@@ -12,7 +12,7 @@ from urllib.parse import parse_qs
 
 import pandas as pd
 import pdfkit
-from django.conf import settings
+from django.conf import settings as pay_settings
 from django.contrib import messages
 from django.db.models import ProtectedError, Q
 from django.http import HttpResponse, HttpResponseRedirect, JsonResponse
@@ -21,6 +21,7 @@ from django.template.loader import render_to_string
 from django.urls import reverse
 from django.utils import timezone
 from django.utils.translation import gettext_lazy as _
+from django.views.decorators.http import require_http_methods
 
 from base.methods import (
     closest_numbers,
@@ -109,7 +110,7 @@ def contract_update(request, contract_id, **kwargs):
     contract = Contract.objects.filter(id=contract_id).first()
     if not contract:
         messages.info(request, _("The contract could not be found."))
-        return redirect(contract_view)
+        return redirect("view-contract")
     contract_form = ContractForm(instance=contract)
     if request.method == "POST":
         contract_form = ContractForm(request.POST, request.FILES, instance=contract)
@@ -184,7 +185,8 @@ def contract_status_update(request, contract_id):
 @permission_required("payroll.change_contract")
 def bulk_contract_status_update(request):
     status = request.POST.get("status")
-    ids = eval_validate(request.POST.get("ids"))
+    ids = request.POST.get("ids")
+    ids = eval_validate(ids) if ids else []
     all_contracts = Contract.objects.all()
     contracts = all_contracts.filter(id__in=ids)
 
@@ -218,6 +220,7 @@ def bulk_contract_status_update(request):
 
 @login_required
 @permission_required("payroll.change_contract")
+@require_http_methods(["POST"])
 def update_contract_filing_status(request, contract_id):
     if request.method == "POST":
         contract = get_object_or_404(Contract, id=contract_id)
@@ -237,7 +240,7 @@ def update_contract_filing_status(request, contract_id):
                 request, _("You selected the wrong option for filing status.")
             )
         contract.save()
-        return redirect(contract_filter)
+        return redirect("contract-filter")
 
 
 @login_required
@@ -473,6 +476,7 @@ def update_payslip_status(request, payslip_id):
     return render(request, "payroll/payslip/individual_payslip_summery.html", data)
 
 
+@login_required
 def update_payslip_status_no_id(request):
     """
     This method is used to update the payslip confirmation status
@@ -572,13 +576,12 @@ def view_payslip_pdf(request, payslip_id):
 
             month_start_name = start_date.strftime("%B %d, %Y")
             month_end_name = end_date.strftime("%B %d, %Y")
-
             # Formatted date for each format
-            for format_name, format_string in settings.HORILLA_DATE_FORMATS.items():
+            for format_name, format_string in pay_settings.HORILLA_DATE_FORMATS.items():
                 if format_name == date_format:
                     formatted_start_date = start_date.strftime(format_string)
 
-            for format_name, format_string in settings.HORILLA_DATE_FORMATS.items():
+            for format_name, format_string in pay_settings.HORILLA_DATE_FORMATS.items():
                 if format_name == date_format:
                     formatted_end_date = end_date.strftime(format_string)
             data["month_start_name"] = month_start_name
@@ -723,11 +726,18 @@ def dashboard_employee_chart(request):
     payroll dashboard employee chart data
     """
 
-    date = request.GET.get("period")
-    year = date.split("-")[0]
-    month = date.split("-")[1]
+    date = request.GET.get("period", datetime.now().strftime("%Y-%m"))
+    year, month = date.split("-")
     dataset = []
+    employee_label = []
+    list_of_employees = []
 
+    response = {
+        "dataset": dataset,
+        "labels": employee_label,
+        "employees": list_of_employees,
+        "message": _("No payslips generated for this month."),
+    }
     is_ajax = request.headers.get("X-Requested-With") == "XMLHttpRequest"
     if is_ajax and request.method == "GET":
         employee_list = Payslip.objects.filter(
@@ -771,7 +781,6 @@ def dashboard_employee_chart(request):
                 total_pay_with_status[dataset_label][label] for label in employees
             ]
 
-        employee_label = []
         for employee in employees:
             employee_label.append(
                 f"{employee.employee_first_name} {employee.employee_last_name}"
@@ -792,7 +801,7 @@ def dashboard_employee_chart(request):
             "employees": list_of_employees,
             "message": _("No payslips generated for this month."),
         }
-        return JsonResponse(response)
+    return JsonResponse(response)
 
 
 @login_required
@@ -801,9 +810,8 @@ def payslip_details(request):
     payroll dashboard payslip details data
     """
 
-    date = request.GET.get("period")
-    year = date.split("-")[0]
-    month = date.split("-")[1]
+    date = request.GET.get("period", datetime.now().strftime("%Y-%m"))
+    year, month = date.split("-")
     employee_list = []
     employee_list = Payslip.objects.filter(
         Q(start_date__month=month) & Q(start_date__year=year)
@@ -825,9 +833,8 @@ def dashboard_department_chart(request):
     payroll dashboard department chart data
     """
 
-    date = request.GET.get("period")
-    year = date.split("-")[0]
-    month = date.split("-")[1]
+    date = request.GET.get("period", datetime.now().strftime("%Y-%m"))
+    year, month = date.split("-")
     dataset = [
         {
             "label": "",
@@ -838,57 +845,50 @@ def dashboard_department_chart(request):
     department = []
     department_total = []
 
+    response = {
+        "dataset": dataset,
+        "labels": department,
+        "department_total": department_total,
+        "message": _("No payslips generated for this month."),
+    }
+
     is_ajax = request.headers.get("X-Requested-With") == "XMLHttpRequest"
     if is_ajax and request.method == "GET":
-        employee_list = Payslip.objects.filter(
-            Q(start_date__month=month) & Q(start_date__year=year)
+        payslips = Payslip.objects.filter(
+            start_date__month=month, start_date__year=year
         )
 
-        for employee in employee_list:
+        department_totals = defaultdict(float)
+
+        for slip in payslips:
             try:
-                department.append(
-                    employee.employee_id.employee_work_info.department_id.department
-                )
+                dept = slip.employee_id.get_department().department
+                department_totals[dept] += round(slip.net_pay, 2)
             except Exception as e:
                 print(e)
 
-        department = list(set(department))
-        for depart in department:
-            department_total.append({"department": depart, "amount": 0})
+        departments = list(department_totals.keys())
 
-        for employee in employee_list:
-            try:
-                employee_department = (
-                    employee.employee_id.employee_work_info.department_id.department
-                )
-            except Exception as e:
-                print(e)
+        department_total = [
+            {"department": dept, "amount": amount}
+            for dept, amount in department_totals.items()
+        ]
 
-            for depart in department_total:
-                if depart["department"] == employee_department:
-                    depart["amount"] += round(employee.net_pay, 2)
-
-        colors = generate_colors(len(department))
-
+        colors = generate_colors(len(departments))
         dataset = [
             {
                 "label": "",
-                "data": [],
+                "data": list(department_totals.values()),
                 "backgroundColor": colors,
             }
         ]
-
-        for depart_total, depart in zip(department_total, department):
-            if depart == depart_total["department"]:
-                dataset[0]["data"].append(depart_total["amount"])
-
         response = {
             "dataset": dataset,
-            "labels": department,
+            "labels": departments,
             "department_total": department_total,
             "message": _("No payslips generated for this month."),
         }
-        return JsonResponse(response)
+    return JsonResponse(response)
 
 
 def contract_ending(request):
@@ -1038,12 +1038,11 @@ def payslip_export(request):
             # Convert the string to a datetime.date object
             start_date = datetime.strptime(start_date_str, "%Y-%m-%d").date()
             end_date = datetime.strptime(end_date_str, "%Y-%m-%d").date()
-
-            for format_name, format_string in settings.HORILLA_DATE_FORMATS.items():
+            for format_name, format_string in pay_settings.HORILLA_DATE_FORMATS.items():
                 if format_name == date_format:
                     formatted_start_date = start_date.strftime(format_string)
 
-            for format_name, format_string in settings.HORILLA_DATE_FORMATS.items():
+            for format_name, format_string in pay_settings.HORILLA_DATE_FORMATS.items():
                 if format_name == date_format:
                     formatted_end_date = end_date.strftime(format_string)
 
@@ -1478,6 +1477,7 @@ def generate_payslip_pdf(template_path, context, html=False):
         return HttpResponse(f"Error generating PDF: {str(e)}", status=500)
 
 
+@login_required
 def payslip_pdf(request, id):
     """
     Generate the payslip as a PDF and return it in an HttpResponse.
@@ -1526,7 +1526,7 @@ def payslip_pdf(request, id):
             end_date = datetime.strptime(end_date_str, "%Y-%m-%d").date()
 
             # Format the start and end dates
-            for format_name, format_string in settings.HORILLA_DATE_FORMATS.items():
+            for format_name, format_string in pay_settings.HORILLA_DATE_FORMATS.items():
                 if format_name == date_format:
                     formatted_start_date = start_date.strftime(format_string)
                     formatted_end_date = end_date.strftime(format_string)
@@ -1574,12 +1574,13 @@ def payslip_pdf(request, id):
 @permission_required("payroll.view_contract")
 def contract_select(request):
     page_number = request.GET.get("page")
+    contracts = Contract.objects.none()
 
     if page_number == "all":
-        employees = Contract.objects.all()
+        contracts = Contract.objects.all()
 
-    contract_ids = [str(emp.id) for emp in employees]
-    total_count = employees.count()
+    contract_ids = [str(contract.id) for contract in contracts]
+    total_count = contracts.count()
 
     context = {"contract_ids": contract_ids, "total_count": total_count}
 
@@ -1591,35 +1592,35 @@ def contract_select_filter(request):
     page_number = request.GET.get("page")
     filtered = request.GET.get("filter")
     filters = json.loads(filtered) if filtered else {}
+    context = {}
 
     if page_number == "all":
         contract_filter = ContractFilter(filters, queryset=Contract.objects.all())
 
         # Get the filtered queryset
-        filtered_employees = contract_filter.qs
+        filtered_contracts = contract_filter.qs
 
-        contract_ids = [str(emp.id) for emp in filtered_employees]
-        total_count = filtered_employees.count()
+        contract_ids = [str(contract.id) for contract in filtered_contracts]
+        total_count = filtered_contracts.count()
 
         context = {"contract_ids": contract_ids, "total_count": total_count}
 
-        return JsonResponse(context)
+    return JsonResponse(context)
 
 
 @login_required
 def payslip_select(request):
     page_number = request.GET.get("page")
+    payslip = Payslip.objects.none()
 
     if page_number == "all":
         if request.user.has_perm("payroll.view_payslip"):
-            employees = Payslip.objects.all()
+            payslip = Payslip.objects.all()
         else:
-            employees = Payslip.objects.filter(
-                employee_id__employee_user_id=request.user
-            )
+            payslip = Payslip.objects.filter(employee_id__employee_user_id=request.user)
 
-    payslip_ids = [str(emp.id) for emp in employees]
-    total_count = employees.count()
+    payslip_ids = [str(emp.id) for emp in payslip]
+    total_count = payslip.count()
 
     context = {"payslip_ids": payslip_ids, "total_count": total_count}
 
@@ -1631,6 +1632,7 @@ def payslip_select_filter(request):
     page_number = request.GET.get("page")
     filtered = request.GET.get("filter")
     filters = json.loads(filtered) if filtered else {}
+    context = {}
 
     if page_number == "all":
         payslip_filter = PayslipFilter(filters, queryset=Payslip.objects.all())
@@ -1643,7 +1645,7 @@ def payslip_select_filter(request):
 
         context = {"payslip_ids": payslip_ids, "total_count": total_count}
 
-        return JsonResponse(context)
+    return JsonResponse(context)
 
 
 @login_required
