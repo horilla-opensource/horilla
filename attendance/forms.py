@@ -111,7 +111,8 @@ class AttendanceUpdateForm(BaseModelForm):
             "is_get_compensation_leave",
             "is_mercantile_holiday",
             "is_poya_holiday",
-            "work_type_id"
+            "work_type_id",
+            "batch_attendance_id"
         ]
         model = Attendance
         widgets = {
@@ -187,14 +188,20 @@ class AttendanceUpdateForm(BaseModelForm):
             )
         ):
             del self.fields["attendance_overtime_approve"]
-        self.fields["batch_attendance_id"].choices = list(
-            self.fields["batch_attendance_id"].choices
-        ) + [("dynamic_create", "Dynamic create")]
-        self.fields["batch_attendance_id"].widget.attrs.update(
-            {
-                "onchange": "dynamicBatchAttendance($(this))",
-            }
-        )
+
+        self.fields["attendance_validated"].widget.attrs.update({
+            "style": "display:none;",
+        })
+        self.fields["attendance_validated"].label = ""
+        self.fields["attendance_validated"].help_text = ""
+        # self.fields["batch_attendance_id"].choices = list(
+        #     self.fields["batch_attendance_id"].choices
+        # ) + [("dynamic_create", "Dynamic create")]
+        # self.fields["batch_attendance_id"].widget.attrs.update(
+        #     {
+        #         "onchange": "dynamicBatchAttendance($(this))",
+        #     }
+        # )
 
     def as_p(self, *args, **kwargs):
         """
@@ -384,14 +391,14 @@ class AttendanceForm(BaseModelForm):
             }
         )
         # self.fields["work_type_id"].widget.attrs.update({"id": str(uuid.uuid4())})
-        self.fields["batch_attendance_id"].choices = list(
-            self.fields["batch_attendance_id"].choices
-        ) + [("dynamic_create", "Dynamic create")]
-        self.fields["batch_attendance_id"].widget.attrs.update(
-            {
-                "onchange": "dynamicBatchAttendance($(this))",
-            }
-        )
+        # self.fields["batch_attendance_id"].choices = list(
+        #     self.fields["batch_attendance_id"].choices
+        # ) + [("dynamic_create", "Dynamic create")]
+        # self.fields["batch_attendance_id"].widget.attrs.update(
+        #     {
+        #         "onchange": "dynamicBatchAttendance($(this))",
+        #     }
+        # )
 
 
     def save(self, commit=True):
@@ -721,14 +728,14 @@ class AttendanceRequestForm(BaseModelForm):
             }
         )
         # self.fields["work_type_id"].widget.attrs.update({"id": str(uuid.uuid4())})
-        self.fields["batch_attendance_id"].choices = list(
-            self.fields["batch_attendance_id"].choices
-        ) + [("dynamic_create", "Dynamic create")]
-        self.fields["batch_attendance_id"].widget.attrs.update(
-            {
-                "onchange": "dynamicBatchAttendance($(this))",
-            }
-        )
+        # self.fields["batch_attendance_id"].choices = list(
+        #     self.fields["batch_attendance_id"].choices
+        # ) + [("dynamic_create", "Dynamic create")]
+        # self.fields["batch_attendance_id"].widget.attrs.update(
+        #     {
+        #         "onchange": "dynamicBatchAttendance($(this))",
+        #     }
+        # )
 
     class Meta:
         """
@@ -745,7 +752,7 @@ class AttendanceRequestForm(BaseModelForm):
             "attendance_clock_out",
             "attendance_worked_hour",
             "request_description",
-            "batch_attendance_id",
+            # "batch_attendance_id",
             "is_get_compensation_leave"
         ]
         widgets = {
@@ -837,7 +844,7 @@ class NewRequestForm(AttendanceRequestForm):
             "attendance_clock_out_date",
             "attendance_clock_out",
             "attendance_worked_hour",
-            "batch_attendance_id",
+            # "batch_attendance_id",
             "is_get_compensation_leave"
 
         ]
@@ -1320,12 +1327,12 @@ class BulkAttendanceRequestForm(BaseModelForm):
         label=_("To Date"),
         widget=forms.DateInput(attrs={"type": "date"}),
     )
-    batch_attendance_id = forms.ModelChoiceField(
-        queryset=BatchAttendance.objects.all(),
-        required=False,
-        label="Batch",
-        widget=forms.Select(attrs={"onchange": "dynamicBatchAttendance($(this))"}),
-    )
+    # batch_attendance_id = forms.ModelChoiceField(
+    #     queryset=BatchAttendance.objects.all(),
+    #     required=False,
+    #     label="Batch",
+    #     widget=forms.Select(attrs={"onchange": "dynamicBatchAttendance($(this))"}),
+    # )
 
     class Meta:
         """
@@ -1404,9 +1411,9 @@ class BulkAttendanceRequestForm(BaseModelForm):
             self.fields["employee_id"].queryset = Employee.objects.filter(
                 employee_user_id=request.user
             )
-        self.fields["batch_attendance_id"].choices = list(
-            self.fields["batch_attendance_id"].choices
-        ) + [("dynamic_create", "Dynamic create")]
+        # self.fields["batch_attendance_id"].choices = list(
+        #     self.fields["batch_attendance_id"].choices
+        # ) + [("dynamic_create", "Dynamic create")]
 
     def clean(self):
         cleaned_data = self.cleaned_data
@@ -1476,11 +1483,11 @@ class BulkAttendanceRequestForm(BaseModelForm):
         # request_description = cleaned_data.get("request_description")
         attendance_worked_hour = cleaned_data.get("attendance_worked_hour")
         date_list = get_date_list(employee_id, from_date, to_date)
-        batch = (
-            cleaned_data.get("batch_attendance_id")
-            if cleaned_data.get("batch_attendance_id")
-            else None
-        )
+        # batch = (
+        #     cleaned_data.get("batch_attendance_id")
+        #     if cleaned_data.get("batch_attendance_id")
+        #     else None
+        # )
         # Prepare initial data for the form
         initial_data = {
             "employee_id": employee_id,
@@ -1506,8 +1513,8 @@ class BulkAttendanceRequestForm(BaseModelForm):
                 instance.employee_id = employee_id
                 instance.request_type = "create_request"
                 instance.is_bulk_request = True
-                if batch:
-                    instance.batch_attendance_id = batch
+                # if batch:
+                #     instance.batch_attendance_id = batch
                 instance.save()
             else:
                 logger.info(form.errors)
