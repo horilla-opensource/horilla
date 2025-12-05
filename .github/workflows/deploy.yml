@@ -11,11 +11,11 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-      #  Checkout the repository
+      # 1️⃣ Checkout the repository
       - name: Checkout code
         uses: actions/checkout@v3
 
-      #  Set up SSH access
+      # 2️⃣ Set up SSH access
       - name: Set up SSH access
         run: |
           mkdir -p ~/.ssh
@@ -23,7 +23,7 @@ jobs:
           chmod 600 ~/.ssh/id_rsa
           ssh-keyscan -H ${{ secrets.EC2_TEST_HOST }} >> ~/.ssh/known_hosts
 
-      #  Deploy to EC2
+      # 3️⃣ Deploy to EC2
       - name: Deploy Horilla App to TEST EC2
         run: |
           ssh ubuntu@${{ secrets.EC2_TEST_HOST }} << 'EOF'
@@ -52,13 +52,20 @@ jobs:
           source venv/bin/activate
 
           # Upgrade pip inside venv
-          python -m pip install --upgrade pip
+          python3 -m pip install --upgrade pip
 
           # Install project dependencies inside venv
-          python -m pip install -r requirements.txt
+          python3 -m pip install -r requirements.txt
 
           # Apply Django migrations
-          python manage.py makemigrations --noinput
-          python manage.py migrate --noinput
+          python3 manage.py makemigrations --noinput
+          python3 manage.py migrate --noinput
 
           # Compile translations if any
+          python3 manage.py compilemessages || true
+
+          # Start server in background
+          nohup python3 manage.py runserver 0.0.0.0:8000 > nohup.out 2>&1 &
+
+          echo "✅ Horilla successfully deployed to TEST!"
+          EOF
