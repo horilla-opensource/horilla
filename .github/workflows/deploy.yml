@@ -26,44 +26,37 @@ jobs:
           ssh ubuntu@${{ secrets.EC2_TEST_HOST }} << 'EOF'
           set -e
 
-          # Make sure venv support and pip exist
-          sudo apt update && sudo apt install -y python3-venv python3-pip
+          # Update system and install dependencies
+          sudo apt update && sudo apt upgrade -y
+          sudo apt install -y python3-venv python3-pip python3-full gettext git
 
-          # Go to project folder or clone if missing
-          if [ ! -d "/home/ubuntu/horilla-hrm" ]; then
-            git clone https://github.com/wireappsltd/horilla-hrm.git /home/ubuntu/horilla-hrm
-          fi
+          # Navigate to existing repo
           cd /home/ubuntu/horilla-hrm
 
-          # Reset local changes and pull latest 'test' branch
-          git reset --hard
+          # Update code from test branch
+          git fetch origin test
+          git reset --hard origin/test
           git clean -fd
-          git pull origin test
 
           # Kill any process on port 8000
           fuser -k 8000/tcp || echo "No process on 8000"
 
-          # Set up virtual environment if missing
-          if [ ! -d "venv" ]; then
-            python3 -m venv venv
-          fi
+          # Activate existing virtual environment
+          source /home/ubuntu/horilla-hrm/venv/bin/activate
 
-          # Activate venv
-          source venv/bin/activate
+          # Upgrade pip and install requirements
+          pip install --upgrade pip
+          pip install -r requirements.txt
 
-          # Upgrade pip inside venv
-          python3 -m pip install --upgrade pip
+          # Run migrations
+          python manage.py makemigrations
+          python manage.py migrate
 
-          # Install dependencies
-          python3 -m pip install -r requirements.txt
-
-          # Apply Django migrations
-          python3 manage.py makemigrations --noinput
-          python3 manage.py migrate --noinput
-          python3 manage.py compilemessages || true
+          # Compile translations
+          python manage.py compilemessages
 
           # Start server in background
-          nohup python3 manage.py runserver 0.0.0.0:8000 > nohup.out 2>&1 &
+          nohup python manage.py runserver 0.0.0.0:8000 > django.log 2>&1 &
 
           echo "✅ Horilla successfully deployed to TEST!"
           EOF
