@@ -73,7 +73,6 @@ class TimeSheetNavView(HorillaNavView):
     def __init__(self, **kwargs: Any) -> None:
         super().__init__(**kwargs)
         self.search_url = reverse("time-sheet-list")
-        url = f"{reverse('personal-time-sheet-view',kwargs={'emp_id': self.request.user.employee_get.id})}"
         self.actions = [
             {
                 "action": _("Delete"),
@@ -85,6 +84,17 @@ class TimeSheetNavView(HorillaNavView):
                     """,
             },
         ]
+        self.create_attrs = f"""
+                                onclick = "event.stopPropagation();"
+                                data-toggle="oh-modal-toggle"
+                                data-target="#genericModal"
+                                hx-target="#genericModalBody"
+                                hx-get="{reverse('create-time-sheet')}"
+                                """
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        url = f"{reverse('personal-time-sheet-view',kwargs={'emp_id': self.request.user.employee_get.id})}"
         self.view_types = [
             {
                 "type": "list",
@@ -105,21 +115,14 @@ class TimeSheetNavView(HorillaNavView):
             {
                 "type": "graph",
                 "icon": "bar-chart",
+                "url": url,
                 "attrs": f"""
-                          onclick="event.stopPropagation();
-                          window.location.href='{url}'"
                           title ='Graph'
                           """,
             },
         ]
-
-        self.create_attrs = f"""
-                                onclick = "event.stopPropagation();"
-                                data-toggle="oh-modal-toggle"
-                                data-target="#genericModal"
-                                hx-target="#genericModalBody"
-                                hx-get="{reverse('create-time-sheet')}"
-                                """
+        context["view_types"] = self.view_types
+        return context
 
 
 @method_decorator(login_required, name="dispatch")

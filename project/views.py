@@ -1487,16 +1487,6 @@ def time_sheet_view(request):
     )
 
 
-def time_sheet_initial(request):
-    """
-    This is an ajax method to return json response to take only tasks related
-    to the project in the timesheet form fields
-    """
-    project_id = request.GET["project_id"]
-    tasks = Task.objects.filter(project=project_id).values("title", "id")
-    return JsonResponse({"data": list(tasks)})
-
-
 # def get_members(request):
 #     project_id = request.GET.get("project_id")
 #     project = Project.objects.get(id=project_id)
@@ -1511,6 +1501,7 @@ def time_sheet_initial(request):
 #     return JsonResponse({'data': list(members)})
 
 
+@login_required
 def get_members(request):
     project_id = request.GET.get("project_id")
     task_id = request.GET.get("task_id")
@@ -1548,6 +1539,7 @@ def get_members(request):
     return HttpResponse(employee_field_html)
 
 
+@login_required
 def get_tasks_in_timesheet(request):
     project_id = request.GET.get("project_id")
     form = TimeSheetForm()
@@ -1721,7 +1713,7 @@ def time_sheet_update(request, time_sheet_id):
                 messages.success(request, _("Time sheet updated"))
                 form = TimeSheetForm()
                 response = render(
-                    request, "./time_sheet/form-create.html", context={"form": form}
+                    request, "time_sheet/form-create.html", context={"form": form}
                 )
                 return HttpResponse(
                     response.content.decode("utf-8")
@@ -1729,13 +1721,14 @@ def time_sheet_update(request, time_sheet_id):
                 )
         return render(
             request,
-            "./time_sheet/form-update.html",
+            "time_sheet/form-update.html",
             {
                 "form": update_form,
             },
         )
     else:
-        return render(request, "error.html")
+        messages.error(request, "You dont have permission.")
+        return HttpResponseRedirect(request.META.get("HTTP_REFERER", "/"))
 
 
 @login_required
@@ -1764,6 +1757,7 @@ def time_sheet_delete(request, time_sheet_id):
         return you_dont_have_permission(request)
 
 
+@login_required
 def time_sheet_filter(request):
     """
     Filter Time sheet based on the provided query parameters.
@@ -1817,6 +1811,7 @@ def time_sheet_initial(request):
     return JsonResponse({"data": list(tasks)})
 
 
+@login_required
 def personal_time_sheet(request):
     """
     This is an ajax method to return json response for generating bar charts to employees.
@@ -1891,6 +1886,7 @@ def personal_time_sheet(request):
     return JsonResponse(response)
 
 
+@login_required
 def personal_time_sheet_view(request, emp_id):
     """
     Function for viewing the barcharts for timesheet of a specific employee.
@@ -1902,10 +1898,7 @@ def personal_time_sheet_view(request, emp_id):
         Renders the chart.html template containing barchat of the specific employee.
 
     """
-    try:
-        Employee.objects.get(id=emp_id)
-    except:
-        return render(request, "error.html")
+    Employee.objects.get(id=emp_id)
     emp_last_name = (
         Employee.objects.get(id=emp_id).employee_last_name
         if Employee.objects.get(id=emp_id).employee_last_name != None
@@ -1922,6 +1915,7 @@ def personal_time_sheet_view(request, emp_id):
     return render(request, "time_sheet/chart.html", context=context)
 
 
+@login_required
 def time_sheet_single_view(request, time_sheet_id):
     """
     Renders a single timesheet view page.
@@ -1939,6 +1933,7 @@ def time_sheet_single_view(request, time_sheet_id):
     return render(request, "time_sheet/time_sheet_single_view.html", context)
 
 
+@login_required
 def time_sheet_bulk_delete(request):
     """
     This method is used to delete set of Task instances

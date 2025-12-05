@@ -11,7 +11,7 @@ urlpatterns = [
         "project-dashboard-view/", views.dashboard_view, name="project-dashboard-view"
     ),
     path(
-        "projects-due-in-this-month",
+        "projects-due-in-this-month/",
         dashboard.ProjectsDueInMonth.as_view(),
         name="projects-due-in-this-month",
     ),
@@ -43,7 +43,7 @@ urlpatterns = [
         name="project-card-view",
     ),
     path("project-view/", projects.ProjectsView.as_view(), name="project-view"),
-    # path("create-project/", views.create_project, name="create-project"),
+    # path("create-project", views.create_project, name="create-project"),
     path("create-project/", projects.ProjectFormView.as_view(), name="create-project"),
     # path(
     #     "update-project/<int:project_id>/",
@@ -227,7 +227,7 @@ urlpatterns = [
     ),
     # path("create-time-sheet", views.time_sheet_creation, name="create-time-sheet"),
     path(
-        "create-time-sheet",
+        "create-time-sheet/",
         timesheet.TimeSheetFormView.as_view(),
         name="create-time-sheet",
     ),
@@ -248,7 +248,7 @@ urlpatterns = [
     # ),
     path("filter-time-sheet/", views.time_sheet_filter, name="filter-time-sheet"),
     path("time-sheet-initial/", views.time_sheet_initial, name="time-sheet-initial"),
-    # path("get-project/", views.get_project, name="get-project"),
+    # path("get-project", views.get_project, name="get-project"),
     path("create-time-sheet/", views.time_sheet_creation, name="create-time-sheet"),
     path(
         "create-project-time-sheet/",
@@ -265,8 +265,8 @@ urlpatterns = [
         views.time_sheet_delete,
         name="delete-time-sheet",
     ),
-    path("filter-time-sheet", views.time_sheet_filter, name="filter-time-sheet"),
-    path("time-sheet-initial", views.time_sheet_initial, name="time-sheet-initial"),
+    path("filter-time-sheet/", views.time_sheet_filter, name="filter-time-sheet"),
+    path("time-sheet-initial/", views.time_sheet_initial, name="time-sheet-initial"),
     path(
         "personal-time-sheet-view/<int:emp_id>/",
         views.personal_time_sheet_view,
