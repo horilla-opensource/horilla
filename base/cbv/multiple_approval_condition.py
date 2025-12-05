@@ -140,6 +140,7 @@ class MultipleApprovalConditionDetailView(HorillaDetailedView):
     }
 
 
+@method_decorator(login_required, name="dispatch")
 class MultipleApprovalConditionFormView(HorillaFormView):
     """
     Create and edit form
@@ -189,6 +190,7 @@ class MultipleApprovalConditionFormView(HorillaFormView):
         return super().form_valid(form)
 
 
+@method_decorator(login_required, name="dispatch")
 class EditApprovalConditionFormView(MultipleApprovalConditionFormView):
     """
     Edit form
