@@ -872,9 +872,11 @@ def send_otp(request):
     Function to send OTP to the user's email address.
     It generates a new OTP code, stores it in the session, and sends it via email.
     """
-    employee = request.user.employee_get
-    email = employee.get_mail()
+    employee = getattr(getattr(request, "user", None), "employee_get", None)
+    if not employee:
+        return redirect("/login/")
 
+    email = employee.get_mail()
     email_backend = ConfiguredEmailBackend()
     display_email_name = email_backend.dynamic_from_email_with_display_name
 
@@ -1684,17 +1686,21 @@ def mail_server_delete(request):
             )
 
 
+@login_required
 def replace_primary_mail(request):
     """
     This method is used to replace primary mail server
     """
     emailconfig_id = request.POST.get("replace_mail")
-    email_config = DynamicEmailConfiguration.objects.get(id=emailconfig_id)
+    email_config = DynamicEmailConfiguration.find(emailconfig_id)
+    if not email_config:
+        messages.error(request, _("Mail server configuration not found"))
+        return redirect("mail-server-conf")
+
     email_config.is_primary = True
     email_config.save()
     DynamicEmailConfiguration.objects.filter(is_primary=True).first().delete()
-
-    messages.success(request, "Primary Mail server configuration replaced")
+    messages.success(request, _("Primary Mail server configuration replaced"))
     return redirect("mail-server-conf")
 
 
@@ -5478,6 +5484,7 @@ def date_settings(request):
     return render(request, "base/company/date.html")
 
 
+@login_required
 @permission_required("base.change_company")
 @csrf_exempt  # Use this decorator if CSRF protection is enabled
 def save_date_format(request):
@@ -5571,6 +5578,7 @@ def get_date_format(request):
     return JsonResponse({"selected_format": date_format})
 
 
+@login_required
 @permission_required("base.change_company")
 @csrf_exempt  # Use this decorator if CSRF protection is enabled
 def save_time_format(request):
@@ -7074,6 +7082,7 @@ def holiday_creation(request):
     )
 
 
+@login_required
 def holidays_excel_template(request):
     try:
         columns = [
