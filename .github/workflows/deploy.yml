@@ -1,10 +1,10 @@
-name: Horilla EC2 Deploy Test
+name: Horilla EC2 Deploy
 
 on:
   push:
     branches:
-      - test
-  workflow_dispatch:
+      - test      # runs on pushes to the test branch
+  workflow_dispatch:   # allows manual trigger
 
 jobs:
   deploy:
@@ -26,37 +26,32 @@ jobs:
           ssh ubuntu@${{ secrets.EC2_TEST_HOST }} << 'EOF'
           set -e
 
-          # Update system and install dependencies
-          sudo apt update && sudo apt upgrade -y
-          sudo apt install -y python3-venv python3-pip python3-full gettext git
+          # Go to the repo directory
+          cd /home/ubuntu/horilla-hrm/horilla-hrm
 
-          # Navigate to existing repo
-          cd /home/ubuntu/horilla-hrm
-
-          # Update code from test branch
-          git fetch origin test
-          git reset --hard origin/test
+          # Pull latest changes
+          git reset --hard
           git clean -fd
+          git pull origin test
 
-          # Kill any process on port 8000
+          # Kill any running server on 8000
           fuser -k 8000/tcp || echo "No process on 8000"
 
           # Activate existing virtual environment
-          source /home/ubuntu/horilla-hrm/venv/bin/activate
+          source ../venv/bin/activate
 
-          # Upgrade pip and install requirements
+          # Install dependencies
           pip install --upgrade pip
           pip install -r requirements.txt
 
-          # Run migrations
-          python manage.py makemigrations
-          python manage.py migrate
-
-          # Compile translations
+          # Run Django migrations and compile messages
+          python manage.py makemigrations --noinput
+          python manage.py migrate --noinput
+    
           python manage.py compilemessages
 
-          # Start server in background
-          nohup python manage.py runserver 0.0.0.0:8000 > django.log 2>&1 &
+          # Start the server in background
+          nohup python3 manage.py runserver 0.0.0.0:8000 > django.log 2>&1 &
 
           echo "✅ Horilla successfully deployed to TEST!"
           EOF
