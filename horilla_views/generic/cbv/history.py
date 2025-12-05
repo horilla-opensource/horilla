@@ -9,11 +9,12 @@ from django.views.generic import DetailView
 from simple_history.utils import get_history_model_for_model
 
 from horilla.horilla_middlewares import _thread_locals
-from horilla_views.cbv_methods import hx_request_required
+from horilla_views.cbv_methods import hx_request_required, login_required
 from horilla_views.generic.cbv.views import HorillaFormView
 from horilla_views.history_methods import get_diff
 
 
+@method_decorator(login_required, name="dispatch")
 @method_decorator(hx_request_required, name="dispatch")
 class HorillaHistoryView(DetailView):
     """
