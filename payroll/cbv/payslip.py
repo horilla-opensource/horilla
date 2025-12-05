@@ -284,8 +284,8 @@ class PayslipBulkExport(TemplateView):
         return context
 
 
-@method_decorator(permission_required("payroll.add_payslip"), name="dispatch")
 @method_decorator(login_required, name="dispatch")
+@method_decorator(permission_required("payroll.add_payslip"), name="dispatch")
 class PayrollCreateFormView(HorillaFormView):
     """
     form view for creating payslip

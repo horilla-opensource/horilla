@@ -109,7 +109,7 @@ urlpatterns = [
         name="dashboard-department-chart",
     ),
     path(
-        "dashboard-department-chart-list",
+        "dashboard-department-chart-list/",
         dashboard.DashboardDepartmentPayslip.as_view(),
         name="dashboard-department-chart-list",
     ),
@@ -119,12 +119,12 @@ urlpatterns = [
     #     name="dashboard-contract-ending",
     # ),
     path(
-        "dashboard-contract-ending",
+        "dashboard-contract-ending/",
         dashboard.DashboardContractList.as_view(),
         name="dashboard-contract-ending",
     ),
     path(
-        "dashboard-contract-expired",
+        "dashboard-contract-expired/",
         dashboard.DashboardContractListExpired.as_view(),
         name="dashboard-contract-expired",
     ),
