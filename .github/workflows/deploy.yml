@@ -3,17 +3,19 @@ name: Horilla EC2 Deploy Test
 on:
   push:
     branches:
-      - up/bhathiya
-  workflow_dispatch:
+      - test           # runs only when 'test' branch changes
+  workflow_dispatch:   # allows manual trigger
 
 jobs:
   deploy:
     runs-on: ubuntu-latest
 
     steps:
+      # 1️⃣ Checkout code
       - name: Checkout code
         uses: actions/checkout@v3
 
+      # 2️⃣ Set up SSH access
       - name: Set up SSH access
         run: |
           mkdir -p ~/.ssh
@@ -21,36 +23,44 @@ jobs:
           chmod 600 ~/.ssh/id_rsa
           ssh-keyscan -H ${{ secrets.EC2_TEST_HOST }} >> ~/.ssh/known_hosts
 
+      # 3️⃣ Deploy to EC2
       - name: Deploy Horilla App to TEST EC2
         run: |
           ssh ubuntu@${{ secrets.EC2_TEST_HOST }} << 'EOF'
           set -e
 
+          # Update packages
           sudo apt update && sudo apt upgrade -y
 
-          if [ ! -d "horilla-hrm" ]; then
-            git clone https://github.com/wireappsltd/horilla-hrm.git
-          fi
-          cd horilla-hrm
+          # Go to project folder
+          cd /home/ubuntu/horilla-hrm
 
+          # Reset any local changes and pull latest from 'test' branch
           git reset --hard
           git clean -fd
-          git pull origin $(git rev-parse --abbrev-ref HEAD)
+          git pull origin test
 
+          # Kill any process on port 8000
           fuser -k 8000/tcp || echo "No process on 8000"
 
+          # Set up virtual environment
           if [ ! -d "venv" ]; then
             python3 -m venv venv
           fi
           source venv/bin/activate
 
+          # Install dependencies
           pip install --upgrade pip
           pip install -r requirements.txt
 
+          # Apply Django migrations
           python manage.py makemigrations --noinput
           python manage.py migrate --noinput
+
+          # Compile translations if any
           python manage.py compilemessages
 
+          # Start server in background
           nohup python3 manage.py runserver 0.0.0.0:8000 > nohup.out 2>&1 &
 
           echo "✅ Horilla successfully deployed to TEST!"
