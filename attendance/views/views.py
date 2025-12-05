@@ -2823,11 +2823,12 @@ def check_compensation(request):
     form = AttendanceForm()
 
     show_duplicate_warning = check_attendance_duplicate(request)
+    # print(show_duplicate_warning)
 
     return render(
         request,
         "attendance/attendance/_compensation_field.html",
-        {"show_field": result["is_mercantile_holiday"], "form": form , "show_duplicate_warning": show_duplicate_warning,},
+        {"show_field": result["is_mercantile_holiday"], "form": form , "show_duplicate_warning":show_duplicate_warning},
     )
 
 def check_attendance_duplicate(request):
@@ -2847,6 +2848,6 @@ def check_attendance_duplicate(request):
     if exists:
         return exists
 
-    return HttpResponse("")
+    return False
 
 
