@@ -312,8 +312,8 @@ class GmeetNavView(views.HorillaNavView):
         create_attrs (str): Dynamic attributes for handling the creation of Google Meet meetings.
     """
 
-    def __init__(self, *args, **kwargs) -> None:
-        super().__init__(*args, **kwargs)
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
         has_credentials = GoogleCredential.objects.filter(
             employee_id=self.request.user.employee_get
         ).exists()
@@ -328,6 +328,8 @@ class GmeetNavView(views.HorillaNavView):
             self.create_attrs = f"""
             href ="{reverse_lazy('create-google-meet')}"
             """
+        context["create_attrs"] = self.create_attrs
+        return context
 
     nav_title = _trans("Google Meet View")
     search_url = reverse_lazy("gmeet-list-view")
