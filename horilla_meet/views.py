@@ -2,7 +2,7 @@ from datetime import datetime
 
 from django.apps import apps
 from django.contrib import messages
-from django.http import HttpResponse, JsonResponse
+from django.http import HttpResponse, HttpResponseRedirect, JsonResponse
 from django.shortcuts import get_object_or_404, redirect
 from google_auth_oauthlib.flow import Flow
 from googleapiclient.discovery import build
@@ -117,6 +117,8 @@ def create_google_meet_link(request):
     )
     if not google_credetial.exists():
         return redirect("authenticate-gmeet")
+    messages.error(request, "Google Credential not found. Please authenticate first.")
+    return HttpResponseRedirect(request.META.get("HTTP_REFERER", "/"))
 
 
 @login_required
@@ -157,7 +159,7 @@ if apps.is_installed("recruitment"):
             interview = get_object_or_404(InterviewSchedule, id=id)
         except Exception as e:
             logger.error(f"Error fetching interview: {e}")
-            return JsonResponse({"success": e})
+            return JsonResponse({"error": str(e)}, status=500)
 
         title = f"Interview for {interview.candidate_id}"
         description = interview.description or f"Interview for {interview.candidate_id}"
@@ -202,7 +204,7 @@ if apps.is_installed("recruitment"):
         except Exception as e:
             logger.error(f"Error creating/updating Google Meeting: {e}")
             messages.error(f"Error creating/updating Google Meeting: {e}")
-            return JsonResponse({"success": e})
+            return JsonResponse({"error": str(e)}, status=500)
 
 
 if apps.is_installed("pms"):
@@ -217,7 +219,7 @@ if apps.is_installed("pms"):
             meeting = get_object_or_404(Meetings, id=id)
         except Exception as e:
             logger.error(f"Error fetching interview: {e}")
-            return JsonResponse({"success": e})
+            return JsonResponse({"error": str(e)}, status=500)
 
         title = meeting.title
         start_time = meeting.date
@@ -257,4 +259,4 @@ if apps.is_installed("pms"):
         except Exception as e:
             logger.error(f"Error creating/updating Google Meeting: {e}")
             messages.error(f"Error creating/updating Google Meeting: {e}")
-            return JsonResponse({"success": e})
+            return JsonResponse({"error": str(e)}, status=500)
