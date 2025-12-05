@@ -372,6 +372,7 @@ class AttendanceListTabDetailView(HorillaDetailedView):
         return super().get_context_data(**kwargs)
 
 
+@method_decorator(login_required, name="dispatch")
 class NewAttendanceRequestFormView(HorillaFormView):
     """
     form view for create  attendance request
@@ -417,6 +418,7 @@ class NewAttendanceRequestFormView(HorillaFormView):
         return super().form_valid(form)
 
 
+@method_decorator(login_required, name="dispatch")
 class BulkAttendanceRequestFormView(HorillaFormView):
     """
     form view for create bulk  attendance request
@@ -466,6 +468,7 @@ class BulkAttendanceRequestFormView(HorillaFormView):
         return super().form_valid(form)
 
 
+@method_decorator(login_required, name="dispatch")
 class UpdateAttendanceRequestFormView(HorillaFormView):
     """
     form view for update attendance request
