@@ -3,19 +3,17 @@ name: Horilla EC2 Deploy Test
 on:
   push:
     branches:
-      - test       # deploys whenever test branch is updated
-  workflow_dispatch:   # allows manual trigger
+      - test
+  workflow_dispatch:
 
 jobs:
   deploy:
     runs-on: ubuntu-latest
 
     steps:
-      # 1️⃣ Checkout the repository
       - name: Checkout code
         uses: actions/checkout@v3
 
-      # 2️⃣ Set up SSH access
       - name: Set up SSH access
         run: |
           mkdir -p ~/.ssh
@@ -23,16 +21,18 @@ jobs:
           chmod 600 ~/.ssh/id_rsa
           ssh-keyscan -H ${{ secrets.EC2_TEST_HOST }} >> ~/.ssh/known_hosts
 
-      # 3️⃣ Deploy to EC2
       - name: Deploy Horilla App to TEST EC2
         run: |
           ssh ubuntu@${{ secrets.EC2_TEST_HOST }} << 'EOF'
           set -e
 
-          # Update system packages
-          sudo apt update && sudo apt upgrade -y
+          # Make sure venv support and pip exist
+          sudo apt update && sudo apt install -y python3-venv python3-pip
 
-          # Go to project folder
+          # Go to project folder or clone if missing
+          if [ ! -d "/home/ubuntu/horilla-hrm" ]; then
+            git clone https://github.com/wireappsltd/horilla-hrm.git /home/ubuntu/horilla-hrm
+          fi
           cd /home/ubuntu/horilla-hrm
 
           # Reset local changes and pull latest 'test' branch
@@ -43,25 +43,23 @@ jobs:
           # Kill any process on port 8000
           fuser -k 8000/tcp || echo "No process on 8000"
 
-          # Create virtual environment if missing
+          # Set up virtual environment if missing
           if [ ! -d "venv" ]; then
-              python3 -m venv venv
+            python3 -m venv venv
           fi
 
-          # Activate virtual environment
+          # Activate venv
           source venv/bin/activate
 
           # Upgrade pip inside venv
           python3 -m pip install --upgrade pip
 
-          # Install project dependencies inside venv
+          # Install dependencies
           python3 -m pip install -r requirements.txt
 
           # Apply Django migrations
           python3 manage.py makemigrations --noinput
           python3 manage.py migrate --noinput
-
-          # Compile translations if any
           python3 manage.py compilemessages || true
 
           # Start server in background
