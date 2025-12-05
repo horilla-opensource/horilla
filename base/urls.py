@@ -270,17 +270,17 @@ urlpatterns = [
     ),
     path("settings/mail-server-conf/", views.mail_server_conf, name="mail-server-conf"),
     path(
-        "mail-server-list",
+        "mail-server-list/",
         mail_server.MailServerListView.as_view(),
         name="mail-server-list",
     ),
     path(
-        "mail-server-nav",
+        "mail-server-nav/",
         mail_server.MailServerNav.as_view(),
         name="mail-server-nav",
     ),
     path(
-        "create-mail-server",
+        "create-mail-server/",
         mail_server.MailServerFormView.as_view(),
         name="create-mail-server",
     ),
@@ -516,7 +516,7 @@ urlpatterns = [
         },
     ),
     path(
-        "add-remove-work-type-fields",
+        "add-remove-work-type-fields/",
         views.add_remove_dynamic_fields,
         name="add-remove-work-type-fields",
         kwargs={
@@ -533,7 +533,7 @@ urlpatterns = [
         name="rotating-work-type-create-form",
     ),
     path(
-        "rotating-work-type-update-form/<int:pk>",
+        "rotating-work-type-update-form/<int:pk>/",
         settings_rotatingwork.RotatingWorkTypesCreateForm.as_view(),
         name="rotating-work-type-update-form",
     ),
@@ -733,7 +733,7 @@ urlpatterns = [
         },
     ),
     path(
-        "employee-shift-shedule-list",
+        "employee-shift-shedule-list/",
         employee_shift_shedule.EmployeeShiftSheduleList.as_view(),
         name="employee-shift-shedule-list",
     ),
@@ -743,12 +743,12 @@ urlpatterns = [
         name="employee-shift-shedule-detail-view",
     ),
     path(
-        "employee-shift-shedule-navbar",
+        "employee-shift-shedule-navbar/",
         employee_shift_shedule.EmployeeShiftSheduleNav.as_view(),
         name="employee-shift-shedule-navbar",
     ),
     path(
-        "settings-employee-shift-shedule-create",
+        "settings-employee-shift-shedule-create/",
         employee_shift_shedule.EmployeeShiftSheduleCreateForm.as_view(),
         name="settings-employee-shift-shedule-create",
     ),
@@ -793,7 +793,7 @@ urlpatterns = [
         name="rotating-shift-create",
     ),
     path(
-        "add-remove-shift-fields",
+        "add-remove-shift-fields/",
         views.add_remove_dynamic_fields,
         name="add-remove-shift-fields",
         kwargs={
@@ -911,7 +911,7 @@ urlpatterns = [
     ),
     # path("work-type-request", views.work_type_request, name="work-type-request"),
     path(
-        "work-type-request",
+        "work-type-request/",
         work_type_request.WorkTypeFormView.as_view(),
         name="work-type-request",
     ),
@@ -992,7 +992,7 @@ urlpatterns = [
     ),
     # path("shift-request", views.shift_request, name="shift-request"),
     path(
-        "shift-request",
+        "shift-request/",
         shift_request.ShiftRequestFormView.as_view(),
         name="shift-request",
     ),
@@ -1017,7 +1017,7 @@ urlpatterns = [
     #     name="shift-request-reallocate",
     # ),
     path(
-        "shift-request-reallocate",
+        "shift-request-reallocate/",
         shift_request.ShiftAllocationFormView.as_view(),
         name="shift-request-reallocate",
     ),
@@ -1197,7 +1197,7 @@ urlpatterns = [
         "settings/helpdesk-tag-view/", views.helpdesk_tag_view, name="helpdesk-tag-view"
     ),
     path("tag-create/", views.tag_create, name="tag-create"),
-    path("tag-update/<int:tag_id>/", views.tag_update, name="tag-update"),
+    path("tag-update/<int:tag_id>", views.tag_update, name="tag-update"),
     path(
         "tag-delete/<int:obj_id>/",
         views.object_delete,
@@ -1267,7 +1267,7 @@ urlpatterns = [
     #     name="multiple-level-approval-create",
     # ),
     path(
-        "multiple-level-approval-create",
+        "multiple-level-approval-create/",
         multiple_approval_condition.MultipleApprovalConditionFormView.as_view(),
         name="multiple-level-approval-create",
     ),
@@ -1332,7 +1332,7 @@ urlpatterns = [
     #     name="dashboard-shift-request",
     # ),
     path(
-        "dashboard-shift-request",
+        "dashboard-shift-request/",
         dashboard.ShiftRequestToApprove.as_view(),
         name="dashboard-shift-request",
     ),
@@ -1342,7 +1342,7 @@ urlpatterns = [
     #     name="dashboard-work-type-request",
     # ),
     path(
-        "dashboard-work-type-request",
+        "dashboard-work-type-request/",
         dashboard.DashboardWorkTypeRequest.as_view(),
         name="dashboard-work-type-request",
     ),
@@ -1363,11 +1363,11 @@ urlpatterns = [
         views.action_type_delete,
         name="action-type-delete",
     ),
-    path(
-        "pagination-settings-view/",
-        views.pagination_settings_view,
-        name="pagination-settings-view",
-    ),
+    # path(
+    #     "pagination-settings-view",
+    #     views.pagination_settings_view,
+    #     name="pagination-settings-view",
+    # ),
     # path("announcement/", announcement.announcement_view, name="announcement"),
     # path(
     #     "create-announcement",
@@ -1378,7 +1378,7 @@ urlpatterns = [
         "announcement-list/", announcement.announcement_list, name="announcement-list"
     ),
     path(
-        "create-announcement",
+        "create-announcement/",
         announcement_cbv.AnnouncementFormView.as_view(),
         name="create-announcement",
     ),
@@ -1549,7 +1549,7 @@ urlpatterns = [
     #     name="emp-workinfo-complete",
     # ),
     path(
-        "emp-workinfo-complete",
+        "emp-workinfo-complete/",
         dashboard.EmployeeWorkInformationList.as_view(),
         name="emp-workinfo-complete",
     ),
@@ -1569,7 +1569,7 @@ urlpatterns = [
         name="hx-multiple-approval-condition",
     ),
     path(
-        "nav-multiple-approval-condition",
+        "nav-multiple-approval-condition/",
         multiple_approval_condition.MultipleApprovalConditionNav.as_view(),
         name="nav-multiple-approval-condition",
     ),
@@ -1675,7 +1675,7 @@ urlpatterns = [
         name="company-leave-detail-view",
     ),
     path(
-        "company-leave-creation",
+        "company-leave-creation/",
         company_leaves.CompanyleaveFormView.as_view(),
         name="company-leave-creation",
     ),
@@ -1698,7 +1698,7 @@ urlpatterns = [
     #     "company-leave-filter", views.company_leave_filter, name="company-leave-filter"
     # ),
     # path("view-penalties", views.view_penalties, name="view-penalties"),
-    path("view-penalties", penalty.ViewPenaltyList.as_view(), name="view-penalties"),
+    path("view-penalties/", penalty.ViewPenaltyList.as_view(), name="view-penalties"),
     path(
         "delete-penalties/<int:penalty_id>/",
         views.delete_penalities,
