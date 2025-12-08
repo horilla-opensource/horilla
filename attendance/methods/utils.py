@@ -17,7 +17,7 @@ from django.utils.translation import gettext_lazy as _
 
 from base.methods import get_pagination
 from base.models import WEEK_DAYS, CompanyLeaves, Holidays
-from employee.models import Employee
+from employee.models import Employee, EmployeeWorkInformation
 from horilla.horilla_settings import HORILLA_DATE_FORMATS, HORILLA_TIME_FORMATS
 from leave.models import LeaveType, LeaveAllocationRequest, AvailableLeave, LeaveRequest
 from django.contrib import messages
@@ -756,3 +756,13 @@ def block_future_attendance(attendance_date):
     """
     today = datetime.today().date()
     return attendance_date > today
+
+def check_employee_joining_date(employee, attendance_date):
+    emp_info = EmployeeWorkInformation.objects.filter(
+        Q(employee_id=employee)
+    ).first()
+
+    if not emp_info:
+        return False
+
+    return emp_info.date_joining <= attendance_date
