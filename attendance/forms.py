@@ -41,7 +41,7 @@ from django.utils.html import format_html
 from django.utils.translation import gettext_lazy as _
 
 from attendance.filters import AttendanceFilters
-from attendance.methods.utils import block_attendance_on_approved_leaves, block_future_attendance
+from attendance.methods.utils import block_attendance_on_approved_leaves, block_future_attendance , check_employee_joining_date
 from attendance.models import (
     Attendance,
     AttendanceActivity,
@@ -219,6 +219,14 @@ class AttendanceUpdateForm(BaseModelForm):
         check_out_time = self.cleaned_data.get("attendance_clock_out")
         worked_hours = self.cleaned_data.get("attendance_worked_hour")
         attendance_date = self.cleaned_data.get("attendance_date")
+        employee = self.cleaned_data["employee_id"]
+
+
+        check_joining_date = check_employee_joining_date(employee,attendance_date)
+        if not check_joining_date:
+            raise ValidationError(
+                _("Attendance cannot be marked before your joining date.")
+            )
 
         is_future_date = block_future_attendance(attendance_date)
         if is_future_date:
@@ -796,6 +804,13 @@ class AttendanceRequestForm(BaseModelForm):
         check_in_time = self.cleaned_data.get("attendance_clock_in")
         check_out_time = self.cleaned_data.get("attendance_clock_out")
         attendance_date = self.cleaned_data.get("attendance_date")
+        employee = self.cleaned_data["employee_id"]
+
+        check_joining_date = check_employee_joining_date(employee,attendance_date)
+        if not check_joining_date:
+            raise ValidationError(
+                _("Attendance cannot be marked before your joining date.")
+            )
 
         is_future_date = block_future_attendance(attendance_date)
         if is_future_date:
@@ -974,6 +989,12 @@ class NewRequestForm(AttendanceRequestForm):
 
         if employee and not hasattr(employee, "employee_work_info"):
             raise ValidationError(_("Employee work info not found"))
+
+        check_joining_date = check_employee_joining_date(employee,attendance_date)
+        if not check_joining_date:
+            raise ValidationError(
+                _("Attendance cannot be marked before your joining date.")
+            )
 
         is_future_date = block_future_attendance(attendance_date)
         if is_future_date:
