@@ -107,13 +107,12 @@ class AttendanceUpdateForm(BaseModelForm):
             "is_active",
             "is_holiday",
             "is_poya_holiday",
-            "is_mercantile_holday"
-            "minimum_hour",
-            "is_get_compensation_leave",
             "is_mercantile_holiday",
             "is_poya_holiday",
             "work_type_id",
-            "batch_attendance_id"
+            "batch_attendance_id",
+            "minimum_hour",
+            "is_get_compensation_leave",
         ]
         model = Attendance
         widgets = {
