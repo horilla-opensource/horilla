@@ -41,6 +41,7 @@ from django.utils.html import format_html
 from django.utils.translation import gettext_lazy as _
 
 from attendance.filters import AttendanceFilters
+from attendance.methods.utils import block_attendance_on_approved_leaves, block_future_attendance
 from attendance.models import (
     Attendance,
     AttendanceActivity,
@@ -218,6 +219,13 @@ class AttendanceUpdateForm(BaseModelForm):
         check_in_time = self.cleaned_data.get("attendance_clock_in")
         check_out_time = self.cleaned_data.get("attendance_clock_out")
         worked_hours = self.cleaned_data.get("attendance_worked_hour")
+        attendance_date = self.cleaned_data.get("attendance_date")
+
+        is_future_date = block_future_attendance(attendance_date)
+        if is_future_date:
+            raise ValidationError(
+                _("Attendance cannot be marked for future dates")
+            )
 
         if check_in_time and check_out_time:
             if check_out_time < check_in_time:
@@ -448,6 +456,13 @@ class AttendanceForm(BaseModelForm):
         worked_hours = self.cleaned_data.get("attendance_worked_hour")
         check_in_time = self.cleaned_data.get("attendance_clock_in")
         check_out_time = self.cleaned_data.get("attendance_clock_out")
+        attendance_date = self.cleaned_data.get("attendance_date")
+
+        is_future_date = block_future_attendance(attendance_date)
+        if is_future_date:
+            raise ValidationError(
+                _("Attendance cannot be marked for future dates")
+            )
 
         if check_in_time and check_out_time:
             if check_out_time < check_in_time:
@@ -781,6 +796,13 @@ class AttendanceRequestForm(BaseModelForm):
         worked_hours = self.cleaned_data.get("attendance_worked_hour")
         check_in_time = self.cleaned_data.get("attendance_clock_in")
         check_out_time = self.cleaned_data.get("attendance_clock_out")
+        attendance_date = self.cleaned_data.get("attendance_date")
+
+        is_future_date = block_future_attendance(attendance_date)
+        if is_future_date:
+            raise ValidationError(
+                _("Attendance cannot be marked for future dates")
+            )
 
         if check_in_time and check_out_time:
             if check_out_time < check_in_time:
@@ -954,6 +976,12 @@ class NewRequestForm(AttendanceRequestForm):
         if employee and not hasattr(employee, "employee_work_info"):
             raise ValidationError(_("Employee work info not found"))
 
+        is_future_date = block_future_attendance(attendance_date)
+        if is_future_date:
+            raise ValidationError(
+                _("Attendance cannot be marked for future dates")
+            )
+
         if check_in_time and check_out_time:
             if check_out_time < check_in_time:
                 self.add_error(
@@ -984,6 +1012,16 @@ class NewRequestForm(AttendanceRequestForm):
                 "attendance_worked_hour",
                 _("Worked hours cannot be empty")
             )
+
+        approved_leaves = block_attendance_on_approved_leaves(attendance_date)
+
+        if approved_leaves:
+                raise ValidationError(
+                    _(
+                        "You cannot mark attendance on a date where leave has been approved."
+                    )
+                )
+
 
         data = {
             "employee_id": employee,
