@@ -332,6 +332,9 @@ python manage.py runserver 8080   # For Windows
 - **More to come...**
 
 ---
+## **CodeRabbit Pull Request Reviews**
+
+![CodeRabbit Pull Request Reviews](https://img.shields.io/coderabbit/prs/github/KalvinMaia/horilla-my-code-review?utm_source=oss&utm_medium=github&utm_campaign=KalvinMaia%2Fhorilla-my-code-review&labelColor=171717&color=FF570A&link=https%3A%2F%2Fcoderabbit.ai&label=CodeRabbit+Reviews)
 
 ## **Languages and Tools Used**
 
@@ -361,7 +364,7 @@ python manage.py runserver 8080   # For Windows
     <img src="https://raw.githubusercontent.com/devicons/devicon/master/icons/postgresql/postgresql-original-wordmark.svg" alt="postgresql" width="40" height="40"/>
   </a>
   <a href="https://www.python.org" target="_blank" rel="noreferrer">
-    <img src="https://raw.githubusercontent.com/devicons/devicon/master/icons/python/python-original.svg" alt="python" width="40" height="40"/>
+    <img src="" alt="python" width="40" height="40"/>
   </a>
 </p>
 
@@ -380,4 +383,5 @@ python manage.py runserver 8080   # For Windows
 ---
 
 This README provides a comprehensive guide to installing and setting up Horilla on various platforms. If you encounter any issues, feel free to reach out to the Horilla community for support. Happy coding! 🚀
+
 
