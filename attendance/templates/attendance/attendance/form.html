@@ -10,6 +10,7 @@
   >
     {% csrf_token %}
     <div class="row">
+      <div class="col-12">{{form.non_field_errors}}</div>
       <!-- Employee -->
       <div class="col-md-6 mb-3" id="id_employee_id_parent_div">
         <label for="id_employee_id" class="form-label fw-semibold">
@@ -159,13 +160,6 @@
       <div id="compensation-field-container"></div>
     </div>
 
-    {% if form.non_field_errors %}
-      <div class="alert alert-danger mt-3">
-        {% for error in form.non_field_errors %}
-          <p class="mb-0">{{ error }}</p>
-        {% endfor %}
-      </div>
-    {% endif %}
 
     <div class="d-flex justify-content-end mt-4">
       <button type="submit" class="oh-btn oh-btn--secondary">
