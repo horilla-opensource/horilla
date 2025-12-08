@@ -2,3 +2,22 @@
 <form hx-post="{% url 'attendance-update' obj_id %}?{{urlencode}}" hx-swap="#updateAttendanceModalBody" id="attendanceUpdateForm" data-url="{% url 'attendance-update' obj_id %}">
     {{form.as_p}}
 </form>
+<script>
+  function attendanceDateChange($el) {
+    const picked = $el.val();
+
+    const $clockInDate  = $("input[name='attendance_clock_in_date']");
+    const $clockOutDate = $("input[name='attendance_clock_out_date']");
+
+    if (picked) {
+      if ($clockInDate.length) {
+        $clockInDate.val(picked);
+        $clockInDate[0].dispatchEvent(new Event('change', { bubbles: true }));
+      }
+      if ($clockOutDate.length) {
+        $clockOutDate.val(picked);
+        $clockOutDate[0].dispatchEvent(new Event('change', { bubbles: true }));
+      }
+    }
+  }
+</script>

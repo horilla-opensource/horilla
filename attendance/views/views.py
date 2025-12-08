@@ -1666,7 +1666,7 @@ def update_worked_hour_field(request):
     hours, minutes = divmod(max(total_seconds, 0), 3600)
     worked_hours_str = f"{int(hours):02}:{int(minutes // 60):02}"
 
-    form = AttendanceForm(initial={"attendance_worked_hour": worked_hours_str})
+    form = NewRequestForm(initial={"attendance_worked_hour": worked_hours_str})
     return render(
         request,
         "attendance/attendance/update_hx_form.html",
