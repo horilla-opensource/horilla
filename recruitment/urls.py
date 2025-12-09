@@ -6,10 +6,6 @@ This module is used to map url path with view methods.
 
 from django.urls import path
 
-import recruitment.views.actions
-import recruitment.views.dashboard
-import recruitment.views.search
-import recruitment.views.surveys
 from base.views import add_remove_dynamic_fields, object_duplicate
 from recruitment import cbvs
 from recruitment.cbv import (
@@ -28,8 +24,9 @@ from recruitment.cbv import (
 )
 from recruitment.forms import QuestionForm, RecruitmentCreationForm, StageCreationForm
 from recruitment.models import Candidate, Recruitment, RecruitmentSurvey, Stage
-from recruitment.views import linkedin, views
-from recruitment.views.actions import get_mail_preview, get_template, get_template_hint
+from recruitment.views import actions
+from recruitment.views import dashboard as views_dashboard
+from recruitment.views import linkedin, search, surveys, views
 
 urlpatterns = [
     path(
@@ -63,8 +60,8 @@ urlpatterns = [
     ),
     # path("recruitment-view/", views.recruitment_view, name="recruitment-view"),
     path(
-        "recruitment-search/",  # form.save()
-        recruitment.views.search.recruitment_search,
+        "recruitment-search/",
+        search.recruitment_search,
         name="recruitment-search",
     ),
     # path(
@@ -102,14 +99,14 @@ urlpatterns = [
         recruitment_view.RecruitmentForm.as_view(),
         name="recruitment-update-pipeline",
     ),
-    path(
-        "recruitment-update-delete/<int:rec_id>/",
-        recruitment.views.actions.recruitment_delete_pipeline,
-        name="recruitment-delete-pipeline",
-    ),
+    # path(
+    #     "recruitment-update-delete/<int:rec_id>/",
+    #     actions.recruitment_delete_pipeline,
+    #     name="recruitment-delete-pipeline",
+    # ),
     path(
         "recruitment-delete/<int:rec_id>/",
-        recruitment.views.actions.recruitment_delete,
+        actions.recruitment_delete,
         name="recruitment-delete",
     ),
     path(
@@ -155,7 +152,7 @@ urlpatterns = [
         views.change_candidate_stage,
         name="candidate-stage-change",
     ),
-    path("pipeline-card/", views.recruitment_pipeline_card, name="pipeline-card"),
+    # path("pipeline-card/", views.recruitment_pipeline_card, name="pipeline-card"),
     path(
         "recruitment-archive/<int:rec_id>/",
         views.recruitment_archive,
@@ -175,7 +172,7 @@ urlpatterns = [
     ),
     # path("stage-view/", views.stage_view, name="rec-stage-view"),
     path("stage-data/<int:rec_id>/", views.stage_data, name="stage-data"),
-    path("stage-search/", recruitment.views.search.stage_search, name="stage-search"),
+    path("stage-search/", search.stage_search, name="stage-search"),
     # path("stage-update/<int:stage_id>/", views.stage_update, name="rec-stage-update"),
     path(
         "stage-update/<int:pk>/",
@@ -220,17 +217,17 @@ urlpatterns = [
     ),
     path(
         "stage-delete/<int:stage_id>/",
-        recruitment.views.actions.stage_delete,
+        actions.stage_delete,
         name="rec-stage-delete",
     ),
     path(
         "remove-stage-manager/<int:mid>/<int:sid>/",
-        recruitment.views.actions.remove_stage_manager,
+        actions.remove_stage_manager,
         name="rec-remove-stage-manager",
     ),
     path(
         "remove-recruitment-manager/<int:mid>/<int:rid>/",
-        recruitment.views.actions.remove_recruitment_manager,
+        actions.remove_recruitment_manager,
         name="remove-recruitment-manager",
     ),
     path("candidate-create/", views.candidate, name="candidate-create"),
@@ -257,12 +254,12 @@ urlpatterns = [
     ),
     path(
         "note-delete/<int:note_id>/",
-        recruitment.views.actions.note_delete,
+        actions.note_delete,
         name="note-delete",
     ),
     path(
         "note-delete-individual/<int:note_id>/",
-        recruitment.views.actions.note_delete_individual,
+        actions.note_delete_individual,
         name="note-delete-individual",
     ),
     path(
@@ -327,15 +324,15 @@ urlpatterns = [
     ),
     path(
         "candidate-filter-view/",
-        recruitment.views.search.candidate_filter_view,
+        search.candidate_filter_view,
         name="candidate-filter-view",
     ),
     path(
         "search-candidate/",
-        recruitment.views.search.candidate_search,
+        search.candidate_search,
         name="search-candidate",
     ),
-    path("candidate-view-list/", views.candidate_view_list, name="candidate-view-list"),
+    # path("candidate-view-list/", views.candidate_view_list, name="candidate-view-list"),
     path("candidate-view-card/", views.candidate_view_card, name="candidate-view-card"),
     path(
         "candidate-info-export/", views.candidate_export, name="candidate-info-export"
@@ -376,22 +373,22 @@ urlpatterns = [
     ),
     path(
         "candidate-delete/<int:cand_id>/",
-        recruitment.views.actions.candidate_delete,
+        actions.candidate_delete,
         name="rec-candidate-delete",
     ),
     path(
         "candidate-archive/<int:cand_id>/",
-        recruitment.views.actions.candidate_archive,
+        actions.candidate_archive,
         name="rec-candidate-archive",
     ),
     path(
         "candidate-bulk-delete/",
-        recruitment.views.actions.candidate_bulk_delete,
+        actions.candidate_bulk_delete,
         name="candidate-bulk-delete",
     ),
     path(
         "candidate-bulk-archive/",
-        recruitment.views.actions.candidate_bulk_archive,
+        actions.candidate_bulk_archive,
         name="candidate-bulk-archive",
     ),
     path(
@@ -401,7 +398,7 @@ urlpatterns = [
     ),
     path(
         "application-form/",
-        recruitment.views.surveys.application_form,
+        surveys.application_form,
         name="application-form",
     ),
     path(
@@ -409,52 +406,52 @@ urlpatterns = [
     ),
     path(
         "dashboard/",
-        recruitment.views.dashboard.dashboard,
+        views_dashboard.dashboard,
         name="recruitment-dashboard",
     ),
     path(
-        "skill-zone-status-dashboard",
+        "skill-zone-status-dashboard/",
         dashboard.SkillZoneStatusList.as_view(),
         name="skill-zone-status-dashboard",
     ),
     path(
-        "candidate-on-onboard-dashboard",
+        "candidate-on-onboard-dashboard/",
         dashboard.CandidateOnOnboardList.as_view(),
         name="candidate-on-onboard-dashboard",
     ),
     path(
-        "current-hiring-pipeline-dashboard",
+        "current-hiring-pipeline-dashboard/",
         dashboard.CurrentHiringList.as_view(),
         name="current-hiring-pipeline-dashboard",
     ),
     path(
-        "ongoing-recruitment-dashboard",
+        "ongoing-recruitment-dashboard/",
         dashboard.OnGoingRecruitmentList.as_view(),
         name="ongoing-recruitment-dashboard",
     ),
-    path(
-        "dashboard-pipeline/",
-        recruitment.views.dashboard.dashboard_pipeline,
-        name="recruitment-pipeline",
-    ),
+    # path(
+    #     "dashboard-pipeline/",
+    #     views_dashboard.dashboard_pipeline,
+    #     name="recruitment-pipeline",
+    # ),
     path(
         "get-open-positions/",
-        recruitment.views.dashboard.get_open_position,
+        views_dashboard.get_open_position,
         name="get-open-position",
     ),
     path(
         "dashboard-hiring/",
-        recruitment.views.dashboard.dashboard_hiring,
+        views_dashboard.dashboard_hiring,
         name="dashboard-hiring",
     ),
     path(
         "dashboard-vacancy/",
-        recruitment.views.dashboard.dashboard_vacancy,
+        views_dashboard.dashboard_vacancy,
         name="dashboard-vacancy",
     ),
     path(
         "candidate-status/",
-        recruitment.views.dashboard.candidate_status,
+        views_dashboard.candidate_status,
         name="candidate-status",
     ),
     path(
@@ -469,36 +466,36 @@ urlpatterns = [
     ),
     path(
         "survey-template-preview/",
-        recruitment.views.surveys.survey_preview,
+        surveys.survey_preview,
         name="survey-template-preview",
     ),
     path(
         "survey-template-preview/<int:pk>/",
-        recruitment.views.surveys.survey_preview,
+        surveys.survey_preview,
         name="survey-template-preview",
     ),
     path(
         "update-question-order/",
-        recruitment.views.surveys.question_order_update,
+        surveys.question_order_update,
         name="update-question-order",
     ),
     path(
         "recruitment-application-survey/",
-        recruitment.views.surveys.survey_form,
+        surveys.survey_form,
         name="recruitment-application-survey",
     ),
     path(
         "recruitment-survey-question-template-view/",
-        recruitment.views.surveys.view_question_template,
+        surveys.view_question_template,
         name="recruitment-survey-question-template-view",
     ),
     # path(
     #     "recruitment-survey-question-template-create",
-    #     recruitment.views.surveys.create_question_template,
+    #     surveys.create_question_template,
     #     name="recruitment-survey-question-template-create",
     # ),
     path(
-        "recruitment-survey-question-template-create",
+        "recruitment-survey-question-template-create/",
         recruitment_survey.QuestionFormView.as_view(),
         name="recruitment-survey-question-template-create",
     ),
@@ -516,7 +513,7 @@ urlpatterns = [
     ),
     # path(
     #     "recruitment-survey-question-template-edit/<int:survey_id>/",
-    #     recruitment.views.surveys.update_question_template,
+    #     surveys.update_question_template,
     #     name="recruitment-survey-question-template-edit",
     # ),
     path(
@@ -541,22 +538,22 @@ urlpatterns = [
     ),
     path(
         "recruitment-survey-question-template-delete/<int:survey_id>/",
-        recruitment.views.surveys.delete_survey_question,
+        surveys.delete_survey_question,
         name="recruitment-survey-question-template-delete",
     ),
     path(
-        "candidate-survey",
-        recruitment.views.surveys.candidate_survey,
+        "candidate-survey/",
+        surveys.candidate_survey,
         name="candidate-survey",
     ),
     path(
-        "filter-survey",
-        recruitment.views.search.filter_survey,
+        "filter-survey/",
+        search.filter_survey,
         name="rec-filter-survey",
     ),
     # path(
     #     "single-survey-view/<int:survey_id>/",
-    #     recruitment.views.surveys.single_survey,
+    #     surveys.single_survey,
     #     name="single-survey-view",
     # ),
     path(
@@ -571,17 +568,17 @@ urlpatterns = [
     ),
     # path(
     #     "survey-template-create",
-    #     recruitment.views.surveys.create_template,
+    #     surveys.create_template,
     #     name="survey-template-create",
     # ),
     path(
         "survey-template-delete/",
-        recruitment.views.surveys.delete_template,
+        surveys.delete_template,
         name="survey-template-delete",
     ),
     path(
         "survey-template-question-add/",
-        recruitment.views.surveys.question_add,
+        surveys.question_add,
         name="survey-template-question-add",
     ),
     path("candidate-select/", views.candidate_select, name="candidate-select"),
@@ -628,11 +625,11 @@ urlpatterns = [
         skill_zone.SkillZoneCandidateFormView.as_view(),
         name="skill-zone-cand-create",
     ),
-    path(
-        "skill-zone-cand-card-view/<int:sz_id>/",
-        views.skill_zone_cand_card_view,
-        name="skill-zone-cand-card-view",
-    ),
+    # path(
+    #     "skill-zone-cand-card-view/<int:sz_id>/",
+    #     views.skill_zone_cand_card_view,
+    #     name="skill-zone-cand-card-view",
+    # ),
     # path(
     #     "skill-zone-cand-edit/<int:sz_cand_id>/",
     #     views.skill_zone_cand_edit,
@@ -674,9 +671,9 @@ urlpatterns = [
         views.skill_zone_cand_delete,
         name="skill-zone-cand-delete",
     ),
-    path("get-template/<int:obj_id>/", get_template, name="get-template"),
-    path("get-mail-preview/", get_mail_preview, name="get-mail-preview"),
-    path("get-template-hint/", get_template_hint, name="get-template-hint"),
+    path("get-template/<int:obj_id>/", actions.get_template, name="get-template"),
+    path("get-mail-preview/", actions.get_mail_preview, name="get-mail-preview"),
+    path("get-template-hint/", actions.get_template_hint, name="get-template-hint"),
     path(
         "create-candidate-rating/<int:cand_id>/",
         views.create_candidate_rating,
@@ -717,7 +714,7 @@ urlpatterns = [
         views.delete_individual_note_file,
         name="delete-individual-note-file",
     ),
-    path("get-mail-log-rec/", views.get_mail_log, name="get-mail-log-rec"),
+    # path("get-mail-log-rec/", views.get_mail_log, name="get-mail-log-rec"),
     path(
         "candidate-self-tracking/",
         views.candidate_self_tracking,
@@ -786,21 +783,16 @@ urlpatterns = [
         candidates.CandidateDetail.as_view(),
         name="candidate-detail",
     ),
-    path(
-        "check-vaccancy/",
-        views.check_vaccancy,
-        name="check-vaccancy",
-    ),
-    path(
-        "add-candidate-reject/",
-        candidates.AddToRejectedCandidatesView.as_view(),
-        name="add-candidate-reject",
-    ),
-    path(
-        "candidate-detail/<int:pk>/",
-        candidates.CandidateDetail.as_view(),
-        name="candidate-detail",
-    ),
+    # path(
+    #     "check-vaccancy/",
+    #     views.check_vaccancy,
+    #     name="check-vaccancy",
+    # ),
+    # path(
+    #     "add-candidate-reject/",
+    #     candidates.AddToRejectedCandidatesView.as_view(),
+    #     name="add-candidate-reject",
+    # ),
     path(
         "recruitment-view/",
         recruitment_view.RecruitmentView.as_view(),
@@ -829,11 +821,11 @@ urlpatterns = [
         stage_view.StageDetailView.as_view(),
         name="stage-detail-view",
     ),
-    path(
-        "add-skill-form/",
-        recruitment_view.RecruitmentNewSkillForm.as_view(),
-        name="add-skill-form",
-    ),
+    # path(
+    #     "add-skill-form/",
+    #     recruitment_view.RecruitmentNewSkillForm.as_view(),
+    #     name="add-skill-form",
+    # ),
     path("skills-list-view/", skills.SkillsListView.as_view(), name="skills-list-view"),
     path("skills-nav-view/", skills.SkillsNavView.as_view(), name="skills-nav-view"),
     path(
@@ -953,11 +945,11 @@ urlpatterns = [
         pipeline.RecruitmentTabView.as_view(),
         name="cbv-pipeline-tab",
     ),
-    path(
-        "cbv-pipeline-tab-list/",
-        pipeline.RecruitmentTabView.as_view(),
-        name="cbv-pipeline-tab-list",
-    ),
+    # path(
+    #     "cbv-pipeline-tab-list/",
+    #     pipeline.RecruitmentTabView.as_view(),
+    #     name="cbv-pipeline-tab-list",
+    # ),
     path("cbv-pipeline-nav/", pipeline.PipelineNav.as_view(), name="cbv-pipeline-nav"),
     path(
         "get-stages/<int:rec_id>/",
@@ -1020,7 +1012,6 @@ urlpatterns = [
         linkedin.update_isactive_linkedin,
         name="update-isactive-linkedin-account",
     ),
-    path("check-linkedin/", linkedin.check_linkedin, name="check-linkedin"),
     path(
         "val-linkedin/<int:pk>/", linkedin.validate_linkedin_token, name="val-linkedin"
     ),
