@@ -524,35 +524,7 @@ if apps.is_installed("offboarding"):
 
 
 if apps.is_installed("project"):
-    from project.cbv.timesheet import (
-        TimeSheetCardView,
-        TimeSheetDetailView,
-        TimeSheetList,
-        TimeSheetNavView,
-    )
-
-    _timesheet_nav_init_orig = TimeSheetNavView.__init__
-
-    def _timesheet_nav_init(self, **kwargs):
-        _timesheet_nav_init_orig(self, **kwargs)
-        url = f"{reverse('personal-time-sheet-view',kwargs={'emp_id': self.request.user.employee_get.id})}"
-        self.view_types = [
-            {
-                "type": "list",
-                "icon": "list-outline",
-                "url": reverse("time-sheet-list"),
-            },
-            {
-                "type": "card",
-                "icon": "grid-outline",
-                "url": reverse("time-sheet-card"),
-            },
-            {
-                "type": "graph",
-                "icon": "bar-chart",
-                "url": url,
-            },
-        ]
+    from project.cbv.timesheet import TimeSheetCardView, TimeSheetList
 
     _timesheet_list_init_orig = TimeSheetList.__init__
 
@@ -581,7 +553,6 @@ if apps.is_installed("project"):
             "subtitle": "{detail_view_subtitle}",
         }
 
-    TimeSheetNavView.__init__ = _timesheet_nav_init
     TimeSheetList.__init__ = _timesheet_list_init
     TimeSheetCardView.__init__ = _timesheet_card_init
 
