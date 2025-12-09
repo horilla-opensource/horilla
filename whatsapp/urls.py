@@ -1,17 +1,12 @@
 from django.urls import path
 from django.views.generic import TemplateView
 
+from horilla.decorators import login_required
+from whatsapp import views
 from whatsapp.cbv import whatsapp
-
-from . import views
 
 urlpatterns = [
     path("", views.whatsapp, name="whatsapp"),
-    path(
-        "template-creation/",
-        views.create_flows,
-        name="template-creation",
-    ),
     path(
         "generic-template-creation/<int:id>/",
         views.create_generic_templates,
@@ -19,7 +14,9 @@ urlpatterns = [
     ),
     path(
         "whatsapp-credential-view/",
-        TemplateView.as_view(template_name="whatsapp/credentials_view.html"),
+        login_required(
+            TemplateView.as_view(template_name="whatsapp/credentials_view.html")
+        ),
         name="whatsapp-credential-view",
     ),
     path(

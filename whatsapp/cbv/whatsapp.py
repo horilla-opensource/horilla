@@ -1,13 +1,14 @@
-from typing import Any
-
 from django.contrib import messages
 from django.http import HttpResponse
 from django.shortcuts import render
 from django.urls import reverse
 from django.utils.decorators import method_decorator
-from django.utils.translation import gettext_lazy as _trans
+from django.utils.translation import gettext_lazy as _
 
-from horilla.decorators import check_integration_enabled, permission_required
+from horilla.decorators import check_integration_enabled
+from horilla.decorators import login_required as func_login_required
+from horilla.decorators import permission_required
+from horilla_views.cbv_methods import login_required
 from horilla_views.generic.cbv.views import (
     HorillaFormView,
     HorillaListView,
@@ -19,6 +20,7 @@ from whatsapp.models import WhatsappCredientials
 from whatsapp.utils import send_text_message
 
 
+@method_decorator(login_required, name="dispatch")
 @method_decorator(
     permission_required("whatsapp.view_whatsappcredentials"), name="dispatch"
 )
@@ -33,16 +35,14 @@ class CredentialListView(HorillaListView):
     show_filter_tags = False
 
     columns = [
-        (_trans("Phone Number"), "meta_phone_number"),
-        (_trans("Phone Number ID"), "meta_phone_number_id"),
-        (_trans("Bussiness ID"), "meta_business_id"),
-        (_trans("Webhook Token"), "get_webhook_token"),
-        (_trans("Token"), "token_render"),
+        (_("Phone Number"), "meta_phone_number"),
+        (_("Phone Number ID"), "meta_phone_number_id"),
+        (_("Bussiness ID"), "meta_business_id"),
+        (_("Webhook Token"), "get_webhook_token"),
+        (_("Token"), "token_render"),
     ]
     # sortby_mapping = [("Bussiness ID", "meta_business_id")]
-    row_attrs = """
-                    id = "credential{get_instance}"
-                """
+    row_attrs = """ id = "credential{get_instance}" """
     option_method = "get_publish_button"
 
     def __init__(self, *args, **kwargs):
@@ -54,43 +54,44 @@ class CredentialListView(HorillaListView):
                 "action": "Edit",
                 "icon": "create-outline",
                 "attrs": """
-                        class="oh-btn oh-btn--light-bkg w-100"
-                        data-toggle="oh-modal-toggle"
-                        data-target = "#genericModal"
-                        hx-target = "#genericModalBody"
-                        hx-get = "{get_update_url}"
-                        """,
+                    class="oh-btn oh-btn--light-bkg w-100"
+                    data-toggle="oh-modal-toggle"
+                    data-target = "#genericModal"
+                    hx-target = "#genericModalBody"
+                    hx-get = "{get_update_url}"
+                """,
             },
             {
                 "action": "Test test message",
                 "icon": "link-outline",
                 "attrs": """
-                        class="oh-btn oh-btn--light-bkg w-100"
-                        data-toggle="oh-modal-toggle"
-                        data-target = "#genericModal"
-                        hx-target = "#genericModalBody"
-                        hx-get = "{get_test_message_url}"
-                        """,
+                    class="oh-btn oh-btn--light-bkg w-100"
+                    data-toggle="oh-modal-toggle"
+                    data-target = "#genericModal"
+                    hx-target = "#genericModalBody"
+                    hx-get = "{get_test_message_url}"
+                """,
             },
             {
                 "action": "Delete",
                 "icon": "trash-outline",
                 "attrs": """
-                        class="oh-btn oh-btn--danger-outline w-100"
-                        hx-confirm = "Are you sure you want to delete this credential?"
-                        hx-post = "{get_delete_url}"
-                        hx-target = "#credential{get_instance}"
-                        hx-swap = "outerHTML"
-                        """,
+                    class="oh-btn oh-btn--danger-outline w-100"
+                    hx-confirm = "Are you sure you want to delete this credential?"
+                    hx-post = "{get_delete_url}"
+                    hx-target = "#credential{get_instance}"
+                    hx-swap = "outerHTML"
+                """,
             },
         ]
 
         self.row_attrs = """
-        id="credential{get_instance}"
-        {get_primary}
+            id="credential{get_instance}"
+            {get_primary}
         """
 
 
+@method_decorator(login_required, name="dispatch")
 @method_decorator(
     permission_required("whatsapp.view_whatsappcredentials"), name="dispatch"
 )
@@ -104,17 +105,18 @@ class CredentialNav(HorillaNavView):
         super().__init__(*args, **kwargs)
         self.search_url = reverse("whatsapp-credential-list")
         self.create_attrs = f"""
-                                data-toggle="oh-modal-toggle"
-                                data-target = "#genericModal"
-                                hx-target = "#genericModalBody"
-                                hx-get = "{reverse('whatsapp-credential-create')}"
-                            """
+            data-toggle="oh-modal-toggle"
+            data-target = "#genericModal"
+            hx-target = "#genericModalBody"
+            hx-get = "{reverse('whatsapp-credential-create')}"
+        """
 
     nav_title = "Whatsapp Credentials"
     search_swap_target = "#listContainer"
     filter_instance = CredentialsViewFilter()
 
 
+@method_decorator(login_required, name="dispatch")
 @method_decorator(
     permission_required("whatsapp.add_whatsappcredentials"), name="dispatch"
 )
@@ -145,16 +147,15 @@ class CredentialForm(HorillaFormView):
         return super().form_valid(form)
 
 
-permission_required("whatsapp.delete_whatsappcredentials")
-
-
+@func_login_required
+@permission_required("whatsapp.delete_whatsappcredentials")
 @check_integration_enabled(app_name="whatsapp")
 def delete_credentials(request):
     """
     delete for Whatsapp credential settings view
     """
 
-    id = request.GET.get("id")
+    id = request.GET["id"]
     crediential = WhatsappCredientials.objects.filter(id=id).first()
     count = WhatsappCredientials.objects.count()
     crediential.delete()
@@ -164,6 +165,7 @@ def delete_credentials(request):
     return HttpResponse("<script>$('#reloadMessagesButton').click();</script>")
 
 
+@func_login_required
 @permission_required("whatsapp.view_whatsappcredentials")
 @check_integration_enabled(app_name="whatsapp")
 def send_test_message(request):
