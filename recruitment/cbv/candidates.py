@@ -808,7 +808,7 @@ class AddToRejectedCandidatesView(View):
 
     template_name = "onboarding/rejection/form.html"
 
-    def get(self, request):
+    def get(self, request, *args, **kwargs):
         """
         get method
         """
@@ -823,7 +823,7 @@ class AddToRejectedCandidatesView(View):
         )
         return render(request, self.template_name, {"form": form})
 
-    def post(self, request):
+    def post(self, request, *args, **kwargs):
         """
         post method
         """
