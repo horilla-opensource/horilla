@@ -5,6 +5,7 @@ import threading
 from typing import Iterable
 
 from bs4 import BeautifulSoup
+from django.apps import apps
 from django.contrib import messages
 from django.db.models.signals import m2m_changed, post_save
 from django.dispatch import receiver
@@ -14,7 +15,7 @@ from django.views.decorators.csrf import csrf_exempt
 
 from base.models import Announcement
 from employee.models import Employee
-from horilla.decorators import check_integration_enabled
+from horilla.decorators import check_integration_enabled, login_required
 from horilla.horilla_middlewares import _thread_locals
 from notifications.signals import notify
 from whatsapp.flows import (
@@ -246,6 +247,7 @@ def whatsapp(request):
     return HttpResponse("error", status=200)
 
 
+@login_required
 @check_integration_enabled(app_name="whatsapp")
 def create_generic_templates(request, id):
     """
@@ -292,70 +294,6 @@ def create_generic_templates(request, id):
     return HttpResponse("<script>window.location.reload();</script>")
 
 
-# @csrf_exempt
-# def create_flows(cred_id):
-#     """
-#     Creates and publishes flows based on predefined details.
-
-#     Args:
-#         request (HttpRequest): The incoming HTTP request.
-
-#     Returns:
-#         HttpResponse: A response indicating the success or failure of flow creation.
-#     """
-
-#     try:
-#         for flow in DETAILED_FLOW:
-#             template_name = flow["template_name"]
-#             flow_name = flow["flow_name"]
-#             flow_json = flow["flow_json"]
-#             credential = WhatsappCredientials.objects.get(id=cred_id)
-
-#             # Create flow
-#             create_response = create_flow(flow_name, template_name, cred_id)
-#             create_response_data = create_response.json()
-
-#             flow_id = create_response_data.get("id")
-#             if not flow_id:
-#                 return HttpResponse(
-#                     json.dumps(create_response_data),
-#                     status=create_response.status_code,
-#                     content_type="application/json",
-#                 )
-
-#             # Update flow
-#             update_response = update_flow(flow_id, flow_json,credential.meta_token)
-#             update_response_data = update_response.json()
-#             if update_response_data.get("validation_error", {}):
-#                 return HttpResponse(
-#                     json.dumps(update_response_data),
-#                     status=update_response.status_code,
-#                     content_type="application/json",
-#                 )
-
-#             # Publish flow
-#             publish_response = publish_flow(flow_id,credential.meta_token)
-#             publish_response_data = publish_response.json()
-#             if publish_response_data.get("error", {}):
-#                 return HttpResponse(
-#                     json.dumps(publish_response_data),
-#                     status=publish_response.status_code,
-#                     content_type="application/json",
-#                 )
-
-#         return HttpResponse(
-#             json.dumps({"message": "Flow created successfully"}),
-#             status=200,
-#             content_type="application/json",
-#         )
-
-#     except Exception as e:
-#         print(f"Unexpected error: {e}")
-#         return HttpResponse(
-#             json.dumps({"error": str(e)}), status=500, content_type="application/json"
-#         )
-
-
 @check_integration_enabled(app_name="whatsapp")
 def create_flows(cred_id):
     """
@@ -367,11 +305,11 @@ def create_flows(cred_id):
     Returns:
         HttpResponse: A response indicating the success or failure of flow creation.
     """
+    credential = WhatsappCredientials.objects.get(id=cred_id)
     for flow in DETAILED_FLOW:
         template_name = flow["template_name"]
         flow_name = flow["flow_name"]
         flow_json = flow["flow_json"]
-        credential = WhatsappCredientials.objects.get(id=cred_id)
 
         # 1. Create flow
         create_data = create_flow(flow_name, template_name, cred_id)
@@ -553,17 +491,32 @@ def flow_conversion(number, flow_response_json):
     if type == "shift_request":
         message = shift_create(employee, flow_response)
     elif type == "leave_request":
-        message = leave_request_create(employee, flow_response)
+        if apps.is_installed("leave"):
+            message = leave_request_create(employee, flow_response)
+        else:
+            message = "Leave module is not installed."
     elif type == "work_type":
         message = work_type_create(employee, flow_response)
     elif type == "asset_request":
-        message = asset_request_create(employee, flow_response)
+        if apps.is_installed("asset"):
+            message = asset_request_create(employee, flow_response)
+        else:
+            message = "Asset module is not installed."
     elif type == "attendance_request":
-        message = attendance_request_create(employee, flow_response)
+        if apps.is_installed("attendance"):
+            message = attendance_request_create(employee, flow_response)
+        else:
+            message = "Attendance module is not installed."
     elif type == "bonus_point":
-        message = bonus_point_create(employee, flow_response)
+        if apps.is_installed("payroll"):
+            message = bonus_point_create(employee, flow_response)
+        else:
+            message = "Payroll module is not installed."
     elif type == "reimbursement":
-        message = reimbursement_create(employee, flow_response)
+        if apps.is_installed("payroll"):
+            message = reimbursement_create(employee, flow_response)
+        else:
+            message = "Payroll module is not installed."
 
     response = send_text_message(number, message)
     return response
