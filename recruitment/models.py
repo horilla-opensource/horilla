@@ -101,6 +101,7 @@ class SurveyTemplate(HorillaModel):
     class Meta:
         verbose_name = _("Survey Template")
         verbose_name_plural = _("Survey Templates")
+        ordering = ["-id"]
 
 
 class Skill(HorillaModel):
@@ -258,6 +259,7 @@ class Recruitment(HorillaModel):
         permissions = (("archive_recruitment", "Archive Recruitment"),)
         verbose_name = _("Recruitment")
         verbose_name_plural = _("Recruitments")
+        ordering = ["-id"]
 
     def total_hires(self):
         """
@@ -1628,6 +1630,9 @@ class SkillZoneCandidate(HorillaModel):
 
     def __str__(self) -> str:
         return str(self.candidate_id.get_full_name())
+
+    class Meta:
+        ordering = ["-id"]
 
 
 class CandidateRating(HorillaModel):
