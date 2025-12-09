@@ -17,9 +17,9 @@ from django.utils.translation import gettext_lazy as _
 
 from base.methods import get_pagination
 from base.models import WEEK_DAYS, CompanyLeaves, Holidays
-from employee.models import Employee
+from employee.models import Employee, EmployeeWorkInformation
 from horilla.horilla_settings import HORILLA_DATE_FORMATS, HORILLA_TIME_FORMATS
-from leave.models import LeaveType , LeaveAllocationRequest , AvailableLeave
+from leave.models import LeaveType, LeaveAllocationRequest, AvailableLeave, LeaveRequest
 from django.contrib import messages
 
 logger = logging.getLogger(__name__)
@@ -732,3 +732,37 @@ def allocate_compensation_leave(request, attendance):
         logger.exception(f"Error in allocate_compensation_leave for attendance {attendance.id}: {e}")
         messages.error(request, f"Error allocating compensation leave: {e}")
 
+
+
+def block_attendance_on_approved_leaves(attendance_date):
+    """
+    This method checks if there are any approved leaves on the given attendance date.
+    If such leaves exist, it returns True indicating that attendance should be blocked.
+    Otherwise, it returns False.
+    """
+    approved_leaves = LeaveRequest.objects.filter(
+        Q(status="approved"),
+        Q(start_date__lte=attendance_date),
+        Q(end_date__gte=attendance_date),
+    )
+
+    return approved_leaves.exists()
+
+def block_future_attendance(attendance_date):
+    """
+    This method checks if the given attendance date is in the future.
+    If it is, the method returns True indicating that future attendance should be blocked.
+    Otherwise, it returns False.
+    """
+    today = datetime.today().date()
+    return attendance_date > today
+
+def check_employee_joining_date(employee, attendance_date):
+    emp_info = EmployeeWorkInformation.objects.filter(
+        Q(employee_id=employee)
+    ).first()
+
+    if not emp_info:
+        return False
+
+    return emp_info.date_joining <= attendance_date

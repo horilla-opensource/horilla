@@ -9,8 +9,8 @@
     data-url="{% url 'attendance-create' %}"
   >
     {% csrf_token %}
-
     <div class="row">
+      <div class="col-12">{{form.non_field_errors}}</div>
       <!-- Employee -->
       <div class="col-md-6 mb-3" id="id_employee_id_parent_div">
         <label for="id_employee_id" class="form-label fw-semibold">
@@ -38,18 +38,7 @@
         {% endfor %}
       </div>
 
-      <!-- Shift -->
-      <div class="col-md-6 mb-3" id="id_shift_id_parent_div">
-        <label for="id_shift_id" class="form-label fw-semibold">
-          {{ form.shift_id.label }}
-        </label>
-        <div class="oh-input-wrapper">
-          {{ form.shift_id }}
-        </div>
-        {% for error in form.shift_id.errors %}
-          <div class="text-danger small">{{ error }}</div>
-        {% endfor %}
-      </div>
+
 
       <!-- Clock In Date -->
       <div class="col-md-6 mb-3" id="id_attendance_clock_in_date_parent_div">
@@ -104,14 +93,27 @@
       </div>
 
       <!-- Work Type -->
-      <div class="col-md-6 mb-3" id="id_work_type_id_parent_div">
-        <label for="id_work_type_id" class="form-label fw-semibold">
-          {{ form.work_type_id.label }}
+{#      <div class="col-md-6 mb-3" id="id_work_type_id_parent_div">#}
+{#        <label for="id_work_type_id" class="form-label fw-semibold">#}
+{#          {{ form.work_type_id.label }}#}
+{#        </label>#}
+{#        <div class="oh-input-wrapper">#}
+{#          {{ form.work_type_id }}#}
+{#        </div>#}
+{#        {% for error in form.work_type_id.errors %}#}
+{#          <div class="text-danger small">{{ error }}</div>#}
+{#        {% endfor %}#}
+{#      </div>#}
+
+        <!-- Shift -->
+      <div class="col-md-6 mb-3" id="id_shift_id_parent_div">
+        <label for="id_shift_id" class="form-label fw-semibold">
+          {{ form.shift_id.label }}
         </label>
         <div class="oh-input-wrapper">
-          {{ form.work_type_id }}
+          {{ form.shift_id }}
         </div>
-        {% for error in form.work_type_id.errors %}
+        {% for error in form.shift_id.errors %}
           <div class="text-danger small">{{ error }}</div>
         {% endfor %}
       </div>
@@ -128,43 +130,36 @@
         {% endfor %}
       </div>
 
-      <!-- Minimum Hours -->
-      <div class="col-md-6 mb-3" id="id_minimum_hour_parent_div">
-        <label for="id_minimum_hour" class="form-label fw-semibold">
-          {{ form.minimum_hour.label }}
-        </label>
-        <div class="oh-input-wrapper">
-          {{ form.minimum_hour }}
-        </div>
-        {% for error in form.minimum_hour.errors %}
-          <div class="text-danger small">{{ error }}</div>
-        {% endfor %}
-      </div>
-
-      <!-- Batch Attendance -->
-      <div class="col-md-6 mb-3" id="id_batch_attendance_id_parent_div">
-        <label for="id_batch_attendance_id" class="form-label fw-semibold">
-          {{ form.batch_attendance_id.label }}
-        </label>
-        <div class="oh-input-wrapper">
-          {{ form.batch_attendance_id }}
-        </div>
-        {% for error in form.batch_attendance_id.errors %}
-          <div class="text-danger small">{{ error }}</div>
-        {% endfor %}
-      </div>
+{#      <!-- Minimum Hours -->#}
+{#      <div class="col-md-6 mb-3" id="id_minimum_hour_parent_div">#}
+{#        <label for="id_minimum_hour" class="form-label fw-semibold">#}
+{#          {{ form.minimum_hour.label }}#}
+{#        </label>#}
+{#        <div class="oh-input-wrapper">#}
+{#          {{ form.minimum_hour }}#}
+{#        </div>#}
+{#        {% for error in form.minimum_hour.errors %}#}
+{#          <div class="text-danger small">{{ error }}</div>#}
+{#        {% endfor %}#}
+{#      </div>#}
+{##}
+{#      <!-- Batch Attendance -->#}
+{#      <div class="col-md-6 mb-3" id="id_batch_attendance_id_parent_div">#}
+{#        <label for="id_batch_attendance_id" class="form-label fw-semibold">#}
+{#          {{ form.batch_attendance_id.label }}#}
+{#        </label>#}
+{#        <div class="oh-input-wrapper">#}
+{#          {{ form.batch_attendance_id }}#}
+{#        </div>#}
+{#        {% for error in form.batch_attendance_id.errors %}#}
+{#          <div class="text-danger small">{{ error }}</div>#}
+{#        {% endfor %}#}
+{#      </div>#}
 
       <!-- HTMX compensation target (kept as-is) -->
-      <div id="compensation-field-container" class="col-md-6 mb-3"></div>
+      <div id="compensation-field-container"></div>
     </div>
 
-    {% if form.non_field_errors %}
-      <div class="alert alert-danger mt-3">
-        {% for error in form.non_field_errors %}
-          <p class="mb-0">{{ error }}</p>
-        {% endfor %}
-      </div>
-    {% endif %}
 
     <div class="d-flex justify-content-end mt-4">
       <button type="submit" class="oh-btn oh-btn--secondary">

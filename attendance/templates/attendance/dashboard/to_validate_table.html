@@ -119,3 +119,63 @@
         {% endif %}
     </div>
 {% endif %}
+<script>
+    {% comment %} reloadMessage(); {% endcomment %}
+    window.addEventListener('load', function () {
+        // Trigger the click event on .filterButton ( only once at the first load )
+        $('.filterButton').click();
+    });
+
+    function showSweetAlert(dataReqValue) {
+        Swal.fire({
+            title: 'Pending Attendance Update Request!',
+            text: 'An attendance request exists for updating this attendance prior to validation.',
+            icon: 'warning',
+            confirmButtonText: 'View Request',
+            showCancelButton: true,
+            cancelButtonText: 'Close',
+            preConfirm: () => {
+                // Redirect to the page based on dataReqValue
+                localStorage.setItem("attendanceRequestActiveTab", "#tab_1")
+                window.location.href = dataReqValue;
+
+            },
+        });
+    }
+    $(document).ready(function () {
+        var activeTab = localStorage.getItem("activeTabAttendance");
+        if (activeTab != null) {
+            var tab = $(`[data-target="${activeTab}"]`);
+            var tabContent = $(activeTab);
+            $(tab).attr("class", "oh-tabs__tab oh-tabs__tab--active");
+            $(tabContent).attr("class", "oh-tabs__content oh-tabs__content--active");
+        } else {
+            $('[data-target="#tab_1"]').attr(
+                "class",
+                "oh-tabs__tab oh-tabs__tab--active"
+            );
+            $("#tab_1").attr("class", "oh-tabs__content oh-tabs__content--active");
+        }
+        $(".oh-tabs__tab").click(function (e) {
+            var activeTab = $(this).attr("data-target");
+            localStorage.setItem("activeTabAttendance", activeTab);
+        });
+    });
+    toggleColumns("validate-attendance-table", "fieldContainerTableValidate")
+    toggleColumns("ot-attendance-table", "fieldContainerTableOverTime")
+    toggleColumns("validated-attendance-table", "fieldContainerTable")
+    localStorageValidateCells = localStorage.getItem("validate_attendances_tab")
+    localStorageOtCells = localStorage.getItem("ot_attendances_tab")
+    localStorageValidatedCells = localStorage.getItem("validated_attendances_tab")
+    if (!localStorageValidateCells) {
+        $("#fieldContainerTableValidate").find("[type=checkbox]").prop("checked", true)
+    }
+    if (!localStorageOtCells) {
+        $("#fieldContainerTableOverTime").find("[type=checkbox]").prop("checked", true)
+    }
+    if (!localStorageValidatedCells) {
+        $("#fieldContainerTable").find("[type=checkbox]").prop("checked", true)
+    }
+    $("[type=checkbox]").change()
+
+</script>
