@@ -267,7 +267,7 @@ def login_required(view_func):
             return redirect(redirect_url)
         try:
             func = view_func(request, *args, **kwargs)
-        except MultiValueDictKeyError:
+        except KeyError:
             raise
         except Exception as e:
             logger.error(e)

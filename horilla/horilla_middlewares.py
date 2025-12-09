@@ -67,7 +67,7 @@ class MissingParameterMiddleware:
         return self.get_response(request)
 
     def process_exception(self, request, exception):
-        if isinstance(exception, MultiValueDictKeyError):
+        if isinstance(exception, KeyError):
             missing_key = str(exception).strip("'")
             message = f"Required parameter '{missing_key}' is missing from the request."
 
