@@ -1,6 +1,29 @@
 {% extends "index.html" %}
 {% load static i18n %}
 {% block content %}
+
+    <style>
+        .resolved--dot {
+            background-color: yellowgreen;
+        }
+
+        .on_hold--dot {
+            background-color: red;
+        }
+
+        .in_progress--dot {
+            background-color: orange;
+        }
+
+        .canceled--dot {
+            background-color: gray;
+        }
+
+        .new--dot {
+            background-color: dodgerblue;
+        }
+    </style>
+
     {% include "generic/components.html" %}
 
     {% for path in script_static_paths %}
@@ -9,7 +32,7 @@
 
     <div
         class="oh-checkpoint-badge mb-2"
-        id="selectedInstances"
+        id="selectedTickets"
         data-ids="[]"
         data-clicked=""
         style="display: none"
@@ -26,5 +49,6 @@
             <div class="mt-4 animated-background" style="height: 600px"></div>
         </div>
     {% endif %}
+
 
 {% endblock content %}
