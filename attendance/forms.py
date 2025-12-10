@@ -128,7 +128,7 @@ class AttendanceUpdateForm(BaseModelForm):
         self.fields[field_name].widget.attrs.update(
             {
                 "id": str(uuid.uuid4()),
-                "hx-include": "#attendanceCreateForm",
+                "hx-include": "#attendanceUpdateForm",
                 "hx-target": "#id_attendance_worked_hour_parent_div",
                 "hx-swap": "outerHTML",
                 "hx-select": "#id_attendance_worked_hour_parent_div",
@@ -194,6 +194,9 @@ class AttendanceUpdateForm(BaseModelForm):
         })
         self.fields["attendance_validated"].label = ""
         self.fields["attendance_validated"].help_text = ""
+        self.fields["attendance_worked_hour"].widget.attrs.update({
+            "style": "pointer-events:none;",
+        })
         # self.fields["batch_attendance_id"].choices = list(
         #     self.fields["batch_attendance_id"].choices
         # ) + [("dynamic_create", "Dynamic create")]
@@ -804,7 +807,7 @@ class AttendanceRequestForm(BaseModelForm):
         check_in_time = self.cleaned_data.get("attendance_clock_in")
         check_out_time = self.cleaned_data.get("attendance_clock_out")
         attendance_date = self.cleaned_data.get("attendance_date")
-        employee = self.cleaned_data["employee_id"]
+        employee = self.instance.employee_id
 
         check_joining_date = check_employee_joining_date(employee,attendance_date)
         if not check_joining_date:
