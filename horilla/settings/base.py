@@ -410,6 +410,7 @@ APP_URLS = [
 ]
 
 APPS = [
+    "auth",
     "base",
     "employee",
     "horilla_documents",
