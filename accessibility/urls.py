@@ -8,7 +8,7 @@ from accessibility import views as accessibility
 
 urlpatterns = [
     path(
-        "user-accessibility/",
+        "settings/user-accessibility/",
         accessibility.user_accessibility,
         name="user-accessibility",
     ),
