@@ -100,6 +100,8 @@ class MailTemplateDuplicateForm(HorillaFormView):
         return self.form_invalid(form)
 
 
+@method_decorator(login_required, name="dispatch")
+@method_decorator(permission_required("base.view_horillamailtemplate"), name="dispatch")
 class MailTemplateNavView(HorillaNavView):
     """
     Mail Template Nav View
