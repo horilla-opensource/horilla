@@ -107,6 +107,7 @@ class AnnouncementFormView(HorillaFormView):
         return super().form_valid(form)
 
 
+@method_decorator(login_required, name="dispatch")
 class AnnouncementDetailView(HorillaDetailedView):
 
     model = Announcement
