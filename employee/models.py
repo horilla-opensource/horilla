@@ -697,7 +697,7 @@ class EmployeeWorkInformation(models.Model):
     )
 
     date_joining = models.DateField(
-        null=True, blank=True, verbose_name=_("Joining Date")
+        null=True, blank=False, verbose_name=_("Joining Date")
     )
     contract_end_date = models.DateField(
         blank=True, null=True, verbose_name=_("Contract End Date")
