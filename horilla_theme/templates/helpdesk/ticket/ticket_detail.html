@@ -129,9 +129,15 @@
                     <h3 class="text-sm font-semibold">
                         {% trans "Responsibility" %}
                     </h3>
+                    {% if ticket.status == "resolved" %}
+                    <p class="font-medium text-xs text-green-600">
+                        {% trans "Resolved" %}
+                    </p>
+                    {% else %}
                     <p class="text-red-600 font-medium text-xs text-{{color}}">
                         {{remaining}}
                     </p>
+                    {% endif %}
                 </div>
                 <div class="bg-[#f7f7f7] p-3 rounded-md mb-3">
                     <div
