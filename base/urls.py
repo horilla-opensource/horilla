@@ -1197,7 +1197,7 @@ urlpatterns = [
         "settings/helpdesk-tag-view/", views.helpdesk_tag_view, name="helpdesk-tag-view"
     ),
     path("tag-create/", views.tag_create, name="tag-create"),
-    path("tag-update/<int:tag_id>", views.tag_update, name="tag-update"),
+    path("tag-update/<int:tag_id>/", views.tag_update, name="tag-update"),
     path(
         "tag-delete/<int:obj_id>/",
         views.object_delete,
@@ -1242,7 +1242,7 @@ urlpatterns = [
     #     name="multiple-approval-condition",
     # ),
     path(
-        "configuration/condition-value-fields",
+        "configuration/condition-value-fields/",
         views.get_condition_value_fields,
         name="condition-value-fields",
     ),
@@ -1559,12 +1559,12 @@ urlpatterns = [
         name="update-emp-workinfo",
     ),
     path(
-        "configuration/multiple-approval-condition",
+        "configuration/multiple-approval-condition/",
         multiple_approval_condition.MultipleApprovalConditionView.as_view(),
         name="multiple-approval-condition",
     ),
     path(
-        "configuration/hx-multiple-approval-condition",
+        "configuration/hx-multiple-approval-condition/",
         multiple_approval_condition.MultipleApprovalConditionList.as_view(),
         name="hx-multiple-approval-condition",
     ),
@@ -1585,7 +1585,7 @@ urlpatterns = [
     ),
     # path("configuration/holiday-view", views.holiday_view, name="holiday-view"),
     path(
-        "configuration/holidays-excel-template",
+        "configuration/holidays-excel-template/",
         views.holidays_excel_template,
         name="holidays-excel-template",
     ),
@@ -1624,7 +1624,7 @@ urlpatterns = [
         name="get-upcoming-holidays",
     ),
     path(
-        "duplicate-holiday/<int:obj_id>",
+        "duplicate-holiday/<int:obj_id>/",
         views.object_duplicate,
         name="duplicate-holiday",
         kwargs={

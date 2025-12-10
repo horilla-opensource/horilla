@@ -5761,22 +5761,22 @@ def enable_profile_edit_feature(request):
 @login_required
 def shift_select(request):
     page_number = request.GET.get("page")
+    shifts = ShiftRequest.objects.none()
 
     if page_number == "all":
         if request.user.has_perm("base.view_shiftrequest"):
-            employees = ShiftRequest.objects.all()
+            shifts = ShiftRequest.objects.all()
         else:
-            employees = ShiftRequest.objects.filter(
+            shifts = ShiftRequest.objects.filter(
                 employee_id__employee_user_id=request.user
             ) | ShiftRequest.objects.filter(
                 employee_id__employee_work_info__reporting_manager_id__employee_user_id=request.user
             )
-        # employees = ShiftRequest.objects.all()
 
-    employee_ids = [str(emp.id) for emp in employees]
-    total_count = employees.count()
+    shift_ids = [str(shift.id) for shift in shifts]
+    total_count = shifts.count()
 
-    context = {"employee_ids": employee_ids, "total_count": total_count}
+    context = {"employee_ids": shift_ids, "total_count": total_count}
 
     return JsonResponse(context, safe=False)
 
@@ -5786,6 +5786,7 @@ def shift_select_filter(request):
     page_number = request.GET.get("page")
     filtered = request.GET.get("filter")
     filters = json.loads(filtered) if filtered else {}
+    context = {}
 
     if page_number == "all":
         employee_filter = ShiftRequestFilter(
@@ -5800,27 +5801,28 @@ def shift_select_filter(request):
 
         context = {"employee_ids": employee_ids, "total_count": total_count}
 
-        return JsonResponse(context)
+    return JsonResponse(context)
 
 
 @login_required
 def work_type_select(request):
     page_number = request.GET.get("page")
+    work_types = WorkTypeRequest.objects.none()
 
     if page_number == "all":
         if request.user.has_perm("base.view_worktyperequest"):
-            employees = WorkTypeRequest.objects.all()
+            work_types = WorkTypeRequest.objects.all()
         else:
-            employees = WorkTypeRequest.objects.filter(
+            work_types = WorkTypeRequest.objects.filter(
                 employee_id__employee_user_id=request.user
             ) | WorkTypeRequest.objects.filter(
                 employee_id__employee_work_info__reporting_manager_id__employee_user_id=request.user
             )
 
-    employee_ids = [str(emp.id) for emp in employees]
-    total_count = employees.count()
+    work_ids = [str(work.id) for work in work_types]
+    total_count = work_types.count()
 
-    context = {"employee_ids": employee_ids, "total_count": total_count}
+    context = {"employee_ids": work_ids, "total_count": total_count}
 
     return JsonResponse(context, safe=False)
 
@@ -5830,6 +5832,7 @@ def work_type_select_filter(request):
     page_number = request.GET.get("page")
     filtered = request.GET.get("filter")
     filters = json.loads(filtered) if filtered else {}
+    context = {}
 
     if page_number == "all":
         employee_filter = WorkTypeRequestFilter(
@@ -5844,7 +5847,7 @@ def work_type_select_filter(request):
 
         context = {"employee_ids": employee_ids, "total_count": total_count}
 
-        return JsonResponse(context)
+    return JsonResponse(context)
 
 
 @login_required
@@ -5853,18 +5856,18 @@ def rotating_shift_select(request):
 
     if page_number == "all":
         if request.user.has_perm("base.view_rotatingshiftassign"):
-            employees = RotatingShiftAssign.objects.filter(is_active=True)
+            r_shifts = RotatingShiftAssign.objects.filter(is_active=True)
         else:
-            employees = RotatingShiftAssign.objects.filter(
+            r_shifts = RotatingShiftAssign.objects.filter(
                 employee_id__employee_work_info__reporting_manager_id__employee_user_id=request.user
             )
     else:
-        employees = RotatingShiftAssign.objects.all()
+        r_shifts = RotatingShiftAssign.objects.all()
 
-    employee_ids = [str(emp.id) for emp in employees]
-    total_count = employees.count()
+    r_shift_ids = [str(r_shift.id) for r_shift in r_shifts]
+    total_count = r_shifts.count()
 
-    context = {"employee_ids": employee_ids, "total_count": total_count}
+    context = {"employee_ids": r_shift_ids, "total_count": total_count}
 
     return JsonResponse(context, safe=False)
 
@@ -5874,6 +5877,7 @@ def rotating_shift_select_filter(request):
     page_number = request.GET.get("page")
     filtered = request.GET.get("filter")
     filters = json.loads(filtered) if filtered else {}
+    context = {}
 
     if page_number == "all":
         employee_filter = RotatingShiftAssignFilters(
@@ -5888,7 +5892,7 @@ def rotating_shift_select_filter(request):
 
         context = {"employee_ids": employee_ids, "total_count": total_count}
 
-        return JsonResponse(context)
+    return JsonResponse(context)
 
 
 @login_required
@@ -5897,18 +5901,18 @@ def rotating_work_type_select(request):
 
     if page_number == "all":
         if request.user.has_perm("base.view_rotatingworktypeassign"):
-            employees = RotatingWorkTypeAssign.objects.filter(is_active=True)
+            r_shifts = RotatingWorkTypeAssign.objects.filter(is_active=True)
         else:
-            employees = RotatingWorkTypeAssign.objects.filter(
+            r_shifts = RotatingWorkTypeAssign.objects.filter(
                 employee_id__employee_work_info__reporting_manager_id__employee_user_id=request.user
             )
     else:
-        employees = RotatingWorkTypeAssign.objects.all()
+        r_shifts = RotatingWorkTypeAssign.objects.all()
 
-    employee_ids = [str(emp.id) for emp in employees]
-    total_count = employees.count()
+    r_shift_ids = [str(r_shift.id) for r_shift in r_shifts]
+    total_count = r_shifts.count()
 
-    context = {"employee_ids": employee_ids, "total_count": total_count}
+    context = {"employee_ids": r_shift_ids, "total_count": total_count}
 
     return JsonResponse(context, safe=False)
 
@@ -5918,6 +5922,7 @@ def rotating_work_type_select_filter(request):
     page_number = request.GET.get("page")
     filtered = request.GET.get("filter")
     filters = json.loads(filtered) if filtered else {}
+    context = {}
 
     if page_number == "all":
         employee_filter = RotatingWorkTypeAssignFilter(
@@ -5932,7 +5937,7 @@ def rotating_work_type_select_filter(request):
 
         context = {"employee_ids": employee_ids, "total_count": total_count}
 
-        return JsonResponse(context)
+    return JsonResponse(context)
 
 
 @login_required
@@ -7458,14 +7463,15 @@ def bulk_holiday_delete(request):
 @login_required
 def holiday_select(request):
     page_number = request.GET.get("page")
+    holidays = Holidays.objects.none()
 
     if page_number == "all":
-        employees = Holidays.objects.all()
+        holidays = Holidays.objects.all()
 
-    employee_ids = [str(emp.id) for emp in employees]
-    total_count = employees.count()
+    holiday_ids = [str(hol.id) for hol in holidays]
+    total_count = holidays.count()
 
-    context = {"employee_ids": employee_ids, "total_count": total_count}
+    context = {"employee_ids": holiday_ids, "total_count": total_count}
 
     return JsonResponse(context, safe=False)
 
@@ -7475,6 +7481,7 @@ def holiday_select_filter(request):
     page_number = request.GET.get("page")
     filtered = request.GET.get("filter")
     filters = json.loads(filtered) if filtered else {}
+    context = {}
 
     if page_number == "all":
         employee_filter = HolidayFilter(filters, queryset=Holidays.objects.all())
@@ -7487,7 +7494,7 @@ def holiday_select_filter(request):
 
         context = {"employee_ids": employee_ids, "total_count": total_count}
 
-        return JsonResponse(context)
+    return JsonResponse(context)
 
 
 @login_required
