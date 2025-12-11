@@ -542,5 +542,10 @@ urlpatterns = [
        "check-compensation/",
         views.check_compensation,
         name="check-compensation",
+    ),
+    path(
+        "check-compensation-apply/",
+        views.compensation_eligibility,
+        name="check-compensation-apply",
     )
 ]

@@ -128,7 +128,7 @@ class AttendanceUpdateForm(BaseModelForm):
         self.fields[field_name].widget.attrs.update(
             {
                 "id": str(uuid.uuid4()),
-                "hx-include": "#attendanceCreateForm",
+                "hx-include": "#attendanceUpdateForm",
                 "hx-target": "#id_attendance_worked_hour_parent_div",
                 "hx-swap": "outerHTML",
                 "hx-select": "#id_attendance_worked_hour_parent_div",
@@ -194,6 +194,9 @@ class AttendanceUpdateForm(BaseModelForm):
         })
         self.fields["attendance_validated"].label = ""
         self.fields["attendance_validated"].help_text = ""
+        self.fields["attendance_worked_hour"].widget.attrs.update({
+            "style": "pointer-events:none;",
+        })
         # self.fields["batch_attendance_id"].choices = list(
         #     self.fields["batch_attendance_id"].choices
         # ) + [("dynamic_create", "Dynamic create")]
@@ -202,6 +205,22 @@ class AttendanceUpdateForm(BaseModelForm):
         #         "onchange": "dynamicBatchAttendance($(this))",
         #     }
         # )
+        self.fields["attendance_clock_in_date"].widget.attrs.update({
+            "style": "pointer-events:none;",
+        })
+        self.fields["attendance_worked_hour"].widget.attrs.update({
+            "style": "pointer-events:none;",
+        })
+        self.fields["attendance_clock_out_date"].widget.attrs.update({
+            "style": "pointer-events:none;",
+        })
+
+        self.fields["attendance_date"].widget.attrs.update({
+            "hx-get": reverse("check-compensation"),
+            "hx-trigger": "change delay:400ms",
+            "hx-target": "#compensation-field-container",
+            "hx-include": "#attendanceCreateForm",
+        })
 
     def as_p(self, *args, **kwargs):
         """
@@ -700,6 +719,16 @@ class AttendanceRequestForm(BaseModelForm):
             }
         )
 
+
+    def get_employee(self):
+        """Unified method to return employee instance."""
+        # If editing, instance already has employee
+        if getattr(self.instance, "employee_id", None):
+            return self.instance.employee_id
+
+        # If creating, the field exists
+        return self.cleaned_data.get("employee_id")
+
     def __init__(self, *args, **kwargs):
         if instance := kwargs.get("instance"):
             # django forms not showing value inside the date, time html element.
@@ -749,6 +778,7 @@ class AttendanceRequestForm(BaseModelForm):
                 "onchange": "attendanceDateChange($(this))",
             }
         )
+
         # self.fields["work_type_id"].widget.attrs.update({"id": str(uuid.uuid4())})
         # self.fields["batch_attendance_id"].choices = list(
         #     self.fields["batch_attendance_id"].choices
@@ -804,8 +834,8 @@ class AttendanceRequestForm(BaseModelForm):
         check_in_time = self.cleaned_data.get("attendance_clock_in")
         check_out_time = self.cleaned_data.get("attendance_clock_out")
         attendance_date = self.cleaned_data.get("attendance_date")
-        employee = self.cleaned_data["employee_id"]
-
+        employee = self.get_employee()
+        print(employee)
         check_joining_date = check_employee_joining_date(employee,attendance_date)
         if not check_joining_date:
             raise ValidationError(
@@ -848,6 +878,31 @@ class AttendanceRequestForm(BaseModelForm):
                 "attendance_worked_hour",
                 _("Worked hours cannot be empty")
             )
+        leave, is_half_day = block_attendance_on_approved_leaves(attendance_date)
+
+        if leave:
+            if worked_hours:
+                try:
+                    parts = worked_hours.split(":")
+                    if len(parts) != 2:
+                        raise ValueError
+                    hour = int(parts[0])
+                    minute = int(parts[1])
+                except (ValueError, IndexError):
+                    self.add_error(
+                        "attendance_worked_hour",
+                        _("Worked hours must be in HH:MM format")
+                    )
+
+                if is_half_day:
+                    if not (hour == 4 and minute == 0):
+                        raise ValidationError(
+                            _("You have a half-day leave. Worked hours must be exactly 04:00.")
+                        )
+                else:
+                    raise ValidationError(
+                        _("You cannot mark attendance on a date where full-day leave has been approved.")
+                    )
 
 
 class NewRequestForm(AttendanceRequestForm):
@@ -991,16 +1046,12 @@ class NewRequestForm(AttendanceRequestForm):
             raise ValidationError(_("Employee work info not found"))
 
         check_joining_date = check_employee_joining_date(employee,attendance_date)
+        print("Check Join Date" , check_joining_date)
         if not check_joining_date:
             raise ValidationError(
                 _("Attendance cannot be marked before your joining date.")
             )
 
-        is_future_date = block_future_attendance(attendance_date)
-        if is_future_date:
-            raise ValidationError(
-                _("Attendance cannot be marked for future dates")
-            )
 
         if check_in_time and check_out_time:
             if check_out_time < check_in_time:
@@ -1032,15 +1083,6 @@ class NewRequestForm(AttendanceRequestForm):
                 "attendance_worked_hour",
                 _("Worked hours cannot be empty")
             )
-
-        approved_leaves = block_attendance_on_approved_leaves(attendance_date)
-
-        if approved_leaves:
-                raise ValidationError(
-                    _(
-                        "You cannot mark attendance on a date where leave has been approved."
-                    )
-                )
 
 
         data = {

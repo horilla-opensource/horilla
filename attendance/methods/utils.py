@@ -735,18 +735,29 @@ def allocate_compensation_leave(request, attendance):
 
 
 def block_attendance_on_approved_leaves(attendance_date):
-    """
-    This method checks if there are any approved leaves on the given attendance date.
-    If such leaves exist, it returns True indicating that attendance should be blocked.
-    Otherwise, it returns False.
-    """
-    approved_leaves = LeaveRequest.objects.filter(
-        Q(status="approved"),
-        Q(start_date__lte=attendance_date),
-        Q(end_date__gte=attendance_date),
-    )
+    leave = LeaveRequest.objects.filter(
+        status="approved",
+        start_date__lte=attendance_date,
+        end_date__gte=attendance_date,
+    ).first()
 
-    return approved_leaves.exists()
+    if not leave:
+        return None, None  # no leave
+
+    is_half_day = False
+
+    if leave.start_date == attendance_date and leave.start_date_breakdown != "full_day":
+        is_half_day = True
+
+    if leave.end_date == attendance_date and leave.end_date_breakdown != "full_day":
+        is_half_day = True
+
+    # If start==end, check both
+    if leave.start_date == leave.end_date:
+        if leave.start_date_breakdown != "full_day" or leave.end_date_breakdown != "full_day":
+            is_half_day = True
+
+    return leave, is_half_day
 
 def block_future_attendance(attendance_date):
     """
