@@ -205,6 +205,15 @@ class AttendanceUpdateForm(BaseModelForm):
         #         "onchange": "dynamicBatchAttendance($(this))",
         #     }
         # )
+        self.fields["attendance_clock_in_date"].widget.attrs.update({
+            "style": "pointer-events:none;",
+        })
+        self.fields["attendance_worked_hour"].widget.attrs.update({
+            "style": "pointer-events:none;",
+        })
+        self.fields["attendance_clock_out_date"].widget.attrs.update({
+            "style": "pointer-events:none;",
+        })
 
         self.fields["attendance_date"].widget.attrs.update({
             "hx-get": reverse("check-compensation"),
