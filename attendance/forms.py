@@ -703,6 +703,16 @@ class AttendanceRequestForm(BaseModelForm):
             }
         )
 
+
+    def get_employee(self):
+        """Unified method to return employee instance."""
+        # If editing, instance already has employee
+        if getattr(self.instance, "employee_id", None):
+            return self.instance.employee_id
+
+        # If creating, the field exists
+        return self.cleaned_data.get("employee_id")
+
     def __init__(self, *args, **kwargs):
         if instance := kwargs.get("instance"):
             # django forms not showing value inside the date, time html element.
@@ -752,6 +762,7 @@ class AttendanceRequestForm(BaseModelForm):
                 "onchange": "attendanceDateChange($(this))",
             }
         )
+
         # self.fields["work_type_id"].widget.attrs.update({"id": str(uuid.uuid4())})
         # self.fields["batch_attendance_id"].choices = list(
         #     self.fields["batch_attendance_id"].choices
@@ -807,8 +818,8 @@ class AttendanceRequestForm(BaseModelForm):
         check_in_time = self.cleaned_data.get("attendance_clock_in")
         check_out_time = self.cleaned_data.get("attendance_clock_out")
         attendance_date = self.cleaned_data.get("attendance_date")
-        employee = self.instance.employee_id
-
+        employee = self.get_employee()
+        print(employee)
         check_joining_date = check_employee_joining_date(employee,attendance_date)
         if not check_joining_date:
             raise ValidationError(
@@ -994,6 +1005,7 @@ class NewRequestForm(AttendanceRequestForm):
             raise ValidationError(_("Employee work info not found"))
 
         check_joining_date = check_employee_joining_date(employee,attendance_date)
+        print("Check Join Date" , check_joining_date)
         if not check_joining_date:
             raise ValidationError(
                 _("Attendance cannot be marked before your joining date.")
