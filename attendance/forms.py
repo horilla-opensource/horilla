@@ -878,6 +878,31 @@ class AttendanceRequestForm(BaseModelForm):
                 "attendance_worked_hour",
                 _("Worked hours cannot be empty")
             )
+        leave, is_half_day = block_attendance_on_approved_leaves(attendance_date)
+
+        if leave:
+            if worked_hours:
+                try:
+                    parts = worked_hours.split(":")
+                    if len(parts) != 2:
+                        raise ValueError
+                    hour = int(parts[0])
+                    minute = int(parts[1])
+                except (ValueError, IndexError):
+                    self.add_error(
+                        "attendance_worked_hour",
+                        _("Worked hours must be in HH:MM format")
+                    )
+
+                if is_half_day:
+                    if not (hour == 4 and minute == 0):
+                        raise ValidationError(
+                            _("You have a half-day leave. Worked hours must be exactly 04:00.")
+                        )
+                else:
+                    raise ValidationError(
+                        _("You cannot mark attendance on a date where full-day leave has been approved.")
+                    )
 
 
 class NewRequestForm(AttendanceRequestForm):
@@ -1027,11 +1052,6 @@ class NewRequestForm(AttendanceRequestForm):
                 _("Attendance cannot be marked before your joining date.")
             )
 
-        is_future_date = block_future_attendance(attendance_date)
-        if is_future_date:
-            raise ValidationError(
-                _("Attendance cannot be marked for future dates")
-            )
 
         if check_in_time and check_out_time:
             if check_out_time < check_in_time:
@@ -1063,15 +1083,6 @@ class NewRequestForm(AttendanceRequestForm):
                 "attendance_worked_hour",
                 _("Worked hours cannot be empty")
             )
-
-        approved_leaves = block_attendance_on_approved_leaves(attendance_date)
-
-        if approved_leaves:
-                raise ValidationError(
-                    _(
-                        "You cannot mark attendance on a date where leave has been approved."
-                    )
-                )
 
 
         data = {
