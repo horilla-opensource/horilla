@@ -206,6 +206,13 @@ class AttendanceUpdateForm(BaseModelForm):
         #     }
         # )
 
+        self.fields["attendance_date"].widget.attrs.update({
+            "hx-get": reverse("check-compensation"),
+            "hx-trigger": "change delay:400ms",
+            "hx-target": "#compensation-field-container",
+            "hx-include": "#attendanceCreateForm",
+        })
+
     def as_p(self, *args, **kwargs):
         """
         Render the form fields as HTML table rows with Bootstrap styling.
