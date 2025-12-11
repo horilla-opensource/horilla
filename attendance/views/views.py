@@ -2851,3 +2851,18 @@ def check_attendance_duplicate(request):
     return False
 
 
+def compensation_eligibility(request):
+    """
+    JSON endpoint to check if a date is eligible for compensation leave.
+    """
+    date_str = request.GET.get("attendance_date") or request.GET.get("date")
+    if not date_str:
+        return JsonResponse({"eligible": False})
+
+    try:
+        date = datetime.strptime(date_str, "%Y-%m-%d").date()
+    except (ValueError, TypeError):
+        return JsonResponse({"eligible": False})
+
+    result = is_mercantile_or_poya_holiday(date)
+    return JsonResponse({"eligible": bool(result.get("is_mercantile_holiday"))})
