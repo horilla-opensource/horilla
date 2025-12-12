@@ -20,6 +20,7 @@ from django.core.exceptions import ValidationError
 from django.core.files.storage import default_storage
 from django.core.validators import MaxValueValidator, MinValueValidator
 from django.db import models
+from django.templatetags.static import static
 from django.urls import reverse, reverse_lazy
 from django.utils import timezone as tz
 from django.utils.html import format_html
@@ -1051,19 +1052,9 @@ class Candidate(HorillaModel):
         return str(self.name)
 
     def get_avatar(self):
-        """
-        Method will rerun the api to the avatar or path to the profile image
-        """
-        url = (
-            f"https://ui-avatars.com/api/?name={self.get_full_name()}&background=random"
-        )
-        if self.profile:
-            full_filename = self.profile.name
-
-            if default_storage.exists(full_filename):
-                url = self.profile.url
-
-        return url
+        if self.profile and default_storage.exists(self.profile.name):
+            return self.profile.url
+        return static("images/ui/default_avatar.jpg")
 
     def get_company(self):
         """
