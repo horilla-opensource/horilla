@@ -21,6 +21,7 @@ def is_valid_uuid(uuid_string):
 def _split_path(self, path=None):
 
     path = path or self.path
+    path = path.strip("/")
     parts = path.split("/") if path else []
 
     if parts and parts[0] in ("static", "media"):
