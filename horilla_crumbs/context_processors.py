@@ -19,18 +19,15 @@ def is_valid_uuid(uuid_string):
 
 
 def _split_path(self, path=None):
-    """Returns a list of the path components between slashes"""
-    if not path:
-        path = self.path
-    if path.endswith("/"):
-        path = path[:-1]
-    if path.startswith("/"):
-        path = path[1:]
-    if path == "":
-        return list()
 
-    result = path.split("/")
-    return result
+    path = path or self.path
+    path = path.strip("/")
+    parts = path.split("/") if path else []
+
+    if parts and parts[0] in ("static", "media"):
+        return []
+
+    return parts
 
 
 sidebar_urls = [
@@ -81,6 +78,7 @@ sidebar_urls = [
     "asset-request-allocation-view",
     "settings",
     "attendance-settings",
+    "geo-face-config",
     "employee-permission-assign",
     "user-group-assign",
     "currency",
@@ -168,6 +166,7 @@ sidebar_urls = [
     "asset-pivot",
     "pms-report",
     "pms-pivot",
+    "cbv-pipeline",
 ]
 remove_urls = [
     "feedback-detailed-view",

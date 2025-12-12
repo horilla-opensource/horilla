@@ -29,6 +29,7 @@ from horilla_views.generic.cbv.views import (
 from notifications.signals import notify
 
 
+@method_decorator(login_required, name="dispatch")
 @method_decorator(
     manager_can_enter("base.view_rotatingworktypeassign"), name="dispatch"
 )
@@ -95,10 +96,10 @@ class GeneralParent(HorillaListView):
                 """
 
 
+@method_decorator(login_required, name="dispatch")
 @method_decorator(
     manager_can_enter("base.view_rotatingworktypeassign"), name="dispatch"
 )
-@method_decorator(login_required, name="dispatch")
 class RotatingWorkListView(GeneralParent):
     """
     list view of the rotating work assign page
@@ -127,10 +128,10 @@ class RotatingWorkListView(GeneralParent):
     ]
 
 
+@method_decorator(login_required, name="dispatch")
 @method_decorator(
     manager_can_enter("base.view_rotatingworktypeassign"), name="dispatch"
 )
-@method_decorator(login_required, name="dispatch")
 class RotatingWorkNavView(HorillaNavView):
     """
     Nav view of the page
@@ -225,10 +226,10 @@ class RotatingWorkNavView(HorillaNavView):
     ]
 
 
+@method_decorator(login_required, name="dispatch")
 @method_decorator(
     manager_can_enter("base.view_rotatingworktypeassign"), name="dispatch"
 )
-@method_decorator(login_required, name="dispatch")
 class RotatingWorkDetailView(HorillaDetailedView):
     """
     Detail view of page
@@ -261,10 +262,10 @@ class RotatingWorkDetailView(HorillaDetailedView):
         return context
 
 
+@method_decorator(login_required, name="dispatch")
 @method_decorator(
     manager_can_enter("base.view_rotatingworktypeassign"), name="dispatch"
 )
-@method_decorator(login_required, name="dispatch")
 class RotatingWorkExport(TemplateView):
     """
     To add export action in the navbar
@@ -285,8 +286,8 @@ class RotatingWorkExport(TemplateView):
         return context
 
 
-@method_decorator(manager_can_enter("base.add_rotatingworktypeassign"), name="dispatch")
 @method_decorator(login_required, name="dispatch")
+@method_decorator(manager_can_enter("base.add_rotatingworktypeassign"), name="dispatch")
 class RotatingWorkTypeFormView(HorillaFormView):
     """
     form view
@@ -355,8 +356,8 @@ class RotatingWorkTypeFormView(HorillaFormView):
         return super().form_valid(form)
 
 
-@method_decorator(manager_can_enter("base.add_rotatingworktypeassign"), name="dispatch")
 @method_decorator(login_required, name="dispatch")
+@method_decorator(manager_can_enter("base.add_rotatingworktypeassign"), name="dispatch")
 class RotatingWorkTypeDuplicateForm(HorillaFormView):
     """
     duplicate from view

@@ -6,11 +6,13 @@ Custom decorators for permission and manager checks in the application.
 
 from functools import wraps
 
+from django.conf import settings
 from django.contrib import messages
-from django.http import HttpResponse, HttpResponseRedirect
+from django.http import HttpResponse
 from django.shortcuts import redirect, render
 
 from employee.models import Employee
+from horilla.config import logger
 from recruitment.models import Recruitment, Stage
 
 
@@ -200,18 +202,32 @@ def candidate_login_required(view_func):
     @wraps(view_func)
     def _wrapped_view(request, *args, **kwargs):
 
+        allow_func = False
         if request.user.has_perm("recruitment.view_candidate"):
-            return view_func(request, *args, **kwargs)
+            allow_func = True
         if request.user:
             if request.user.is_authenticated:
                 if (
                     request.user.employee_get.stage_set.exists()
                     or request.user.employee_get.recruitment_set.exists()
                 ):
-                    return view_func(request, *args, **kwargs)
+                    allow_func = True
 
         if "candidate_id" in request.session:
-            return view_func(request, *args, **kwargs)
+            allow_func = True
+
+        if allow_func:
+            try:
+                func = view_func(request, *args, **kwargs)
+            except KeyError:
+                raise
+            except Exception as e:
+                logger.error(e)
+                if not settings.DEBUG:
+                    messages.error(request, str(e))
+                    return render(request, "went_wrong.html", status=404)
+                raise e
+            return func
         return redirect("candidate-login")
 
     return _wrapped_view

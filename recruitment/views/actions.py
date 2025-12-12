@@ -435,6 +435,7 @@ def get_template_hint(request, obj_id=None):
     """
     This method is used to return the mail template
     """
+    body = ""
     if obj_id:
         body = HorillaMailTemplate.objects.get(id=obj_id).body
         template_bdy = template.Template(body)

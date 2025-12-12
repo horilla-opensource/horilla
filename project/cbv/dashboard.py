@@ -79,11 +79,11 @@ class ProjectDetailView(HorillaDetailedView):
         "description": 12,
     }
 
-    def __init__(self, **kwargs: Any) -> None:
-        super().__init__(**kwargs)
-        instnce_id = resolve(self.request.path_info).kwargs.get("pk")
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        instance_id = resolve(self.request.path_info).kwargs.get("pk")
         employee = self.request.user.employee_get
-        project = Project.objects.get(id=instnce_id)
+        project = Project.objects.get(id=instance_id)
         if (
             employee in project.managers.all()
             or employee in project.members.all()
@@ -99,6 +99,8 @@ class ProjectDetailView(HorillaDetailedView):
                 """,
                 }
             ]
+        context["actions"] = self.actions
+        return context
 
     def get_queryset(self) -> QuerySet[Any]:
         queryset = super().get_queryset()

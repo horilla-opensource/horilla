@@ -359,6 +359,7 @@ def dashboard_attendance(request):
     return JsonResponse({"dataSet": data_set, "labels": labels, "message": message})
 
 
+@login_required
 def pending_hours(request):
     """
     pending hours chart dashboard view

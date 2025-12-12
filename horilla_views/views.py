@@ -1,18 +1,22 @@
 import importlib
 import io
 import json
+import os
 import re
 from collections import defaultdict
 
 from bs4 import BeautifulSoup
 from django import forms
 from django.apps import apps
+from django.conf import settings
 from django.contrib import messages
 from django.contrib.admin.utils import NestedObjects
+from django.contrib.staticfiles import finders
 from django.core.cache import cache as CACHE
 from django.db import router
 from django.http import HttpResponse, HttpResponseForbidden, JsonResponse
 from django.shortcuts import render
+from django.templatetags.static import static
 from django.utils.decorators import method_decorator
 from django.views import View
 from django.views.decorators.csrf import csrf_protect
@@ -269,7 +273,8 @@ class SearchInIds(View):
         """
         cache_key = f"{self.request.session.session_key}search_in_instance_ids"
         context: dict = CACHE.get(cache_key)
-        context["instances"] = context["filter_class"](self.request.GET).qs
+        if context:
+            context["instances"] = context["filter_class"](self.request.GET).qs
         return render(self.request, "generic/filter_result.html", context)
 
 
@@ -632,13 +637,6 @@ def get_model_class(model_path):
     return model_class
 
 
-import os
-
-from django.conf import settings
-from django.contrib.staticfiles import finders
-from django.templatetags.static import static
-
-
 def link_callback(uri, rel):
     """
     Convert html URIs to absolute system paths so xhtml2pdf can access them.
@@ -917,14 +915,17 @@ def export_data(request, *args, **kwargs):
     )
 
 
+@method_decorator(login_required, name="dispatch")
 class DynamicView(View):
     """
     DynamicView
     """
 
-    def get(self, request, field, session_key):
+    def get(self, request, *args, **kwargs):
+
+        field = kwargs.get("field")
+        session_key = kwargs.get("session_key")
         if session_key != request.session.session_key:
             return HttpResponseForbidden("Invalid session key.")
 
-        # Your logic here
         return render(request, "dynamic.html", {"field": field})

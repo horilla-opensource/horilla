@@ -8,8 +8,11 @@
         {% trans "Edit" %}
     </a>
     {% if perms.project.view_timesheet or request.user|is_reportingmanager %}
-        <a href="{% url 'personal-time-sheet-view' instance.employee_id.id %}" class="oh-btn oh-btn--info me-1 ms-1"
-            style="width: 48%;">
+        <a hx-get="{% url 'personal-time-sheet-view' instance.employee_id.id %}?date={{instance.date}}" class="oh-btn oh-btn--info"
+            hx-target="#objectDetailW75ModalTarget"
+            data-toggle="oh-modal-toggle"
+            data-target="#objectDetailW75Modal"
+        >
             <ion-icon name="bar-chart" role="img" class="md hydrated" aria-label="create outline"></ion-icon>
             {% trans "View Timesheet Chart" %}
         </a>

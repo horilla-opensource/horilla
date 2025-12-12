@@ -198,22 +198,22 @@ urlpatterns = [
     path("404", views.custom404, name="404"),
     path("login/", views.login_user, name="login"),
     path(
-        "forgot-password",
+        "forgot-password/",
         views.HorillaPasswordResetView.as_view(),
         name="forgot-password",
     ),
     path(
-        "employee-reset-password",
+        "employee-reset-password/",
         views.EmployeePasswordResetView.as_view(),
         name="employee-reset-password",
     ),
-    path("reset-send-success", views.reset_send_success, name="reset-send-success"),
-    path("change-password", views.change_password, name="change-password"),
-    path("change-username", views.change_username, name="change-username"),
-    path("two-factor", views.two_factor_auth, name="two-factor"),
-    path("send-otp", views.send_otp, name="send-otp"),
-    path("logout", views.logout_user, name="logout"),
-    path("settings", views.common_settings, name="settings"),
+    path("reset-send-success/", views.reset_send_success, name="reset-send-success"),
+    path("change-password/", views.change_password, name="change-password"),
+    path("change-username/", views.change_username, name="change-username"),
+    path("two-factor/", views.two_factor_auth, name="two-factor"),
+    path("send-otp/", views.send_otp, name="send-otp"),
+    path("logout/", views.logout_user, name="logout"),
+    path("settings/", views.common_settings, name="settings"),
     path(
         "settings/user-group-create/", views.user_group_table, name="user-group-create"
     ),
@@ -233,7 +233,9 @@ urlpatterns = [
         name="group-permission-remove",
     ),
     path(
-        "user-group-assign-view", views.group_assign_view, name="user-group-assign-view"
+        "user-group-assign-view/",
+        views.group_assign_view,
+        name="user-group-assign-view",
     ),
     path("settings/user-group-assign/", views.group_assign, name="user-group-assign"),
     path(
@@ -247,38 +249,38 @@ urlpatterns = [
         name="employee-permission-assign",
     ),
     path(
-        "employee-permission-search",
+        "employee-permission-search/",
         views.employee_permission_search,
         name="permission-search",
     ),
     path(
-        "update-user-permission",
+        "update-user-permission/",
         views.update_permission,
         name="update-user-permission",
     ),
     path(
-        "update-group-permission",
+        "update-group-permission/",
         views.update_group_permission,
         name="update-group-permission",
     ),
     path(
-        "permission-table",
+        "permission-table/",
         views.permission_table,
         name="permission-table",
     ),
     path("settings/mail-server-conf/", views.mail_server_conf, name="mail-server-conf"),
     path(
-        "mail-server-list",
+        "mail-server-list/",
         mail_server.MailServerListView.as_view(),
         name="mail-server-list",
     ),
     path(
-        "mail-server-nav",
+        "mail-server-nav/",
         mail_server.MailServerNav.as_view(),
         name="mail-server-nav",
     ),
     path(
-        "create-mail-server",
+        "create-mail-server/",
         mail_server.MailServerFormView.as_view(),
         name="create-mail-server",
     ),
@@ -297,9 +299,9 @@ urlpatterns = [
         views.mail_server_test_email,
         name="mail-server-test-email",
     ),
-    path("mail-server-delete", views.mail_server_delete, name="mail-server-delete"),
+    path("mail-server-delete/", views.mail_server_delete, name="mail-server-delete"),
     path(
-        "replace-primary-mail", views.replace_primary_mail, name="replace-primary-mail"
+        "replace-primary-mail/", views.replace_primary_mail, name="replace-primary-mail"
     ),
     path(
         "configuration/view-mail-templates/",
@@ -509,7 +511,7 @@ urlpatterns = [
         },
     ),
     path(
-        "add-remove-work-type-fields",
+        "add-remove-work-type-fields/",
         views.add_remove_dynamic_fields,
         name="add-remove-work-type-fields",
         kwargs={
@@ -526,7 +528,7 @@ urlpatterns = [
         name="rotating-work-type-create-form",
     ),
     path(
-        "rotating-work-type-update-form/<int:pk>",
+        "rotating-work-type-update-form/<int:pk>/",
         settings_rotatingwork.RotatingWorkTypesCreateForm.as_view(),
         name="rotating-work-type-update-form",
     ),
@@ -576,17 +578,17 @@ urlpatterns = [
     #     name="rotating-work-type-assign-add",
     # ),
     path(
-        "rotating-work-type-assign-add",
+        "rotating-work-type-assign-add/",
         rotating_work_type.RotatingWorkTypeFormView.as_view(),
         name="rotating-work-type-assign-add",
     ),
     path(
-        "rotating-work-type-assign-view",
+        "rotating-work-type-assign-view/",
         views.rotating_work_type_assign_view,
         name="rotating-work-type-assign-view",
     ),
     path(
-        "rotating-work-type-assign-export",
+        "rotating-work-type-assign-export/",
         views.rotating_work_type_assign_export,
         name="rotating-work-type-assign-export",
     ),
@@ -621,12 +623,12 @@ urlpatterns = [
         name="rotating-work-type-assign-archive",
     ),
     path(
-        "rotating-work-type-assign-bulk-archive",
+        "rotating-work-type-assign-bulk-archive/",
         views.rotating_work_type_assign_bulk_archive,
         name="rotating-shift-work-type-bulk-archive",
     ),
     path(
-        "rotating-work-type-assign-bulk-delete",
+        "rotating-work-type-assign-bulk-delete/",
         views.rotating_work_type_assign_bulk_delete,
         name="rotating-shift-work-type-bulk-delete",
     ),
@@ -726,7 +728,7 @@ urlpatterns = [
         },
     ),
     path(
-        "employee-shift-shedule-list",
+        "employee-shift-shedule-list/",
         employee_shift_shedule.EmployeeShiftSheduleList.as_view(),
         name="employee-shift-shedule-list",
     ),
@@ -736,12 +738,12 @@ urlpatterns = [
         name="employee-shift-shedule-detail-view",
     ),
     path(
-        "employee-shift-shedule-navbar",
+        "employee-shift-shedule-navbar/",
         employee_shift_shedule.EmployeeShiftSheduleNav.as_view(),
         name="employee-shift-shedule-navbar",
     ),
     path(
-        "settings-employee-shift-shedule-create",
+        "settings-employee-shift-shedule-create/",
         employee_shift_shedule.EmployeeShiftSheduleCreateForm.as_view(),
         name="settings-employee-shift-shedule-create",
     ),
@@ -786,7 +788,7 @@ urlpatterns = [
         name="rotating-shift-create",
     ),
     path(
-        "add-remove-shift-fields",
+        "add-remove-shift-fields/",
         views.add_remove_dynamic_fields,
         name="add-remove-shift-fields",
         kwargs={
@@ -838,17 +840,17 @@ urlpatterns = [
     #     name="rotating-shift-assign",
     # ),
     path(
-        "rotating-shift-assign-add",
+        "rotating-shift-assign-add/",
         rotating_shift_assign.RotatingShiftFormView.as_view(),
         name="rotating-shift-assign-add",
     ),
     path(
-        "rotating-shift-assign-view",
+        "rotating-shift-assign-view/",
         views.rotating_shift_assign_view,
         name="rotating-shift-assign-view",
     ),
     path(
-        "rotating-shift-assign-info-export",
+        "rotating-shift-assign-info-export/",
         views.rotating_shift_assign_export,
         name="rotating-shift-assign-info-export",
     ),
@@ -858,7 +860,7 @@ urlpatterns = [
     #     name="rotating-shift-assign-update",
     # ),
     path(
-        "rotating-shift-assign-info-import",
+        "rotating-shift-assign-info-import/",
         views.rotating_shift_assign_import,
         name="rotating-shift-assign-info-import",
     ),
@@ -888,12 +890,12 @@ urlpatterns = [
         name="rotating-shift-assign-archive",
     ),
     path(
-        "rotating-shift-assign-bulk-archive",
+        "rotating-shift-assign-bulk-archive/",
         views.rotating_shift_assign_bulk_archive,
         name="rotating-shift-assign-bulk-archive",
     ),
     path(
-        "rotating-shift-assign-bulk-delete",
+        "rotating-shift-assign-bulk-delete/",
         views.rotating_shift_assign_bulk_delete,
         name="rotating-shift-assign-bulk-delete",
     ),
@@ -904,7 +906,7 @@ urlpatterns = [
     ),
     # path("work-type-request", views.work_type_request, name="work-type-request"),
     path(
-        "work-type-request",
+        "work-type-request/",
         work_type_request.WorkTypeFormView.as_view(),
         name="work-type-request",
     ),
@@ -929,12 +931,12 @@ urlpatterns = [
     #     name="work-type-request-view",
     # ),
     path(
-        "work-type-request-info-export",
+        "work-type-request-info-export/",
         views.work_type_request_export,
         name="work-type-request-info-export",
     ),
     path(
-        "work-type-request-search",
+        "work-type-request-search/",
         views.work_type_request_search,
         name="work-type-request-search",
     ),
@@ -944,7 +946,7 @@ urlpatterns = [
         name="work-type-request-cancel",
     ),
     path(
-        "work-type-request-bulk-cancel",
+        "work-type-request-bulk-cancel/",
         views.work_type_request_bulk_cancel,
         name="work-type-request-bulk-cancel",
     ),
@@ -954,7 +956,7 @@ urlpatterns = [
         name="work-type-request-approve",
     ),
     path(
-        "work-type-request-bulk-approve",
+        "work-type-request-bulk-approve/",
         views.work_type_request_bulk_approve,
         name="work-type-request-bulk-approve",
     ),
@@ -979,13 +981,13 @@ urlpatterns = [
         name="work-type-request-single-view",
     ),
     path(
-        "work-type-request-bulk-delete",
+        "work-type-request-bulk-delete/",
         views.work_type_request_bulk_delete,
         name="work-type-request-bulk-delete",
     ),
     # path("shift-request", views.shift_request, name="shift-request"),
     path(
-        "shift-request",
+        "shift-request/",
         shift_request.ShiftRequestFormView.as_view(),
         name="shift-request",
     ),
@@ -1010,12 +1012,12 @@ urlpatterns = [
     #     name="shift-request-reallocate",
     # ),
     path(
-        "shift-request-reallocate",
+        "shift-request-reallocate/",
         shift_request.ShiftAllocationFormView.as_view(),
         name="shift-request-reallocate",
     ),
     path(
-        "update-employee-allocation",
+        "update-employee-allocation/",
         views.update_employee_allocation,
         name="update-employee-allocation",
     ),
@@ -1025,12 +1027,12 @@ urlpatterns = [
     #     name="shift-request-view",
     # ),
     path(
-        "shift-request-info-export",
+        "shift-request-info-export/",
         views.shift_request_export,
         name="shift-request-info-export",
     ),
     path(
-        "shift-request-search", views.shift_request_search, name="shift-request-search"
+        "shift-request-search/", views.shift_request_search, name="shift-request-search"
     ),
     path(
         "shift-request-details/<int:id>/",
@@ -1073,7 +1075,7 @@ urlpatterns = [
         name="shift-allocation-request-cancel",
     ),
     path(
-        "shift-request-bulk-cancel",
+        "shift-request-bulk-cancel/",
         views.shift_request_bulk_cancel,
         name="shift-request-bulk-cancel",
     ),
@@ -1088,7 +1090,7 @@ urlpatterns = [
         name="shift-allocation-request-approve",
     ),
     path(
-        "shift-request-bulk-approve",
+        "shift-request-bulk-approve/",
         views.shift_request_bulk_approve,
         name="shift-request-bulk-approve",
     ),
@@ -1098,20 +1100,20 @@ urlpatterns = [
         name="shift-request-delete",
     ),
     path(
-        "shift-request-bulk-delete",
+        "shift-request-bulk-delete/",
         views.shift_request_bulk_delete,
         name="shift-request-bulk-delete",
     ),
-    path("notifications", views.notifications, name="notifications"),
-    path("clear-notifications", views.clear_notification, name="clear-notifications"),
+    path("notifications/", views.notifications, name="notifications"),
+    path("clear-notifications/", views.clear_notification, name="clear-notifications"),
     path(
-        "delete-all-notifications",
+        "delete-all-notifications/",
         views.delete_all_notifications,
         name="delete-all-notifications",
     ),
-    path("read-notifications", views.read_notifications, name="read-notifications"),
+    path("read-notifications/", views.read_notifications, name="read-notifications"),
     path(
-        "mark-as-read-notification/<int:notification_id>",
+        "mark-as-read-notification/<int:notification_id>/",
         views.mark_as_read_notification,
         name="mark-as-read-notification",
     ),
@@ -1120,7 +1122,7 @@ urlpatterns = [
         views.mark_as_read_notification_json,
         name="mark-as-read-notification-json",
     ),
-    path("all-notifications", views.all_notifications, name="all-notifications"),
+    path("all-notifications/", views.all_notifications, name="all-notifications"),
     path(
         "delete-notifications/<id>/",
         views.delete_notification,
@@ -1133,17 +1135,17 @@ urlpatterns = [
     path("settings/save-time/", views.save_time_format, name="save_time_format"),
     path("settings/get-time-format/", views.get_time_format, name="get-time-format"),
     path(
-        "history-field-settings",
+        "history-field-settings/",
         views.history_field_settings,
         name="history-field-settings",
     ),
     path(
-        "enable-account-block-unblock",
+        "enable-account-block-unblock/",
         views.enable_account_block_unblock,
         name="enable-account-block-unblock",
     ),
     path(
-        "enable-profile-edit-feature",
+        "enable-profile-edit-feature/",
         views.enable_profile_edit_feature,
         name="enable-profile-edit-feature",
     ),
@@ -1189,8 +1191,8 @@ urlpatterns = [
     path(
         "settings/helpdesk-tag-view/", views.helpdesk_tag_view, name="helpdesk-tag-view"
     ),
-    path("tag-create", views.tag_create, name="tag-create"),
-    path("tag-update/<int:tag_id>", views.tag_update, name="tag-update"),
+    path("tag-create/", views.tag_create, name="tag-create"),
+    path("tag-update/<int:tag_id>/", views.tag_update, name="tag-update"),
     path(
         "tag-delete/<int:obj_id>",
         views.object_delete,
@@ -1214,7 +1216,7 @@ urlpatterns = [
         audit.AuditTagCreateForm.as_view(),
         name="settings-audit-tag-update",
     ),
-    path("audit-tag-create", views.audit_tag_create, name="audit-tag-create"),
+    path("audit-tag-create/", views.audit_tag_create, name="audit-tag-create"),
     path(
         "audit-tag-update/<int:tag_id>", views.audit_tag_update, name="audit-tag-update"
     ),
@@ -1233,7 +1235,7 @@ urlpatterns = [
     #     name="multiple-approval-condition",
     # ),
     path(
-        "configuration/condition-value-fields",
+        "configuration/condition-value-fields/",
         views.get_condition_value_fields,
         name="condition-value-fields",
     ),
@@ -1258,7 +1260,7 @@ urlpatterns = [
     #     name="multiple-level-approval-create",
     # ),
     path(
-        "multiple-level-approval-create",
+        "multiple-level-approval-create/",
         multiple_approval_condition.MultipleApprovalConditionFormView.as_view(),
         name="multiple-level-approval-create",
     ),
@@ -1323,7 +1325,7 @@ urlpatterns = [
     #     name="dashboard-shift-request",
     # ),
     path(
-        "dashboard-shift-request",
+        "dashboard-shift-request/",
         dashboard.ShiftRequestToApprove.as_view(),
         name="dashboard-shift-request",
     ),
@@ -1333,7 +1335,7 @@ urlpatterns = [
     #     name="dashboard-work-type-request",
     # ),
     path(
-        "dashboard-work-type-request",
+        "dashboard-work-type-request/",
         dashboard.DashboardWorkTypeRequest.as_view(),
         name="dashboard-work-type-request",
     ),
@@ -1343,7 +1345,7 @@ urlpatterns = [
         name="pagination-settings-view",
     ),
     path("settings/action-type/", views.action_type_view, name="action-type"),
-    path("action-type-create", views.action_type_create, name="action-type-create"),
+    path("action-type-create/", views.action_type_create, name="action-type-create"),
     path(
         "action-type-update/<int:act_id>",
         views.action_type_update,
@@ -1354,20 +1356,22 @@ urlpatterns = [
         views.action_type_delete,
         name="action-type-delete",
     ),
-    path(
-        "pagination-settings-view",
-        views.pagination_settings_view,
-        name="pagination-settings-view",
-    ),
+    # path(
+    #     "pagination-settings-view",
+    #     views.pagination_settings_view,
+    #     name="pagination-settings-view",
+    # ),
     # path("announcement/", announcement.announcement_view, name="announcement"),
     # path(
     #     "create-announcement",
     #     announcement.create_announcement,
     #     name="create-announcement",
     # ),
-    path("announcement-list", announcement.announcement_list, name="announcement-list"),
     path(
-        "create-announcement",
+        "announcement-list/", announcement.announcement_list, name="announcement-list"
+    ),
+    path(
+        "create-announcement/",
         announcement_cbv.AnnouncementFormView.as_view(),
         name="create-announcement",
     ),
@@ -1427,15 +1431,15 @@ urlpatterns = [
         name="announcement-delete-comment",
     ),
     path(
-        "announcement-viewed-by", announcement.viewed_by, name="announcement-viewed-by"
+        "announcement-viewed-by/", announcement.viewed_by, name="announcement-viewed-by"
     ),
-    path("driver-viewed", views.driver_viewed_status, name="driver-viewed"),
+    path("driver-viewed/", views.driver_viewed_status, name="driver-viewed"),
     path(
-        "dashboard-components-toggle",
+        "dashboard-components-toggle/",
         views.dashboard_components_toggle,
         name="dashboard-components-toggle",
     ),
-    path("employee-chart-show", views.employee_chart_show, name="employee-chart-show"),
+    path("employee-chart-show/", views.employee_chart_show, name="employee-chart-show"),
     path(
         "settings/enable-biometric-attendance/",
         views.enable_biometric_attendance_view,
@@ -1463,7 +1467,7 @@ urlpatterns = [
     ),
     path("shift-export/", shift_request.ExportView.as_view(), name="shift-export"),
     path(
-        "shift-request-tab",
+        "shift-request-tab/",
         shift_request.ShiftRequestTab.as_view(),
         name="shift-request-tab",
     ),
@@ -1528,7 +1532,7 @@ urlpatterns = [
     #     name="emp-workinfo-complete",
     # ),
     path(
-        "emp-workinfo-complete",
+        "emp-workinfo-complete/",
         dashboard.EmployeeWorkInformationList.as_view(),
         name="emp-workinfo-complete",
     ),
@@ -1538,17 +1542,17 @@ urlpatterns = [
         name="update-emp-workinfo",
     ),
     path(
-        "configuration/multiple-approval-condition",
+        "configuration/multiple-approval-condition/",
         multiple_approval_condition.MultipleApprovalConditionView.as_view(),
         name="multiple-approval-condition",
     ),
     path(
-        "configuration/hx-multiple-approval-condition",
+        "configuration/hx-multiple-approval-condition/",
         multiple_approval_condition.MultipleApprovalConditionList.as_view(),
         name="hx-multiple-approval-condition",
     ),
     path(
-        "nav-multiple-approval-condition",
+        "nav-multiple-approval-condition/",
         multiple_approval_condition.MultipleApprovalConditionNav.as_view(),
         name="nav-multiple-approval-condition",
     ),
@@ -1564,7 +1568,7 @@ urlpatterns = [
     ),
     # path("configuration/holiday-view", views.holiday_view, name="holiday-view"),
     path(
-        "configuration/holidays-excel-template",
+        "configuration/holidays-excel-template/",
         views.holidays_excel_template,
         name="holidays-excel-template",
     ),
@@ -1586,7 +1590,7 @@ urlpatterns = [
         name="holiday-detail-view",
     ),
     path(
-        "holiday-creation", holidays.HolidayFormView.as_view(), name="holiday-creation"
+        "holiday-creation/", holidays.HolidayFormView.as_view(), name="holiday-creation"
     ),
     path(
         "holiday-update/<int:pk>",
@@ -1594,16 +1598,16 @@ urlpatterns = [
         name="holiday-update",
     ),
     path(
-        "holidays-info-import", views.holidays_info_import, name="holidays-info-import"
+        "holidays-info-import/", views.holidays_info_import, name="holidays-info-import"
     ),
-    path("holiday-info-export", views.holiday_info_export, name="holiday-info-export"),
+    path("holiday-info-export/", views.holiday_info_export, name="holiday-info-export"),
     path(
-        "get-upcoming-holidays",
+        "get-upcoming-holidays/",
         views.get_upcoming_holidays,
         name="get-upcoming-holidays",
     ),
     path(
-        "duplicate-holiday/<int:obj_id>",
+        "duplicate-holiday/<int:obj_id>/",
         views.object_duplicate,
         name="duplicate-holiday",
         kwargs={
@@ -1614,7 +1618,7 @@ urlpatterns = [
     ),
     path("holiday-delete/<int:obj_id>", views.holiday_delete, name="holiday-delete"),
     path(
-        "holidays-bulk-delete", views.bulk_holiday_delete, name="holidays-bulk-delete"
+        "holidays-bulk-delete/", views.bulk_holiday_delete, name="holidays-bulk-delete"
     ),
     # path("holiday-filter", views.holiday_filter, name="holiday-filter"),
     path("holiday-select/", views.holiday_select, name="holiday-select"),
@@ -1654,7 +1658,7 @@ urlpatterns = [
         name="company-leave-detail-view",
     ),
     path(
-        "company-leave-creation",
+        "company-leave-creation/",
         company_leaves.CompanyleaveFormView.as_view(),
         name="company-leave-creation",
     ),
@@ -1677,7 +1681,7 @@ urlpatterns = [
     #     "company-leave-filter", views.company_leave_filter, name="company-leave-filter"
     # ),
     # path("view-penalties", views.view_penalties, name="view-penalties"),
-    path("view-penalties", penalty.ViewPenaltyList.as_view(), name="view-penalties"),
+    path("view-penalties/", penalty.ViewPenaltyList.as_view(), name="view-penalties"),
     path(
         "delete-penalties/<int:penalty_id>/",
         views.delete_penalities,

@@ -1,24 +1,16 @@
 import json
-import logging
-import os
-import re
-
-import requests
-from django.contrib import messages
-from django.shortcuts import redirect, render
-from django.urls import reverse
-
-logger = logging.getLogger(__name__)
-import json
 
 import requests
 from bs4 import BeautifulSoup
-from django.conf import settings
+from django.contrib import messages
 from django.http import HttpResponse, JsonResponse
+from django.shortcuts import redirect
+from django.urls import reverse
 from django.utils.translation import gettext_lazy as _
 
-from horilla_views.cbv_methods import login_required, permission_required
-from recruitment.models import LinkedInAccount, Recruitment
+from horilla.config import logger
+from horilla.decorators import login_required, permission_required
+from recruitment.models import LinkedInAccount
 
 
 @login_required
@@ -55,25 +47,9 @@ def delete_linkedin_account(request, pk, return_redirect=True):
             messages.success(request, "Linkedin data deleted")
             return redirect(reverse("linkedin-setting-list"))
     except Exception as e:
-        logger(e)
+        logger.error(e)
         messages.error(request, "Something went wrong")
-
-
-@login_required
-def check_linkedin(request):
-    import requests
-
-    url = "https://www.linkedin.com/oauth/v2/userinfo"
-    data = {
-        "grant_type": "authorization_code",
-        "code": "AQXepuwNjedxqn6A7XE75IBHWGdCGeuWqB8ZmhlA9oFbKIHtSBzsKaPwJ5uw4opHURUAwNbi3asSUkJvjmR57BNqgK-Snw_2nUhuRp_S3cTRtFcCrE4JZKIZpy_aTWokL3tr1BFGu0zfgzK1uSU5zYClUeQ4j4bTNkCmvjVAQ8T_4T9JdJ8MZg8m84tMMsuvbniMXOGrdURJXJsmBHckyFnaFD0Mp9Fahl85BGYXqtm0czifPhOJH3TuP2GQQb8fQoNH9rDWcXoNW9D0Jchkv-gs_7_p3cz_U0Dqa_6g_Qdj-5uGdTjPiZlKZNCjPNOsK28lilGOtybHipJ8kVkhoW_tg774Zg",
-        "redirect_uri": "https://www.linkedin.com/developers/tools/oauth/redirect",
-        "client_id": "86bnqwzxrmxdy6",
-        "client_secret": "WPL_AP1.op0BkkK4xDn5ANwP.RuayNw==",
-    }
-
-    response = requests.post(url, data=data)
-    return JsonResponse(response)
+    return HttpResponse("<script>window.location.reload()</script>")
 
 
 @login_required

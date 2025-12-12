@@ -275,6 +275,7 @@ def attendance_excel(_request):
 
 @login_required
 @permission_required("attendance.add_attendance")
+@require_http_methods(["POST"])
 def attendance_import(request):
     """
     Save the import of attendance data from an uploaded Excel file, validate the data,
@@ -667,6 +668,7 @@ def attendance_overtime_view(request):
     )
 
 
+@login_required
 def attendance_account_export(request):
     if request.META.get("HTTP_HX_REQUEST") == "true":
         context = {
@@ -1171,13 +1173,18 @@ def on_time_view(request):
     """
     total_attendances = AttendanceFilters(request.GET).qs
     ids_to_exclude = AttendanceLateComeEarlyOut.objects.filter(
-        attendance_id__id__in=[attendance.id for attendance in total_attendances],
+        attendance_id__in=total_attendances.values_list("id", flat=True),
         type="late_come",
-    ).values_list("attendance_id__id", flat=True)
-    # Exclude attendances with related objects in AttendanceLateComeEarlyOut
+    ).values_list("attendance_id", flat=True)
+    # Filter out late-come attendances
     total_attendances = total_attendances.exclude(id__in=ids_to_exclude)
+
+    paginator = Paginator(total_attendances, 50)
+    page_number = request.GET.get("page")
+    page_obj = paginator.get_page(page_number)
+
     context = {
-        "attendances": total_attendances,
+        "attendances": page_obj.object_list,
     }
     return render(
         request, "attendance/attendance/attendance_on_time.html", context=context
@@ -1917,14 +1924,15 @@ def hour_attendance_select_filter(request):
     page_number = request.GET.get("page")
     filtered = request.GET.get("filter")
     filters = json.loads(filtered) if filtered else {}
+    context = {}
 
     if page_number == "all":
         if request.user.has_perm("attendance.view_attendanceovertime"):
-            employee_filter = AttendanceOverTimeFilter(
+            attendance_filter = AttendanceOverTimeFilter(
                 filters, queryset=AttendanceOverTime.objects.all()
             )
         else:
-            employee_filter = AttendanceOverTimeFilter(
+            attendance_filter = AttendanceOverTimeFilter(
                 filters,
                 queryset=AttendanceOverTime.objects.filter(
                     employee_id__employee_user_id=request.user
@@ -1935,34 +1943,35 @@ def hour_attendance_select_filter(request):
             )
 
         # Get the filtered queryset
-        filtered_employees = employee_filter.qs
+        filtered_attendance = attendance_filter.qs
 
-        employee_ids = [str(emp.id) for emp in filtered_employees]
-        total_count = filtered_employees.count()
+        attendance_ids = [str(attendance.id) for attendance in filtered_attendance]
+        total_count = filtered_attendance.count()
 
-        context = {"employee_ids": employee_ids, "total_count": total_count}
+        context = {"employee_ids": attendance_ids, "total_count": total_count}
 
-        return JsonResponse(context)
+    return JsonResponse(context)
 
 
 @login_required
 def activity_attendance_select(request):
     page_number = request.GET.get("page")
+    activity = AttendanceActivity.objects.all()
 
     if page_number == "all":
         if request.user.has_perm("attendance.view_attendanceovertime"):
-            employees = AttendanceActivity.objects.all()
+            activity = AttendanceActivity.objects.all()
         else:
-            employees = AttendanceActivity.objects.filter(
-                employee_id__employee_user_id=request.user
+            activity = AttendanceActivity.objects.filter(
+                employee_id=request.user.employee_get
             ) | AttendanceActivity.objects.filter(
-                employee_id__employee_work_info__reporting_manager_id__employee_user_id=request.user
+                employee_id__employee_work_info__reporting_manager_id=request.user.employee_get
             )
 
-    employee_ids = [str(emp.id) for emp in employees]
-    total_count = employees.count()
+    activity_ids = [str(act.id) for act in activity]
+    total_count = activity.count()
 
-    context = {"employee_ids": employee_ids, "total_count": total_count}
+    context = {"employee_ids": activity_ids, "total_count": total_count}
 
     return JsonResponse(context, safe=False)
 
@@ -1972,14 +1981,15 @@ def activity_attendance_select_filter(request):
     page_number = request.GET.get("page")
     filtered = request.GET.get("filter")
     filters = json.loads(filtered) if filtered else {}
+    context = {}
 
     if page_number == "all":
         if request.user.has_perm("attendance.view_attendanceovertime"):
-            employee_filter = AttendanceActivityFilter(
+            activity_filter = AttendanceActivityFilter(
                 filters, queryset=AttendanceActivity.objects.all()
             )
         else:
-            employee_filter = AttendanceActivityFilter(
+            activity_filter = AttendanceActivityFilter(
                 filters,
                 queryset=AttendanceActivity.objects.filter(
                     employee_id__employee_user_id=request.user
@@ -1990,34 +2000,35 @@ def activity_attendance_select_filter(request):
             )
 
         # Get the filtered queryset
-        filtered_employees = employee_filter.qs
+        filtered_activity = activity_filter.qs
 
-        employee_ids = [str(emp.id) for emp in filtered_employees]
-        total_count = filtered_employees.count()
+        activity_ids = [str(emp.id) for emp in filtered_activity]
+        total_count = filtered_activity.count()
 
-        context = {"employee_ids": employee_ids, "total_count": total_count}
+        context = {"employee_ids": activity_ids, "total_count": total_count}
 
-        return JsonResponse(context)
+    return JsonResponse(context)
 
 
 @login_required
 def latecome_attendance_select(request):
     page_number = request.GET.get("page")
+    late_objs = AttendanceLateComeEarlyOut.objects.none()
 
     if page_number == "all":
         if request.user.has_perm("attendance.view_attendancelatecomeearlyout"):
-            employees = AttendanceLateComeEarlyOut.objects.all()
+            late_objs = AttendanceLateComeEarlyOut.objects.all()
         else:
-            employees = AttendanceLateComeEarlyOut.objects.filter(
+            late_objs = AttendanceLateComeEarlyOut.objects.filter(
                 employee_id__employee_user_id=request.user
             ) | AttendanceLateComeEarlyOut.objects.filter(
                 employee_id__employee_work_info__reporting_manager_id__employee_user_id=request.user
             )
 
-    employee_ids = [str(emp.id) for emp in employees]
-    total_count = employees.count()
+    late_ids = [str(emp.id) for emp in late_objs]
+    total_count = late_objs.count()
 
-    context = {"employee_ids": employee_ids, "total_count": total_count}
+    context = {"employee_ids": late_ids, "total_count": total_count}
 
     return JsonResponse(context, safe=False)
 
@@ -2027,14 +2038,15 @@ def latecome_attendance_select_filter(request):
     page_number = request.GET.get("page")
     filtered = request.GET.get("filter")
     filters = json.loads(filtered) if filtered else {}
+    context = {}
 
     if page_number == "all":
         if request.user.has_perm("attendance.view_attendancelatecomeearlyout"):
-            employee_filter = LateComeEarlyOutFilter(
+            late_filter = LateComeEarlyOutFilter(
                 filters, queryset=AttendanceLateComeEarlyOut.objects.all()
             )
         else:
-            employee_filter = LateComeEarlyOutFilter(
+            late_filter = LateComeEarlyOutFilter(
                 filters,
                 queryset=AttendanceLateComeEarlyOut.objects.filter(
                     employee_id__employee_user_id=request.user
@@ -2045,14 +2057,14 @@ def latecome_attendance_select_filter(request):
             )
 
         # Get the filtered queryset
-        filtered_employees = employee_filter.qs
+        filtered_obj = late_filter.qs
 
-        employee_ids = [str(emp.id) for emp in filtered_employees]
-        total_count = filtered_employees.count()
+        late_ids = [str(emp.id) for emp in filtered_obj]
+        total_count = filtered_obj.count()
 
-        context = {"employee_ids": employee_ids, "total_count": total_count}
+        context = {"employee_ids": late_ids, "total_count": total_count}
 
-        return JsonResponse(context)
+    return JsonResponse(context)
 
 
 @login_required
@@ -2167,6 +2179,7 @@ def delete_grace_time(request, grace_id):
     except GraceTime.DoesNotExist:
         delete_error = True
         messages.error(request, _("Grace Time Does not exists.."))
+        return HttpResponse("<script>window.location.reload()</script>")
     except ProtectedError:
         delete_error = True
         messages.error(request, _("Related datas exists."))
@@ -2917,6 +2930,7 @@ def allowed_ips(request):
 
 @login_required
 @permission_required("attendance.add_attendance")
+@require_http_methods(["POST"])
 def enable_ip_restriction(request):
     """
     This function is used to enable the allowed ips
@@ -2929,13 +2943,10 @@ def enable_ip_restriction(request):
             ip_restiction = AttendanceAllowedIP.objects.create(is_enabled=True)
             return HttpResponse("<script>window.location.reload()</script>")
 
-        if not ip_restiction.is_enabled:
-            ip_restiction.is_enabled = True
-        elif ip_restiction.is_enabled:
-            ip_restiction.is_enabled = False
+        ip_restiction.is_enabled = not ip_restiction.is_enabled
 
         ip_restiction.save()
-        return HttpResponse("<script>window.location.reload()</script>")
+    return HttpResponse("<script>window.location.reload()</script>")
 
 
 def validate_ip_address(self, value):
@@ -3036,7 +3047,7 @@ def edit_allowed_ips(request):
         return redirect("allowed-ips")
 
     ips = allowed_ips.additional_data.get("allowed_ips", [])
-    id = request.GET.get("id")
+    id = request.GET["id"]
 
     try:
         id = int(id)
