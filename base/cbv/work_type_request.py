@@ -39,6 +39,7 @@ class WorkRequestView(TemplateView):
     template_name = "cbv/work_type_request/work_type_home.html"
 
 
+@method_decorator(login_required, name="dispatch")
 class WorkRequestListView(HorillaListView):
     """
     list view of the work request page

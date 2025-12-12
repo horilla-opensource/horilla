@@ -285,6 +285,7 @@ def dashboard_vacancy(_request):
     return JsonResponse({"dataSet": data_set, "labels": label})
 
 
+@login_required
 def get_open_position(request):
     """
     This is an ajax method to render the open position to the recruitment

@@ -1238,6 +1238,7 @@ def stage_view(request):
     )
 
 
+@login_required
 def stage_data(request, rec_id):
     stages = StageFilter(request.GET).qs.filter(recruitment_id__id=rec_id)
     previous_data = request.GET.urlencode()
@@ -2189,6 +2190,7 @@ def interview_edit(request, interview_id):
     )
 
 
+@login_required
 def get_interview_managers(request):
     cand_id = request.GET.get("candidate_id")
     form = ScheduleInterviewForm()
@@ -2208,6 +2210,7 @@ def get_interview_managers(request):
     )
 
 
+@login_required
 def get_managers(request):
     cand_id = request.GET.get("cand_id")
     candidate_obj = Candidate.objects.get(id=cand_id)
@@ -2354,6 +2357,7 @@ def candidate_select_filter(request):
     page_number = request.GET.get("page")
     filtered = request.GET.get("filter")
     filters = json.loads(filtered) if filtered else {}
+    context = {}
 
     if page_number == "all":
         candidate_filter = CandidateFilter(filters, queryset=Candidate.objects.all())
@@ -2361,12 +2365,12 @@ def candidate_select_filter(request):
         # Get the filtered queryset
         filtered_candidates = candidate_filter.qs
 
-        employee_ids = [str(emp.id) for emp in filtered_candidates]
+        candidate_ids = [str(cand.id) for cand in filtered_candidates]
         total_count = filtered_candidates.count()
 
-        context = {"employee_ids": employee_ids, "total_count": total_count}
+        context = {"employee_ids": candidate_ids, "total_count": total_count}
 
-        return JsonResponse(context)
+    return JsonResponse(context)
 
 
 @login_required
@@ -3298,7 +3302,6 @@ def create_skills(request):
             messages.success(request, "Skill created successfully")
 
             if request.GET.get("dynamic") == "True":
-                from django.urls import reverse
 
                 url = reverse("recruitment-create")
                 instance = Skill.objects.all().last()
@@ -3333,17 +3336,21 @@ def delete_skills(request, id=None):
     """
     This method is used to delete the skills
     """
-
     ids = request.GET.getlist("ids")
+
     skills = Skill.objects.filter(id__in=ids)
-    for skill in skills:
-        count = Skill.objects.count
-        skill.delete()
-        messages.success(request, f"{skill.title} is deleted.")
-        if count == 0:
-            return HttpResponse("<script>$('#reloadMessagesButton').click()</script>")
-        else:
-            return HttpResponse("<script>$('.reload-record').click()</script>")
+    titles = list(skills.values_list("title", flat=True))
+
+    count_before = skills.count()
+    deleted_count, d = skills.delete()
+
+    for title in titles:
+        messages.success(request, f"{title} is deleted.")
+
+    if count_before - deleted_count == 0:
+        return HttpResponse("<script>$('#reloadMessagesButton').click()</script>")
+
+    return HttpResponse("<script>$('.reload-record').click()</script>")
 
 
 @login_required

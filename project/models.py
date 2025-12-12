@@ -261,6 +261,7 @@ class Project(HorillaModel):
 
         verbose_name = _("Project")
         verbose_name_plural = _("Projects")
+        ordering = ["-id"]
 
 
 class ProjectStage(HorillaModel):
@@ -396,6 +397,7 @@ class Task(HorillaModel):
         unique_together = ["project", "title"]
         verbose_name = _("Task")
         verbose_name_plural = _("Tasks")
+        ordering = ["-id"]
 
     def __str__(self):
         return f"{self.title}"

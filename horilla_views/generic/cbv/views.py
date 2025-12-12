@@ -46,6 +46,7 @@ from horilla_views.cbv_methods import (  # update_initial_cache,
     get_short_uuid,
     get_verbose_name_from_field_path,
     hx_request_required,
+    login_required,
     paginator_qry,
     sortby,
     split_by_import_reference,
@@ -1799,6 +1800,7 @@ class HorillaCardView(ListView):
         return view
 
 
+@method_decorator(login_required, name="dispatch")
 @method_decorator(hx_request_required, name="dispatch")
 class ReloadMessages(TemplateView):
     """
@@ -2313,30 +2315,6 @@ class HorillaProfileView(DetailView):
                 )
                 tab["url"] = "/" + url + "/{pk}/"
 
-        # hidden columns configuration
-
-        existing_instance = models.ToggleColumn.objects.filter(
-            user_id=request.user, path=request.path_info
-        ).first()
-
-        self.visible_tabs = self.tabs.copy()
-
-        self.tabs_list = [(tab["title"], tab["title"]) for tab in self.visible_tabs]
-
-        hidden_tabs = (
-            [] if not existing_instance else existing_instance.excluded_columns
-        )
-        self.toggle_form = ToggleColumnForm(
-            self.tabs_list,
-            hidden_tabs,
-            hidden_fields=[],
-        )
-        for column in self.tabs_list:
-            if column[1] in hidden_tabs:
-                for tab in self.visible_tabs:
-                    if tab["title"] == column[1]:
-                        self.visible_tabs.remove(tab)
-
     @classmethod
     def add_tab(cls, tab: dict = None, index: int = None, tabs: list = None) -> None:
         """
@@ -2377,8 +2355,6 @@ class HorillaProfileView(DetailView):
         context = super().get_context_data(**kwargs)
         context["instance"] = context["object"]
         context["tabs"] = self.tabs
-        context["visible_tabs"] = self.visible_tabs
-        context["toggle_form"] = self.toggle_form
         context["view_id"] = self.view_id
         active_tab = models.ActiveTab.objects.filter(
             created_by=self.request.user, path=self.request.path
@@ -2411,6 +2387,30 @@ class HorillaProfileView(DetailView):
         url = resolve(self.request.path)
         key = list(url.kwargs.keys())[0]
 
+        # hidden columns configuration
+
+        existing_instance = models.ToggleColumn.objects.filter(
+            user_id=self.request.user, path=self.request.path_info
+        ).first()
+
+        self.visible_tabs = self.tabs.copy()
+
+        self.tabs_list = [(tab["title"], tab["title"]) for tab in self.visible_tabs]
+
+        hidden_tabs = (
+            [] if not existing_instance else existing_instance.excluded_columns
+        )
+        self.toggle_form = ToggleColumnForm(
+            self.tabs_list,
+            hidden_tabs,
+            hidden_fields=[],
+        )
+        for column in self.tabs_list:
+            if column[1] in hidden_tabs:
+                for tab in self.visible_tabs:
+                    if tab["title"] == column[1]:
+                        self.visible_tabs.remove(tab)
+
         url_name = url.url_name
         next_url = reverse(url_name, kwargs={key: next_id})
         previous_url = reverse(url_name, kwargs={key: previous_id})
@@ -2427,6 +2427,8 @@ class HorillaProfileView(DetailView):
         context["display_count"] = display_count
         context["actions"] = self.actions
         context["filter_class"] = self.filter_class
+        context["visible_tabs"] = self.visible_tabs
+        context["toggle_form"] = self.toggle_form
         cache = {
             "instances": context["instances"],
             "instance_ids": context["instance_ids"],

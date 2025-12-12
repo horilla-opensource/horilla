@@ -186,21 +186,7 @@ class TasksNavBar(HorillaNavView):
 
     def __init__(self, **kwargs: Any) -> None:
         super().__init__(**kwargs)
-        employee = self.request.user.employee_get
-        projects = Project.objects.all()
-        managers = [
-            manager for project in projects for manager in project.managers.all()
-        ]
         self.search_url = reverse("tasks-list-view")
-        if employee in managers or self.request.user.has_perm("project.add_task"):
-            self.create_attrs = f"""
-                onclick = "event.stopPropagation();"
-                data-toggle="oh-modal-toggle"
-                data-target="#genericModal"
-                hx-target="#genericModalBody"
-                hx-get="{reverse('create-task-all')}"
-            """
-
         self.view_types = [
             {
                 "type": "list",
@@ -219,6 +205,22 @@ class TasksNavBar(HorillaNavView):
                 """,
             },
         ]
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        employee = self.request.user.employee_get
+        projects = Project.objects.all()
+        managers = [
+            manager for project in projects for manager in project.managers.all()
+        ]
+        if employee in managers or self.request.user.has_perm("project.add_task"):
+            self.create_attrs = f"""
+                onclick = "event.stopPropagation();"
+                data-toggle="oh-modal-toggle"
+                data-target="#genericModal"
+                hx-target="#genericModalBody"
+                hx-get="{reverse('create-task-all')}"
+            """
 
         if self.request.user.has_perm("project.view_task"):
             self.actions = [
@@ -246,6 +248,9 @@ class TasksNavBar(HorillaNavView):
                     """,
                 },
             ]
+        context["actions"] = self.actions
+        context["create_attrs"] = self.create_attrs
+        return context
 
 
 @method_decorator(login_required, name="dispatch")

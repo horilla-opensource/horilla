@@ -1182,7 +1182,7 @@ def payslip_export(request):
 
     if not selected_fields:
         selected_fields = form.fields["selected_fields"].initial
-        ids = request.GET.get("ids")
+        ids = request.GET.get("ids", "[]")
         id_list = json.loads(ids)
         payslips = Payslip.objects.filter(id__in=id_list)
 
@@ -1223,7 +1223,7 @@ def payslip_export(request):
     response["Content-Disposition"] = f'attachment; filename="{file_name}"'
 
     writer = pd.ExcelWriter(response, engine="xlsxwriter")
-    data_frame.style.applymap(lambda x: "text-align: center").to_excel(
+    data_frame.style.map(lambda x: "text-align: center").to_excel(
         writer, index=False, sheet_name="Sheet1"
     )
     worksheet = writer.sheets["Sheet1"]
@@ -1850,8 +1850,7 @@ def delete_reimbursements(request):
     """
     ids = request.GET.getlist("ids")
     reimbursements = Reimbursement.objects.filter(id__in=ids)
-    for reimbursement in reimbursements:
-        user = reimbursement.employee_id.employee_user_id
+    user = list(reimbursements.values_list("employee_id__employee_user_id", flat=True))
     reimbursements.delete()
     messages.success(request, "Reimbursements deleted")
     notify.send(
@@ -1916,7 +1915,7 @@ def delete_attachments(request, _reimbursement_id):
     ids = request.GET.getlist("ids")
     ReimbursementMultipleAttachment.objects.filter(id__in=ids).delete()
     messages.success(request, "Attachment deleted")
-    return redirect(view_reimbursement)
+    return redirect("view-reimbursement")
 
 
 @login_required

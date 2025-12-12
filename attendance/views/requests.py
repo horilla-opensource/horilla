@@ -230,15 +230,18 @@ def create_batch_attendance(request):
     previous_form_data = request.GET.urlencode()
     previous_url = request.GET.get("previous_url")
     # Split the string at "?" and extract the first part, then reattach the "?"
-    previous_url = previous_url.split("?")[0] + "?"
-    if "attendance-update" in previous_url:
-        hx_target = "#updateAttendanceModalBody"
-    elif "edit-validate-attendance" in previous_url:
-        hx_target = "#editValidateAttendanceRequestModalBody"
-    elif "request-attendance" in previous_url:
-        hx_target = "#objectUpdateModalTarget"
-    elif "attendance-create" in previous_url:
-        hx_target = "#addAttendanceModalBody"
+    if previous_url:
+        previous_url = previous_url.split("?")[0] + "?"
+        if "attendance-update" in previous_url:
+            hx_target = "#updateAttendanceModalBody"
+        elif "edit-validate-attendance" in previous_url:
+            hx_target = "#editValidateAttendanceRequestModalBody"
+        elif "request-attendance" in previous_url:
+            hx_target = "#objectUpdateModalTarget"
+        elif "attendance-create" in previous_url:
+            hx_target = "#addAttendanceModalBody"
+        else:
+            hx_target = "#objectCreateModalTarget"
     else:
         hx_target = "#objectCreateModalTarget"
     if request.method == "POST":
@@ -621,16 +624,17 @@ def select_all_filter_attendance_request(request):
     page_number = request.GET.get("page")
     filtered = request.GET.get("filter")
     filters = json.loads(filtered) if filtered else {}
+    context = {}
 
     if page_number == "all":
         if request.user.has_perm("attendance.view_attendance"):
-            employee_filter = AttendanceFilters(
-                request.GET,
+            attendance_filter = AttendanceFilters(
+                filters,
                 queryset=Attendance.objects.filter(is_validate_request=True),
             )
         else:
-            employee_filter = AttendanceFilters(
-                request.GET,
+            attendance_filter = AttendanceFilters(
+                filters,
                 queryset=Attendance.objects.filter(
                     employee_id__employee_user_id=request.user, is_validate_request=True
                 )
@@ -642,14 +646,14 @@ def select_all_filter_attendance_request(request):
 
         # Get the filtered queryset
 
-        filtered_employees = employee_filter.qs
+        filtered_attendance = attendance_filter.qs
 
-        employee_ids = [str(emp.id) for emp in filtered_employees]
-        total_count = filtered_employees.count()
+        attendance_ids = [str(att.id) for att in filtered_attendance]
+        total_count = filtered_attendance.count()
 
-        context = {"employee_ids": employee_ids, "total_count": total_count}
+        context = {"employee_ids": attendance_ids, "total_count": total_count}
 
-        return JsonResponse(context)
+    return JsonResponse(context)
 
 
 @login_required

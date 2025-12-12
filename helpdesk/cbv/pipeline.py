@@ -2,6 +2,7 @@ from typing import Any
 
 from django.urls import reverse, reverse_lazy
 from django.utils.decorators import method_decorator
+from django.utils.translation import gettext_lazy as _
 
 from base.methods import filtersubordinates, is_reportingmanager
 from helpdesk.filter import TicketFilter, TicketReGroup
@@ -42,13 +43,13 @@ class TicketPipelineNav(HorillaNavView):
     filter_instance = TicketFilter()
     filter_form_context_name = "form"
     group_by_fields = [
-        ("employee_id", "Owner"),
-        ("ticket_type", "Ticket Type"),
-        ("status", "Status"),
-        ("priority", "Priority"),
-        ("tags", "Tags"),
-        ("assigned_to", "Assigner"),
-        ("employee_id__employee_work_info__company_id", "Company"),
+        ("employee_id", _("Owner")),
+        ("ticket_type", _("Ticket Type")),
+        ("status", _("Status")),
+        ("priority", _("Priority")),
+        ("tags", _("Tags")),
+        ("assigned_to", _("Assigner")),
+        ("employee_id__employee_work_info__company_id", _("Company")),
     ]
     actions = [
         {
@@ -102,12 +103,12 @@ class TicketTabView(HorillaTabView):
 
         self.tabs = [
             {
-                "title": "My Tickets",
+                "title": _("My Tickets"),
                 # "url":f'{ reverse("ticket-pipeline-view")}?ticket_tab=my_tickets&',
                 "url": f'{ reverse("ticket-tab-list")}?ticket_tab=my_tickets&',
             },
             {
-                "title": "Suggested Tickets",
+                "title": _("Suggested Tickets"),
                 # "url":f'{ reverse("ticket-pipeline-view")}?ticket_tab=suggested_tickets&',
                 "url": f'{ reverse("ticket-tab-list")}?ticket_tab=suggested_tickets&',
             },
@@ -118,7 +119,7 @@ class TicketTabView(HorillaTabView):
         ):
             self.tabs.append(
                 {
-                    "title": "All Tickets",
+                    "title": _("All Tickets"),
                     # "url":f'{ reverse("ticket-pipeline-view")}?ticket_tab=all_tickets&',
                     "url": f'{ reverse("ticket-tab-list")}?ticket_tab=all_tickets&',
                 }
@@ -179,15 +180,15 @@ class TicketListView(HorillaListView):
         "tags",
     ]
     columns = [
-        ("Ticket ID", "get_ticket_id_col"),
-        ("Title", "title"),
-        ("Owner", "employee_id"),
-        ("Type", "ticket_type"),
-        ("Forward to", "get_raised_on"),
-        ("Assigned to", "get_assigned_to"),
-        ("Status", "get_status_col"),
-        ("Priority", "get_priority_stars"),
-        ("Tags", "get_tags_col"),
+        (_("Ticket ID"), "get_ticket_id_col"),
+        (_("Title"), "title"),
+        (_("Owner"), "employee_id"),
+        (_("Type"), "ticket_type"),
+        (_("Forward to"), "get_raised_on"),
+        (_("Assigned to"), "get_assigned_to"),
+        (_("Status"), "get_status_col"),
+        (_("Priority"), "get_priority_stars"),
+        (_("Tags"), "get_tags_col"),
     ]
 
     row_attrs = """
@@ -197,6 +198,85 @@ class TicketListView(HorillaListView):
 
     action_method = """ticket_action_col"""
     header_attrs = {"action": "style='width:200px'"}
+
+    row_status_indications = [
+        (
+            "canceled--dot",
+            _("Canceled"),
+            """
+            onclick="
+            $('#applyFilter').closest('form').find('[name=status]').val('canceled');
+            $('[name=new]').val('unknown').change();
+            $('[name=in_progress]').val('unknown').change();
+            $('[name=on_hold]').val('unknown').change();
+            $('[name=resolved]').val('unknown').change();
+            $('#applyFilter').click();
+            "
+
+            """,
+        ),
+        (
+            "resolved--dot",
+            _("Resolved"),
+            """
+            onclick="
+            $('#applyFilter').closest('form').find('[name=status]').val('resolved');
+            $('[name=new]').val('unknown').change();
+            $('[name=in_progress]').val('unknown').change();
+            $('[name=on_hold]').val('unknown').change();
+            $('[name=canceled]').val('unknown').change();
+            $('#applyFilter').click();
+            "
+
+            """,
+        ),
+        (
+            "on_hold--dot",
+            _("On Hold"),
+            """
+            onclick="
+            $('#applyFilter').closest('form').find('[name=status]').val('on_hold');
+            $('[name=new]').val('unknown').change();
+            $('[name=in_progress]').val('unknown').change();
+            $('[name=resolved]').val('unknown').change();
+            $('[name=canceled]').val('unknown').change();
+            $('#applyFilter').click();
+            "
+
+            """,
+        ),
+        (
+            "in_progress--dot",
+            _("In Progress"),
+            """
+            onclick="
+            $('#applyFilter').closest('form').find('[name=status]').val('in_progress');
+            $('[name=new]').val('unknown').change();
+            $('[name=on_hold]').val('unknown').change();
+            $('[name=resolved]').val('unknown').change();
+            $('[name=canceled]').val('unknown').change();
+            $('#applyFilter').click();
+            "
+
+            """,
+        ),
+        (
+            "new--dot",
+            _("New"),
+            """
+            onclick="
+            $('#applyFilter').closest('form').find('[name=status]').val('new');
+            $('[name=on_hold]').val('unknown').change();
+            $('[name=in_progress]').val('unknown').change();
+            $('[name=resolved]').val('unknown').change();
+            $('[name=canceled]').val('unknown').change();
+            $('#applyFilter').click();
+            "
+
+            """,
+        ),
+    ]
+    row_status_class = "new-{new} in_progress-{in_progress} on_hold-{on_hold} resolved-{resolved} canceled-{canceled}"
 
     def __init__(self, **kwargs: Any) -> None:
         super().__init__(**kwargs)
