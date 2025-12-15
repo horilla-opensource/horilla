@@ -100,6 +100,30 @@ class ContractForm(ModelForm):
         """
         return f"/payroll/update-contract-status/{instance.pk}"
 
+    def clean(self):
+        """
+        Custom clean method to validate contract dates
+        """
+        cleaned_data = super().clean()
+        start_date = cleaned_data.get("contract_start_date")
+        end_date = cleaned_data.get("contract_end_date")
+        wage = cleaned_data.get("wage")
+
+        if end_date and start_date and end_date == start_date:
+            self.add_error(
+                "contract_end_date",
+                "Contract end date cannot be the same as start date.",
+            )
+
+        if end_date and start_date and end_date < start_date:
+            self.add_error(
+                "contract_end_date",
+                "Contract end date cannot be earlier than start date.",
+            )
+        if wage is not None and wage <= 0:
+            self.add_error("wage", "Wage cannot be negative.")
+
+        return cleaned_data
 
 class ReimbursementRequestCommentForm(ModelForm):
     """
