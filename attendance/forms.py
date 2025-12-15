@@ -1002,18 +1002,18 @@ class NewRequestForm(AttendanceRequestForm):
                 ),
                 initial=view_initial.get("employee_id"),
             ),
-            "create_bulk": forms.BooleanField(
-                required=False,
-                label=_("Create Bulk"),
-                help_text=_("By selecting this indicates whether this attendance was added via a bulk request. When attendance is created in bulk, any attendance marked on holidays will not be automatically marked or processed."),
-                widget=forms.CheckboxInput(
-                    attrs={
-                        "class": "oh-checkbox",
-                        "hx-target": "#objectCreateModalTarget",
-                        "hx-get": "/attendance/request-new-attendance?bulk=True",
-                    }
-                ),
-            ),
+            # "create_bulk": forms.BooleanField(
+            #     required=False,
+            #     label=_("Create Bulk"),
+            #     help_text=_("By selecting this indicates whether this attendance was added via a bulk request. When attendance is created in bulk, any attendance marked on holidays will not be automatically marked or processed."),
+            #     widget=forms.CheckboxInput(
+            #         attrs={
+            #             "class": "oh-checkbox",
+            #             "hx-target": "#objectCreateModalTarget",
+            #             "hx-get": "/attendance/request-new-attendance?bulk=True",
+            #         }
+            #     ),
+            # ),
         }
         new_dict.update(old_dict)
         self.fields = new_dict
