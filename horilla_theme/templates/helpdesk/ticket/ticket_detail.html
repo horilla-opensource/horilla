@@ -1,6 +1,32 @@
 {% extends 'index.html' %}
 {% load static i18n audit_filters basefilters helpdeskfilters %}
 {% block content %}
+<style>
+    #ticketComment + .note-editor .note-editable {
+        background-color: #f1f1f1;
+        padding: 12px 16px;
+    }
+
+    #ticketComment + .note-editor.note-frame {
+        background-color: #f1f1f1;
+        border: none;
+    }
+    #ticketComment + .note-editor.note-frame,
+    #ticketComment + .note-editor .note-editable {
+        border-radius: 12px;
+    }
+
+</style>
+<button
+    class="reload-record"
+    id="{{view_id|safe}}Reload"
+    hidden
+    hx-get="{{request.path}}?{{saved_filters.urlencode}}"
+    hx-target="#ticketCommentContainer"
+    hx-select="#ticketCommentContainer"
+    hx-swap="outerHTML"
+    hx-on:click="htmxLoadIndicator(this);"
+></button>
 
 <div id="ohMessages"></div>
 
@@ -50,6 +76,12 @@
                     >
                         <span class="font-medium text-xs">{% trans "Created" %}</span>
                         <span class="font-medium dateformat_changer">{{ticket.created_date}}</span>
+                    </div>
+                    <div
+                        class="flex justify-between items-center text-sm mb-3"
+                    >
+                        <span class="font-medium text-xs">{% trans "Deadline" %}</span>
+                        <span class="font-medium dateformat_changer">{{ticket.deadline}}</span>
                     </div>
                     <div
                         class="flex justify-between items-center text-sm mb-3"
@@ -129,15 +161,9 @@
                     <h3 class="text-sm font-semibold">
                         {% trans "Responsibility" %}
                     </h3>
-                    {% if ticket.status == "resolved" %}
-                    <p class="font-medium text-xs text-green-600">
-                        {% trans "Resolved" %}
-                    </p>
-                    {% else %}
-                    <p class="text-red-600 font-medium text-xs text-{{color}}">
+                    <p class="font-medium text-xs text-{{color}}">
                         {{remaining}}
                     </p>
-                    {% endif %}
                 </div>
                 <div class="bg-[#f7f7f7] p-3 rounded-md mb-3">
                     <div
@@ -316,7 +342,7 @@
     </div>
 
     <!-- Right Column: 6/12 -->
-    <div class="col-span-12 lg:col-span-9">
+    <div class="col-span-12 lg:col-span-9" id="ticketCommentContainer">
         <div
             class="bg-white rounded-md shadow-card p-3"
         >
@@ -386,19 +412,26 @@
                                     </div>
                                     <div class="comment_container flex justify-between items-center">
                                         <textarea class="w-full comment_input"
-                                            data-comment-id="{{item.comment.id}}">{{item.comment.comment}}</textarea>
+                                            data-comment-id="{{item.comment.id}}" hidden
+                                            hx-post="{% url 'comment-edit' %}?comment_id={{item.comment.id}}"
+                                            name="new_comment"
+                                            hx-trigger="focusout"
+                                        >{{item.comment.comment}}</textarea>
                                         <span class="text-sm text-[#333] comment_text">
                                             {{item.comment.comment|safe}}
                                         </span>
                                         <div class="oh-btn-group" style="border:none">
                                             {% if request.user.employee_get|is_department_manager:ticket or perms.helpdesk.change_comment or request.user.employee_get == item.comment.employee_id %}
-                                                <a class="oh-btn p-3 edit_comment" title="{% trans 'Edit' %}">
+                                                <a class="oh-btn p-3 edit_comment" title="{% trans 'Edit' %}" onclick="toggleCommentEdit(this)">
                                                     <ion-icon name="pencil-outline"></ion-icon>
                                                 </a>
                                             {% endif %}
                                             {% if perms.helpdesk.delete_comment %}
-                                                <a href="{% url "comment-delete" item.comment.id %}" type="button"
-                                                    title="{% trans 'Delete' %}" class="oh-btn p-3 text-danger">
+                                                <a
+                                                    hx-confirm="Are you sure you want to delete this comment?"
+                                                    hx-get="{% url "comment-delete" item.comment.id %}" type="button"
+                                                    title="{% trans 'Delete' %}" class="oh-btn p-3 text-danger"
+                                                >
                                                     <ion-icon name="trash-outline"></ion-icon>
                                                 </a>
                                             {% endif %}
@@ -481,33 +514,54 @@
                 <div
                     class="sticky bottom-0 h-[20%] lg:h-[55px] flex items-end"
                 >
-                    <div class="relative w-full">
-                        <form class="comment-form" name="comment-form" action="{% url 'comment-create' ticket.id %}" method="POST"
+                    <div class="w-full">
+                        <form class="comment-form" name="comment-form" hx-post="{% url 'comment-create' ticket.id %}" method="POST"
                             enctype="multipart/form-data" class="oh-chat oh-chat__input-wrapper">
                             {% csrf_token %}
                             <input name="file" type="file" id="fileUpload" class="hidden" multiple />
-                            <label aria-role="button" for="fileUpload" aria-label="Attach Files"
-                                class="oh-btn oh-btn--chat oh-btn--chat-attachments absolute left-1 top-0 bottom-0 m-auto h-9">
-                                <!-- The file count badge -->
-                                <span id="fileCount"
-                                    class="absolute left-[-10px] top-[-6px] bg-danger text-white text-xs rounded-full px-2 py-1"
-                                    style="display: none;"
+
+                            <div class="grid grid-cols-[auto_auto_1fr_auto] gap-2 items-end">
+                                <!-- Toggle Button -->
+                                <span id="toggleRichText"
+                                    class="oh-btn oh-btn--chat h-9 cursor-pointer flex items-center justify-center"
+                                    title="{% trans 'Toggle Rich Text' %}"
+                                    onclick="toggleRichText()"
                                 >
+                                    <i class="fa fa-table text-[18px]" aria-hidden="true"></i>
                                 </span>
-                            </label>
-                            <input
-                                class="w-full pl-[40px] p-3 rounded-full text-sm bg-[#f1f1f1] placeholder:text-xs focus:outline-none"
-                                placeholder="Write your message here..."
-                                name="comment"
-                                type="text"
-                            />
-                            <button
-                                type="submit"
-                                onclick="validateComment(event)"
-                                class="absolute right-1 top-0 bottom-0 m-auto h-9 flex justify-center items-center cursor-pointer bg-[white] text-primary-600 rounded-full w-9 hover:bg-primary-200 transition duration-300"
-                            >
-                                <i class="fa-solid fa-paper-plane"></i>
-                            </button>
+
+                                <!-- Attachment Button -->
+                                <label aria-role="button" for="fileUpload" aria-label="Attach Files"
+                                    class="oh-btn oh-btn--chat oh-btn--chat-attachments h-9 cursor-pointer relative flex items-center justify-center"
+                                    style="background:transparent"
+                                    title= "{% trans 'Add attachments' %}"
+                                >
+                                    <!-- The file count badge -->
+                                    <span id="fileCount"
+                                        class="absolute -right-2 -top-2 bg-danger text-white text-xs rounded-full px-2 py-1"
+                                        style="display: none;"
+                                    >
+                                    </span>
+                                </label>
+
+                                <!-- Textarea -->
+                                <textarea
+                                    class="w-full p-3 rounded-full text-sm bg-[#f1f1f1] placeholder:text-xs focus:outline-none resize-none"
+                                    placeholder="Write your message here..."
+                                    name="comment"
+                                    id="ticketComment"
+                                    rows="1"
+                                ></textarea>
+                                <!-- Submit Button -->
+                                <button
+                                    type="submit"
+                                    onclick="validateComment(event)"
+                                    class="h-9 w-9 flex justify-center items-center cursor-pointer bg-white text-primary-600 rounded-full hover:bg-primary-200 transition duration-300"
+                                    title= "{% trans 'Send' %}"
+                                >
+                                    <i class="fa-solid fa-paper-plane"></i>
+                                </button>
+                            </div>
                         </form>
                     </div>
                 </div>
@@ -564,6 +618,36 @@
                 }
             }
         });
+    }
+
+    function toggleRichText() {
+        const $el = $("#ticketComment");
+        const isActive = $el.next('.note-editor').length > 0;
+
+        if (isActive) {
+            $el.summernote('destroy');
+        } else {
+            const html = $el.val();
+
+            $el.summernote({
+                placeholder: 'Write your message with formatting...',
+                height: 80,
+                toolbar: [
+                    ['style', ['bold', 'italic', 'underline']],
+                    ['font', ['strikethrough']],
+                    ['color', ['color']],
+                    ['para', ['ul', 'ol']],
+                    ['insert', ['link']]
+                ],
+                callbacks: {
+                    onInit: function () {
+                        $('.note-statusbar').hide();
+                    }
+                }
+            });
+
+            $el.summernote('code', html);
+        }
     }
 
     function updateStatus(elem) {
@@ -657,46 +741,23 @@
         }
     });
 
+    function toggleCommentEdit(el) {
+        let container = $(el).closest('.comment_container')
+        let text = $(container).find('.comment_text')
+        let input = $(container).find('textarea')
+        $(text).hide()
+        $(input).show()
+        $(input).focus()
+        var length = input.val().length;
+        input[0].setSelectionRange(length, length);
+
+    }
+
     $(document).ready(function () {
+        const $dropZone = $("#dropZone");
+        const $fileInput = $("#fileUpload1");
+
         $("#fileUpload").attr('multiple', '');
-        $('.comment_container textarea').hide();
-
-        $(".edit_comment").on("click", function () {
-            let container = $(this).closest('.comment_container')
-            let text = $(container).find('.comment_text')
-            let input = $(container).find('textarea')
-            $(text).hide()
-            $(input).show()
-            $(input).focus()
-            var length = input.val().length;
-            input[0].setSelectionRange(length, length);
-
-        })
-
-        $(".comment_input").on("keydown", function (event) {
-            if (event.keyCode === 13 && !event.shiftKey) {
-                event.preventDefault();
-                $(this).blur();
-            }
-        });
-
-        $(".comment_input").on('focusout', function () {
-            let newComment = $(this).val()
-            let commentId = $(this).data("comment-id")
-
-            $.ajax({
-                type: "post",
-                url: "{% url 'comment-edit' %}",
-                data: {
-                    csrfmiddlewaretoken: getCookie("csrftoken"),
-                    "new_comment": newComment,
-                    "comment_id": commentId,
-                },
-                success: function (response) {
-                    window.location.reload()
-                },
-            })
-        })
 
         setTimeout(function () {
             var container = $('#ticketContainer');
@@ -707,11 +768,6 @@
                 );
             }
         }, 100);
-    })
-
-    $(document).ready(function () {
-        const $dropZone = $("#dropZone");
-        const $fileInput = $("#fileUpload1");
 
         $dropZone.on("dragover", function (e) {
             e.preventDefault();
