@@ -108,10 +108,11 @@ def note_accessibility(
     """
     accessibility for note tab
     """
-    if request.user.has_perm("employee.view_employeenote") or check_manager(
-        request.user.employee_get, instance
-    ):
-        return True
+    if instance.employee_user_id != request.user or request.user.is_superuser:
+        if request.user.has_perm("employee.view_employeenote") or check_manager(
+            request.user.employee_get, instance
+        ):
+            return True
     return False
 
 
