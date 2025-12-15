@@ -108,6 +108,7 @@ class ContractForm(ModelForm):
         start_date = cleaned_data.get("contract_start_date")
         end_date = cleaned_data.get("contract_end_date")
         wage = cleaned_data.get("wage")
+        notice_period = cleaned_data.get("notice_period_in_days")
 
         if end_date and start_date and end_date == start_date:
             self.add_error(
@@ -122,6 +123,9 @@ class ContractForm(ModelForm):
             )
         if wage is not None and wage <= 0:
             self.add_error("wage", "Wage cannot be negative.")
+
+        if notice_period is not None and notice_period <= 0:
+            self.add_error("notice_period_in_days", "Notice Period must be greater than 0.")
 
         return cleaned_data
 
