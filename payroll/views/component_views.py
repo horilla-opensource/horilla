@@ -219,7 +219,7 @@ def payroll_calculation(employee, start_date, end_date):
         "amount": employee_epf_amount,
     })
     post_tax_deductions["post_tax_deductions"].append({
-        "title": "Payee Tax",
+        "title": "PAYE Tax",
         "amount": payee_tax,
     })
 
