@@ -1075,7 +1075,7 @@ def view_payslip(request):
     if request.user.has_perm("payroll.view_payslip"):
         payslips = Payslip.objects.all()
     else:
-        payslips = Payslip.objects.filter(employee_id__employee_user_id=request.user)
+        payslips = Payslip.objects.filter(employee_id__employee_user_id=request.user,status__in=["paid", "confirmed"])
     export_column = forms.PayslipExportColumnForm()
     filter_form = PayslipFilter(request.GET, payslips)
     payslips = filter_form.qs
