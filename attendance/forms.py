@@ -483,6 +483,18 @@ class AttendanceForm(BaseModelForm):
         check_in_time = self.cleaned_data.get("attendance_clock_in")
         check_out_time = self.cleaned_data.get("attendance_clock_out")
         attendance_date = self.cleaned_data.get("attendance_date")
+        work_shift = self.cleaned_data.get("shift_id")
+
+        if not work_shift:
+            self.add_error(
+                'shift_id',
+                _("Work shift is required.")
+            )
+        check_joining_date = check_employee_joining_date(self.instance.employee_id,attendance_date)
+        if not check_joining_date:
+            raise ValidationError(
+                _("Attendance cannot be marked before your joining date.")
+            )
 
         is_future_date = block_future_attendance(attendance_date)
         if is_future_date:
@@ -832,10 +844,19 @@ class AttendanceRequestForm(BaseModelForm):
         super().clean()
         worked_hours = self.cleaned_data.get("attendance_worked_hour")
         check_in_time = self.cleaned_data.get("attendance_clock_in")
+        work_shift = self.cleaned_data.get("shift_id")
         check_out_time = self.cleaned_data.get("attendance_clock_out")
         attendance_date = self.cleaned_data.get("attendance_date")
         employee = self.get_employee()
         print(employee)
+
+
+        if not work_shift:
+            self.add_error(
+                'shift_id',
+              _("Work shift is required.")
+            )
+
         check_joining_date = check_employee_joining_date(employee,attendance_date)
         if not check_joining_date:
             raise ValidationError(
@@ -981,18 +1002,18 @@ class NewRequestForm(AttendanceRequestForm):
                 ),
                 initial=view_initial.get("employee_id"),
             ),
-            "create_bulk": forms.BooleanField(
-                required=False,
-                label=_("Create Bulk"),
-                help_text=_("By selecting this indicates whether this attendance was added via a bulk request. When attendance is created in bulk, any attendance marked on holidays will not be automatically marked or processed."),
-                widget=forms.CheckboxInput(
-                    attrs={
-                        "class": "oh-checkbox",
-                        "hx-target": "#objectCreateModalTarget",
-                        "hx-get": "/attendance/request-new-attendance?bulk=True",
-                    }
-                ),
-            ),
+            # "create_bulk": forms.BooleanField(
+            #     required=False,
+            #     label=_("Create Bulk"),
+            #     help_text=_("By selecting this indicates whether this attendance was added via a bulk request. When attendance is created in bulk, any attendance marked on holidays will not be automatically marked or processed."),
+            #     widget=forms.CheckboxInput(
+            #         attrs={
+            #             "class": "oh-checkbox",
+            #             "hx-target": "#objectCreateModalTarget",
+            #             "hx-get": "/attendance/request-new-attendance?bulk=True",
+            #         }
+            #     ),
+            # ),
         }
         new_dict.update(old_dict)
         self.fields = new_dict
