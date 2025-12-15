@@ -400,7 +400,7 @@ def about_tab(request, obj_id, **kwargs):
     This method is used to view profile of an employee.
     """
     employee = Employee.objects.get(id=obj_id)
-    contracts = employee.contract_set.all() if apps.is_installed("payroll") else None
+    contracts = employee.contract_set.exclude(contract_status="draft") if apps.is_installed("payroll") else None
     employee_leaves = (
         employee.available_leave.all() if apps.is_installed("leave") else None
     )
