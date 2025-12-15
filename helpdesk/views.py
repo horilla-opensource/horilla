@@ -935,7 +935,9 @@ def ticket_detail(request, ticket_id, **kwargs):
         color = "success"
         remaining_days = ticket.deadline - today
         remaining = f"Due in {remaining_days.days} days"
-        if remaining_days.days < 0:
+        if ticket.status == "resolved":
+            remaining = "Resolved"
+        elif remaining_days.days < 0:
             remaining = f"{abs(remaining_days.days)} days overdue"
             color = "danger"
         elif remaining_days.days == 0:
@@ -1070,7 +1072,7 @@ def ticket_change_raised_on(request, ticket_id):
             if form.is_valid():
                 form.save()
                 messages.success(request, _("Responsibility updated for the Ticket"))
-                return redirect(ticket_detail, ticket_id=ticket_id)
+                return HttpResponse("<script>window.location.reload()</script>")
         return render(
             request,
             "helpdesk/ticket/forms/change_raised_on.html",
@@ -1267,12 +1269,14 @@ def comment_create(request, ticket_id):
                         )
                         a_form.save()
             messages.success(request, _("A new comment has been created."))
-    return redirect(ticket_detail, ticket_id=ticket_id)
+    return HttpResponse(
+        "<script>$('.reload-record').click();$('#reloadMessagesButton').click();</script>"
+    )
 
 
 @login_required
 def comment_edit(request):
-    comment_id = request.POST.get("comment_id")
+    comment_id = request.GET.get("comment_id")
     new_comment = request.POST.get("new_comment")
     if new_comment and len(new_comment) > 1:
         comment = Comment.objects.get(id=comment_id)
@@ -1285,7 +1289,9 @@ def comment_edit(request):
     response = {
         "errors": "no_error",
     }
-    return JsonResponse(response)
+    return HttpResponse(
+        "<script>$('.reload-record').click();$('#reloadMessagesButton').click();</script>"
+    )
 
 
 @login_required
@@ -1297,7 +1303,9 @@ def comment_delete(request, comment_id):
     messages.success(
         request, _("{}'s comment has been deleted successfully.").format(employee)
     )
-    return HttpResponseRedirect(request.META.get("HTTP_REFERER", "/"))
+    return HttpResponse(
+        "<script>$('.reload-record').click();$('#reloadMessagesButton').click();</script>"
+    )
 
 
 @login_required
