@@ -49,7 +49,7 @@ SUBMENUS = [
     #     "accessibility": "payroll.sidebar.federal_tax_accessibility",
     # },
     {
-        "menu": trans("Payee Tax"),
+        "menu": trans("PAYE Tax"),
         "redirect": reverse("view-payee-tax"),
         "accessibility": "payroll.sidebar.federal_tax_accessibility",
     },
