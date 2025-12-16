@@ -26,7 +26,7 @@ aria-hidden="true"
           alt="Username"
           />
         </div>
-        <input type="file" name='employee_profile' id="id_employee_profile" class="oh-input oh-input--file oh-input--file-sm mt-4" />
+        <input type="file" name='employee_profile' id="id_employee_profile" class="oh-input oh-input--file oh-input--file-sm mt-4"  accept="image/*" />
         <div class="d-flex justify-content-between w-100 align-items-center mt-4">
           <button class="oh-btn oh-btn--light-danger mr-1" hx-target='#personalMessage' hx-delete="{% url 'remove-own-profile-image' %}"><ion-icon class="me-1" name="trash-outline"></ion-icon>{% trans "Delete Image" %}</button>
           <button
