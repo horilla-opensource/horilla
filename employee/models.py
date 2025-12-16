@@ -5,6 +5,7 @@ This module is used to register models for employee app
 
 """
 
+import xml.etree.ElementTree as ET
 from datetime import date, datetime, timedelta
 
 from django.apps import apps
@@ -16,12 +17,13 @@ from django.db import models
 from django.db.models.query import QuerySet
 from django.db.models.signals import post_save
 from django.dispatch import receiver
-from django.http import JsonResponse
 from django.templatetags.static import static
 from django.urls import reverse, reverse_lazy
 from django.utils.translation import gettext as _
 from django.utils.translation import gettext_lazy as trans
+from PIL import Image
 
+from accessibility.accessibility import ACCESSBILITY_FEATURE
 from base.horilla_company_manager import HorillaCompanyManager
 from base.models import (
     Company,
@@ -302,8 +304,6 @@ class Employee(models.Model):
             status = _("On a break")
         # return status
         return f'<span class="oh-recruitment_tag" style="font-size: 0.5rem; color: red;">{status}</span>'
-
-    from django.http import JsonResponse
 
     def send_mail_button(self):
         """
@@ -627,12 +627,41 @@ class Employee(models.Model):
         )
         return subordinates
 
+    def clean(self):
+        super().clean()
+
+        file = self.employee_profile
+        if not file:
+            return
+
+        try:
+            file.seek(0)
+            content = file.read()
+        except Exception:
+            raise ValidationError({"employee_profile": "Unable to read uploaded file."})
+
+        is_svg = False
+        try:
+            text = content.decode("utf-8", errors="strict")
+            root = ET.fromstring(text)
+            if root.tag.endswith("svg"):
+                is_svg = True
+        except Exception:
+            pass
+
+        if not is_svg:
+            try:
+                file.seek(0)
+                Image.open(file).verify()
+            except Exception:
+                raise ValidationError(
+                    {"employee_profile": "Invalid image or SVG file."}
+                )
+
     def save(self, *args, **kwargs):
-        # your custom code here
-        # ...
-        # call the parent class's save method to save the object
-        # prev_employee = Employee.objects.filter(id=self.id).first()
+        self.full_clean()
         super().save(*args, **kwargs)
+
         request = getattr(horilla_middlewares._thread_locals, "request", None)
         if request and not self.is_active and self.get_archive_condition() is not False:
             self.is_active = True
@@ -644,16 +673,11 @@ class Employee(models.Model):
             username = self.email
             password = str(self.phone)
 
-            is_new_employee_flag = (
-                not employee.employee_user_id.is_new_employee
-                if employee.employee_user_id
-                else True
-            )
             user = User.objects.create_user(
                 username=username,
                 email=username,
                 password=password,
-                is_new_employee=is_new_employee_flag,
+                is_new_employee=True,
             )
             if not user:
                 user = User.objects.create_user(
@@ -1277,8 +1301,6 @@ class ProfileEditFeature(HorillaModel):
     is_enabled = models.BooleanField(default=False)
     objects = models.Manager()
 
-
-from accessibility.accessibility import ACCESSBILITY_FEATURE
 
 ACCESSBILITY_FEATURE.append(("gender_chart", "Can view Gender Chart"))
 ACCESSBILITY_FEATURE.append(("department_chart", "Can view Department Chart"))
