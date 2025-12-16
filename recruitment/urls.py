@@ -429,11 +429,11 @@ urlpatterns = [
         dashboard.OnGoingRecruitmentList.as_view(),
         name="ongoing-recruitment-dashboard",
     ),
-    # path(
-    #     "dashboard-pipeline/",
-    #     views_dashboard.dashboard_pipeline,
-    #     name="recruitment-pipeline",
-    # ),
+    path(
+        "dashboard-pipeline/",
+        views_dashboard.dashboard_pipeline,
+        name="recruitment-pipeline",
+    ),
     path(
         "get-open-positions/",
         views_dashboard.get_open_position,

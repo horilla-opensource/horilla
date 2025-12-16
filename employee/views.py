@@ -1641,7 +1641,7 @@ def update_profile_image(request, obj_id):
         employee.save()
         messages.success(request, _("Profile image updated."))
     except Exception:
-        messages.error(request, _("No image chosen."))
+        messages.error(request, _("Upload a valid image."))
     response = render(
         request,
         "employee/profile/profile_modal.html",
@@ -1657,11 +1657,14 @@ def update_own_profile_image(request):
     """
     This method is used to update own profile image from profile view form
     """
-    employee = request.user.employee_get
-    img = request.FILES.get("employee_profile")
-    employee.employee_profile = img
-    employee.save()
-    messages.success(request, _("Profile image updated."))
+    try:
+        employee = request.user.employee_get
+        img = request.FILES.get("employee_profile")
+        employee.employee_profile = img
+        employee.save()
+        messages.success(request, _("Profile image updated."))
+    except Exception:
+        messages.error(request, _("Upload a valid image."))
     response = render(
         request,
         "employee/profile/profile_modal.html",
@@ -1744,7 +1747,7 @@ def employee_create_update_personal_info(request, obj_id=None):
     This method is used to update employee's personal info.
     """
     employee = Employee.objects.filter(id=obj_id).first()
-    form = EmployeeForm(request.POST, instance=employee)
+    form = EmployeeForm(request.POST, request.FILES, instance=employee)
     if form.is_valid():
         form.save()
         if obj_id is None:
