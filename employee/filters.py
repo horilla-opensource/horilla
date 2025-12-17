@@ -62,7 +62,7 @@ class EmployeeFilter(HorillaFilterSet):
         field_name="is_active",
         label="Is Active",
         choices=[
-            (True, "Yes"),
+            (True, _("Yes")),
             (False, "No"),
         ],
     )
@@ -71,7 +71,7 @@ class EmployeeFilter(HorillaFilterSet):
         field_name="is_from_onboarding",
         label="Is From Onboarding",
         choices=[
-            (True, "Yes"),
+            (True, _("Yes")),
             (False, "No"),
         ],
     )
@@ -79,7 +79,7 @@ class EmployeeFilter(HorillaFilterSet):
         field_name="is_directly_converted",
         label="Is Directly Converted",
         choices=[
-            (True, "Yes"),
+            (True, _("Yes")),
             (False, "No"),
         ],
     )

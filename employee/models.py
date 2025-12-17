@@ -841,12 +841,16 @@ class Policy(HorillaModel):
     Policies model
     """
 
-    title = models.CharField(max_length=50)
-    body = models.TextField()
-    is_visible_to_all = models.BooleanField(default=True)
+    title = models.CharField(max_length=50, verbose_name=trans("Title"))
+    body = models.TextField(verbose_name=trans("Body"))
+    is_visible_to_all = models.BooleanField(
+        default=True, verbose_name=trans("Is visible to all")
+    )
     specific_employees = models.ManyToManyField(Employee, blank=True, editable=False)
     attachments = models.ManyToManyField(PolicyMultipleFile, blank=True)
-    company_id = models.ManyToManyField(Company, blank=True, verbose_name=_("Company"))
+    company_id = models.ManyToManyField(
+        Company, blank=True, verbose_name=trans("Company")
+    )
 
     objects = HorillaCompanyManager("company_id")
 
@@ -935,8 +939,10 @@ class Actiontype(HorillaModel):
     action_type = models.CharField(max_length=30, choices=choice_actions)
     block_option = models.BooleanField(
         default=False,
-        verbose_name=_("Enable login block :"),
-        help_text="If is enabled, employees log in will be blocked based on period of suspension or dismissal.",
+        verbose_name=trans("Enable login block :"),
+        help_text=trans(
+            "If is enabled, employees log in will be blocked based on period of suspension or dismissal."
+        ),
     )
 
     def __str__(self) -> str:
