@@ -1,9 +1,9 @@
-""" Django notifications template tags file """
+"""Django notifications template tags file"""
 
-from django import get_version
 from django.template import Library
 from django.urls import reverse
 from django.utils.html import format_html
+from django.utils.safestring import mark_safe
 
 register = Library()
 
@@ -16,9 +16,6 @@ def notifications_unread(context):
     return user.notifications.unread().count()
 
 
-notifications_unread = register.simple_tag(takes_context=True)(notifications_unread)
-
-
 @register.filter
 def has_notification(user):
     if user:
@@ -26,10 +23,9 @@ def has_notification(user):
     return False
 
 
-# Requires vanilla-js framework - http://vanilla-js.com/
 @register.simple_tag
 def register_notify_callbacks(
-    badge_class="live_notify_badge",  # pylint: disable=too-many-arguments,missing-docstring
+    badge_class="live_notify_badge",
     menu_class="live_notify_list",
     refresh_period=15,
     callbacks="",
@@ -44,60 +40,63 @@ def register_notify_callbacks(
         api_url = reverse("notifications:live_unread_notification_count")
     else:
         return ""
-    definitions = """
-        notify_badge_class='{badge_class}';
-        notify_menu_class='{menu_class}';
-        notify_api_url='{api_url}';
-        notify_fetch_count='{fetch_count}';
-        notify_unread_url='{unread_url}';
-        notify_mark_all_unread_url='{mark_all_unread_url}';
-        notify_refresh_period={refresh};
-    """.format(
-        badge_class=badge_class,
-        menu_class=menu_class,
-        refresh=refresh_period,
-        api_url=api_url,
-        unread_url=reverse("notifications:unread"),
-        mark_all_unread_url=reverse("notifications:mark_all_as_read"),
-        fetch_count=fetch,
+
+    script = """
+<script>
+var notify_badge_class = "{}";
+var notify_menu_class = "{}";
+var notify_api_url = "{}";
+var notify_fetch_count = {};
+var notify_unread_url = "{}";
+var notify_mark_all_unread_url = "{}";
+var notify_refresh_period = {};
+""".format(
+        badge_class,
+        menu_class,
+        api_url,
+        fetch,
+        reverse("notifications:unread"),
+        reverse("notifications:mark_all_as_read"),
+        refresh_period,
     )
 
-    script = "<script>" + definitions
     for callback in callbacks.split(","):
-        script += "register_notifier(" + callback + ");"
+        if callback.strip():
+            script += "register_notifier({});\n".format(callback.strip())
+
     script += "</script>"
-    return format_html(script)
+
+    return mark_safe(script)
 
 
 @register.simple_tag(takes_context=True)
-def live_notify_badge(context, badge_class="live_notify_badge"):
+def live_notify_badge(context, *args, badge_class="live_notify_badge", **kwargs):
     user = user_context(context)
     if not user:
         return ""
 
-    html = "<span class='{badge_class}'>{unread}</span>".format(
-        badge_class=badge_class, unread=user.notifications.unread().count()
+    return format_html(
+        "<span class='{}'>{}</span>",
+        badge_class,
+        user.notifications.unread().count(),
     )
-    return format_html(html)
 
 
 @register.simple_tag
 def live_notify_list(list_class="live_notify_list"):
-    html = "<ul class='{list_class}'></ul>".format(list_class=list_class)
-    return format_html(html)
+    return format_html(
+        "<ul class='{}'></ul>",
+        list_class,
+    )
 
 
 def user_context(context):
-    if "user" not in context:
+    request = context.get("request")
+    if not request:
         return None
 
-    request = context["request"]
     user = request.user
-    try:
-        user_is_anonymous = user.is_anonymous()
-    except TypeError:  # Django >= 1.11
-        user_is_anonymous = user.is_anonymous
-
-    if user_is_anonymous:
+    if not user.is_authenticated:
         return None
+
     return user

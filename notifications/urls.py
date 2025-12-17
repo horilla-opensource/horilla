@@ -2,8 +2,6 @@
 
 # -*- coding: utf-8 -*-
 
-from django import get_version
-from django.urls import path
 from django.urls import re_path as pattern
 
 from . import views
@@ -36,11 +34,6 @@ urlpatterns = [
         r"^api/all_list/",
         views.live_all_notification_list,
         name="live_all_notification_list",
-    ),
-    path(
-        "notification-sound",
-        views.notification_sound,
-        name="notification-sound",
     ),
 ]
 
