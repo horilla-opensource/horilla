@@ -1133,6 +1133,11 @@ urlpatterns = [
         views.delete_notification,
         name="delete-notifications",
     ),
+    path(
+        "notification-sound",
+        views.notification_sound,
+        name="notification-sound",
+    ),
     path("settings/general-settings/", views.general_settings, name="general-settings"),
     path("settings/date-settings/", views.date_settings, name="date-settings"),
     path("settings/save-date/", views.save_date_format, name="save_date_format"),
