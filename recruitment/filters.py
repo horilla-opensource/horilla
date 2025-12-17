@@ -43,9 +43,9 @@ class CandidateFilter(HorillaFilterSet):
     name = django_filters.CharFilter(field_name="name", lookup_expr="icontains")
     search = django_filters.CharFilter(method="search_by_name", lookup_expr="icontains")
 
-    start_onboard = django_filters.CharFilter(
-        method="start_onboard_method", lookup_expr="icontains"
-    )
+    # start_onboard = django_filters.CharFilter(
+    #     method="start_onboard_method", lookup_expr="icontains"
+    # )
 
     candidate = django_filters.ModelMultipleChoiceFilter(
         queryset=Candidate.objects.all(),

@@ -39,12 +39,6 @@ class SkillZoneStatusList(HorillaListView):
     ]
     bulk_select_option = False
 
-    header_attrs = {
-        "title": """
-                 style="width:150px !important"
-                 """
-    }
-
     def get_queryset(self):
         queryset = super().get_queryset()
         queryset = queryset.filter(is_active=True)
