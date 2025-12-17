@@ -155,6 +155,7 @@ from base.models import (
     JobRole,
     MultipleApprovalCondition,
     MultipleApprovalManagers,
+    NotificationSound,
     PenaltyAccounts,
     RotatingShift,
     RotatingWorkType,
@@ -5360,6 +5361,17 @@ def all_notifications(request):
         "notification/all_notifications.html",
         {"notifications": request.user.notifications.all()},
     )
+
+
+@login_required
+def notification_sound(request):
+    employee = request.user.employee_get
+    sound, created = NotificationSound.objects.get_or_create(employee=employee)
+    if not created:
+        sound.sound_enabled = not sound.sound_enabled
+        sound.save()
+
+    return HttpResponse("")
 
 
 @login_required
