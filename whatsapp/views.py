@@ -13,7 +13,7 @@ from django.http.response import HttpResponse
 from django.shortcuts import render
 from django.views.decorators.csrf import csrf_exempt
 
-from base.models import Announcement
+from base.models import Announcement, IntegrationApps
 from employee.models import Employee
 from horilla.decorators import check_integration_enabled, login_required
 from horilla.horilla_middlewares import _thread_locals
@@ -352,9 +352,15 @@ def send_notification_task(request, recipient, verb, redirect, icon):
 
 
 @receiver(notify)
-@check_integration_enabled(app_name="whatsapp")
 def send_notification_on_whatsapp(sender, recipient, verb, redirect, icon, **kwargs):
+    """
+    Send notification on whatspp
+    """
 
+    if not IntegrationApps.objects.filter(
+        app_label="whatsapp", is_enabled=True
+    ).exists():
+        return
     request = getattr(_thread_locals, "request", None)
     thread = threading.Thread(
         target=send_notification_task, args=(request, recipient, verb, redirect, icon)
