@@ -1,4 +1,4 @@
-""" Django notifications settings file """
+"""Django notifications settings file"""
 
 # -*- coding: utf-8 -*-
 from django.conf import settings
@@ -8,6 +8,7 @@ CONFIG_DEFAULTS = {
     "USE_JSONFIELD": False,
     "SOFT_DELETE": False,
     "NUM_TO_FETCH": 10,
+    "CACHE_TIMEOUT": 2,
 }
 
 
