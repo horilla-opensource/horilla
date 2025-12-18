@@ -75,21 +75,21 @@ class MainParentListView(HorillaListView):
     records_per_page = 10
     view_id = "deleteleavedata"
     columns = [
-        ("Leave Type", "leave_type_custom"),
-        ("Start Date", "start_date"),
-        ("End Date", "end_date"),
-        ("Requested Days", "requested_days"),
-        ("Status", "custom_status_col"),
-        ("Comment", "comment_action"),
+        (_("Leave Type"), "leave_type_custom"),
+        (_("Start Date"), "start_date"),
+        (_("End Date"), "end_date"),
+        (_("Requested Days"), "requested_days"),
+        (_("Status"), "custom_status_col"),
+        (_("Comment"), "comment_action"),
     ]
     option_method = "cancel_confirmation_action"
     action_method = "leave_actions"
     sortby_mapping = [
-        ("Leave Type", "leave_type_id__name", "leave_type_id__get_avatar"),
-        ("Start Date", "start_date"),
-        ("End Date", "end_date"),
-        ("Requested Days", "requested_days"),
-        ("Status", "status"),
+        (_("Leave Type"), "leave_type_id__name", "leave_type_id__get_avatar"),
+        (_("Start Date"), "start_date"),
+        (_("End Date"), "end_date"),
+        (_("Requested Days"), "requested_days"),
+        (_("Status"), "status"),
     ]
     row_status_indications = [
         (
@@ -187,7 +187,7 @@ class MyLeaveRequestNavView(HorillaNavView):
 
         self.actions = [
             {
-                "action": "Delete",
+                "action": _("Delete"),
                 "attrs": """
                     class="delete"
                     onclick="
@@ -213,9 +213,9 @@ class MyLeaveRequestNavView(HorillaNavView):
     search_swap_target = "#listContainer"
 
     group_by_fields = [
-        ("leave_type_id", "Leave Type"),
-        ("status", "Status"),
-        ("requested_days", "Requested Days"),
+        ("leave_type_id", _("Leave Type")),
+        ("status", _("Status")),
+        ("requested_days", _("Requested Days")),
     ]
 
     def get_context_data(self, **kwargs):
@@ -240,14 +240,14 @@ class MyLeaveRequestDetailView(HorillaDetailedView):
     }
     cols = {"rejected_action": 12, "description": 12}
     body = [
-        ("Leave Type", "leave_type_id"),
-        ("Days", "requested_days"),
-        ("Start Date", "start_date"),
-        ("End Date", "end_date"),
-        ("Status", "get_status_display"),
-        ("Description", "description"),
-        ("Reason for Rejection", "rejected_action", True),
-        ("View attachment", "attachment_action", True),
+        (_("Leave Type"), "leave_type_id"),
+        (_("Days"), "requested_days"),
+        (_("Start Date"), "start_date"),
+        (_("End Date"), "end_date"),
+        (_("Status"), "get_status_display"),
+        (_("Description"), "description"),
+        (_("Reason for Rejection"), "rejected_action", True),
+        (_("View attachment"), "attachment_action", True),
     ]
     action_method = "detail_leave_actions"
 

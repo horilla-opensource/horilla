@@ -82,14 +82,14 @@ class RotatingShiftListParent(HorillaListView):
     }
 
     sortby_mapping = [
-        ("Employee", "employee_id__get_full_name", "employee_id__get_avatar"),
-        ("Rotating Shift", "rotating_shift_id__name"),
-        ("Based on", "get_based_on_display"),
-        ("Rotate", "rotating_column"),
-        ("Next Shift", "next_shift__employee_shift"),
-        ("Start Date", "start_date"),
-        ("Current Shift", "current_shift__employee_shift"),
-        ("Next Switch", "next_change_date"),
+        (_("Employee"), "employee_id__get_full_name", "employee_id__get_avatar"),
+        (_("Rotating Shift"), "rotating_shift_id__name"),
+        (_("Based on"), "get_based_on_display"),
+        (_("Rotate"), "rotating_column"),
+        (_("Next Shift"), "next_shift__employee_shift"),
+        (_("Start Date"), "start_date"),
+        (_("Current Shift"), "current_shift__employee_shift"),
+        (_("Next Switch"), "next_change_date"),
     ]
 
 

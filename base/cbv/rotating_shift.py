@@ -39,7 +39,7 @@ class RotatingShiftTypeListView(HorillaListView):
         if self.request.user.has_perm("base.change_rotatingshift"):
             self.actions.append(
                 {
-                    "action": "Edit",
+                    "action": _("Edit"),
                     "icon": "create-outline",
                     "attrs": """
                     class="oh-btn oh-btn--light-bkg w-100"
@@ -53,7 +53,7 @@ class RotatingShiftTypeListView(HorillaListView):
         if self.request.user.has_perm("base.delete_rotatingshift"):
             self.actions.append(
                 {
-                    "action": "Delete",
+                    "action": _("Delete"),
                     "icon": "trash-outline",
                     "attrs": """
                             class="oh-btn oh-btn--danger-outline oh-btn--light-bkg w-100"
@@ -76,10 +76,10 @@ class RotatingShiftTypeListView(HorillaListView):
     ]
 
     sortby_mapping = [
-        ("Title", "name"),
-        ("Shift 1", "shift1__employee_shift"),
-        ("Shift 2", "shift2__employee_shift"),
-        ("Additional Shifts", "get_additional_shifts"),
+        (_("Title"), "name"),
+        (_("Shift 1"), "shift1__employee_shift"),
+        (_("Shift 2"), "shift2__employee_shift"),
+        (_("Additional Shifts"), "get_additional_shifts"),
     ]
 
     row_attrs = """
@@ -123,7 +123,7 @@ class DynamicRotatingShiftTypeFormView(HorillaFormView):
 
     model = RotatingShift
     form_class = RotatingShiftForm
-    new_display_title = "Create Rotating Shift"
+    new_display_title = _("Create Rotating Shift")
     is_dynamic_create_view = True
     template_name = "cbv/rotating_shift/rot_shift_form.html"
 

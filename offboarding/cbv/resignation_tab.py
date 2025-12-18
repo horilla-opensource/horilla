@@ -6,6 +6,7 @@ from typing import Any
 
 from django.urls import reverse
 from django.utils.decorators import method_decorator
+from django.utils.translation import gettext_lazy as _
 
 from employee.cbv.employee_profile import EmployeeProfileView
 from horilla_views.cbv_methods import check_feature_enabled, login_required
@@ -78,7 +79,7 @@ class ResignationTabDetailView(ResignationLetterDetailView):
 EmployeeProfileView.add_tab(
     tabs=[
         {
-            "title": "Resignation",
+            "title": _("Resignation"),
             "view": ResignationTabView.as_view(),
             "accessibility": "offboarding.cbv.accessibility.resignation_accessibility",
         },

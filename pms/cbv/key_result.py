@@ -105,9 +105,9 @@ class KeyResultsListView(HorillaListView):
     ]
 
     sortby_mapping = [
-        ("Progress Type", "get_progress_type"),
-        ("Target Value", "target_value"),
-        ("Duration", "duration"),
+        (_("Progress Type"), "get_progress_type"),
+        (_("Target Value"), "target_value"),
+        (_("Duration"), "duration"),
     ]
 
     header_attrs = {

@@ -64,9 +64,9 @@ class HolidayListView(HorillaListView):
     }
 
     sortby_mapping = [
-        ("Holiday Name", "name"),
-        ("Start Date", "start_date"),
-        ("End Date", "end_date"),
+        (_("Holiday Name"), "name"),
+        (_("Start Date"), "start_date"),
+        (_("End Date"), "end_date"),
     ]
 
     row_attrs = """

@@ -71,8 +71,8 @@ class ActionTypeListView(HorillaListView):
     ]
 
     sortby_mapping = [
-        ("Title", "title"),
-        ("Type", "get_action_type_display"),
+        (_("Title"), "title"),
+        (_("Type"), "get_action_type_display"),
     ]
 
     row_attrs = """ id = "actionTr{get_instance_id}" """

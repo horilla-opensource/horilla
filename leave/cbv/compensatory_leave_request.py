@@ -67,12 +67,12 @@ class CompensatoryListView(HorillaListView):
     option_method = "compensatory_options"
 
     sortby_mapping = [
-        ("Employee", "employee_id__get_full_name"),
-        ("Leave Type", "leave_type_id__name"),
-        ("Attendance Dates", "compensatory_date"),
-        ("Requested Days", "requested_days"),
-        ("Created By", "created_by__get_full_name"),
-        ("Status", "status_display"),
+        (_("Employee"), "employee_id__get_full_name"),
+        (_("Leave Type"), "leave_type_id__name"),
+        (_("Attendance Dates"), "compensatory_date"),
+        (_("Requested Days"), "requested_days"),
+        (_("Created By"), "created_by__get_full_name"),
+        (_("Status"), "status_display"),
     ]
     row_status_indications = [
         (

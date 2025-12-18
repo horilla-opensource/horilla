@@ -55,8 +55,8 @@ class DisciplinaryActionsList(HorillaListView):
     header_attrs = {"employee_column": 'style="width:300px !important;"'}
 
     sortby_mapping = [
-        ("Action Taken", "action_taken_col"),
-        ("Action Date", "action_date_col"),
+        (_("Action Taken"), "action_taken_col"),
+        (_("Action Date"), "action_date_col"),
     ]
 
     row_attrs = """
@@ -116,7 +116,7 @@ class DisciplinaryActionsNav(HorillaNavView):
                                 data-toggle="oh-modal-toggle"
                                 """
 
-    nav_title = "Disciplinary Actions"
+    nav_title = _("Disciplinary Actions")
     filter_instance = DisciplinaryActionFilter()
     filter_form_context_name = "form"
     search_swap_target = "#listContainer"
@@ -126,7 +126,7 @@ class DynamicActionTypeFormView(HorillaFormView):
 
     model = Actiontype
     form_class = ActiontypeForm
-    new_display_title = "Create Action Type"
+    new_display_title = _("Create Action Type")
     is_dynamic_create_view = True
 
     def form_valid(self, form: ActiontypeForm) -> HttpResponse:
@@ -151,7 +151,7 @@ class DisciplinaryActionsFormView(HorillaFormView):
     model = DisciplinaryAction
     form_class = DisciplinaryActionForm
     template_name = "cbv/disciplinary_actions/forms/create_form.html"
-    new_display_title = "Take An Action"
+    new_display_title = _("Take An Action")
     dynamic_create_fields = [("action", DynamicActionTypeFormView)]
 
     def get_context_data(self, **kwargs):

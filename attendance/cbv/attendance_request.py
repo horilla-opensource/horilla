@@ -101,12 +101,12 @@ class AttendancesRequestListView(HorillaListView):
         (_("Approved By"), "request_approved_by"),
     ]
     sortby_mapping = [
-        ("Employee", "employee_id__get_full_name", "employee_id__get_avatar"),
-        ("Date", "attendance_date"),
-        ("In Date", "attendance_clock_in_date"),
-        ("Out Date", "attendance_clock_out_date"),
-        ("At Work", "attendance_worked_hour"),
-        ("Overtime", "attendance_overtime"),
+        (_("Employee"), "employee_id__get_full_name", "employee_id__get_avatar"),
+        (_("Date"), "attendance_date"),
+        (_("In Date"), "attendance_clock_in_date"),
+        (_("Out Date"), "attendance_clock_out_date"),
+        (_("At Work"), "attendance_worked_hour"),
+        (_("Overtime"), "attendance_overtime"),
     ]
     row_status_indications = [
         (
@@ -301,19 +301,22 @@ class AttendanceRequestNav(HorillaNavView):
     search_swap_target = "#listContainer"
 
     group_by_fields = [
-        ("employee_id", "Employee"),
-        ("attendance_date", "Attendance Date"),
-        ("attendance_clock_in_date", "In Date"),
-        ("attendance_clock_out_date", "Out Date"),
-        ("employee_id__country", "Country"),
-        ("employee_id__employee_work_info__reporting_manager_id", "Reporting Manager"),
-        ("shift_id", "Shift"),
-        ("work_type_id", "Work Type"),
-        ("minimum_hour", " Min Hour"),
-        ("employee_id__employee_work_info__department_id", "Department"),
-        ("employee_id__employee_work_info__job_position_id", "Job Position"),
-        ("employee_id__employee_work_info__employee_type_id", "Employement Type"),
-        ("employee_id__employee_work_info__company_id", "Company"),
+        ("employee_id", _("Employee")),
+        ("attendance_date", _("Attendance Date")),
+        ("attendance_clock_in_date", _("In Date")),
+        ("attendance_clock_out_date", _("Out Date")),
+        ("employee_id__country", _("Country")),
+        (
+            "employee_id__employee_work_info__reporting_manager_id",
+            _("Reporting Manager"),
+        ),
+        ("shift_id", _("Shift")),
+        ("work_type_id", _("Work Type")),
+        ("minimum_hour", _("Min Hour")),
+        ("employee_id__employee_work_info__department_id", _("Department")),
+        ("employee_id__employee_work_info__job_position_id", _("Job Position")),
+        ("employee_id__employee_work_info__employee_type_id", _("Employement Type")),
+        ("employee_id__employee_work_info__company_id", _("Company")),
     ]
 
 

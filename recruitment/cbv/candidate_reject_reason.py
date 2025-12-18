@@ -48,7 +48,7 @@ class RejectReasonListView(HorillaListView):
 
     actions = [
         {
-            "action": "Edit",
+            "action": _("Edit"),
             "icon": "create-outline",
             "attrs": """
                     class="oh-btn oh-btn--light-bkg w-50"
@@ -59,7 +59,7 @@ class RejectReasonListView(HorillaListView):
                     """,
         },
         {
-            "action": "Delete",
+            "action": _("Delete"),
             "icon": "trash-outline",
             "attrs": """
                     id = "delete-reject"

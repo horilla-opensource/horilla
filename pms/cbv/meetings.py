@@ -255,7 +255,7 @@ class MeetingResponseFormView(HorillaFormView):
     model = Meetings
     form_class = MeetingResponseForm
     # template_name = "cbv/recruitment/forms/create_form.html"
-    new_display_title = "Add Response"
+    new_display_title = _("Add Response")
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)

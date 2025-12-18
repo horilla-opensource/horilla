@@ -308,21 +308,21 @@ class EmployeesList(HorillaListView):
                 onclick="window.location.href='{get_individual_url}?instance_ids={ordered_ids}'"
                 """
     sortby_mapping = [
-        ("Employee", "get_full_name", "get_avatar"),
-        ("Badge Id", "badge_id"),
+        (_("Employee"), "get_full_name", "get_avatar"),
+        (_("Badge Id"), "badge_id"),
         (
-            "Reporting Manager",
+            _("Reporting Manager"),
             "employee_work_info__reporting_manager_id__get_full_name",
         ),
         (
-            "Department",
+            _("Department"),
             "employee_work_info__department_id__department",
         ),
         (
-            "Job Position",
+            _("Job Position"),
             "employee_work_info__job_position_id__job_position",
         ),
-        ("Date of Joining", "employee_work_info__date_joining"),
+        (_("Date of Joining"), "employee_work_info__date_joining"),
     ]
 
 
@@ -557,7 +557,7 @@ class EmployeeCard(HorillaCardView):
         ) or is_reportingmanager(self.request):
             self.actions = [
                 {
-                    "action": "Edit",
+                    "action": _("Edit"),
                     "accessibility": "employee.cbv.accessibility.edit_accessibility",
                     "attrs": """
                     onclick="event.stopPropagation()

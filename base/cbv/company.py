@@ -111,11 +111,11 @@ class CompanyListView(HorillaListView):
     ]
 
     sortby_mapping = [
-        ("Company", "company_icon_with_name"),
-        ("Country", "country"),
-        ("State", "state"),
-        ("City", "city"),
-        ("Zip", "zip"),
+        (_("Company"), "company_icon_with_name"),
+        (_("Country"), "country"),
+        (_("State"), "state"),
+        (_("City"), "city"),
+        (_("Zip"), "zip"),
     ]
 
     row_attrs = """
