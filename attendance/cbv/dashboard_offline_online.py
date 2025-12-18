@@ -45,9 +45,9 @@ class DashboardOfflineEmployees(HorillaListView):
         return queryset
 
     columns = [
-        ("Employee", "get_full_name", "get_avatar"),
-        ("Work Status", "get_leave_status"),
-        ("Actions", "send_mail_button"),
+        (_("Employee"), "get_full_name", "get_avatar"),
+        (_("Work Status"), "get_leave_status"),
+        (_("Actions"), "send_mail_button"),
     ]
     header_attrs = {
         "get_full_name": """
@@ -88,8 +88,8 @@ class DashboardOnlineEmployees(HorillaListView):
         return queryset
 
     columns = [
-        ("Employee", "get_full_name", "get_avatar"),
-        ("Work Status", "get_custom_forecasted_info_col"),
+        (_("Employee"), "get_full_name", "get_avatar"),
+        (_("Work Status"), "get_custom_forecasted_info_col"),
     ]
 
     header_attrs = {

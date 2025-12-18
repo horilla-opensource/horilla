@@ -94,15 +94,15 @@ class LateComeAndEarlyOutList(HorillaListView):
     }
 
     sortby_mapping = [
-        ("Employee", "employee_id__get_full_name", "employee_id__get_avatar"),
-        ("Type", "get_type"),
-        ("Attendance Date", "attendance_id__attendance_date"),
-        ("Check-In", "attendance_id__attendance_clock_in"),
-        ("In Date", "attendance_id__attendance_clock_in_date"),
-        ("Check-Out", "attendance_id__attendance_clock_out"),
-        ("Out Date", "attendance_id__attendance_clock_out_date"),
-        ("At Work", "attendance_id__attendance_worked_hour"),
-        ("Min Hour", "attendance_id__minimum_hour"),
+        (_("Employee"), "employee_id__get_full_name", "employee_id__get_avatar"),
+        (_("Type"), "get_type"),
+        (_("Attendance Date"), "attendance_id__attendance_date"),
+        (_("Check-In"), "attendance_id__attendance_clock_in"),
+        (_("In Date"), "attendance_id__attendance_clock_in_date"),
+        (_("Check-Out"), "attendance_id__attendance_clock_out"),
+        (_("Out Date"), "attendance_id__attendance_clock_out_date"),
+        (_("At Work"), "attendance_id__attendance_worked_hour"),
+        (_("Min Hour"), "attendance_id__minimum_hour"),
     ]
 
 

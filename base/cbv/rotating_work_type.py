@@ -79,14 +79,14 @@ class GeneralParent(HorillaListView):
     ]
 
     sortby_mapping = [
-        ("Employee", "employee_id__get_full_name", "employee_id__get_avatar"),
-        ("Rotating Work Type", "rotating_work_type_id__name"),
-        ("Based On", "get_based_on_display"),
-        ("Rotate", "rotate_data"),
-        ("Start Date", "start_date"),
-        ("Current Work Type", "current_work_type__work_type"),
-        ("Next Switch", "next_change_date"),
-        ("Next Work Type", "next_work_type__work_type"),
+        (_("Employee"), "employee_id__get_full_name", "employee_id__get_avatar"),
+        (_("Rotating Work Type"), "rotating_work_type_id__name"),
+        (_("Based On"), "get_based_on_display"),
+        (_("Rotate"), "rotate_data"),
+        (_("Start Date"), "start_date"),
+        (_("Current Work Type"), "current_work_type__work_type"),
+        (_("Next Switch"), "next_change_date"),
+        (_("Next Work Type"), "next_work_type__work_type"),
     ]
     row_attrs = """
                 hx-get='{work_rotate_detail_view}?instance_ids={ordered_ids}'
@@ -146,7 +146,7 @@ class RotatingWorkNavView(HorillaNavView):
         ) or is_reportingmanager(self.request):
             self.actions.append(
                 {
-                    "action": "Archive",
+                    "action": _("Archive"),
                     "attrs": """
                 id="archiveWorkRotateNav"
                 style="cursor: pointer;"

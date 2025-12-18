@@ -80,9 +80,9 @@ class TicketsListView(HorillaListView):
     header_attrs = {"title": """ style = "width:200px !important" """}
 
     sortby_mapping = [
-        ("Ticket Type", "title"),
-        ("Type", "type"),
-        ("Prefix", "prefix"),
+        (_("Ticket Type"), "title"),
+        (_("Type"), "type"),
+        (_("Prefix"), "prefix"),
     ]
 
     row_attrs = """

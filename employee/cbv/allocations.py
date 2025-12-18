@@ -1043,7 +1043,7 @@ if app_installed("payroll"):
         bulk_update_fields = []
         filter_selected = False
 
-        columns = [(("Deduction"), "title", "get_avatar")]
+        columns = [(_("Deduction"), "title", "get_avatar")]
 
         def post(self, *args, **kwargs):
             employee_id = self.request.POST["instance_id"]

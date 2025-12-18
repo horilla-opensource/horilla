@@ -71,12 +71,12 @@ class ObjectivesList(HorillaListView):
     filter_class = ActualObjectiveFilter
 
     columns = [
-        ("Title", "title_col"),
-        ("Mangers", "manager_col"),
-        ("Key Results", "key_res_col"),
-        ("Assignees", "assingnees_col"),
-        ("Duration", "duration_col"),
-        ("Description", "description"),
+        (_("Title"), "title_col"),
+        (_("Managers"), "manager_col"),
+        (_("Key Results"), "key_res_col"),
+        (_("Assignees"), "assingnees_col"),
+        (_("Duration"), "duration_col"),
+        (_("Description"), "description"),
     ]
 
     header_attrs = {
@@ -645,14 +645,14 @@ class EmployeeObjectiveKeyResultDetailListView(HorillaListView):
     model = EmployeeKeyResult
     filter_class = KeyResultFilter
     columns = [
-        ("Title", "title_col"),
-        ("Start Value", "start_value"),
-        ("Current Value", "get_current_value_col"),
-        ("Target Value", "target_value"),
-        ("Progress Percentage", "get_progress_col"),
-        ("Start Date", "start_date"),
-        ("End Date", "end_date"),
-        ("Status", "status_col"),
+        (_("Title"), "title_col"),
+        (_("Start Value"), "start_value"),
+        (_("Current Value"), "get_current_value_col"),
+        (_("Target Value"), "target_value"),
+        (_("Progress Percentage"), "get_progress_col"),
+        (_("Start Date"), "start_date"),
+        (_("End Date"), "end_date"),
+        (_("Status"), "status_col"),
     ]
     filter_selected = False
     show_filter_tags = False
@@ -684,7 +684,7 @@ class EmployeeObjectiveKeyResultDetailListView(HorillaListView):
         ):
             self.actions.append(
                 {
-                    "action": "Edit",
+                    "action": _("Edit"),
                     "icon": "create-outline",
                     "attrs": """
                     hx-get='{get_update_url}'
@@ -699,7 +699,7 @@ class EmployeeObjectiveKeyResultDetailListView(HorillaListView):
         if self.request.user.has_perm("pms.delete_employeekeyresult"):
             self.actions.append(
                 {
-                    "action": "Delete",
+                    "action": _("Delete"),
                     "icon": "trash-outline",
                     "attrs": """
                 hx-get='{get_delete_url}'
@@ -720,7 +720,7 @@ class EmployeeObjectiveKeyResultDetailListView(HorillaListView):
         ):
             self.actions.append(
                 {
-                    "action": "History",
+                    "action": _("History"),
                     "icon": "hourglass-outline",
                     "attrs": """
                 hx-get='{get_history_url}'
@@ -767,15 +767,15 @@ class EKRTab(EmployeeObjectiveKeyResultDetailListView):
     """
 
     columns = [
-        ("Title", "title_col"),
-        ("Objective", "employee_objective_id__objective_id__title"),
-        ("Start Value", "start_value"),
-        ("Current Value", "current_value"),
-        ("Target Value", "target_value"),
-        ("Progress Percentage", "get_progress_col"),
-        ("Start Date", "start_date"),
-        ("End Date", "end_date"),
-        ("Status", "status"),
+        (_("Title"), "title_col"),
+        (_("Objective"), "employee_objective_id__objective_id__title"),
+        (_("Start Value"), "start_value"),
+        (_("Current Value"), "current_value"),
+        (_("Target Value"), "target_value"),
+        (_("Progress Percentage"), "get_progress_col"),
+        (_("Start Date"), "start_date"),
+        (_("End Date"), "end_date"),
+        (_("Status"), "status"),
     ]
 
     def __init__(self, **kwargs):
@@ -796,7 +796,7 @@ class EKRTab(EmployeeObjectiveKeyResultDetailListView):
 EmployeeProfileView.add_tab(
     tabs=[
         {
-            "title": "Key Results",
+            "title": _("Key Results"),
             "view": EKRTab.as_view(),
             "accessibility": "pms.cbv.accessibility.performance_accessibility",
         },

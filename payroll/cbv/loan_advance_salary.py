@@ -98,11 +98,11 @@ class LoanListView(HorillaListView):
     ]
 
     sortby_mapping = [
-        ("Employee", "employee_id__get_full_name", "employee_id__get_avatar"),
-        ("Provided Date", "provided_date"),
-        ("Installment Start Date", "installment_start_date"),
-        ("Toatal Installments", "installments"),
-        ("Amount", "loan_amount"),
+        (_("Employee"), "employee_id__get_full_name", "employee_id__get_avatar"),
+        (_("Provided Date"), "provided_date"),
+        (_("Installment Start Date"), "installment_start_date"),
+        (_("Toatal Installments"), "installments"),
+        (_("Amount"), "loan_amount"),
     ]
 
     action_method = "loan_actions"

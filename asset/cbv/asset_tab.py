@@ -112,7 +112,7 @@ class AssetTabView(HorillaTabView):
 EmployeeProfileView.add_tab(
     tabs=[
         {
-            "title": "Asset",
+            "title": _("Asset"),
             "view": AssetTabView.as_view(),
             "accessibility": "asset.cbv.accessibility.asset_accessibility",
         },

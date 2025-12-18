@@ -71,8 +71,8 @@ class AllocationList(HorillaListView):
     }
 
     sortby_mapping = [
-        ("Category", "asset_id__asset_category_id__asset_category_name"),
-        ("Expiry Date", "asset_id__expiry_date"),
+        (_("Category"), "asset_id__asset_category_id__asset_category_name"),
+        (_("Expiry Date"), "asset_id__expiry_date"),
     ]
 
     action_method = "asset_action"
@@ -140,10 +140,10 @@ class AssetAllocationList(AllocationList):
     ]
 
     sortby_mapping = [
-        ("Allocated User", "assigned_to_employee_id__get_full_name"),
-        ("Asset", "asset_id__asset_name"),
-        ("Assigned Date", "assigned_date"),
-        ("Return Date", "return_status_col"),
+        (_("Allocated User"), "assigned_to_employee_id__get_full_name"),
+        (_("Asset"), "asset_id__asset_name"),
+        (_("Assigned Date"), "assigned_date"),
+        (_("Return Date"), "return_status_col"),
     ]
 
     row_attrs = """

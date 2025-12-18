@@ -75,10 +75,10 @@ class AllowanceListView(HorillaListView):
     ]
 
     sortby_mapping = [
-        ("Allowance", "title"),
-        ("Specific Employees", "get_specific_employees"),
-        ("Excluded Employees", "get_exclude_employees"),
-        ("Amount", "amount"),
+        (_("Allowance"), "title"),
+        (_("Specific Employees"), "get_specific_employees"),
+        (_("Excluded Employees"), "get_exclude_employees"),
+        (_("Amount"), "amount"),
     ]
 
     header_attrs = {

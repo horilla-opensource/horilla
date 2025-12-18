@@ -30,7 +30,7 @@ class EmployeeShiftListView(HorillaListView):
         if self.request.user.has_perm("base.change_employeeshift"):
             self.actions.append(
                 {
-                    "action": "Edit",
+                    "action": _("Edit"),
                     "icon": "create-outline",
                     "attrs": """
                     class="oh-btn oh-btn--light-bkg w-100"
@@ -44,7 +44,7 @@ class EmployeeShiftListView(HorillaListView):
         if self.request.user.has_perm("base.delete_employeeshift"):
             self.actions.append(
                 {
-                    "action": "Delete",
+                    "action": _("Delete"),
                     "icon": "trash-outline",
                     "attrs": """
                             class="oh-btn oh-btn--danger-outline oh-btn--light-bkg w-100"
@@ -70,7 +70,7 @@ class EmployeeShiftListView(HorillaListView):
     ]
 
     sortby_mapping = [
-        ("Shift", "employee_shift"),
+        (_("Shift"), "employee_shift"),
     ]
 
     row_attrs = """ id = "shiftTr{get_instance_id}" """

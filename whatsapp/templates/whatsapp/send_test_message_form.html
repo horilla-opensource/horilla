@@ -1,0 +1,27 @@
+{% load i18n %}
+<form hx-encoding="multipart/form-data" hx-post="{% url 'send-test-message' %}" hx-target="#genericModalBody">
+    <div class="oh-modal__dialog-header">
+        <h2 class="oh-modal__dialog-title" id="createTitle">
+        {% trans "Send Test Message" %}
+        </h2>
+        <button type="button" class="oh-modal__close--custom" onclick="$(this).closest('.oh-modal--show').removeClass('oh-modal--show')" aria-label="Close">
+            <ion-icon name="close-outline" role="img" class="md hydrated" aria-label="close outline"></ion-icon>
+        </button>
+    </div>
+    <div class="oh-modal__dialog-body oh-modal__dialog-relative">
+        {% csrf_token %}
+        <div class="row">
+            <div class="col-12">
+                <div class="oh-input__group">
+                    <label class="oh-input__label" for="id_allowed_time">{% trans "Phone number" %}</label>
+                    <input type="text" name="number" placeholder="Phone number" class="oh-input w-100" required id="id_number">
+                </div>
+            </div>
+        </div>
+        <div class="oh-modal__dialog-footer p-0 mt-3">
+            <button type="submit" class="oh-btn oh-btn--secondary oh-btn--shadow">
+                {% trans "Send" %}
+            </button>
+        </div>
+    </div>
+</form>

@@ -82,10 +82,10 @@ class CandidateProfileTasks(HorillaListView):
         )
 
     columns = [
-        ("Task", "onboarding_task_id__task_title"),
-        ("Status", "status_col"),
+        (_("Task"), "onboarding_task_id__task_title"),
+        (_("Status"), "status_col"),
         (
-            "Modified By",
+            _("Modified By"),
             "modified_by__employee_get__get_full_name",
             "modified_by__employee_get__get_avatar",
         ),
@@ -113,58 +113,58 @@ class CandidateProfileTasks(HorillaListView):
 CandidateProfileView.add_tab(
     tabs=[
         {
-            "title": "About",
+            "title": _("About"),
             "view": views.candidate_about_tab,
             "accessibility": "recruitment.cbv.accessibility.if_manager_accessibility",
         },
         {
-            "title": "Resume",
+            "title": _("Resume"),
             "view": views.candidate_resume_tab,
             "accessibility": "recruitment.cbv.accessibility.if_manager_accessibility",
         },
         {
-            "title": "Survey",
+            "title": _("Survey"),
             "view": views.candidate_survey_tab,
             "accessibility": "recruitment.cbv.accessibility.if_manager_accessibility",
         },
         {
-            "title": "Documents",
+            "title": _("Documents"),
             "view": views.candidate_document_request_tab,
             "accessibility": "recruitment.cbv.accessibility.if_manager_accessibility",
         },
         {
-            "title": "Notes",
+            "title": _("Notes"),
             "view": views.add_note,
             "accessibility": "recruitment.cbv.accessibility.if_manager_accessibility",
         },
         {
-            "title": "History",
+            "title": _("History"),
             "view": views.candidate_history_tab,
             "accessibility": "recruitment.cbv.accessibility.if_manager_accessibility",
         },
         {
-            "title": "Rating",
+            "title": _("Rating"),
             "view": views.candidate_rating_tab,
             "accessibility": "recruitment.cbv.accessibility.rating_accessibility",
         },
         {
-            "title": "Onboarding",
+            "title": _("Onboarding"),
             "view": CandidateProfileTasks.as_view(),
             "accessibility": "recruitment.cbv.accessibility.onboarding_accessibility",
         },
         {
-            "title": "Mail Log",
+            "title": _("Mail Log"),
             # "view": views.get_mail_log
             "view": CandidateMailLogTabList.as_view(),
             "accessibility": "recruitment.cbv.accessibility.if_manager_accessibility",
         },
         {
-            "title": "Sheduled Interviews",
+            "title": _("Scheduled Interviews"),
             "view": views.candidate_interview_tab,
             "accessibility": "recruitment.cbv.accessibility.empl_scheduled_interview_accessibility",
         },
         {
-            "title": "Skill Zone",
+            "title": _("Skill Zone"),
             "view": skill_zone.SkillZoneProfileListView.as_view(),
             "accessibility": "recruitment.cbv.accessibility.if_manager_accessibility",
         },
@@ -175,7 +175,7 @@ CandidateProfileView.add_tab(
 EmployeeProfileView.add_tab(
     tabs=[
         {
-            "title": "Scheduled Interviews",
+            "title": _("Scheduled Interviews"),
             "view": views.scheduled_interview_tab,
             "accessibility": "recruitment.cbv.accessibility.empl_scheduled_interview_accessibility",
         },

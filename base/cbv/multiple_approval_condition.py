@@ -72,9 +72,9 @@ class MultipleApprovalConditionList(HorillaListView):
     }
 
     sortby_mapping = [
-        ("Department", "department__department"),
-        ("Condition Operator", "get_condition_operator"),
-        ("Condition Value", "get_condition_value"),
+        (_("Department"), "department__department"),
+        (_("Condition Operator"), "get_condition_operator"),
+        (_("Condition Value"), "get_condition_value"),
     ]
 
     row_attrs = """

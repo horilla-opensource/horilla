@@ -131,10 +131,10 @@ class ReimbursementsAndEncashmentsListView(HorillaListView):
 class ReimbursementsListView(ReimbursementsAndEncashmentsListView):
 
     sortby_mapping = [
-        ("Employee", "employee_id__get_full_name", "employee_id__get_avatar"),
-        ("Date", "created_at"),
-        ("Amount", "amount"),
-        ("Status", "get_status_display"),
+        (_("Employee"), "employee_id__get_full_name", "employee_id__get_avatar"),
+        (_("Date"), "created_at"),
+        (_("Amount"), "amount"),
+        (_("Status"), "get_status_display"),
     ]
 
     row_attrs = """
@@ -165,11 +165,11 @@ class LeaveEncashmentsListView(ReimbursementsAndEncashmentsListView):
         self.search_url = reverse("list-leave-encash")
 
     sortby_mapping = [
-        ("Employee", "employee_id__get_full_name", "employee_id__get_avatar"),
-        ("Date", "created_at"),
-        ("Amount", "amount"),
-        ("Available days to encash", "ad_to_encash"),
-        ("Carryforward to encash", "cfd_to_encash"),
+        (_("Employee"), "employee_id__get_full_name", "employee_id__get_avatar"),
+        (_("Date"), "created_at"),
+        (_("Amount"), "amount"),
+        (_("Available days to encash"), "ad_to_encash"),
+        (_("Carryforward to encash"), "cfd_to_encash"),
     ]
 
     columns = [
@@ -207,11 +207,11 @@ class BonusEncashmentsListView(ReimbursementsAndEncashmentsListView):
         self.search_url = reverse("list-bonus-encash")
 
     sortby_mapping = [
-        ("Employee", "employee_id__get_full_name", "employee_id__get_avatar"),
-        ("Date", "created_at"),
-        ("Amount", "amount"),
-        ("Status", "get_status_display"),
-        ("Bonus to encash", "bonus_to_encash"),
+        (_("Employee"), "employee_id__get_full_name", "employee_id__get_avatar"),
+        (_("Date"), "created_at"),
+        (_("Amount"), "amount"),
+        (_("Status"), "get_status_display"),
+        (_("Bonus to encash"), "bonus_to_encash"),
     ]
 
     columns = [

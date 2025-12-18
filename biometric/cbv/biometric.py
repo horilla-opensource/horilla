@@ -76,7 +76,7 @@ class BiometricCardView(HorillaCardView):
         self.search_url = reverse("biometric-card-view")
         self.actions = [
             {
-                "action": "Edit",
+                "action": _("Edit"),
                 "attrs": """
                     class="oh-dropdown__link"
                     hx-get="{get_update_url}"
@@ -86,7 +86,7 @@ class BiometricCardView(HorillaCardView):
                     """,
             },
             {
-                "action": "Fetch Logs",
+                "action": _("Fetch Logs"),
                 "attrs": """
                     hx-get="{get_fetch_url}"
                     class="oh-dropdown__link"
@@ -107,7 +107,7 @@ class BiometricCardView(HorillaCardView):
                     """,
             },
             {
-                "action": "Delete",
+                "action": _("Delete"),
                 "attrs": """
                     hx-confirm="Do you want to delete this device?"
                     hx-post="{get_delete_url}"

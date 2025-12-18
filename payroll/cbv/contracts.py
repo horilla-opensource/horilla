@@ -72,12 +72,12 @@ class ContractsList(HorillaListView):
     }
 
     sortby_mapping = [
-        ("Contract", "contract_name"),
-        ("Employee", "employee_id__get_full_name"),
-        ("Start Date", "contract_start_date"),
-        ("End Date", "contract_end_date"),
-        ("Basic Salary", "wage"),
-        ("Status", "status_col"),
+        (_("Contract"), "contract_name"),
+        (_("Employee"), "employee_id__get_full_name"),
+        (_("Start Date"), "contract_start_date"),
+        (_("End Date"), "contract_end_date"),
+        (_("Basic Salary"), "wage"),
+        (_("Status"), "status_col"),
     ]
 
     action_method = "actions_col"

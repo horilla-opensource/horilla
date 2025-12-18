@@ -70,11 +70,11 @@ class LeaveAllocationRequestList(HorillaListView):
     }
 
     sortby_mapping = [
-        ("Employee", "employee_id__get_full_name"),
-        ("Leave Type", "leave_type_id__name"),
-        ("Requested Days", "requested_days"),
-        ("Created By", "created_by__get_full_name"),
-        ("Status", "get_status"),
+        (_("Employee"), "employee_id__get_full_name"),
+        (_("Leave Type"), "leave_type_id__name"),
+        (_("Requested Days"), "requested_days"),
+        (_("Created By"), "created_by__get_full_name"),
+        (_("Status"), "get_status"),
     ]
 
     option_method = "action_col"
@@ -367,7 +367,7 @@ class LeaveAllocationRequestFormView(HorillaFormView):
 EmployeeProfileView.add_tab(
     tabs=[
         {
-            "title": "Leave",
+            "title": _("Leave"),
             # "view": views.employee_view_individual_leave_tab,
             "view": IndividualLeaveTab.as_view(),
             "accessibility": "leave.cbv.accessibility.leave_accessibility",

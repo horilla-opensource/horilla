@@ -557,7 +557,7 @@ def bulk_create_job_position_import(success_lists):
 
     # Step 2: Fetch all departments at once and build a name -> object map
     department_objs = Department.objects.only("id", "department")
-    department_lookup = {dep.department: dep for dep in department_objs}
+    department_lookup = {dep.department: dep.id for dep in department_objs}
 
     # Step 3: Filter out entries with unknown departments
     valid_pairs = [
