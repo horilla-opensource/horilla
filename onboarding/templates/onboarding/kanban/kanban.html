@@ -177,7 +177,7 @@
             name="page"
             class="oh-pagination__input"
             value="{{recruitments.number}}"
-            {% comment %} hx-get="{% url 'recruitment-search' %}?{{pd}}" hx-target="#tab_rec_{{rec.id}}" {% endcomment %}
+            onkeypress="if(event.key === 'Enter') { event.preventDefault(); window.location.href = '{% url 'kanban-view' %}?{{pd}}&page=' + this.value; }"
             min="1"
             />
             <span class="oh-pagination__label">{% trans "of" %} {{recruitments.paginator.num_pages}}</span>
