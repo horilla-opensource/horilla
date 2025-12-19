@@ -2,7 +2,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: horillatw\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2025-10-13 16:42+0530\n"
+"POT-Creation-Date: 2025-12-18 13:55+0530\n"
 "PO-Revision-Date: 2025-07-31 06:12\n"
 "Last-Translator: \n"
 "Language-Team: Chinese Traditional\n"
@@ -241,6 +241,16 @@ msgstr "請求用戶"
 msgid "Requested Date"
 msgstr "要求日期"
 
+#, fuzzy
+#| msgid "Allowance deleted successfully"
+msgid "Allocation deleted successfully"
+msgstr "已成功刪除配額"
+
+#, fuzzy
+#| msgid "Asset deleted successfully"
+msgid "Asset request deleted successfully"
+msgstr "資產刪除成功"
+
 msgid "Asset Allocation"
 msgstr "資產配置"
 
@@ -279,19 +289,19 @@ msgstr "資產分配日期"
 msgid "Asset Allocation / Return Date"
 msgstr "資產分配日期"
 
-msgid "Description"
-msgstr "描述"
-
 msgid "Tracking Id"
 msgstr "追蹤 ID"
+
+msgid "Batch No"
+msgstr "批號"
 
 #, fuzzy
 #| msgid "Assigned By"
 msgid "Assigned by"
 msgstr "指派人"
 
-msgid "Batch No"
-msgstr "批號"
+msgid "Description"
+msgstr "描述"
 
 msgid "Asset Information"
 msgstr "資產資訊"
@@ -438,9 +448,6 @@ msgstr "請求和分配"
 msgid "Update"
 msgstr "更新"
 
-msgid "Asset Report"
-msgstr "資產報告"
-
 msgid "Do you want to delete this asset?"
 msgstr "您要刪除此資產嗎？"
 
@@ -476,6 +483,9 @@ msgstr "報告"
 
 msgid "Edit"
 msgstr "編輯"
+
+msgid "Asset Report"
+msgstr "資產報告"
 
 msgid "Page"
 msgstr "頁"
@@ -654,6 +664,11 @@ msgstr "核准"
 msgid "Reject"
 msgstr "拒絕"
 
+#, fuzzy
+#| msgid "Do you want to delete this Allowance?"
+msgid "Do you want to delete this Allocation?"
+msgstr "您想刪除此許可嗎？"
+
 msgid "Requested Employee"
 msgstr "申請員工"
 
@@ -734,11 +749,21 @@ msgstr "資產請求批准成功！"
 msgid "An error occurred: "
 msgstr "發生錯誤： "
 
+#, fuzzy
+#| msgid "Shift request not found."
+msgid "Asset request not found."
+msgstr "未找到輪班請求。"
+
 msgid "Asset request has been rejected."
 msgstr "資產請求已被拒絕。"
 
 msgid "Asset allocated successfully!."
 msgstr "資產分配成功！"
+
+#, fuzzy
+#| msgid "{rshift_assign} not found."
+msgid "Asset assignment not found."
+msgstr "{rshift_assign} 找不到。"
 
 msgid "Return request for {} initiated."
 msgstr "已發起 {} 的退貨要求。"
@@ -786,6 +811,9 @@ msgstr "哎呀！ ！未找到資產..."
 
 msgid "assets in use"
 msgstr "在用資產"
+
+msgid "Employee not found."
+msgstr "未找到員工。"
 
 msgid "Attendance Date"
 msgstr "出席日期"
@@ -919,6 +947,11 @@ msgstr "已驗證的出勤率"
 msgid "Hour Account"
 msgstr "小時帳戶"
 
+#, fuzzy
+#| msgid "Attendance Records"
+msgid "Attendance Report"
+msgstr "出勤記錄"
+
 msgid "Pending Hour"
 msgstr "待處理時數"
 
@@ -1024,9 +1057,6 @@ msgstr "工作時間"
 msgid "Allowed Time"
 msgstr "允許時間"
 
-msgid "Is active"
-msgstr "處於活動狀態"
-
 msgid "Applicable on clock-in"
 msgstr "適用於上班打卡"
 
@@ -1035,6 +1065,12 @@ msgstr "適用於下班打卡"
 
 msgid "Assigned Shifts"
 msgstr "分配班次"
+
+msgid "Is default"
+msgstr ""
+
+msgid "Is active"
+msgstr "處於活動狀態"
 
 msgid "Default Grace Time"
 msgstr "預設寬限時間"
@@ -1094,6 +1130,9 @@ msgstr "已新增考勤帳戶。"
 #| msgid "Attendance account added."
 msgid "Attendance account added"
 msgstr "已新增考勤帳戶。"
+
+msgid "IPs"
+msgstr "IP位址"
 
 msgid "Type"
 msgstr "類型"
@@ -1793,9 +1832,6 @@ msgstr "新增 IP"
 msgid "Sl.No"
 msgstr "序號"
 
-msgid "IPs"
-msgstr "IP位址"
-
 msgid "Edit Allowed IPs"
 msgstr "編輯允許的 IP"
 
@@ -1885,9 +1921,6 @@ msgstr "休假"
 
 msgid "On leave, But attendance exist"
 msgstr "休假，但有出勤紀錄"
-
-msgid "record_type_name"
-msgstr "記錄類型名稱"
 
 #, fuzzy
 #| msgid "Work Records"
@@ -2276,6 +2309,11 @@ msgstr "評論刪除成功！"
 msgid "File deleted successfully"
 msgstr "文件刪除成功"
 
+#, fuzzy
+#| msgid "Work Records"
+msgid "Work Records Status"
+msgstr "工作記錄"
+
 msgid "enabled"
 msgstr "已啟用"
 
@@ -2415,11 +2453,8 @@ msgstr "部門已更新。"
 msgid "Department has been created successfully!"
 msgstr "部門創建成功！"
 
-msgid "Weekly Full Time"
-msgstr "每週全職"
-
-msgid "Full Time"
-msgstr "全職"
+msgid "Employee Shift"
+msgstr "員工排次"
 
 msgid "Shift Schedule"
 msgstr "輪班安排"
@@ -2585,6 +2620,9 @@ msgstr "重複模板"
 msgid "Template Added"
 msgstr "範本"
 
+msgid "Mail Templates"
+msgstr "郵件模板"
+
 msgid "Condition Field"
 msgstr "條件字段"
 
@@ -2635,6 +2673,21 @@ msgstr "額外班次"
 msgid "Rotating Shift"
 msgstr "輪班"
 
+#, fuzzy
+#| msgid "Rotating shift created."
+msgid "Rotating Shift Created"
+msgstr "輪班已建立。"
+
+#, fuzzy
+#| msgid "Update Rotating Shift"
+msgid "Update Rotating Shift Type"
+msgstr "更新輪班"
+
+#, fuzzy
+#| msgid "Rotating shift updated."
+msgid "Rotating Shift Updated"
+msgstr "輪班已更新。"
+
 msgid "Based on"
 msgstr "基於"
 
@@ -2661,21 +2714,6 @@ msgstr "工作角色"
 
 msgid "Next Change Date"
 msgstr "下次變更日期"
-
-#, fuzzy
-#| msgid "Rotating shift created."
-msgid "Rotating Shift Created"
-msgstr "輪班已建立。"
-
-#, fuzzy
-#| msgid "Update Rotating Shift"
-msgid "Update Rotating Shift Type"
-msgstr "更新輪班"
-
-#, fuzzy
-#| msgid "Rotating shift updated."
-msgid "Rotating Shift Updated"
-msgstr "輪班已更新。"
 
 msgid "Rotating Shift Assign"
 msgstr "輪班分配"
@@ -2708,25 +2746,6 @@ msgstr "下一個工作類型"
 msgid "Rotating Work Type Assign"
 msgstr "輪班工作類型分配"
 
-msgid "Create Rotating Work Type"
-msgstr "創建輪換工作類型"
-
-#, fuzzy
-#| msgid "Rotating work type created."
-msgid "Rotating Work Type Created"
-msgstr "已建立輪換工作類型。"
-
-msgid "Update Rotating Work Type"
-msgstr "更新輪調工作類型"
-
-msgid "Update Work Type"
-msgstr "更新工作類型"
-
-#, fuzzy
-#| msgid "Rotating work type updated."
-msgid "Rotating Work Type Updated"
-msgstr "輪換工作類型已更新。"
-
 #, fuzzy
 #| msgid "Work Information Updated Successfully"
 msgid "Rotating Work Assign Updated Successfully"
@@ -2752,6 +2771,25 @@ msgstr "工作類型 2"
 #| msgid "Rotating Work Types"
 msgid "Additional Work Types"
 msgstr "所有輪班工作類型"
+
+msgid "Create Rotating Work Type"
+msgstr "創建輪換工作類型"
+
+#, fuzzy
+#| msgid "Rotating work type created."
+msgid "Rotating Work Type Created"
+msgstr "已建立輪換工作類型。"
+
+msgid "Update Rotating Work Type"
+msgstr "更新輪調工作類型"
+
+msgid "Update Work Type"
+msgstr "更新工作類型"
+
+#, fuzzy
+#| msgid "Rotating work type updated."
+msgid "Rotating Work Type Updated"
+msgstr "輪換工作類型已更新。"
 
 msgid "Canceled"
 msgstr "取消"
@@ -3146,9 +3184,6 @@ msgstr "員工排班日"
 
 msgid "Employee Shift Days"
 msgstr "員工所有排班"
-
-msgid "Employee Shift"
-msgstr "員工排次"
 
 msgid "Employee Shifts"
 msgstr "員工所有排次"
@@ -3899,6 +3934,12 @@ msgstr "時間表"
 msgid "Are you sure you want to delete this schedule?"
 msgstr "您確定要刪除這個計劃嗎？"
 
+msgid "Weekly Full Time"
+msgstr "每週全職"
+
+msgid "Full Time"
+msgstr "全職"
+
 msgid "Are you sure you want to delete this shift?"
 msgstr "您確定要刪除此班次嗎？"
 
@@ -3940,9 +3981,6 @@ msgstr "根據工作日"
 
 msgid "All"
 msgstr "全部"
-
-msgid "Completed"
-msgstr "完全的"
 
 msgid "Are you sure you want to delete?"
 msgstr "您確定要刪除嗎？"
@@ -4055,9 +4093,6 @@ msgstr "目前沒有假期。"
 
 msgid "No more holidays scheduled for this month."
 msgstr "本月沒有安排其他假期。"
-
-msgid "Mail Templates"
-msgstr "郵件模板"
 
 #, fuzzy
 #| msgid "There are currently no email templates."
@@ -4652,6 +4687,11 @@ msgstr "舞台視圖"
 msgid "view-onboarding-dashboard"
 msgstr "查看入職儀表板"
 
+#, fuzzy
+#| msgid "pipeline"
+msgid "cbv-pipeline"
+msgstr "管道"
+
 msgid "onboarding-view"
 msgstr "入職視圖"
 
@@ -5155,6 +5195,89 @@ msgstr "資產報告"
 msgid "pms-report"
 msgstr "匯入"
 
+#, fuzzy
+#| msgid "Bank Information"
+msgid "linkedin-integration-setting"
+msgstr "銀行資訊"
+
+#, fuzzy
+#| msgid "date-settings"
+msgid "ldap-settings"
+msgstr "日期設定"
+
+#, fuzzy
+#| msgid "general-settings"
+msgid "gmeet-setting"
+msgstr "常規設定"
+
+msgid "whatsapp-credential-view"
+msgstr ""
+
+#, fuzzy
+#| msgid "Employee Work Information"
+msgid "Employee Work Info"
+msgstr "員工工作資訊"
+
+msgid "Online Employees"
+msgstr "線上員工"
+
+msgid "Overall Leave Chart"
+msgstr "整體休假圖表"
+
+msgid "Hired Candidates"
+msgstr "已錄取應徵者"
+
+msgid "Onboarding Candidates"
+msgstr "已入職應徵者"
+
+msgid "Recruitment Analytics"
+msgstr "招募分析"
+
+msgid "Attendance analytics"
+msgstr "出勤分析"
+
+msgid "Employees Chart"
+msgstr "員工圖表"
+
+msgid "Department Chart"
+msgstr "部門圖"
+
+msgid "Gender Chart"
+msgstr "性別圖表"
+
+msgid "Shift Request to Approve"
+msgstr "輪班申請批准"
+
+msgid "Work Type Request to Approve"
+msgstr "工作類型 申請批准"
+
+msgid "Overtime to Approve"
+msgstr "加班待批准"
+
+msgid "Attendance to Validate"
+msgstr "出席驗證"
+
+msgid "Leave Request to Approve"
+msgstr "休假申請審批"
+
+msgid "Leave Allocation to Approve"
+msgstr "待批准的分配"
+
+msgid "Feedbacks to Answer"
+msgstr "回饋答案"
+
+msgid "Asset Request to Approve"
+msgstr "待批准的資產請求"
+
+msgid "Objective Status"
+msgstr "客觀現狀"
+
+msgid "Key Result Status"
+msgstr "關鍵結果狀態"
+
+msgid "Feedback Status"
+msgstr "回饋狀態"
+
 msgid "Database loaded successfully."
 msgstr "資料庫載入成功。"
 
@@ -5164,20 +5287,16 @@ msgstr "資料庫身份驗證失敗"
 msgid "The password you entered is incorrect. Please try again."
 msgstr "您輸入的密碼不正確，請重試。"
 
+msgid "Access Denied: Your account is blocked."
+msgstr "拒絕存取：您的帳戶已被封鎖。"
+
 msgid "Invalid username or password."
 msgstr "使用者名稱或密碼無效。"
-
-#, fuzzy
-#| msgid "Access Denied: Your account is blocked."
-msgid "Access Denied: Your login credentials are currently blocked."
-msgstr "拒絕存取：您的帳戶已被封鎖。"
 
 msgid "This user is archived. Please contact the manager for more information."
 msgstr "此用戶已被封存。請聯絡管理員以了解更多資訊。"
 
-#, fuzzy
-#| msgid "Login successful."
-msgid "Login Success"
+msgid "Login successful."
 msgstr "登入成功。"
 
 msgid "Primary mail server is not configured"
@@ -5191,6 +5310,9 @@ msgstr "未找到具有該用戶名的用戶"
 
 msgid "No user with the given username"
 msgstr "沒有指定用戶名的用戶"
+
+msgid "Username changed successfully"
+msgstr "使用者名稱修改成功"
 
 msgid "User group created."
 msgstr "使用者群組已建立。"
@@ -5215,6 +5337,16 @@ msgstr "郵件發送成功"
 
 msgid "Can't Delete"
 msgstr "無法刪除"
+
+#, fuzzy
+#| msgid "Employee work information not found."
+msgid "Mail server configuration not found"
+msgstr "未找到員工工作資料。"
+
+#, fuzzy
+#| msgid "Primary mail server is not configured"
+msgid "Primary Mail server configuration replaced"
+msgstr "未配置主郵件伺服器"
 
 msgid "Company has been created successfully!"
 msgstr "公司已創建成功！"
@@ -5380,6 +5512,11 @@ msgstr "您無法刪除此工作類型請求。"
 msgid "You cannot delete {employee} work type request for the date {date}."
 msgstr "您無法刪除日期為 {date}的 {employee} 工作類型請求。"
 
+#, fuzzy
+#| msgid "Work type request deleted."
+msgid "{} work type requests deleted."
+msgstr "工作類型請求已刪除。"
+
 msgid "Shift request added"
 msgstr "已新增輪班請求"
 
@@ -5410,12 +5547,14 @@ msgstr "輪班已獲批准。"
 msgid "You cannot delete this shift request."
 msgstr "您無法刪除此輪班請求。"
 
-msgid "Shift request deleted."
-msgstr "輪班請求已刪除。"
-
 #, python-brace-format
 msgid "You cannot delete {employee} shift request for the date {date}."
 msgstr "您無法刪除日期為 {date}的 {employee} 輪班請求。"
+
+#, fuzzy
+#| msgid "Shift request deleted."
+msgid "{} shift requests deleted."
+msgstr "輪班請求已刪除。"
 
 msgid "Unread notifications removed."
 msgstr "未讀通知已刪除。"
@@ -5435,11 +5574,11 @@ msgstr "設定已更新。"
 msgid "Please select a valid date format."
 msgstr "請選擇有效的日期格式。"
 
-msgid "Please update the company field for the user."
-msgstr "請更新使用者的公司欄位。"
-
 msgid "Date format saved successfully."
 msgstr "日期格式保存成功。"
+
+msgid "Please update the company field for the user."
+msgstr "請更新使用者的公司欄位。"
 
 msgid "Date format cannot saved. You are not in the company."
 msgstr "無法儲存日期格式。您不在本公司。"
@@ -5452,6 +5591,9 @@ msgstr "時間格式保存成功。"
 
 msgid "Time format cannot saved. You are not in the company."
 msgstr "無法儲存時間格式。您不在公司。"
+
+msgid "Profile edit accessibility feature has been removed."
+msgstr ""
 
 msgid "Tag has been created successfully!"
 msgstr "標籤已成功建立！"
@@ -5487,65 +5629,10 @@ msgstr "此行動類型正在紀律處分中使用，無法刪除。"
 msgid "Action has been deleted successfully!"
 msgstr "操作已成功刪除！"
 
-msgid "Online Employees"
-msgstr "線上員工"
-
-msgid "Overall Leave Chart"
-msgstr "整體休假圖表"
-
-msgid "Hired Candidates"
-msgstr "已錄取應徵者"
-
-msgid "Onboarding Candidates"
-msgstr "已入職應徵者"
-
-msgid "Recruitment Analytics"
-msgstr "招募分析"
-
-msgid "Attendance analytics"
-msgstr "出勤分析"
-
-msgid "Employees Chart"
-msgstr "員工圖表"
-
-msgid "Department Chart"
-msgstr "部門圖"
-
-msgid "Gender Chart"
-msgstr "性別圖表"
-
-msgid "Objective Status"
-msgstr "客觀現狀"
-
-msgid "Key Result Status"
-msgstr "關鍵結果狀態"
-
-msgid "Feedback Status"
-msgstr "回饋狀態"
-
-msgid "Shift Request to Approve"
-msgstr "輪班申請批准"
-
-msgid "Work Type Request to Approve"
-msgstr "工作類型 申請批准"
-
-msgid "Overtime to Approve"
-msgstr "加班待批准"
-
-msgid "Attendance to Validate"
-msgstr "出席驗證"
-
-msgid "Leave Request to Approve"
-msgstr "休假申請審批"
-
-msgid "Leave Allocation to Approve"
-msgstr "待批准的分配"
-
-msgid "Feedbacks to Answer"
-msgstr "回饋答案"
-
-msgid "Asset Request to Approve"
-msgstr "待批准的資產請求"
+#, fuzzy
+#| msgid "Task status changed successfully."
+msgid "Dashboard charts updated successfully"
+msgstr "任務狀態變更成功。"
 
 msgid "The biometric attendance feature has been activated successfully."
 msgstr "生物辨識考勤功能已成功啟動。"
@@ -5603,28 +5690,6 @@ msgstr "公司休假刪除成功.."
 
 msgid "Company leave not found."
 msgstr "未找到公司休假。"
-
-msgid "Access Denied: Your account is blocked."
-msgstr "拒絕存取：您的帳戶已被封鎖。"
-
-msgid "Login successful."
-msgstr "登入成功。"
-
-msgid "Username changed successfully"
-msgstr "使用者名稱修改成功"
-
-#, fuzzy
-#| msgid "Work type request deleted."
-msgid "{} work type requests deleted."
-msgstr "工作類型請求已刪除。"
-
-#, fuzzy
-#| msgid "Shift request deleted."
-msgid "{} shift requests deleted."
-msgstr "輪班請求已刪除。"
-
-msgid "Profile edit accessibility feature has been removed."
-msgstr ""
 
 #, fuzzy
 #| msgid "Asset deleted successfully"
@@ -5983,8 +6048,21 @@ msgstr "員工t"
 msgid "Emp Code"
 msgstr "郵遞區號"
 
+msgid "Map e-Time Office User"
+msgstr ""
+
 msgid "Do you want to unschedule the device attendance fetching?"
 msgstr "您想取消設備考勤預約嗎？"
+
+#, fuzzy
+#| msgid "Device"
+msgid "Device:"
+msgstr "裝置"
+
+#, fuzzy
+#| msgid "Deduction"
+msgid "Direction:"
+msgstr "扣除"
 
 msgid "Biometric device unscheduled successfully"
 msgstr "生物辨識設備取消預約成功"
@@ -6135,9 +6213,6 @@ msgstr "{} 已新增至生物辨識設備"
 #| msgid "{} successfully removed from the biometric device."
 msgid "Selected employee successfully mapped to the biometric user"
 msgstr "已成功從生物辨識裝置移除 {}。"
-
-msgid "Employee not found."
-msgstr "未找到員工。"
 
 #, fuzzy
 #| msgid "{} already added to biometric device"
@@ -6377,6 +6452,15 @@ msgstr "上傳文件"
 msgid "Document uploaded successfully"
 msgstr "文檔上傳成功"
 
+msgid "Bulk Approve Requests"
+msgstr "批量批准請求"
+
+msgid "Bulk Reject Requests"
+msgstr "大量拒絕請求"
+
+msgid "Document Requests"
+msgstr "文件請求"
+
 msgid "Employee Tags"
 msgstr "員工標籤"
 
@@ -6393,6 +6477,9 @@ msgstr "識別證號碼"
 
 msgid "Date of Joining"
 msgstr "加入日期"
+
+msgid "Work Information"
+msgstr "工作資訊"
 
 msgid "Bulk mail"
 msgstr "群發郵件"
@@ -6419,6 +6506,9 @@ msgstr "政策"
 #| msgid "Profile updated."
 msgid "Policy updated"
 msgstr "個人資料已更新。"
+
+msgid "Policies"
+msgstr "政策"
 
 msgid "Search in : Employee"
 msgstr "搜尋範圍：員工"
@@ -6519,9 +6609,6 @@ msgstr "具有此帳號的員工的銀行詳細資料已存在"
 msgid "Policy"
 msgstr "政策"
 
-msgid "Policies"
-msgstr "政策"
-
 msgid "equals"
 msgstr "等於"
 
@@ -6606,8 +6693,29 @@ msgstr "您確定要從此操作中移除該員工嗎？"
 msgid "Disciplinary Action"
 msgstr "紀律處分"
 
-msgid "Work Information"
-msgstr "工作資訊"
+msgid "Document Request"
+msgstr "文件請求"
+
+msgid "Document request"
+msgstr "文件請求"
+
+#, fuzzy
+#| msgid "Document"
+msgid "No Document"
+msgstr "文件"
+
+#, fuzzy
+#| msgid "Document"
+msgid "Upload Document"
+msgstr "文件"
+
+msgid "Are you sure you want to delete this Document Request?"
+msgstr "您確定要刪除此文件請求嗎？"
+
+#, fuzzy
+#| msgid "No records available at the moment."
+msgid "No Documents available at the moment"
+msgstr "目前沒有可用的記錄。"
 
 msgid "Export Individual Data"
 msgstr "匯出個人數據"
@@ -6672,25 +6780,10 @@ msgstr "採取行動。"
 msgid "Edit Action."
 msgstr "編輯操作。"
 
-msgid "Document Requests"
-msgstr "文件請求"
-
-msgid "Document Request"
-msgstr "文件請求"
-
-msgid "Document request"
-msgstr "文件請求"
-
-msgid "Bulk Approve Requests"
-msgstr "批量批准請求"
-
 #, fuzzy
 #| msgid "Do You really want to approve the request"
 msgid "Do you really want to approve all the selected requests?"
 msgstr "您確實要批准該請求嗎"
-
-msgid "Bulk Reject Requests"
-msgstr "大量拒絕請求"
 
 msgid "Selected Documents"
 msgstr "精選文件"
@@ -6708,9 +6801,6 @@ msgstr "文件已上傳"
 
 msgid "Do you want to approve this request"
 msgstr "您是否要批准此請求"
-
-msgid "Are you sure you want to delete this Document Request?"
-msgstr "您確定要刪除此文件請求嗎？"
 
 #, fuzzy
 #| msgid "No document requests found."
@@ -7375,8 +7465,10 @@ msgstr "員工銀行詳細資料已更新。"
 msgid "Profile image updated."
 msgstr "個人資料圖片已更新。"
 
-msgid "No image chosen."
-msgstr "未選擇影像。"
+#, fuzzy
+#| msgid "Enter a valid time."
+msgid "Upload a valid image."
+msgstr "輸入有效時間。"
 
 msgid "No profile image to remove."
 msgstr "沒有可刪除的個人資料圖片。"
@@ -7550,6 +7642,47 @@ msgstr "常見問題已成功更新。"
 msgid "The FAQ created successfully."
 msgstr "常見問題建立成功。"
 
+msgid "Owner"
+msgstr "擁有者"
+
+msgid "Priority"
+msgstr "優先事項"
+
+#, fuzzy
+#| msgid "Assign"
+msgid "Assigner"
+msgstr "分配"
+
+msgid "My Tickets"
+msgstr "我的單據"
+
+msgid "Suggested Tickets"
+msgstr "建議單據"
+
+msgid "All Tickets"
+msgstr "所有單據"
+
+msgid "Ticket ID"
+msgstr "單據 ID"
+
+msgid "Forward to"
+msgstr "轉發至"
+
+msgid "Assigned to"
+msgstr "分配給"
+
+msgid "Resolved"
+msgstr "已解決"
+
+msgid "On Hold"
+msgstr "等候接聽"
+
+msgid "In Progress"
+msgstr "進行中"
+
+msgid "New"
+msgstr "新的"
+
 msgid "Helpdesk Tags"
 msgstr "幫助台標籤"
 
@@ -7570,6 +7703,9 @@ msgstr "單據創建成功。"
 
 msgid "The Ticket updated successfully."
 msgstr "單據已成功更新。"
+
+msgid "Deadline should be greater than today"
+msgstr "截止日期應晚於今天"
 
 #, fuzzy
 #| msgid "Department Managers"
@@ -7601,9 +7737,6 @@ msgstr "單據"
 
 msgid "Tickets"
 msgstr "單據"
-
-msgid "Deadline should be greater than today"
-msgstr "截止日期應晚於今天"
 
 msgid "Low"
 msgstr "低的"
@@ -7642,26 +7775,11 @@ msgstr "索賠請求"
 msgid "Claim"
 msgstr "申請"
 
-msgid "Do you want to archive this ticket?"
-msgstr "您想存檔此票嗎？"
-
-msgid "Do you want to un-archive this ticket?"
-msgstr "您想取消存檔此票嗎？"
-
 msgid "Are you sure you want to delete\tthis Ticket?"
 msgstr "您確定要刪除此票嗎？"
 
-msgid "Owner"
-msgstr "擁有者"
-
-msgid "Assigned to"
-msgstr "分配給"
-
 msgid "Till date"
 msgstr "至今"
-
-msgid "Priority"
-msgstr "優先事項"
 
 msgid "Are you sure you want to remove this department manager?"
 msgstr "您確定要刪除該部門經理嗎？"
@@ -7704,6 +7822,12 @@ msgstr "受讓人"
 
 msgid "Responsibility"
 msgstr "責任"
+
+msgid "Do you want to archive this ticket?"
+msgstr "您想存檔此票嗎？"
+
+msgid "Do you want to un-archive this ticket?"
+msgstr "您想取消存檔此票嗎？"
 
 msgid "owner"
 msgstr "擁有者"
@@ -7749,9 +7873,6 @@ msgstr "上次活動："
 msgid "Tags:"
 msgstr "標籤："
 
-msgid "Forward to"
-msgstr "轉發至"
-
 #, fuzzy
 #| msgid "Claim Requests"
 msgid " Claim Requests"
@@ -7769,41 +7890,17 @@ msgstr "單據"
 msgid "Dead line"
 msgstr "最後期限"
 
-msgid "Ticket ID"
-msgstr "單據 ID"
-
 msgid "Un Archive"
 msgstr "解除歸檔"
 
 msgid "Selected Tickets"
 msgstr "選擇單據"
 
-msgid "Resolved"
-msgstr "已解決"
-
-msgid "On Hold"
-msgstr "等候接聽"
-
-msgid "In Progress"
-msgstr "進行中"
-
-msgid "New"
-msgstr "新的"
-
 msgid "Select All Tickets"
 msgstr "選擇所有單據"
 
 msgid "Unselect All Tickets"
 msgstr "取消選擇所有單據"
-
-msgid "My Tickets"
-msgstr "我的單據"
-
-msgid "Suggested Tickets"
-msgstr "建議單據"
-
-msgid "All Tickets"
-msgstr "所有單據"
 
 msgid "The FAQ category has been deleted successfully."
 msgstr "常見問題類別已成功刪除。"
@@ -7896,6 +7993,11 @@ msgstr "單據類別成功刪除！"
 msgid "Ticket type can not delete"
 msgstr "未找到單據類別"
 
+#, fuzzy
+#| msgid "Files uploaded successfully"
+msgid "File(s) uploaded successfully."
+msgstr "文件上傳成功"
+
 msgid "Please enable the Track Late Come & Early Out from settings"
 msgstr "請從設定中啟用“追蹤遲到和早退”"
 
@@ -7948,6 +8050,14 @@ msgstr "已更新"
 msgid "Why this change?"
 msgstr "為什麼會有這種改變？"
 
+msgid "Horilla Auth"
+msgstr ""
+
+#, fuzzy
+#| msgid "User"
+msgid "Users"
+msgstr "使用者"
+
 msgid "The employees selected here will receive the email as Cc."
 msgstr "此處選擇的員工將以副本形式收到電子郵件。"
 
@@ -7966,7 +8076,7 @@ msgstr ""
 msgid "Also Send to"
 msgstr "也發送至"
 
-msgid "Choose Delivary Channel"
+msgid "Choose Delivery Channel"
 msgstr ""
 
 #, fuzzy
@@ -8053,22 +8163,659 @@ msgstr "配置"
 msgid "Configuration updated successfully."
 msgstr "問題更新成功。"
 
-msgid "Feature is not enabled on the settings"
+#, fuzzy
+#| msgid "Attendances"
+msgid "Attendees"
+msgstr "出席人數"
+
+msgid "Google meeting"
 msgstr ""
 
-msgid "Records"
-msgstr "記錄"
+#, fuzzy
+#| msgid "Bank Information"
+msgid "Google Meet Integration"
+msgstr "銀行資訊"
 
-msgid "Selected Records updated"
-msgstr "選定的記錄已更新"
+msgid "Enable Google meet"
+msgstr ""
 
-msgid "No records selected"
-msgstr "未選擇任何記錄"
+msgid "Enable this to integrate Google meet to Horilla."
+msgstr ""
+
+msgid "Reason for Cancellation"
+msgstr "取消原因"
+
+msgid "Reason for Rejection"
+msgstr "拒絕原因"
+
+msgid "View attachment"
+msgstr "查看附件"
 
 #, fuzzy
-#| msgid "Location"
-msgid "Allocation"
-msgstr "地點"
+#| msgid "Activities"
+msgid "Activities:"
+msgstr "活動"
+
+#, fuzzy
+#| msgid "View assets"
+msgid "View Clashes"
+msgstr "查看資產"
+
+msgid "Tax"
+msgstr "稅"
+
+msgid "Pretax"
+msgstr "稅前"
+
+msgid "Question Template"
+msgstr "問題模板"
+
+msgid "Managers"
+msgstr "主管"
+
+msgid "Answerable employees"
+msgstr "負責任的員工"
+
+msgid "Minutes of Meeting"
+msgstr "會議記錄"
+
+msgid "Planned To Leave"
+msgstr "計劃休假"
+
+msgid "Taxable"
+msgstr "應稅"
+
+msgid "One Time Allowance"
+msgstr "一次性津貼"
+
+msgid "Condition Based"
+msgstr "基於條件"
+
+msgid "Has Maximum Limit"
+msgstr "有最大限制"
+
+msgid "Allowance Eligibility"
+msgstr "津貼資格"
+
+msgid "Specific Employees"
+msgstr "特定員工"
+
+msgid "One Time deduction"
+msgstr "一次扣除"
+
+msgid "Deduction Eligibility"
+msgstr "扣除資格"
+
+#, fuzzy
+#| msgid "The employees selected here will receive the email as Cc."
+msgid ""
+"Only the employees selected in any of the fields will have access to the "
+msgstr "此處選擇的員工將以副本形式收到電子郵件。"
+
+msgid ""
+"If none are selected, the feature will be available to all normal users and "
+"employees."
+msgstr ""
+
+msgid "This will clear all filters you have applied."
+msgstr ""
+
+#, fuzzy
+#| msgid "Comments"
+msgid "Comments disabled"
+msgstr "評論"
+
+#, fuzzy
+#| msgid "Comments"
+msgid "Comments of - "
+msgstr "評論"
+
+#, fuzzy
+#| msgid "Are you sure you want to delete this company?"
+msgid "Are you sure you want to delete this comment?"
+msgstr "您確定要刪除該公司嗎？"
+
+#, fuzzy
+#| msgid "Tracking Id"
+msgid "Tracking ID"
+msgstr "追蹤 ID"
+
+#, fuzzy
+#| msgid "Reports"
+msgid "Report"
+msgstr "報告"
+
+#, fuzzy
+#| msgid "Asset Return Form"
+msgid "Asset Return"
+msgstr "資產申報表"
+
+msgid "Attendance Analytics"
+msgstr "出勤分析"
+
+#, fuzzy
+#| msgid "On Leave"
+msgid "Minius Leave"
+msgstr "休假"
+
+#, fuzzy
+#| msgid "Maximum Carryforward"
+msgid "Deduct From Carryforward"
+msgstr "最大結轉"
+
+#, fuzzy
+#| msgid "Penalty amount"
+msgid "Penalty Amount"
+msgstr "罰款金額"
+
+#, fuzzy
+#| msgid "On leave, But attendance exist"
+msgid "On Leave, But Attendance Exist"
+msgstr "休假，但有出勤紀錄"
+
+#, fuzzy
+#| msgid "Date range"
+msgid "Date Range"
+msgstr "日期範圍"
+
+#, fuzzy
+#| msgid "Previous"
+msgid "Previous Page"
+msgstr "以前的"
+
+#, fuzzy
+#| msgid "Net Pay"
+msgid "Next Page"
+msgstr "淨薪"
+
+#, fuzzy
+#| msgid "Forgot Password"
+msgid "Forgot Password ?"
+msgstr "忘記密碼"
+
+#, fuzzy
+#| msgid "Enter New Username"
+msgid "New Username"
+msgstr "輸入新使用者名稱"
+
+msgid "General"
+msgstr "一般的"
+
+msgid "Resignation Request"
+msgstr "辭職申請"
+
+msgid "Notice Period"
+msgstr "通知期"
+
+msgid ""
+"Once you enable this option, a new submenu called Biometric Devices will be "
+"added under the Attendance menu."
+msgstr ""
+
+#, fuzzy
+#| msgid "No records available at the moment."
+msgid "No records available at the moment"
+msgstr "目前沒有可用的記錄。"
+
+msgid "Application Form"
+msgstr "申請表"
+
+#, fuzzy
+#| msgid "Description"
+msgid "Job Description"
+msgstr "描述"
+
+msgid "Choose Job Position"
+msgstr "選擇職位"
+
+msgid "Portfolio"
+msgstr "作品集"
+
+#, fuzzy
+#| msgid "Optional Profile Image?"
+msgid "Profile Image"
+msgstr "可選的個人資料圖片？"
+
+msgid "Resume"
+msgstr "履歷"
+
+#, fuzzy
+#| msgid "Application Form"
+msgid "Submit Application"
+msgstr "申請表"
+
+msgid "Changes"
+msgstr "變化"
+
+#, fuzzy
+#| msgid "Are you sure you want to delete this stage?"
+msgid "Are you sure you want to delete this note?"
+msgstr "您確定要刪除這個階段嗎？"
+
+msgid "stage"
+msgstr "階段"
+
+msgid "No notes have been added for this candidate"
+msgstr "尚未為該應徵者添加註釋"
+
+#, fuzzy
+#| msgid "No penalties found."
+msgid "No rating found."
+msgstr "未發現任何處罰。"
+
+#, fuzzy
+#| msgid "Allocated"
+msgid "Allocate"
+msgstr "已分配"
+
+#, fuzzy
+#| msgid "Dashboard Chart Select"
+msgid "Dashboard Access"
+msgstr "儀表板圖表選擇"
+
+#, fuzzy
+#| msgid "Do you want to delete this Allowance?"
+msgid "Do you want to delete this allowance ?"
+msgstr "您想刪除此許可嗎？"
+
+msgid "Do you want to delete this deduction?"
+msgstr "您想刪除此扣除額嗎？"
+
+#, fuzzy
+#| msgid "Do you want to delete this asset?"
+msgid "Do you want to delete this asset ?"
+msgstr "您要刪除此資產嗎？"
+
+#, fuzzy
+#| msgid "Date of Birth"
+msgid "Date of birth"
+msgstr "出生日期"
+
+msgid "Recruitment Information"
+msgstr "招募資訊"
+
+msgid "Recruitment"
+msgstr "招募"
+
+#, fuzzy
+#| msgid "Position"
+msgid "Applied Position"
+msgstr "位置"
+
+msgid "Current Stage"
+msgstr "當前階段"
+
+#, fuzzy
+#| msgid "Offer letter status :"
+msgid "Offer Letter Status"
+msgstr "錄取通知書狀態："
+
+msgid "Is Hired"
+msgstr "被聘用"
+
+msgid "Schedule Interview"
+msgstr "安排面試"
+
+msgid "Interviewers"
+msgstr "面試官"
+
+#, fuzzy
+#| msgid "No interviews are scheduled for this candidate"
+msgid "No interviews are scheduled for this candidate."
+msgstr "此應徵者沒有安排面試"
+
+msgid "Stars"
+msgstr "星星"
+
+msgid "Star"
+msgstr "星星"
+
+msgid "No survey templates have been established yet."
+msgstr "尚未建立調查模板。"
+
+msgid "Calculate Leave Amount"
+msgstr "計算休假金額"
+
+msgid "Deduction Amount For One Leave"
+msgstr "一次休假扣除金額"
+
+msgid "Note"
+msgstr "筆記"
+
+msgid "Tasks"
+msgstr "任務"
+
+#, fuzzy
+#| msgid "Update Image"
+msgid "Update Stage Order"
+msgstr "更新影像"
+
+msgid "INTERVIEW : Today at"
+msgstr "面試：今天"
+
+msgid "with"
+msgstr "和"
+
+msgid "Sl No."
+msgstr ""
+
+msgid "Completed"
+msgstr "完全的"
+
+msgid "Members"
+msgstr "成員"
+
+#, fuzzy
+#| msgid "Not Available"
+msgid "No Description Available"
+msgstr "無法配合"
+
+#, fuzzy
+#| msgid "Project"
+msgid "'s Projects"
+msgstr "專案"
+
+#, fuzzy
+#| msgid "Project"
+msgid "View Project"
+msgstr "專案"
+
+#, fuzzy
+#| msgid "There are no rotating shift assigned to this employee."
+msgid "No projects assigned to this employee."
+msgstr "未給該員工分配輪班。"
+
+msgid "Add more options.."
+msgstr "增加更多選項.."
+
+msgid "View Timesheet Chart"
+msgstr ""
+
+#, fuzzy
+#| msgid "Do you want to delete this period ?"
+msgid "Do you want to delete this project?"
+msgstr "您想刪除此句點嗎？"
+
+msgid "Compensatory Leave"
+msgstr "補假"
+
+msgid "Compensatory Leave Request"
+msgstr "補假申請"
+
+msgid "By enabling this compensatory leave feature will avilable on Leave."
+msgstr "透過啟用此補償休假功能，可在休假時使用。"
+
+msgid "Total Vacancies"
+msgstr "職位空缺總數"
+
+msgid "Ongoing Recruitments"
+msgstr "正在進行的招聘"
+
+msgid "Conversion Rate"
+msgstr "轉換率"
+
+#, fuzzy
+#| msgid "Offer Acceptance Rate (OAR)"
+msgid "Offer Acceptance Rate"
+msgstr "錄取率（OAR）"
+
+msgid "Skill Zone Status"
+msgstr "技能區狀態"
+
+msgid "Candidate Offer Letter Status"
+msgstr "應徵者錄取通知書狀態"
+
+msgid "Candidate on Onboard"
+msgstr "應徵者入職"
+
+msgid "Joinings Per Month"
+msgstr "每月加入人數"
+
+msgid "Current Hiring Pipeline"
+msgstr "目前招募管道"
+
+msgid "Candidates Per Stage"
+msgstr "每階段應徵者"
+
+msgid "Ongoing Recruitments & Hiring Managers"
+msgstr "正在進行的招聘和招聘經理"
+
+msgid "My Onboarding Tasks"
+msgstr "我的入職任務"
+
+msgid "Total employee objectives"
+msgstr "員工整體目標"
+
+msgid "Total key results"
+msgstr "關鍵結果總計"
+
+msgid "Total feedbacks"
+msgstr "總回饋數"
+
+msgid "Objective status"
+msgstr "客觀現狀"
+
+msgid "No objectives are available."
+msgstr "沒有可用的目標。"
+
+msgid "Key result status"
+msgstr "關鍵結果狀態"
+
+msgid "No key results are available."
+msgstr "沒有可用的關鍵結果。"
+
+msgid "Feedback status"
+msgstr "回饋狀態"
+
+msgid "No feedbacks are available."
+msgstr "沒有可用的回饋。"
+
+msgid "Objectives At-Risk"
+msgstr "目標面臨風險"
+
+#, fuzzy
+#| msgid "Total Hires"
+msgid "Total Projects"
+msgstr "總招募人數"
+
+#, fuzzy
+#| msgid "Project"
+msgid "New Projects"
+msgstr "專案"
+
+#, fuzzy
+#| msgid "In progress"
+msgid "Projects in progress"
+msgstr "進行中"
+
+#, fuzzy
+#| msgid "Portal Status"
+msgid "Project Status"
+msgstr "入口網站狀態"
+
+#, fuzzy
+#| msgid "No contracts ending this month"
+msgid "Projects due in this month"
+msgstr "本月沒有到期合約"
+
+msgid "Task Status"
+msgstr "任務狀態"
+
+msgid "Dashboard Chart Select"
+msgstr "儀表板圖表選擇"
+
+#, fuzzy
+#| msgid "Select All Shifts"
+msgid "Select All Charts"
+msgstr "選擇所有班次"
+
+#, fuzzy
+#| msgid "Unselect All Shifts"
+msgid "Unselect All Charts"
+msgstr "取消選擇所有班次"
+
+#, fuzzy
+#| msgid "Gender Chart"
+msgid "Reorder Charts"
+msgstr "性別圖表"
+
+msgid "Charts"
+msgstr "圖表"
+
+msgid "Feedback Answer"
+msgstr "回饋答案"
+
+msgid "Strongly Disagree"
+msgstr "強烈反對"
+
+msgid "Disagree"
+msgstr "不同意"
+
+msgid "Neutral"
+msgstr "中性的"
+
+msgid "Agree"
+msgstr "同意"
+
+msgid "Strongly Agree"
+msgstr "非常同意"
+
+msgid "Key Result"
+msgstr "關鍵結果"
+
+msgid "Perfect"
+msgstr "完美的"
+
+msgid "Good"
+msgstr "好的"
+
+msgid "Average"
+msgstr "平均的"
+
+msgid "Bad"
+msgstr "壞的"
+
+#, fuzzy
+#| msgid "Feedback Answers"
+msgid "Feedback Responses"
+msgstr "回饋答案"
+
+msgid "Key Results"
+msgstr "主要結果"
+
+msgid "Do you want archive this Feedback ?"
+msgstr "您想要存檔此回饋嗎？"
+
+msgid "Do you want Delete this Feedback ?"
+msgstr "您想刪除此回饋嗎？"
+
+#, fuzzy
+#| msgid "Requested Feedback"
+msgid "Request feedback"
+msgstr "請求回饋"
+
+#, fuzzy
+#| msgid "Answered employees: "
+msgid "Answered Employees"
+msgstr "員工回答： "
+
+#, fuzzy
+#| msgid "Employees not answerd yet: "
+msgid "Employees not answered yet"
+msgstr "員工尚未回答： "
+
+#, fuzzy
+#| msgid "Cyclic feedback period: "
+msgid "Cyclic feedback period"
+msgstr "循環回饋週期： "
+
+#, fuzzy
+#| msgid "Next feedback on: "
+msgid "Next feedback on"
+msgstr "下次回饋： "
+
+msgid "Feedback Answers"
+msgstr "回饋答案"
+
+msgid "Feedback Overview"
+msgstr "回饋概述"
+
+msgid "Answer View"
+msgstr "答案視圖"
+
+msgid "Subordinates"
+msgstr "下屬"
+
+msgid "Colleague"
+msgstr "同事"
+
+#, fuzzy
+#| msgid "Online Employees"
+msgid "Other Employees"
+msgstr "線上員工"
+
+msgid "Answers"
+msgstr "答案"
+
+msgid "Key results"
+msgstr "主要結果"
+
+msgid "No answers yet."
+msgstr "尚無答案。"
+
+msgid "Hide Questions"
+msgstr "隱藏問題"
+
+msgid "Show Questions"
+msgstr "顯示問題"
+
+msgid "Question Type"
+msgstr "問題類型"
+
+msgid "Question"
+msgstr "問題"
+
+msgid "Hide Options"
+msgstr "隱藏選項"
+
+msgid "Show Options"
+msgstr "顯示選項"
+
+msgid "Do you want to delete the question?"
+msgstr "您想刪除該問題嗎？"
+
+#, fuzzy
+#| msgid "Add Question"
+msgid "Edit Question"
+msgstr "添加問題"
+
+msgid "Add A Question"
+msgstr "添加問題"
+
+msgid "Add Question"
+msgstr "添加問題"
+
+msgid "Option"
+msgstr "選項"
+
+msgid "Questions"
+msgstr "問題"
+
+msgid "Forgot Password"
+msgstr "忘記密碼"
+
+#, fuzzy
+#| msgid "Type in your email to reset the password"
+msgid "Type in your username to reset the password."
+msgstr "輸入您的電子郵件以重設密碼"
+
+#, fuzzy
+#| msgid "Send password reset link"
+msgid "Send reset link"
+msgstr "發送密碼重設連結"
+
+msgid "Reset link will be sent to your registered email"
+msgstr ""
 
 msgid "Delete Confirmation"
 msgstr "刪除確認"
@@ -8085,10 +8832,14 @@ msgstr "受保護的記錄"
 msgid "Other Related Records"
 msgstr "其他相關記錄"
 
-msgid "I Have took manual action for the protected records"
+#, fuzzy
+#| msgid "I Have took manual action for the protected records"
+msgid "I have took manual action for the protected records"
 msgstr "我已對受保護的記錄採取手動操作"
 
-msgid "I acknowledge, I wont be able to revert this "
+#, fuzzy
+#| msgid "I acknowledge, I wont be able to revert this "
+msgid "I acknowledge, i wont be able to revert this"
 msgstr "我承認，我無法恢復此 "
 
 msgid "Confirming to delete the related and protected records"
@@ -8099,6 +8850,1258 @@ msgstr "需要採取的行動"
 
 msgid "Select All Columns"
 msgstr "選擇所有列"
+
+msgid "Records"
+msgstr "記錄"
+
+#, fuzzy
+#| msgid "Reveal"
+msgid "Revert"
+msgstr "揭示"
+
+#, fuzzy
+#| msgid "Item"
+msgid "Items"
+msgstr "物品"
+
+msgid "Unselect"
+msgstr "取消選擇"
+
+msgid "Show All"
+msgstr "顯示全部"
+
+#, fuzzy
+#| msgid "Search in :Asset"
+msgid "Search in FAQs..."
+msgstr "搜尋：資產"
+
+#, fuzzy
+#| msgid "Approved request"
+msgid "Approve request"
+msgstr "已批准的請求"
+
+#, fuzzy
+#| msgid "Reject Requests"
+msgid "Reject request"
+msgstr "拒絕請求"
+
+#, fuzzy
+#| msgid "Dead line"
+msgid "Deadline"
+msgstr "最後期限"
+
+#, fuzzy
+#| msgid "Last activity:"
+msgid "Last Activity"
+msgstr "上次活動："
+
+#, fuzzy
+#| msgid "Rotating shift assigned."
+msgid "No tags assigned"
+msgstr "已分配輪班。"
+
+#, fuzzy
+#| msgid "Forward to"
+msgid "Forwarded to"
+msgstr "轉發至"
+
+msgid "Choose or Drop Files Here"
+msgstr ""
+
+#, fuzzy
+#| msgid "Update Ticket"
+msgid "Edit Ticket"
+msgstr "更新單據"
+
+msgid "Toggle Rich Text"
+msgstr ""
+
+#, fuzzy
+#| msgid "Attachments"
+msgid "Add attachments"
+msgstr "附件"
+
+msgid "Send"
+msgstr "傳送"
+
+#, fuzzy
+#| msgid "Today's Attendances"
+msgid "Todays's New Joiners"
+msgstr "今日出席人數"
+
+#, fuzzy
+#| msgid "Leave days"
+msgid "Leave on today"
+msgstr "休假天數"
+
+#, fuzzy
+#| msgid "New Joining This Week"
+msgid "Joining this week"
+msgstr "本週新加入"
+
+msgid "Total Strength"
+msgstr "總人數"
+
+msgid "Create Announcement"
+msgstr "創建公告"
+
+#, fuzzy
+#| msgid "Shift Request to Approve"
+msgid "Shift Requests to Approve"
+msgstr "輪班申請批准"
+
+#, fuzzy
+#| msgid "Work Type Request to Approve"
+msgid "Work Type Requests to Approve"
+msgstr "工作類型 申請批准"
+
+msgid "Employee Work Information"
+msgstr "員工工作資訊"
+
+msgid "Candidates Started Onboarding"
+msgstr "應徵者開始入職"
+
+msgid "Overall Leave"
+msgstr "整體休假"
+
+msgid "This Week"
+msgstr "本週"
+
+msgid "This Month"
+msgstr "本月"
+
+msgid "This Year"
+msgstr "今年"
+
+msgid "Leave Requests To Approve"
+msgstr "待批准的休假請求"
+
+msgid "Leave Allocation Request To Approve"
+msgstr "休假分配請求待批准"
+
+msgid "Feedback To Answers"
+msgstr "回饋答案"
+
+#, fuzzy
+#| msgid "No records available at the moment."
+msgid "No charts are available at the moment..."
+msgstr "目前沒有可用的記錄。"
+
+msgid "All Notifications"
+msgstr "所有通知"
+
+msgid "Clear All"
+msgstr "清除全部"
+
+#, fuzzy
+#| msgid "Employees Chart"
+msgid "Reorder Dashboard Charts"
+msgstr "員工圖表"
+
+#, fuzzy
+#| msgid "Configuration"
+msgid "Configurations"
+msgstr "配置"
+
+msgid "Multiple Approvals"
+msgstr "多重核准"
+
+msgid "Mail Automations"
+msgstr "郵件自動化"
+
+msgid "Restrict Leaves"
+msgstr "限制休假"
+
+msgid "Google Meet"
+msgstr ""
+
+msgid "Compensatory Leave Type"
+msgstr "補假類型"
+
+msgid "This leave type will be used for assigning compensatory leaves."
+msgstr "此休假類型將用於分配補假。"
+
+msgid "Requests to Approve"
+msgstr "批准請求"
+
+msgid "Approved Leaves In This Month"
+msgstr "本月批准的休假"
+
+msgid "Rejected Leaves In This Month"
+msgstr "本月被拒絕的休假"
+
+msgid "Employee Leaves"
+msgstr "員工休假"
+
+msgid "View Personal Dashboard"
+msgstr "查看個人儀表板"
+
+msgid "Next Holiday"
+msgstr "下一個假期"
+
+msgid "Upcoming holidays"
+msgstr "即將到來的假期"
+
+#, fuzzy
+#| msgid "Upcoming holidays"
+msgid "Upcoming holidays in this year."
+msgstr "即將到來的假期"
+
+msgid "Department Leaves"
+msgstr "部門休假"
+
+msgid "Leave Type - Count of leaves"
+msgstr "休假類型 - 休假數量"
+
+msgid "Weekly Leave Analytics"
+msgstr "每週休假分析"
+
+msgid "New Requests"
+msgstr "新請求"
+
+msgid "Available Leaves"
+msgstr "可用假期"
+
+msgid "Total Leave Requests"
+msgstr "請假申請總數"
+
+msgid "View Admin Dashboard"
+msgstr "查看管理儀表板"
+
+#, fuzzy
+#| msgid "Add Comment"
+msgid "Add Comments"
+msgstr "新增評論"
+
+#, fuzzy
+#| msgid "Add Fine"
+msgid "Add Files"
+msgstr "添加罰款"
+
+msgid "'s leave allocation request"
+msgstr "的休假分配請求"
+
+#, fuzzy
+#| msgid "No notes have been added for this employee"
+msgid "No Comments have been added for this Leave Allocation Request"
+msgstr "尚未為該員工添加任何註釋"
+
+msgid "Requested Days"
+msgstr "請求天數"
+
+msgid "You have No leave requests for this month."
+msgstr "您本月沒有休假申請。"
+
+msgid "'s leave request"
+msgstr "的休假請求"
+
+#, fuzzy
+#| msgid "No notes have been added for this employee"
+msgid "No Comments have been added for this Leave request"
+msgstr "尚未為該員工添加任何註釋"
+
+msgid "Create Leave Type"
+msgstr "建立休假類型"
+
+#, fuzzy
+#| msgid "Is pretax"
+msgid "Is paid"
+msgstr "是稅前"
+
+msgid "Limit Leave Days"
+msgstr "限制休假天數"
+
+msgid "Do you want to limit leave days for this leave type?"
+msgstr "您是否要限制此休假類型的休假天數？"
+
+msgid "Require Approval"
+msgstr "需要批准"
+
+msgid "Do you need approval for leave from the authority?"
+msgstr "您需要得到主管機關的批准才能休假嗎？"
+
+msgid "Reset"
+msgstr "重置"
+
+msgid "Do you need to reset leaves based on conditions?"
+msgstr "是否需要視情況重新設定休假？"
+
+msgid "Reset Period"
+msgstr "重置期"
+
+msgid "The time period for the leave to reset."
+msgstr "休假重置的時間段。"
+
+msgid "Reset Month"
+msgstr "重置月份"
+
+msgid "Reset Day"
+msgstr "重置日"
+
+msgid "Reset Weekday"
+msgstr "重置工作日"
+
+msgid "Carryforward Type"
+msgstr "結轉類型"
+
+msgid "The conditions for carrying forward the balance of leave."
+msgstr "結轉剩餘假期的條件。"
+
+msgid "Carryforward Max"
+msgstr "結轉上限"
+
+msgid "The maximum number of leave that can be carried forward."
+msgstr "可結轉的最大假期天數。"
+
+msgid "Carryforward Expire In"
+msgstr "結轉到期日"
+
+msgid "The count of carryforward expire period"
+msgstr "結轉到期期限計數"
+
+msgid "Carryforward Expire Period"
+msgstr "結轉到期期限"
+
+msgid "The time period for the expiration of carryforward leave."
+msgstr "結轉假期的到期時段。"
+
+msgid "Carryforward Expire Date"
+msgstr "結轉到期日"
+
+msgid ""
+"The date on which carryforward leave resets to 0. After this reset, the date "
+"will be updated to the next expiration period."
+msgstr "結轉假期重設為 0 的日期。重置後，日期將更新為下一個到期期限。"
+
+msgid "Icon"
+msgstr "圖示"
+
+#, fuzzy
+#| msgid "---Choose Action---"
+msgid "Choose Icon"
+msgstr "---選擇操作---"
+
+msgid "Require Attachment"
+msgstr "需要附件"
+
+msgid "Do you need to attach a document for leave?"
+msgstr "請假需要附上文件嗎？"
+
+msgid "Exclude Company Holidays"
+msgstr "不含公司假期"
+
+msgid "Do you need to exclude company holidays from the requested leave days?"
+msgstr "您是否需要從申請的休假天數中排除公司假期？"
+
+msgid "Exclude Holidays"
+msgstr "不包括假日"
+
+msgid "Do you need to exclude public holidays from the requested leave days?"
+msgstr "您是否需要從申請的休假天數中排除公共假期？"
+
+msgid "Is Encashable"
+msgstr "可兌現"
+
+msgid "Do you need to encash pending leave days?"
+msgstr "您需要將待付的休假天數兌現嗎？"
+
+msgid "Assign to Employees"
+msgstr "分配給員工"
+
+#, fuzzy
+#| msgid "Choose employees to assign this leave type"
+msgid "choose employees to assign this leave type"
+msgstr "選擇要指派此休假類型的員工"
+
+msgid "Update Leave Type"
+msgstr "更新休假類型"
+
+msgid "Restrict Past Leave"
+msgstr "限制過去的休假"
+
+msgid "Restricts Past Date Leave Request Creation"
+msgstr "限制建立逾期休假申請"
+
+msgid ""
+"By enabling this only admins and managers can create leave requests for the "
+"past dates"
+msgstr "啟用此功能後，只有管理員和經理才能建立過去日期的休假申請"
+
+#, fuzzy
+#| msgid "Carryforward Leave Days"
+msgid "Carryforwrad Leave Days"
+msgstr "結轉休假天數"
+
+#, fuzzy
+#| msgid "Total Leave taken"
+msgid "Total Leave Taken"
+msgstr "總休假次數"
+
+#, fuzzy
+#| msgid "Reallocate to"
+msgid "Welcome to"
+msgstr "重新分配至"
+
+msgid "HR"
+msgstr ""
+
+msgid "Please login to access the dashboard."
+msgstr "請登入以存取儀表板。"
+
+msgid "Sign In"
+msgstr "登入"
+
+msgid "Initialize Database"
+msgstr "初始化資料庫"
+
+msgid "Load Demo Data"
+msgstr "載入演示數據"
+
+#, fuzzy
+#| msgid "ago by"
+msgid "ago by "
+msgstr "之前"
+
+#, fuzzy
+#| msgid "All caught up!"
+msgid "All Caught Up!"
+msgstr "全部追上！"
+
+#, fuzzy
+#| msgid "You have no new notifications at the moment."
+msgid "You have no new notifications at the moment"
+msgstr "您目前沒有新通知。"
+
+msgid "Notifications"
+msgstr "通知"
+
+#, fuzzy
+#| msgid "All Notifications"
+msgid "Clear Notifications"
+msgstr "所有通知"
+
+#, fuzzy
+#| msgid "View all notifications"
+msgid "View all Notification"
+msgstr "查看所有通知"
+
+msgid "Anonymous"
+msgstr "匿名的"
+
+msgid "Exit Ratio"
+msgstr ""
+
+msgid "Archived Employees / Total Employees"
+msgstr ""
+
+msgid "Exiting to Joining Ratio"
+msgstr ""
+
+msgid "Exiting Employees : Joining Employees"
+msgstr ""
+
+#, fuzzy
+#| msgid "Add Employee"
+msgid "Archived Employees"
+msgstr "新增員工"
+
+msgid "Joining and Offboarding Chart"
+msgstr ""
+
+#, fuzzy
+#| msgid "Same Department & Job Position"
+msgid "Department - JobPosition Offboarding"
+msgstr "同部門、同崗位"
+
+#, fuzzy
+#| msgid "Returned Status"
+msgid "Not Returned Assets"
+msgstr "退貨狀態"
+
+#, fuzzy
+#| msgid "Offboarding employee deleted"
+msgid "Offboarding Employees Feedbacks"
+msgstr "離職員工被刪除"
+
+#, fuzzy
+#| msgid "Note"
+msgid "'s Note"
+msgstr "筆記"
+
+#, fuzzy
+#| msgid "No notes have been added for this candidate"
+msgid "No Comments have been added for this Shift request"
+msgstr "尚未為該應徵者添加註釋"
+
+msgid ""
+"By enabling this normal users can request for their resignation progress"
+msgstr "透過啟用此功能，普通用戶可以請求他們的辭職進度"
+
+msgid "Activites"
+msgstr "活動"
+
+msgid "Do you want to un-archive this employee objective?"
+msgstr "您想取消存檔該員工目標嗎？"
+
+msgid "Unarchive"
+msgstr "取消存檔"
+
+msgid "Do you want to archive this employee objective?"
+msgstr "您想存檔此員工目標嗎？"
+
+msgid "Do you want to delete this employee objective?"
+msgstr "您要刪除該員工目標嗎？"
+
+msgid "Employee Objectives"
+msgstr "員工目標"
+
+#, fuzzy
+#| msgid "Create Employee Objective"
+msgid "Search by Employee or Objective..."
+msgstr "建立員工目標"
+
+msgid "Objective"
+msgstr "客觀的"
+
+msgid "Start Date From"
+msgstr "開始日期"
+
+msgid "Start Date Till"
+msgstr "開始日期至"
+
+#, python-format
+msgid "Objective Progress %% (GTE)"
+msgstr ""
+
+msgid "End Date From"
+msgstr "結束日期自"
+
+msgid "End Date Till"
+msgstr "結束日期"
+
+#, python-format
+msgid "Objective Progress %% (LTE)"
+msgstr ""
+
+#, fuzzy, python-format
+#| msgid "Progress Type"
+msgid "KR Progress %% (GTE)"
+msgstr "進度類型"
+
+#, fuzzy, python-format
+#| msgid "Progress Type"
+msgid "KR Progress %% (LTE)"
+msgstr "進度類型"
+
+#, fuzzy
+#| msgid "Filters"
+msgid "Quick Filters"
+msgstr "過濾器"
+
+msgid "updated"
+msgstr "已更新"
+
+msgid "from"
+msgstr "從"
+
+msgid "field of "
+msgstr "領域 "
+
+msgid "key result"
+msgstr "關鍵結果"
+
+msgid "added a comment"
+msgstr "新增評論"
+
+#, fuzzy
+#| msgid "Update Objectives"
+msgid "updated objective details"
+msgstr "更新目標"
+
+msgid "There are no assignees for this objective at the moment."
+msgstr "目前該目標尚無受讓人。"
+
+#, fuzzy
+#| msgid "Task not found."
+msgid "No Tasks found."
+msgstr "未找到任務。"
+
+msgid "Select Month and Year:"
+msgstr "選擇月份和年份："
+
+msgid "Contributions"
+msgstr "貢獻"
+
+msgid "Employee Payslips"
+msgstr "員工薪資單"
+
+#, fuzzy
+#| msgid "Export Payslips"
+msgid "Total Payslips"
+msgstr "匯出薪資單"
+
+msgid "Total Payslips Genarated :"
+msgstr "產生的工資單總數："
+
+msgid "Total Amount :"
+msgstr "總金額 ："
+
+msgid "Department Total Amount"
+msgstr "部門總金額"
+
+msgid "Employer Contributions"
+msgstr "雇主繳款"
+
+#, fuzzy
+#| msgid "Contracts ending "
+msgid "Contracts Ending "
+msgstr "合約終止 "
+
+msgid "Number of contracts expiring in "
+msgstr "到期合約數量 "
+
+#, fuzzy
+#| msgid "Contract Created"
+msgid "Contracts Expired"
+msgstr "合約創建"
+
+#, fuzzy
+#| msgid "Number of contracts expiring in "
+msgid "Number of contracts expired in "
+msgstr "到期合約數量 "
+
+msgid "Employee Contribution"
+msgstr "員工貢獻"
+
+msgid "Employer Contribution"
+msgstr "雇主繳款"
+
+msgid "Total Amount"
+msgstr "總金額"
+
+msgid "Paid Amount"
+msgstr "已付金額"
+
+msgid "Balance Amount"
+msgstr "餘額"
+
+msgid "S/N"
+msgstr "序號"
+
+msgid "One Time Date"
+msgstr "一次性約會"
+
+msgid "Payslip"
+msgstr "薪資單"
+
+msgid "Do you want to send the payslip by mail?"
+msgstr "您想透過電子郵件發送薪資單嗎？"
+
+msgid "Send via mail"
+msgstr "透過郵件發送"
+
+msgid "Total Net Payable"
+msgstr "應付淨額總計"
+
+msgid "Gross Earnings - Total Deductions"
+msgstr "總收入 - 總扣除額"
+
+msgid "Employee Net Pay"
+msgstr "員工淨工資"
+
+msgid "Actual Basic Pay"
+msgstr "實質基本工資"
+
+msgid "Paid Days"
+msgstr "有薪休假"
+
+msgid "LOP Days"
+msgstr "曠職天數"
+
+msgid "Updated Basic Pay"
+msgstr "更新基本工資"
+
+msgid "The payslip is calculated based on the updated basic pay"
+msgstr "薪資單是根據更新後的基本工資計算的"
+
+msgid "Taxable Gross Pay"
+msgstr "應稅總薪資"
+
+#, fuzzy
+#| msgid "taxable amount"
+msgid "Taxable amount"
+msgstr "應稅金額"
+
+msgid "Employee Details"
+msgstr "員工詳細資訊"
+
+#, fuzzy
+#| msgid "Bank Acc./Cheque No."
+msgid "Bank Acc."
+msgstr "銀行帳戶/支票號碼"
+
+msgid "Add Allowance"
+msgstr "添加津貼"
+
+msgid "Basic Pay"
+msgstr "基本工資"
+
+msgid ""
+"Some deductions will update basic pay before payslip calculation starts, eg: "
+"LOP is Deduducted from basic pay if `Deduct leave from basic pay` field is "
+"enabled on the contract, and also with the update compensation deduction "
+"through"
+msgstr ""
+"一些扣除將在工資單計算開始之前更新基本工資，例如：如果合約中啟用了「從基本工"
+"資中扣除休假」字段，則從基本工資中扣除 LOP，並且通過更新薪酬扣除"
+
+msgid "Total Gross Pay"
+msgstr "總工資"
+
+msgid ""
+"Some Deduction will update the total gross pay using the deductions that are "
+"enabled update compensation"
+msgstr "部分扣除將使用啟用的更新補償扣除來更新總工資"
+
+msgid "Add Deduction"
+msgstr "添加扣除"
+
+msgid "Loss of Pay"
+msgstr "工資損失"
+
+#, fuzzy
+#| msgid "Basic Pay Deductions"
+msgid " Basic Pay Deductions"
+msgstr "基本工資扣除"
+
+#, fuzzy
+#| msgid "Gross Pay Deductions"
+msgid " Gross Pay Deductions"
+msgstr "總工資扣除額"
+
+msgid "Federal Tax"
+msgstr "聯邦稅"
+
+#, fuzzy
+#| msgid "Net Pay Deductions"
+msgid " Net Pay Deductions"
+msgstr "淨工資扣除額"
+
+msgid "Total Deductions"
+msgstr "總扣除額"
+
+msgid ""
+"Some deductions are not included in the total deductions because they are "
+"given as updated compensations. These deductions may be applied before the "
+"main calculation begins, such as from the basic pay or gross pay, while "
+"others are deducted after calculating the net pay."
+msgstr ""
+"有些扣除額未計入總扣除額，因為它們是作為更新後的薪酬給出的。這些扣除額可能在"
+"主要計算開始之前應用，例如從基本工資或總工資中扣除，而其他扣除額則在計算淨工"
+"資後扣除。"
+
+msgid "'s reimbursement request"
+msgstr "的報銷請求"
+
+#, fuzzy
+#| msgid "No notes have been added for this employee"
+msgid "No Comments have been added for this reimbursement request"
+msgstr "尚未為該員工添加任何註釋"
+
+msgid "Currency Symbol"
+msgstr "貨幣符號"
+
+msgid "Position"
+msgstr "位置"
+
+msgid "Default Notice Period"
+msgstr "違約通知期"
+
+msgid " Set initial notice period (in days)"
+msgstr " 設定初始通知期（以天為單位）"
+
+msgid "No tax filing status has been recorded."
+msgstr "未記錄任何納稅申報狀態。"
+
+msgid "Are you sure to delete this Tax bracket ?"
+msgstr "您確定要刪除此稅級嗎？"
+
+msgid "Score"
+msgstr "分數"
+
+msgid "Need verification"
+msgstr "需要驗證"
+
+msgid "Candidated Added"
+msgstr "已新增應徵者"
+
+msgid "Create Candidate"
+msgstr "創建應徵者"
+
+#, fuzzy
+#| msgid "A"
+msgid "At"
+msgstr "一個"
+
+#, fuzzy
+#| msgid "View policy"
+msgid "View Policy"
+msgstr "查看政策"
+
+msgid " - Open Recruitments"
+msgstr " - 公開招聘"
+
+msgid "Open Job Listings"
+msgstr "公開招聘訊息"
+
+msgid ""
+"We're hiring! Join our team and be part of a vibrant workplace where your "
+"talents make a difference. Here are the open Recruitments...."
+msgstr ""
+"我們正在招募！加入我們的團隊，加入我們充滿活力的職場，讓你的才華發揮更大作"
+"用。以下是公開招募資訊…"
+
+msgid "Applied"
+msgstr "應用"
+
+msgid "Capacity"
+msgstr "容量"
+
+msgid "Total vacancies"
+msgstr "空缺職位總數"
+
+#, fuzzy
+#| msgid "Recruitments"
+msgid "Recruitment Details"
+msgstr "招募"
+
+msgid "Candidate Self Tracking"
+msgstr "應徵者自我追蹤"
+
+msgid "Application Tracking"
+msgstr "應用程式追蹤"
+
+msgid "By enabling the feature candidates can track their recruitment progress"
+msgstr "透過啟用該功能，應徵者可以追蹤他們的招募進度"
+
+msgid "Rating Visiblity"
+msgstr "評級可見性"
+
+msgid ""
+"By enabling the feature candidates can view their recruitment overall rating"
+msgstr "透過啟用該功能，應徵者可以查看他們的招募總體評分"
+
+#, fuzzy
+#| msgid "Replace Employee"
+msgid "Replace"
+msgstr "更換員工"
+
+#, fuzzy
+#| msgid "Asset Report"
+msgid "Asset Reports"
+msgstr "資產報告"
+
+#, fuzzy
+#| msgid "Export Leaves"
+msgid "Export Table"
+msgstr "出口樹葉"
+
+#, fuzzy
+#| msgid "Attendance Records"
+msgid "Attendance Reports"
+msgstr "出勤記錄"
+
+#, fuzzy
+#| msgid "Employee rate"
+msgid "Employee Reports"
+msgstr "員工費率"
+
+#, fuzzy
+#| msgid "Leave Records"
+msgid "Leave Reports"
+msgstr "休假記錄"
+
+#, fuzzy
+#| msgid "Available Leaves"
+msgid "Available Leave"
+msgstr "可用假期"
+
+msgid "Carryforward Days"
+msgstr "結轉天數"
+
+msgid "Available Days Greater or Equal"
+msgstr "可用天數大於或等於"
+
+msgid "Available Days Less Than or Equal"
+msgstr "可用天數小於或等於"
+
+msgid "Carryforward Days Greater or Equal"
+msgstr "結轉天數大於或等於"
+
+msgid "Carryforward Days Less Than or Equal"
+msgstr "結轉天數小於或等於"
+
+msgid "Total Leave Days Greater or Equal"
+msgstr "總休假天數大於或等於"
+
+msgid "Total Leave Days Less Than or Equal"
+msgstr "總休假天數小於或等於"
+
+#, fuzzy
+#| msgid "Asset Report"
+msgid "Choose Report"
+msgstr "資產報告"
+
+#, fuzzy
+#| msgid "Payroll Records"
+msgid "Payroll Reports"
+msgstr "薪資記錄"
+
+msgid "Gross Pay Less Than or Equal"
+msgstr "總工資低於或等於"
+
+msgid "Gross Pay Greater or Equal"
+msgstr "總工資大於或等於"
+
+msgid "Deduction Less Than or Equal"
+msgstr "扣除額小於或等於"
+
+msgid "Deduction Greater or Equal"
+msgstr "扣除額大於或等於"
+
+msgid "Net Pay Less Than or Equal"
+msgstr "淨薪資小於或等於"
+
+msgid "Net Pay Greater or Equal"
+msgstr "淨薪資大於或等於"
+
+msgid "Allowance & Deduction"
+msgstr "免稅及扣除"
+
+#, fuzzy
+#| msgid "Allowance created."
+msgid "Allowance Greater than"
+msgstr "已建立津貼。"
+
+#, fuzzy
+#| msgid "Allowance on"
+msgid "Allowance Less than"
+msgstr "津貼"
+
+#, fuzzy
+#| msgid "Deduction Greater or Equal"
+msgid "Deduction Greater than"
+msgstr "扣除額大於或等於"
+
+#, fuzzy
+#| msgid "Deduction Less Than or Equal"
+msgid "Deduction Less than"
+msgstr "扣除額小於或等於"
+
+#, fuzzy
+#| msgid "Performance"
+msgid "Performance Reports"
+msgstr "表現"
+
+#, fuzzy
+#| msgid "Employee Objectives"
+msgid "Employee Objective"
+msgstr "員工目標"
+
+msgid "Feedback"
+msgstr "回饋"
+
+msgid "Feedback Title"
+msgstr "回饋標題"
+
+msgid "Subordinate"
+msgstr "下屬"
+
+msgid "Objectives"
+msgstr "目標"
+
+#, fuzzy
+#| msgid "Candidate Details"
+msgid "Candidate Reports"
+msgstr "應徵者詳情"
+
+msgid "Candidate"
+msgstr "應徵者"
+
+msgid "Offer Status"
+msgstr "優惠狀態"
+
+msgid "Stage Type"
+msgstr "階段類型"
+
+msgid "Is Canceled"
+msgstr "已取消"
+
+msgid "Is Closed"
+msgstr "已關閉"
+
+msgid "Unknown"
+msgstr "未知"
+
+msgid "Is Published"
+msgstr "已發布"
+
+msgid "Till End Date"
+msgstr "截止截止日期"
+
+msgid "Onboarding"
+msgstr "入職"
+
+msgid "Stage"
+msgstr "階段"
+
+msgid "Task"
+msgstr "任務"
+
+msgid "Candidates"
+msgstr "應徵者"
+
+#, fuzzy
+#| msgid "Stage Managers"
+msgid "Stage Manager"
+msgstr "階段監督"
+
+msgid "Task Manager"
+msgstr "工作管理員"
+
+msgid "Settings"
+msgstr "設定"
+
+msgid "General Settings"
+msgstr "常規設定"
+
+msgid "Employee Permission"
+msgstr "員工許可"
+
+msgid "User Group"
+msgstr "使用者群組"
+
+msgid "Accessibility Restriction"
+msgstr "無障礙限制"
+
+msgid "Date & Time Format"
+msgstr "日期和時間格式"
+
+#, fuzzy
+#| msgid "Bulk Mail"
+msgid "Outlook Mail"
+msgstr "大量郵件"
+
+msgid "Base"
+msgstr "根據"
+
+msgid "Candidate Reject Reason"
+msgstr "應徵者被拒絕的原因"
+
+msgid "Skills"
+msgstr "技能"
+
+msgid "Disciplinary Action Type"
+msgstr "紀律處分類型"
+
+msgid "Track Late Come & Early Out"
+msgstr "追蹤遲到和早退"
+
+msgid "Attendance Break Point"
+msgstr "出勤斷點"
+
+msgid "Check In/Check Out"
+msgstr "簽到/簽退"
+
+msgid "Geo & Face Config"
+msgstr ""
+
+msgid "Restrictions"
+msgstr "限制"
+
+msgid "Payroll"
+msgstr "薪資單"
+
+msgid "Payslip Auto Generation"
+msgstr "薪資單自動生成"
+
+msgid "Performance"
+msgstr "表現"
+
+msgid "Bonus Point Setting"
+msgstr "積分設定"
+
+#, fuzzy
+#| msgid "Interval duration"
+msgid "Integrations"
+msgstr "間隔時長"
+
+msgid "Gdrive Backup"
+msgstr "Gdrive 備份"
+
+msgid "Linkedin"
+msgstr ""
+
+msgid "LDAP"
+msgstr ""
+
+msgid "Whatsapp"
+msgstr ""
+
+#, fuzzy
+#| msgid "Bank Information"
+msgid "LinkedIn Integration"
+msgstr "銀行資訊"
+
+#, fuzzy
+#| msgid "Enable Face"
+msgid "Enable Linkedin"
+msgstr "啟用面"
+
+msgid "Enable this to integrate linkedin to Horilla."
+msgstr ""
+
+msgid "Do you want to archive this skill zone ?"
+msgstr "您想存檔該技能區嗎？"
+
+#, fuzzy
+#| msgid "Do you want to un archive this skill zone?"
+msgid "Do you want to unarchive this skill zone?"
+msgstr "您想取消存檔該技能區嗎？"
+
+msgid "Are you sure want to delete this skill zone?"
+msgstr "您確定要刪除該技能區嗎？"
+
+msgid "Added on"
+msgstr "添加於"
+
+msgid "Do you want to remove this candidate"
+msgstr "您是否要刪除此應徵者"
+
+msgid "Skill Zone"
+msgstr "技能區"
+
+msgid "Candidate Filter"
+msgstr "候選篩選器"
+
+msgid "Are you sure want to delete?"
+msgstr "您確定要刪除嗎？"
+
+msgid "Add Questions"
+msgstr "添加問題"
+
+msgid "Do you want to delete this template"
+msgstr "是否要刪除此模板"
+
+msgid "No template groups have been established yet."
+msgstr "尚未建立模板組。"
+
+msgid "Create Survey Template"
+msgstr "建立調查模板"
+
+msgid "Duplicate Survey Template"
+msgstr "重複調查模板"
+
+msgid "Survey Templates"
+msgstr "調查模板"
+
+#, fuzzy
+#| msgid "Create survey questions"
+msgid "Create survey questions"
+msgstr "創建調查問題"
+
+#, fuzzy
+#| msgid "Please select a valid date format."
+msgid "Please select one option"
+msgstr "請選擇有效的日期格式。"
+
+#, fuzzy
+#| msgid "Balance points to redeem:"
+msgid "Balance point(s) to redeem"
+msgstr "可兌換的餘額積分："
+
+#, fuzzy
+#| msgid "Redeem Now"
+msgid "Redeem"
+msgstr "立即兌換"
+
+#, fuzzy
+#| msgid "Asset History"
+msgid "Points History"
+msgstr "資產歷史"
+
+#, fuzzy
+#| msgid "Bonus Account created"
+msgid "Bonus account Created"
+msgstr "獎金帳戶已創建"
+
+msgid "Kanban View"
+msgstr ""
+
+msgid "Add task"
+msgstr "新增任務"
+
+msgid "Are you sure you want to delete this stage?"
+msgstr "您確定要刪除這個階段嗎？"
+
+#, fuzzy
+#| msgid "Do you really want to delete this leave type?"
+msgid "Do you really want to delete this task?"
+msgstr "您確實要刪除此休假類型嗎？"
+
+#, fuzzy
+#| msgid "Asset View"
+msgid "List View"
+msgstr "資產視圖"
+
+msgid "Add Task"
+msgstr "新增任務"
+
+msgid "Task Managers"
+msgstr "工作管理員"
+
+#, fuzzy
+#| msgid "No user found with the username"
+msgid "No tasks found in this stage."
+msgstr "未找到具有該用戶名的用戶"
+
+msgid "Search by Task Name..."
+msgstr ""
+
+#, fuzzy
+#| msgid "Time"
+msgid "Personal Timesheet of"
+msgstr "時間"
+
+#, fuzzy
+#| msgid "Weekly"
+msgid "Week"
+msgstr "每週"
+
+#, fuzzy
+#| msgid "No notes have been added for this employee"
+msgid "No Comments have been added for this worktype request"
+msgstr "尚未為該員工添加任何註釋"
+
+msgid "Feature is not enabled on the settings"
+msgstr ""
+
+msgid "Selected Records updated"
+msgstr "選定的記錄已更新"
+
+msgid "No records selected"
+msgstr "未選擇任何記錄"
+
+#, fuzzy
+#| msgid "Location"
+msgid "Allocation"
+msgstr "地點"
+
+msgid "I Have took manual action for the protected records"
+msgstr "我已對受保護的記錄採取手動操作"
+
+msgid "I acknowledge, I wont be able to revert this "
+msgstr "我承認，我無法恢復此 "
 
 #, fuzzy
 #| msgid "File path"
@@ -8111,9 +10114,6 @@ msgstr "過濾器"
 msgid "Save filter"
 msgstr "保存過濾器"
 
-msgid "Clear All"
-msgstr "清除全部"
-
 msgid "E-mail"
 msgstr "電子郵件"
 
@@ -8121,12 +10121,6 @@ msgstr "電子郵件"
 #| msgid "Import"
 msgid "Import Help"
 msgstr "匯入"
-
-msgid "Unselect"
-msgstr "取消選擇"
-
-msgid "Show All"
-msgstr "顯示全部"
 
 msgid "Selected"
 msgstr "選定"
@@ -8139,9 +10133,6 @@ msgstr "取消全選"
 
 msgid "Item"
 msgstr "物品"
-
-msgid "Carryforward Days"
-msgstr "結轉天數"
 
 #, fuzzy
 #| msgid "On Leave"
@@ -8172,9 +10163,6 @@ msgstr "可用休假更新成功..."
 
 msgid "Attendance Dates"
 msgstr "出席日期"
-
-msgid "Requested Days"
-msgstr "請求天數"
 
 msgid "Compensatory Leave Requests"
 msgstr "補假申請"
@@ -8231,15 +10219,6 @@ msgstr "休假衝突"
 msgid "Leave Requests"
 msgstr "休假申請"
 
-msgid "View attachment"
-msgstr "查看附件"
-
-msgid "Multiple Approvals"
-msgstr "多重核准"
-
-msgid "Reason for Rejection"
-msgstr "拒絕原因"
-
 #, fuzzy
 #| msgid "Leave request is updated successfully.."
 msgid "Leave request is updated successfully"
@@ -8271,40 +10250,11 @@ msgstr "休假類型"
 msgid "Period In"
 msgstr "期間"
 
-msgid "Reset"
-msgstr "重置"
-
-msgid "Carryforward Type"
-msgstr "結轉類型"
-
-#, fuzzy
-#| msgid "Is pretax"
-msgid "Is paid"
-msgstr "是稅前"
-
-msgid "Require Approval"
-msgstr "需要批准"
-
-msgid "Require Attachment"
-msgstr "需要附件"
-
 msgid "Exclude company Leaves"
 msgstr "排除公司休假"
 
-msgid "Exclude Holidays"
-msgstr "不包括假日"
-
-msgid "Is Encashable"
-msgstr "可兌現"
-
 msgid "Reset Based"
 msgstr "基於重置"
-
-msgid "Reset Month"
-msgstr "重置月份"
-
-msgid "Reset Day"
-msgstr "重置日"
 
 msgid "Reset weekend"
 msgstr "重置週末"
@@ -8407,35 +10357,8 @@ msgstr "結轉"
 msgid "Carry Forward with Expire"
 msgstr "可結轉並有期限"
 
-msgid "Icon"
-msgstr "圖示"
-
 msgid "Is Paid"
 msgstr "已付款"
-
-msgid "Limit Leave Days"
-msgstr "限制休假天數"
-
-msgid "Reset Period"
-msgstr "重置期"
-
-msgid "Reset Weekday"
-msgstr "重置工作日"
-
-msgid "Carryforward Max"
-msgstr "結轉上限"
-
-msgid "Carryforward Expire In"
-msgstr "結轉到期日"
-
-msgid "Carryforward Expire Period"
-msgstr "結轉到期期限"
-
-msgid "Carryforward Expire Date"
-msgstr "結轉到期日"
-
-msgid "Exclude Company Holidays"
-msgstr "不含公司假期"
 
 msgid "Compensatory Leave Request already exists."
 msgstr "補假申請已存在。"
@@ -8521,24 +10444,6 @@ msgstr "半天出勤需要驗證"
 msgid "Assigned Leave"
 msgstr "指定休假"
 
-msgid "Available Days Greater or Equal"
-msgstr "可用天數大於或等於"
-
-msgid "Available Days Less Than or Equal"
-msgstr "可用天數小於或等於"
-
-msgid "Carryforward Days Greater or Equal"
-msgstr "結轉天數大於或等於"
-
-msgid "Carryforward Days Less Than or Equal"
-msgstr "結轉天數小於或等於"
-
-msgid "Total Leave Days Greater or Equal"
-msgstr "總休假天數大於或等於"
-
-msgid "Total Leave Days Less Than or Equal"
-msgstr "總休假天數小於或等於"
-
 #, fuzzy
 #| msgid "Are you sure you want to delete this assigned leave?"
 msgid "Are you sure you want to delete this assigned leave request?"
@@ -8552,9 +10457,6 @@ msgstr "導入已分配的休假"
 
 msgid "Are you sure you want to approve ?"
 msgstr "您確定要批准嗎？"
-
-msgid "Compensatory Leave Request"
-msgstr "補假申請"
 
 msgid "Requested days Up To"
 msgstr "請求天數最多"
@@ -8615,9 +10517,6 @@ msgstr "總天數大於或等於"
 msgid "Total Days less Than or Equal"
 msgstr "總天數小於或等於"
 
-msgid "Reason for Cancellation"
-msgstr "取消原因"
-
 msgid "Are you sure you want to delete this leave request?"
 msgstr "您確定要刪除此休假申請嗎？"
 
@@ -8626,9 +10525,6 @@ msgstr ""
 
 msgid "You have an interview in this requested date range."
 msgstr "您在此請求的日期範圍內有一次面試。"
-
-msgid "Restrict Leaves"
-msgstr "限制休假"
 
 msgid "View Accrual Plan"
 msgstr "查看累積計劃"
@@ -8648,20 +10544,11 @@ msgstr "應計"
 msgid "Extra Leave"
 msgstr "額外休假"
 
-msgid "'s leave request"
-msgstr "的休假請求"
-
 msgid "Reject Compensatory Leave Request"
 msgstr "拒絕補假申請"
 
 msgid "You have No leave requests for this filter."
 msgstr "您沒有針對此篩選器的休假請求。"
-
-msgid "Compensatory Leave Type"
-msgstr "補假類型"
-
-msgid "This leave type will be used for assigning compensatory leaves."
-msgstr "此休假類型將用於分配補假。"
 
 msgid "There are no compensatory leave requests at the moment."
 msgstr "目前沒有補假請求。"
@@ -8669,41 +10556,11 @@ msgstr "目前沒有補假請求。"
 msgid "Attendance Days"
 msgstr "出勤天數"
 
-msgid "Requests to Approve"
-msgstr "批准請求"
-
-msgid "Approved Leaves In This Month"
-msgstr "本月批准的休假"
-
-msgid "Rejected Leaves In This Month"
-msgstr "本月被拒絕的休假"
-
-msgid "Employee Leaves"
-msgstr "員工休假"
-
 msgid "next"
 msgstr "下一個"
 
-msgid "View Personal Dashboard"
-msgstr "查看個人儀表板"
-
-msgid "Next Holiday"
-msgstr "下一個假期"
-
-msgid "Upcoming holidays"
-msgstr "即將到來的假期"
-
-msgid "Department Leaves"
-msgstr "部門休假"
-
 msgid "Today is a holiday."
 msgstr "今天是假期。"
-
-msgid "Leave Type - Count of leaves"
-msgstr "休假類型 - 休假數量"
-
-msgid "Weekly Leave Analytics"
-msgstr "每週休假分析"
 
 msgid "Do you want to Approve this leave allocation request?"
 msgstr "您要批准此休假分配請求嗎？"
@@ -8714,26 +10571,11 @@ msgstr "您要批准此休假申請嗎？"
 msgid "No employees have taken leave today."
 msgstr "今天沒有員工休假。"
 
-msgid "New Requests"
-msgstr "新請求"
-
 msgid "Approved Requests"
 msgstr "已批准的請求"
 
 msgid "Rejected Requests"
 msgstr "被拒絕的請求"
-
-msgid "Available Leaves"
-msgstr "可用假期"
-
-msgid "Total Leave Requests"
-msgstr "請假申請總數"
-
-msgid "View Admin Dashboard"
-msgstr "查看管理儀表板"
-
-msgid "'s leave allocation request"
-msgstr "的休假分配請求"
 
 msgid "Reject Leave Allocation Request"
 msgstr "拒絕休假分配請求"
@@ -8794,9 +10636,6 @@ msgstr "新的休假申請"
 
 msgid "Extra Days"
 msgstr "額外天數"
-
-msgid "You have No leave requests for this month."
-msgstr "您本月沒有休假申請。"
 
 msgid "Leave type is not assigned for the selected employee."
 msgstr "沒有為選定的員工分配休假類型。"
@@ -8864,53 +10703,6 @@ msgstr "所有休假申請"
 msgid "Back to Leave Request"
 msgstr "返回休假申請"
 
-msgid "Create Leave Type"
-msgstr "建立休假類型"
-
-msgid "Do you want to limit leave days for this leave type?"
-msgstr "您是否要限制此休假類型的休假天數？"
-
-msgid "Do you need to reset leaves based on conditions?"
-msgstr "是否需要視情況重新設定休假？"
-
-msgid "The time period for the leave to reset."
-msgstr "休假重置的時間段。"
-
-msgid "The conditions for carrying forward the balance of leave."
-msgstr "結轉剩餘假期的條件。"
-
-msgid "The maximum number of leave that can be carried forward."
-msgstr "可結轉的最大假期天數。"
-
-msgid "The count of carryforward expire period"
-msgstr "結轉到期期限計數"
-
-msgid "The time period for the expiration of carryforward leave."
-msgstr "結轉假期的到期時段。"
-
-msgid ""
-"The date on which carryforward leave resets to 0. After this reset, the date "
-"will be updated to the next expiration period."
-msgstr "結轉假期重設為 0 的日期。重置後，日期將更新為下一個到期期限。"
-
-msgid "Do you need approval for leave from the authority?"
-msgstr "您需要得到主管機關的批准才能休假嗎？"
-
-msgid "Do you need to attach a document for leave?"
-msgstr "請假需要附上文件嗎？"
-
-msgid "Do you need to exclude company holidays from the requested leave days?"
-msgstr "您是否需要從申請的休假天數中排除公司假期？"
-
-msgid "Do you need to exclude public holidays from the requested leave days?"
-msgstr "您是否需要從申請的休假天數中排除公共假期？"
-
-msgid "Do you need to encash pending leave days?"
-msgstr "您需要將待付的休假天數兌現嗎？"
-
-msgid "Assign to Employees"
-msgstr "分配給員工"
-
 msgid "Choose employees to assign this leave type"
 msgstr "選擇要指派此休假類型的員工"
 
@@ -8922,9 +10714,6 @@ msgstr "您確實要刪除此休假類型嗎？"
 
 msgid "There are no leave types to view"
 msgstr "沒有可供查看的休假類型"
-
-msgid "Update Leave Type"
-msgstr "更新休假類型"
 
 msgid "View Leave Types"
 msgstr "查看休假類型"
@@ -8952,17 +10741,6 @@ msgstr "排除的休假類型"
 
 msgid "No restricted date available."
 msgstr "無限制日期。"
-
-msgid "Restrict Past Leave"
-msgstr "限制過去的休假"
-
-msgid "Restricts Past Date Leave Request Creation"
-msgstr "限制建立逾期休假申請"
-
-msgid ""
-"By enabling this only admins and managers can create leave requests for the "
-"past dates"
-msgstr "啟用此功能後，只有管理員和經理才能建立過去日期的休假申請"
 
 msgid "Create Leave Request"
 msgstr "建立休假申請"
@@ -9301,12 +11079,6 @@ msgstr "通知期開始日期"
 msgid "Notice Period end Date"
 msgstr "通知期結束日期"
 
-msgid "Stage"
-msgstr "階段"
-
-msgid "Tasks"
-msgstr "任務"
-
 msgid "Stages"
 msgstr "階段"
 
@@ -9315,9 +11087,6 @@ msgstr "新增階段"
 
 msgid "Manage Stage Order"
 msgstr ""
-
-msgid "Planned To Leave"
-msgstr "計劃休假"
 
 msgid "Resignations"
 msgstr "辭職"
@@ -9395,14 +11164,6 @@ msgstr "通知期開始"
 msgid "Notice Period Ends"
 msgstr "通知期結束"
 
-msgid "Managers"
-msgstr "主管"
-
-#, fuzzy
-#| msgid "Update Image"
-msgid "Update Stage Order"
-msgstr "更新影像"
-
 msgid "Do You really want to approve the request"
 msgstr "您確實要批准該請求嗎"
 
@@ -9425,11 +11186,6 @@ msgid "Add to offboarding"
 msgstr "添加到離職"
 
 #, fuzzy
-#| msgid "Returned Status"
-msgid "Not Returned Assets"
-msgstr "退貨狀態"
-
-#, fuzzy
 #| msgid "Gender"
 msgid "Reminder"
 msgstr "性別"
@@ -9437,52 +11193,13 @@ msgstr "性別"
 msgid "No Assets Due for Return from Offboarding Employees."
 msgstr ""
 
-msgid "Exit Ratio"
-msgstr ""
-
-msgid "Archived Employees / Total Employees"
-msgstr ""
-
-msgid "Exiting to Joining Ratio"
-msgstr ""
-
-msgid "Exiting Employees : Joining Employees"
-msgstr ""
-
-#, fuzzy
-#| msgid "Add Employee"
-msgid "Archived Employees"
-msgstr "新增員工"
-
-#, fuzzy
-#| msgid "Same Department & Job Position"
-msgid "Department - JobPosition Offboarding"
-msgstr "同部門、同崗位"
-
-msgid "Joining and Offboarding Chart"
-msgstr ""
-
-#, fuzzy
-#| msgid "Offboarding employee deleted"
-msgid "Offboarding Employees Feedbacks"
-msgstr "離職員工被刪除"
-
-msgid "Feedback"
-msgstr "回饋"
-
 #, fuzzy
 #| msgid "No feedbacks are available."
 msgid "No feedbacks for Offboarding Employees."
 msgstr "沒有可用的回饋。"
 
-msgid "Task Status"
-msgstr "任務狀態"
-
 msgid "No Pending Tasks for Offboarding Employees."
 msgstr ""
-
-msgid "stage"
-msgstr "階段"
 
 msgid "There is no offboardings at this moment."
 msgstr "目前還沒有離職資訊。"
@@ -9499,21 +11216,8 @@ msgstr "你想刪除這封信嗎"
 msgid "No resignation has been created yet."
 msgstr "尚未創建任何辭職訊息。"
 
-msgid "Resignation Request"
-msgstr "辭職申請"
-
-msgid ""
-"By enabling this normal users can request for their resignation progress"
-msgstr "透過啟用此功能，普通用戶可以請求他們的辭職進度"
-
 msgid "Are you sure want to delete this stage?"
 msgstr "您確定要刪除這個階段嗎？"
-
-msgid "Notice Period"
-msgstr "通知期"
-
-msgid "Add Task"
-msgstr "新增任務"
 
 msgid "Offboarding deleted"
 msgstr "已刪除下線"
@@ -9577,9 +11281,6 @@ msgstr "辭職信已保存"
 msgid "Resignation Request setting has been {} successfully."
 msgstr "辭職請求設定已成功{}。"
 
-msgid "Task"
-msgstr "任務"
-
 msgid "Scheduled"
 msgstr "已安排"
 
@@ -9605,26 +11306,15 @@ msgstr "門戶未發送"
 msgid "Portal Send"
 msgstr "傳送門已發送"
 
-msgid "Recruitment"
-msgstr "招募"
-
 #, fuzzy
 #| msgid "Probation ends"
 msgid "Probation End"
 msgstr "試用期結束"
 
 #, fuzzy
-#| msgid "Offer letter status :"
-msgid "Offer Letter Status"
-msgstr "錄取通知書狀態："
-
-#, fuzzy
 #| msgid "Reject Reason"
 msgid "Rejected Reason"
 msgstr "拒絕原因"
-
-msgid "Skill Zone"
-msgstr "技能區"
 
 msgid "Send Portal"
 msgstr "發送入口網站"
@@ -9696,9 +11386,6 @@ msgstr "移動的"
 msgid "Task title"
 msgstr "任務標題"
 
-msgid "Task Managers"
-msgstr "工作管理員"
-
 msgid "Stage Title"
 msgstr "舞台名稱"
 
@@ -9730,9 +11417,6 @@ msgstr "入職階段圖"
 msgid "Task Title"
 msgstr "任務標題"
 
-msgid "Candidates"
-msgstr "應徵者"
-
 #, fuzzy
 #| msgid "My Onboarding Tasks"
 msgid "Onboarding Task"
@@ -9752,9 +11436,6 @@ msgstr "已入職應徵者"
 #| msgid "Candidate Onboarding stage"
 msgid "Candidate Onboarding Stage"
 msgstr "應徵者入職階段"
-
-msgid "Onboarding"
-msgstr "入職"
 
 #, fuzzy
 #| msgid "onboarding-view"
@@ -9801,9 +11482,6 @@ msgstr "發送入口網站/開始入職"
 msgid "Send Portal  / Start onboarding"
 msgstr "發送入口網站/開始入職"
 
-msgid "Candidate Filter"
-msgstr "候選篩選器"
-
 msgid "Joining From"
 msgstr "加入自"
 
@@ -9812,9 +11490,6 @@ msgstr "加入 Till"
 
 msgid "Portal Sent"
 msgstr "傳送門已發送"
-
-msgid "Offer Status"
-msgstr "優惠狀態"
 
 msgid "Optional"
 msgstr "選填"
@@ -9825,20 +11500,8 @@ msgstr "模板作為附件"
 msgid "Send Portal Link"
 msgstr "傳送入口網站連結"
 
-msgid "Is Published"
-msgstr "已發布"
-
 msgid "Is closed"
 msgstr "已關閉"
-
-msgid "Start Date From"
-msgstr "開始日期"
-
-msgid "Till End Date"
-msgstr "截止截止日期"
-
-msgid "Candidate"
-msgstr "應徵者"
 
 msgid "Taks"
 msgstr ""
@@ -9902,9 +11565,6 @@ msgstr "應徵者入職"
 msgid "No candidates started onboarding."
 msgstr "沒有應徵者開始入職。"
 
-msgid "My Onboarding Tasks"
-msgstr "我的入職任務"
-
 msgid "Login"
 msgstr "登入"
 
@@ -9935,16 +11595,8 @@ msgstr "出生日期"
 msgid "Next Step"
 msgstr "下一步"
 
-#, fuzzy
-#| msgid "Task not found."
-msgid "No Tasks found."
-msgstr "未找到任務。"
-
 msgid "Do you want to delete this stage?"
 msgstr "您想刪除這個階段嗎？"
-
-msgid "Add task"
-msgstr "新增任務"
 
 msgid "Bulk Stage Change"
 msgstr "批量階段變更"
@@ -9984,17 +11636,11 @@ msgstr "打開"
 msgid "Candidate Name"
 msgstr "應徵者姓名"
 
-msgid "Send"
-msgstr "傳送"
-
 msgid "Onboarding portal stage"
 msgstr "入職入口網站階段"
 
 msgid "Portal"
 msgstr "入口網站"
-
-msgid "Task Manager"
-msgstr "工作管理員"
 
 msgid "Authentication"
 msgstr "驗證"
@@ -10160,33 +11806,6 @@ msgstr "郵件已發送"
 msgid "Outlook authentication required/expired"
 msgstr ""
 
-msgid "Tax"
-msgstr "稅"
-
-msgid "One Time deduction"
-msgstr "一次扣除"
-
-msgid "Condition Based"
-msgstr "基於條件"
-
-msgid "Has Maximum Limit"
-msgstr "有最大限制"
-
-msgid "Deduction Eligibility"
-msgstr "扣除資格"
-
-msgid "Taxable"
-msgstr "應稅"
-
-msgid "One Time Allowance"
-msgstr "一次性津貼"
-
-msgid "Allowance Eligibility"
-msgstr "津貼資格"
-
-msgid "Specific Employees"
-msgstr "特定員工"
-
 msgid "Excluded Employees"
 msgstr "被排除的員工"
 
@@ -10211,12 +11830,6 @@ msgstr "從基本工資中扣除"
 msgid "Pay Frequency"
 msgstr "付款頻率"
 
-msgid "Calculate Leave Amount"
-msgstr "計算休假金額"
-
-msgid "Note"
-msgstr "筆記"
-
 #, fuzzy
 #| msgid "Total Net Payable"
 msgid "Total Net Pay"
@@ -10231,9 +11844,6 @@ msgstr "結束日期"
 #| msgid "Expiry Date"
 msgid "Expired Date"
 msgstr "到期日"
-
-msgid "Pretax"
-msgstr "稅前"
 
 #, fuzzy
 #| msgid "Filing Status"
@@ -10273,6 +11883,17 @@ msgstr "稅級已成功更新。"
 
 msgid "The tax bracket was created successfully."
 msgstr "稅級已成功建立。"
+
+#, fuzzy
+#| msgid "Tax Rate"
+msgid "Tax Rate (%)"
+msgstr "稅率"
+
+msgid "Min. Income"
+msgstr "最低收入"
+
+msgid "Max. Income"
+msgstr "最高收入"
 
 msgid "Loan"
 msgstr "貸款"
@@ -10328,16 +11949,10 @@ msgstr "薪資報告"
 msgid "Send Via Mail"
 msgstr "透過郵件發送"
 
-msgid "Payslip"
-msgstr "薪資單"
-
 #, fuzzy
 #| msgid "Payslip Batch"
 msgid "Pay Slip Batch"
 msgstr "薪資批次"
-
-msgid "Basic Pay"
-msgstr "基本工資"
 
 msgid "Create Payslip"
 msgstr "創建薪資單"
@@ -10433,9 +12048,6 @@ msgstr "可用天數不足，無法兌換"
 
 msgid "Value must be greater than zero"
 msgstr "值必須大於零"
-
-msgid "Taxable Gross Pay"
-msgstr "應稅總薪資"
 
 #, fuzzy
 #| msgid "Filing Status"
@@ -10771,12 +12383,6 @@ msgstr "後綴"
 msgid "Payroll Settings"
 msgstr "薪資設定已更新。"
 
-msgid "Min. Income"
-msgstr "最低收入"
-
-msgid "Max. Income"
-msgstr "最高收入"
-
 msgid "Tax Rate"
 msgstr "稅率"
 
@@ -10804,14 +12410,8 @@ msgstr "雇主費率："
 msgid "Employee Rate :"
 msgstr "員工費率："
 
-msgid "Do you want to delete this deduction?"
-msgstr "您想刪除此扣除額嗎？"
-
 msgid "Based"
 msgstr "基於"
-
-msgid "Deduction Amount For One Leave"
-msgstr "一次休假扣除金額"
 
 msgid "Export Contracts"
 msgstr "出口合約"
@@ -10842,21 +12442,6 @@ msgstr ""
 msgid "installments"
 msgstr "分期付款"
 
-msgid "Total Amount"
-msgstr "總金額"
-
-msgid "Paid Amount"
-msgstr "已付金額"
-
-msgid "Balance Amount"
-msgstr "餘額"
-
-msgid "S/N"
-msgstr "序號"
-
-msgid "One Time Date"
-msgstr "一次性約會"
-
 msgid "Loan Filter"
 msgstr "貸款篩選"
 
@@ -10871,38 +12456,8 @@ msgstr "已解決"
 msgid "Do you want to sent the payslip by mail?"
 msgstr "您想透過電子郵件發送薪資單嗎？"
 
-msgid "Send via mail"
-msgstr "透過郵件發送"
-
 msgid "Are you sure you want to delete this payslip?"
 msgstr "您確定要刪除此薪資單嗎？"
-
-msgid "Start Date Till"
-msgstr "開始日期至"
-
-msgid "End Date From"
-msgstr "結束日期自"
-
-msgid "End Date Till"
-msgstr "結束日期"
-
-msgid "Gross Pay Less Than or Equal"
-msgstr "總工資低於或等於"
-
-msgid "Gross Pay Greater or Equal"
-msgstr "總工資大於或等於"
-
-msgid "Deduction Less Than or Equal"
-msgstr "扣除額小於或等於"
-
-msgid "Deduction Greater or Equal"
-msgstr "扣除額大於或等於"
-
-msgid "Net Pay Less Than or Equal"
-msgstr "淨薪資小於或等於"
-
-msgid "Net Pay Greater or Equal"
-msgstr "淨薪資大於或等於"
 
 msgid "Mail Sent"
 msgstr "郵件已發送"
@@ -10924,6 +12479,11 @@ msgstr "目前沒有需要考慮的津貼。"
 msgid "There have been no contracts signed."
 msgstr "尚未簽署任何合約。"
 
+#, fuzzy
+#| msgid "Update"
+msgid " Update"
+msgstr "更新"
+
 msgid "Wage"
 msgstr "薪資"
 
@@ -10944,51 +12504,6 @@ msgstr "捐款扣除"
 
 msgid "Deduct From"
 msgstr "扣除"
-
-msgid "Employee Contribution"
-msgstr "員工貢獻"
-
-msgid "Employer Contribution"
-msgstr "雇主繳款"
-
-msgid "Select Month and Year:"
-msgstr "選擇月份和年份："
-
-msgid "Contributions"
-msgstr "貢獻"
-
-msgid "Employee Payslips"
-msgstr "員工薪資單"
-
-msgid "Total Payslips Genarated :"
-msgstr "產生的工資單總數："
-
-msgid "Total Amount :"
-msgstr "總金額 ："
-
-msgid "Department Total Amount"
-msgstr "部門總金額"
-
-msgid "Employer Contributions"
-msgstr "雇主繳款"
-
-#, fuzzy
-#| msgid "Contracts ending "
-msgid "Contracts Ending "
-msgstr "合約終止 "
-
-msgid "Number of contracts expiring in "
-msgstr "到期合約數量 "
-
-#, fuzzy
-#| msgid "Contract Created"
-msgid "Contracts Expired"
-msgstr "合約創建"
-
-#, fuzzy
-#| msgid "Number of contracts expiring in "
-msgid "Number of contracts expired in "
-msgstr "到期合約數量 "
 
 msgid "No records available."
 msgstr "沒有可用記錄。"
@@ -11017,9 +12532,6 @@ msgstr "選擇所有薪資單"
 msgid "Unselect All Payslips"
 msgstr "取消選擇所有薪資單"
 
-msgid "Do you want to send the payslip by mail?"
-msgstr "您想透過電子郵件發送薪資單嗎？"
-
 msgid "payslips"
 msgstr "薪資單"
 
@@ -11029,61 +12541,14 @@ msgstr "選擇所有用戶"
 msgid "Send via mail "
 msgstr "透過郵件發送 "
 
-msgid "Employee Details"
-msgstr "員工詳細資訊"
-
 msgid "Employee ID"
 msgstr "員工 ID"
 
 msgid "Bank Acc./Cheque No."
 msgstr "銀行帳戶/支票號碼"
 
-msgid "Employee Net Pay"
-msgstr "員工淨工資"
-
-msgid "Actual Basic Pay"
-msgstr "實質基本工資"
-
-msgid "Paid Days"
-msgstr "有薪休假"
-
-msgid "LOP Days"
-msgstr "曠職天數"
-
-msgid "Updated Basic Pay"
-msgstr "更新基本工資"
-
-msgid "The payslip is calculated based on the updated basic pay"
-msgstr "薪資單是根據更新後的基本工資計算的"
-
 msgid "taxable amount"
 msgstr "應稅金額"
-
-msgid "Add Allowance"
-msgstr "添加津貼"
-
-msgid ""
-"Some deductions will update basic pay before payslip calculation starts, eg: "
-"LOP is Deduducted from basic pay if `Deduct leave from basic pay` field is "
-"enabled on the contract, and also with the update compensation deduction "
-"through"
-msgstr ""
-"一些扣除將在工資單計算開始之前更新基本工資，例如：如果合約中啟用了「從基本工"
-"資中扣除休假」字段，則從基本工資中扣除 LOP，並且通過更新薪酬扣除"
-
-msgid "Total Gross Pay"
-msgstr "總工資"
-
-msgid ""
-"Some Deduction will update the total gross pay using the deductions that are "
-"enabled update compensation"
-msgstr "部分扣除將使用啟用的更新補償扣除來更新總工資"
-
-msgid "Add Deduction"
-msgstr "添加扣除"
-
-msgid "Loss of Pay"
-msgstr "工資損失"
 
 msgid "Basic Pay Deductions"
 msgstr "基本工資扣除"
@@ -11091,30 +12556,8 @@ msgstr "基本工資扣除"
 msgid "Gross Pay Deductions"
 msgstr "總工資扣除額"
 
-msgid "Federal Tax"
-msgstr "聯邦稅"
-
 msgid "Net Pay Deductions"
 msgstr "淨工資扣除額"
-
-msgid "Total Deductions"
-msgstr "總扣除額"
-
-msgid ""
-"Some deductions are not included in the total deductions because they are "
-"given as updated compensations. These deductions may be applied before the "
-"main calculation begins, such as from the basic pay or gross pay, while "
-"others are deducted after calculating the net pay."
-msgstr ""
-"有些扣除額未計入總扣除額，因為它們是作為更新後的薪酬給出的。這些扣除額可能在"
-"主要計算開始之前應用，例如從基本工資或總工資中扣除，而其他扣除額則在計算淨工"
-"資後扣除。"
-
-msgid "Total Net Payable"
-msgstr "應付淨額總計"
-
-msgid "Gross Earnings - Total Deductions"
-msgstr "總收入 - 總扣除額"
 
 msgid "'s Payslip"
 msgstr "的薪資單"
@@ -11183,9 +12626,6 @@ msgstr "未發現任何處罰。"
 msgid "No files available at the moment."
 msgstr "目前沒有可用的記錄。"
 
-msgid "'s reimbursement request"
-msgstr "的報銷請求"
-
 #, fuzzy
 #| msgid "No records available at the moment."
 msgid "No comments available at the moment."
@@ -11215,32 +12655,14 @@ msgstr "天即可兌現。"
 msgid "There are currently no reimbursement to consider."
 msgstr "目前沒有可考慮的報銷。"
 
-msgid "Currency Symbol"
-msgstr "貨幣符號"
-
-msgid "Position"
-msgstr "位置"
-
 msgid "All company"
 msgstr "所有公司"
 
 msgid "Are you sure you want to delete this payslip auto generate?"
 msgstr "您確定要刪除此自動產生的薪資單嗎？"
 
-msgid "Default Notice Period"
-msgstr "違約通知期"
-
-msgid " Set initial notice period (in days)"
-msgstr " 設定初始通知期（以天為單位）"
-
-msgid "No tax filing status has been recorded."
-msgstr "未記錄任何納稅申報狀態。"
-
 msgid "Tax Bracket"
 msgstr "稅級"
-
-msgid "Are you sure to delete this Tax bracket ?"
-msgstr "您確定要刪除此稅級嗎？"
 
 msgid "Allowance created."
 msgstr "已建立津貼。"
@@ -11418,9 +12840,6 @@ msgstr "進度百分比"
 msgid "Due On"
 msgstr "到期日"
 
-msgid "Answers"
-msgstr "答案"
-
 msgid "At Risk"
 msgstr "處於危險之中"
 
@@ -11473,9 +12892,6 @@ msgstr "更新回饋"
 msgid "Feedback updated successfully!"
 msgstr "回饋更新成功！"
 
-msgid "Key Results"
-msgstr "主要結果"
-
 msgid "Progress Type"
 msgstr "進度類型"
 
@@ -11500,15 +12916,6 @@ msgstr "媽媽"
 
 msgid "Meetings"
 msgstr "會議"
-
-msgid "Question Template"
-msgstr "問題模板"
-
-msgid "Answerable employees"
-msgstr "負責任的員工"
-
-msgid "Minutes of Meeting"
-msgstr "會議記錄"
 
 #, fuzzy
 #| msgid "Update Request"
@@ -11537,9 +12944,6 @@ msgstr "指定休假"
 #| msgid "All Objective"
 msgid "All Objectives"
 msgstr "所有目標"
-
-msgid "Objectives"
-msgstr "目標"
 
 msgid "Create Employee Objective"
 msgstr "建立員工目標"
@@ -11623,9 +13027,6 @@ msgstr "問題更新成功。"
 msgid "Question Template Created Successfully"
 msgstr "問題創建成功。"
 
-msgid "Bonus Point Setting"
-msgstr "積分設定"
-
 #, fuzzy
 #| msgid "Bonus Point Setting"
 msgid "Create Bonus Point Setting"
@@ -11654,20 +13055,11 @@ msgstr "大量拒絕請求"
 msgid "Key result"
 msgstr "關鍵結果"
 
-msgid "Objective"
-msgstr "客觀的"
-
 msgid "Enter a title"
 msgstr "輸入標題"
 
 msgid "Enter a description"
 msgstr "輸入描述"
-
-msgid "Colleague"
-msgstr "同事"
-
-msgid "Key Result"
-msgstr "關鍵結果"
 
 msgid "Is Cyclic Feedback"
 msgstr "是循環回饋"
@@ -11763,22 +13155,11 @@ msgstr "李克特量表"
 msgid "Employees working on the same department."
 msgstr "員工未在所選公司工作。"
 
-msgid "Subordinates"
-msgstr "下屬"
-
 msgid "Employees for whom the feedback requester is the reporting manager"
 msgstr ""
 
-#, fuzzy
-#| msgid "Online Employees"
-msgid "Other Employees"
-msgstr "線上員工"
-
 msgid "Cycle Period"
 msgstr "週期"
-
-msgid "General"
-msgstr "一般的"
 
 msgid "Answerable Employees"
 msgstr "負責任的員工"
@@ -11799,9 +13180,6 @@ msgstr "結束語"
 
 msgid "Completion Date"
 msgstr "完成日期"
-
-msgid "Members"
-msgstr "成員"
 
 msgid "Feedback Subject"
 msgstr "回饋主旨"
@@ -11830,14 +13208,8 @@ msgstr "您想要存檔此回饋嗎？"
 msgid "Are you sure you want to archive this feedback?"
 msgstr "您想要存檔此回饋嗎？"
 
-msgid "Do you want Delete this Feedback ?"
-msgstr "您想刪除此回饋嗎？"
-
 msgid "Can't delete the feedback it's already answered."
 msgstr "無法刪除已經回答的回饋。"
-
-msgid "Subordinate"
-msgstr "下屬"
 
 #, fuzzy
 #| msgid "Offboarding"
@@ -11860,11 +13232,6 @@ msgid "Created At Range"
 msgstr "創建於"
 
 #, fuzzy
-#| msgid "Filters"
-msgid "Quick Filters"
-msgstr "過濾器"
-
-#, fuzzy
 #| msgid "Are you sure you want to delete\tthis Key result?"
 msgid "Are you sure you want to delete this Key result?"
 msgstr "您確定要刪除此關鍵結果嗎？"
@@ -11874,9 +13241,6 @@ msgstr "您確定要刪除此關鍵結果嗎？"
 msgid "Do you want to unarchive this key Result?"
 msgstr "您要取消存檔該會議嗎？"
 
-msgid "Unarchive"
-msgstr "取消存檔"
-
 #, fuzzy
 #| msgid "Do you want to archive this ticket?"
 msgid "Do you want to archive this key Result?"
@@ -11884,6 +13248,16 @@ msgstr "您想存檔此票嗎？"
 
 msgid "Do you want to delete this Key result?"
 msgstr "您想刪除此關鍵結果嗎？"
+
+#, fuzzy
+#| msgid "Meeting"
+msgid "Join Meeting"
+msgstr "會議"
+
+#, fuzzy
+#| msgid "Send Link"
+msgid "Send Meeting Link"
+msgstr "發送連結"
 
 msgid "Do you want to unarchive this meeting?"
 msgstr "您要取消存檔該會議嗎？"
@@ -11909,6 +13283,11 @@ msgstr "日期小於或等於"
 msgid "Are you sure to remove this manager?"
 msgstr "您確定要刪除該經理嗎？"
 
+#, fuzzy
+#| msgid "Minutes of Meeting"
+msgid "Minutes Of Meeting"
+msgstr "會議記錄"
+
 msgid "Do you want to unarchive this objective?"
 msgstr "您想取消存檔該目標嗎？"
 
@@ -11927,9 +13306,6 @@ msgstr "已歸檔"
 msgid "Are you sure want to remove this key result?"
 msgstr "您確定要刪除此關鍵結果嗎？"
 
-msgid "Key results"
-msgstr "主要結果"
-
 msgid "Are you sure want to remove this manager?"
 msgstr "您確定要刪除該經理嗎？"
 
@@ -11937,9 +13313,6 @@ msgstr "您確定要刪除該經理嗎？"
 #| msgid "Do you want to un-archive this employee objective?"
 msgid "Do you want to unarchive this employee objective?"
 msgstr "您想取消存檔該員工目標嗎？"
-
-msgid "Do you want to archive this employee objective?"
-msgstr "您想存檔此員工目標嗎？"
 
 msgid "Do you want to delete this period ?"
 msgstr "您想刪除此句點嗎？"
@@ -11950,82 +13323,8 @@ msgstr "您要刪除該問題範本嗎？"
 msgid "Due Date"
 msgstr "到期日"
 
-msgid "Total employee objectives"
-msgstr "員工整體目標"
-
-msgid "Total key results"
-msgstr "關鍵結果總計"
-
-msgid "Total feedbacks"
-msgstr "總回饋數"
-
-msgid "Objective status"
-msgstr "客觀現狀"
-
-msgid "No objectives are available."
-msgstr "沒有可用的目標。"
-
-msgid "Key result status"
-msgstr "關鍵結果狀態"
-
-msgid "No key results are available."
-msgstr "沒有可用的關鍵結果。"
-
-msgid "Feedback status"
-msgstr "回饋狀態"
-
-msgid "No feedbacks are available."
-msgstr "沒有可用的回饋。"
-
-msgid "Objectives At-Risk"
-msgstr "目標面臨風險"
-
-msgid "Feedback Answer"
-msgstr "回饋答案"
-
-msgid "Stars"
-msgstr "星星"
-
-msgid "Star"
-msgstr "星星"
-
-msgid "Strongly Disagree"
-msgstr "強烈反對"
-
-msgid "Disagree"
-msgstr "不同意"
-
-msgid "Neutral"
-msgstr "中性的"
-
-msgid "Agree"
-msgstr "同意"
-
-msgid "Strongly Agree"
-msgstr "非常同意"
-
-msgid "Perfect"
-msgstr "完美的"
-
-msgid "Good"
-msgstr "好的"
-
-msgid "Average"
-msgstr "平均的"
-
-msgid "Bad"
-msgstr "壞的"
-
 msgid "Owner: "
 msgstr "所有者： "
-
-#, fuzzy
-#| msgid "Requested Feedback"
-msgid "Request feedback"
-msgstr "請求回饋"
-
-msgid "Do you want archive this Feedback ?"
-msgstr "您想要存檔此回饋嗎？"
 
 msgid "Start date: "
 msgstr "開始日期： "
@@ -12044,15 +13343,6 @@ msgstr "循環回饋週期： "
 
 msgid "Next feedback on: "
 msgstr "下次回饋： "
-
-msgid "Feedback Answers"
-msgstr "回饋答案"
-
-msgid "Feedback Overview"
-msgstr "回饋概述"
-
-msgid "Answer View"
-msgstr "答案視圖"
 
 #, fuzzy
 #| msgid "Self Feedback"
@@ -12077,53 +13367,36 @@ msgstr "創建於"
 msgid "There are no anonymous feedbacks available."
 msgstr "沒有可用的匿名回饋。"
 
-msgid "Feedback Title"
-msgstr "回饋標題"
-
 msgid "Yesterday"
 msgstr "昨天"
-
-msgid "This Week"
-msgstr "本週"
-
-msgid "This Month"
-msgstr "本月"
-
-msgid "No answers yet."
-msgstr "尚無答案。"
 
 msgid "Review Cycle"
 msgstr "審查週期"
 
-msgid "Hide Questions"
-msgstr "隱藏問題"
-
-msgid "Show Questions"
-msgstr "顯示問題"
-
-msgid "Question Type"
+#, fuzzy
+#| msgid "Question Type"
+msgid "Question type"
 msgstr "問題類型"
 
-msgid "Question"
-msgstr "問題"
+#, fuzzy
+#| msgid "Optional"
+msgid "Option a"
+msgstr "選填"
 
-msgid "Show Options"
-msgstr "顯示選項"
-
-msgid "Hide Options"
-msgstr "隱藏選項"
-
-msgid "Option"
+#, fuzzy
+#| msgid "Option"
+msgid "Option b"
 msgstr "選項"
 
-msgid "Do you want to delete the question?"
-msgstr "您想刪除該問題嗎？"
+#, fuzzy
+#| msgid "Option"
+msgid "Option c"
+msgstr "選項"
 
-msgid "Add A Question"
-msgstr "添加問題"
-
-msgid "Add Question"
-msgstr "添加問題"
+#, fuzzy
+#| msgid "Option"
+msgid "Option d"
+msgstr "選項"
 
 msgid "Total Question"
 msgstr "總問題"
@@ -12155,40 +13428,10 @@ msgstr "會議記錄（MoM）"
 msgid "Response"
 msgstr "回覆"
 
-msgid "Employee Objectives"
-msgstr "員工目標"
-
-msgid "Activites"
-msgstr "活動"
-
-msgid "Do you want to un-archive this employee objective?"
-msgstr "您想取消存檔該員工目標嗎？"
-
-msgid "Do you want to delete this employee objective?"
-msgstr "您要刪除該員工目標嗎？"
-
-#, python-format
-msgid "Objective Progress %% (GTE)"
-msgstr ""
-
-#, python-format
-msgid "Objective Progress %% (LTE)"
-msgstr ""
-
 #, fuzzy
 #| msgid "End Date Till"
 msgid "End Date TTill"
 msgstr "結束日期"
-
-#, fuzzy, python-format
-#| msgid "Progress Type"
-msgid "KR Progress %% (GTE)"
-msgstr "進度類型"
-
-#, fuzzy, python-format
-#| msgid "Progress Type"
-msgid "KR Progress %% (LTE)"
-msgstr "進度類型"
 
 msgid "Create Key Result"
 msgstr "創建關鍵結果"
@@ -12265,21 +13508,6 @@ msgstr "您想刪除此目標嗎？"
 msgid "Add New"
 msgstr "新增"
 
-msgid "updated"
-msgstr "已更新"
-
-msgid "from"
-msgstr "從"
-
-msgid "field of "
-msgstr "領域 "
-
-msgid "key result"
-msgstr "關鍵結果"
-
-msgid "added a comment"
-msgstr "新增評論"
-
 msgid "Created Objective"
 msgstr "建立目標"
 
@@ -12306,9 +13534,6 @@ msgstr "期間："
 
 msgid "Description:"
 msgstr "描述："
-
-msgid "There are no assignees for this objective at the moment."
-msgstr "目前該目標尚無受讓人。"
 
 msgid "Create Objectives"
 msgstr "建立目標"
@@ -12465,6 +13690,11 @@ msgstr "回饋狀態已更新至  %(status)s"
 msgid "Error occurred during status update to %(status)s"
 msgstr "狀態更新至 %(status)s時發生錯誤"
 
+#, fuzzy
+#| msgid "Attendance Does not exists.."
+msgid "Feedback does not exist."
+msgstr "沒有出勤記錄"
+
 msgid "Feedback un-archived successfully!."
 msgstr "回饋取消存檔成功！"
 
@@ -12590,11 +13820,6 @@ msgstr "積分設定已成功啟動。"
 
 msgid "Bonus point setting deactivated successfully."
 msgstr "獎勵積分設定已成功取消。"
-
-#, fuzzy
-#| msgid "Project"
-msgid "View Project"
-msgstr "專案"
 
 #, fuzzy
 #| msgid "Tasks"
@@ -12768,11 +13993,6 @@ msgid "Timesheet"
 msgstr "時間"
 
 #, fuzzy
-#| msgid "Do you want to delete this period ?"
-msgid "Do you want to delete this project?"
-msgstr "您想刪除此句點嗎？"
-
-#, fuzzy
 #| msgid "Project"
 msgid "Project:"
 msgstr "專案"
@@ -12808,11 +14028,6 @@ msgid "Do you really want to delete all the selected projects?"
 msgstr "您確實要刪除此休假類型嗎？"
 
 #, fuzzy
-#| msgid "There are no rotating shift assigned to this employee."
-msgid "No projects assigned to this employee."
-msgstr "未給該員工分配輪班。"
-
-#, fuzzy
 #| msgid "Import Assets"
 msgid "Import Project"
 msgstr "導入資產"
@@ -12845,38 +14060,10 @@ msgstr "您要刪除此資產嗎？"
 msgid "Do you want to delete this time sheet?"
 msgstr "您要刪除此資產嗎？"
 
-msgid "View Timesheet Chart"
-msgstr ""
-
 #, fuzzy
 #| msgid "Not Added"
 msgid " Add"
 msgstr "未添加"
-
-#, fuzzy
-#| msgid "Total Hires"
-msgid "Total Projects"
-msgstr "總招募人數"
-
-#, fuzzy
-#| msgid "Project"
-msgid "New Projects"
-msgstr "專案"
-
-#, fuzzy
-#| msgid "In progress"
-msgid "Projects in progress"
-msgstr "進行中"
-
-#, fuzzy
-#| msgid "Portal Status"
-msgid "Project Status"
-msgstr "入口網站狀態"
-
-#, fuzzy
-#| msgid "No contracts ending this month"
-msgid "Projects due in this month"
-msgstr "本月沒有到期合約"
 
 #, fuzzy
 #| msgid "Recruitment manager"
@@ -12908,9 +14095,6 @@ msgstr "目前沒有需要考慮的津貼。"
 msgid "Project Manager"
 msgstr "部門經理"
 
-msgid "Are you sure you want to delete this stage?"
-msgstr "您確定要刪除這個階段嗎？"
-
 #, fuzzy
 #| msgid "There are currently no email templates."
 msgid "There are currently no available tasks; please create a new one."
@@ -12930,11 +14114,6 @@ msgid " Time sheet"
 msgstr ""
 
 #, fuzzy
-#| msgid "Do you really want to delete this leave type?"
-msgid "Do you really want to delete this task?"
-msgstr "您確實要刪除此休假類型嗎？"
-
-#, fuzzy
 #| msgid "Managers:"
 msgid "Managers: "
 msgstr "主管:"
@@ -12943,11 +14122,6 @@ msgstr "主管:"
 #| msgid "Are you sure you want to delete this stage?"
 msgid " Are you sure you want to delete this stage?"
 msgstr "您確定要刪除這個階段嗎？"
-
-#, fuzzy
-#| msgid "No user found with the username"
-msgid "No tasks found in this stage."
-msgstr "未找到具有該用戶名的用戶"
 
 #, fuzzy
 #| msgid "Create Task"
@@ -13184,9 +14358,6 @@ msgstr "面試日期"
 msgid "Interview Time"
 msgstr "面試時間"
 
-msgid "Schedule Interview"
-msgstr "安排面試"
-
 #, fuzzy
 #| msgid "Request Updated Successfully"
 msgid "Interview Updated Successfully"
@@ -13211,8 +14382,8 @@ msgstr "加入技能區"
 msgid "Reject Candidate"
 msgstr "編輯被拒絕的應徵者"
 
-msgid "Resume"
-msgstr "履歷"
+msgid "Add Candidate"
+msgstr "新增應徵者"
 
 #, fuzzy
 #| msgid "Hide Questions"
@@ -13245,9 +14416,6 @@ msgstr "範本"
 msgid "Sequence"
 msgstr "順序"
 
-msgid "Survey Templates"
-msgstr "調查模板"
-
 msgid "Is Published?"
 msgstr "是否已發布？"
 
@@ -13259,9 +14427,6 @@ msgstr "可選的個人資料圖片？"
 
 msgid "Optional Resume?"
 msgstr "可選履歷？"
-
-msgid "Skills"
-msgstr "技能"
 
 #, fuzzy
 #| msgid "Skill Zone created successfully."
@@ -13280,9 +14445,6 @@ msgstr "請求更新成功"
 #| msgid "Recruitment deleted successfully."
 msgid "Recruitment Created Successfully"
 msgstr "招聘刪除成功。"
-
-msgid "Add Candidate"
-msgstr "新增應徵者"
 
 #, fuzzy
 #| msgid "Candidate added successfully."
@@ -13324,9 +14486,6 @@ msgstr "應徵者更新成功。"
 
 msgid "Candidate added successfully."
 msgstr "應徵者添加成功。"
-
-msgid "SI.No"
-msgstr ""
 
 msgid "Skill"
 msgstr "技能"
@@ -13373,9 +14532,6 @@ msgstr "調查過濾器"
 #| msgid "Select all users"
 msgid "Select survey answers..."
 msgstr "選擇所有用戶"
-
-msgid "Stage Type"
-msgstr "階段類型"
 
 msgid "---Choose Skills---"
 msgstr "---選擇技能---"
@@ -13468,9 +14624,6 @@ msgstr "如果正在發布招聘訊息，空缺人數必須大於零。"
 msgid "End date cannot be less than start date."
 msgstr "結束日期不能早於開始日期。"
 
-msgid "Applied"
-msgstr "應用"
-
 #, fuzzy
 #| msgid "Not set"
 msgid "Not Sent"
@@ -13486,9 +14639,6 @@ msgstr ""
 
 msgid "Joined"
 msgstr ""
-
-msgid "Application Form"
-msgstr "申請表"
 
 msgid "Inside software"
 msgstr "內部軟體"
@@ -13571,12 +14721,6 @@ msgstr "公開招聘"
 msgid "Choose Open Position"
 msgstr "選擇空缺職位"
 
-msgid "Choose Job Position"
-msgstr "選擇職位"
-
-msgid "Portfolio"
-msgstr "作品集"
-
 msgid "Are you sure you want to convert this candidate into an employee?"
 msgstr "您確定要將這位應徵者轉為正式員工嗎？"
 
@@ -13622,8 +14766,10 @@ msgstr "前往技能區"
 msgid "Create document request"
 msgstr "建立文件請求"
 
-msgid "Application Tracking"
-msgstr "應用程式追蹤"
+#, fuzzy
+#| msgid "Cancel / Reject"
+msgid "Cancel Rejection"
+msgstr "取消/拒絕"
 
 msgid "Congratulation on your selection"
 msgstr "恭喜您選擇"
@@ -13652,9 +14798,6 @@ msgstr "應徵者資訊"
 msgid "Not-Hired"
 msgstr "未受聘"
 
-msgid "No notes have been added for this candidate"
-msgstr "尚未為該應徵者添加註釋"
-
 msgid "Are you sure you want to remove this interviewer?"
 msgstr "您確定要刪除該面試官嗎？"
 
@@ -13662,9 +14805,6 @@ msgstr "您確定要刪除該面試官嗎？"
 #| msgid "Remove"
 msgid " Remove"
 msgstr "消除"
-
-msgid "Interviewers"
-msgstr "面試官"
 
 #, fuzzy
 #| msgid "Edit"
@@ -13689,15 +14829,6 @@ msgstr " 目前沒有可顯示的評級。"
 msgid "Hired Date"
 msgstr "罰款日期"
 
-msgid "Is Hired"
-msgstr "被聘用"
-
-msgid "Is Canceled"
-msgstr "已取消"
-
-msgid "Is Closed"
-msgstr "已關閉"
-
 msgid "Recruitment Managers"
 msgstr "招募經理"
 
@@ -13719,17 +14850,6 @@ msgstr "預定從"
 msgid "Scheduled Till"
 msgstr "預定截止日期"
 
-msgid "Recruitment Information"
-msgstr "招募資訊"
-
-msgid "Current Stage"
-msgstr "當前階段"
-
-#, fuzzy
-#| msgid "No interviews are scheduled for this candidate"
-msgid "No interviews are scheduled for this candidate."
-msgstr "此應徵者沒有安排面試"
-
 #, fuzzy
 #| msgid "There are no assignees for this objective at the moment."
 msgid "There are no tasks assigned for this candidate."
@@ -13737,9 +14857,6 @@ msgstr "目前該目標尚無受讓人。"
 
 msgid "This candidate does not have a resume on file."
 msgstr "該應徵者沒有存檔履歷。"
-
-msgid "No survey templates have been established yet."
-msgstr "尚未建立調查模板。"
 
 msgid "Are you sure you want to delete this interview?"
 msgstr "您確定要刪除此面試嗎？"
@@ -13749,12 +14866,6 @@ msgstr "面試日期"
 
 msgid "Interview Date Till"
 msgstr "面試日期截止"
-
-msgid "INTERVIEW : Today at"
-msgstr "面試：今天"
-
-msgid "with"
-msgstr "和"
 
 msgid "Interviews Scheduled"
 msgstr "已安排面試"
@@ -13772,9 +14883,6 @@ msgstr "您確定要結束本次招募嗎？"
 msgid "Are you sure you want to unarchive this recruitment?"
 msgstr "您確定要結束本次招募嗎？"
 
-msgid "Unknown"
-msgstr "未知"
-
 #, fuzzy
 #| msgid "Are you sure you want to remove this department manager?"
 msgid "Are you sure you want to remove this recruitment manager?"
@@ -13783,56 +14891,23 @@ msgstr "您確定要刪除該部門經理嗎？"
 msgid "Jobs"
 msgstr "工作"
 
-msgid "Add more options.."
-msgstr "增加更多選項.."
-
 msgid "Are sure want to remove this manager?"
 msgstr "確定要刪除該管理員嗎？"
-
-msgid "Total Vacancies"
-msgstr "職位空缺總數"
-
-msgid "Ongoing Recruitments"
-msgstr "正在進行的招聘"
-
-msgid "Conversion Rate"
-msgstr "轉換率"
 
 msgid "Offer Acceptance Rate (OAR)"
 msgstr "錄取率（OAR）"
 
-msgid "Skill Zone Status"
-msgstr "技能區狀態"
-
-msgid "Candidate Offer Letter Status"
-msgstr "應徵者錄取通知書狀態"
-
 msgid "No Candidates available."
 msgstr "沒有可用的應徵者。"
-
-msgid "Candidate on Onboard"
-msgstr "應徵者入職"
-
-msgid "Joinings Per Month"
-msgstr "每月加入人數"
 
 msgid "No records were available."
 msgstr "沒有可用記錄。"
 
-msgid "Current Hiring Pipeline"
-msgstr "目前招募管道"
-
 msgid "No onboarding tasks are currently available."
 msgstr "目前沒有可用的入職任務。"
 
-msgid "Candidates Per Stage"
-msgstr "每階段應徵者"
-
 msgid "No recruitment stages currently available."
 msgstr "目前沒有可用的招募階段。"
-
-msgid "Ongoing Recruitments & Hiring Managers"
-msgstr "正在進行的招聘和招聘經理"
 
 msgid "Check Connection"
 msgstr ""
@@ -13878,18 +14953,6 @@ msgstr "此欄位為必填項"
 msgid "Are you sure you want to delete this candidate?"
 msgstr "您確定要刪除該應徵者嗎？"
 
-msgid "Score"
-msgstr "分數"
-
-msgid "Need verification"
-msgstr "需要驗證"
-
-msgid "Candidated Added"
-msgstr "已新增應徵者"
-
-msgid "Create Candidate"
-msgstr "創建應徵者"
-
 msgid "Sequence updated"
 msgstr "序列已更新"
 
@@ -13927,27 +14990,8 @@ msgstr "您確定要結束本次招募嗎？"
 msgid "Are you sure you want to reopen this recruitment?"
 msgstr "您確定要重新開啟此招募嗎？"
 
-msgid " - Open Recruitments"
-msgstr " - 公開招聘"
-
-msgid "Open Job Listings"
-msgstr "公開招聘訊息"
-
-msgid ""
-"We're hiring! Join our team and be part of a vibrant workplace where your "
-"talents make a difference. Here are the open Recruitments...."
-msgstr ""
-"我們正在招募！加入我們的團隊，加入我們充滿活力的職場，讓你的才華發揮更大作"
-"用。以下是公開招募資訊…"
-
 msgid "Apply Now"
 msgstr "立即申請"
-
-msgid "Capacity"
-msgstr "容量"
-
-msgid "Total vacancies"
-msgstr "空缺職位總數"
 
 msgid "Total Hires"
 msgstr "總招募人數"
@@ -13973,24 +15017,16 @@ msgstr "已關閉？"
 msgid "Is Active?"
 msgstr "是活動的嗎？"
 
-msgid "Candidate Self Tracking"
-msgstr "應徵者自我追蹤"
-
-msgid "By enabling the feature candidates can track their recruitment progress"
-msgstr "透過啟用該功能，應徵者可以追蹤他們的招募進度"
-
-msgid "Rating Visiblity"
-msgstr "評級可見性"
-
-msgid ""
-"By enabling the feature candidates can view their recruitment overall rating"
-msgstr "透過啟用該功能，應徵者可以查看他們的招募總體評分"
-
 msgid "Are you sure want to delete this reason?"
 msgstr "您確定要刪除該原因嗎？"
 
 msgid "Are you sure want to delete this skill?"
 msgstr "您確定要刪除此技能嗎？"
+
+#, fuzzy
+#| msgid "Scheduled Interviews"
+msgid "'s Scheduled Interviews"
+msgstr "預約面試"
 
 msgid "There are currently no skill zone to consider."
 msgstr "目前沒有可供考慮的技能區。"
@@ -14004,20 +15040,8 @@ msgstr "您想取消存檔該技能區嗎？"
 msgid "Do you want to delete this Skill zone?"
 msgstr "您想刪除該技能區域嗎？"
 
-msgid "Do you want to archive this skill zone ?"
-msgstr "您想存檔該技能區嗎？"
-
 msgid "Do you want to un archive this skill zone?"
 msgstr "您想取消存檔該技能區嗎？"
-
-msgid "Are you sure want to delete this skill zone?"
-msgstr "您確定要刪除該技能區嗎？"
-
-msgid "Added on"
-msgstr "添加於"
-
-msgid "Do you want to remove this candidate"
-msgstr "您是否要刪除此應徵者"
 
 msgid "Reasom"
 msgstr "理性"
@@ -14042,32 +15066,11 @@ msgstr "增加更多選項.."
 msgid "Survey Filter"
 msgstr "調查過濾器"
 
-msgid "Are you sure want to delete?"
-msgstr "您確定要刪除嗎？"
-
 msgid "No questions have been established yet."
 msgstr "尚未確定任何問題。"
 
-msgid "Create Survey Template"
-msgstr "建立調查模板"
-
-msgid "Questions"
-msgstr "問題"
-
-msgid "Add Questions"
-msgstr "添加問題"
-
-msgid "Do you want to delete this template"
-msgstr "是否要刪除此模板"
-
-msgid "No template groups have been established yet."
-msgstr "尚未建立模板組。"
-
 msgid "No template have been established yet."
 msgstr "尚未建立模板。"
-
-msgid "Duplicate Survey Template"
-msgstr "重複調查模板"
 
 msgid "Templates"
 msgstr "範本"
@@ -14339,89 +15342,6 @@ msgstr "評級可見性"
 msgid "Rating visibility is disabled "
 msgstr "評級可見性"
 
-#, fuzzy
-#| msgid "Asset Report"
-msgid "Asset Reports"
-msgstr "資產報告"
-
-#, fuzzy
-#| msgid "Export Leaves"
-msgid "Export Table"
-msgstr "出口樹葉"
-
-#, fuzzy
-#| msgid "Attendance Records"
-msgid "Attendance Reports"
-msgstr "出勤記錄"
-
-#, fuzzy
-#| msgid "Employee rate"
-msgid "Employee Reports"
-msgstr "員工費率"
-
-#, fuzzy
-#| msgid "Leave Records"
-msgid "Leave Reports"
-msgstr "休假記錄"
-
-#, fuzzy
-#| msgid "Available Leaves"
-msgid "Available Leave"
-msgstr "可用假期"
-
-#, fuzzy
-#| msgid "Payroll Records"
-msgid "Payroll Reports"
-msgstr "薪資記錄"
-
-msgid "Allowance & Deduction"
-msgstr "免稅及扣除"
-
-#, fuzzy
-#| msgid "Allowance created."
-msgid "Allowance Greater than"
-msgstr "已建立津貼。"
-
-#, fuzzy
-#| msgid "Allowance on"
-msgid "Allowance Less than"
-msgstr "津貼"
-
-#, fuzzy
-#| msgid "Deduction Greater or Equal"
-msgid "Deduction Greater than"
-msgstr "扣除額大於或等於"
-
-#, fuzzy
-#| msgid "Deduction Less Than or Equal"
-msgid "Deduction Less than"
-msgstr "扣除額小於或等於"
-
-#, fuzzy
-#| msgid "Performance"
-msgid "Performance Reports"
-msgstr "表現"
-
-#, fuzzy
-#| msgid "Employee Objectives"
-msgid "Employee Objective"
-msgstr "員工目標"
-
-#, fuzzy
-#| msgid "Candidate Details"
-msgid "Candidate Reports"
-msgstr "應徵者詳情"
-
-#, fuzzy
-#| msgid "Stage Managers"
-msgid "Stage Manager"
-msgstr "階段監督"
-
-#, fuzzy
-#| msgid "Asset Report"
-msgid "Choose Report"
-msgstr "資產報告"
-
 msgid "Trying to connect..."
 msgstr "正在嘗試連接..."
 
@@ -14431,32 +15351,11 @@ msgstr "新增評論。"
 msgid "Comments."
 msgstr "評論。"
 
-msgid "Compensatory Leave"
-msgstr "補假"
-
-msgid "By enabling this compensatory leave feature will avilable on Leave."
-msgstr "透過啟用此補償休假功能，可在休假時使用。"
-
 msgid "New Joining Today"
 msgstr "今天新加入"
 
 msgid "New Joining This Week"
 msgstr "本週新加入"
-
-msgid "Total Strength"
-msgstr "總人數"
-
-msgid "Overall Leave"
-msgstr "整體休假"
-
-msgid "This Year"
-msgstr "今年"
-
-msgid "Candidates Started Onboarding"
-msgstr "應徵者開始入職"
-
-msgid "Attendance Analytics"
-msgstr "出勤分析"
 
 msgid "Shift Requests To Approve"
 msgstr "待批准的輪班請求"
@@ -14464,32 +15363,11 @@ msgstr "待批准的輪班請求"
 msgid "Work Type Requests To Approve"
 msgstr "待批准的工作類型請求"
 
-msgid "Leave Requests To Approve"
-msgstr "待批准的休假請求"
-
-msgid "Leave Allocation Request To Approve"
-msgstr "休假分配請求待批准"
-
-msgid "Feedback To Answers"
-msgstr "回饋答案"
-
-msgid "Create Announcement"
-msgstr "創建公告"
-
-msgid "Employee Work Information"
-msgstr "員工工作資訊"
-
-msgid "Dashboard Chart Select"
-msgstr "儀表板圖表選擇"
-
 msgid "Select All Rows"
 msgstr "選擇所有行"
 
 msgid "Unselect All Rows"
 msgstr "取消選擇所有行"
-
-msgid "Charts"
-msgstr "圖表"
 
 msgid "You Dont Have Permission"
 msgstr "您沒有權限"
@@ -14502,9 +15380,6 @@ msgstr "資料庫身份驗證"
 
 msgid "Authenticate with your password to load demo database"
 msgstr "使用您的密碼進行身份驗證以載入演示資料庫"
-
-msgid "Forgot Password"
-msgstr "忘記密碼"
 
 msgid "Type in your email to reset the password"
 msgstr "輸入您的電子郵件以重設密碼"
@@ -14520,9 +15395,6 @@ msgstr " 導入成功"
 
 msgid "Download Error File"
 msgstr "下載錯誤文件"
-
-msgid "All Notifications"
-msgstr "所有通知"
 
 msgid "Clear all"
 msgstr "清除全部"
@@ -14546,20 +15418,8 @@ msgstr "請註冊以存取 Horilla HRMS。"
 msgid "Secure Sign-up"
 msgstr "安全註冊"
 
-msgid "Sign In"
-msgstr "登入"
-
-msgid "Please login to access the dashboard."
-msgstr "請登入以存取儀表板。"
-
 msgid "Secure Sign-in"
 msgstr "安全登入"
-
-msgid "Initialize Database"
-msgstr "初始化資料庫"
-
-msgid "Load Demo Data"
-msgstr "載入演示數據"
 
 msgid "ago by"
 msgstr "之前"
@@ -14570,17 +15430,11 @@ msgstr "全部追上！"
 msgid "You have no new notifications at the moment."
 msgstr "您目前沒有新通知。"
 
-msgid "Notifications"
-msgstr "通知"
-
 msgid "Mark as read"
 msgstr "標記為已讀"
 
 msgid "Clear"
 msgstr "清除"
-
-msgid "Anonymous"
-msgstr "匿名的"
 
 msgid "View all notifications"
 msgstr "查看所有通知"
@@ -14600,72 +15454,13 @@ msgstr "確認新密碼"
 msgid "Reset my password"
 msgstr "重置我的密碼"
 
-msgid "Settings"
-msgstr "設定"
-
 msgid "All\tSettings"
 msgstr "所有設定"
-
-msgid "General Settings"
-msgstr "常規設定"
-
-msgid "Employee Permission"
-msgstr "員工許可"
-
-msgid "Accessibility Restriction"
-msgstr "無障礙限制"
-
-msgid "User Group"
-msgstr "使用者群組"
-
-msgid "Date & Time Format"
-msgstr "日期和時間格式"
-
-#, fuzzy
-#| msgid "Bulk Mail"
-msgid "Outlook Mail"
-msgstr "大量郵件"
-
-msgid "Gdrive Backup"
-msgstr "Gdrive 備份"
-
-msgid "Base"
-msgstr "根據"
-
-msgid "Candidate Reject Reason"
-msgstr "應徵者被拒絕的原因"
 
 #, fuzzy
 #| msgid "Bank Information"
 msgid "Linkedin Integration"
 msgstr "銀行資訊"
-
-msgid "Disciplinary Action Type"
-msgstr "紀律處分類型"
-
-msgid "Track Late Come & Early Out"
-msgstr "追蹤遲到和早退"
-
-msgid "Attendance Break Point"
-msgstr "出勤斷點"
-
-msgid "Check In/Check Out"
-msgstr "簽到/簽退"
-
-msgid "Geo & Face Config"
-msgstr ""
-
-msgid "Restrictions"
-msgstr "限制"
-
-msgid "Payroll"
-msgstr "薪資單"
-
-msgid "Payslip Auto Generation"
-msgstr "薪資單自動生成"
-
-msgid "Performance"
-msgstr "表現"
 
 #, fuzzy
 #| msgid "Configuration"
@@ -14681,14 +15476,52 @@ msgstr "我的公司"
 msgid "Configuration"
 msgstr "配置"
 
-msgid "Mail Automations"
-msgstr "郵件自動化"
-
 msgid "Invalid File"
 msgstr "無效文件"
 
 msgid "Please upload a valid XLSX file."
 msgstr "請上傳有效的 XLSX 檔案。"
+
+#, fuzzy
+#| msgid "Account number"
+msgid "Phone Number"
+msgstr "帳號"
+
+#, fuzzy
+#| msgid "Account number"
+msgid "Phone Number ID"
+msgstr "帳號"
+
+msgid "Bussiness ID"
+msgstr ""
+
+msgid "Webhook Token"
+msgstr ""
+
+#, fuzzy
+#| msgid "API Key"
+msgid "Token"
+msgstr "API 金鑰"
+
+#, fuzzy
+#| msgid "Configuration"
+msgid "Whatsapp Integration"
+msgstr "配置"
+
+#, fuzzy
+#| msgid "Enable Face"
+msgid "Enable Whatsapp"
+msgstr "啟用面"
+
+msgid "Enable this to integrate Whatsapp to Horilla."
+msgstr ""
+
+#, fuzzy
+#| msgid ""
+#| " Do you really want to allow this employee to access and log into this "
+#| "webpage?"
+msgid "Do you want to create Templates and Flows in whatsapp manager?"
+msgstr " 您確實允許該員工造訪並登入該網頁嗎？"
 
 #, fuzzy
 #| msgid "Send Test Email"
@@ -14699,6 +15532,25 @@ msgstr "發送測試電子郵件"
 #| msgid "Account number"
 msgid "Phone number"
 msgstr "帳號"
+
+#~ msgid "record_type_name"
+#~ msgstr "記錄類型名稱"
+
+#, fuzzy
+#~| msgid "Access Denied: Your account is blocked."
+#~ msgid "Access Denied: Your login credentials are currently blocked."
+#~ msgstr "拒絕存取：您的帳戶已被封鎖。"
+
+#, fuzzy
+#~| msgid "Login successful."
+#~ msgid "Login Success"
+#~ msgstr "登入成功。"
+
+#~ msgid "Shift request deleted."
+#~ msgstr "輪班請求已刪除。"
+
+#~ msgid "No image chosen."
+#~ msgstr "未選擇影像。"
 
 #~ msgid "A powerful laptop for business use."
 #~ msgstr "一台適合商務使用的強大筆記型電腦。"
@@ -14765,9 +15617,6 @@ msgstr "帳號"
 #~ msgid "Month:"
 #~ msgstr "月："
 
-#~ msgid "A"
-#~ msgstr "一個"
-
 #~ msgid "P"
 #~ msgstr "P"
 
@@ -14790,9 +15639,6 @@ msgstr "帳號"
 
 #~ msgid "There is no companies at this moment."
 #~ msgstr "目前沒有公司。"
-
-#~ msgid "Are you sure you want to delete this company?"
-#~ msgstr "您確定要刪除該公司嗎？"
 
 #~ msgid "There is no department at this moment."
 #~ msgstr "目前沒有部門。"
@@ -14913,9 +15759,6 @@ msgstr "帳號"
 #~ msgid "Un-Block Account"
 #~ msgstr "解除帳戶封鎖"
 
-#~ msgid "Send password reset link"
-#~ msgstr "發送密碼重設連結"
-
 #~ msgid "Next Employee"
 #~ msgstr "下一位員工"
 
@@ -14948,9 +15791,6 @@ msgstr "帳號"
 
 #~ msgid "Raised on"
 #~ msgstr "成長於"
-
-#~ msgid "Changes"
-#~ msgstr "變化"
 
 #~ msgid "Audit log"
 #~ msgstr "審計日誌"
@@ -15567,9 +16407,6 @@ msgstr "帳號"
 
 #~ msgid "Enter a valid date."
 #~ msgstr "輸入有效日期。"
-
-#~ msgid "Enter a valid time."
-#~ msgstr "輸入有效時間。"
 
 #~ msgid "Enter a valid date/time."
 #~ msgstr "輸入有效的日期/時間。"
