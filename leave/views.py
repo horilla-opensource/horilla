@@ -3356,10 +3356,13 @@ def leave_allocation_request_create(request):
     form = LeaveAllocationRequestForm(initial={"employee_id": employee})
     form = choosesubordinates(request, form, "leave.add_leaveallocationrequest")
     # 961
-    form.fields["employee_id"].queryset = (
-        form.fields["employee_id"].queryset
-        | Employee.objects.filter(employee_user_id=request.user).distinct()
-    )
+    employee_qs = form.fields["employee_id"].queryset
+    # 999
+    if not employee_qs.filter(employee_user_id=request.user).exists():
+        form.fields["employee_id"].queryset = employee_qs.union(
+            Employee.objects.filter(employee_user_id=request.user).distinct()
+        )
+
     if request.method == "POST":
         form = LeaveAllocationRequestForm(request.POST, request.FILES)
         if form.is_valid():
