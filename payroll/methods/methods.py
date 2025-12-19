@@ -590,7 +590,7 @@ def compute_salary_on_30_day_wage(employee, wage, start_date, end_date, *args, *
         except (ValueError, AttributeError):
             hour = 0
 
-        if attendance_day.is_mercantile_holiday and not attendance_day.is_get_compensation_leave:
+        if attendance_day.is_mercantile_holiday and not attendance_day.is_get_compensation_leave and hour == 8:
             logger.info("Attendance marked on Mercantile Holiday: %s", attendance_day.attendance_date)
             holiday_allowances.append({
                 "title": "Mercantile Holiday Allowance",
@@ -600,10 +600,21 @@ def compute_salary_on_30_day_wage(employee, wage, start_date, end_date, *args, *
                 "include_in_lop": False,
             })
             filtered_days.append(attendance_day)
+        elif not attendance_day.is_get_compensation_leave and  attendance_day.is_mercantile_holiday and hour == 4:
+            logger.info("Attendance marked on Mercantile Holiday with Half Day: %s", attendance_day.attendance_date)
+            holiday_allowances.append({
+                "title": "Mercantile Holiday Half Day Allowance",
+                "code": "mercantile_holiday_half_day",
+                "amount": salary_per_day * 1,
+                "is_taxable": False,
+                "include_in_lop": False,
+            })
+            half_day_count += 1
+            filtered_days.append(attendance_day)
         elif attendance_day.is_get_compensation_leave and attendance_day.is_mercantile_holiday:
             logger.info("Attendance marked on Mercantile Holiday with Compensation Leave: %s", attendance_day.attendance_date)
             filtered_days.append(attendance_day)
-        elif attendance_day.is_poya_holiday:
+        elif attendance_day.is_poya_holiday and hour == 8:
             logger.info("Attendance marked on Poya Holiday: %s", attendance_day.attendance_date)
             holiday_allowances.append({
                 "title": "Poya Holiday Allowance",
@@ -612,6 +623,17 @@ def compute_salary_on_30_day_wage(employee, wage, start_date, end_date, *args, *
                 "is_taxable": False,
                 "include_in_lop": False,
             })
+            filtered_days.append(attendance_day)
+        elif attendance_day.is_poya_holiday and hour == 4:
+            logger.info("Attendance marked on Poya Holiday with Half Day: %s", attendance_day.attendance_date)
+            holiday_allowances.append({
+                "title": "Poya Holiday Half Day Allowance",
+                "code": "poya_holiday_half_day",
+                "amount": salary_per_day * 0.75,
+                "is_taxable": False,
+                "include_in_lop": False,
+            })
+            half_day_count += 1
             filtered_days.append(attendance_day)
         elif attendance_day.is_holiday:
             logger.info("Attendance marked on Regular Holiday: %s", attendance_day.attendance_date)
