@@ -1,4 +1,4 @@
-{% load i18n %}
+{% load static i18n %}
 <div class="oh-modal__dialog-header">
     <h2 class="oh-modal__dialog-title">
         {% trans "Import Employee" %}
@@ -33,8 +33,14 @@
                     </label>
                     <input type="file" name="file"/ required>
                     <div class="d-inline float-end">
-                        <a href="#" style="text-decoration:none; display: inline-block;" class="oh-dropdown__link" hx-on:click="template_download(event)">
-                            <ion-icon name="cloud-download-outline" style="font-size:20px; vertical-align: middle;" role="img" class="md hydrated"></ion-icon>
+                        <a href="{% static 'employee/work_info_import.xlsx' %}"
+                            class="oh-dropdown__link"
+                            id="workInfoImportButton"
+                            style="text-decoration:none; display:inline-block;"
+                            onclick="return confirm('Do you want to download the template?')"
+                            download>
+                            <ion-icon name="cloud-download-outline"
+                                    style="font-size:20px; vertical-align: middle;"></ion-icon>
                             <span>{% trans "Download Template" %}</span>
                         </a>
                       </div>
@@ -47,3 +53,12 @@
         </form>
     </div>
 </div>
+
+<script>
+    document.getElementById("workInfoImportButton")
+    .dispatchEvent(new MouseEvent("click", {
+        bubbles: true,
+        cancelable: true,
+        view: window
+    }));
+</script>
