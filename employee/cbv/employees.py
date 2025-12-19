@@ -372,7 +372,6 @@ class EmployeeNav(HorillaNavView):
                         data-target="#objectCreateModal"
                         hx-get="{reverse('work-info-import')}"
                         hx-target="#objectCreateModalTarget"
-                        hx-on-htmx-after-request="setTimeout(() => {{template_download(event);}},100);"
                         style="cursor: pointer;"
                     """,
                 },

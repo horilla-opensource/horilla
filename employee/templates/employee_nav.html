@@ -1,4 +1,4 @@
-{% load static %} {% load i18n %}
+{% load static i18n %}
 
 <style>
     #progress {
@@ -233,7 +233,7 @@
                                             <a href="#" class="oh-dropdown__link"
                                                 data-toggle="oh-modal-toggle" data-target="#objectCreateModal"
                                                 hx-get="{% url 'work-info-import' %}" hx-target="#objectCreateModalTarget"
-                                                hx-on-htmx-after-request="setTimeout(() => {template_download(event);},100);">
+                                            >
                                                 {% trans "Import" %}
                                             </a>
                                         </li>

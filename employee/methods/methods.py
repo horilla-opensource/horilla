@@ -124,16 +124,21 @@ def clean_badge_id(value):
         return str(value).strip()
 
 
-def convert_nan(field, dicts):
+def convert_nan(field, data):
+    import math
+
     """
-    This method is returns None or field value
+    Returns None if value is NaN or empty, otherwise returns the value.
     """
-    field_value = dicts.get(field)
-    try:
-        float(field_value)
+    value = data.get(field)
+
+    if value is None:
         return None
-    except ValueError:
-        return field_value
+
+    if isinstance(value, float) and math.isnan(value):
+        return None
+
+    return value
 
 
 def dynamic_prefix_sort(item):
@@ -284,6 +289,7 @@ def process_employee_records(data_frame):
         badge_id = clean_badge_id(emp.get("Badge ID"))
         first_name = convert_nan("First Name", emp)
         last_name = convert_nan("Last Name", emp)
+        address = convert_nan("Address", emp)
         gender = str(emp.get("Gender") or "").strip().lower()
         company = convert_nan("Company", emp)
         basic_salary = convert_nan("Basic Salary", emp)
@@ -465,6 +471,7 @@ def bulk_create_employee_import(success_lists):
             badge_id=row["Badge ID"],
             employee_first_name=convert_nan("First Name", row),
             employee_last_name=convert_nan("Last Name", row),
+            address=row.get("Address"),
             email=row["Email"],
             phone=row["Phone"],
             gender=row.get("Gender", "").lower(),
@@ -854,7 +861,7 @@ def bulk_create_work_info_import(success_lists):
                 reporting_manager_obj = reporting_manager_dict[reporting_manager]
 
         company_obj = existing_companies.get(work_info.get("Company"))
-        location = work_info.get("Location")
+        location = convert_nan("Location", work_info)
 
         # Parsing dates and salary
         date_joining = (
@@ -869,13 +876,11 @@ def bulk_create_work_info_import(success_lists):
             else None
         )
         basic_salary = (
-            convert_nan("Basic Salary", work_info)
-            if type(convert_nan("Basic Salary", work_info)) is int
-            else 0
+            convert_nan("Basic Salary", work_info) if ("Basic Salary", work_info) else 0
         )
         salary_hour = (
             convert_nan("Salary Hour", work_info)
-            if type(convert_nan("Salary Hour", work_info)) is int
+            if convert_nan("Salary Hour", work_info)
             else 0
         )
 
