@@ -945,6 +945,7 @@ class ReimbursementForm(ModelForm):
 
         type_ = cleaned_data.get("type")
         employee = cleaned_data.get("employee_id")
+        amount = cleaned_data.get("amount")
 
         if not type_ or not employee:
             return cleaned_data
@@ -1015,6 +1016,9 @@ class ReimbursementForm(ModelForm):
                             self.add_error(
                                 "ad_to_encash", _("Not enough available days to redeem")
                             )
+        else:
+            if amount is None or amount <= 0:
+                self.add_error("amount", "Amount must be greater than zero.")
 
         return cleaned_data
 
