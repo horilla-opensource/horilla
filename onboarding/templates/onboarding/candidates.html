@@ -173,7 +173,7 @@
             <div class="oh-pagination__input-container me-3">
                 <span class="oh-pagination__label me-1">{% trans "Page" %}</span>
                 <input type="number" name="page" class="oh-pagination__input" value="{{candidates.number}}"
-                    hx-get="{% url 'candidate-filter' %}?{{pd}}" hx-target="#candidates" min="1" />
+                    hx-get="{% url 'candidate-filter' %}?{{pd}}" hx-target="#candidates" hx-trigger="keyup[key=='Enter']" min="1" />
                 <span class="oh-pagination__label">{% trans "of" %} {{candidates.paginator.num_pages}}</span>
             </div>
             <ul class="oh-pagination__items">
