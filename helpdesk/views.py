@@ -663,6 +663,7 @@ def change_ticket_status(request, ticket_id):
     pre_status = ticket.get_status_display()
     status = request.POST.get("status")
     user = request.user.employee_get
+    response = {}
     if ticket.status != status:
         if (
             user == ticket.employee_id
