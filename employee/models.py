@@ -804,7 +804,7 @@ class EmployeeWorkInformation(models.Model):
         EmployeeTag, blank=True, verbose_name=_("Employee tag")
     )
     location = models.CharField(
-        max_length=50, null=True, blank=True, verbose_name=_("Work Location")
+        max_length=254, null=True, blank=True, verbose_name=_("Work Location")
     )
     company_id = models.ForeignKey(
         Company,
