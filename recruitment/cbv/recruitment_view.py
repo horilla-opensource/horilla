@@ -68,14 +68,14 @@ class RecruitmentList(HorillaListView):
         return self.queryset
 
     columns = [
-        ("Recruitment", "recruitment_column"),
-        ("Managers", "managers_column"),
-        ("Open Jobs", "open_job_col"),
-        ("Vaccancy", "vacancy"),
-        ("Total Hires", "tot_hires"),
-        ("Start Date", "start_date"),
-        ("End date", "end_date"),
-        ("Status", "status_col"),
+        (_("Recruitment"), "recruitment_column"),
+        (_("Managers"), "managers_column"),
+        (_("Open Jobs"), "open_job_col"),
+        (_("Vaccancy"), "vacancy"),
+        (_("Total Hires"), "tot_hires"),
+        (_("Start Date"), "start_date"),
+        (_("End date"), "end_date"),
+        (_("Status"), "status_col"),
     ]
     action_method = "rec_actions"
 
@@ -112,10 +112,10 @@ class RecruitmentList(HorillaListView):
     row_status_class = "closed-{closed}"
 
     sortby_mapping = [
-        ("Recruitment", "recruitment_column"),
-        ("Vaccancy", "vacancy"),
-        ("Start Date", "start_date"),
-        ("End date", "end_date"),
+        (_("Recruitment"), "recruitment_column"),
+        (_("Vaccancy"), "vacancy"),
+        (_("Start Date"), "start_date"),
+        (_("End date"), "end_date"),
     ]
 
     row_attrs = """
@@ -388,12 +388,12 @@ class RecruitmentDetailView(HorillaDetailedView):
     def __init__(self, **kwargs: Any) -> None:
         super().__init__(**kwargs)
         self.body = [
-            ("Managers", "managers_detail"),
-            ("Open Jobs", "open_job_detail"),
-            ("Vaccancy", "vacancy"),
-            ("Total Hires", "tot_hires"),
-            ("Start Date", "start_date"),
-            ("End date", "end_date"),
+            (_("Managers"), "managers_detail"),
+            (_("Open Jobs"), "open_job_detail"),
+            (_("Vaccancy"), "vacancy"),
+            (_("Total Hires"), "tot_hires"),
+            (_("Start Date"), "start_date"),
+            (_("End date"), "end_date"),
         ]
 
     action_method = "detail_actions"

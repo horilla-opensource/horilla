@@ -158,7 +158,7 @@ class RecruitmentSurveyDetailView(HorillaDetailedView):
 
     actions = [
         {
-            "action": "Edit",
+            "action": _("Edit"),
             "icon": "create-outline",
             "attrs": """
                      class="oh-btn oh-btn--info w-50"
@@ -169,7 +169,7 @@ class RecruitmentSurveyDetailView(HorillaDetailedView):
                      """,
         },
         {
-            "action": "Delete",
+            "action": _("Delete"),
             "icon": "trash-outline",
             "attrs": """
                     class="oh-btn oh-btn--danger w-50"

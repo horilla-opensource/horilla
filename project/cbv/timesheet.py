@@ -417,7 +417,7 @@ class TimeSheetCardView(HorillaCardView):
         self.search_url = reverse("time-sheet-card")
         self.actions = [
             {
-                "action": "Edit",
+                "action": _("Edit"),
                 "attrs": """
                          hx-get='{get_update_url}'
                          hx-target='#genericModalBody'
@@ -427,7 +427,7 @@ class TimeSheetCardView(HorillaCardView):
                          """,
             },
             {
-                "action": "Delete",
+                "action": _("Delete"),
                 "attrs": """
                 onclick="
                             event.stopPropagation()

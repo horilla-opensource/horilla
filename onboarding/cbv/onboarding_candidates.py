@@ -82,13 +82,13 @@ class OnboardingCandidatesList(HorillaListView):
     filter_class = CandidateFilter
 
     columns = [
-        ("Candidate", "name", "get_avatar"),
-        ("Email", "last_email"),
-        ("Date of joining", "date_of_joining"),
-        ("Probation ends", "probation_date"),
-        ("Job position", "job_position_id"),
-        ("Recruitment", "recruitment_id"),
-        ("Offer letter", "offer_letter"),
+        (_("Candidate"), "name", "get_avatar"),
+        (_("Email"), "last_email"),
+        (_("Date of joining"), "date_of_joining"),
+        (_("Probation ends"), "probation_date"),
+        (_("Job position"), "job_position_id"),
+        (_("Recruitment"), "recruitment_id"),
+        (_("Offer letter"), "offer_letter"),
     ]
     header_attrs = {
         "action": "style='width: 350px;'",
@@ -147,12 +147,12 @@ class OnboardingCandidatesList(HorillaListView):
     ]
 
     sortby_mapping = [
-        ("Candidate", "name"),
-        ("Email", "last_email"),
-        ("Date of joining", "date_of_joining"),
-        ("Job position", "job_position_id__job_position"),
-        ("Recruitment", "recruitment_id__title"),
-        ("Probation ends", "probation_date"),
+        (_("Candidate"), "name"),
+        (_("Email"), "last_email"),
+        (_("Date of joining"), "date_of_joining"),
+        (_("Job position"), "job_position_id__job_position"),
+        (_("Recruitment"), "recruitment_id__title"),
+        (_("Probation ends"), "probation_date"),
     ]
 
     row_attrs = """

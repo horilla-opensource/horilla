@@ -57,19 +57,19 @@ class MyAttendancesListView(HorillaListView):
     records_per_page = 20
 
     sortby_mapping = [
-        ("Employee", "employee_id__get_full_name", "employee_id__get_avatar"),
-        ("Date", "attendance_date"),
-        ("Day", "attendance_day__day"),
-        ("Check-In", "attendance_clock_in"),
-        ("Shift", "shift_id__employee_shift"),
-        ("Work Type", "work_type_id__work_type"),
-        ("Min Hour", "minimum_hour"),
-        ("Pending Hour", "hours_pending"),
-        ("In Date", "attendance_clock_in_date"),
-        ("Check-Out", "attendance_clock_out"),
-        ("Out Date", "attendance_clock_out_date"),
-        ("At Work", "attendance_worked_hour"),
-        ("Overtime", "attendance_overtime"),
+        (_("Employee"), "employee_id__get_full_name", "employee_id__get_avatar"),
+        (_("Date"), "attendance_date"),
+        (_("Day"), "attendance_day__day"),
+        (_("Check-In"), "attendance_clock_in"),
+        (_("Shift"), "shift_id__employee_shift"),
+        (_("Work Type"), "work_type_id__work_type"),
+        (_("Min Hour"), "minimum_hour"),
+        (_("Pending Hour"), "hours_pending"),
+        (_("In Date"), "attendance_clock_in_date"),
+        (_("Check-Out"), "attendance_clock_out"),
+        (_("Out Date"), "attendance_clock_out_date"),
+        (_("At Work"), "attendance_worked_hour"),
+        (_("Overtime"), "attendance_overtime"),
     ]
 
 

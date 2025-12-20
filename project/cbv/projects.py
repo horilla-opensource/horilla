@@ -360,7 +360,7 @@ class ProjectCardView(HorillaCardView):
         ):
             self.actions = [
                 {
-                    "action": "Edit",
+                    "action": _("Edit"),
                     "accessibility": "project.cbv.accessibility.project_manager_accessibility",
                     "attrs": """
                         hx-get='{get_update_url}'
@@ -380,7 +380,7 @@ class ProjectCardView(HorillaCardView):
                     """,
                 },
                 {
-                    "action": "Delete",
+                    "action": _("Delete"),
                     "accessibility": "project.cbv.accessibility.project_manager_accessibility",
                     "attrs": """
                         onclick="
@@ -524,7 +524,7 @@ from employee.cbv.employee_profile import EmployeeProfileView
 EmployeeProfileView.add_tab(
     tabs=[
         {
-            "title": "Projects",
+            "title": _("Projects"),
             # "view": projects_tab,
             "view": ProjectsTabView.as_view(),
             "accessibility": "employee.cbv.accessibility.project_accessibility",

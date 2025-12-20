@@ -63,10 +63,10 @@ class RestrictedDaysList(HorillaListView):
     header_attrs = {"title": """ style="width:180px !important" """}
 
     sortby_mapping = [
-        ("Start Date", "start_date"),
-        ("End date", "end_date"),
-        ("Department", "department__department"),
-        ("Job Position", "job_position_col"),
+        (_("Start Date"), "start_date"),
+        (_("End date"), "end_date"),
+        (_("Department"), "department__department"),
+        (_("Job Position"), "job_position_col"),
     ]
 
     row_attrs = """

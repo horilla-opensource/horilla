@@ -256,20 +256,20 @@ class CandidateList(HorillaListView):
         "get_interview_count": """ style="width:200px;" """,
     }
     columns = [
-        ("Name", "candidate_name", "get_avatar"),
-        ("Email", "mail_indication"),
-        ("Stage", "stage_drop_down"),
-        ("Rating", "rating_bar"),
-        ("Hired Date", "hired_date"),
-        ("Scheduled Interview", "get_interview_count"),
-        ("Job Position", "job_position_id"),
-        ("Contact", "mobile"),
+        (_("Name"), "candidate_name", "get_avatar"),
+        (_("Email"), "mail_indication"),
+        (_("Stage"), "stage_drop_down"),
+        (_("Rating"), "rating_bar"),
+        (_("Hired Date"), "hired_date"),
+        (_("Scheduled Interview"), "get_interview_count"),
+        (_("Job Position"), "job_position_id"),
+        (_("Contact"), "mobile"),
     ]
 
     default_columns = [
-        ("Name", "candidate_name", "get_avatar"),
-        ("Email", "mail_indication"),
-        ("Stage", "stage_drop_down"),
+        (_("Name"), "candidate_name", "get_avatar"),
+        (_("Email"), "mail_indication"),
+        (_("Stage"), "stage_drop_down"),
     ]
 
     bulk_update_fields = [

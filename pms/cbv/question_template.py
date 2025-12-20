@@ -67,7 +67,7 @@ class QuestionTemplateList(HorillaListView):
     }
 
     sortby_mapping = [
-        ("Total Questions", "question_count"),
+        (_("Total Questions"), "question_count"),
     ]
 
     row_attrs = """

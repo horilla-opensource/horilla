@@ -37,7 +37,7 @@ class TicketPipelineNav(HorillaNavView):
     Offboarding Pipeline Navigation View
     """
 
-    nav_title = "Tickets"
+    nav_title = _("Tickets")
     search_swap_target = "#pipelineContainer"
     search_url = reverse_lazy("ticket-tab")
     filter_body_template = "cbv/pipeline/ticket_filter_form.html"
@@ -56,7 +56,7 @@ class TicketPipelineNav(HorillaNavView):
 
     actions = [
         {
-            "action": "Archive",
+            "action": _("Archive"),
             "attrs": """
                 href="#"
                 role="button"
@@ -65,7 +65,7 @@ class TicketPipelineNav(HorillaNavView):
             """,
         },
         {
-            "action": "Unarchive",
+            "action": _("Unarchive"),
             "attrs": """
                 href="#"
                 role="button"
@@ -74,7 +74,7 @@ class TicketPipelineNav(HorillaNavView):
             """,
         },
         {
-            "action": "Delete",
+            "action": _("Delete"),
             "attrs": """
                 href="#"
                 role="button"

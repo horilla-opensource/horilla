@@ -121,8 +121,8 @@ class InterviewLIstView(HorillaListView):
     }
 
     sortby_mapping = [
-        ("Interview Date", "interview_date"),
-        ("Interview Time", "interview_time"),
+        (_("Interview Date"), "interview_date"),
+        (_("Interview Time"), "interview_time"),
     ]
     action_method = "custom_action_col"
 

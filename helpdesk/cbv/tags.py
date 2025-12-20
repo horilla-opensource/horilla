@@ -71,7 +71,7 @@ class TagsListView(HorillaListView):
                    """,
     }
 
-    sortby_mapping = [("Title", "title")]
+    sortby_mapping = [(_("Title"), "title")]
 
     row_attrs = """
                 id = "tagTr{get_instance_id}"

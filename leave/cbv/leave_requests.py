@@ -110,12 +110,12 @@ class LeaveRequestsListView(HorillaListView):
                 data-toggle="oh-modal-toggle"
                 """
     sortby_mapping = [
-        ("Employee", "employee_id__get_full_name", "employee_id__get_avatar"),
-        ("Leave Type", "leave_type_id"),
-        ("Start Date", "start_date"),
-        ("End Date", "end_date"),
-        ("Requested Days", "requested_days"),
-        ("Status", "status"),
+        (_("Employee"), "employee_id__get_full_name", "employee_id__get_avatar"),
+        (_("Leave Type"), "leave_type_id"),
+        (_("Start Date"), "start_date"),
+        (_("End Date"), "end_date"),
+        (_("Requested Days"), "requested_days"),
+        (_("Status"), "status"),
     ]
 
     action_method = "confirmation_col"

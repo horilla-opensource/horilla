@@ -154,11 +154,11 @@ class ShiftRequestList(ShiftList):
     option_method = "shift_actions"
 
     sortby_mapping = [
-        ("Employee", "employee_id__get_full_name"),
-        ("Requested Shift", "shift_id__employee_shift"),
-        ("Previous/Current Shift", "previous_shift_id__employee_shift"),
-        ("Requested Date", "requested_date"),
-        ("Requested Till", "requested_till"),
+        (_("Employee"), "employee_id__get_full_name"),
+        (_("Requested Shift"), "shift_id__employee_shift"),
+        (_("Previous/Current Shift"), "previous_shift_id__employee_shift"),
+        (_("Requested Date"), "requested_date"),
+        (_("Requested Till"), "requested_till"),
     ]
 
     row_attrs = """
@@ -221,12 +221,12 @@ class AllocatedShift(ShiftList):
                 data-toggle="oh-modal-toggle"
                 """
     sortby_mapping = [
-        ("Employee", "employee_id__get_full_name"),
-        ("Allocated Employee", "reallocate_to__get_full_name"),
-        ("Requested Shift", "shift_id__employee_shift"),
-        ("Previous/Current Shift", "previous_shift_id__employee_shift"),
-        ("Requested Date", "requested_date"),
-        ("Requested Till", "requested_till"),
+        (_("Employee"), "employee_id__get_full_name"),
+        (_("Allocated Employee"), "reallocate_to__get_full_name"),
+        (_("Requested Shift"), "shift_id__employee_shift"),
+        (_("Previous/Current Shift"), "previous_shift_id__employee_shift"),
+        (_("Requested Date"), "requested_date"),
+        (_("Requested Till"), "requested_till"),
     ]
 
 

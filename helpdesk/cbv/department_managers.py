@@ -56,13 +56,13 @@ class DepartmentManagersListView(HorillaListView):
     }
 
     sortby_mapping = [
-        ("Department", "department__department"),
-        ("Manager", "manager__get_full_name"),
+        (_("Department"), "department__department"),
+        (_("Manager"), "manager__get_full_name"),
     ]
 
     actions = [
         {
-            "action": "Edit",
+            "action": _("Edit"),
             "icon": "create-outline",
             "attrs": """
                     class="oh-btn oh-btn--light-bkg w-50"
@@ -73,7 +73,7 @@ class DepartmentManagersListView(HorillaListView):
                     """,
         },
         {
-            "action": "Delete",
+            "action": _("Delete"),
             "icon": "trash-outline",
             "attrs": """
                     class="oh-btn oh-btn--danger-outline oh-btn--light-bkg w-50"
@@ -106,7 +106,7 @@ class DepartmentManagersNav(HorillaNavView):
             ("department__department", _("Department")),
             (
                 "manager__employee_first_name",
-                "Manager",
+                _("Manager"),
             ),
         ]
         self.create_attrs = f"""

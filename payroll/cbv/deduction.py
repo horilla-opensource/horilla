@@ -160,10 +160,10 @@ class DeductionListView(HorillaListView):
     }
 
     sortby_mapping = [
-        ("Deduction", "title"),
-        ("Specific Employees", "specific_employees_col"),
-        ("Excluded Employees", "excluded_employees_col"),
-        ("Amount", "amount"),
+        (_("Deduction"), "title"),
+        (_("Specific Employees"), "specific_employees_col"),
+        (_("Excluded Employees"), "excluded_employees_col"),
+        (_("Amount"), "amount"),
     ]
 
     def get_queryset(self):

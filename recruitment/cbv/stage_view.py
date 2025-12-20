@@ -61,19 +61,19 @@ class StageList(HorillaListView):
         return queryset
 
     columns = [
-        ("Title", "title_col"),
-        ("Managers", "managers_col"),
-        ("Type", "get_type"),
+        (_("Title"), "title_col"),
+        (_("Managers"), "managers_col"),
+        (_("Type"), "get_type"),
     ]
     sortby_mapping = [
-        ("Type", "get_type"),
+        (_("Type"), "get_type"),
     ]
     action_method = "actions_col"
 
     row_status_indications = [
         (
             "hired--dot",
-            "Hired",
+            _("Hired"),
             """
             onclick="
                 $('#applyFilter').closest('form').find('[name=stage_type]').val('hired');
@@ -83,7 +83,7 @@ class StageList(HorillaListView):
         ),
         (
             "cancelled--dot",
-            "Cancelled",
+            _("Cancelled"),
             """
             onclick="
                  $('#applyFilter').closest('form').find('[name=stage_type]').val('cancelled');
@@ -93,7 +93,7 @@ class StageList(HorillaListView):
         ),
         (
             "interview--dot",
-            "Interview",
+            _("Interview"),
             """
             onclick=" $('#applyFilter').closest('form').find('[name=stage_type]').val('interview');
                 $('#applyFilter').click();
@@ -102,7 +102,7 @@ class StageList(HorillaListView):
         ),
         (
             "test--dot",
-            "Test",
+            _("Test"),
             """
             onclick=" $('#applyFilter').closest('form').find('[name=stage_type]').val('test');
                 $('#applyFilter').click();
@@ -111,7 +111,7 @@ class StageList(HorillaListView):
         ),
         (
             "initial--dot",
-            "Initial",
+            _("Initial"),
             """
             onclick=" $('#applyFilter').closest('form').find('[name=stage_type]').val('initial');
                 $('#applyFilter').click();
@@ -170,7 +170,7 @@ class StageNav(HorillaNavView):
     search_swap_target = "#listContainer"
     filter_body_template = "cbv/stages/filter.html"
 
-    group_by_fields = [("recruitment_id", "Recruitment")]
+    group_by_fields = [("recruitment_id", _("Recruitment"))]
 
 
 @method_decorator(login_required, name="dispatch")
@@ -310,9 +310,9 @@ class StageDetailView(HorillaDetailedView):
     def __init__(self, **kwargs: Any) -> None:
         super().__init__(**kwargs)
         self.body = [
-            ("Title", "stage"),
-            ("Managers", "detail_managers_col"),
-            ("Type", "get_type"),
+            (_("Title"), "stage"),
+            (_("Managers"), "detail_managers_col"),
+            (_("Type"), "get_type"),
         ]
 
     action_method = "detail_action"

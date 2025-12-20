@@ -83,19 +83,19 @@ class AttendancesListView(HorillaListView):
         (_("Overtime"), "attendance_overtime"),
     ]
     sortby_mapping = [
-        ("Employee", "employee_id__get_full_name", "employee_id__get_avatar"),
-        ("Date", "attendance_date"),
-        ("Day", "attendance_day__day"),
-        ("Check-In", "attendance_clock_in"),
-        ("In Date", "attendance_clock_in_date"),
-        ("Check-Out", "attendance_clock_out"),
-        ("Out Date", "attendance_clock_out_date"),
-        ("Shift", "shift_id__employee_shift"),
-        ("Work Type", "work_type_id__work_type"),
-        ("Min Hour", "minimum_hour"),
-        ("At Work", "attendance_worked_hour"),
-        ("Pending Hour", "hours_pending"),
-        ("Overtime", "attendance_overtime"),
+        (_("Employee"), "employee_id__get_full_name", "employee_id__get_avatar"),
+        (_("Date"), "attendance_date"),
+        (_("Day"), "attendance_day__day"),
+        (_("Check-In"), "attendance_clock_in"),
+        (_("In Date"), "attendance_clock_in_date"),
+        (_("Check-Out"), "attendance_clock_out"),
+        (_("Out Date"), "attendance_clock_out_date"),
+        (_("Shift"), "shift_id__employee_shift"),
+        (_("Work Type"), "work_type_id__work_type"),
+        (_("Min Hour"), "minimum_hour"),
+        (_("At Work"), "attendance_worked_hour"),
+        (_("Pending Hour"), "hours_pending"),
+        (_("Overtime"), "attendance_overtime"),
     ]
     records_per_page = 10
 
@@ -680,13 +680,13 @@ class ValidateAttendancesIndividualDetailView(GenericAttendancesDetailView):
 EmployeeProfileView.add_tab(
     tabs=[
         {
-            "title": "Attendance",
+            "title": _("Attendance"),
             # "view": views.attendance_tab,
             "view": AttendanceTabView.as_view(),
             "accessibility": "attendance.cbv.accessibility.attendance_accessibility",
         },
         {
-            "title": "Penalty Account",
+            "title": _("Penalty Account"),
             "view": PenaltyAccountListView.as_view(),
             "accessibility": "attendance.cbv.accessibility.penalty_accessibility",
         },

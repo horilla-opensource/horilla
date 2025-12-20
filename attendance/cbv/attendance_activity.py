@@ -77,13 +77,13 @@ class AttendanceActivityListView(HorillaListView):
                 data-toggle="oh-modal-toggle"
                 """
     sortby_mapping = [
-        ("Employee", "employee_id__get_full_name", "employee_id__get_avatar"),
-        ("Attendance Date", "attendance_date"),
-        ("Check In", "clock_in"),
-        ("In Date", "clock_in_date"),
-        ("Check Out", "clock_out"),
-        ("Out Date", "clock_out_date"),
-        ("Duration (HH:MM:SS)", "duration_format"),
+        (_("Employee"), "employee_id__get_full_name", "employee_id__get_avatar"),
+        (_("Attendance Date"), "attendance_date"),
+        (_("Check In"), "clock_in"),
+        (_("In Date"), "clock_in_date"),
+        (_("Check Out"), "clock_out"),
+        (_("Out Date"), "clock_out_date"),
+        (_("Duration (HH:MM:SS)"), "duration_format"),
     ]
 
 

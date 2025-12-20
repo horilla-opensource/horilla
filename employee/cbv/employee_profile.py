@@ -45,7 +45,7 @@ class EmployeeProfileView(HorillaProfileView):
 
             self.actions = [
                 {
-                    "title": "Edit",
+                    "title": _("Edit"),
                     "src": f"/{settings.STATIC_URL}images/ui/editing.png",
                     "accessibility": "employee.cbv.accessibility.edit_accessibility",
                     "attrs": """
@@ -53,7 +53,7 @@ class EmployeeProfileView(HorillaProfileView):
                     """,
                 },
                 {
-                    "title": "Block Account",
+                    "title": _("Block Account"),
                     "src": f"/{settings.STATIC_URL}images/ui/block-user.png",
                     "accessibility": "employee.cbv.accessibility.block_account_accessibility",
                     "attrs": """
@@ -61,7 +61,7 @@ class EmployeeProfileView(HorillaProfileView):
                     """,
                 },
                 {
-                    "title": "Un-Block Account",
+                    "title": _("Un-Block Account"),
                     "src": f"/{settings.STATIC_URL}images/ui/unlock.png",
                     "accessibility": "employee.cbv.accessibility.un_block_account_accessibility",
                     "attrs": """
@@ -69,7 +69,7 @@ class EmployeeProfileView(HorillaProfileView):
                     """,
                 },
                 {
-                    "title": "Send password reset link",
+                    "title": _("Send password reset link"),
                     "src": f"/{settings.STATIC_URL}images/ui/key.png",
                     "accessibility": "employee.cbv.accessibility.password_reset_accessibility",
                     "attrs": """
@@ -82,7 +82,7 @@ class EmployeeProfileView(HorillaProfileView):
         ):
             self.actions = [
                 {
-                    "title": "Edit Profile",
+                    "title": _("Edit Profile"),
                     "src": f"/{settings.STATIC_URL}images/ui/editing.png",
                     "accessibility": "employee.cbv.accessibility.edit_accessibility",
                     "attrs": """
@@ -90,7 +90,7 @@ class EmployeeProfileView(HorillaProfileView):
                     """,
                 },
                 {
-                    "title": "Send password reset link",
+                    "title": _("Send password reset link"),
                     "src": f"/{settings.STATIC_URL}images/ui/key.png",
                     "accessibility": "employee.cbv.accessibility.password_reset_accessibility",
                     "attrs": """
@@ -103,37 +103,37 @@ class EmployeeProfileView(HorillaProfileView):
 EmployeeProfileView.add_tab(
     tabs=[
         {
-            "title": "About",
+            "title": _("About"),
             "view": views.about_tab,
         },
         {
-            "title": "Work Type & Shift",
+            "title": _("Work Type & Shift"),
             # "view": views.shift_tab,
             "view": WorkAndShiftTabView.as_view(),
             "accessibility": "employee.cbv.accessibility.workshift_accessibility",
         },
         {
-            "title": "Groups & Permissions",
+            "title": _("Groups & Permissions"),
             "view": base_views.employee_permission_assign,
             "accessibility": "employee.cbv.accessibility.permission_accessibility",
         },
         {
-            "title": "Note",
+            "title": _("Note"),
             "view": views.note_tab,
             "accessibility": "employee.cbv.accessibility.note_accessibility",
         },
         {
-            "title": "Documents",
+            "title": _("Documents"),
             "view": views.document_tab,
             "accessibility": "employee.cbv.accessibility.document_accessibility",
         },
         {
-            "title": "Mail Log",
+            "title": _("Mail Log"),
             "view": MailLogTabList.as_view(),
             "accessibility": "employee.cbv.accessibility.mail_log_accessibility",
         },
         {
-            "title": "History",
+            "title": _("History"),
             "view": views.history_tab,
             "accessibility": "employee.cbv.accessibility.history_accessibility",
         },
