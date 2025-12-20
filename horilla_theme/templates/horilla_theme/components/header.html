@@ -21,18 +21,13 @@
         </div>
     {% endif %}
 
-    <!-- Right side - Search and Actions -->
-
     <div class="flex items-center gap-8">
-
         <!-- Action Icons -->
         <div class="flex items-center gap-2">
             {% if "attendance"|app_installed %}
-                {% if enabled_timerunner %}
                     <div id="attendance-activity-container">
                         {% include "attendance/components/in_out_component.html" %}
                     </div>
-                {% endif %}
             {% endif %}
             <button
                 class="md:block p-2 group text-primary-600 w-12 h-12 bg-primary-100 hover:bg-primary-600 rounded-full transition duration-300 flex items-center justify-center"
