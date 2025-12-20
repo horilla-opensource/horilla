@@ -162,14 +162,14 @@ class ListCandidates(HorillaListView):
                 self.export_fields.append(survey_question)
 
     columns = [
-        ("Candidates", "name", "get_avatar"),
-        ("Email", "email"),
-        ("Phone", "mobile"),
-        ("Rating", "rating"),
-        ("Recruitment", "recruitment_id"),
-        ("Job Position", "job_position_id"),
-        ("Hired Date", "hired_date"),
-        ("Resume", "resume_pdf"),
+        (_("Candidates"), "name", "get_avatar"),
+        (_("Email"), "email"),
+        (_("Phone"), "mobile"),
+        (_("Rating"), "rating"),
+        (_("Recruitment"), "recruitment_id"),
+        (_("Job Position"), "job_position_id"),
+        (_("Hired Date"), "hired_date"),
+        (_("Resume"), "resume_pdf"),
     ]
     default_columns = columns
 
@@ -190,7 +190,7 @@ class ListCandidates(HorillaListView):
 
     actions = [
         {
-            "action": "Edit",
+            "action": _("Edit"),
             "icon": "create-outline",
             "attrs": """class="oh-btn oh-btn--light-bkg w-100"
             onclick="event.stopPropagation()
@@ -198,7 +198,7 @@ class ListCandidates(HorillaListView):
              """,
         },
         {
-            "action": "Archive",
+            "action": _("Archive"),
             "accessibility": "recruitment.cbv.accessibility.archive_status",
             "icon": "archive",
             "attrs": """
@@ -208,7 +208,7 @@ class ListCandidates(HorillaListView):
             """,
         },
         {
-            "action": "Un-archive",
+            "action": _("Un-archive"),
             "accessibility": "recruitment.cbv.accessibility.unarchive_status",
             "icon": "archive",
             "attrs": """
@@ -231,12 +231,12 @@ class ListCandidates(HorillaListView):
     ]
 
     sortby_mapping = [
-        ("Candidates", "name", "get_avatar"),
+        (_("Candidates"), "name", "get_avatar"),
     ]
     row_status_indications = [
         (
             "canceled--dot",
-            "Canceled",
+            _("Canceled"),
             """
             onclick="
                 $('#applyFilter').closest('form').find('[name=canceled]').val('true');
@@ -246,7 +246,7 @@ class ListCandidates(HorillaListView):
         ),
         (
             "nothired--dot",
-            "Not Hired",
+            _("Not Hired"),
             """
             onclick="
                 $('#applyFilter').closest('form').find('[name=hired]').val('false');
@@ -256,7 +256,7 @@ class ListCandidates(HorillaListView):
         ),
         (
             "hired--dot",
-            "Hired",
+            _("Hired"),
             """
             onclick="$('#applyFilter').closest('form').find('[name=hired]').val('true');
                 $('#applyFilter').click();
@@ -540,7 +540,7 @@ class CardCandidates(HorillaCardView):
 
     actions = [
         {
-            "action": "Convert to Employee",
+            "action": _("Convert to Employee"),
             "accessibility": "recruitment.cbv.accessibility.convert_emp",
             "attrs": """
                 onclick="event.stopPropagation()
@@ -551,7 +551,7 @@ class CardCandidates(HorillaCardView):
             """,
         },
         {
-            "action": "Add to Skill Zone",
+            "action": _("Add to Skill Zone"),
             "accessibility": "recruitment.cbv.accessibility.add_skill_zone",
             "attrs": """
                 data-toggle="oh-modal-toggle"
@@ -563,7 +563,7 @@ class CardCandidates(HorillaCardView):
             """,
         },
         {
-            "action": "View candidate self tracking",
+            "action": _("View candidate self tracking"),
             "accessibility": "recruitment.cbv.accessibility.check_candidate_self_tracking",
             "attrs": """
                 href="{get_self_tracking_url}"
@@ -571,7 +571,7 @@ class CardCandidates(HorillaCardView):
             """,
         },
         {
-            "action": "Request Document",
+            "action": _("Request Document"),
             "accessibility": "recruitment.cbv.accessibility.request_document",
             "attrs": """
                 data-toggle="oh-modal-toggle"
@@ -582,7 +582,7 @@ class CardCandidates(HorillaCardView):
             """,
         },
         {
-            "action": "Add to Rejected",
+            "action": _("Add to Rejected"),
             "accessibility": "recruitment.cbv.accessibility.add_reject",
             "attrs": """
                 hx-target="#genericModalBody"
@@ -595,7 +595,7 @@ class CardCandidates(HorillaCardView):
             """,
         },
         {
-            "action": "Edit Rejected Candidate",
+            "action": _("Edit Rejected Candidate"),
             "accessibility": "recruitment.cbv.accessibility.edit_reject",
             "attrs": """
                 hx-target="#genericModalBody"
@@ -608,7 +608,7 @@ class CardCandidates(HorillaCardView):
             """,
         },
         {
-            "action": "Edit Profile",
+            "action": _("Edit Profile"),
             "attrs": """
                 onclick="event.stopPropagation()
                 window.location.href='{get_update_url}' "
@@ -626,7 +626,7 @@ class CardCandidates(HorillaCardView):
             """,
         },
         {
-            "action": "Delete",
+            "action": _("Delete"),
             "attrs": """
                 class="oh-dropdown__link oh-dropdown__link--danger"
                 onclick="event.stopPropagation();
@@ -638,7 +638,7 @@ class CardCandidates(HorillaCardView):
     card_status_indications = [
         (
             "canceled--dot",
-            "Canceled",
+            _("Canceled"),
             """
             onclick="
                 $('#applyFilter').closest('form').find('[name=canceled]').val('true');
@@ -648,7 +648,7 @@ class CardCandidates(HorillaCardView):
         ),
         (
             "nothired--dot",
-            "Not Hired",
+            _("Not Hired"),
             """
             onclick="
                 $('#applyFilter').closest('form').find('[name=hired]').val('false');
@@ -658,7 +658,7 @@ class CardCandidates(HorillaCardView):
         ),
         (
             "hired--dot",
-            "Hired",
+            _("Hired"),
             """
             onclick="$('#applyFilter').closest('form').find('[name=hired]').val('true');
                 $('#applyFilter').click();
@@ -689,7 +689,7 @@ class CandidateNav(HorillaNavView):
                             """
         self.actions = [
             {
-                "action": "Export",
+                "action": _("Export"),
                 "attrs": f"""
                  data-toggle="oh-modal-toggle"
                  data-target="#genericModal"
@@ -698,7 +698,7 @@ class CandidateNav(HorillaNavView):
                  """,
             },
             {
-                "action": "Bulk mail",
+                "action": _("Bulk mail"),
                 "attrs": f"""
                 data-toggle="oh-modal-toggle"
                 data-target="#genericModal"
@@ -707,7 +707,7 @@ class CandidateNav(HorillaNavView):
                 """,
             },
             {
-                "action": "Create document request",
+                "action": _("Create document request"),
                 "attrs": f"""
                 data-toggle="oh-modal-toggle"
                 data-target="#objectCreateModal"
@@ -716,21 +716,21 @@ class CandidateNav(HorillaNavView):
                 """,
             },
             {
-                "action": "Archive",
+                "action": _("Archive"),
                 "attrs": """
                 id="archiveCandidates"
 
                 """,
             },
             {
-                "action": "Un archive",
+                "action": _("Un-archive"),
                 "attrs": """
                 id="unArchiveCandidates"
 
                 """,
             },
             {
-                "action": "Delete",
+                "action": _("Delete"),
                 "attrs": """
                 data-action = "delete"
                 id="deleteCandidates"
@@ -764,16 +764,16 @@ class CandidateNav(HorillaNavView):
     filter_form_context_name = "form"
     search_swap_target = "#listContainer"
     group_by_fields = [
-        ("recruitment_id", "Recruitment"),
-        ("job_position_id", "Job Position"),
-        ("hired", "Hired"),
-        ("country", "Country"),
-        ("stage_id", "Stage"),
-        ("joining_date", "Date joining"),
-        ("probation_end", "Probation End"),
-        ("offer_letter_status", "offer Letter Status"),
-        ("rejected_candidate__reject_reason_id", "Reject reason"),
-        ("skillzonecandidate_set", "Skill zone"),
+        ("recruitment_id", _("Recruitment")),
+        ("job_position_id", _("Job Position")),
+        ("hired", _("Hired")),
+        ("country", _("Country")),
+        ("stage_id", _("Stage")),
+        ("joining_date", _("Date joining")),
+        ("probation_end", _("Probation End")),
+        ("offer_letter_status", _("Offer Letter Status")),
+        ("rejected_candidate__reject_reason_id", _("Reject reason")),
+        ("skillzonecandidate_set", _("Skill zone")),
     ]
 
 
@@ -836,7 +836,7 @@ class AddToRejectedCandidatesView(View):
         form = RejectedCandidateForm(request.POST, instance=instance)
         if form.is_valid():
             form.save()
-            messages.success(request, "Candidate reject reason saved")
+            messages.success(request, _("Candidate reject reason saved"))
             return HttpResponse("<script>window.location.reload()</script>")
         return render(request, self.template_name, {"form": form})
 
@@ -857,13 +857,13 @@ class CandidateDetail(HorillaDetailedView):
     header = {"title": "get_full_name", "subtitle": "get_email", "avatar": "get_avatar"}
 
     body = [
-        ("Gender", "gender"),
-        ("Phone", "mobile"),
-        ("Stage", "stage_drop_down"),
-        ("Rating", "rating_bar"),
-        ("Recruitment", "recruitment_id"),
-        ("Job Position", "job_position_id"),
-        ("Interview Table", "candidate_interview_view", True),
+        (_("Gender"), "gender"),
+        (_("Phone"), "mobile"),
+        (_("Stage"), "stage_drop_down"),
+        (_("Rating"), "rating_bar"),
+        (_("Recruitment"), "recruitment_id"),
+        (_("Job Position"), "job_position_id"),
+        (_("Interview Table"), "candidate_interview_view", True),
     ]
 
     cols = {
@@ -874,7 +874,7 @@ class CandidateDetail(HorillaDetailedView):
         super().__init__(**kwargs)
         self.actions = [
             {
-                "action": "Edit",
+                "action": _("Edit"),
                 "icon": "create-outline",
                 "attrs": """
             class="oh-btn oh-btn--info w-50"
@@ -882,7 +882,7 @@ class CandidateDetail(HorillaDetailedView):
             """,
             },
             {
-                "action": "View",
+                "action": _("View"),
                 "icon": "eye-outline",
                 "attrs": """
             class="oh-btn oh-btn--success w-50"
@@ -894,7 +894,7 @@ class CandidateDetail(HorillaDetailedView):
         if self.request.user.has_perm("recruitment.delete_candidate"):
             self.actions.append(
                 {
-                    "action": "Delete",
+                    "action": _("Delete"),
                     "icon": "trash-outline",
                     "accessibility": "recruitment.cbv.candidates.delete_cand",
                     "attrs": f"""
@@ -921,7 +921,7 @@ class ToSkillZoneFormView(HorillaFormView):
 
     model = SkillZoneCandidate
     form_class = ToSkillZoneForm
-    new_display_title = "Add To Skill Zone"
+    new_display_title = _("Add To Skill Zone")
 
     def get_context_data(self, **kwargs):
         """
@@ -1016,7 +1016,7 @@ class RejectReasonFormView(HorillaFormView):
         Handles valid form submission and saves rejected candidate reason.
         """
         if form.is_valid():
-            message = _("Candidate reject reason saved")
+            message = "Candidate reject reason saved"
             messages.success(self.request, _(message))
             form.save()
             return self.HttpResponse()

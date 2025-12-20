@@ -245,7 +245,7 @@ class CandidatePipeline(Pipeline):
             ],
             "actions": [
                 {
-                    "action": "Edit",
+                    "action": _("Edit"),
                     "accessibility": "onboarding.cbv.accessibility.edit_stage_accessibility",
                     "attrs": """
                     hx-target="#genericModalBody"
@@ -255,7 +255,7 @@ class CandidatePipeline(Pipeline):
                 """,
                 },
                 {
-                    "action": "Bulk Mail",
+                    "action": _("Bulk Mail"),
                     "attrs": """
                     hx-target="#objectCreateModalTarget"
                     hx-get="{bulk_send_mail_path}"
@@ -264,7 +264,7 @@ class CandidatePipeline(Pipeline):
                 """,
                 },
                 {
-                    "action": "Delete",
+                    "action": _("Delete"),
                     "accessibility": "onboarding.cbv.accessibility.delete_stage_accessibility",
                     "attrs": """
                     data-target="#deleteConfirmation"
@@ -341,13 +341,13 @@ class CandidateOnboardingDetail(CandidateDetail):
     """
 
     body = [
-        ("Gender", "gender"),
-        ("Phone", "mobile"),
-        ("Stage", "stage_drop_down"),
-        ("Rating", "rating_bar"),
-        ("Recruitment", "recruitment_id"),
-        ("Job Position", "job_position_id"),
-        ("Tasks", "task_fetch", True),
+        (_("Gender"), "gender"),
+        (_("Phone"), "mobile"),
+        (_("Stage"), "stage_drop_down"),
+        (_("Rating"), "rating_bar"),
+        (_("Recruitment"), "recruitment_id"),
+        (_("Job Position"), "job_position_id"),
+        (_("Tasks"), "task_fetch", True),
     ]
 
     cols = {"task_fetch": 12}
@@ -385,18 +385,18 @@ class CandidateList(HorillaListView):
         "get_interview_count": "style='width:200px;'",
     }
     columns = [
-        ("Name", "candidate_id__candidate_name", "candidate_id__get_avatar"),
-        ("Email", "candidate_id__mail_indication"),
-        ("Contact", "candidate_id__mobile"),
-        ("Stage", "stage_drop_down"),
-        ("Rating", "candidate_id__rating_bar"),
-        ("Job Position", "candidate_id__job_position_id"),
+        (_("Name"), "candidate_id__candidate_name", "candidate_id__get_avatar"),
+        (_("Email"), "candidate_id__mail_indication"),
+        (_("Contact"), "candidate_id__mobile"),
+        (_("Stage"), "stage_drop_down"),
+        (_("Rating"), "candidate_id__rating_bar"),
+        (_("Job Position"), "candidate_id__job_position_id"),
     ]
 
     default_columns = [
-        ("Name", "candidate_id__candidate_name", "candidate_id__get_avatar"),
-        ("Email", "candidate_id__mail_indication"),
-        ("Stage", "stage_drop_down"),
+        (_("Name"), "candidate_id__candidate_name", "candidate_id__get_avatar"),
+        (_("Email"), "candidate_id__mail_indication"),
+        (_("Stage"), "stage_drop_down"),
     ]
 
     bulk_update_fields = [
@@ -780,7 +780,7 @@ class AssignTask(View):
         candidate_task.stage_id = candidate.onboarding_stage_id
         candidate_task.onboarding_task_id = task
         candidate_task.save()
-        messages.success(self.request, "Task Allocated")
+        messages.success(self.request, _("Task Allocated"))
 
         return HttpResponse(
             f"""
@@ -804,7 +804,7 @@ class AssignTask(View):
         candidate_task.status = status
         candidate_task.save()
 
-        messages.success(self.request, "Status updated")
+        messages.success(self.request, _("Status updated"))
 
         return HttpResponse(
             f"""

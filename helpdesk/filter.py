@@ -7,6 +7,7 @@ This page is used to register filter for employee models
 
 import django_filters
 from django import forms
+from django.utils.translation import gettext_lazy as _
 from django_filters import CharFilter, DateFilter
 
 from base.models import Tags
@@ -106,13 +107,13 @@ class TicketReGroup:
 
     fields = [
         ("", "Select"),
-        ("employee_id", "Owner"),
-        ("ticket_type", "Ticket Type"),
-        ("status", "Status"),
-        ("priority", "Priority"),
-        ("tags", "Tags"),
-        ("assigned_to", "Assigner"),
-        ("employee_id__employee_work_info__company_id", "Company"),
+        ("employee_id", _("Owner")),
+        ("ticket_type", _("Ticket Type")),
+        ("status", _("Status")),
+        ("priority", _("Priority")),
+        ("tags", _("Tags")),
+        ("assigned_to", _("Assigner")),
+        ("employee_id__employee_work_info__company_id", _("Company")),
     ]
 
 

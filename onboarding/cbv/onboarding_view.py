@@ -245,7 +245,7 @@ class OnboardingCandidateDetailView(HorillaDetailedView):
 
     actions = [
         {
-            "action": "View",
+            "action": _("View"),
             "icon": "eye-outline",
             "attrs": """
                      class="oh-btn oh-btn--light w-50"
@@ -253,7 +253,7 @@ class OnboardingCandidateDetailView(HorillaDetailedView):
                      """,
         },
         {
-            "action": "Edit",
+            "action": _("Edit"),
             "icon": "create-outline",
             "attrs": """
                     class="oh-btn oh-btn--info w-50"

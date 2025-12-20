@@ -93,11 +93,11 @@ class FeedbackListView(HorillaListView):
     }
 
     sortby_mapping = [
-        ("Employee", "employee_id__get_full_name"),
-        ("Status", "custom_status_style"),
-        ("Title", "review_cycle"),
-        ("Start Date", "start_date"),
-        ("Due On", "due_days_diff"),
+        (_("Employee"), "employee_id__get_full_name"),
+        (_("Status"), "custom_status_style"),
+        (_("Title"), "review_cycle"),
+        (_("Start Date"), "start_date"),
+        (_("Due On"), "due_days_diff"),
     ]
 
     row_attrs = """
@@ -186,7 +186,7 @@ class FeedbackGenericTabView(HorillaTabView):
                 "url": f"{reverse('anonymous-feedback-tab')}",
                 "actions": [
                     {
-                        "action": "Add Anonymous",
+                        "action": _("Add Anonymous"),
                         "attrs": f"""
                                 data-toggle = "oh-modal-toggle"
                                 data-target = "#genericModal"
@@ -502,7 +502,7 @@ class PerformanceTab(SelfFeedbacktab):
 EmployeeProfileView.add_tab(
     tabs=[
         {
-            "title": "Performance",
+            "title": _("Performance"),
             "view": PerformanceTab.as_view(),
             "accessibility": "pms.cbv.accessibility.performance_accessibility",
         },

@@ -130,9 +130,9 @@ class ResignationListView(HorillaListView):
     }
 
     sortby_mapping = [
-        ("Employee", "employee_id", "employee_id__get_avatar"),
-        ("Planned To Leave", "planned_to_leave_on"),
-        ("Status", "get_status"),
+        (_("Employee"), "employee_id", "employee_id__get_avatar"),
+        (_("Planned To Leave"), "planned_to_leave_on"),
+        (_("Status"), "get_status"),
     ]
 
 

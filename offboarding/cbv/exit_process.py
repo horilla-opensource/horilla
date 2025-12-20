@@ -271,7 +271,7 @@ class OffboardingPipelineNav(HorillaNavView):
     Offboarding Pipeline Navigation View
     """
 
-    nav_title = "Exit Process"
+    nav_title = _("Exit Process")
     search_swap_target = "#pipelineContainer"
     search_url = reverse_lazy("get-offboarding-tab")
     filter_body_template = "cbv/exit_process/pipeline_filter.html"
@@ -427,7 +427,7 @@ class OffboardingPipelineStage(Pipeline):
             ],
             "actions": [
                 {
-                    "action": "Add Employee",
+                    "action": _("Add Employee"),
                     "accessibility": "offboarding.cbv.accessibility.add_employee_accessibility",
                     "attrs": """
                         data-toggle="oh-modal-toggle"
@@ -438,7 +438,7 @@ class OffboardingPipelineStage(Pipeline):
                     """,
                 },
                 {
-                    "action": "Edit",
+                    "action": _("Edit"),
                     "accessibility": "offboarding.cbv.accessibility.edit_stage_accessibility",
                     "attrs": """
                         hx-target="#genericModalBody"
@@ -448,7 +448,7 @@ class OffboardingPipelineStage(Pipeline):
                     """,
                 },
                 {
-                    "action": "Delete",
+                    "action": _("Delete"),
                     "accessibility": "offboarding.cbv.accessibility.delete_stage_accessibility",
                     "attrs": """
                         data-target="#deleteConfirmation"
@@ -623,13 +623,13 @@ class OffboardingEmployeeList(HorillaListView):
     filter_selected = False
     custom_empty_template = "cbv/pipeline/empty.html"
     columns = [
-        ("Employee", "employee_id", "employee_id__get_avatar"),
-        ("Notice Period", "get_notice_period_col"),
-        ("Start Date", "notice_period_starts"),
-        ("End Date", "notice_period_ends"),
-        ("Stage", "get_stage_col"),
-        ("Created At", "get_created_at_date"),
-        ("Task Status", "get_task_status_col"),
+        (_("Employee"), "employee_id", "employee_id__get_avatar"),
+        (_("Notice Period"), "get_notice_period_col"),
+        (_("Start Date"), "notice_period_starts"),
+        (_("End Date"), "notice_period_ends"),
+        (_("Stage"), "get_stage_col"),
+        (_("Created At"), "get_created_at_date"),
+        (_("Task Status"), "get_task_status_col"),
     ]
 
     action_method = """get_action_col"""

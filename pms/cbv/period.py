@@ -68,8 +68,8 @@ class PeriodList(HorillaListView):
     }
 
     sortby_mapping = [
-        ("Start Date", "start_date"),
-        ("End date", "end_date"),
+        (_("Start Date"), "start_date"),
+        (_("End date"), "end_date"),
     ]
 
     row_attrs = """

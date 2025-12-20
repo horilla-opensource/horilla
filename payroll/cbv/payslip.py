@@ -94,13 +94,13 @@ class PayslipList(HorillaListView):
     ]
 
     sortby_mapping = [
-        ("Employee", "employee_id__get_full_name", "employee_id__get_avatar"),
-        ("Start date", "start_date"),
-        ("End Date", "end_date"),
-        ("Gross Pay", "gross_pay_display"),
-        ("Deduction", "deduction_display"),
-        ("Net Pay", "net_pay_display"),
-        ("Status", "custom_status_col"),
+        (_("Employee"), "employee_id__get_full_name", "employee_id__get_avatar"),
+        (_("Start date"), "start_date"),
+        (_("End Date"), "end_date"),
+        (_("Gross Pay"), "gross_pay_display"),
+        (_("Deduction"), "deduction_display"),
+        (_("Net Pay"), "net_pay_display"),
+        (_("Status"), "custom_status_col"),
     ]
     records_per_page = 10
     action_method = "custom_actions_col"
@@ -397,18 +397,18 @@ class PayrollTab(PayslipList):
 EmployeeProfileView.add_tab(
     tabs=[
         {
-            "title": "Payroll",
+            "title": _("Payroll"),
             "view": PayrollTab.as_view(),
             "accessibility": "payroll.cbv.accessibility.payroll_accessibility",
         },
         {
-            "title": "Allowance & Deduction",
+            "title": _("Allowance & Deduction"),
             "view": AllowanceDeductionTabView.as_view(),
             # "view": views.allowances_deductions_tab,
             "accessibility": "payroll.cbv.accessibility.allowance_and_deduction_accessibility",
         },
         {
-            "title": "Bonus Points",
+            "title": _("Bonus Points"),
             "view": employee_view.bonus_points_tab,
             "accessibility": "payroll.cbv.accessibility.bonus_accessibility",
         },

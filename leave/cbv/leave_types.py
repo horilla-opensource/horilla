@@ -61,8 +61,8 @@ class LeaveTypeListView(HorillaListView):
     action_method = "leave_list_actions"
 
     sortby_mapping = [
-        ("Leave Type", "name", "get_avatar"),
-        ("Total Days", "count"),
+        (_("Leave Type"), "name", "get_avatar"),
+        (_("Total Days"), "count"),
     ]
 
     row_status_indications = [

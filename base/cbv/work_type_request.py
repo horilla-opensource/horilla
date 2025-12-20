@@ -93,11 +93,11 @@ class WorkRequestListView(HorillaListView):
     }
 
     sortby_mapping = [
-        ("Employee", "employee_id__get_full_name", "employee_id__get_avatar"),
-        ("Requested Work Type", "work_type_id__work_type"),
-        ("Previous/current Work Type", "previous_work_type_id__work_type"),
-        ("Requested Date", "requested_date"),
-        ("Requested Till", "requested_till"),
+        (_("Employee"), "employee_id__get_full_name", "employee_id__get_avatar"),
+        (_("Requested Work Type"), "work_type_id__work_type"),
+        (_("Previous/current Work Type"), "previous_work_type_id__work_type"),
+        (_("Requested Date"), "requested_date"),
+        (_("Requested Till"), "requested_till"),
     ]
     row_attrs = """
                 hx-get='{detail_view}?instance_ids={ordered_ids}'

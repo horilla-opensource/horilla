@@ -79,10 +79,10 @@ class RotatingWorkTypeList(HorillaListView):
     ]
 
     sortby_mapping = [
-        ("Title", "name"),
-        ("Work Type 1", "work_type1__work_type"),
-        ("Work Type 2", "work_type2__work_type"),
-        ("Additional Work Types", "get_additional_worktytpes"),
+        (_("Title"), "name"),
+        (_("Work Type 1"), "work_type1__work_type"),
+        (_("Work Type 2"), "work_type2__work_type"),
+        (_("Additional Work Types"), "get_additional_worktytpes"),
     ]
 
     header_attrs = {
