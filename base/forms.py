@@ -776,15 +776,26 @@ class JobRoleForm(ModelForm):
     JobRole model's form
     """
 
+    job_position_id = forms.ModelMultipleChoiceField(
+        queryset=JobPosition.objects.all(),
+        label="Job Position",
+        widget=forms.SelectMultiple(
+            attrs={
+                "class": "w-100 oh-select",
+                "style": "height:45px;",
+            }
+        ),
+    )
+
     cols = {"job_position_id": 12, "job_role": 12}
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
-        if not self.instance.pk:
-            job_position_id = forms.ModelMultipleChoiceField(
-                queryset=JobPosition.objects.all(),
+        if self.instance.pk:
+            job_position_id = forms.ModelChoiceField(
+                queryset=self.fields["job_position_id"].queryset,
                 label="Job Position",
-                widget=forms.SelectMultiple(
+                widget=forms.Select(
                     attrs={
                         "class": "w-100 oh-select",
                         "style": "height:45px;",
@@ -799,7 +810,8 @@ class JobRoleForm(ModelForm):
         """
 
         model = JobRole
-        fields = ["job_role", "job_position_id"]
+        fields = "__all__"
+        exclude = ["is_active", "job_position_id", "company_id"]
 
     def clean(self):
         cleaned_data = super().clean()
@@ -817,7 +829,6 @@ class JobRoleForm(ModelForm):
                 raise ValidationError(
                     f"{job_role} already exists under this job position"
                 )
-        cleaned_data.pop("job_position_id", None)
         return cleaned_data
 
     def save(self, commit, *args, **kwargs) -> Any:
