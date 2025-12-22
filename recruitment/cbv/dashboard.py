@@ -38,6 +38,7 @@ class SkillZoneStatusList(HorillaListView):
         (_("No. of Candidates"), "candidate_count_display"),
     ]
     bulk_select_option = False
+    show_toggle_form = False
 
     def get_queryset(self):
         queryset = super().get_queryset()
@@ -61,21 +62,16 @@ class CandidateOnOnboardList(HorillaListView):
     model = Candidate
     filter_class = CandidateFilter
     bulk_select_option = False
+    show_toggle_form = False
 
     columns = [
         (_("Candidates"), "name", "get_avatar"),
         (_("Job Position"), "job_position_id"),
     ]
 
-    header_attrs = {
-        "name": """
-                 style="width:100px !important"
-                 """
-    }
-
     def get_queryset(self):
         queryset = super().get_queryset()
-        queryset = queryset.filter(onboarding_stage__isnull=False)
+        queryset = queryset.filter(start_onboard=True)
         return queryset
 
     def __init__(self, **kwargs: Any) -> None:
@@ -107,24 +103,12 @@ class CurrentHiringList(HorillaListView):
     ]
 
     header_attrs = {
-        "job_position": """
-                          style = "width:100px !important "
-                          """,
-        "initial_count": """
-                          style = "width:55px !important"
-                          """,
-        "test_count": """
-                          style = "width:55px !important;"
-                          """,
-        "interview_count": """
-                          style = "width:60px !important"
-                          """,
-        "hired_count": """
-                          style = "width:55px !important"
-                          """,
-        "cancelled_count": """
-                          style = "width:65px !important"
-                          """,
+        "job_position": """ style = "width:100px !important " """,
+        "initial_count": """ style = "width:55px !important" """,
+        "test_count": """ style = "width:55px !important;" """,
+        "interview_count": """ style = "width:60px !important" """,
+        "hired_count": """ style = "width:55px !important" """,
+        "cancelled_count": """ style = "width:65px !important" """,
     }
 
     def get_queryset(self):
@@ -165,17 +149,12 @@ class OnGoingRecruitmentList(HorillaListView):
     model = Recruitment
     filter_class = RecruitmentFilter
     bulk_select_option = False
+    show_toggle_form = False
 
     columns = [
         (_("Recrutment"), "title"),
         (_("Managers"), "managers"),
     ]
-
-    header_attrs = {
-        "title": """
-                 style="width:100px !important"
-                 """
-    }
 
     def get_queryset(self):
         queryset = super().get_queryset()
