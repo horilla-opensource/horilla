@@ -1834,6 +1834,8 @@ def delete_reimbursements(request):
     reimbursements = Reimbursement.objects.filter(id__in=ids)
     for reimbursement in reimbursements:
         user = reimbursement.employee_id.employee_user_id
+        if reimbursement.status == "approved" and reimbursement.type == "reimbursement":
+            reimbursement.allowance_id.delete()
     reimbursements.delete()
     messages.success(request, "Reimbursements deleted")
     notify.send(
