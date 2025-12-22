@@ -553,9 +553,9 @@ def bulk_create_job_position_import(success_lists):
 
     # Step 1: Extract unique (job_position, department_name) pairs
     job_positions_to_import = {
-        (convert_nan("Job Position", item), convert_nan("Department", item))
+        (jp, dep)
         for item in success_lists
-        if convert_nan("Job Position", item) and convert_nan("Department", item)
+        if (jp := item.get("Job Position")) and (dep := item.get("Department"))
     }
 
     if not job_positions_to_import:
@@ -567,7 +567,7 @@ def bulk_create_job_position_import(success_lists):
 
     # Step 3: Filter out entries with unknown departments
     valid_pairs = [
-        (jp, department_lookup[dept])
+        (jp, department_lookup[dept].id)
         for jp, dept in job_positions_to_import
         if dept in department_lookup
     ]
@@ -584,7 +584,7 @@ def bulk_create_job_position_import(success_lists):
 
     # Step 5: Create list of new JobPosition instances
     new_positions = [
-        JobPosition(job_position=jp, department_id=dept_id)
+        JobPosition(job_position=jp, department_id_id=dept_id)
         for jp, dept_id in valid_pairs
         if (jp, dept_id) not in existing_pairs
     ]
@@ -611,14 +611,16 @@ def bulk_create_job_role_import(success_lists):
 
     # Prefetch existing data efficiently
     job_positions = JobPosition.objects.only("id", "job_position")
+    job_position_lookup = {jp.job_position: jp.id for jp in job_positions}
+
     existing_job_roles = set(JobRole.objects.values_list("job_role", "job_position_id"))
 
     # Create new job roles
     new_job_roles = [
-        JobRole(job_role=role, job_position_id=job_positions[pos].id)
+        JobRole(job_role=role, job_position_id_id=job_position_lookup[pos])
         for role, pos in job_roles_to_import
-        if pos in job_positions
-        and (role, job_positions[pos].id) not in existing_job_roles
+        if pos in job_position_lookup
+        and (role, job_position_lookup[pos]) not in existing_job_roles
     ]
 
     # Bulk create if there are new roles
@@ -684,25 +686,25 @@ def bulk_create_shifts(success_lists):
 
 def bulk_create_employee_types(success_lists):
     """
-    Bulk creation of employee type instances based on the excel import of employees
+    Bulk creation of EmployeeType instances based on imported employee data.
     """
-    # Extract unique employee types, filtering out None values
+
     employee_types_to_import = {
-        et for work_info in success_lists if (et := work_info.get("Employee Type"))
+        et for row in success_lists if (et := row.get("Employee Type"))
     }
 
-    # Get existing employee types in one optimized query
+    if not employee_types_to_import:
+        return
+
     existing_employee_types = set(
         EmployeeType.objects.values_list("employee_type", flat=True)
     )
 
-    # Create new employee type objects
     new_employee_types = [
         EmployeeType(employee_type=et)
         for et in employee_types_to_import - existing_employee_types
     ]
 
-    # Bulk create if there are new types
     if new_employee_types:
         with transaction.atomic():
             EmployeeType.objects.bulk_create(
@@ -716,9 +718,6 @@ def create_contracts_in_thread(new_work_info_list, update_work_info_list):
     """
     from payroll.models.models import Contract
 
-    def get_or_none(value):
-        return value if value else None
-
     contracts_list = [
         Contract(
             contract_name=f"{work_info.employee_id}'s Contract",
@@ -726,11 +725,11 @@ def create_contracts_in_thread(new_work_info_list, update_work_info_list):
             contract_start_date=(
                 work_info.date_joining if work_info.date_joining else datetime.today()
             ),
-            department=get_or_none(work_info.department_id),
-            job_position=get_or_none(work_info.job_position_id),
-            job_role=get_or_none(work_info.job_role_id),
-            shift=get_or_none(work_info.shift_id),
-            work_type=get_or_none(work_info.work_type_id),
+            department=work_info.department_id,
+            job_position=work_info.job_position_id,
+            job_role=work_info.job_role_id,
+            shift=work_info.shift_id,
+            work_type=work_info.work_type_id,
             wage=work_info.basic_salary or 0,
         )
         for work_info in new_work_info_list + update_work_info_list
