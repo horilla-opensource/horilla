@@ -198,6 +198,7 @@ class TicketListView(HorillaListView):
 
     action_method = """ticket_action_col"""
     header_attrs = {"action": "style='width:200px'"}
+    selected_instances_key_id = "selectedTickets"
 
     row_status_indications = [
         (
