@@ -1802,6 +1802,8 @@ class Reimbursement(HorillaModel):
                         )
                         assigned_leave.save()
                     self.allowance_id.delete()
+                if self.type == "reimbursement" and self.allowance_id is not None:
+                    self.allowance_id.delete()
 
     def delete(self, *args, **kwargs):
         request = getattr(horilla_middlewares._thread_locals, "request", None)
