@@ -214,6 +214,7 @@
                                 </p>
                                 {% endif %}
                                 <div class="oh-btn-group">
+                                    {% if req.status != "rejected" %}
                                     <button
                                         type="button"
                                         title="{% trans 'Reject' %}"
@@ -222,6 +223,15 @@
                                     >
                                         <ion-icon class="me-1" name="close-circle-outline"></ion-icon>
                                     </button>
+                                     {% else %}
+                                        <button
+                                            type="button"
+                                            title="{% trans 'Reject' %}"
+                                            class="oh-btn oh-btn--danger w-100 oh-btn--disabled"
+                                        >
+                                         <ion-icon class="me-1" name="close-circle-outline"></ion-icon>
+                                        </button>
+                                    {% endif %}
                                     {% if req.status != "approved" and req.status != "rejected" %}
                                         <button
                                             type="button"
@@ -234,6 +244,7 @@
                                     {% else %}
                                         <button
                                             type="button"
+                                            title="{% trans 'Approve' %}"
                                             class="oh-btn oh-btn--success oh-btn--disabled w-100"
                                         >
                                         <ion-icon class="me-1" name="checkmark-outline"></ion-icon>

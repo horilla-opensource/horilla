@@ -837,20 +837,24 @@ class ReimbursementForm(ModelForm):
         self.configure_fields()
 
     def get_employee(self):
-        """Resolves employee either from form data or request."""
+        """Resolve employee based on permission and context."""
         employee_qs = self.fields["employee_id"].queryset
-        employee_id = self.data.get("employee_id") if self.data else None
 
+        if (
+                self.request
+                and hasattr(self.request.user, "employee_get")
+                and not self.request.user.has_perm("payroll.add_reimbursement")
+        ):
+            return self.request.user.employee_get
+
+        employee_id = self.data.get("employee_id") if self.data else None
         if employee_id and (emp := employee_qs.filter(id=employee_id).first()):
             return emp
 
-        if self.request and (emp := self.request.user.employee_get):
-            if not self.instance.pk and emp in employee_qs:
-                return emp
-            if self.instance.pk and emp.id == self.instance.employee_id:
-                return emp
+        if self.instance.pk:
+            return self.instance.employee_id
 
-        return employee_qs.first()
+        return None
 
     def get_encashable_leaves(self, employee):
         LeaveType = get_horilla_model_class(app_label="leave", model="leavetype")
@@ -945,6 +949,7 @@ class ReimbursementForm(ModelForm):
 
         type_ = cleaned_data.get("type")
         employee = cleaned_data.get("employee_id")
+        amount = cleaned_data.get("amount")
 
         if not type_ or not employee:
             return cleaned_data
@@ -1015,6 +1020,9 @@ class ReimbursementForm(ModelForm):
                             self.add_error(
                                 "ad_to_encash", _("Not enough available days to redeem")
                             )
+        else:
+            if amount is None or amount <= 0:
+                self.add_error("amount", "Amount must be greater than zero.")
 
         return cleaned_data
 
@@ -1022,6 +1030,9 @@ class ReimbursementForm(ModelForm):
         multiple_attachment_ids = []
         is_new = not self.instance.pk
         attachments = self.files.getlist("attachment")
+
+        if not self.instance.employee_id_id:
+            self.instance.employee_id = self.employee
 
         if attachments:
             self.instance.attachment = attachments[0]

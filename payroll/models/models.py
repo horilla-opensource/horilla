@@ -1283,8 +1283,9 @@ class Deduction(HorillaModel):
         return payslip
 
     def clean(self):
+        if self.amount and self.amount < 0:
+            raise ValidationError({"amount": _("Deduction amount must be greater than zero.")})
         super().clean()
-
         if self.is_tax:
             self.is_pretax = False
         if not self.is_fixed:
@@ -1801,6 +1802,8 @@ class Reimbursement(HorillaModel):
                             assigned_leave.carryforward_days + cfd_days
                         )
                         assigned_leave.save()
+                    self.allowance_id.delete()
+                if self.type == "reimbursement" and self.allowance_id is not None:
                     self.allowance_id.delete()
 
     def delete(self, *args, **kwargs):
