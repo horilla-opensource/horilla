@@ -92,6 +92,9 @@ class JobRoleFormView(HorillaFormView):
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
         if self.form.instance.pk:
+            self.form.fields["job_position_id"].initial = (
+                self.form.instance.job_position_id
+            )
             self.form_class.verbose_name = _("Update Job Role")
         return context
 
