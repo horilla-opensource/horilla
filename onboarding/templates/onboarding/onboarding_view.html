@@ -88,9 +88,11 @@
                 <div class="oh-pagination__input-container me-3">
                     <span class="oh-pagination__label me-1">{% trans "Page" %}</span>
 
-                    <input type="number" name="page" class="oh-pagination__input" value="{{recruitments.number}}"
+                    <form class="d-inline" action="{% url 'onboarding-view' %}?{{pd}}" method="get">
+                        <input type="number" name="page" class="oh-pagination__input" value="{{recruitments.number}}"
                         {% comment %} hx-get="{% url 'recruitment-search' %}?{{pd}}" hx-target="#tab_rec_{{rec.id}}" {% endcomment %}
-                        min="1" />
+                        min="1" onchange="$(this).closest('form').submit()" />
+                    </form>
                     <span class="oh-pagination__label">{% trans "of" %} {{recruitments.paginator.num_pages}}</span>
                 </div>
 
