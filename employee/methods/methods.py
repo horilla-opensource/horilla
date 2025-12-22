@@ -81,10 +81,10 @@ def normalize_phone(phone):
 
 
 def import_valid_date(date_value, field_label, errors_dict, error_key):
-    if pd.isna(date_value) or date_value is None or str(date_value).strip() == "":
+    if date_value is None or pd.isna(date_value) or str(date_value).strip() == "":
         return None
 
-    if isinstance(date_value, datetime):
+    if isinstance(date_value, (pd.Timestamp, datetime)):
         return date_value.date()
 
     date_str = str(date_value).strip()
@@ -282,18 +282,19 @@ def process_employee_records(data_frame):
     for emp in employee_dicts:
         errors = {}
         save = True
+        gender = emp.get("Gender")
 
         email = str(emp.get("Email", "")).strip().lower()
         raw_phone = emp.get("Phone", "")
         phone = normalize_phone(raw_phone)
         badge_id = clean_badge_id(emp.get("Badge ID"))
-        first_name = convert_nan("First Name", emp)
-        last_name = convert_nan("Last Name", emp)
-        address = convert_nan("Address", emp)
-        gender = str(emp.get("Gender") or "").strip().lower()
-        company = convert_nan("Company", emp)
-        basic_salary = convert_nan("Basic Salary", emp)
-        salary_hour = convert_nan("Salary Hour", emp)
+        first_name = emp.get("First Name")
+        last_name = emp.get("Last Name")
+        address = emp.get("Address")
+        gender = str(gender).strip().lower() if gender else None
+        company = emp.get("Company")
+        basic_salary = emp.get("Basic Salary")
+        salary_hour = emp.get("Salary Hour")
 
         # Date validation
         joining_date = import_valid_date(
@@ -467,14 +468,14 @@ def bulk_create_employee_import(success_lists):
 
     employees_to_create = [
         Employee(
-            employee_user_id=existing_users[row["Email"]],
-            badge_id=row["Badge ID"],
-            employee_first_name=convert_nan("First Name", row),
-            employee_last_name=convert_nan("Last Name", row),
+            employee_user_id=existing_users[row.get("Email")],
+            badge_id=row.get("Badge ID"),
+            employee_first_name=row.get("First Name"),
+            employee_last_name=row.get("Last Name"),
             address=row.get("Address"),
-            email=row["Email"],
-            phone=row["Phone"],
-            gender=row.get("Gender", "").lower(),
+            email=row.get("Email"),
+            phone=row.get("Phone"),
+            gender=row.get("Gender").lower() if row.get("Gender") else None,
         )
         for row in success_lists
         if row["Email"] in existing_users
@@ -528,9 +529,7 @@ def bulk_create_department_import(success_lists):
     Bulk creation of department instances based on the excel import of employees
     """
     departments_to_import = {
-        dept
-        for work_info in success_lists
-        if (dept := convert_nan("Department", work_info))
+        dept for work_info in success_lists if (dept := work_info.get("Department"))
     }
 
     existing_departments = set(Department.objects.values_list("department", flat=True))
@@ -564,7 +563,7 @@ def bulk_create_job_position_import(success_lists):
 
     # Step 2: Fetch all departments at once and build a name -> object map
     department_objs = Department.objects.only("id", "department")
-    department_lookup = {dep.department: dep.id for dep in department_objs}
+    department_lookup = {dep.department: dep for dep in department_objs}
 
     # Step 3: Filter out entries with unknown departments
     valid_pairs = [
@@ -606,8 +605,8 @@ def bulk_create_job_role_import(success_lists):
     job_roles_to_import = {
         (role, pos)
         for work_info in success_lists
-        if (role := convert_nan("Job Role", work_info))
-        and (pos := convert_nan("Job Position", work_info))
+        if (role := work_info.get("Job Role"))
+        and (pos := work_info.get("Job Position"))
     }
 
     # Prefetch existing data efficiently
@@ -636,7 +635,7 @@ def bulk_create_work_types(success_lists):
     """
     # Extract unique work types, filtering out None values
     work_types_to_import = {
-        wt for work_info in success_lists if (wt := convert_nan("Work Type", work_info))
+        wt for work_info in success_lists if (wt := work_info.get("Work Type"))
     }
 
     # Get existing work types in one optimized query
@@ -661,9 +660,7 @@ def bulk_create_shifts(success_lists):
     """
     # Extract unique shifts, filtering out None values
     shifts_to_import = {
-        shift
-        for work_info in success_lists
-        if (shift := convert_nan("Shift", work_info))
+        shift for work_info in success_lists if (shift := work_info.get("Shift"))
     }
 
     # Get existing shifts in one optimized query
@@ -691,9 +688,7 @@ def bulk_create_employee_types(success_lists):
     """
     # Extract unique employee types, filtering out None values
     employee_types_to_import = {
-        et
-        for work_info in success_lists
-        if (et := convert_nan("Employee Type", work_info))
+        et for work_info in success_lists if (et := work_info.get("Employee Type"))
     }
 
     # Get existing employee types in one optimized query
@@ -861,7 +856,7 @@ def bulk_create_work_info_import(success_lists):
                 reporting_manager_obj = reporting_manager_dict[reporting_manager]
 
         company_obj = existing_companies.get(work_info.get("Company"))
-        location = convert_nan("Location", work_info)
+        location = work_info.get("Location")
 
         # Parsing dates and salary
         date_joining = (
@@ -876,12 +871,10 @@ def bulk_create_work_info_import(success_lists):
             else None
         )
         basic_salary = (
-            convert_nan("Basic Salary", work_info) if ("Basic Salary", work_info) else 0
+            work_info.get("Basic Salary") if work_info.get("Basic Salary") else 0
         )
         salary_hour = (
-            convert_nan("Salary Hour", work_info)
-            if convert_nan("Salary Hour", work_info)
-            else 0
+            work_info.get("Salary Hour") if work_info.get("Salary Hour") else 0
         )
 
         if employee_work_info is None:

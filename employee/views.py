@@ -2654,6 +2654,9 @@ def work_info_import_file(request):
     return response
 
 
+import numpy as np
+
+
 @login_required
 @hx_request_required
 @permission_required("employee.add_employee")
@@ -2689,6 +2692,7 @@ def work_info_import(request):
                     {"error_message": error_message},
                 )
 
+            cleaned_data_frame = data_frame.astype(object).replace({np.nan: None})
             valid, error_message = valid_import_file_headers(data_frame)
             if not valid:
                 return render(
@@ -2697,7 +2701,7 @@ def work_info_import(request):
                     {"error_message": error_message},
                 )
             success_list, error_list, created_count = process_employee_records(
-                data_frame
+                cleaned_data_frame
             )
             if success_list:
                 try:
@@ -2734,6 +2738,7 @@ def work_info_import(request):
                 "model": _("Employees"),
                 "path_info": path_info,
             }
+            messages.success(request, f"{created_count} employees created.")
             result = render_to_string("import_popup.html", context)
             result += """
                         <script>
