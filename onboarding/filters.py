@@ -72,8 +72,10 @@ class OnboardingStageFilter(FilterSet):
         """
         This method is used to search recruitment
         """
-        queryset = queryset.filter(stage_title__icontains=value) | queryset.filter(
-            candidate__candidate_id__name__icontains=value
+        queryset = (
+            queryset.filter(stage_title__icontains=value)
+            | queryset.filter(candidate__candidate_id__name__icontains=value)
+            | queryset.filter(recruitment_id__title__icontains=value)
         )
         return queryset.distinct()
 
