@@ -9,4 +9,6 @@ urlpatterns = [
     path("gdrive/", gdrive_setup, name="gdrive"),
     path("gdrive-start-stop/", gdrive_Backup_stop_or_start, name="gdrive_start_stop"),
     path("gdrive-delete/", gdrive_Backup_delete, name="gdrive_delete"),
+    path("gdrive-authorize/", gdrive_authorize, name="gdrive_authorize"),
+    path("google/callback/", gdrive_callback, name="gdrive_callback"),
 ]
