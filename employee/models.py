@@ -848,9 +848,7 @@ class Policy(HorillaModel):
     )
     specific_employees = models.ManyToManyField(Employee, blank=True, editable=False)
     attachments = models.ManyToManyField(PolicyMultipleFile, blank=True)
-    company_id = models.ManyToManyField(
-        Company, blank=True, verbose_name=trans("Company")
-    )
+    company_id = models.ManyToManyField(Company, blank=True, verbose_name=_("Company"))
 
     objects = HorillaCompanyManager("company_id")
 

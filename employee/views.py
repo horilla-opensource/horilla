@@ -3523,7 +3523,7 @@ def initial_prefix(request):
         form = EmployeeGeneralSettingPrefixForm(request.POST, instance=instance)
         if form.is_valid():
             form.save()
-            messages.success(request, __("Initial prefix updated successfully."))
+            messages.success(request, _("Initial prefix updated successfully."))
             return HttpResponseRedirect(request.META.get("HTTP_REFERER", "/"))
         else:
             messages.error(request, "There was an error updating the prefix.")

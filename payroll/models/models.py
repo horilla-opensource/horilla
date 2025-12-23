@@ -1885,7 +1885,11 @@ class PayslipAutoGenerate(models.Model):
     )
     auto_generate = models.BooleanField(default=False, verbose_name=_("Auto generate"))
     company_id = models.OneToOneField(
-        Company, on_delete=models.CASCADE, null=True, blank=True, verbose_name="Company"
+        Company,
+        on_delete=models.CASCADE,
+        null=True,
+        blank=True,
+        verbose_name=_("Company"),
     )
 
     def clean(self):

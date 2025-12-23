@@ -6,7 +6,6 @@ To set Horilla sidebar for onboarding
 
 from django.contrib.auth.context_processors import PermWrapper
 from django.urls import reverse
-
 from django.utils.translation import gettext_lazy as _
 
 from onboarding.templatetags.onboardingfilters import is_taskmanager

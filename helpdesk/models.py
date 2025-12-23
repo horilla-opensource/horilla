@@ -5,8 +5,7 @@ from django import apps
 from django.db import models
 from django.db.models.signals import post_delete, post_save
 from django.forms import ValidationError
-from django.utils.translation import gettext as _
-from django.utils.translation import gettext_lazy as trans
+from django.utils.translation import gettext_lazy as _
 
 from base.horilla_company_manager import HorillaCompanyManager
 from base.models import Company, Department, JobPosition, Tags
@@ -17,32 +16,31 @@ from horilla_audit.methods import get_diff
 from horilla_audit.models import HorillaAuditInfo, HorillaAuditLog
 
 PRIORITY = [
-    ("low", trans("Low")),
-    ("medium", trans("Medium")),
-    ("high", trans("High")),
+    ("low", _("Low")),
+    ("medium", _("Medium")),
+    ("high", _("High")),
 ]
-
 MANAGER_TYPES = [
-    ("department", trans("Department")),
-    ("job_position", trans("Job Position")),
-    ("individual", trans("Individual")),
+    ("department", _("Department")),
+    ("job_position", _("Job Position")),
+    ("individual", _("Individual")),
 ]
 
 TICKET_TYPES = [
-    ("suggestion", trans("Suggestion")),
-    ("complaint", trans("Complaint")),
-    ("service_request", trans("Service Request")),
-    ("meeting_request", trans("Meeting Request")),
-    ("anounymous_complaint", trans("Anonymous Complaint")),
-    ("others", trans("Others")),
+    ("suggestion", _("Suggestion")),
+    ("complaint", _("Complaint")),
+    ("service_request", _("Service Request")),
+    ("meeting_request", _("Meeting Request")),
+    ("anounymous_complaint", _("Anonymous Complaint")),
+    ("others", _("Others")),
 ]
 
 TICKET_STATUS = [
-    ("new", trans("New")),
-    ("in_progress", trans("In Progress")),
-    ("on_hold", trans("On Hold")),
-    ("resolved", trans("Resolved")),
-    ("canceled", trans("Canceled")),
+    ("new", _("New")),
+    ("in_progress", _("In Progress")),
+    ("on_hold", _("On Hold")),
+    ("resolved", _("Resolved")),
+    ("canceled", _("Canceled")),
 ]
 
 
@@ -76,11 +74,9 @@ class DepartmentManager(HorillaModel):
 
 
 class TicketType(HorillaModel):
-    title = models.CharField(max_length=100, unique=True, verbose_name=trans("Title"))
-    type = models.CharField(
-        choices=TICKET_TYPES, max_length=50, verbose_name=trans("Type")
-    )
-    prefix = models.CharField(max_length=3, unique=True, verbose_name=trans("Prefix"))
+    title = models.CharField(max_length=100, unique=True, verbose_name=_("Title"))
+    type = models.CharField(choices=TICKET_TYPES, max_length=50, verbose_name=_("Type"))
+    prefix = models.CharField(max_length=3, unique=True, verbose_name=_("Prefix"))
     company_id = models.ForeignKey(
         Company, null=True, editable=False, on_delete=models.PROTECT
     )
@@ -90,20 +86,23 @@ class TicketType(HorillaModel):
         return self.title
 
     class Meta:
-        verbose_name = trans("Ticket Type")
-        verbose_name_plural = trans("Ticket Types")
+        verbose_name = _("Ticket Type")
+        verbose_name_plural = _("Ticket Types")
 
 
 class Ticket(HorillaModel):
 
     title = models.CharField(max_length=50)
     employee_id = models.ForeignKey(
-        Employee, on_delete=models.PROTECT, related_name="ticket", verbose_name="Owner"
+        Employee,
+        on_delete=models.PROTECT,
+        related_name="ticket",
+        verbose_name=_("Owner"),
     )
     ticket_type = models.ForeignKey(
         TicketType,
         on_delete=models.PROTECT,
-        verbose_name=trans("Ticket Type"),
+        verbose_name=_("Ticket Type"),
     )
     description = models.TextField(max_length=255)
     priority = models.CharField(choices=PRIORITY, max_length=100, default="low")
@@ -246,9 +245,9 @@ class Attachment(HorillaModel):
 
 
 class FAQCategory(HorillaModel):
-    title = models.CharField(max_length=30, verbose_name=trans("Title"))
+    title = models.CharField(max_length=30, verbose_name=_("Title"))
     description = models.TextField(
-        blank=True, null=True, max_length=255, verbose_name=trans("Description")
+        blank=True, null=True, max_length=255, verbose_name=_("Description")
     )
     company_id = models.ForeignKey(
         Company,

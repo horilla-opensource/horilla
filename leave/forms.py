@@ -15,8 +15,7 @@ from django.core.exceptions import ValidationError
 from django.db.models import Q
 from django.forms.widgets import TextInput
 from django.template.loader import render_to_string
-from django.utils.translation import gettext as _
-from django.utils.translation import gettext_lazy as trans
+from django.utils.translation import gettext_lazy as _
 
 from base.forms import ModelForm as BaseModelForm
 from base.methods import filtersubordinatesemployeemodel, reload_queryset
@@ -708,8 +707,8 @@ class AssignLeaveForm(HorillaForm):
             attrs={"class": "oh-select oh-select-2 mb-2", "required": True}
         ),
         empty_label=None,
+        label=_("Leave Type"),
         required=False,
-        label=trans("Leave Type"),
     )
     employee_id = HorillaMultiSelectField(
         queryset=Employee.objects.all(),
@@ -720,7 +719,7 @@ class AssignLeaveForm(HorillaForm):
             filter_template_path="employee_filters.html",
             required=True,
         ),
-        label=trans("Employee"),
+        label=_("Employee"),
     )
 
     def clean(self):

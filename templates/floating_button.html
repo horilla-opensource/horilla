@@ -1,6 +1,4 @@
-{% load i18n %}
-
-{% load static %}
+{% load static i18n %}
 {% load horillafilters %}
 <style>
     .round {
@@ -204,7 +202,7 @@
         </div>
     {% endif %}
     {% if "attendance"|app_installed %}
-    <div id="fab2" class="fab round" data-tooltip="{% trans 'Create Attendance Request' %}">
+    <div id="fab2" class="fab round" data-tooltip= "{% trans 'Create Attendance Request' %}">
         <a
             class="text-light"
             data-toggle="oh-modal-toggle"
@@ -219,8 +217,8 @@
     </div>
     {% endif %}
 </div>
-<div id="fab1" class="fab round" data-tooltip="{% trans 'Quick Actions' %}">
-    <i id="fabIcon" class="material-icons">add</i>
+<div id="fab1" class="fab round" data-tooltip= "{% trans 'Quick Action' %}">
+    <i id="fabIcon" class="material-icons">{% trans "add" %}</i>
 </div>
 
 <script>

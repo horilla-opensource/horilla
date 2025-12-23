@@ -1,5 +1,6 @@
 from django import forms
 from django.template.loader import render_to_string
+from django.utils.translation import gettext_lazy as _
 
 from base.forms import ModelForm
 from base.methods import reload_queryset
@@ -8,8 +9,6 @@ from employee.models import Employee
 from horilla_documents.models import Document, DocumentRequest
 from horilla_widgets.widgets.horilla_multi_select_field import HorillaMultiSelectField
 from horilla_widgets.widgets.select_widgets import HorillaMultiSelectWidget
-
-from django.utils.translation import gettext as _
 
 
 class DocumentRequestForm(ModelForm):
