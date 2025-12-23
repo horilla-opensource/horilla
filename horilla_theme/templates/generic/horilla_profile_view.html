@@ -1,5 +1,14 @@
 {% load static i18n generic_template_filters %}
 <div class="" id="{{view_id|safe}}">
+
+	<button
+		hidden
+		hx-get="{{request.path}}"
+		class="reload-profile-view"
+		hx-target="#{{view_id|safe}}"
+		hx-swap="outerHTML"
+	></button>
+
 	<div class="">
 		<!-- Left Column: 6/12 -->
 		<!-- Right Column: 6/12 -->
@@ -29,7 +38,7 @@
 							</p>
 							<p class="text-[13px] text-[#565E6C] mb-1">
 								<i class="fa-solid fa-phone pe-2"></i>
-                                {{ object.phone }}
+								{{ object.phone }}
 							</p>
 							<p class="text-[13px] text-[#565E6C] mb-1">
 								<i
@@ -47,38 +56,38 @@
 									<!-- Settings Button -->
 									<div
 										class="relative inline-block"
-                                        x-data="{open: false}"
+										x-data="{open: false}"
 									>
 										<button
 											class="p-2 group text-primary-600 w-8 h-8 text-sm bg-white shadow-card hover:bg-primary-600 rounded-full transition duration-300 flex items-center justify-center"
-                                            title = "Actions"
-                                            @click="open = !open" @click.outside="open = false"
-                                        >
+											title = "Actions"
+											@click="open = !open" @click.outside="open = false"
+										>
 											<i
 												class="fas fa-cog transition duration-300 group-hover:text-white"
 											></i>
 										</button>
 
-                                        <div
+										<div
 											class="absolute right-0 min-w-[100px] bg-white rounded-lg shadow-card py-2 z-50 transition-all duration-200"
-										    x-show="open"
-                                        >
+											x-show="open"
+										>
 											<ul class="text-xs">
 												{% for action in actions %}
-                                                    {% if action.accessibility|accessibility:instance %}
-                                                        <li role="button">
-                                                            <p
-                                                                class="w-[200px] text-dark-600 font-bold text-left text-xs px-3 py-1 hover:text-primary-600 transition duration-300"
-                                                            >
-                                                                <a
-                                                                    {{action.attrs|format:instance|safe}}
-                                                                >
-                                                                    {{action.title}}
-                                                                </a>
-                                                            </p>
-                                                        </li>
-                                                    {% endif %}
-                                                {% endfor %}
+													{% if action.accessibility|accessibility:instance %}
+														<li role="button">
+															<p
+																class="w-[200px] text-dark-600 font-bold text-left text-xs px-3 py-1 hover:text-primary-600 transition duration-300"
+															>
+																<a
+																	{{action.attrs|format:instance|safe}}
+																>
+																	{{action.title}}
+																</a>
+															</p>
+														</li>
+													{% endif %}
+												{% endfor %}
 											</ul>
 										</div>
 									</div>
@@ -94,7 +103,7 @@
 											{% endif %}
 											hx-target="#{{view_id|safe}}"
 											hx-swap="outerHTML"
-                                            title = "Previous"
+											title = "Previous"
 											class="p-2 w-8 h-8 justify-center bg-primary-600 text-white rounded-full text-xs flex items-center gap-2 hover:bg-primary-800 transition duration-300"
 										>
 											<i
@@ -154,28 +163,52 @@
 						</div>
 					</div>
 				</div>
+				<div class="relative">
+					<div class="oh-sticky-dropdown--header absolute right-[15px] top-[5px]" style="z-index: 13;">
+						<div class="oh-dropdown" x-data="{open: false}">
+							<button class="oh-sticky-dropdown_btn" @click="open = !open">
+								<ion-icon
+								name="ellipsis-vertical-sharp"
+								role="img"
+								class="md hydrated"
+								aria-label="ellipsis vertical sharp"
+								></ion-icon>
+							</button>
+							<div
+								class="oh-dropdown__menu oh-sticky-table_dropdown"
+								x-show="open"
+								@click.outside="
+									open = false
+									$($el).closest('#{{view_id|safe}}').parent().find('.reload-profile-view').click();
+								"
+							>
+								{{toggle_form.as_list}}
+							</div>
+						</div>
+					</div>
+				</div>
 				<ul class="usertablist">
 					{% for tab in visible_tabs %}
-                        {% if not tab.accessibility or tab.accessibility|accessibility:instance %}
-                            <li>
-                                <button
-                                    onclick=" $('#{{view_id}} li button.active').removeClass('active'); $(this).addClass('active');"
-                                    data-url="{{tab.url|format:instance}}"
-                                    hx-get="{{tab.url|format:instance}}"
-                                    hx-target="#{{view_id}}profileTab"
-                                    data-tab="{{tab.title}}"
-                                    class="{% if forloop.counter == 1 and not active_target %} active {% endif %}"
-                                >
-                                    {{tab.title}}
-                                </button>
-                                <span
-                                    hx-get="{{tab.url|format:instance}}"
-                                    hx-target="#{{view_id}}profileTab"
-                                >
-                                </span>
-                            </li>
-                        {% endif %}
-                    {% endfor %}
+						{% if not tab.accessibility or tab.accessibility|accessibility:instance %}
+							<li>
+								<button
+									onclick=" $('#{{view_id}} li button.active').removeClass('active'); $(this).addClass('active');"
+									data-url="{{tab.url|format:instance}}"
+									hx-get="{{tab.url|format:instance}}"
+									hx-target="#{{view_id}}profileTab"
+									data-tab="{{tab.title}}"
+									class="{% if forloop.counter == 1 and not active_target %} active {% endif %}"
+								>
+									{{tab.title}}
+								</button>
+								<span
+									hx-get="{{tab.url|format:instance}}"
+									hx-target="#{{view_id}}profileTab"
+								>
+								</span>
+							</li>
+						{% endif %}
+					{% endfor %}
 				</ul>
 			</div>
 
@@ -189,30 +222,30 @@
 	</div>
 	<script>
 		$("#{{view_id}} ul.usertablist li button").click(function (e) {
-		  var target = `[data-url="${$(this).attr('data-url')}"]`
-		  e.preventDefault();
-		  $.ajax({
-		    type: "get",
-		    url: "{% url 'active-tab' %}",
-		    data: {
-		      "path":"{{request.path}}",
-		      "target":target,
-		    },
-		    success: function (response) {
+		var target = `[data-url="${$(this).attr('data-url')}"]`
+		e.preventDefault();
+		$.ajax({
+			type: "get",
+			url: "{% url 'active-tab' %}",
+			data: {
+			"path":"{{request.path}}",
+			"target":target,
+			},
+			success: function (response) {
 
-		    }
-		  });
+			}
+		});
 		});
 		{% if active_target %}
-            $("#{{view_id|safe}}").find(`{{active_target|safe}}`).click();
-            setTimeout(() => {
-            $("#{{view_id|safe}}").find(`{{active_target|safe}}`).parent().find('span').click()
-            }, 100);
+			$("#{{view_id|safe}}").find(`{{active_target|safe}}`).click();
+			setTimeout(() => {
+			$("#{{view_id|safe}}").find(`{{active_target|safe}}`).parent().find('span').click()
+			}, 100);
 		{% else %}
-            setTimeout(() => {
-            $("#{{view_id|safe}} .usertablist").find(`li button[data-url]:first`).click()
-            $("#{{view_id|safe}} .usertablist").find(`li button[data-url]:first`).parent().find('span').click()
-            }, 100);
+			setTimeout(() => {
+			$("#{{view_id|safe}} .usertablist").find(`li button[data-url]:first`).click()
+			$("#{{view_id|safe}} .usertablist").find(`li button[data-url]:first`).parent().find('span').click()
+			}, 100);
 		{% endif %}
 	</script>
 </div>
