@@ -115,23 +115,40 @@
                     {% csrf_token %}
 
                     <div id="uploadContainer" class="px-4 pb-4">
+                        <input type="hidden" name="MAX_FILE_SIZE" value="10485760">
+
                         <label class="oh-dropdown__import-label" for="uploadFile">
                             <ion-icon name="cloud-upload" class="oh-dropdown__import-form-icon"></ion-icon>
-                            <span class="oh-dropdown__import-form-title">{% trans "Upload CSV File" %}</span>
-                            <span class="oh-dropdown__import-form-text">{% trans "Drag and drop your CSV file here (PAYE Tax format). Only .csv files are accepted." %}</span>
+                            <span class="oh-dropdown__import-form-title">
+            {% trans "Upload CSV File" %}
+        </span>
+                            <span class="oh-dropdown__import-form-text">
+            {% trans "Drag and drop your CSV file here (PAYE Tax format). Only .csv files are accepted." %}
+        </span>
                         </label>
+
                         <div class="flex items-center justify-between mt-2">
-                            <input type="file" name="csv_file" id="uploadFile" accept=".csv" required class="flex-1" />
+                            <input
+                                    type="file"
+                                    name="csv_file"
+                                    id="uploadFile"
+                                    accept=".csv"
+                                    required
+                                    class="flex-1"
+                            />
                         </div>
                     </div>
+
                     <div class="px-4">
                         <a href="{% static 'payroll/templates/tax_import_template.csv' %}"
-                           class="oh-btn oh-btn--small oh-btn--secondary w-100 mt-2"  title="{% trans 'Click to download the PAYE tax template CSV' %}" download>
+                           class="oh-btn oh-btn--small oh-btn--secondary w-100 mt-2"
+                           title="{% trans 'Click to download the PAYE tax template CSV' %}" download>
                             {% trans "Download Template CSV" %}
                         </a>
                     </div>
                     <div class="px-4 pb-4">
-                        <button type="submit" class="oh-btn oh-btn--small oh-btn--secondary w-100 mt-2" title="{% trans 'Click to import the PAYE CSV file' %}">
+                        <button type="submit" class="oh-btn oh-btn--small oh-btn--secondary w-100 mt-2"
+                                title="{% trans 'Click to import the PAYE CSV file' %}">
                             {% trans "Import" %}
                         </button>
                     </div>
@@ -200,8 +217,12 @@
         }
 
         @keyframes spin {
-            0% { transform: rotate(0deg); }
-            100% { transform: rotate(360deg); }
+            0% {
+                transform: rotate(0deg);
+            }
+            100% {
+                transform: rotate(360deg);
+            }
         }
 
         .loading-text {
@@ -236,7 +257,7 @@
         const loadingOverlay = document.getElementById('loadingOverlay');
         const uploadFile = document.getElementById('uploadFile');
 
-        uploadForm.addEventListener('submit', function(e) {
+        uploadForm.addEventListener('submit', function (e) {
             // Check if file is selected
             if (!uploadFile.files || uploadFile.files.length === 0) {
                 e.preventDefault();
@@ -256,9 +277,50 @@
             document.getElementById('importModal').style.display = 'none';
         });
 
-        window.addEventListener('pageshow', function() {
+        window.addEventListener('pageshow', function () {
             loadingOverlay.classList.remove('active');
         });
     </script>
+    <script>
+        document.addEventListener("DOMContentLoaded", () => {
+            const container = document.getElementById("uploadContainer");
+            const label = container.querySelector("label");
+            const input = document.getElementById("uploadFile");
+
+            const prevent = e => {
+                e.preventDefault();
+                e.stopPropagation();
+            };
+
+            ["dragenter", "dragover", "dragleave", "drop"].forEach(evt => {
+                label.addEventListener(evt, prevent);
+                container.addEventListener(evt, prevent);
+            });
+
+            label.addEventListener("dragover", () => {
+                container.classList.add("oh-drop-active");
+            });
+
+            label.addEventListener("dragleave", () => {
+                container.classList.remove("oh-drop-active");
+            });
+
+            label.addEventListener("drop", e => {
+                container.classList.remove("oh-drop-active");
+
+                const file = e.dataTransfer.files[0];
+                if (!file) return;
+
+                if (!file.name.toLowerCase().endsWith(".csv")) {
+                    alert("Only CSV files are allowed");
+                    return;
+                }
+
+                input.files = e.dataTransfer.files;
+                input.dispatchEvent(new Event("change", {bubbles: true}));
+            });
+        });
+    </script>
+
 
 {% endblock %}
