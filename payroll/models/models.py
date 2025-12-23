@@ -1684,6 +1684,12 @@ class Reimbursement(HorillaModel):
     class Meta:
         ordering = ["-id"]
 
+    def clean(self):
+        if self.amount and self.amount < 0 and self.type == "reimbursement":
+            raise ValidationError({"amount": _("Amount must be greater than zero.")})
+
+
+
     def save(self, *args, **kwargs) -> None:
         request = getattr(horilla_middlewares._thread_locals, "request", None)
         amount_for_leave = (
