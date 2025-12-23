@@ -1480,9 +1480,10 @@ def generate_payslip_pdf(template_path, context, html=False):
         pdf = pdfkit.from_string(html_content, False, options=pdf_options)
 
         # Return an HttpResponse containing the PDF content
-        response = HttpResponse(pdf, content_type="application/pdf")
-        response["Content-Disposition"] = "inline; filename=payslip.pdf"
-        return response
+        if not pdf or len(pdf) < 1000:
+            raise ValueError("PDF generation failed")
+
+        return pdf
     except Exception as e:
         # Handle errors gracefully
         return HttpResponse(f"Error generating PDF: {str(e)}", status=500)
@@ -1499,6 +1500,7 @@ def payslip_pdf(request, id):
     Returns:
         HttpResponse: A response containing the PDF content.
     """
+
 
     from .component_views import filter_payslip
 
@@ -1575,7 +1577,8 @@ def payslip_pdf(request, id):
             data["zipped_data"] = zip(data["allowances"], data["all_deductions"])
             template_path = "payroll/payslip/payslip_pdf.html"
 
-            return generate_payslip_pdf(template_path, context=data, html=False)
+            pdf_bytes = generate_payslip_pdf(template_path, context=data)
+            return pdf_bytes
         return redirect(filter_payslip)
     return render(request, "405.html")
 
