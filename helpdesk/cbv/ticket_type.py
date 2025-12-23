@@ -11,12 +11,11 @@ from django.urls import reverse
 from django.utils.decorators import method_decorator
 from django.utils.translation import gettext_lazy as _
 
-from base.models import Attachment
 from employee.models import Employee
 from helpdesk.cbv.tags import DynamicTagsCreateFormView
 from helpdesk.filter import TicketTypeFilter
 from helpdesk.forms import TicketForm, TicketTypeForm
-from helpdesk.models import Ticket, TicketType
+from helpdesk.models import Attachment, Ticket, TicketType
 from helpdesk.threading import TicketSendThread
 from horilla_views.cbv_methods import login_required, permission_required
 from horilla_views.generic.cbv.views import (
@@ -202,9 +201,10 @@ class TicketsCreateFormView(HorillaFormView):
             if not form.instance.pk:
                 ticket = form.save()
                 attachments = form.files.getlist("attachment")
-                for attachment in attachments:
-                    attachment_instance = Attachment(file=attachment)
-                    attachment_instance.save()
+                if self.request.FILES:
+                    files = self.request.FILES.getlist("attachment")
+                    for file in files:
+                        Attachment.objects.create(file=file, ticket=ticket)
                 mail_thread = TicketSendThread(self.request, ticket, type="create")
                 mail_thread.start()
                 messages.success(self.request, _("The Ticket created successfully."))
