@@ -13,6 +13,39 @@
         hx-encoding="multipart/form-data"
     >
         {{form.as_p}}
+       {% if form.instance.pk %}
+            <div class="existing-attachments mt-4">
+                <p class="font-semibold mb-2 text-sm text-gray-800">Attachments</p>
+                <div class="grid grid-cols-3 sm:grid-cols-4 md:grid-cols-6 gap-3">
+                    {% if form.instance.attachment %}
+                        <a href="{{ form.instance.attachment.url }}" download
+                           class="group flex flex-col items-center text-center text-xs text-gray-700 hover:text-gray-900">
+
+                            <div class="w-14 h-14 flex items-center justify-center bg-gray-100 border border-gray-300 rounded-md hover:bg-gray-200 transition">
+                                <ion-icon name="document-text-outline" class="text-gray-600 text-lg"></ion-icon>
+                                <span class="mt-1 truncate w-12">
+                            {{ form.instance.attachment.name|cut:"payroll/reimbursements/" }}
+                           </span>
+                            </div>
+
+
+                        </a>
+                    {% endif %}
+
+                    {% for file in form.instance.other_attachments.all %}
+                        <a href="{{ file.attachment.url }}" download
+                           class="group flex flex-col items-center text-center text-xs text-gray-700 hover:text-gray-900">
+                            <div class="w-12 h-12 flex items-center justify-center bg-gray-100 border border-gray-300 rounded-md hover:bg-gray-200 transition">
+                                <ion-icon name="document-outline" class="text-gray-600 text-lg"></ion-icon>
+                                  <span class="mt-1 truncate w-12">
+                            {{ form.instance.attachment.name|cut:"payroll/reimbursements/" }}
+                           </span>
+                            </div>
+                        </a>
+                    {% endfor %}
+                </div>
+            </div>
+        {% endif %}
     </form>
     <table
         class="oh-table oh-table--sortable" {% if not form.instance.id or form.instance.type == "reimbursement" or form.instance.type == "bonus_encashment" %}
