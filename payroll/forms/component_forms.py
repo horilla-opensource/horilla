@@ -934,7 +934,8 @@ class ReimbursementForm(ModelForm):
             ]
 
         if is_edit:
-            exclude_fields += ["type", "employee_id"]
+            exclude_fields += ["employee_id"]
+            self.fields["type"].widget = forms.HiddenInput()
 
     def as_p(self):
         """
