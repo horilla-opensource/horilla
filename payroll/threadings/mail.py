@@ -45,11 +45,12 @@ class MailSendThread(Thread):
             )
             attachments = []
             for instance in record["instances"]:
-                response = payslip_pdf(self.request, instance.id)
+                pdf_bytes = payslip_pdf(self.request, instance.id)
+
                 attachments.append(
                     (
                         f"{instance.get_payslip_title()}.pdf",
-                        response.content,
+                        pdf_bytes,
                         "application/pdf",
                     )
                 )
