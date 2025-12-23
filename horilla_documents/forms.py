@@ -9,6 +9,8 @@ from horilla_documents.models import Document, DocumentRequest
 from horilla_widgets.widgets.horilla_multi_select_field import HorillaMultiSelectField
 from horilla_widgets.widgets.select_widgets import HorillaMultiSelectWidget
 
+from django.utils.translation import gettext as _
+
 
 class DocumentRequestForm(ModelForm):
     """form to create a new Document Request"""
@@ -44,7 +46,7 @@ class DocumentRequestForm(ModelForm):
                 required=True,
                 instance=self.instance,
             ),
-            label="Employee",
+            label=_("Employee"),
         )
         reload_queryset(self.fields)
 

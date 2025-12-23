@@ -7,6 +7,7 @@ from django.db.models.signals import m2m_changed, post_save
 from django.dispatch import receiver
 from django.forms import ValidationError
 from django.utils.translation import gettext as _
+from django.utils.translation import gettext_lazy as trans
 
 from base.horilla_company_manager import HorillaCompanyManager
 from employee.models import Employee
@@ -42,14 +43,16 @@ def document_create(instance):
 
 
 class DocumentRequest(HorillaModel):
-    title = models.CharField(max_length=100, verbose_name=_("Title"))
-    employee_id = models.ManyToManyField(Employee, verbose_name=_("Employees"))
-    format = models.CharField(choices=FORMATS, max_length=10, verbose_name=_("Format"))
+    title = models.CharField(max_length=100, verbose_name=trans("Title"))
+    employee_id = models.ManyToManyField(Employee, verbose_name=trans("Employee"))
+    format = models.CharField(
+        choices=FORMATS, max_length=10, verbose_name=trans("Format")
+    )
     max_size = models.IntegerField(
-        blank=True, null=True, verbose_name=_("Max size (In MB)")
+        blank=True, null=True, verbose_name=trans("Max size (In MB)")
     )
     description = models.TextField(
-        blank=True, null=True, max_length=255, verbose_name=_("Description")
+        blank=True, null=True, max_length=255, verbose_name=trans("Description")
     )
     objects = HorillaCompanyManager(
         related_company_field="employee_id__employee_work_info__company_id"
@@ -60,8 +63,8 @@ class DocumentRequest(HorillaModel):
         Meta class to add additional options
         """
 
-        verbose_name = _("Document Request")
-        verbose_name_plural = _("Document Requests")
+        verbose_name = trans("Document Request")
+        verbose_name_plural = trans("Document Requests")
 
     def __str__(self):
         return self.title
@@ -79,27 +82,31 @@ def document_request_m2m_changed(sender, instance, action, **kwargs):
 class Document(HorillaModel):
     title = models.CharField(max_length=250)
     employee_id = models.ForeignKey(
-        Employee, on_delete=models.PROTECT, verbose_name=_("Employee")
+        Employee, on_delete=models.PROTECT, verbose_name=trans("Employee")
     )
     document_request_id = models.ForeignKey(
         DocumentRequest, on_delete=models.PROTECT, null=True
     )
     document = models.FileField(
-        upload_to=upload_path, null=True, verbose_name=_("Document")
+        upload_to=upload_path, null=True, verbose_name=trans("Document")
     )
     status = models.CharField(
-        choices=STATUS, max_length=10, default="requested", verbose_name=_("Status")
+        choices=STATUS, max_length=10, default="requested", verbose_name=trans("Status")
     )
     reject_reason = models.TextField(
-        blank=True, null=True, max_length=255, verbose_name=_("Reject Reason")
+        blank=True, null=True, max_length=255, verbose_name=trans("Reject Reason")
     )
-    issue_date = models.DateField(null=True, blank=True, verbose_name=_("Issue Date"))
-    expiry_date = models.DateField(null=True, blank=True, verbose_name=_("Expiry Date"))
+    issue_date = models.DateField(
+        null=True, blank=True, verbose_name=trans("Issue Date")
+    )
+    expiry_date = models.DateField(
+        null=True, blank=True, verbose_name=trans("Expiry Date")
+    )
     notify_before = models.IntegerField(
-        default=1, null=True, verbose_name=_("Notify Before")
+        default=1, null=True, verbose_name=trans("Notify Before")
     )
     is_digital_asset = models.BooleanField(
-        default=False, verbose_name=_("Is Digital Asset")
+        default=False, verbose_name=trans("Is Digital Asset")
     )
     objects = HorillaCompanyManager(
         related_company_field="employee_id__employee_work_info__company_id"
@@ -110,8 +117,8 @@ class Document(HorillaModel):
         Meta class to add additional options
         """
 
-        verbose_name = _("Document")
-        verbose_name_plural = _("Documents")
+        verbose_name = trans("Document")
+        verbose_name_plural = trans("Documents")
 
     def __str__(self) -> str:
         return f"{self.title}"
@@ -121,7 +128,9 @@ class Document(HorillaModel):
         file = self.document
 
         if len(self.title) < 3:
-            raise ValidationError({"title": _("Title must be at least 3 characters")})
+            raise ValidationError(
+                {"title": trans("Title must be at least 3 characters")}
+            )
 
         if file and self.document_request_id:
             format = self.document_request_id.format
@@ -129,7 +138,7 @@ class Document(HorillaModel):
             if max_size:
                 if file.size > max_size * 1024 * 1024:
                     raise ValidationError(
-                        {"document": _("File size exceeds the limit")}
+                        {"document": trans("File size exceeds the limit")}
                     )
 
             ext = file.name.split(".")[1].lower()
@@ -137,7 +146,7 @@ class Document(HorillaModel):
                 pass
             elif ext != format:
                 raise ValidationError(
-                    {"document": _("Please upload {} file only.").format(format)}
+                    {"document": trans("Please upload {} file only.").format(format)}
                 )
 
     def save(self, *args, **kwargs):
