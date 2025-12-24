@@ -531,6 +531,10 @@ class AvailableLeave(HorillaModel):
         )
         return pending_leaves.count()
 
+    def balance_leaves(self):
+        balance_leave_days = self.available_days + self.carryforward_days - self.pending_leaves()
+        return balance_leave_days if balance_leave_days else 0
+
     def total_leaves(self):
         total_leave_days_assigned = self.available_days + self.carryforward_days + self.leave_taken()
         return total_leave_days_assigned if total_leave_days_assigned else 0
