@@ -1,0 +1,107 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Upgrade Plan - Marsel Force</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script type="module" src="https://unpkg.com/ionicons@7.1.0/dist/ionicons/ionicons.esm.js"></script>
+    <script nomodule src="https://unpkg.com/ionicons@7.1.0/dist/ionicons/ionicons.js"></script>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Outfit:wght@500;600;700&display=swap');
+
+        body {
+            font-family: 'Inter', sans-serif;
+        }
+
+        h1,
+        h2,
+        h3,
+        h4,
+        h5,
+        h6 {
+            font-family: 'Outfit', sans-serif;
+        }
+    </style>
+</head>
+
+<body class="bg-slate-50 min-h-screen flex items-center justify-center p-4">
+
+    <div class="max-w-4xl w-full bg-white rounded-3xl shadow-2xl overflow-hidden flex flex-col md:flex-row">
+
+        <!-- Left Side: Message -->
+        <div class="md:w-1/2 p-10 flex flex-col justify-center bg-slate-900 text-white relative overflow-hidden">
+            <div class="absolute inset-0 opacity-20 bg-[url('https://www.transparenttextures.com/patterns/cubes.png')]">
+            </div>
+            <div class="relative z-10">
+                <div
+                    class="w-16 h-16 bg-red-500 rounded-2xl flex items-center justify-center mb-6 shadow-lg shadow-red-500/30">
+                    <ion-icon name="alert-circle" class="text-3xl"></ion-icon>
+                </div>
+                <h1 class="text-3xl font-bold mb-4">Trial Expired</h1>
+                <p class="text-slate-300 text-lg mb-8 leading-relaxed">
+                    Your 14-day free trial has ended. We hope you enjoyed using Marsel Force! To continue managing your
+                    workforce efficiently, please upgrade to a paid plan.
+                </p>
+                <div class="flex items-center gap-3 text-sm text-slate-400">
+                    <ion-icon name="lock-closed" class="text-lg"></ion-icon>
+                    <span>Your data is safe and secure.</span>
+                </div>
+            </div>
+        </div>
+
+        <!-- Right Side: Plans -->
+        <div class="md:w-1/2 p-10 bg-white">
+            <h2 class="text-2xl font-bold text-slate-900 mb-6">Choose a Plan</h2>
+
+            <div class="space-y-4">
+                <!-- Plan 1 -->
+                <div
+                    class="border-2 border-slate-200 rounded-xl p-4 hover:border-green-500 cursor-pointer transition-all group">
+                    <div class="flex justify-between items-center mb-2">
+                        <h3 class="font-bold text-slate-900">Professional</h3>
+                        <span class="text-green-600 font-bold">$79/mo</span>
+                    </div>
+                    <p class="text-sm text-slate-500 mb-3">Perfect for growing teams up to 50 employees.</p>
+                    <ul class="text-xs text-slate-600 space-y-1">
+                        <li class="flex items-center"><ion-icon name="checkmark" class="text-green-500 mr-2"></ion-icon>
+                            Payroll & Attendance</li>
+                        <li class="flex items-center"><ion-icon name="checkmark" class="text-green-500 mr-2"></ion-icon>
+                            Recruitment Module</li>
+                    </ul>
+                </div>
+
+                <!-- Plan 2 -->
+                <div
+                    class="border-2 border-slate-200 rounded-xl p-4 hover:border-green-500 cursor-pointer transition-all group">
+                    <div class="flex justify-between items-center mb-2">
+                        <h3 class="font-bold text-slate-900">Enterprise</h3>
+                        <span class="text-green-600 font-bold">$199/mo</span>
+                    </div>
+                    <p class="text-sm text-slate-500 mb-3">Unlimited employees and custom features.</p>
+                    <ul class="text-xs text-slate-600 space-y-1">
+                        <li class="flex items-center"><ion-icon name="checkmark" class="text-green-500 mr-2"></ion-icon>
+                            All Features Included</li>
+                        <li class="flex items-center"><ion-icon name="checkmark" class="text-green-500 mr-2"></ion-icon>
+                            Dedicated Support</li>
+                    </ul>
+                </div>
+            </div>
+
+            <button
+                class="w-full mt-8 bg-green-600 hover:bg-green-700 text-white font-bold py-3 px-6 rounded-xl transition-colors shadow-lg shadow-green-600/30">
+                Upgrade Now
+            </button>
+
+            <div class="mt-4 text-center">
+                <a href="{% url 'logout' %}" class="text-sm text-slate-500 hover:text-slate-700 underline">Logout</a>
+            </div>
+        </div>
+
+    </div>
+
+</body>
+
+</html>

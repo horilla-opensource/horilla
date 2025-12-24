@@ -5,8 +5,8 @@
   "main": "src/index.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
-    "dev":"npm run development",
-    "development":"mix"
+    "dev": "npm run development",
+    "development": "mix"
   },
   "repository": {
     "type": "git",
@@ -19,7 +19,14 @@
   },
   "homepage": "https://github.com/ArjunCybro/OpenHRMS-Dashboard#readme",
   "devDependencies": {
-    "laravel-mix": "^6.0.49"
+    "@tailwindcss/forms": "^0.5.10",
+    "autoprefixer": "^10.4.22",
+    "laravel-mix": "^6.0.49",
+    "postcss": "^8.5.6",
+    "resolve-url-loader": "^5.0.0",
+    "sass": "^1.94.2",
+    "sass-loader": "^12.6.0",
+    "tailwindcss": "^3.4.18"
   },
   "dependencies": {
     "alpinejs": "^3.10.5",
