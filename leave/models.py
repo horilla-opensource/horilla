@@ -240,7 +240,7 @@ class LeaveType(HorillaModel):
     )
     is_compensatory_leave = models.BooleanField(default=False)
     company_id = models.ForeignKey(
-        Company, null=True, editable=False, on_delete=models.PROTECT
+        Company, null=True, editable=True, on_delete=models.PROTECT
     )
     objects = HorillaCompanyManager(related_company_field="company_id")
 
@@ -523,6 +523,21 @@ class AvailableLeave(HorillaModel):
         ).aggregate(total_sum=Sum("requested_days"))
 
         return leave_taken["total_sum"] if leave_taken["total_sum"] else 0
+    def pending_leaves(self):
+        pending_leaves = LeaveRequest.objects.filter(
+            leave_type_id=self.leave_type_id,
+            employee_id=self.employee_id,
+            status="requested",
+        )
+        return pending_leaves.count()
+
+    def balance_leaves(self):
+        balance_leave_days = self.available_days + self.carryforward_days - self.pending_leaves()
+        return balance_leave_days if balance_leave_days else 0
+
+    def total_leaves(self):
+        total_leave_days_assigned = self.available_days + self.carryforward_days + self.leave_taken()
+        return total_leave_days_assigned if total_leave_days_assigned else 0
 
     # Setting the expiration date for carryforward leaves
     def set_expired_date(self, available_leave, assigned_date):

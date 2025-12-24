@@ -3963,7 +3963,7 @@ def employee_available_leave_count(request):
         "hx_target": hx_target,
         "leave_type_id": leave_type_id,
         "available_leave": available_leave,
-        "total_leave_days": total_leave_days,
+        "total_leave_days": total_leave_days - pending_requests_days,
         "forcasted_days": forcasted_days,
         "pending_requests": pending_requests_days,
     }

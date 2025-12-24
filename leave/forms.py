@@ -146,6 +146,9 @@ class LeaveTypeForm(ConditionForm):
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
+        if "company_id" in self.fields:
+            self.fields["company_id"].initial = None
+            self.fields["company_id"].required = True
 
 
 class UpdateLeaveTypeForm(ConditionForm):
