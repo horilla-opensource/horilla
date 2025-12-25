@@ -54,7 +54,7 @@
   {% endfor %}
   <script>
     var tabId = $("#{{view_id}}").closest(".oh-tabs__content").attr("id");
-    var badge = $(`#badge-${tabId}`);
+    var badge = $(".oh-tabs__tab--active").find(".tab-badge");
     var count = "{{groups|length}}";
     var label = badge.attr("data-badge-label") || "";
     var title = count + " " + label;
