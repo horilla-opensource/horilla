@@ -20,6 +20,7 @@ import threading
 from datetime import date, datetime, timedelta
 from urllib.parse import parse_qs
 
+import numpy as np
 import pandas as pd
 from django.apps import apps
 from django.conf import settings
@@ -2651,9 +2652,6 @@ def work_info_import_file(request):
     response["Content-Disposition"] = 'attachment; filename="work_info_template.xlsx"'
     data_frame.to_excel(response, index=False)
     return response
-
-
-import numpy as np
 
 
 @login_required

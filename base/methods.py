@@ -692,6 +692,7 @@ def closest_numbers(numbers: list, input_number: int) -> tuple:
     previous_number = input_number
     next_number = input_number
     try:
+        numbers = list(map(int, numbers))
         index = numbers.index(input_number)
         if index > 0:
             previous_number = numbers[index - 1]
