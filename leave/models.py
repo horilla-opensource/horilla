@@ -968,7 +968,7 @@ class LeaveRequest(HorillaModel):
                 status__in=["cancelled", "rejected"]
             ).exists():
                 raise ValidationError(
-                    _("Employee already has a leave request for this date range.")
+                    _("Your selected date range overlaps with an existing leave request.")
                 )
 
         # Past date restriction
