@@ -103,8 +103,8 @@ def penalities_column(self):
         )
     else:
         return format_html(
-            '<div class="bg-green-100/10 border-2 border-green-300 rounded-xl px-4 py-2 w-32 text-xs text-center text-green-700 font-semibold">'
-            "No Penalties</div>"
+            '<div class="bg-green-100/10 border-2 border-green-300 rounded-xl px-4 py-2 w-32 text-xs text-center text-green-700 font-semibold">{}</div>',
+            "No Penalties",
         )
 
 
