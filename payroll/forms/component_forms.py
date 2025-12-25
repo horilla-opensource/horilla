@@ -881,7 +881,10 @@ class ReimbursementForm(ModelForm):
             attrs={"type": "date", "class": "oh-input w-100"}
         )
 
-        self.fields["attachment"] = MultipleFileField(label="Attachments")
+        self.fields["attachment"] = MultipleFileField(
+            label="Attachments",
+            required=not bool(self.instance.pk)
+        )
         self.fields["attachment"].widget.attrs["accept"] = ".jpg, .jpeg, .png, .pdf"
 
         self.exclude_fields_by_type(exclude_fields)
@@ -949,10 +952,17 @@ class ReimbursementForm(ModelForm):
         cleaned_data = super().clean()
 
         type_ = cleaned_data.get("type")
-        employee = cleaned_data.get("employee_id")
+        employee = cleaned_data.get("employee_id") or self.employee
         amount = cleaned_data.get("amount")
+        is_new = not self.instance.pk
+        attachment = cleaned_data.get("attachment")
 
-        if not type_ or not employee:
+
+        if not type_ :
+            return cleaned_data
+
+        if not employee:
+            self.add_error("employee_id", "This field is required")
             return cleaned_data
 
         if type_ == "bonus_encashment":
@@ -1021,9 +1031,11 @@ class ReimbursementForm(ModelForm):
                             self.add_error(
                                 "ad_to_encash", _("Not enough available days to redeem")
                             )
-        else:
-            if amount is None or amount <= 0:
+        elif type_ == "reimbursement":
+            if amount is None or amount <= 0.00:
                 self.add_error("amount", "Amount must be greater than zero.")
+            if is_new and not attachment:
+                raise forms.ValidationError("Attachment is required.")
 
         return cleaned_data
 
