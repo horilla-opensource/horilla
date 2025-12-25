@@ -52,7 +52,7 @@
 							"
 					>
 						<span
-							class="w-6 h-6 bg-primary-600 rounded-full text-white flex items-center justify-center"
+							class="w-6 h-6 bg-primary-600 rounded-full text-white flex items-center justify-center tab-badge"
 							id="badge-{{view_id}}{{forloop.counter}}"
 							{% if tab.badge_label %}
 								data-badge-label="{{tab.badge_label}}"
@@ -81,8 +81,6 @@
 					{% if tab.actions %}
 					<div
 						class="dropdown-menu absolute right-0 min-w-[100px] bg-white rounded-lg shadow-card py-2 z-50 transition-all duration-200"
-						x-show="open"
-						x-cloak
 					>
 						<ul class="text-xs">
 							{% for action in tab.actions %}
