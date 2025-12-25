@@ -523,13 +523,14 @@ class AvailableLeave(HorillaModel):
         ).aggregate(total_sum=Sum("requested_days"))
 
         return leave_taken["total_sum"] if leave_taken["total_sum"] else 0
+
     def pending_leaves(self):
         pending_leaves = LeaveRequest.objects.filter(
             leave_type_id=self.leave_type_id,
             employee_id=self.employee_id,
             status="requested",
-        )
-        return pending_leaves.count()
+        ).aggregate(total_days=Sum('requested_days'))['total_days']
+        return pending_leaves if pending_leaves else 0
 
     def balance_leaves(self):
         balance_leave_days = self.available_days + self.carryforward_days - self.pending_leaves()
