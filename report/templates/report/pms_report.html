@@ -190,12 +190,14 @@
     </div>
 
     <!-- Model Selection Dropdown -->
-    <span class="ms-1 fw-bold" style="font-size:16px;">Choose Report : </span>
-    <select id="model-select" class="oh-select oh-select--sm ml-2 mb-2" style="width: 200px;">
-        <option value="objective">Objectives</option>
-        <option value="employeeobjective">Employee Objective</option>
-        <option value="feedback">Feedback</option>
-    </select>
+    <span class="ms-1 fw-bold" style="font-size:16px;">{% trans "Choose Report" %} : </span>
+    <div class="d-inline-block ms-2" style="width: 13%;margin-bottom: 10px;">
+        <select id="model-select" class="oh-select oh-select--sm ml-2 mb-2" style="width: 200px;">
+            <option value="objective">{% trans "Objectives" %}</option>
+            <option value="employeeobjective">{% trans "Employee Objective" %}</option>
+            <option value="feedback">{% trans "Feedback" %}</option>
+        </select>
+    </div>
 
 
     <!-- Pivot Container -->
