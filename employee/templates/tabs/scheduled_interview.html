@@ -90,9 +90,9 @@
                             class="float-end"
                             title="{% trans 'edit' %}"
                             hx-get="{% url 'edit-interview' interview.id %}?view=false"
-                            data-target="#createModal"
+                            hx-target="#genericModalBody"
+                            data-target="#genericModal"
                             hx-swap="innerHTML"
-                            hx-target="#createTarget"
                             data-toggle="oh-modal-toggle"
                         >
                             <ion-icon
