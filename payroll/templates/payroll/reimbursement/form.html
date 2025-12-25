@@ -11,42 +11,36 @@
         hx-post="{% url 'create-reimbursement' %}?{% if form.instance.id %}instance_id={{form.instance.id}}{% endif %}"
         hx-target="#objectCreateModalTarget"
         hx-encoding="multipart/form-data"
+        novalidate
+
     >
+
         {{form.as_p}}
 
-  {% if form.instance.pk %}
-<div class="existing-attachments mt-4">
-    <p class="mb-2 text-sm font-medium text-gray-800">Attachments</p>
+   {% if form.instance.pk %}
+       {% if form.instance.attachment %}
+            <div class="existing-attachments mt-6">
+                <p class="mb-3 mt-3 text-sm font-semibold text-gray-700">Attachment</p>
 
-    <div class="flex flex-wrap gap-2">
-        {# Primary attachment always shown as 1 #}
-        {% if form.instance.attachment %}
-            <a href="{{ form.instance.attachment.url }}" download
-               class="inline-flex items-center gap-2 rounded-full
-                      border border-gray-300 bg-gray-100 px-3 py-1.5
-                      text-xs font-medium text-gray-700 hover:bg-gray-200 transition">
+                <div class="flex flex-wrap gap-3">
+                    {# Primary attachment always shown as 1 #}
 
-                <ion-icon name="document-text-outline" class="text-sm"></ion-icon>
-                <span>Attachment 1</span>
-            </a>
+                        <div class="group relative rounded-xl border border-gray-200 bg-gradient-to-br from-white to-gray-50 p-4 shadow-sm hover:shadow-md transition-all duration-200 hover:border-blue-300">
+                            <div class="flex items-center gap-4">
+
+                                <a href="{{ form.instance.attachment.url }}"
+                                   target="_blank"
+                                   class="flex items-center gap-1.5 px-4 py-2 bg-blue-600 hover:bg-blue-700 text-black text-sm font-medium rounded-lg transition-colors duration-200 shadow-sm hover:shadow">
+                                    View
+                                </a>
+                            </div>
+                        </div>
+
+
+                </div>
+            </div>
+                        {% endif %}
         {% endif %}
-
-        {# Other attachments continue numbering #}
-        {% for file in form.instance.other_attachments.all %}
-            <a href="{{ file.attachment.url }}" download
-               class="inline-flex items-center gap-2 rounded-full
-                      border border-gray-300 bg-gray-100 px-3 py-1.5
-                      text-xs font-medium text-gray-700 hover:bg-gray-200 transition">
-
-                <ion-icon name="document-outline" class="text-sm"></ion-icon>
-                <span>
-                    Attachment {{ forloop.counter|add:1 }}
-                </span>
-            </a>
-        {% endfor %}
-    </div>
-</div>
-{% endif %}
 
 
     </form>
