@@ -3956,8 +3956,8 @@ def employee_available_leave_count(request):
             pending_requests_days = available_leave.employee_id.leaverequest_set.filter(
                 status="requested",
                 leave_type_id=leave_type_id,
-                start_date__gte=datetime.today().date(),
-            ).count()
+            ).aggregate(total_days=Sum('requested_days'))['total_days']
+
 
     context = {
         "hx_target": hx_target,
