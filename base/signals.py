@@ -8,7 +8,7 @@ from django.conf import settings
 from django.contrib import messages
 from django.contrib.auth.signals import user_login_failed
 from django.db.models import Max, Q
-from django.db.models.signals import m2m_changed, post_migrate, post_save
+from django.db.models.signals import m2m_changed, post_delete, post_migrate, post_save
 from django.dispatch import receiver
 from django.http import Http404
 from django.shortcuts import redirect, render
@@ -62,6 +62,60 @@ def create_deduction_cutleave_from_penalty(sender, instance, created, **kwargs):
             else:
                 available.carryforward_days = max(
                     0, (available.carryforward_days - unit)
+                )
+
+            available.save()
+
+
+@receiver(post_delete, sender=PenaltyAccounts)
+def delete_deduction_cutleave_from_penalty(sender, instance, **kwargs):
+    """
+    This is a post delete method, used to delete the deduction and update available leave days.
+    """
+    # Check if the deduction model is installed
+    if apps.is_installed("payroll"):
+        Deduction = get_horilla_model_class(app_label="payroll", model="deduction")
+
+        if instance.late_early_id:
+            title = f"{instance.late_early_id.get_type_display()} penalty"
+        elif instance.leave_request_id:
+            title = f"Leave penalty {instance.leave_request_id.end_date}"
+        else:
+            title = f"Penalty on {datetime.today()}"
+
+        # Attempt to retrieve the deduction specifically associated with the penalty account
+        deductions = Deduction.objects.filter(
+            specific_employees=instance.employee_id,
+            amount=instance.penalty_amount,
+            title=title,
+        )
+
+        # If you have a date or other unique field, add it to the filter
+        if instance.late_early_id:
+            deductions = deductions.filter(
+                one_time_date=instance.late_early_id.attendance_id.attendance_date
+            )
+        elif instance.leave_request_id:
+            deductions = deductions.filter(
+                one_time_date=instance.leave_request_id.end_date
+            )
+        else:
+            deductions = deductions.filter(one_time_date=datetime.today())
+
+        for deduction in deductions:
+            deduction.delete()
+
+    if apps.is_installed("leave") and instance.leave_type_id and instance.minus_leaves:
+        available = instance.employee_id.available_leave.filter(
+            leave_type_id=instance.leave_type_id
+        ).first()
+        if available:
+            unit = round(instance.minus_leaves * 2) / 2
+            if not instance.deduct_from_carry_forward:
+                available.available_days += unit  # Restore the deducted days
+            else:
+                available.carryforward_days += (
+                    unit  # Restore the deducted carryforward days
                 )
 
             available.save()
