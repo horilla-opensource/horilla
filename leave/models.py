@@ -930,6 +930,7 @@ class LeaveRequest(HorillaModel):
         requ_days = set(self.requested_dates())
         restricted_leaves = RestrictLeave.objects.all()
         request = getattr(horilla_middlewares._thread_locals, "request", None)
+        employee_id = self.employee_id
 
         # Check if leave type is assigned to employee
         if not AvailableLeave.objects.filter(
@@ -1067,6 +1068,17 @@ class LeaveRequest(HorillaModel):
                     raise ValidationError(
                         "You cannot request leave for this date range. The requested dates are restricted. Please contact admin."
                     )
+
+        if employee_id:
+            active_contract = employee_id.contract_set.filter(
+                contract_status="active"
+            ).first()
+
+            if not active_contract:
+                raise ValidationError(
+                    "You cannot request leave without an active contract. Please contact HR."
+                )
+
 
         return cleaned_data
 
