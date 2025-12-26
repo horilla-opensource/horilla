@@ -468,6 +468,10 @@ class UserLeaveRequestForm(BaseModelForm):
         ]
         widgets = {
             "employee_id": forms.HiddenInput(),
+            "description": forms.Textarea(attrs={
+                "maxlength": 255,
+                "rows": 4,
+            }),
         }
 
 

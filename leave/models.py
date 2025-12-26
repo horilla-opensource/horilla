@@ -523,13 +523,14 @@ class AvailableLeave(HorillaModel):
         ).aggregate(total_sum=Sum("requested_days"))
 
         return leave_taken["total_sum"] if leave_taken["total_sum"] else 0
+
     def pending_leaves(self):
         pending_leaves = LeaveRequest.objects.filter(
             leave_type_id=self.leave_type_id,
             employee_id=self.employee_id,
             status="requested",
-        )
-        return pending_leaves.count()
+        ).aggregate(total_days=Sum('requested_days'))['total_days']
+        return pending_leaves if pending_leaves else 0
 
     def balance_leaves(self):
         balance_leave_days = self.available_days + self.carryforward_days - self.pending_leaves()
@@ -929,6 +930,7 @@ class LeaveRequest(HorillaModel):
         requ_days = set(self.requested_dates())
         restricted_leaves = RestrictLeave.objects.all()
         request = getattr(horilla_middlewares._thread_locals, "request", None)
+        employee_id = self.employee_id
 
         # Check if leave type is assigned to employee
         if not AvailableLeave.objects.filter(
@@ -967,7 +969,7 @@ class LeaveRequest(HorillaModel):
                 status__in=["cancelled", "rejected"]
             ).exists():
                 raise ValidationError(
-                    _("Employee already has a leave request for this date range.")
+                    _("Your selected date range overlaps with an existing leave request.")
                 )
 
         # Past date restriction
@@ -1066,6 +1068,17 @@ class LeaveRequest(HorillaModel):
                     raise ValidationError(
                         "You cannot request leave for this date range. The requested dates are restricted. Please contact admin."
                     )
+
+        if employee_id:
+            active_contract = employee_id.contract_set.filter(
+                contract_status="active"
+            ).first()
+
+            if not active_contract:
+                raise ValidationError(
+                    "You cannot request leave without an active contract. Please contact HR."
+                )
+
 
         return cleaned_data
 

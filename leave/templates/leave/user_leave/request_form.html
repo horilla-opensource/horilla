@@ -1,4 +1,5 @@
-{% load i18n %}{% load horillafilters %}
+{% load i18n %}{% load horillafilters %}{% load widget_tweaks %}
+
 {% if messages %}
     <span hx-get="{% url 'user-request-filter' %}?{{pd}}" hx-target="#userRequest" hx-trigger="load"
         hx-on-htmx-after-request="setTimeout(function () { reloadMessage(this); $('.oh-modal__close').click(); }, 1000);"></span>
@@ -14,8 +15,102 @@
     <div id="availableLeaveCount" style="height: 40px;display: none;"></div>
 </div>
 <div class="oh-modal__dialog-body">
-    <form hx-post="{% url 'leave-request-create' %}?{{pd}}" hx-target="#objectCreateModalTarget"
-        hx-encoding="multipart/form-data" id="userLeaveForm">
-        {{form.as_p}}
-    </form>
+<form hx-post="{% url 'leave-request-create' %}?{{pd}}"
+      hx-target="#objectCreateModalTarget"
+      hx-encoding="multipart/form-data"
+      id="userLeaveForm">
+{% if form.non_field_errors %}
+   <div class="col-12">{{ form.non_field_errors }}</div>
+{% endif %}
+    <div class="row">
+        {% for field in form.visible_fields %}
+            {% if field.name != "description" %}
+                <div class="col-12 col-md-6">
+                    <div class="form-group oh-form-group">
+                        <label class="oh-label {% if field.field.required %}required-star{% endif %}">
+                            {{ field.label }}
+                        </label>
+
+                        {{ field|add_class:"form-control oh-input w-100" }}
+
+                        {% if field.errors %}
+                            <div class="text-danger text-sm mt-1">
+                                {{ field.errors }}
+                            </div>
+                        {% endif %}
+                    </div>
+                </div>
+            {% endif %}
+        {% endfor %}
+    </div>
+
+    <div class="row">
+        <div class="col-12">
+            <div class="form-group oh-form-group">
+                <label class="oh-label required-star">
+                    {{ form.description.label }}
+                </label>
+
+                {{ form.description|add_class:"form-control oh-input w-100" }}
+
+                <small class="text-muted d-block mt-1" id="descriptionCounter">
+                    0 / 255 characters
+                </small>
+
+                {% if form.description.errors %}
+                    <div class="text-danger text-sm mt-1">
+                        {{ form.description.errors }}
+                    </div>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+
+    {% for field in form.hidden_fields %}
+        {{ field }}
+    {% endfor %}
+
+    <div class="d-flex flex-row-reverse mt-3">
+        <button type="submit"
+                class="oh-btn oh-btn--secondary pl-4 pr-5 oh-btn--w-100-resp">
+            {% trans "Save" %}
+        </button>
+    </div>
+
+</form>
+
+
+
+
+
 </div>
+
+<script>
+document.body.addEventListener("htmx:afterSwap", function (event) {
+    if (!event.target.closest("#objectCreateModalTarget")) return;
+
+    const textarea = document.querySelector("#id_description");
+    const counter = document.querySelector("#descriptionCounter");
+
+    if (!textarea || !counter) return;
+
+    const maxLength = 255;
+
+    function updateCounter() {
+        const length = textarea.value.length;
+        counter.textContent = `${length} / ${maxLength} characters`;
+
+        if (length >= maxLength) {
+            counter.style.color = "red";
+        } else if (length >= maxLength - 20) {
+            counter.style.color = "orange";
+        } else {
+            counter.style.color = "#6b7280";
+        }
+    }
+
+    textarea.removeEventListener("input", updateCounter);
+    textarea.addEventListener("input", updateCounter);
+    updateCounter();
+});
+</script>

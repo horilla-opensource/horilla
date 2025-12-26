@@ -196,12 +196,18 @@
                                                 <ion-icon name="information-circle-outline"></ion-icon>
                                             </button>
                                         {% endif %}
-                                        {% if request.user|is_reportingmanager or perms.leave.change_leaverequest or perms.leave.delete_leaverequest or request.user|is_leave_approval_manager%}
-                                            {% if request.user|is_reportingmanager or perms.leave.change_leaverequest or request.user|is_leave_approval_manager %}
-                                            <button class="oh-btn oh-btn--light-bkg w-100" title="{% trans 'Edit' %}"
-                                                data-toggle="oh-modal-toggle" data-target="#objectUpdateModal"
-                                                hx-get="{% url 'request-update' leave_request.id %}"
-                                                hx-target="#objectUpdateModalTarget"><ion-icon name="create-outline"></ion-icon></button>
+                                            {% if leave_request.status == 'requested' %}
+                                                {% if request.user|is_reportingmanager or perms.leave.change_leaverequest or perms.leave.delete_leaverequest or request.user|is_leave_approval_manager%}
+                                                    {% if request.user|is_reportingmanager or perms.leave.change_leaverequest or request.user|is_leave_approval_manager %}
+                                                    <button class="oh-btn oh-btn--light-bkg w-100" title="{% trans 'Edits' %}"
+                                                        data-toggle="oh-modal-toggle" data-target="#objectUpdateModal"
+                                                        hx-get="{% url 'request-update' leave_request.id %}"
+                                                        hx-target="#objectUpdateModalTarget"><ion-icon name="create-outline"></ion-icon></button>
+                                                    {% endif %}
+                                            {% else %}
+                                                <button class="oh-btn oh-btn--light-bkg w-50" disabled>
+                                                    <ion-icon name="create-outline"></ion-icon>
+                                                </button>
                                             {% endif %}
                                             {% if leave_request.status == 'requested' %}
                                                 {% if request.user|is_reportingmanager or perms.leave.delete_leaverequest or request.user|is_leave_approval_manager %}
