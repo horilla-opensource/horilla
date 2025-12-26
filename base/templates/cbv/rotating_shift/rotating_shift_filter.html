@@ -1,5 +1,6 @@
-{% load i18n %} {% load basefilters %}
-<div class="oh-accordion">
+{% load i18n basefilters %}
+
+  <div class="oh-accordion">
     <div class="oh-accordion-header">{% trans "Rotating Shift" %}</div>
     <div class="oh-accordion-body">
       <div class="row">
@@ -13,7 +14,6 @@
             {{form.based_on}}
           </div>
           <div class="oh-input-group">
-            <label class="oh-label">{% trans "Job Position" %}</label>
             <label class="oh-label">{% trans "Current Shift" %}</label>
             {{form.current_shift}}
           </div>
@@ -35,6 +35,7 @@
       </div>
     </div>
   </div>
+
   <div class="oh-accordion">
     <div class="oh-accordion-header">{% trans "Work Info" %}</div>
     <div class="oh-accordion-body">
@@ -70,6 +71,7 @@
       </div>
     </div>
   </div>
+
   <div class="oh-accordion">
     <div class="oh-accordion-header">{% trans "Advanced" %}</div>
     <div class="oh-accordion-body">
