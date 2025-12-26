@@ -201,7 +201,7 @@ DJANGO_NOTIFICATIONS_CONFIG = {
     "TEMPLATE": "notifications.html",  # Add this line
 }
 
-X_FRAME_OPTIONS = "ALLOWALL"
+X_FRAME_OPTIONS = "SAMEORIGIN"
 
 LANGUAGES = (
     ("en", "English (US)"),
