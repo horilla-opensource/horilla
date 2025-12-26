@@ -2258,10 +2258,6 @@ ul.errorlist ul.errorlist li {
     color: #000000;
 }
 
-.d-none {
-    display: none;
-}
-
 .highlight-selected {
     background: #00d6ff1f !important;
 }
@@ -3187,6 +3183,25 @@ span.oh-activity-sidebar__a img {
     height: 80px;
 }
 
+.w-25 {
+  width: 25% !important;
+}
+
+.w-50 {
+  width: 50% !important;
+}
+
+.w-75 {
+  width: 75% !important;
+}
+
+.w-100 {
+  width: 100% !important;
+}
+
+.d-none {
+    display: none;
+}
 
 .d-flex {
     display: flex !important;
