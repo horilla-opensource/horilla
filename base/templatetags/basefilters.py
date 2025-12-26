@@ -19,12 +19,10 @@ def equals(value, arg):
 
 
 @register.simple_tag
-def is_manager_of(user, instance, field_name=None):
+def is_manager_of(user, instance, field_name="employee_id"):
     employee = Employee.objects.filter(employee_user_id=user).first()
 
-    target_employee = (
-        getattr(instance, field_name, None) if field_name else instance.employee_id
-    )
+    target_employee = getattr(instance, field_name, None)
 
     return EmployeeWorkInformation.objects.filter(
         reporting_manager_id=employee, employee_id=target_employee
@@ -33,7 +31,7 @@ def is_manager_of(user, instance, field_name=None):
 
 @register.filter(name="is_reportingmanager")
 def is_reportingmanager(user):
-    """{% load basefilters %}
+    """
 
     This method will return true if the user employee profile is reporting manager to any employee
     """
