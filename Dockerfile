@@ -2,7 +2,7 @@ FROM python:3.10-slim-bullseye AS builder
 
 ENV PYTHONUNBUFFERED=1
 
-RUN apt-get update && apt-get install -y --no-install-recommends libcairo2-dev gcc && rm -rf /var/lib/apt/lists/*
+RUN apt-get update && apt-get install -y --no-install-recommends libcairo2-dev gcc postgresql-client && rm -rf /var/lib/apt/lists/*
 
 WORKDIR /app/
 
