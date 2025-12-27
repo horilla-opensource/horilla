@@ -1880,12 +1880,16 @@ class PayslipAutoGenerate(models.Model):
         max_length=30,
         choices=DAYS,
         default=("1"),
-        verbose_name="Payslip Generate Day",
-        help_text="On this day of every month,Payslip will auto generate",
+        verbose_name=_("Payslip Generate Day"),
+        help_text=_("On this day of every month,Payslip will auto generate"),
     )
-    auto_generate = models.BooleanField(default=False)
+    auto_generate = models.BooleanField(default=False, verbose_name=_("Auto generate"))
     company_id = models.OneToOneField(
-        Company, on_delete=models.CASCADE, null=True, blank=True, verbose_name="Company"
+        Company,
+        on_delete=models.CASCADE,
+        null=True,
+        blank=True,
+        verbose_name=_("Company"),
     )
 
     def clean(self):

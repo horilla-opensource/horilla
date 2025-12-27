@@ -1,3 +1,5 @@
+from typing import Any
+
 from django.http import HttpResponse
 from django.utils.decorators import method_decorator
 from django_filters.rest_framework import DjangoFilterBackend
@@ -163,7 +165,7 @@ class DepartmentView(APIView):
 
         departments = Department.objects.all()
         paginator = PageNumberPagination()
-        page = paginator.paginate_queryset(departments, request)
+        page: list[Any] | None = paginator.paginate_queryset(departments, request)
         serializer = self.serializer_class(page, many=True)
         return paginator.get_paginated_response(serializer.data)
 

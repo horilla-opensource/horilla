@@ -1,4 +1,4 @@
-{% load static %}
+{% load static i18n %}
 {% load horillafilters %}
 <style>
     .round {
@@ -110,7 +110,7 @@
 </style>
 
 <div class="inner-fabs">
-    <div id="fab9" class="fab round" data-tooltip="Dashboard Charts">
+    <div id="fab9" class="fab round" data-tooltip="{% trans 'Dashboard Charts' %}">
         <a
             class="text-light"
             data-toggle="oh-modal-toggle"
@@ -122,7 +122,7 @@
         </a>
     </div>
     {% if "helpdesk"|app_installed %}
-        <div id="fab8" class="fab round" data-tooltip="Create Ticket">
+        <div id="fab8" class="fab round" data-tooltip="{% trans 'Create Ticket' %}">
             <a
                 class="text-light"
                 data-toggle="oh-modal-toggle"
@@ -135,7 +135,7 @@
         </div>
     {% endif %}
     {% if "asset"|app_installed %}
-    <div id="fab7" class="fab round" data-tooltip="Create Asset Request">
+    <div id="fab7" class="fab round" data-tooltip="{% trans 'Create Asset Request' %}">
         <a
             class="text-light"
             data-toggle="oh-modal-toggle"
@@ -148,7 +148,7 @@
     </div>
     {% endif %}
     {% if "payroll"|app_installed %}
-    <div id="fab6" class="fab round" data-tooltip="Create Reimbursement">
+    <div id="fab6" class="fab round" data-tooltip="{% trans 'Create Reimbursement' %}">
         <a
             class="text-light"
             data-toggle="oh-modal-toggle"
@@ -160,7 +160,7 @@
         </a>
     </div>
     {% endif %}
-    <div id="fab5" class="fab round" data-tooltip="Create Work Type Request">
+    <div id="fab5" class="fab round" data-tooltip="{% trans 'Create Work Type Request' %}">
         <a
             class="text-light"
             data-toggle="oh-modal-toggle"
@@ -171,7 +171,7 @@
             <i class="material-icons mt-2">work</i>
         </a>
     </div>
-    <div id="fab4" class="fab round" data-tooltip="Create Shift Request">
+    <div id="fab4" class="fab round" data-tooltip="{% trans 'Create Shift Request' %}">
         <a
             class="text-light"
             data-toggle="oh-modal-toggle"
@@ -183,7 +183,7 @@
         </a>
     </div>
     {% if "leave"|app_installed %}
-        <div id="fab3" class="fab round" data-tooltip="Create Leave Request">
+        <div id="fab3" class="fab round" data-tooltip="{% trans 'Create Leave Request' %}">
             <a
                 class="text-light"
                 data-toggle="oh-modal-toggle"
@@ -202,7 +202,7 @@
         </div>
     {% endif %}
     {% if "attendance"|app_installed %}
-    <div id="fab2" class="fab round" data-tooltip="Create Attendance Request">
+    <div id="fab2" class="fab round" data-tooltip= "{% trans 'Create Attendance Request' %}">
         <a
             class="text-light"
             data-toggle="oh-modal-toggle"
@@ -217,8 +217,8 @@
     </div>
     {% endif %}
 </div>
-<div id="fab1" class="fab round" data-tooltip="Quick Action">
-    <i id="fabIcon" class="material-icons">add</i>
+<div id="fab1" class="fab round" data-tooltip= "{% trans 'Quick Action' %}">
+    <i id="fabIcon" class="material-icons">{% trans "add" %}</i>
 </div>
 
 <script>

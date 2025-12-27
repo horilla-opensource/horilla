@@ -16,31 +16,31 @@ from horilla_audit.methods import get_diff
 from horilla_audit.models import HorillaAuditInfo, HorillaAuditLog
 
 PRIORITY = [
-    ("low", "Low"),
-    ("medium", "Medium"),
-    ("high", "High"),
+    ("low", _("Low")),
+    ("medium", _("Medium")),
+    ("high", _("High")),
 ]
 MANAGER_TYPES = [
-    ("department", "Department"),
-    ("job_position", "Job Position"),
-    ("individual", "Individual"),
+    ("department", _("Department")),
+    ("job_position", _("Job Position")),
+    ("individual", _("Individual")),
 ]
 
 TICKET_TYPES = [
-    ("suggestion", "Suggestion"),
-    ("complaint", "Complaint"),
-    ("service_request", "Service Request"),
-    ("meeting_request", "Meeting Request"),
-    ("anounymous_complaint", "Anonymous Complaint"),
-    ("others", "Others"),
+    ("suggestion", _("Suggestion")),
+    ("complaint", _("Complaint")),
+    ("service_request", _("Service Request")),
+    ("meeting_request", _("Meeting Request")),
+    ("anounymous_complaint", _("Anonymous Complaint")),
+    ("others", _("Others")),
 ]
 
 TICKET_STATUS = [
-    ("new", "New"),
-    ("in_progress", "In Progress"),
-    ("on_hold", "On Hold"),
-    ("resolved", "Resolved"),
-    ("canceled", "Canceled"),
+    ("new", _("New")),
+    ("in_progress", _("In Progress")),
+    ("on_hold", _("On Hold")),
+    ("resolved", _("Resolved")),
+    ("canceled", _("Canceled")),
 ]
 
 
@@ -94,12 +94,15 @@ class Ticket(HorillaModel):
 
     title = models.CharField(max_length=50)
     employee_id = models.ForeignKey(
-        Employee, on_delete=models.PROTECT, related_name="ticket", verbose_name="Owner"
+        Employee,
+        on_delete=models.PROTECT,
+        related_name="ticket",
+        verbose_name=_("Owner"),
     )
     ticket_type = models.ForeignKey(
         TicketType,
         on_delete=models.PROTECT,
-        verbose_name="Ticket Type",
+        verbose_name=_("Ticket Type"),
     )
     description = models.TextField(max_length=255)
     priority = models.CharField(choices=PRIORITY, max_length=100, default="low")
@@ -112,7 +115,7 @@ class Ticket(HorillaModel):
     assigned_to = models.ManyToManyField(
         Employee, blank=True, related_name="ticket_assigned_to"
     )
-    deadline = models.DateField(null=True, blank=True)
+    deadline = models.DateField(null=True, blank=True, verbose_name=_("Deadline"))
     tags = models.ManyToManyField(Tags, blank=True, related_name="ticket_tags")
     status = models.CharField(choices=TICKET_STATUS, default="new", max_length=50)
     history = HorillaAuditLog(
@@ -242,8 +245,10 @@ class Attachment(HorillaModel):
 
 
 class FAQCategory(HorillaModel):
-    title = models.CharField(max_length=30)
-    description = models.TextField(blank=True, null=True, max_length=255)
+    title = models.CharField(max_length=30, verbose_name=_("Title"))
+    description = models.TextField(
+        blank=True, null=True, max_length=255, verbose_name=_("Description")
+    )
     company_id = models.ForeignKey(
         Company,
         null=True,
