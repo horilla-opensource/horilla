@@ -1234,6 +1234,16 @@ def leave_request_cancel(request, id, emp_id=None):
 
                 mail_thread = LeaveMailSendThread(request, leave_request, type="reject")
                 mail_thread.start()
+
+                if leave_request.manager:
+                    manager = leave_request.manager
+                    if manager.employee_user_id and manager.employee_user_id.email:
+                        LeaveMailSendThread(
+                            request,
+                            leave_request,
+                            type="manager_reject_mail",
+                        ).start()
+
             else:
                 messages.error(request, _("Leave request already rejected."))
 
