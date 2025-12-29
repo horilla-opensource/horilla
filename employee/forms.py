@@ -175,6 +175,11 @@ class EmployeeForm(ModelForm):
         self.fields["email"].widget.attrs["autocomplete"] = "email"
         self.fields["phone"].widget.attrs["autocomplete"] = "phone"
         self.fields["address"].widget.attrs["autocomplete"] = "address"
+        self.fields["nic"].widget.attrs.update({
+            "placeholder": "NIC",
+            "style": "text-transform:none;"
+        })
+
         if instance := kwargs.get("instance"):
             # ----
             # django forms not showing value inside the date, time html element.
@@ -194,6 +199,7 @@ class EmployeeForm(ModelForm):
     def clean(self):
         super().clean()
         email = self.cleaned_data["email"]
+        phone = self.cleaned_data.get("phone")
         query = Employee.objects.entire().filter(email=email)
 
 
@@ -220,18 +226,41 @@ class EmployeeForm(ModelForm):
                 error_message = _("An Employee with this Email already exists")
 
             raise forms.ValidationError({"email": error_message})
+
+        if not phone:
+            self.add_error(
+                "phone",
+                _("This field is required.")
+            )
+        elif phone:
+            if not re.fullmatch(r"07\d{8}", str(phone)):
+                self.add_error(
+                    "phone",
+                    _("Enter a valid mobile number (e.g. 07XXXXXXXX).")
+                )
+
         contact_name = self.cleaned_data.get("emergency_contact_name")
         contact_number = self.cleaned_data.get("emergency_contact")
         contact_relationship = self.cleaned_data.get("emergency_contact_relation")
 
         if contact_name:
             if not contact_number:
-                self.add_error('emergency_contact',
-                               "This field is required when Emergency Contact Name is filled.")
-            if not contact_relationship:
-                self.add_error('emergency_contact_relation',
-                               "This field is required when Emergency Contact Name is filled.")
+                self.add_error(
+                    "emergency_contact",
+                    _("This field is required when Emergency Contact Name is filled.")
+                )
+            else:
+                if not re.fullmatch(r"07\d{8}", str(contact_number)):
+                    self.add_error(
+                        "emergency_contact",
+                        _("Enter a valid mobile number (e.g. 07XXXXXXXX).")
+                    )
 
+            if not contact_relationship:
+                self.add_error(
+                    "emergency_contact_relation",
+                    _("This field is required when Emergency Contact Name is filled.")
+                )
 
     def get_next_badge_id(self):
         """
