@@ -68,13 +68,9 @@
 
             <div class="row">
                   <div class="col-12 col-sm-12 col-md-12 col-lg-6">
-                    <label class="oh-label" for="firstname">{% trans "Employee ID" %}
                       <div hx-get="{% url 'get-first-last-badge-id' %}" hx-target="#badgeModalBody" data-target="#badgeModal" data-toggle="oh-modal-toggle" class="oh-checkpoint-badge text-success mb-2" id="selectAllInstances" style="cursor: pointer">
-                        {% trans "Show" %}
+                        {% trans "Show Current ID" %}
                       </div>
-                    </label>
-                    {{form.badge_id}}
-                    {{form.badge_id.errors}}
                   </div>
               </div>
               {{form.as_p}}
@@ -83,7 +79,7 @@
                 <button type="submit" class="oh-btn oh-btn--secondary">
                     {% trans "Save Changes" %}
                 </button>
-            </div>
+              </div>
         </form>
     </div>
   </div>
