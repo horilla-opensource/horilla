@@ -3963,19 +3963,22 @@ def employee_available_leave_count(request):
 
             total_leave_days += forcasted_days
 
-        # Only query pending requests if we have a valid employee
         if available_leave.employee_id_id:
             pending_requests_days = available_leave.employee_id.leaverequest_set.filter(
                 status="requested",
                 leave_type_id=leave_type_id,
             ).aggregate(total_days=Sum('requested_days'))['total_days']
+            pending_requests_days = (
+                pending_requests_days if pending_requests_days is not None else 0
+            )
 
+    available_days_for_request = total_leave_days - pending_requests_days
 
     context = {
         "hx_target": hx_target,
         "leave_type_id": leave_type_id,
         "available_leave": available_leave,
-        "total_leave_days": total_leave_days - pending_requests_days,
+        "total_leave_days": available_days_for_request,
         "forcasted_days": forcasted_days,
         "pending_requests": pending_requests_days,
     }
