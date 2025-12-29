@@ -101,28 +101,67 @@ class LeaveMailSendThread(Thread):
 
             self.send_email(subject, content, [owner], self.leave_request.id)
 
-        elif self.type == "cancel":
-            owner = self.leave_request.employee_id
-            reporting_manager = self.leave_request.employee_id.get_reporting_manager()
 
-            content_manager = f"This is to inform you that a leave request has been requested to cancel by {owner}. Take the necessary actions for the leave request. Should you have any additional information or updates, please feel free to communicate directly with the {owner}."
-            subject_manager = f"Leave request cancellation"
+        elif self.type == "manager_reject_mail":
+
+            employee = self.leave_request.employee_id
+
+            manager = self.leave_request.manager
+
+            if not manager or not manager.employee_user_id:
+                return
+
+            subject = f"Leave Request Rejected – {employee}"
+
+            content = (
+
+                f"This is to inform you that the leave request submitted by "
+
+                f"{employee} has been rejected.\n\n"
+
+                f"Leave Period: {self.leave_request.start_date} to {self.leave_request.end_date}\n"
+
+                f"Rejected By: {self.request.user.employee_get}\n"
+
+                f"Reason: {self.leave_request.reject_reason}"
+
+            )
 
             self.send_email(
-                subject_manager,
-                content_manager,
-                [reporting_manager],
+
+                subject,
+
+                content,
+
+                [manager],
+
                 self.leave_request.id,
+
             )
 
-            content_owner = f"This is to inform you that a cancellation request created for your leave request has been successfully logged into our system. The manager will now take the necessary actions to address the leave request. Should you have any additional information or updates, please feel free to communicate directly with the {reporting_manager}."
-            subject_owner = "Leave request cancellation requested"
 
-            self.send_email(
-                subject_owner, content_owner, [owner], self.leave_request.id
-            )
+        elif self.type == "cancel":
+                owner = self.leave_request.employee_id
+                reporting_manager = self.leave_request.employee_id.get_reporting_manager()
 
-        return
+                content_manager = f"This is to inform you that a leave request has been requested to cancel by {owner}. Take the necessary actions for the leave request. Should you have any additional information or updates, please feel free to communicate directly with the {owner}."
+                subject_manager = f"Leave request cancellation"
+
+                self.send_email(
+                    subject_manager,
+                    content_manager,
+                    [reporting_manager],
+                    self.leave_request.id,
+                )
+
+                content_owner = f"This is to inform you that a cancellation request created for your leave request has been successfully logged into our system. The manager will now take the necessary actions to address the leave request. Should you have any additional information or updates, please feel free to communicate directly with the {reporting_manager}."
+                subject_owner = "Leave request cancellation requested"
+
+                self.send_email(
+                    subject_owner, content_owner, [owner], self.leave_request.id
+                )
+
+                return
 
 
 class LeaveClashThread(Thread):
