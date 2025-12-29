@@ -182,7 +182,7 @@ class EmployeeForm(ModelForm):
             # ----
             initial = {}
             if instance.dob is not None:
-                initial["dob"] = instance.dob.strftime("%H:%M")
+                initial["dob"] = instance.dob.strftime("%Y-%m-%d")
             kwargs["initial"] = initial
         else:
             self.initial = {"badge_id": self.get_next_badge_id()}
@@ -195,6 +195,8 @@ class EmployeeForm(ModelForm):
         super().clean()
         email = self.cleaned_data["email"]
         query = Employee.objects.entire().filter(email=email)
+
+
         if self.instance and self.instance.id:
             query = query.exclude(id=self.instance.id)
 
@@ -218,9 +220,9 @@ class EmployeeForm(ModelForm):
                 error_message = _("An Employee with this Email already exists")
 
             raise forms.ValidationError({"email": error_message})
-        contact_name = self.cleaned_data["emergency_contact_name"]
-        contact_number = self.cleaned_data["emergency_contact"]
-        contact_relationship = self.cleaned_data["emergency_contact_relation"]
+        contact_name = self.cleaned_data.get("emergency_contact_name")
+        contact_number = self.cleaned_data.get("emergency_contact")
+        contact_relationship = self.cleaned_data.get("emergency_contact_relation")
 
         if contact_name:
             if not contact_number:
@@ -282,23 +284,7 @@ class EmployeeForm(ModelForm):
             prefix = get_initial_prefix(None)["get_initial_prefix"]
         return prefix
 
-    def clean_badge_id(self):
-        """
-        This method is used to clean the badge id
-        """
-        badge_id = self.cleaned_data["badge_id"]
-        if badge_id:
-            all_employees = Employee.objects.entire()
-            queryset = all_employees.filter(badge_id=badge_id).exclude(
-                pk=self.instance.pk if self.instance else None
-            )
-            if queryset.exists():
-                raise forms.ValidationError(trans("Badge ID must be unique."))
-            if not re.search(r"\d", badge_id):
-                raise forms.ValidationError(
-                    trans("Badge ID must contain at least one digit.")
-                )
-        return badge_id
+
 
 
 class EmployeeWorkInformationForm(ModelForm):
