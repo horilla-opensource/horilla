@@ -60,6 +60,7 @@ from leave.methods import (
     company_leave_dates_list,
     filter_conditional_leave_request,
     holiday_dates_list,
+
 )
 from leave.models import *
 from leave.models import leave_requested_dates
@@ -1285,6 +1286,18 @@ def user_leave_cancel(request, id):
                     leave_request.reject_reason = form.cleaned_data["reason"]
                     leave_request.status = "cancelled"
                     leave_request.save()
+
+                    available_leave = AvailableLeave.objects.filter(
+                        employee_id=leave_request.employee_id,
+                        leave_type_id=leave_request.leave_type_id
+                    ).first()
+
+                    if available_leave:
+                        available_leave.available_days += leave_request.requested_days
+                        available_leave.save()
+
+                    leave_request.save()
+
                     messages.success(
                         request, _("Leave request cancelled successfully..")
                     )
