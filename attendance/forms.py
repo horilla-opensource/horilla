@@ -899,7 +899,7 @@ class AttendanceRequestForm(BaseModelForm):
                 "attendance_worked_hour",
                 _("Worked hours cannot be empty")
             )
-        leave, is_half_day = block_attendance_on_approved_leaves(attendance_date)
+        leave, is_half_day = block_attendance_on_approved_leaves(attendance_date, employee)
 
         if leave:
             if worked_hours:
