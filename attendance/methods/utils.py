@@ -734,8 +734,9 @@ def allocate_compensation_leave(request, attendance):
 
 
 
-def block_attendance_on_approved_leaves(attendance_date):
+def block_attendance_on_approved_leaves(attendance_date , employee):
     leave = LeaveRequest.objects.filter(
+        employee_id=employee,
         status="approved",
         start_date__lte=attendance_date,
         end_date__gte=attendance_date,
