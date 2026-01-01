@@ -29,20 +29,20 @@ SUBMENUS = [
         "menu": _("Attendance Requests"),
         "redirect": reverse("request-attendance-view"),
     },
-    {
-        "menu": _("Hour Account"),
-        "redirect": reverse("attendance-overtime-view"),
-        "accessibility": "attendance.sidebar.hour_account_accessibility",
-    },
+    # {
+    #     "menu": _("Hour Account"),
+    #     "redirect": reverse("attendance-overtime-view"),
+    #     "accessibility": "attendance.sidebar.hour_account_accessibility",
+    # },
     {
         "menu": _("Work Records"),
         "redirect": reverse("work-records"),
         "accessibility": "attendance.sidebar.work_record_accessibility",
     },
-    {
-        "menu": _("Attendance Activities"),
-        "redirect": reverse("attendance-activity-view"),
-    },
+    # {
+    #     "menu": _("Attendance Activities"),
+    #     "redirect": reverse("attendance-activity-view"),
+    # },
     {
         "menu": _("Late Come Early Out"),
         "redirect": reverse("late-come-early-out-view"),

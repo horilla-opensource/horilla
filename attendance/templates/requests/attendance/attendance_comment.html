@@ -23,6 +23,8 @@
 
 	<div>
 		<input type="text" name="comment" id="commentInput" class="oh-input w-100" placeholder="Comment here" hx-on:keyup="toggleCommentButton(this);">
+        <small id="charInfo" class="mt-1" style="font-size: 12px; color: #666;"></small>
+        <div id="charError" class="mt-1" style="display: none; color: red;"></div>
 		<button type="submit" id="commentButton" class="oh-btn oh-btn--secondary mt-2 mr-0 oh-btn--w-100-resp" style="display: none;">
 			{% trans "Comment" %}
 		</button>
@@ -93,3 +95,30 @@
 		</div>
 	{% endif %}
 </ol>
+<script>
+function toggleCommentButton(input) {
+    const btn = document.getElementById("commentButton");
+    const info = document.getElementById("charInfo");
+    const error = document.getElementById("charError");
+    const maxLen = 255;
+    const len = input.value.length;
+
+    // Show character count
+    info.textContent = len + "/" + maxLen + " characters";
+
+    // Validation logic
+    if (len === 0 || len > maxLen) {
+        btn.style.display = "none";
+    } else {
+        btn.style.display = "block";
+    }
+
+    // Show or hide error message
+    if (len > maxLen) {
+        error.textContent = "Comment cannot exceed 255 characters.";
+        error.style.display = "block";
+    } else {
+        error.style.display = "none";
+    }
+}
+</script>

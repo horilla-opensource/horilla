@@ -1,4 +1,180 @@
 {% load i18n %}
 <form hx-post="{% url 'attendance-update' obj_id %}?{{urlencode}}" hx-swap="#updateAttendanceModalBody" id="attendanceUpdateForm" data-url="{% url 'attendance-update' obj_id %}">
-    {{form.as_p}}
+     {% csrf_token %}
+    <div class="row">
+      <div class="col-12">{{form.non_field_errors}}</div>
+      <!-- Employee -->
+      <div class="col-md-6 mb-3" id="id_employee_id_parent_div">
+        <label for="id_employee_id" class="form-label fw-semibold">
+          {{ form.employee_id.label }}
+          {% if form.employee_id.field.required %}<span class="text-danger">*</span>{% endif %}
+        </label>
+        <div class="oh-input-wrapper">
+          {{ form.employee_id }}
+        </div>
+        {% for error in form.employee_id.errors %}
+          <div class="text-danger small">{{ error }}</div>
+        {% endfor %}
+      </div>
+
+      <!-- Attendance Date -->
+      <div class="col-md-6 mb-3" id="id_attendance_date_parent_div">
+        <label for="id_attendance_date" class="form-label fw-semibold">
+          {{ form.attendance_date.label }}
+        </label>
+        <div class="oh-input-wrapper">
+          {{ form.attendance_date }}
+        </div>
+        {% for error in form.attendance_date.errors %}
+          <div class="text-danger small">{{ error }}</div>
+        {% endfor %}
+      </div>
+
+
+
+      <!-- Clock In Date -->
+      <div class="col-md-6 mb-3" id="id_attendance_clock_in_date_parent_div">
+        <label for="id_attendance_clock_in_date" class="form-label fw-semibold">
+          {{ form.attendance_clock_in_date.label }}
+        </label>
+        <div class="oh-input-wrapper">
+          {{ form.attendance_clock_in_date }}
+        </div>
+        {% for error in form.attendance_clock_in_date.errors %}
+          <div class="text-danger small">{{ error }}</div>
+        {% endfor %}
+      </div>
+
+      <!-- Clock In Time -->
+      <div class="col-md-6 mb-3" id="id_attendance_clock_in_parent_div">
+        <label for="id_attendance_clock_in" class="form-label fw-semibold">
+          {{ form.attendance_clock_in.label }}
+        </label>
+        <div class="oh-input-wrapper">
+          {{ form.attendance_clock_in }}
+        </div>
+        {% for error in form.attendance_clock_in.errors %}
+          <div class="text-danger small">{{ error }}</div>
+        {% endfor %}
+      </div>
+
+      <!-- Clock Out Date -->
+      <div class="col-md-6 mb-3" id="id_attendance_clock_out_date_parent_div">
+        <label for="id_attendance_clock_out_date" class="form-label fw-semibold">
+          {{ form.attendance_clock_out_date.label }}
+        </label>
+        <div class="oh-input-wrapper">
+          {{ form.attendance_clock_out_date }}
+        </div>
+        {% for error in form.attendance_clock_out_date.errors %}
+          <div class="text-danger small">{{ error }}</div>
+        {% endfor %}
+      </div>
+
+      <!-- Clock Out Time -->
+      <div class="col-md-6 mb-3" id="id_attendance_clock_out_parent_div">
+        <label for="id_attendance_clock_out" class="form-label fw-semibold">
+          {{ form.attendance_clock_out.label }}
+        </label>
+        <div class="oh-input-wrapper">
+          {{ form.attendance_clock_out }}
+        </div>
+        {% for error in form.attendance_clock_out.errors %}
+          <div class="text-danger small">{{ error }}</div>
+        {% endfor %}
+      </div>
+
+      <!-- Work Type -->
+{#      <div class="col-md-6 mb-3" id="id_work_type_id_parent_div">#}
+{#        <label for="id_work_type_id" class="form-label fw-semibold">#}
+{#          {{ form.work_type_id.label }}#}
+{#        </label>#}
+{#        <div class="oh-input-wrapper">#}
+{#          {{ form.work_type_id }}#}
+{#        </div>#}
+{#        {% for error in form.work_type_id.errors %}#}
+{#          <div class="text-danger small">{{ error }}</div>#}
+{#        {% endfor %}#}
+{#      </div>#}
+
+        <!-- Shift -->
+      <div class="col-md-6 mb-3" id="id_shift_id_parent_div">
+        <label for="id_shift_id" class="form-label fw-semibold">
+          {{ form.shift_id.label }}
+        </label>
+        <div class="oh-input-wrapper">
+          {{ form.shift_id }}
+        </div>
+        {% for error in form.shift_id.errors %}
+          <div class="text-danger small">{{ error }}</div>
+        {% endfor %}
+      </div>
+
+      <div class="col-md-6 mb-3" id="id_attendance_worked_hour_parent_div">
+        <label for="id_attendance_worked_hour" class="form-label fw-semibold">
+          {{ form.attendance_worked_hour.label }}
+        </label>
+        <div class="oh-input-wrapper">
+          {{ form.attendance_worked_hour }}
+        </div>
+        {% for error in form.attendance_worked_hour.errors %}
+          <div class="text-danger small">{{ error }}</div>
+        {% endfor %}
+      </div>
+
+{#      <!-- Minimum Hours -->#}
+{#      <div class="col-md-6 mb-3" id="id_minimum_hour_parent_div">#}
+{#        <label for="id_minimum_hour" class="form-label fw-semibold">#}
+{#          {{ form.minimum_hour.label }}#}
+{#        </label>#}
+{#        <div class="oh-input-wrapper">#}
+{#          {{ form.minimum_hour }}#}
+{#        </div>#}
+{#        {% for error in form.minimum_hour.errors %}#}
+{#          <div class="text-danger small">{{ error }}</div>#}
+{#        {% endfor %}#}
+{#      </div>#}
+{##}
+{#      <!-- Batch Attendance -->#}
+{#      <div class="col-md-6 mb-3" id="id_batch_attendance_id_parent_div">#}
+{#        <label for="id_batch_attendance_id" class="form-label fw-semibold">#}
+{#          {{ form.batch_attendance_id.label }}#}
+{#        </label>#}
+{#        <div class="oh-input-wrapper">#}
+{#          {{ form.batch_attendance_id }}#}
+{#        </div>#}
+{#        {% for error in form.batch_attendance_id.errors %}#}
+{#          <div class="text-danger small">{{ error }}</div>#}
+{#        {% endfor %}#}
+{#      </div>#}
+
+      <!-- HTMX compensation target (kept as-is) -->
+      <div id="compensation-field-container"></div>
+    </div>
+
+
+    <div class="d-flex justify-content-end mt-4">
+      <button type="submit" class="oh-btn oh-btn--secondary">
+        {% trans "Save Attendance" %}
+      </button>
+    </div>
 </form>
+<script>
+  function attendanceDateChange($el) {
+    const picked = $el.val();
+
+    const $clockInDate  = $("input[name='attendance_clock_in_date']");
+    const $clockOutDate = $("input[name='attendance_clock_out_date']");
+
+    if (picked) {
+      if ($clockInDate.length) {
+        $clockInDate.val(picked);
+        $clockInDate[0].dispatchEvent(new Event('change', { bubbles: true }));
+      }
+      if ($clockOutDate.length) {
+        $clockOutDate.val(picked);
+        $clockOutDate[0].dispatchEvent(new Event('change', { bubbles: true }));
+      }
+    }
+  }
+</script>

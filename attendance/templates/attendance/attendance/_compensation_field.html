@@ -1,17 +1,23 @@
 {% load i18n %}
 <div id="compensation-field-container">
-  {% if show_field %}
-    <label
-      for="{{ form.is_get_compensation_leave.id_for_label }}"
-      class="form-label fw-semibold mb-2"
-      title="{{ form.is_get_compensation_leave.help_text }}"
-    >
-      {{ form.is_get_compensation_leave.label }}
-      <i class="bi bi-info-circle text-muted" style="font-size: 0.9rem;"></i>
-    </label>
+    {% if show_field %}
+        <label
+                for="{{ form.is_get_compensation_leave.id_for_label }}"
+                class="form-label fw-semibold mb-1 d-flex align-items-center"
+                title="{{ form.is_get_compensation_leave.help_text }}"
+        >
+            {{ form.is_get_compensation_leave.label }}
+            <i class="bi bi-info-circle ms-1 text-muted" style="font-size: 0.9rem;"></i>
+        </label>
 
-    <div class="oh-input-wrapper">
-      {{ form.is_get_compensation_leave }}
-    </div>
-  {% endif %}
+        <div class="oh-input-wrapper mb-2">
+            {{ form.is_get_compensation_leave }}
+        </div>
+    {% endif %}
+    {% if show_duplicate_warning %}
+        <div class="alert alert-warning d-flex justify-content-center align-items-center mb-3 mt-2" role="alert">
+            <span class="text-danger text-center">Existing record detected. Proceeding will update it.</span>
+        </div>
+    {% endif %}
+
 </div>
