@@ -33,7 +33,8 @@ from django.forms import DateInput, TextInput
 from django.template.loader import render_to_string
 from django.utils.translation import gettext as _
 from django.utils.translation import gettext_lazy as trans
-
+from django.core.validators import validate_email
+from django.core.exceptions import ValidationError
 from base.methods import eval_validate, reload_queryset
 from employee.models import (
     Actiontype,
@@ -179,6 +180,10 @@ class EmployeeForm(ModelForm):
             "placeholder": "NIC",
             "style": "text-transform:none;"
         })
+        self.fields["badge_id"].widget.attrs.update({
+            "placeholder": "Employee ID",
+            "style": "text-transform:none;"
+        })
 
         if instance := kwargs.get("instance"):
             # ----
@@ -202,6 +207,11 @@ class EmployeeForm(ModelForm):
         phone = self.cleaned_data.get("phone")
         query = Employee.objects.entire().filter(email=email)
 
+        if email:
+            try:
+                validate_email(email)
+            except ValidationError:
+                self.add_error("email", _("Enter a valid email address."))
 
         if self.instance and self.instance.id:
             query = query.exclude(id=self.instance.id)
