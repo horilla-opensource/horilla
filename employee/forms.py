@@ -421,12 +421,8 @@ class EmployeeWorkInformationForm(ModelForm):
                 _("This field is required.")
             )
 
-        if not work_phone:
-            self.add_error(
-                "mobile",
-                _("This field is required.")
-            )
-        elif work_phone:
+
+        if work_phone:
             if not re.fullmatch(r"07\d{8}", str(work_phone)):
                 self.add_error(
                     "mobile",
@@ -476,12 +472,7 @@ class EmployeeWorkInformationUpdateForm(ModelForm):
                 _("This field is required.")
             )
 
-        if not work_phone:
-            self.add_error(
-                "mobile",
-                _("This field is required.")
-            )
-        elif work_phone:
+        if work_phone:
             if not re.fullmatch(r"07\d{8}", str(work_phone)):
                 self.add_error(
                     "mobile",
