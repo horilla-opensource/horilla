@@ -169,7 +169,7 @@
 {#{% endif %}#}
 <script>
 document.body.addEventListener("htmx:afterSwap", function (event) {
-    if (!event.target.closest("#objectCreateModalTarget")) return;
+    if (!event.target.closest("#objectUpdateModalTarget")) return;
 
     const textarea = document.querySelector("#id_description");
     const counter = document.querySelector("#descriptionCounter");
