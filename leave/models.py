@@ -240,7 +240,7 @@ class LeaveType(HorillaModel):
     )
     is_compensatory_leave = models.BooleanField(default=False)
     company_id = models.ForeignKey(
-        Company, null=True, editable=False, on_delete=models.PROTECT
+        Company, null=True, editable=True, on_delete=models.PROTECT
     )
     objects = HorillaCompanyManager(related_company_field="company_id")
 
@@ -524,6 +524,22 @@ class AvailableLeave(HorillaModel):
 
         return leave_taken["total_sum"] if leave_taken["total_sum"] else 0
 
+    def pending_leaves(self):
+        pending_leaves = LeaveRequest.objects.filter(
+            leave_type_id=self.leave_type_id,
+            employee_id=self.employee_id,
+            status="requested",
+        ).aggregate(total_days=Sum('requested_days'))['total_days']
+        return pending_leaves if pending_leaves else 0
+
+    def balance_leaves(self):
+        balance_leave_days = self.available_days + self.carryforward_days - self.pending_leaves()
+        return balance_leave_days if balance_leave_days else 0
+
+    def total_leaves(self):
+        total_leave_days_assigned = self.available_days + self.carryforward_days + self.leave_taken()
+        return total_leave_days_assigned if total_leave_days_assigned else 0
+
     # Setting the expiration date for carryforward leaves
     def set_expired_date(self, available_leave, assigned_date):
         period = available_leave.leave_type_id.carryforward_expire_in
@@ -686,12 +702,12 @@ class LeaveRequest(HorillaModel):
     objects = HorillaCompanyManager(
         related_company_field="employee_id__employee_work_info__company_id"
     )
-    approve_manager = models.ForeignKey(
+    manager = models.ForeignKey(
         Employee,
         on_delete=models.SET_NULL,
         null=True,
         blank=True,
-        verbose_name=_("Leave Approver"),
+        verbose_name=_("Covering Person"),
         related_name="leave_approvals",
     )
 
@@ -914,6 +930,7 @@ class LeaveRequest(HorillaModel):
         requ_days = set(self.requested_dates())
         restricted_leaves = RestrictLeave.objects.all()
         request = getattr(horilla_middlewares._thread_locals, "request", None)
+        employee_id = self.employee_id
 
         # Check if leave type is assigned to employee
         if not AvailableLeave.objects.filter(
@@ -952,7 +969,7 @@ class LeaveRequest(HorillaModel):
                 status__in=["cancelled", "rejected"]
             ).exists():
                 raise ValidationError(
-                    _("Employee already has a leave request for this date range.")
+                    _("Your selected date range overlaps with an existing leave request.")
                 )
 
         # Past date restriction
@@ -1051,6 +1068,17 @@ class LeaveRequest(HorillaModel):
                     raise ValidationError(
                         "You cannot request leave for this date range. The requested dates are restricted. Please contact admin."
                     )
+
+        if employee_id:
+            active_contract = employee_id.contract_set.filter(
+                contract_status="active"
+            ).first()
+
+            if not active_contract:
+                raise ValidationError(
+                    "You cannot request leave without an active contract. Please contact HR."
+                )
+
 
         return cleaned_data
 

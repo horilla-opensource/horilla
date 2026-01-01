@@ -1730,7 +1730,7 @@ class Holidays(HorillaModel):
     end_date = models.DateField(null=True, blank=True, verbose_name=_("End Date"))
     recurring = models.BooleanField(default=False, verbose_name=_("Recurring"))
     is_poya_holiday = models.BooleanField(default=False, verbose_name=_("Is Poya Holiday"))
-    is_mercantile_holiday = models.BooleanField(default=False, verbose_name=_("Is Mercantile Holday"))
+    is_mercantile_holiday = models.BooleanField(default=False, verbose_name=_("Is Mercantile Holiday"))
     company_id = models.ForeignKey(
         Company,
         null=True,

@@ -60,6 +60,7 @@ from leave.methods import (
     company_leave_dates_list,
     filter_conditional_leave_request,
     holiday_dates_list,
+
 )
 from leave.models import *
 from leave.models import leave_requested_dates
@@ -1234,6 +1235,16 @@ def leave_request_cancel(request, id, emp_id=None):
 
                 mail_thread = LeaveMailSendThread(request, leave_request, type="reject")
                 mail_thread.start()
+
+                if leave_request.manager:
+                    manager = leave_request.manager
+                    if manager.employee_user_id and manager.employee_user_id.email:
+                        LeaveMailSendThread(
+                            request,
+                            leave_request,
+                            type="manager_reject_mail",
+                        ).start()
+
             else:
                 messages.error(request, _("Leave request already rejected."))
 
@@ -1275,6 +1286,7 @@ def user_leave_cancel(request, id):
                     leave_request.reject_reason = form.cleaned_data["reason"]
                     leave_request.status = "cancelled"
                     leave_request.save()
+
                     messages.success(
                         request, _("Leave request cancelled successfully..")
                     )
@@ -3951,19 +3963,22 @@ def employee_available_leave_count(request):
 
             total_leave_days += forcasted_days
 
-        # Only query pending requests if we have a valid employee
         if available_leave.employee_id_id:
             pending_requests_days = available_leave.employee_id.leaverequest_set.filter(
                 status="requested",
                 leave_type_id=leave_type_id,
-                start_date__gte=datetime.today().date(),
-            ).count()
+            ).aggregate(total_days=Sum('requested_days'))['total_days']
+            pending_requests_days = (
+                pending_requests_days if pending_requests_days is not None else 0
+            )
+
+    available_days_for_request = total_leave_days - pending_requests_days
 
     context = {
         "hx_target": hx_target,
         "leave_type_id": leave_type_id,
         "available_leave": available_leave,
-        "total_leave_days": total_leave_days,
+        "total_leave_days": available_days_for_request,
         "forcasted_days": forcasted_days,
         "pending_requests": pending_requests_days,
     }

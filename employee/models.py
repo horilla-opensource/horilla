@@ -63,7 +63,7 @@ class Employee(models.Model):
         ("married", trans("Married")),
         ("divorced", trans("Divorced")),
     )
-    badge_id = models.CharField(max_length=50, null=True, blank=True )
+    badge_id = models.CharField(max_length=50,  unique=True, null=True, blank=True , verbose_name=_("Employee ID"))
     employee_user_id = models.OneToOneField(
         User,
         on_delete=models.CASCADE,
@@ -697,7 +697,7 @@ class EmployeeWorkInformation(models.Model):
     )
 
     date_joining = models.DateField(
-        null=True, blank=False, verbose_name=_("Joining Date")
+        null=True, blank=True, verbose_name=_("Joining Date")
     )
     contract_end_date = models.DateField(
         blank=True, null=True, verbose_name=_("Contract End Date")

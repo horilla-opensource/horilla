@@ -3,10 +3,8 @@ name: Horilla EC2 Deploy
 on:
   push:
     branches:
-      - up/bhathiya
-  workflow_dispatch:
-  
-
+      - test      # runs on pushes to the test branch
+  workflow_dispatch:   # allows manual trigger
 
 jobs:
   deploy:
@@ -19,42 +17,41 @@ jobs:
       - name: Set up SSH access
         run: |
           mkdir -p ~/.ssh
-          echo "${{ secrets.EC2_SSH_KEY }}" > ~/.ssh/id_rsa
+          echo "${{ secrets.EC2_TEST_SSH_KEY }}" > ~/.ssh/id_rsa
           chmod 600 ~/.ssh/id_rsa
-          ssh-keyscan -H ${{ secrets.EC2_HOST }} >> ~/.ssh/known_hosts
+          ssh-keyscan -H ${{ secrets.EC2_TEST_HOST }} >> ~/.ssh/known_hosts
 
-      - name: Deploy Horilla App
+      - name: Deploy Horilla App to TEST EC2
         run: |
-          ssh ubuntu@${{ secrets.EC2_HOST }} << 'EOF'
+          ssh ubuntu@${{ secrets.EC2_TEST_HOST }} << 'EOF'
           set -e
 
-          sudo apt update && sudo apt upgrade -y
+          # Go to the repo directory
+          cd /home/ubuntu/horilla-hrm/horilla-hrm
 
-          if [ ! -d "horilla-hrm" ]; then
-            git clone https://github.com/wireappsltd/horilla-hrm.git
-          fi
-          cd horilla-hrm
-
+          # Pull latest changes
           git reset --hard
           git clean -fd
-          git pull origin $(git rev-parse --abbrev-ref HEAD)
+          git pull origin test
 
+          # Kill any running server on 8000
           fuser -k 8000/tcp || echo "No process on 8000"
 
-          if [ ! -d "venv" ]; then
-            python3 -m venv venv
-          fi
-          source venv/bin/activate
+          # Activate existing virtual environment
+          source ../venv/bin/activate
 
+          # Install dependencies
           pip install --upgrade pip
           pip install -r requirements.txt
 
+          # Run Django migrations and compile messages
           python manage.py makemigrations --noinput
           python manage.py migrate --noinput
+    
           python manage.py compilemessages
-         
 
-          nohup python3 manage.py runserver 0.0.0.0:8000 > nohup.out 2>&1 &
+          # Start the server in background
+          nohup python3 manage.py runserver 0.0.0.0:8000 > django.log 2>&1 &
 
-          echo "✅ Horilla successfully deployed!"
+          echo "✅ Horilla successfully deployed to TEST!"
           EOF

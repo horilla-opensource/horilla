@@ -146,6 +146,9 @@ class LeaveTypeForm(ConditionForm):
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
+        if "company_id" in self.fields:
+            self.fields["company_id"].initial = None
+            self.fields["company_id"].required = True
 
 
 class UpdateLeaveTypeForm(ConditionForm):
@@ -251,7 +254,7 @@ class LeaveRequestCreationForm(BaseModelForm):
             "end_date",
             "end_date_breakdown",
             "attachment",
-            "approve_manager",
+            "manager",
             "description",
         ]
 
@@ -462,9 +465,14 @@ class UserLeaveRequestForm(BaseModelForm):
             "end_date_breakdown",
             "attachment",
             "description",
+            "manager",
         ]
         widgets = {
             "employee_id": forms.HiddenInput(),
+            "description": forms.Textarea(attrs={
+                "maxlength": 255,
+                "rows": 4,
+            }),
         }
 
 
@@ -559,6 +567,11 @@ class UserLeaveRequestCreationForm(BaseModelForm):
                 id__in=available_leaves.values_list("leave_type_id", flat=True)
             )
             self.fields["leave_type_id"].queryset = assigned_leave_types
+            self.fields["manager"].queryset = (
+                Employee.objects
+                .exclude(id=employee.id)
+                .filter(is_active=True)
+            )
         self.fields["leave_type_id"].widget.attrs.update(
             {
                 "hx-include": "#userLeaveForm",
@@ -586,6 +599,7 @@ class UserLeaveRequestCreationForm(BaseModelForm):
             "attachment",
             "description",
             "requested_days",
+            "manager"
         ]
         widgets = {
             "employee_id": forms.HiddenInput(),

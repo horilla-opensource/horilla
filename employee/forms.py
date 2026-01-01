@@ -33,7 +33,8 @@ from django.forms import DateInput, TextInput
 from django.template.loader import render_to_string
 from django.utils.translation import gettext as _
 from django.utils.translation import gettext_lazy as trans
-
+from django.core.validators import validate_email
+from django.core.exceptions import ValidationError
 from base.methods import eval_validate, reload_queryset
 from employee.models import (
     Actiontype,
@@ -175,6 +176,15 @@ class EmployeeForm(ModelForm):
         self.fields["email"].widget.attrs["autocomplete"] = "email"
         self.fields["phone"].widget.attrs["autocomplete"] = "phone"
         self.fields["address"].widget.attrs["autocomplete"] = "address"
+        self.fields["nic"].widget.attrs.update({
+            "placeholder": "NIC",
+            "style": "text-transform:none;"
+        })
+        self.fields["badge_id"].widget.attrs.update({
+            "placeholder": "Employee ID",
+            "style": "text-transform:none;"
+        })
+
         if instance := kwargs.get("instance"):
             # ----
             # django forms not showing value inside the date, time html element.
@@ -182,7 +192,7 @@ class EmployeeForm(ModelForm):
             # ----
             initial = {}
             if instance.dob is not None:
-                initial["dob"] = instance.dob.strftime("%H:%M")
+                initial["dob"] = instance.dob.strftime("%Y-%m-%d")
             kwargs["initial"] = initial
         else:
             self.initial = {"badge_id": self.get_next_badge_id()}
@@ -194,7 +204,15 @@ class EmployeeForm(ModelForm):
     def clean(self):
         super().clean()
         email = self.cleaned_data["email"]
+        phone = self.cleaned_data.get("phone")
         query = Employee.objects.entire().filter(email=email)
+
+        if email:
+            try:
+                validate_email(email)
+            except ValidationError:
+                self.add_error("email", _("Enter a valid email address."))
+
         if self.instance and self.instance.id:
             query = query.exclude(id=self.instance.id)
 
@@ -218,18 +236,41 @@ class EmployeeForm(ModelForm):
                 error_message = _("An Employee with this Email already exists")
 
             raise forms.ValidationError({"email": error_message})
-        contact_name = self.cleaned_data["emergency_contact_name"]
-        contact_number = self.cleaned_data["emergency_contact"]
-        contact_relationship = self.cleaned_data["emergency_contact_relation"]
+
+        if not phone:
+            self.add_error(
+                "phone",
+                _("This field is required.")
+            )
+        elif phone:
+            if not re.fullmatch(r"07\d{8}", str(phone)):
+                self.add_error(
+                    "phone",
+                    _("Enter a valid mobile number (e.g. 07XXXXXXXX).")
+                )
+
+        contact_name = self.cleaned_data.get("emergency_contact_name")
+        contact_number = self.cleaned_data.get("emergency_contact")
+        contact_relationship = self.cleaned_data.get("emergency_contact_relation")
 
         if contact_name:
             if not contact_number:
-                self.add_error('emergency_contact',
-                               "This field is required when Emergency Contact Name is filled.")
-            if not contact_relationship:
-                self.add_error('emergency_contact_relation',
-                               "This field is required when Emergency Contact Name is filled.")
+                self.add_error(
+                    "emergency_contact",
+                    _("This field is required when Emergency Contact Name is filled.")
+                )
+            else:
+                if not re.fullmatch(r"07\d{8}", str(contact_number)):
+                    self.add_error(
+                        "emergency_contact",
+                        _("Enter a valid mobile number (e.g. 07XXXXXXXX).")
+                    )
 
+            if not contact_relationship:
+                self.add_error(
+                    "emergency_contact_relation",
+                    _("This field is required when Emergency Contact Name is filled.")
+                )
 
     def get_next_badge_id(self):
         """
@@ -282,23 +323,7 @@ class EmployeeForm(ModelForm):
             prefix = get_initial_prefix(None)["get_initial_prefix"]
         return prefix
 
-    def clean_badge_id(self):
-        """
-        This method is used to clean the badge id
-        """
-        badge_id = self.cleaned_data["badge_id"]
-        if badge_id:
-            all_employees = Employee.objects.entire()
-            queryset = all_employees.filter(badge_id=badge_id).exclude(
-                pk=self.instance.pk if self.instance else None
-            )
-            if queryset.exists():
-                raise forms.ValidationError(trans("Badge ID must be unique."))
-            if not re.search(r"\d", badge_id):
-                raise forms.ValidationError(
-                    trans("Badge ID must contain at least one digit.")
-                )
-        return badge_id
+
 
 
 class EmployeeWorkInformationForm(ModelForm):
