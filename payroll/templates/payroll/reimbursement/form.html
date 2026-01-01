@@ -11,9 +11,54 @@
         hx-post="{% url 'create-reimbursement' %}?{% if form.instance.id %}instance_id={{form.instance.id}}{% endif %}"
         hx-target="#objectCreateModalTarget"
         hx-encoding="multipart/form-data"
+        novalidate
+
     >
+
         {{form.as_p}}
+
+   {% if form.instance.pk %}
+       {% if form.instance.attachment %}
+            <div class="existing-attachments mt-6">
+                <p class="mb-3 mt-3 text-sm font-semibold text-gray-700">Attachment</p>
+
+                <div class="flex flex-wrap gap-3">
+                    {# Primary attachment always shown as 1 #}
+
+                        <div class="group relative rounded-xl border border-gray-200 bg-gradient-to-br from-white to-gray-50 p-4 shadow-sm hover:shadow-md transition-all duration-200 hover:border-blue-300">
+                            <div class="flex items-center gap-4">
+
+                                <a href="{{ form.instance.attachment.url }}"
+                                   target="_blank"
+                                   class="flex items-center gap-1.5 px-4 py-2 bg-blue-600 hover:bg-blue-700 text-black text-sm font-medium rounded-lg transition-colors duration-200 shadow-sm hover:shadow">
+                                    View
+                                </a>
+                            </div>
+                        </div>
+
+
+                </div>
+            </div>
+                        {% endif %}
+        {% endif %}
+
+
     </form>
+     {% if req.type == 'reimbursement' %}
+                                <i
+                                    ><a
+                                        data-target="#reimbursementAttachementModal"
+                                        data-toggle="oh-modal-toggle"
+                                        hx-get="{% url "reimbursement-attachments" req.id %}"
+                                        hx-target="#reimbursementAttachementModalBody"
+                                        role="button"
+                                        class="text-danger"
+                                        title="Attachments"
+                                        rel="noopener noreferrer"
+                                        >{% trans 'View Attachments' %}</a
+                                    ></i
+                                >
+                                {% endif %}
     <table
         class="oh-table oh-table--sortable" {% if not form.instance.id or form.instance.type == "reimbursement" or form.instance.type == "bonus_encashment" %}
         id="availableTable"

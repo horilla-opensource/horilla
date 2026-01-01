@@ -72,7 +72,7 @@ def import_payee_tax(request):
                 return redirect("view-payee-tax")
 
             except Exception as e:
-                messages.error(request, f"Error processing file: {e}")
+                messages.error(request, f"Invalid CSV format.")
 
     else:
         form = PayeeTaxImportForm()

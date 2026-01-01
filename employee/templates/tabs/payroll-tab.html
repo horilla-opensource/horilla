@@ -6,14 +6,14 @@
 </style>
 {% if employee.payslip_set.all %}
 <div class="d-flex flex-row-reverse">
-  <span class="m-3">
-    <span class="oh-dot oh-dot--small me-1" style="background-color:gray"></span>
-    {% trans "Draft" %}
-  </span>
-  <span class="m-3">
-    <span class="oh-dot oh-dot--small me-1" style="background-color:orange"></span>
-    {% trans "Review Ongoing" %}
-  </span>
+{#  <span class="m-3">#}
+{#    <span class="oh-dot oh-dot--small me-1" style="background-color:gray"></span>#}
+{#    {% trans "Draft" %}#}
+{#  </span>#}
+{#  <span class="m-3">#}
+{#    <span class="oh-dot oh-dot--small me-1" style="background-color:orange"></span>#}
+{#    {% trans "Review Ongoing" %}#}
+{#  </span>#}
   <span class="m-3">
     <span class="oh-dot oh-dot--small me-1" style="background-color:rgb(103, 171, 238)"></span>
     {% trans "Confirmed" %}
@@ -40,6 +40,7 @@
         </div>
         <div class="oh-sticky-table__tbody">
             {% for payslip in employee.payslip_set.all %}
+            {% if payslip.status == "paid" or payslip.status == "confirmed" %}
               <a href="{% url 'view-created-payslip' payslip.id %}" class="oh-sticky-table__tr" >
                   <div class="oh-sticky-table__sd {% if payslip.status == "review_ongoing" %}row-status--orange {% elif payslip.status == "confirmed" %} row-status--blue {% elif payslip.status == "paid" %} row-status--yellow {% elif payslip.status == "draft" %} row-status--gray{% endif %}">
                     <div class="d-flex">
@@ -81,6 +82,7 @@
                     </div>
                   </div>
               </a>
+                {% endif %}
             {% endfor %}
         </div>
     </div>

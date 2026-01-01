@@ -219,7 +219,7 @@ def payroll_calculation(employee, start_date, end_date):
         "amount": employee_epf_amount,
     })
     post_tax_deductions["post_tax_deductions"].append({
-        "title": "Payee Tax",
+        "title": "PAYE Tax",
         "amount": payee_tax,
     })
 
@@ -1075,7 +1075,7 @@ def view_payslip(request):
     if request.user.has_perm("payroll.view_payslip"):
         payslips = Payslip.objects.all()
     else:
-        payslips = Payslip.objects.filter(employee_id__employee_user_id=request.user)
+        payslips = Payslip.objects.filter(employee_id__employee_user_id=request.user,status__in=["paid", "confirmed"])
     export_column = forms.PayslipExportColumnForm()
     filter_form = PayslipFilter(request.GET, payslips)
     payslips = filter_form.qs
@@ -1834,6 +1834,8 @@ def delete_reimbursements(request):
     reimbursements = Reimbursement.objects.filter(id__in=ids)
     for reimbursement in reimbursements:
         user = reimbursement.employee_id.employee_user_id
+        if reimbursement.status == "approved" and reimbursement.type == "reimbursement":
+            reimbursement.allowance_id.delete()
     reimbursements.delete()
     messages.success(request, "Reimbursements deleted")
     notify.send(

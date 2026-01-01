@@ -17,7 +17,6 @@
         </section>
 
 
-        <!-- Tax Table -->
         <section class="oh-wrapper mt-6">
             <div class="oh-card shadow-sm">
                 {% if tax_records %}
@@ -91,6 +90,15 @@
         </section>
 
     </main>
+
+    <div id="loadingOverlay" class="loading-overlay">
+        <div class="loading-content">
+            <div class="spinner"></div>
+            <p class="loading-text">{% trans "Uploading and processing file..." %}</p>
+            <p class="loading-subtext">{% trans "Please wait" %}</p>
+        </div>
+    </div>
+
     <div class="oh-modal" id="importModal" role="dialog" aria-labelledby="payeeTaxImportLabel" aria-hidden="true">
         <div class="oh-modal__dialog oh-modal__dialog--wide">
             <div class="oh-modal__dialog-header">
@@ -103,28 +111,44 @@
             </div>
             <div class="oh-modal__dialog-body p-0 pt-2">
                 <form method="post" enctype="multipart/form-data" action="{% url 'import-payee-tax' %}"
-                      class="space-y-5">
+                      class="space-y-5" id="uploadForm">
                     {% csrf_token %}
 
                     <div id="uploadContainer" class="px-4 pb-4">
+                        <input type="hidden" name="MAX_FILE_SIZE" value="10485760">
+
                         <label class="oh-dropdown__import-label" for="uploadFile">
                             <ion-icon name="cloud-upload" class="oh-dropdown__import-form-icon"></ion-icon>
-                            <span class="oh-dropdown__import-form-title">{% trans "Upload CSV File" %}</span>
-                            <span class="oh-dropdown__import-form-text">{% trans "Drag and drop your CSV file here (PAYE Tax format). Only .csv files are accepted." %}</span>
+                            <span class="oh-dropdown__import-form-title">
+            {% trans "Upload CSV File" %}
+        </span>
+                            <span class="oh-dropdown__import-form-text">
+            {% trans "Drag and drop your CSV file here (PAYE Tax format). Only .csv files are accepted." %}
+        </span>
                         </label>
+
                         <div class="flex items-center justify-between mt-2">
-                            <input type="file" name="csv_file" id="uploadFile" accept=".csv" required class="flex-1"
-                                   />
+                            <input
+                                    type="file"
+                                    name="csv_file"
+                                    id="uploadFile"
+                                    accept=".csv"
+                                    required
+                                    class="flex-1"
+                            />
                         </div>
                     </div>
+
                     <div class="px-4">
                         <a href="{% static 'payroll/templates/tax_import_template.csv' %}"
-                           class="oh-btn oh-btn--small oh-btn--secondary w-100 mt-2"  title="{% trans 'Click to download the PAYE tax template CSV' %}" download>
+                           class="oh-btn oh-btn--small oh-btn--secondary w-100 mt-2"
+                           title="{% trans 'Click to download the PAYE tax template CSV' %}" download>
                             {% trans "Download Template CSV" %}
                         </a>
                     </div>
                     <div class="px-4 pb-4">
-                        <button type="submit" class="oh-btn oh-btn--small oh-btn--secondary w-100 mt-2" title="{% trans 'Click to import the PAYE CSV file' %}">
+                        <button type="submit" class="oh-btn oh-btn--small oh-btn--secondary w-100 mt-2"
+                                title="{% trans 'Click to import the PAYE CSV file' %}">
                             {% trans "Import" %}
                         </button>
                     </div>
@@ -132,6 +156,7 @@
             </div>
         </div>
     </div>
+
     <style>
         .oh-modal__dialog--wide {
             max-width: 700px !important;
@@ -155,6 +180,63 @@
             transform: scale(1.2);
             color: #000;
         }
+
+        .loading-overlay {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.7);
+            z-index: 9999;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .loading-overlay.active {
+            display: flex;
+        }
+
+        .loading-content {
+            text-align: center;
+            background: white;
+            padding: 40px 60px;
+            border-radius: 12px;
+            box-shadow: 0 10px 40px rgba(0, 0, 0, 0.3);
+        }
+
+        .spinner {
+            border: 4px solid #f3f3f3;
+            border-top: 4px solid #3498db;
+            border-radius: 50%;
+            width: 50px;
+            height: 50px;
+            animation: spin 1s linear infinite;
+            margin: 0 auto 20px;
+        }
+
+        @keyframes spin {
+            0% {
+                transform: rotate(0deg);
+            }
+            100% {
+                transform: rotate(360deg);
+            }
+        }
+
+        .loading-text {
+            font-size: 18px;
+            font-weight: 600;
+            color: #333;
+            margin: 0 0 8px 0;
+        }
+
+        .loading-subtext {
+            font-size: 14px;
+            color: #666;
+            margin: 0;
+        }
     </style>
 
     <script>
@@ -168,6 +250,74 @@
         document.querySelectorAll('.oh-modal__close').forEach(btn => {
             btn.addEventListener('click', () => {
                 btn.closest('.oh-modal').style.display = 'none';
+            });
+        });
+
+        const uploadForm = document.getElementById('uploadForm');
+        const loadingOverlay = document.getElementById('loadingOverlay');
+        const uploadFile = document.getElementById('uploadFile');
+
+        uploadForm.addEventListener('submit', function (e) {
+            // Check if file is selected
+            if (!uploadFile.files || uploadFile.files.length === 0) {
+                e.preventDefault();
+                alert('{% trans "Please select a file to upload" %}');
+                return;
+            }
+
+            const fileName = uploadFile.files[0].name;
+            if (!fileName.toLowerCase().endsWith('.csv')) {
+                e.preventDefault();
+                alert('{% trans "Please select a valid CSV file" %}');
+                return;
+            }
+
+            loadingOverlay.classList.add('active');
+
+            document.getElementById('importModal').style.display = 'none';
+        });
+
+        window.addEventListener('pageshow', function () {
+            loadingOverlay.classList.remove('active');
+        });
+    </script>
+    <script>
+        document.addEventListener("DOMContentLoaded", () => {
+            const container = document.getElementById("uploadContainer");
+            const label = container.querySelector("label");
+            const input = document.getElementById("uploadFile");
+
+            const prevent = e => {
+                e.preventDefault();
+                e.stopPropagation();
+            };
+
+            ["dragenter", "dragover", "dragleave", "drop"].forEach(evt => {
+                label.addEventListener(evt, prevent);
+                container.addEventListener(evt, prevent);
+            });
+
+            label.addEventListener("dragover", () => {
+                container.classList.add("oh-drop-active");
+            });
+
+            label.addEventListener("dragleave", () => {
+                container.classList.remove("oh-drop-active");
+            });
+
+            label.addEventListener("drop", e => {
+                container.classList.remove("oh-drop-active");
+
+                const file = e.dataTransfer.files[0];
+                if (!file) return;
+
+                if (!file.name.toLowerCase().endsWith(".csv")) {
+                    alert("Only CSV files are allowed");
+                    return;
+                }
+
+                input.files = e.dataTransfer.files;
+                input.dispatchEvent(new Event("change", {bubbles: true}));
             });
         });
     </script>
