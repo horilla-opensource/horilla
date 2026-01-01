@@ -205,7 +205,14 @@ class EmployeeForm(ModelForm):
         super().clean()
         email = self.cleaned_data["email"]
         phone = self.cleaned_data.get("phone")
+        dob = self.cleaned_data.get("dob")
         query = Employee.objects.entire().filter(email=email)
+
+        if dob is None:
+            self.add_error(
+                "dob",
+                _("This field is required.")
+            )
 
         if email:
             try:
