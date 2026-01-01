@@ -414,6 +414,7 @@ class EmployeeWorkInformationForm(ModelForm):
         super().clean()
         work_phone = self.cleaned_data.get("mobile")
         date_joining = self.cleaned_data.get("date_joining")
+        email = self.cleaned_data.get("email")
 
         if not date_joining:
             self.add_error(
@@ -421,6 +422,11 @@ class EmployeeWorkInformationForm(ModelForm):
                 _("This field is required.")
             )
 
+        if email:
+            try:
+                validate_email(email)
+            except ValidationError:
+                self.add_error("email", _("Enter a valid email address."))
 
         if work_phone:
             if not re.fullmatch(r"07\d{8}", str(work_phone)):
@@ -465,6 +471,13 @@ class EmployeeWorkInformationUpdateForm(ModelForm):
         super().clean()
         work_phone = self.cleaned_data.get("mobile")
         date_joining = self.cleaned_data.get("date_joining")
+        email = self.cleaned_data.get("email")
+
+        if email:
+            try:
+                validate_email(email)
+            except ValidationError:
+                self.add_error("email", _("Enter a valid email address."))
 
         if not date_joining:
             self.add_error(
