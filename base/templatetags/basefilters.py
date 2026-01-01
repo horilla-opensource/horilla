@@ -153,3 +153,160 @@ def readable(value):
     except:
         value = value
     return value
+
+
+@register.simple_tag(takes_context=True)
+def general_section_main(context):
+    user = context["request"].user
+
+    if not user.is_authenticated:
+        return False
+
+    return any(
+        [
+            user.has_perm("base.change_announcementexpire"),
+            user.has_perm("base.view_dynamicpagination"),
+            user.has_perm("horilla_audit.view_accountblockunblock"),
+            user.has_perm("offboarding.change_offboardinggeneralsetting"),
+            user.has_perm("attendance.change_attendancegeneralsetting"),
+            user.has_perm("payroll.change_payrollgeneralsetting"),
+            user.has_perm("employee.change_employeegeneralsetting"),
+            user.has_perm("payroll.change_encashmentgeneralsetting"),
+            user.has_perm("base.view_historytrackingfields"),
+            user.has_perm("payroll.view_payrollsettings"),
+            user.has_perm("auth.view_permission"),
+            user.has_perm("auth.view_group"),
+            user.has_perm("base.view_company"),
+            user.has_perm("base.view_tags"),
+            user.has_perm("employee.view_employeetag"),
+            user.has_perm("horilla_audit.view_audittag"),
+            user.has_perm("base.view_dynamicemailconfiguration"),
+            user.has_perm("horilla_backup.view_googledrivebackup"),
+        ]
+    )
+
+
+@register.simple_tag(takes_context=True)
+def general_section(context):
+    user = context["request"].user
+
+    if not user.is_authenticated:
+        return False
+
+    return any(
+        [
+            user.has_perm("base.change_announcementexpire"),
+            user.has_perm("base.view_dynamicpagination"),
+            user.has_perm("horilla_audit.view_accountblockunblock"),
+            user.has_perm("offboarding.change_offboardinggeneralsetting"),
+            user.has_perm("attendance.change_attendancegeneralsetting"),
+            user.has_perm("payroll.change_payrollgeneralsetting"),
+            user.has_perm("employee.change_employeegeneralsetting"),
+            user.has_perm("payroll.change_encashmentgeneralsetting"),
+            user.has_perm("base.view_historytrackingfields"),
+            user.has_perm("payroll.view_payrollsettings"),
+        ]
+    )
+
+
+@register.simple_tag(takes_context=True)
+def employee_section(context):
+    user = context["request"].user
+
+    if not user.is_authenticated:
+        return False
+
+    return any(
+        [
+            user.has_perm("base.view_worktype"),
+            user.has_perm("base.view_rotatingworktype"),
+            user.has_perm("base.view_employeeshift"),
+            user.has_perm("base.view_rotatingshift"),
+            user.has_perm("base.view_employeeshiftschedule"),
+            user.has_perm("base.view_employeetype"),
+            user.has_perm("employee.view_actiontype"),
+            user.has_perm("employee.view_employeetag"),
+        ]
+    )
+
+
+@register.simple_tag(takes_context=True)
+def attendance_section(context):
+    user = context["request"].user
+
+    if not user.is_authenticated:
+        return False
+
+    return any(
+        [
+            user.has_perm("attendance.view_attendancevalidationcondition"),
+            user.has_perm("base.view_biometricattendance"),
+            user.has_perm("attendance.add_attendance"),
+            user.has_perm("geofencing.add_geofencing"),
+            user.has_perm("facedetection.add_facedetection"),
+        ]
+    )
+
+
+@register.simple_tag(takes_context=True)
+def show_section(context):
+    user = context["request"].user
+
+    if not user.is_authenticated:
+        return False
+
+    return any(
+        [
+            user.has_perm("attendance.view_attendancevalidationcondition"),
+            user.has_perm("helpdesk.view_departmentmanager"),
+            user.has_perm("helpdesk.view_tickettype"),
+            user.has_perm("employee.view_employeetag"),
+            user.has_perm("pms.add_bonuspointsetting"),
+            user.has_perm("payroll.view_payslipautogenerate"),
+            user.has_perm("leave.add_restrictleave"),
+            user.has_perm("base.view_biometricattendance"),
+            user.has_perm("attendance.add_attendance"),
+            user.has_perm("geofencing.add_geofencing"),
+            user.has_perm("facedetection.add_facedetection"),
+            user.has_perm("recruitment.view_recruitment"),
+            user.has_perm("recruitment.view_rejectreason"),
+            user.has_perm("recruitment.add_recruitment"),
+            user.has_perm("recruitment.add_linkedinaccount"),
+            user.has_perm("horilla_audit.view_accountblockunblock"),
+            user.has_perm("offboarding.change_offboardinggeneralsetting"),
+            user.has_perm("attendance.change_attendancegeneralsetting"),
+            user.has_perm("payroll.change_payrollgeneralsetting"),
+            user.has_perm("employee.change_employeegeneralsetting"),
+            user.has_perm("payroll.change_encashmentgeneralsetting"),
+            user.has_perm("payroll.view_payrollsettings"),
+            user.has_perm("auth.view_permission"),
+            user.has_perm("auth.view_group"),
+            user.has_perm("horilla_audit.view_audittag"),
+            user.has_perm("horilla_backup.view_googledrivebackup"),
+            user.has_perm("horilla_ldap.add_ldapsettings"),
+            user.has_perm("horilla_ldap.update_ldapsettings"),
+            user.has_perm("employee.view_actiontype"),
+            user.has_perm("helpdesk.view_tag"),
+            user.has_perm("whatsapp.view_whatsappcredentials"),
+            user.has_perm("base.view_company"),
+            user.has_perm("base.view_tags"),
+            user.has_perm("base.view_dynamicemailconfiguration"),
+            user.has_perm("base.view_department"),
+            user.has_perm("base.view_jobposition"),
+            user.has_perm("base.view_jobrole"),
+            user.has_perm("base.view_worktype"),
+            user.has_perm("base.view_rotatingworktype"),
+            user.has_perm("base.view_employeeshift"),
+            user.has_perm("base.view_rotatingshift"),
+            user.has_perm("base.view_employeeshiftschedule"),
+            user.has_perm("base.view_employeetype"),
+            user.has_perm("base.change_announcementexpire"),
+            user.has_perm("base.view_dynamicpagination"),
+            user.has_perm("horilla_backup.view_googledrivebackup"),
+            user.has_perm("recruitment.view_linkedinaccount"),
+            user.has_perm("horilla_ldap.add_ldapsettings"),
+            user.has_perm("horilla_ldap.update_ldapsettings"),
+            user.has_perm("horilla_meet.view_googlecloudcredential"),
+            user.has_perm("whatsapp.add_whatsappcredentials"),
+        ]
+    )

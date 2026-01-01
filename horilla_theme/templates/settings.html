@@ -1,6 +1,11 @@
 {% extends 'index.html' %}
 {% block content %}
-{% load static i18n horillafilters %}
+{% load static i18n horillafilters basefilters%}
+{% general_section as general_section %}
+{% employee_section as employee_section %}
+{% attendance_section as attendance_section %}
+{% general_section_main as general_section_main %}
+
 
 <h3 class="text-lg font-semibold mb-3">{% trans "Settings" %}</h3>
 
@@ -10,6 +15,7 @@
 		<div class="bg-white rounded-md shadow-card p-3 h-full">
 			<div class="accordion-wrapper space-y-2">
 				<!-- Accordion Item -->
+				{% if general_section_main %}
 				<div
 					class="accordion-item border border-primary-300 rounded-md overflow-hidden"
 				>
@@ -26,12 +32,14 @@
 						<div class="py-3">
 							<ul>
 								<li class="py-1">
-									<a
-										id="generalSettings"
-										href="{% url 'general-settings' %}"
-										class="hover:text-primary-600 transition duration-300 text-[13px]"
-										>{% trans "General Settings" %}
-									</a>
+									{% if general_section %}
+										<a
+											id="generalSettings"
+											href="{% url 'general-settings' %}"
+											class="hover:text-primary-600 transition duration-300 text-[13px]"
+											>{% trans "General Settings" %}
+										</a>
+									{% endif %}
 								</li>
 								{% if perms.auth.view_permission %}
 								<li class="py-1">
@@ -73,7 +81,7 @@
 									</a>
 								</li>
 								{% endif %}
-								{% if perms.base.view_tags or perms.employee.view_emplyeetag or perms.horilla_audit.view_audittag %}
+								{% if perms.base.view_tags or perms.employee.view_employeetag or perms.horilla_audit.view_audittag %}
 								<li class="py-1">
 									<a
 										id="ticket_type"
@@ -92,7 +100,7 @@
 										>{% trans "Mail Server" %}
 									</a>
 								</li>
-								{% elif perms.base.view_dynamicemailconfiguratio and "outlook_auth"|app_installed %}
+								{% elif perms.base.view_dynamicemailconfiguration and "outlook_auth"|app_installed %}
 								<li class="py-1">
 									<a
 										id="date"
@@ -106,8 +114,10 @@
 						</div>
 					</div>
 				</div>
+				{% endif %}
 
 				<!-- Accordion Item -->
+				{% if perms.base.view_department or perms.base.view_jobposition or perms.base.view_jobrole or perms.base.view_company %}
 				<div
 					class="accordion-item border border-primary-300 rounded-md overflow-hidden"
 				>
@@ -167,9 +177,11 @@
 						</div>
 					</div>
 				</div>
+				{% endif %}
 
 				{% if "recruitment"|app_installed %}
 				<!-- Accordion Item -->
+				{% if perms.recruitment.view_recruitment or perms.recruitment.view_rejectreason or perms.recruitment.add_recruitment or perms.recruitment.add_linkedinaccount %}
 				<div
 					class="accordion-item border border-primary-300 rounded-md overflow-hidden"
 				>
@@ -220,7 +232,9 @@
 					</div>
 				</div>
 				{% endif %}
+				{% endif %}
 
+				{% if employee_section %}
 				<div
 					class="accordion-item border border-primary-300 rounded-md overflow-hidden"
 				>
@@ -320,8 +334,9 @@
 						</div>
 					</div>
 				</div>
+				{% endif %}
 
-				{% if "attendance"|app_installed %}
+				{% if "attendance"|app_installed and attendance_section%}
 				<div
 					class="accordion-item border border-primary-300 rounded-md overflow-hidden"
 				>
@@ -415,6 +430,7 @@
 				</div>
 				{% endif %}
 				{% if "leave"|app_installed %}
+				{% if perms.leave.add_restrictleave or perms.attendance.view_attendancevalidationcondition %}
 				<div
 					class="accordion-item border border-primary-300 rounded-md overflow-hidden"
 				>
@@ -457,7 +473,8 @@
 					</div>
 				</div>
 				{% endif %}
-				{% if "payroll"|app_installed %}
+				{% endif %}
+				{% if "payroll"|app_installed and perms.payroll.view_payslipautogenerate %}
 				<div
 					class="accordion-item border border-primary-300 rounded-md overflow-hidden"
 				>
@@ -488,7 +505,7 @@
 					</div>
 				</div>
 				{% endif %}
-				{% if "pms"|app_installed %}
+				{% if "pms"|app_installed and perms.pms.add_bonuspointsetting %}
 				<div
 					class="accordion-item border border-primary-300 rounded-md overflow-hidden"
 				>
@@ -504,7 +521,7 @@
 					>
 						<div class="py-3">
 							<ul>
-								{% if perms.pms.view_payslipautogenerate %}
+								{% if perms.pms.add_bonuspointsetting %}
 								<li class="py-1">
 									<a
 										id="bonusPoint"
@@ -520,6 +537,7 @@
 				</div>
 				{% endif %}
 				{% if "helpdesk"|app_installed %}
+				{% if perms.helpdesk.view_departmentmanager or perms.helpdesk.view_tickettype or perms.helpdesk.view_tag %}
 				<div
 					class="accordion-item border border-primary-300 rounded-md overflow-hidden"
 				>
@@ -555,7 +573,7 @@
 									</a>
 								</li>
 								{% endif %}
-								{% if perms.employee.view_emplyeetag %}
+								{% if perms.helpdesk.view_tag %}
 								<li class="py-1">
 									<a
 										id="help_desk"
@@ -570,6 +588,8 @@
 					</div>
 				</div>
 				{% endif %}
+				{% endif %}
+				{% if perms.horilla_backup.view_googledrivebackup or perms.recruitment.view_linkedinaccount or perms.horilla_ldap.add_ldapsettings or perms.horilla_ldap.update_ldapsettings or perms.horilla_meet.view_googlecloudcredential or perms.whatsapp.add_whatsappcredentials %}
 				<div
 					class="accordion-item border border-primary-300 rounded-md overflow-hidden"
 				>
@@ -650,6 +670,7 @@
 						</div>
 					</div>
 				</div>
+				{% endif %}
 			</div>
 		</div>
 	</div>

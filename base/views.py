@@ -975,32 +975,32 @@ def home(request):
             and user.employee_get.dob.day == today.day
         )
 
-    show_section = any(
-        [
-            request.user.has_perm("attendance.view_attendancevalidationcondition"),
-            request.user.has_perm("helpdesk.view_departmentmanager"),
-            request.user.has_perm("helpdesk.view_tickettype"),
-            request.user.has_perm("employee.view_employeetag"),
-            request.user.has_perm("pms.add_bonuspointsetting"),
-            request.user.has_perm("payroll.view_payslipautogenerate"),
-            request.user.has_perm("leave.add_restrictleave"),
-            request.user.has_perm("base.view_biometricattendance"),
-            request.user.has_perm("attendance.add_attendance"),
-            request.user.has_perm("geofencing.add_geofencing"),
-            request.user.has_perm("facedetection.add_facedetection"),
-            request.user.has_perm("recruitment.view_recruitment"),
-            request.user.has_perm("recruitment.view_rejectreason"),
-            request.user.has_perm("recruitment.add_recruitment"),
-            request.user.has_perm("recruitment.add_linkedinaccount"),
-        ]
-    )
+    # show_section = any(
+    #     [
+    #         request.user.has_perm("attendance.view_attendancevalidationcondition"),
+    #         request.user.has_perm("helpdesk.view_departmentmanager"),
+    #         request.user.has_perm("helpdesk.view_tickettype"),
+    #         request.user.has_perm("employee.view_employeetag"),
+    #         request.user.has_perm("pms.add_bonuspointsetting"),
+    #         request.user.has_perm("payroll.view_payslipautogenerate"),
+    #         request.user.has_perm("leave.add_restrictleave"),
+    #         request.user.has_perm("base.view_biometricattendance"),
+    #         request.user.has_perm("attendance.add_attendance"),
+    #         request.user.has_perm("geofencing.add_geofencing"),
+    #         request.user.has_perm("facedetection.add_facedetection"),
+    #         request.user.has_perm("recruitment.view_recruitment"),
+    #         request.user.has_perm("recruitment.view_rejectreason"),
+    #         request.user.has_perm("recruitment.add_recruitment"),
+    #         request.user.has_perm("recruitment.add_linkedinaccount"),
+    #     ]
+    # )
 
     context = {
         "first_day_of_week": first_day_of_week.strftime("%Y-%m-%d"),
         "last_day_of_week": last_day_of_week.strftime("%Y-%m-%d"),
         "charts": employee_charts.charts,
         "is_birthday": is_birthday,
-        "show_section": show_section,
+        # "show_section": show_section,
     }
 
     return render(request, "index.html", context)
