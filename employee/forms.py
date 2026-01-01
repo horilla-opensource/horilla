@@ -422,6 +422,12 @@ class EmployeeWorkInformationForm(ModelForm):
                 _("This field is required.")
             )
 
+        if not email:
+            self.add_error(
+                "email",
+                _("This field is required.")
+            )
+
         if email:
             try:
                 validate_email(email)
@@ -473,6 +479,12 @@ class EmployeeWorkInformationUpdateForm(ModelForm):
         date_joining = self.cleaned_data.get("date_joining")
         email = self.cleaned_data.get("email")
 
+
+        if not email:
+            self.add_error(
+                "email",
+                _("This field is required.")
+            )
         if email:
             try:
                 validate_email(email)
