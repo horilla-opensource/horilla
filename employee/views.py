@@ -870,6 +870,28 @@ def file_upload(request, id):
     return render(request, "tabs/htmx/document_form.html", context=context)
 
 
+def get_content_type(file_extension):
+    """
+    This function retuns the content type of a file
+    parameters:
+
+    file_extension: The file extension of the file
+    """
+
+    content_types = {
+        "pdf": "application/pdf",
+        "txt": "text/plain",
+        "docx": "application/vnd.openxmlformats-officedocument.wordprocessingml.document",
+        "xlsx": "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
+        "jpg": "image/jpeg",
+        "png": "image/png",
+        "jpeg": "image/jpeg",
+    }
+
+    # Default to application/octet-stream if the file extension is not recognized
+    return content_types.get(file_extension, "application/octet-stream")
+
+
 @login_required
 @hx_request_required
 def view_file(request, id):
@@ -906,28 +928,6 @@ def view_file(request, id):
         context["content_type"] = content_type
 
     return render(request, "tabs/htmx/view_file.html", context)
-
-
-def get_content_type(file_extension):
-    """
-    This function retuns the content type of a file
-    parameters:
-
-    file_extension: The file extension of the file
-    """
-
-    content_types = {
-        "pdf": "application/pdf",
-        "txt": "text/plain",
-        "docx": "application/vnd.openxmlformats-officedocument.wordprocessingml.document",
-        "xlsx": "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
-        "jpg": "image/jpeg",
-        "png": "image/png",
-        "jpeg": "image/jpeg",
-    }
-
-    # Default to application/octet-stream if the file extension is not recognized
-    return content_types.get(file_extension, "application/octet-stream")
 
 
 @login_required
