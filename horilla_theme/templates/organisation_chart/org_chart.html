@@ -40,7 +40,7 @@
                             hx-post="{% url 'organisation-chart' %}"
                             hx-target="#chart_target"
                             hx-swap="OuterHTML"
-                            hx-trigger="load"
+                            hx-trigger="load, change"
                         >
                             {% for manager_id, values in reporting_manager_dict.items %}
                                 <option value="{{ manager_id }}" {% if act_manager_id == manager_id %} selected {% endif %} >{{ values }}</option>
