@@ -284,7 +284,7 @@
     $(function () {
         // Function to load pivot data dynamically
         function loadPivotData(model) {
-            let url = `leave-pivot?model=${model}`;
+            let url = `/report/leave-pivot?model=${model}`;
 
             // Hide all container
             $(".pivot-wrapper").hide();
@@ -354,7 +354,7 @@
 
             $("#" + containerId).show();
 
-            $.getJSON(`leave-pivot?model=${selectedModel}&${formData}`, function (data) {
+            $.getJSON(`/report/leave-pivot?model=${selectedModel}&${formData}`, function (data) {
 
                 const plotlyRenderers = $.pivotUtilities.plotly_renderers;
 

@@ -266,7 +266,7 @@
     $(function () {
         // Function to load pivot data dynamically
         function loadPivotData(model) {
-            let url = `payroll-pivot?model=${model}`;
+            let url = `/report/payroll-pivot?model=${model}`;
 
             // Hide all containers first
             $(".pivot-wrapper").hide();
@@ -350,7 +350,7 @@
 
                     $("#" + containerId).show();
 
-                    $.getJSON(`payroll-pivot?model=${selectedModel}&${formData}`, function (data) {
+                    $.getJSON(`/report/payroll-pivot?model=${selectedModel}&${formData}`, function (data) {
 
                         const plotlyRenderers = $.pivotUtilities.plotly_renderers;
 

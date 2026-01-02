@@ -272,7 +272,7 @@
     $(function () {
         // Function to load pivot data dynamically
         function loadPivotData(model) {
-            let url = `recruitment-pivot?model=${model}`;
+            let url = `/report/recruitment-pivot?model=${model}`;
 
             // Hide all containers first
             $(".pivot-wrapper").hide();
@@ -294,6 +294,10 @@
 
             // Show relevant container
             $("#" + containerId).show();
+            console.log('^^^^^^^^^^^^^^^^^^^^')
+            console.log(url)
+            console.log('^^^^^^^^^^^^^^^^^^^^')
+
 
             $.getJSON(url, function (data) {
                 // Add Plotly renderers correctly
@@ -359,7 +363,7 @@
 
             $("#" + containerId).show();
 
-            $.getJSON(`recruitment-pivot?model=${selectedModel}&${formData}`, function (data) {
+            $.getJSON(`/report/recruitment-pivot?model=${selectedModel}&${formData}`, function (data) {
 
                 const plotlyRenderers = $.pivotUtilities.plotly_renderers;
 
