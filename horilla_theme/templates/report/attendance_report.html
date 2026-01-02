@@ -191,7 +191,7 @@
         var formData = $("#filterForm").serialize(); // Serializing the form
 
         $.ajax({
-            url: "attendance-pivot", // Replace with your URL to fetch filtered data
+            url: "/report/attendance-pivot", // Replace with your URL to fetch filtered data
             method: "GET",
             data: formData,
             success: function (data) {
@@ -265,7 +265,7 @@
 
     $(document).ready(function () {
         // Initialize the pivot table on page load
-        $.getJSON("attendance-pivot", function (data) {
+        $.getJSON("/report/attendance-pivot", function (data) {
             // Add Plotly renderers correctly
             let plotlyRenderers = $.pivotUtilities.plotly_renderers;
 

@@ -132,7 +132,7 @@
         var formData = $("#filterForm").serialize(); // Serializing the form
 
         $.ajax({
-            url: "asset-pivot", // Replace with your URL to fetch filtered data
+            url: "/report/asset-pivot", // Replace with your URL to fetch filtered data
             method: "GET",
             data: formData,
             success: function (data) {
@@ -165,7 +165,7 @@
 
     $(document).ready(function () {
         // Initialize the pivot table on page load
-        $.getJSON("asset-pivot", function (data) {
+        $.getJSON("/report/asset-pivot", function (data) {
             $("#pivot-container").pivotUI(data, {
                 rows: ["Asset Name","Category","Tracking ID","Batch Number","Status","Asset Cost","Asset User","Phone"],
                 cols: [],

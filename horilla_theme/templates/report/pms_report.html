@@ -245,7 +245,7 @@
             $("#" + containerId).show();
 
             // Fetch and render data in its own container
-            $.getJSON(`pms-pivot?model=${model}`, function (data) {
+            $.getJSON(`/report/pms-pivot?model=${model}`, function (data) {
                 let plotlyRenderers = $.pivotUtilities.plotly_renderers;
 
                 $("#" + containerId).pivotUI(data, {
@@ -299,7 +299,7 @@
 
             $("#" + containerId).show();
 
-            $.getJSON(`pms-pivot?model=${selectedModel}&${formData}`, function (data) {
+            $.getJSON(`/report/pms-pivot?model=${selectedModel}&${formData}`, function (data) {
 
                 const plotlyRenderers = $.pivotUtilities.plotly_renderers;
 
