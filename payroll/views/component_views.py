@@ -187,7 +187,7 @@ def payroll_calculation(employee, start_date, end_date):
         + total_post_tax_deduction
         + total_tax_deductions
         + federal_tax
-        + loss_of_pay_amount
+        + loss_of_pay  # 1022
     )
 
     net_pay = gross_pay - total_deductions
