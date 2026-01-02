@@ -205,7 +205,14 @@ class EmployeeForm(ModelForm):
         super().clean()
         email = self.cleaned_data["email"]
         phone = self.cleaned_data.get("phone")
+        dob = self.cleaned_data.get("dob")
         query = Employee.objects.entire().filter(email=email)
+
+        if dob is None:
+            self.add_error(
+                "dob",
+                _("This field is required.")
+            )
 
         if email:
             try:
@@ -404,10 +411,39 @@ class EmployeeWorkInformationForm(ModelForm):
                         ]
 
     def clean(self):
-        cleaned_data = super().clean()
+        super().clean()
+        work_phone = self.cleaned_data.get("mobile")
+        date_joining = self.cleaned_data.get("date_joining")
+        email = self.cleaned_data.get("email")
+
+        if not date_joining:
+            self.add_error(
+                "date_joining",
+                _("This field is required.")
+            )
+
+        if not email:
+            self.add_error(
+                "email",
+                _("This field is required.")
+            )
+
+        if email:
+            try:
+                validate_email(email)
+            except ValidationError:
+                self.add_error("email", _("Enter a valid email address."))
+
+        if work_phone:
+            if not re.fullmatch(r"07\d{8}", str(work_phone)):
+                self.add_error(
+                    "mobile",
+                    _("Enter a valid mobile number (e.g. 07XXXXXXXX).")
+                )
+
         if "employee_id" in self.errors:
             del self.errors["employee_id"]
-        return cleaned_data
+
 
     def as_p(self, *args, **kwargs):
         context = {"form": self}
@@ -436,6 +472,38 @@ class EmployeeWorkInformationUpdateForm(ModelForm):
     def as_p(self, *args, **kwargs):
         context = {"form": self}
         return render_to_string("employee/create_form/personal_info_as_p.html", context)
+
+    def clean(self):
+        super().clean()
+        work_phone = self.cleaned_data.get("mobile")
+        date_joining = self.cleaned_data.get("date_joining")
+        email = self.cleaned_data.get("email")
+
+
+        if not email:
+            self.add_error(
+                "email",
+                _("This field is required.")
+            )
+        if email:
+            try:
+                validate_email(email)
+            except ValidationError:
+                self.add_error("email", _("Enter a valid email address."))
+
+        if not date_joining:
+            self.add_error(
+                "date_joining",
+                _("This field is required.")
+            )
+
+        if work_phone:
+            if not re.fullmatch(r"07\d{8}", str(work_phone)):
+                self.add_error(
+                    "mobile",
+                    _("Enter a valid mobile number (e.g. 07XXXXXXXX).")
+                )
+
 
 
 class EmployeeBankDetailsForm(ModelForm):

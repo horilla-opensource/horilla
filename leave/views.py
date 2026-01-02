@@ -1301,6 +1301,11 @@ def user_leave_cancel(request, id):
                 "leave/leave_request/user_cancel_form.html",
                 {"form": form, "id": id},
             )
+        elif leave_request.status == "requested":
+            leave_request.status = "cancelled"
+            leave_request.save()
+            messages.success(request, _("Leave request cancelled successfully.."))
+            return HttpResponse("<script>location.reload();</script>")
         messages.error(request, _("You can't cancel this leave request."))
         return HttpResponse("<script>location.reload();</script>")
     messages.error(request, _("You don't have the permission."))
