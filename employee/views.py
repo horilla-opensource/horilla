@@ -909,23 +909,27 @@ def view_file(request, id):
     context = {
         "document": document_obj,
     }
-    if document_obj.document:
-        file_path = document_obj.document.path
-        file_extension = os.path.splitext(file_path)[1][
-            1:
-        ].lower()  # Get the lowercase file extension
+
+    if document_obj and document_obj.document:
+        # Use name instead of path, Safe for local + GCS + S3
+        file_name = document_obj.document.name
+        file_extension = os.path.splitext(file_name)[1][1:].lower()
 
         content_type = get_content_type(file_extension)
 
         try:
-            with open(file_path, "rb") as file:
-                file_content = file.read()  # Decode the binary content for display
-        except:
+            with document_obj.document.open("rb") as f:
+                file_content = f.read()
+        except Exception as e:
             file_content = None
 
-        context["file_content"] = file_content
-        context["file_extension"] = file_extension
-        context["content_type"] = content_type
+        context.update(
+            {
+                "file_content": file_content,
+                "file_extension": file_extension,
+                "content_type": content_type,
+            }
+        )
 
     return render(request, "tabs/htmx/view_file.html", context)
 
