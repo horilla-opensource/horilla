@@ -8,10 +8,31 @@
 
 ## **Installation**
 
-Horilla can be installed on your system by following the steps below. Ensure you have **Python**, **Django**, and a **database** (preferably PostgreSQL) installed as prerequisites.
+Horilla can be installed in **two ways**:
 
----
+1. **Using Docker** – 
+2. **Manual Installation** – 
 
+## 🐳 Run Horilla Using Docker
+
+Horilla can be run **without installing Python, PostgreSQL, or virtual environments** by using **Docker and Docker Compose**.
+
+### Prerequisites
+- [Docker](https://docs.docker.com/get-docker/)
+- [Docker Compose](https://docs.docker.com/compose/)
+
+Verify installation:
+```bash
+docker --version
+docker compose version
+```
+
+Start Horilla:
+```bash
+docker compose up
+```
+
+## **Manual Installation Step below** 
 ## **Prerequisites**
 
 ### **1. Python Installation**
