@@ -436,6 +436,11 @@ class EmployeeWorkInformationForm(ModelForm):
                 "date_joining",
                 _("This field is required.")
             )
+        if not probation_period_end:
+            self.add_error(
+                "probation_end_date",
+                _("This field is required.")
+            )
         if date_joining:
             if probation_period_end and probation_period_end < date_joining:
                 self.add_error(
@@ -535,6 +540,11 @@ class EmployeeWorkInformationUpdateForm(ModelForm):
         if not date_joining:
             self.add_error(
                 "date_joining",
+                _("This field is required.")
+            )
+        if not probation_period_end:
+            self.add_error(
+                "probation_end_date",
                 _("This field is required.")
             )
         if date_joining:
