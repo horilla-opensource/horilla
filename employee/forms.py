@@ -493,6 +493,7 @@ class EmployeeWorkInformationUpdateForm(ModelForm):
         widgets = {
             "date_joining": DateInput(attrs={"type": "date"}),
             "contract_end_date": DateInput(attrs={"type": "date"}),
+            "probation_end_date": DateInput(attrs={"type": "date"}),
         }
 
     def as_p(self, *args, **kwargs):
@@ -506,6 +507,8 @@ class EmployeeWorkInformationUpdateForm(ModelForm):
         email = self.cleaned_data.get("email")
         salary_hour = self.cleaned_data.get("salary_hour")
         basic_salary = self.cleaned_data.get("basic_salary")
+        probation_period_end = self.cleaned_data.get("probation_end_date")
+        contract_end_date = self.cleaned_data.get("contract_end_date")
 
         if salary_hour < 0:
             self.add_error(
@@ -534,6 +537,17 @@ class EmployeeWorkInformationUpdateForm(ModelForm):
                 "date_joining",
                 _("This field is required.")
             )
+        if date_joining:
+            if probation_period_end and probation_period_end < date_joining:
+                self.add_error(
+                    "probation_end_date",
+                    _("Probation end date cannot be earlier than date of joining.")
+                )
+            if contract_end_date and contract_end_date < date_joining:
+                self.add_error(
+                    "contract_end_date",
+                    _("Contract end date cannot be earlier than date of joining.")
+                )
 
         if work_phone:
             if not re.fullmatch(r"07\d{8}", str(work_phone)):
