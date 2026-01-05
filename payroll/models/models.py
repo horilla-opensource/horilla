@@ -184,7 +184,7 @@ class Contract(HorillaModel):
     wage_type = models.CharField(
         choices=WAGE_CHOICES,
         max_length=250,
-        default="monthly",
+        default="30days",
         verbose_name=_("Wage Type"),
     )
     pay_frequency = models.CharField(
@@ -257,7 +257,7 @@ class Contract(HorillaModel):
     )
     contract_document = models.FileField(upload_to="uploads/", null=True, blank=True)
     deduct_leave_from_basic_pay = models.BooleanField(
-        default=True,
+        default=False,
         verbose_name=_("Deduct From Basic Pay"),
         help_text=_("Deduct the leave amount from basic pay."),
     )
