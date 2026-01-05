@@ -93,8 +93,8 @@ document.addEventListener("DOMContentLoaded", function () {
 
     let bankData = {};
 
-    const initialBank = "{{ form.initial.bank_name|escapejs }}";
-    const initialBranch = "{{ form.initial.branch|escapejs }}";
+    const initialBank = "{{ form.bank_name.value|escapejs }}";
+    const initialBranch = "{{ form.branch.value|escapejs }}";
 
     fetch("/employee/api/bank-info/all/")
         .then(response => response.json())
