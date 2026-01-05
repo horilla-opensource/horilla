@@ -11,13 +11,13 @@ class RejectBasicAuthMiddleware:
         self.get_response = get_response
 
     def __call__(self, request):
-        auth_header = request.META.get('HTTP_AUTHORIZATION', '')
-        if isinstance(auth_header, str) and auth_header.startswith('Basic '):
+        auth_header = request.META.get("HTTP_AUTHORIZATION", "")
+        if isinstance(auth_header, str) and auth_header.startswith("Basic "):
             return JsonResponse(
                 {
                     "error": "Basic authentication is disabled",
-                    "detail": "Use Bearer token (JWT) in the Authorization header."
+                    "detail": "Use Bearer token (JWT) in the Authorization header.",
                 },
-                status=401
+                status=401,
             )
         return self.get_response(request)

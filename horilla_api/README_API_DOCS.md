@@ -73,7 +73,7 @@ If endpoints are not appearing in documentation:
 - Ensure the URL is included in the `patterns` list in `horilla_api/urls.py`
 - Check that the view is using proper decorators
 - Verify the serializer is correctly defined
- 
+
 If you see a Basic authorization option in Swagger:
 - Clear your browser cache and refresh `/api/swagger/`
 - Confirm `SWAGGER_SETTINGS` only contains the `Bearer` scheme

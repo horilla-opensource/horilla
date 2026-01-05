@@ -340,7 +340,10 @@ class WorkTypeRequestView(APIView):
     filterset_class = WorkTypeRequestFilter
     permission_classes = [IsAuthenticated]
 
-    def get_queryset(self, request):
+    def get_queryset(self, request=None):
+        # Handle schema generation for DRF-YASG
+        if getattr(self, "swagger_fake_view", False) or request is None:
+            return WorkTypeRequest.objects.none()
         queryset = WorkTypeRequest.objects.all()
         user = request.user
         # checking user level permissions
@@ -919,7 +922,10 @@ class ShiftRequestView(APIView):
     filterset_class = ShiftRequestFilter
     permission_classes = [IsAuthenticated]
 
-    def get_queryset(self, request):
+    def get_queryset(self, request=None):
+        # Handle schema generation for DRF-YASG
+        if getattr(self, "swagger_fake_view", False) or request is None:
+            return ShiftRequest.objects.none()
         queryset = ShiftRequest.objects.all()
         user = request.user
         # checking user level permissions
