@@ -152,11 +152,14 @@ class CrossChexCloudAPI:
             )
             response = self._post(payload_data)
 
-            records = response["payload"]["list"]
+            # Safe extraction to avoid KeyError
+            payload = response.get("payload", {}) if isinstance(response, dict) else {}
+            records = payload.get("list", [])
+
             all_records.extend(records)
 
-            page_count = response["payload"]["pageCount"]
-            if page >= page_count:
+            page_count = payload.get("pageCount", 0)
+            if page >= page_count or not records:
                 break
 
             page += 1
