@@ -196,21 +196,7 @@
 											<span
 												class="oh-profile__info-value">{{employee.employee_work_info.location|default:_("None")}}</span>
 										</li>
-
-										<li class="oh-profile__card-info-item">
-											<span class="oh-profile__info-label mb-1">
-												<ion-icon name="calendar-outline"></ion-icon>
-												<span>{% trans "End Date" %}</span>
-											</span>
-											<span
-												class="oh-profile__info-value dateformat_changer">{{employee.employee_work_info.contract_end_date|default:_("None")}}</span>
-										</li>
-									</ul>
-								</div>
-
-								<div class="col-12 col-sm-12 col-md-12 col-lg-6">
-									<ul class="oh-profile__card-info-list">
-										<li class="oh-profile__card-info-item">
+                                        <li class="oh-profile__card-info-item">
 											<span class="oh-profile__info-label mb-1">
 												<ion-icon name="briefcase-outline"></ion-icon>
 												<span>{% trans "Job Position" %}</span>
@@ -218,7 +204,11 @@
 											<span
 												class="oh-profile__info-value">{{employee.employee_work_info.job_position_id|default:_("None")}}</span>
 										</li>
+									</ul>
+								</div>
 
+								<div class="col-12 col-sm-12 col-md-12 col-lg-6">
+									<ul class="oh-profile__card-info-list">
 										<li class="oh-profile__card-info-item">
 											<span class="oh-profile__info-label mb-1">
 												<ion-icon name="time-outline"></ion-icon>
