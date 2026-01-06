@@ -345,11 +345,10 @@ class EmployeeWorkInformationForm(ModelForm):
 
         model = EmployeeWorkInformation
         fields = "__all__"
-        exclude = ("employee_id", "additional_info", "experience")
+        exclude = ("employee_id", "additional_info", "experience" , "contract_end_date")
 
         widgets = {
             "date_joining": DateInput(attrs={"type": "date"}),
-            "contract_end_date": DateInput(attrs={"type": "date"}),
             "probation_end_date": DateInput(attrs={"type": "date"}),
         }
 
@@ -415,12 +414,38 @@ class EmployeeWorkInformationForm(ModelForm):
         work_phone = self.cleaned_data.get("mobile")
         date_joining = self.cleaned_data.get("date_joining")
         email = self.cleaned_data.get("email")
+        salary_hour = self.cleaned_data.get("salary_hour")
+        basic_salary = self.cleaned_data.get("basic_salary")
+        probation_period_end = self.cleaned_data.get("probation_end_date")
 
+
+        if salary_hour < 0:
+            self.add_error(
+                "salary_hour",
+                _("Salary per hour must be greater than zero.")
+            )
+        if basic_salary < 0:
+            self.add_error(
+                "basic_salary",
+                _("Basic salary must be greater than zero.")
+            )
         if not date_joining:
             self.add_error(
                 "date_joining",
                 _("This field is required.")
             )
+        if not probation_period_end:
+            self.add_error(
+                "probation_end_date",
+                _("This field is required.")
+            )
+        if date_joining:
+            if probation_period_end and probation_period_end < date_joining:
+                self.add_error(
+                    "probation_end_date",
+                    _("Probation end date cannot be earlier than date of joining.")
+                )
+
 
         if not email:
             self.add_error(
@@ -462,11 +487,11 @@ class EmployeeWorkInformationUpdateForm(ModelForm):
 
         model = EmployeeWorkInformation
         fields = "__all__"
-        exclude = ("employee_id",)
+        exclude = ("employee_id","contract_end_date")
 
         widgets = {
             "date_joining": DateInput(attrs={"type": "date"}),
-            "contract_end_date": DateInput(attrs={"type": "date"}),
+            "probation_end_date": DateInput(attrs={"type": "date"}),
         }
 
     def as_p(self, *args, **kwargs):
@@ -478,7 +503,20 @@ class EmployeeWorkInformationUpdateForm(ModelForm):
         work_phone = self.cleaned_data.get("mobile")
         date_joining = self.cleaned_data.get("date_joining")
         email = self.cleaned_data.get("email")
+        salary_hour = self.cleaned_data.get("salary_hour")
+        basic_salary = self.cleaned_data.get("basic_salary")
+        probation_period_end = self.cleaned_data.get("probation_end_date")
 
+        if salary_hour < 0:
+            self.add_error(
+                "salary_hour",
+                _("Salary per hour must be greater than zero.")
+            )
+        if basic_salary < 0:
+            self.add_error(
+                "basic_salary",
+                _("Basic salary must be greater than zero.")
+            )
 
         if not email:
             self.add_error(
@@ -496,6 +534,18 @@ class EmployeeWorkInformationUpdateForm(ModelForm):
                 "date_joining",
                 _("This field is required.")
             )
+        if not probation_period_end:
+            self.add_error(
+                "probation_end_date",
+                _("This field is required.")
+            )
+        if date_joining:
+            if probation_period_end and probation_period_end < date_joining:
+                self.add_error(
+                    "probation_end_date",
+                    _("Probation end date cannot be earlier than date of joining.")
+                )
+
 
         if work_phone:
             if not re.fullmatch(r"07\d{8}", str(work_phone)):
