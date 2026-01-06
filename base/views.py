@@ -7725,14 +7725,14 @@ def is_jwt_token_valid(auth_header):
 
 def protected_media(request, path):
     public_pages = [
-        "/login",
-        "/forgot-password",
-        "/change-username",
-        "/change-password",
-        "/employee-reset-password",
-        "/recruitment/candidate-survey",
-        "/recruitment/open-recruitments",
-        "/recruitment/candidate-self-status-tracking",
+        "/login/",
+        "/forgot-password/",
+        "/change-username/",
+        "/change-password/",
+        "/employee-reset-password/",
+        "/recruitment/candidate-survey/",
+        "/recruitment/open-recruitments/",
+        "/recruitment/candidate-self-status-tracking/",
     ]
     exempted_folders = ["base/icon/"]
 
