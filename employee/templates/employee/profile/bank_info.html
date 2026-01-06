@@ -1,4 +1,6 @@
-{% load i18n %}{% load basefilters %}{% load widget_tweaks %}
+{% load i18n %}{% load widget_tweaks %}
+<div class="oh-general__tab-target oh-profile-section mb-4 d-none" id="bank">
+    <div class="oh-profile-section__card">
 <form method="post">
     {% csrf_token %}
     <div class="card">
@@ -65,7 +67,8 @@
         </button>
     </div>
 </form>
-
+    </div>
+</div>
 {% block javascript %}
 <script>
 document.addEventListener("DOMContentLoaded", function () {
