@@ -1,92 +1,159 @@
-{% load i18n %}
-<div class="oh-general__tab-target oh-profile-section mb-4 d-none" id="bank">
-    <div class="oh-profile-section__card">
-        <form action="" method="post">
-
-            {% csrf_token %}
+{% load i18n %}{% load basefilters %}{% load widget_tweaks %}
+<form method="post">
+    {% csrf_token %}
+    <div class="card">
+        <div class="card-body">
             <div class="row">
+
                 <div class="col-12 col-sm-12 col-md-12 col-lg-6">
                     <div class="oh-input-group">
-                        <label class="oh-label">{% trans "Bank Name" %}</label>
-                        {{ bank_form.bank_name }}
-                        {{ bank_form.bank_name.errors }}
+                        <label class="oh-label required-star">
+                            {% trans "Bank Name" %}
+                        </label>
+                        <select id="bankName" class="form-control w-100 p-2" style="border-color:#cdd5df">
+                            <option value="">{% trans "Select Bank" %}</option>
+                        </select>
                     </div>
                 </div>
+
+
                 <div class="col-12 col-sm-12 col-md-12 col-lg-6">
                     <div class="oh-input-group">
-                        <label class="oh-label">{% trans "Account Number" %}</label>
+                        <label class="oh-label required-star">
+                            {% trans "Branch" %}
+                        </label>
+                        <select id="branchName" class="form-control w-100 p-2" style="border-color:#cdd5df">
+                            <option value="">{% trans "Select Branch" %}</option>
+                        </select>
+                    </div>
+                </div>
+
+                <div class="col-12 col-sm-12 col-md-12 col-lg-6">
+                    <div class="oh-input-group">
+                        <label class="oh-label">{% trans "Bank Code" %}</label>
+                        <input type="text" id="bankCode" class="form-control w-100 p-2"  style="border: 1px solid #cdd5df; box-shadow: none;" readonly>
+                    </div>
+                </div>
+
+                <div class="col-12 col-sm-12 col-md-12 col-lg-6">
+                    <div class="oh-input-group">
+                        <label class="oh-label">{% trans "Branch Code" %}</label>
+                        <input type="text" id="branchCode" class="form-control w-100 p-2"  style="border: 1px solid #cdd5df; box-shadow: none;" readonly>
+                    </div>
+                </div>
+
+                <div class="col-12 col-sm-12 col-md-12 col-lg-12">
+                    <div class="oh-input-group">
+                        <label class="oh-label">{% trans "Bank Number" %}</label>
                         {{ bank_form.account_number }}
                         {{ bank_form.account_number.errors }}
                     </div>
                 </div>
-            </div>
-            <div class="row">
-                <div class="col-12 col-sm-12 col-md-12 col-lg-6">
-                    <div class="oh-input-group">
-                        <label class="oh-label">{% trans "Branch" %}</label>
-                        {{ bank_form.branch }}
-                        {{ bank_form.branch.errors }}
-                    </div>
-                </div>
-                <div class="col-12 col-sm-12 col-md-12 col-lg-6">
-                    <div class="oh-input-group">
-                        <label class="oh-label">{% trans "Bank Code" %} #1</label>
-                        {{ bank_form.any_other_code1 }}
-                        {{ bank_form.any_other_code1.errors }}
-                    </div>
-                </div>
-            </div>
-            <div class="row">
-                <div class="col-12 col-sm-12 col-md-12 col-lg-12">
-                    <div class="oh-input-group">
-                        <label class="oh-label">{% trans "Bank Address" %}</label>
-                        {{ bank_form.address }}
-                        {{ bank_form.address.errors }}
-                    </div>
-                </div>
-            </div>
-            <div class="row">
-                <div class="col-12 col-sm-12 col-md-12 col-lg-6">
-                    <label class="oh-label" for="country">{% trans "Country" %}</label>
-                    <select name="country" id="country" class="oh-select oh-select-2"
-                        data-selected="{{ bank_form.country.value|default:'' }}">
-                    </select>
-                    {{ bank_form.country.errors }}
-                </div>
-                <div class="col-12 col-sm-12 col-md-12 col-lg-6">
-                    <div class="oh-input-group">
-                        <label class="oh-label">{% trans "State" %}</label>
-                        <select name="state" id="state" class="oh-select oh-select-2"
-                            data-selected="{{ bank_form.state.value|default:'' }}">
 
-                        </select>
-                        {{ bank_form.state.errors }}
-                    </div>
-                </div>
             </div>
-            <div class="row">
-                <div class="col-12 col-sm-12 col-md-12 col-lg-6">
-                    <div class="oh-input-group">
-                        <label class="oh-label">{% trans "City" %}</label>
-                        {{ bank_form.city }}
-                        {{ bank_form.city.errors }}
-                    </div>
-                </div>
-                <div class="col-12 col-sm-12 col-md-12 col-lg-6">
-                    <div class="oh-input-group">
-                        <label class="oh-label">{% trans "Bank Code" %} #2</label>
-                        {{ bank_form.any_other_code2 }}
-                        {{ bank_form.any_other_code2.errors }}
-                    </div>
-                </div>
-            </div>
-            <hr class="mt-5 mb-3">
-            <div class="w-100 d-flex align-items-center justify-content-end">
-                <button type="submit" class="oh-btn oh-btn--secondary oh-btn--w-100-resp">
-                    {% trans "Save" %}
-                </button>
-            </div>
-        </form>
+        </div>
     </div>
-</div>
-</div>
+
+    <input type="hidden" name="bank_name" id="bankNameHidden" value="{{ bank_form.bank_name.value|default:'' }}">
+    <input type="hidden" name="branch" id="branchHidden" value="{{ bank_form.branch.value|default:'' }}">
+    <input type="hidden" name="any_other_code1" id="bankCodeHidden" value="{{ bank_form.any_other_code1.value|default:'' }}">
+    <input type="hidden" name="any_other_code2" id="branchCodeHidden" value="{{ bank_form.any_other_code2.value|default:'' }}">
+
+    <div class="w-100 d-flex align-items-center justify-content-end mt-4">
+        <button type="submit" class="oh-btn oh-btn--secondary oh-btn--w-100-resp">
+            {% trans "Save" %}
+        </button>
+    </div>
+</form>
+
+{% block javascript %}
+<script>
+document.addEventListener("DOMContentLoaded", function () {
+
+    const bankSelect = document.getElementById("bankName");
+    const branchSelect = document.getElementById("branchName");
+    const bankCodeInput = document.getElementById("bankCode");
+    const branchCodeInput = document.getElementById("branchCode");
+
+    const hiddenBankName = document.getElementById("bankNameHidden");
+    const hiddenBranch = document.getElementById("branchHidden");
+    const hiddenBankCode = document.getElementById("bankCodeHidden");
+    const hiddenBranchCode = document.getElementById("branchCodeHidden");
+
+    const initialBank = hiddenBankName.value;
+    const initialBranch = hiddenBranch.value;
+
+    let bankData = {};
+
+    fetch("/employee/api/bank-info/all/")
+        .then(res => res.json())
+        .then(data => {
+            bankData = data;
+
+            // Populate bank select
+            for (const bank in data) {
+                const option = document.createElement("option");
+                option.value = bank;
+                option.textContent = bank;
+                if (bank === initialBank) option.selected = true;
+                bankSelect.appendChild(option);
+            }
+
+            // Load initial bank/branch if editing
+            if (initialBank) loadBank(initialBank, initialBranch);
+        })
+        .catch(err => console.error("Failed to load bank info:", err));
+
+    bankSelect.addEventListener("change", () => {
+        const bank = bankSelect.value;
+
+        hiddenBankName.value = bank;
+        hiddenBranch.value = "";
+        hiddenBankCode.value = bankData[bank]?.bank_code || "";
+        hiddenBranchCode.value = "";
+
+        bankCodeInput.value = hiddenBankCode.value;
+        branchCodeInput.value = "";
+        branchSelect.innerHTML = `<option value="">{% trans "Select Branch" %}</option>`;
+
+        if (bank) loadBank(bank);
+    });
+
+    branchSelect.addEventListener("change", () => {
+        const bank = bankSelect.value;
+        const branch = branchSelect.value;
+
+        const code = bankData[bank]?.branches[branch] || "";
+        branchCodeInput.value = code;
+
+        hiddenBranch.value = branch;
+        hiddenBranchCode.value = code;
+    });
+
+    function loadBank(bank, preselectBranch = "") {
+        const bankInfo = bankData[bank];
+        if (!bankInfo) return;
+
+        bankCodeInput.value = bankInfo.bank_code;
+        hiddenBankCode.value = bankInfo.bank_code;
+
+        branchSelect.innerHTML = `<option value="">{% trans "Select Branch" %}</option>`;
+
+        for (const branch in bankInfo.branches) {
+            const option = document.createElement("option");
+            option.value = branch;
+            option.textContent = branch;
+
+            if (branch === preselectBranch) {
+                option.selected = true;
+                branchCodeInput.value = bankInfo.branches[branch];
+                hiddenBranchCode.value = bankInfo.branches[branch];
+            }
+
+            branchSelect.appendChild(option);
+        }
+    }
+
+});
+</script>
+{% endblock %}
