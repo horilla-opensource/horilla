@@ -80,6 +80,7 @@ class WorkRequestListView(HorillaListView):
         (_("Previous/current Work Type"), "previous_work_type_id"),
         (_("Requested Date"), "requested_date"),
         (_("Requested Till"), "requested_till"),
+        (_("Status"), "request_status"),
         (_("Description"), "description"),
         (_("Comment"), "comment_note"),
     ]

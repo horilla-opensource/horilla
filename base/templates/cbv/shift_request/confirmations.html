@@ -7,7 +7,7 @@
 {% is_manager_of request.user instance as can_manage %}
 {% if perms.base.change_shiftrequest or can_manage %}
 	<div class="oh-btn-group w-100">
-		{% if instance.approved and instance.canceled %}
+		{% if instance.approved or instance.canceled %}
 			<a
 				href="#"
 				class="oh-btn oh-btn--success oh-btn--disabled w-100"

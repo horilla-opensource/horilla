@@ -241,11 +241,13 @@
 
     <!-- Model Selection Dropdown -->
     <span class="ms-1 fw-bold" style="font-size:16px;">{% trans "Choose Report" %} : </span>
-    <select id="model-select" class="oh-select oh-select--sm ml-2 mb-2" style="width: 200px;">
-        <option value="candidate">{% trans "Candidate" %}</option>
-        <option value="recruitment">{% trans "Recruitment" %}</option>
-        <option value="onboarding">{% trans "Onboarding" %}</option>
-    </select>
+    <div class="d-inline-block ms-2" style="width: 13%;margin-bottom: 10px;">
+        <select id="model-select" class="oh-select oh-select--sm ml-2 mb-2" style="width: 200px;">
+            <option value="candidate">{% trans "Candidate" %}</option>
+            <option value="recruitment">{% trans "Recruitment" %}</option>
+            <option value="onboarding">{% trans "Onboarding" %}</option>
+        </select>
+    </div>
 
 
     <!-- Pivot Container -->

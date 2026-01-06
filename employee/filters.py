@@ -71,6 +71,7 @@ class EmployeeFilter(HorillaFilterSet):
             (True, "Yes"),
             (False, "No"),
         ],
+        initial=True,
     )
 
     is_from_onboarding = django_filters.ChoiceFilter(

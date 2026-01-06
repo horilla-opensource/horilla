@@ -394,23 +394,31 @@ class AttendanceFilters(HorillaFilterSet):
     attendance_date = django_filters.DateFilter(
         widget=forms.DateInput(attrs={"type": "date"}),
     )
-    pending_hour__lte = DurationInSecondsFilter(
+    pending_hour_lte = DurationInSecondsFilter(
         method="filter_pending_hour",
     )
-    pending_hour__gte = DurationInSecondsFilter(
+    pending_hour_gte = DurationInSecondsFilter(
         method="filter_pending_hour",
     )
     at_work_second__lte = DurationInSecondsFilter(
-        field_name="at_work_second", lookup_expr="lte"
+        field_name="at_work_second",
+        lookup_expr="lte",
+        widget=forms.TimeInput(attrs={"type": "time"}),
     )
     at_work_second__gte = DurationInSecondsFilter(
-        field_name="at_work_second", lookup_expr="gte"
+        field_name="at_work_second",
+        lookup_expr="gte",
+        widget=forms.TimeInput(attrs={"type": "time"}),
     )
     overtime_second__lte = DurationInSecondsFilter(
-        field_name="overtime_second", lookup_expr="lte"
+        field_name="overtime_second",
+        lookup_expr="lte",
+        widget=forms.TimeInput(attrs={"type": "time"}),
     )
     overtime_second__gte = DurationInSecondsFilter(
-        field_name="overtime_second", lookup_expr="gte"
+        field_name="overtime_second",
+        lookup_expr="gte",
+        widget=forms.TimeInput(attrs={"type": "time"}),
     )
     year = django_filters.CharFilter(field_name="attendance_date", lookup_expr="year")
     month = django_filters.CharFilter(field_name="attendance_date", lookup_expr="month")
@@ -419,6 +427,17 @@ class AttendanceFilters(HorillaFilterSet):
         field_name="employee_id__employee_work_info__department_id__department",
         lookup_expr="icontains",
     )
+
+    @property
+    def form(self):
+        form = super().form
+        form.fields["pending_hour_lte"].widget = forms.TimeInput(
+            attrs={"type": "time", "class": "oh-input w-100 form-control"}
+        )
+        form.fields["pending_hour_gte"].widget = forms.TimeInput(
+            attrs={"type": "time", "class": "oh-input w-100 form-control"}
+        )
+        return form
 
     def filter_pending_hour(self, queryset, name, value):
         """
