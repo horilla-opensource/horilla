@@ -257,11 +257,13 @@
     </div>
 
     <!-- Model Selection Dropdown -->
-    <span class="ms-1 fw-bold" style="font-size:16px;">Choose Report : </span>
-    <select id="model-select" class="oh-select oh-select--sm ml-2 mb-2" style="width: 200px;">
-        <option value="leave_request">Leave Request</option>
-        <option value="available_leave">Available Leave</option>
-    </select>
+    <span class="ms-1 fw-bold" style="font-size:16px;">{% trans "Choose Report" %} : </span>
+    <div class="d-inline-block ms-2" style="width: 13%;margin-bottom: 10px;">
+        <select id="model-select" class="oh-select oh-select--sm ml-2 mb-2" style="width: 200px;">
+            <option value="leave_request">{% trans "Leave Request" %}</option>
+            <option value="available_leave">{% trans "Available Leave" %}</option>
+        </select>
+    </div>
 
     <!-- Pivot Container -->
     <div id="pivot-container" class="mb-5" style="width: 100%; overflow-x: auto;">

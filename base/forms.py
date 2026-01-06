@@ -231,20 +231,24 @@ class ModelForm(forms.ModelForm):
                     }
                 )
 
-            # DateTime field
-            elif isinstance(widget, forms.DateTimeInput):
-                field.initial = now.strftime("%Y-%m-%d %H:%M")
-                widget.input_type = "datetime-local"
-                widget.format = "%Y-%m-%dT%H:%M"
-                field.input_formats = ["%Y-%m-%dT%H:%M"]
+            # ===================================== DISABLED FOR NOW. Rendering datetime field for attendance issue =====================================
 
-                existing_class = widget.attrs.get("class", default_input_class)
-                widget.attrs.update(
-                    {
-                        "class": f"{existing_class} form-control",
-                        "placeholder": label,
-                    }
-                )
+            # DateTime field
+            # elif isinstance(widget, forms.DateTimeInput):
+            #     field.initial = now.strftime("%Y-%m-%d %H:%M")
+            #     widget.input_type = "datetime-local"
+            #     widget.format = "%Y-%m-%dT%H:%M"
+            #     field.input_formats = ["%Y-%m-%dT%H:%M"]
+
+            #     existing_class = widget.attrs.get("class", default_input_class)
+            #     widget.attrs.update(
+            #         {
+            #             "class": f"{existing_class} form-control",
+            #             "placeholder": label,
+            #         }
+            #     )
+
+            # ==================================== DISABLED FOR NOW =====================================
 
             # Number, Email, Text, File, URL fields
             elif isinstance(
@@ -497,7 +501,7 @@ class AssignPermission(Form):
         widget=HorillaMultiSelectWidget(
             filter_route_name="employee-widget-filter",
             filter_class=EmployeeFilter,
-            filter_instance_contex_name="f",
+            filter_instance_context_name="f",
             filter_template_path="employee_filters.html",
             required=True,
         ),
@@ -1006,7 +1010,7 @@ class RotatingWorkTypeAssignForm(ModelForm):
     #     widget=HorillaMultiSelectWidget(
     #         filter_route_name="employee-widget-filter",
     #         filter_class=EmployeeFilter,
-    #         filter_instance_contex_name="f",
+    #         filter_instance_context_name="f",
     #         filter_template_path="employee_filters.html",
     #     ),
     #     label=_("Employees"),
@@ -1054,7 +1058,7 @@ class RotatingWorkTypeAssignForm(ModelForm):
                 widget=HorillaMultiSelectWidget(
                     filter_route_name="employee-widget-filter",
                     filter_class=EmployeeFilter,
-                    filter_instance_contex_name="f",
+                    filter_instance_context_name="f",
                     filter_template_path="employee_filters.html",
                 ),
                 label=_("Employees"),
@@ -1688,7 +1692,7 @@ class RotatingShiftAssignForm(ModelForm):
     #     widget=HorillaMultiSelectWidget(
     #         filter_route_name="employee-widget-filter",
     #         filter_class=EmployeeFilter,
-    #         filter_instance_contex_name="f",
+    #         filter_instance_context_name="f",
     #         filter_template_path="employee_filters.html",
     #     ),
     #     label=_("Employees"),
@@ -1737,7 +1741,7 @@ class RotatingShiftAssignForm(ModelForm):
                 widget=HorillaMultiSelectWidget(
                     filter_route_name="employee-widget-filter",
                     filter_class=EmployeeFilter,
-                    filter_instance_contex_name="f",
+                    filter_instance_context_name="f",
                     filter_template_path="employee_filters.html",
                 ),
                 label=_("Employees"),
@@ -2673,7 +2677,7 @@ class AnnouncementForm(ModelForm):
         widget=HorillaMultiSelectWidget(
             filter_route_name="employee-widget-filter",
             filter_class=EmployeeFilter,
-            filter_instance_contex_name="f",
+            filter_instance_context_name="f",
             filter_template_path="employee_filters.html",
         ),
         label="Employees",

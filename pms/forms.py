@@ -122,7 +122,7 @@ class ObjectiveForm(BaseForm):
             widget=HorillaMultiSelectWidget(
                 filter_route_name="employee-widget-filter",
                 filter_class=EmployeeFilter,
-                filter_instance_contex_name="f",
+                filter_instance_context_name="f",
                 filter_template_path="employee_filters.html",
                 required=False,
                 instance=self.instance,
@@ -135,7 +135,7 @@ class ObjectiveForm(BaseForm):
             widget=HorillaMultiSelectWidget(
                 filter_route_name="employee-widget-filter",
                 filter_class=EmployeeFilter,
-                filter_instance_contex_name="f",
+                filter_instance_context_name="f",
                 filter_template_path="employee_filters.html",
                 required=False,
                 instance=self.instance,
@@ -810,7 +810,7 @@ class FeedbackForm(HorillaModelForm):
         #     widget=HorillaMultiSelectWidget(
         #         filter_route_name="employee-widget-filter",
         #         filter_class=EmployeeFilter,
-        #         filter_instance_contex_name="f",
+        #         filter_instance_context_name="f",
         #         filter_template_path="employee_filters.html",
         #         instance=self.instance,
         #         required=False,
@@ -1129,7 +1129,7 @@ class MeetingsForm(BaseForm):
             widget=HorillaMultiSelectWidget(
                 filter_route_name="employee-widget-filter",
                 filter_class=EmployeeFilter,
-                filter_instance_contex_name="f",
+                filter_instance_context_name="f",
                 filter_template_path="employee_filters.html",
                 form=self,
                 instance=self.instance,
@@ -1251,7 +1251,7 @@ class EmployeeFeedbackForm(HorillaModelForm):
             widget=HorillaMultiSelectWidget(
                 filter_route_name="employee-widget-filter",
                 filter_class=EmployeeFilter,
-                filter_instance_contex_name="f",
+                filter_instance_context_name="f",
                 filter_template_path="employee_filters.html",
                 form=self,
                 instance=self.instance,
@@ -1348,7 +1348,7 @@ class BulkFeedbackForm(HorillaModelForm):
             widget=HorillaMultiSelectWidget(
                 filter_route_name="employee-widget-filter",
                 filter_class=EmployeeFilter,
-                filter_instance_contex_name="f",
+                filter_instance_context_name="f",
                 filter_template_path="employee_filters.html",
                 form=self,
                 instance=self.instance,

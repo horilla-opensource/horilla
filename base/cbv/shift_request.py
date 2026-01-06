@@ -58,7 +58,6 @@ class ShiftList(HorillaListView):
     row_status_class = (
         "approved-{approved} canceled-{canceled} requested-{approved}-{canceled}"
     )
-    records_per_page = 5
 
     row_status_indications = [
         (
@@ -142,6 +141,7 @@ class ShiftRequestList(ShiftList):
         (_("Previous/Current Shift"), "previous_shift_id"),
         (_("Requested Date"), "requested_date"),
         (_("Requested Till"), "requested_till"),
+        (_("Status"), "request_status"),
         (_("Description"), "description"),
         (_("Comment"), "comment"),
     ]

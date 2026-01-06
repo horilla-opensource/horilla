@@ -5,17 +5,16 @@ This module is used to register django models
 import ipaddress
 from datetime import date, datetime
 
-import django
 from django.apps import apps
 from django.contrib import messages
 from django.contrib.auth.models import User
 from django.core.exceptions import ValidationError
+from django.core.validators import MinValueValidator
 from django.db import models
-from django.db.models.signals import post_delete, post_save
-from django.dispatch import receiver
+from django.db.models import Case, When
 from django.urls import reverse, reverse_lazy
+from django.utils import timezone
 from django.utils.html import format_html
-from django.utils.safestring import mark_safe
 from django.utils.translation import gettext_lazy as _
 
 from base.horilla_company_manager import HorillaCompanyManager
@@ -34,7 +33,6 @@ WEEKS = [
     ("4", _("Fifth Week")),
 ]
 
-
 WEEK_DAYS = [
     ("0", _("Monday")),
     ("1", _("Tuesday")),
@@ -43,6 +41,25 @@ WEEK_DAYS = [
     ("4", _("Friday")),
     ("5", _("Saturday")),
     ("6", _("Sunday")),
+]
+
+DAY_DATE = [(str(i), str(i)) for i in range(1, 32)]
+DAY_DATE.append(("last", _("Last Day")))
+
+DAY = [
+    ("monday", _("Monday")),
+    ("tuesday", _("Tuesday")),
+    ("wednesday", _("Wednesday")),
+    ("thursday", _("Thursday")),
+    ("friday", _("Friday")),
+    ("saturday", _("Saturday")),
+    ("sunday", _("Sunday")),
+]
+
+BASED_ON = [
+    ("after", _("After")),
+    ("weekly", _("Weekend")),
+    ("monthly", _("Monthly")),
 ]
 
 
@@ -254,7 +271,7 @@ class JobPosition(HorillaModel):
 
     def job_position_col(self):
         """
-        This method for get custom column .
+        This method for get custom column.
         """
 
         return render_template(
@@ -267,7 +284,7 @@ class JobPosition(HorillaModel):
 
     def job_role_col(self):
         """
-        This method for get custom column .
+        This method for get custom column.
         """
 
         return render_template(
@@ -480,24 +497,6 @@ class RotatingWorkType(HorillaModel):
         return additional_work_types
 
 
-DAY_DATE = [(str(i), str(i)) for i in range(1, 32)]
-DAY_DATE.append(("last", _("Last Day")))
-DAY = [
-    ("monday", _("Monday")),
-    ("tuesday", _("Tuesday")),
-    ("wednesday", _("Wednesday")),
-    ("thursday", _("Thursday")),
-    ("friday", _("Friday")),
-    ("saturday", _("Saturday")),
-    ("sunday", _("Sunday")),
-]
-BASED_ON = [
-    ("after", _("After")),
-    ("weekly", _("Weekend")),
-    ("monthly", _("Monthly")),
-]
-
-
 class RotatingWorkTypeAssign(HorillaModel):
     """
     RotatingWorkTypeAssign model
@@ -512,9 +511,7 @@ class RotatingWorkTypeAssign(HorillaModel):
     rotating_work_type_id = models.ForeignKey(
         RotatingWorkType, on_delete=models.PROTECT, verbose_name=_("Rotating Work Type")
     )
-    start_date = models.DateField(
-        default=django.utils.timezone.now, verbose_name=_("Start Date")
-    )
+    start_date = models.DateField(default=timezone.now, verbose_name=_("Start Date"))
     next_change_date = models.DateField(null=True, verbose_name=_("Next Switch"))
     current_work_type = models.ForeignKey(
         WorkType,
@@ -577,7 +574,7 @@ class RotatingWorkTypeAssign(HorillaModel):
         ordering = ["-next_change_date", "-employee_id__employee_first_name"]
 
     def clean(self):
-        if self.start_date < django.utils.timezone.now().date():
+        if self.start_date < timezone.now().date():
             raise ValidationError(_("Date must be greater than or equal to today"))
 
         if self.is_active and self.employee_id is not None:
@@ -832,9 +829,6 @@ class EmployeeShift(HorillaModel):
         return self
 
 
-from django.db.models import Case, When
-
-
 class EmployeeShiftSchedule(HorillaModel):
     """
     EmployeeShiftSchedule model
@@ -909,7 +903,7 @@ class EmployeeShiftSchedule(HorillaModel):
 
     def get_automatic_check_out_time(self):
         """
-        Custome column for automatic checkout time
+        Custom column for automatic checkout time
         """
         return (
             f"<div class='oh-timeoff-modal__stat-title'>Automatic Check Out Time</div><div>{self.auto_punch_out_time}</div>"
@@ -1094,9 +1088,7 @@ class RotatingShiftAssign(HorillaModel):
     rotating_shift_id = models.ForeignKey(
         RotatingShift, on_delete=models.PROTECT, verbose_name=_("Rotating Shift")
     )
-    start_date = models.DateField(
-        default=django.utils.timezone.now, verbose_name=_("Start Date")
-    )
+    start_date = models.DateField(default=timezone.now, verbose_name=_("Start Date"))
     next_change_date = models.DateField(null=True, verbose_name=_("Next Switch"))
     current_shift = models.ForeignKey(
         EmployeeShift,
@@ -1153,7 +1145,7 @@ class RotatingShiftAssign(HorillaModel):
 
     def rotating_column(self):
         """
-        This method for get custome coloumn .
+        This method for get custom column.
         """
 
         return render_template(
@@ -1163,7 +1155,7 @@ class RotatingShiftAssign(HorillaModel):
 
     def actions(self):
         """
-        This method for get custome coloumn .
+        This method for get custom column.
         """
 
         return render_template(
@@ -1173,7 +1165,7 @@ class RotatingShiftAssign(HorillaModel):
 
     def rotating_detail_actions(self):
         """
-        This method for get custome coloumn .
+        This method for get custom column.
         """
 
         return render_template(
@@ -1258,7 +1250,7 @@ class RotatingShiftAssign(HorillaModel):
             if siblings.exists() and siblings.first().id != self.id:
                 raise ValidationError(_("Only one active record allowed per employee"))
 
-        if self.start_date < django.utils.timezone.now().date():
+        if self.start_date < timezone.now().date():
             raise ValidationError(_("Date must be greater than or equal to today"))
 
 
@@ -1294,7 +1286,7 @@ class WorkTypeRequest(HorillaModel):
         verbose_name=_("Previous Work Type"),
     )
     requested_date = models.DateField(
-        null=True, default=django.utils.timezone.now, verbose_name=_("Requested Date")
+        null=True, default=timezone.now, verbose_name=_("Requested Date")
     )
     requested_till = models.DateField(
         null=True, blank=True, verbose_name=_("Requested Till")
@@ -1440,7 +1432,7 @@ class WorkTypeRequest(HorillaModel):
     def clean(self):
         request = getattr(horilla_middlewares._thread_locals, "request", None)
         if not request.user.is_superuser:
-            if self.requested_date < django.utils.timezone.now().date():
+            if self.requested_date < timezone.now().date():
                 raise ValidationError(_("Date must be greater than or equal to today"))
         if self.requested_till and self.requested_till < self.requested_date:
             raise ValidationError(
@@ -1510,7 +1502,7 @@ class ShiftRequest(HorillaModel):
         verbose_name=_("Previous Shift"),
     )
     requested_date = models.DateField(
-        null=True, default=django.utils.timezone.now, verbose_name=_("Requested Date")
+        null=True, default=timezone.now, verbose_name=_("Requested Date")
     )
     reallocate_to = models.ForeignKey(
         "employee.Employee",
@@ -1557,7 +1549,7 @@ class ShiftRequest(HorillaModel):
 
     def comment(self):
         """
-        This method for get custome coloumn for comment.
+        This method for get custom column for comment.
         """
 
         return render_template(
@@ -1567,7 +1559,7 @@ class ShiftRequest(HorillaModel):
 
     # def shift_allocate_actions(self):
     #     """
-    #     This method for get custome coloumn for allocated actions.
+    #     This method for get custom column for allocated actions.
     #     """
 
     #     return render_template(
@@ -1577,7 +1569,7 @@ class ShiftRequest(HorillaModel):
 
     def allocated_confirm_action_col(self):
         """
-        This method for get custome coloumn for allocated actions.
+        This method for get custom column for allocated actions.
         """
 
         return render_template(
@@ -1587,7 +1579,7 @@ class ShiftRequest(HorillaModel):
 
     def user_availability(self):
         """
-        This method for get custome coloumn for User availability.
+        This method for get custom column for User availability.
         """
 
         return render_template(
@@ -1621,7 +1613,7 @@ class ShiftRequest(HorillaModel):
 
     def shift_actions(self):
         """
-        This method for get custome coloumn for actions.
+        This method for get custom column for actions.
         """
 
         return render_template(
@@ -1631,7 +1623,7 @@ class ShiftRequest(HorillaModel):
 
     def confirmations(self):
         """
-        This method for get custome coloumn for confirmations.
+        This method for get custom column for confirmations.
         """
 
         return render_template(
@@ -1641,7 +1633,7 @@ class ShiftRequest(HorillaModel):
 
     def allocate_confirmations(self):
         """
-        This method for get custome coloumn for confirmations.
+        This method for get custom column for confirmations.
         """
 
         return render_template(
@@ -1651,7 +1643,7 @@ class ShiftRequest(HorillaModel):
 
     def detail_actions(self):
         """
-        This method for get custome coloumn for comment.
+        This method for get custom column for comment.
         """
 
         return render_template(
@@ -1677,7 +1669,7 @@ class ShiftRequest(HorillaModel):
 
         request = getattr(horilla_middlewares._thread_locals, "request", None)
         if not request.user.is_superuser:
-            if not self.pk and self.requested_date < django.utils.timezone.now().date():
+            if not self.pk and self.requested_date < timezone.now().date():
                 raise ValidationError(_("Date must be greater than or equal to today"))
         if self.requested_till and self.requested_till < self.requested_date:
             raise ValidationError(
@@ -1891,7 +1883,7 @@ class DynamicEmailConfiguration(HorillaModel):
 
     def action_col(self):
         """
-        This method for get custome coloumn .
+        This method for get custom column.
         """
 
         return render_template(
@@ -2198,9 +2190,6 @@ class DynamicPagination(models.Model):
     """
     model for storing pagination for employees
     """
-
-    from django.contrib.auth.models import User
-    from django.core.validators import MinValueValidator
 
     user_id = models.OneToOneField(
         User,
@@ -2807,136 +2796,6 @@ class NotificationSound(models.Model):
         Employee, on_delete=models.CASCADE, related_name="notification_sound"
     )
     sound_enabled = models.BooleanField(default=False)
-
-
-@receiver(post_save, sender=PenaltyAccounts)
-def create_deduction_cutleave_from_penalty(sender, instance, created, **kwargs):
-    """
-    This is post save method, used to create deduction and cut availabl leave days"""
-    # only work when creating
-    if created:
-        penalty_amount = instance.penalty_amount
-        if apps.is_installed("payroll") and penalty_amount:
-            Deduction = get_horilla_model_class(app_label="payroll", model="deduction")
-            penalty = Deduction()
-            if instance.late_early_id:
-                penalty.title = f"{instance.late_early_id.get_type_display()} penalty"
-                penalty.one_time_date = (
-                    instance.late_early_id.attendance_id.attendance_date
-                )
-            elif instance.leave_request_id:
-                penalty.title = f"Leave penalty {instance.leave_request_id.end_date}"
-                penalty.one_time_date = instance.leave_request_id.end_date
-            else:
-                penalty.title = f"Penalty on {datetime.today()}"
-                penalty.one_time_date = datetime.today()
-            penalty.include_active_employees = False
-            penalty.is_fixed = True
-            penalty.amount = instance.penalty_amount
-            penalty.only_show_under_employee = True
-            penalty.save()
-            penalty.include_active_employees = False
-            penalty.specific_employees.add(instance.employee_id)
-            penalty.save()
-
-        if (
-            apps.is_installed("leave")
-            and instance.leave_type_id
-            and instance.minus_leaves
-        ):
-            available = instance.employee_id.available_leave.filter(
-                leave_type_id=instance.leave_type_id
-            ).first()
-            unit = round(instance.minus_leaves * 2) / 2
-            if not instance.deduct_from_carry_forward:
-                available.available_days = max(0, (available.available_days - unit))
-            else:
-                available.carryforward_days = max(
-                    0, (available.carryforward_days - unit)
-                )
-
-            available.save()
-
-
-# @receiver(post_delete, sender=PenaltyAccounts)
-# def delete_deduction_cutleave_from_penalty(sender, instance, **kwargs):
-#     """
-#     This is a post delete method, used to delete deduction and update available leave days."""
-#     # Check if the deduction model is installed
-#     if apps.is_installed("payroll"):
-#         Deduction = get_horilla_model_class(app_label="payroll", model="deduction")
-#         # Assuming deductions are related to PenaltyAccounts by a foreign key or similar
-#         deductions = Deduction.objects.filter(specific_employees=instance.employee_id, amount=instance.penalty_amount)
-
-#         for deduction in deductions:
-#             deduction.delete()
-
-#     if apps.is_installed("leave") and instance.leave_type_id and instance.minus_leaves:
-#         available = instance.employee_id.available_leave.filter(
-#             leave_type_id=instance.leave_type_id
-#         ).first()
-#         if available:
-#             unit = round(instance.minus_leaves * 2) / 2
-#             if not instance.deduct_from_carry_forward:
-#                 available.available_days += unit  # Restore the deducted days
-#             else:
-#                 available.carryforward_days += unit  # Restore the deducted carryforward days
-
-#             available.save()
-
-
-@receiver(post_delete, sender=PenaltyAccounts)
-def delete_deduction_cutleave_from_penalty(sender, instance, **kwargs):
-    """
-    This is a post delete method, used to delete the deduction and update available leave days.
-    """
-    # Check if the deduction model is installed
-    if apps.is_installed("payroll"):
-        Deduction = get_horilla_model_class(app_label="payroll", model="deduction")
-
-        if instance.late_early_id:
-            title = f"{instance.late_early_id.get_type_display()} penalty"
-        elif instance.leave_request_id:
-            title = f"Leave penalty {instance.leave_request_id.end_date}"
-        else:
-            title = f"Penalty on {datetime.today()}"
-
-        # Attempt to retrieve the deduction specifically associated with the penalty account
-        deductions = Deduction.objects.filter(
-            specific_employees=instance.employee_id,
-            amount=instance.penalty_amount,
-            title=title,
-        )
-
-        # If you have a date or other unique field, add it to the filter
-        if instance.late_early_id:
-            deductions = deductions.filter(
-                one_time_date=instance.late_early_id.attendance_id.attendance_date
-            )
-        elif instance.leave_request_id:
-            deductions = deductions.filter(
-                one_time_date=instance.leave_request_id.end_date
-            )
-        else:
-            deductions = deductions.filter(one_time_date=datetime.today())
-
-        for deduction in deductions:
-            deduction.delete()
-
-    if apps.is_installed("leave") and instance.leave_type_id and instance.minus_leaves:
-        available = instance.employee_id.available_leave.filter(
-            leave_type_id=instance.leave_type_id
-        ).first()
-        if available:
-            unit = round(instance.minus_leaves * 2) / 2
-            if not instance.deduct_from_carry_forward:
-                available.available_days += unit  # Restore the deducted days
-            else:
-                available.carryforward_days += (
-                    unit  # Restore the deducted carryforward days
-                )
-
-            available.save()
 
 
 User.add_to_class("is_new_employee", models.BooleanField(default=False))

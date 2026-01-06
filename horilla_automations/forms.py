@@ -41,7 +41,7 @@ class AutomationForm(ModelForm):
             widget=HorillaMultiSelectWidget(
                 filter_route_name="employee-widget-filter",
                 filter_class=EmployeeFilter,
-                filter_instance_contex_name="f",
+                filter_instance_context_name="f",
                 filter_template_path="employee_filters.html",
                 instance=self.instance,
             ),

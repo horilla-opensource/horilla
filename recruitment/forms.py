@@ -315,7 +315,7 @@ class RecruitmentCreationForm(BaseModelForm):
                 widget=HorillaMultiSelectWidget(
                     filter_route_name="employee-widget-filter",
                     filter_class=EmployeeFilter,
-                    filter_instance_contex_name="f",
+                    filter_instance_context_name="f",
                     filter_template_path="employee_filters.html",
                     required=True,
                 ),
@@ -388,7 +388,7 @@ class StageCreationForm(BaseModelForm):
                 widget=HorillaMultiSelectWidget(
                     filter_route_name="employee-widget-filter",
                     filter_class=EmployeeFilter,
-                    filter_instance_contex_name="f",
+                    filter_instance_context_name="f",
                     filter_template_path="employee_filters.html",
                     required=True,
                 ),
@@ -1078,11 +1078,7 @@ class SkillZoneCandidateForm(ModelForm):
         """
 
         model = SkillZoneCandidate
-        fields = "__all__"
-        exclude = [
-            "added_on",
-            "is_active",
-        ]
+        fields = ["skill_zone_id", "reason"]
 
     def as_p(self, *args, **kwargs):
         """
@@ -1095,11 +1091,9 @@ class SkillZoneCandidateForm(ModelForm):
     def clean_candidate_id(self):
         candidate_field = self.cleaned_data["candidate_id"]
 
-        # Case 1: update (single select → a Candidate object)
         if isinstance(candidate_field, Candidate):
             return candidate_field
 
-        # Case 2: create (multi select → QuerySet/iterable of Candidate)
         if hasattr(candidate_field, "__iter__"):
             for candidate in candidate_field:
                 if not isinstance(candidate, Candidate):
@@ -1111,6 +1105,13 @@ class SkillZoneCandidateForm(ModelForm):
     def __init__(self, *args, **kwargs) -> None:
         super().__init__(*args, **kwargs)
         self.fields["candidate_id"].empty_label = None
+
+        self.fields = {
+            "skill_zone_id": self.fields["skill_zone_id"],
+            "candidate_id": self.fields["candidate_id"],
+            "reason": self.fields["reason"],
+        }
+
         if self.instance.pk:
             self.verbose_name = (
                 self.instance.candidate_id.name

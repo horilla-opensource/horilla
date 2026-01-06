@@ -30,18 +30,18 @@
 
             {# Delete Button #}
             {% if can_manage or can_delete or leave_manager %}
-            <button
-                class="oh-btn oh-btn--danger-outline oh-btn--light-bkg w-100 {% if instance.status != 'requested' %}disabled{% endif %}"
-                title="{% trans 'Delete' %}"
-                id="delete-link"
-                {% if instance.status == 'requested' %}
-                    hx-confirm="{% trans 'Are you sure you want to delete?' %}"
-                    hx-get="{% url 'request-delete' instance.id %}"
-                    hx-target="#leaveRequest"
-                {% endif %}
-                >
-                <ion-icon name="trash-outline"></ion-icon>
-            </button>
+                <button
+                    class="oh-btn oh-btn--danger-outline oh-btn--light-bkg w-100" {% if instance.status != 'requested' %}disabled{% endif %}
+                    title="{% trans 'Delete' %}"
+                    id="delete-link"
+                    {% if instance.status == 'requested' %}
+                        hx-confirm="{% trans 'Are you sure you want to delete?' %}"
+                        hx-get="{% url 'request-delete' instance.id %}"
+                        hx-target="#leaveRequest"
+                    {% endif %}
+                    >
+                    <ion-icon name="trash-outline"></ion-icon>
+                </button>
             {% endif %}
 
         </div>
