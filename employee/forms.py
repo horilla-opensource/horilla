@@ -207,11 +207,23 @@ class EmployeeForm(ModelForm):
         phone = self.cleaned_data.get("phone")
         dob = self.cleaned_data.get("dob")
         query = Employee.objects.entire().filter(email=email)
+        children = self.cleaned_data.get("children")
+        experience = self.cleaned_data.get("experience")
 
         if dob is None:
             self.add_error(
                 "dob",
                 _("This field is required.")
+            )
+        if children is not None and children < 0:
+            self.add_error(
+                "children",
+                _("Number of children cannot be negative.")
+            )
+        if experience is not None and experience < 0:
+            self.add_error(
+                "experience",
+                _("Experience cannot be negative.")
             )
 
         if email:
