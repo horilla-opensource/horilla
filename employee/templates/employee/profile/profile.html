@@ -40,37 +40,47 @@
 </div>
 
 <script>
-	$(document).ready(function() {
+	$(document).ready(function () {
+		$('#id_profile').change(function (e) {
 
-		  // Active tab script
-		function activeEmpprofileTab() {
-		  var activeTab = localStorage.getItem("activeEmpprofileTab")
+			const file = this.files[0];
+			const reader = new FileReader();
 
-		  if (!["#personal", "#bank"].includes(activeTab)) {
-			activeTab = "#personal";
-		  }
+			reader.addEventListener("load", function () {
+				const imageUrl = reader.result;
+				$(".preview").attr("src", imageUrl);
+			});
 
-		  if (!$(activeTab).length && $(`[data-target="#personal"]`).length) {
-			$(`[data-target="#personal"]`)[0].click()
-		  }else if(activeTab != null){
-			$(".oh-general__tab-link--active").removeClass("oh-general__tab-link--active");
-			$(`[data-target='${activeTab}']`).addClass("oh-general__tab-link--active");
-			$(".oh-general__tab-target").addClass("d-none");
-			$(activeTab).removeClass("d-none");
-			if($(`[data-target="${activeTab}"]`).length>0){
-			  $(`[data-target="${activeTab}"]`)[0].click();
-			}
-		  }
-		}
-		activeEmpprofileTab()
-		$("[data-action=general-tab]").on("click",function (e) {
-		  e.preventDefault();
-		  const targetId = $(this).attr('data-target');
-		  localStorage.setItem("activeEmpprofileTab",targetId)
+			reader.readAsDataURL(file);
 		});
 
-	  });
+		// Active tab script
+		function activeEmpTab() {
+			var activeTab = localStorage.getItem("activeEmpTab")
 
+			if (!["#personal", "#work", "#bank"].includes(activeTab)) {
+				activeTab = "#personal";
+			}
+
+			if (activeTab != null) {
+				$(".oh-general__tab-link--active").removeClass("oh-general__tab-link--active");
+				$(`[data-target='${activeTab}']`).addClass("oh-general__tab-link--active");
+				$(".oh-general__tab-target").addClass("d-none");
+				$(activeTab).removeClass("d-none");
+				if ($(`[data-target="${activeTab}"]`).length > 0) {
+					$(`[data-target="${activeTab}"]`)[0].click();
+				}
+			}
+		}
+		activeEmpTab()
+		$("[data-action=general-tab]").on("click", function (e) {
+			e.preventDefault();
+			const targetId = $(this).attr('data-target');
+			localStorage.setItem("activeEmpTab", targetId)
+			activeEmpTab()
+		});
+
+	});
 </script>
 
 {% endblock content %}
