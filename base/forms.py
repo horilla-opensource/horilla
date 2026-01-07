@@ -1439,16 +1439,7 @@ class EmployeeShiftScheduleForm(ModelForm):
         """
 
         model = EmployeeShiftSchedule
-        fields = [
-            "shift_id",
-            "minimum_working_hour",
-            "start_time",
-            "end_time",
-            "is_auto_punch_out_enabled",
-            "auto_punch_out_time",
-            "company_id",
-            "day",
-        ]
+        fields = "__all__"
         exclude = ["is_active", "day", "is_night_shift"]
         widgets = {
             "start_time": forms.TimeInput(),
