@@ -93,7 +93,6 @@ document.addEventListener("DOMContentLoaded", function () {
         .then(data => {
             bankData = data;
 
-            // Populate bank select
             for (const bank in data) {
                 const option = document.createElement("option");
                 option.value = bank;
@@ -102,7 +101,6 @@ document.addEventListener("DOMContentLoaded", function () {
                 bankSelect.appendChild(option);
             }
 
-            // Load initial bank/branch if editing
             if (initialBank) loadBank(initialBank, initialBranch);
         })
         .catch(err => console.error("Failed to load bank info:", err));

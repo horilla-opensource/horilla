@@ -1738,6 +1738,7 @@ def employee_update_bank_details(request, obj_id=None):
     )
     return HttpResponse(f'<ul class="alert alert-danger">{errors}</ul>')
 
+from django.core.exceptions import FieldDoesNotExist
 
 @login_required
 @hx_request_required
@@ -1773,11 +1774,32 @@ def employee_filter_view(request):
         employees = group_by_queryset(employees, field, page_number, "page")
         template = "employee_personal_info/group_by.html"
     else:
-        employees = sortby(request, employees, "orderby")
-        employees = paginator_qry(employees, page_number)
+        orderby = request.GET.get("orderby")
 
-        # Store the employees in the session
-        request.session["filtered_employees"] = [employee.id for employee in employees]
+        ORDERBY_FIELD_MAP = {
+            "reporting_manager_id": "employee_work_info__reporting_manager",
+        }
+
+        if orderby:
+            clean = orderby.lstrip("-")
+
+            mapped = ORDERBY_FIELD_MAP.get(clean)
+
+            if mapped:
+                if orderby.startswith("-"):
+                    orderby = f"-{mapped}"
+                else:
+                    orderby = mapped
+
+                employees = employees.order_by(orderby)
+
+            else:
+                try:
+                    Employee._meta.get_field(clean)
+                    employees = employees.order_by(orderby)
+                except FieldDoesNotExist:
+                    employees = employees.order_by("id")
+        employees = paginator_qry(employees, page_number)
 
     return render(
         request,
