@@ -123,17 +123,17 @@
 								>
 							</li>
 
-							<li data-cell-index="19" data-cell-title="{% trans 'Work type & Shift' %}" class="oh-general__tab">
-								<a
-								hx-get="{% url 'shift-tab' employee.id %}?profile=true"
-								hx-target="#shift_target"
-								data-action="general-tab"
-								data-target="#shift_target"
-								class="oh-general__tab-link pointer"
-								role="button"
-								>{% trans "Work Type & Shift" %}</a
-								>
-							</li>
+{#							<li data-cell-index="19" data-cell-title="{% trans 'Work type & Shift' %}" class="oh-general__tab">#}
+{#								<a#}
+{#								hx-get="{% url 'shift-tab' employee.id %}?profile=true"#}
+{#								hx-target="#shift_target"#}
+{#								data-action="general-tab"#}
+{#								data-target="#shift_target"#}
+{#								class="oh-general__tab-link pointer"#}
+{#								role="button"#}
+{#								>{% trans "Work Type & Shift" %}</a#}
+{#								>#}
+{#							</li>#}
 
 							{% if "attendance"|app_installed %}
 								<li data-cell-index="18" data-cell-title="{% trans 'Attendance' %}" class="oh-general__tab">
