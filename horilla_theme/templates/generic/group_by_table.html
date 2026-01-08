@@ -34,7 +34,7 @@
                 class="oh-accordion border border-primary-300 rounded-md overflow-hidden {% if forloop.first %}oh-accordion--show{% endif %}"
             >
                 <button
-                    class="oh-accordion-header no-after w-full flex justify-between items-center px-4 py-2 bg-[#fff5f1] text-[#e54f38] text-sm transition-all"
+                    class="oh-accordion-header no-after w-full flex justify-between items-center px-4 py-2 bg-primary-100 text-primary-600 text-sm transition-all"
                     data-field="{{saved_filters.field}}"
                     data-path="{{request.path}}"
                     data-group="{{forloop.counter}}"
@@ -65,15 +65,17 @@
                                             >
                                                 <input
                                                     type="checkbox"
-                                                    value=""
                                                     class="bulk-list-table-row w-4 h-4 bg-[#E9EDF7] rounded-sm text-[#e54f38] cursor-pointer"
                                                     title="Select All"
                                                     onchange="
-                                                        $(this).closest('.fixed-table').find('.list-table-row').prop('checked',$(this).is(':checked')).change();
-                                                        $(document).ready(function () {
-                                                        reloadSelectedCount($('#count_{{view_id|safe}}'),'{{selected_instances_key_id}}');
-                                                        reloadSelectedCount($('.count_{{view_id|safe}}'),'{{selected_instances_key_id}}');
-                                                        });
+                                                    var isChecked = $(this).is(':checked');
+                                                        $(this)
+                                                            .closest('.fixed-table')
+                                                            .find('.list-table-row')
+                                                            .prop('checked', isChecked)
+                                                            .trigger('change');
+                                                        reloadSelectedCount($('#count_{{view_id|safe}}'), '{{selected_instances_key_id}}');
+                                                        reloadSelectedCount($('.count_{{view_id|safe}}'), '{{selected_instances_key_id}}');
                                                     "
                                                 />
                                             </th>
@@ -157,14 +159,15 @@
                                                     value = "{{instance.pk}}"
                                                     onclick="event.stopPropagation();"
                                                     onchange="
-                                                        element = $(this) highlightRow(element);
-                                                        $(document).ready(function () {
-                                                            if (!element.is(':checked')) {
-                                                                removeId(element)
-                                                            }
-                                                            reloadSelectedCount($('#count_{{view_id|safe}}'),'{{selected_instances_key_id}}');
-                                                            reloadSelectedCount($('.count_{{view_id|safe}}'),'{{selected_instances_key_id}}');
-                                                        });
+                                                        var element = $(this);
+                                                        highlightRow(element);
+
+                                                        if (!element.is(':checked')) {
+                                                            removeId(element);
+                                                        }
+
+                                                        reloadSelectedCount($('#count_{{view_id|safe}}'),'{{selected_instances_key_id}}');
+                                                        reloadSelectedCount($('.count_{{view_id|safe}}'),'{{selected_instances_key_id}}');
                                                     "
                                                 />
                                             </td>
@@ -372,3 +375,10 @@
 	</div>
 	{% endif %}
 </div>
+
+<script>
+    $(document).ready(function() {
+        // Initialize selectSelected for the assigned leave delete view
+        selectSelected('#{{view_id|safe}}', 'selectedInstances');
+    });
+</script>

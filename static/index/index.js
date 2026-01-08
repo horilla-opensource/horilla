@@ -138,24 +138,43 @@ function selectSelected(viewId, storeKey = "selectedInstances") {
             .prop("checked", true)
             .change();
     });
+
     $(
         `${viewId} .oh-sticky-table__tbody .list-table-row,${viewId} tbody .list-table-row`
     ).change(function (e) {
         id = $(this).val();
         ids = JSON.parse($(`#${storeKey}`).attr("data-ids") || "[]");
+
+        // Convert to Set to ensure uniqueness, then back to array
         ids = Array.from(new Set(ids));
-        let index = ids.indexOf(id);
-        if (!ids.includes(id)) {
-            ids.push(id);
+
+        if ($(this).is(":checked")) {
+            // Checkbox is checked - add if not already present
+            if (!ids.includes(id)) {
+                ids.push(id);
+            }
         } else {
-            if (!$(this).is(":checked")) {
+            // Checkbox is unchecked - remove if present
+            let index = ids.indexOf(id);
+            if (index !== -1) {
                 ids.splice(index, 1);
             }
         }
+
+        // Update the data attribute with the modified array
         $(`#${storeKey}`).attr("data-ids", JSON.stringify(ids));
+
+        // Update count and show/hide buttons after every change
+        if (viewId) {
+            let cleanViewId = viewId.replace('#', '');
+            reloadSelectedCount($(`#count_${cleanViewId}`), storeKey);
+            reloadSelectedCount($(`.count_${cleanViewId}`), storeKey);
+        }
     });
+
     if (viewId) {
-        reloadSelectedCount($(`#count_${viewId}`), storeKey);
+        let cleanViewId = viewId.replace('#', '');
+        reloadSelectedCount($(`#count_${cleanViewId}`), storeKey);
     }
 }
 
@@ -259,6 +278,16 @@ function toggleReimbursmentType(element) {
             .parent().parent()
             .show()
             .attr("required", true);
+    }
+}
+
+function highlightRow(checkbox) {
+    console.log("Index.js ________________________________________", checkbox)
+    checkbox.closest(".oh-sticky-table__tr").removeClass("highlight-selected");
+    checkbox.closest("tr").removeClass("highlight-selected");
+    if (checkbox.is(":checked")) {
+        checkbox.closest(".oh-sticky-table__tr").addClass("highlight-selected");
+        checkbox.closest("tr").addClass("highlight-selected");
     }
 }
 
@@ -730,7 +759,7 @@ window.confirm = function (message) {
                     triggerEl.submit();
                 }
 
-            // Handle <a>
+                // Handle <a>
             } else if (triggerEl.tagName.toLowerCase() === "a") {
                 if (triggerEl.href) {
                     window.location.href = triggerEl.href;
@@ -771,7 +800,7 @@ window.confirm = function (message) {
                         ajaxWithResponseHandler(triggerEl);
                     });
                 }
-            // Handle other HTMX triggers
+                // Handle other HTMX triggers
             } else {
                 if (verb === "post") {
                     htmx.ajax("POST", path, {
