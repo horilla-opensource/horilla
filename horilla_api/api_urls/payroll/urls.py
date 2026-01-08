@@ -13,7 +13,7 @@ urlpatterns = [
     ),
     path("payslip/", PayslipView.as_view(), name=""),
     path("payslip/<int:id>", PayslipView.as_view(), name=""),
-    path("payslip-download/<int:id>", PayslipDownloadView.as_view(), name=""),
+    path("payslip-download/<int:id>", PayslipPDFAPIView.as_view(), name=""),
     path("payslip-send-mail/", PayslipSendMailView.as_view(), name=""),
     path("loan-account/", LoanAccountView.as_view(), name=""),
     path("loan-account/<int:pk>", LoanAccountView.as_view(), name=""),
