@@ -37,6 +37,7 @@ class HorillaAutomationConfig(AppConfig):
 
         model_choices.append(("employee.models.Employee", "Employee"))
         model_choices.append(("pms.models.EmployeeKeyResult", "Employee Key Results"))
+        model_choices.append(("pms.models.Feedback", "Feedback"))
         model_choices[:] = list(set(model_choices))  # Update in-place
 
         # Only start automation when running the server

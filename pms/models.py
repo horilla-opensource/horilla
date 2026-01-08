@@ -468,10 +468,59 @@ class Question(HorillaModel):
         null=True,
         blank=True,
     )
+
+    # Who can answer this question - controls visibility in feedback form
+    answerable_by_employee = models.BooleanField(
+        default=True,
+        verbose_name=_("Employee Can Answer"),
+        help_text=_("If checked, the employee can answer this question in their self-feedback"),
+    )
+    answerable_by_manager = models.BooleanField(
+        default=True,
+        verbose_name=_("Manager Can Answer"),
+        help_text=_("If checked, the manager can answer this question"),
+    )
+    answerable_by_colleague = models.BooleanField(
+        default=True,
+        verbose_name=_("Colleague Can Answer"),
+        help_text=_("If checked, colleagues can answer this question"),
+    )
+    answerable_by_subordinate = models.BooleanField(
+        default=True,
+        verbose_name=_("Subordinate Can Answer"),
+        help_text=_("If checked, subordinates can answer this question"),
+    )
+    answerable_by_others = models.BooleanField(
+        default=True,
+        verbose_name=_("Others Can Answer"),
+        help_text=_("If checked, other employees can answer this question"),
+    )
+
     objects = HorillaCompanyManager("template_id__company_id")
 
     def __str__(self):
         return self.question
+
+    def is_answerable_by_role(self, role):
+        """Check if this question can be answered by a specific role"""
+        role_map = {
+            "employee": self.answerable_by_employee,
+            "manager": self.answerable_by_manager,
+            "colleague": self.answerable_by_colleague,
+            "subordinate": self.answerable_by_subordinate,
+            "others": self.answerable_by_others,
+        }
+        return role_map.get(role, True)
+
+    def is_manager_only(self):
+        """Check if this question is only answerable by the manager"""
+        return (
+            self.answerable_by_manager
+            and not self.answerable_by_employee
+            and not self.answerable_by_colleague
+            and not self.answerable_by_subordinate
+            and not self.answerable_by_others
+        )
 
 
 class QuestionOptions(HorillaModel):
@@ -506,8 +555,19 @@ class Feedback(HorillaModel):
         ("months", _("Months")),
         ("years", _("Years")),
     )
+    FEEDBACK_TYPE_CHOICES = (
+        ("360", _("360 Feedback")),
+        ("appraisal", _("Performance Appraisal")),
+    )
     review_cycle = models.CharField(
         max_length=100, null=False, blank=False, verbose_name=_("Title")
+    )
+    feedback_type = models.CharField(
+        max_length=20,
+        choices=FEEDBACK_TYPE_CHOICES,
+        default="360",
+        verbose_name=_("Feedback Type"),
+        help_text=_("360 Feedback: All participants fill independently. Performance Appraisal: Employee fills first, then manager reviews and rates."),
     )
     manager_id = models.ForeignKey(
         Employee,
@@ -576,6 +636,18 @@ class Feedback(HorillaModel):
     cyclic_next_start_date = models.DateField(null=True, blank=True)
     cyclic_next_end_date = models.DateField(null=True, blank=True)
 
+    # Appraisal workflow tracking
+    employee_submitted = models.BooleanField(
+        default=False,
+        verbose_name=_("Employee Submitted"),
+        help_text=_("Indicates if the employee has completed their self-assessment (for appraisal mode)"),
+    )
+    manager_submitted = models.BooleanField(
+        default=False,
+        verbose_name=_("Manager Submitted"),
+        help_text=_("Indicates if the manager has completed their review (for appraisal mode)"),
+    )
+
     objects = HorillaCompanyManager("employee_id__employee_work_info__company_id")
 
     class Meta:
@@ -625,6 +697,34 @@ class Feedback(HorillaModel):
         if self.employee_id:
             employees.add(self.employee_id)
         return list(employees)
+
+    def is_appraisal(self):
+        """Check if this is a performance appraisal feedback"""
+        return self.feedback_type == "appraisal"
+
+    def can_employee_answer(self):
+        """Check if the employee can currently fill out their part"""
+        if not self.is_appraisal():
+            return True  # 360 feedback - always can answer
+        return not self.employee_submitted
+
+    def can_manager_review(self):
+        """Check if the manager can currently review and rate"""
+        if not self.is_appraisal():
+            return True  # 360 feedback - always can answer
+        # Manager can only review after employee has submitted
+        return self.employee_submitted and not self.manager_submitted
+
+    def get_appraisal_status(self):
+        """Get the current status of the appraisal workflow"""
+        if not self.is_appraisal():
+            return None
+        if not self.employee_submitted:
+            return "awaiting_employee"
+        elif not self.manager_submitted:
+            return "awaiting_manager"
+        else:
+            return "completed"
 
 
 class AnonymousFeedback(models.Model):
@@ -734,6 +834,62 @@ class Answer(models.Model):
 
     def __str__(self):
         return f"{self.employee_id.employee_first_name} - {self.answer}"
+
+
+class ManagerRating(models.Model):
+    """
+    Stores manager's rating/assessment of an employee's answer.
+    Used in Performance Appraisal mode where manager reviews employee's self-assessment.
+    """
+    feedback = models.ForeignKey(
+        Feedback,
+        on_delete=models.CASCADE,
+        related_name="manager_ratings",
+    )
+    employee_answer = models.ForeignKey(
+        Answer,
+        on_delete=models.CASCADE,
+        related_name="manager_rating",
+        help_text=_("The employee's answer being rated"),
+    )
+    question = models.ForeignKey(
+        Question,
+        on_delete=models.DO_NOTHING,
+        related_name="manager_ratings",
+        null=True,
+        blank=True,
+    )
+    rating = models.IntegerField(
+        null=True,
+        blank=True,
+        verbose_name=_("Rating"),
+        help_text=_("Manager's rating (1-5)"),
+    )
+    comment = models.TextField(
+        null=True,
+        blank=True,
+        verbose_name=_("Comment"),
+        help_text=_("Manager's comment on the employee's answer"),
+    )
+    manager = models.ForeignKey(
+        Employee,
+        on_delete=models.DO_NOTHING,
+        related_name="given_ratings",
+        verbose_name=_("Rated By"),
+    )
+    created_at = models.DateTimeField(auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now=True)
+
+    # Use standard Django manager to avoid issues with update_or_create
+    objects = models.Manager()
+
+    class Meta:
+        verbose_name = _("Manager Rating")
+        verbose_name_plural = _("Manager Ratings")
+        unique_together = ["feedback", "employee_answer", "manager"]
+
+    def __str__(self):
+        return f"Rating by {self.manager} for {self.employee_answer}"
 
 
 class KeyResultFeedback(models.Model):

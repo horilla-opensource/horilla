@@ -28,6 +28,7 @@ from employee.filters import EmployeeFilter
 from horilla import horilla_middlewares
 from horilla_widgets.widgets.horilla_multi_select_field import HorillaMultiSelectField
 from horilla_widgets.widgets.select_widgets import HorillaMultiSelectWidget
+from base.models import Department
 from pms.models import (
     AnonymousFeedback,
     BonusPointSetting,
@@ -685,7 +686,7 @@ class FeedbackForm(HorillaModelForm):
     class Meta:
         model = Feedback
         fields = "__all__"
-        exclude = ["status", "archive", "is_active"]
+        exclude = ["status", "archive", "is_active", "employee_submitted", "manager_submitted"]
 
         widgets = {
             "review_cycle": forms.TextInput(
@@ -701,6 +702,11 @@ class FeedbackForm(HorillaModelForm):
                 attrs={
                     "class": "oh-switch__checkbox",
                     "onchange": "changeCyclicFeedback(this)",
+                }
+            ),
+            "feedback_type": forms.Select(
+                attrs={
+                    "class": "oh-select w-100",
                 }
             ),
         }
@@ -802,6 +808,77 @@ class FeedbackForm(HorillaModelForm):
         return cleaned_data
 
 
+class DepartmentBulkFeedbackForm(forms.Form):
+    """
+    Form for bulk creating feedbacks by department.
+    Supports title templates with placeholders like {{employee_name}}, {{department}}.
+    """
+
+    departments = forms.ModelMultipleChoiceField(
+        queryset=Department.objects.all(),
+        label=_("Departments"),
+        widget=forms.SelectMultiple(
+            attrs={
+                "class": "oh-select oh-select-2 select2-hidden-accessible w-100",
+            }
+        ),
+        help_text=_("Select one or more departments"),
+    )
+
+    title_template = forms.CharField(
+        max_length=200,
+        label=_("Title Template"),
+        widget=forms.TextInput(
+            attrs={
+                "class": "oh-input w-100",
+                "placeholder": _("e.g., Performance Appraisal for {{employee_name}}"),
+            }
+        ),
+        help_text=_("Use {{employee_name}} or {{department}} as placeholders"),
+    )
+
+    question_template_id = forms.ModelChoiceField(
+        queryset=QuestionTemplate.objects.filter(is_active=True),
+        label=_("Question Template"),
+        widget=forms.Select(attrs={"class": "oh-select oh-select-2 select2-hidden-accessible w-100"}),
+    )
+
+    feedback_type = forms.ChoiceField(
+        choices=Feedback.FEEDBACK_TYPE_CHOICES,
+        label=_("Feedback Type"),
+        widget=forms.Select(attrs={"class": "oh-select oh-select-2 select2-hidden-accessible w-100"}),
+        initial="appraisal",
+    )
+
+    start_date = forms.DateField(
+        label=_("Start Date"),
+        widget=forms.DateInput(attrs={"type": "date", "class": "oh-input w-100"}),
+    )
+
+    end_date = forms.DateField(
+        label=_("End Date"),
+        widget=forms.DateInput(attrs={"type": "date", "class": "oh-input w-100"}),
+    )
+
+    # Hidden field to store selected employees (populated via AJAX)
+    selected_employees = forms.CharField(
+        widget=forms.HiddenInput(),
+        required=False,
+    )
+
+    def clean(self):
+        cleaned_data = super().clean()
+        start_date = cleaned_data.get("start_date")
+        end_date = cleaned_data.get("end_date")
+
+        if start_date and end_date and start_date > end_date:
+            raise forms.ValidationError(
+                _("The start date must be before the end date.")
+            )
+
+        return cleaned_data
+
+
 class QuestionTemplateForm(ModelForm):
     """
     Form for creating or updating a question template instance
@@ -890,6 +967,38 @@ class QuestionForm(ModelForm):
         required=False,
     )
 
+    # Answerable by fields - who can answer this question
+    answerable_by_employee = forms.BooleanField(
+        required=False,
+        initial=True,
+        label=_("Employee"),
+        widget=forms.CheckboxInput(attrs={"class": "oh-switch__checkbox"}),
+    )
+    answerable_by_manager = forms.BooleanField(
+        required=False,
+        initial=True,
+        label=_("Manager"),
+        widget=forms.CheckboxInput(attrs={"class": "oh-switch__checkbox"}),
+    )
+    answerable_by_colleague = forms.BooleanField(
+        required=False,
+        initial=True,
+        label=_("Colleague"),
+        widget=forms.CheckboxInput(attrs={"class": "oh-switch__checkbox"}),
+    )
+    answerable_by_subordinate = forms.BooleanField(
+        required=False,
+        initial=True,
+        label=_("Subordinate"),
+        widget=forms.CheckboxInput(attrs={"class": "oh-switch__checkbox"}),
+    )
+    answerable_by_others = forms.BooleanField(
+        required=False,
+        initial=True,
+        label=_("Others"),
+        widget=forms.CheckboxInput(attrs={"class": "oh-switch__checkbox"}),
+    )
+
     class Meta:
         """
         A nested class that specifies the model,exclude fields and style of fields for the form.
@@ -911,6 +1020,14 @@ class QuestionForm(ModelForm):
         super().__init__(*args, **kwargs)
         reload_queryset(self.fields)
         self.fields["question_type"].widget.attrs.update({"id": str(uuid.uuid4())})
+
+        # Set initial values for answerable_by fields if editing existing question
+        if self.instance.pk:
+            self.fields["answerable_by_employee"].initial = self.instance.answerable_by_employee
+            self.fields["answerable_by_manager"].initial = self.instance.answerable_by_manager
+            self.fields["answerable_by_colleague"].initial = self.instance.answerable_by_colleague
+            self.fields["answerable_by_subordinate"].initial = self.instance.answerable_by_subordinate
+            self.fields["answerable_by_others"].initial = self.instance.answerable_by_others
         if (
             self.instance.pk
             and self.instance.question_type == "4"

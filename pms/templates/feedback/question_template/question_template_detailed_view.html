@@ -40,6 +40,45 @@
                                     <p id="id_question_template_error" class="text-danger mt-1 p-2"></p>
 
                                     </div>
+                                    
+                                    <!-- Answerable By Section -->
+                                    <div class="col-12 mt-3">
+                                        <label class="oh-label text-muted fw-bold mb-2">{% trans "Who Can Answer This Question" %}</label>
+                                        <div class="d-flex flex-wrap gap-3">
+                                            <div class="oh-switch">
+                                                <input type="checkbox" name="answerable_by_employee" class="oh-switch__checkbox" id="id_answerable_by_employee_create" checked>
+                                                <label class="oh-switch__label" for="id_answerable_by_employee_create">
+                                                    {% trans "Employee" %}
+                                                </label>
+                                            </div>
+                                            <div class="oh-switch">
+                                                <input type="checkbox" name="answerable_by_manager" class="oh-switch__checkbox" id="id_answerable_by_manager_create" checked>
+                                                <label class="oh-switch__label" for="id_answerable_by_manager_create">
+                                                    {% trans "Manager" %}
+                                                </label>
+                                            </div>
+                                            <div class="oh-switch">
+                                                <input type="checkbox" name="answerable_by_colleague" class="oh-switch__checkbox" id="id_answerable_by_colleague_create" checked>
+                                                <label class="oh-switch__label" for="id_answerable_by_colleague_create">
+                                                    {% trans "Colleague" %}
+                                                </label>
+                                            </div>
+                                            <div class="oh-switch">
+                                                <input type="checkbox" name="answerable_by_subordinate" class="oh-switch__checkbox" id="id_answerable_by_subordinate_create" checked>
+                                                <label class="oh-switch__label" for="id_answerable_by_subordinate_create">
+                                                    {% trans "Subordinate" %}
+                                                </label>
+                                            </div>
+                                            <div class="oh-switch">
+                                                <input type="checkbox" name="answerable_by_others" class="oh-switch__checkbox" id="id_answerable_by_others_create" checked>
+                                                <label class="oh-switch__label" for="id_answerable_by_others_create">
+                                                    {% trans "Others" %}
+                                                </label>
+                                            </div>
+                                        </div>
+                                        <small class="text-muted">{% trans "Uncheck to hide this question from specific roles when they fill out the feedback" %}</small>
+                                    </div>
+                                    
                                     <div x-data="{showAnswers: true}" class="oh-link__expanded d-none">
                                         <a href="#" class="oh-link oh-link--secondary mt-3"
                                             @click="showAnswers = !showAnswers" x-show="!showAnswers">

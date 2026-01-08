@@ -1,0 +1,388 @@
+{% extends 'index.html' %} {% load static i18n %}
+{% block styles %}
+<link rel="stylesheet" href="{% static 'css/pms.css' %}" />
+<style>
+    .employee-table-container {
+        max-height: 400px;
+        overflow-y: auto;
+        border: 1px solid #e0e0e0;
+        border-radius: 8px;
+        margin-top: 1rem;
+    }
+    .employee-table {
+        width: 100%;
+        border-collapse: collapse;
+    }
+    .employee-table th,
+    .employee-table td {
+        padding: 12px 15px;
+        text-align: left;
+        border-bottom: 1px solid #e0e0e0;
+    }
+    .employee-table th {
+        background-color: #f8f9fa;
+        font-weight: 600;
+        position: sticky;
+        top: 0;
+        z-index: 1;
+    }
+    .employee-table tr:hover {
+        background-color: #f5f5f5;
+    }
+    .employee-count {
+        font-size: 0.9rem;
+        color: #666;
+        margin-bottom: 0.5rem;
+    }
+    .no-manager-warning {
+        color: #dc3545;
+        font-size: 0.85rem;
+    }
+    .placeholder-hint {
+        background: #f8f9fa;
+        padding: 10px 15px;
+        border-radius: 6px;
+        margin-top: 0.5rem;
+    }
+    .placeholder-hint code {
+        background: #e9ecef;
+        padding: 2px 6px;
+        border-radius: 3px;
+        font-size: 0.9rem;
+    }
+    .select-all-container {
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+    }
+</style>
+{% endblock styles %}
+{% block content %}
+{% if form.errors %}
+<div class="oh-wrapper">
+    <div class="oh-alert-container">
+        {% for error in form.non_field_errors %}
+        <div class="oh-alert oh-alert--animated oh-alert--danger">
+            {{ error }}
+        </div>
+        {% endfor %}
+    </div>
+</div>
+{% endif %}
+
+<div class="oh-wrapper" id="message"></div>
+
+<main class="oh-onboarding">
+    <div class="oh-onboarding-card oh-profile-section" style="max-width: 1100px">
+        <form action="{% url 'bulk-feedback-creation-post' %}" id="bulkFeedbackForm" method="post">
+            {% csrf_token %}
+            {{ form.non_field_errors }}
+
+            <div class="oh-onboarding-card__address-group">
+                <h2 class="oh-onboarding-card__section-title">
+                    {% trans "Bulk Feedback Creation" %}
+                </h2>
+                <p class="text-muted mb-4">
+                    {% trans "Create feedbacks for multiple employees at once by selecting departments." %}
+                </p>
+
+                <!-- Department & Common Settings -->
+                <div class="row">
+                    <div class="col-12 col-md-6">
+                        <div class="oh-input__group">
+                            <label class="oh-input__label" for="id_departments">
+                                {% trans "Departments" %}
+                            </label>
+                            <select id="id_departments" name="departments" class="oh-select oh-select-2 w-100" multiple="multiple">
+                                {% for dept in departments %}
+                                <option value="{{ dept.id }}">{{ dept.department }}</option>
+                                {% endfor %}
+                            </select>
+                            {{ form.departments.errors }}
+                        </div>
+                    </div>
+                    <div class="col-12 col-md-6">
+                        <div class="oh-input__group">
+                            <label class="oh-input__label" for="{{ form.feedback_type.id_for_label }}">
+                                {{ form.feedback_type.label }}
+                            </label>
+                            {{ form.feedback_type }}
+                            {{ form.feedback_type.errors }}
+                        </div>
+                    </div>
+                </div>
+
+                <div class="row">
+                    <div class="col-12">
+                        <div class="oh-input__group">
+                            <label class="oh-input__label" for="{{ form.title_template.id_for_label }}">
+                                {{ form.title_template.label }}
+                            </label>
+                            {{ form.title_template }}
+                            {{ form.title_template.errors }}
+                            <div class="placeholder-hint">
+                                <strong>{% trans "Available placeholders" %}:</strong>
+                                <code>{% templatetag openvariable %}employee_name{% templatetag closevariable %}</code>,
+                                <code>{% templatetag openvariable %}employee_first_name{% templatetag closevariable %}</code>,
+                                <code>{% templatetag openvariable %}employee_last_name{% templatetag closevariable %}</code>,
+                                <code>{% templatetag openvariable %}department{% templatetag closevariable %}</code>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="row">
+                    <div class="col-12">
+                        <div class="oh-input__group">
+                            <label class="oh-input__label" for="{{ form.question_template_id.id_for_label }}">
+                                {{ form.question_template_id.label }}
+                            </label>
+                            {{ form.question_template_id }}
+                            {{ form.question_template_id.errors }}
+                        </div>
+                    </div>
+                </div>
+
+                <div class="row">
+                    <div class="col-12 col-md-6">
+                        <div class="oh-input__group">
+                            <label class="oh-input__label" for="{{ form.start_date.id_for_label }}">
+                                {{ form.start_date.label }}
+                            </label>
+                            {{ form.start_date }}
+                            {{ form.start_date.errors }}
+                        </div>
+                    </div>
+                    <div class="col-12 col-md-6">
+                        <div class="oh-input__group">
+                            <label class="oh-input__label" for="{{ form.end_date.id_for_label }}">
+                                {{ form.end_date.label }}
+                            </label>
+                            {{ form.end_date }}
+                            {{ form.end_date.errors }}
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Employee Selection Section -->
+                <div class="mt-4">
+                    <h3 class="oh-onboarding-card__section-title" style="font-size: 1.1rem;">
+                        {% trans "Select Employees" %}
+                    </h3>
+
+                    <div id="employeeSection" style="display: none;">
+                        <div class="d-flex justify-content-between align-items-center mb-2">
+                            <p class="employee-count mb-0">
+                                <span id="selectedCount">0</span> {% trans "of" %} 
+                                <span id="totalCount">0</span> {% trans "employees selected" %}
+                            </p>
+                            <div class="select-all-container">
+                                <input type="checkbox" id="selectAll" class="form-check-input" />
+                                <label for="selectAll" class="form-check-label">{% trans "Select All" %}</label>
+                            </div>
+                        </div>
+
+                        <div class="employee-table-container">
+                            <table class="employee-table">
+                                <thead>
+                                    <tr>
+                                        <th style="width: 40px;"></th>
+                                        <th>{% trans "Employee" %}</th>
+                                        <th>{% trans "Department" %}</th>
+                                        <th>{% trans "Manager" %}</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="employeeTableBody">
+                                    <!-- Populated via JavaScript -->
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+
+                    <div id="noEmployeesMessage" class="text-center py-4 text-muted">
+                        <ion-icon name="people-outline" style="font-size: 3rem;"></ion-icon>
+                        <p class="mt-2">{% trans "Select departments to load employees" %}</p>
+                    </div>
+
+                    <div id="loadingMessage" class="text-center py-4" style="display: none;">
+                        <div class="spinner-border text-primary" role="status">
+                            <span class="visually-hidden">Loading...</span>
+                        </div>
+                        <p class="mt-2">{% trans "Loading employees..." %}</p>
+                    </div>
+                </div>
+
+                <!-- Hidden field for selected employees -->
+                {{ form.selected_employees }}
+            </div>
+
+            <div class="w-100 d-flex align-items-center justify-content-between mt-4">
+                <a href="{% url 'feedback-view' %}" class="oh-btn oh-btn--light">
+                    {% trans "Cancel" %}
+                </a>
+                <button type="submit" class="oh-btn oh-btn--secondary" id="submitBtn" disabled>
+                    {% trans "Create Feedbacks" %}
+                </button>
+            </div>
+        </form>
+    </div>
+</main>
+
+<script>
+$(document).ready(function () {
+    let allEmployees = [];
+
+    // Initialize Select2 for all selects
+    setTimeout(function() {
+        // Remove any existing Select2 instances first
+        $('select').each(function() {
+            $(this).siblings('span.select2.select2-container').remove();
+        });
+        
+        // Initialize Select2 on selects
+        $('#id_departments').select2({
+            placeholder: "{% trans 'Select departments...' %}",
+            allowClear: true,
+            width: '100%'
+        });
+        $('#id_question_template_id').select2({ width: '100%' });
+        $('#id_feedback_type').select2({ width: '100%' });
+        
+        // Bind change event for departments Select2
+        $('#id_departments').on('change', function() {
+            loadDepartmentEmployees();
+        });
+    }, 200);
+
+    // Department change handler
+    window.loadDepartmentEmployees = function() {
+        const departmentIds = $('#id_departments').val();
+
+        if (!departmentIds || departmentIds.length === 0) {
+            $('#employeeSection').hide();
+            $('#noEmployeesMessage').show();
+            $('#loadingMessage').hide();
+            allEmployees = [];
+            updateSelectedEmployees();
+            return;
+        }
+
+        $('#employeeSection').hide();
+        $('#noEmployeesMessage').hide();
+        $('#loadingMessage').show();
+
+        // Build query string for multiple department IDs
+        const params = departmentIds.map(id => `department_ids[]=${id}`).join('&');
+
+        $.ajax({
+            url: '{% url "get-department-employees" %}?' + params,
+            method: 'GET',
+            success: function(response) {
+                allEmployees = response.employees || [];
+                renderEmployeeTable();
+                $('#loadingMessage').hide();
+
+                if (allEmployees.length > 0) {
+                    $('#employeeSection').show();
+                    $('#noEmployeesMessage').hide();
+                } else {
+                    $('#employeeSection').hide();
+                    $('#noEmployeesMessage').show();
+                    $('#noEmployeesMessage p').text('{% trans "No employees found in selected departments" %}');
+                }
+            },
+            error: function() {
+                $('#loadingMessage').hide();
+                $('#noEmployeesMessage').show();
+                $('#noEmployeesMessage p').text('{% trans "Error loading employees. Please try again." %}');
+            }
+        });
+    };
+
+    // Render employee table
+    function renderEmployeeTable() {
+        const tbody = $('#employeeTableBody');
+        tbody.empty();
+
+        allEmployees.forEach(function(emp) {
+            const managerHtml = emp.manager_name === 'No Manager'
+                ? `<span class="no-manager-warning"><ion-icon name="warning-outline"></ion-icon> ${emp.manager_name}</span>`
+                : emp.manager_name;
+
+            const row = `
+                <tr>
+                    <td>
+                        <input type="checkbox" class="employee-checkbox form-check-input" 
+                               value="${emp.id}" data-name="${emp.name}" checked />
+                    </td>
+                    <td>${emp.name}</td>
+                    <td>${emp.department}</td>
+                    <td>${managerHtml}</td>
+                </tr>
+            `;
+            tbody.append(row);
+        });
+
+        $('#totalCount').text(allEmployees.length);
+        updateSelectedCount();
+        updateSelectedEmployees();
+    }
+
+    // Select all checkbox handler
+    $('#selectAll').on('change', function() {
+        const isChecked = $(this).is(':checked');
+        $('.employee-checkbox').prop('checked', isChecked);
+        updateSelectedCount();
+        updateSelectedEmployees();
+    });
+
+    // Individual checkbox handler
+    $(document).on('change', '.employee-checkbox', function() {
+        updateSelectedCount();
+        updateSelectedEmployees();
+
+        // Update select all checkbox state
+        const totalCheckboxes = $('.employee-checkbox').length;
+        const checkedCheckboxes = $('.employee-checkbox:checked').length;
+        $('#selectAll').prop('checked', totalCheckboxes === checkedCheckboxes);
+    });
+
+    // Update selected count display
+    function updateSelectedCount() {
+        const count = $('.employee-checkbox:checked').length;
+        $('#selectedCount').text(count);
+
+        // Enable/disable submit button
+        $('#submitBtn').prop('disabled', count === 0);
+    }
+
+    // Update hidden field with selected employee IDs
+    function updateSelectedEmployees() {
+        const selectedIds = [];
+        $('.employee-checkbox:checked').each(function() {
+            selectedIds.push(parseInt($(this).val()));
+        });
+        $('#id_selected_employees').val(JSON.stringify(selectedIds));
+    }
+
+    // Form validation before submit
+    $('#bulkFeedbackForm').on('submit', function(e) {
+        const selectedCount = $('.employee-checkbox:checked').length;
+        if (selectedCount === 0) {
+            e.preventDefault();
+            alert('{% trans "Please select at least one employee." %}');
+            return false;
+        }
+
+        // Confirm creation
+        if (!confirm(`{% trans "Are you sure you want to create " %}${selectedCount}{% trans " feedback(s)?" %}`)) {
+            e.preventDefault();
+            return false;
+        }
+
+        // Show loading state
+        $('#submitBtn').prop('disabled', true).text('{% trans "Creating..." %}');
+    });
+});
+</script>
+{% endblock %}
