@@ -1,6 +1,6 @@
 import calendar
 from datetime import datetime, timedelta
-
+from django.utils.timezone import now
 from django.apps import apps
 from django.db.models import Q
 
@@ -158,3 +158,31 @@ def filter_conditional_leave_request(request):
         else:
             leave_request_ids.append(instance.leave_request_id.id)
     return LeaveRequest.objects.filter(pk__in=leave_request_ids)
+
+
+
+
+def is_carryforward_valid(leave_type, leave_start_date):
+    if leave_type.carryforward_expire_date:
+        return leave_start_date <= leave_type.carryforward_expire_date
+
+    if (
+        leave_type.carryforward_expire_in
+        and leave_type.carryforward_expire_period
+    ):
+        today = now().date()
+
+        if leave_type.carryforward_expire_period == "day":
+            expiry_date = today + timedelta(days=leave_type.carryforward_expire_in)
+
+        elif leave_type.carryforward_expire_period == "month":
+            expiry_date = today.replace(
+                month=min(today.month + leave_type.carryforward_expire_in, 12)
+            )
+
+        else:
+            return False
+
+        return leave_start_date <= expiry_date
+
+    return False
