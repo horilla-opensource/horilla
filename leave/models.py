@@ -32,7 +32,7 @@ from horilla_audit.models import HorillaAuditInfo, HorillaAuditLog
 from leave.methods import (
     calculate_requested_days,
     company_leave_dates_list,
-    holiday_dates_list,
+    holiday_dates_list, is_carryforward_valid,
 )
 
 logger = logging.getLogger(__name__)
@@ -1004,22 +1004,30 @@ class LeaveRequest(HorillaModel):
         month_year = [f"{date.year}-{date.strftime('%m')}" for date in leave_dates]
         today = datetime.today()
         unique_dates = list(set(month_year))
-        if f"{today.month}-{today.year}" in unique_dates:
-            unique_dates.remove(f"{today.strftime('%m')}-{today.year}")
+        current_month = today.strftime("%Y-%m")
+        if current_month in unique_dates:
+            unique_dates.remove(current_month)
 
         forcated_days = available_leave.forcasted_leaves(self.start_date)
-        total_leave_days = (
-            available_leave.leave_type_id.carryforward_max
-            if available_leave.leave_type_id.carryforward_type
-            in ["carryforward", "carryforward expire"]
-            and available_leave.leave_type_id.carryforward_max < total_leave_days
-            else total_leave_days
-        )
-        if (
-            available_leave.leave_type_id.carryforward_type == "no carryforward"
-            and available_leave.carryforward_days
-        ):
-            total_leave_days = total_leave_days - available_leave.carryforward_days
+        leave_type = available_leave.leave_type_id
+
+        total_leave_days = available_leave.available_days
+
+        if leave_type.carryforward_type == "carryforward":
+            total_leave_days += min(
+                available_leave.carryforward_days or 0,
+                leave_type.carryforward_max or available_leave.carryforward_days or 0,
+            )
+
+        elif leave_type.carryforward_type == "carryforward expire":
+            if is_carryforward_valid(leave_type, self.start_date):
+                total_leave_days += min(
+                    available_leave.carryforward_days or 0,
+                    leave_type.carryforward_max or available_leave.carryforward_days or 0,
+                )
+
+        total_leave_days += forcated_days
+
         total_leave_days += forcated_days
         if not effective_requested_days <= total_leave_days:
             raise ValidationError(
