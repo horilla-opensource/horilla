@@ -1,3 +1,5 @@
-from django.test import TestCase
+"""
+Tests for the horilla_theme app
+"""
 
-# Create your tests here.
+# Create your horilla_theme tests here.

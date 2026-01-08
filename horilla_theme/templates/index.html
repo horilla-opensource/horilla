@@ -1,6 +1,7 @@
 {% load static %}
 {% load i18n %}
 {% load horillafilters %}
+{% get_company as company_obj %}
 <!DOCTYPE html>
 <html>
     <head>
@@ -19,7 +20,8 @@
         <link rel="icon" type="image/png" sizes="16x16"
             href="{% if white_label_company.icon %}{{white_label_company.icon.url}} {% else %}{% static 'favicons/favicon-16x16.png' %}{% endif %}">
 
-        {% include "horilla_theme/components/header_scripts.html" %}
+            <script src="{% static "horilla_theme/assets/js/tailwindcdn.js" %}"></script>
+            {% include "horilla_theme/components/header_scripts.html" %}
 
         <link
             rel="stylesheet"
@@ -33,7 +35,6 @@
         <link href="{% static 'cdn/select2/css/select2.min.css' %}" rel="stylesheet" />
 
         <script src="{% static 'horilla_theme/assets/js/global.js' %}"></script>
-        <script src="{% static "horilla_theme/assets/js/tailwindcdn.js" %}"></script>
         <script src="{% static 'cdn/hyperscript/script/_hyperscript.min.js' %}"></script>
         <!-- Load global.css after Select2 to ensure custom styles override Select2 defaults -->
         <link
@@ -45,6 +46,61 @@
             href="{% static 'horilla_theme/assets/css/v1_styles.css' %}"
         />
         <link rel="stylesheet" href="{% static 'build/css/pivottable.min.css' %}" />
+        {% with theme=company_obj.companytheme_set.first.theme %}
+        <style>
+
+            /* Primary 600 background */
+            .btn,
+            .oh-btn--secondary,
+            .toggle-input:checked + .toggle-switch,
+            .sideboxmain.active,
+            .sideboxmain:hover,
+            .usertablist li button:hover,
+            .usertablist li button.active,
+            .oh-tabs__tab--active,
+            .oh-switch .oh-switch__checkbox:checked,
+            .select2-container--default
+            .select2-selection--multiple
+            .select2-selection__choice {
+                background-color: {{ theme.primary_600|default:"#E54F38" }};
+            }
+
+            .usertablist li button.active,
+            .usertablist li button:hover{
+                border: 1px solid {{ company_obj.companytheme_set.first.theme.primary_600|default:"#E54F38" }};
+            }
+
+            .oh-btn--secondary:hover{
+                background-color: {{ company_obj.companytheme_set.first.theme.primary_800 | default:"#AC3B2A" }}
+            }
+
+            /* Primary 300 background */
+            .sidebox ul li a:after,
+            .sidebox ul li a:hover,
+            .oh-accordion-header:hover {
+                background-color: {{ theme.primary_300|default:"#FCEDEB" }};
+            }
+
+            /* Accordion base */
+            .oh-accordion-header {
+                background-color: {{ theme.primary_200|default:"#FEF6F5" }};
+                color: {{ theme.primary_600|default:"#E54F38" }};
+            }
+
+            .oh-tabs__movable-header,
+            .oh-tabs__movable:hover {
+                background-color: {{ theme.primary_100|default:"#FEF6F5" }};
+            }
+
+            /* Text color */
+            .oh-tabs__movable-header,
+            .sidebox ul li a:hover,
+            .breadcrumb li:last-child,
+            .breadcrumb li a:hover {
+                color: {{ theme.primary_600|default:"#E54F38" }};
+            }
+        </style>
+        {% endwith %}
 
         {% block styles %}
         <!-- Page-specific styles (optional) -->
@@ -67,7 +123,7 @@
 
         <!-- Main Content -->
         <div class="ml-[4.7rem] h-screen overflow-auto">
-            <div class="bg-[#F6F6F6]">
+            <div>
                 <!-- Include Header -->
                 <div id="header">
                     {% include "horilla_theme/components/header.html" %}

@@ -114,9 +114,10 @@
   transition: 0.3s;
 }
 
-.sideboxmain:hover {
+/* Comment this line for dynamic theme */
+/* .sideboxmain:hover {
   background-color: #e34e38;
-}
+} */
 
 .sideboxmain:hover img {
   filter: brightness(0) invert(1);
@@ -156,7 +157,8 @@
   position: absolute;
   width: 2px;
   height: 100%;
-  background-color: #e34e38;
+  /* Comment this line for dynamic theme */
+  /* background-color: #e34e38; */
   opacity: 0;
   inset: 0;
   right: 0;
@@ -166,7 +168,8 @@
 
 .sidebox ul li a:hover {
   background: rgb(227 78 56 / 10%);
-  color: #e34e38;
+  /* Comment this line for dynamic theme  */
+  /* color: #e34e38; */
   /* border-right: 2px solid #e54f38; */
 }
 
@@ -372,10 +375,7 @@
   transition: transform 0.3s;
 }
 
-/* When checked */
-.toggle-input:checked+.toggle-switch {
-  background-color: #e54f38;
-}
+
 
 .toggle-input:checked+.toggle-switch::after {
   transform: translateX(16px);
@@ -395,7 +395,8 @@
 }
 
 .select2-container--default .select2-selection--multiple .select2-selection__choice {
-  background-color: #e54f38;
+  /* Comment this line for dynamic theme */
+  /* background-color: #e54f38; */
   color: white;
   border: unset;
   height: 23px;

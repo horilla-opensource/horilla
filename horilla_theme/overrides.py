@@ -206,7 +206,7 @@ def leave_clash_col(self):
                     title="{}">
 
                     <i class="material-icons text-4xl" >groups</i>
-                    <span class="w-5 h-5 bg-[#e54f38] rounded-full text-white text-xs font-semibold flex items-center justify-center">{}</span>
+                    <span class="w-5 h-5 bg-bg-primary-600 rounded-full text-white text-xs font-semibold flex items-center justify-center">{}</span>
                 </div>
             </div>
         """,

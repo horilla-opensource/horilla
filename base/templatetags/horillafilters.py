@@ -348,3 +348,12 @@ def verbose_name(instance, field_name):
         return instance._meta.get_field(field_name).verbose_name
     except Exception:
         return field_name
+
+
+@register.simple_tag(takes_context=True)
+def get_company(context):
+    request = context["request"]
+    company_id = request.session.get("selected_company")
+    if company_id != "all":
+        return Company.objects.filter(id=company_id).first()
+    return None

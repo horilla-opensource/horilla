@@ -1,0 +1,79 @@
+{% load static i18n %}
+<div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
+    {% for theme in themes %}
+        <div
+            class="theme-card relative bg-white rounded-lg border transition-all duration-300 hover:shadow-lg flex flex-col {% if active_theme and active_theme.id == theme.id %}border-primary-600 shadow-md{% else %}border-dark-50 hover:border-primary-300{% endif %}">
+
+            <!-- Active Badge -->
+            {% if active_theme and active_theme.id == theme.id %}
+                <div
+                    class="absolute -top-2 -right-2 bg-primary-600 text-white rounded-full p-2 shadow-lg z-10 border-2 border-white">
+                    <i class="fas fa-check text-sm"></i>
+                </div>
+            {% endif %}
+
+            <form hx-post="{% url 'horilla_theme:change_theme' %}" hx-target="#theme-cards-container" hx-swap="outerHTML"
+                hx-indicator="#loading-indicator" hx-trigger="click" class="cursor-pointer flex-grow">
+
+                <input type="hidden" name="theme_id" value="{{ theme.id }}">
+                {% csrf_token %}
+
+                <!-- Color Preview -->
+                <div class="p-4">
+                    <div
+                        class="flex gap-1 mb-3 rounded-lg overflow-hidden {% if active_theme and active_theme.id == theme.id %}ring-1 ring-primary-600{% endif %}">
+                        <div class="flex-1 h-12" style="background-color: {{ theme.primary_100 }};"></div>
+                        <div class="flex-1 h-12" style="background-color: {{ theme.primary_300 }};"></div>
+                        <div class="flex-1 h-12" style="background-color: {{ theme.primary_500 }};"></div>
+                        <div class="flex-1 h-12" style="background-color: {{ theme.primary_600 }};"></div>
+                        <div class="flex-1 h-12" style="background-color: {{ theme.primary_800 }};"></div>
+                    </div>
+
+                    <!-- Theme Info -->
+                    <div>
+                        <h3 class="font-semibold text-sm text-gray-900 mb-1">
+                            {{ theme.name }}
+                            {% if active_theme and active_theme.id == theme.id %}
+                            <span class="ml-1 text-primary-600 text-xs">(Active)</span>
+                            {% endif %}
+                        </h3>
+                        {% if theme.description %}
+                        <p class="text-xs text-gray-500 line-clamp-2 mb-2">{{ theme.description }}</p>
+                        {% endif %}
+                    </div>
+                </div>
+
+                <!-- Hidden Submit Button -->
+                <button type="submit" class="hidden"></button>
+            </form>
+
+            <!-- Set as Default Button -->
+            <div class="px-4 pb-4 mt-auto">
+                {% if default_theme and default_theme.id == theme.id %}
+                <button type="button"
+                    class="w-full flex items-center justify-center gap-2 px-3 py-2 text-xs font-medium transition-all duration-200 rounded-lg border bg-[{{ theme.primary_600 }}] text-white hover:bg-[{{ theme.primary_800 }}]"
+                    hx-post="{% url 'horilla_theme:set_default_theme' %}" hx-target="#theme-cards-container"
+                    hx-swap="outerHTML" hx-indicator="#loading-indicator" hx-vals='{"theme_id": "{{ theme.id }}"}'
+                    onclick="event.stopPropagation();" title="{% trans 'Remove as default' %}">
+                    <i class="fas fa-star text-sm"></i>
+                    <span>{% trans 'Default Theme' %}</span>
+                </button>
+                {% else %}
+                <button type="button"
+                    class="w-full flex items-center justify-center gap-2 px-3 py-2 text-xs font-medium transition-all duration-200 rounded-lg border bg-white text-gray-700 border-dark-50 hover:bg-[{{ theme.primary_600 }}] hover:text-white"
+                    hx-post="{% url 'horilla_theme:set_default_theme' %}" hx-target="#theme-cards-container"
+                    hx-swap="outerHTML" hx-indicator="#loading-indicator" hx-vals='{"theme_id": "{{ theme.id }}"}'
+                    onclick="event.stopPropagation();" title="{% trans 'Set as default for login page' %}">
+                    <i class="fas fa-star text-sm"></i>
+                    <span>{% trans 'Set as Default' %}</span>
+                </button>
+                {% endif %}
+            </div>
+        </div>
+    {% empty %}
+        <div class="col-span-full text-center py-8 text-gray-500">
+            <i class="fas fa-palette text-4xl mb-2"></i>
+            <p>{% trans 'No themes available' %}</p>
+        </div>
+    {% endfor %}
+</div>
