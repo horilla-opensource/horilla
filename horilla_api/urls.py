@@ -13,7 +13,7 @@ schema_view = get_schema_view(
         default_version="v1",
         description="API documentation for Horilla HRMS. Click the 'Authorize' button at the top to authenticate.",
         terms_of_service="https://www.horilla.com/terms/",
-        contact=openapi.Contact(email="contact@horilla.com"),
+        contact=openapi.Contact(email="support@horilla.com"),
         license=openapi.License(name="BSD License"),
     ),
     public=True,
@@ -44,4 +44,8 @@ urlpatterns = [
     path("leave/", include("horilla_api.api_urls.leave.urls")),
     path("helpdesk/", include("horilla_api.api_urls.helpdesk.urls")),
     path("project/", include("horilla_api.api_urls.project.urls")),
+    path("onboarding/", include("horilla_api.api_urls.onboarding.urls")),
+    path("offboarding/", include("horilla_api.api_urls.offboarding.urls")),
+    path("recruitment/", include("horilla_api.api_urls.recruitment.urls")),
+    path("pms/", include("horilla_api.api_urls.pms.urls")),
 ]

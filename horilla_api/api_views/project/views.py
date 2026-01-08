@@ -144,8 +144,15 @@ class ProjectStageGetCreateAPIView(APIView):
         return paginator.get_paginated_response(serializer.data)
 
     @permission_required("project.add_projectstage")
-    def post(self, request):
-        serializer = ProjectStageSerializer(data=request.data)
+    def post(self, request, project_id=None, **kwargs):
+        data = request.data.copy()
+        if (
+            project_id
+            and not data.get("project_id_write")
+            and not data.get("project_id")
+        ):
+            data["project_id_write"] = project_id
+        serializer = ProjectStageSerializer(data=data)
         if serializer.is_valid():
             serializer.save()
             return Response(serializer.data, status=status.HTTP_201_CREATED)
@@ -229,8 +236,15 @@ class TaskGetCreateAPIView(APIView):
         return paginator.get_paginated_response(serializer.data)
 
     @permission_required("project.add_task")
-    def post(self, request):
-        serializer = TaskSerializer(data=request.data)
+    def post(self, request, project_id=None, **kwargs):
+        data = request.data.copy()
+        if (
+            project_id
+            and not data.get("project_id_write")
+            and not data.get("project_id")
+        ):
+            data["project_id_write"] = project_id
+        serializer = TaskSerializer(data=data)
         if serializer.is_valid():
             serializer.save()
             return Response(serializer.data, status=status.HTTP_201_CREATED)
@@ -316,8 +330,17 @@ class TimeSheetGetCreateAPIView(APIView):
         return paginator.get_paginated_response(serializer.data)
 
     @permission_required("project.add_timesheet")
-    def post(self, request):
-        serializer = TimeSheetSerializer(data=request.data)
+    def post(self, request, project_id=None, task_id=None, **kwargs):
+        data = request.data.copy()
+        if (
+            project_id
+            and not data.get("project_id_write")
+            and not data.get("project_id")
+        ):
+            data["project_id_write"] = project_id
+        if task_id and not data.get("task_id_write") and not data.get("task_id"):
+            data["task_id_write"] = task_id
+        serializer = TimeSheetSerializer(data=data)
         if serializer.is_valid():
             serializer.save()
             return Response(serializer.data, status=status.HTTP_201_CREATED)
