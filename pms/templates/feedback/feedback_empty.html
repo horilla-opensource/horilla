@@ -43,10 +43,33 @@
             {% if perms.pms.add_feedback or request.user|filtersubordinates %}
                 <div class="oh-btn-group ml-2">
                     <div class="oh-dropdown" x-data="{open: false}">
-                        <a href="{% url 'feedback-creation' %}" class="oh-btn oh-btn--secondary" role="button">
+                        <button
+                            onclick="event.preventDefault()"
+                            class="oh-btn oh-btn--dropdown oh-btn--secondary"
+                            @click="open = !open"
+                            @click.outside="open = false"
+                        >
                             <ion-icon class="md hydrated" name="add-outline" role="img" aria-label="add outline"></ion-icon>
-                            {% trans "Create" %}</a>
-
+                            {% trans "Create" %}
+                        </button>
+                        <div class="oh-dropdown__menu oh-dropdown__menu--right" x-show="open"
+                            style="display: none;"
+                        >
+                            <ul class="oh-dropdown__items">
+                                <li class="oh-dropdown__item">
+                                    <a href="{% url 'feedback-creation' %}" class="oh-dropdown__link">
+                                        <ion-icon name="person-outline" class="me-1"></ion-icon>
+                                        {% trans "Single Feedback" %}
+                                    </a>
+                                </li>
+                                <li class="oh-dropdown__item">
+                                    <a href="{% url 'bulk-feedback-creation' %}" class="oh-dropdown__link">
+                                        <ion-icon name="people-outline" class="me-1"></ion-icon>
+                                        {% trans "Bulk by Department" %}
+                                    </a>
+                                </li>
+                            </ul>
+                        </div>
                     </div>
                 </div>
             {% endif %}

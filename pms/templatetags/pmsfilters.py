@@ -124,3 +124,14 @@ def is_anonymous_feedback_owner(user, feedback):
     if str(user.id) == feedback.anonymous_feedback_id:
         return True
     return False
+
+
+@register.filter(name="get_item")
+def get_item(dictionary, key):
+    """
+    Get an item from a dictionary using the key.
+    Usage: {{ mydict|get_item:key }}
+    """
+    if dictionary is None:
+        return None
+    return dictionary.get(key)

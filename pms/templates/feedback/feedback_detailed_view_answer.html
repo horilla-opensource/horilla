@@ -1,4 +1,5 @@
 {% load i18n %}
+{% load pmsfilters %}
 {% for answer in answers %}
 <li class="oh-activity-sidebar__qa-item">
     <span class="oh-activity-sidebar__q"> {{forloop.counter}}. {{answer.question_id.question}}?</span>
@@ -10,16 +11,16 @@
     {% if answer.question_id.question_type == '2' %}
       <div class="d-block mb-0">
         <div class="oh-rate">
-          <input type="radio" id="star5" value="5" disabled {% if answer.answer.answer == '5' %} checked {% endif %} />
-          <label for="star5" title="5 Stars">5 {% trans "Stars" %}</label>
-          <input type="radio" id="star4" value="4" disabled  {% if answer.answer.answer == '4' %} checked {% endif %} />
-          <label for="star4" title="4 Stars">4 {% trans "Stars" %}</label>
-          <input type="radio" id="star3" value="3" disabled  {% if answer.answer.answer == '3' %} checked {% endif %} />
-          <label for="star3" title="3 Stars">3 {% trans "Stars" %}</label>
-          <input type="radio" id="star2" value="2" disabled  {% if answer.answer.answer == '2' %} checked {% endif %}  />
-          <label for="star2" title="2 Stars">2 {% trans "Stars" %}</label>
-          <input type="radio" id="star1" value="1" disabled  {% if answer.answer.answer == '1' %} checked {% endif %} />
-          <label for="star1" title="1 Star">1 {% trans "Star" %}</label>
+          <input type="radio" id="star5_{{answer.id}}" value="5" disabled {% if answer.answer.answer == '5' %} checked {% endif %} />
+          <label for="star5_{{answer.id}}" title="5 Stars">5 {% trans "Stars" %}</label>
+          <input type="radio" id="star4_{{answer.id}}" value="4" disabled  {% if answer.answer.answer == '4' %} checked {% endif %} />
+          <label for="star4_{{answer.id}}" title="4 Stars">4 {% trans "Stars" %}</label>
+          <input type="radio" id="star3_{{answer.id}}" value="3" disabled  {% if answer.answer.answer == '3' %} checked {% endif %} />
+          <label for="star3_{{answer.id}}" title="3 Stars">3 {% trans "Stars" %}</label>
+          <input type="radio" id="star2_{{answer.id}}" value="2" disabled  {% if answer.answer.answer == '2' %} checked {% endif %}  />
+          <label for="star2_{{answer.id}}" title="2 Stars">2 {% trans "Stars" %}</label>
+          <input type="radio" id="star1_{{answer.id}}" value="1" disabled  {% if answer.answer.answer == '1' %} checked {% endif %} />
+          <label for="star1_{{answer.id}}" title="1 Star">1 {% trans "Star" %}</label>
         </div>
       </div>
     {% endif %}
@@ -59,9 +60,98 @@
         </div>
       </div>
     {% endif %}
+
+    <!-- Manager Rating Section (for Performance Appraisals) -->
+    {% if answer.mgr_rating %}
+      <div class="mt-3 p-2" style="background-color: #e3f2fd; border-radius: 4px; border-left: 3px solid #1976d2;">
+        <small class="text-primary fw-bold">{% trans "Manager's Assessment" %}:</small>
+        {% if answer.mgr_rating.rating %}
+        <div class="oh-rate mt-1" style="pointer-events: none;">
+          <input type="radio" id="mr5_{{answer.id}}" disabled {% if answer.mgr_rating.rating == 5 %}checked{% endif %} />
+          <label for="mr5_{{answer.id}}">5</label>
+          <input type="radio" id="mr4_{{answer.id}}" disabled {% if answer.mgr_rating.rating == 4 %}checked{% endif %} />
+          <label for="mr4_{{answer.id}}">4</label>
+          <input type="radio" id="mr3_{{answer.id}}" disabled {% if answer.mgr_rating.rating == 3 %}checked{% endif %} />
+          <label for="mr3_{{answer.id}}">3</label>
+          <input type="radio" id="mr2_{{answer.id}}" disabled {% if answer.mgr_rating.rating == 2 %}checked{% endif %} />
+          <label for="mr2_{{answer.id}}">2</label>
+          <input type="radio" id="mr1_{{answer.id}}" disabled {% if answer.mgr_rating.rating == 1 %}checked{% endif %} />
+          <label for="mr1_{{answer.id}}">1</label>
+        </div>
+        {% endif %}
+        {% if answer.mgr_rating.comment %}
+        <div class="mt-1">
+          <small class="text-muted">{% trans "Comment" %}:</small>
+          <p class="mb-0 small">{{ answer.mgr_rating.comment }}</p>
+        </div>
+        {% endif %}
+      </div>
+    {% endif %}
   </li>
 
 {% endfor %}
+<!-- Manager-Only Questions Section (for Performance Appraisals) -->
+{% if manager_only_answers %}
+<hr/>
+  <span class="oh-activity-sidebar__q" style="font-size: medium; color: #F7941D;">{% trans "Manager's Additional Assessment" %}</span>
+  {% for answer in manager_only_answers %}
+  <li class="oh-activity-sidebar__qa-item" style="border-left: 4px solid #F7941D; padding-left: 15px; margin-left: 0;">
+    <span class="oh-activity-sidebar__q"> {{forloop.counter}}. {{answer.question_id.question}}?</span>
+    {% if answer.question_id.question_type == '1' %}
+      <span class="oh-activity-sidebar__a">{{ answer.answer.answer}}.</span>
+    {% endif %}
+    {% if answer.question_id.question_type == '2' %}
+      <div class="d-block mb-0">
+        <div class="oh-rate">
+          <input type="radio" id="dv_mo_star5_{{answer.id}}" value="5" disabled {% if answer.answer.answer == '5' %} checked {% endif %} />
+          <label for="dv_mo_star5_{{answer.id}}" title="5 Stars">5 {% trans "Stars" %}</label>
+          <input type="radio" id="dv_mo_star4_{{answer.id}}" value="4" disabled  {% if answer.answer.answer == '4' %} checked {% endif %} />
+          <label for="dv_mo_star4_{{answer.id}}" title="4 Stars">4 {% trans "Stars" %}</label>
+          <input type="radio" id="dv_mo_star3_{{answer.id}}" value="3" disabled  {% if answer.answer.answer == '3' %} checked {% endif %} />
+          <label for="dv_mo_star3_{{answer.id}}" title="3 Stars">3 {% trans "Stars" %}</label>
+          <input type="radio" id="dv_mo_star2_{{answer.id}}" value="2" disabled  {% if answer.answer.answer == '2' %} checked {% endif %}  />
+          <label for="dv_mo_star2_{{answer.id}}" title="2 Stars">2 {% trans "Stars" %}</label>
+          <input type="radio" id="dv_mo_star1_{{answer.id}}" value="1" disabled  {% if answer.answer.answer == '1' %} checked {% endif %} />
+          <label for="dv_mo_star1_{{answer.id}}" title="1 Star">1 {% trans "Star" %}</label>
+        </div>
+      </div>
+    {% endif %}
+    {% if answer.question_id.question_type == '3' %}
+      <div class="oh-input__group">
+        <div class="oh-input-picker-group">
+          <div class="oh-input-picker oh-input-picker--selected boolean-colour">
+            {{answer.answer.answer}}
+            <input type="radio" selected />
+          </div>
+        </div>
+      </div>
+    {% endif %}
+    {% if answer.question_id.question_type == '4' %}
+      <div class="d-block">
+        <ul class="oh-questions mt-2">
+          <li class="oh-questions__answer">
+            <div class="oh-radio">
+              <input type="radio" class="oh-radio" id="dv_mo_answer1_{{answer.id}}" checked />
+              <span class="oh-radio__checkmark"></span>
+              <label class="oh-label" for="dv_mo_answer1_{{answer.id}}"> {{answer.answer.answer}}</label>
+            </div>
+          </li>
+        </ul>
+      </div>
+    {% endif %}
+    {% if answer.question_id.question_type == '5' %}
+      <div class="d-block">
+        <div class="oh-input-picker-group oh-input-picker-group--resp mt-2">
+          <div class="oh-input-picker oh-input-picker--likert likert-colour oh-input-picker--selected">
+            {{answer.answer.answer}}
+          </div>
+        </div>
+      </div>
+    {% endif %}
+  </li>
+  {% endfor %}
+{% endif %}
+
 {% if kr_feedbacks %}
 <hr/>
   <span class="oh-activity-sidebar__q" style="font-size: medium;">{% trans "Key results" %}</span>

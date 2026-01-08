@@ -35,7 +35,7 @@ from base.methods import (
     paginator_qry,
     sortby,
 )
-from base.models import Company
+from base.models import Company, Department
 from employee.models import Employee, EmployeeWorkInformation
 from horilla.decorators import (
     hx_request_required,
@@ -63,6 +63,7 @@ from pms.filters import (
 from pms.forms import (
     AddAssigneesForm,
     AnonymousFeedbackForm,
+    DepartmentBulkFeedbackForm,
     EmployeeKeyResultForm,
     EmployeeObjectiveCreateForm,
     EmployeeObjectiveForm,
@@ -93,6 +94,7 @@ from pms.models import (
     Feedback,
     KeyResult,
     KeyResultFeedback,
+    ManagerRating,
     Meetings,
     MeetingsAnswer,
     Objective,
@@ -1551,6 +1553,159 @@ def feedback_creation(request):
 
 
 @login_required
+@permission_required(perm="pms.add_feedback")
+def bulk_feedback_creation(request):
+    """
+    View for bulk creating feedbacks by department.
+    Allows selecting departments and creating feedbacks for all employees in those departments.
+    """
+    form = DepartmentBulkFeedbackForm()
+    departments = Department.objects.all()
+    context = {
+        "form": form,
+        "employees": [],
+        "departments": departments,
+    }
+    return render(request, "feedback/bulk_feedback_creation.html", context)
+
+
+@login_required
+@permission_required(perm="pms.add_feedback")
+def bulk_feedback_creation_post(request):
+    """
+    Handle the POST request for bulk feedback creation.
+    Creates feedbacks for selected employees with common settings.
+    """
+    if request.method != "POST":
+        return redirect("bulk-feedback-creation")
+
+    form = DepartmentBulkFeedbackForm(request.POST)
+
+    if form.is_valid():
+        title_template = form.cleaned_data["title_template"]
+        question_template = form.cleaned_data["question_template_id"]
+        feedback_type = form.cleaned_data["feedback_type"]
+        start_date = form.cleaned_data["start_date"]
+        end_date = form.cleaned_data["end_date"]
+        selected_employees_json = form.cleaned_data.get("selected_employees", "[]")
+
+        try:
+            selected_employee_ids = json.loads(selected_employees_json)
+        except json.JSONDecodeError:
+            selected_employee_ids = []
+
+        if not selected_employee_ids:
+            messages.error(request, _("No employees selected."))
+            return redirect("bulk-feedback-creation")
+
+        employees = Employee.objects.filter(
+            id__in=selected_employee_ids, is_active=True
+        ).select_related("employee_work_info", "employee_work_info__reporting_manager_id")
+
+        created_count = 0
+        skipped_count = 0
+        errors = []
+
+        for employee in employees:
+            # Get employee's reporting manager
+            work_info = getattr(employee, "employee_work_info", None)
+            reporting_manager = getattr(work_info, "reporting_manager_id", None) if work_info else None
+            department = getattr(work_info, "department_id", None) if work_info else None
+
+            # Generate title from template
+            title = title_template.replace(
+                "{{employee_name}}", employee.get_full_name()
+            ).replace(
+                "{{department}}", str(department) if department else ""
+            ).replace(
+                "{{employee_first_name}}", employee.employee_first_name or ""
+            ).replace(
+                "{{employee_last_name}}", employee.employee_last_name or ""
+            )
+
+            try:
+                # Create the feedback
+                feedback = Feedback.objects.create(
+                    review_cycle=title,
+                    feedback_type=feedback_type,
+                    employee_id=employee,
+                    manager_id=reporting_manager,
+                    question_template_id=question_template,
+                    start_date=start_date,
+                    end_date=end_date,
+                    status="Not Started",
+                )
+
+                # Send notifications
+                send_feedback_notifications(request, feedback=feedback)
+                created_count += 1
+
+            except Exception as e:
+                errors.append(f"{employee.get_full_name()}: {str(e)}")
+                skipped_count += 1
+
+        if created_count > 0:
+            messages.success(
+                request,
+                _("Successfully created {} feedback(s).").format(created_count)
+            )
+        if skipped_count > 0:
+            messages.warning(
+                request,
+                _("Skipped {} employee(s) due to errors.").format(skipped_count)
+            )
+        if errors:
+            for error in errors[:5]:  # Show first 5 errors
+                messages.error(request, error)
+
+        return redirect(feedback_list_view)
+
+    else:
+        context = {
+            "form": form,
+            "employees": [],
+        }
+        return render(request, "feedback/bulk_feedback_creation.html", context)
+
+
+@login_required
+def get_department_employees(request):
+    """
+    AJAX endpoint to get employees by department(s).
+    Returns employee data including their reporting managers.
+    """
+    department_ids = request.GET.getlist("department_ids[]", [])
+
+    if not department_ids:
+        return JsonResponse({"employees": []})
+
+    employees = Employee.objects.filter(
+        is_active=True,
+        employee_work_info__department_id__in=department_ids
+    ).select_related(
+        "employee_work_info",
+        "employee_work_info__reporting_manager_id",
+        "employee_work_info__department_id"
+    ).distinct()
+
+    employee_list = []
+    for emp in employees:
+        work_info = getattr(emp, "employee_work_info", None)
+        manager = getattr(work_info, "reporting_manager_id", None) if work_info else None
+        department = getattr(work_info, "department_id", None) if work_info else None
+
+        employee_list.append({
+            "id": emp.id,
+            "name": emp.get_full_name(),
+            "department": str(department) if department else "N/A",
+            "manager_id": manager.id if manager else None,
+            "manager_name": manager.get_full_name() if manager else "No Manager",
+        })
+
+    return JsonResponse({"employees": employee_list})
+
+
+@login_required
 @hx_request_required
 @permission_required(perm="pms.change_feedback")
 def feedback_update(request, id):
@@ -1835,10 +1990,41 @@ def feedback_detailed_view_answer(request, id, emp_id):
         feedback_id=feedback, employee_id=employee
     )
     if is_have_perm:
-        answers = Answer.objects.filter(employee_id=employee, feedback_id=feedback)
+        # Show ALL answers - no filtering when viewing answers
+        # The employee should be able to see all answers from all reviewers,
+        # including answers to manager-only questions
+        answers = list(Answer.objects.filter(employee_id=employee, feedback_id=feedback))
+
+        # For appraisal mode, attach manager ratings to employee's answers
+        manager_only_answers = []
+        if feedback.is_appraisal() and employee == feedback.employee_id:
+            # Get manager's ratings for the employee's answers
+            ratings = ManagerRating.objects.filter(
+                feedback=feedback,
+                employee_answer__in=answers
+            ).select_related('employee_answer')
+            ratings_dict = {r.employee_answer_id: r for r in ratings}
+            
+            # Attach ratings to answers using a different attribute name
+            # to avoid conflict with the reverse ForeignKey relation
+            for answer in answers:
+                answer.mgr_rating = ratings_dict.get(answer.id)
+            
+            # Get manager's answers to manager-only questions
+            if feedback.manager_id:
+                manager_only_answers = Answer.objects.filter(
+                    feedback_id=feedback,
+                    employee_id=feedback.manager_id,
+                    question_id__answerable_by_employee=False,
+                    question_id__answerable_by_manager=True
+                ).select_related('question_id')
+
         context = {
             "answers": answers,
             "kr_feedbacks": kr_feedbacks,
+            "feedback": feedback,
+            "viewing_employee": employee,
+            "manager_only_answers": manager_only_answers,
         }
         return render(request, "feedback/feedback_detailed_view_answer.html", context)
     else:
@@ -1849,6 +2035,42 @@ def feedback_detailed_view_answer(request, id, emp_id):
         if key in request.META.keys():
             return render(request, "decorator_404.html")
         return HttpResponse(script)
+
+
+def get_employee_feedback_role(employee, feedback):
+    """
+    Determine the role of an employee in a feedback.
+    Returns: 'employee', 'manager', 'colleague', 'subordinate', 'others', or None
+    """
+    if employee == feedback.employee_id:
+        return "employee"
+    if employee == feedback.manager_id:
+        return "manager"
+    if employee in feedback.colleague_id.all():
+        return "colleague"
+    if employee in feedback.subordinate_id.all():
+        return "subordinate"
+    if employee in feedback.others_id.all():
+        return "others"
+    return None
+
+
+def filter_questions_by_role(questions, role):
+    """
+    Filter questions based on the user's role in the feedback.
+    Only returns questions that the role is allowed to answer.
+    """
+    if role == "employee":
+        return questions.filter(answerable_by_employee=True)
+    elif role == "manager":
+        return questions.filter(answerable_by_manager=True)
+    elif role == "colleague":
+        return questions.filter(answerable_by_colleague=True)
+    elif role == "subordinate":
+        return questions.filter(answerable_by_subordinate=True)
+    elif role == "others":
+        return questions.filter(answerable_by_others=True)
+    return questions
 
 
 @login_required
@@ -1889,19 +2111,50 @@ def feedback_answer_get(request, id, **kwargs):
         messages.info(request, _("You are not allowed to answer"))
         return redirect(feedback_list_view)
 
+    # Determine the user's role
+    user_role = get_employee_feedback_role(employee, feedback)
+
+    # Handle Performance Appraisal workflow
+    if feedback.is_appraisal():
+        if user_role == "employee":
+            # Employee filling self-assessment
+            if feedback.employee_submitted:
+                messages.info(request, _("You have already submitted your self-assessment"))
+                return redirect(feedback_list_view)
+            # Filter questions for employee
+            questions = filter_questions_by_role(questions, user_role)
+        elif user_role == "manager":
+            # Manager reviewing employee's answers
+            if not feedback.employee_submitted:
+                messages.info(request, _("Please wait for the employee to complete their self-assessment first"))
+                return redirect(feedback_list_view)
+            if feedback.manager_submitted:
+                messages.info(request, _("You have already submitted your review"))
+                return redirect(feedback_list_view)
+            # Redirect to manager review page
+            return redirect("feedback-manager-review", id=feedback.id)
+        else:
+            # Other roles (colleagues, subordinates) - not part of appraisal workflow
+            messages.info(request, _("This feedback is a Performance Appraisal. Only the employee and manager can participate."))
+            return redirect(feedback_list_view)
+    else:
+        # 360 Feedback - standard workflow
+        # Filter questions based on role
+        questions = filter_questions_by_role(questions, user_role)
+
+        # Check if the feedback has already been answered
+        if answer:
+            messages.info(request, _("Feedback already answered"))
+            return redirect(feedback_list_view)
+
     # Employee does not have an answer object
-    for employee in feedback_employees:
+    for emp in feedback_employees:
         has_answer = Answer.objects.filter(
-            employee_id=employee, feedback_id=feedback
+            employee_id=emp, feedback_id=feedback
         ).exists()
     if has_answer:
         feedback.status = "Closed"
         feedback.save()
-
-    # Check if the feedback has already been answered
-    if answer:
-        messages.info(request, _("Feedback already answered"))
-        return redirect(feedback_list_view)
 
     context = {
         "questions": questions,
@@ -1928,6 +2181,10 @@ def feedback_answer_post(request, id):
     question_template = feedback.question_template_id
     questions = question_template.question.all()
 
+    # Determine the user's role and filter questions to only process those they can answer
+    user_role = get_employee_feedback_role(employee, feedback)
+    questions = filter_questions_by_role(questions, user_role)
+
     if request.method == "POST":
         for question in questions:
             if request.POST.get(f"answer{question.id}"):
@@ -1949,12 +2206,154 @@ def feedback_answer_post(request, id):
                     feedback_id=feedback,
                     employee_id=request.user.employee_get,
                 )
+        # For appraisal mode, mark employee as submitted
+        if feedback.is_appraisal() and user_role == "employee":
+            feedback.employee_submitted = True
+            feedback.save()
+
         messages.success(
             request,
             _("Feedback %(review_cycle)s has been answered successfully!.")
             % {"review_cycle": feedback.review_cycle},
         )
         return redirect(feedback_list_view)
+
+
+@login_required
+def feedback_manager_review(request, id):
+    """
+    Manager review view for Performance Appraisal.
+    Shows employee's answers and allows manager to add ratings.
+    """
+    feedback = Feedback.objects.get(id=id)
+    user = request.user
+    employee = Employee.objects.filter(employee_user_id=user).first()
+
+    # Verify this is an appraisal and user is the manager
+    if not feedback.is_appraisal():
+        messages.info(request, _("This is not a Performance Appraisal"))
+        return redirect(feedback_list_view)
+
+    if employee != feedback.manager_id:
+        messages.info(request, _("Only the manager can review this feedback"))
+        return redirect(feedback_list_view)
+
+    if not feedback.employee_submitted:
+        messages.info(request, _("Please wait for the employee to complete their self-assessment"))
+        return redirect(feedback_list_view)
+
+    if feedback.manager_submitted:
+        messages.info(request, _("You have already submitted your review"))
+        return redirect(feedback_list_view)
+
+    # Get employee's answers
+    employee_answers = Answer.objects.filter(
+        feedback_id=feedback,
+        employee_id=feedback.employee_id
+    ).select_related("question_id")
+
+    # Get questions that manager can answer (for additional manager-only questions)
+    question_template = feedback.question_template_id
+    all_questions = question_template.question.all()
+    manager_only_questions = all_questions.filter(
+        answerable_by_manager=True,
+        answerable_by_employee=False
+    )
+
+    options = QuestionOptions.objects.all()
+
+    # Get existing manager ratings if any
+    existing_ratings = {
+        rating.employee_answer_id: rating
+        for rating in ManagerRating.objects.filter(
+            feedback=feedback,
+            manager=employee
+        )
+    }
+
+    context = {
+        "feedback": feedback,
+        "employee_answers": employee_answers,
+        "manager_only_questions": manager_only_questions,
+        "options": options,
+        "existing_ratings": existing_ratings,
+    }
+
+    return render(request, "feedback/answer/manager_review.html", context)
+
+
+@login_required
+def feedback_manager_review_post(request, id):
+    """
+    Handle manager's review submission for Performance Appraisal.
+    """
+    feedback = Feedback.objects.get(id=id)
+    user = request.user
+    manager = Employee.objects.filter(employee_user_id=user).first()
+
+    # Verify this is an appraisal and user is the manager
+    if not feedback.is_appraisal():
+        messages.error(request, _("This is not a Performance Appraisal"))
+        return redirect(feedback_list_view)
+
+    if manager != feedback.manager_id:
+        messages.error(request, _("Only the manager can review this feedback"))
+        return redirect(feedback_list_view)
+
+    if request.method == "POST":
+        # Get employee's answers
+        employee_answers = Answer.objects.filter(
+            feedback_id=feedback,
+            employee_id=feedback.employee_id
+        )
+
+        # Save manager's ratings for each employee answer
+        for answer in employee_answers:
+            rating_value = request.POST.get(f"rating_{answer.id}")
+            comment_value = request.POST.get(f"comment_{answer.id}")
+
+            if rating_value or comment_value:
+                ManagerRating.objects.update_or_create(
+                    feedback=feedback,
+                    employee_answer=answer,
+                    manager=manager,
+                    defaults={
+                        "question": answer.question_id,
+                        "rating": int(rating_value) if rating_value else None,
+                        "comment": comment_value or "",
+                    }
+                )
+
+        # Handle manager-only questions (if any)
+        question_template = feedback.question_template_id
+        manager_only_questions = question_template.question.filter(
+            answerable_by_manager=True,
+            answerable_by_employee=False
+        )
+
+        for question in manager_only_questions:
+            answer_value = request.POST.get(f"answer{question.id}")
+            if answer_value:
+                Answer.objects.get_or_create(
+                    answer={"answer": answer_value},
+                    question_id=question,
+                    feedback_id=feedback,
+                    employee_id=manager,
+                )
+
+        # Mark manager as submitted
+        feedback.manager_submitted = True
+        feedback.status = "Closed"
+        feedback.save()
+
+        messages.success(
+            request,
+            _("Your review for %(review_cycle)s has been submitted successfully!")
+            % {"review_cycle": feedback.review_cycle},
+        )
+        return redirect(feedback_list_view)
+
+    return redirect("feedback-manager-review", id=feedback.id)
 
 
 @login_required
@@ -1970,19 +2369,91 @@ def feedback_answer_view(request, id, **kwargs):
     user = request.user
     employee = Employee.objects.filter(employee_user_id=user).first()
     feedback = Feedback.objects.get(id=id)
-    answers = Answer.objects.filter(feedback_id=feedback, employee_id=employee)
+    answers = list(Answer.objects.filter(feedback_id=feedback, employee_id=employee))
     key_result_feedback = KeyResultFeedback.objects.filter(
         feedback_id=feedback, employee_id=employee
     )
 
+    manager_only_answers = []
+    manager_ratings = []
+    employee_answers_for_manager = []
+    
+    # For Performance Appraisals, handle manager view differently
+    if feedback.is_appraisal() and employee == feedback.manager_id:
+        # Manager is viewing their own feedback contribution
+        # Get the manager's ratings on employee answers
+        manager_ratings = list(ManagerRating.objects.filter(
+            feedback=feedback,
+            manager=employee
+        ).select_related('employee_answer', 'employee_answer__question_id'))
+        
+        # Get employee's answers that the manager rated
+        employee_answers_for_manager = list(Answer.objects.filter(
+            feedback_id=feedback,
+            employee_id=feedback.employee_id
+        ).select_related('question_id'))
+        
+        # Attach manager ratings to employee answers
+        ratings_dict = {r.employee_answer_id: r for r in manager_ratings}
+        for answer in employee_answers_for_manager:
+            answer.mgr_rating = ratings_dict.get(answer.id)
+        
+        # Get manager's answers to manager-only questions
+        manager_only_answers = list(Answer.objects.filter(
+            feedback_id=feedback,
+            employee_id=employee,
+            question_id__answerable_by_employee=False,
+            question_id__answerable_by_manager=True
+        ).select_related('question_id'))
+        
+        # Check if manager has provided any review
+        if not manager_ratings and not manager_only_answers:
+            messages.info(request, _("Feedback is not answered yet"))
+            return redirect(feedback_list_view)
+        
+        context = {
+            "answers": employee_answers_for_manager,  # Show employee answers with manager's ratings
+            "feedback_id": feedback,
+            "feedback": feedback,
+            "key_result_feedback": key_result_feedback,
+            "manager_only_answers": manager_only_answers,
+            "is_manager_view": True,
+        }
+        return render(request, "feedback/answer/feedback_answer_view.html", context)
+
+    # Regular check for answers
     if not answers:
         messages.info(request, _("Feedback is not answered yet"))
         return redirect(feedback_list_view)
 
+    # For Performance Appraisals (employee viewing their own feedback)
+    if feedback.is_appraisal() and employee == feedback.employee_id:
+        # Get manager's ratings for employee's answers
+        ratings = ManagerRating.objects.filter(
+            feedback=feedback,
+            employee_answer__in=answers
+        ).select_related('employee_answer')
+        ratings_dict = {r.employee_answer_id: r for r in ratings}
+        
+        # Attach ratings to answers
+        for answer in answers:
+            answer.mgr_rating = ratings_dict.get(answer.id)
+        
+        # Get manager's answers to manager-only questions
+        if feedback.manager_id:
+            manager_only_answers = Answer.objects.filter(
+                feedback_id=feedback,
+                employee_id=feedback.manager_id,
+                question_id__answerable_by_employee=False,
+                question_id__answerable_by_manager=True
+            ).select_related('question_id')
+
     context = {
         "answers": answers,
         "feedback_id": feedback,
+        "feedback": feedback,
         "key_result_feedback": key_result_feedback,
+        "manager_only_answers": manager_only_answers,
     }
     return render(request, "feedback/answer/feedback_answer_view.html", context)
 
@@ -1999,19 +2470,21 @@ def feedback_delete(request, id):
     """
     try:
         feedback = Feedback.objects.filter(id=id).first()
-        answered = Answer.objects.filter(feedback_id=feedback).first()
-        if (
-            feedback.status == "Closed"
-            or feedback.status == "Not Started"
-            and not answered
-        ):
+        if not feedback:
+            messages.error(request, _("Feedback not found."))
+            return redirect(feedback_list_view)
+            
+        if feedback.status == "Closed" or feedback.status == "Not Started":
+            # Delete related records first (Answer has on_delete=PROTECT)
+            # ManagerRating will be auto-deleted due to CASCADE on Answer
+            Answer.objects.filter(feedback_id=feedback).delete()
+            KeyResultFeedback.objects.filter(feedback_id=feedback).delete()
             feedback.delete()
             messages.success(
                 request,
                 _("Feedback %(review_cycle)s deleted successfully!")
                 % {"review_cycle": feedback.review_cycle},
             )
-
         else:
             messages.warning(
                 request,
@@ -2023,7 +2496,7 @@ def feedback_delete(request, id):
     except Feedback.DoesNotExist:
         messages.error(request, _("Feedback not found."))
     except ProtectedError:
-        messages.error(request, _("Related entries exists"))
+        messages.error(request, _("Cannot delete - related entries exist that are protected."))
     return redirect(feedback_list_view)
 
 
@@ -2178,10 +2651,10 @@ def get_collegues(request):
 
 @login_required
 def feedback_status(request):
-    """this function is used to un-archive the feedback
+    """this function is used to check feedback completion status
     args:
         id(int): primarykey of feedback
-        emp_id(int): primarykey of feedback
+        emp_id(int): primarykey of employee
     """
 
     is_ajax = request.headers.get("X-Requested-With") == "XMLHttpRequest"
@@ -2191,8 +2664,24 @@ def feedback_status(request):
             feedback_id = request.POST.get("feedback_id")
             feedback = Feedback.objects.get(id=feedback_id)
             employee = Employee.objects.filter(id=employee_id).first()
-            answer = Answer.objects.filter(employee_id=employee, feedback_id=feedback)
-            status = _("Completed") if answer else _("Not-completed")
+            
+            # For Performance Appraisals, check the submission flags
+            if feedback.is_appraisal():
+                if employee == feedback.employee_id:
+                    # Employee's status based on employee_submitted flag
+                    status = _("Completed") if feedback.employee_submitted else _("Not-completed")
+                elif employee == feedback.manager_id:
+                    # Manager's status based on manager_submitted flag
+                    status = _("Completed") if feedback.manager_submitted else _("Not-completed")
+                else:
+                    # For others in appraisal (shouldn't normally happen)
+                    answer = Answer.objects.filter(employee_id=employee, feedback_id=feedback)
+                    status = _("Completed") if answer else _("Not-completed")
+            else:
+                # For 360 Feedback, check for Answer records as before
+                answer = Answer.objects.filter(employee_id=employee, feedback_id=feedback)
+                status = _("Completed") if answer else _("Not-completed")
+            
             return JsonResponse({"status": status})
         return JsonResponse({"status": "Invalid request"}, status=400)
 
@@ -2896,6 +3385,10 @@ def feedback_bulk_delete(request):
         try:
             feedback = Feedback.objects.get(id=feedback_id)
             if feedback.status == "Closed" or feedback.status == "Not Started":
+                # Delete related records first (Answer has on_delete=PROTECT)
+                # ManagerRating will be auto-deleted due to CASCADE on Answer
+                Answer.objects.filter(feedback_id=feedback).delete()
+                KeyResultFeedback.objects.filter(feedback_id=feedback).delete()
                 feedback.delete()
                 messages.success(
                     request,
@@ -2916,6 +3409,12 @@ def feedback_bulk_delete(request):
 
         except Feedback.DoesNotExist:
             messages.error(request, _("Feedback not found."))
+        except ProtectedError:
+            messages.error(
+                request,
+                _("Cannot delete feedback %(review_cycle)s - it has related records that cannot be deleted.")
+                % {"review_cycle": feedback.review_cycle},
+            )
     return JsonResponse({"message": "Success"})
 
 

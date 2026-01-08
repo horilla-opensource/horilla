@@ -41,6 +41,87 @@
                                         <label class="oh-label text-muted fw-bold" for="id_question">{% trans "Question" %}</label>
                                         {% render_field form.question disabled='disabled' %}
                                     </div>
+                                    
+                                    <!-- Answerable By Section - Display Mode -->
+                                    <div class="col-12 mt-3 answerable-by-display">
+                                        <label class="oh-label text-muted fw-bold mb-2">{% trans "Who Can Answer" %}</label>
+                                        <div class="d-flex flex-wrap gap-2">
+                                            {% if form.instance.answerable_by_employee %}
+                                                <span class="badge bg-success">{% trans "Employee" %}</span>
+                                            {% else %}
+                                                <span class="badge bg-secondary">{% trans "Employee" %}</span>
+                                            {% endif %}
+                                            {% if form.instance.answerable_by_manager %}
+                                                <span class="badge bg-success">{% trans "Manager" %}</span>
+                                            {% else %}
+                                                <span class="badge bg-secondary">{% trans "Manager" %}</span>
+                                            {% endif %}
+                                            {% if form.instance.answerable_by_colleague %}
+                                                <span class="badge bg-success">{% trans "Colleague" %}</span>
+                                            {% else %}
+                                                <span class="badge bg-secondary">{% trans "Colleague" %}</span>
+                                            {% endif %}
+                                            {% if form.instance.answerable_by_subordinate %}
+                                                <span class="badge bg-success">{% trans "Subordinate" %}</span>
+                                            {% else %}
+                                                <span class="badge bg-secondary">{% trans "Subordinate" %}</span>
+                                            {% endif %}
+                                            {% if form.instance.answerable_by_others %}
+                                                <span class="badge bg-success">{% trans "Others" %}</span>
+                                            {% else %}
+                                                <span class="badge bg-secondary">{% trans "Others" %}</span>
+                                            {% endif %}
+                                        </div>
+                                    </div>
+                                    
+                                    <!-- Answerable By Section - Edit Mode (hidden until edit is clicked) -->
+                                    <div class="col-12 mt-3 answerable-by-edit d-none">
+                                        <label class="oh-label text-muted fw-bold mb-2">{% trans "Who Can Answer This Question" %}</label>
+                                        <div class="d-flex flex-wrap gap-3">
+                                            <div class="oh-switch">
+                                                <input type="checkbox" name="answerable_by_employee" class="oh-switch__checkbox" 
+                                                    id="id_answerable_by_employee_{{form.instance.id}}" 
+                                                    {% if form.instance.answerable_by_employee %}checked{% endif %}>
+                                                <label class="oh-switch__label" for="id_answerable_by_employee_{{form.instance.id}}">
+                                                    {% trans "Employee" %}
+                                                </label>
+                                            </div>
+                                            <div class="oh-switch">
+                                                <input type="checkbox" name="answerable_by_manager" class="oh-switch__checkbox" 
+                                                    id="id_answerable_by_manager_{{form.instance.id}}"
+                                                    {% if form.instance.answerable_by_manager %}checked{% endif %}>
+                                                <label class="oh-switch__label" for="id_answerable_by_manager_{{form.instance.id}}">
+                                                    {% trans "Manager" %}
+                                                </label>
+                                            </div>
+                                            <div class="oh-switch">
+                                                <input type="checkbox" name="answerable_by_colleague" class="oh-switch__checkbox" 
+                                                    id="id_answerable_by_colleague_{{form.instance.id}}"
+                                                    {% if form.instance.answerable_by_colleague %}checked{% endif %}>
+                                                <label class="oh-switch__label" for="id_answerable_by_colleague_{{form.instance.id}}">
+                                                    {% trans "Colleague" %}
+                                                </label>
+                                            </div>
+                                            <div class="oh-switch">
+                                                <input type="checkbox" name="answerable_by_subordinate" class="oh-switch__checkbox" 
+                                                    id="id_answerable_by_subordinate_{{form.instance.id}}"
+                                                    {% if form.instance.answerable_by_subordinate %}checked{% endif %}>
+                                                <label class="oh-switch__label" for="id_answerable_by_subordinate_{{form.instance.id}}">
+                                                    {% trans "Subordinate" %}
+                                                </label>
+                                            </div>
+                                            <div class="oh-switch">
+                                                <input type="checkbox" name="answerable_by_others" class="oh-switch__checkbox" 
+                                                    id="id_answerable_by_others_{{form.instance.id}}"
+                                                    {% if form.instance.answerable_by_others %}checked{% endif %}>
+                                                <label class="oh-switch__label" for="id_answerable_by_others_{{form.instance.id}}">
+                                                    {% trans "Others" %}
+                                                </label>
+                                            </div>
+                                        </div>
+                                        <small class="text-muted">{% trans "Uncheck to hide this question from specific roles" %}</small>
+                                    </div>
+                                    
                                     <div x-data="{showAnswers: true}" class="oh-link__expanded d-none">
                                         <a href="#" class="oh-link oh-link--secondary mt-3"
                                             @click="showAnswers = !showAnswers" x-show="!showAnswers">
@@ -107,3 +188,22 @@
     </div>
 </div>
 <!-- end of  new section with individual form -->
+
+<script>
+// Toggle answerable_by section between display and edit mode
+$(document).ready(function() {
+    // When edit button is clicked, show edit checkboxes and hide badges
+    $(document).on('click', '.oh-btn--section-edit', function() {
+        var parentItem = $(this).closest('.oh-item');
+        parentItem.find('.answerable-by-display').addClass('d-none');
+        parentItem.find('.answerable-by-edit').removeClass('d-none');
+    });
+    
+    // When cancel is clicked, restore display mode
+    $(document).on('click', '.oh-section-edit--cancel', function() {
+        var parentItem = $(this).closest('.oh-item');
+        parentItem.find('.answerable-by-edit').addClass('d-none');
+        parentItem.find('.answerable-by-display').removeClass('d-none');
+    });
+});
+</script>

@@ -126,6 +126,21 @@ urlpatterns = [
     ),
     path("feedback-creation", views.feedback_creation, name="feedback-creation"),
     path(
+        "bulk-feedback-creation/",
+        views.bulk_feedback_creation,
+        name="bulk-feedback-creation",
+    ),
+    path(
+        "bulk-feedback-creation-post/",
+        views.bulk_feedback_creation_post,
+        name="bulk-feedback-creation-post",
+    ),
+    path(
+        "get-department-employees/",
+        views.get_department_employees,
+        name="get-department-employees",
+    ),
+    path(
         "bulk-feedback-create",
         cbvs.BulkFeedbackFormView.as_view(),
         name="bulk-feedback-create",
@@ -155,6 +170,16 @@ urlpatterns = [
         views.feedback_answer_view,
         name="feedback-answer-view",
         kwargs={"model": models.Feedback},
+    ),
+    path(
+        "feedback-manager-review/<int:id>",
+        views.feedback_manager_review,
+        name="feedback-manager-review",
+    ),
+    path(
+        "feedback-manager-review-post/<int:id>",
+        views.feedback_manager_review_post,
+        name="feedback-manager-review-post",
     ),
     path(
         "feedback-detailed-view/<int:id>",

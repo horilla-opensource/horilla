@@ -27,14 +27,30 @@
                 <h2 class="oh-onboarding-card__section-title">
                     {{feedback_form.verbose_name}}
                 </h2>
-                <div class="oh-input__group">
-                    <label
-                        class="oh-input__label"
-                        for="{{feedback_form.review_cycle.id_for_label}}"
-                        >{{feedback_form.review_cycle.label}}</label
-                    >
-                    {{feedback_form.review_cycle}}
-                    {{feedback_form.review_cycle.errors}}
+                <div class="row">
+                    <div class="col-12 col-sm-12 col-md-8 col-lg-8">
+                        <div class="oh-input__group">
+                            <label
+                                class="oh-input__label"
+                                for="{{feedback_form.review_cycle.id_for_label}}"
+                                >{{feedback_form.review_cycle.label}}</label
+                            >
+                            {{feedback_form.review_cycle}}
+                            {{feedback_form.review_cycle.errors}}
+                        </div>
+                    </div>
+                    <div class="col-12 col-sm-12 col-md-4 col-lg-4">
+                        <div class="oh-input__group">
+                            <label
+                                class="oh-input__label"
+                                for="{{feedback_form.feedback_type.id_for_label}}"
+                                >{{feedback_form.feedback_type.label}}</label
+                            >
+                            {{feedback_form.feedback_type}}
+                            {{feedback_form.feedback_type.errors}}
+                            <small class="text-muted">{{feedback_form.feedback_type.help_text}}</small>
+                        </div>
+                    </div>
                 </div>
                 <div class="row">
                     <div class="col-12 col-sm-12 col-md-6 col-lg-6">
