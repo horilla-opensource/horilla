@@ -4,7 +4,7 @@
     {% for asset_category in asset_categories %}
         <div class="accordion-item border border-primary-300 rounded-md overflow-hidden">
             <button
-                class="accordion-btn w-full flex justify-between items-center px-4 py-2 text-sm transition-all bg-[#fff5f1] text-[#e54f38]"
+                class="accordion-btn w-full flex justify-between items-center px-4 py-2 text-sm transition-all bg-primary-100 text-primary-600"
                 hx-get="{% url 'asset-list' cat_id=asset_category.id %}?category={{ asset_category.pk }}&{{ request.GET.urlencode }}"
                 hx-target="#assetCategory{{ asset_category.id }}" hx-trigger="doRequest"
                 _="on click if isElementVisible(me) trigger doRequest" hx-on:click="toggleAccordion(this)">

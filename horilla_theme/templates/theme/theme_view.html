@@ -1,0 +1,23 @@
+{% extends 'settings.html' %}
+{% load static i18n %}
+
+{% block settings %}
+    <div id="theme-view" class="h-full overflow-x-auto custom-scroll">
+        <div class="mb-6">
+            <h2 class="text-md font-semibold text-gray-900 mb-2">{% trans 'Theme Management' %}</h2>
+            <p class="text-xs text-gray-600">{% trans 'Select a theme to customize the appearance of your application' %}</p>
+        </div>
+
+        <div id="theme-cards-container">
+            {% include "theme/theme_cards.html" %}
+        </div>
+        <script>
+            // Handle HTMX response and reload page to apply theme
+            document.body.addEventListener('htmx:afterSwap', function(event) {
+                if (event.detail.target && event.detail.target.id === 'theme-cards-container') {
+                    window.location.reload();
+                }
+            });
+        </script>
+    </div>
+{% endblock %}

@@ -21,7 +21,7 @@
                                 <th class="w-12 text-sm font-medium text-left p-3">
                                     <input
                                         type="checkbox"
-                                        class="custom-checkbox w-4 h-4 bg-[#E9EDF7] rounded-sm text-[#e54f38] cursor-pointer row-permission__select-all"
+                                        class="custom-checkbox w-4 h-4 bg-[#E9EDF7] rounded-sm text-primary-600 cursor-pointer row-permission__select-all"
                                         id="id{{perm.app}}Permissions"
                                         onchange="selectAllPermissions(this)"
                                     >
@@ -63,7 +63,7 @@
                                             <input
                                                 type="checkbox"
                                                 id="id_{{perm.app}}{{model.model_name}}"
-                                                class="custom-checkbox w-4 h-4 bg-[#E9EDF7] rounded-sm text-[#e54f38] cursor-pointer row-permission"
+                                                class="custom-checkbox w-4 h-4 bg-[#E9EDF7] rounded-sm text-primary-600 cursor-pointer row-permission"
                                                 onchange="
                                                     $(this).closest('tr').find('[type=checkbox][name=permissions]').prop('checked', $(this).is(':checked')).change();
                                                 ">

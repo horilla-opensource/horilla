@@ -29,7 +29,7 @@
     <div class="accordion-wrapper space-y-2" id="projectStages">
         {% for stage in stages %}
         <div class="accordion-item border border-primary-300 rounded-md">
-            <button class="accordion-btn-pr w-full flex justify-between items-center px-4 py-2 bg-[#fff5f1] text-[#e54f38] text-sm transition-all">
+            <button class="accordion-btn-pr w-full flex justify-between items-center px-4 py-2 bg-primary-100 text-primary-600 text-sm transition-all">
                 <div class="flex items-center gap-2">
                     <span class="w-6 h-6 bg-primary-600 rounded-full text-white flex items-center justify-center text-xs">{{ stage.tasks.count }}</span>
                     {{ stage.title }}
@@ -211,21 +211,21 @@
                 // Collapse all others (optional — comment this block if you want multiple open)
                 document.querySelectorAll('.accordion-panel-pr').forEach(p => {
                     p.style.maxHeight = null;
-                    p.previousElementSibling.classList.remove("bg-[#e54f38]", "text-white");
-                    p.previousElementSibling.classList.add("bg-[#fff5f1]", "text-[#e54f38]");
+                    p.previousElementSibling.classList.remove("bg-primary-600", "text-white");
+                    p.previousElementSibling.classList.add("bg-primary-100", "text-primary-600");
                 });
 
                 // Toggle current
                 if (!isOpen) {
                     panel.style.maxHeight = panel.scrollHeight + 'px';
                     icon.textContent = '−';
-                    btn.classList.remove("bg-[#fff5f1]", "text-[#e54f38]");
-                    btn.classList.add("bg-[#fff5f1]", "text-[#e54f38]");
+                    btn.classList.remove("bg-primary-100", "text-primary-600");
+                    btn.classList.add("bg-primary-100", "text-primary-600");
                 } else {
                     panel.style.maxHeight = null;
                     icon.textContent = '+';
-                    btn.classList.remove("bg-[#e54f38]", "text-white");
-                    btn.classList.add("bg-[#fff5f1]", "text-[#e54f38]");
+                    btn.classList.remove("bg-primary-600", "text-white");
+                    btn.classList.add("bg-primary-100", "text-primary-600");
                 }
             });
         });

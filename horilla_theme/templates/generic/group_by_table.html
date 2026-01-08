@@ -65,7 +65,8 @@
                                             >
                                                 <input
                                                     type="checkbox"
-                                                    class="bulk-list-table-row w-4 h-4 bg-[#E9EDF7] rounded-sm text-[#e54f38] cursor-pointer"
+                                                    value=""
+                                                    class="bulk-list-table-row w-4 h-4 bg-[#E9EDF7] rounded-sm text-primary-600 cursor-pointer"
                                                     title="Select All"
                                                     onchange="
                                                     var isChecked = $(this).is(':checked');
@@ -153,7 +154,7 @@
                                             >
                                                 <input
                                                     type="checkbox"
-                                                    class="w-4 h-4 bg-[#E9EDF7] rounded-sm text-[#e54f38] cursor-pointer list-table-row"
+                                                    class="w-4 h-4 bg-[#E9EDF7] rounded-sm text-primary-600 cursor-pointer list-table-row"
                                                     data-view-id="{{view_id|safe}}"
                                                     title="{% trans "Select Row" %}"
                                                     value = "{{instance.pk}}"

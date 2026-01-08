@@ -558,21 +558,21 @@ function toggleAccordion(btn) {
         const prevBtn = p.previousElementSibling;
         const prevIcon = prevBtn.querySelector(".icon");
         if (prevIcon) prevIcon.textContent = "+";
-        prevBtn.classList.remove("bg-[#e54f38]", "text-white");
-        prevBtn.classList.add("bg-[#fff5f1]", "text-[#e54f38]");
+        prevBtn.classList.remove("bg-bg-primary-600", "text-white");
+        prevBtn.classList.add("bg-[#fff5f1]", "text-bg-primary-600");
     });
 
     // Toggle current panel
     if (!isOpen) {
         panel.style.maxHeight = "500px";
         if (icon) icon.textContent = "−";
-        // btn.classList.remove("bg-[#fff5f1]", "text-[#e54f38]");
-        // btn.classList.add("bg-[#e54f38]", "text-white");
+        // btn.classList.remove("bg-[#fff5f1]", "text-bg-primary-600");
+        // btn.classList.add("bg-bg-primary-600", "text-white");
     } else {
         panel.style.maxHeight = null;
         if (icon) icon.textContent = "+";
-        // btn.classList.remove("bg-[#e54f38]", "text-white");
-        // btn.classList.add("bg-[#fff5f1]", "text-[#e54f38]");
+        // btn.classList.remove("bg-bg-primary-600", "text-white");
+        // btn.classList.add("bg-[#fff5f1]", "text-bg-primary-600");
     }
 }
 
@@ -586,21 +586,21 @@ document.querySelectorAll('.accordion-btn').forEach((btn) => {
         document.querySelectorAll('.accordion-panel').forEach(p => {
             p.style.maxHeight = null;
             p.previousElementSibling.querySelector('.icon').textContent = '+';
-            p.previousElementSibling.classList.remove("bg-[#e54f38]", "text-white");
-            p.previousElementSibling.classList.add("bg-[#fff5f1]", "text-[#e54f38]");
+            p.previousElementSibling.classList.remove("bg-bg-primary-600", "text-white");
+            p.previousElementSibling.classList.add("bg-[#fff5f1]", "text-bg-primary-600");
         });
 
         // Toggle current
         if (!isOpen) {
             panel.style.maxHeight = panel.scrollHeight + 'px';
             icon.textContent = '-';
-            // btn.classList.remove("bg-[#fff5f1]", "text-[#e54f38]");
-            // btn.classList.add("bg-[#e54f38]", "text-white");
+            // btn.classList.remove("bg-[#fff5f1]", "text-bg-primary-600");
+            // btn.classList.add("bg-bg-primary-600", "text-white");
         } else {
             panel.style.maxHeight = null;
             icon.textContent = '+';
-            // btn.classList.remove("bg-[#e54f38]", "text-white");
-            // btn.classList.add("bg-[#fff5f1]", "text-[#e54f38]");
+            // btn.classList.remove("bg-bg-primary-600", "text-white");
+            // btn.classList.add("bg-[#fff5f1]", "text-bg-primary-600");
         }
     });
 });
@@ -667,11 +667,11 @@ $(".oh-password-input--toggle").on("click", function (e) {
     }
 });
 
-$(".oh-modal__close").on("click", function(){
+$(".oh-modal__close").on("click", function () {
     $(this).closest(".oh-modal--show").removeClass("oh-modal--show")
 })
 
-$(document).on("click", ".oh-accordion-header", function(event) {
+$(document).on("click", ".oh-accordion-header", function (event) {
     event.stopImmediatePropagation();
     $(this).closest(".oh-accordion").toggleClass("oh-accordion--show");
 });

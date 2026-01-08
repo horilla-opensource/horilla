@@ -8,7 +8,7 @@
         <span class"oh-tabs__movable-title">{{stage.stage}}</span>
 
         <div onclick="event.stopPropagation()" class="oh-dropdown" x-data="{open: false}">
-          <button class="oh-btn oh-stop-prop oh-btn--transparent oh-accordion-meta__btn" style="color: #e54f38;" @click="open = !open" @click.outside="open = false" title=" Actions">
+          <button class="oh-btn oh-stop-prop oh-btn--transparent oh-accordion-meta__btn" class="text-primary-600" @click="open = !open" @click.outside="open = false" title=" Actions">
               <ion-icon name="ellipsis-vertical" role="img" class="md hydrated" aria-label="ellipsis vertical"></ion-icon>
             </button>
             <div class="oh-dropdown__menu oh-dropdown__menu--right" x-show="open" style="min-width:135px !important;">

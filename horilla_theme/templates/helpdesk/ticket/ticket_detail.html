@@ -483,7 +483,7 @@
                                 <strong>{{item.history.pair.0|fk_history:item.history.changes.0|safe}}</strong> {% trans "to" %}
                                 <strong>{{item.history.pair.1|fk_history:item.history.changes.0|safe}}</strong>
                             </p>
-                            <p class="text-sm text-[#E54F38] font-semibold">
+                            <p class="text-sm text-primary-600 font-semibold">
                                 <span class="dateformat_changer">{{ item.history.pair.0.history_date|date}}</span>
                                 <span class="timeformat_changer">{{ item.history.pair.0.history_date|time}}</span>
                             </p>
@@ -500,7 +500,7 @@
                                 {% trans "to" %}
                                 <strong>{{item.history.changes.0.new|safe}}</strong>
                             </p>
-                            <p class="text-sm text-[#E54F38] font-semibold">
+                            <p class="text-sm text-primary-600 font-semibold">
                                 <span class="dateformat_changer">{{ item.history.pair.0.history_date|date}}</span>
                                 <span class="timeformat_changer">{{ item.history.pair.0.history_date|time}}</span>
                             </p>
@@ -677,7 +677,7 @@
                                 <i>${response.user}</i> changed the ticket Status from
                                 <strong>${response.pre_status}</strong> to <strong>${response.cur_status}</strong>
                             </p>
-                            <p class="text-sm text-[#E54F38] font-semibold">${response.time}</p>
+                            <p class="text-sm text-primary-600 font-semibold">${response.time}</p>
                         </div>`
                     )
                 }

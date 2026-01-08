@@ -1,3 +1,11 @@
+"""
+Admin registration for the horilla_theme app
+"""
+
 from django.contrib import admin
 
-# Register your models here.
+from horilla_theme.models import CompanyTheme, HorillaColorTheme
+
+# Register your horilla_theme models here.
+admin.site.register(HorillaColorTheme)
+admin.site.register(CompanyTheme)

@@ -26,10 +26,10 @@
             </form>
             <div class="accordion-item border border-primary-300 rounded-md">
                 <button hx-on:click="toggleAccordion(this)"
-                    class="accordion-btn w-full flex justify-between gap-5 md:gap-0 items-center flex-wrap px-4 py-2 bg-[#fff5f1] text-[#e54f38] text-sm transition-all">
+                    class="accordion-btn w-full flex justify-between gap-5 md:gap-0 items-center flex-wrap px-4 py-2 bg-primary-100 text-primary-600 text-sm transition-all">
                     <div class="flex flex-wrap items-center gap-2">
                         <input type="checkbox" name="select_all" value="" onclick="selectAllDocuments(event)"
-                            class="custom-checkbox w-4 h-4 bg-[#E9EDF7] rounded-sm text-[#e54f38] cursor-pointer me-3" />
+                            class="custom-checkbox w-4 h-4 bg-[#E9EDF7] rounded-sm text-primary-600 cursor-pointer me-3" />
                         <span class="font-semibold "> {{document_list.grouper}}</span> <span title="{% trans 'Uploaded / Requested' %}"
                             class="text-sm text-dark-600 ps-2">	{{document_list.list.0.upload_documents_count}} / {{document_list.list|length}}</span>
                     </div>
@@ -78,7 +78,7 @@
 
                             <div class="flex gap-1">
                                 <input type="checkbox" value="" id="{{ document.id }}" onchange="highlightRow($(this))" onclick="event.stopPropagation()"
-                                    class="custom-checkbox w-4 h-4 bg-[#E9EDF7] rounded-sm text-[#e54f38] cursor-pointer me-3" />
+                                    class="custom-checkbox w-4 h-4 bg-[#E9EDF7] rounded-sm text-primary-600 cursor-pointer me-3" />
 
 
                                     {% if document.document %}

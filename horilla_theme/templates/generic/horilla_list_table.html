@@ -70,7 +70,7 @@
                                             <input
                                                 type="checkbox"
                                                 value=""
-                                                class="bulk-list-table-row custom-checkbox w-4 h-4 bg-[#E9EDF7] rounded-sm text-[#e54f38] cursor-pointer"
+                                                class="bulk-list-table-row custom-checkbox w-4 h-4 bg-[#E9EDF7] rounded-sm text-primary-600 cursor-pointer"
                                                 title="Select All"
                                                 onchange="
                                                     $(this).closest('.fixed-table').find('.list-table-row').prop('checked',$(this).is(':checked')).change();
@@ -151,7 +151,7 @@
                                     <td class="text-sm text-left p-3 text-[#666] rounded-lg h-[45px] {{row_status_class|format:instance|safe}}">
                                         <input
                                             type="checkbox"
-                                            class="list-table-row custom-checkbox w-4 h-4 bg-[#E9EDF7] rounded-sm text-[#e54f38] cursor-pointer"
+                                            class="list-table-row custom-checkbox w-4 h-4 bg-[#E9EDF7] rounded-sm text-primary-600 cursor-pointer"
                                             data-view-id="{{view_id|safe}}"
                                             title="{% trans "Select Row" %}"
                                             value = "{{instance.pk}}"

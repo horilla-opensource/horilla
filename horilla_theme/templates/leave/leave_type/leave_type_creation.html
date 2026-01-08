@@ -1,6 +1,7 @@
 {% extends 'index.html' %}
-{% load static widget_tweaks %}
+{% load static widget_tweaks horillafilters %}
 {% load i18n %}
+{% get_company as company_obj %}
 {% block content %}
 {% if form.errors %}
 <!-- form errors  -->
@@ -89,7 +90,7 @@
   }
   .sr-only.peer:checked + div,
   .sr-only.peer:checked + .relative {
-    background: #e54f38; /* your red */
+    background: {{ company_obj.companytheme_set.first.theme.primary_600|default:"#E54F38" }};
   }
   .sr-only.peer:checked + div::after,
   .sr-only.peer:checked + .relative::after {
@@ -105,7 +106,7 @@
     font-weight: 600;
   }
   .oh-btn.oh-btn--secondary {
-    background: #e54f38;
+    background-color: {{ company_obj.companytheme_set.first.theme.primary_600|default:"#E54F38" }};
     color: #fff;
     border: 0;
     box-shadow: 0 6px 18px rgba(229,79,56,0.12);
@@ -154,7 +155,7 @@
                     <div class="form-input-items" >
                         <label class="inline-flex items-center cursor-pointer gap-3">
                             {{form.limit_leave|add_class:"sr-only peer"}}
-                            <div class="relative w-9 h-5 bg-[#aeaeb2] rounded-full peer-checked:bg-[#e54f38]
+                            <div class="relative w-9 h-5 bg-[#aeaeb2] rounded-full peer-checked:bg-primary-600
                                 after:content-[''] after:absolute after:top-[2px] after:left-[2px]
                                 after:bg-white after:rounded-full after:h-4 after:w-4
                                 after:transition-all peer-checked:after:translate-x-4 peer-checked:after:border-white">
@@ -188,7 +189,7 @@
                     </div>
                     <label class="inline-flex items-center cursor-pointer gap-3">
                         <input type="checkbox" class="sr-only peer toggle-contro yesOrNol" id="id_approval" checked />
-                            <div class="relative w-9 h-5 bg-[#aeaeb2] rounded-full peer-checked:bg-[#e54f38]
+                            <div class="relative w-9 h-5 bg-[#aeaeb2] rounded-full peer-checked:bg-primary-600
                                 after:content-[''] after:absolute after:top-[2px] after:left-[2px]
                                 after:bg-white after:rounded-full after:h-4 after:w-4
                                 after:transition-all peer-checked:after:translate-x-4 peer-checked:after:border-white">
@@ -206,7 +207,7 @@
                     </div>
                     <label class="inline-flex items-center cursor-pointer gap-3">
                         {{form.reset|add_class:"sr-only peer"}}
-                        <div class="relative w-9 h-5 bg-[#aeaeb2] rounded-full peer-checked:bg-[#e54f38]
+                        <div class="relative w-9 h-5 bg-[#aeaeb2] rounded-full peer-checked:bg-primary-600
                             after:content-[''] after:absolute after:top-[2px] after:left-[2px]
                             after:bg-white after:rounded-full after:h-4 after:w-4
                             after:transition-all peer-checked:after:translate-x-4 peer-checked:after:border-white">
@@ -329,7 +330,7 @@
                         </div>
                         <label class="inline-flex items-center cursor-pointer gap-3">
                             <input type="checkbox" class="sr-only peer toggle-control yesOrNo" id="id_attachment" />
-                                <div class="relative w-9 h-5 bg-[#aeaeb2] rounded-full peer-checked:bg-[#e54f38]
+                                <div class="relative w-9 h-5 bg-[#aeaeb2] rounded-full peer-checked:bg-primary-600
                                     after:content-[''] after:absolute after:top-[2px] after:left-[2px]
                                     after:bg-white after:rounded-full after:h-4 after:w-4
                                     after:transition-all peer-checked:after:translate-x-4 peer-checked:after:border-white">
@@ -345,7 +346,7 @@
                         </div>
                         <label class="inline-flex items-center cursor-pointer gap-3">
                             <input type="checkbox" class="sr-only peer toggle-control yesOrNo" id="id_exclude_comp_leave" />
-                                <div class="relative w-9 h-5 bg-[#aeaeb2] rounded-full peer-checked:bg-[#e54f38]
+                                <div class="relative w-9 h-5 bg-[#aeaeb2] rounded-full peer-checked:bg-primary-600
                                     after:content-[''] after:absolute after:top-[2px] after:left-[2px]
                                     after:bg-white after:rounded-full after:h-4 after:w-4
                                     after:transition-all peer-checked:after:translate-x-4 peer-checked:after:border-white">
@@ -361,7 +362,7 @@
                         </div>
                         <label class="inline-flex items-center cursor-pointer gap-3">
                             <input type="checkbox" class="sr-only peer toggle-control yesOrNo" id="id_exclude_public_leave" />
-                                <div class="relative w-9 h-5 bg-[#aeaeb2] rounded-full peer-checked:bg-[#e54f38]
+                                <div class="relative w-9 h-5 bg-[#aeaeb2] rounded-full peer-checked:bg-primary-600
                                     after:content-[''] after:absolute after:top-[2px] after:left-[2px]
                                     after:bg-white after:rounded-full after:h-4 after:w-4
                                     after:transition-all peer-checked:after:translate-x-4 peer-checked:after:border-white">
@@ -377,7 +378,7 @@
                         </div>
                         <label class="inline-flex items-center cursor-pointer gap-3">
                             {{form.is_encashable|add_class:"sr-only peer"}}
-                            <div class="relative w-9 h-5 bg-[#aeaeb2] rounded-full peer-checked:bg-[#e54f38]
+                            <div class="relative w-9 h-5 bg-[#aeaeb2] rounded-full peer-checked:bg-primary-600
                                 after:content-[''] after:absolute after:top-[2px] after:left-[2px]
                                 after:bg-white after:rounded-full after:h-4 after:w-4
                                 after:transition-all peer-checked:after:translate-x-4 peer-checked:after:border-white">

@@ -1,7 +1,7 @@
 {% load static %}
 {% load horillafilters %}
 {% include 'generic/components.html' %}
-
+{% get_company as company_obj %}
 <style>
 
     .fab-container {
@@ -9,7 +9,7 @@
         height: 40px;
         border-radius: 0 30px 30px 0;
         box-shadow: 0px 3px 10px rgba(0, 0, 0, 0.16), 0px 3px 10px rgba(0, 0, 0, 0.16);
-        background: #ff3b38;
+        background-color: {{ company_obj.companytheme_set.first.theme.primary_600|default:"#ff3b38" }};
         position: fixed;
         bottom: 40px;
         left: 80px;
@@ -20,7 +20,7 @@
     .fab {
         width: 40px;
         height: 40px;
-        background-color: #ff3b38;
+        background-color: {{ company_obj.companytheme_set.first.theme.primary_600|default:"#ff3b38" }};
         border-radius: 50%;
         display: flex;
         align-items: center;

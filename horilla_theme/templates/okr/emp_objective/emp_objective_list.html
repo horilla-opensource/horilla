@@ -18,7 +18,7 @@
       <div id="ekrIds{{emp_objective.pk}}" data-ids="[]"></div>
       <div class="accordion-item border border-primary-300 rounded-md">
         <button
-            class="accordion-btn w-full flex justify-between gap-5 md:gap-0 items-center flex-wrap px-4 py-2 bg-[#fff5f1] text-[#e54f38] text-sm transition-all"
+            class="accordion-btn w-full flex justify-between gap-5 md:gap-0 items-center flex-wrap px-4 py-2 bg-primary-100 text-primary-600 text-sm transition-all"
             hx-get="{% url 'kr-table-view' emp_objective.id %}?{{request.GET.urlencode}}&employee_objective_id={{emp_objective.id}}"
             hx-target="#krData{{emp_objective.id}}"
             hx-trigger="click"
