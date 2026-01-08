@@ -7734,20 +7734,25 @@ def protected_media(request, path):
         "/recruitment/open-recruitments/",
         "/recruitment/candidate-self-status-tracking/",
     ]
-    exempted_folders = ["base/icon/"]
+
+    # EXACT folder where company logos exist
+    exempted_folders = [
+        "base/company/icon/",
+    ]
 
     media_path = os.path.join(settings.MEDIA_ROOT, path)
+
     if not os.path.exists(media_path):
         raise Http404("File not found")
 
     referer_path = urlparse(request.META.get("HTTP_REFERER", "")).path
 
-    # Try Bearer token auth
+    # JWT support (your existing logic)
     jwt_user = is_jwt_token_valid(request.META.get("HTTP_AUTHORIZATION", ""))
 
-    # Access control logic
+    # Access control
     if referer_path not in public_pages and not any(
-        path.startswith(f) for f in exempted_folders
+        path.startswith(folder) for folder in exempted_folders
     ):
         if not request.user.is_authenticated and not jwt_user:
             messages.error(
@@ -7756,4 +7761,5 @@ def protected_media(request, path):
             )
             return redirect("login")
 
+    # Allow logo to be served publicly
     return FileResponse(open(media_path, "rb"))
