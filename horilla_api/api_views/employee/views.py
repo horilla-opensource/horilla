@@ -250,8 +250,14 @@ class EmployeeBankDetailsAPIView(APIView):
     permission_classes = [IsAuthenticated]
 
     def get_queryset(self):
+        # Handle schema generation for DRF-YASG
+        if getattr(self, "swagger_fake_view", False):
+            return EmployeeBankDetails.objects.none()
         queryset = EmployeeBankDetails.objects.all()
         user = self.request.user
+        # Handle AnonymousUser during schema generation
+        if not user.is_authenticated:
+            return EmployeeBankDetails.objects.none()
         # checking user level permissions
         perm = "base.view_employeebankdetails"
         queryset = permission_based_queryset(user, perm, queryset)
@@ -526,6 +532,7 @@ class DisciplinaryActionAPIView(APIView):
 
     filterset_class = DisciplinaryActionFilter
     permission_classes = [IsAuthenticated]
+    queryset = DisciplinaryAction.objects.none()  # For drf-yasg schema generation
 
     def get_object(self, pk):
         try:
@@ -771,6 +778,7 @@ class DocumentRequestAPIView(APIView):
 class DocumentAPIView(APIView):
     filterset_class = DocumentRequestFilter
     permission_classes = [IsAuthenticated]
+    queryset = Document.objects.none()  # For drf-yasg schema generation
 
     def get_object(self, pk):
         try:

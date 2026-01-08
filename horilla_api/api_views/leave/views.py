@@ -15,7 +15,7 @@ from base.methods import filtersubordinates
 from horilla_api.api_serializers.leave.serializers import *
 from leave.filters import *
 from leave.methods import filter_conditional_leave_request
-from leave.models import LeaveRequest
+from leave.models import AvailableLeave, LeaveAllocationRequest, LeaveRequest, LeaveType
 from notifications.signals import notify
 
 from ...api_decorators.base.decorators import manager_permission_required
@@ -38,6 +38,16 @@ class EmployeeLeaveRequestGetCreateAPIView(APIView):
     permission_classes = [IsAuthenticated]
     filter_backends = [DjangoFilterBackend]
     filterset_class = UserLeaveRequestFilter
+    queryset = LeaveRequest.objects.none()  # For drf-yasg schema generation
+
+    def get_queryset(self):
+        # Handle schema generation for DRF-YASG
+        if getattr(self, "swagger_fake_view", False):
+            return LeaveRequest.objects.none()
+        if not self.request.user.is_authenticated:
+            return LeaveRequest.objects.none()
+        employee = self.request.user.employee_get
+        return employee.leaverequest_set.all().order_by("-id")
 
     def get(self, request):
         employee = request.user.employee_get
@@ -142,6 +152,13 @@ class LeaveTypeGetCreateAPIView(APIView):
     permission_classes = [IsAuthenticated]
     filter_backends = [DjangoFilterBackend]
     filterset_class = LeaveTypeFilter
+    queryset = LeaveType.objects.none()  # For drf-yasg schema generation
+
+    def get_queryset(self):
+        # Handle schema generation for DRF-YASG
+        if getattr(self, "swagger_fake_view", False):
+            return LeaveType.objects.none()
+        return LeaveType.objects.all()
 
     # @method_decorator(permission_required('leave.view_leavetype', raise_exception=True), name='dispatch')
     def get(self, request):
@@ -208,6 +225,18 @@ class LeaveAllocationRequestGetCreateAPIView(APIView):
     permission_classes = [IsAuthenticated]
     filter_backends = [DjangoFilterBackend]
     filterset_class = LeaveAllocationRequestFilter
+    queryset = LeaveAllocationRequest.objects.none()  # For drf-yasg schema generation
+
+    def get_queryset(self):
+        # Handle schema generation for DRF-YASG
+        if getattr(self, "swagger_fake_view", False):
+            return LeaveAllocationRequest.objects.none()
+        if not self.request.user.is_authenticated:
+            return LeaveAllocationRequest.objects.none()
+        allocation_requests = LeaveAllocationRequest.objects.all().order_by("-id")
+        return filtersubordinates(
+            self.request, allocation_requests, "leave.view_leaveallocationrequest"
+        )
 
     def get_user(self, request):
         user = request.user
@@ -304,6 +333,18 @@ class AssignLeaveGetCreateAPIView(APIView):
     permission_classes = [IsAuthenticated]
     filter_backends = [DjangoFilterBackend]
     filterset_class = AssignedLeaveFilter
+    queryset = AvailableLeave.objects.none()  # For drf-yasg schema generation
+
+    def get_queryset(self):
+        # Handle schema generation for DRF-YASG
+        if getattr(self, "swagger_fake_view", False):
+            return AvailableLeave.objects.none()
+        if not self.request.user.is_authenticated:
+            return AvailableLeave.objects.none()
+        available_leave = AvailableLeave.objects.all().order_by("-id")
+        return filtersubordinates(
+            self.request, available_leave, "leave.view_availableleave"
+        )
 
     @method_decorator(
         permission_required("leave.view_availableleave", raise_exception=True),
@@ -404,6 +445,20 @@ class LeaveRequestGetCreateAPIView(APIView):
     permission_classes = [IsAuthenticated]
     filter_backends = [DjangoFilterBackend]
     filterset_class = LeaveRequestFilter
+    queryset = LeaveRequest.objects.none()  # For drf-yasg schema generation
+
+    def get_queryset(self):
+        # Handle schema generation for DRF-YASG
+        if getattr(self, "swagger_fake_view", False):
+            return LeaveRequest.objects.none()
+        if not self.request.user.is_authenticated:
+            return LeaveRequest.objects.none()
+        leave_request = LeaveRequest.objects.all().order_by("-id")
+        multiple_approvals = filter_conditional_leave_request(self.request)
+        return (
+            filtersubordinates(self.request, leave_request, "leave.view_leaverequest")
+            | multiple_approvals
+        )
 
     @manager_permission_required("leave.view_leaverequest")
     def get(self, request):
@@ -920,6 +975,16 @@ class EmployeeLeaveAllocationGetCreateAPIView(APIView):
     permission_classes = [IsAuthenticated]
     filter_backends = [DjangoFilterBackend]
     filterset_class = LeaveAllocationRequestFilter
+    queryset = LeaveAllocationRequest.objects.none()  # For drf-yasg schema generation
+
+    def get_queryset(self):
+        # Handle schema generation for DRF-YASG
+        if getattr(self, "swagger_fake_view", False):
+            return LeaveAllocationRequest.objects.none()
+        if not self.request.user.is_authenticated:
+            return LeaveAllocationRequest.objects.none()
+        employee = self.request.user.employee_get
+        return employee.leaveallocationrequest_set.all().order_by("-id")
 
     def get_user(self, request):
         user = request.user

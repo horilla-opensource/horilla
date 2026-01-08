@@ -46,6 +46,10 @@ def groupby_queryset(request, url, field_name, queryset):
 
 
 def permission_based_queryset(user, perm, queryset, user_obj=None):
+    # Handle AnonymousUser during schema generation
+    if not user.is_authenticated:
+        return queryset.none()
+
     if user.has_perm(perm):
         return queryset
 
