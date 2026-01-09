@@ -415,7 +415,7 @@ def send_mail(request, automation, instance):
         try:
             user = request.user.employee_get
             display_email_name = f"{user.get_full_name()} <{user.email}>"
-            from_email = display_email_name
+            # from_email = display_email_name
             reply_to = [display_email_name]
         except Exception as e:
             logger.error(f"Error generating user-based email display name: {e}")
