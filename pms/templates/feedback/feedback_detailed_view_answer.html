@@ -93,7 +93,7 @@
 <!-- Manager-Only Questions Section (for Performance Appraisals) -->
 {% if manager_only_answers %}
 <hr/>
-  <span class="oh-activity-sidebar__q" style="font-size: medium; color: #F7941D;">{% trans "Manager's Additional Assessment" %}</span>
+  <span class="oh-activity-sidebar__q" style="font-size: medium; color: #F7941D;">{% trans "Manager's Evaluation" %}</span>
   {% for answer in manager_only_answers %}
   <li class="oh-activity-sidebar__qa-item" style="border-left: 4px solid #F7941D; padding-left: 15px; margin-left: 0;">
     <span class="oh-activity-sidebar__q"> {{forloop.counter}}. {{answer.question_id.question}}?</span>

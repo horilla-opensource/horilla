@@ -101,8 +101,7 @@
       {% if manager_only_questions %}
       <div class="oh-card mb-3">
         <div class="oh-card__header">
-          <span class="oh-card__title fw-bold">{% trans "Manager Assessment Questions" %}</span>
-          <p class="text-muted small mb-0">{% trans "These questions are for manager's assessment only" %}</p>
+          <span class="oh-card__title fw-bold">{% trans "Manager's Evaluation" %}</span>
         </div>
         <div class="oh-card__body">
           {% for q in manager_only_questions %}
@@ -220,11 +219,87 @@
         <a href="{% url 'feedback-view' %}" class="oh-btn oh-btn--light me-2">
           {% trans "Cancel" %}
         </a>
-        <button type="submit" class="oh-btn oh-btn--secondary oh-btn--shadow">
+        <button type="submit" class="oh-btn oh-btn--secondary oh-btn--shadow" id="submitReviewBtn">
           {% trans "Submit Review" %}
         </button>
       </div>
     </div>
   </form>
 </div>
+
+<script>
+$(document).ready(function() {
+  // Fix auto-scroll issue on star rating click
+  $('.oh-rate label').on('click', function(e) {
+    // Store current scroll position
+    var scrollPos = $(window).scrollTop();
+    
+    // Allow the click to process
+    setTimeout(function() {
+      // Restore scroll position after a brief moment
+      $(window).scrollTop(scrollPos);
+    }, 10);
+  });
+
+  // Validation before form submit
+  $('form').on('submit', function(e) {
+    var isValid = true;
+    var firstError = null;
+    
+    // Validate manager ratings for employee answers
+    {% for answer in employee_answers %}
+    if (!$('input[name="rating_{{ answer.id }}"]:checked').length) {
+      isValid = false;
+      var container = $('input[name="rating_{{ answer.id }}"]').closest('.mb-4');
+      container.css('border-color', '#dc3545');
+      if (!firstError) firstError = container;
+    } else {
+      $('input[name="rating_{{ answer.id }}"]').closest('.mb-4').css('border-color', '#e0e0e0');
+    }
+    {% endfor %}
+    
+    // Validate manager-only questions
+    {% if manager_only_questions %}
+    {% for q in manager_only_questions %}
+    {% if q.question_type == '1' %}
+    if (!$('input[name="answer{{ q.id }}"]').val().trim()) {
+      isValid = false;
+      var container = $('input[name="answer{{ q.id }}"]').closest('.mb-3');
+      container.find('input').addClass('is-invalid');
+      if (!firstError) firstError = container;
+    }
+    {% else %}
+    if (!$('input[name="answer{{ q.id }}"]:checked').length) {
+      isValid = false;
+      var container = $('input[name="answer{{ q.id }}"]').closest('.mb-3');
+      container.css('border', '1px solid #dc3545');
+      container.css('border-radius', '8px');
+      container.css('padding', '10px');
+      if (!firstError) firstError = container;
+    }
+    {% endif %}
+    {% endfor %}
+    {% endif %}
+    
+    if (!isValid) {
+      e.preventDefault();
+      if (firstError) {
+        $('html, body').animate({
+          scrollTop: firstError.offset().top - 100
+        }, 300);
+      }
+      Swal.fire({
+        icon: 'warning',
+        title: '{% trans "Incomplete Review" %}',
+        text: '{% trans "Please provide a rating for all employee responses and complete all required questions." %}',
+        confirmButtonColor: '#44b86c'
+      });
+      return false;
+    }
+    
+    // Show loading state
+    $('#submitReviewBtn').prop('disabled', true).text('{% trans "Submitting..." %}');
+  });
+});
+</script>
 {% endblock content %}

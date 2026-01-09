@@ -171,7 +171,7 @@
 
         </div>
         <div class="oh-modal__dialog-footer mb-3 ">
-          <button type="submit" class="oh-btn oh-btn--secondary oh-btn--shadow ">
+          <button type="submit" class="oh-btn oh-btn--secondary oh-btn--shadow" id="submitFeedbackBtn">
             {% trans "Save" %}
           </button>
         </div>
@@ -179,4 +179,72 @@
   </form>
 </div>
 
+<script>
+$(document).ready(function() {
+  // Fix auto-scroll issue on star rating click
+  $('.oh-rate label').on('click', function(e) {
+    var scrollPos = $(window).scrollTop();
+    setTimeout(function() {
+      $(window).scrollTop(scrollPos);
+    }, 10);
+  });
+
+  // Validation before form submit
+  $('form').on('submit', function(e) {
+    var isValid = true;
+    var firstError = null;
+    var errorMessages = [];
+    
+    // Validate all questions
+    {% for q in questions %}
+    {% if q.question_type == '1' %}
+    // Text input validation
+    if (!$('input[name="answer{{ q.id }}"]').val().trim()) {
+      isValid = false;
+      var container = $('input[name="answer{{ q.id }}"]').closest('.d-block');
+      $('input[name="answer{{ q.id }}"]').addClass('is-invalid').css('border-color', '#dc3545');
+      if (!firstError) firstError = container;
+    } else {
+      $('input[name="answer{{ q.id }}"]').removeClass('is-invalid').css('border-color', '');
+    }
+    {% else %}
+    // Radio button validation (Rating, Boolean, Multi-choice, Likert)
+    if (!$('input[name="answer{{ q.id }}"]:checked').length) {
+      isValid = false;
+      var container = $('input[name="answer{{ q.id }}"]').closest('.d-block, .oh-input__group');
+      container.css('background-color', '#fff5f5');
+      container.css('border-radius', '8px');
+      container.css('padding', '10px');
+      container.css('border', '1px solid #dc3545');
+      if (!firstError) firstError = container;
+    } else {
+      var container = $('input[name="answer{{ q.id }}"]').closest('.d-block, .oh-input__group');
+      container.css('background-color', '');
+      container.css('border', '');
+      container.css('padding', '');
+    }
+    {% endif %}
+    {% endfor %}
+    
+    if (!isValid) {
+      e.preventDefault();
+      if (firstError) {
+        $('html, body').animate({
+          scrollTop: firstError.offset().top - 100
+        }, 300);
+      }
+      Swal.fire({
+        icon: 'warning',
+        title: '{% trans "Incomplete Feedback" %}',
+        text: '{% trans "Please answer all questions before submitting." %}',
+        confirmButtonColor: '#44b86c'
+      });
+      return false;
+    }
+    
+    // Show loading state
+    $('#submitFeedbackBtn').prop('disabled', true).text('{% trans "Submitting..." %}');
+  });
+});
+</script>
 {% endblock content %}
