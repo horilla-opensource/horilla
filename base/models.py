@@ -84,6 +84,7 @@ class Company(HorillaModel):
     objects = models.Manager()
     date_format = models.CharField(max_length=30, blank=True, null=True)
     time_format = models.CharField(max_length=20, blank=True, null=True)
+    trial_start_date = models.DateTimeField(null=True, blank=True)
 
     class Meta:
         """
@@ -97,6 +98,12 @@ class Company(HorillaModel):
 
     def __str__(self) -> str:
         return str(self.company)
+
+    @property
+    def is_trial_valid(self):
+        if not self.trial_start_date:
+            return False
+        return django.utils.timezone.now() < self.trial_start_date + timedelta(days=14)
 
 
 class Department(HorillaModel):

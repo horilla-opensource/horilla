@@ -1,0 +1,255 @@
+{% load static %} {% load i18n %}
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Register - {{white_label_company_name}} Dashboard</title>
+    <link rel="apple-touch-icon" sizes="180x180"
+        href="{% if white_label_company.icon %}{{white_label_company.icon.url}} {% else %}{% static 'favicons/apple-touch-icon.png' %}{% endif %}">
+    <link rel="icon" type="image/png" sizes="32x32"
+        href="{% if white_label_company.icon %}{{white_label_company.icon.url}} {% else %}{% static 'favicons/favicon-32x32.png' %}{% endif %}">
+    <link rel="icon" type="image/png" sizes="16x16"
+        href="{% if white_label_company.icon %}{{white_label_company.icon.url}} {% else %}{% static 'favicons/favicon-16x16.png' %}{% endif %}">
+
+    <!-- Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link
+        href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Poppins:wght@500;600;700&display=swap"
+        rel="stylesheet">
+
+    <!-- Styles -->
+    <link rel="stylesheet" href="{% static '/build/css/style.min.css' %}" />
+    <!-- Scoped Tailwind CSS for Login -->
+    <link rel="stylesheet" href="{% static '/build/css/login.css' %}" />
+    <link rel="manifest" href="{% static 'build/manifest.json' %}" />
+
+    <style>
+        .login-bg {
+            background-image: url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' fill-rule='evenodd'%3E%3Cg fill='%2315803d' fill-opacity='0.05'%3E%3Cpath d='M36 34v-4h-2v4h-4v2h4v4h2v-4h4v-2h-4zm0-30V0h-2v4h-4v2h4v4h2V6h4V4h-4zM6 34v-4H4v4H0v2h4v4h2v-4h4v-2H6zM6 4V0H4v4H0v2h4v4h2V6h4V4H6z'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E");
+        }
+
+        .blob {
+            position: absolute;
+            filter: blur(40px);
+            z-index: -1;
+            opacity: 0.4;
+            animation: float 10s infinite ease-in-out;
+        }
+
+        @keyframes float {
+            0% {
+                transform: translate(0, 0) scale(1);
+            }
+
+            33% {
+                transform: translate(30px, -50px) scale(1.1);
+            }
+
+            66% {
+                transform: translate(-20px, 20px) scale(0.9);
+            }
+
+            100% {
+                transform: translate(0, 0) scale(1);
+            }
+        }
+    </style>
+</head>
+
+<body
+    class="tw-bg-slate-50 tw-font-sans tw-h-screen tw-w-full tw-overflow-hidden tw-flex tw-items-center tw-justify-center login-bg tw-relative tw-login-wrapper">
+
+    <!-- Background Blobs -->
+    <div
+        class="blob tw-bg-primary-300 tw-w-96 tw-h-96 tw-rounded-full tw-top-0 tw-left-0 tw--translate-x-1/2 tw--translate-y-1/2">
+    </div>
+    <div
+        class="blob tw-bg-blue-300 tw-w-96 tw-h-96 tw-rounded-full tw-bottom-0 tw-right-0 tw-translate-x-1/2 tw-translate-y-1/2 animation-delay-2000">
+    </div>
+
+    <div id="main" class="tw-w-full tw-max-w-6xl tw-px-4 tw-flex tw-items-center tw-justify-center tw-h-full">
+
+        <div class="oh-alert-container tw-absolute tw-top-4 tw-right-4 tw-z-50">
+            {% for message in messages %}
+            <div class="oh-alert oh-alert--animated {{ message.tags }} tw-mb-2">
+                {{ message }}
+            </div>
+            {% endfor %}
+
+            {% if form.errors %}
+            {% for field in form %}
+            {% for error in field.errors %}
+            <div class="oh-alert oh-alert--animated oh-alert--danger tw-mb-2">
+                {{ error }}
+            </div>
+            {% endfor %}
+            {% endfor %}
+            {% for error in form.non_field_errors %}
+            <div class="oh-alert oh-alert--animated oh-alert--danger tw-mb-2">
+                {{ error }}
+            </div>
+            {% endfor %}
+            {% endif %}
+        </div>
+
+        <main class="tw-w-full tw-grid md:tw-grid-cols-2 tw-gap-8 tw-items-center">
+
+            <!-- Left Side: Branding -->
+            <div class="tw-hidden md:tw-flex tw-flex-col tw-items-start tw-justify-center tw-p-8 tw-space-y-6">
+                <div class="tw-relative">
+                    {% if white_label_company and white_label_company.icon %}
+                    <img src="{{ white_label_company.icon.url }}" alt="{{ white_label_company_name }}"
+                        class="tw-h-24 tw-object-contain tw-mb-6 tw-rounded-lg" />
+                    {% else %}
+                    <img src="{% static 'images/ui/marsel-logo.png' %}" alt="Marsel Force"
+                        class="tw-h-32 tw-object-contain tw-mb-6 tw-rounded-lg" />
+                    {% endif %}
+                </div>
+
+                <div>
+                    <h1
+                        class="tw-text-4xl lg:tw-text-5xl tw-font-heading tw-font-bold tw-text-slate-800 tw-mb-4 tw-leading-tight">
+                        Start your journey with <br />
+                        <span class="tw-text-primary-600">{{ white_label_company|default:"Marsel Force" }}</span>
+                    </h1>
+                    <p class="tw-text-lg tw-text-slate-600 tw-max-w-md">
+                        Create your company account today and streamline your HR operations.
+                    </p>
+                </div>
+
+                <div class="tw-flex tw-items-center tw-gap-4 tw-mt-8">
+                    <div class="tw-flex tw--space-x-2">
+                        <div
+                            class="tw-w-10 tw-h-10 tw-rounded-full tw-bg-slate-200 tw-border-2 tw-border-white tw-flex tw-items-center tw-justify-center tw-text-xs tw-font-bold tw-text-slate-500">
+                            HR</div>
+                        <div
+                            class="tw-w-10 tw-h-10 tw-rounded-full tw-bg-slate-300 tw-border-2 tw-border-white tw-flex tw-items-center tw-justify-center tw-text-xs tw-font-bold tw-text-slate-500">
+                            IT</div>
+                        <div
+                            class="tw-w-10 tw-h-10 tw-rounded-full tw-bg-slate-400 tw-border-2 tw-border-white tw-flex tw-items-center tw-justify-center tw-text-xs tw-font-bold tw-text-slate-500">
+                            M</div>
+                    </div>
+                    <span class="tw-text-sm tw-text-slate-500 tw-font-medium">Join thousands of companies</span>
+                </div>
+            </div>
+
+            <!-- Right Side: Registration Form -->
+            <div class="tw-w-full tw-max-w-md tw-mx-auto">
+                <div
+                    class="tw-card-glass tw-p-8 md:tw-p-10 tw-relative tw-overflow-hidden tw-bg-white/80 tw-backdrop-blur-md tw-rounded-2xl tw-shadow-glass">
+                    <!-- Decorative top bar -->
+                    <div
+                        class="tw-absolute tw-top-0 tw-left-0 tw-w-full tw-h-1.5 tw-bg-gradient-to-r tw-from-primary-400 tw-to-primary-600">
+                    </div>
+
+                    <div class="tw-mb-8 tw-text-center md:tw-text-left">
+                        <h2 class="tw-text-2xl tw-font-bold tw-text-slate-800">Register Company</h2>
+                        <p class="tw-text-slate-500 tw-mt-1">Create your new company account.</p>
+                    </div>
+
+                    <form method="post" class="tw-space-y-4">
+                        {% csrf_token %}
+
+                        <!-- Company Name -->
+                        <div class="tw-space-y-1.5">
+                            <label class="tw-block tw-text-sm tw-font-medium tw-text-slate-700"
+                                for="company_name">Company Name</label>
+                            <div class="tw-relative">
+                                <div
+                                    class="tw-absolute tw-inset-y-0 tw-left-0 tw-pl-3 tw-flex tw-items-center tw-pointer-events-none">
+                                    <ion-icon name="business-outline" class="tw-text-slate-400 tw-text-lg"></ion-icon>
+                                </div>
+                                {{ form.company_name }}
+                            </div>
+                        </div>
+
+                        <!-- Admin Username -->
+                        <div class="tw-space-y-1.5">
+                            <label class="tw-block tw-text-sm tw-font-medium tw-text-slate-700" for="username">Admin
+                                Username</label>
+                            <div class="tw-relative">
+                                <div
+                                    class="tw-absolute tw-inset-y-0 tw-left-0 tw-pl-3 tw-flex tw-items-center tw-pointer-events-none">
+                                    <ion-icon name="person-outline" class="tw-text-slate-400 tw-text-lg"></ion-icon>
+                                </div>
+                                {{ form.username }}
+                            </div>
+                        </div>
+
+                        <!-- Admin Email -->
+                        <div class="tw-space-y-1.5">
+                            <label class="tw-block tw-text-sm tw-font-medium tw-text-slate-700" for="email">Admin
+                                Email</label>
+                            <div class="tw-relative">
+                                <div
+                                    class="tw-absolute tw-inset-y-0 tw-left-0 tw-pl-3 tw-flex tw-items-center tw-pointer-events-none">
+                                    <ion-icon name="mail-outline" class="tw-text-slate-400 tw-text-lg"></ion-icon>
+                                </div>
+                                {{ form.email }}
+                            </div>
+                        </div>
+
+                        <!-- Password -->
+                        <div class="tw-space-y-1.5">
+                            <label class="tw-block tw-text-sm tw-font-medium tw-text-slate-700"
+                                for="password">Password</label>
+                            <div class="tw-relative">
+                                <div
+                                    class="tw-absolute tw-inset-y-0 tw-left-0 tw-pl-3 tw-flex tw-items-center tw-pointer-events-none">
+                                    <ion-icon name="lock-closed-outline"
+                                        class="tw-text-slate-400 tw-text-lg"></ion-icon>
+                                </div>
+                                {{ form.password }}
+                            </div>
+                        </div>
+
+                        <!-- Confirm Password -->
+                        <div class="tw-space-y-1.5">
+                            <label class="tw-block tw-text-sm tw-font-medium tw-text-slate-700"
+                                for="confirm_password">Confirm Password</label>
+                            <div class="tw-relative">
+                                <div
+                                    class="tw-absolute tw-inset-y-0 tw-left-0 tw-pl-3 tw-flex tw-items-center tw-pointer-events-none">
+                                    <ion-icon name="lock-closed-outline"
+                                        class="tw-text-slate-400 tw-text-lg"></ion-icon>
+                                </div>
+                                {{ form.confirm_password }}
+                            </div>
+                        </div>
+
+                        <div class="tw-flex tw-justify-end">
+                            <a href="{% url 'login' %}"
+                                class="tw-text-sm tw-font-medium tw-text-primary-600 hover:tw-text-primary-700 tw-transition-colors">
+                                Already have an account? Sign In
+                            </a>
+                        </div>
+
+                        <button type="submit"
+                            class="tw-w-full tw-bg-primary-600 hover:tw-bg-primary-700 tw-text-white tw-font-semibold tw-px-4 tw-py-4 tw-rounded-lg tw-border-0 tw-shadow-lg tw-shadow-primary-600/30 hover:tw-shadow-xl hover:tw-shadow-primary-600/40 tw-transition-all tw-duration-200 tw-flex tw-items-center tw-justify-center tw-gap-2 tw-group">
+                            <ion-icon name="rocket-outline"
+                                class="tw-text-xl group-hover:tw-translate-x-1 tw-transition-transform tw-duration-200"></ion-icon>
+                            Register Company
+                        </button>
+                    </form>
+
+                    <div class="tw-mt-8 tw-text-center">
+                        <p class="tw-text-xs tw-text-slate-400">
+                            Powered by <span class="tw-font-bold tw-text-slate-500">Marsel Force</span>
+                        </p>
+                    </div>
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <!-- Scripts -->
+    <script src="{% static '/jquery/jquery.min.js' %}"></script>
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@10"></script>
+    <script type="module" src="{% static 'images/ionicons/ui_icons/ionicons/ionicons.esm.js' %}"></script>
+</body>
+
+</html>
