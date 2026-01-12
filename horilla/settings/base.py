@@ -254,6 +254,7 @@ LANGUAGES = (
     ("zh-hans", "Simplified Chinese"),
     ("zh-hant", "Traditional Chinese"),
     ("it", "Italian"),
+    ("tr", "Turkish"),
 )
 
 LOCALE_PATHS = [join(BASE_DIR, "horilla", "locale")]
