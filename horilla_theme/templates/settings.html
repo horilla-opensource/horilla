@@ -589,7 +589,7 @@
 				</div>
 				{% endif %}
 				{% endif %}
-				{% if "horilla_theme"|app_installed %}
+				{% if "horilla_theme"|app_installed and perms.horilla_theme.view_horillacolortheme %}
 					<div class="accordion-item border border-primary-300 rounded-md overflow-hidden">
 						<button
 							class="accordion-btn-stng font-medium w-full flex justify-between items-center px-3 py-1 bg-primary-200 text-primary-600 text-[13px] transition-all"
@@ -601,14 +601,12 @@
 							class="accordion-panel max-h-0 overflow-hidden transition-all duration-300 bg-white px-4 text-sm text-gray-700">
 							<div class="py-3">
 								<ul>
-									{% if perms.horilla_theme.view_companytheme %}
 									<li class="py-1">
 										<a id="bonusPoint" href="{% url 'horilla_theme:color_theme_view' %}"
 											class="hover:text-primary-600 transition duration-300 text-[13px]">
 											{% trans "Color Theme" %}
 										</a>
 									</li>
-									{% endif %}
 								</ul>
 							</div>
 						</div>

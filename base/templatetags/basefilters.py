@@ -308,5 +308,6 @@ def show_section(context):
             user.has_perm("horilla_ldap.update_ldapsettings"),
             user.has_perm("horilla_meet.view_googlecloudcredential"),
             user.has_perm("whatsapp.add_whatsappcredentials"),
+            user.has_perm("horilla_theme.view_horillacolortheme"),
         ]
     )

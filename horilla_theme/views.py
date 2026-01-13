@@ -14,7 +14,7 @@ from horilla_views.cbv_methods import login_required, permission_required
 
 
 @method_decorator(
-    permission_required(["horilla_theme.view_horillacolortheme"]),
+    permission_required("horilla_theme.view_horillacolortheme"),
     name="dispatch",
 )
 class ThemeView(LoginRequiredMixin, TemplateView):
@@ -47,9 +47,7 @@ class ThemeView(LoginRequiredMixin, TemplateView):
 
 
 @method_decorator(
-    permission_required(
-        ["horilla_theme.change_companytheme", "horilla_theme.add_companytheme"]
-    ),
+    permission_required("horilla_theme.change_horillacolortheme"),
     name="dispatch",
 )
 class ChangeThemeView(LoginRequiredMixin, View):
@@ -147,7 +145,7 @@ class ChangeThemeView(LoginRequiredMixin, View):
 
 
 @method_decorator(
-    permission_required(["horilla_theme.add_horillacolortheme"]),
+    permission_required("horilla_theme.add_horillacolortheme"),
     name="dispatch",
 )
 class SetDefaultThemeView(LoginRequiredMixin, View):

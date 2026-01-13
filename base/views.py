@@ -3520,7 +3520,7 @@ def get_models_in_app(app_name):
     try:
         app_config = apps.get_app_config(app_name)
         models = app_config.get_models()
-        return models
+        return [model for model in models if model.__name__ != "CompanyTheme"]
     except LookupError:
         return []
 
