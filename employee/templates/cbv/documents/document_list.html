@@ -102,7 +102,7 @@
 								<div
 									class="text-sm font-medium px-3 py-1 rounded-xl text-center {% if document.document %} {% if document.status == 'approved' %}bg-green-100 text-green-700 {% elif document.status == 'rejected' %}bg-red-100 text-red-700 {% elif document.status == 'requested' %}bg-blue-100 text-blue-700 {% endif %} {% else %} bg-amber-100 text-amber-700 {% endif %}"
 								>
-									{% if document.document %} {{document.status}}
+									{% if document.document %} {{document.get_status_display}}
 									{% else %} {% trans "No Document" %}
 									{% endif %}
 								</div>
@@ -115,10 +115,31 @@
 							<div class="flex gap-1 w-full">
 								{% if document.document %}
 									{% if perms.horilla_document.change_documentrequest %}
-										{% if document.status == "approved" %}
+										{% if document.status == "requested" %}
+											<button
+												class="oh-btn flex-1 text-base bg-green-100 text-green-700 hover:bg-green-200 hover:scale-105"
+												hx-get="{% url 'document-approve' document.id %}"
+												title="{% trans 'Approve' %}"
+												onclick="event.stopPropagation()"
+											>
+												<ion-icon class="me-1" name="checkmark-outline"></ion-icon>
+											</button>
+											<button
+												class="oh-btn flex-1 text-base bg-red-100 text-red-600 hover:bg-red-200 hover:scale-105 transition"
+												hx-get="{% url 'document-reject' document.id %}"
+												hx-target="#genericModalBody"
+												data-toggle="oh-modal-toggle"
+												data-target="#genericModal"
+												title="{% trans 'Reject' %}"
+												onclick="event.stopPropagation()"
+											>
+												<ion-icon class="me-1" name="close-outline"></ion-icon>
+											</button>
+										{% elif document.status == "approved" %}
 											<button
 												class="oh-btn flex-1 text-base bg-green-100 text-green-700 hover:bg-green-200 hover:scale-105 opacity-50 cursor-not-allowed"
 												title="{% trans 'Approve' %}"
+												onclick="event.stopPropagation()"
 											>
 												<ion-icon class="me-1" name="checkmark-outline"></ion-icon>
 											</button>
@@ -146,6 +167,7 @@
 											<button
 												class="oh-btn flex-1 text-base bg-red-100 text-red-600 hover:bg-red-200 hover:scale-105 transition opacity-50 cursor-not-allowed"
 												title="{% trans 'Reject' %}"
+												onclick="event.stopPropagation()"
 											>
 												<ion-icon class="me-1" name="close-outline"></ion-icon>
 											</button>
