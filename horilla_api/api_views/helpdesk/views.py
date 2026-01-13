@@ -2,44 +2,45 @@
 horilla_api/api_views/helpdesk/views.py
 """
 
-from rest_framework.views import APIView
-from rest_framework.permissions import IsAuthenticated
-from rest_framework.response import Response
-from rest_framework import status
-from rest_framework.pagination import PageNumberPagination
-from django_filters.rest_framework import DjangoFilterBackend
-from django.shortcuts import get_object_or_404
-from django.http import Http404
 from django.contrib.auth.models import AnonymousUser
 from django.db.models import Q
+from django.http import Http404
+from django.shortcuts import get_object_or_404
+from django_filters.rest_framework import DjangoFilterBackend
+from rest_framework import status
+from rest_framework.pagination import PageNumberPagination
+from rest_framework.permissions import IsAuthenticated
+from rest_framework.response import Response
+from rest_framework.views import APIView
 
-from horilla_api.api_serializers.helpdesk.serializers import (
-    TicketSerializer,
-    TicketTypeSerializer,
-    FAQSerializer,
-    FAQCategorySerializer,
-    CommentSerializer,
-    AttachmentSerializer,
-    ClaimRequestSerializer,
-    DepartmentManagerSerializer,
-)
+from base.methods import filtersubordinates
+from helpdesk.filter import FAQCategoryFilter, FAQFilter, TicketFilter
 from helpdesk.models import (
-    Ticket,
-    TicketType,
     FAQ,
-    FAQCategory,
-    Comment,
     Attachment,
     ClaimRequest,
+    Comment,
     DepartmentManager,
+    FAQCategory,
+    Ticket,
+    TicketType,
 )
-from helpdesk.filter import TicketFilter, FAQFilter, FAQCategoryFilter
-from ...api_methods.base.methods import groupby_queryset, permission_based_queryset
+from horilla_api.api_serializers.helpdesk.serializers import (
+    AttachmentSerializer,
+    ClaimRequestSerializer,
+    CommentSerializer,
+    DepartmentManagerSerializer,
+    FAQCategorySerializer,
+    FAQSerializer,
+    TicketSerializer,
+    TicketTypeSerializer,
+)
+
 from ...api_decorators.base.decorators import (
     manager_permission_required,
     permission_required,
 )
-from base.methods import filtersubordinates
+from ...api_methods.base.methods import groupby_queryset, permission_based_queryset
 
 
 def object_check(cls, pk):
@@ -54,10 +55,11 @@ def object_check(cls, pk):
 class TicketTypeGetCreateAPIView(APIView):
     permission_classes = [IsAuthenticated]
     filter_backends = [DjangoFilterBackend]
+    queryset = TicketType.objects.all()
 
     def get_queryset(self):
         # Handle schema generation for DRF-YASG
-        if getattr(self, 'swagger_fake_view', False):
+        if getattr(self, "swagger_fake_view", False):
             return TicketType.objects.none()
         return TicketType.objects.all()
 
@@ -115,10 +117,11 @@ class FAQCategoryGetCreateAPIView(APIView):
     permission_classes = [IsAuthenticated]
     filter_backends = [DjangoFilterBackend]
     filterset_class = FAQCategoryFilter
+    queryset = FAQCategory.objects.all()
 
     def get_queryset(self):
         # Handle schema generation for DRF-YASG
-        if getattr(self, 'swagger_fake_view', False):
+        if getattr(self, "swagger_fake_view", False):
             return FAQCategory.objects.none()
         return FAQCategory.objects.all()
 
@@ -177,10 +180,11 @@ class FAQGetCreateAPIView(APIView):
     permission_classes = [IsAuthenticated]
     filter_backends = [DjangoFilterBackend]
     filterset_class = FAQFilter
+    queryset = FAQ.objects.all()
 
     def get_queryset(self):
         # Handle schema generation for DRF-YASG
-        if getattr(self, 'swagger_fake_view', False):
+        if getattr(self, "swagger_fake_view", False):
             return FAQ.objects.none()
         return FAQ.objects.all()
 
@@ -242,10 +246,11 @@ class TicketGetCreateAPIView(APIView):
     permission_classes = [IsAuthenticated]
     filter_backends = [DjangoFilterBackend]
     filterset_class = TicketFilter
+    queryset = Ticket.objects.all()
 
     def get_queryset(self):
         # Handle schema generation for DRF-YASG
-        if getattr(self, 'swagger_fake_view', False):
+        if getattr(self, "swagger_fake_view", False):
             return Ticket.objects.none()
         if not self.request.user.is_authenticated:
             return Ticket.objects.none()
@@ -270,12 +275,18 @@ class TicketGetCreateAPIView(APIView):
     def post(self, request):
         # Set employee_id from request user if not provided
         data = request.data.copy()
-        if not data.get("employee_id_write") and not data.get("employee_id") and request.user.is_authenticated:
+        if (
+            not data.get("employee_id_write")
+            and not data.get("employee_id")
+            and request.user.is_authenticated
+        ):
             data["employee_id_write"] = request.user.employee_get.id
         serializer = TicketSerializer(data=data)
         if serializer.is_valid():
             ticket = serializer.save()
-            return Response(TicketSerializer(ticket).data, status=status.HTTP_201_CREATED)
+            return Response(
+                TicketSerializer(ticket).data, status=status.HTTP_201_CREATED
+            )
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
 
@@ -288,9 +299,11 @@ class TicketGetUpdateDeleteAPIView(APIView):
             return Response({"error": "Ticket not found"}, status=404)
         # Check permissions
         user = request.user
-        if not (user.has_perm("helpdesk.view_ticket") or 
-                ticket.employee_id == user.employee_get or
-                ticket.assigned_to.filter(id=user.employee_get.id).exists()):
+        if not (
+            user.has_perm("helpdesk.view_ticket")
+            or ticket.employee_id == user.employee_get
+            or ticket.assigned_to.filter(id=user.employee_get.id).exists()
+        ):
             return Response({"error": "Permission denied"}, status=403)
         serializer = TicketSerializer(ticket)
         return Response(serializer.data, status=200)
@@ -327,11 +340,14 @@ class TicketChangeStatusAPIView(APIView):
         if ticket is None:
             return Response({"error": "Ticket not found"}, status=404)
         status_value = request.data.get("status")
-        if status_value not in [choice[0] for choice in Ticket._meta.get_field("status").choices]:
+        if status_value not in [
+            choice[0] for choice in Ticket._meta.get_field("status").choices
+        ]:
             return Response({"error": "Invalid status"}, status=400)
         ticket.status = status_value
         if status_value == "resolved":
             from datetime import date
+
             ticket.resolved_date = date.today()
         ticket.save()
         return Response(TicketSerializer(ticket).data, status=200)
@@ -370,12 +386,18 @@ class CommentGetCreateAPIView(APIView):
             return Response({"error": "Ticket not found"}, status=404)
         data = request.data.copy()
         data["ticket_id"] = ticket_id
-        if not data.get("employee_id_write") and not data.get("employee_id") and request.user.is_authenticated:
+        if (
+            not data.get("employee_id_write")
+            and not data.get("employee_id")
+            and request.user.is_authenticated
+        ):
             data["employee_id_write"] = request.user.employee_get.id
         serializer = CommentSerializer(data=data)
         if serializer.is_valid():
             comment = serializer.save()
-            return Response(CommentSerializer(comment).data, status=status.HTTP_201_CREATED)
+            return Response(
+                CommentSerializer(comment).data, status=status.HTTP_201_CREATED
+            )
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
 
@@ -407,7 +429,10 @@ class CommentGetUpdateDeleteAPIView(APIView):
         if comment is None:
             return Response({"error": "Comment not found"}, status=404)
         # Check if user owns the comment or has permission
-        if comment.employee_id != request.user.employee_get and not request.user.has_perm("helpdesk.delete_comment"):
+        if (
+            comment.employee_id != request.user.employee_get
+            and not request.user.has_perm("helpdesk.delete_comment")
+        ):
             return Response({"error": "Permission denied"}, status=403)
         try:
             comment.delete()
@@ -436,7 +461,9 @@ class AttachmentGetCreateAPIView(APIView):
         serializer = AttachmentSerializer(data=request.data)
         if serializer.is_valid():
             attachment = serializer.save()
-            return Response(AttachmentSerializer(attachment).data, status=status.HTTP_201_CREATED)
+            return Response(
+                AttachmentSerializer(attachment).data, status=status.HTTP_201_CREATED
+            )
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
 
@@ -479,7 +506,10 @@ class ClaimRequestGetCreateAPIView(APIView):
         serializer = ClaimRequestSerializer(data=request.data)
         if serializer.is_valid():
             claim_request = serializer.save()
-            return Response(ClaimRequestSerializer(claim_request).data, status=status.HTTP_201_CREATED)
+            return Response(
+                ClaimRequestSerializer(claim_request).data,
+                status=status.HTTP_201_CREATED,
+            )
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
 
@@ -520,7 +550,7 @@ class DepartmentManagerGetCreateAPIView(APIView):
 
     def get_queryset(self):
         # Handle schema generation for DRF-YASG
-        if getattr(self, 'swagger_fake_view', False):
+        if getattr(self, "swagger_fake_view", False):
             return DepartmentManager.objects.none()
         return DepartmentManager.objects.all()
 
@@ -571,4 +601,3 @@ class DepartmentManagerGetUpdateDeleteAPIView(APIView):
             return Response(status=status.HTTP_204_NO_CONTENT)
         except Exception as e:
             return Response({"error": str(e)}, status=400)
-

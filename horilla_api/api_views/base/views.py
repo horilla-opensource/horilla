@@ -921,6 +921,7 @@ class ShiftRequestView(APIView):
     filter_backends = [DjangoFilterBackend]
     filterset_class = ShiftRequestFilter
     permission_classes = [IsAuthenticated]
+    queryset = ShiftRequest.objects.all()
 
     def get_queryset(self, request=None):
         # Handle schema generation for DRF-YASG

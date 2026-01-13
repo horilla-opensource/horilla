@@ -98,6 +98,7 @@ class EmployeeAPIView(APIView):
     filter_backends = [DjangoFilterBackend]
     filterset_class = EmployeeFilter
     permission_classes = [IsAuthenticated]
+    queryset = Employee.objects.all()
 
     def get(self, request, pk):
         user = request.user
