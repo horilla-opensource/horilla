@@ -1,4 +1,4 @@
-{% load static %}
+{% load static i18n %}
 <form hx-post="{% url 'add-attachment-policy' %}?policy_id={{policy.id}}" hx-target="#attachmentContainer" class="add-files-form d-flex" method="post"
     hx-encoding="multipart/form-data">
     {% for attachment in policy.attachments.all %}
@@ -25,7 +25,7 @@
     {% csrf_token %}
     <input type="file" name="files" class="d-none" multiple="true" id="addFile_18" onchange="submitForm(this)" />
     <input type="submit" class="d-none add_more_submit" value="save" />
-    <label for="addFile_18" title="Add Files"
+    <label for="addFile_18" title="{% trans 'Add Files' %}"
         style="cursor: pointer;">
         <ion-icon name="add-outline" style="font-size: 24px" role="img" class="md hydrated"
             aria-label="add outline"></ion-icon>

@@ -309,7 +309,7 @@
                         <textarea name="comment" class="oh-helpdesk__chat-input oh-chat__main-input ps-5"
                             placeholder="Type something..."></textarea>
                         <button class="oh-btn oh-btn--chat oh-btn--chat-send" type="submit" id="sendMessageButton" onclick="validateComment(event)"
-                            title="Send Message" aria-label="Send Message"></button>
+                            title="{% trans 'Send Message' %}" aria-label="Send Message"></button>
                     </form>
                     <script>
                         $(document).ready(function () {
@@ -327,7 +327,7 @@
                 <!-- Ticket Info. -->
                 <div class="oh-helpdesk__card">
                     <div class="oh-helpdesk__card-header d-flex justify-content-between align-items-center">
-                        <span class="oh-helpdesk__card-title">{% trans "Ticket Info 123" %}</span>
+                        <span class="oh-helpdesk__card-title">{% trans "Ticket Info" %}</span>
                     </div>
                     <div class="oh-helpdesk__card-body">
                         <ul class="helpdesk__card-items">
@@ -495,7 +495,7 @@
                                 </label>
                             </form>
                             <button class="oh-btn oh-btn--chat oh-btn--chat-send" style="position: relative !important; cursor: pointer;" onclick="$('#sendMessageButton').click()"
-                                    title="File Upload" aria-label="File Upload">
+                                    title="{% trans 'File Upload' %}" aria-label="File Upload">
                             </button>
                             </div>
                         {% endif %}
@@ -526,7 +526,7 @@
                                             <!-- Cross mark for delete action (absolute positioned) -->
                                             <span class="position-absolute"
                                                 style="top: -6px; right: 0px; color: red; font-size: 16px; cursor: pointer;"
-                                                title="Delete attachment"
+                                                title="{% trans 'Delete attachment' %}"
                                                 hx-delete="{% url 'delete-ticket-document' attachment.id %}"
                                                 hx-confirm="Are you sure you want to delete this file?" hx-swap="none"
                                                 hx-trigger="click" hx-headers='{"X-CSRFToken": "{{ csrf_token }}"}'

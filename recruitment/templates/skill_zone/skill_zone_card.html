@@ -19,7 +19,7 @@
 
             <span class="oh-kanban-card__title d-flex">
               {{skill_zone}}
-              <span class="oh-badge oh-badge--secondary oh-badge--small oh-badge--round ms-2 mr-2"  title="{{skill_zone.skillzonecandidate_set.all|length}} Candidates" title="4 Stages" onclick="event.stopPropagation()">
+              <span class="oh-badge oh-badge--secondary oh-badge--small oh-badge--round ms-2 mr-2"  title="{{skill_zone.skillzonecandidate_set.all|length}} {% trans 'Candidates' %}" onclick="event.stopPropagation()">
                 {{skill_zone.skillzonecandidate_set.all|length}}
               </span>
             </span>

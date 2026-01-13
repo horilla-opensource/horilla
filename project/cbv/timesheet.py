@@ -11,7 +11,9 @@ from django.http import HttpResponse
 from django.shortcuts import render
 from django.urls import resolve, reverse
 from django.utils.decorators import method_decorator
+from django.utils.formats import localize
 from django.utils.functional import cached_property
+from django.utils.text import format_lazy
 from django.utils.translation import gettext_lazy as _
 
 from employee.models import Employee
@@ -100,16 +102,16 @@ class TimeSheetNavView(HorillaNavView):
                 "type": "list",
                 "icon": "list-outline",
                 "url": reverse("time-sheet-list"),
-                "attrs": """
-                        title ='List'
+                "attrs": f"""
+                        title ='{_("List")}'
                         """,
             },
             {
                 "type": "card",
                 "icon": "grid-outline",
                 "url": reverse("time-sheet-card"),
-                "attrs": """
-                          title ='Card'
+                "attrs": f"""
+                          title ='{_("Card")}'
                           """,
             },
             {
@@ -441,7 +443,17 @@ class TimeSheetCardView(HorillaCardView):
     details = {
         "image_src": "employee_id__get_avatar",
         "title": "{employee_id}",
-        "subtitle": " <b>{date}</b> <br>Project : <b>{project_id}</b> <br><b>{task_id}</b> |  Time Spent : <b>{time_spent}</b>",
+        "subtitle": format_lazy(
+            "<b>{date_str}</b> <br>"
+            "{project_str} : <b>{project}</b> <br>"
+            "<b>{task}</b> |  {time_str} : <b>{time}</b>",
+            date_str=localize("{date}"),
+            project_str=_("Project"),
+            project="{project_id}",
+            time_str=_("Time Spent"),
+            task="{task_id}",
+            time="{time_spent}",
+        ),
     }
 
     card_status_class = "status-{status}"

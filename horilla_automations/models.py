@@ -27,32 +27,41 @@ class MailAutomation(HorillaModel):
     """
 
     choices = [
-        ("on_create", "On Create"),
-        ("on_update", "On Update"),
-        ("on_delete", "On Delete"),
+        ("on_create", _("On Create")),
+        ("on_update", _("On Update")),
+        ("on_delete", _("On Delete")),
     ]
     SEND_OPTIONS = [
-        ("email", "Send as Email"),
-        ("notification", "Send as Notification"),
-        ("both", "Send as Email and Notification"),
+        ("email", _("Send as Email")),
+        ("notification", _("Send as Notification")),
+        ("both", _("Send as Email and Notification")),
     ]
 
     title = models.CharField(max_length=256, unique=True)
     method_title = models.CharField(max_length=100, editable=False)
-    model = models.CharField(max_length=100, choices=MODEL_CHOICES, null=False)
-    mail_to = models.TextField(verbose_name="Mail to/Notify to")
+    model = models.CharField(
+        max_length=100, choices=MODEL_CHOICES, null=False, verbose_name=_("Model")
+    )
+    mail_to = models.TextField(verbose_name=_("Mail to/Notify to"))
     mail_details = models.CharField(
         max_length=250,
         help_text=_(
             "Fill mail template details(reciever/instance, `self` will be the person who trigger the automation)"
         ),
+        verbose_name=_("Mail Details"),
     )
     mail_detail_choice = models.TextField(default="", editable=False)
-    trigger = models.CharField(max_length=10, choices=choices)
+    trigger = models.CharField(
+        max_length=10, choices=choices, verbose_name=_("Trigger Condition")
+    )
     # udpate the on_update logic to if and only if when
     # changes in the previous and current value
     mail_template = models.ForeignKey(
-        HorillaMailTemplate, on_delete=models.CASCADE, null=True, blank=True
+        HorillaMailTemplate,
+        on_delete=models.CASCADE,
+        null=True,
+        blank=True,
+        verbose_name=_("Mail Template"),
     )
     also_sent_to = models.ManyToManyField(
         Employee,
@@ -69,6 +78,7 @@ class MailAutomation(HorillaModel):
         HorillaMailTemplate,
         related_name="template_attachment",
         blank=True,
+        verbose_name=_("Template Attachments"),
     )
     condition_html = models.TextField(null=True, editable=False)
     condition_querystring = models.TextField(null=True, editable=False)

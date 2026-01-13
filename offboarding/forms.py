@@ -10,6 +10,7 @@ from typing import Any
 from django import forms
 from django.contrib import messages
 from django.template.loader import render_to_string
+from django.utils.translation import gettext_lazy as _
 
 from base.forms import ModelForm
 from employee.forms import MultipleFileField
@@ -191,8 +192,7 @@ class TaskForm(ModelForm):
 
     verbose_name = "Offboarding Task"
     tasks_to = forms.ModelMultipleChoiceField(
-        queryset=OffboardingEmployee.objects.all(),
-        required=False,
+        queryset=OffboardingEmployee.objects.all(), required=False, label=_("Task To")
     )
     cols = {"title": 12, "managers": 12, "stage_id": 12, "tasks_to": 12}
 

@@ -10,6 +10,7 @@ from django.http import HttpResponse
 from django.shortcuts import redirect, render
 from django.urls import reverse
 from django.utils.decorators import method_decorator
+from django.utils.text import format_lazy
 from django.utils.translation import gettext_lazy as _
 from django.views import View
 
@@ -63,16 +64,16 @@ class KeyResultNavView(HorillaNavView):
                 "type": "list",
                 "icon": "list-outline",
                 "url": reverse("filter-key-result"),
-                "attrs": """
-                            title='List'
+                "attrs": f"""
+                            title='{_("List")}'
                             """,
             },
             {
                 "type": "card",
                 "icon": "grid-outline",
                 "url": reverse("key-result-card-view"),
-                "attrs": """
-                            title='Card'
+                "attrs": f"""
+                            title='{_("Card")}'
                             """,
             },
         ]
@@ -158,7 +159,15 @@ class KeyResultCardView(HorillaCardView):
     details = {
         "image_src": "get_avatar",
         "title": "{title}",
-        "subtitle": "Target Value : {target_value} {progress_type} <br> Duration : {duration} Days",
+        "subtitle": format_lazy(
+            "{} : {} {} <br> {} : {} {}",
+            _("Target Value"),
+            "{target_value}",
+            "{progress_type}",
+            _("Duration"),
+            "{duration}",
+            _("Days"),
+        ),
     }
 
     card_attrs = """

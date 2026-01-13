@@ -93,7 +93,7 @@ class AssetTabView(HorillaTabView):
                 "url": f"{reverse('asset-request-tab-list-view',kwargs={'pk': pk})}",
                 "actions": [
                     {
-                        "action": "Create Request",
+                        "action": _("Create Request"),
                         "accessibility": "asset.cbv.accessibility.create_asset_request_accessibility",
                         "attrs": f"""
                                 data-toggle="oh-modal-toggle"

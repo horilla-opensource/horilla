@@ -26,10 +26,10 @@
                     <span class="oh-timeoff-modal__user fw-bold">{{candidate}}</span>
                 </div>
                 <div class="oh-profile">
-                    <a href="{% url 'candidate-view-individual' candidate.id %}" type="button" title="View" class="oh-btn oh-btn--light-bkg w-50">
+                    <a href="{% url 'candidate-view-individual' candidate.id %}" type="button" title="{% trans 'View' %}" class="oh-btn oh-btn--light-bkg w-50">
                         <ion-icon name="eye-outline" role="img" class="md hydrated" aria-label="eye outline"></ion-icon>
                     </a>
-                    <a href="{% url 'rec-candidate-update' candidate.id %}?onboarding=true" class="oh-btn oh-btn--light-bkg w-100" title="Edit" >
+                    <a href="{% url 'rec-candidate-update' candidate.id %}?onboarding=true" class="oh-btn oh-btn--light-bkg w-100" title="{% trans 'Edit' %}" >
                         <ion-icon name="create-outline" role="img" class="md hydrated" aria-label="create outline"></ion-icon>
                     </a>
                 </div>

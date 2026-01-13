@@ -1485,7 +1485,7 @@ class HorillaDetailedView(DetailView):
     HorillDetailedView
     """
 
-    title = "Detailed View"
+    title = _("Detailed View")
     template_name = "generic/horilla_detailed_view.html"
     header: dict = {
         "title": "Horilla",

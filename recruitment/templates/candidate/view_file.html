@@ -6,7 +6,7 @@
 			hx-get="{% url 'candidate-file-upload' document.id %}"
 			hx-target="#objectCreateModalTarget"
 			onclick ="$('#objectCreateModal').addClass('oh-modal--show')"
-			title="Upload file"
+			title="{% trans 'Upload File' %}"
 			class="oh-btn oh-btn--warning w-100"
 		>
 			<ion-icon name="attach-outline"></ion-icon>

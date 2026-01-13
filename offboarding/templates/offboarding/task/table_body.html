@@ -53,7 +53,7 @@
             </div>
             {% endif %}
             <div class="oh-sticky-table__td text-center">
-                <div class="oh-checkpoint-badge oh-checkpoint-badge--primary" title="Completed {{ employee.employeetask_set|completed_tasks }} of {{employee.employeetask_set.all|length}} tasks">
+                <div class="oh-checkpoint-badge oh-checkpoint-badge--primary" title="{% trans 'Completed' %} {{ employee.employeetask_set|completed_tasks }} {% trans 'of' %} {{employee.employeetask_set.all|length}} {% trans 'tasks' %}">
                     {{ employee.employeetask_set|completed_tasks }} / {{employee.employeetask_set.all|length}}
                 </div>
             </div>

@@ -2,7 +2,6 @@
 {% block content %}
 {% include 'generic/components.html' %}
 {% load static i18n %}
-{% load i18n %}
 {% load basefilters %}
 {% load mathfilters %}
 
@@ -83,7 +82,7 @@
       </div>
 
         <div class="align-items-center d-flex justify-content-between">
-          <div class="oh-profile oh-profile--md" title="Owner">
+          <div class="oh-profile oh-profile--md" title="{% trans 'Owner' %}">
             <span class="oh-profile__info-label ">
               <span>{% trans "Owner: " %}</span>
             </span>
@@ -96,7 +95,7 @@
           </div>
             <div class="oh-main__titlebar oh-main__titlebar--right justify-content-end">
               {% if  perms.pms.change_feedback or request.user|is_reportingmanager %}
-                <select id="status" class="oh-select oh-select--sm ms-3" name="feedback_status" title="Status"
+                <select id="status" class="oh-select oh-select--sm ms-3" name="feedback_status" title="{% trans 'Status' %}"
                     hx-post="{%url 'feedback-detailed-view-status'  id=feedback.id %}"
                     hx-trigger="change" hx-swap="afterend" >
                       <option value="{{feedback.status}}" selected>
@@ -109,7 +108,7 @@
                     {% endfor %}
                 </select>
               {% else %}
-                <label id="status" class="oh-select oh-select--sm ms-3" name="feedback_status" title="Status">
+                <label id="status" class="oh-select oh-select--sm ms-3" name="feedback_status" title="{% trans 'Status' %}">
                    {% trans feedback.get_status_display %}
                 </label>
               {% endif %}
@@ -135,7 +134,7 @@
                       data-toggle="oh-modal-toggle"
                       data-target="#objectCreateModal"
                       hx-target="#objectCreateModalTarget"
-                      class="oh-btn oh-btn--light-bkg w-100" title="{% trans "Request feedback" %}">
+                      class="oh-btn oh-btn--light-bkg w-100" title="{% trans 'Request feedback' %}">
                       <ion-icon name="add-outline" class="m-0 md hydrated" role="img" aria-label="add outline"></ion-icon>
                     </a>
                   {% endif %}

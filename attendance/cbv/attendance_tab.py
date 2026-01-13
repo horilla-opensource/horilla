@@ -45,7 +45,7 @@ class AttendanceTabView(HorillaTabView):
                 "url": f"{reverse('attendance-request-individual-tab',kwargs={'pk': pk})}",
                 "actions": [
                     {
-                        "action": "Create Attendance Request",
+                        "action": _("Create Attendance Request"),
                         "accessibility": "attendance.cbv.accessibility.create_attendance_request_accessibility",
                         "attrs": f"""
                                 hx-get="{reverse('request-new-attendance')}?emp_id={pk}",

@@ -10,7 +10,7 @@
                         <div class="oh-tabs__input-badge-container">
                             <span
                                 class="oh-badge oh-badge--secondary oh-badge--small oh-badge--round mr-1"
-                                title="{{skill_zone.list|length}} Candidate"
+                                title="{{skill_zone.list|length}} {% trans 'Candidate' %}"
                             >
                                 {{skill_zone.list|length}}
                             </span>
@@ -27,7 +27,7 @@
                                 data-target="#genericModal"
                                 hx-get="{% url 'skill-zone-cand-create' skill_zone.grouper.id %}"
                                 hx-target="#genericModalBody"
-                                title="Add candidate"
+                                title="{% trans 'Add candidate' %}"
                             >
                                 <ion-icon name="person-add-outline"></ion-icon>
                                 </a>
@@ -175,7 +175,7 @@
                                                           onsubmit="Are you sure want to delete this candidate?" class="w-100">
                                                           {% csrf_token %}
                                                           <button type='submit' class="oh-btn oh-btn--danger-outline oh-btn--light-bkg w-100"
-                                                              title="Remove"><ion-icon name="trash-outline"></ion-icon></button>
+                                                              title="{% trans 'Remove' %}"><ion-icon name="trash-outline"></ion-icon></button>
                                                       </form>
                                                     {% endif %}
                                                 </div>

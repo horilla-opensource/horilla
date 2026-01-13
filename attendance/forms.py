@@ -531,8 +531,9 @@ class AttendanceValidationConditionForm(forms.ModelForm):
             attrs={"class": "oh-input w-100", "placeholder": "09:00"}
         ),
         label=format_html(
+            "<span title='{}'>{}</span>",
             _(
-                "<span title='Do not Auto Validate Attendance if an Employee Works More Than this Amount of Duration'>{}</span>"
+                "Do not Auto Validate Attendance if an Employee Works More Than this Amount of Duration"
             ),
             _("Worked Hours(At Work) Auto Approve Till"),
         ),

@@ -1,5 +1,4 @@
 {% load static i18n %}
-{% load i18n %}
 {% load widget_tweaks %} {% load basefilters %} {% load pmsfilters %}
 {% include "filter_tags.html" %}
 {% if messages %}
@@ -100,7 +99,7 @@
                                         hx-target="#genericModalBody"
                                         data-toggle="oh-modal-toggle"
                                         data-target="#genericModal"
-                                        title="Add Key Result"
+                                        title="{% trans 'Add Key Result' %}"
                                         onclick="event.stopPropagation()"
                                     >
                                         <ion-icon name="add-outline" class="m-0 md hydrated" role="img" aria-label="add outline"></ion-icon>

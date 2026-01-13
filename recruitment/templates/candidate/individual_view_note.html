@@ -60,7 +60,7 @@
                     <form hx-post="{% url 'add-more-files-individual' note.id %}" class="add-files-form"
                         hx-encoding="multipart/form-data" data-target="#activitySidebar" hx-swap="innerHTML" hx-target="#note">
                         {% csrf_token %}
-                        <label for="addFile_{{note.id}}" title="Add Files"><ion-icon name="add-outline" style="font-size: 24px"
+                        <label for="addFile_{{note.id}}" title="{% trans 'Add Files' %}"><ion-icon name="add-outline" style="font-size: 24px"
                                 role="img" class="md hydrated" aria-label="add outline"></ion-icon></label>
                         <input type="file" name="files" class="d-none" multiple="true" id="addFile_{{note.id}}"
                             onchange="submitForm(this)" hx-on:change="setTimeout(() => {reloadMessage(this);},100);" />

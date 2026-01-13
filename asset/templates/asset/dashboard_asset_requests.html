@@ -72,7 +72,7 @@
                                         data-target="#objectCreateModal"
                                         hx-get="{% url 'asset-request-approve' req_id=asset_request.id %}"
                                         hx-target="#objectCreateModalTarget"
-                                        title="Approve request"
+                                        title="{% trans 'Approve request' %}"
                                     >
                                         <ion-icon name="checkmark-outline"></ion-icon>
                                     </a>

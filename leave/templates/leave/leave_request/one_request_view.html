@@ -161,7 +161,7 @@
                     {% endif %}
                 {% endif %}
                 {% if request.user|is_reportingmanager or request.user|is_leave_approval_manager or perms.base.add_penaltyaccounts %}
-                    <button data-toggle="oh-modal-toggle" data-target="#objectCreateModal" hx-target="#objectCreateModalTarget" hx-get="{% url 'leave-cut-penalty' leave_request.id %}" type="submit" class="oh-btn oh-btn--info w-100" title="Penalty">
+                    <button data-toggle="oh-modal-toggle" data-target="#objectCreateModal" hx-target="#objectCreateModalTarget" hx-get="{% url 'leave-cut-penalty' leave_request.id %}" type="submit" class="oh-btn oh-btn--info w-100" title="{% trans 'Penalty' %}">
                         <ion-icon name="information-circle-outline" role="img" class="md hydrated" aria-label="information circle outline"></ion-icon>
                     </button>
                 {% endif %}

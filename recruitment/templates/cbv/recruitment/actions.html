@@ -4,7 +4,7 @@
       <ion-icon name="share-social-outline"></ion-icon>
     </a>
     {% if perms.recruitment.change_recruitment %}
-    <a  hx-get="{% url 'recruitment-update' instance.id %}?instance_ids={{instance.ordered_ids}}" hx-target='#genericModalBody' hx-swap='innerHTML' data-toggle='oh-modal-toggle' data-target='#genericModal'  class="oh-btn oh-btn--light-bkg w-100" title="Edit"><ion-icon name="create-outline"></ion-icon></a>
+    <a  hx-get="{% url 'recruitment-update' instance.id %}?instance_ids={{instance.ordered_ids}}" hx-target='#genericModalBody' hx-swap='innerHTML' data-toggle='oh-modal-toggle' data-target='#genericModal'  class="oh-btn oh-btn--light-bkg w-100" title="{% trans 'Edit' %}"><ion-icon name="create-outline"></ion-icon></a>
     {% endif %}
     <a hx-get="{% url 'recruitment-duplicate' instance.id %}" hx-target='#genericModalBody' hx-swap='innerHTML' data-toggle='oh-modal-toggle' data-target='#genericModal'  class="oh-btn oh-btn--light-bkg w-100" title="{% trans 'Duplicate' %}"><ion-icon name="copy-outline"></ion-icon></a>
     {% if perms.recruitment.delete_recruitment %}

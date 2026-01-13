@@ -4,47 +4,47 @@ payroll/sidebar.py
 """
 
 from django.urls import reverse
-from django.utils.translation import gettext_lazy as trans
+from django.utils.translation import gettext_lazy as _
 
-MENU = trans("Payroll")
+MENU = _("Payroll")
 IMG_SRC = "images/ui/wallet-outline.svg"
 
 SUBMENUS = [
     {
-        "menu": trans("Dashboard"),
+        "menu": _("Dashboard"),
         "redirect": reverse("view-payroll-dashboard"),
         "accessibility": "payroll.sidebar.dasbhoard_accessibility",
     },
     {
-        "menu": trans("Contract"),
+        "menu": _("Contract"),
         "redirect": reverse("view-contract"),
         "accessibility": "payroll.sidebar.dasbhoard_accessibility",
     },
     {
-        "menu": trans("Allowances"),
+        "menu": _("Allowances"),
         "redirect": reverse("view-allowance"),
         "accessibility": "payroll.sidebar.allowance_accessibility",
     },
     {
-        "menu": trans("Deductions"),
+        "menu": _("Deductions"),
         "redirect": reverse("view-deduction"),
         "accessibility": "payroll.sidebar.deduction_accessibility",
     },
     {
-        "menu": trans("Payslips"),
+        "menu": _("Payslips"),
         "redirect": reverse("view-payslip"),
     },
     {
-        "menu": trans("Loan / Advanced Salary"),
+        "menu": _("Loan / Advanced Salary"),
         "redirect": reverse("view-loan"),
         "accessibility": "payroll.sidebar.loan_accessibility",
     },
     {
-        "menu": trans("Encashments & Reimbursements"),
+        "menu": _("Encashments & Reimbursements"),
         "redirect": reverse("view-reimbursement"),
     },
     {
-        "menu": trans("Federal Tax"),
+        "menu": _("Federal Tax"),
         "redirect": reverse("filing-status-view"),
         "accessibility": "payroll.sidebar.federal_tax_accessibility",
     },

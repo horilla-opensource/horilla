@@ -233,7 +233,7 @@ class ResignationLetterDetailView(HorillaDetailedView):
         return context
 
     body = [
-        (_(""), ""),
+        ("", ""),
         (_("Actions"), "option_column", True),
         (_("Planned To Leave"), "planned_to_leave_on"),
         (_("Status"), "get_status"),

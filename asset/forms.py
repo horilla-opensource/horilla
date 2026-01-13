@@ -67,7 +67,7 @@ class AssetForm(ModelForm):
         labels = {
             "asset_name": "Asset Name",
             "asset_description": "Description",
-            "asset_tracking_id": "Tracking ID",
+            # "asset_tracking_id": "Tracking ID", #commented for translation
             "asset_purchase_date": "Purchase Date",
             "expiry_date": "Expiry Date",
             "asset_purchase_cost": "Cost",

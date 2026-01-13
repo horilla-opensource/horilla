@@ -109,7 +109,7 @@ style="cursor: pointer;"
                   </button>
 
                   <button type="button" hx-get="{% url 'view-shift-comment' shift_request.id %}" hx-target="#commentContainer"
-                          data-target = '#activitySidebar' title="View Comment"  class="oh-btn oh-btn--light oh-activity-sidebar__open" style="flex: 1 0 auto; width:20px;height: 40.68px; padding: 0;" onclick="event.stopPropagation()">
+                          data-target = '#activitySidebar' title="{% trans 'View Comment' %}"  class="oh-btn oh-btn--light oh-activity-sidebar__open" style="flex: 1 0 auto; width:20px;height: 40.68px; padding: 0;" onclick="event.stopPropagation()">
                     <ion-icon name="eye-outline" role="img" class="md hydrated" aria-label="eye outline"></ion-icon>
                   </button>
                </div>

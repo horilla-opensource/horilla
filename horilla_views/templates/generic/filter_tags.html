@@ -79,7 +79,7 @@
     {% endif %}
     {% endwith %} {% endif %} {% endfor %}
     {% if filter_dict %}
-    <button class="oh-titlebar__save" onclick="$('#loadsavedfilterform').click();$('#savedFilterModal').addClass('oh-modal--show')" name="save" aria-label="save" title='{% trans "Save filter" %}''><ion-icon name="bookmark-outline"></ion-icon>Save</button></span>
+    <button class="oh-titlebar__save" onclick="$('#loadsavedfilterform').click();$('#savedFilterModal').addClass('oh-modal--show')" name="save" aria-label="save" title='{% trans "Save filter" %}'><ion-icon name="bookmark-outline"></ion-icon>{% trans "Save" %}</button></span>
     <span class="oh-titlebar__tag oh-titlebar__tag--custom" title="{% trans 'Clear All' %}" role="button" onclick="clearAllFilter($(this));"
       ><ion-icon class="close-icon" name="close-outline"></ion-icon></span
     >

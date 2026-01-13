@@ -101,7 +101,7 @@ class FilingStatus(HorillaModel):
         default="taxable_gross_pay",
         verbose_name=_("Based on"),
     )
-    use_py = models.BooleanField(verbose_name="Python Code", default=False)
+    use_py = models.BooleanField(verbose_name=_("Python Code"), default=False)
     python_code = models.TextField(null=True)
     description = models.TextField(
         blank=True,
@@ -363,9 +363,9 @@ class Contract(HorillaModel):
         Deduct leave from basic pay column
         """
         if self.deduct_leave_from_basic_pay:
-            return "Yes"
+            return _("Yes")
         else:
-            return "No"
+            return _("No")
 
     def __str__(self) -> str:
         return f"{self.contract_name} -{self.contract_start_date} - {self.contract_end_date}"
@@ -977,6 +977,7 @@ class Allowance(HorillaModel):
         blank=True,
         validators=[min_zero],
         help_text=_("The maximum amount for the allowance"),
+        verbose_name=_("Maximum Amount"),
     )
     maximum_unit = models.CharField(
         max_length=20,
@@ -990,6 +991,7 @@ class Allowance(HorillaModel):
             # ("monthly_working_days", "For working days on month"),
         ],
         help_text="The maximum amount for ?",
+        verbose_name=_("Maximum Unit"),
     )
     if_choice = models.CharField(
         max_length=10,
@@ -1067,19 +1069,19 @@ class Allowance(HorillaModel):
         """
         method to return is taxable or not
         """
-        return "Yes" if self.is_taxable else "No"
+        return _("Yes") if self.is_taxable else _("No")
 
     def get_is_condition_based(self):
         """
         method to return is condition based or not
         """
-        return "Yes" if self.is_condition_based else "No"
+        return _("Yes") if self.is_condition_based else _("No")
 
     def get_is_fixed(self):
         """
         method to return is fixed
         """
-        return "Yes" if self.is_fixed else "No"
+        return _("Yes") if self.is_fixed else _("No")
 
     def get_based_on_display(self):
         """
@@ -1139,7 +1141,7 @@ class Allowance(HorillaModel):
         if self.one_time_date:
             return f'On <span class="dateformat_changer">{self.one_time_date}</span>'
         else:
-            return "No"
+            return _("No")
 
     def get_field_display(self):
         """
@@ -1161,7 +1163,7 @@ class Allowance(HorillaModel):
             condition_display = self.get_condition_display()
             return f"{self.get_field_display()} {condition_display} {self.value}"
         else:
-            return "No"
+            return _("No")
 
     def based_on_amount(self):
         """
@@ -1513,6 +1515,7 @@ class Deduction(HorillaModel):
         blank=True,
         validators=[min_zero],
         help_text=_("The maximum amount for the deduction"),
+        verbose_name=_("Maximum Amount"),
     )
 
     maximum_unit = models.CharField(
@@ -1524,6 +1527,7 @@ class Deduction(HorillaModel):
             # ("monthly_working_days", "For working days on month"),
         ],
         help_text=_("The maximum amount for ?"),
+        verbose_name=_("Maximum Unit"),
     )
     if_choice = models.CharField(
         max_length=10,
@@ -1565,13 +1569,13 @@ class Deduction(HorillaModel):
         return payslip
 
     def get_is_pretax_display(self):
-        return "Yes" if self.is_pretax else "No"
+        return _("Yes") if self.is_pretax else _("No")
 
     def get_is_condition_based_display(self):
-        return "Yes" if self.is_condition_based else "No"
+        return _("Yes") if self.is_condition_based else _("No")
 
     def get_is_fixed_display(self):
-        return "Yes" if self.is_fixed else "No"
+        return _("Yes") if self.is_fixed else _("No")
 
     def get_based_on_display(self):
         """
@@ -1598,7 +1602,7 @@ class Deduction(HorillaModel):
         if self.is_condition_based:
             return f"{self.get_field_display()} {self.get_condition_display()} {self.value}"
         else:
-            return "No"
+            return _("No")
 
     def deduct_actions(self):
         """
@@ -1701,10 +1705,10 @@ class Deduction(HorillaModel):
     def tax_col(self):
         if self.is_tax:
             title = _("Tax")
-            count = "Yes" if self.is_tax else "No"
+            count = _("Yes") if self.is_tax else _("No")
         else:
             title = _("Pretax")
-            count = "Yes" if self.is_pretax else "No"
+            count = _("Yes") if self.is_pretax else _("No")
         count = count.capitalize()
 
         return f"""
@@ -1721,7 +1725,7 @@ class Deduction(HorillaModel):
         if self.one_time_date:
             return f"On <span class='dateformat_changer'> {self.one_time_date}</span> "
         else:
-            return "No"
+            return _("No")
 
     def get_specific_exclude_employees(self):
         """
@@ -2084,10 +2088,11 @@ class LoanAccount(HorillaModel):
     )
     installments = models.IntegerField(verbose_name=_("Total installments"))
     installment_start_date = models.DateField(
-        help_text="From the start date deduction will apply"
+        help_text="From the start date deduction will apply",
+        verbose_name=_("Installment start date"),
     )
     apply_on = models.CharField(default="end_of_month", max_length=20, editable=False)
-    settled = models.BooleanField(default=False)
+    settled = models.BooleanField(default=False, verbose_name=_("Settled"))
     settled_date = models.DateTimeField(null=True)
 
     if apps.is_installed("asset"):
@@ -2634,12 +2639,16 @@ class PayslipAutoGenerate(models.Model):
         max_length=30,
         choices=DAYS,
         default=("1"),
-        verbose_name="Payslip Generate Day",
-        help_text="On this day of every month,Payslip will auto generate",
+        verbose_name=_("Payslip Generate Day"),
+        help_text=_("On this day of every month,Payslip will auto generate"),
     )
-    auto_generate = models.BooleanField(default=False)
+    auto_generate = models.BooleanField(default=False, verbose_name=_("Auto Generate"))
     company_id = models.OneToOneField(
-        Company, on_delete=models.CASCADE, null=True, blank=True, verbose_name="Company"
+        Company,
+        on_delete=models.CASCADE,
+        null=True,
+        blank=True,
+        verbose_name=_("Company"),
     )
 
     def get_generate_day_display(self):

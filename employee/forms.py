@@ -31,8 +31,7 @@ from django.contrib.auth.models import User
 from django.db.models import Q
 from django.forms import DateInput, TextInput
 from django.template.loader import render_to_string
-from django.utils.translation import gettext as _
-from django.utils.translation import gettext_lazy as trans
+from django.utils.translation import gettext_lazy as _
 
 from base.methods import eval_validate, reload_queryset
 from employee.models import (
@@ -334,10 +333,10 @@ class EmployeeForm(ModelForm):
                 pk=self.instance.pk if self.instance else None
             )
             if queryset.exists():
-                raise forms.ValidationError(trans("Badge ID must be unique."))
+                raise forms.ValidationError(_("Badge ID must be unique."))
             if not re.search(r"\d", badge_id):
                 raise forms.ValidationError(
-                    trans("Badge ID must contain at least one digit.")
+                    _("Badge ID must contain at least one digit.")
                 )
         return badge_id
 
@@ -556,48 +555,48 @@ class EmployeeBankDetailsUpdateForm(ModelForm):
 
 
 excel_columns = [
-    ("badge_id", trans("Badge ID")),
-    ("employee_first_name", trans("First Name")),
-    ("employee_last_name", trans("Last Name")),
-    ("email", trans("Email")),
-    ("phone", trans("Phone")),
-    ("experience", trans("Experience")),
-    ("gender", trans("Gender")),
-    ("dob", trans("Date of Birth")),
-    ("country", trans("Country")),
-    ("state", trans("State")),
-    ("city", trans("City")),
-    ("address", trans("Address")),
-    ("zip", trans("Zip Code")),
-    ("marital_status", trans("Marital Status")),
-    ("children", trans("Children")),
-    ("is_active", trans("Is active")),
-    ("emergency_contact", trans("Emergency Contact")),
-    ("emergency_contact_name", trans("Emergency Contact Name")),
-    ("emergency_contact_relation", trans("Emergency Contact Relation")),
-    ("employee_work_info__email", trans("Work Email")),
-    ("employee_work_info__mobile", trans("Work Phone")),
-    ("employee_work_info__department_id", trans("Department")),
-    ("employee_work_info__job_position_id", trans("Job Position")),
-    ("employee_work_info__job_role_id", trans("Job Role")),
-    ("employee_work_info__shift_id", trans("Shift")),
-    ("employee_work_info__work_type_id", trans("Work Type")),
-    ("employee_work_info__reporting_manager_id", trans("Reporting Manager")),
-    ("employee_work_info__employee_type_id", trans("Employee Type")),
-    ("employee_work_info__location", trans("Location")),
-    ("employee_work_info__date_joining", trans("Date Joining")),
-    ("employee_work_info__basic_salary", trans("Basic Salary")),
-    ("employee_work_info__salary_hour", trans("Salary Hour")),
-    ("employee_work_info__contract_end_date", trans("Contract End Date")),
-    ("employee_work_info__company_id", trans("Company")),
-    ("employee_bank_details__bank_name", trans("Bank Name")),
-    ("employee_bank_details__branch", trans("Branch")),
-    ("employee_bank_details__account_number", trans("Account Number")),
-    ("employee_bank_details__any_other_code1", trans("Bank Code #1")),
-    ("employee_bank_details__any_other_code2", trans("Bank Code #2")),
-    ("employee_bank_details__country", trans("Bank Country")),
-    ("employee_bank_details__state", trans("Bank State")),
-    ("employee_bank_details__city", trans("Bank City")),
+    ("badge_id", _("Badge ID")),
+    ("employee_first_name", _("First Name")),
+    ("employee_last_name", _("Last Name")),
+    ("email", _("Email")),
+    ("phone", _("Phone")),
+    ("experience", _("Experience")),
+    ("gender", _("Gender")),
+    ("dob", _("Date of Birth")),
+    ("country", _("Country")),
+    ("state", _("State")),
+    ("city", _("City")),
+    ("address", _("Address")),
+    ("zip", _("Zip Code")),
+    ("marital_status", _("Marital Status")),
+    ("children", _("Children")),
+    ("is_active", _("Is active")),
+    ("emergency_contact", _("Emergency Contact")),
+    ("emergency_contact_name", _("Emergency Contact Name")),
+    ("emergency_contact_relation", _("Emergency Contact Relation")),
+    ("employee_work_info__email", _("Work Email")),
+    ("employee_work_info__mobile", _("Work Phone")),
+    ("employee_work_info__department_id", _("Department")),
+    ("employee_work_info__job_position_id", _("Job Position")),
+    ("employee_work_info__job_role_id", _("Job Role")),
+    ("employee_work_info__shift_id", _("Shift")),
+    ("employee_work_info__work_type_id", _("Work Type")),
+    ("employee_work_info__reporting_manager_id", _("Reporting Manager")),
+    ("employee_work_info__employee_type_id", _("Employee Type")),
+    ("employee_work_info__location", _("Location")),
+    ("employee_work_info__date_joining", _("Date Joining")),
+    ("employee_work_info__basic_salary", _("Basic Salary")),
+    ("employee_work_info__salary_hour", _("Salary Hour")),
+    ("employee_work_info__contract_end_date", _("Contract End Date")),
+    ("employee_work_info__company_id", _("Company")),
+    ("employee_bank_details__bank_name", _("Bank Name")),
+    ("employee_bank_details__branch", _("Branch")),
+    ("employee_bank_details__account_number", _("Account Number")),
+    ("employee_bank_details__any_other_code1", _("Bank Code #1")),
+    ("employee_bank_details__any_other_code2", _("Bank Code #2")),
+    ("employee_bank_details__country", _("Bank Country")),
+    ("employee_bank_details__state", _("Bank State")),
+    ("employee_bank_details__city", _("Bank City")),
 ]
 fields_to_remove = [
     "badge_id",

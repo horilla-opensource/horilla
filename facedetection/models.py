@@ -4,6 +4,7 @@ from django.core.exceptions import ValidationError
 from django.db import models
 from django.db.models.signals import post_delete
 from django.dispatch import receiver
+from django.utils.translation import gettext_lazy as _
 
 # Create your models here.
 
@@ -16,7 +17,7 @@ class FaceDetection(models.Model):
         null=True,
         blank=True,
     )
-    start = models.BooleanField(default=False)
+    start = models.BooleanField(default=False, verbose_name=_("Start"))
 
     def clean(self):
         if self.company_id is None:

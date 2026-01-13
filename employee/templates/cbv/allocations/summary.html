@@ -1,3 +1,5 @@
+{% load i18n %}
+
 <div class="oh-inner-sidebar-content p-0">
   <div class="row justify-content-center">
     <div class="col-12 col-sm-12 col-md-12 col-lg-12">
@@ -21,7 +23,7 @@
         </div>
       </div>
     </div>
-    <p class="oh-profile__info-designation mt-2">Dashboard Access :
+    <p class="oh-profile__info-designation mt-2">{% trans "Dashboard Access" %} :
       <form hx-post="{% url "toggle-user-dashboard-access" %}?instance_id={{instance.pk}}"
       hx-target="#responseContainer"
       >
@@ -46,14 +48,14 @@
           <div class="col-sm-12 col-md-12 col-lg-12">
             <div class="oh-card mt-3">
               <div class="oh-card__header">
-                <span class="oh-card__title oh-card__title--sm fw-bold me-2">Employee</span>
+                <span class="oh-card__title oh-card__title--sm fw-bold me-2">{% trans "Employee" %}</span>
               </div>
               <div class="oh-card__body mt-4">
                 <div class="row">
                   <div class="col-12 col-sm-12 col-md-12 col-lg-12">
                     <ul class="oh-profile__card-info-list">
                       <li class="oh-profile__card-info-item">
-                        <span class="oh-profile__info-value">Personal Info</span>
+                        <span class="oh-profile__info-value">{% trans "Personal Info" %}</span>
                         <div class="oh-progress-container">
                           <div class="oh-progress" role="progressbar">
                             <div class="oh-progress__bar oh-progress__bar--secondary" style="width: {{personal_percentage}}%"></div>
@@ -62,7 +64,7 @@
                         </div>
                       </li>
                       <li class="oh-profile__card-info-item">
-                        <span class="oh-profile__info-value">Work Info</span>
+                        <span class="oh-profile__info-value">{% trans "Work Info" %}</span>
                         <div class="oh-progress-container">
                           <div class="oh-progress" role="progressbar">
                             <div class="oh-progress__bar oh-progress__bar--secondary" style="width: {{work_percentage}}%"></div>
@@ -71,7 +73,7 @@
                         </div>
                       </li>
                       <li class="oh-profile__card-info-item">
-                        <span class="oh-profile__info-value">Bank Info</span>
+                        <span class="oh-profile__info-value">{% trans "Bank Info" %}</span>
                         <div class="oh-progress-container">
                           <div class="oh-progress" role="progressbar">
                             <div class="oh-progress__bar oh-progress__bar--secondary" style="width: {{bank_percentage}}%"></div>
@@ -86,7 +88,7 @@
             </div>
             <div class="oh-card mt-3">
               <div class="oh-card__header">
-                <span class="oh-card__title oh-card__title--sm fw-bold me-2">Leave Policy</span>
+                <span class="oh-card__title oh-card__title--sm fw-bold me-2">{% trans "Leave Policy" %}</span>
               </div>
               <div class="oh-card__body">
                 <div class="row">
@@ -97,7 +99,7 @@
             </div>
             <div class="oh-card mt-3">
               <div class="oh-card__header">
-                <span class="oh-card__title oh-card__title--sm fw-bold me-2">Assets</span>
+                <span class="oh-card__title oh-card__title--sm fw-bold me-2">{% trans "Assets" %}</span>
               </div>
               <div class="oh-card__body">
                 <div class="row">
@@ -108,7 +110,7 @@
             </div>
             <div class="oh-card mt-3">
               <div class="oh-card__header">
-                <span class="oh-card__title oh-card__title--sm fw-bold me-2">Allowance</span>
+                <span class="oh-card__title oh-card__title--sm fw-bold me-2">{% trans "Allowance" %}</span>
               </div>
               <div class="oh-card__body">
                 <div class="row">
@@ -119,7 +121,7 @@
             </div>
             <div class="oh-card mt-3">
               <div class="oh-card__header">
-                <span class="oh-card__title oh-card__title--sm fw-bold me-2">Deductions</span>
+                <span class="oh-card__title oh-card__title--sm fw-bold me-2">{% trans "Deductions" %}</span>
               </div>
               <div class="oh-card__body">
                 <div class="row">
@@ -135,6 +137,6 @@
   </div>
 
   <div class="oh-modal__dialog-footer p-0">
-    <button type="submit" class="oh-btn oh-btn--secondary oh-btn--shadow">Next</button>
+    <button type="submit" class="oh-btn oh-btn--secondary oh-btn--shadow">{% trans "Next" %}</button>
   </div>
 </div>

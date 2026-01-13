@@ -128,6 +128,10 @@ class AttendanceOverTimeFilter(HorillaFilterSet):
         for field in self.form.fields.keys():
             self.form.fields[field].widget.attrs["id"] = f"{uuid.uuid4()}"
 
+        self.form.fields["employee_id__employee_work_info__location"].widget.attrs[
+            "placeholder"
+        ] = _("Work Location")
+
 
 class LateComeEarlyOutFilter(HorillaFilterSet):
     """
@@ -331,6 +335,10 @@ class AttendanceActivityFilter(HorillaFilterSet):
         for field in self.form.fields.keys():
             self.form.fields[field].widget.attrs["id"] = f"{uuid.uuid4()}"
 
+        self.form.fields["employee_id__employee_work_info__location"].widget.attrs[
+            "placeholder"
+        ] = _("Work Location")
+
 
 class AttendanceFilters(HorillaFilterSet):
     """
@@ -511,6 +519,10 @@ class AttendanceFilters(HorillaFilterSet):
         super().__init__(data=data, queryset=queryset, request=request, prefix=prefix)
         for field in self.form.fields.keys():
             self.form.fields[field].widget.attrs["id"] = f"{uuid.uuid4()}"
+
+        self.form.fields["employee_id__employee_work_info__location"].widget.attrs[
+            "placeholder"
+        ] = _("Work Location")
 
     def filter_by_name(self, queryset, name, value):
 
