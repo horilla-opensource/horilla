@@ -3,6 +3,7 @@ AppConfig for the horilla_theme app
 """
 
 from django.apps import AppConfig
+from django.conf import settings
 from django.utils.translation import gettext_lazy as _
 
 
@@ -23,6 +24,7 @@ class HorillaThemeConfig(AppConfig):
 
             from horilla.urls import urlpatterns
 
+            settings.APPS.append(("horilla_theme"))
             # Add app URLs to main urlpatterns
             urlpatterns.append(
                 path("theme/", include("horilla_theme.urls")),
