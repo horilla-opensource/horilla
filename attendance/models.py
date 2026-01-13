@@ -1298,9 +1298,9 @@ class AttendanceLateComeEarlyOut(HorillaModel):
 
     def attendance_validated_check(self):
         if self.attendance_id.attendance_validated == True:
-            return "Yes"
+            return _("Yes")
         else:
-            return "No"
+            return _("No")
 
     def late_come_detail(self):
         """
@@ -1411,7 +1411,7 @@ class GraceTime(HorillaModel):
         """
         Allowed time col
         """
-        return "Yes" if self.is_default else "No"
+        return _("Yes") if self.is_default else _("No")
 
     def action_col(self):
         """

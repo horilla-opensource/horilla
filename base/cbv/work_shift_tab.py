@@ -45,7 +45,7 @@ class WorkAndShiftTabView(HorillaTabView):
                 "url": f"{reverse('employee-worktype-tab-list',kwargs={'pk': pk})}",
                 "actions": [
                     {
-                        "action": "Add Work Type Request",
+                        "action": _("Add Work Type Request"),
                         "attrs": f"""
                                 hx-get="{reverse('work-type-request')}?emp_id={pk}",
 								hx-target="#genericModalBody"
@@ -60,7 +60,7 @@ class WorkAndShiftTabView(HorillaTabView):
                 "url": f"{reverse('employee-rotating-work-tab-list',kwargs={'pk': pk})}",
                 "actions": [
                     {
-                        "action": "Add Rotating Work",
+                        "action": _("Add Rotating Work"),
                         "attrs": f"""
                                 hx-get="{reverse('rotating-work-type-assign-add')}?emp_id={pk}",
 								hx-target="#genericModalBody"
@@ -75,7 +75,7 @@ class WorkAndShiftTabView(HorillaTabView):
                 "url": f"{reverse('shift-request-individual-tab-view',kwargs={'pk': pk})}",
                 "actions": [
                     {
-                        "action": "Add Shift Request",
+                        "action": _("Add Shift Request"),
                         "attrs": f"""
                                 hx-get="{reverse('shift-request')}?emp_id={pk}",
 								hx-target="#genericModalBody"
@@ -90,7 +90,7 @@ class WorkAndShiftTabView(HorillaTabView):
                 "url": f"{reverse('rotating-shift-individual-tab-view',kwargs={'pk': pk})}",
                 "actions": [
                     {
-                        "action": "Add Rotating Shift",
+                        "action": _("Add Rotating Shift"),
                         "attrs": f"""
                                 hx-get="{reverse('rotating-shift-assign-add')}?emp_id={pk}",
 								hx-target="#genericModalBody"

@@ -107,7 +107,7 @@
                                 <div class="d-flex" style="align-items: center;">
                                   <div>{{ rec }}</div>
                                   {% if rec.linkedin_account_id %}
-                                    <div style="margin-left: 8px;" title="{{ rec }} posted on {{ rec.linkedin_account_id }} LinkedIn account.">
+                                    <div style="margin-left: 8px;" title="{{ rec }} {% trans 'posted on' %} {{ rec.linkedin_account_id }} {% trans 'LinkedIn account' %}.">
                                       <ion-icon name="logo-linkedin"></ion-icon>
                                     </div>
                                   {% endif %}

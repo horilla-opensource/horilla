@@ -133,7 +133,7 @@
                                                     <a hx-get="{% url 'meeting-question-template-view' meeting.id %}"
                                                         hx-target="#answerContainer" data-target="#activitySidebar"
                                                         class="oh-btn oh-btn--light-bkg oh-activity-sidebar__open w-100 text-decoration-none"
-                                                        title="Answer">
+                                                        title="{% trans 'Answer' %}">
                                                         <i class="material-symbols-outlined fw-light" data-target="#activitySidebar"
                                                             style="font-size:14px;">
                                                             edit_document

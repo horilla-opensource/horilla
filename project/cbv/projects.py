@@ -116,16 +116,16 @@ class ProjectsNavView(HorillaNavView):
                 "type": "list",
                 "icon": "list-outline",
                 "url": reverse("project-list-view"),
-                "attrs": """
-                    title ='List'
+                "attrs": f"""
+                    title ='{_("List")}'
                 """,
             },
             {
                 "type": "card",
                 "icon": "grid-outline",
                 "url": reverse("project-card-view"),
-                "attrs": """
-                    title ='Card'
+                "attrs": f"""
+                    title ='{_("Card")}'
                 """,
             },
         ]

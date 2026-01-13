@@ -214,7 +214,7 @@ class RotatingShiftAssignNav(HorillaNavView):
                 }
             )
 
-    nav_title = "Rotating Shift Assign"
+    nav_title = _("Rotating Shift Assigns")
     filter_body_template = "cbv/rotating_shift/rotating_shift_filter.html"
     filter_instance = RotatingShiftAssignFilters()
     filter_form_context_name = "form"

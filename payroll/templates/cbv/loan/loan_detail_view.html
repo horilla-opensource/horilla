@@ -141,7 +141,7 @@ href="{% url 'employee-view-individual' loan.employee_id.id %}"
             />
             <div class="oh-sticky-table__td" align="center">
                 {% if deduction.installment_payslip %}
-                <span title="Installment paid, Click to view">
+                <span title="{% trans 'Installment paid, Click to view' %}">
                     <a href="{% url "view-created-payslip" deduction.installment_payslip.id %}"> ✅ </a>
                 </span>
                 {% endif %}
@@ -162,7 +162,7 @@ href="{% url 'employee-view-individual' loan.employee_id.id %}"
                 {{loan.loan_amount|balance_amount:installments}}
             </div>
             <div class="oh-sticky-table__td" align="center">
-                <span title="Loan Settled">
+                <span title="{% trans 'Loan Settled' %}">
                     <a href="#"> ✅ </a>
                 </span>
             </div>
@@ -192,7 +192,7 @@ href="{% url 'employee-view-individual' loan.employee_id.id %}"
 
 <div class="oh-btn-group" style="padding:20px;">
     {% if perms.payroll.change_loanaccount or request.user %}
-    <button data-toggle="oh-modal-toggle" data-target="#genericModal" hx-target="#genericModalBody" hx-get="{% url 'loan-edit-form' instance.id %}" type="submit" class="oh-btn oh-btn-group oh-btn--info w-100" title="dit">
+    <button data-toggle="oh-modal-toggle" data-target="#genericModal" hx-target="#genericModalBody" hx-get="{% url 'loan-edit-form' instance.id %}" type="submit" class="oh-btn oh-btn-group oh-btn--info w-100" title="{% trans 'Edit' %}">
         <ion-icon name="create-outline" role="img" class="md hydrated" aria-label="information circle outline"></ion-icon>
     </button>
         {% comment %} <a class="oh-btn oh-btn--light-bkg w-100" hx-get="{% url 'loan-edit-form' instance.id%}" hx-target="#genericModalBody" data-toggle="oh-modal-toggle" data-target="#genericModal" title='{% trans "Edit" %}'>

@@ -112,7 +112,7 @@
                         {% if request.user.employee_get ==  work_type_request.employee_id or perms.base.view_worktyperequestcomment or request.user|is_reportingmanager %}
                             <button type="button" hx-get="{% url 'view-work-type-comment' work_type_request.id %}"
                                 hx-target="#commentContainer" data-toggle='oh-modal-toggle'
-                                data-target='#worktypeactivitySidebar' title="View Comment"
+                                data-target='#worktypeactivitySidebar' title="{% trans 'View Comment' %}"
                                 class="oh-btn oh-btn--light oh-activity-sidebar__open w-100"
                                 style="flex: 1 0 auto; width:20px;height: 40.68px; padding: 0;">
                                 <ion-icon name="newspaper-outline" role="img" class="md hydrated"

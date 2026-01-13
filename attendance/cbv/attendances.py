@@ -146,7 +146,7 @@ class AttendancesTabView(HorillaTabView):
                 "url": f"{reverse('validate-attendance-tab')}",
                 "actions": [
                     {
-                        "action": "Validate",
+                        "action": _("Validate"),
                         "attrs": """
                     onclick="
                     bulkValidateTabAttendance();
@@ -161,7 +161,7 @@ class AttendancesTabView(HorillaTabView):
                 "url": f"{reverse('ot-attendance-tab')}",
                 "actions": [
                     {
-                        "action": "Approve OT",
+                        "action": _("Approve OT"),
                         "attrs": """
                     onclick="
                     otBulkValidateTabAttendance();
@@ -256,7 +256,7 @@ class AttendancesNavView(HorillaNavView):
         ("shift_id", _("Shift")),
         ("Work Type", _("work_type_id")),
         ("minimum_hour", _("Min Hour")),
-        ("employee_id__country", "Country"),
+        ("employee_id__country", _("Country")),
         (
             "employee_id__employee_work_info__reporting_manager_id",
             _("Reporting Manager"),

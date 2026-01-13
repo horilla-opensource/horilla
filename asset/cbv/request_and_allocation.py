@@ -274,7 +274,7 @@ class RequestAndAllocationTab(HorillaTabView):
                 "url": f"{reverse('list-asset-request')}",
                 "actions": [
                     {
-                        "action": "Create Request",
+                        "action": _("Create Request"),
                         "attrs": f"""
                             data-toggle="oh-modal-toggle"
                             data-target="#genericModal"
@@ -293,7 +293,7 @@ class RequestAndAllocationTab(HorillaTabView):
                     "url": f"{reverse('list-asset-allocation')}",
                     "actions": [
                         {
-                            "action": "Create Allocation",
+                            "action": _("Create Allocation"),
                             "attrs": f"""
                                 data-toggle="oh-modal-toggle"
                                 data-target="#genericModal"

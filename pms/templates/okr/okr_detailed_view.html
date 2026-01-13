@@ -1,4 +1,4 @@
-{% extends 'index.html' %} {% load static i18n %} {% load i18n %}
+{% extends 'index.html' %} {% load static i18n %}
 {% load widget_tweaks %} {% block content %} {% load basefilters %}
 {% include 'filter_tags.html' %}
 {% include "okr/emp_objective/emp_objective_nav.html" %}
@@ -32,7 +32,7 @@
                   data-toggle="oh-modal-toggle"
                   data-target="#objectDetailsModal"
                   class="oh-btn oh-btn--light-bkg w-100"
-                  title="Add assignees"
+                  title="{% trans 'Add assignees' %}"
                   ><ion-icon name="add-outline"></ion-icon
                 ></a>
                 {% endif %}

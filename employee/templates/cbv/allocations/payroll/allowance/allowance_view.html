@@ -1,3 +1,4 @@
+{% load i18n %}
 <div class="oh-inner-sidebar-content p-0">
     <div class="oh-inner-sidebar-content__header">
       <div class="oh-main__titlebar oh-main__titlebar--right justify-content-between align-items-center">
@@ -22,7 +23,7 @@
          ids = $('#selectedInstances').attr('data-ids')
          $('.oh-inner-sidebar-content [name=ids]').val(ids);
          $('#idsForm [type=submit]').click();
-        " class="oh-btn oh-btn--secondary oh-btn--shadow" id="addAllowanceButton">Add</button>
+        " class="oh-btn oh-btn--secondary oh-btn--shadow" id="addAllowanceButton">{% trans "Add" %}</button>
       </div>
     </div>
   </div>

@@ -5,7 +5,7 @@
         <div class="oh-btn-group">
             <a hx-get="{% url 'update-task-all' instance.id %}?instance_ids={{instance.ordered_ids}}"
                 hx-target='#genericModalBody' data-toggle='oh-modal-toggle' data-target="#genericModal" hx-swap='innerHTML'
-                class="oh-btn oh-btn--light-bkg w-100" title="Edit">
+                class="oh-btn oh-btn--light-bkg w-100" title="{% trans 'Edit' %}">
                 <ion-icon name="create-outline"></ion-icon>
             </a>
             {% if instance.is_active %}
@@ -33,7 +33,7 @@
         </div>
     {% else %}
         <div class="oh-btn-group">
-            <a href="#" class="oh-btn oh-btn--light-bkg w-100 oh-btn--disabled" title="Edit" aria-disabled="true">
+            <a href="#" class="oh-btn oh-btn--light-bkg w-100 oh-btn--disabled" title="{% trans 'Edit' %}" aria-disabled="true">
                 <ion-icon name="create-outline"></ion-icon>
             </a>
 

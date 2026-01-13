@@ -78,7 +78,7 @@
 										<div class="centered-div" align="center">
 										<input type="checkbox" class="oh-input oh-input__checkbox group-select"
 										onchange="$(this).closest('.oh-sticky-table').find('.candidate-checkbox').prop('checked',$(this).is(':checked')).change();"
-										title="Select All"  />
+										title="{% trans 'Select All' %}"  />
 										</div>
 									</div>
 									<div class="oh-sticky-table__th" hx-target='#section' hx-get="{% url 'search-candidate' %}?{{pd}}&orderby=name&view=list">{% trans "Candidates" %}</div>
@@ -226,19 +226,19 @@
 										<div class="oh-btn-group">
 										  {% if perms.recruitment.change_candidate %}
 										  <a href="{% url 'rec-candidate-update' cand.id %}" hx-target='#updateFormContainer' hx-swap='innerHTML'
-											class="oh-btn oh-btn--light-bkg w-100" title="Edit"><ion-icon name="create-outline"></ion-icon></a>
+											class="oh-btn oh-btn--light-bkg w-100" title="{% trans 'Edit' %}"><ion-icon name="create-outline"></ion-icon></a>
 										  {% endif %}
 										  {% if perms.recruitment.delete_candidate %}
 										  {% if cand.is_active %}
-										  <form action="{% url 'rec-candidate-archive' cand.id  %}" title="Archive" onsubmit="return confirm('{% trans "Do you want to archive this candidate?" %}')" method='post'
+										  <form action="{% url 'rec-candidate-archive' cand.id  %}" title="{% trans 'Archive' %}" onsubmit="return confirm('{% trans "Do you want to archive this candidate?" %}')" method='post'
 											class="w-50">
 										  {% csrf_token %}
 										  <button type='submit' class="oh-btn oh-btn--danger-outline oh-btn--light-bkg w-100"
-											><ion-icon name="archive" title="Archive"></ion-icon></button>
+											><ion-icon name="archive" title="{% trans 'Archive' %}"></ion-icon></button>
 										  </form>
 										  {% else %}
 
-										  <form action="{% url 'rec-candidate-archive' cand.id  %}"  title="Un Archive" onsubmit="return confirm('{% trans "Do you want to un-archive this candidate?" %}')" method='post'
+										  <form action="{% url 'rec-candidate-archive' cand.id  %}"  title="{% trans 'Un Archive' %}" onsubmit="return confirm('{% trans "Do you want to un-archive this candidate?" %}')" method='post'
 											class="w-100">
 											{% csrf_token %}
 											<button type='submit' class="oh-btn oh-btn--danger-outline oh-btn--light-bkg w-100"
@@ -251,7 +251,7 @@
 											onsubmit="Are you sure want to delete this candidate?" class="w-100">
 											{% csrf_token %}
 											<button type='submit' class="oh-btn oh-btn--danger-outline oh-btn--light-bkg w-100"
-											  title="Remove"><ion-icon name="trash-outline"></ion-icon></button>
+											  title="{% trans "Remove" %}"><ion-icon name="trash-outline"></ion-icon></button>
 										  </form>
 										  {% endif %}
 										</div>

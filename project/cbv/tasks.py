@@ -192,16 +192,16 @@ class TasksNavBar(HorillaNavView):
                 "type": "list",
                 "icon": "list-outline",
                 "url": reverse("tasks-list-view"),
-                "attrs": """
-                    title ='List'
+                "attrs": f"""
+                    title ='{_("List")}'
                 """,
             },
             {
                 "type": "card",
                 "icon": "grid-outline",
                 "url": reverse("tasks-card-view"),
-                "attrs": """
-                    title ='Card'
+                "attrs": f"""
+                    title ='{_("Card")}'
                 """,
             },
         ]

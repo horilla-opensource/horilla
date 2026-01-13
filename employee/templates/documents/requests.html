@@ -49,7 +49,7 @@
 						<div class="oh-accordion-meta__actions" onclick="event.stopPropagation()">
 							<div class="oh-dropdown" x-data="{open: false}">
 								<button class="oh-btn oh-stop-prop oh-accordion-meta__btn" @click="open = !open"
-									@click.outside="open = false" title="Action">
+									@click.outside="open = false" title={% trans "Actions" %}>
 									{% trans "Actions" %}
 									<ion-icon class="ms-2 oh-accordion-meta__btn-icon md hydrated" name="caret-down-outline"
 										role="img" aria-label="caret down outline"></ion-icon>

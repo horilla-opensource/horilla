@@ -845,12 +845,13 @@ class QuestionTemplateForm(ModelForm):
     cols = {"question_template": 12, "company_id": 12}
 
     question_template = forms.CharField(
+        label=_("Question Template"),
         widget=forms.TextInput(
             attrs={
                 "class": "oh-input oh-input--small oh-input--res-height w-100",
                 "placeholder": _("For Developer"),
             }
-        )
+        ),
     )
 
     class Meta:

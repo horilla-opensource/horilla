@@ -10,6 +10,7 @@ from django.contrib import messages
 from django.http import HttpResponse
 from django.urls import reverse
 from django.utils.decorators import method_decorator
+from django.utils.text import format_lazy
 from django.utils.translation import gettext_lazy as _
 from zk import ZK
 
@@ -121,7 +122,14 @@ class BiometricCardView(HorillaCardView):
 
     details = {
         "title": "{name}",
-        "subtitle": " Device Type : {get_machine_type} <br> {get_card_details} <br> {render_live_capture_html} <br> {render_actions_html}",
+        "subtitle": format_lazy(
+            "{} : {} <br> {} <br> {} <br> {}",
+            _("Device Type"),
+            "{get_machine_type}",
+            "{get_card_details}",
+            "{render_live_capture_html}",
+            "{render_actions_html}",
+        ),
     }
 
     card_status_class = "is_scheduler-{is_scheduler} is_live-{is_live}"

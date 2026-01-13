@@ -184,7 +184,9 @@ class Department(HorillaModel):
                 .exclude(id=self.id)
                 .exists()
             ):
-                raise ValidationError("This department already exists in this company")
+                raise ValidationError(
+                    _("This department already exists in this company")
+                )
         return
 
     def toggle_count(self):
@@ -658,7 +660,7 @@ class EmployeeType(HorillaModel):
     EmployeeType model
     """
 
-    employee_type = models.CharField(max_length=50)
+    employee_type = models.CharField(max_length=50, verbose_name=_("Employee Type"))
     company_id = models.ManyToManyField(Company, blank=True, verbose_name=_("Company"))
 
     objects = HorillaCompanyManager("employee_id__employee_work_info__company_id")
@@ -746,6 +748,7 @@ class EmployeeShift(HorillaModel):
         max_length=50,
         null=False,
         blank=False,
+        verbose_name=_("Employee Shift"),
     )
     days = models.ManyToManyField(EmployeeShiftDay, through="EmployeeShiftSchedule")
     weekly_full_time = models.CharField(
@@ -786,7 +789,7 @@ class EmployeeShift(HorillaModel):
         if self.grace_time_id:
             return self.grace_time_id
         else:
-            return "Nil"
+            return _("Nil")
 
     def get_instance_id(self):
         return self.id
@@ -937,7 +940,7 @@ class EmployeeShiftSchedule(HorillaModel):
         )
 
     def auto_punch_out_col(self):
-        return "Yes" if self.is_auto_punch_out_enabled else "No"
+        return _("Yes") if self.is_auto_punch_out_enabled else _("No")
 
     def save(self, *args, **kwargs):
         if self.start_time and self.end_time:
@@ -1362,7 +1365,7 @@ class WorkTypeRequest(HorillaModel):
         """
         Method to display "Yes" or "No" based on is_permanent_work_type value
         """
-        return "Yes" if self.is_permanent_work_type else "No"
+        return _("Yes") if self.is_permanent_work_type else _("No")
 
     def detail_view_actions(self):
         """
@@ -1609,7 +1612,7 @@ class ShiftRequest(HorillaModel):
         """
         Permanent shift
         """
-        return "Yes" if self.is_permanent_shift else "No"
+        return _("Yes") if self.is_permanent_shift else _("No")
 
     def shift_actions(self):
         """
@@ -1868,13 +1871,18 @@ class DynamicEmailConfiguration(HorillaModel):
         help_text=_(
             "By enabling this the display name will take from who triggered the mail"
         ),
+        verbose_name=_("Use dynamic display name"),
     )
 
     timeout = models.SmallIntegerField(
         null=True, verbose_name=_("Email Send Timeout (seconds)")
     )
     company_id = models.OneToOneField(
-        Company, on_delete=models.CASCADE, null=True, blank=True
+        Company,
+        on_delete=models.CASCADE,
+        null=True,
+        blank=True,
+        verbose_name=_("Company"),
     )
 
     def highlight_cell(self):
@@ -1950,9 +1958,14 @@ class MultipleApprovalCondition(HorillaModel):
     condition_field = models.CharField(
         max_length=255,
         choices=FIELD_CHOICE,
+        verbose_name=_("Condition Field"),
     )
     condition_operator = models.CharField(
-        max_length=255, choices=CONDITION_CHOICE, null=True, blank=True
+        max_length=255,
+        choices=CONDITION_CHOICE,
+        null=True,
+        blank=True,
+        verbose_name=_("Condition Operator"),
     )
     condition_value = models.CharField(
         max_length=100,
@@ -2563,7 +2576,7 @@ class Holidays(HorillaModel):
         """
         recurring data
         """
-        return "Yes" if self.recurring else "No"
+        return _("Yes") if self.recurring else _("No")
 
     def holidays_actions(self):
         """
@@ -2698,7 +2711,7 @@ class PenaltyAccounts(HorillaModel):
         on_delete=models.PROTECT,
         related_name="penalty_accounts",
         editable=False,
-        verbose_name="Employee",
+        verbose_name=_("Employee"),
         null=True,
     )
     if apps.is_installed("attendance"):
@@ -2717,17 +2730,23 @@ class PenaltyAccounts(HorillaModel):
             on_delete=models.DO_NOTHING,
             blank=True,
             null=True,
-            verbose_name="Leave type",
+            verbose_name=_("Leave type"),
         )
-        minus_leaves = models.FloatField(default=0.0, null=True)
-        deduct_from_carry_forward = models.BooleanField(default=False)
+        minus_leaves = models.FloatField(
+            default=0.0, null=True, verbose_name=_("Minus Leaves")
+        )
+        deduct_from_carry_forward = models.BooleanField(
+            default=False, verbose_name=_("Deduct from Carry Forward")
+        )
 
         def get_deduct_from_carry_forward(self):
             if self.deduct_from_carry_forward:
-                return "Yes"
-            return "No"
+                return _("Yes")
+            return _("No")
 
-    penalty_amount = models.FloatField(default=0.0, null=True)
+    penalty_amount = models.FloatField(
+        default=0.0, null=True, verbose_name=_("Penalty Amount")
+    )
 
     def get_delete_url(self):
         """

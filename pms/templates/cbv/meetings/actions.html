@@ -16,7 +16,7 @@
         data-toggle="oh-modal-toggle"
         data-target="#genericModal"
         class="oh-btn oh-btn--light-bkg w-100"
-        title="Add MoM"
+        title="{% trans 'Add MoM' %}"
      >
        <ion-icon name="add-outline"></ion-icon>
      </a>
@@ -28,7 +28,7 @@
             hx-target="#answerContainer"
             data-target="#activitySidebar"
             class="oh-btn oh-btn--light-bkg oh-activity-sidebar__open w-100 text-decoration-none"
-            title="Answer"
+            title="{% trans 'Answer' %}"
         >
             <i class="material-symbols-outlined fw-light" data-target="#activitySidebar" style="font-size:14px;">
                 edit_document
@@ -55,7 +55,7 @@
         {% if perms.pms.change_meetings or request.user.employee_get in instance.manager.all %}
             <a
                 onclick="event.preventDefault();event.stopPropagation()"
-                hx-get="{% url 'update-meeting' instance.id %}?instance_ids={{instance.ordered_ids}}" hx-target='#genericModalBody' hx-swap='innerHTML' data-toggle='oh-modal-toggle' data-target='#genericModal'  class="oh-btn oh-btn--light-bkg w-100" title="Edit"
+                hx-get="{% url 'update-meeting' instance.id %}?instance_ids={{instance.ordered_ids}}" hx-target='#genericModalBody' hx-swap='innerHTML' data-toggle='oh-modal-toggle' data-target='#genericModal'  class="oh-btn oh-btn--light-bkg w-100" title="{% trans 'Edit' %}"
             ><ion-icon name="create-outline"></ion-icon></a>
         {% endif %}
         {% if perms.pms.delete_meetings %}

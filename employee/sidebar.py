@@ -5,61 +5,61 @@ To set Horilla sidebar for employee
 """
 
 from django.urls import reverse_lazy
-from django.utils.translation import gettext_lazy as trans
+from django.utils.translation import gettext_lazy as _
 
 from accessibility.methods import check_is_accessible
 from base.templatetags.basefilters import is_reportingmanager
 from horilla.horilla_middlewares import _thread_locals
 
 request = getattr(_thread_locals, "request", None)
-MENU = trans("Employee")
+MENU = _("Employee")
 IMG_SRC = "images/ui/employees.svg"
 
 
 SUBMENUS = [
     {
-        "menu": trans("Profile"),
+        "menu": _("Profile"),
         "redirect": reverse_lazy("employee-profile"),
         "accessibility": "employee.sidebar.profile_accessibility",
     },
     {
-        "menu": trans("Employees"),
+        "menu": _("Employees"),
         "redirect": reverse_lazy("employee-view"),
         "accessibility": "employee.sidebar.employee_accessibility",
     },
     {
-        "menu": trans("Document Requests"),
+        "menu": _("Document Requests"),
         "redirect": reverse_lazy("document-request-view"),
         "accessibility": "employee.sidebar.document_accessibility",
     },
     {
-        "menu": trans("Shift Requests"),
+        "menu": _("Shift Requests"),
         "redirect": reverse_lazy("shift-request-view"),
     },
     {
-        "menu": trans("Work Type Requests"),
+        "menu": _("Work Type Requests"),
         "redirect": reverse_lazy("work-type-request-view"),
     },
     {
-        "menu": trans("Rotating Shift Assign"),
+        "menu": _("Rotating Shift Assign"),
         "redirect": reverse_lazy("rotating-shift-assign"),
         "accessibility": "employee.sidebar.rotating_shift_accessibility",
     },
     {
-        "menu": trans("Rotating Work Type Assign"),
+        "menu": _("Rotating Work Type Assign"),
         "redirect": reverse_lazy("rotating-work-type-assign"),
         "accessibility": "employee.sidebar.rotating_work_type_accessibility",
     },
     {
-        "menu": trans("Disciplinary Actions"),
+        "menu": _("Disciplinary Actions"),
         "redirect": reverse_lazy("disciplinary-actions"),
     },
     {
-        "menu": trans("Policies"),
+        "menu": _("Policies"),
         "redirect": reverse_lazy("view-policies"),
     },
     {
-        "menu": trans("Organization Chart"),
+        "menu": _("Organization Chart"),
         "redirect": reverse_lazy("organisation-chart"),
     },
 ]

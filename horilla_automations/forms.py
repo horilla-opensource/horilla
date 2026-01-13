@@ -45,7 +45,7 @@ class AutomationForm(ModelForm):
                 filter_template_path="employee_filters.html",
                 instance=self.instance,
             ),
-            label="Also Sent to",
+            label=_("Also Sent to"),
             help_text=_("The employees selected here will receive the email as Cc."),
         )
 
@@ -62,6 +62,7 @@ class AutomationForm(ModelForm):
             choices=mail_to,
             initial=self.data.get("mail_to"),
             widget=forms.SelectMultiple(attrs={"class": "oh-select oh-select-2 w-100"}),
+            label=_("Mail To"),
         )
 
         # --- Field: mail_details ---
@@ -70,6 +71,7 @@ class AutomationForm(ModelForm):
             help_text=_(
                 "Fill mail template details (receiver/instance, `self` will be the person who triggers the automation)"
             ),
+            label=_("Mail Details"),
         )
         self.fields["mail_details"].widget.attrs = {
             "class": "oh-select oh-select-2 w-100"

@@ -536,7 +536,7 @@ class OffboardingEmployeeList(HorillaListView):
                                     style="
                                         border:1px hsl(8,77%,56%) solid;
                                     "
-                                    title="Edit"
+                                    title="{_('Edit')}"
                                 >
                                     <ion-icon name="create-outline"></ion-icon>
                                 </button>
@@ -549,7 +549,7 @@ class OffboardingEmployeeList(HorillaListView):
                                     style="
                                         border:1px hsl(8,77%,56%) solid;
                                     "
-                                    title="Delete"
+                                    title="{_('Delete')}"
                                 >
                                     <ion-icon name="trash-outline"></ion-icon>
                                 </a>
@@ -572,7 +572,7 @@ class OffboardingEmployeeList(HorillaListView):
                             hx-get="{reverse('offboarding-add-task')}?stage_id={stage_id}"
                             hx-target="#genericModalBody"
                             >
-                            + Task
+                            + {_('Task')}
                         </button>
                         """,
                     "",

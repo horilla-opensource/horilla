@@ -28,7 +28,7 @@ from django.template.loader import render_to_string
 from django.utils.encoding import force_bytes
 from django.utils.html import strip_tags
 from django.utils.http import urlsafe_base64_encode
-from django.utils.translation import gettext as _
+from django.utils.translation import gettext_lazy as _
 
 from base.methods import reload_queryset
 from base.models import (
@@ -2512,7 +2512,7 @@ class DynamicMailTestForm(forms.Form):
     DynamicEmailTest
     """
 
-    to_email = forms.EmailField(label="To email", required=True)
+    to_email = forms.EmailField(label=_("To email"), required=True)
 
 
 class MailTemplateForm(ModelForm):
@@ -2610,6 +2610,7 @@ class MultipleApproveConditionForm(ModelForm):
                 "hx-get": "condition-value-fields",
             },
         ),
+        label=_("Condition Operator"),
     )
 
     class Meta:

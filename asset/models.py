@@ -9,6 +9,7 @@ from django.core.exceptions import ValidationError
 from django.db import models
 from django.urls import reverse, reverse_lazy
 from django.utils.html import format_html
+from django.utils.text import format_lazy
 from django.utils.translation import gettext_lazy as _
 
 from base.horilla_company_manager import HorillaCompanyManager
@@ -487,9 +488,13 @@ class AssetAssignment(HorillaModel):
         """
 
         return (
-            '<span class="link-primary">Requested to return</span>'
+            format_lazy(
+                '<span class="link-primary">{}</span>', _("Requested to return")
+            )
             if self.return_request
-            else '<span style = "color : yellowgreen;">In use</span>'
+            else format_lazy(
+                '<span style = "color : yellowgreen;">{}</span>', _("In use")
+            )
         )
 
     def detail_status(self):
@@ -497,11 +502,17 @@ class AssetAssignment(HorillaModel):
         Asset allocation  tab detail status
         """
         if self.return_date:
-            status = '<span style = "color : red;" >Returned</span>'
+            status = format_lazy(
+                '<span style = "color : red;" >{}</span>', _("Returned")
+            )
         elif self.return_request:
-            status = '<span class="link-primary">Requested to return</span>'
+            status = format_lazy(
+                '<span class="link-primary">{}</span>', _("Requested to return")
+            )
         else:
-            status = '<span style = "color : yellowgreen;" >Allocated</span>'
+            status = format_lazy(
+                '<span style = "color : yellowgreen;" >{}</span>', _("Allocated")
+            )
         return status
 
     def asset_allocation_detail_subtitle(self):
@@ -511,7 +522,7 @@ class AssetAssignment(HorillaModel):
         return f"{self.assigned_to_employee_id.get_department()} / {self.assigned_to_employee_id.get_job_position()}"
 
     def status_display(self):
-        status = self.asset_id.asset_status
+        status = self.asset_id.get_asset_status_display()
         color_class = "oh-dot--warning"  # Adjust based on your status
         return format_html(
             '<span class="oh-dot oh-dot--small me-1 oh-dot--color {color_class}"></span>'

@@ -1,11 +1,12 @@
 from django.template.loader import render_to_string
+from django.utils.translation import gettext_lazy as _
 
 from base.forms import ModelForm
 from facedetection.models import FaceDetection
 
 
 class FaceDetectionSetupForm(ModelForm):
-    verbose_name = "Facedetection Configuration"
+    verbose_name = _("Facedetection Configuration")
 
     class Meta:
         model = FaceDetection

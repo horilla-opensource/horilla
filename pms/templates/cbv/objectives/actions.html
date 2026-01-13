@@ -11,7 +11,7 @@
                                                                     {% if perms.pms.add_employeeobjective %}
                                                                         <a
                                                                             onclick="event.preventDefault();event.stopPropagation()"
-                                                                            hx-get="{% url 'add-assignees' instance.pk %}" hx-target='#genericModalBody' hx-swap='innerHTML' data-toggle='oh-modal-toggle' data-target='#genericModal'  class="oh-btn oh-btn--light-bkg w-100" title="Add assignees"
+                                                                            hx-get="{% url 'add-assignees' instance.pk %}" hx-target='#genericModalBody' hx-swap='innerHTML' data-toggle='oh-modal-toggle' data-target='#genericModal'  class="oh-btn oh-btn--light-bkg w-100" title="{% trans 'Add assignees' %}"
                                                                         ><ion-icon name="add-outline"></ion-icon></a>
                                                                     {% endif %}
                                                                     {% if perms.pms.change_objective %}

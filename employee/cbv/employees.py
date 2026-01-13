@@ -45,8 +45,8 @@ def profile_edit_accessibility_display(self):
     """
     request = _thread_locals.request
     if self.pk in request.all_edit_accessible_employees:
-        return "Revoke Profile Edit Access"
-    return "Add Profile Edit Access"
+        return _("Revoke Profile Edit Access")
+    return _("Add Profile Edit Access")
 
 
 def toggle_profile_edit_access_url(self):
@@ -434,16 +434,16 @@ class EmployeeNav(HorillaNavView):
                 "type": "list",
                 "icon": "list-outline",
                 "url": reverse("employees-list"),
-                "attrs": """
-                            title ='List'
+                "attrs": f"""
+                            title ='{_("List")}'
                             """,
             },
             {
                 "type": "card",
                 "icon": "grid-outline",
                 "url": reverse("employees-card"),
-                "attrs": """
-                          title ='Card'
+                "attrs": f"""
+                          title ='{_("Card")}'
                           """,
             },
         ]
@@ -457,7 +457,7 @@ class EmployeeNav(HorillaNavView):
         ("employee_work_info__job_position_id", _("Job Position")),
         (
             "employee_work_info__department_id",
-            "Department",
+            _("Department"),
         ),
         ("employee_work_info__shift_id", _("Shift")),
         ("employee_work_info__work_type_id", _("Work Type")),

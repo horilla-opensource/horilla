@@ -71,7 +71,7 @@
                 </div>
                 <button
                     class="oh-btn oh-btn--secondary-outline oh-stop-prop oh-accordion-meta__btn p-2"
-                    title="Add"
+                    title="{% trans 'Add' %}"
                     hx-get="{% url 'work-type-request' %}?emp_id={{emp_id}}"
                     hx-target="#objectCreateModalTarget"
                     data-target="#objectCreateModal"
@@ -128,7 +128,7 @@
                 </div>
                 <button
                     class="oh-btn oh-btn--secondary-outline oh-stop-prop oh-accordion-meta__btn p-2"
-                    title="Add"
+                    title="{% trans 'Add' %}"
                     hx-get="{% url 'shift-request' %}?emp_id={{emp_id}}"
                     hx-target="#objectCreateModalTarget"
                     data-target="#objectCreateModal"
@@ -154,7 +154,7 @@
                 {% if not request.GET.profile and perms.add_rotatingworktypeassign or request.user|is_reportingmanager %}
                     <button
                         class="oh-btn oh-btn--secondary-outline oh-stop-prop oh-accordion-meta__btn p-2"
-                        title="Add"
+                        title="{% trans 'Add' %}"
                         hx-get="{% url 'rotating-shift-assign-add' %}?emp_id={{emp_id}}"
                         hx-target="#objectCreateModalTarget"
                         data-target="#objectCreateModal"

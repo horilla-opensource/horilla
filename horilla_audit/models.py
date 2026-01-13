@@ -7,6 +7,7 @@ from collections.abc import Iterable
 from django.db import models
 from django.dispatch import receiver
 from django.urls import reverse_lazy
+from django.utils.translation import gettext_lazy as _
 from simple_history.models import (
     HistoricalRecords,
     _default_get_user,
@@ -47,7 +48,7 @@ class AuditTag(models.Model):
         """
         return yes or no based on highlight true or false
         """
-        return "Yes" if self.highlight else "No"
+        return _("Yes") if self.highlight else _("No")
 
     def get_update_url(self):
         """

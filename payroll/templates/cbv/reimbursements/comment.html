@@ -1,10 +1,12 @@
+{% load i18n %}
+
 <div onclick="event.stopPropagation();">
 	<a
 		type="button"
 		hx-get="{% url 'payroll-request-view-comment' instance.id %}"
 		hx-target="#commentContainer"
 		data-target="#activitySidebar"
-		title="View Comment"
+		title="{% trans 'View Comment' %}"
 		class="oh-btn oh-btn--light oh-activity-sidebar__open w-100"
 		onclick="event.stopPropagation()"
 	>

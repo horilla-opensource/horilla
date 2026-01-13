@@ -5,7 +5,7 @@
         {% if perms.pms.change_objective %}
             <a
                 onclick="event.preventDefault();event.stopPropagation()"
-                hx-get="{% url 'update-employee-objective' instance.get_employee_objective.id %}" hx-target='#genericModalBody' hx-swap='innerHTML' data-toggle='oh-modal-toggle' data-target='#genericModal'  class="oh-btn oh-btn--light-bkg w-100" title="Edit"
+                hx-get="{% url 'update-employee-objective' instance.get_employee_objective.id %}" hx-target='#genericModalBody' hx-swap='innerHTML' data-toggle='oh-modal-toggle' data-target='#genericModal'  class="oh-btn oh-btn--light-bkg w-100" title="{% trans 'Edit' %}"
             ><ion-icon name="create-outline"></ion-icon></a>
         {% endif %}
         {% if perms.pms.delete_objective %}
