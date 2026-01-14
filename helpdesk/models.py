@@ -221,7 +221,7 @@ class Ticket(HorillaModel):
             else:
                 due_text = format_lazy(
                     _("Due in {} days"),
-                    days_diff=days_diff,
+                    days_diff,
                 )
 
         if self.deadline < today:
