@@ -44,12 +44,12 @@
             <label class="oh-label oh-label--question" for="keyDesc">{{forloop.counter}}. {{q.question}}</label>
             <div class="oh-input-picker-group">
               <div class="oh-input-picker oh-input-picker--likert oh-input-picker--4 ">
-                Yes
+                {% trans "Yes" %}
 
                 <input type="radio" name="answer{{q.id}}" value="yes"/>
               </div>
               <div class="oh-input-picker oh-input-picker--likert oh-input-picker--1  ">
-                No
+                {% trans "No" %}
                 <input type="radio" name="answer{{q.id}}" value="no" />
               </div>
 
