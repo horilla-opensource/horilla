@@ -34,7 +34,7 @@
                 class="oh-input oh-input__icon oh-search_input"
                 aria-label="Search Input"
                 name="search"
-                placeholder="Search in FAQs..."
+                placeholder="{% trans 'Search in FAQs...' %}"
                 hx-get="{% url 'faq-search' %}?category=true"
                 hx-trigger="change"
                 hx-target="#faqCategoryList"
