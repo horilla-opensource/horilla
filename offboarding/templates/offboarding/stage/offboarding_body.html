@@ -80,7 +80,7 @@
                     </span>
                     {% if perms.offboarding.delete_offboardingtask or perms.offboarding.edit_offboardingtask or request.user.employee_get|is_stage_manager:stage.grouper.title or request.user.employee_get|is_task_manager:task.title or request.user.employee_get|is_offboarding_manager %}
                     <div class="oh-dropdown" x-data="{open: false}">
-                      <button class="oh-btn oh-stop-prop oh-btn--transparent oh-accordion-meta__btn" @click="open = !open" @click.outside="open = false" title="Actions">
+                      <button class="oh-btn oh-stop-prop oh-btn--transparent oh-accordion-meta__btn" @click="open = !open" @click.outside="open = false" title="{% trans 'Actions' %}">
                       <ion-icon name="ellipsis-vertical" role="img" class="md hydrated" aria-label="ellipsis vertical"></ion-icon>
                       </button>
                       <div class="oh-dropdown__menu oh-dropdown__menu--right" x-show="open" style="text-align: left !important; display: none;">
@@ -92,7 +92,7 @@
                             {% endif %}
                             {% if perms.offboarding.delete_offboardingtask or request.user.employee_get|is_stage_manager:stage.grouper.title or request.user.employee_get|is_task_manager:task.title or request.user.employee_get|is_offboarding_manager %}
                               <li class="oh-dropdown__item">
-                                <a class="oh-dropdown__link oh-dropdown__link--danger" hx-confirm = 'Do you want to delete task?' hx-post="{% url 'delete-offboarding-task' %}?task_ids={{task.id}}" hx-target="#offboardingContainer" title="{% trans "Delete" %}">{% trans "Delete" %}</a>
+                                <a class="oh-dropdown__link oh-dropdown__link--danger" hx-confirm = "{% trans 'Do you want to delete task?' %}" hx-post="{% url 'delete-offboarding-task' %}?task_ids={{task.id}}" hx-target="#offboardingContainer" title="{% trans 'Delete' %}">{% trans "Delete" %}</a>
                               </li>
                             {% endif %}
                          </ul>
