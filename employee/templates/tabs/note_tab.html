@@ -104,7 +104,7 @@
                                     hx-encoding="multipart/form-data" data-target="#activitySidebar" hx-swap="innerHTML"
                                     hx-target="#note_target">
                                     {% csrf_token %}
-                                    <label for="addFile_{{note.id}}" title="Add Files"><ion-icon name="add-outline"
+                                    <label for="addFile_{{note.id}}" title="{% trans 'Add Files' %}"><ion-icon name="add-outline"
                                             style="font-size: 24px" role="img" class="md hydrated"
                                             aria-label="add outline"></ion-icon></label>
                                     <input type="file" name="files" class="d-none" multiple="true" id="addFile_{{note.id}}"

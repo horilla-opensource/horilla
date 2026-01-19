@@ -30,14 +30,14 @@
 									<span
 										class="oh-badge oh-badge--secondary oh-badge--small oh-badge--round ms-2 mr-2 file-upload"
 										onclick="event.stopPropagation()"
-										title="Approved"
+										title="{% trans 'Approved' %}"
 									>
 									<ion-icon name="checkmark"></ion-icon>
 								{% elif document.status == 'rejected' %}
 									<span
 										class="oh-badge oh-badge--secondary oh-badge--small oh-badge--round ms-2 mr-2 file-upload"
 										onclick="event.stopPropagation()"
-										title="Rejected"
+										title="{% trans 'Rejected' %}"
 									>
 										<ion-icon name="alert"></ion-icon>
 									</span>
@@ -45,7 +45,7 @@
 								<span
 										class="oh-badge oh-badge--secondary oh-badge--small oh-badge--round ms-2 mr-2 file-upload"
 										onclick="event.stopPropagation()"
-										title="Uploaded"
+										title="{% trans 'Uploaded' %}"
 									>
 									<ion-icon name="image-outline"></ion-icon>
 								</span>
@@ -59,7 +59,7 @@
 									data-toggle="oh-modal-toggle"
 									data-target="#genericModal"
 									onclick="event.stopPropagation()"
-									title="Upload File"
+									title="{% trans 'Upload File' %}"
 								>
 									<ion-icon
 										class="md hydrated"

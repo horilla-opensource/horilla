@@ -19,8 +19,7 @@ from django.db.models.signals import post_save
 from django.dispatch import receiver
 from django.templatetags.static import static
 from django.urls import reverse, reverse_lazy
-from django.utils.translation import gettext as _
-from django.utils.translation import gettext_lazy as trans
+from django.utils.translation import gettext_lazy as _
 from PIL import Image
 
 from accessibility.accessibility import ACCESSBILITY_FEATURE
@@ -61,14 +60,14 @@ class Employee(models.Model):
     """
 
     choice_gender = [
-        ("male", trans("Male")),
-        ("female", trans("Female")),
-        ("other", trans("Other")),
+        ("male", _("Male")),
+        ("female", _("Female")),
+        ("other", _("Other")),
     ]
     choice_marital = (
-        ("single", trans("Single")),
-        ("married", trans("Married")),
-        ("divorced", trans("Divorced")),
+        ("single", _("Single")),
+        ("married", _("Married")),
+        ("divorced", _("Divorced")),
     )
     badge_id = models.CharField(max_length=50, null=True, blank=True)
     employee_user_id = models.OneToOneField(
@@ -85,7 +84,9 @@ class Employee(models.Model):
     employee_last_name = models.CharField(
         max_length=200, null=True, blank=True, verbose_name=_("Last Name")
     )
-    employee_profile = models.ImageField(upload_to=upload_path, null=True, blank=True)
+    employee_profile = models.ImageField(
+        upload_to=upload_path, null=True, blank=True, verbose_name=_("Profile Image")
+    )
     email = models.EmailField(max_length=254, unique=True)
     phone = models.CharField(
         max_length=25,
@@ -94,20 +95,34 @@ class Employee(models.Model):
     country = models.CharField(max_length=100, blank=True, null=True)
     state = models.CharField(max_length=100, null=True, blank=True)
     city = models.CharField(max_length=30, null=True, blank=True)
-    zip = models.CharField(max_length=20, null=True, blank=True)
-    dob = models.DateField(null=True, blank=True)
+    zip = models.CharField(max_length=20, null=True, blank=True, verbose_name=_("Zip"))
+    dob = models.DateField(null=True, blank=True, verbose_name=_("Date of Birth"))
     gender = models.CharField(
         max_length=10, null=True, choices=choice_gender, default="male"
     )
     qualification = models.CharField(max_length=50, blank=True, null=True)
     experience = models.IntegerField(null=True, blank=True)
     marital_status = models.CharField(
-        max_length=50, blank=True, null=True, choices=choice_marital, default="single"
+        max_length=50,
+        blank=True,
+        null=True,
+        choices=choice_marital,
+        default="single",
+        verbose_name=_("Marital Status"),
     )
     children = models.IntegerField(blank=True, null=True)
-    emergency_contact = models.CharField(max_length=15, null=True, blank=True)
-    emergency_contact_name = models.CharField(max_length=20, null=True, blank=True)
-    emergency_contact_relation = models.CharField(max_length=20, null=True, blank=True)
+    emergency_contact = models.CharField(
+        max_length=15, null=True, blank=True, verbose_name=_("Emergency Contact")
+    )
+    emergency_contact_name = models.CharField(
+        max_length=20, null=True, blank=True, verbose_name=_("Emergency Contact Name")
+    )
+    emergency_contact_relation = models.CharField(
+        max_length=20,
+        null=True,
+        blank=True,
+        verbose_name=_("Emergency Contact Relation"),
+    )
     is_active = models.BooleanField(default=True)
     additional_info = models.JSONField(null=True, blank=True)
     is_from_onboarding = models.BooleanField(
@@ -544,9 +559,9 @@ class Employee(models.Model):
         archive status
         """
         if self.is_active:
-            return "Archive"
+            return _("Archive")
         else:
-            return "Un-Archive"
+            return _("Un-Archive")
 
     def check_online(self):
         """
@@ -939,7 +954,7 @@ class EmployeeBankDetails(HorillaModel):
         related_name="employee_bank_details",
         verbose_name=_("Employee"),
     )
-    bank_name = models.CharField(max_length=50, null=True)
+    bank_name = models.CharField(max_length=50, null=True, verbose_name=_("Bank Name"))
     account_number = models.CharField(
         max_length=50,
         null=True,
@@ -1110,17 +1125,21 @@ class Actiontype(HorillaModel):
     """
 
     choice_actions = [
-        ("warning", trans("Warning")),
-        ("suspension", trans("Suspension")),
-        ("dismissal", trans("Dismissal")),
+        ("warning", _("Warning")),
+        ("suspension", _("Suspension")),
+        ("dismissal", _("Dismissal")),
     ]
 
     title = models.CharField(max_length=50)
-    action_type = models.CharField(max_length=30, choices=choice_actions)
+    action_type = models.CharField(
+        max_length=30, choices=choice_actions, verbose_name=_("Action Type")
+    )
     block_option = models.BooleanField(
         default=False,
         verbose_name=_("Enable login block :"),
-        help_text="If is enabled, employees log in will be blocked based on period of suspension or dismissal.",
+        help_text=_(
+            "If is enabled, employees log in will be blocked based on period of suspension or dismissal."
+        ),
     )
 
     class Meta:
@@ -1135,8 +1154,8 @@ class Actiontype(HorillaModel):
         To get block option
         """
         if self.block_option:
-            return "Yes"
-        return "No"
+            return _("Yes")
+        return _("No")
 
     def get_action_type_display(self):
         """
@@ -1217,9 +1236,9 @@ class DisciplinaryAction(HorillaModel):
         block option column
         """
         if self.action.block_option:
-            return "Yes"
+            return _("Yes")
         else:
-            return "No"
+            return _("No")
 
     def action_date_col(self):
         """
@@ -1303,7 +1322,7 @@ class ProfileEditFeature(HorillaModel):
     objects = models.Manager()
 
 
-ACCESSBILITY_FEATURE.append(("gender_chart", "Can view Gender Chart"))
-ACCESSBILITY_FEATURE.append(("department_chart", "Can view Department Chart"))
-ACCESSBILITY_FEATURE.append(("employees_chart", "Can view Employees Chart"))
-ACCESSBILITY_FEATURE.append(("birthday_view", "Can view Birthdays"))
+ACCESSBILITY_FEATURE.append(("gender_chart", _("Can view Gender Chart")))
+ACCESSBILITY_FEATURE.append(("department_chart", _("Can view Department Chart")))
+ACCESSBILITY_FEATURE.append(("employees_chart", _("Can view Employees Chart")))
+ACCESSBILITY_FEATURE.append(("birthday_view", _("Can view Birthdays")))

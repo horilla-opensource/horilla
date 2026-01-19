@@ -22,7 +22,7 @@
                 {% trans "Groups" %}
             </h2>
             {% if perms.auth.change_group %}
-          <button class="oh-btn oh-btn--danger" hx-get="{% url "assign-group-user" %}" hx-vals='{"employee":"{{employee.id}}"}' hx-target="#groupAssignBody" data-toggle="oh-modal-toggle" data-target="#groupAssign" onclick="event.stopPropagation()" title="Assign user groups">
+          <button class="oh-btn oh-btn--danger" hx-get="{% url "assign-group-user" %}" hx-vals='{"employee":"{{employee.id}}"}' hx-target="#groupAssignBody" data-toggle="oh-modal-toggle" data-target="#groupAssign" onclick="event.stopPropagation()" title="{% trans 'Assign user groups' %}">
             <ion-icon name="person-add-outline" class="text-light">Add</ion-icon>
           </button>
         {% endif %}
