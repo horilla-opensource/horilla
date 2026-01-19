@@ -152,8 +152,12 @@ class OffboardingEmployee(HorillaModel):
     )
     notice_period = models.IntegerField(null=True)
     unit = models.CharField(max_length=10, choices=UNIT, default="month", null=True)
-    notice_period_starts = models.DateField(null=True)
-    notice_period_ends = models.DateField(null=True, blank=True)
+    notice_period_starts = models.DateField(
+        null=True, verbose_name=_("Notice Period Starts")
+    )
+    notice_period_ends = models.DateField(
+        null=True, blank=True, verbose_name=_("Notice Period Ends")
+    )
     objects = HorillaCompanyManager(
         related_company_field="employee_id__employee_work_info__company_id"
     )
@@ -239,7 +243,7 @@ class OffboardingEmployee(HorillaModel):
 
         task_status = f"{completed_tasks} / {total_tasks}"
         col = f"""
-            <div class="oh-checkpoint-badge oh-checkpoint-badge--primary" title="Completed {completed_tasks} of {total_tasks} tasks">
+            <div class="oh-checkpoint-badge oh-checkpoint-badge--primary" title="{_('Completed')} {completed_tasks} {_('of')} {total_tasks} {_('tasks')}">
                 {task_status}
             </div>
         """
@@ -342,7 +346,7 @@ class ResignationLetter(HorillaModel):
     )
     title = models.CharField(max_length=100, null=True)
     description = models.TextField(null=True, max_length=255)
-    planned_to_leave_on = models.DateField()
+    planned_to_leave_on = models.DateField(verbose_name=_("Planned To Leave On"))
     status = models.CharField(max_length=10, choices=statuses, default="requested")
     offboarding_employee_id = models.ForeignKey(
         OffboardingEmployee, on_delete=models.CASCADE, editable=False, null=True

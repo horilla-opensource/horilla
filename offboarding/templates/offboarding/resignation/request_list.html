@@ -142,7 +142,7 @@
                             <div class="oh-btn-group">
                                 {% if letter.status != "approved" %}
                                 <button
-                                    title="By approving the request employee will added to the offboarding pipeline"
+                                    title="{% trans 'By approving the request employee will added to the offboarding pipeline' %}"
                                     type="button"
                                     onclick="event.stopPropagation();$(this).closest('form').find('input[name=status]').val('approved');resignLetterConfirmation('{% trans 'Do You really want to approve the request' %}?',$(this).closest('form').find('[type=submit]'),true);"
                                     class="oh-btn oh-btn--success w-100 oh-btn--block w-100"
