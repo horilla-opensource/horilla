@@ -106,7 +106,7 @@
               <label class="oh-label"
                 >{% trans "Pending Hour Greater or Equal" %}</label
               >
-              {{form.pending_hour__gte}}
+              {{form.pending_hour_gte}}
             </div>
             <div class="oh-input-group">
               <label class="oh-label">{% trans "OT Greater or Equal" %}</label>
@@ -128,19 +128,19 @@
             </div>
             <div class="oh-input-group">
               <label class="oh-label"
-                >{% trans "At Work Less Than or Equal" %}</label
+                >{% trans "At Work Lesser or Equal" %}</label
               >
               {{form.at_work_second__lte}}
             </div>
             <div class="oh-input-group">
               <label class="oh-label"
-                >{% trans "Pending Hour Less Than or Equal" %}</label
+                >{% trans "Pending Hour Lesser or Equal" %}</label
               >
-              {{form.pending_hour__lte}}
+              {{form.pending_hour_lte}}
             </div>
             <div class="oh-input-group">
               <label class="oh-label"
-                >{% trans "OT Less Than or Equal" %}</label
+                >{% trans "OT Lesser or Equal" %}</label
               >
               {{form.overtime_second__lte}}
             </div>
