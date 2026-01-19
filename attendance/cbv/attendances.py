@@ -146,7 +146,7 @@ class AttendancesTabView(HorillaTabView):
                 "url": f"{reverse('validate-attendance-tab')}",
                 "actions": [
                     {
-                        "action": "Validate",
+                        "action": _("Validate"),
                         "attrs": """
                     onclick="
                     bulkValidateTabAttendance();
@@ -161,7 +161,7 @@ class AttendancesTabView(HorillaTabView):
                 "url": f"{reverse('ot-attendance-tab')}",
                 "actions": [
                     {
-                        "action": "Approve OT",
+                        "action": _("Approve OT"),
                         "attrs": """
                     onclick="
                     otBulkValidateTabAttendance();
@@ -256,7 +256,7 @@ class AttendancesNavView(HorillaNavView):
         ("shift_id", _("Shift")),
         ("Work Type", _("work_type_id")),
         ("minimum_hour", _("Min Hour")),
-        ("employee_id__country", "Country"),
+        ("employee_id__country", _("Country")),
         (
             "employee_id__employee_work_info__reporting_manager_id",
             _("Reporting Manager"),
@@ -576,17 +576,17 @@ class PenaltyAccountListView(HorillaListView):
         (_("Penalty Type"), "penalty_type_col"),
     ]
 
+    confirm_text = _("Are you sure you want to delete this penalty?")
     actions = [
         {
             "action": _("Delete"),
             "icon": "trash-outline",
-            "attrs": """
+            "attrs": f"""
                         class="oh-btn oh-btn--light-bkg w-100 text-danger"
-                        hx-confirm="Are you sure you want to delete this penalty?"
-                        hx-post="{get_delete_url}"
-                        hx-target="#penaltyTr{get_delete_instance}"
+                        hx-confirm="{confirm_text}"
+                        hx-post="{{get_delete_url}}"
+                        hx-target="#penaltyTr{{get_delete_instance}}"
                         hx-swap="delete"
-
                       """,
         }
     ]

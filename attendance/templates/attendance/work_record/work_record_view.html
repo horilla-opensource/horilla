@@ -127,17 +127,17 @@
                         class="date-filter-form"
                     >
                         <div class="input-group">
-                            <label for="startDate">Start Date:</label>
+                            <label for="startDate">{% trans "Start Date" %}:</label>
                             <input type="date" name="start_date" id="startDate" class="oh-input">
                         </div>
 
                         <div class="input-group">
-                            <label for="endDate">End Date:</label>
+                            <label for="endDate">{% trans "End Date" %}:</label>
                             <input type="date" name="end_date" id="endDate" class="oh-input" max="{{ today|date:'Y-m-d' }}">
                         </div>
 
                         <div class="button-group">
-                            <button type="submit" class="oh-btn-filter">Filter</button>
+                            <button type="submit" class="oh-btn-filter">{% trans "Filter" %}</button>
                         </div>
                     </form>
                 </h6>
