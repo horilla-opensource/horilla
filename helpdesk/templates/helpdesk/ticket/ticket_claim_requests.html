@@ -70,7 +70,7 @@
                                                 data-target="#objectDetailsModal"
                                                 hx-get="{% url 'approve-claim-request' req.id %}?approve=True"
                                                 hx-target="#objectDetailsModalTarget"
-                                                title="Approve request"
+                                                title="{% trans 'Approve request' %}"
                                             >
                                                 <ion-icon name="checkmark-outline"></ion-icon>
                                             </button>
@@ -78,7 +78,7 @@
                                             <button
                                                 class="oh-btn oh-btn--success w-100"
                                                 disabled
-                                                title="Approve request"
+                                                title="{% trans 'Approve request' %}"
                                             >
                                                 <ion-icon name="checkmark-outline"></ion-icon>
                                             </button>
