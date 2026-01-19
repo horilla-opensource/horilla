@@ -22,7 +22,7 @@
   {% include 'generic/horilla_list_table.html' %}
   {% elif not queryset.exists %}
     <div class="oh-checkpoint-badge text-success quick-bulk-action" onclick="$(`[hx-get='{% url "allocation-allowance" %}?instance_id={{request.GET.instance_id}}']`).click();" style="cursor: pointer;">
-      <span class="label">+ Allocate</span>
+      <span class="label">+ {% trans "Allocate" %}</span>
     </div>
   {% endif %}
 </div>
