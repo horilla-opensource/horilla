@@ -13,8 +13,8 @@ from datetime import date, datetime, timedelta
 import pandas as pd
 from django.apps import apps
 from django.core.exceptions import ValidationError
-from django.db import models
-from django.db.models import Q
+from django.db import models, transaction
+from django.db.models import F, Q
 from django.urls import reverse
 from django.utils import timezone
 from django.utils.translation import gettext_lazy as _
@@ -660,50 +660,119 @@ class Attendance(HorillaModel):
             ):
                 self.attendance_overtime_approve = True
 
-    def save(self, *args, **kwargs):
-        self.update_attendance_overtime()
-        self.attendance_day = EmployeeShiftDay.objects.get(
-            day=self.attendance_date.strftime("%A").lower()
-        )
-        prev_attendance_approved = False
-        self.adjust_minimum_hour()
+    # def save(self, *args, **kwargs):
+    #     self.update_attendance_overtime()
+    #     self.attendance_day = EmployeeShiftDay.objects.get(
+    #         day=self.attendance_date.strftime("%A").lower()
+    #     )
+    #     prev_attendance_approved = False
+    #     self.adjust_minimum_hour()
 
-        # Handle overtime cutoff and auto-approval
+    #     # Handle overtime cutoff and auto-approval
+    #     self.handle_overtime_conditions()
+
+    #     if self.pk is not None:
+    #         # Get the previous values of the boolean field
+    #         prev_state = Attendance.objects.get(pk=self.pk)
+    #         prev_attendance_approved = prev_state.attendance_overtime_approve
+
+    #     # super().save(*args, **kwargs)  #commend this line, it take too much time to complete
+    #     employee_ot = self.employee_id.employee_overtime.filter(
+    #         month=self.attendance_date.strftime("%B").lower(),
+    #         year=self.attendance_date.year,
+    #     ).first()
+    #     if employee_ot:
+    #         # Update if exists
+    #         self.update_ot(employee_ot)
+    #     else:
+    #         # Create and update in one call
+    #         employee_ot = self.create_ot()
+    #         self.update_ot(employee_ot)
+    #     approved = self.attendance_overtime_approve
+    #     attendance_account = self.employee_id.employee_overtime.filter(
+    #         month=self.attendance_date.strftime("%B").lower(),
+    #         year=self.attendance_date.year,
+    #     ).first()
+    #     total_ot_seconds = attendance_account.overtime_second
+    #     if approved and prev_attendance_approved is False:
+    #         self.approved_overtime_second = self.overtime_second
+    #         total_ot_seconds = total_ot_seconds + self.approved_overtime_second
+    #     elif not approved:
+    #         total_ot_seconds = total_ot_seconds - self.approved_overtime_second
+    #         self.approved_overtime_second = 0
+    #     attendance_account.overtime = format_time(total_ot_seconds)
+    #     attendance_account.save()
+    #     super().save(*args, **kwargs)
+    #     self.first_save = False
+
+    def save(self, *args, **kwargs):
+        is_new = self.pk is None
+        old = None
+
+        if not is_new:
+            old = Attendance.objects.only(
+                "at_work_second",
+                "approved_overtime_second",
+                "minimum_hour",
+            ).get(pk=self.pk)
+
+            old_work = old.at_work_second or 0
+            old_approved_ot = old.approved_overtime_second or 0
+
+            old_min = strtime_seconds(old.minimum_hour)
+            old_pending_today = max(0, old_min - old_work)
+        else:
+            old_work = 0
+            old_approved_ot = 0
+            old_pending_today = 0
+
+        self.update_attendance_overtime()
+        self.adjust_minimum_hour()
         self.handle_overtime_conditions()
 
-        if self.pk is not None:
-            # Get the previous values of the boolean field
-            prev_state = Attendance.objects.get(pk=self.pk)
-            prev_attendance_approved = prev_state.attendance_overtime_approve
+        new_work = self.at_work_second or 0
+        new_approved_ot = self.approved_overtime_second or 0
 
-        # super().save(*args, **kwargs)  #commend this line, it take too much time to complete
-        employee_ot = self.employee_id.employee_overtime.filter(
-            month=self.attendance_date.strftime("%B").lower(),
-            year=self.attendance_date.year,
-        ).first()
-        if employee_ot:
-            # Update if exists
-            self.update_ot(employee_ot)
-        else:
-            # Create and update in one call
-            employee_ot = self.create_ot()
-            self.update_ot(employee_ot)
-        approved = self.attendance_overtime_approve
-        attendance_account = self.employee_id.employee_overtime.filter(
-            month=self.attendance_date.strftime("%B").lower(),
-            year=self.attendance_date.year,
-        ).first()
-        total_ot_seconds = attendance_account.overtime_second
-        if approved and prev_attendance_approved is False:
-            self.approved_overtime_second = self.overtime_second
-            total_ot_seconds = total_ot_seconds + self.approved_overtime_second
-        elif not approved:
-            total_ot_seconds = total_ot_seconds - self.approved_overtime_second
-            self.approved_overtime_second = 0
-        attendance_account.overtime = format_time(total_ot_seconds)
-        attendance_account.save()
+        new_min = strtime_seconds(self.minimum_hour)
+        new_pending_today = max(0, new_min - new_work)
+
+        diff_work = new_work - old_work
+        diff_approved_ot = new_approved_ot - old_approved_ot
+        diff_pending = new_pending_today - old_pending_today
+
         super().save(*args, **kwargs)
-        self.first_save = False
+
+        if diff_work == diff_approved_ot == diff_pending == 0:
+            return
+
+        month = self.attendance_date.strftime("%B").lower()
+        year = self.attendance_date.year
+
+        with transaction.atomic():
+            ot, _ = AttendanceOverTime.objects.get_or_create(
+                employee_id=self.employee_id,
+                month=month,
+                year=year,
+                defaults={
+                    "hour_account_second": 0,
+                    "hour_pending_second": 0,
+                    "overtime_second": 0,
+                },
+            )
+
+            AttendanceOverTime.objects.filter(pk=ot.pk).update(
+                hour_account_second=F("hour_account_second") + diff_work,
+                overtime_second=F("overtime_second") + diff_approved_ot,
+                hour_pending_second=F("hour_pending_second") + diff_pending,
+            )
+
+            ot.refresh_from_db(
+                fields=["hour_account_second", "hour_pending_second", "overtime_second"]
+            )
+            ot.worked_hours = format_time(ot.hour_account_second or 0)
+            ot.pending_hours = format_time(ot.hour_pending_second or 0)
+            ot.overtime = format_time(ot.overtime_second or 0)
+            ot.save(update_fields=["worked_hours", "pending_hours", "overtime"])
 
     def serialize(self):
         """
@@ -1081,10 +1150,33 @@ class AttendanceOverTime(HorillaModel):
         """
         return MONTH_MAPPING[self.month]
 
+    # def save(self, *args, **kwargs):
+    #     self.hour_account_second = strtime_seconds(self.worked_hours)
+    #     self.hour_pending_second = strtime_seconds(self.pending_hours)
+    #     self.overtime_second = strtime_seconds(self.overtime)
+    #     month_name = self.month.split("-")[0]
+    #     months = [
+    #         "january",
+    #         "february",
+    #         "march",
+    #         "april",
+    #         "may",
+    #         "june",
+    #         "july",
+    #         "august",
+    #         "september",
+    #         "october",
+    #         "november",
+    #         "december",
+    #     ]
+    #     self.month_sequence = months.index(month_name)
+    #     super().save(*args, **kwargs)
+
     def save(self, *args, **kwargs):
-        self.hour_account_second = strtime_seconds(self.worked_hours)
-        self.hour_pending_second = strtime_seconds(self.pending_hours)
-        self.overtime_second = strtime_seconds(self.overtime)
+        self.worked_hours = format_time(self.hour_account_second or 0)
+        self.pending_hours = format_time(self.hour_pending_second or 0)
+        self.overtime = format_time(self.overtime_second or 0)
+
         month_name = self.month.split("-")[0]
         months = [
             "january",
@@ -1101,6 +1193,7 @@ class AttendanceOverTime(HorillaModel):
             "december",
         ]
         self.month_sequence = months.index(month_name)
+
         super().save(*args, **kwargs)
 
 
@@ -1205,9 +1298,9 @@ class AttendanceLateComeEarlyOut(HorillaModel):
 
     def attendance_validated_check(self):
         if self.attendance_id.attendance_validated == True:
-            return "Yes"
+            return _("Yes")
         else:
-            return "No"
+            return _("No")
 
     def late_come_detail(self):
         """
@@ -1318,7 +1411,7 @@ class GraceTime(HorillaModel):
         """
         Allowed time col
         """
-        return "Yes" if self.is_default else "No"
+        return _("Yes") if self.is_default else _("No")
 
     def action_col(self):
         """
