@@ -270,7 +270,7 @@
                                                                     {% if perms.pms.add_employeeobjective %}
                                                                         <a
                                                                             onclick="event.preventDefault();event.stopPropagation()"
-                                                                            hx-get="{% url 'add-assignees' objective.pk %}" hx-target='#objectDetailsModalTarget' hx-swap='innerHTML' data-toggle='oh-modal-toggle' data-target='#objectDetailsModal'  class="oh-btn oh-btn--light-bkg w-100" title="Add assignees"
+                                                                            hx-get="{% url 'add-assignees' objective.pk %}" hx-target='#objectDetailsModalTarget' hx-swap='innerHTML' data-toggle='oh-modal-toggle' data-target='#objectDetailsModal'  class="oh-btn oh-btn--light-bkg w-100" title="{% trans 'Add assignees' %}"
                                                                         ><ion-icon name="add-outline"></ion-icon></a>
                                                                     {% endif %}
                                                                     {% if perms.pms.change_objective %}
@@ -516,7 +516,7 @@
                                                                     {% if perms.pms.change_objective %}
                                                                         <a
                                                                             onclick="event.preventDefault();event.stopPropagation()"
-                                                                            hx-get="{% url 'update-employee-objective' objective.id %}" hx-target='#objectDetailsModalTarget' hx-swap='innerHTML' data-toggle='oh-modal-toggle' data-target='#objectDetailsModal'  class="oh-btn oh-btn--light-bkg w-100" title="Edit"
+                                                                            hx-get="{% url 'update-employee-objective' objective.id %}" hx-target='#objectDetailsModalTarget' hx-swap='innerHTML' data-toggle='oh-modal-toggle' data-target='#objectDetailsModal'  class="oh-btn oh-btn--light-bkg w-100" title="{% trans 'Edit' %}"
                                                                         ><ion-icon name="create-outline"></ion-icon></a>
                                                                     {% endif %}
                                                                     {% if perms.pms.delete_objective %}

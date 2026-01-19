@@ -1,5 +1,4 @@
 {% load static i18n %}
-{% load i18n %}
 {% load widget_tweaks %} {% load basefilters %} {% load pmsfilters %}
 {% comment %} <section class="oh-wrapper oh-main__topbar" x-data="{searchShow: false}"> {% endcomment %}
     <div class="oh-main__titlebar oh-main__titlebar--left">
@@ -75,7 +74,7 @@
                                                         hx-target="#genericModalBody"
                                                         data-toggle="oh-modal-toggle"
                                                         data-target="#genericModal"
-                                                        title="Add Key Result"
+                                                        title="{% trans 'Add Key Result' %}"
                                                         onclick="event.stopPropagation()"
                                                     >
                                                         <ion-icon name="add-outline" class="m-0 md hydrated" role="img" aria-label="add outline"></ion-icon>
