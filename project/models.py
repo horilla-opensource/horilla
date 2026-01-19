@@ -13,6 +13,7 @@ from django.core.exceptions import ValidationError
 from django.db import models
 from django.urls import reverse, reverse_lazy
 from django.utils import timezone
+from django.utils.formats import localize
 from django.utils.html import format_html
 from django.utils.translation import gettext_lazy as _
 
@@ -194,13 +195,16 @@ class Project(HorillaModel):
 
         col = format_html(
             """
-                <div class="my-2">Status : <span class="font-semibold">{}</span></div>
-                <div class="mb-2">Start date : <span class="dateformat_changer font-semibold">{}</span></div>
-                <div>End date : <span class="dateformat_changer font-semibold">{}</span></div>
+                <div class="my-2">{status_label} : <span class="font-semibold">{status}</span></div>
+                <div class="mb-2">{start_label} : <span class="dateformat_changer font-semibold"> {start} </span></div>
+                <div>{end_label} : <span class="dateformat_changer font-semibold"> {end} </span></div>
             """,
-            self.get_status_display(),
-            self.start_date,
-            self.end_date,
+            status_label=_("Status"),
+            start_label=_("Start date"),
+            end_label=_("End date"),
+            status=self.get_status_display(),
+            start=localize(self.start_date),
+            end=localize(self.end_date),
         )
         return col
 
@@ -227,9 +231,9 @@ class Project(HorillaModel):
         archive status
         """
         if self.is_active:
-            return "Archive"
+            return _("Archive")
         else:
-            return "Un-Archive"
+            return _("Un-Archive")
 
     def clean(self) -> None:
         # validating end date
@@ -423,13 +427,16 @@ class Task(HorillaModel):
         """
         col = format_html(
             """
-                <div class="my-2">Project Name : <span class="font-semibold">{}</span></div>
-                <div class="mb-2">Stage Name : <span class="font-semibold">{}</span></div>
-                <div>End date : <span class="dateformat_changer font-semibold">{}</span></div>
+                <div class="my-2">{project_label} : <span class="font-semibold">{project}</span></div>
+                <div class="mb-2">{stage_label} : <span class="font-semibold">{stage}</span></div>
+                <div>{end_label} : <span class="dateformat_changer font-semibold">{end}</span></div>
             """,
-            self.if_project(),
-            self.stage,
-            self.end_date,
+            project_label=_("Project Name"),
+            stage_label=_("Stage Name"),
+            end_label=_("End date"),
+            project=self.if_project(),
+            stage=self.stage,
+            end=localize(self.end_date),
         )
         return col
 

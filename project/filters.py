@@ -1,7 +1,7 @@
 import django_filters
 from django import forms
 from django.db.models import Q
-from django.utils.translation import gettext as _
+from django.utils.translation import gettext_lazy as _
 
 from horilla.filters import FilterSet, HorillaFilterSet, filter_by_name
 
@@ -77,7 +77,7 @@ class TaskAllFilter(HorillaFilterSet):
         field_name="end_date",
         lookup_expr="lte",
         widget=forms.DateInput(attrs={"type": "date"}),
-        label=_("End Till"),
+        label=_("End Date Till"),
     )
 
     class Meta:
@@ -92,12 +92,6 @@ class TaskAllFilter(HorillaFilterSet):
             "status",
             "is_active",
         ]
-
-    def __init__(self, *args, **kwargs):
-        super().__init__(*args, **kwargs)
-        self.form.fields["end_till"].label = (
-            f"{self.Meta.model()._meta.get_field('end_date').verbose_name} Till"
-        )
 
     def filter_by_task(self, queryset, _, value):
         queryset = queryset.filter(title__icontains=value)
@@ -116,11 +110,13 @@ class TimeSheetFilter(HorillaFilterSet):
         field_name="date",
         lookup_expr="gte",
         widget=forms.DateInput(attrs={"type": "date"}),
+        label=_("Start Date From"),
     )
     end_till = django_filters.DateFilter(
         field_name="date",
         lookup_expr="lte",
         widget=forms.DateInput(attrs={"type": "date"}),
+        label=_("End Date Till"),
     )
 
     project = (
@@ -147,11 +143,6 @@ class TimeSheetFilter(HorillaFilterSet):
             "date",
             "status",
         ]
-
-    def __init__(self, *args, **kwargs):
-        super().__init__(*args, **kwargs)
-        self.form.fields["start_from"].label = _("Start Date From")
-        self.form.fields["end_till"].label = _("End Date Till")
 
     def filter_by_employee(self, queryset, _, value):
         """
