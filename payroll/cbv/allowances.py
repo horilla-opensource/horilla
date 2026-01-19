@@ -6,6 +6,7 @@ from typing import Any
 
 from django.urls import reverse, reverse_lazy
 from django.utils.decorators import method_decorator
+from django.utils.text import format_lazy
 from django.utils.translation import gettext_lazy as _
 
 from horilla_views.cbv_methods import login_required, permission_required
@@ -183,16 +184,16 @@ class AllowanceNavView(HorillaNavView):
                 "type": "list",
                 "icon": "list-outline",
                 "url": reverse("allowances-list-view"),
-                "attrs": """
-                            title='List'
+                "attrs": f"""
+                            title="{_('List')}"
                             """,
             },
             {
                 "type": "card",
                 "icon": "grid-outline",
                 "url": reverse("allowances-card-view"),
-                "attrs": """
-                            title='Card'
+                "attrs": f"""
+                            title="{_('Card')}"
                             """,
             },
         ]
@@ -232,7 +233,15 @@ class AllowancesCardView(HorillaCardView):
     details = {
         "image_src": "get_avatar",
         "title": "{title}",
-        "subtitle": "Amount : {based_on_amount} <br> One Time Allowance : {one_time_date_display} <br> Taxable : {get_is_taxable_display}",
+        "subtitle": format_lazy(
+            "{} : {} <br> {} : {} <br> {} : {}",
+            _("Amount"),
+            "{based_on_amount}",
+            _("One Time Allowance"),
+            "{one_time_date_display}",
+            _("Taxable"),
+            "{get_is_taxable_display}",
+        ),
     }
 
     card_attrs = """
