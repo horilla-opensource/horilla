@@ -1,6 +1,8 @@
 {% load static %}
 {% load i18n %}
 {% load horillafilters %}
+{% load basefilters %}
+{% show_section as show_section %}
 <!DOCTYPE html>
 <html>
 {% get_current_language_bidi as LANGUAGE_BIDI %}
@@ -43,6 +45,7 @@
     <script src="{% static '/build/js/orgChart.js' %}"></script>
     <script src="{% static 'build/js/driver.js' %}"></script>
     <script src="{% static 'build/js/clearFilter.js' %}"></script>
+    <script src="{% static 'src/js/customHeaderScripts.js' %}"></script>
 
 
 
@@ -150,9 +153,9 @@
                             <!-- End of check in/out button in nav bar -->
                         {% endif %}
 
-                        {% if request.user|any_permission:'base' or show_section %}
+                        {% if show_section %}
                             <!-- Start of settings button in nav bar -->
-                            <div class="oh-navbar__action-icons" title="Settings">
+                            <div class="oh-navbar__action-icons" title="{% trans 'Settings' %}">
                                 <a href="{% url 'general-settings' %}" id="settingsMenu" class="oh-navbar__action-icons-link">
                                     <ion-icon name="settings-outline" class="oh-navbar__icon"></ion-icon>
                                 </a>
@@ -258,6 +261,7 @@
     <script type="module" src="{% static 'images/ionicons/ui_icons/ionicons/ionicons.esm.js' %}"></script>
     <script src="{% static '/build/js/sweetAlert.js' %}"></script>
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script src="{% static 'src/js/customFooterScripts.js' %}"></script>
     <script>
         // Clear all query parameters from the URL
         function clearQueryParameters() {
