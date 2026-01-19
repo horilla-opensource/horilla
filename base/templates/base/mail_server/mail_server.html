@@ -1,4 +1,7 @@
-{% extends 'settings.html' %} {% load i18n %} {% block settings %}{% load static %}
+{% extends 'settings.html' %}
+{% load static i18n %}
+
+{% block settings %}
 <style>
 	.alert {
 		position: relative;
@@ -12,6 +15,9 @@
 		color: #856404;
 		background-color: #fff3cd;
 		border-color: #ffeeba;
+		display: flex;
+		align-items: center;
+		gap: 20px;
 	}
 </style>
 {% include "generic/components.html" %}
