@@ -17,7 +17,7 @@ from django.http import HttpResponse
 from django.shortcuts import render
 from django.urls import reverse_lazy
 from django.utils.decorators import method_decorator
-from django.utils.translation import gettext as _
+from django.utils.translation import gettext_lazy as _
 from django.views.generic import View
 
 from base.forms import AddToUserGroupForm, ModelForm, forms
