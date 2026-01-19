@@ -38,6 +38,7 @@ class TagsListView(HorillaListView):
         super().__init__(**kwargs)
         self.view_id = "tagContainer"
         self.search_url = reverse("helpdesk-tag-list")
+        delete_confirm = _("Are you sure you want to delete this tag?")
         self.actions = [
             {
                 "action": _("Edit"),
@@ -53,11 +54,11 @@ class TagsListView(HorillaListView):
             {
                 "action": _("Delete"),
                 "icon": "trash-outline",
-                "attrs": """
+                "attrs": f"""
                         class="oh-btn oh-btn--light-bkg w-100 text-danger"
-                        hx-confirm="Are you sure you want to delete this tag ?"
-                        hx-post="{get_delete_url}"
-                        hx-target="#tagTr{get_instance_id}"
+                        hx-confirm="{delete_confirm}"
+                        hx-post="{{get_delete_url}}"
+                        hx-target="#tagTr{{get_instance_id}}"
                         hx-swap="delete"
                         """,
             },

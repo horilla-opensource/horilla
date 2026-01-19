@@ -40,6 +40,7 @@ class DepartmentManagersListView(HorillaListView):
     model = DepartmentManager
     filter_class = DepartmentManagerFilter
     show_toggle_form = False
+    delete_confirm = _("Are you sure you want to remove this department manager?")
 
     columns = [
         (_("Department"), "department"),
@@ -75,11 +76,11 @@ class DepartmentManagersListView(HorillaListView):
         {
             "action": _("Delete"),
             "icon": "trash-outline",
-            "attrs": """
+            "attrs": f"""
                     class="oh-btn oh-btn--danger-outline oh-btn--light-bkg w-50"
-                    hx-confirm="Are you sure you want to remove this department manager?"
-                    hx-target="#dapartmentManagerTr{get_instance_id}"
-                    hx-post="{get_delete_url}"
+                    hx-confirm="{delete_confirm}"
+                    hx-target="#dapartmentManagerTr{{get_instance_id}}"
+                    hx-post="{{get_delete_url}}"
                     hx-swap="innerHTML"
                     """,
         },
