@@ -99,6 +99,7 @@ def format(string: str, instance: object):
     """
     format
     """
+    string = str(string)
     attr_placeholder_regex = r"{([^}]*)}"
     attr_placeholders = re.findall(attr_placeholder_regex, string)
 
