@@ -10,6 +10,7 @@ from django.http import HttpResponse
 from django.shortcuts import render
 from django.urls import reverse, reverse_lazy
 from django.utils.decorators import method_decorator
+from django.utils.text import format_lazy
 from django.utils.translation import gettext_lazy as _
 
 from employee.models import Employee
@@ -124,16 +125,16 @@ class LeaveTypeNavView(HorillaNavView):
                     "type": "list",
                     "icon": "list-outline",
                     "url": reverse("leave-type-list"),
-                    "attrs": """
-                            title='List'
+                    "attrs": f"""
+                            title='{_("List")}'
                             """,
                 },
                 {
                     "type": "card",
                     "icon": "grid-outline",
                     "url": reverse("leave-type-card-view"),
-                    "attrs": """
-                            title='Card'
+                    "attrs": f"""
+                            title='{_("Card")}'
                             """,
                 },
             ]
@@ -234,7 +235,13 @@ class LeaveTypeCardView(HorillaCardView):
     details = {
         "image_src": "get_avatar",
         "title": "{name}",
-        "subtitle": "Payment : {payment} <br> Total Days : {count}",
+        "subtitle": format_lazy(
+            "{} : {} <br> {} : {}",
+            _("Payment"),
+            "{payment}",
+            _("Total Days"),
+            "{count}",
+        ),
     }
 
     card_status_indications = [
