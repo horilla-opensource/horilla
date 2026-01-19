@@ -106,14 +106,14 @@
               <div class="oh-btn-group">
                 {% comment %} {% if perms.recruitment.change_candidate %} {% endcomment %}
                 <a hx-get="{% url 'update-task-all' task.id %}" hx-target='#TaskDetailsTarget' data-toggle = 'oh-modal-toggle' data-target="#TaskModal"  hx-swap='innerHTML'
-                  class="oh-btn oh-btn--light-bkg w-100" title="Edit"><ion-icon name="create-outline"></ion-icon></a>
+                  class="oh-btn oh-btn--light-bkg w-100" title="{% trans 'Edit' %}"><ion-icon name="create-outline"></ion-icon></a>
                 {% comment %} {% endif %} {% endcomment %}
                 {% comment %} {% if perms.recruitment.delete_candidate %} {% endcomment %}
                 <form action="{% url 'delete-task' task.id  %}?task_all=true" method='post'
                   onsubmit="Are you sure want to delete this candidate?">
                   {% csrf_token %}
                   <button type='submit' class="oh-btn oh-btn--danger-outline oh-btn--light-bkg w-100"
-                    title="Remove"><ion-icon name="trash-outline"></ion-icon></button>
+                    title="{% trans 'Remove' %}"><ion-icon name="trash-outline"></ion-icon></button>
                 </form>
                 {% comment %} {% endif %} {% endcomment %}
               </div>
