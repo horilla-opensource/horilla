@@ -35,6 +35,7 @@ class EmployeeTagListView(HorillaListView):
         super().__init__(**kwargs)
         self.search_url = reverse("employee-tag-list")
         self.actions = []
+        tags_confirm = _("Are you sure you want to delete this employee tag?")
         if self.request.user.has_perm("employee.change_employeetag"):
             self.actions.append(
                 {
@@ -54,12 +55,12 @@ class EmployeeTagListView(HorillaListView):
                 {
                     "action": _("Delete"),
                     "icon": "trash-outline",
-                    "attrs": """
+                    "attrs": f"""
                         class="oh-btn oh-btn--light-bkg w-100 text-danger"
-                        hx-confirm="Are you sure you want to delete this employee tag?"
+                        hx-confirm="{tags_confirm}"
                         hx-swap="outerHTML"
-                        hx-post="{get_delete_url}"
-                        hx-target="#employeeTagTr{get_instance_id}"
+                        hx-post="{{get_delete_url}}"
+                        hx-target="#employeeTagTr{{get_instance_id}}"
                       """,
                 }
             )
