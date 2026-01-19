@@ -519,6 +519,7 @@ class AvailableLeave(HorillaModel):
         leave_taken = LeaveRequest.objects.filter(
             leave_type_id=self.leave_type_id,
             employee_id=self.employee_id,
+            start_date__gte=self.assigned_date,  # Considering leaves taken after assigned date
             status="approved",
         ).aggregate(total_sum=Sum("requested_days"))
 
