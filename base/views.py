@@ -942,6 +942,18 @@ def logout_user(request):
     return response
 
 
+@login_required
+def toggle_theme(request):
+    if request.method == "POST":
+        current = request.session.get("theme")
+
+        request.session["theme"] = "light" if current == "dark" else "dark"
+
+        return HttpResponse(status=204)
+
+    return HttpResponse(status=400)
+
+
 class Workinfo:
     def __init__(self, employee) -> None:
         self.employee_work_info = employee
@@ -5439,33 +5451,6 @@ def general_settings(request):
             messages.success(request, _("Settings updated."))
             return HttpResponseRedirect(request.META.get("HTTP_REFERER", "/"))
 
-    general_section = any(
-        [
-            request.user.has_perm("base.change_announcementexpire"),
-            request.user.has_perm("base.view_dynamicpagination"),
-            request.user.has_perm("horilla_audit.view_accountblockunblock"),
-            request.user.has_perm("offboarding.change_offboardinggeneralsetting"),
-            request.user.has_perm("attendance.change_attendancegeneralsetting"),
-            request.user.has_perm("payroll.change_payrollgeneralsetting"),
-            request.user.has_perm("employee.change_employeegeneralsetting"),
-            request.user.has_perm("payroll.change_encashmentgeneralsetting"),
-            request.user.has_perm("base.view_historytrackingfields"),
-            request.user.has_perm("payroll.view_payrollsettings"),
-        ]
-    )
-    employee_section = any(
-        [
-            request.user.has_perm("base.view_worktype"),
-            request.user.has_perm("base.view_rotatingworktype"),
-            request.user.has_perm("base.view_employeeshift"),
-            request.user.has_perm("base.view_rotatingshift"),
-            request.user.has_perm("base.view_employeeshiftschedule"),
-            request.user.has_perm("base.view_employeetype"),
-            request.user.has_perm("employee.view_actiontype"),
-            request.user.has_perm("employee.view_employeetag"),
-        ]
-    )
-
     return render(
         request,
         "base/general_settings.html",
@@ -5481,8 +5466,6 @@ def general_settings(request):
             "prefix_form": prefix_form,
             "companies": companies,
             "selected_company_id": selected_company_id,
-            "general_section": general_section,
-            "employee_section": employee_section,
         },
     )
 
