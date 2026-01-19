@@ -28,7 +28,7 @@ from django.template.loader import render_to_string
 from django.utils.encoding import force_bytes
 from django.utils.html import strip_tags
 from django.utils.http import urlsafe_base64_encode
-from django.utils.translation import gettext as _
+from django.utils.translation import gettext_lazy as _
 
 from base.methods import reload_queryset
 from base.models import (
@@ -502,7 +502,7 @@ class AssignPermission(Form):
         widget=HorillaMultiSelectWidget(
             filter_route_name="employee-widget-filter",
             filter_class=EmployeeFilter,
-            filter_instance_contex_name="f",
+            filter_instance_context_name="f",
             filter_template_path="employee_filters.html",
             required=True,
         ),
@@ -1011,7 +1011,7 @@ class RotatingWorkTypeAssignForm(ModelForm):
     #     widget=HorillaMultiSelectWidget(
     #         filter_route_name="employee-widget-filter",
     #         filter_class=EmployeeFilter,
-    #         filter_instance_contex_name="f",
+    #         filter_instance_context_name="f",
     #         filter_template_path="employee_filters.html",
     #     ),
     #     label=_("Employees"),
@@ -1059,7 +1059,7 @@ class RotatingWorkTypeAssignForm(ModelForm):
                 widget=HorillaMultiSelectWidget(
                     filter_route_name="employee-widget-filter",
                     filter_class=EmployeeFilter,
-                    filter_instance_contex_name="f",
+                    filter_instance_context_name="f",
                     filter_template_path="employee_filters.html",
                 ),
                 label=_("Employees"),
@@ -1440,16 +1440,7 @@ class EmployeeShiftScheduleForm(ModelForm):
         """
 
         model = EmployeeShiftSchedule
-        fields = [
-            "shift_id",
-            "minimum_working_hour",
-            "start_time",
-            "end_time",
-            "is_auto_punch_out_enabled",
-            "auto_punch_out_time",
-            "company_id",
-            "day",
-        ]
+        fields = "__all__"
         exclude = ["is_active", "day", "is_night_shift"]
         widgets = {
             "start_time": forms.TimeInput(),
@@ -1693,7 +1684,7 @@ class RotatingShiftAssignForm(ModelForm):
     #     widget=HorillaMultiSelectWidget(
     #         filter_route_name="employee-widget-filter",
     #         filter_class=EmployeeFilter,
-    #         filter_instance_contex_name="f",
+    #         filter_instance_context_name="f",
     #         filter_template_path="employee_filters.html",
     #     ),
     #     label=_("Employees"),
@@ -1742,7 +1733,7 @@ class RotatingShiftAssignForm(ModelForm):
                 widget=HorillaMultiSelectWidget(
                     filter_route_name="employee-widget-filter",
                     filter_class=EmployeeFilter,
-                    filter_instance_contex_name="f",
+                    filter_instance_context_name="f",
                     filter_template_path="employee_filters.html",
                 ),
                 label=_("Employees"),
@@ -2522,7 +2513,7 @@ class DynamicMailTestForm(forms.Form):
     DynamicEmailTest
     """
 
-    to_email = forms.EmailField(label="To email", required=True)
+    to_email = forms.EmailField(label=_("To email"), required=True)
 
 
 class MailTemplateForm(ModelForm):
@@ -2620,6 +2611,7 @@ class MultipleApproveConditionForm(ModelForm):
                 "hx-get": "condition-value-fields",
             },
         ),
+        label=_("Condition Operator"),
     )
 
     class Meta:
@@ -2678,7 +2670,7 @@ class AnnouncementForm(ModelForm):
         widget=HorillaMultiSelectWidget(
             filter_route_name="employee-widget-filter",
             filter_class=EmployeeFilter,
-            filter_instance_contex_name="f",
+            filter_instance_context_name="f",
             filter_template_path="employee_filters.html",
         ),
         label="Employees",
