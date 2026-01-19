@@ -28,7 +28,9 @@ from horilla_views.cbv_methods import render_template
 class Period(HorillaModel):
     """this is a period model used for creating period"""
 
-    period_name = models.CharField(max_length=150, unique=True)
+    period_name = models.CharField(
+        max_length=150, unique=True, verbose_name=_("Period Name")
+    )
     start_date = models.DateField()
     end_date = models.DateField()
     company_id = models.ManyToManyField(Company, blank=True, verbose_name=_("Company"))
@@ -88,10 +90,15 @@ class KeyResult(HorillaModel):
         blank=False, null=False, max_length=255, verbose_name="Description"
     )
     progress_type = models.CharField(
-        max_length=60, default="%", choices=PROGRESS_CHOICES
+        max_length=60,
+        default="%",
+        choices=PROGRESS_CHOICES,
+        verbose_name=_("Progress Type"),
     )
-    target_value = models.IntegerField(null=True, blank=True, default=100)
-    duration = models.IntegerField(null=True, blank=True, help_text="In Days")
+    target_value = models.IntegerField(
+        null=True, blank=True, default=100, verbose_name=_("Target Value")
+    )
+    duration = models.IntegerField(null=True, blank=True, help_text=_("In Days"))
     archive = models.BooleanField(default=False)
     history = HorillaAuditLog(bases=[HorillaAuditInfo])
     company_id = models.ForeignKey(
@@ -210,7 +217,7 @@ class Objective(HorillaModel):
         null=True,
         blank=True,
         default="days",
-        verbose_name="Duration Unit",
+        verbose_name=_("Duration Unit"),
     )
     duration = models.IntegerField(default=1, validators=[MinValueValidator(0)])
     add_assignees = models.BooleanField(default=False)
@@ -223,7 +230,9 @@ class Objective(HorillaModel):
         verbose_name=_("Company"),
         on_delete=models.CASCADE,
     )
-    self_employee_progress_update = models.BooleanField(default=True)
+    self_employee_progress_update = models.BooleanField(
+        default=True, verbose_name=_("Self employee progress update")
+    )
     objects = HorillaCompanyManager()
 
     class Meta:
@@ -629,9 +638,15 @@ class EmployeeKeyResult(models.Model):
     )
     created_at = models.DateField(auto_now_add=True, blank=True, null=True)
     updated_at = models.DateField(auto_now=True, null=True, blank=True)
-    start_value = models.IntegerField(null=True, blank=True, default=0)
-    current_value = models.IntegerField(null=True, blank=True, default=0)
-    target_value = models.IntegerField(null=True, blank=True, default=0)
+    start_value = models.IntegerField(
+        null=True, blank=True, default=0, verbose_name=_("Start Value")
+    )
+    current_value = models.IntegerField(
+        null=True, blank=True, default=0, verbose_name=_("Current Value")
+    )
+    target_value = models.IntegerField(
+        null=True, blank=True, default=0, verbose_name=_("Target Value")
+    )
     start_date = models.DateField(null=True, blank=True)
     end_date = models.DateField(null=True, blank=True)
     history = HorillaAuditLog(bases=[HorillaAuditInfo])
@@ -888,7 +903,7 @@ class QuestionTemplate(HorillaModel):
     """question template creation"""
 
     question_template = models.CharField(
-        max_length=100, null=False, blank=False, unique=True, verbose_name="Title"
+        max_length=100, null=False, blank=False, unique=True, verbose_name=_("Title")
     )
     company_id = models.ManyToManyField(Company, blank=True, verbose_name=_("Company"))
 
@@ -1149,12 +1164,12 @@ class Feedback(HorillaModel):
         )
 
         title_text = (
-            "Due today"
+            _("Due today")
             if self.end_date == current_date
             else (
-                f"Over due by {abs(date_diff)} days"
+                _("Over due by %(days)s days") % {"days": abs(date_diff)}
                 if self.end_date < current_date
-                else f"Due in {date_diff} days"
+                else _("Due in %(days)s days") % {"days": date_diff}
             )
         )
 
@@ -1396,7 +1411,11 @@ class Meetings(HorillaModel):
         ),
     )
     question_template = models.ForeignKey(
-        QuestionTemplate, on_delete=models.PROTECT, null=True, blank=True
+        QuestionTemplate,
+        on_delete=models.PROTECT,
+        null=True,
+        blank=True,
+        verbose_name=_("Question Template"),
     )
     response = models.TextField(null=True, blank=True)
     show_response = models.BooleanField(default=False, editable=False)
@@ -1605,7 +1624,7 @@ class EmployeeBonusPoint(HorillaModel):
         blank=True,
         verbose_name="Employee",
     )
-    bonus_point = models.IntegerField(default=0)
+    bonus_point = models.IntegerField(default=0, verbose_name=_("Bonus Points"))
     instance = models.CharField(max_length=150, null=True, blank=True)
     based_on = models.CharField(max_length=150)
     bonus_point_id = models.ForeignKey(
@@ -1678,15 +1697,31 @@ class BonusPointSetting(models.Model):
     ]
     model = models.CharField(max_length=100, choices=MODEL_CHOICES, null=False)
     applicable_for = models.CharField(
-        max_length=50, choices=APPLECABLE_FOR, null=True, blank=True
+        max_length=50,
+        choices=APPLECABLE_FOR,
+        null=True,
+        blank=True,
+        verbose_name=_("Applicable For"),
     )
-    bonus_for = models.CharField(max_length=25, choices=BONUS_FOR)
-    field_1 = models.CharField(max_length=25, choices=FIELD_1, null=True, blank=True)
+    bonus_for = models.CharField(
+        max_length=25, choices=BONUS_FOR, verbose_name=_("Bonus For")
+    )
+    field_1 = models.CharField(
+        max_length=25, choices=FIELD_1, null=True, blank=True, verbose_name=_("Field 1")
+    )
     conditions = models.CharField(
-        max_length=25, choices=CONDITIONS, null=True, blank=True
+        max_length=25,
+        choices=CONDITIONS,
+        null=True,
+        blank=True,
+        verbose_name=_("Conditions"),
     )
-    field_2 = models.CharField(max_length=25, choices=FIELD_2, null=True, blank=True)
-    points = models.IntegerField(default=0, validators=[MinValueValidator(0)])
+    field_2 = models.CharField(
+        max_length=25, choices=FIELD_2, null=True, blank=True, verbose_name=_("Field 2")
+    )
+    points = models.IntegerField(
+        default=0, validators=[MinValueValidator(0)], verbose_name=_("Points")
+    )
     is_active = models.BooleanField(default=True)
 
     def get_model_display(self):
