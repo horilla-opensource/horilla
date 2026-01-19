@@ -744,22 +744,22 @@ class CandidateNav(HorillaNavView):
                 "type": "list",
                 "icon": "list-outline",
                 "url": reverse("list-candidate"),
-                "attrs": """
-                            title='List'
+                "attrs": f"""
+                            title='{_("List")}'
                             """,
             },
             {
                 "type": "card",
                 "icon": "grid-outline",
                 "url": reverse("card-candidate"),
-                "attrs": """
-                            title='Card'
+                "attrs": f"""
+                            title='{_("Card")}'
                             """,
             },
         ]
         self.filter_instance = CandidateFilter()
 
-    nav_title = "Candidates"
+    nav_title = _("Candidates")
     filter_body_template = "cbv/candidates/filter.html"
     filter_form_context_name = "form"
     search_swap_target = "#listContainer"

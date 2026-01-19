@@ -8,7 +8,7 @@
         <input class="oh-tabs__movable-title oh-table__editable-input" value="{{stage.stage}}" readonly />
 
         <div onclick="event.stopPropagation()" class="oh-dropdown" x-data="{open: false}">
-          <button class="oh-btn oh-stop-prop oh-btn--transparent oh-accordion-meta__btn" @click="open = !open" @click.outside="open = false" title=" Actions">
+          <button class="oh-btn oh-stop-prop oh-btn--transparent oh-accordion-meta__btn" @click="open = !open" @click.outside="open = false" title=" {% trans 'Actions' %}">
               <ion-icon name="ellipsis-vertical" role="img" class="md hydrated" aria-label="ellipsis vertical"></ion-icon>
             </button>
             <div class="oh-dropdown__menu oh-dropdown__menu--right" x-show="open">

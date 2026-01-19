@@ -626,7 +626,7 @@ class Candidate(HorillaModel):
     ]
     name = models.CharField(max_length=100, null=True, verbose_name=_("Name"))
     profile = models.ImageField(upload_to=upload_path, null=True)  # 853
-    portfolio = models.URLField(max_length=200, blank=True)
+    portfolio = models.URLField(max_length=200, blank=True, verbose_name=_("Portfolio"))
     recruitment_id = models.ForeignKey(
         Recruitment,
         on_delete=models.PROTECT,
@@ -672,6 +672,7 @@ class Candidate(HorillaModel):
         validators=[
             validate_pdf,
         ],
+        verbose_name=_("Resume"),
     )
     referral = models.ForeignKey(
         Employee,
@@ -859,9 +860,9 @@ class Candidate(HorillaModel):
         archive status
         """
         if self.is_active:
-            return "Archive"
+            return _("Archive")
         else:
-            return "Un-Archive"
+            return _("Un-Archive")
 
     def resume_pdf(self):
         """
@@ -1335,7 +1336,7 @@ class RejectedCandidate(HorillaModel):
 
     def __str__(self) -> str:
         reasons = ", ".join(self.reject_reason_id.values_list("title", flat=True))
-        return f"{self.candidate_id} - {reasons if reasons else 'No Reason'}"
+        return f"{self.candidate_id} - {reasons if reasons else _('No Reason')}"
 
 
 class StageFiles(HorillaModel):
@@ -1820,11 +1821,13 @@ FORMATS = [
 
 
 class CandidateDocumentRequest(HorillaModel):
-    title = models.CharField(max_length=100)
+    title = models.CharField(max_length=100, verbose_name=_("Title"))
     candidate_id = models.ManyToManyField(Candidate)
-    format = models.CharField(choices=FORMATS, max_length=10)
-    max_size = models.IntegerField(blank=True, null=True)
-    description = models.TextField(blank=True, null=True)
+    format = models.CharField(choices=FORMATS, max_length=10, verbose_name=_("Format"))
+    max_size = models.IntegerField(
+        blank=True, null=True, verbose_name=_("Max size (In MB)")
+    )
+    description = models.TextField(blank=True, null=True, verbose_name=_("Description"))
     objects = HorillaCompanyManager(
         related_company_field="employee_id__employee_work_info__company_id"
     )
@@ -1834,16 +1837,20 @@ class CandidateDocumentRequest(HorillaModel):
 
 
 class CandidateDocument(HorillaModel):
-    title = models.CharField(max_length=250)
+    title = models.CharField(max_length=250, verbose_name=_("Title"))
     candidate_id = models.ForeignKey(
-        Candidate, on_delete=models.PROTECT, verbose_name="Candidate"
+        Candidate, on_delete=models.PROTECT, verbose_name=_("Candidate")
     )
     document_request_id = models.ForeignKey(
         CandidateDocumentRequest, on_delete=models.PROTECT, null=True
     )
     document = models.FileField(upload_to=upload_path, null=True)
-    status = models.CharField(choices=STATUS, max_length=10, default="requested")
-    reject_reason = models.TextField(blank=True, null=True, max_length=255)
+    status = models.CharField(
+        choices=STATUS, max_length=10, default="requested", verbose_name=_("Status")
+    )
+    reject_reason = models.TextField(
+        blank=True, null=True, max_length=255, verbose_name=_("Reject Reason")
+    )
 
     def __str__(self):
         return f"{self.candidate_id} - {self.title}"

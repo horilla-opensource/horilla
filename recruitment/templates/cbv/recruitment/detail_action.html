@@ -2,7 +2,7 @@
 <div class="oh-btn-group" style="width: 100%;">
 
     {% if perms.recruitment.change_recruitment %}
-    <a hx-get="{% url 'recruitment-update' instance.id %}" hx-target='#genericModalBody' hx-swap='innerHTML' data-toggle='oh-modal-toggle' data-target='#genericModal'  class="oh-btn oh-btn--info w-50 " title="Edit">
+    <a hx-get="{% url 'recruitment-update' instance.id %}" hx-target='#genericModalBody' hx-swap='innerHTML' data-toggle='oh-modal-toggle' data-target='#genericModal'  class="oh-btn oh-btn--info w-50 " title="{% trans 'Edit' %}">
         <button style="
         background: none;
         color: inherit;
