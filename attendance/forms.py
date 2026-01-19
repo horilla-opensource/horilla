@@ -213,7 +213,7 @@ class AttendanceForm(BaseModelForm):
         widget=HorillaMultiSelectWidget(
             filter_route_name="employee-widget-filter",
             filter_class=EmployeeFilter,
-            filter_instance_contex_name="f",
+            filter_instance_context_name="f",
             filter_template_path="employee_filters.html",
         ),
         label=_("Employees"),
@@ -531,8 +531,9 @@ class AttendanceValidationConditionForm(forms.ModelForm):
             attrs={"class": "oh-input w-100", "placeholder": "09:00"}
         ),
         label=format_html(
+            "<span title='{}'>{}</span>",
             _(
-                "<span title='Do not Auto Validate Attendance if an Employee Works More Than this Amount of Duration'>{}</span>"
+                "Do not Auto Validate Attendance if an Employee Works More Than this Amount of Duration"
             ),
             _("Worked Hours(At Work) Auto Approve Till"),
         ),
