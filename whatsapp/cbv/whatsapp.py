@@ -4,7 +4,7 @@ from django.contrib import messages
 from django.http import HttpResponse
 from django.shortcuts import render
 from django.urls import reverse
-from django.utils.translation import gettext_lazy as _trans
+from django.utils.translation import gettext_lazy as _
 
 from horilla_views.generic.cbv.views import (
     HorillaFormView,
@@ -24,11 +24,11 @@ class CredentialListView(HorillaListView):
     show_filter_tags = False
 
     columns = [
-        (_trans("Phone Number"), "meta_phone_number"),
-        (_trans("Phone Number ID"), "meta_phone_number_id"),
-        (_trans("Bussiness ID"), "meta_business_id"),
-        (_trans("Webhook Token"), "get_webhook_token"),
-        (_trans("Token"), "token_render"),
+        (_("Phone Number"), "meta_phone_number"),
+        (_("Phone Number ID"), "meta_phone_number_id"),
+        (_("Bussiness ID"), "meta_business_id"),
+        (_("Webhook Token"), "get_webhook_token"),
+        (_("Token"), "token_render"),
     ]
     # sortby_mapping = [("Bussiness ID", "meta_business_id")]
     row_attrs = """
@@ -40,9 +40,10 @@ class CredentialListView(HorillaListView):
         super().__init__(*args, **kwargs)
         self.search_url = reverse("whatsapp-credential-list")
         self.view_id = "CredentialList"
+        delete_confirm = _("Are you sure you want to delete this credential?")
         self.actions = [
             {
-                "action": _trans("Edit"),
+                "action": _("Edit"),
                 "icon": "create-outline",
                 "attrs": """
                         class="oh-btn oh-btn--light-bkg w-100"
@@ -53,7 +54,7 @@ class CredentialListView(HorillaListView):
                         """,
             },
             {
-                "action": _trans("Test test message"),
+                "action": _("Send Test Message"),
                 "icon": "link-outline",
                 "attrs": """
                         class="oh-btn oh-btn--light-bkg w-100"
@@ -64,13 +65,13 @@ class CredentialListView(HorillaListView):
                         """,
             },
             {
-                "action": _trans("Delete"),
+                "action": _("Delete"),
                 "icon": "trash-outline",
-                "attrs": """
+                "attrs": f"""
                         class="oh-btn oh-btn--danger-outline w-100"
-                        hx-confirm = "Are you sure you want to delete this credential?"
-                        hx-post = "{get_delete_url}"
-                        hx-target = "#credential{get_instance}"
+                        hx-confirm = "{delete_confirm}"
+                        hx-post = "{{get_delete_url}}"
+                        hx-target = "#credential{{get_instance}}"
                         hx-swap = "outerHTML"
                         """,
             },
@@ -94,7 +95,7 @@ class CredentialNav(HorillaNavView):
                                 hx-get = "{reverse('whatsapp-credential-create')}"
                             """
 
-    nav_title = _trans("Whatsapp Credentials")
+    nav_title = _("Whatsapp Credentials")
     search_swap_target = "#listContainer"
     filter_instance = CredentialsViewFilter()
 
@@ -102,24 +103,20 @@ class CredentialNav(HorillaNavView):
 class CredentialForm(HorillaFormView):
     model = WhatsappCredientials
     form_class = WhatsappForm
-    new_display_title = _trans("Create whatsapp")
+    new_display_title = _("Create whatsapp")
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
         if self.form.instance.pk:
-            self.form_class.verbose_name = _trans("Update Credentials")
+            self.form_class.verbose_name = _("Update Credentials")
         return context
 
     def form_valid(self, form: WhatsappForm) -> HttpResponse:
         if form.is_valid():
             if self.form.instance.pk:
-                messages.success(
-                    self.request, _trans("Crediential updated successfully")
-                )
+                messages.success(self.request, _("Crediential updated successfully"))
             else:
-                messages.success(
-                    self.request, _trans("Crediential created successfully")
-                )
+                messages.success(self.request, _("Crediential created successfully"))
             form.save()
             return self.HttpResponse()
         return super().form_valid(form)
@@ -140,12 +137,12 @@ def send_test_message(request):
     message = "This is a test message"
     if request.method == "POST":
         number = request.POST.get("number")
-        response = send_text_message(number, _trans(message))
+        response = send_text_message(number, _(message))
         print(response)
         if response:
-            messages.success(request, _trans("Message sent successfully"))
+            messages.success(request, _("Message sent successfully"))
         else:
-            messages.error(request, _trans("message not send"))
+            messages.error(request, _("message not send"))
         return HttpResponse("<script>window.location.reload()</script>")
 
     return render(request, "whatsapp/send_test_message_form.html")

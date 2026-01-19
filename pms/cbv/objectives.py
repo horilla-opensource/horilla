@@ -696,19 +696,20 @@ class EmployeeObjectiveKeyResultDetailListView(HorillaListView):
                     """,
                 },
             )
+        delete_confirm = _("Are you sure you want to delete	this Key result?")
         if self.request.user.has_perm("pms.delete_employeekeyresult"):
             self.actions.append(
                 {
                     "action": _("Delete"),
                     "icon": "trash-outline",
-                    "attrs": """
-                hx-get='{get_delete_url}'
-                hx-confirm="Are you sure you want to delete	this Key result?"
-                hx-swap="none"
-                class="oh-btn oh-btn--danger-outline w-100"
-                hx-on-htmx-after-request= "window.location.reload();"
-                style="cursor: pointer;"
-                """,
+                    "attrs": f"""
+                        hx-get='{{get_delete_url}}'
+                        hx-confirm="{delete_confirm}"
+                        hx-swap="none"
+                        class="oh-btn oh-btn--danger-outline w-100"
+                        hx-on-htmx-after-request= "window.location.reload();"
+                        style="cursor: pointer;"
+                    """,
                 }
             )
 

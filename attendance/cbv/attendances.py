@@ -576,17 +576,17 @@ class PenaltyAccountListView(HorillaListView):
         (_("Penalty Type"), "penalty_type_col"),
     ]
 
+    confirm_text = _("Are you sure you want to delete this penalty?")
     actions = [
         {
             "action": _("Delete"),
             "icon": "trash-outline",
-            "attrs": """
+            "attrs": f"""
                         class="oh-btn oh-btn--light-bkg w-100 text-danger"
-                        hx-confirm="Are you sure you want to delete this penalty?"
-                        hx-post="{get_delete_url}"
-                        hx-target="#penaltyTr{get_delete_instance}"
+                        hx-confirm="{confirm_text}"
+                        hx-post="{{get_delete_url}}"
+                        hx-target="#penaltyTr{{get_delete_instance}}"
                         hx-swap="delete"
-
                       """,
         }
     ]
