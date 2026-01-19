@@ -11,7 +11,7 @@
         const button_container = `
             <button class="oh-btn oh-btn--info mt-2 mr-2 pl-4 pr-5 oh-btn--w-100-resp"
                 hx-post="${deleteUrl}"
-                hx-confirm="Are you sure you want to cancel this rejection?"
+                hx-confirm="{% trans 'Are you sure you want to cancel this rejection?' %}"
                 onclick="event.preventDefault(); event.stopPropagation();">
                 {% trans 'Cancel Rejection' %}
             </button>
