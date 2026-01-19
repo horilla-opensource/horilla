@@ -14,7 +14,7 @@
 {% if late_in_early_out %}
     <div class="oh-modal__dialog-header">
         <h2 class="oh-modal__dialog-title m-0" id="objectDetailsModalLabel">
-            {% trans "Details 123231" %}
+            {% trans "Details" %}
         </h2>
         <button class="oh-modal__close" aria-label="Close">
             <ion-icon name="close-outline"></ion-icon>
@@ -44,7 +44,7 @@
                 </div>
                 <div class="oh-timeoff-modal__profile-info">
                     <span class="oh-timeoff-modal__user fw-bold">{{late_in_early_out.employee_id}}</span>
-                    <span class="oh-timeoff-modal__user m-0" style="font-size: 18px; color: #4d4a4a">
+                    <span class="oh-timeoff-modal__user m-0" style="font-size: 15px; color: #4d4a4a">
                         {{late_in_early_out.employee_id.employee_work_info.department_id}} /
                         {{late_in_early_out.employee_id.employee_work_info.job_position_id}}</span>
                 </div>
