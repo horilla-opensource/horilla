@@ -315,7 +315,7 @@ class RecruitmentCreationForm(BaseModelForm):
                 widget=HorillaMultiSelectWidget(
                     filter_route_name="employee-widget-filter",
                     filter_class=EmployeeFilter,
-                    filter_instance_contex_name="f",
+                    filter_instance_context_name="f",
                     filter_template_path="employee_filters.html",
                     required=True,
                 ),
@@ -388,7 +388,7 @@ class StageCreationForm(BaseModelForm):
                 widget=HorillaMultiSelectWidget(
                     filter_route_name="employee-widget-filter",
                     filter_class=EmployeeFilter,
-                    filter_instance_contex_name="f",
+                    filter_instance_context_name="f",
                     filter_template_path="employee_filters.html",
                     required=True,
                 ),
@@ -421,7 +421,7 @@ class CandidateCreationForm(BaseModelForm):
             if self.instance is not None:
                 self.fields["job_position_id"] = forms.ModelChoiceField(
                     queryset=self.instance.recruitment_id.open_positions.all(),
-                    label="Job Position",
+                    label=_("Job Position"),
                 )
         self.fields["recruitment_id"].widget.attrs = {"data-widget": "ajax-widget"}
         self.fields["job_position_id"].widget.attrs = {"data-widget": "ajax-widget"}
