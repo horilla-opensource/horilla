@@ -102,7 +102,7 @@
 
                                     <div class="oh-sticky-table__td" onclick="event.stopPropagation();">
                                         <button type="button" hx-get="{% url 'view-shift-comment' shift_request.id %}"
-                                            hx-target="#commentContainer" data-target='#activitySidebar' title="View Comment"
+                                            hx-target="#commentContainer" data-target='#activitySidebar' title="{% trans 'View Comment' %}"
                                             class="oh-btn oh-btn--light oh-activity-sidebar__open w-100"
                                             style="flex: 1 0 auto; width:20px;height: 40.68px; padding: 0;"
                                             onclick="event.stopPropagation()">
@@ -374,7 +374,7 @@
                             <div class="oh-sticky-table__td" onclick="event.stopPropagation();">
 
                                 <button type="button" hx-get="{% url 'view-shift-comment' shift_request.id %}"
-                                    hx-target="#commentContainer" data-target='#activitySidebar' title="View Comment"
+                                    hx-target="#commentContainer" data-target='#activitySidebar' title="{% trans 'View Comment' %}"
                                     class="oh-btn oh-btn--light oh-activity-sidebar__open w-100"
                                     style="flex: 1 0 auto; width:20px;height: 40.68px; padding: 0;"
                                     onclick="event.stopPropagation()">
