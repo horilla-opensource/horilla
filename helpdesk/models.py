@@ -5,6 +5,7 @@ from django.db import models
 from django.forms import ValidationError
 from django.middleware.csrf import get_token
 from django.urls import reverse_lazy
+from django.utils.text import format_lazy
 from django.utils.translation import gettext_lazy as _
 
 from base.horilla_company_manager import HorillaCompanyManager
@@ -18,31 +19,31 @@ from horilla_audit.models import HorillaAuditInfo, HorillaAuditLog
 from horilla_views.cbv_methods import render_template
 
 PRIORITY = [
-    ("low", "Low"),
-    ("medium", "Medium"),
-    ("high", "High"),
+    ("low", _("Low")),
+    ("medium", _("Medium")),
+    ("high", _("High")),
 ]
 MANAGER_TYPES = [
-    ("department", "Department"),
-    ("job_position", "Job Position"),
-    ("individual", "Individual"),
+    ("department", _("Department")),
+    ("job_position", _("Job Position")),
+    ("individual", _("Individual")),
 ]
 
 TICKET_TYPES = [
-    ("suggestion", "Suggestion"),
-    ("complaint", "Complaint"),
-    ("service_request", "Service Request"),
-    ("meeting_request", "Meeting Request"),
-    ("anounymous_complaint", "Anonymous Complaint"),
-    ("others", "Others"),
+    ("suggestion", _("Suggestion")),
+    ("complaint", _("Complaint")),
+    ("service_request", _("Service Request")),
+    ("meeting_request", _("Meeting Request")),
+    ("anounymous_complaint", _("Anonymous Complaint")),
+    ("others", _("Others")),
 ]
 
 TICKET_STATUS = [
-    ("new", "New"),
-    ("in_progress", "In Progress"),
-    ("on_hold", "On Hold"),
-    ("resolved", "Resolved"),
-    ("canceled", "Canceled"),
+    ("new", _("New")),
+    ("in_progress", _("In Progress")),
+    ("on_hold", _("On Hold")),
+    ("resolved", _("Resolved")),
+    ("canceled", _("Canceled")),
 ]
 
 
@@ -136,15 +137,20 @@ class Ticket(HorillaModel):
 
     title = models.CharField(max_length=50)
     employee_id = models.ForeignKey(
-        Employee, on_delete=models.PROTECT, related_name="ticket", verbose_name="Owner"
+        Employee,
+        on_delete=models.PROTECT,
+        related_name="ticket",
+        verbose_name=_("Owner"),
     )
     ticket_type = models.ForeignKey(
         TicketType,
         on_delete=models.PROTECT,
-        verbose_name="Ticket Type",
+        verbose_name=_("Ticket Type"),
     )
     description = models.TextField(max_length=255)
-    priority = models.CharField(choices=PRIORITY, max_length=100, default="low")
+    priority = models.CharField(
+        choices=PRIORITY, max_length=100, default="low", verbose_name=_("Priority")
+    )
     created_date = models.DateField(auto_now_add=True)
     resolved_date = models.DateField(blank=True, null=True)
     assigning_type = models.CharField(
@@ -203,14 +209,20 @@ class Ticket(HorillaModel):
             return ticket_id
 
         if self.deadline == today:
-            due_text = "Due today"
+            due_text = _("Due today")
         else:
             days_diff = (self.deadline - today).days
             if days_diff < 0:
                 days_diff = abs(days_diff)
-                due_text = f"Overdue by {days_diff} days"
+                due_text = format_lazy(
+                    _("Overdue by {} days"),
+                    days_diff,
+                )
             else:
-                due_text = f"Due in {days_diff} days"
+                due_text = format_lazy(
+                    _("Due in {} days"),
+                    days_diff,
+                )
 
         if self.deadline < today:
             icon_class = "danger"
