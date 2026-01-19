@@ -99,9 +99,9 @@
 									name="enable_block_account"
 									onchange="$(this).closest('form').find('input[type=submit]').click()"
 									{% if note.candidate_can_view %}
-										title="Candidate can view this note" checked
+										title="{% trans 'Candidate can view this note' %}" checked
 									{% else %}
-										title="Candidate can't view this note"
+										title="{% trans "Candidate can't view this note" %}"
 									{% endif %}
 								/>
 								<input type="submit" hidden/>
@@ -137,7 +137,7 @@
 
 						>
 						{% csrf_token %}
-						<label for="addFile_{{note.id}}" title="Add Files"
+						<label for="addFile_{{note.id}}" title="{% trans 'Add Files' %}"
 							><ion-icon
 								name="add-outline"
 								style="font-size: 24px"

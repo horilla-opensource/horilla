@@ -624,7 +624,7 @@
                                             <button class="note-close-btn"
                                                 aria-label="Close note"
                                                 hx-get="{% url 'note-delete-individual' note.id %}"
-                                                title="delete" hx-swap="delete"
+                                                title="{% trans 'delete' %}" hx-swap="delete"
                                                 hx-target="closest .card"
                                                 hx-on:click="setTimeout(() => {reloadMessage(this);},250);"
                                             >
