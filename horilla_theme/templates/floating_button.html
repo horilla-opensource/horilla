@@ -8,11 +8,11 @@
         width: 40px;
         height: 40px;
         border-radius: 0 30px 30px 0;
-        box-shadow: 0px 3px 10px rgba(0, 0, 0, 0.16), 0px 3px 10px rgba(0, 0, 0, 0.16);
+        {% comment %} box-shadow: 0px 3px 10px rgba(0, 0, 0, 0.16), 0px 3px 10px rgba(0, 0, 0, 0.16); {% endcomment %}
         background-color: {{ company_obj.companytheme_set.first.theme.primary_600|default:"#ff3b38" }};
         position: fixed;
         bottom: 40px;
-        left: 80px;
+        left: 78px;
         z-index: 9;
         transition: all 0.3s ease;
     }

@@ -3,7 +3,7 @@
 {% load horillafilters %}
 {% get_company as company_obj %}
 <!DOCTYPE html>
-<html>
+<html class="{% if request.session.theme == 'dark' %}dark{% endif %}">
     <head>
         <meta charset="UTF-8" />
         <meta name="viewport" content="width=device-width, initial-scale=1.0" />
@@ -20,12 +20,16 @@
         <link rel="icon" type="image/png" sizes="16x16"
             href="{% if white_label_company.icon %}{{white_label_company.icon.url}} {% else %}{% static 'favicons/favicon-16x16.png' %}{% endif %}">
 
-            <script src="{% static "horilla_theme/assets/js/tailwindcdn.js" %}"></script>
-            {% include "horilla_theme/components/header_scripts.html" %}
+        <script src="{% static "horilla_theme/assets/js/tailwindcdn.js" %}"></script>
+        {% include "horilla_theme/components/header_scripts.html" %}
 
         <link
             rel="stylesheet"
             href="{% static 'cdn/font-awsome/css/all.min.css' %}"
+        />
+        <link
+            rel="stylesheet"
+            href="{% static 'horilla_theme/assets/css/dark.css' %}"
         />
         <link
             href="{% static 'cdn/googleapi/css/inter-font-style.css' %}"
@@ -107,7 +111,7 @@
         {% endblock %}
     </head>
 
-    <body class="bg-secondary-50 font-[Inter,_sans-serif] overflow-hidden">
+    <body class="bg-secondary-50 font-[Inter,_sans-serif] overflow-hidden {% if request.session.theme == 'dark' %}dark{% endif %}">
         {% get_current_language_bidi as LANGUAGE_BIDI %}
         {% get_current_language as LANGUAGE_CODE %}
         <div hidden id="statiUrl" data-url='{% static "" %}'></div>

@@ -32,27 +32,27 @@
 <div
     class="dropdown-content absolute z-10 bg-white rounded-lg [box-shadow:0px_0px_20px_0px_rgb(0_0_0_/_8%)] min-w-[170px] py-2 px-4 right-0"
 >
-    <ul class="text-sm">
+    <ul>
         {% if request.session.selected_company == "all" or request.user.employee_get.employee_work_info.company_id.id == request.session.selected_company|default:"-1"|add:"0" %}
             <li>
                 <button
                     class="py-1.5 hover:text-primary-600 transition duration-300 text-sm gap-4 items-center flex w-full"
                 >
-                    <a href="{% url 'employee-profile' %}">{% trans "My Profile" %}</a>
+                    <a class="text-[13px]" href="{% url 'employee-profile' %}">{% trans "My Profile" %}</a>
                 </button>
             </li>
             <li>
                 <button
                     class="py-1.5 hover:text-primary-600 transition duration-300 text-sm gap-4 items-center flex w-full"
                 >
-                    <a href="{% url 'change-username' %}">{% trans "Change Username" %}</a>
+                    <a class="text-[13px]" href="{% url 'change-username' %}">{% trans "Change Username" %}</a>
                 </button>
             </li>
             <li>
                 <button
                     class="py-1.5 hover:text-primary-600 transition duration-300 text-sm gap-4 items-center flex w-full"
                 >
-                    <a href="{% url 'change-password' %}"> {% trans "Change Password" %} </a>
+                    <a class="text-[13px]" href="{% url 'change-password' %}"> {% trans "Change Password" %} </a>
                 </button>
             </li>
         {% endif %}
@@ -62,7 +62,7 @@
             <button
                 class="py-1.5 hover:text-primary-600 transition duration-300 text-sm gap-4 items-center flex w-full"
             >
-                <a href="{% url 'logout' %}"> {% trans "Logout" %} </a>
+                <a class="text-[13px]" href="{% url 'logout' %}"> {% trans "Logout" %} </a>
             </button>
         </li>
     </ul>

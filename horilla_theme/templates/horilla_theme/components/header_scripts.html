@@ -1,5 +1,38 @@
 {% load static %} {% load horillafilters %}
 {% get_company as company_obj %}
+<script>
+    document.addEventListener("DOMContentLoaded", function () {
+    var btn = document.getElementById("themeToggleButton");
+    if (!btn) return;
+
+    btn.addEventListener("click", function (e) {
+        e.preventDefault();
+
+        fetch("{% url 'toggle_theme' %}", {
+        method: "POST",
+        headers: {
+            "X-CSRFToken": "{{ csrf_token }}",
+            "X-Requested-With": "XMLHttpRequest"
+        }
+        })
+        .then(response => {
+        if (response.status === 204) {
+            // Since server stored the new theme, we just mirror it in the UI
+
+            const isDark = document.documentElement.classList.toggle("dark");
+            document.body.classList.toggle("dark", isDark);
+
+            const icon = btn.querySelector("i");
+            if (icon) {
+            icon.classList.toggle("fa-moon", !isDark);
+            icon.classList.toggle("fa-lightbulb", isDark);
+            }
+        }
+        })
+        .catch(err => console.error(err));
+    });
+    });
+</script>
 
 
 <script>
@@ -101,5 +134,6 @@
 <script src="{% static 'build/js/clearFilter.js' %}"></script>
 <script src="{% static '/cdn/alpine/alpine.min.js' %}"></script>
 <script src="{% static 'cdn/chartJs/scripts/chart.js' %}"></script>
+
 {% block header_scripts %}
 {% endblock header_scripts %}
