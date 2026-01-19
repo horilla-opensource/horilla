@@ -528,7 +528,7 @@
                                                 style="top: -6px; right: 0px; color: red; font-size: 16px; cursor: pointer;"
                                                 title="{% trans 'Delete attachment' %}"
                                                 hx-delete="{% url 'delete-ticket-document' attachment.id %}"
-                                                hx-confirm="Are you sure you want to delete this file?" hx-swap="none"
+                                                hx-confirm="{% trans 'Are you sure you want to delete this file?' %}" hx-swap="none"
                                                 hx-trigger="click" hx-headers='{"X-CSRFToken": "{{ csrf_token }}"}'
                                                 onclick="deleteFile(event);">
                                                 &times;

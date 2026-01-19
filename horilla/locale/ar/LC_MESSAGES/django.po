@@ -2,7 +2,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: horilla-hrms\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-01-13 13:01+0530\n"
+"POT-Creation-Date: 2026-01-19 12:50+0530\n"
 "PO-Revision-Date: 2025-12-18 10:26\n"
 "Last-Translator: \n"
 "Language-Team: Arabic\n"
@@ -938,6 +938,9 @@ msgstr "تاريخ الإنشاء"
 
 msgid "Penalty Type"
 msgstr "نوع الغرامة"
+
+msgid "Are you sure you want to delete this penalty?"
+msgstr "هل أنت متأكد أنك تريد حذف هذه العقوبة؟"
 
 msgid "Attendance"
 msgstr "الحضور"
@@ -5410,6 +5413,13 @@ msgstr "تم حذف الغرامة بنجاح"
 msgid "Biometric Devices"
 msgstr "الأجهزة البيومترية"
 
+#, python-format
+msgid "Do you want to %(status)s this device?"
+msgstr "هل تريد %(status)s هذا الجهاز؟"
+
+msgid "Do you want to delete this device?"
+msgstr "هل تريد حذف هذا الجهاز؟"
+
 msgid "Fetch Logs"
 msgstr "جلب سجلات الحضور"
 
@@ -6045,6 +6055,9 @@ msgstr "سجل البريد"
 msgid "History"
 msgstr "التاريخ"
 
+msgid "Are you sure you want to delete this employee tag?"
+msgstr "هل تريد حذف وسم الموظف هذا؟"
+
 msgid "Employee Tags"
 msgstr "وسوم الموظفين"
 
@@ -6077,6 +6090,10 @@ msgstr "قائمة"
 
 msgid "Card"
 msgstr "بطاقة"
+
+#, python-format
+msgid "Do you want to %(status)s this employee?"
+msgstr "هل تريد %(status)s هذا الموظف؟"
 
 msgid "Policy Creation"
 msgstr "إنشاء سياسة"
@@ -6272,8 +6289,11 @@ msgstr "فصل"
 msgid "Enable login block :"
 msgstr "تفعيل حظر الدخول:"
 
-msgid "If is enabled, employees log in will be blocked based on period of suspension or dismissal."
-msgstr "إذا تم تمكينه، سيتم حظر تسجيل دخول الموظفين بناءً على فترة الإيقاف أو الفصل."
+msgid ""
+"If is enabled, employees log in will be blocked based on period of "
+"suspension or dismissal."
+msgstr ""
+"إذا تم تمكينه، سيتم حظر تسجيل دخول الموظفين بناءً على فترة الإيقاف أو الفصل."
 
 msgid "Action Types"
 msgstr "أنواع الإجراءات"
@@ -7211,6 +7231,9 @@ msgstr "إعدادات السياج الجغرافي"
 msgid "Geofencing config created successfully."
 msgstr "تم إنشاء تكوين تحديد الموقع الجغرافي بنجاح."
 
+msgid "Are you sure you want to remove this department manager?"
+msgstr "هل تريد إزالة مدير القسم هذا؟"
+
 msgid "Manager"
 msgstr "المدير"
 
@@ -7297,6 +7320,9 @@ msgstr "قيد التقدم"
 
 msgid "New"
 msgstr "جديد"
+
+msgid "Are you sure you want to delete this tag?"
+msgstr "هل تريد حذف هذا الوسم؟"
 
 msgid "Helpdesk Tags"
 msgstr "وسوم خدمة العملاء"
@@ -7417,9 +7443,6 @@ msgstr "\"هل تريد حذف هذه التذكرة؟\""
 msgid "Till date"
 msgstr "حتى تاريخ"
 
-msgid "Are you sure you want to remove this department manager?"
-msgstr "هل تريد إزالة مدير القسم هذا؟"
-
 msgid "Are you sure you want to delete this FAQ Category?"
 msgstr "هل تريد حذف فئة الأسئلة الشائعة هذه؟"
 
@@ -7512,6 +7535,9 @@ msgstr "رفع ملف"
 
 msgid "Delete attachment"
 msgstr "حذف المرفق"
+
+msgid "Are you sure you want to delete this file?"
+msgstr "هل تريد حقاً حذف هذا الملف؟"
 
 msgid "Ticket Id"
 msgstr "معرف التذكرة"
@@ -9104,6 +9130,9 @@ msgstr "لا توجد سجلات..."
 msgid "Show managing records"
 msgstr "إظهار السجلات المدارة"
 
+msgid "Do you want to delete this offboarding user?"
+msgstr "هل تريد حذف هذا الأصل؟"
+
 msgid "Managers"
 msgstr "المدراء"
 
@@ -9176,6 +9205,9 @@ msgstr "لا توجد مهام معلقة لموظفي إنهاء الخدمة."
 
 msgid "stage"
 msgstr "المرحلة"
+
+msgid "Are you sure you want to delete this offboarding?"
+msgstr "هل أنت متأكد أنك تريد حذف إجراء إنهاء الخدمة هذا؟"
 
 msgid "There is no offboardings at this moment."
 msgstr "لا توجد عمليات إنهاء خدمة في الوقت الحالي."
@@ -9938,6 +9970,9 @@ msgstr "كشوف المرتبات"
 
 msgid "Allowance & Deduction"
 msgstr "البدل والخصم"
+
+msgid "Are you sure you want to delete this payslip auto generate?"
+msgstr "هل تريد حذف إنشاء كشف الراتب التلقائي هذا؟"
 
 msgid "Payslip creation date"
 msgstr "تاريخ إنشاء كشف الراتب"
@@ -10837,9 +10872,6 @@ msgstr "المنصب"
 msgid "All company"
 msgstr "جميع الشركات"
 
-msgid "Are you sure you want to delete this payslip auto generate?"
-msgstr "هل تريد حذف إنشاء كشف الراتب التلقائي هذا؟"
-
 msgid "Default Notice Period"
 msgstr "فترة الإشعار الافتراضية"
 
@@ -11090,6 +11122,9 @@ msgstr "النتائج الرئيسية"
 msgid "Progress Type"
 msgstr "نوع التقدم"
 
+msgid "Do you want to delete this Key result?"
+msgstr "هل تريد حذف النتيجة الرئيسية هذه؟"
+
 msgid "Create Key result"
 msgstr "إنشاء نتيجة رئيسية"
 
@@ -11173,6 +11208,9 @@ msgstr "تم تحديث النتيجة الرئيسية بنجاح."
 
 msgid "Key result assigned sucessfully."
 msgstr "تم تعيين النتيجة الرئيسية بنجاح."
+
+msgid "Are you sure you want to delete\tthis Key result?"
+msgstr "\"هل تريد حذف النتيجة الرئيسية هذه؟\""
 
 msgid "Objective"
 msgstr "الهدف"
@@ -11474,9 +11512,6 @@ msgstr "هل تريد إلغاء أرشفة هذه النتيجة الرئيسي
 
 msgid "Do you want to archive this key Result?"
 msgstr "هل تريد أرشفة هذه النتيجة الرئيسية؟"
-
-msgid "Do you want to delete this Key result?"
-msgstr "هل تريد حذف النتيجة الرئيسية هذه؟"
 
 msgid "Add MoM"
 msgstr "إضافة محضر اجتماع (MoM)"
@@ -11826,9 +11861,6 @@ msgstr " أيام"
 
 msgid "Employee Key Results"
 msgstr "النتائج الرئيسية للموظف"
-
-msgid "Are you sure you want to delete\tthis Key result?"
-msgstr "\"هل تريد حذف النتيجة الرئيسية هذه؟\""
 
 msgid "Descrption"
 msgstr "الوصف"
@@ -12526,6 +12558,9 @@ msgstr "الاستطلاع"
 msgid "Reject Reasons"
 msgstr "أسباب الرفض"
 
+msgid "Are you sure want to delete this reason?"
+msgstr "هل تريد حذف هذا السبب؟"
+
 msgid "Create reject reason"
 msgstr "إنشاء سبب رفض"
 
@@ -12711,6 +12746,9 @@ msgstr "تمت إضافة المرشح بنجاح."
 
 msgid "Skill"
 msgstr "المهارة"
+
+msgid "Are you sure want to delete this skill?"
+msgstr "هل تريد حذف هذه المهارة؟"
 
 msgid "Update Skills"
 msgstr "تحديث المهارات"
@@ -12946,6 +12984,9 @@ msgstr "تم تحويل المرشح "
 
 msgid "To Skill zone"
 msgstr "إلى منطقة المهارات"
+
+msgid "Are you sure you want to cancel this rejection?"
+msgstr "هل أنت متأكد أنك تريد إلغاء هذا الرفض؟"
 
 msgid "Cancel Rejection"
 msgstr "إلغاء الرفض"
@@ -13284,12 +13325,6 @@ msgstr "إظهار التقييم"
 msgid ""
 "By enabling the feature candidates can view their recruitment overall rating"
 msgstr "بتمكين الميزة، يمكن للمرشحين رؤية تقييمهم الإجمالي للتوظيف"
-
-msgid "Are you sure want to delete this reason?"
-msgstr "هل تريد حذف هذا السبب؟"
-
-msgid "Are you sure want to delete this skill?"
-msgstr "هل تريد حذف هذه المهارة؟"
 
 msgid "'s Skill Zones"
 msgstr "مناطق المهارة لـ"
@@ -13939,14 +13974,53 @@ msgstr "الصفحة السابقة"
 msgid "Next Page"
 msgstr "الصفحة التالية"
 
-msgid "Create Message Template and Flows"
-msgstr "إنشاء قالب رسالة ومسارات"
+msgid "Phone Number"
+msgstr "رقم الهاتف"
+
+msgid "Phone Number ID"
+msgstr "معرف رقم الهاتف"
+
+msgid "Bussiness ID"
+msgstr "معرف العمل"
+
+msgid "Webhook Token"
+msgstr "رمز Webhook"
+
+msgid "Token"
+msgstr "الرمز المميز"
+
+msgid "Are you sure you want to delete this credential?"
+msgstr "هل أنت متأكد أنك تريد حذف بيانات الاعتماد هذه؟"
 
 msgid "Send Test Message"
 msgstr "إرسال رسالة اختبار"
 
+msgid "Create whatsapp"
+msgstr "إنشاء واتساب"
+
+msgid "Update Credentials"
+msgstr "تحديث بيانات الاعتماد"
+
+msgid "Crediential updated successfully"
+msgstr "تم تحديث بيانات الاعتماد بنجاح"
+
+msgid "Crediential created successfully"
+msgstr "تم إنشاء بيانات الاعتماد بنجاح"
+
+msgid "Message sent successfully"
+msgstr "تم إرسال الرسالة بنجاح"
+
+msgid "message not send"
+msgstr "لم يتم إرسال الرسالة"
+
+msgid "Create Message Template and Flows"
+msgstr "إنشاء قالب رسالة ومسارات"
+
 msgid "Phone number"
 msgstr "رقم الهاتف"
+
+#~ msgid "Test test message"
+#~ msgstr "إرسال رسالة اختبار"
 
 #~ msgid "Add more managers.. 321"
 #~ msgstr "إضافة المزيد من المديرين.. 321"
@@ -14424,9 +14498,6 @@ msgstr "رقم الهاتف"
 #~ msgid "Comments of - "
 #~ msgstr "تعليقات - "
 
-#~ msgid "Are you sure you want to delete this comment?"
-#~ msgstr "هل تريد حذف هذا التعليق؟"
-
 #~ msgid "Tracking ID"
 #~ msgstr "رقم التتبع"
 
@@ -14463,9 +14534,6 @@ msgstr "رقم الهاتف"
 
 #~ msgid "Submit Application"
 #~ msgstr "إرسال الطلب"
-
-#~ msgid "Are you sure you want to delete this note?"
-#~ msgstr "هل تريد حذف هذه الملاحظة؟"
 
 #~ msgid "No rating found."
 #~ msgstr "لم يتم العثور على تقييم."
@@ -14754,21 +14822,6 @@ msgstr "رقم الهاتف"
 
 #~ msgid "'s Scheduled Interviews"
 #~ msgstr "المقابلات المجدولة لـ"
-
-#~ msgid "Phone Number"
-#~ msgstr "رقم الهاتف"
-
-#~ msgid "Phone Number ID"
-#~ msgstr "معرف رقم الهاتف"
-
-#~ msgid "Business ID"
-#~ msgstr "معرف العمل"
-
-#~ msgid "Webhook Token"
-#~ msgstr "رمز Webhook"
-
-#~ msgid "Token"
-#~ msgstr "الرمز المميز"
 
 #~ msgid "Whatsapp Integration"
 #~ msgstr "تكامل WhatsApp"

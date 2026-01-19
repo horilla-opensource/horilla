@@ -177,6 +177,7 @@ class KeyResultCardView(HorillaCardView):
                 data-toggle="oh-modal-toggle"
                 """
 
+    delete_confirm = _("Do you want to delete this Key result?")
     actions = [
         {
             "action": _("Edit"),
@@ -190,10 +191,10 @@ class KeyResultCardView(HorillaCardView):
         },
         {
             "action": _("Delete"),
-            "attrs": """
+            "attrs": f"""
                     class="oh-dropdown__link"
-                    hx-confirm="Do you want to delete this Key result?"
-                    hx-post='{get_delete_url}'
+                    hx-confirm="{delete_confirm}"
+                    hx-post='{{get_delete_url}}'
                     hx-swap="innerHTML"
                     hx-target="#key-result-container"
                 """,

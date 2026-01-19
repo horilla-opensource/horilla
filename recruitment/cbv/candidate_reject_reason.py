@@ -46,6 +46,7 @@ class RejectReasonListView(HorillaListView):
         (_("Description"), "description"),
     ]
 
+    delete_confirm = _("Are you sure want to delete this reason?")
     actions = [
         {
             "action": _("Edit"),
@@ -61,12 +62,12 @@ class RejectReasonListView(HorillaListView):
         {
             "action": _("Delete"),
             "icon": "trash-outline",
-            "attrs": """
+            "attrs": f"""
                     id = "delete-reject"
                     class="oh-btn oh-btn--danger-outline oh-btn--light-bkg w-50"
-                    hx-confirm="Are you sure want to delete this reason?"
-                    hx-target="#rejectReasonTr{get_instance_id}"
-                    hx-post="{get_delete_url}"
+                    hx-confirm="{delete_confirm}"
+                    hx-target="#rejectReasonTr{{get_instance_id}}"
+                    hx-post="{{get_delete_url}}"
                     hx-swap="delete"
                     """,
         },

@@ -546,6 +546,9 @@ class EmployeeCard(HorillaCardView):
     def __init__(self, **kwargs: Any) -> None:
         super().__init__(**kwargs)
         self.search_url = reverse("employees-card")
+        employee_confirm = _("Do you want to %(status)s this employee?") % {
+            "status": "{archive_status}",
+        }
         self.request.all_edit_accessible_employees = (
             DefaultAccessibility.objects.filter(feature="profile_edit").values_list(
                 "employees__pk", flat=True
@@ -568,9 +571,9 @@ class EmployeeCard(HorillaCardView):
                 {
                     "action": "archive_status",
                     "accessibility": "employee.cbv.accessibility.action_accessible",
-                    "attrs": """
-                    hx-confirm="Do you want to {archive_status} this employee?"
-                    hx-post="{get_archive_url}"
+                    "attrs": f"""
+                    hx-confirm="{employee_confirm}"
+                    hx-post="{{get_archive_url}}"
                     class="oh-dropdown__link"
                     hx-target="#relatedModel"
                     """,

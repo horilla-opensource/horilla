@@ -94,7 +94,7 @@
                     {% endif %}
                     {% if perms.offboarding.delete_offboarding %}
                     <li class="oh-dropdown__item">
-                      <form hx-confirm = 'Are you sure you want to delete this offboarding?' hx-post="{% url "delete-offboarding" offboarding.offboarding.id %}" hx-target="#offboardingContainer">
+                      <form hx-confirm = "{% trans 'Are you sure you want to delete this offboarding?' %}" hx-post="{% url "delete-offboarding" offboarding.offboarding.id %}" hx-target="#offboardingContainer">
                         {% csrf_token %}
                         <button type="submit" class="oh-dropdown__link oh-dropdown__link--danger">
                           {% trans "Delete" %}

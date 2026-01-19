@@ -43,6 +43,7 @@ class SkillsListView(HorillaListView):
 
     row_attrs = """ id="skillsTr{get_delete_instance}" """
 
+    delete_confirm = _("Are you sure want to delete this skill?")
     actions = [
         {
             "action": _("Edit"),
@@ -58,13 +59,13 @@ class SkillsListView(HorillaListView):
         {
             "action": _("Delete"),
             "icon": "trash-outline",
-            "attrs": """
+            "attrs": f"""
                         class="oh-btn oh-btn--light-bkg w-100 text-danger"
-                        hx-post="{get_delete_url}"
+                        hx-post="{{get_delete_url}}"
                         hx-swap="delete"
-                        hx-confirm="Are you sure want to delete this skill?"
-                        hx-target="#skillsTr{get_delete_instance}"
-                      """,
+                        hx-confirm="{delete_confirm}"
+                        hx-target="#skillsTr{{get_delete_instance}}"
+                    """,
         },
     ]
 
