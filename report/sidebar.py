@@ -1,8 +1,8 @@
 from django.apps import apps
 from django.urls import reverse_lazy
-from django.utils.translation import gettext_lazy as trans
+from django.utils.translation import gettext_lazy as _
 
-MENU = trans("Reports")
+MENU = _("Reports")
 IMG_SRC = "images/ui/report.svg"
 ACCESSIBILITY = "report.sidebar.menu_accessibility"
 
