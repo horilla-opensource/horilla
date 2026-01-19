@@ -581,7 +581,7 @@ class CandidateList(HorillaListView):
                    style="
                    border:1px hsl(8,77%,56%) solid;
                    "
-                   title="Edit"
+                   title="{_('Edit')}"
                    >
                     <ion-icon name="create-outline"></ion-icon>
                    </button>
@@ -594,7 +594,7 @@ class CandidateList(HorillaListView):
                     style="
                     border:1px hsl(8,77%,56%) solid;
                     "
-                    title="Delete"
+                    title="{_('Delete')}"
 
                   >
                   <ion-icon name="trash-outline"></ion-icon>
@@ -615,7 +615,7 @@ class CandidateList(HorillaListView):
                 hx-get="{reverse('task-creation',kwargs={'obj_id':stage_id})}"
                 hx-target="#genericModalBody"
                 >
-                + Task
+                + {_('Task')}
             </button>
             """,
                 "",
