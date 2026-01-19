@@ -41,16 +41,16 @@ class DeductionNav(HorillaNavView):
                 "type": "list",
                 "icon": "list-outline",
                 "url": reverse("deduction-view-list"),
-                "attrs": """
-                            title='List'
+                "attrs": f"""
+                            title='{_("List")}'
                             """,
             },
             {
                 "type": "card",
                 "icon": "grid-outline",
                 "url": reverse("deduction-view-card"),
-                "attrs": """
-                            title='Card'
+                "attrs": f"""
+                            title='{_("Card")}'
                             """,
             },
         ]
