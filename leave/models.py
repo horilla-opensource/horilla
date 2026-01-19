@@ -449,7 +449,7 @@ class LeaveType(HorillaModel):
         """
         encashable condition
         """
-        return "Yes" if self.is_encashable else "No"
+        return _("Yes") if self.is_encashable else _("No")
 
     def detail_view_actions(self):
         """
@@ -494,7 +494,7 @@ class Holiday(HorillaModel):
         """
         recurring data
         """
-        return "Yes" if self.recurring else "No"
+        return _("Yes") if self.recurring else _("No")
 
     def holidays_actions(self):
         """
