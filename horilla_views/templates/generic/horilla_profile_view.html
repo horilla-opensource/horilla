@@ -100,7 +100,6 @@
           {% endif %}
           hx-target="#{{view_id|safe}}"
           hx-swap="outerHTML"
-            title=""
             style="color: hsl(8, 77%, 56%);cursor: pointer;"
             class="ms-1 fw-bold"
           >
@@ -119,7 +118,6 @@
             {% endif %}
             hx-target="#{{view_id|safe}}"
             hx-swap="outerHTML"
-            title=""
             style="color: hsl(8, 77%, 56%);cursor: pointer;"
             class="ms-1 fw-bold"
           >
@@ -189,7 +187,7 @@
           {% if instance|getattribute:"is_active" %}
           <span
             class="oh-profile__active-badge oh-profile__active-badge--secondary"
-            title="Active"
+            title="{% trans 'Active' %}"
             style="background-color: limegreen;"
           ></span>
           {% endif %}
