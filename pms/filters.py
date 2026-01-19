@@ -13,6 +13,7 @@ import django_filters
 from dateutil.relativedelta import relativedelta
 from django import forms
 from django.utils import timezone
+from django.utils.translation import gettext_lazy as _
 from django_filters import DateFilter, DateFromToRangeFilter
 
 from base.filters import FilterSet
@@ -212,11 +213,11 @@ class ObjectiveFilter(CustomFilterSet):
 
 
 DUE_DATE_CHOICES = [
-    ("", "All"),
-    ("overdue", "Overdue"),
-    ("due_today", "Due Today"),
-    ("due_this_week", "Due This Week"),
-    ("due_this_month", "Due This Month"),
+    ("", _("All")),
+    ("overdue", _("Overdue")),
+    ("due_today", _("Due Today")),
+    ("due_this_week", _("Due This Week")),
+    ("due_this_month", _("Due This Month")),
 ]
 
 
@@ -385,11 +386,11 @@ class KeyResultFilter(CustomFilterSet):
         method="filter_due_date",
         label="Due",
         choices=[
-            ("due_today", "Due Today"),
-            ("due_this_week", "Due This Week"),
-            ("due_this_month", "Due This Month"),
-            ("due_next_month", "Due Next Month"),
-            ("overdue", "Overdue"),
+            ("due_today", _("Due Today")),
+            ("due_this_week", _("Due This Week")),
+            ("due_this_month", _("Due This Month")),
+            ("due_next_month", _("Due Next Month")),
+            ("overdue", _("Overdue")),
         ],
     )
 
@@ -535,11 +536,11 @@ class EmployeeObjectiveFilter(HorillaFilterSet):
         method="filter_due_date",
         label="Due",
         choices=[
-            ("due_today", "Due Today"),
-            ("due_this_week", "Due This Week"),
-            ("due_this_month", "Due This Month"),
-            ("due_next_month", "Due Next Month"),
-            ("overdue", "Overdue"),
+            ("due_today", _("Due Today")),
+            ("due_this_week", _("Due This Week")),
+            ("due_this_month", _("Due This Month")),
+            ("due_next_month", _("Due Next Month")),
+            ("overdue", _("Overdue")),
         ],
     )
     progress_percentage__gte = django_filters.NumberFilter(
