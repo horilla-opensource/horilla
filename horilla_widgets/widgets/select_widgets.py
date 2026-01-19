@@ -31,7 +31,7 @@ class HorillaMultiSelectWidget(forms.Widget):
         *args,
         filter_route_name,
         filter_class=None,
-        filter_instance_contex_name=None,
+        filter_instance_context_name=None,
         filter_template_path=None,
         instance=None,
         required=False,
@@ -42,7 +42,7 @@ class HorillaMultiSelectWidget(forms.Widget):
         self.filter_route_name = filter_route_name
         self.required = required
         self.filter_class = filter_class
-        self.filter_instance_contex_name = filter_instance_contex_name
+        self.filter_instance_context_name = filter_instance_context_name
         self.filter_template_path = filter_template_path
         self.instance = instance
         self.form = form
@@ -81,7 +81,7 @@ class HorillaMultiSelectWidget(forms.Widget):
         )
         uid = get_short_uuid(5)
         context["section_id"] = uid
-        context[self.filter_instance_contex_name] = self.filter_class
+        context[self.filter_instance_context_name] = self.filter_class
         request = getattr(horilla_middlewares._thread_locals, "request", None)
         ALL_INSTANCES[str(request.user.id)] = self
 
