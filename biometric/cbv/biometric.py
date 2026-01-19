@@ -11,6 +11,7 @@ from django.contrib import messages
 from django.http import HttpResponse
 from django.urls import reverse
 from django.utils.decorators import method_decorator
+from django.utils.text import format_lazy
 from django.utils.translation import gettext_lazy as _
 from zk import ZK
 
@@ -74,6 +75,11 @@ class BiometricCardView(HorillaCardView):
     def __init__(self, **kwargs: Any) -> None:
         super().__init__(**kwargs)
         self.search_url = reverse("biometric-card-view")
+        archive_confirm = _("Do you want to %(status)s this device?") % {
+            "status": "{archive_status}",
+        }
+        delete_confirm = _("Do you want to delete this device?")
+
         self.actions = [
             {
                 "action": _("Edit"),
@@ -97,9 +103,9 @@ class BiometricCardView(HorillaCardView):
             },
             {
                 "action": "archive_status",
-                "attrs": """
-                    hx-confirm="Do you want to {archive_status} this device?"
-                    hx-post="{get_archive_url}"
+                "attrs": f"""
+                    hx-confirm="{archive_confirm}"
+                    hx-post="{{get_archive_url}}"
                     class="oh-dropdown__link"
                     hx-target="#listContainer"
                     hx-swap="none"
@@ -108,9 +114,9 @@ class BiometricCardView(HorillaCardView):
             },
             {
                 "action": _("Delete"),
-                "attrs": """
-                    hx-confirm="Do you want to delete this device?"
-                    hx-post="{get_delete_url}"
+                "attrs": f"""
+                    hx-confirm="{delete_confirm}"
+                    hx-post="{{get_delete_url}}"
                     class="oh-dropdown__link oh-dropdown__link--danger"
                     hx-target="#biometricDeviceList"
                     hx-swap="none"
@@ -121,7 +127,14 @@ class BiometricCardView(HorillaCardView):
 
     details = {
         "title": "{name}",
-        "subtitle": " Device Type : {get_machine_type} <br> {get_card_details} <br> {render_live_capture_html} <br> {render_actions_html}",
+        "subtitle": format_lazy(
+            "{} : {} <br> {} <br> {} <br> {}",
+            _("Device Type"),
+            "{get_machine_type}",
+            "{get_card_details}",
+            "{render_live_capture_html}",
+            "{render_actions_html}",
+        ),
     }
 
     card_status_class = "is_scheduler-{is_scheduler} is_live-{is_live}"

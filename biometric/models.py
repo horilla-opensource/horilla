@@ -129,9 +129,11 @@ class BiometricDevices(HorillaModel):
         """
 
         if self.machine_type in ["zk", "cosec"]:
-            return f"Machine IP : {self.machine_ip}<br>Port No : {self.port}"
+            return (
+                f"{_('Machine IP')} : {self.machine_ip}<br>{_('Port No')} : {self.port}"
+            )
         elif self.machine_type == "anviz":
-            return f"API Url : {self.api_url}"
+            return f"{_('API Url')} : {self.api_url}"
         else:
             return ""
 
@@ -140,8 +142,8 @@ class BiometricDevices(HorillaModel):
         live capture button
         """
         checked_attribute = "checked" if self.is_live else ""
-        activate_label = "Activate live capture mode"
-        activate_title = "Activate" if not self.is_live else "Deactivate"
+        activate_label = _("Activate live capture mode")
+        activate_title = _("Activate") if not self.is_live else _("Deactivate")
 
         if self.machine_type in ["zk", "cosec"]:
             html = f"""
@@ -171,34 +173,12 @@ class BiometricDevices(HorillaModel):
         """
         actions buttons
         """
-
-        margin_style = (
-            "style='margin-top:0px;'" if self.machine_type in ["anviz", "cosec"] else ""
+        html = render_template(
+            "biometric/actions_html.html",
+            {
+                "device": self,
+            },
         )
-
-        test_url = reverse("biometric-device-test", args=[self.id])
-        unschedule_url = reverse("biometric-device-unschedule", args=[self.id])
-        schedule_url = reverse("biometric-device-schedule", args=[self.id])
-        employees_url = reverse("biometric-device-employees", args=[self.id])
-
-        html = f"""
-        <div class="d-block oh-kanban-card__biometric-actions" {margin_style} style="display: flex; gap: 10px; ">
-            <a href="#" hx-get="{test_url}" data-toggle="oh-modal-toggle"
-                data-target="#BiometricDeviceTestModal" hx-target="#BiometricDeviceTestFormTarget"
-                class="oh-checkpoint-badge text-success mr-2" style="border: 2px solid #28a745; padding: 5px 10px; border-radius: 4px; display: inline-block; color: #28a745;">Test
-            </a>
-            {"<a hx-confirm='Do you want to unschedule the device attendance fetching?'"
-              f" hx-post='{unschedule_url}'"
-              " hx-target='#biometricDeviceList' class='oh-checkpoint-badge text-info ' style='border: 2px solid #17a2b8; padding: 5px 10px; border-radius: 4px; display: inline-block; color: #17a2b8;'>Unschedule</a>"
-              if self.is_scheduler else
-              "<a href='#' class='oh-checkpoint-badge text-info' hx-get='" + schedule_url + "'"
-              " data-toggle='oh-modal-toggle' data-target='#BiometricDeviceModal'"
-              " hx-target='#BiometricDeviceFormTarget' style='border: 2px solid #17a2b8; padding: 5px 10px; border-radius: 4px; display: inline-block; color: #17a2b8;'>Schedule</a>"}
-            {"<a href='" + employees_url + "' class='oh-checkpoint-badge text-secondary bio-user-list ml-4' style='border: 2px solid #6c757d; padding: 5px 10px; border-radius: 4px; display: inline-block; color: #6c757d;'>Employee</a>"
-              if self.machine_type in ["zk", "cosec"] else ""}
-        </div>
-
-        """
 
         return html
 
@@ -216,9 +196,9 @@ class BiometricDevices(HorillaModel):
         archive status
         """
         if self.is_active:
-            return "Archive"
+            return _("Archive")
         else:
-            return "Un-Archive"
+            return _("Un-Archive")
 
     def get_update_url(self):
         """
