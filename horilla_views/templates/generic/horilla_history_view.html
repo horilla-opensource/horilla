@@ -1,3 +1,4 @@
+{% load i18n %}
 <div id="generic-history-container">
     <button hidden hx-get="{{ request.path }}" class="reload-record" hx-target="#generic-history-container" hx-swap="outerHTML"></button>
     {% load static %} {% load i18n %}
@@ -42,7 +43,7 @@
                       {% if has_perm_to_revert %}
                       <button hidden id="revert{{history.pair.1.pk}}" hx-post="{% url 'history-revert' object.pk history.pair.1.pk %}?model={{ model }}"></button>
                       {% if history.pair.1.pk %}
-                      <a href="javascript:void(0);" title="Restore the previous state"
+                      <a href="javascript:void(0);" title="{% trans 'Restore the previous state' %}"
                       onclick="Swal.fire({
                             title: 'Are you sure?',
                             text: 'This will revert the object to a previous state.',
