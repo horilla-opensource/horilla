@@ -103,7 +103,7 @@
           <button
             hx-get="{% url 'last-applied-filter' %}?{{ filter.urlencode }}"
             hx-swap="none"
-            class="px-4 py-2 bg-white border border-[#b3bac0] rounded-md text-xs flex gap-2 items-center">
+            class="px-4 py-2 bg-white border border-[#e6e6e6] rounded-md text-xs flex gap-2 items-center">
             <span class="h-3 w-3 rounded-full flex" style="background-color: {{ filter.color }};"></span>
             {{ filter.title }}
           </button>
@@ -134,7 +134,7 @@
         </div>
       {% endfor %}
       {% for indication in row_status_indications %}
-        <button class="px-4 py-2 bg-[white] border border-[#b3bac0] rounded-md text-xs flex gap-2 items-center" {{ indication.2|safe }}><span class="h-3 w-3 rounded-full flex {{ indication.0 }}"></span>{{ indication.1 }}</button>
+        <button class="px-4 py-2 bg-[white] border border-[#e6e6e6] rounded-md text-xs flex gap-2 items-center" {{ indication.2|safe }}><span class="h-3 w-3 rounded-full flex {{ indication.0 }}"></span>{{ indication.1 }}</button>
       {% endfor %}
     </div>
   {% endif %}

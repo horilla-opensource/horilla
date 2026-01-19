@@ -187,7 +187,7 @@
   display: flex;
   flex-flow: wrap;
   gap: 1.5rem;
-  font-size: 0.9rem;
+  font-size: 0.8rem;
   color: #333;
 }
 
@@ -208,7 +208,7 @@
   font-size: 10px;
   position: absolute;
   right: -15px;
-  top: 5px;
+  top: 4px;
   bottom: 0;
   margin: auto;
 }
@@ -374,8 +374,6 @@
   border-radius: 50%;
   transition: transform 0.3s;
 }
-
-
 
 .toggle-input:checked+.toggle-switch::after {
   transform: translateX(16px);
@@ -1083,4 +1081,61 @@ input[type="checkbox"].custom-checkbox:hover {
   height: 100%;
   z-index: 1;
   background: linear-gradient(360deg, #ffffff, transparent);
+}
+
+#sidebar nav .sidebox {
+  /* background-color: #1b1b1b; */
+  left: 78px;
+}
+
+.material-icons.fw-lighter.fs-5 {
+  font-size: 1rem;
+}
+
+.select2-container--default .select2-selection--multiple .select2-selection__rendered li {
+  list-style: none;
+  font-size: 0.7rem;
+  height: auto;
+}
+
+.select2-container--default .select2-selection--multiple .select2-selection__choice__remove {
+  height: auto;
+}
+
+#year {
+  font-size: 0.8rem;
+  padding: 3px 8px;
+  border-radius: 5px;
+}
+
+.fixed-table th,
+.fixed-table td {
+  border: 1px solid #efefef;
+  border-radius: 2px;
+}
+
+.oh-input[type="color"] {
+  height: 38px !important;
+}
+
+::-webkit-scrollbar {
+  width: 8px;
+  height: 6px;
+  border-radius: 5px;
+  overflow: hidden;
+}
+
+::-webkit-scrollbar-track {
+  background-color: #eee;
+  border-radius: 5px
+}
+
+::-webkit-scrollbar-thumb {
+  background-color: #acacac;
+  border-radius: 5px;
+  transition: .3s;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background-color: #8a8a8a
 }
