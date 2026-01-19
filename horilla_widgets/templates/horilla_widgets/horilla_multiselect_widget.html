@@ -1,5 +1,5 @@
+{% load i18n %}
 <div id="{{section_id}}">
-  {% load i18n %}
   <style>
     .oh-modal__close-custom {
       border: none;
@@ -161,7 +161,7 @@
     <span
       data-toggle="oh-modal-toggle"
       data-target="#filterChoose{{section_id}}"
-      title="Filter and Choose {{field.label}}"
+      title="{% trans 'Filter and Choose' %} {{field.label}}"
       style="
         justify-content: right;
         align-items: center;
