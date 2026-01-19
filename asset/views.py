@@ -1157,7 +1157,7 @@ def asset_allocation_individual_view(request, asset_allocation_id):
         context["allocations_ids"] = allocation_ids_json
         context["previous"] = previous_id
         context["next"] = next_id
-    return render(request, "request_allocation/individual allocation.html", context)
+    return render(request, "request_allocation/individual_allocation.html", context)
 
 
 def convert_nan(val):
