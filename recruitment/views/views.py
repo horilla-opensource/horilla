@@ -3265,7 +3265,7 @@ def check_vaccancy(request):
     """
     stage_id = request.GET.get("stageId")
     stage = Stage.objects.get(id=stage_id)
-    message = "No message"
+    message = _("No message")
     if stage and stage.recruitment_id.is_vacancy_filled():
         message = _("Vaccancy is filled")
     return JsonResponse({"message": message})
