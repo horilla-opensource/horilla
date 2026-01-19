@@ -884,7 +884,7 @@ def biometric_device_bulk_fetch_logs(request):
     zk_devices = BiometricDevices.objects.filter(id__in=zk_ids, machine_type="zk")
 
     if not zk_devices:
-        messages.error(request, _(""))
+        messages.error(request, "")
         script = render_connection_response(
             _("Biometric device not supported."),
             _(
