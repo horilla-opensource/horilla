@@ -42,6 +42,7 @@ class PaySlipAutomationListView(HorillaListView):
     model = PayslipAutoGenerate
     filter_class = PayslipAutoGenerateFilter
     show_toggle_form = False
+    delete_confirm = _("Are you sure you want to delete this payslip auto generate?")
 
     columns = [
         (_("Payslip creation date"), "get_generate_day_display"),
@@ -70,11 +71,11 @@ class PaySlipAutomationListView(HorillaListView):
         {
             "action": _("Delete"),
             "icon": "trash-outline",
-            "attrs": """
+            "attrs": f"""
                     class="oh-btn oh-btn--danger-outline oh-btn--light-bkg w-50"
-                    hx-confirm="Are you sure you want to delete this payslip auto generate?"
-                    hx-target="#autoPayslipTr{get_instance_id}"
-                    hx-post="{get_delete_url}"
+                    hx-confirm="{delete_confirm}"
+                    hx-target="#autoPayslipTr{{get_instance_id}}"
+                    hx-post="{{get_delete_url}}"
                     hx-swap="delete"
                     """,
         },
