@@ -14,7 +14,6 @@ from django.shortcuts import render
 from django.urls import reverse, reverse_lazy
 from django.utils.decorators import method_decorator
 from django.utils.translation import gettext_lazy as _
-from django.utils.translation import gettext_lazy as _trans
 from django.views import View
 
 from base.models import HorillaMailTemplate
@@ -67,7 +66,7 @@ class AutomationNavView(views.HorillaNavView):
 
             self.actions.append(
                 {
-                    "action": "Load Automations",
+                    "action": _("Load Automations"),
                     "attrs": f"""
                         data-toggle="oh-modal-toggle"
                         data-target="#genericModal"
@@ -81,7 +80,7 @@ class AutomationNavView(views.HorillaNavView):
         if self.request.user.has_perm("horilla_automations.add_mailautomation"):
             self.actions.append(
                 {
-                    "action": "Refresh Automations",
+                    "action": _("Refresh Automations"),
                     "attrs": f"""
                         hx-get="{reverse_lazy('refresh-automations')}"
                         hx-target="#reloadMessages"
@@ -194,22 +193,22 @@ class AutomationDetailedView(views.HorillaDetailedView):
     """
 
     model = models.MailAutomation
-    title = "Detailed View"
+    title = _("Detailed View")
     header = {
         "title": "title",
         "subtitle": "title",
         "avatar": "get_avatar",
     }
     body = [
-        ("Model", "model"),
-        ("Mail Templates", "mail_template"),
-        ("Mail To", "get_mail_to_display"),
-        ("Mail Cc", "get_mail_cc_display"),
-        ("Trigger", "trigger_display"),
+        (_("Model"), "model"),
+        (_("Mail Templates"), "mail_template"),
+        (_("Mail To"), "get_mail_to_display"),
+        (_("Mail Cc"), "get_mail_cc_display"),
+        (_("Trigger"), "trigger_display"),
     ]
     actions = [
         {
-            "action": "Edit",
+            "action": _("Edit"),
             "icon": "create-outline",
             "attrs": """
             hx-get="{edit_url}?instance_ids={ordered_ids}"
@@ -220,7 +219,7 @@ class AutomationDetailedView(views.HorillaDetailedView):
             """,
         },
         {
-            "action": "Delete",
+            "action": _("Delete"),
             "icon": "trash-outline",
             "attrs": """
             class="oh-btn oh-btn--danger w-50"
