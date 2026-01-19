@@ -46,6 +46,7 @@ class AudiTagsList(HorillaListView):
     ]
 
     row_attrs = """ id="auditTagTr{get_delete_instance}" """
+    delete_confirm = _("Are you sure you want to delete this history tag ?")
 
     actions = [
         {
@@ -62,11 +63,11 @@ class AudiTagsList(HorillaListView):
         {
             "action": _("Delete"),
             "icon": "trash-outline",
-            "attrs": """
+            "attrs": f"""
                 class="oh-btn oh-btn--light-bkg w-100 text-danger"
-                hx-confirm="Are you sure you want to delete this history tag ?"
-                hx-post="{get_delete_url}"
-                hx-target="#auditTagTr{get_delete_instance}"
+                hx-confirm="{delete_confirm}"
+                hx-post="{{get_delete_url}}"
+                hx-target="#auditTagTr{{get_delete_instance}}"
                 hx-swap="delete"
             """,
         },
