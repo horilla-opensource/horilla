@@ -116,7 +116,7 @@
                     {% if not announcement.disable_comments %}
                     <button class="oh-btn oh-btn--light oh-activity-sidebar__open" type="button"
                         hx-get="{% url 'announcement-view-comment' announcement.id %}" hx-target="#commentContainer"
-                        data-target='#activitySidebar' title="Comments">
+                        data-target='#activitySidebar' title="{% trans 'Comments' %}">
                         <ion-icon name="chatbox-outline" style="font-size:18px;" class="md hydrated" role="img"
                             aria-label="chevron back outline"></ion-icon>
                     </button>

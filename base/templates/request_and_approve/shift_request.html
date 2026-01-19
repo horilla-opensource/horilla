@@ -45,7 +45,7 @@
                             href="/shift-request-approve/{{shift_request.id}}/"
 							onclick="return confirm('{% trans "Do you want to approve this shift request?" %}')"
                             class="oh-btn oh-btn--success"
-                            title="Approve"
+                            title="{% trans 'Approve' %}"
                             ><ion-icon name="checkmark-outline"></ion-icon
                         ></a>
 
@@ -53,7 +53,7 @@
                             href="/shift-request-cancel/{{shift_request.id}}/"
 							onclick="return confirm('{% trans "Do you want to cancel this request?" %}')"
                             class="oh-btn oh-btn--danger"
-                            title="cancel"
+                            title="{% trans 'cancel' %}"
                             ><ion-icon name="close-circle-outline"></ion-icon
                         ></a>
                     </div>

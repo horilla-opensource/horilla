@@ -1,10 +1,10 @@
-{% load basefilters %}
+{% load basefilters i18n %}
 {% is_manager_of request.user instance as can_manage %}
 {% with is_owner=request.user.employee_get|equals:instance.employee_id can_view=perms.base.view_worktyperequestcomment %}
 {% if is_owner or can_view or can_manage %}
     <div class="" onclick="event.stopPropagation();">
         <button type="button" hx-get="{% url 'view-work-type-comment' instance.id %}" hx-target="#commentContainer"
-            data-toggle='oh-modal-toggle' data-target='#worktypeactivitySidebar' title="View Comment"
+            data-toggle='oh-modal-toggle' data-target='#worktypeactivitySidebar' title="{% trans 'View Comment' %}"
             class="oh-btn oh-btn--light oh-activity-sidebar__open w-100"
             style="flex: 1 0 auto; width:20px;height: 40.68px; padding: 0;">
             <ion-icon name="newspaper-outline" role="img" class="md hydrated" aria-label="newspaper outline"></ion-icon>
