@@ -27,7 +27,7 @@
 		{% csrf_token %}
 
 		<div>
-			<input type="text" name="comment" id="commentInput" class="oh-input w-100" placeholder="Comment here"
+			<input type="text" name="comment" id="commentInput" class="oh-input w-100" placeholder="{% trans 'Comment here' %}"
 				hx-on:keyup="toggleCommentButton(this);">
 			<button type="submit" id="commentButton" class="oh-btn oh-btn--secondary mt-2 mr-0 oh-btn--w-100-resp"
 				style="display: none;">
@@ -72,7 +72,7 @@
 							class="add-files-form" hx-encoding="multipart/form-data" data-target="#allocationactivitySidebar"
 							hx-swap="innerHTML" hx-target="#commentContainer">
 							{% csrf_token %}
-							<label for="addFile_{{comment.id}}" title="Add Files"><ion-icon name="add-outline"
+							<label for="addFile_{{comment.id}}" title="{% trans 'Add Files' %}"><ion-icon name="add-outline"
 									style="font-size: 24px" role="img" class="md hydrated"
 									aria-label="add outline"></ion-icon></label>
 							<input type="file" name="files" class="d-none" multiple="true" accept=".jpg, .jpeg, .png, .pdf"
