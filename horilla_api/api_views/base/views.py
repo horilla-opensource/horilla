@@ -883,6 +883,7 @@ class RotatingShiftAssignView(APIView):
         if serializer.is_valid():
             serializer.save()
             return Response(serializer.data, status=200)
+        print(serializer.errors)
         return Response(serializer.errors, status=400)
 
     @manager_permission_required("base.delete_rotatingshiftassign")
