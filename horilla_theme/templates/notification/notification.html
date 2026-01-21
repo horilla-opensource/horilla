@@ -1,25 +1,17 @@
 {% load static i18n basefilters notifications_tags %}
 {% notifications_unread as unread_count %}
 
-<div
-    class="dropdown-content w-80 absolute z-10 bg-white rounded-lg shadow-card right-0"
->
-    <div
-        class="flex justify-between items-center p-3 border-b border-b-dark-50"
-    >
+<div class="dropdown-content w-80 absolute z-10 bg-white rounded-lg shadow-card right-0">
+    <div class="flex justify-between items-center p-3 border-b border-b-dark-50">
         <h5 class="font-semibold text-sm">{% trans "Notifications" %}</h5>
         <div class="flex gap-1">
             <span
                 class="cursor-pointer text-xs group text-primary-600 w-7 h-7 bg-primary-100 hover:bg-primary-600 hover:text-white rounded-full transition duration-300 flex items-center justify-center"
-                hx-get="{% url 'notification-sound' %}"
-                hx-swap="none"
-                title="Notification Sound"
-                onclick="
+                hx-get="{% url 'notification-sound' %}" hx-swap="none" title="Notification Sound" onclick="
                     event.stopPropagation();
                     event.preventDefault();
                     toggleNotificationIcon($(this));
-                "
-            >
+                ">
                 {% if request.user.employee_get.notification_sound.sound_enabled %}
                 <span class="material-symbols-outlined text-lg font-light">
                     volume_up
@@ -32,40 +24,31 @@
             </span>
             <span
                 class="cursor-pointer text-xs group text-primary-600 w-7 h-7 bg-primary-100 hover:bg-primary-600 hover:text-white rounded-full transition duration-300 flex items-center justify-center"
-                onclick="event.stopPropagation();event.preventDefault();"
-                hx-get="{% url 'read-notifications' %}"
-                hx-target="#notificationContainer"
-                title="Mark All as Read"
-            >
+                onclick="event.stopPropagation();event.preventDefault();" hx-get="{% url 'read-notifications' %}"
+                hx-target="#notificationContainer" title="Mark All as Read">
                 <i class="fa-solid fa-check-double"></i>
             </span>
             <span
                 class="cursor-pointer text-xs group text-primary-600 w-7 h-7 bg-primary-100 hover:bg-primary-600 hover:text-white rounded-full transition duration-300 flex items-center justify-center"
-                onclick="event.stopPropagation();event.preventDefault();"
-                hx-get="{% url 'clear-notifications' %}"
-                hx-target="#notificationContainer"
-                title="{% trans 'Clear Notifications' %}"
-            >
+                onclick="event.stopPropagation();event.preventDefault();" hx-get="{% url 'clear-notifications' %}"
+                hx-target="#notificationContainer" title="{% trans 'Clear Notifications' %}">
                 <i class="fa-solid fa-xmark"></i>
             </span>
         </div>
     </div>
 
-    <div class="p-3" id="notificationContainer" >
+    <div class="p-3" id="notificationContainer">
         {% include "notification/notification_items.html" %}
     </div>
     <div class="p-3 border-t border-t-dark-50 flex justify-center">
         <button
             class="toggleSidemenu text-primary-600 text-xs flex justify-center font-semibold hover:text-[#ac3b2a] transition duration-300"
-            data-sidebar="sidebarModal3"
-            hx-get="{% url 'all-notifications' %}"
-            hx-target="#sidebarModalBody"
-        >
+            data-sidebar="sidebarModal3" hx-get="{% url 'all-notifications' %}" hx-target="#sidebarModalBody">
             {% trans "View all Notification" %}
         </button>
     </div>
 </div>
-<script src="{% static 'notifications/notify.js' %}" type="text/javascript" ></script>
+<script src="{% static 'notifications/notify.js' %}" type="text/javascript"></script>
 
 <script>
     var staticUrl = $("#statiUrl").attr("data-url");
@@ -116,5 +99,36 @@
             $icon.text(current === "volume_up" ? "volume_off" : "volume_up");
         }
     }
+
+    function markNotificationAndRedirect(element) {
+        alert("Hello")
+        var notificationLink = $(element);
+        var notificationId = notificationLink.data("id");
+
+        $.ajax({
+            type: "POST",
+            url: "/mark-as-read-notification-json/",
+            data: {
+                csrfmiddlewaretoken: getCookie("csrftoken"),
+                notification_id: notificationId,
+            },
+            success: function (response) {
+                // Redirect in all cases
+                window.location.href = notificationLink.attr("href");
+
+                if (!response.success) {
+                    console.error("Failed to mark notification as read");
+                    if (response.error) {
+                        console.error("Error:", response.error);
+                    }
+                }
+            },
+            error: function (xhr, status, error) {
+                window.location.href = notificationLink.attr("href");
+                console.error("Error:", status, error);
+            },
+        });
+    }
+
 </script>
 {% register_notify_callbacks callbacks='fill_notification_list,fill_notification_badge' %}
