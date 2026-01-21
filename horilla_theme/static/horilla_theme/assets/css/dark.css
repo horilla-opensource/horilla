@@ -82,10 +82,10 @@ body.dark #pivot-container,
 body.dark .pvtAxisContainer,
 body.dark .pvtVals,
 body.dark #pivot-container .pvtTable tbody tr th,
-body.dark #pivot-container .pvtTable thead tr th ,
+body.dark #pivot-container .pvtTable thead tr th,
 body.dark .pvtFilterBox,
 body.dark #pivot-container .pvtTable tr:nth-child(2n) td,
-body.dark #pivot-container .pvtTable td{
+body.dark #pivot-container .pvtTable td {
   border-color: #444444 !important;
 }
 body.dark .oh-input,
@@ -104,7 +104,7 @@ body.dark #addAnnouncement img,
 body.dark .oh-dropdown img,
 body.dark .oh-modal__close--custom img,
 body.dark .mt-\[-1px\],
-body.dark .dropdown-wrapper .flex.items-center.gap-2 img,
+/* body.dark .dropdown-wrapper .flex.items-center.gap-2 img, */
 body.dark #employee_canvas_body img,
 body.dark #department_canvas_body img,
 body.dark #detailViewContainer button img {
@@ -268,6 +268,38 @@ body.dark .sha::after {
 .pvtAxisContainer li span.pvtAttr {
   font-size: 0.9rem;
 }
-body.dark i{
+body.dark i {
   color: white;
+}
+body.dark ul.errorlist {
+  color: white;
+  background-color: #464646;
+  border: 1px solid #5d5d5d;
+}
+
+body.dark .oh-alert--danger {
+  color: hsl(0, 71%, 54%);
+}
+body.dark .oh-alert--warning {
+  color: hsl(44, 89%, 62%);
+}
+body.dark .oh-alert--info {
+  color: hsl(225, 72%, 48%);
+}
+body.dark .oh-alert--success {
+  color: hsl(119, 39.1304347826%, 46%);
+}
+
+body.dark .oh-hover-btn__small {
+  background-color: hsl(0deg 0% 34.17%);
+  border: 1px solid hsl(0deg 0% 49.2%);
+}
+body.dark .animated-background {
+  background-color: #535353;
+  background: linear-gradient(
+    to right,
+    #9e9e9e9c -30%,
+    #4b4b4b96 10%,
+    #96969661 20%
+  );
 }
