@@ -471,6 +471,10 @@ def clock_out(request):
             .last()
         )
         if attendance is not None:
+            if not attendance.attendance_day:
+                day_name = attendance.attendance_date.strftime("%A").lower()
+                attendance.attendance_day = EmployeeShiftDay.objects.get(day=day_name)
+                attendance.save(update_fields=["attendance_day"])
             day = attendance.attendance_day
         now = datetime.now().strftime("%H:%M")
         if request.__dict__.get("time"):
