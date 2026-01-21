@@ -114,7 +114,8 @@
   max-width: 700px;
   border-radius: 10px;
   overflow: hidden;
-  box-shadow: rgba(0, 0, 0, 0.2) 0px 12px 28px 0px,
+  box-shadow:
+    rgba(0, 0, 0, 0.2) 0px 12px 28px 0px,
     rgba(0, 0, 0, 0.1) 0px 2px 4px 0px,
     rgba(255, 255, 255, 0.05) 0px 0px 0px 1px inset;
   margin: 1.75rem auto;
@@ -320,7 +321,9 @@ input[type="file"] {
   color: hsl(0, 0%, 11%);
   background-color: white;
   border-radius: 0.375rem;
-  transition: border-color 0.3s ease, outline 0.3s ease;
+  transition:
+    border-color 0.3s ease,
+    outline 0.3s ease;
   height: 35px;
 }
 
@@ -1110,7 +1113,9 @@ input[type="file"] {
 }
 
 .oh-btn--shadow {
-  box-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.1), 0 1px 2px 0 rgba(0, 0, 0, 0.06);
+  box-shadow:
+    0 1px 3px 0 rgba(0, 0, 0, 0.1),
+    0 1px 2px 0 rgba(0, 0, 0, 0.06);
 }
 
 .oh-btn--sq-sm {
@@ -1581,24 +1586,30 @@ table .oh-btn-group {
 }
 
 .oh-hover-btn__small {
-  width: 36px;
-  height: 36px;
+  width: 24px;
+  height: 24px;
   border-radius: 50%;
   background-color: hsl(0, 0%, 100%);
   border: 1px solid hsl(213, 22%, 93%);
-  box-shadow: rgba(17, 17, 26, 0.05) 0px 4px 16px,
-    rgba(17, 17, 26, 0.05) 0px 8px 32px;
+  /* box-shadow: rgba(17, 17, 26, 0.05) 0px 4px 16px,
+    rgba(17, 17, 26, 0.05) 0px 8px 32px; */
   display: flex;
   align-items: center;
   justify-content: center;
-  transition: all 0.3s linear;
+  transition: 0.3s;
+}
+.oh-hover-btn__small ion-icon {
+  font-size: 0.9rem;
+}
+.oh-hover-btn__main{
+  transition: .3s;
 }
 
 .oh-hover-btn__small:hover {
   background-color: hsl(8, 77%, 56%);
   border: 1px solid hsl(8, 61%, 50%);
   color: hsl(0, 0%, 100%);
-  transition: all 0.2s linear;
+  transition: 0.3s;
   transform: scale(105%);
 }
 
@@ -2005,7 +2016,7 @@ table .oh-btn-group {
   font-weight: 500;
   font-size: medium;
   padding: inherit;
-  transition: .3s;
+  transition: 0.3s;
 }
 
 .oh-tabs__movable:first-child {
@@ -2828,7 +2839,8 @@ ul.errorlist ul.errorlist li {
   border-radius: 10px;
   color: hsl(0, 0%, 11%);
   border: 1px solid hsl(0, 0%, 95%);
-  box-shadow: rgba(0, 0, 0, 0.1) 0px 10px 15px -3px,
+  box-shadow:
+    rgba(0, 0, 0, 0.1) 0px 10px 15px -3px,
     rgba(0, 0, 0, 0.05) 0px 4px 6px -2px;
   z-index: 999;
 }
@@ -3117,7 +3129,8 @@ ul.errorlist ul.errorlist li {
   padding: 1.25rem;
   border-radius: 0.5rem;
   border: 1px solid hsl(213, 22%, 93%);
-  box-shadow: rgba(0, 0, 0, 0.1) 0px 1px 3px 0px,
+  box-shadow:
+    rgba(0, 0, 0, 0.1) 0px 1px 3px 0px,
     rgba(0, 0, 0, 0.06) 0px 1px 2px 0px;
   transition: background-color 0.4s ease-in-out;
   margin: 1rem auto;
@@ -3822,6 +3835,9 @@ ion-icon {
 }
 .oh-input__label {
   font-size: 0.9rem;
+}
+input[type="file"] {
+  border: 1px solid #656565 !important;
 }
 table .oh-input,
 table .oh-select,

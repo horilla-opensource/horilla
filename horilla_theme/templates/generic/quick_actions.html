@@ -94,7 +94,7 @@
     <div class="flex flex-wrap gap-2">
       {% for filter in stored_filters %}
         <div
-            class="relative group inline-block"
+            class="relative group oh-hover-btn__main flex transition duration-300 bg-white border border-[#e6e6e6] rounded-md"
             hx-get="{{ request.path }}?{{ filter.urlencode }}"
             hx-target="#{{ view_id|safe }}"
             hx-swap="outerHTML">
@@ -103,13 +103,13 @@
           <button
             hx-get="{% url 'last-applied-filter' %}?{{ filter.urlencode }}"
             hx-swap="none"
-            class="px-4 py-2 bg-white border border-[#e6e6e6] rounded-md text-xs flex gap-2 items-center">
+              class="px-4 py-2 text-xs flex gap-2 items-center">
             <span class="h-3 w-3 rounded-full flex" style="background-color: {{ filter.color }};"></span>
             {{ filter.title }}
           </button>
 
           <!-- Edit/Delete Drawer (appears on hover or always visible depending on your design) -->
-          <div class="absolute top-0 right-0 translate-x-1/2 -translate-y-1/2 hidden group-hover:flex gap-1 bg-white shadow p-1 rounded z-10"
+          <div class="relative top-0 right-0 hidden group-hover:flex transition duration-300 gap-1 p-1 rounded z-10"
               onclick="event.stopPropagation()">
             <!-- Edit -->
             <button class="oh-hover-btn__small"
