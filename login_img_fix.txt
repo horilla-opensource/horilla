@@ -1,0 +1,10 @@
+                <img src={% if white_label_company.icon %}
+                        "{{white_label_company.icon.url}}"
+                        alt="{{white_label_company_name}}"
+                        style="opacity: 0.90; width: 200px; height: 140px;"
+                    {% else %}
+                        "{% static 'images/ui/marsel-logo.png' %}"
+                        alt="Marsel Force"
+                        style="width: 200px; height: 200px; object-fit: contain;"
+                    {% endif %}
+                />
