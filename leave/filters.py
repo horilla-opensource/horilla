@@ -11,8 +11,8 @@ from datetime import datetime, timedelta
 import django_filters
 from django import forms
 from django.apps import apps
-from django.db.models import Q
-from django.db.models.functions import TruncYear
+from django.db.models import Q, Value
+from django.db.models.functions import Coalesce, Concat, TruncYear
 from django.utils.translation import gettext as __
 from django.utils.translation import gettext_lazy as _
 from django_filters import DateFilter, FilterSet, NumberFilter, filters
@@ -240,25 +240,23 @@ class LeaveRequestFilter(HorillaFilterSet):
             "employee_id__employee_work_info__company_id": "employee_id__employee_work_info__company_id__company__icontains",
         }
         search_field = self.data.get("search_field")
+        qs = queryset
         if not search_field:
-            parts = value.split()
-            first_name = parts[0]
-            last_name = " ".join(parts[1:]) if len(parts) > 1 else ""
+            value = " ".join(value.split())
 
-            # Filter the queryset by first name and last name
-            if first_name and last_name:
-                queryset = queryset.filter(
-                    employee_id__employee_first_name__icontains=first_name,
-                    employee_id__employee_last_name__icontains=last_name,
+            queryset = queryset.annotate(
+                full_name=Concat(
+                    Coalesce("employee_id__employee_first_name", Value("")),
+                    Value(" "),
+                    Coalesce("employee_id__employee_last_name", Value("")),
                 )
-            elif first_name:
-                queryset = queryset.filter(
-                    employee_id__employee_first_name__icontains=first_name
-                )
-            elif last_name:
-                queryset = queryset.filter(
-                    employee_id__employee_last_name__icontains=last_name
-                )
+            )
+
+            queryset = queryset.filter(full_name__icontains=value)
+
+            queryset = (
+                queryset | qs.filter(employee_id__badge_id__icontains=value)
+            ).distinct()
         else:
             filter = filter_method.get(search_field)
             queryset = queryset.filter(**{filter: value})
@@ -533,27 +531,28 @@ if apps.is_installed("attendance"):
                 "company": "employee_id__employee_work_info__company_id__company__icontains",
             }
             search_field = self.data.get("search_field")
+            qs = queryset
             if not search_field:
-                parts = value.split()
-                first_name = parts[0]
-                last_name = " ".join(parts[1:]) if len(parts) > 1 else ""
+                value = " ".join(value.split())
 
-                # Filter the queryset by first name and last name
-                if first_name and last_name:
-                    queryset = queryset.filter(
-                        employee_id__employee_first_name__icontains=first_name,
-                        employee_id__employee_last_name__icontains=last_name,
+                queryset = queryset.annotate(
+                    full_name=Concat(
+                        Coalesce("employee_id__employee_first_name", Value("")),
+                        Value(" "),
+                        Coalesce("employee_id__employee_last_name", Value("")),
                     )
-                elif first_name:
-                    queryset = queryset.filter(
-                        employee_id__employee_first_name__icontains=first_name
-                    )
-                elif last_name:
-                    queryset = queryset.filter(
-                        employee_id__employee_last_name__icontains=last_name
-                    )
+                )
+
+                queryset = queryset.filter(full_name__icontains=value)
+
+                queryset = (
+                    queryset | qs.filter(employee_id__badge_id__icontains=value)
+                ).distinct()
             else:
                 filter = filter_method.get(search_field)
                 queryset = queryset.filter(**{filter: value})
 
+            queryset = (
+                queryset | qs.filter(employee_id__badge_id__icontains=value).distinct()
+            )
             return queryset
