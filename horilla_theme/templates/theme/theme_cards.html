@@ -47,8 +47,9 @@
                 <button type="submit" class="hidden"></button>
             </form>
 
-            <!-- Set as Default Button -->
-                {% comment %} <div class="px-4 pb-4 mt-auto">
+            {% if request.session.selected_company == "all" %}
+                <!-- Set as Default Button -->
+                <div class="px-4 pb-4 mt-auto">
                     {% if default_theme and default_theme.id == theme.id %}
                     <button type="button"
                         class="w-full flex items-center justify-center gap-2 px-3 py-2 text-xs font-medium transition-all duration-200 rounded-lg border bg-[{{ theme.primary_600 }}] text-white hover:bg-[{{ theme.primary_800 }}]"
@@ -68,7 +69,8 @@
                         <span>{% trans 'Set as Default' %}</span>
                     </button>
                     {% endif %}
-                </div> {% endcomment %}
+                </div>
+            {% endif %}
         </div>
     {% empty %}
         <div class="col-span-full text-center py-8 text-gray-500">

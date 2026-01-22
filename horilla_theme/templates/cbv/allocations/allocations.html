@@ -1,9 +1,9 @@
 {% load static i18n generic_template_filters horillafilters %}
-{% get_company as company_obj %}
+{% get_company as theme_obj %}
 <style>
 	.sidebarItemActive {
 		background: #fff5f1;
-		color: {{ company_obj.companytheme_set.first.theme.primary_600|default:"#E54F38" }};
+		color: {{ theme_obj.primary_600|default:"#E54F38" }};
 	}
 </style>
 

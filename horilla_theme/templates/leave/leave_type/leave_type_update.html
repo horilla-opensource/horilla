@@ -1,7 +1,7 @@
 {% extends 'index.html' %}
 {% load static widget_tweaks horillafilters %}
 {% load i18n %}
-{% get_company as company_obj %}
+{% get_company as theme_obj %}
 
 {% block content %}
 {% if form.errors %}
@@ -91,7 +91,7 @@
   }
   .sr-only.peer:checked + div,
   .sr-only.peer:checked + .relative {
-    background-color: {{ company_obj.companytheme_set.first.theme.primary_600|default:"#E54F38" }};
+    background-color: {{ theme_obj.primary_600|default:"#E54F38" }};
   }
   .sr-only.peer:checked + div::after,
   .sr-only.peer:checked + .relative::after {
@@ -107,7 +107,7 @@
     font-weight: 600;
   }
   .oh-btn.oh-btn--secondary {
-    background-color: {{ company_obj.companytheme_set.first.theme.primary_600|default:"#E54F38" }};
+    background-color: {{ theme_obj.primary_600|default:"#E54F38" }};
     color: #fff;
     border: 0;
     box-shadow: 0 6px 18px rgba(229,79,56,0.12);
@@ -405,9 +405,10 @@
                 </div>
             </div>
         </div>
+        <hr class="mt-5 mb-3 d-flex flex-row-reverse" style="color:#cdd5df;">
         <div class="flex gap-1 justify-end pt-3 mt-3">
             <button type="submit"
-                class="oh-btn oh-onboarding-card__button mt-4 oh-btn--secondary oh-btn--shadow w-100 mb-4"
+                class="oh-btn oh-onboarding-card__button mt-4 oh-btn--secondary oh-btn--shadow mb-4"
                 role="button">
                 {% trans "Update" %}
             </button>

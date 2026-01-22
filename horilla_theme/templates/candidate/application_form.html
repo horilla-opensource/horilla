@@ -1,6 +1,7 @@
 {% comment %} {% extends 'candidate/application_form_component.html' %}  {% endcomment %}
 {% block content %}
-{% load static %} {% load i18n %} {{form.load}}
+{% load static %} {% load i18n horillafilters %} {{form.load}}
+{% get_company as theme_obj %}
 <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
@@ -47,11 +48,11 @@
 
 <body class="bg-secondary-50 font-[Inter,_sans-serif]">
     <!-- Main Content -->
-        <div class="bg-[#F6F6F6]">
+        <div class="bg-[{{theme_obj.primary_50}}]">
             <div class="pb-10 pt-3 pl-20 pr-20">
                 <h3 class="pb-4 pt-2 font-bold text-center text-2xl">{% trans "Application Form" %}</h3>
                 <div class="grid grid-cols-12 gap-4">
-                    <div class="col-span-12 lg:col-span-4 bg-white rounded-md shadow-card p-5">
+                    <div class="col-span-12 lg:col-span-4 bg-[{{theme_obj.primary_50}}] rounded-md shadow-card p-5 [box-shadow:0px_0px_25px_#a1a1a1]">
                         <div class="lg:h-[calc(100vh_-_160px)] overflow-hidden overflow-y-auto">
                             {% if resume %}
                                 <div class="sticky">
@@ -78,7 +79,7 @@
                                 {% endfor %}
                             </div>
                         {% endif %}
-                        <form class="col-span-12 lg:col-span-8 bg-white rounded-md shadow-card p-5 myform" method="post" enctype="multipart/form-data">
+                        <form class="col-span-12 lg:col-span-8 bg-[{{theme_obj.primary_50}}] rounded-md shadow-card p-5 myform [box-shadow:0px_0px_25px_#a1a1a1]" method="post" enctype="multipart/form-data">
                             {% csrf_token %}
                             <div class= "lg:h-[calc(100vh_-_160px)] overflow-hidden overflow-y-auto">
                                 <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4 ">
@@ -86,7 +87,8 @@
                                         <label class="required-star" for="name">{% trans "Name" %}</label>
                                         <div class="relative">
                                             <input type="text" id="name" name="name" placeholder="Enter your name" required style="padding-left: 35px;" value="{{ form.name.value|default:'' }}">
-                                            <span class="absolute left-1 top-0 bottom-0 m-auto flex items-center ps-2 text-sm text-primary-600">
+                                            <span class="absolute left-1 top-0 bottom-0 m-auto flex items-center ps-2 text-sm text-[{{theme_obj.primary_700}}]">
+
                                                 <i class="fa-solid fa-user"></i></span>
                                             </div>
                                             {{form.name.errors}}
@@ -96,7 +98,7 @@
                                         <div class="relative">
                                             <input type="email" id="email" name="email" placeholder="e.g. janedoe@example.com" required style="padding-left: 35px;" value="{{ form.email.value|default:'' }}">
                                             <span
-                                            class="absolute left-1 top-0 bottom-0 m-auto flex items-center ps-2 text-sm text-primary-600"><i
+                                            class="absolute left-1 top-0 bottom-0 m-auto flex items-center ps-2 text-sm text-[{{theme_obj.primary_700}}]"><i
                                             class="fa-solid fa-envelope"></i></span>
                                         </div>
                                         {{form.email.errors}}
@@ -106,7 +108,7 @@
                                         <div class="relative">
                                             <input type="text" placeholder="e.g. +1 245 999 999" name="mobile" style="padding-left: 35px;" value="{{ form.mobile.value|default:'' }}">
                                             <span
-                                            class="absolute left-1 top-0 bottom-0 m-auto flex items-center ps-2 text-sm text-primary-600"><i
+                                            class="absolute left-1 top-0 bottom-0 m-auto flex items-center ps-2 text-sm text-[{{theme_obj.primary_700}}]"><i
                                             class="fa-solid fa-phone"></i></span>
                                         </div>
                                         {{form.mobile.errors}}
@@ -125,7 +127,7 @@
                                                     <option value="{{job.id}}">&nbsp;&nbsp;&nbsp;&nbsp;{{job.job_position}}</option>
                                                 {% endfor %}
                                             </select>
-                                            <span class="absolute left-2 top-3 text-sm text-primary-600 pointer-events-none">
+                                            <span class="absolute left-2 top-3 text-sm text-[{{theme_obj.primary_700}}] pointer-events-none">
                                                 <i class="fa-solid fa-briefcase"></i>
                                             </span>
                                         </div>
@@ -136,7 +138,7 @@
                                         <div class="relative">
                                             <input type="text" id="portfolio" name="portfolio" placeholder="e.g. https://www.linktoportfolio.com/" style="padding-left: 35px;" value="{{ form.portfolio.value|default:'' }}">
                                             <span
-                                            class="absolute left-1 top-0 bottom-0 m-auto flex items-center ps-2 text-sm text-primary-600"><i
+                                            class="absolute left-1 top-0 bottom-0 m-auto flex items-center ps-2 text-sm text-[{{theme_obj.primary_700}}]"><i
                                             class="fa-solid fa-folder-open"></i></span>
                                         </div>
                                         {{form.portfolio.errors}}
@@ -146,7 +148,7 @@
                                         <label class="required-star" for="gender">{% trans "Gender" %}</label>
                                         <div class="relative">
                                             {{form.gender}}
-                                            <span class="absolute left-1 top-0 bottom-0 m-auto flex items-center ps-2 text-sm text-primary-600">
+                                            <span class="absolute left-1 top-0 bottom-0 m-auto flex items-center ps-2 text-sm text-[{{theme_obj.primary_700}}]">
                                                 <i class="fa-solid fa-circle-dot"></i></span>
                                             </div>
                                             {{form.gender.errors}}
@@ -160,7 +162,7 @@
                                         <textarea type="text" id="address" name="address" required rows="3" placeholder="Enter your address"
                                             style="padding-left: 35px;">{{ form.address.value|default:'' }}</textarea>
                                             <span
-                                            class="absolute left-1 top-2.5 m-auto flex items-center ps-2 text-sm text-primary-600"><i
+                                            class="absolute left-1 top-2.5 m-auto flex items-center ps-2 text-sm text-[{{theme_obj.primary_700}}]"><i
                                             class="fa-solid fa-location-dot"></i></span>
                                         </div>
                                         {{form.address.errors}}
@@ -225,7 +227,7 @@
                                             <select name="country" id="id_country" required class="oh-select oh-select-2" style="padding-left:30px;" data-selected="{{ form.country.value|default:'' }}">
                                         </select>
                                             {{form.country.errors}}
-                                            <span class="absolute left-1 top-2.5 m-auto flex items-center ps-2 text-sm text-primary-600">
+                                            <span class="absolute left-1 top-2.5 m-auto flex items-center ps-2 text-sm text-[{{theme_obj.primary_700}}]">
                                                 <i class="fa-solid fa-globe"></i></span>
                                         </div>
                                     </div>
@@ -235,7 +237,7 @@
                                             <select name="state" id="id_state" required class="oh-select oh-select-2" style="padding-left:30px;" data-selected="{{ form.state.value|default:'' }}">
                                             </select>
                                                 {{form.state.errors}}
-                                            <span class="absolute left-1 top-2.5 m-auto flex items-center ps-2 text-sm text-primary-600">
+                                            <span class="absolute left-1 top-2.5 m-auto flex items-center ps-2 text-sm text-[{{theme_obj.primary_700}}]">
                                                 <i class="fa-solid fa-map"></i>
                                             </span>
                                         </div>
@@ -246,7 +248,7 @@
                                             <input type="text" id="city" required name="city" placeholder="e.g. Kerala" style="padding-left: 35px;" value="{{ form.city.value|default:'' }}">
                                             {{form.city.errors}}
                                             <span
-                                            class="absolute left-1 top-0 bottom-0 m-auto flex items-center ps-2 text-sm text-primary-600"><i
+                                            class="absolute left-1 top-0 bottom-0 m-auto flex items-center ps-2 text-sm text-[{{theme_obj.primary_700}}]"><i
                                             class="fa-solid fa-city"></i></span>
                                         </div>
                                     </div>
@@ -256,7 +258,7 @@
                                             <input type="text" id="zip" required name="zip" placeholder="e.g. 611 293" style="padding-left: 35px;" value="{{ form.zip.value|default:'' }}">
                                             {{form.zip.errors}}
                                             <span
-                                            class="absolute left-1 top-0 bottom-0 m-auto flex items-center ps-2 text-sm text-primary-600"><i
+                                            class="absolute left-1 top-0 bottom-0 m-auto flex items-center ps-2 text-sm text-[{{theme_obj.primary_700}}]"><i
                                             class="fa-solid fa-location-dot"></i></span>
                                         </div>
                                     </div>
@@ -264,7 +266,7 @@
                             </div>
                             <div class="flex justify-end">
                                 <button type="submit" onclick="validateForm(event)"
-                                  class="px-4 py-2 bg-primary-600 text-white rounded-md text-sm flex items-center gap-2 hover:bg-primary-800 transition duration-300">
+                                  class="px-4 py-2 bg-[{{theme_obj.primary_600}}] text-white rounded-md text-sm flex items-center gap-2 hover:bg-[{{theme_obj.primary_800}}] transition duration-300">
                                   <i class="fa-solid fa-check"></i>
                                   {% trans "Submit Application" %}
                                 </button>

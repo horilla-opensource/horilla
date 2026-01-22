@@ -68,9 +68,9 @@ class ChangeThemeView(LoginRequiredMixin, View):
             if selected_company != "all"
             else None
         )
-        if not active_company:
-            return self._error_response(request, _("No active company found"), 400)
-
+        if selected_company == "all":
+            messages.error(request, _("No active company found"))
+            return self._render_themes(request)
         try:
             theme = HorillaColorTheme.objects.get(pk=theme_id)
             self._update_company_theme(active_company, theme, is_default)
@@ -159,9 +159,9 @@ class SetDefaultThemeView(LoginRequiredMixin, View):
         if not theme_id:
             return self._error_response(request, _("Theme ID is required"), 400)
 
-        active_company = getattr(request, "active_company", None)
-        if not active_company:
-            return self._error_response(request, _("No active company found"), 400)
+        # active_company = getattr(request, "active_company", None)
+        # company_id = request.session.get("selected_company")
+        # return self._error_response(request, _("No active company found"), 400)
 
         try:
             theme = HorillaColorTheme.objects.get(pk=theme_id)
