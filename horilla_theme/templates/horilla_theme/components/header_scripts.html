@@ -1,5 +1,5 @@
 {% load static %} {% load horillafilters %}
-{% get_company as company_obj %}
+{% get_company as theme_obj %}
 <script>
     document.addEventListener("DOMContentLoaded", function () {
     var btn = document.getElementById("themeToggleButton");
@@ -48,39 +48,39 @@
                 white: '#FFFFFF',
 
                 primary: {
-                    50:  '{{ company_obj.companytheme_set.first.theme.primary_50  | default:"#f6f6f6" }}',
-                    100: '{{ company_obj.companytheme_set.first.theme.primary_100 | default:"#FFF5F1" }}',
-                    200: '{{ company_obj.companytheme_set.first.theme.primary_200 | default:"#FEF6F5" }}',
-                    300: '{{ company_obj.companytheme_set.first.theme.primary_300 | default:"#FCEDEB" }}',
-                    400: '{{ company_obj.companytheme_set.first.theme.primary_400 | default:"#FBE5E1" }}',
-                    500: '{{ company_obj.companytheme_set.first.theme.primary_500 | default:"#F7C8C1" }}',
-                    600: '{{ company_obj.companytheme_set.first.theme.primary_600 | default:"#E54F38" }}',
-                    700: '{{ company_obj.companytheme_set.first.theme.primary_700 | default:"#ce4732" }}',
-                    800: '{{ company_obj.companytheme_set.first.theme.primary_800 | default:"#AC3B2A" }}',
-                    900: '{{ company_obj.companytheme_set.first.theme.primary_900 | default:"#672419" }}',
+                    50:  '{{ theme_obj.primary_50  | default:"#f6f6f6" }}',
+                    100: '{{ theme_obj.primary_100 | default:"#FFF5F1" }}',
+                    200: '{{ theme_obj.primary_200 | default:"#FEF6F5" }}',
+                    300: '{{ theme_obj.primary_300 | default:"#FCEDEB" }}',
+                    400: '{{ theme_obj.primary_400 | default:"#FBE5E1" }}',
+                    500: '{{ theme_obj.primary_500 | default:"#F7C8C1" }}',
+                    600: '{{ theme_obj.primary_600 | default:"#E54F38" }}',
+                    700: '{{ theme_obj.primary_700 | default:"#ce4732" }}',
+                    800: '{{ theme_obj.primary_800 | default:"#AC3B2A" }}',
+                    900: '{{ theme_obj.primary_900 | default:"#672419" }}',
                 },
 
                 dark: {
-                    50:  '{{ company_obj.companytheme_set.first.theme.dark_50  | default:"#E6E6E6" }}',
-                    100: '{{ company_obj.companytheme_set.first.theme.dark_100 | default:"#A8A8A8" }}',
-                    200: '{{ company_obj.companytheme_set.first.theme.dark_200 | default:"#515151" }}',
-                    300: '{{ company_obj.companytheme_set.first.theme.dark_300 | default:"#501C14" }}',
-                    400: '{{ company_obj.companytheme_set.first.theme.dark_400 | default:"#64748B" }}',
-                    500: '{{ company_obj.companytheme_set.first.theme.dark_500 | default:"#190906" }}',
-                    600: '{{ company_obj.companytheme_set.first.theme.dark_600 | default:"#000000" }}',
+                    50:  '{{ theme_obj.dark_50  | default:"#E6E6E6" }}',
+                    100: '{{ theme_obj.dark_100 | default:"#A8A8A8" }}',
+                    200: '{{ theme_obj.dark_200 | default:"#515151" }}',
+                    300: '{{ theme_obj.dark_300 | default:"#501C14" }}',
+                    400: '{{ theme_obj.dark_400 | default:"#64748B" }}',
+                    500: '{{ theme_obj.dark_500 | default:"#190906" }}',
+                    600: '{{ theme_obj.dark_600 | default:"#000000" }}',
                 },
 
                 secondary: {
-                    50:  '{{ company_obj.companytheme_set.first.theme.secondary_50  | default:"#f8fafc" }}',
-                    100: '{{ company_obj.companytheme_set.first.theme.secondary_100 | default:"#f1f5f9" }}',
-                    200: '{{ company_obj.companytheme_set.first.theme.secondary_200 | default:"#e2e8f0" }}',
-                    300: '{{ company_obj.companytheme_set.first.theme.secondary_300 | default:"#cbd5e1" }}',
-                    400: '{{ company_obj.companytheme_set.first.theme.secondary_400 | default:"#FBE5E1" }}',
-                    500: '{{ company_obj.companytheme_set.first.theme.secondary_500 | default:"#F7C8C1" }}',
-                    600: '{{ company_obj.companytheme_set.first.theme.secondary_600 | default:"#E54F38" }}',
-                    700: '{{ company_obj.companytheme_set.first.theme.secondary_700 | default:"#334155" }}',
-                    800: '{{ company_obj.companytheme_set.first.theme.secondary_800 | default:"#1e293b" }}',
-                    900: '{{ company_obj.companytheme_set.first.theme.secondary_900 | default:"#0f172a" }}',
+                    50:  '{{ theme_obj.secondary_50  | default:"#f8fafc" }}',
+                    100: '{{ theme_obj.secondary_100 | default:"#f1f5f9" }}',
+                    200: '{{ theme_obj.secondary_200 | default:"#e2e8f0" }}',
+                    300: '{{ theme_obj.secondary_300 | default:"#cbd5e1" }}',
+                    400: '{{ theme_obj.secondary_400 | default:"#FBE5E1" }}',
+                    500: '{{ theme_obj.secondary_500 | default:"#F7C8C1" }}',
+                    600: '{{ theme_obj.secondary_600 | default:"#E54F38" }}',
+                    700: '{{ theme_obj.secondary_700 | default:"#334155" }}',
+                    800: '{{ theme_obj.secondary_800 | default:"#1e293b" }}',
+                    900: '{{ theme_obj.secondary_900 | default:"#0f172a" }}',
                 },
 
                 success: {

@@ -1,5 +1,5 @@
 {% load i18n generic_template_filters horillafilters %}
-{% get_company as company_obj %}
+{% get_company as theme_obj %}
 
 <style>
 	.oh-tabs__tab {
@@ -18,8 +18,8 @@
 	/* Active tab */
 	.oh-tabs__tab--active {
 		background-color: #fcedeb; /* bg-primary-300 */
-		color: {{ company_obj.companytheme_set.first.theme.primary_600|default:"#E54F38" }}; /* text-primary-600 */
-		border: 1px solid color: {{ company_obj.companytheme_set.first.theme.primary_600|default:"#E54F38" }}; /* border-primary-600 */
+		color: {{ theme_obj.primary_600|default:"#E54F38" }}; /* text-primary-600 */
+		border: 1px solid color: {{ theme_obj.primary_600|default:"#E54F38" }}; /* border-primary-600 */
 	}
 	.oh-tabs__content {
 		display: none;

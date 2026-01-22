@@ -635,6 +635,7 @@ class CompanyTheme(HorillaModel):
         if company_theme and company_theme.theme:
             return company_theme.theme
 
-        return HorillaColorTheme.objects.filter(
-            name="Coral Red Theme (Default)"
-        ).first()
+        # return HorillaColorTheme.objects.filter(
+        #     name="Coral Red Theme (Default)"
+        # ).first()
+        return HorillaColorTheme.objects.filter(is_default=True).first()
