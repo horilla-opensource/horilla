@@ -20,6 +20,7 @@ from base.models import Company, EmployeeShiftSchedule, IntegrationApps
 from employee.methods.duration_methods import strtime_seconds
 from horilla.horilla_middlewares import _thread_locals
 from horilla.methods import get_horilla_model_class
+from horilla_theme.models import CompanyTheme, HorillaColorTheme
 
 register = template.Library()
 
@@ -355,5 +356,15 @@ def get_company(context):
     request = context["request"]
     company_id = request.session.get("selected_company")
     if company_id != "all":
-        return Company.objects.filter(id=company_id).first()
-    return None
+        company = Company.objects.filter(id=company_id).first()
+        theme = CompanyTheme.objects.filter(company=company).first()
+        if theme:
+            return HorillaColorTheme.objects.filter(id=theme.theme.id).first()
+        else:
+            return HorillaColorTheme.objects.filter(is_default=True).first()
+    return HorillaColorTheme.objects.filter(is_default=True).first()
+
+
+@register.simple_tag(takes_context=True)
+def get_def_theme(context):
+    return HorillaColorTheme.objects.filter(is_default=True).first()
