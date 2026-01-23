@@ -55,3 +55,10 @@ jobs:
           DATABASE_URL: postgres://postgres:postgres@localhost:5432/test_db
         run: |
           python manage.py test
+          on:
+  workflow_dispatch:
+  push:
+    branches: ["main", "master"]
+  pull_request:
+    branches: ["main", "master"]
+
