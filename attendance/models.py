@@ -1139,6 +1139,7 @@ class AttendanceOverTime(HorillaModel):
                     employee_id=self.employee_id,
                     attendance_validated=True,
                     attendance_overtime_approve=False,
+                    overtime_second__isnull=False,
                 ).values_list("overtime_second", flat=True)
             )
         )
