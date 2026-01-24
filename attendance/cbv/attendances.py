@@ -99,35 +99,35 @@ class AttendancesListView(HorillaListView):
     ]
     records_per_page = 10
 
-    def get_queryset(self, queryset=None, filtered=False, *args, **kwargs):
-        """
-        Get queryset
-        """
-        get_data = self.request.GET.copy()
-        # Check if user has set any range filter
-        has_min = (
-            "attendance_date__gte" in get_data and get_data["attendance_date__gte"]
-        )
-        has_max = (
-            "attendance_date__lte" in get_data and get_data["attendance_date__lte"]
-        )
+    # def get_queryset(self, queryset=None, filtered=False, *args, **kwargs):
+    #     """
+    #     Get queryset
+    #     """
+    #     get_data = self.request.GET.copy()
+    #     # Check if user has set any range filter
+    #     has_min = (
+    #         "attendance_date__gte" in get_data and get_data["attendance_date__gte"]
+    #     )
+    #     has_max = (
+    #         "attendance_date__lte" in get_data and get_data["attendance_date__lte"]
+    #     )
 
-        # If no date range is specified, set default to last 2 days
-        if not has_min and not has_max:
-            today = datetime.now().date()
-            two_days_ago = today - timedelta(days=32)
-            get_data["attendance_date__gte"] = two_days_ago.strftime("%Y-%m-%d")
-            get_data["attendance_date__lte"] = today.strftime("%Y-%m-%d")
+    #     # If no date range is specified, set default to last 2 days
+    #     if not has_min and not has_max:
+    #         today = datetime.now().date()
+    #         two_days_ago = today - timedelta(days=32)
+    #         get_data["attendance_date__gte"] = two_days_ago.strftime("%Y-%m-%d")
+    #         get_data["attendance_date__lte"] = today.strftime("%Y-%m-%d")
 
-        if get_data.get("attendance_date"):
-            get_data["attendance_date__gte"] = get_data["attendance_date"]
-            get_data["attendance_date__lte"] = get_data["attendance_date"]
+    #     if get_data.get("attendance_date"):
+    #         get_data["attendance_date__gte"] = get_data["attendance_date"]
+    #         get_data["attendance_date__lte"] = get_data["attendance_date"]
 
-        if not self.queryset:
-            self.queryset = super().get_queryset(
-                filtered=True, queryset=self.filter_class(get_data).qs
-            )
-        return self.queryset
+    #     if not self.queryset:
+    #         self.queryset = super().get_queryset(
+    #             filtered=True, queryset=self.filter_class(get_data).qs
+    #         )
+    #     return self.queryset
 
 
 @method_decorator(login_required, name="dispatch")
