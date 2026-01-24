@@ -8,6 +8,8 @@ import django_filters
 from django import forms
 from django.core.paginator import Page, Paginator
 from django.db import models
+from django.db.models import Value
+from django.db.models.functions import Coalesce, Concat
 from django.utils.translation import gettext_lazy as _
 from django_filters.filterset import FILTER_FOR_DBFIELD_DEFAULTS
 
@@ -24,25 +26,20 @@ def filter_by_name(queryset, name, value):
     """
     Filter queryset by first name or last name.
     """
-    # Split the search value into first name and last name
-    parts = value.split()
-    first_name = parts[0]
-    last_name = " ".join(parts[1:]) if len(parts) > 1 else ""
+    qs = queryset
+    value = " ".join(value.split())
 
-    # Filter the queryset by first name and last name
-    if first_name and last_name:
-        queryset = queryset.filter(
-            employee_id__employee_first_name__icontains=first_name,
-            employee_id__employee_last_name__icontains=last_name,
+    queryset = queryset.annotate(
+        full_name=Concat(
+            Coalesce("employee_id__employee_first_name", Value("")),
+            Value(" "),
+            Coalesce("employee_id__employee_last_name", Value("")),
         )
-    elif first_name:
-        queryset = queryset.filter(
-            employee_id__employee_first_name__icontains=first_name
-        )
-    elif last_name:
-        queryset = queryset.filter(employee_id__employee_last_name__icontains=last_name)
+    )
 
-    return queryset
+    queryset = queryset.filter(full_name__icontains=value)
+
+    queryset = (queryset | qs.filter(employee_id__badge_id__icontains=value)).distinct()
 
 
 class FilterSet(django_filters.FilterSet):
