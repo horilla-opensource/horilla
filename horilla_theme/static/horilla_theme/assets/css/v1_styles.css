@@ -126,7 +126,9 @@
   padding: 1.75rem 1.75rem 0.5rem;
   width: 100%;
 }
-
+.oh-modal ion-icon {
+    font-size: 1.5rem;
+}
 .oh-modal__dialog-body {
   padding: 0 1.75rem 1.75rem 1.75rem;
 }
@@ -156,10 +158,10 @@
   border: none;
   background: none;
   font-size: 1.5rem;
-  opacity: 0.7;
+
   position: absolute;
   top: 25px;
-  right: 15px;
+  right: 25px;
   cursor: pointer;
   -webkit-transition: all 0.3s ease-in-out;
   transition: all 0.3s ease-in-out;

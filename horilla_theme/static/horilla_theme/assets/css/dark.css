@@ -9,7 +9,13 @@ body.dark
   .select2-container--default
   .select2-results__option[aria-selected="true"],
 body.dark .oh-activity-sidebar,
-body.dark .oh-card-dashboard {
+body.dark .oh-card-dashboard,
+body.dark .note-editable,
+body.dark .note-btn.active,
+body.dark .note-btn.focus,
+body.dark .note-btn:active,
+body.dark .note-btn:focus,
+body.dark .note-btn:hover {
   background-color: #242424;
 }
 body.dark #sidebar nav .sidebox,
@@ -27,7 +33,8 @@ body.dark #pivot-container .pvtTable tbody tr th,
 body.dark #pivot-container .pvtTable thead tr th,
 body.dark .pvtFilterBox p button,
 body.dark #pivot-container .pvtTable td,
-body.dark #pivot-container .pvtTable tr:nth-child(2n) td {
+body.dark #pivot-container .pvtTable tr:nth-child(2n) td,
+body.dark .note-toolbar {
   background-color: #1b1b1b !important;
 }
 
@@ -85,17 +92,34 @@ body.dark #pivot-container .pvtTable tbody tr th,
 body.dark #pivot-container .pvtTable thead tr th,
 body.dark .pvtFilterBox,
 body.dark #pivot-container .pvtTable tr:nth-child(2n) td,
-body.dark #pivot-container .pvtTable td {
+body.dark #pivot-container .pvtTable td,
+body.dark .note-toolbar,
+body.dark .note-btn {
   border-color: #444444 !important;
 }
 body.dark .oh-input,
 body.dark .oh-select,
-body.dark select {
+body.dark select,
+body.dark .form-input-items input[type="text"],
+body.dark .form-input-items input[type="number"],
+body.dark .form-input-items input[type="file"],
+body.dark .form-input-items select,
+body.dark .form-input-items textarea,
+body.dark .form-input-items .oh-input,
+body.dark .form-input-items .oh-select,
+body.dark .note-btn{
   color: #dfdfdf !important;
   background-color: #111111;
   border-color: #656565 !important;
 }
-body.dark .oh-input {
+body.dark .oh-input,
+body.dark .form-input-items input[type="text"],
+body.dark .form-input-items input[type="number"],
+body.dark .form-input-items input[type="file"],
+body.dark .form-input-items select,
+body.dark .form-input-items textarea,
+body.dark .form-input-items .oh-input,
+body.dark .form-input-items .oh-select {
   border: 1px solid #656565 !important;
 }
 body.dark .sideboxmain img,
@@ -120,7 +144,9 @@ body.dark .swal2-title,
 body.dark .pvtColOrder,
 body.dark .pvtRowOrder,
 body.dark .pvtFilterBox h4,
-body.dark .fa-solid.fa-clone {
+body.dark .fa-solid.fa-clone,
+body.dark .form-input-items label,
+body.dark .form-input-items .text-xs {
   color: white;
 }
 
@@ -302,4 +328,15 @@ body.dark .animated-background {
     #4b4b4b96 10%,
     #96969661 20%
   );
+}
+
+body.dark .sr-only.peer + div,
+body.dark .sr-only.peer + .relative ,
+body.dark .oh-switch .oh-switch__checkbox::after{
+  background: #747474;
+}
+body.dark .sr-only.peer + div::after,
+body.dark .sr-only.peer + .relative::after,
+body.dark .oh-switch .oh-switch__checkbox {
+  background: #3a3a3a;
 }
