@@ -133,7 +133,7 @@
     <form method="post" enctype="multipart/form-data" id="mainform">
         {% csrf_token %}
         <div class="grid grid-cols-12 gap-4 ">
-            <div class="col-span-12 md:col-span-6 rounded-md border border-dark-50 p-5 bg-gray-50">
+            <div class="col-span-12 md:col-span-6 rounded-md border border-dark-50 p-5">
                 <div class="form-input-items" >
                     <label class="text-xs font-medium">{% trans "Name" %}</label>
                         {{form.name}}
@@ -302,7 +302,7 @@
 
             <!-- right col -->
             <div class="col-span-12 md:col-span-6">
-                <div class="p-5 bg-gray-50 rounded-md border border-dark-50">
+                <div class="p-5 rounded-md border border-dark-50">
                     <div class="form-input-items" >
                         <label class="text-xs font-medium">{% trans "Icon" %}</label>
                         <label for="fileUpload" class="text-xs font-medium flex items-center bg-white justify-center gap-2 px-4 py-2 border border-dark-50 rounded-md text-xs text-gray-700 cursor-pointer hover:bg-gray-100 transition duration-300">
