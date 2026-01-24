@@ -17,9 +17,9 @@
 
             {# Edit Button #}
             {% if can_manage or can_change or leave_manager %}
-                <button class="oh-btn oh-btn--light-bkg w-100 {% if instance.status != 'requested' %}disabled{% endif %}"
+                <button class="oh-btn oh-btn--light-bkg w-100" {% if instance.end_date < current_date %} disabled {% endif %}
                     title="{% trans 'Edit' %}" data-toggle="oh-modal-toggle" data-target="#genericModal"
-                    {% if instance.status == 'requested' %}
+                    {% if instance.end_date >= current_date %}
                         hx-get="{% url 'request-update' instance.id %}?instance_ids={{ instance.ordered_ids }}"
                         hx-target="#genericModalBody"
                     {% endif %}

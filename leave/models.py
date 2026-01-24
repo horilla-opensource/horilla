@@ -1170,9 +1170,13 @@ class LeaveRequest(HorillaModel):
         """
         method for actions coloumn
         """
+        current_date = date.today()
         return render_template(
             path="cbv/leave_requests/actions_col.html",
-            context={"instance": self},
+            context={
+                "instance": self,
+                "current_date": current_date,
+            },
         )
 
     def confirmation_col(self):
