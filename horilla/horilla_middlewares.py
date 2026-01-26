@@ -43,3 +43,14 @@ class MethodNotAllowedMiddleware:
         if isinstance(response, HttpResponseNotAllowed):
             return render(request, "405.html")
         return response
+
+class ActiveUserMiddleware:
+    def __init__(self, get_response):
+        self.get_response = get_response
+
+    def __call__(self, request):
+        if request.user.is_authenticated:
+            from django.core.cache import cache
+
+            cache.set(f"online_user_{request.user.id}", True, 300)
+        return self.get_response(request)
