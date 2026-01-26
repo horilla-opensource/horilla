@@ -1,6 +1,6 @@
 import logging
 from threading import Thread
-
+from django.contrib.auth.models import Group
 from django.contrib import messages
 from django.core.mail import EmailMessage
 from django.db.models import Q
@@ -21,6 +21,17 @@ class LeaveMailSendThread(Thread):
         self.type = type
         self.host = request.get_host()
         self.protocol = "https" if request.is_secure() else "http"
+
+    def get_hr_users(self):
+        try:
+            hr_group = Group.objects.get(name="HR")
+            return [
+                user.employee_get
+                for user in hr_group.user_set.all()
+                if hasattr(user, "employee_get") and user.employee_get
+            ]
+        except Group.DoesNotExist:
+            return []
 
     def send_email(self, subject, content, recipients, leave_request_id="#"):
         email_backend = ConfiguredEmailBackend()
@@ -63,16 +74,44 @@ class LeaveMailSendThread(Thread):
     def run(self) -> None:
         super().run()
         if self.type == "request":
+            leave = self.leave_request
             owner = self.leave_request.employee_id
             reporting_manager = self.leave_request.employee_id.get_reporting_manager()
 
-            content_manager = f"This is to inform you that a leave request has been requested by {owner}. Take the necessary actions for the leave request. Should you have any additional information or updates, please feel free to communicate directly with the {owner}."
+            leave_details = {
+                "employee_name": owner.get_full_name(),
+                "leave_type": leave.leave_type_id.name,
+                "from_date": leave.start_date,
+                "to_date": leave.end_date,
+                "total_days": leave.requested_days,
+                "status": leave.status.capitalize(),
+            }
+
+            content_manager = (
+                f"A new leave request has been submitted by {leave_details['employee_name']} "
+                f"This is for {leave_details['leave_type']}, "
+                f"starting from {leave_details['from_date']} to {leave_details['to_date']}, "
+                f"for a total of {leave_details['total_days']} day"
+                f"{'s' if leave_details['total_days'] > 1 else ''}. "
+                f"The current status of the leave request is {leave_details['status']}."
+            )
+
             subject_manager = f"Leave request has been requested by {owner}"
+
+            recipients = []
+
+            if reporting_manager:
+                recipients.append(reporting_manager)
+
+            hr_users = self.get_hr_users()
+            recipients.extend(hr_users)
+
+            recipients = list(set(recipients))
 
             self.send_email(
                 subject_manager,
                 content_manager,
-                [reporting_manager],
+                recipients,
                 self.leave_request.id,
             )
 
