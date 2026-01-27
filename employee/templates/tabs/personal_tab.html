@@ -1,4 +1,4 @@
-{% load i18n %} {% load static %} {% load horillafilters %}
+{% load i18n %} {% load static %} {% load horillafilters %} {% load humanize %}
 <div class="row">
 	<div class="col-sm-12 col-md-12 col-lg-4">
 		<div class="oh-card oh-card--margin">
@@ -234,7 +234,8 @@
 											{% if employee.employee_work_info.basic_salary %}
 												<span class="oh-profile__info-value">
 													{% if perms.employee.view_employee or request.user == employee.employee_user_id %}
-														{{employee.employee_work_info.basic_salary}}
+														{{employee.employee_work_info.basic_salary|intcomma}}
+														{{employee.employee_work_info.salary_currency}}
 													{% else %}
 														**********
 													{% endif %}
