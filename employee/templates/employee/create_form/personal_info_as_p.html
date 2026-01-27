@@ -1,55 +1,158 @@
 {% load i18n %} {% load basefilters %}{% load widget_tweaks %}
 {{ form.non_field_errors }}
 
+<style>
+  .oh-field-error {
+    margin-top: 6px;
+    font-size: 12px;
+    line-height: 1.3;
+    color: #b42318;
+  }
+
+  .form-control.is-invalid {
+    border-color: #d92d20 !important;
+    box-shadow: none !important;
+  }
+
+  select.is-invalid + .select2-container .select2-selection {
+    border-color: #d92d20 !important;
+    box-shadow: none !important;
+  }
+</style>
+
 <div class="row">
-    {% for field in form %}
-        {% if field.label != "Employee profile" and field.label != 'Country' and field.label != 'State' and field.label != 'Address' and field.label != 'Badge id' %}
-            <div class="col-lg-6">
-                <div class="oh-input__group">
-                    <label class="oh-label {% if field.field.required %}required-star{% endif %}" for="id_{{ field.name }}"
-                        title="{{ field.help_text|safe }}">
-                        {% trans field.label %}
-                    </label>
+  {% for field in form %}
+    {% if field.label != "Employee profile" and field.label != 'Country' and field.label != 'State' and field.label != 'Address' and field.label != 'Badge id' %}
+      <div class="col-lg-6">
+        <div class="oh-input__group">
+          <label class="oh-label {% if field.field.required %}required-star{% endif %}"
+                 for="id_{{ field.name }}"
+                 title="{{ field.help_text|safe }}">
+            {% trans field.label %}
+          </label>
 
-                    {% if field.field.widget.input_type == 'checkbox' %}
-                        <div class="oh-switch" style="width: 30px;">{{ field|add_class:'oh-switch__checkbox' }}</div>
-                    {% else %}
-                        {{ field|add_class:'form-control' }}
-                    {% endif %}
+          {% if field.field.widget.input_type == 'checkbox' %}
+            <div class="oh-switch" style="width: 30px;">
+              {{ field|add_class:'oh-switch__checkbox' }}
+            </div>
+          {% else %}
+            {% if field.errors %}
+              {{ field|add_class:'form-control is-invalid' }}
+            {% else %}
+              {{ field|add_class:'form-control' }}
+            {% endif %}
+          {% endif %}
 
-                    {{ field.errors }}
-                </div>
+          {% if field.name == "qualification" %}
+            <div id="qualificationCounter"
+                 data-max="{{ field.field.max_length|default:'' }}"
+                 style="margin-top:6px;font-size:12px;color:#667085;"></div>
+          {% endif %}
+
+          {% if field.errors %}
+            <div class="oh-field-error">
+              {% for error in field.errors %}
+                {{ error }}{% if not forloop.last %}<br>{% endif %}
+              {% endfor %}
             </div>
-        {% elif field.label == 'Address' %}
-            <div class="col-lg-12">
-                <div class="oh-input__group">
-                    <label class="oh-label {% if field.field.required %}required-star{% endif %}" for="id_{{ field.name }}"
-                        title="{{ field.help_text|safe }}">
-                        {% trans field.label %}
-                    </label>
-                    {{ field }}
-                    {{ field.errors }}
-                </div>
+          {% endif %}
+        </div>
+      </div>
+
+    {% elif field.label == 'Address' %}
+      <div class="col-lg-12">
+        <div class="oh-input__group">
+          <label class="oh-label {% if field.field.required %}required-star{% endif %}"
+                 for="id_{{ field.name }}"
+                 title="{{ field.help_text|safe }}">
+            {% trans field.label %}
+          </label>
+
+          {% if field.errors %}
+            {{ field|add_class:'form-control is-invalid' }}
+          {% else %}
+            {{ field|add_class:'form-control' }}
+          {% endif %}
+
+          {% if field.errors %}
+            <div class="oh-field-error">
+              {% for error in field.errors %}
+                {{ error }}{% if not forloop.last %}<br>{% endif %}
+              {% endfor %}
             </div>
-        {% elif field.label == 'Country' %}
-            <div class="row">
-                <div class="col-lg-6">
-                    <label class="oh-label" for="country">{% trans "Country" %}</label>
-                    <select name="country" class="w-100 oh-select-2" id="id_country"
-                        data-selected="{{ form.country.value|default:'' }}">
-                    </select>
-                    {{form.country.errors}}
-                    <span class="dropdown-wrapper" aria-hidden="true"></span>
-                    </span>
-                </div>
-                <div class="col-lg-6">
-                    <label class="oh-label d-block" for="state">{% trans "State" %}</label>
-                    <select name="state" class="w-100 oh-select-2" id="id_state"
-                        data-selected="{{ form.state.value|default:'' }}">
-                    </select>
-                    {{form.state.errors}}
-                </div>
+          {% endif %}
+        </div>
+      </div>
+
+    {% elif field.label == 'Country' %}
+      <div class="row">
+        <div class="col-lg-6">
+          <label class="oh-label" for="country">{% trans "Country" %}</label>
+
+          <select name="country"
+                  class="w-100 oh-select-2 {% if form.country.errors %}is-invalid{% endif %}"
+                  id="id_country"
+                  data-selected="{{ form.country.value|default:'' }}">
+          </select>
+
+          {% if form.country.errors %}
+            <div class="oh-field-error">
+              {% for error in form.country.errors %}
+                {{ error }}{% if not forloop.last %}<br>{% endif %}
+              {% endfor %}
             </div>
-        {% endif %}
-    {% endfor %}
+          {% endif %}
+
+          <span class="dropdown-wrapper" aria-hidden="true"></span>
+        </div>
+
+        <div class="col-lg-6">
+          <label class="oh-label d-block" for="state">{% trans "State" %}</label>
+
+          <select name="state"
+                  class="w-100 oh-select-2 {% if form.state.errors %}is-invalid{% endif %}"
+                  id="id_state"
+                  data-selected="{{ form.state.value|default:'' }}">
+          </select>
+
+          {% if form.state.errors %}
+            <div class="oh-field-error">
+              {% for error in form.state.errors %}
+                {{ error }}{% if not forloop.last %}<br>{% endif %}
+              {% endfor %}
+            </div>
+          {% endif %}
+        </div>
+      </div>
+    {% endif %}
+  {% endfor %}
 </div>
+
+<script>
+  (function () {
+    const input = document.getElementById("id_qualification");
+    const counter = document.getElementById("qualificationCounter");
+    if (!input || !counter) return;
+
+    const maxAttr = parseInt(input.getAttribute("maxlength"), 10);
+    const maxData = parseInt(counter.getAttribute("data-max"), 10);
+    const max = maxAttr || maxData;
+    if (!max) return;
+
+    function update() {
+      const used = input.value.length;
+      const remaining = max - used;
+
+      if (remaining <= 0) {
+        counter.textContent = "Character limit reached (" + max + ").";
+        counter.style.color = "#b42318";
+      } else {
+        counter.textContent = remaining + " characters remaining";
+        counter.style.color = "#667085";
+      }
+    }
+
+    input.addEventListener("input", update);
+    update();
+  })();
+</script>
