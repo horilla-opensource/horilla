@@ -37,7 +37,7 @@
 							/>
 						</div>
 						{% if "attendance"|app_installed %}
-							{% if employee.check_online %}
+							{% if employee.is_logged_in %}
 								<span
 									class="oh-profile__active-badge oh-profile__active-badge--secondary" style="background-color: yellowgreen;"
 									title="{% trans 'Online' %}">
