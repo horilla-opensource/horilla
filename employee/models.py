@@ -63,7 +63,7 @@ class Employee(models.Model):
         ("married", trans("Married")),
         ("divorced", trans("Divorced")),
     )
-    badge_id = models.CharField(max_length=50,  unique=True, null=True, blank=True , verbose_name=_("Employee ID"))
+    badge_id = models.CharField(max_length=50,  unique=True, null=False, blank=False , verbose_name=_("Employee ID"))
     employee_user_id = models.OneToOneField(
         User,
         on_delete=models.CASCADE,
@@ -487,6 +487,16 @@ class Employee(models.Model):
                 working_employees = request.working_employees
                 return self.pk in working_employees
         return False
+
+    def is_logged_in(self):
+        """"
+        Check if user is logged in
+        """
+        from django.core.cache import cache
+        user = getattr(self, "employee_user_id", None)
+        if not user:
+            return False
+        return cache.get(f"online_user_{user.id}") is not None
 
     class Meta:
         """
