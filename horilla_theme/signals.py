@@ -5,6 +5,7 @@ Signals for the horilla_theme app
 # themes/signals.py
 # Define your horilla_theme signals here
 from django.db.models.signals import post_migrate
+from django.db.utils import OperationalError, ProgrammingError
 from django.dispatch import receiver
 
 from .models import THEMES_DATA, HorillaColorTheme
@@ -20,8 +21,12 @@ def create_default_themes(sender, **kwargs):
         return
 
     # Check if horilla_theme already exist
-    if HorillaColorTheme.objects.exists():
-        print("Themes already exist. Skipping creation.")
+    try:
+        # Table may not exist yet in some migration orders
+        if HorillaColorTheme.objects.exists():
+            return
+    except (OperationalError, ProgrammingError):
+        # Table not created yet — skip silently
         return
 
     print("Creating default color themes...")
