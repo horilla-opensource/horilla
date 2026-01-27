@@ -89,7 +89,10 @@
             <div class="col-12 col-sm-12 col-md-12 col-lg-6">
             <div class="oh-input-group">
                 <label class="oh-label">{% trans "Basic Salary" %}</label>
-                {{work_form.basic_salary}}
+                <div class="d-flex" style="gap:10px">
+                    {{work_form.basic_salary}}
+                    {{work_form.salary_currency}}
+                </div>
             </div>
             </div>
             <div class="col-12 col-sm-12 col-md-12 col-lg-6">
