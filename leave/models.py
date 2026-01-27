@@ -32,7 +32,7 @@ from horilla_audit.models import HorillaAuditInfo, HorillaAuditLog
 from leave.methods import (
     calculate_requested_days,
     company_leave_dates_list,
-    holiday_dates_list, is_carryforward_valid,
+    holiday_dates_list,  is_carryforward_valid,
 )
 
 logger = logging.getLogger(__name__)
@@ -1025,8 +1025,6 @@ class LeaveRequest(HorillaModel):
                     available_leave.carryforward_days or 0,
                     leave_type.carryforward_max or available_leave.carryforward_days or 0,
                 )
-
-        total_leave_days += forcated_days
 
         total_leave_days += forcated_days
         if not effective_requested_days <= total_leave_days:
