@@ -1,4 +1,6 @@
-{% load static %} {% now "Y" as current_year %}
+{% load static horillafilters %} {% now "Y" as current_year %}
+{% get_company as theme_obj %}
+
 <!DOCTYPE html>
 <html lang="en">
     <head>
@@ -117,7 +119,7 @@
                         <a
                             href="{{protocol}}://{{host}}/leave/request-view/?id={{link}}"
                             style="
-                                background-color: #e54f37;
+                                background-color:{{theme_obj.primary_600}};
                                 color: #fff;
                                 border-radius: 10px;
                                 display: inline-block;
@@ -127,6 +129,7 @@
                             "
                             >View Leave Request</a
                         >
+
                     </td>
                 </tr>
                 {% endif %}
