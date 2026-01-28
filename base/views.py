@@ -722,7 +722,7 @@ class EmployeePasswordResetView(PasswordResetView):
                 }
                 form.save(**opts)
                 messages.success(
-                    self.request, _("Password reset link sent successfully")
+                    self.request, _("Password reset link sent successfully to {}").format(user.email)
                 )
             else:
                 messages.error(self.request, _("No user with the given username"))
