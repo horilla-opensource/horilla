@@ -75,7 +75,7 @@ if apps.is_installed("attendance"):
 
         else:
             for date in period_dates:
-                WorkRecords.objects.filter(
+                WorkRecords._base_manager.filter(
                     is_leave_record=True,
                     date=date,
                     employee_id=instance.employee_id,
@@ -85,7 +85,9 @@ if apps.is_installed("attendance"):
     def leaverequest_pre_delete(sender, instance, **kwargs):
         from attendance.models import WorkRecords
 
-        work_records = WorkRecords.objects.filter(leave_request_id=instance).delete()
+        work_records = WorkRecords._base_manager.filter(
+            leave_request_id=instance
+        ).delete()
 
 
 # @receiver(post_migrate)
