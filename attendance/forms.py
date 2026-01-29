@@ -118,7 +118,7 @@ class AttendanceUpdateForm(BaseModelForm):
                 "hx-target": "#id_attendance_worked_hour_parent_div",
                 "hx-swap": "outerHTML",
                 "hx-select": "#id_attendance_worked_hour_parent_div",
-                "hx-get": "/attendance/update-worked-hour-field",
+                "hx-get": "/attendance/update-worked-hour-field/",
                 "hx-trigger": "change delay:300ms",  # Delay added here for 500ms
             }
         )
@@ -157,7 +157,7 @@ class AttendanceUpdateForm(BaseModelForm):
                 "hx-target": "#attendanceUpdateFormFields,#personal",
                 "hx-trigger": "change",
                 "hx-swap": "outerHTML",
-                "hx-get": "/attendance/update-fields-based-shift",
+                "hx-get": "/attendance/update-fields-based-shift/",
             }
         )
         for field in [
@@ -259,7 +259,7 @@ class AttendanceForm(BaseModelForm):
                 "hx-target": "#id_attendance_worked_hour_parent_div",
                 "hx-swap": "outerHTML",
                 "hx-select": "#id_attendance_worked_hour_parent_div",
-                "hx-get": "/attendance/update-worked-hour-field",
+                "hx-get": "/attendance/update-worked-hour-field/",
                 "hx-trigger": "change delay:300ms",  # Delay added here for 500ms
             }
         )
@@ -311,7 +311,7 @@ class AttendanceForm(BaseModelForm):
                 "hx-target": "#attendanceFormFields,#personal",
                 "hx-trigger": "change",
                 "hx-swap": "outerHTML",
-                "hx-get": "/attendance/update-fields-based-shift",
+                "hx-get": "/attendance/update-fields-based-shift/",
             }
         )
 
@@ -587,7 +587,7 @@ class AttendanceRequestForm(BaseModelForm):
                 "hx-target": "#id_attendance_worked_hour_parent_div",
                 "hx-swap": "outerHTML",
                 "hx-select": "#id_attendance_worked_hour_parent_div",
-                "hx-get": "/attendance/update-worked-hour-field",
+                "hx-get": "/attendance/update-worked-hour-field/",
                 "hx-trigger": "change delay:300ms",  # Delay added here for 300ms
             }
         )
@@ -626,7 +626,7 @@ class AttendanceRequestForm(BaseModelForm):
                     "hx-include": "#attendanceRequestForm",
                     "hx-target": "#attendanceRequestDiv",
                     "hx-swap": "innerHTML",
-                    "hx-get": "/attendance/update-fields-based-shift",
+                    "hx-get": "/attendance/update-fields-based-shift/",
                 }
             )
         for field in [
@@ -720,7 +720,7 @@ class NewRequestForm(AttendanceRequestForm):
                         "class": "oh-select oh-select-2 w-100",
                         "hx-target": "#id_shift_id_parent_div,#id_shift_id_div",
                         "hx-swap": "innerHTML",
-                        "hx-get": "/attendance/get-employee-shift?bulk=False",
+                        "hx-get": "/attendance/get-employee-shift/?bulk=False",
                     }
                 ),
                 initial=view_initial.get("employee_id"),
@@ -733,7 +733,7 @@ class NewRequestForm(AttendanceRequestForm):
                         "class": "oh-checkbox",
                         "hx-target": "#genericModalBody",
                         "hx-swap": "innerHTML",
-                        "hx-get": "/attendance/request-bulk-attendance?bulk=True",
+                        "hx-get": "/attendance/request-bulk-attendance/?bulk=True",
                     }
                 ),
             ),
@@ -1079,7 +1079,7 @@ class BulkAttendanceRequestForm(BaseModelForm):
             attrs={
                 "hx-target": "#id_shift_id_parent_div",
                 "hx-swap": "innerHTML",
-                "hx-get": "/attendance/get-employee-shift?bulk=True",
+                "hx-get": "/attendance/get-employee-shift/?bulk=True",
             }
         ),
         label=_("Employee"),
@@ -1093,7 +1093,7 @@ class BulkAttendanceRequestForm(BaseModelForm):
                 "class": "oh-checkbox",
                 "hx-target": "#genericModalBody",
                 "hx-swap": "innerHTML",
-                "hx-get": "/attendance/request-new-attendance?bulk=False",
+                "hx-get": "/attendance/request-new-attendance/?bulk=False",
             }
         ),
     )
@@ -1152,7 +1152,7 @@ class BulkAttendanceRequestForm(BaseModelForm):
                 "hx-target": "#id_attendance_worked_hour_parent_div",
                 "hx-swap": "outerHTML",
                 "hx-select": "#id_attendance_worked_hour_parent_div",
-                "hx-get": "/attendance/update-worked-hour-field",
+                "hx-get": "/attendance/update-worked-hour-field/",
                 "hx-trigger": "change delay:300ms",
             }
         )
