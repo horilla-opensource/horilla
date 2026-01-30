@@ -101,7 +101,7 @@ function payslipBulkDelete() {
                 }
                 $.ajax({
                     type: "POST",
-                    url: "/payroll/payslip-bulk-delete",
+                    url: "/payroll/payslip-bulk-delete/",
                     data: {
                         csrfmiddlewaretoken: getCookie("csrftoken"),
                         ids: JSON.stringify(ids),
