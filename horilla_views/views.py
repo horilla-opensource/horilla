@@ -767,16 +767,21 @@ def export_data(request, *args, **kwargs):
         select_index += 1
 
     # =====================================================
-    # EXECUTE SQL
+    # EXECUTE SQL (SQLite + PostgreSQL SAFE)
     # =====================================================
+    if not ids:
+        return HttpResponse("No IDs provided")
+
+    placeholders = ", ".join(["%s"] * len(ids))
+
     query = f"""
         SELECT {", ".join(select_sql)}
         FROM {base_table}
-        WHERE {base_table}.id IN %s
+        WHERE {base_table}.id IN ({placeholders})
     """
 
     with connection.cursor() as cursor:
-        cursor.execute(query, [tuple(ids)])
+        cursor.execute(query, ids)
         rows = cursor.fetchall()
 
     # =====================================================
