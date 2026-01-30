@@ -865,7 +865,7 @@ def generate_payslip(request):
                 )
             messages.success(request, f"{emp_count} payslip saved as draft")
             return redirect(
-                f"/payroll/view-payslip?group_by=group_name&active_group={group_name}"
+                f"/payroll/view-payslip/?group_by=group_name&active_group={group_name}"
             )
 
     return render(request, "payroll/common/form.html", {"form": form})
