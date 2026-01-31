@@ -1,5 +1,6 @@
 {% load static %}
-{% load i18n %}
+{% load i18n horillafilters%}
+{% get_company as theme_obj %}
 <!DOCTYPE html>
 <html lang="en">
 
@@ -39,9 +40,11 @@
           <p class="oh-onboarding-card__lead text-center">
             {% trans "Hey there, welcome to our team. Let's get you started." %}
           </p>
-          <a href="/" class="oh-btn oh-onboarding-card__button mt-4 oh-btn--secondary oh-btn--shadow" role="button">
+          <a href="/" style="background-color:{{theme_obj.primary_600}}; color:{{theme_obj.secondary_100}}" class="oh-btn oh-onboarding-card__button mt-4 oh-btn--shadow" role="button">
             {% trans "Next Step" %} <ion-icon class="ms-2" name="arrow-forward-outline"></ion-icon></a>
         </div>
+
+
       </div>
     </main>
   </div>
@@ -52,3 +55,13 @@
 </body>
 
 </html>
+
+
+
+
+
+
+
+
+
+
