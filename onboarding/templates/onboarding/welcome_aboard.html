@@ -1,4 +1,5 @@
 {% load static %}
+{% load i18n %}
 <!DOCTYPE html>
 <html lang="en">
 
@@ -6,7 +7,7 @@
   <meta charset="UTF-8" />
   <meta http-equiv="X-UA-Compatible" content="IE=edge" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Employee Onboarding - {{white_label_company_name}} Dashboard</title>
+  <title>{% trans "Employee Onboarding" %} - {{white_label_company_name}} {% trans "Dashboard" %}</title>
   <link rel="apple-touch-icon" sizes="180x180" href="{% if white_label_company.icon %}{{white_label_company.icon.url}} {% else %}{% static 'favicons/apple-touch-icon.png' %}{% endif %}">
   <link rel="icon" type="image/png" sizes="32x32" href="{% if white_label_company.icon %}{{white_label_company.icon.url}} {% else %}{% static 'favicons/favicon-32x32.png' %}{% endif %}">
   <link rel="icon" type="image/png" sizes="16x16" href="{% if white_label_company.icon %}{{white_label_company.icon.url}} {% else %}{% static 'favicons/favicon-16x16.png' %}{% endif %}">
@@ -33,13 +34,13 @@
           <img src="{% static 'static/images/ui/online_party.svg' %}" class="oh-onboarding-card__lead-image mb-5" width="300"
             height="2" alt="Welcome Aboard" />
           <h1 class="oh-onboarding-card__title oh-onboarding-card__title--h1 text-center">
-            Welcome Aboard!
+            {% trans "Welcome Aboard!" %}
           </h1>
           <p class="oh-onboarding-card__lead text-center">
-            Hey there, welcome to our team. Let's get you started.
+            {% trans "Hey there, welcome to our team. Let's get you started." %}
           </p>
-          <a href="/" class="oh-btn oh-onboarding-card__button mt-4 oh-btn--secondary oh-btn--shadow" role="button">Next
-            Step <ion-icon class="ms-2" name="arrow-forward-outline"></ion-icon></a>
+          <a href="/" class="oh-btn oh-onboarding-card__button mt-4 oh-btn--secondary oh-btn--shadow" role="button">
+            {% trans "Next Step" %} <ion-icon class="ms-2" name="arrow-forward-outline"></ion-icon></a>
         </div>
       </div>
     </main>
