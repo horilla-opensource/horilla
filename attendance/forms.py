@@ -1275,8 +1275,7 @@ class BulkAttendanceRequestForm(BaseModelForm):
                 instance.employee_id = employee_id
                 if pk := attendance_mapping.get(date):
                     instance.pk = pk
-                else:
-                    instance.request_type = "create_request"
+                instance.request_type = "create_request"
                 instance.is_bulk_request = True
                 if batch:
                     instance.batch_attendance_id = batch
