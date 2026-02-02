@@ -2,6 +2,8 @@
 Announcement page
 """
 
+import os
+
 from django.contrib import messages
 from django.http import HttpResponse
 from django.urls import resolve, reverse
@@ -10,7 +12,7 @@ from django.utils.translation import gettext_lazy as _
 
 from base.forms import AnnouncementForm
 from base.methods import closest_numbers
-from base.models import Announcement, AnnouncementView
+from base.models import Announcement, AnnouncementView, Attachment
 from employee.models import Employee
 from horilla_auth.models import HorillaUser
 from horilla_views.cbv_methods import login_required, permission_required
@@ -20,6 +22,18 @@ from horilla_views.generic.cbv.views import (
     HorillaListView,
 )
 from notifications.signals import notify
+
+BLOCKED_EXTENSIONS = {
+    ".html",
+    ".htm",
+    ".js",
+    ".svg",
+    ".xml",
+    ".php",
+    ".py",
+    ".sh",
+    ".exe",
+}
 
 
 @method_decorator(login_required, name="dispatch")
@@ -46,7 +60,8 @@ class AnnouncementFormView(HorillaFormView):
                 message = _("Announcement updated successfully.")
             else:
                 message = _("Announcement created successfully.")
-            anou, attachment_ids = form.save(commit=False)
+
+            anou, unused_attachment_ids = form.save(commit=False)
 
             employees = form.cleaned_data["employees"]
             departments = form.cleaned_data["department"]
@@ -60,26 +75,48 @@ class AnnouncementFormView(HorillaFormView):
                     employee_work_info__company_id__in=company, is_active=True
                 )
                 message = _(
-                    f"Announcement created successfully to all employees in {', '.join(company.values_list('company', flat=True))}."
+                    f"Announcement created successfully to all employees in "
+                    f"{', '.join(company.values_list('company', flat=True))}."
                 )
 
+            # Attachment validation
+            files = self.request.FILES.getlist("attachments")
+            safe_attachment_ids = []
+
+            for file in files:
+                ext = os.path.splitext(file.name)[1].lower()
+
+                if ext in BLOCKED_EXTENSIONS:
+                    messages.error(
+                        self.request,
+                        f"File type {ext} is not allowed for security reasons.",
+                    )
+                    continue
+
+                attachment = Attachment.objects.create(file=file)
+                safe_attachment_ids.append(attachment.id)
+
             anou.save()
-            anou.attachments.set(attachment_ids)
+            anou.attachments.set(safe_attachment_ids)  # IMPORTANT FIX
             anou.department.set(departments)
             anou.job_position.set(job_positions)
+
             emp_dep = HorillaUser.objects.filter(
                 employee_get__employee_work_info__department_id__in=departments
             )
             emp_jobs = HorillaUser.objects.filter(
                 employee_get__employee_work_info__job_position_id__in=job_positions
             )
+
             employees = employees | Employee.objects.filter(
                 employee_work_info__department_id__in=departments
             )
             employees = employees | Employee.objects.filter(
                 employee_work_info__job_position_id__in=job_positions
             )
+
             anou.employees.add(*employees)
+
             notify.send(
                 self.request.user.employee_get,
                 recipient=emp_dep,
@@ -91,6 +128,7 @@ class AnnouncementFormView(HorillaFormView):
                 redirect="/",
                 icon="chatbox-ellipses",
             )
+
             notify.send(
                 self.request.user.employee_get,
                 recipient=emp_jobs,
@@ -102,8 +140,10 @@ class AnnouncementFormView(HorillaFormView):
                 redirect="/",
                 icon="chatbox-ellipses",
             )
+
             messages.success(self.request, message)
             return HttpResponse("<script>window.location.reload();</script>")
+
         return super().form_valid(form)
 
 

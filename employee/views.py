@@ -174,6 +174,18 @@ filter_mapping = {
     },
 }
 
+BLOCKED_EXTENSIONS = {
+    ".html",
+    ".htm",
+    ".js",
+    ".svg",
+    ".xml",
+    ".php",
+    ".py",
+    ".sh",
+    ".exe",
+}
+
 
 def _check_reporting_manager(request, *args, **kwargs):
     if kwargs.get("obj_id"):
@@ -3274,13 +3286,21 @@ def add_more_employee_files(request, note_id):
     """
     note = EmployeeNote.objects.get(id=note_id)
     employee_id = note.employee_id.id
+
     if request.method == "POST":
         files = request.FILES.getlist("files")
-        files_ids = []
-        for file in files:
-            instance = NoteFiles.objects.create(files=file)
-            files_ids.append(instance.id)
 
+        for file in files:
+            ext = os.path.splitext(file.name)[1].lower()
+
+            # Block dangerous file types
+            if ext in BLOCKED_EXTENSIONS:
+                messages.error(
+                    request, f"File type {ext} is not allowed for security reasons."
+                )
+                continue  # skip this file
+
+            instance = NoteFiles.objects.create(files=file)
             note.note_files.add(instance.id)
     return redirect(f"/employee/note-tab/{employee_id}")
 
