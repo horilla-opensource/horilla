@@ -1228,6 +1228,9 @@ class BulkAttendanceRequestForm(BaseModelForm):
         from_date = cleaned_data.get("from_date")
         to_date = cleaned_data.get("to_date")
         shift_id = cleaned_data.get("shift_id")
+        from horilla.horilla_middlewares import _thread_locals
+
+        request = _thread_locals.request
         attendance_clock_in = cleaned_data.get("attendance_clock_in")
         attendance_clock_out = cleaned_data.get("attendance_clock_out")
         request_description = cleaned_data.get("request_description")
@@ -1242,9 +1245,9 @@ class BulkAttendanceRequestForm(BaseModelForm):
         )
         # Prepare initial data for the form
         initial_data = {
-            "employee_id": employee_id,
-            "shift_id": shift_id,
-            "work_type_id": work_type_id,
+            "employee_id": employee_id.pk if employee_id else None,
+            "shift_id": shift_id.pk if shift_id else None,
+            "work_type_id": work_type_id.pk if work_type_id else None,
             "attendance_clock_in": attendance_clock_in,
             "attendance_clock_out": attendance_clock_out,
             "attendance_worked_hour": attendance_worked_hour,
@@ -1252,6 +1255,11 @@ class BulkAttendanceRequestForm(BaseModelForm):
             "minimum_hour": minimum_hour,
             "request_description": request_description,
         }
+        attendance_mapping = dict(
+            Attendance.objects.filter(
+                attendance_date__in=date_list, employee_id=employee_id
+            ).values_list("attendance_date", "pk")
+        )
         for date in date_list:
             initial_data.update(
                 {
@@ -1265,11 +1273,15 @@ class BulkAttendanceRequestForm(BaseModelForm):
                 instance = form.save(commit=False)
                 instance.is_validate_request = True
                 instance.employee_id = employee_id
-                instance.request_type = "create_request"
+                if pk := attendance_mapping.get(date):
+                    instance.pk = pk
+                else:
+                    instance.request_type = "create_request"
                 instance.is_bulk_request = True
                 if batch:
                     instance.batch_attendance_id = batch
-                instance.save()
+                if date not in self.to_update_dates:
+                    instance.save()
             else:
                 logger(form.errors)
         instance = super().save(commit=False)

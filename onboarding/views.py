@@ -654,108 +654,256 @@ def candidate_filter(request):
     )
 
 
+# @login_required
+# @all_manager_can_enter("recruitment.view_recruitment")
+# def email_send(request):
+#     """
+#     function used to send onboarding portal for hired candidates .
+
+#     Parameters:
+#     request (HttpRequest): The HTTP request object.
+
+#     Returns:
+#     GET : return json response
+#     """
+#     host = request.get_host()
+#     protocol = "https" if request.is_secure() else "http"
+#     candidates = request.POST.getlist("ids")
+#     other_attachments = request.FILES.getlist("other_attachments")
+#     template_attachment_ids = request.POST.getlist("template_attachment_ids")
+#     email_backend = ConfiguredEmailBackend()
+#     if not candidates:
+#         messages.info(request, "Please choose candidates")
+#         return HttpResponse("<script>window.location.reload()</script>")
+
+#     bodys = list(
+#         HorillaMailTemplate.objects.filter(id__in=template_attachment_ids).values_list(
+#             "body", flat=True
+#         )
+#     )
+
+#     attachments_other = []
+#     for file in other_attachments:
+#         attachments_other.append((file.name, file.read(), file.content_type))
+#         file.close()
+#     for cand_id in candidates:
+#         attachments = list(set(attachments_other) | set([]))
+#         candidate = Candidate.objects.get(id=cand_id)
+#         if not request.GET.get("no_portal"):
+#             if candidate.converted_employee_id:
+#                 messages.info(
+#                     request, _(f"{candidate} has already been converted to employee.")
+#                 )
+#                 continue
+#             for html in bodys:
+#                 # due to not having solid template we first need to pass the context
+#                 template_bdy = template.Template(html)
+#                 context = template.Context(
+#                     {"instance": candidate, "self": request.user.employee_get}
+#                 )
+#                 render_bdy = template_bdy.render(context)
+#                 attachments.append(
+#                     (
+#                         "Document",
+#                         generate_pdf(
+#                             render_bdy, {}, path=False, title="Document"
+#                         ).content,
+#                         "application/pdf",
+#                     )
+#                 )
+#             token = secrets.token_hex(15)
+#             existing_portal = OnboardingPortal.objects.filter(candidate_id=candidate)
+#             if existing_portal.exists():
+#                 new_portal = existing_portal.first()
+#                 new_portal.token = token
+#                 new_portal.used = False
+#                 new_portal.count = 0
+#                 new_portal.profile = None
+#                 new_portal.save()
+#             else:
+#                 OnboardingPortal(candidate_id=candidate, token=token).save()
+#             html_message = render_to_string(
+#                 "onboarding/mail_templates/default.html",
+#                 {
+#                     "portal": f"{protocol}://{host}/onboarding/user-creation/{token}",
+#                     "instance": candidate,
+#                     "host": host,
+#                     "protocol": protocol,
+#                 },
+#                 request=request,
+#             )
+#             email = EmailMessage(
+#                 subject=f"Hello {candidate.name}, Congratulations on your selection!",
+#                 body=html_message,
+#                 to=[candidate.email],
+#             )
+#             email.content_subtype = "html"
+#             email.attachments = attachments
+#             try:
+#                 email.send()
+#                 # to check ajax or not
+#                 messages.success(request, "Portal link sent to the candidate")
+#             except Exception as e:
+#                 logger.error(e)
+#                 messages.error(request, f"Mail not send to {candidate.name}")
+#             candidate.start_onboard = True
+#             candidate.save()
+#         try:
+#             onboarding_candidate = CandidateStage()
+#             onboarding_candidate.onboarding_stage_id = (
+#                 candidate.recruitment_id.onboarding_stage.first()
+#             )
+#             onboarding_candidate.candidate_id = candidate
+#             onboarding_candidate.save()
+#             messages.success(request, "Candidate Added to Onboarding Stage")
+#         except Exception as e:
+#             logger.error(e)
+
+#     return HttpResponse("<script>window.location.reload()</script>")
+
+
+import logging
+import os
+import secrets
+from email.mime.image import MIMEImage
+
+from django.contrib import messages
+from django.core.mail import EmailMultiAlternatives
+from django.template.loader import render_to_string
+
+logger = logging.getLogger(__name__)
+
+
 @login_required
 @all_manager_can_enter("recruitment.view_recruitment")
 def email_send(request):
-    """
-    function used to send onboarding portal for hired candidates .
-
-    Parameters:
-    request (HttpRequest): The HTTP request object.
-
-    Returns:
-    GET : return json response
-    """
     host = request.get_host()
     protocol = "https" if request.is_secure() else "http"
+
     candidates = request.POST.getlist("ids")
     other_attachments = request.FILES.getlist("other_attachments")
     template_attachment_ids = request.POST.getlist("template_attachment_ids")
+
     email_backend = ConfiguredEmailBackend()
+    display_email_name = email_backend.dynamic_from_email_with_display_name
+
     if not candidates:
         messages.info(request, "Please choose candidates")
         return HttpResponse("<script>window.location.reload()</script>")
 
+    # Fetch PDF templates
     bodys = list(
         HorillaMailTemplate.objects.filter(id__in=template_attachment_ids).values_list(
             "body", flat=True
         )
     )
 
+    # Collect uploaded attachments
     attachments_other = []
     for file in other_attachments:
         attachments_other.append((file.name, file.read(), file.content_type))
         file.close()
+
     for cand_id in candidates:
-        attachments = list(set(attachments_other) | set([]))
         candidate = Candidate.objects.get(id=cand_id)
-        if not request.GET.get("no_portal"):
-            if candidate.converted_employee_id:
-                messages.info(
-                    request, _(f"{candidate} has already been converted to employee.")
-                )
-                continue
-            for html in bodys:
-                # due to not having solid template we first need to pass the context
-                template_bdy = template.Template(html)
-                context = template.Context(
-                    {"instance": candidate, "self": request.user.employee_get}
-                )
-                render_bdy = template_bdy.render(context)
-                attachments.append(
-                    (
-                        "Document",
-                        generate_pdf(
-                            render_bdy, {}, path=False, title="Document"
-                        ).content,
-                        "application/pdf",
-                    )
-                )
-            token = secrets.token_hex(15)
-            existing_portal = OnboardingPortal.objects.filter(candidate_id=candidate)
-            if existing_portal.exists():
-                new_portal = existing_portal.first()
-                new_portal.token = token
-                new_portal.used = False
-                new_portal.count = 0
-                new_portal.profile = None
-                new_portal.save()
-            else:
-                OnboardingPortal(candidate_id=candidate, token=token).save()
-            html_message = render_to_string(
-                "onboarding/mail_templates/default.html",
-                {
-                    "portal": f"{protocol}://{host}/onboarding/user-creation/{token}",
-                    "instance": candidate,
-                    "host": host,
-                    "protocol": protocol,
-                },
-                request=request,
+        attachments = list(attachments_other)
+
+        # Prevent duplicate onboarding
+        if candidate.converted_employee_id:
+            messages.info(
+                request, f"{candidate} has already been converted to employee."
             )
-            email = EmailMessage(
-                subject=f"Hello {candidate.name}, Congratulations on your selection!",
-                body=html_message,
-                to=[candidate.email],
+            continue
+
+        # Generate PDFs
+        for html in bodys:
+            template_bdy = template.Template(html)
+            context = template.Context(
+                {"instance": candidate, "self": request.user.employee_get}
             )
-            email.content_subtype = "html"
-            email.attachments = attachments
-            try:
-                email.send()
-                # to check ajax or not
-                messages.success(request, "Portal link sent to the candidate")
-            except Exception as e:
-                logger.error(e)
-                messages.error(request, f"Mail not send to {candidate.name}")
-            candidate.start_onboard = True
-            candidate.save()
+            render_bdy = template_bdy.render(context)
+
+            attachments.append(
+                (
+                    "Document.pdf",
+                    generate_pdf(render_bdy, {}, path=False, title="Document").content,
+                    "application/pdf",
+                )
+            )
+
+        # Create / reset portal
+        token = secrets.token_hex(15)
+        portal, _ = OnboardingPortal.objects.get_or_create(candidate_id=candidate)
+        portal.token = token
+        portal.used = False
+        portal.count = 0
+        portal.profile = None
+        portal.save()
+
+        # Render email HTML
+        html_message = render_to_string(
+            "onboarding/mail_templates/default.html",
+            {
+                "portal": f"{protocol}://{host}/onboarding/user-creation/{token}",
+                "instance": candidate,
+                "host": host,
+                "protocol": protocol,
+                "use_cid_logo": True,
+            },
+            request=request,
+        )
+
+        # ✅ Use EmailMultiAlternatives (IMPORTANT)
+        email = EmailMultiAlternatives(
+            subject=f"Hello {candidate.name}, Congratulations on your selection!",
+            body=html_message,
+            from_email=display_email_name,
+            to=[candidate.email],
+            reply_to=[display_email_name],
+        )
+
+        email.attach_alternative(html_message, "text/html")
+
+        # Attach files
+        for attachment in attachments:
+            email.attach(*attachment)
+
+        # ✅ Attach company logo INLINE
         try:
-            onboarding_candidate = CandidateStage()
-            onboarding_candidate.onboarding_stage_id = (
-                candidate.recruitment_id.onboarding_stage.first()
+            company = candidate.recruitment_id.company_id
+            if company and company.icon:
+                with open(company.icon.path, "rb") as f:
+                    logo = MIMEImage(f.read())
+                    logo.add_header("Content-ID", "<company_logo>")
+                    logo.add_header(
+                        "Content-Disposition",
+                        "inline",
+                        filename=os.path.basename(company.icon.path),
+                    )
+                    email.attach(logo)
+        except Exception as e:
+            logger.error(f"Company logo attach failed: {e}")
+
+        # Send mail
+        try:
+            email.send()
+            messages.success(request, "Portal link sent to the candidate")
+        except Exception as e:
+            logger.error(e)
+            messages.error(request, f"Mail not sent to {candidate.name}")
+            continue
+
+        # Mark onboarding started
+        candidate.start_onboard = True
+        candidate.save()
+
+        # ✅ SAFE onboarding stage insert
+        try:
+            stage = candidate.recruitment_id.onboarding_stage.first()
+            CandidateStage.objects.get_or_create(
+                candidate_id=candidate,
+                defaults={"onboarding_stage_id": stage},
             )
-            onboarding_candidate.candidate_id = candidate
-            onboarding_candidate.save()
-            messages.success(request, "Candidate Added to Onboarding Stage")
         except Exception as e:
             logger.error(e)
 
@@ -1025,6 +1173,7 @@ def profile_view(request, token):
         profile = request.FILES.get("profile")
         if profile is not None:
             candidate.profile = profile
+            candidate.save()
             onboarding_portal.profile = profile
             onboarding_portal.count = 2
             onboarding_portal.save()
@@ -1091,7 +1240,9 @@ def employee_creation(request, token):
             employee_personal_info = form.save(commit=False)
             employee_personal_info.employee_user_id = user
             employee_personal_info.email = candidate.email
-            if candidate.profile:  # 896
+            if candidate.profile and candidate.profile.storage.exists(
+                candidate.profile.name
+            ):  # 896
                 filename = os.path.basename(candidate.profile.name)
                 employee_personal_info.employee_profile.save(
                     filename, ContentFile(candidate.profile.read()), save=False
