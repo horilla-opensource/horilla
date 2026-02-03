@@ -399,7 +399,7 @@ function pendingHourChart(year, month) {
           plugins: [
             {
               afterRender: (chart) => {
-                emptyChart(pendingHoursCanvas);
+                emptyChart(chart);
               },
             },
           ],
