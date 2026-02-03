@@ -23,6 +23,7 @@ if (objectiveChart != null) {
 			responsive: true,
 			maintainAspectRatio:false,
 			onClick: (e, activeEls) => {
+				if (!activeEls || activeEls.length === 0) return;
 				let datasetIndex = activeEls[0].datasetIndex;
 				let dataIndex = activeEls[0].index;
 				let datasetLabel = e.chart.data.datasets[datasetIndex].label;
@@ -47,14 +48,18 @@ if (objectiveChart != null) {
 			},
 		},
 		plugins: [{
-			afterRender: (chart)=>emptyChart(chart)
+			afterRender: (chart) => {
+				if (typeof emptyChart === "function") {
+					emptyChart(chart);
+		        }
+		    }
 		}],
 	});
 }
 
 function objectiveStatusDataUpdate(data) {
-	objectiveStatusData.labels = data.objective_label;
-	objectiveStatusData.datasets[0].data = data.objective_value;
+	objectiveStatusData.labels = Array.isArray(data?.objective_label) ? data.objective_label : [];
+	objectiveStatusData.datasets[0].data = Array.isArray(data?.objective_value) ? data.objective_value : [];
 	objectiveStatusData.message = data.message;
 	if (objectiveStatusChart){
 		objectiveStatusChart.update();
@@ -78,6 +83,7 @@ $.ajax({
 
 // chart change
 $("#objective-status-chart").click(function (e) {
+	if (!objectiveStatusChart) return;
 	var chartType = objectiveStatusChart.config.type;
 	if (chartType === "line") {
 		chartType = "bar";
@@ -122,6 +128,7 @@ if (keyResultStatusChartCtx != null) {
 			responsive: true,
 			maintainAspectRatio:false,
 			onClick: (e, activeEls) => {
+				if (!activeEls || activeEls.length === 0) return;
 				let datasetIndex = activeEls[0].datasetIndex;
 				let dataIndex = activeEls[0].index;
 				let datasetLabel = e.chart.data.datasets[datasetIndex].label;
@@ -146,14 +153,18 @@ if (keyResultStatusChartCtx != null) {
 			},
 		},
 		plugins: [{
-			afterRender: (chart)=>emptyChart(chart)
+			afterRender: (chart) => {
+				if (typeof emptyChart === "function") {
+					emptyChart(chart);
+		        }
+		    }
 		}],
 	});
 }
 
 function keyResultStatusDataUpdate(data) {
-	keyResultStatusData.labels = data.key_result_label;
-	keyResultStatusData.datasets[0].data = data.key_result_value;
+	keyResultStatusData.labels = (data && data.key_result_label) ? data.key_result_label : [];
+	keyResultStatusData.datasets[0].data = (data && data.key_result_value) ? data.key_result_value : [];
 	keyResultStatusData.message = data.message;
 	if(keyResultStatusChart){
 		keyResultStatusChart.update();
@@ -177,6 +188,7 @@ $.ajax({
 
 // chart change
 $("#key-result-status-chart").click(function (e) {
+	if (!keyResultStatusChart) return;
 	var chartType = keyResultStatusChart.config.type;
 	if (chartType === "line") {
 		chartType = "bar";
@@ -220,6 +232,7 @@ if (feedbackStatusChartCtx != null) {
 			responsive: true,
 			maintainAspectRatio:false,
 			onClick: (e, activeEls) => {
+				if (!activeEls || activeEls.length === 0) return;
 				let datasetIndex = activeEls[0].datasetIndex;
 				let dataIndex = activeEls[0].index;
 				let datasetLabel = e.chart.data.datasets[datasetIndex].label;
@@ -230,14 +243,18 @@ if (feedbackStatusChartCtx != null) {
 			},
 		},
 		plugins: [{
-			afterRender: (chart)=>emptyChart(chart)
+			afterRender: (chart) => {
+				if (typeof emptyChart === "function") {
+					emptyChart(chart);
+		        }
+		    }
 		}],
 	});
 }
 
 function feedbackStatusDataUpdate(data) {
-	feedbackStatusData.labels = data.feedback_label;
-	feedbackStatusData.datasets[0].data = data.feedback_value;
+	feedbackStatusData.labels = (data && data.feedback_label) ? data.feedback_label : [];
+	feedbackStatusData.datasets[0].data = (data && data.feedback_value) ? data.feedback_value : [];
 	feedbackStatusData.message = data.message;
 	if (feedbackStatusChart){
 		feedbackStatusChart.update();
