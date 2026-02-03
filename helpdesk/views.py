@@ -70,6 +70,18 @@ from horilla.decorators import (
 from horilla.group_by import group_by_queryset
 from notifications.signals import notify
 
+BLOCKED_EXTENSIONS = {
+    ".html",
+    ".htm",
+    ".js",
+    ".svg",
+    ".xml",
+    ".php",
+    ".py",
+    ".sh",
+    ".exe",
+}
+
 logger = logging.getLogger(__name__)
 
 # Create your views here.
@@ -1249,29 +1261,64 @@ def delete_ticket_document(request, doc_id):
 
 @login_required
 def comment_create(request, ticket_id):
-    """ "
+    """
     This method is used to create comment to a ticket
     """
     if request.method == "POST":
         ticket = Ticket.objects.get(id=ticket_id)
         c_form = CommentForm(request.POST)
+
         if c_form.is_valid():
+            comment_text = c_form.cleaned_data.get("comment", "").strip()
+            files = request.FILES.getlist("file")
+
+            valid_files = []
+            blocked_found = False
+
+            for file in files:
+                ext = os.path.splitext(file.name)[1].lower()
+                if ext in BLOCKED_EXTENSIONS:
+                    blocked_found = True
+                else:
+                    valid_files.append(file)
+
+            # stop here
+            if not comment_text and not valid_files:
+                if blocked_found:
+                    messages.error(
+                        request, f"File type {ext} is not allowed for security reasons."
+                    )
+                else:
+                    messages.error(
+                        request, _("Please add a comment or upload at least one file.")
+                    )
+                return HttpResponse(
+                    "<script>"
+                    "$('.reload-record').click();"
+                    "$('#reloadMessagesButton').click();"
+                    "</script>"
+                )
+
+            # Now safe to create comment
             comment = c_form.save(commit=False)
             comment.employee_id = request.user.employee_get
             comment.ticket = ticket
             comment.save()
-            if request.FILES:
-                f_form = AttachmentForm(request.FILES)
-                if f_form.is_valid():
-                    files = request.FILES.getlist("file")
-                    for file in files:
-                        a_form = AttachmentForm(
-                            {"file": file, "comment": comment, "ticket": ticket}
-                        )
-                        a_form.save()
+
+            for file in valid_files:
+                Attachment.objects.create(
+                    file=file,
+                    comment=comment,
+                    ticket=ticket,
+                )
+
             messages.success(request, _("A new comment has been created."))
+
     return HttpResponse(
-        "<script>$('.reload-record').click();$('#reloadMessagesButton').click();</script>"
+        "<script>"
+        "$('.reload-record').click();"
+        "$('#reloadMessagesButton').click();"
+        "</script>"
     )
 
 
@@ -1904,6 +1951,14 @@ def ticket_file_upload(request, id):
         files = request.FILES.getlist("file")
 
         for file in files:
+            ext = os.path.splitext(file.name)[1].lower()
+
+            if ext in BLOCKED_EXTENSIONS:
+                messages.error(
+                    request, f"File type {ext} is not allowed for security reasons."
+                )
+                continue
+
             a_form = AttachmentForm({"file": file, "ticket": ticket, "comment": None})
             a_form.save()
         messages.success(request, _("File(s) uploaded successfully."))
