@@ -64,8 +64,35 @@
 </div>
 
 <script>
+    // --- PERBAIKAN: Menambahkan fungsi yang hilang ---
+    function requestedAttendanceTickCheckboxes() {
+        var ids = [];
+        $(".attendance-request-checkbox:checked").each(function () {
+            ids.push($(this).val());
+        });
+        if (ids.length > 0) {
+            $(".bulk-action-btn").removeClass("d-none").show();
+        } else {
+            $(".bulk-action-btn").addClass("d-none").hide();
+        }
+    }
+    // --------------------------------------------------
 
   $(document).ready(function () {
+    
+    // --- PERBAIKAN: Memastikan fungsi dipanggil saat load & change ---
+    requestedAttendanceTickCheckboxes();
+
+    $(document).on("change", ".attendance-request-checkbox", function () {
+        requestedAttendanceTickCheckboxes();
+    });
+
+    $(document).on("change", "#all-attendance-request", function () {
+        var isChecked = $(this).is(":checked");
+        $(".attendance-request-checkbox").prop("checked", isChecked).change();
+    });
+    // ----------------------------------------------------------------
+
     // Function to handle tab switching
     $('.oh-tabs__tab').on('click', function (e) {
         e.preventDefault();
@@ -136,14 +163,20 @@
     //start of select all //
     $(".requested-attendances-select-all").change(function () {
       setTimeout(function() {
-          addingRequestAttendanceIds();
-      }, 500); // Run after 2 seconds
+          if (typeof addingRequestAttendanceIds === "function") {
+             addingRequestAttendanceIds();
+          }
+      }, 500); // Run after 0.5 seconds
     });
     $("#selectAllInstances").click(function () {
-      selectAllReqAttendance();
+      if (typeof selectAllReqAttendance === "function") {
+         selectAllReqAttendance();
+      }
     });
     $("#unselectAllInstances").click(function () {
-      unselectAllReqAttendance();
+      if (typeof unselectAllReqAttendance === "function") {
+         unselectAllReqAttendance();
+      }
     });
   });
 
