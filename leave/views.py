@@ -5386,7 +5386,7 @@ def monthly_leave_report(request):
         ws.append([
             leave.employee_id.badge_id,
             leave.employee_id.get_full_name(),
-            leave.employee_id.get_department(),
+            str(leave.employee_id.get_department() or ""),
             leave.leave_type_id.name,
             leave.description or "",
             leave.status,
