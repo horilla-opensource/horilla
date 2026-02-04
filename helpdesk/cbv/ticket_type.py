@@ -2,6 +2,7 @@
 this page is handling the cbv methods for Ticket types in settings
 """
 
+import os
 from typing import Any
 
 from django.contrib import messages
@@ -24,6 +25,18 @@ from horilla_views.generic.cbv.views import (
     HorillaNavView,
 )
 from notifications.signals import notify
+
+BLOCKED_EXTENSIONS = {
+    ".html",
+    ".htm",
+    ".js",
+    ".svg",
+    ".xml",
+    ".php",
+    ".py",
+    ".sh",
+    ".exe",
+}
 
 
 @method_decorator(login_required, name="dispatch")
@@ -200,23 +213,33 @@ class TicketsCreateFormView(HorillaFormView):
         if form.is_valid():
             if not form.instance.pk:
                 ticket = form.save()
-                attachments = form.files.getlist("attachment")
-                if self.request.FILES:
-                    files = self.request.FILES.getlist("attachment")
-                    for file in files:
-                        Attachment.objects.create(file=file, ticket=ticket)
+
+                # Secure attachment handling
+                files = self.request.FILES.getlist("attachment")
+                for file in files:
+                    ext = os.path.splitext(file.name)[1].lower()
+
+                    if ext in BLOCKED_EXTENSIONS:
+                        messages.error(
+                            self.request,
+                            f"File type {ext} is not allowed for security reasons.",
+                        )
+                        continue
+
+                    Attachment.objects.create(file=file, ticket=ticket)
+
                 mail_thread = TicketSendThread(self.request, ticket, type="create")
                 mail_thread.start()
+
                 messages.success(self.request, _("The Ticket created successfully."))
+
                 employees = ticket.assigned_to.all()
                 assignees = [employee.employee_user_id for employee in employees]
                 assignees.append(ticket.employee_id.employee_user_id)
 
                 if ticket.assigning_type == "individual":
                     try:
-                        employee = Employee.objects.get(
-                            id=ticket.raised_on
-                        )  # adjust if raised_on stores badge_id etc.
+                        employee = Employee.objects.get(id=ticket.raised_on)
                         ticket.assigned_to.set([employee])
                         ticket.save()
                     except Employee.DoesNotExist:
@@ -238,6 +261,7 @@ class TicketsCreateFormView(HorillaFormView):
                             .manager
                         )
                         assignees.append(manager.employee_user_id)
+
                 notify.send(
                     self.request.user.employee_get,
                     recipient=assignees,
@@ -247,11 +271,16 @@ class TicketsCreateFormView(HorillaFormView):
                     verb_es="Se te ha asignado un nuevo ticket",
                     verb_fr="Un nouveau ticket vous a été attribué",
                     icon="infinite",
-                    redirect=reverse("ticket-detail", kwargs={"ticket_id": ticket.id}),
+                    redirect=reverse(
+                        "ticket-detail",
+                        kwargs={"ticket_id": ticket.id},
+                    ),
                 )
+
             else:
                 ticket = form.save()
                 messages.success(self.request, _("The Ticket updated successfully."))
 
             return HttpResponse("<script>window.location.reload();</script>")
+
         return super().form_valid(form)
