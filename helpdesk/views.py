@@ -72,6 +72,18 @@ from notifications.signals import notify
 
 logger = logging.getLogger(__name__)
 
+BLOCKED_EXTENSIONS = {
+    ".html",
+    ".htm",
+    ".js",
+    ".svg",
+    ".xml",
+    ".php",
+    ".py",
+    ".sh",
+    ".exe",
+}
+
 # Create your views here.
 
 
@@ -444,43 +456,59 @@ def ticket_view(request):
 def ticket_create(request):
     """
     This function is responsible for creating the Ticket.
-
-    Parameters:
-        request (HttpRequest): The HTTP request object.
-
-    Returns:
-    GET : return Ticket create form template
-    POST : return Ticket view
     """
 
     form = TicketForm()
+
     if request.GET.get("status"):
         status = request.GET.get("status")
-        form = TicketForm(
-            initial={
-                "status": status,
-            }
-        )
+        form = TicketForm(initial={"status": status})
+
     if request.method == "POST":
-        form = TicketForm(request.POST, request.FILES)
+        form = TicketForm(request.POST)
+
         if form.is_valid():
             ticket = form.save()
-            attachments = form.files.getlist("attachment")
-            for attachment in attachments:
-                attachment_instance = Attachment(file=attachment, ticket=ticket)
-                attachment_instance.save()
+
+            files = request.FILES.getlist("attachment")
+            blocked_exts = set()
+
+            for file in files:
+                ext = os.path.splitext(file.name)[1].lower()
+
+                if ext in BLOCKED_EXTENSIONS:
+                    blocked_exts.add(ext)
+                    continue
+
+                attachment = Attachment(
+                    file=file,
+                    ticket=ticket,
+                )
+                attachment.save()
+
+            if blocked_exts:
+                messages.error(
+                    request,
+                    _("File type(s) %(ext)s are not allowed.")
+                    % {"ext": ", ".join(blocked_exts)},
+                )
+
             mail_thread = TicketSendThread(request, ticket, type="create")
             mail_thread.start()
+
             messages.success(request, _("The Ticket created successfully."))
+
             employees = ticket.assigned_to.all()
-            assignees = [employee.employee_user_id for employee in employees]
+            assignees = [emp.employee_user_id for emp in employees]
             assignees.append(ticket.employee_id.employee_user_id)
+
             if hasattr(ticket.get_raised_on_object(), "dept_manager"):
                 if ticket.get_raised_on_object().dept_manager.all():
                     manager = (
                         ticket.get_raised_on_object().dept_manager.all().first().manager
                     )
                     assignees.append(manager.employee_user_id)
+
             notify.send(
                 request.user.employee_get,
                 recipient=assignees,
@@ -492,7 +520,9 @@ def ticket_create(request):
                 icon="infinite",
                 redirect=reverse("ticket-detail", kwargs={"ticket_id": ticket.id}),
             )
+
             return HttpResponse("<script>window.location.reload()</script>")
+
     context = {
         "form": form,
         "t_type_form": TicketTypeForm(),
@@ -1189,27 +1219,57 @@ def delete_ticket_document(request, doc_id):
 
 @login_required
 def comment_create(request, ticket_id):
-    """ "
+    """
     This method is used to create comment to a ticket
     """
     if request.method == "POST":
         ticket = Ticket.objects.get(id=ticket_id)
         c_form = CommentForm(request.POST)
+
         if c_form.is_valid():
+            comment_text = c_form.cleaned_data.get("comment", "").strip()
+            files = request.FILES.getlist("file")
+
+            valid_files = []
+            blocked_exts = set()
+
+            for file in files:
+                ext = os.path.splitext(file.name)[1].lower()
+                if ext in BLOCKED_EXTENSIONS:
+                    blocked_exts.add(ext)
+                else:
+                    valid_files.append(file)
+
+            # Prevent empty comment creation
+            if not comment_text and not valid_files:
+                if blocked_exts:
+                    messages.error(
+                        request,
+                        _("File type(s) %(ext)s are not allowed.")
+                        % {"ext": ", ".join(blocked_exts)},
+                    )
+                else:
+                    messages.error(
+                        request, _("Please add a comment or upload at least one file.")
+                    )
+                return redirect(ticket_detail, ticket_id=ticket_id)
+
+            # Create comment only when valid
             comment = c_form.save(commit=False)
             comment.employee_id = request.user.employee_get
             comment.ticket = ticket
             comment.save()
-            if request.FILES:
-                f_form = AttachmentForm(request.FILES)
-                if f_form.is_valid():
-                    files = request.FILES.getlist("file")
-                    for file in files:
-                        a_form = AttachmentForm(
-                            {"file": file, "comment": comment, "ticket": ticket}
-                        )
-                        a_form.save()
+
+            for file in valid_files:
+                attachment = Attachment(
+                    file=file,
+                    comment=comment,
+                    ticket=ticket,
+                )
+                attachment.save()
+
             messages.success(request, _("A new comment has been created."))
+
     return redirect(ticket_detail, ticket_id=ticket_id)
 
 
