@@ -252,6 +252,14 @@ class EmployeeForm(ModelForm):
             except ValidationError:
                 self.add_error("email", _("Enter a valid email address."))
 
+        if email:
+            user_q = User.objects.filter(username=email)
+            if self.instance and self.instance.pk and self.instance.employee_user_id:
+                user_q = user_q.exclude(pk=self.instance.employee_user_id.pk)
+
+            if user_q.exists():
+                self.add_error("email", _("This email is already in use."))
+
         if self.instance and self.instance.id:
             query = query.exclude(id=self.instance.id)
 
