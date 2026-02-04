@@ -5,6 +5,8 @@ import re
 from collections import defaultdict
 from io import BytesIO
 
+import arabic_reshaper
+from bidi.algorithm import get_display
 from django import forms
 from django.apps import apps
 from django.conf import settings
@@ -24,6 +26,8 @@ from django.views.decorators.csrf import csrf_protect
 from openpyxl import Workbook
 from openpyxl.drawing.image import Image
 from openpyxl.styles import Alignment, Border, Font, PatternFill, Side
+from xhtml2pdf import pisa
+from xhtml2pdf.files import pisaFileObject
 
 from base.methods import eval_validate
 from horilla.decorators import login_required as func_login_required
@@ -674,6 +678,28 @@ def link_callback(uri, rel):
     raise Exception("File not found for URI: %s" % uri)
 
 
+def reshape_text(text):
+    """
+    Make text safe for xhtml2pdf:
+    - Reshape Arabic
+    - Apply bidi ordering
+    - Leave all other languages untouched
+    """
+    import unicodedata
+
+    if not isinstance(text, str):
+        return text
+
+    text = unicodedata.normalize("NFKC", text)
+    text = text.replace("\ufdf2", "الله")
+
+    try:
+        reshaped = arabic_reshaper.reshape(text)
+        return get_display(reshaped)
+    except Exception:
+        return text
+
+
 @func_login_required
 def export_data(request, *args, **kwargs):
 
@@ -832,32 +858,41 @@ def export_data(request, *args, **kwargs):
         ws = wb.active
         ws.title = "Quick Export"
 
-        total_columns = len(headers) + 1
+        total_columns = len(headers)
         center = Alignment(horizontal="center", vertical="center")
         header_fill = PatternFill(start_color="FFD700", fill_type="solid")
         header_font = Font(bold=True)
         thin = Side(style="thin")
         border = Border(left=thin, right=thin, top=thin, bottom=thin)
 
-        if logo_path and os.path.exists(logo_path):
+        has_logo = logo_path and os.path.exists(logo_path)
+        if has_logo:
             img = Image(logo_path)
             img.width = 120
             img.height = 60
             ws.add_image(img, "A1")
 
-        ws.merge_cells(start_row=1, start_column=2, end_row=1, end_column=total_columns)
-        ws.cell(row=1, column=2).value = company_name
-        ws.cell(row=1, column=2).font = Font(size=14, bold=True)
-        ws.cell(row=1, column=2).alignment = center
+        start_col = 1
 
-        ws.merge_cells(start_row=2, start_column=2, end_row=3, end_column=total_columns)
-        ws.cell(row=2, column=2).value = file_name
-        ws.cell(row=2, column=2).font = Font(size=14, bold=True, color="FF0000")
-        ws.cell(row=2, column=2).alignment = center
+        ws.merge_cells(
+            start_row=1, start_column=start_col, end_row=1, end_column=total_columns
+        )
+        ws.cell(row=1, column=start_col).value = company_name
+        ws.cell(row=1, column=start_col).font = Font(size=14, bold=True)
+        ws.cell(row=1, column=start_col).alignment = center
 
-        ws.merge_cells(start_row=4, start_column=2, end_row=4, end_column=total_columns)
-        ws.cell(row=4, column=2).value = date_range
-        ws.cell(row=4, column=2).alignment = center
+        ws.merge_cells(
+            start_row=2, start_column=start_col, end_row=3, end_column=total_columns
+        )
+        ws.cell(row=2, column=start_col).value = file_name
+        ws.cell(row=2, column=start_col).font = Font(size=14, bold=True, color="FF0000")
+        ws.cell(row=2, column=start_col).alignment = center
+
+        ws.merge_cells(
+            start_row=4, start_column=start_col, end_row=4, end_column=total_columns
+        )
+        ws.cell(row=4, column=start_col).value = date_range
+        ws.cell(row=4, column=start_col).alignment = center
 
         HEADER_ROW = 5
         for col, header in enumerate(headers, start=1):
@@ -886,25 +921,51 @@ def export_data(request, *args, **kwargs):
     # PDF EXPORT
     # =====================================================
     if export_format == "pdf":
-        from xhtml2pdf import pisa
+
+        original_headers = headers
+        display_headers = [
+            reshape_text(h) if isinstance(h, str) else h for h in headers
+        ]
+
+        raw_rows = final_rows
+        processed_rows = []
+
+        for row in raw_rows:
+            new_row = []
+
+            for value in row:
+                if isinstance(value, str):
+                    new_row.append(reshape_text(value))
+                elif isinstance(value, (list, tuple)):
+                    new_row.append(
+                        [reshape_text(v) if isinstance(v, str) else v for v in value]
+                    )
+                else:
+                    new_row.append(value)
+
+            processed_rows.append(new_row)
+        rows = processed_rows
 
         html = render_to_string(
             "generic/export_pdf.html",
             {
-                "headers": headers,
-                "rows": [dict(zip(headers, r)) for r in final_rows],
-                "company_name": company_name,
-                "date_range": date_range,
-                "report_title": file_name,
+                "headers": display_headers,
+                "lookup_headers": original_headers,
+                "rows": [dict(zip(original_headers, r)) for r in rows],
+                "company_name": reshape_text(company_name),
+                "date_range": reshape_text(date_range),
+                "report_title": reshape_text(file_name),
                 "logo_path": (
                     logo_path if logo_path and os.path.exists(logo_path) else None
                 ),
                 "landscape": len(headers) > 5,
             },
+            request=request,
         )
 
         buf = BytesIO()
-        pisa.CreatePDF(html, dest=buf)
+        pisaFileObject.getNamedFile = lambda self: self.uri
+        pisa.CreatePDF(html, dest=buf, link_callback=link_callback)
 
         return HttpResponse(
             buf.getvalue(),
