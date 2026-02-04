@@ -116,7 +116,7 @@ class Employee(models.Model):
         blank=True,
         null=True
     )
-    qualification = models.CharField(max_length=50, blank=True, null=True)
+    qualification = models.CharField(blank=True, null=True)
     experience = models.IntegerField(null=True, blank=True)
     marital_status = models.CharField(
         max_length=50, blank=True, null=True, choices=choice_marital, default="single"
