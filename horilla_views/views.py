@@ -5,7 +5,7 @@ import re
 from collections import defaultdict
 from io import BytesIO
 
-import arabic_reshaper
+from arabic_reshaper import ArabicReshaper
 from bidi.algorithm import get_display
 from django import forms
 from django.apps import apps
@@ -39,6 +39,13 @@ from horilla_views.generic.cbv.views import HorillaFormView, HorillaListView
 from horilla_views.templatetags.generic_template_filters import getattribute
 
 # Create your views here.
+
+
+reshaper = ArabicReshaper(
+    {
+        "support_ligatures": False,
+    }
+)
 
 
 @method_decorator(login_required, name="dispatch")
@@ -685,16 +692,11 @@ def reshape_text(text):
     - Apply bidi ordering
     - Leave all other languages untouched
     """
-    import unicodedata
 
     if not isinstance(text, str):
         return text
-
-    text = unicodedata.normalize("NFKC", text)
-    text = text.replace("\ufdf2", "الله")
-
     try:
-        reshaped = arabic_reshaper.reshape(text)
+        reshaped = reshaper.reshape(text)
         return get_display(reshaped)
     except Exception:
         return text
