@@ -403,42 +403,59 @@ function initializeSummernote(candId,searchWords,) {
   });
 
   function emptyChart(chart, args, options) {
-    flag = false;
-    for (let i = 0; i < chart.data.datasets.length; i++) {
-      flag = flag + chart.data.datasets[i].data.some(Boolean);
+    // Guard: chart/canvas from HTMX swap / destroy / rerender
+    const canvas = chart?.canvas;
+    if (!canvas || !canvas.isConnected) return;
+
+    const parent = canvas.parentElement;
+    if (!parent) return;
+
+    const datasets = chart?.data?.datasets;
+    if (!Array.isArray(datasets)) return;
+
+    let hasData = false;
+    for (let i = 0; i < datasets.length; i++) {
+      const arr = datasets[i]?.data;
+      if (Array.isArray(arr) && arr.some(Boolean)) {
+        hasData = true;
+        break;
+      }
     }
-    if (!flag) {
-      const { ctx, canvas } = chart;
-      chart.clear();
-      const parent = canvas.parentElement;
+    if (hasData) return;
 
-      // Set canvas width/height to match
-      canvas.width = parent.clientWidth;
-      canvas.height = parent.clientHeight;
-      // Calculate center position
-      const x = canvas.width / 2;
-      const y = (canvas.height - 70) / 2;
-      var noDataImage = new Image();
-      noDataImage.src = chart.data.emptyImageSrc
-        ? chart.data.emptyImageSrc
-        : "{% static '/images/ui/no_records.svg' %}";
+    const ctx = chart?.ctx;
+    if (!ctx) return;
 
-      message = chart.data.message
-        ? chart.data.message
-        : emptyMessages[languageCode];
+    chart.clear();
 
-      noDataImage.onload = () => {
-        // Draw image first at center
-        ctx.drawImage(noDataImage, x - 35, y, 70, 70);
+    // Set canvas width/height to match parent
+    canvas.width = parent.clientWidth;
+    canvas.height = parent.clientHeight;
 
-        // Draw text below image
-        ctx.textAlign = "center";
-        ctx.textBaseline = "middle";
-        ctx.fillStyle = "hsl(0,0%,45%)";
-        ctx.font = "16px Poppins";
-        ctx.fillText(message, x, y + 70 + 30);
-      };
-    }
+    // Calculate center position
+    const x = canvas.width / 2;
+    const y = (canvas.height - 70) / 2;
+
+    const noDataImage = new Image();
+    noDataImage.src = chart?.data?.emptyImageSrc
+      ? chart.data.emptyImageSrc
+      : "{% static '/images/ui/no_records.svg' %}";
+
+    const message = chart?.data?.message
+      ? chart.data.message
+      : emptyMessages[languageCode];
+
+    noDataImage.onload = () => {
+      // Guard
+      if (!canvas.isConnected) return;
+
+      ctx.drawImage(noDataImage, x - 35, y, 70, 70);
+      ctx.textAlign = "center";
+      ctx.textBaseline = "middle";
+      ctx.fillStyle = "hsl(0,0%,45%)";
+      ctx.font = "16px Poppins";
+      ctx.fillText(message, x, y + 70 + 30);
+    };
   }
 
   function highlightRow(checkbox) {
@@ -509,3 +526,4 @@ function initializeSummernote(candId,searchWords,) {
     }
   }
 </script>
+
