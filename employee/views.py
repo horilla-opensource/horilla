@@ -250,7 +250,7 @@ def self_info_update(request):
     )
     form = EmployeeForm(instance=Employee.objects.filter(employee_user_id=user).first())
     if request.POST:
-        if request.POST.get("employee_first_name") is not None:
+        if request.POST.get("form_type") == "personal" or request.POST.get("employee_first_name") is not None:
             instance = Employee.objects.filter(employee_user_id=request.user).first()
             form = EmployeeForm(request.POST, instance=instance)
             if form.is_valid():
@@ -260,7 +260,7 @@ def self_info_update(request):
                     instance.badge_id = badge_id
                 instance.save()
                 messages.success(request, _("Profile updated."))
-        elif request.POST.get("any_other_code1") is not None:
+        elif request.POST.get("form_type") == "bank" or request.POST.get("any_other_code1") is not None:
             instance = EmployeeBankDetails.objects.filter(employee_id=employee).first()
             bank_form = EmployeeBankDetailsForm(request.POST, instance=instance)
             if bank_form.is_valid():
