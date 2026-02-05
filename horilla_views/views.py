@@ -1,11 +1,12 @@
+import csv
 import importlib
-import io
-import json
 import os
 import re
 from collections import defaultdict
+from io import BytesIO
 
-from bs4 import BeautifulSoup
+from arabic_reshaper import ArabicReshaper
+from bidi.algorithm import get_display
 from django import forms
 from django.apps import apps
 from django.conf import settings
@@ -13,28 +14,30 @@ from django.contrib import messages
 from django.contrib.admin.utils import NestedObjects
 from django.contrib.staticfiles import finders
 from django.core.cache import cache as CACHE
-from django.db import router
+from django.core.exceptions import FieldDoesNotExist
+from django.db import connection, router
+from django.db.models.fields.related import ForeignKey, OneToOneField
 from django.http import HttpResponse, HttpResponseForbidden, JsonResponse
 from django.shortcuts import render
-from django.templatetags.static import static
+from django.template.loader import render_to_string
 from django.utils.decorators import method_decorator
 from django.views import View
 from django.views.decorators.csrf import csrf_protect
-from import_export import fields, resources
+from openpyxl import Workbook
+from openpyxl.drawing.image import Image
+from openpyxl.styles import Alignment, Border, Font, PatternFill, Side
 from xhtml2pdf import pisa
+from xhtml2pdf.files import pisaFileObject
 
 from base.methods import eval_validate
 from horilla.decorators import login_required as func_login_required
-from horilla.horilla_middlewares import _thread_locals
 from horilla.signals import post_generic_delete, pre_generic_delete
 from horilla_views import models
 from horilla_views.cbv_methods import (
-    export_xlsx,
     get_nested_field,
     get_short_uuid,
     login_required,
     merge_dicts,
-    render_to_string,
     set_nested_attr,
 )
 from horilla_views.forms import SavedFilterForm
@@ -42,6 +45,13 @@ from horilla_views.generic.cbv.views import HorillaFormView, HorillaListView
 from horilla_views.templatetags.generic_template_filters import getattribute
 
 # Create your views here.
+
+
+reshaper = ArabicReshaper(
+    {
+        "support_ligatures": False,
+    }
+)
 
 
 @method_decorator(login_required, name="dispatch")
@@ -870,240 +880,311 @@ def link_callback(uri, rel):
     raise Exception("File not found for URI: %s" % uri)
 
 
+def reshape_text(text):
+    """
+    Make text safe for xhtml2pdf:
+    - Reshape Arabic
+    - Apply bidi ordering
+    - Leave all other languages untouched
+    """
+
+    if not isinstance(text, str):
+        return text
+    try:
+        reshaped = reshaper.reshape(text)
+        return get_display(reshaped)
+    except Exception:
+        return text
+
+
 @func_login_required
 def export_data(request, *args, **kwargs):
-    """
-    Export list view visible columns
-    """
-    from horilla_views.generic.cbv.views import HorillaFormView
 
-    request = getattr(_thread_locals, "request", None)
-    ids = eval_validate(request.POST["ids"])
-    _columns = eval_validate(request.POST["columns"])
-    export_format = request.POST.get("format", "xlsx")
+    # =====================================================
+    # INPUT
+    # =====================================================
+    ids = eval_validate(request.POST.get("ids", "[]"))
+    columns = eval_validate(request.POST.get("columns", "[]"))
 
-    model: models.models.Model = get_model_class(model_path=request.GET["model"])
+    export_format = request.POST.get("format", "csv").lower()
+    file_name = request.POST.get("export_file_name", "quick_export")
 
-    if not request.user.has_perm(
-        f"""{request.GET["model"].split(".")[0]}.view_{model.__name__}"""
-    ):
-        messages.info(f"You dont have view perm for model {model._meta.verbose_name}")
-        return HorillaFormView.HttpResponse()
-    queryset = model.objects.filter(id__in=ids)
-    export_fields = eval_validate(request.POST["export_fields"])
-    export_file_name = request.POST["export_file_name"]
-    export_file_name = sanitize_filename(export_file_name)
+    date_range = request.session.get("report_date_range", "")
 
-    _model = model
+    # =====================================================
+    # COMPANY
+    # =====================================================
+    company_name = "All Company"
+    logo_path = None
 
-    class HorillaListViewResorce(resources.ModelResource):
-        """
-        Instant Resource class
-        """
-
-        id = fields.Field(column_name="ID")
-
-        class Meta:
-            """
-            Meta class for additional option
-            """
-
-            model = _model
-            fields = [field[1] for field in _columns]  # 773
-
-        def dehydrate_id(self, instance):
-            """
-            Dehydrate method for id field
-            """
-            return instance.pk
-
-        for field_tuple in _columns:
-            dynamic_fn_str = f"def dehydrate_{field_tuple[1]}(self, instance):return self.remove_extra_spaces(getattribute(instance, '{field_tuple[1]}'),{field_tuple})"
-            exec(dynamic_fn_str)
-            dynamic_fn = locals()[f"dehydrate_{field_tuple[1]}"]
-            locals()[field_tuple[1]] = fields.Field(column_name=field_tuple[0])
-
-        def remove_extra_spaces(self, text, field_tuple):
-            """
-            Clean the text:
-            - If it's a <select> element, extract the selected option's value.
-            - If it's an <input> or <textarea>, extract its 'value'.
-            - Otherwise, remove blank spaces, keep line breaks, and handle <li> tags.
-            """
-            soup = BeautifulSoup(str(text), "html.parser")
-
-            # Handle <select> tag
-            select_tag = soup.find("select")
-            if select_tag:
-                selected_option = select_tag.find("option", selected=True)
-                if selected_option:
-                    return selected_option["value"]
-                else:
-                    first_option = select_tag.find("option")
-                    return first_option["value"] if first_option else ""
-
-            # Handle <input> tag
-            input_tag = soup.find("input")
-            if input_tag:
-                return input_tag.get("value", "")
-
-            # Handle <textarea> tag
-            textarea_tag = soup.find("textarea")
-            if textarea_tag:
-                return textarea_tag.text.strip()
-
-            # Default: clean normal text and <li> handling
-            for li in soup.find_all("li"):
-                li.insert_before("\n")
-                li.unwrap()
-
-            text = soup.get_text()
-            lines = text.splitlines()
-            non_blank_lines = [line.strip() for line in lines if line.strip()]
-            cleaned_text = "\n".join(non_blank_lines)
-            return cleaned_text
-
-    book_resource = HorillaListViewResorce()
-
-    # Export the data using the resource
-    dataset = book_resource.export(queryset)
-
-    # excel_data = dataset.export("xls")
-
-    # Set the response headers
-    # file_name = self.export_file_name
-    # if not file_name:
-    #     file_name = "quick_export"
-    # response = HttpResponse(excel_data, content_type="application/vnd.ms-excel")
-    # response["Content-Disposition"] = f'attachment; filename="{file_name}.xls"'
-    # return response
-
-    json_data = json.loads(dataset.export("json"))
-    merged = []
-
-    for item in _columns:
-        # Check if item has exactly 2 elements
-        if len(item) == 2:
-            # Check if there's a matching (type, key) in export_fields (t, k, _)
-            match_found = any(
-                export_item[0] == item[0] and export_item[1] == item[1]
-                for export_item in export_fields
-            )
-
-            if match_found:
-                # Find the first matching metadata or use {} as fallback
-                try:
-                    metadata = next(
-                        (
-                            export_item[2]
-                            for export_item in export_fields
-                            if export_item[0] == item[0] and export_item[1] == item[1]
-                        ),
-                        {},
-                    )
-                except Exception as e:
-                    merged.append(item)
-                    continue
-
-                merged.append([*item, metadata])
-            else:
-                merged.append(item)
-        else:
-            merged.append(item)
-    columns = []
-    for column in merged:
-        if len(column) >= 3 and isinstance(column[2], dict):
-            column = (column[0], column[0], column[2])
-        elif len(column) >= 3:
-            column = (column[0], column[1])
-        columns.append(column)
-
-    logo_path = ""
-    company_title = ""
-
-    company = request.selected_company_instance
+    company = getattr(request, "selected_company_instance", None)
     if company:
-        logo_path = company.icon
-        company_title = company.company
+        company_name = company.company or company_name
+        if company.icon:
+            logo_path = company.icon.path
 
-    if export_format == "json":
+    # =====================================================
+    # MODEL
+    # =====================================================
+    model_path = request.GET.get("model")
+    app_label = model_path.split(".")[0]
+    model_name = model_path.split(".")[-1]
+    model = apps.get_model(app_label, model_name)
+    base_table = model._meta.db_table
+
+    # =====================================================
+    # SQL BUILD (IDS + SIMPLE FIELDS ONLY)
+    # =====================================================
+    headers = []
+    select_sql = [f"{base_table}.id"]  # index 0 = object id
+    joins = {}
+    alias_count = 0
+
+    method_columns = {}  # sql_index -> attribute name
+
+    def next_alias():
+        nonlocal alias_count
+        alias_count += 1
+        return f"t{alias_count}"
+
+    select_index = 1
+
+    for label, field in columns:
+        headers.append(label)
+
+        # Empty column
+        if not field:
+            select_sql.append("''")
+            select_index += 1
+            continue
+
+        parts = field.split("__")
+
+        # =================================================
+        # SIMPLE FIELD (no relation)
+        # =================================================
+        if len(parts) == 1:
+            try:
+                f = model._meta.get_field(parts[0])
+
+                # FK / relation → resolve via ORM
+                if isinstance(f, (ForeignKey, OneToOneField)):
+                    select_sql.append(f"{base_table}.id")
+                    method_columns[select_index] = parts[0]
+                else:
+                    select_sql.append(f"{base_table}.{f.column}")
+
+            except FieldDoesNotExist:
+                # property / method
+                select_sql.append(f"{base_table}.id")
+                method_columns[select_index] = parts[0]
+
+            select_index += 1
+            continue
+
+        # =================================================
+        # RELATED / COMPUTED FIELD (always ORM)
+        # =================================================
+        select_sql.append(f"{base_table}.id")
+        method_columns[select_index] = field
+        select_index += 1
+
+    # =====================================================
+    # EXECUTE SQL (SQLite + PostgreSQL SAFE)
+    # =====================================================
+    if not ids:
+        return HttpResponse("No IDs provided")
+
+    placeholders = ", ".join(["%s"] * len(ids))
+
+    query = f"""
+        SELECT {", ".join(select_sql)}
+        FROM {base_table}
+        WHERE {base_table}.id IN ({placeholders})
+    """
+
+    with connection.cursor() as cursor:
+        cursor.execute(query, ids)
+        rows = cursor.fetchall()
+
+    # =====================================================
+    # ORM OBJECT CACHE
+    # =====================================================
+    objs = {o.id: o for o in model.objects.filter(id__in=ids)}
+
+    # =====================================================
+    # METHOD MAPS (FK / PROPERTIES / CALLABLES)
+    # =====================================================
+    method_maps = {}
+
+    for idx, attr in method_columns.items():
+        method_maps[idx] = {}
+
+        for obj_id, obj in objs.items():
+            value = obj
+
+            for part in attr.split("__"):
+                if value is None:
+                    break
+
+                value = getattr(value, part, None)
+                if callable(value):
+                    value = value()
+
+            method_maps[idx][obj_id] = str(value) if value is not None else ""
+
+    # =====================================================
+    # FINAL ROWS
+    # =====================================================
+    final_rows = []
+
+    for row in rows:
+        row = list(row)
+        obj_id = row[0]
+
+        for idx, mmap in method_maps.items():
+            row[idx] = mmap.get(obj_id, "")
+
+        final_rows.append(row[1:])
+
+    # =====================================================
+    # XLSX EXPORT
+    # =====================================================
+    if export_format == "xlsx":
+        wb = Workbook()
+        ws = wb.active
+        ws.title = "Quick Export"
+
+        total_columns = len(headers)
+        center = Alignment(horizontal="center", vertical="center")
+        header_fill = PatternFill(start_color="FFD700", fill_type="solid")
+        header_font = Font(bold=True)
+        thin = Side(style="thin")
+        border = Border(left=thin, right=thin, top=thin, bottom=thin)
+
+        has_logo = logo_path and os.path.exists(logo_path)
+        if has_logo:
+            img = Image(logo_path)
+            img.width = 120
+            img.height = 60
+            ws.add_image(img, "A1")
+
+        start_col = 1
+
+        ws.merge_cells(
+            start_row=1, start_column=start_col, end_row=1, end_column=total_columns
+        )
+        ws.cell(row=1, column=start_col).value = company_name
+        ws.cell(row=1, column=start_col).font = Font(size=14, bold=True)
+        ws.cell(row=1, column=start_col).alignment = center
+
+        ws.merge_cells(
+            start_row=2, start_column=start_col, end_row=3, end_column=total_columns
+        )
+        ws.cell(row=2, column=start_col).value = file_name
+        ws.cell(row=2, column=start_col).font = Font(size=14, bold=True, color="FF0000")
+        ws.cell(row=2, column=start_col).alignment = center
+
+        ws.merge_cells(
+            start_row=4, start_column=start_col, end_row=4, end_column=total_columns
+        )
+        ws.cell(row=4, column=start_col).value = date_range
+        ws.cell(row=4, column=start_col).alignment = center
+
+        HEADER_ROW = 5
+        for col, header in enumerate(headers, start=1):
+            c = ws.cell(row=HEADER_ROW, column=col)
+            c.value = header
+            c.fill = header_fill
+            c.font = header_font
+            c.border = border
+            c.alignment = center
+
+        for r_idx, row in enumerate(final_rows, start=HEADER_ROW + 1):
+            for c_idx, val in enumerate(row, start=1):
+                ws.cell(row=r_idx, column=c_idx).value = val
+
+        buf = BytesIO()
+        wb.save(buf)
+
         response = HttpResponse(
-            json.dumps(json_data, indent=4), content_type="application/json"
+            buf.getvalue(),
+            content_type="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
         )
-        response["Content-Disposition"] = (
-            f'attachment; filename="{export_file_name}.json"'
-        )
+        response["Content-Disposition"] = f'attachment; filename="{file_name}.xlsx"'
         return response
-    # CSV
-    elif export_format == "csv":
-        csv_data = dataset.export("csv")
-        response = HttpResponse(csv_data, content_type="text/csv")
-        response["Content-Disposition"] = (
-            f'attachment; filename="{export_file_name}.csv"'
-        )
-        return response
-    elif export_format == "pdf":
 
-        headers = dataset.headers
-        rows = dataset.dict
-        if not logo_path:
-            logo_path = static(os.path.join(settings.BASE_DIR, logo_path))
+    # =====================================================
+    # PDF EXPORT
+    # =====================================================
+    if export_format == "pdf":
 
-        # Get absolute logo path from ImageField or fallback
-        if logo_path:
-            # If it's a FieldFile (from ImageField), convert to string
-            if hasattr(logo_path, "path"):
-                abs_logo_path = logo_path.path  # full file system path
-            else:
-                abs_logo_path = os.path.join(settings.BASE_DIR, str(logo_path))
-        else:
-            abs_logo_path = None
-        # Render to HTML using a template
-        landscape = len(headers) > 5
-        html_string = render_to_string(
+        original_headers = headers
+        display_headers = [
+            reshape_text(h) if isinstance(h, str) else h for h in headers
+        ]
+
+        raw_rows = final_rows
+        processed_rows = []
+
+        for row in raw_rows:
+            new_row = []
+
+            for value in row:
+                if isinstance(value, str):
+                    new_row.append(reshape_text(value))
+                elif isinstance(value, (list, tuple)):
+                    new_row.append(
+                        [reshape_text(v) if isinstance(v, str) else v for v in value]
+                    )
+                else:
+                    new_row.append(value)
+
+            processed_rows.append(new_row)
+        rows = processed_rows
+
+        html = render_to_string(
             "generic/export_pdf.html",
             {
-                "headers": headers,
-                "rows": rows,
-                "landscape": landscape,
-                "company_name": company_title,
-                "date_range": (
-                    request.session.get("report_date_range")
-                    if request.session.get("report_date_range")
-                    else ""
+                "headers": display_headers,
+                "lookup_headers": original_headers,
+                "rows": [dict(zip(original_headers, r)) for r in rows],
+                "company_name": reshape_text(company_name),
+                "date_range": reshape_text(date_range),
+                "report_title": reshape_text(file_name),
+                "logo_path": (
+                    logo_path if logo_path and os.path.exists(logo_path) else None
                 ),
-                "report_title": export_file_name,
-                "logo_path": abs_logo_path,
+                "landscape": len(headers) > 5,
             },
+            request=request,
         )
 
-        # Convert HTML to PDF using xhtml2pdf
-        result = io.BytesIO()
-        pisa_status = pisa.CreatePDF(
-            html_string, dest=result, link_callback=link_callback
+        buf = BytesIO()
+        pisaFileObject.getNamedFile = lambda self: self.uri
+        pisa.CreatePDF(html, dest=buf, link_callback=link_callback)
+
+        return HttpResponse(
+            buf.getvalue(),
+            content_type="application/pdf",
+            headers={"Content-Disposition": f'attachment; filename="{file_name}.pdf"'},
         )
 
-        if pisa_status.err:
-            return HttpResponse("PDF generation failed", status=500)
+    # =====================================================
+    # CSV EXPORT
+    # =====================================================
+    response = HttpResponse(content_type="text/csv")
+    response["Content-Disposition"] = f'attachment; filename="{file_name}.csv"'
 
-        # Return response
-        response = HttpResponse(result.getvalue(), content_type="application/pdf")
-        response["Content-Disposition"] = (
-            f'attachment; filename="{export_file_name}.pdf"'
-        )
-        return response
+    writer = csv.writer(response)
+    writer.writerow([company_name])
+    writer.writerow([file_name])
+    writer.writerow([date_range])
+    writer.writerow([])
+    writer.writerow(headers)
+    writer.writerows(final_rows)
 
-    return export_xlsx(
-        json_data,
-        columns,
-        file_name=export_file_name,
-        extra_info={
-            "company_name": company_title,
-            "date_range": request.session.get("report_date_range"),
-            "report_title": export_file_name,
-            "logo_path": logo_path,
-        },
-    )
+    return response
 
 
 @method_decorator(login_required, name="dispatch")
