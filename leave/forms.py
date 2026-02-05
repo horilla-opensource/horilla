@@ -241,7 +241,7 @@ class LeaveRequestCreationForm(BaseModelForm):
                 "hx-target": "#createTitle",
                 "hx-swap": "afterend",
                 "hx-trigger": "change",
-                "hx-get": f"/leave/employee-available-leave-count",
+                "hx-get": f"/leave/employee-available-leave-count/",
             }
         )
 
@@ -250,7 +250,7 @@ class LeaveRequestCreationForm(BaseModelForm):
                 "hx-target": "#id_leave_type_id_parent_div",
                 "hx-trigger": "change",
                 "hx-swap": "innerHTML",
-                "hx-get": "/leave/get-employee-leave-types?form=LeaveRequestCreationForm",
+                "hx-get": "/leave/get-employee-leave-types/?form=LeaveRequestCreationForm",
             }
         )
 
@@ -260,7 +260,7 @@ class LeaveRequestCreationForm(BaseModelForm):
                 "hx-target": "#createTitle",
                 "hx-swap": "afterend",
                 "hx-trigger": "change",
-                "hx-get": f"/leave/employee-available-leave-count",
+                "hx-get": f"/leave/employee-available-leave-count/",
             }
         )
 
@@ -316,14 +316,14 @@ class LeaveRequestUpdationForm(BaseModelForm):
                 "hx-target": "#assinedLeaveAvailableCount",
                 "hx-swap": "outerHTML",
                 "hx-trigger": "change",
-                "hx-get": "/leave/employee-available-leave-count",
+                "hx-get": "/leave/employee-available-leave-count/",
             }
         )
         self.fields["employee_id"].widget.attrs.update(
             {
                 "hx-target": "#id_leave_type_id_parent_div",
                 "hx-trigger": "change",
-                "hx-get": "/leave/get-employee-leave-types?form=LeaveRequestUpdationForm",
+                "hx-get": "/leave/get-employee-leave-types/?form=LeaveRequestUpdationForm",
             }
         )
         self.fields["attachment"].widget.attrs["accept"] = ".jpg, .jpeg, .png, .pdf"
@@ -334,7 +334,7 @@ class LeaveRequestUpdationForm(BaseModelForm):
                 "hx-target": "#assinedLeaveAvailableCount",
                 "hx-swap": "outerHTML",
                 "hx-trigger": "change",
-                "hx-get": "/leave/employee-available-leave-count",
+                "hx-get": "/leave/employee-available-leave-count/",
             }
         )
 
@@ -625,7 +625,7 @@ class UserLeaveRequestCreationForm(BaseModelForm):
                 "hx-target": "#createTitle",
                 "hx-swap": "afterend",
                 "hx-trigger": "change",
-                "hx-get": f"/leave/employee-available-leave-count",
+                "hx-get": f"/leave/employee-available-leave-count/",
             }
         )
         self.fields["employee_id"].initial = employee
@@ -958,7 +958,7 @@ class RestrictLeaveForm(BaseModelForm):
                 "hx-include": "#leaveRestrictForm",
                 "hx-target": "#restrictLeaveJobPosition",
                 "hx-trigger": "change",
-                "hx-get": "/leave/get-restrict-job-positions",
+                "hx-get": "/leave/get-restrict-job-positions/",
             }
         )
 
@@ -1032,7 +1032,7 @@ if apps.is_installed("attendance"):
                     "hx-target": "#dynamic_field_attendance_id",
                     "hx-trigger": "change",
                     "hx-swap": "innerHTML",
-                    "hx-get": "/leave/get-leave-attendance-dates",
+                    "hx-get": "/leave/get-leave-attendance-dates/",
                 }
             )
 
