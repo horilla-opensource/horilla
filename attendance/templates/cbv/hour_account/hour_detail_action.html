@@ -3,8 +3,7 @@
 {% with dates=instance.month_days can_view=perms.attendance.view_attendance is_owner=request.user.employee_get|equals:instance.employee_id %}
 	{% if can_view or can_manage %}
 		<a
-			class="oh-btn oh-btn--warning"
-			style="width: 50%"
+			class="oh-btn oh-btn--warning h-8"
 			onclick="validateHours('{% url 'attendance-view' %}?employee_id={{instance.employee_id.id}}&month={{ dates.1.month}}');"
 		>
 			{{ instance.not_validated_hrs }} {% trans "Hours to validate" %}
@@ -12,8 +11,7 @@
 
 	{% elif is_owner %}
 		<a
-			class="oh-btn oh-btn--warning"
-			style="width: 50%"
+			class="oh-btn oh-btn--warning h-8"
 			href="{% url 'view-my-attendance' %}?month={{ dates.1.month}}"
 		>
 			{{ instance.not_validated_hrs }} {% trans "Hours to validate" %}
@@ -22,16 +20,14 @@
 
 	{% if can_view or can_manage %}
 		<a
-			class="oh-btn oh-btn--success"
-			style="width: 50%"
+			class="oh-btn oh-btn--success h-8"
 			onclick="validateOTHours('{% url 'attendance-view' %}?employee_id={{instance.employee_id.id}}&month={{ dates.1.month}}');"
 		>
 			{{ instance.not_approved_ot_hrs }} hrs {% trans "OT to Approve" %}
 		</a>
 	{% elif is_owner %}
 		<a
-			class="oh-btn oh-btn-group oh-btn--success"
-			style="width: 50%"
+			class="oh-btn oh-btn-group oh-btn--success h-8"
 			href="{% url 'view-my-attendance' %}?month={{ dates.1.month}}"
 		>
 			{{ instance.not_approved_ot_hrs }} hrs {% trans "OT to Approve" %}
