@@ -1240,7 +1240,6 @@ def employee_creation(request, token):
             employee_personal_info = form.save(commit=False)
             employee_personal_info.employee_user_id = user
             employee_personal_info.email = candidate.email
-
             if candidate.profile and candidate.profile.storage.exists(
                 candidate.profile.name
             ):  # 896
