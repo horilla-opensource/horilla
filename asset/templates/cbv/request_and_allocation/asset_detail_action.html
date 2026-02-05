@@ -1,11 +1,11 @@
 {% load i18n %}
-<div class="oh-modal__button-container text-center mt-3 w-100">
+<div class="oh-modal__button-container text-center w-100">
     {% if perms.asset.change_assetassignment or not instance.return_request %}
       <div class="oh-btn-group">
           {% if perms.asset.change_assetassignment  %}
             <button
                 href="#"
-                class="oh-btn oh-btn--secondary w-100"
+                class="oh-btn oh-btn--secondary w-100 h-8"
                 role="button"
                 data-toggle="oh-modal-toggle"
                 data-target="#objectCreateModal"
@@ -20,7 +20,7 @@
                   onsubmit="return confirm('{% trans "Are you sure you want to return this asset?" %}');"
                   >
                   {% csrf_token %}
-                  <button type="submit" class="oh-btn oh-btn--secondary w-100">
+                  <button type="submit" class="oh-btn oh-btn--secondary w-100 h-8">
                       <ion-icon name="return-down-back-sharp"></ion-icon>
                       {% trans "Return Request" %}
                   </button>
