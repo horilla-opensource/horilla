@@ -363,7 +363,7 @@ class AttendanceListTabDetailView(HorillaDetailedView):
                     "icon": "create-outline",
                     "attrs": """
                             onclick="event.stopPropagation();"
-                            class="oh-btn oh-btn--info w-100"
+                            class="w-24 h-8 px-4 py-2 bg-primary-600 text-white rounded-md text-xs flex items-center justify-center gap-2 hover:bg-primary-800 transition duration-300"
                             data-toggle="oh-modal-toggle"
                             data-target="#genericModalEdit"
                             hx-get="{change_attendance}?all_attendance=true"
