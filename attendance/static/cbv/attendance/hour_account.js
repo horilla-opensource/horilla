@@ -40,7 +40,7 @@ function hourAccountbulkDelete() {
                 ids = JSON.parse($("#selectedInstances").attr("data-ids"));
                 $.ajax({
                     type: "POST",
-                    url: "/attendance/attendance-account-bulk-delete",
+                    url: "/attendance/attendance-account-bulk-delete/",
                     data: {
                         csrfmiddlewaretoken: getCookie("csrftoken"),
                         ids: JSON.stringify(ids),
@@ -83,7 +83,7 @@ function lateComeBulkDelete() {
                 ids = JSON.parse($("#selectedInstances").attr("data-ids"));
                 $.ajax({
                     type: "POST",
-                    url: "/attendance/late-come-early-out-bulk-delete",
+                    url: "/attendance/late-come-early-out-bulk-delete/",
                     data: {
                         csrfmiddlewaretoken: getCookie("csrftoken"),
                         ids: JSON.stringify(ids),
@@ -124,7 +124,7 @@ function reqAttendanceBulkApprove() {
                 ids = JSON.parse($("#selectedInstances").attr("data-ids") || "[]");
                 $.ajax({
                     type: "POST",
-                    url: "/attendance/bulk-approve-attendance-request",
+                    url: "/attendance/bulk-approve-attendance-request/",
                     data: {
                         csrfmiddlewaretoken: getCookie("csrftoken"),
                         ids: JSON.stringify(ids),
@@ -166,7 +166,7 @@ function reqAttendanceBulkReject() {
                 ids = JSON.parse($("#selectedInstances").attr("data-ids") || "[]");
                 $.ajax({
                     type: "POST",
-                    url: "/attendance/bulk-reject-attendance-request",
+                    url: "/attendance/bulk-reject-attendance-request/",
                     data: {
                         csrfmiddlewaretoken: getCookie("csrftoken"),
                         ids: JSON.stringify(ids),
