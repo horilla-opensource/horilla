@@ -47,7 +47,7 @@ class LeaveMailSendThread(Thread):
     #                 },
     #                 request=self.request,
     #             )
-    #
+
     #             email = EmailMessage(
     #                 subject=subject,
     #                 body=html_message,
