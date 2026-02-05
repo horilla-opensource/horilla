@@ -72,7 +72,6 @@ class HorillaListView(ListView):
     export_file_name: str = "quick_export"
     export_formats: list = [
         ("xlsx", "Excel"),
-        ("json", "Json"),
         ("csv", "CSV"),
         ("pdf", "PDF"),
     ]
