@@ -227,6 +227,7 @@ def asset_update(request, asset_id):
 
 @login_required
 @hx_request_required
+@permission_required("asset.view_asset")
 def asset_information(request, asset_id):
     """
     Display information about a specific Asset object.
