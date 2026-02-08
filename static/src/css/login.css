@@ -1,0 +1,30 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* Scoped Reset for Login Wrapper */
+.tw-login-wrapper {
+    box-sizing: border-box;
+}
+
+.tw-login-wrapper *,
+.tw-login-wrapper *::before,
+.tw-login-wrapper *::after {
+    box-sizing: inherit;
+}
+
+/* Remove all borders from inputs and buttons */
+.tw-login-wrapper input,
+.tw-login-wrapper button,
+.tw-login-wrapper ion-icon {
+    border: none !important;
+    outline: none !important;
+}
+
+.tw-login-wrapper input:focus {
+    border: none !important;
+}
+
+.tw-login-wrapper button:focus {
+    outline: none !important;
+}

@@ -13,119 +13,265 @@
         href="{% if white_label_company.icon %}{{white_label_company.icon.url}} {% else %}{% static 'favicons/favicon-32x32.png' %}{% endif %}">
     <link rel="icon" type="image/png" sizes="16x16"
         href="{% if white_label_company.icon %}{{white_label_company.icon.url}} {% else %}{% static 'favicons/favicon-16x16.png' %}{% endif %}">
+
+    <!-- Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link
+        href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Poppins:wght@500;600;700&display=swap"
+        rel="stylesheet">
+
+    <!-- Styles -->
     <link rel="stylesheet" href="{% static '/build/css/style.min.css' %}" />
+    <!-- Scoped Tailwind CSS for Login -->
+    <link rel="stylesheet" href="{% static '/build/css/login.css' %}" />
     <link rel="manifest" href="{% static 'build/manifest.json' %}" />
+
+    <style>
+        .login-bg {
+            background-image: url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' fill-rule='evenodd'%3E%3Cg fill='%2315803d' fill-opacity='0.05'%3E%3Cpath d='M36 34v-4h-2v4h-4v2h4v4h2v-4h4v-2h-4zm0-30V0h-2v4h-4v2h4v4h2V6h4V4h-4zM6 34v-4H4v4H0v2h4v4h2v-4h4v-2H6zM6 4V0H4v4H0v2h4v4h2V6h4V4H6z'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E");
+        }
+
+        .blob {
+            position: absolute;
+            filter: blur(40px);
+            z-index: -1;
+            opacity: 0.4;
+            animation: float 10s infinite ease-in-out;
+        }
+
+        @keyframes float {
+            0% {
+                transform: translate(0, 0) scale(1);
+            }
+
+            33% {
+                transform: translate(30px, -50px) scale(1.1);
+            }
+
+            66% {
+                transform: translate(-20px, 20px) scale(0.9);
+            }
+
+            100% {
+                transform: translate(0, 0) scale(1);
+            }
+        }
+    </style>
 </head>
 
-<body>
-    <div id="main">
-        <div class="oh-alert-container">
+<body
+    class="tw-bg-slate-50 tw-font-sans tw-h-screen tw-w-full tw-overflow-hidden tw-flex tw-items-center tw-justify-center login-bg tw-relative tw-login-wrapper">
+
+    <!-- Background Blobs -->
+    <div
+        class="blob tw-bg-primary-300 tw-w-96 tw-h-96 tw-rounded-full tw-top-0 tw-left-0 tw--translate-x-1/2 tw--translate-y-1/2">
+    </div>
+    <div
+        class="blob tw-bg-blue-300 tw-w-96 tw-h-96 tw-rounded-full tw-bottom-0 tw-right-0 tw-translate-x-1/2 tw-translate-y-1/2 animation-delay-2000">
+    </div>
+
+    <div id="main" class="tw-w-full tw-max-w-6xl tw-px-4 tw-flex tw-items-center tw-justify-center tw-h-full">
+
+        <div class="oh-alert-container tw-absolute tw-top-4 tw-right-4 tw-z-50">
             {% for message in messages %}
-            <div class="oh-alert oh-alert--animated {{ message.tags }}">
+            <div class="oh-alert oh-alert--animated {{ message.tags }} tw-mb-2">
                 {{ message }}
             </div>
             {% endfor %}
+
+            {% if form.errors %}
+            {% for field in form %}
+            {% for error in field.errors %}
+            <div class="oh-alert oh-alert--animated oh-alert--danger tw-mb-2">
+                {{ error }}
+            </div>
+            {% endfor %}
+            {% endfor %}
+            {% for error in form.non_field_errors %}
+            <div class="oh-alert oh-alert--animated oh-alert--danger tw-mb-2">
+                {{ error }}
+            </div>
+            {% endfor %}
+            {% endif %}
         </div>
-        <main class="oh-auth">
-            <div class="oh-auth-card mb-4">
-                <h1 class="oh-onboarding-card__title oh-onboarding-card__title--h2 text-center my-3">
-                    {% trans "Sign In" %}
-                </h1>
-                <p class="text-muted text-center">
-                    {% trans "Please login to access the dashboard." %}
-                </p>
-                <form method="post" class="oh-form-group">
-                    {% csrf_token %}
-                    <div class="oh-input-group">
-                        <label class="oh-label" for="username">{% trans "Username" %}</label>
-                        <input type="text" id="username" name="username" class="oh-input w-100"
-                            placeholder="e.g. adam.luis@horilla.com" />
-                    </div>
-                    <div class="oh-input-group">
-                        <label class="oh-label" for="password">{% trans "Password" %}</label>
-                        <div class="oh-password-input-container">
-                            <input type="password" id="password" name="password"
-                                class="oh-input oh-input--password w-100" placeholder="Use alphanumeric characters" />
-                            <button type="button" class="oh-btn oh-btn--transparent oh-password-input--toggle">
-                                <ion-icon class="oh-passowrd-input__show-icon" title="{% trans 'Show Password' %}"
-                                    name="eye-outline"></ion-icon>
-                                <ion-icon class="oh-passowrd-input__hide-icon d-none" title="{% trans 'Hide Password' %}"
-                                    name="eye-off-outline"></ion-icon>
-                            </button>
-                        </div>
-                    </div>
-                    <button type="submit"
-                        class="oh-btn oh-onboarding-card__button mt-4 oh-btn--secondary oh-btn--shadow w-100 mb-4"
-                        role="button">
-                        <ion-icon class="me-2" name="lock-closed-outline"></ion-icon>
-                        {% trans "Secure Sign-in" %}
-                    </button>
-                    {% if not initialize_database %}
-                        <small class="text-center">
-                            <a href="{% url 'forgot-password' %}" class="oh-link oh-link--secondary justify-content-center">
-                                {% trans "Forgot password" %}?
-                            </a>
-                        </small>
+
+        <main class="tw-w-full tw-grid md:tw-grid-cols-2 tw-gap-8 tw-items-center">
+
+            <!-- Left Side: Branding -->
+            <div class="tw-hidden md:tw-flex tw-flex-col tw-items-start tw-justify-center tw-p-8 tw-space-y-6">
+                <div class="tw-relative">
+                    {% if white_label_company and white_label_company.icon %}
+                    <img src="{{ white_label_company.icon.url }}" alt="{{ white_label_company_name }}"
+                        class="tw-h-24 tw-object-contain tw-mb-6 tw-rounded-lg" />
+                    {% else %}
+                    <img src="{% static 'images/ui/marsel-logo.png' %}" alt="Marsel Force"
+                        class="tw-h-32 tw-object-contain tw-mb-6 tw-rounded-lg" />
                     {% endif %}
-                </form>
-                {% if initialize_database %}
-                    <div>
-                        <div class="d-flex gap-2">
-                            <a href="{% url 'initialize-database' %}"
-                                class="oh-btn oh-onboarding-card__button mt-4 oh-btn--secondary oh-btn--shadow w-100 mb-4"
-                                role="button" style="
-                                background-color: rgba(229, 79, 56, 0.1);
-                                color: hsl(8, 77%, 56%);
-                                ">
-                                {% trans "Initialize Database" %}
-                                <ion-icon class="ms-2" name="arrow-forward-outline"></ion-icon>
-                            </a>
-                            <a
-                                onclick="$('#dataLoadAuthentication').toggleClass('oh-modal--show');"
-                                class="oh-btn oh-onboarding-card__button mt-4 oh-btn--secondary oh-btn--shadow w-100 mb-4"
-                                style="background-color: #31b46e1f; color: #1fad61" role="button">
-                                {% trans "Load Demo Data" %}
-                                <ion-icon class="ms-2" name="arrow-forward-outline"></ion-icon>
+                </div>
+
+                <div>
+                    <h1
+                        class="tw-text-4xl lg:tw-text-5xl tw-font-heading tw-font-bold tw-text-slate-800 tw-mb-4 tw-leading-tight">
+                        Welcome to <br />
+                        <span class="tw-text-primary-600">{{ white_label_company|default:"Marsel Force" }}</span>
+                    </h1>
+                    <p class="tw-text-lg tw-text-slate-600 tw-max-w-md">
+                        Streamline your HR operations with our comprehensive management dashboard. Secure, efficient,
+                        and easy to use.
+                    </p>
+                </div>
+
+                <div class="tw-flex tw-items-center tw-gap-4 tw-mt-8">
+                    <div class="tw-flex tw--space-x-2">
+                        <div
+                            class="tw-w-10 tw-h-10 tw-rounded-full tw-bg-slate-200 tw-border-2 tw-border-white tw-flex tw-items-center tw-justify-center tw-text-xs tw-font-bold tw-text-slate-500">
+                            HR</div>
+                        <div
+                            class="tw-w-10 tw-h-10 tw-rounded-full tw-bg-slate-300 tw-border-2 tw-border-white tw-flex tw-items-center tw-justify-center tw-text-xs tw-font-bold tw-text-slate-500">
+                            IT</div>
+                        <div
+                            class="tw-w-10 tw-h-10 tw-rounded-full tw-bg-slate-400 tw-border-2 tw-border-white tw-flex tw-items-center tw-justify-center tw-text-xs tw-font-bold tw-text-slate-500">
+                            M</div>
+                    </div>
+                    <span class="tw-text-sm tw-text-slate-500 tw-font-medium">Trusted by industry leaders</span>
+                </div>
+            </div>
+
+            <!-- Right Side: Registration Form -->
+            <div class="tw-w-full tw-max-w-md tw-mx-auto">
+                <div
+                    class="tw-card-glass tw-p-8 md:tw-p-10 tw-relative tw-overflow-hidden tw-bg-white/80 tw-backdrop-blur-md tw-rounded-2xl tw-shadow-glass">
+                    <!-- Decorative top bar -->
+                    <div
+                        class="tw-absolute tw-top-0 tw-left-0 tw-w-full tw-h-1.5 tw-bg-gradient-to-r tw-from-primary-400 tw-to-primary-600">
+                    </div>
+
+                    <div class="tw-mb-8 tw-text-center md:tw-text-left">
+                        <h2 class="tw-text-2xl tw-font-bold tw-text-slate-800">Sign In</h2>
+                        <p class="tw-text-slate-500 tw-mt-1">Please login to access your account.</p>
+                    </div>
+
+                    <form method="post" class="tw-space-y-5">
+                        {% csrf_token %}
+
+                        <div class="tw-space-y-1.5">
+                            <label class="tw-block tw-text-sm tw-font-medium tw-text-slate-700"
+                                for="username">Username</label>
+                            <div class="tw-relative">
+                                <div
+                                    class="tw-absolute tw-inset-y-0 tw-left-0 tw-pl-3 tw-flex tw-items-center tw-pointer-events-none">
+                                    <ion-icon name="person-outline" class="tw-text-slate-400 tw-text-lg"></ion-icon>
+                                </div>
+                                <input type="text" id="username" name="username"
+                                    class="tw-w-full tw-pl-10 tw-pr-4 tw-py-3 tw-bg-slate-50 tw-border-0 tw-rounded-lg tw-text-sm tw-text-slate-800 placeholder:tw-text-slate-400 focus:tw-outline-none focus:tw-ring-2 focus:tw-ring-primary-500 focus:tw-bg-white tw-transition-all"
+                                    placeholder="e.g. adam.luis" required />
+                            </div>
+                        </div>
+
+                        <div class="tw-space-y-1.5">
+                            <label class="tw-block tw-text-sm tw-font-medium tw-text-slate-700"
+                                for="password">Password</label>
+                            <div class="tw-relative">
+                                <div
+                                    class="tw-absolute tw-inset-y-0 tw-left-0 tw-pl-3 tw-flex tw-items-center tw-pointer-events-none">
+                                    <ion-icon name="lock-closed-outline"
+                                        class="tw-text-slate-400 tw-text-lg"></ion-icon>
+                                </div>
+                                <input type="password" id="password" name="password"
+                                    class="tw-w-full tw-pl-10 tw-pr-12 tw-py-3 tw-bg-slate-50 tw-border-0 tw-rounded-lg tw-text-sm tw-text-slate-800 placeholder:tw-text-slate-400 focus:tw-outline-none focus:tw-ring-2 focus:tw-ring-primary-500 focus:tw-bg-white tw-transition-all"
+                                    placeholder="••••••••" required />
+                                <button type="button"
+                                    class="tw-absolute tw-inset-y-0 tw-right-0 tw-pr-3 tw-pl-3 tw-flex tw-items-center tw-rounded-lg tw-text-slate-400 hover:tw-text-primary-600 tw-transition-colors oh-password-input--toggle">
+                                    <ion-icon class="oh-passowrd-input__show-icon" name="eye-outline"></ion-icon>
+                                    <ion-icon class="oh-passowrd-input__hide-icon d-none"
+                                        name="eye-off-outline"></ion-icon>
+                                </button>
+                            </div>
+                        </div>
+
+                        {% if not initialize_database %}
+                        <div class="tw-flex tw-justify-end">
+                            <a href="{% url 'forgot-password' %}"
+                                class="tw-text-sm tw-font-medium tw-text-primary-600 hover:tw-text-primary-700 tw-transition-colors">
+                                Forgot password?
                             </a>
                         </div>
+                        {% endif %}
+
+                        <button type="submit"
+                            class="tw-w-full tw-bg-primary-600 hover:tw-bg-primary-700 tw-text-white tw-font-semibold tw-px-4 tw-py-3 tw-rounded-lg tw-border-0 tw-shadow-lg tw-shadow-primary-600/30 hover:tw-shadow-xl hover:tw-shadow-primary-600/40 tw-transition-all tw-duration-200 tw-flex tw-items-center tw-justify-center tw-gap-2 tw-group">
+                            <ion-icon name="log-in-outline"
+                                class="tw-text-xl group-hover:tw-translate-x-1 tw-transition-transform tw-duration-200"></ion-icon>
+                            Sign In
+                        </button>
+                    </form>
+
+                    {% if initialize_database %}
+                    <div class="tw-mt-6 tw-space-y-3">
+                        <a href="{% url 'initialize-database' %}"
+                            class="tw-w-full tw-text-red-600 tw-bg-red-50 hover:tw-bg-red-100 tw-font-medium tw-flex tw-items-center tw-justify-center tw-gap-2 tw-py-2.5 tw-px-4 tw-rounded-lg tw-border-0 tw-transition-colors">
+                            Initialize Database
+                            <ion-icon name="server-outline"></ion-icon>
+                        </a>
+                        <a onclick="$('#dataLoadAuthentication').toggleClass('oh-modal--show');"
+                            class="tw-w-full tw-text-emerald-600 tw-bg-emerald-50 hover:tw-bg-emerald-100 tw-font-medium tw-cursor-pointer tw-flex tw-items-center tw-justify-center tw-gap-2 tw-py-2.5 tw-px-4 tw-rounded-lg tw-border-0 tw-transition-colors">
+                            Load Demo Data
+                            <ion-icon name="cloud-download-outline"></ion-icon>
+                        </a>
                     </div>
-                    <div class="oh-modal" id="dataLoadAuthentication" role="dialog" aria-labelledby="dataLoadAuthenticationLabel" aria-hidden="true" style="backdrop-filter: blur(8px);">
+
+                    <div class="oh-modal" id="dataLoadAuthentication" role="dialog"
+                        aria-labelledby="dataLoadAuthenticationLabel" aria-hidden="true"
+                        style="backdrop-filter: blur(8px);">
                         <div class="oh-modal__dialog">
                             {% include "demo_database/auth_load_data.html" %}
                         </div>
                     </div>
-                {% endif %}
-            </div>
-            <div style="display: contents;">
-                <img src={% if white_label_company.icon %}
-                        "{{white_label_company.icon.url}}"
-                        alt="{{white_label_company_name}}"
-                        style=" opacity:.90; 200px; height: 140px;"
-                    {% else %}
-                        "{% static 'images/ui/auth-logo.png' %}" alt="Horilla"
                     {% endif %}
-                />
-                {% if white_label_company %}
-                <p style=" font-size: large; color: gray; text-align: center;" class="mt-2">{{white_label_company}}</p>
-                {% endif %}
 
+                    <div class="tw-mt-8 tw-text-center">
+                        <p class="tw-text-xs tw-text-slate-400">
+                            Powered by <span class="tw-font-bold tw-text-slate-500">Marsel Force</span>
+                        </p>
+                    </div>
+                </div>
             </div>
         </main>
     </div>
-    <script src="{% static '/build/js/web.frontend.min.js' %}"></script>
-    <script src="https://code.jquery.com/jquery-3.6.4.min.js"></script>
-    {% comment %} <script type="module" src="https://unpkg.com/ionicons@5.5.2/dist/ionicons/ionicons.esm.js"></script>
-    <script nomodule src="https://unpkg.com/ionicons@5.5.2/dist/ionicons/ionicons.js"></script> {% endcomment %}
-    <script type="module"  src="{% static 'images/ionicons/ui_icons/ionicons/ionicons.esm.js' %}"></script>
+
+    <!-- Scripts -->
+    <script src="{% static '/jquery/jquery.min.js' %}"></script>
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@10"></script>
+    <script type="module" src="{% static 'images/ionicons/ui_icons/ionicons/ionicons.esm.js' %}"></script>
     <script>
         $(document).ready(function () {
+            // Password toggle
+            $(".oh-password-input--toggle").click(function () {
+                var input = $("#password");
+                var showIcon = $(".oh-passowrd-input__show-icon");
+                var hideIcon = $(".oh-passowrd-input__hide-icon");
+
+                if (input.attr("type") === "password") {
+                    input.attr("type", "text");
+                    showIcon.addClass("d-none");
+                    hideIcon.removeClass("d-none");
+                } else {
+                    input.attr("type", "password");
+                    showIcon.removeClass("d-none");
+                    hideIcon.addClass("d-none");
+                }
+            });
+
             if ($(".oh-alert--warning").length > 0) {
                 Swal.fire({
                     title: 'Access Denied !',
                     text: 'Your login credentials are currently blocked. Please contact HR administrators for assistance.',
                     icon: 'warning',
                     confirmButtonText: 'OK',
+                    customClass: {
+                        confirmButton: 'tw-btn-primary tw-bg-primary-600 tw-text-white tw-px-4 tw-py-2 tw-rounded'
+                    }
                 });
             }
         });
