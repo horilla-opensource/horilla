@@ -82,6 +82,13 @@
                         <div class="oh-switch" style="width: 30px">
                             {{ field|add_class:'oh-switch__checkbox' }}
                         </div>
+                    {% elif field.name == "country" or field.name == "state" %}
+                        <div class="oh-input-group mb-2">
+                            <select name="{{ field.name }}" id="{{ field.id_for_label }}" class="oh-select oh-select-2 form-control"
+                                data-selected="{{ field.value|default:'' }}">
+                            </select>
+                            {{ field.errors }}
+                        </div>
                     {% else %}
                     <div id="dynamic_field_{{field.name}}">
                         {{ field|add_class:'form-control' }} {{ field.errors }}
