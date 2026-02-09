@@ -23,7 +23,7 @@
         </button>
     </div>
 
-    <form action="{% url 'monthly-leave-report' %}" method="post">
+    <form action="{% url 'monthly-leave-report' %}" method="post"   target="monthly_leave_download_iframe" onsubmit="afterReportSubmit()">
         {% csrf_token %}
 
         <div class="row mt-3">
@@ -43,11 +43,19 @@
             {% trans "Generate Report" %}
         </button>
     </form>
+<iframe name="monthly_leave_download_iframe" style="display:none;"></iframe>
 
 </div>
 <script>
 function hideMonthlyLeaveReportModal() {
     const modal = document.getElementById("monthlyLeaveReportModal");
     if (modal) modal.classList.remove("show");
+}
+function afterReportSubmit() {
+    setTimeout(() => {
+        document.querySelector(".oh-modal__close")?.click();
+
+
+    }, 100);
 }
 </script>
