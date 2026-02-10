@@ -2,6 +2,7 @@
 This page handles the cbv methods for document request page
 """
 
+import os
 from typing import Any
 
 from django import forms
@@ -28,6 +29,18 @@ from horilla_views.generic.cbv.views import (
     HorillaNavView,
 )
 from notifications.signals import notify
+
+BLOCKED_EXTENSIONS = {
+    ".html",
+    ".htm",
+    ".js",
+    ".svg",
+    ".xml",
+    ".php",
+    ".py",
+    ".sh",
+    ".exe",
+}
 
 
 @method_decorator(login_required, name="dispatch")
@@ -106,11 +119,18 @@ class DocumentCreateForm(HorillaFormView):
         return initial
 
     def form_valid(self, form: DocumentForm) -> HttpResponse:
-        if form.is_valid():
-            messages.success(self.request, _("Document Uploaded Successfully"))
-            form.save()
-            return HttpResponse("<script>window.location.reload();</script>")
-        return super().form_valid(form)
+        uploaded_file = self.request.FILES.get("document")
+        if uploaded_file:
+            ext = os.path.splitext(uploaded_file.name)[1].lower()
+            if ext in BLOCKED_EXTENSIONS:
+                messages.error(
+                    self.request, _("File type %(ext)s is not allowed.") % {"ext": ext}
+                )
+                return HttpResponse("<script>window.location.reload();</script>")
+
+        form.save()
+        messages.success(self.request, _("Document Uploaded Successfully"))
+        return HttpResponse("<script>window.location.reload();</script>")
 
 
 @method_decorator(login_required, name="dispatch")
@@ -166,6 +186,16 @@ class DocumentUploadForm(HorillaFormView):
         return context
 
     def form_valid(self, form: DocumentUpdateForm) -> HttpResponse:
+        uploaded_file = self.request.FILES.get("document")
+
+        if uploaded_file:
+            ext = os.path.splitext(uploaded_file.name)[1].lower()
+            if ext in BLOCKED_EXTENSIONS:
+                messages.error(
+                    self.request, _("File type %(ext)s is not allowed.") % {"ext": ext}
+                )
+                return HttpResponse("<script>window.location.reload();</script>")
+
         if form.is_valid():
             if form.instance.pk:
                 messages.success(self.request, _("Document uploaded successfully"))
@@ -184,7 +214,7 @@ class DocumentUploadForm(HorillaFormView):
                         ),
                         icon="chatbox-ellipses",
                     )
-                except:
+                except Exception:
                     pass
             form.instance.status = "requested"
             form.save()
