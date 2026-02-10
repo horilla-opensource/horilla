@@ -5404,3 +5404,63 @@ def monthly_leave_report(request):
 
     wb.save(response)
     return response
+
+@login_required
+@manager_can_enter("leave.view_leaverequest")
+def monthly_leave_report_pdf(request):
+    start = request.POST.get("start_date")
+    end = request.POST.get("end_date")
+
+    request_employee = getattr(request.user, "employee_get", None)  # don't call it
+    print("REQUEST EMPLOYEE:", request_employee)
+
+    leaves = (
+        LeaveRequest.objects.filter(
+            start_date__gte=start,
+            end_date__lte=end,
+            is_active=True
+        )
+        .select_related("employee_id", "leave_type_id")
+    )
+
+    ids = set()
+    for l in leaves:
+        val = getattr(l, "modified_by_id", None)
+        if val:
+            ids.add(int(val))
+
+    user_map = {}
+    if ids:
+        employees = Employee.objects.filter(id__in=ids).select_related("employee_user_id")
+        print("EMPLOYEES FOUND:", employees.count())
+        print("Names", [emp.get_full_name() for emp in employees])
+
+        for emp in employees:
+            name = emp.get_full_name()
+
+            if not name or name == str(emp).strip():
+                user = getattr(emp, "employee_user_id", None)
+                if user:
+                    user_full = (user.get_full_name() or "").strip()
+                    if user_full:
+                        name = user_full
+
+            user_map[emp.id] = name
+
+    for l in leaves:
+        key = getattr(l, "modified_by_id", None)
+        l.modified_by_name = user_map.get(int(key), "-") if key else "-"
+
+    context = {
+        "leaves": leaves,
+        "start": start,
+        "end": end,
+        "request": request,
+        "request_user": request_employee,
+        "report_creation_date": timezone.now(),
+    }
+
+    template_path = "leave/reports/monthly_leave_report_pdf.html"
+    resp = generate_leave_request_pdf(template_path, context=context, html=False)
+    resp["Content-Disposition"] = 'attachment; filename="monthly_leave_report.pdf"'
+    return resp
