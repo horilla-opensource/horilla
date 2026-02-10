@@ -9,7 +9,6 @@ from datetime import date, datetime, timedelta
 
 from django.apps import apps
 from django.conf import settings
-from django.db import transaction, IntegrityError
 from django.contrib.auth.models import Permission, User
 from django.core.exceptions import ValidationError
 from django.core.files.storage import default_storage
@@ -558,45 +557,44 @@ class Employee(models.Model):
         # your custom code here
         # ...
         # call the parent class's save method to save the object
-        creating = self.pk is None
+        prev_employee = Employee.objects.filter(id=self.id).first()
+        super().save(*args, **kwargs)
         request = getattr(horilla_middlewares._thread_locals, "request", None)
-
-        with transaction.atomic():
+        if request and not self.is_active and self.get_archive_condition() is not False:
+            self.is_active = True
             super().save(*args, **kwargs)
-            if request and not self.is_active and self.get_archive_condition() is not False:
-                self.is_active = True
-                super().save(update_fields=["is_active"])
+        employee = self
 
-            if self.employee_user_id_id is None:
-                username = (self.email or "").strip().lower()
-                password = str(self.phone or "").strip()
+        if employee.employee_user_id is None:
+            # Create user if no corresponding user exists
+            username = self.email
+            password = self.phone
 
-                user = User.objects.filter(username=username).first()
-                if user is None:
-                    user = User.objects.create_user(
-                        username=username,
-                        email=username,
-                        password=password,
-                    )
+            is_new_employee_flag = (
+                not employee.employee_user_id.is_new_employee
+                if employee.employee_user_id
+                else True
+            )
+            user = User.objects.create_user(
+                username=username,
+                email=username,
+                password=password,
+                is_new_employee=is_new_employee_flag,
+            )
+            if not user:
+                user = User.objects.create_user(
+                    username=username, email=username, password=password
+                )
+            self.employee_user_id = user
+            # default permissions
+            change_ownprofile = Permission.objects.get(codename="change_ownprofile")
+            view_ownprofile = Permission.objects.get(codename="view_ownprofile")
+            user.user_permissions.add(view_ownprofile)
+            user.user_permissions.add(change_ownprofile)
 
-                self.employee_user_id = user
-                super().save(update_fields=["employee_user_id"])
-
-                change_ownprofile = Permission.objects.get(codename="change_ownprofile")
-                view_ownprofile = Permission.objects.get(codename="view_ownprofile")
-                user.user_permissions.add(view_ownprofile, change_ownprofile)
-
-            else:
-                new_username = (self.email or "").strip().lower()
-                user = self.employee_user_id
-                if user.username != new_username:
-                    if not User.objects.exclude(pk=user.pk).filter(username=new_username).exists():
-                        user.username = new_username
-                        user.email = new_username
-                        user.save(update_fields=["username", "email"])
-
-            if not hasattr(self, "employee_work_info"):
-                EmployeeWorkInformation.objects.get_or_create(employee_id=self)
+        if not hasattr(self, "employee_work_info"):
+            EmployeeWorkInformation.objects.get_or_create(employee_id=self)
+            return self.save()
 
         return self
 

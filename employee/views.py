@@ -236,7 +236,7 @@ def employee_profile(request):
 @login_required
 @enter_if_accessible(
     feature="profile_edit",
-    perm="employee.change_ownprofile",
+    perm="employee.change_employee",
 )
 def self_info_update(request):
     """
@@ -244,45 +244,30 @@ def self_info_update(request):
     """
     user = request.user
     employee = Employee.objects.filter(employee_user_id=user).first()
-
-    if not employee:
-        messages.error(request, _("Employee profile not found."))
-        return redirect("employee-profile")
-
     badge_id = employee.badge_id
-
-    bank_instance = EmployeeBankDetails.objects.filter(employee_id=employee).first()
-    bank_form = EmployeeBankDetailsForm(instance=bank_instance)
-
-    form = EmployeeForm(instance=employee)
-
-    if request.method == "POST":
+    bank_form = EmployeeBankDetailsForm(
+        instance=EmployeeBankDetails.objects.filter(employee_id=employee).first()
+    )
+    form = EmployeeForm(instance=Employee.objects.filter(employee_user_id=user).first())
+    if request.POST:
         if request.POST.get("form_type") == "personal" or request.POST.get("employee_first_name") is not None:
-            form = EmployeeForm(request.POST, request.FILES, instance=employee)
-
+            instance = Employee.objects.filter(employee_user_id=request.user).first()
+            form = EmployeeForm(request.POST, instance=instance)
             if form.is_valid():
-                inst = form.save(commit=False)
-                inst.employee_user_id = user
-                if not inst.badge_id:
-                    inst.badge_id = badge_id
-                inst.save()
+                instance = form.save(commit=False)
+                instance.employee_user_id = user
+                if instance.badge_id is None:
+                    instance.badge_id = badge_id
+                instance.save()
                 messages.success(request, _("Profile updated."))
-                return redirect("employee-profile")
-            else:
-                messages.error(request, _("Profile update failed. Please fix the errors below."))
-
         elif request.POST.get("form_type") == "bank" or request.POST.get("any_other_code1") is not None:
-            bank_form = EmployeeBankDetailsForm(request.POST, request.FILES, instance=bank_instance)
-
+            instance = EmployeeBankDetails.objects.filter(employee_id=employee).first()
+            bank_form = EmployeeBankDetailsForm(request.POST, instance=instance)
             if bank_form.is_valid():
-                bank = bank_form.save(commit=False)
-                bank.employee_id = employee
-                bank.save()
+                instance = bank_form.save(commit=False)
+                instance.employee_id = employee
+                instance.save()
                 messages.success(request, _("Bank details updated."))
-                return redirect("employee-profile")
-            else:
-                messages.error(request, _("Bank update failed. Please fix the errors below."))
-
     return render(
         request,
         "employee/profile/profile.html",

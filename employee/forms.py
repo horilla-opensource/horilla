@@ -258,9 +258,7 @@ class EmployeeForm(ModelForm):
                 user_q = user_q.exclude(pk=self.instance.employee_user_id.pk)
 
             if user_q.exists():
-                user = user_q.first()
-                if hasattr(user, 'employee_get'):
-                    self.add_error("email", _("This email is already in use by another employee."))
+                self.add_error("email", _("This email is already in use."))
 
         if self.instance and self.instance.id:
             query = query.exclude(id=self.instance.id)
