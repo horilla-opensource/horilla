@@ -1,0 +1,38 @@
+{% load basefilters i18n %}
+<style>
+	tr span.txt {
+		display: none;
+	}
+</style>
+{% is_manager_of request.user instance as can_manage %}
+{% if perms.base.change_worktyperequest or can_manage %}
+	<div class="oh-btn-group w-100" onclick="event.stopPropagation();">
+		{% if instance.approved or instance.canceled %}
+			<a type="submit" href="#" title="{% trans 'Approve' %}" class="h-8 oh-btn oh-btn--success oh-btn--disabled w-50">
+				<ion-icon class="me-1" name="checkmark-outline"></ion-icon>
+				<span class="txt">{% trans 'Approve' %}</span>
+			</a>
+		{% else %}
+			<a href="{% url 'work-type-request-approve' instance.id %}" title="{% trans 'Approve' %}"
+				onclick="return confirm(`{% trans 'Do you want to approve this request?' %}`)"
+				class="h-8 oh-btn oh-btn--success w-50">
+				<ion-icon class="me-1" name="checkmark-outline"></ion-icon>
+				<span class="txt">{% trans 'Approve' %}</span>
+			</a>
+		{% endif %}
+
+		{% if instance.canceled %}
+			<a type="submit" href="#" title="{% trans 'Reject' %}" class="h-8 oh-btn oh-btn--danger oh-btn--disabled w-50">
+				<ion-icon class="me-1" name="close-circle-outline"></ion-icon>
+				<span class="txt">{% trans 'Reject' %}</span>
+			</a>
+		{% else %}
+			<a href="{% url 'work-type-request-cancel' instance.id %}" title="{% trans 'Reject' %}"
+				onclick="return confirm(`{% trans 'Do you want to reject this request?' %}`)"
+				class="h-8 oh-btn oh-btn--danger w-50">
+				<ion-icon class="me-1" name="close-circle-outline"></ion-icon>
+				<span class="txt">{% trans 'Reject' %}</span>
+			</a>
+		{% endif %}
+	</div>
+{% endif %}

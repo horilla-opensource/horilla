@@ -1,0 +1,45 @@
+{% load i18n static %}
+
+<button
+    class="w-24 px-4 py-2 bg-primary-600 text-white rounded-md
+        text-xs flex items-center justify-center gap-2
+        hover:bg-primary-800 transition duration-300
+        {% if not instance.status == 'requested' %}opacity-60 cursor-not-allowed{% endif %}"
+    title="{% trans 'Edit' %}"
+    {% if instance.status == 'requested' %}
+        data-toggle="oh-modal-toggle" data-target="#genericModal"
+        hx-get="{% url 'leave-allocation-request-update' instance.id %}"
+        hx-target="#genericModalBody"
+    {% else %}
+        disabled
+    {% endif %}
+>
+    <img src="{% static 'horilla_theme/assets/img/icons/edit.svg' %}" width="13"
+         class="filter brightness-0 invert" />
+    {% trans "Edit" %}
+</button>
+
+<button
+    class="w-24 px-4 py-2 bg-white rounded-md text-xs flex items-center justify-center gap-2
+        border border-primary-500 hover:border-primary-600 transition duration-300
+        {% if not instance.status == 'requested' %}opacity-60 cursor-not-allowed{% endif %}"
+    title="{% trans 'Delete' %}"
+    {% if instance.status == 'requested' %}
+        id="delete-link"
+        hx-confirm="{% trans 'Are you sure you want to delete ?' %}"
+        hx-post="{% url 'leave-allocation-request-delete' instance.id %}?instances_ids={{ request.GET.instance_ids }}"
+        hx-target="#genericModalBody"
+    {% else %}
+        disabled
+    {% endif %}
+>
+    <img src="{% static 'horilla_theme/assets/img/icons/trash.svg' %}" width="16" class="mt-[-1px]" />
+    {% trans "Delete" %}
+</button>
+
+{% if request.GET.deleted %}
+<script>
+    $(".reload-record").click()
+    $("#reloadMessagesButton").click()
+</script>
+{% endif %}

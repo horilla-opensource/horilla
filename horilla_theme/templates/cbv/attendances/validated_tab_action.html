@@ -1,37 +1,25 @@
-{% load i18n basefilters %}
+{% load i18n basefilters static %}
 
-<div class="oh-btn-group" >
-{% if perms.instance.change_attendance or perms.instance.delete_attendance or request.user|is_reportingmanager %}
-    <a
-        class="oh-btn oh-btn-group oh-btn--info"
-        hx-get="{% url 'attendance-update' instance.id %}?dashboard={{dashboard}}"
-        hx-target="#genericModalBody"
-        hx-swap="innerHTML"
-        data-toggle="oh-modal-toggle"
-        data-target="#genericModal"
-    >
-        <ion-icon
-            name="create-outline"
-            role="img"
-            class="md hydrated"
-            aria-label="create outline"
-        ></ion-icon
-        >{% trans "Edit" %}
-    </a>
+<div class="oh-btn-group">
+    {% if perms.instance.change_attendance or perms.instance.delete_attendance or request.user|is_reportingmanager %}
+        <a class="w-24 px-4 py-2 bg-primary-600 text-white rounded-md text-xs flex items-center justify-center gap-2 hover:bg-primary-800 transition duration-300"
+            hx-get="{% url 'attendance-update' instance.id %}?dashboard={{dashboard}}" hx-target="#genericModalBody"
+            hx-swap="innerHTML" data-toggle="oh-modal-toggle" data-target="#genericModal">
+            <img src="{% static 'horilla_theme/assets/img/icons/edit.svg' %}" alt="{% trans 'Edit' %}" width="13"
+                class="filter brightness-0 invert" />
+            {% trans "Edit" %}
+        </a>
 
-    <form
-        action="{% url 'attendance-delete' instance.id  %}"
-        onsubmit="return confirm(`{% trans 'Are you sure want to delete this attendance?' %}`)"
-        hx-target="#tab_contents"
-        method="post"
-        class="oh-btn oh-btn-group oh-btn--danger"
-    >
-        {% csrf_token %}
-        <button
-            type="submit"
-        >
-            <ion-icon name="trash-outline"></ion-icon>{% trans 'Delete' %}
-        </button>
-    </form>
-{% endif %}
+        <form action="{% url 'attendance-delete' instance.id  %}"
+            onsubmit="return confirm(`{% trans 'Are you sure want to delete this attendance?' %}`)"
+            hx-target="#tab_contents" method="post">
+            {% csrf_token %}
+            <button type="submit"
+                class="w-24 px-4 py-2 bg-white rounded-md text-xs flex items-center justify-center gap-2 border border-primary-500 hover:border-primary-600 transition duration-300">
+                <img src="{% static 'horilla_theme/assets/img/icons/trash.svg' %}" alt="{% trans 'Delete' %}" width="16"
+                    class="mt-[-1px]">
+                {% trans 'Delete' %}
+            </button>
+        </form>
+    {% endif %}
 </div>

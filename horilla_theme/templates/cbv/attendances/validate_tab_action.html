@@ -1,46 +1,33 @@
-{% load i18n basefilters %}
+{% load i18n basefilters static %}
 
-<div class="oh-btn-group" >
-{% if perms.attendance.change_attendance or perms.attendance.delete_attendance or request.user|is_reportingmanager %}
-    <a
-        class="oh-btn oh-btn-group oh-btn--info"
-        hx-get="{% url 'attendance-update' instance.id %}"
-        onclick="event.stopPropagation()"
-        hx-target="#genericModalBody"
-        hx-swap="innerHTML"
-        data-toggle="oh-modal-toggle"
-        data-target="#genericModal"
-    >
-        <ion-icon name="create-outline"></ion-icon>
-        {% trans 'Edit' %}
-    </a>
+<div class="oh-btn-group">
+    {% if perms.attendance.change_attendance or perms.attendance.delete_attendance or request.user|is_reportingmanager %}
+        <a class="w-24 h-8 px-4 py-2 bg-primary-600 text-white rounded-md text-xs flex items-center justify-center gap-2 hover:bg-primary-800 transition duration-300"
+            hx-get="{% url 'attendance-update' instance.id %}" onclick="event.stopPropagation()"
+            hx-target="#genericModalBody" hx-swap="innerHTML" data-toggle="oh-modal-toggle" data-target="#genericModal">
+            <img src="{% static 'horilla_theme/assets/img/icons/edit.svg' %}" alt="{% trans 'Edit' %}" width="13"
+                class="filter brightness-0 invert" />
+            {% trans 'Edit' %}
+        </a>
 
-    <a
-        href='{% url "validate-this-attendance" instance.id %}'
-        hx-target="#updateAttendanceBody"
-        data-req="/attendance/request-attendance-view/?id={{instance.id}}"
-        onclick="event.stopPropagation(); {% if instance.is_validate_request %}  event.preventDefault(); showApproveAlert($(this).data('req')); {% endif %}"
-        class="oh-btn oh-btn--success"
-    >
-        <ion-icon name="checkmark-done-outline"></ion-icon>
-        {% trans 'Validate' %}
-    </a>
+        <a href="{% url 'validate-this-attendance' instance.id %}" hx-target="#updateAttendanceBody"
+            data-req="/attendance/request-attendance-view/?id={{instance.id}}"
+            onclick="event.stopPropagation(); {% if instance.is_validate_request %}  event.preventDefault(); showApproveAlert($(this).data('req')); {% endif %}"
+            class="w-24 h-8 px-4 py-2 bg-white rounded-md text-xs flex items-center justify-center gap-2 border border-primary-500 hover:border-primary-600 transition duration-300">
+            <ion-icon name="checkmark-done-outline"></ion-icon>
+            {% trans 'Validate' %}
+        </a>
 
-    <form
-        action="{% url 'attendance-delete' instance.id %}"
-        onclick="event.stopPropagation()"
-        onsubmit="return confirm(`{% trans 'Are you sure want to delete this attendance?' %}`)"
-        hx-target="#tab_contents"
-        method="post"
-        class="oh-btn oh-btn-group oh-btn--danger cursor-pointer"
-    >
-        {% csrf_token %}
-        <button
-            type="submit"
-        >
-            <ion-icon name="trash-outline"></ion-icon>
-            {% trans 'Delete' %}
-        </button>
-    </form>
-{% endif %}
+        <form action="{% url 'attendance-delete' instance.id %}" onclick="event.stopPropagation()"
+            onsubmit="return confirm(`{% trans 'Are you sure want to delete this attendance?' %}`)"
+            hx-target="#tab_contents" method="post">
+            {% csrf_token %}
+            <button type="submit"
+                class="w-24 h-8 px-4 py-2 bg-white rounded-md text-xs flex items-center justify-center gap-2 border border-primary-500 hover:border-primary-600 transition duration-300">
+                <img src="{% static 'horilla_theme/assets/img/icons/trash.svg' %}" alt="{% trans 'Delete' %}" width="16"
+                class="mt-[-1px]">
+                {% trans 'Delete' %}
+            </button>
+        </form>
+    {% endif %}
 </div>

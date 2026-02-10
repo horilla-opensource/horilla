@@ -1,0 +1,49 @@
+{% load basefilters i18n %} 
+<style>
+	tr span.txt {
+		display:none;
+	}
+</style>
+{% is_manager_of request.user instance as can_manage %}
+{% if perms.base.change_shiftrequest or can_manage %}
+	<div class="oh-btn-group w-100">
+		{% if instance.approved or instance.canceled %}
+			<a
+				href="#"
+				class="h-8 oh-btn oh-btn--success oh-btn--disabled w-100"
+			>
+				<ion-icon class="me-1" name="checkmark-outline"></ion-icon>
+				<span class="txt">{% trans 'Approve' %}</span>
+			</a>
+		{% else %}
+			<a
+				href="{% url 'shift-request-approve' instance.id %}"
+				onclick="return confirm(`{% trans 'Do you want to approve this request?' %}`)"
+				class="h-8 oh-btn oh-btn--success w-100"
+			>
+				<ion-icon class="me-1" name="checkmark-outline"></ion-icon>
+				<span class="txt">{% trans 'Approve' %}</span>
+			</a>
+		{% endif %} 
+
+		{% if instance.canceled %}
+			<a
+				type="submit"
+				href="#"
+				class="h-8 oh-btn oh-btn--danger oh-btn--disabled w-100"
+			>
+				<ion-icon class="me-1" name="close-circle-outline"></ion-icon>
+				<span class="txt">{% trans 'Reject' %}</span>
+			</a>
+		{% else %}
+			<a
+				href="{% url 'shift-request-cancel' instance.id %}"
+				onclick="return confirm(`{% trans 'Do you want to reject this request?' %}`)"
+				class="h-8 oh-btn oh-btn--danger w-100"
+			>
+				<ion-icon class="me-1" name="close-circle-outline"></ion-icon>
+				<span class="txt">{% trans 'Reject' %}</span>
+			</a>
+		{% endif %}
+	</div>
+{% endif %}
