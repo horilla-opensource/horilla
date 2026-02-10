@@ -5412,7 +5412,7 @@ def monthly_leave_report_pdf(request):
     end = request.POST.get("end_date")
 
     request_employee = getattr(request.user, "employee_get", None)  # don't call it
-    print("REQUEST EMPLOYEE:", request_employee)
+    # print("REQUEST EMPLOYEE:", request_employee)
 
     leaves = (
         LeaveRequest.objects.filter(
@@ -5432,8 +5432,8 @@ def monthly_leave_report_pdf(request):
     user_map = {}
     if ids:
         employees = Employee.objects.filter(id__in=ids).select_related("employee_user_id")
-        print("EMPLOYEES FOUND:", employees.count())
-        print("Names", [emp.get_full_name() for emp in employees])
+        # print("EMPLOYEES FOUND:", employees.count())
+        # print("Names", [emp.get_full_name() for emp in employees])
 
         for emp in employees:
             name = emp.get_full_name()
