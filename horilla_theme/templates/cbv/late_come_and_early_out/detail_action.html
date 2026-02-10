@@ -1,0 +1,31 @@
+{% load i18n %}
+{% load basefilters %}
+{% is_manager_of request.user instance as can_manage %}
+{% with can_penalty=perms.base.chanage_penaltyaccounts can_delete=perms.attendance.delete_attendance %}
+    {% if can_manage or can_penalty or can_delete %}
+        {% if can_manage or can_penalty %}
+            <a class="w-24 h-8 px-4 py-2 bg-primary-600 text-white rounded-md text-xs flex items-center justify-center gap-2 hover:bg-primary-800 transition duration-300"
+                data-toggle="oh-modal-toggle" data-target="#penaltyModal" hx-target="#penaltyModalBody"
+                hx-get="{% url 'cut-penalty' instance.id %}" style="width: 50%;">
+
+                <ion-icon name="information-circle-outline" role="img" class="md hydrated" aria-label="information circle outline">
+                </ion-icon>{% trans "Penalty" %}
+            </a>
+        {% endif %}
+        {% if can_delete or can_manage %}
+            <form hx-confirm="{% trans 'Are you sure want to delete this attendance?' %}"
+                hx-post="{% url 'late-come-early-out-delete' instance.id  %}?instances_ids={{ request.GET.instance_ids }}"
+                hx-target="#genericModalBody" onclick="event.stopPropagation()" class="w-50">
+                {% csrf_token %}
+                <button type='submit'
+                    class="w-24 h-8 px-4 py-2 bg-white rounded-md text-xs flex items-center justify-center gap-2 border border-primary-500 hover:border-primary-600 transition duration-300"><ion-icon
+                        name="trash-outline" role="img" class="md hydrated" aria-label="create outline"></ion-icon>{% trans "Delete" %}</button>
+            </form>
+        {% endif %}
+    {% endif %}
+{% endwith %}
+{% if request.GET.deleted %}
+<script>
+    $(".reload-record").click()
+</script>
+{% endif %}

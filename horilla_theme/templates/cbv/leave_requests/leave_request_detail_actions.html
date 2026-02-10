@@ -4,7 +4,7 @@
 	<a
 		href="{% url 'request-approve' instance.id %}"
 		title="{% trans 'Approve' %}"
-		class="oh-btn oh-btn--success"
+		class="h-8 oh-btn oh-btn--success"
 		{% if instance.end_date.month <= current_date.month %}
 			onclick = "return confirm('Do You really want to Approve this request?')";
 		{% else %}
@@ -18,7 +18,7 @@
 		type="submit"
 		href="#"
 		title="{% trans 'Approve' %}"
-		class="oh-btn oh-btn-group oh-btn--success oh-btn--disabled"
+		class="h-8 oh-btn oh-btn-group oh-btn--success oh-btn--disabled"
 	>
 		<ion-icon class="me-1" name="checkmark-outline"></ion-icon> {% trans 'Approve' %}
 	</a>
@@ -30,7 +30,7 @@
 	hx-target="#penaltyModalBody"
 	hx-get="{% url 'leave-cut-penalty' instance.id %}"
 	type="submit"
-	class="oh-btn oh-btn--info"
+	class="h-8 oh-btn oh-btn--info"
 	title="{% trans 'Penalty' %}"
 	id="penaltyButton"
 >
@@ -50,7 +50,7 @@
 		hx-get="{% url 'request-cancel' instance.id %}"
 		hx-target="#rejectForm"
 		title="{% trans 'Reject' %}"
-		class="oh-btn oh-btn--danger"
+		class="h-8 oh-btn oh-btn--danger"
 	>
 		<ion-icon class="me-1" name="close-circle-outline"></ion-icon> {% trans 'Reject' %}
 	</a>
@@ -59,7 +59,7 @@
 		type="submit"
 		href="#"
 		title="{% trans 'Reject' %}"
-		class="oh-btn oh-btn-group oh-btn--danger oh-btn--disabled"
+		class="h-8 oh-btn oh-btn-group oh-btn--danger oh-btn--disabled"
 	>
 		<ion-icon class="me-1" name="close-circle-outline"></ion-icon> {% trans 'Reject' %}
 	</a>

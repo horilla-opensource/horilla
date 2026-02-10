@@ -1,0 +1,31 @@
+{% load i18n static %}
+
+{% if perms.leave.change_restrictleave or perms.leave.delete_restrictleave %}
+    {% if perms.leave.change_restrictleave %}
+        <button
+            class="w-24 px-4 py-2 bg-primary-600 text-white rounded-md text-xs flex items-center justify-center gap-2 hover:bg-primary-800 transition duration-300"
+            data-toggle="oh-modal-toggle" data-target="#genericModal" hx-get="{% url 'restrict-update' instance.id %}?{{pd}}"
+            hx-target="#genericModalBody">
+            <img src="{% static 'horilla_theme/assets/img/icons/edit.svg' %}" alt="{% trans 'Edit' %}" width="13"
+                class="filter brightness-0 invert" />
+            {% trans 'Edit' %}
+        </button>
+    {% endif %}
+
+    {% if perms.leave.delete_restrictleave %}
+        <a class="w-24 px-4 py-2 bg-white rounded-md text-xs flex items-center justify-center gap-2 border border-primary-500 hover:border-primary-600 transition duration-300"
+            id="delete-link" hx-confirm="{% trans 'Are you sure you want to delete?' %}"
+            hx-post="{% url 'restrict-delete' instance.id %}?instances_ids={{ request.GET.instance_ids }}"
+            hx-target="#genericModalBody">
+            <img src="{% static 'horilla_theme/assets/img/icons/trash.svg' %}" alt="{% trans 'Delete' %}" width="16"
+                class="mt-[-1px]">
+            {% trans 'Delete' %}
+        </a>
+    {% endif %}
+{% endif %}
+
+{% if request.GET.deleted %}
+<script>
+    $(".reload-record").click();
+</script>
+{% endif %}
