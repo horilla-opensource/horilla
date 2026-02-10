@@ -206,29 +206,7 @@ class AutomationDetailedView(views.HorillaDetailedView):
         (_("Mail Cc"), "get_mail_cc_display"),
         (_("Trigger"), "trigger_display"),
     ]
-    actions = [
-        {
-            "action": _("Edit"),
-            "icon": "create-outline",
-            "attrs": """
-            hx-get="{edit_url}?instance_ids={ordered_ids}"
-            hx-target="#genericModalBody"
-            data-toggle="oh-modal-toggle"
-            data-target="#genericModal"
-            class="oh-btn oh-btn--info w-50"
-            """,
-        },
-        {
-            "action": _("Delete"),
-            "icon": "trash-outline",
-            "attrs": """
-            class="oh-btn oh-btn--danger w-50"
-            onclick="
-                confirm('Do you want to delete the automation?','{delete_url}')
-            "
-            """,
-        },
-    ]
+    action_method = "detail_view_actions"
 
 
 @method_decorator(login_required, name="dispatch")
