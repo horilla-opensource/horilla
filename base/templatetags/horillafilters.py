@@ -238,6 +238,15 @@ def base64_encode(value):
 
 
 @register.filter
+def absolute_url(url, request):
+    if not url:
+        return ""
+    if url.startswith("http"):
+        return url
+    return f"{request.scheme}://{request.get_host()}{url}"
+
+
+@register.filter
 def get_item(list, i):
     try:
         return list[i]

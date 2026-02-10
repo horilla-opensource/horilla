@@ -1443,9 +1443,16 @@ def generate_payslip_pdf(template_path, context, html=False):
     Returns:
         HttpResponse: A response with the generated PDF file or raw HTML.
     """
+
+    from horilla.horilla_middlewares import _thread_locals
+
     try:
         # Render the HTML content from the template and context
         html_content = render_to_string(template_path, context)
+        request = getattr(_thread_locals, "request")
+        cookies = None
+        if request:
+            cookies = request.META.get("HTTP_COOKIE", "")
 
         # Return raw HTML if requested
         if html:
@@ -1464,6 +1471,16 @@ def generate_payslip_pdf(template_path, context, html=False):
             "zoom": 1.3,
             "footer-center": "[page]/[topage]",  # Required to load local CSS/images
         }
+
+        if cookies:
+            pdf_options.update(
+                {
+                    "custom-header": [
+                        ("Cookie", cookies),
+                    ],
+                    "custom-header-propagation": None,
+                }
+            )
 
         # Generate the PDF as binary content
         pdf = pdfkit.from_string(html_content, False, options=pdf_options)
@@ -1504,6 +1521,7 @@ def payslip_pdf(request, id):
 
             # Taking the company_name of the user
             info = EmployeeWorkInformation.objects.filter(employee_id=employee)
+            date_format = "MMM. D, YYYY"
             if info.exists():
                 for data in info:
                     employee_company = data.company_id
@@ -1563,6 +1581,7 @@ def payslip_pdf(request, id):
 
             equalize_lists_length(data["allowances"], data["all_deductions"])
             data["zipped_data"] = zip(data["allowances"], data["all_deductions"])
+            data["request"] = request
             template_path = "payroll/payslip/payslip_pdf.html"
 
             return generate_payslip_pdf(template_path, context=data, html=False)
