@@ -23,18 +23,18 @@
         </button>
     </div>
 
-    <form action="{% url 'monthly-leave-report' %}" method="post"   target="monthly_leave_download_iframe" onsubmit="afterReportSubmit()">
+    <form action="{% url 'monthly-leave-report' %}" method="post"  hx-disable="true"  target="monthly_leave_download_iframe" onsubmit="return validateMonthlyLeaveDates()">
         {% csrf_token %}
 
         <div class="row mt-3">
             <div class="col-sm-6">
                 <label class="oh-label">{% trans "Start Date" %}</label>
-                <input type="date" name="start_date" required class="oh-input">
+                <input type="date" id="start_date" name="start_date" required class="oh-input">
             </div>
 
             <div class="col-sm-6">
                 <label class="oh-label">{% trans "End Date" %}</label>
-                <input type="date" name="end_date" required class="oh-input">
+                <input type="date" id="end_date" name="end_date" required class="oh-input">
             </div>
         </div>
 
@@ -43,6 +43,14 @@
             {% trans "Generate Report" %}
         </button>
     </form>
+    <div id="dateError"
+     class="oh-alert--danger mt-3 p-3"
+     style="display:none;"
+     role="alert">
+    <strong>{% trans "Invalid date range" %}</strong><br>
+    {% trans "Start date cannot be later than end date." %}
+</div>
+
 <iframe name="monthly_leave_download_iframe" style="display:none;"></iframe>
 
 </div>
@@ -57,5 +65,17 @@ function afterReportSubmit() {
 
 
     }, 100);
+}
+function validateMonthlyLeaveDates() {
+    const start = document.getElementById("start_date").value;
+    const end = document.getElementById("end_date").value;
+    const errorBox = document.getElementById("dateError");
+    errorBox.style.display = "none";
+    if (start && end && start > end) {
+        errorBox.style.display = "block";
+        return false;
+    }
+    afterReportSubmit();
+    return true;
 }
 </script>
