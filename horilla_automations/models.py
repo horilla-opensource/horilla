@@ -153,3 +153,13 @@ class MailAutomation(HorillaModel):
     def trigger_display(self):
         """"""
         return self.get_trigger_display()
+
+    def detail_view_actions(self):
+        """
+        This method for get detail view actions.
+        """
+
+        return render_template(
+            path="horilla_automations/detail_actions.html",
+            context={"instance": self},
+        )
