@@ -494,6 +494,20 @@ def validate_time_in_minutes(value):
         raise ValidationError(_("Invalid format,  excepted MM:SS")) from e
 
 
+class Session(dict):
+    """
+    Fake session object that mimics Django's session for biometric requests.
+    Provides session_key attribute and dict-like access for context processors.
+    """
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        # Generate a unique session key for this fake session
+        import uuid
+
+        self.session_key = str(uuid.uuid4())
+
+
 class Request:
     """
     Represents a request for clock-in or clock-out.
@@ -503,7 +517,7 @@ class Request:
     - date: The date of the request.
     - time: The time of the request.
     - path: The path associated with the request (default: "/").
-    - session: The session data associated with the request (default: {"title": None}).
+    - session: The session data associated with the request (default: Session with title=None).
     """
 
     def __init__(
@@ -515,16 +529,44 @@ class Request:
     ) -> None:
         self.user = user
         self.path = "/"
-        self.session = {"title": None}
+        self.session = Session({"title": None})
         self.date = date
         self.time = time
         self.datetime = datetime
         self.META = META()
 
+    def build_absolute_uri(self, location=None):
+        """
+        Build an absolute URI from the location and the variables available in
+        this request. Mimics Django's HttpRequest.build_absolute_uri() for
+        context processors that need it (e.g. breadcrumbs).
+        """
+        if location is None:
+            location = "/"
+        # For fake requests from biometric devices, return a simple default URL
+        # The actual URL doesn't matter since this is just for template rendering
+        return f"http://localhost{location}"
+
+    def is_secure(self):
+        """
+        Returns True if the request was made over HTTPS, False otherwise.
+        For fake requests from biometric devices, always returns False.
+        """
+        return False
+
+    def get_host(self):
+        """
+        Returns the host from the request. Mimics Django's HttpRequest.get_host()
+        for context processors that need it.
+        """
+        return "localhost"
+
 
 class META:
     """
     Provides access to HTTP metadata keys.
+    Dict-like interface so Django context processors (e.g. debug) work when
+    this fake request is used (e.g. from ZK biometric punch processing).
     """
 
     @classmethod
@@ -536,6 +578,13 @@ class META:
             list: A list of HTTP metadata keys.
         """
         return ["HTTP_HX_REQUEST"]
+
+    def get(self, key, default=None):
+        """
+        Return the value for key if key is in the metadata, else default.
+        Required for Django context processors that call request.META.get().
+        """
+        return default
 
 
 def parse_time(time_str):
