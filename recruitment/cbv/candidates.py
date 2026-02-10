@@ -153,12 +153,13 @@ class ListCandidates(HorillaListView):
             "question", flat=True
         ).distinct()
         self.survey_question_mapping = {}
-        for question in unique_questions:
-            survey_question = (question, f"question_{clean_column_name(question)}")
-            self.survey_question_mapping[f"question_{clean_column_name(question)}"] = (
-                question
-            )
-            if not survey_question in self.export_fields:
+        for idx, question in enumerate(unique_questions, start=1):
+            key = f"question_{idx}"
+
+            survey_question = (question, key)
+            self.survey_question_mapping[key] = question
+
+            if survey_question not in self.export_fields:
                 self.export_fields.append(survey_question)
 
     columns = [
