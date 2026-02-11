@@ -12,7 +12,7 @@
 
   <div class="oh-general__tab-target oh-profile-section mb-4" id="personal" data-select2-id="select2-data-personal">
     <div class="oh-profile-section__card" data-select2-id="select2-data-48-0df8">
-        <form data-select2-id="select2-data-47-5jxy" method='post' action='{% url "employee-create-personal-info" %}' enctype="multipart/form-data" novalidate>
+        <form data-select2-id="select2-data-47-5jxy" method='post' action='{% url "employee-create-personal-info" %}' enctype="multipart/form-data">
             {% csrf_token %}
             <div class="row">
               <div
