@@ -236,7 +236,7 @@ def employee_profile(request):
 @login_required
 @enter_if_accessible(
     feature="profile_edit",
-    perm="employee.change_employee",
+    perm="employee.change_ownprofile",
 )
 def self_info_update(request):
     """
@@ -250,9 +250,10 @@ def self_info_update(request):
     )
     form = EmployeeForm(instance=Employee.objects.filter(employee_user_id=user).first())
     if request.POST:
-        if request.POST.get("employee_first_name") is not None:
+        if request.POST.get("profile_update"):
             instance = Employee.objects.filter(employee_user_id=request.user).first()
             form = EmployeeForm(request.POST, instance=instance)
+            del form.fields["badge_id"]
             if form.is_valid():
                 instance = form.save(commit=False)
                 instance.employee_user_id = user

@@ -4,6 +4,7 @@
         <div class="oh-profile-section__card" data-select2-id="select2-data-48-0df8">
             <form action="" method="post" enctype="multipart/form-data">
                 {% csrf_token %}
+                <input type="hidden" name="profile_update" value="true">
                 <div class="row">
                     <div class="col-12 col-sm-12 col-md-12 col-lg-6 d-flex align-items-center">
                         <div class="oh-profile-section__edit-photo me-4 mb-3" data-toggle="oh-modal-toggle"
