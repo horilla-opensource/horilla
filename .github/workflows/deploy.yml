@@ -3,7 +3,7 @@ name: Horilla EC2 Deploy
 on:
   push:
     branches:
-      - up/bhathiya 
+      - development 
 
 
 jobs:
