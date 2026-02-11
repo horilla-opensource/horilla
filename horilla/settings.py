@@ -117,7 +117,10 @@ WSGI_APPLICATION = "horilla.wsgi.application"
 
 if env("DATABASE_URL", default=None):
     DATABASES = {
-        "default": env.db(),
+        "default": {
+            **env.db(),
+            "CONN_MAX_AGE": 0,
+        }
     }
 else:
     DATABASES = {
@@ -134,6 +137,7 @@ else:
             "PASSWORD": env("DB_PASSWORD", default=""),
             "HOST": env("DB_HOST", default=""),
             "PORT": env("DB_PORT", default=""),
+            "CONN_MAX_AGE": 0,
         }
     }
 
