@@ -134,7 +134,7 @@ urlpatterns = [
         name="dashboard-export",
     ),
     path(
-        "payslip-bulk-delete/",
+        "payslip-bulk-delete",
         views.payslip_bulk_delete,
         name="payslip-bulk-delete",
     ),
@@ -145,7 +145,7 @@ urlpatterns = [
     ),
     path("contract-export/", views.contract_export, name="contract-export"),
     path(
-        "contract-bulk-delete/",
+        "contract-bulk-delete",
         views.contract_bulk_delete,
         name="contract-bulk-delete",
     ),

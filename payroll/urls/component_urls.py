@@ -28,7 +28,7 @@ urlpatterns = [
     path("payslip-list/", payslip.PayslipList.as_view(), name="payslip-list"),
     path("payslip-navbar/", payslip.PayslipNav.as_view(), name="payslip-navbar"),
     path(
-        "payslip-bulk-export-data/",
+        "payslip-bulk-export-data",
         payslip.PayslipBulkExport.as_view(),
         name="payslip-bulk-export-data",
     ),

@@ -67,9 +67,9 @@ urlpatterns = [
     path("project-import/", views.project_import, name="project-import"),
     path("project-bulk-export/", views.project_bulk_export, name="project-bulk-export"),
     path(
-        "project-bulk-archive/", views.project_bulk_archive, name="project-bulk-archive"
+        "project-bulk-archive", views.project_bulk_archive, name="project-bulk-archive"
     ),
-    path("project-bulk-delete/", views.project_bulk_delete, name="project-bulk-delete"),
+    path("project-bulk-delete", views.project_bulk_delete, name="project-bulk-delete"),
     path(
         "project-archive/<int:project_id>/",
         views.project_archive,
@@ -159,12 +159,12 @@ urlpatterns = [
     # ),
     path("task-all-filter/", views.task_all_filter, name="task-all-filter"),
     path(
-        "task-all-bulk-archive/",
+        "task-all-bulk-archive",
         views.task_all_bulk_archive,
         name="task-all-bulk-archive",
     ),
     path(
-        "task-all-bulk-delete/", views.task_all_bulk_delete, name="task-all-bulk-delete"
+        "task-all-bulk-delete", views.task_all_bulk_delete, name="task-all-bulk-delete"
     ),
     path(
         "task-all-archive/<int:task_id>/",
@@ -279,7 +279,7 @@ urlpatterns = [
         name="view-single-time-sheet",
     ),
     path(
-        "time-sheet-bulk-delete/",
+        "time-sheet-bulk-delete",
         views.time_sheet_bulk_delete,
         name="time-sheet-bulk-delete",
     ),

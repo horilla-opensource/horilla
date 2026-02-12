@@ -382,12 +382,12 @@ urlpatterns = [
         name="rec-candidate-archive",
     ),
     path(
-        "candidate-bulk-delete/",
+        "candidate-bulk-delete",
         actions.candidate_bulk_delete,
         name="candidate-bulk-delete",
     ),
     path(
-        "candidate-bulk-archive/",
+        "candidate-bulk-archive",
         actions.candidate_bulk_archive,
         name="candidate-bulk-archive",
     ),
