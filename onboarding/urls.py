@@ -109,12 +109,12 @@ urlpatterns = [
         name="candidate-stage-update",
     ),
     path(
-        "candidate-stage-bulk-update/",
+        "candidate-stage-bulk-update",
         views.candidate_stage_bulk_update,
         name="candidate-stage-bulk-update",
     ),
     path(
-        "candidate-task-bulk-update/",
+        "candidate-task-bulk-update",
         views.candidate_task_bulk_update,
         name="candidate-task-bulk-update",
     ),
@@ -217,12 +217,12 @@ urlpatterns = [
         name="onboarding-candidates-nav",
     ),
     path(
-        "offer-letter-bulk-status-update/",
+        "offer-letter-bulk-status-update",
         views.offer_letter_bulk_status_update,
         name="offer-letter-bulk-status-update",
     ),
     path(
-        "onboarding-candidate-bulk-delete/",
+        "onboarding-candidate-bulk-delete",
         views.onboarding_candidate_bulk_delete,
         name="onboarding-candidate-bulk-delete",
     ),

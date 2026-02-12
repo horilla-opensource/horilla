@@ -629,12 +629,12 @@ urlpatterns = [
         name="rotating-work-type-assign-archive",
     ),
     path(
-        "rotating-work-type-assign-bulk-archive/",
+        "rotating-work-type-assign-bulk-archive",
         views.rotating_work_type_assign_bulk_archive,
         name="rotating-shift-work-type-bulk-archive",
     ),
     path(
-        "rotating-work-type-assign-bulk-delete/",
+        "rotating-work-type-assign-bulk-delete",
         views.rotating_work_type_assign_bulk_delete,
         name="rotating-shift-work-type-bulk-delete",
     ),
@@ -896,12 +896,12 @@ urlpatterns = [
         name="rotating-shift-assign-archive",
     ),
     path(
-        "rotating-shift-assign-bulk-archive/",
+        "rotating-shift-assign-bulk-archive",
         views.rotating_shift_assign_bulk_archive,
         name="rotating-shift-assign-bulk-archive",
     ),
     path(
-        "rotating-shift-assign-bulk-delete/",
+        "rotating-shift-assign-bulk-delete",
         views.rotating_shift_assign_bulk_delete,
         name="rotating-shift-assign-bulk-delete",
     ),
@@ -952,7 +952,7 @@ urlpatterns = [
         name="work-type-request-cancel",
     ),
     path(
-        "work-type-request-bulk-cancel/",
+        "work-type-request-bulk-cancel",
         views.work_type_request_bulk_cancel,
         name="work-type-request-bulk-cancel",
     ),
@@ -962,7 +962,7 @@ urlpatterns = [
         name="work-type-request-approve",
     ),
     path(
-        "work-type-request-bulk-approve/",
+        "work-type-request-bulk-approve",
         views.work_type_request_bulk_approve,
         name="work-type-request-bulk-approve",
     ),
@@ -987,7 +987,7 @@ urlpatterns = [
         name="work-type-request-single-view",
     ),
     path(
-        "work-type-request-bulk-delete/",
+        "work-type-request-bulk-delete",
         views.work_type_request_bulk_delete,
         name="work-type-request-bulk-delete",
     ),
@@ -1081,7 +1081,7 @@ urlpatterns = [
         name="shift-allocation-request-cancel",
     ),
     path(
-        "shift-request-bulk-cancel/",
+        "shift-request-bulk-cancel",
         views.shift_request_bulk_cancel,
         name="shift-request-bulk-cancel",
     ),
@@ -1096,7 +1096,7 @@ urlpatterns = [
         name="shift-allocation-request-approve",
     ),
     path(
-        "shift-request-bulk-approve/",
+        "shift-request-bulk-approve",
         views.shift_request_bulk_approve,
         name="shift-request-bulk-approve",
     ),
@@ -1106,7 +1106,7 @@ urlpatterns = [
         name="shift-request-delete",
     ),
     path(
-        "shift-request-bulk-delete/",
+        "shift-request-bulk-delete",
         views.shift_request_bulk_delete,
         name="shift-request-bulk-delete",
     ),
@@ -1641,7 +1641,7 @@ urlpatterns = [
     ),
     path("holiday-delete/<int:obj_id>/", views.holiday_delete, name="holiday-delete"),
     path(
-        "holidays-bulk-delete/", views.bulk_holiday_delete, name="holidays-bulk-delete"
+        "holidays-bulk-delete", views.bulk_holiday_delete, name="holidays-bulk-delete"
     ),
     # path("holiday-filter", views.holiday_filter, name="holiday-filter"),
     path("holiday-select/", views.holiday_select, name="holiday-select"),

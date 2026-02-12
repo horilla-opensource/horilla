@@ -160,7 +160,7 @@ urlpatterns = [
         name="tickets-select-filter",
     ),
     path(
-        "tickets-bulk-archive/", views.tickets_bulk_archive, name="tickets-bulk-archive"
+        "tickets-bulk-archive", views.tickets_bulk_archive, name="tickets-bulk-archive"
     ),
     path("tickets-bulk-delete/", views.tickets_bulk_delete, name="tickets-bulk-delete"),
     # path(
