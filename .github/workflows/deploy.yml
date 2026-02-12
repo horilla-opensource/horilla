@@ -3,7 +3,7 @@ name: Horilla EC2 Deploy
 on:
   push:
     branches:
-      - up/bhathiya 
+      - development 
 
 
 jobs:
@@ -33,9 +33,9 @@ jobs:
           fi
           cd horilla-hrm
 
-          git reset --hard
+          git fetch origin
+          git reset --hard origin/development
           git clean -fd
-          git pull origin $(git rev-parse --abbrev-ref HEAD)
 
           fuser -k 8000/tcp || echo "No process on 8000"
 

@@ -580,6 +580,11 @@ def login_user(request):
         user = authenticate(request, username=username, password=password)
 
         if not user:
+            existing_user = User.objects.filter(username__iexact=username).first()
+            if existing_user:
+                user = authenticate(request, username=existing_user.username, password=password)
+
+        if not user:
             user_object = User.objects.filter(username=username).first()
             if user_object and not user_object.is_active:
                 messages.warning(request, _("Access Denied: Your account is blocked."))

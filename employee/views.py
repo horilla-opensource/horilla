@@ -244,6 +244,11 @@ def self_info_update(request):
     """
     user = request.user
     employee = Employee.objects.filter(employee_user_id=user).first()
+
+    if not employee:
+        messages.error(request, _("Employee profile not found."))
+        return redirect("employee-profile")
+
     badge_id = employee.badge_id
     bank_form = EmployeeBankDetailsForm(
         instance=EmployeeBankDetails.objects.filter(employee_id=employee).first()
@@ -255,20 +260,28 @@ def self_info_update(request):
             form = EmployeeForm(request.POST, instance=instance)
             del form.fields["badge_id"]
             if form.is_valid():
-                instance = form.save(commit=False)
-                instance.employee_user_id = user
-                if instance.badge_id is None:
-                    instance.badge_id = badge_id
-                instance.save()
+                inst = form.save(commit=False)
+                inst.employee_user_id = user
+                if not inst.badge_id:
+                    inst.badge_id = badge_id
+                inst.save()
                 messages.success(request, _("Profile updated."))
-        elif request.POST.get("any_other_code1") is not None:
-            instance = EmployeeBankDetails.objects.filter(employee_id=employee).first()
-            bank_form = EmployeeBankDetailsForm(request.POST, instance=instance)
+                return redirect("employee-profile")
+            else:
+                messages.error(request, _("Profile update failed. Please fix the errors below."))
+
+        elif request.POST.get("form_type") == "bank" or request.POST.get("any_other_code1") is not None:
+            bank_form = EmployeeBankDetailsForm(request.POST, request.FILES, instance=bank_instance)
+
             if bank_form.is_valid():
-                instance = bank_form.save(commit=False)
-                instance.employee_id = employee
-                instance.save()
+                bank = bank_form.save(commit=False)
+                bank.employee_id = employee
+                bank.save()
                 messages.success(request, _("Bank details updated."))
+                return redirect("employee-profile")
+            else:
+                messages.error(request, _("Bank update failed. Please fix the errors below."))
+
     return render(
         request,
         "employee/profile/profile.html",
