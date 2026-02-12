@@ -171,6 +171,9 @@ sidebar_urls = [
     "gmeet-setting",
     "whatsapp-credential-view",
     "cbv-pipeline",
+    "gmeet-view",
+    "color-theme-view",
+    "survey-template-preview",
 ]
 remove_urls = [
     "feedback-detailed-view",

@@ -1,0 +1,5346 @@
+# SOME DESCRIPTIVE TITLE.
+# Copyright (C) YEAR THE PACKAGE'S COPYRIGHT HOLDER
+# This file is distributed under the same license as the PACKAGE package.
+# FIRST AUTHOR <EMAIL@ADDRESS>, YEAR.
+#
+#, fuzzy
+msgid ""
+msgstr ""
+"Project-Id-Version: PACKAGE VERSION\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2026-02-11 13:01+0530\n"
+"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
+"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"Language-Team: LANGUAGE <LL@li.org>\n"
+"Language: \n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=2; plural=(n != 1);\n"
+#: horilla_theme/apps.py:15 horilla_theme/templates/settings.html:597
+msgid "Theme Manager"
+msgstr ""
+
+#: horilla_theme/models.py:430
+#: horilla_theme/templates/candidate/application_form.html:89
+#: horilla_theme/templates/leave/leave_type/leave_type_creation.html:138
+#: horilla_theme/templates/leave/leave_type/leave_type_update.html:140
+#: horilla_theme/templates/report/recruitment_report.html:43
+msgid "Name"
+msgstr ""
+
+#: horilla_theme/models.py:431 horilla_theme/overrides.py:517
+#: horilla_theme/templates/announcement/announcement_one.html:111
+#: horilla_theme/templates/cbv/candidates/profile_interview_tab.html:122
+#: horilla_theme/templates/cbv/projects/project_details.html:138
+#: horilla_theme/templates/okr/okr_detailed_view.html:63
+#: horilla_theme/templates/payroll/loan/installments.html:71
+#: horilla_theme/templates/requests/attendance/individual_view.html:48
+#: horilla_theme/templates/task/new/task_list_view.html:95
+msgid "Description"
+msgstr ""
+
+#: horilla_theme/models.py:522
+msgid "Is Default"
+msgstr ""
+
+#: horilla_theme/models.py:524
+msgid ""
+"Set as default theme for login page. Only one theme can be default across "
+"all companies."
+msgstr ""
+
+#: horilla_theme/models.py:534 horilla_theme/templates/settings.html:607
+msgid "Color Theme"
+msgstr ""
+
+#: horilla_theme/models.py:535
+msgid "Color Themes"
+msgstr ""
+
+#: horilla_theme/models.py:594
+msgid "Theme"
+msgstr ""
+
+#: horilla_theme/models.py:601
+#: horilla_theme/templates/payroll/payslip/individual_payslip.html:19
+#: horilla_theme/templates/payroll/settings/payroll_settings.html:23
+#: horilla_theme/templates/report/attendance_report.html:62
+#: horilla_theme/templates/report/employee_report.html:74
+#: horilla_theme/templates/report/leave_report.html:91
+#: horilla_theme/templates/report/recruitment_report.html:144
+#: horilla_theme/templates/report/recruitment_report.html:195
+#: horilla_theme/templates/settings.html:172
+msgid "Company"
+msgstr ""
+
+#: horilla_theme/models.py:610
+msgid "Company Theme"
+msgstr ""
+
+#: horilla_theme/models.py:611
+msgid "Company Themes"
+msgstr ""
+
+#: horilla_theme/overrides.py:114
+msgid "Reason for Cancellation"
+msgstr ""
+
+#: horilla_theme/overrides.py:116
+msgid "Reason for Rejection"
+msgstr ""
+
+#: horilla_theme/overrides.py:142
+msgid "View attachment"
+msgstr ""
+
+#: horilla_theme/overrides.py:153
+msgid "Activities:"
+msgstr ""
+
+#: horilla_theme/overrides.py:154
+msgid "View Activities"
+msgstr ""
+
+#: horilla_theme/overrides.py:155
+msgid "Activity"
+msgstr ""
+
+#: horilla_theme/overrides.py:155
+#: horilla_theme/templates/okr/objective_detailed_view_activity.html:153
+msgid "Activities"
+msgstr ""
+
+#: horilla_theme/overrides.py:195
+msgid "View Clashes"
+msgstr ""
+
+#: horilla_theme/overrides.py:243
+msgid "Assign Condition Images"
+msgstr ""
+
+#: horilla_theme/overrides.py:283
+#: horilla_theme/templates/asset/asset_return_form.html:51
+#: horilla_theme/templates/cbv/allocations/asset/return_form.html:51
+msgid "Return Condition Images"
+msgstr ""
+
+#: horilla_theme/overrides.py:383 horilla_theme/overrides.py:627
+msgid "Tax"
+msgstr ""
+
+#: horilla_theme/overrides.py:386
+msgid "Pretax"
+msgstr ""
+
+#: horilla_theme/overrides.py:416
+#: horilla_theme/templates/candidate/document.html:64
+#: horilla_theme/templates/cbv/contracts/document.html:4
+#: horilla_theme/templates/cbv/documents/document_list.html:33
+#: horilla_theme/templates/tabs/document_tab.html:25
+#: horilla_theme/templates/task/new/task_list_view.html:94
+msgid "Document"
+msgstr ""
+
+#: horilla_theme/overrides.py:496
+#: horilla_theme/templates/cbv/candidates/profile_interview_tab.html:44
+#: horilla_theme/templates/cbv/documents/document_list.html:35
+#: horilla_theme/templates/cbv/pipeline/interview_template.html:69
+#: horilla_theme/templates/tabs/document_tab.html:27
+#: horilla_theme/templates/tabs/scheduled_interview.html:111
+msgid "Date"
+msgstr ""
+
+#: horilla_theme/overrides.py:497
+msgid "Question Template"
+msgstr ""
+
+#: horilla_theme/overrides.py:498
+#: horilla_theme/templates/biometric/nav_employees_biometric.html:3
+#: horilla_theme/templates/biometric/nav_employees_cosec_biometric.html:3
+#: horilla_theme/templates/biometric_users/dahua/nav_dahua_employees.html:3
+#: horilla_theme/templates/biometric_users/etimeoffice/nav_etimeoffice_employees.html:3
+#: horilla_theme/templates/report/leave_report.html:46
+#: horilla_theme/templates/report/leave_report.html:135
+#: horilla_theme/templates/report/pms_report.html:76
+msgid "Employees"
+msgstr ""
+
+#: horilla_theme/overrides.py:499
+#: horilla_theme/templates/cbv/projects/project_details.html:84
+#: horilla_theme/templates/okr/okr_detailed_view.html:50
+#: horilla_theme/templates/report/pms_report.html:46
+#: horilla_theme/templates/report/recruitment_report.html:122
+#: horilla_theme/templates/task/new/task_kanban_view.html:263
+msgid "Managers"
+msgstr ""
+
+#: horilla_theme/overrides.py:500
+msgid "Answerable employees"
+msgstr ""
+
+#: horilla_theme/overrides.py:501
+msgid "Minutes of Meeting"
+msgstr ""
+
+#: horilla_theme/overrides.py:515
+msgid "Planned To Leave"
+msgstr ""
+
+#: horilla_theme/overrides.py:516
+#: horilla_theme/templates/asset/asset_list.html:21
+#: horilla_theme/templates/candidate/document.html:65
+#: horilla_theme/templates/cbv/documents/document_list.html:34
+#: horilla_theme/templates/cbv/pipeline/interview_template.html:71
+#: horilla_theme/templates/feedback/feedback_detailed_view.html:247
+#: horilla_theme/templates/feedback/feedback_detailed_view.html:282
+#: horilla_theme/templates/feedback/feedback_detailed_view.html:318
+#: horilla_theme/templates/feedback/feedback_detailed_view.html:356
+#: horilla_theme/templates/feedback/feedback_detailed_view.html:394
+#: horilla_theme/templates/helpdesk/ticket/ticket_detail.html:45
+#: horilla_theme/templates/leave/leave_request/dashboard_leave_requests.html:189
+#: horilla_theme/templates/okr/emp_objective/emp_objective_nav.html:95
+#: horilla_theme/templates/payroll/dashboard.html:180
+#: horilla_theme/templates/payroll/loan/installments.html:97
+#: horilla_theme/templates/report/asset_report.html:81
+#: horilla_theme/templates/report/leave_report.html:70
+#: horilla_theme/templates/report/payroll_report.html:55
+#: horilla_theme/templates/report/pms_report.html:103
+#: horilla_theme/templates/report/pms_report.html:127
+#: horilla_theme/templates/tabs/document_tab.html:26
+#: horilla_theme/templates/task/new/task_kanban_view.html:275
+#: horilla_theme/templates/task/new/task_list_view.html:91
+msgid "Status"
+msgstr ""
+
+#: horilla_theme/overrides.py:611
+msgid "Taxable"
+msgstr ""
+
+#: horilla_theme/overrides.py:612
+msgid "One Time Allowance"
+msgstr ""
+
+#: horilla_theme/overrides.py:613 horilla_theme/overrides.py:629
+msgid "Condition Based"
+msgstr ""
+
+#: horilla_theme/overrides.py:614 horilla_theme/overrides.py:630
+#: horilla_theme/templates/cbv/allocations/payroll/allowance/allowance_list.html:10
+#: horilla_theme/templates/cbv/allocations/payroll/deduction/deduction_list.html:10
+#: horilla_theme/templates/payroll/loan/installments.html:94
+#: horilla_theme/templates/payroll/payslip/individual_payslip_summery.html:89
+#: horilla_theme/templates/payroll/payslip/individual_payslip_summery.html:150
+msgid "Amount"
+msgstr ""
+
+#: horilla_theme/overrides.py:615 horilla_theme/overrides.py:631
+msgid "Has Maximum Limit"
+msgstr ""
+
+#: horilla_theme/overrides.py:616
+msgid "Allowance Eligibility"
+msgstr ""
+
+#: horilla_theme/overrides.py:617 horilla_theme/overrides.py:633
+msgid "Specific Employees"
+msgstr ""
+
+#: horilla_theme/overrides.py:628
+msgid "One Time deduction"
+msgstr ""
+
+#: horilla_theme/overrides.py:632
+msgid "Deduction Eligibility"
+msgstr ""
+
+#: horilla_theme/templates/accessibility/accessibility.html:10
+msgid "Default Accessibility"
+msgstr ""
+
+#: horilla_theme/templates/accessibility/accessibility.html:13
+msgid "Limit default view access to horilla feature"
+msgstr ""
+
+#: horilla_theme/templates/accessibility/accessibility.html:53
+msgid "Restrict All"
+msgstr ""
+
+#: horilla_theme/templates/accessibility/accessibility.html:74
+msgid ""
+"Only the employees selected in any of the fields will have access to the "
+msgstr ""
+
+#: horilla_theme/templates/accessibility/accessibility.html:75
+msgid "feature"
+msgstr ""
+
+#: horilla_theme/templates/accessibility/accessibility.html:77
+msgid ""
+"If none are selected, the feature will be available to all normal users and "
+"employees."
+msgstr ""
+
+#: horilla_theme/templates/accessibility/accessibility.html:123
+#: horilla_theme/templates/cbv/attendances/ot_tab_action.html:49
+msgid "Are you sure?"
+msgstr ""
+
+#: horilla_theme/templates/accessibility/accessibility.html:124
+msgid "This will clear all filters you have applied."
+msgstr ""
+
+#: horilla_theme/templates/accessibility/accessibility.html:129
+#: horilla_theme/templates/biometric/list_employees_cosec_biometric.html:82
+#: horilla_theme/templates/biometric/list_employees_cosec_biometric.html:103
+#: horilla_theme/templates/feedback/answer/feedback_answer.html:56
+#: horilla_theme/templates/survey_preview_form.html:154
+msgid "Yes"
+msgstr ""
+
+#: horilla_theme/templates/accessibility/accessibility.html:129
+msgid "Clear it"
+msgstr ""
+
+#: horilla_theme/templates/announcement/announcement_one.html:43
+msgid "Announcement"
+msgstr ""
+
+#: horilla_theme/templates/announcement/announcement_one.html:58
+#: horilla_theme/templates/asset/asset_list.html:25
+#: horilla_theme/templates/base/auth/permission_table.html:32
+#: horilla_theme/templates/biometric/list_employees_biometric.html:56
+#: horilla_theme/templates/biometric/list_employees_cosec_biometric.html:56
+#: horilla_theme/templates/biometric/nav_employees_biometric.html:31
+#: horilla_theme/templates/biometric/nav_employees_biometric.html:35
+#: horilla_theme/templates/biometric/nav_employees_cosec_biometric.html:31
+#: horilla_theme/templates/biometric/nav_employees_cosec_biometric.html:35
+#: horilla_theme/templates/biometric_users/dahua/list_dahua_employees.html:33
+#: horilla_theme/templates/biometric_users/dahua/nav_dahua_employees.html:31
+#: horilla_theme/templates/biometric_users/dahua/nav_dahua_employees.html:35
+#: horilla_theme/templates/biometric_users/etimeoffice/list_etimeoffice_employees.html:33
+#: horilla_theme/templates/biometric_users/etimeoffice/nav_etimeoffice_employees.html:31
+#: horilla_theme/templates/biometric_users/etimeoffice/nav_etimeoffice_employees.html:35
+#: horilla_theme/templates/candidate/document.html:66
+#: horilla_theme/templates/category/asset_category.html:22
+#: horilla_theme/templates/cbv/attendance_request/attendance_request_tab.html:132
+#: horilla_theme/templates/cbv/documents/document_list.html:36
+#: horilla_theme/templates/feedback/question/question_all.html:28
+#: horilla_theme/templates/generic/group_by_table.html:139
+#: horilla_theme/templates/generic/horilla_list_table.html:137
+#: horilla_theme/templates/generic/horilla_nav.html:127
+#: horilla_theme/templates/generic/horilla_nav.html:128
+#: horilla_theme/templates/helpdesk/faq/faq_category_nav.html:59
+#: horilla_theme/templates/leave/compensatory_leave/compensatory_leave_type.html:30
+#: horilla_theme/templates/skill_zone/skill_zone_list.html:130
+#: horilla_theme/templates/survey/template_accordion.html:22
+#: horilla_theme/templates/survey/template_accordion.html:85
+#: horilla_theme/templates/tabs/document_tab.html:28
+#: horilla_theme/templates/task/new/task_list_view.html:97
+msgid "Actions"
+msgstr ""
+
+#: horilla_theme/templates/announcement/announcement_one.html:69
+#: horilla_theme/templates/asset/asset_list.html:58
+#: horilla_theme/templates/biometric/list_employees_cosec_biometric.html:137
+#: horilla_theme/templates/category/asset_category.html:55
+#: horilla_theme/templates/cbv/allowance_deduction/allowance/detail_view_actions.html:6
+#: horilla_theme/templates/cbv/allowance_deduction/allowance/detail_view_actions.html:8
+#: horilla_theme/templates/cbv/allowance_deduction/allowance_action.html:7
+#: horilla_theme/templates/cbv/allowance_deduction/deductions/deductions_actions.html:7
+#: horilla_theme/templates/cbv/allowance_deduction/deductions/detail_view_actions.html:7
+#: horilla_theme/templates/cbv/allowance_deduction/deductions/detail_view_actions.html:9
+#: horilla_theme/templates/cbv/asset/detail_action.html:7
+#: horilla_theme/templates/cbv/asset/detail_action.html:9
+#: horilla_theme/templates/cbv/asset_batch_no/detail_actions.html:7
+#: horilla_theme/templates/cbv/asset_batch_no/detail_actions.html:9
+#: horilla_theme/templates/cbv/assigned_leave/assigned_leave_detail_actions.html:9
+#: horilla_theme/templates/cbv/assigned_leave/assigned_leave_detail_actions.html:11
+#: horilla_theme/templates/cbv/attendances/ot_tab_action.html:19
+#: horilla_theme/templates/cbv/attendances/validate_tab_action.html:8
+#: horilla_theme/templates/cbv/attendances/validate_tab_action.html:10
+#: horilla_theme/templates/cbv/attendances/validated_tab_action.html:8
+#: horilla_theme/templates/cbv/attendances/validated_tab_action.html:10
+#: horilla_theme/templates/cbv/candidates/profile_interview_tab.html:88
+#: horilla_theme/templates/cbv/company_leaves/detail_view_actions.html:7
+#: horilla_theme/templates/cbv/company_leaves/detail_view_actions.html:9
+#: horilla_theme/templates/cbv/contracts/detail_action.html:6
+#: horilla_theme/templates/cbv/contracts/detail_action.html:8
+#: horilla_theme/templates/cbv/disciplinary_actions/detail_action.html:8
+#: horilla_theme/templates/cbv/disciplinary_actions/detail_action.html:9
+#: horilla_theme/templates/cbv/disciplinary_actions/detail_action.html:11
+#: horilla_theme/templates/cbv/holidays/detail_view_actions.html:7
+#: horilla_theme/templates/cbv/holidays/detail_view_actions.html:9
+#: horilla_theme/templates/cbv/key_results/detail_view_actions.html:6
+#: horilla_theme/templates/cbv/key_results/detail_view_actions.html:7
+#: horilla_theme/templates/cbv/key_results/detail_view_actions.html:9
+#: horilla_theme/templates/cbv/leave_allocation_request/detail_action.html:8
+#: horilla_theme/templates/cbv/leave_allocation_request/detail_action.html:19
+#: horilla_theme/templates/cbv/leave_types/detail_actions.html:6
+#: horilla_theme/templates/cbv/leave_types/detail_actions.html:8
+#: horilla_theme/templates/cbv/leave_types/detail_actions.html:13
+#: horilla_theme/templates/cbv/leave_types/detail_actions.html:15
+#: horilla_theme/templates/cbv/leave_types/detail_actions.html:21
+#: horilla_theme/templates/cbv/meetings/detail_action.html:6
+#: horilla_theme/templates/cbv/meetings/detail_action.html:8
+#: horilla_theme/templates/cbv/meetings/detail_action.html:10
+#: horilla_theme/templates/cbv/multiple_approval_condition/detail_action.html:5
+#: horilla_theme/templates/cbv/multiple_approval_condition/detail_action.html:9
+#: horilla_theme/templates/cbv/multiple_approval_condition/detail_action.html:11
+#: horilla_theme/templates/cbv/my_leave_request/detail_leave_actions.html:6
+#: horilla_theme/templates/cbv/my_leave_request/detail_leave_actions.html:10
+#: horilla_theme/templates/cbv/period/detail_view_actions.html:8
+#: horilla_theme/templates/cbv/period/detail_view_actions.html:10
+#: horilla_theme/templates/cbv/projects/project_details.html:45
+#: horilla_theme/templates/cbv/reimbursements/detail_actions.html:8
+#: horilla_theme/templates/cbv/reimbursements/detail_actions.html:10
+#: horilla_theme/templates/cbv/reimbursements/detail_actions.html:16
+#: horilla_theme/templates/cbv/reimbursements/detail_actions.html:18
+#: horilla_theme/templates/cbv/restricted_days/detail_action.html:9
+#: horilla_theme/templates/cbv/restricted_days/detail_action.html:11
+#: horilla_theme/templates/cbv/rotating_shift/rotating_shift_detail_actions.html:7
+#: horilla_theme/templates/cbv/rotating_shift/rotating_shift_detail_actions.html:8
+#: horilla_theme/templates/cbv/rotating_work_type/rotate_detail_view_actions.html:7
+#: horilla_theme/templates/cbv/rotating_work_type/rotate_detail_view_actions.html:9
+#: horilla_theme/templates/cbv/settings/employee_shift_schedule_detail_action.html:6
+#: horilla_theme/templates/cbv/settings/employee_shift_schedule_detail_action.html:8
+#: horilla_theme/templates/cbv/shift_request/shift_detail_actions.html:16
+#: horilla_theme/templates/cbv/tasks/task_detail_actions.html:7
+#: horilla_theme/templates/cbv/tasks/task_detail_actions.html:9
+#: horilla_theme/templates/cbv/timesheet/detail_actions.html:6
+#: horilla_theme/templates/cbv/timesheet/detail_actions.html:8
+#: horilla_theme/templates/cbv/work_type_request/detail_view_actions.html:7
+#: horilla_theme/templates/cbv/work_type_request/detail_view_actions.html:9
+#: horilla_theme/templates/cbv/work_type_request/detail_view_actions.html:15
+#: horilla_theme/templates/cbv/work_type_request/detail_view_actions.html:17
+#: horilla_theme/templates/documents/requests.html:51
+#: horilla_theme/templates/employee/update_form/form_view.html:7
+#: horilla_theme/templates/feedback/feedback_detailed_view.html:112
+#: horilla_theme/templates/helpdesk/faq/faq_category_list.html:31
+#: horilla_theme/templates/helpdesk/faq/faq_list.html:74
+#: horilla_theme/templates/helpdesk/ticket/ticket_detail.html:181
+#: horilla_theme/templates/helpdesk/ticket/ticket_detail.html:215
+#: horilla_theme/templates/helpdesk/ticket/ticket_detail.html:360
+#: horilla_theme/templates/helpdesk/ticket/ticket_detail.html:425
+#: horilla_theme/templates/horilla_automations/detail_actions.html:7
+#: horilla_theme/templates/horilla_automations/detail_actions.html:9
+#: horilla_theme/templates/leave/compensatory_leave/compensatory_leave_type.html:48
+#: horilla_theme/templates/okr/emp_objective/emp_objective_list.html:128
+#: horilla_theme/templates/okr/okr_detailed_view.html:29
+#: horilla_theme/templates/payroll/tax/filing_status_actions.html:28
+#: horilla_theme/templates/payroll/tax/tax_bracket_actions.html:7
+#: horilla_theme/templates/policies/records.html:30
+#: horilla_theme/templates/requests/attendance/individual_view.html:73
+#: horilla_theme/templates/skill_zone/skill_zone_list.html:60
+#: horilla_theme/templates/skill_zone/skill_zone_list.html:180
+#: horilla_theme/templates/survey/survey_card.html:43
+#: horilla_theme/templates/survey/template_accordion.html:48
+#: horilla_theme/templates/survey/template_accordion.html:116
+#: horilla_theme/templates/task/new/task_kanban_view.html:110
+#: horilla_theme/templates/task/new/task_kanban_view.html:186
+#: horilla_theme/templates/task/new/task_list_view.html:57
+msgid "Edit"
+msgstr ""
+
+#: horilla_theme/templates/announcement/announcement_one.html:75
+msgid "Are you sure you want to delete this announcement?"
+msgstr ""
+
+#: horilla_theme/templates/announcement/announcement_one.html:79
+#: horilla_theme/templates/announcement/comment_view.html:106
+#: horilla_theme/templates/asset/asset_list.html:95
+#: horilla_theme/templates/biometric/list_employees_biometric.html:268
+#: horilla_theme/templates/biometric/list_employees_cosec_biometric.html:152
+#: horilla_theme/templates/biometric/nav_employees_biometric.html:50
+#: horilla_theme/templates/biometric/nav_employees_cosec_biometric.html:50
+#: horilla_theme/templates/biometric_users/dahua/nav_dahua_employees.html:59
+#: horilla_theme/templates/biometric_users/etimeoffice/nav_etimeoffice_employees.html:59
+#: horilla_theme/templates/candidate/document.html:235
+#: horilla_theme/templates/candidate/individual_view_note.html:41
+#: horilla_theme/templates/category/asset_category.html:66
+#: horilla_theme/templates/cbv/allowance_deduction/allowance/detail_view_actions.html:21
+#: horilla_theme/templates/cbv/allowance_deduction/allowance/detail_view_actions.html:23
+#: horilla_theme/templates/cbv/allowance_deduction/allowance_action.html:24
+#: horilla_theme/templates/cbv/allowance_deduction/deductions/deductions_actions.html:23
+#: horilla_theme/templates/cbv/allowance_deduction/deductions/detail_view_actions.html:22
+#: horilla_theme/templates/cbv/allowance_deduction/deductions/detail_view_actions.html:24
+#: horilla_theme/templates/cbv/asset/detail_action.html:21
+#: horilla_theme/templates/cbv/asset/detail_action.html:23
+#: horilla_theme/templates/cbv/asset_batch_no/detail_actions.html:20
+#: horilla_theme/templates/cbv/asset_batch_no/detail_actions.html:22
+#: horilla_theme/templates/cbv/assigned_leave/assigned_leave_detail_actions.html:20
+#: horilla_theme/templates/cbv/assigned_leave/assigned_leave_detail_actions.html:22
+#: horilla_theme/templates/cbv/attendance_activity/detail_delete_action.html:9
+#: horilla_theme/templates/cbv/attendance_activity/detail_delete_action.html:10
+#: horilla_theme/templates/cbv/attendance_activity/detail_delete_action.html:12
+#: horilla_theme/templates/cbv/attendances/ot_tab_action.html:91
+#: horilla_theme/templates/cbv/attendances/validate_tab_action.html:27
+#: horilla_theme/templates/cbv/attendances/validate_tab_action.html:29
+#: horilla_theme/templates/cbv/attendances/validated_tab_action.html:19
+#: horilla_theme/templates/cbv/attendances/validated_tab_action.html:21
+#: horilla_theme/templates/cbv/candidates/profile_interview_tab.html:104
+#: horilla_theme/templates/cbv/company_leaves/detail_view_actions.html:17
+#: horilla_theme/templates/cbv/company_leaves/detail_view_actions.html:19
+#: horilla_theme/templates/cbv/contracts/detail_action.html:21
+#: horilla_theme/templates/cbv/contracts/detail_action.html:23
+#: horilla_theme/templates/cbv/disciplinary_actions/detail_action.html:20
+#: horilla_theme/templates/cbv/disciplinary_actions/detail_action.html:22
+#: horilla_theme/templates/cbv/documents/document_list.html:207
+#: horilla_theme/templates/cbv/holidays/detail_view_actions.html:17
+#: horilla_theme/templates/cbv/holidays/detail_view_actions.html:19
+#: horilla_theme/templates/cbv/key_results/detail_view_actions.html:16
+#: horilla_theme/templates/cbv/key_results/detail_view_actions.html:17
+#: horilla_theme/templates/cbv/key_results/detail_view_actions.html:19
+#: horilla_theme/templates/cbv/late_come_and_early_out/detail_action.html:22
+#: horilla_theme/templates/cbv/leave_allocation_request/detail_action.html:26
+#: horilla_theme/templates/cbv/leave_allocation_request/detail_action.html:37
+#: horilla_theme/templates/cbv/leave_types/detail_actions.html:30
+#: horilla_theme/templates/cbv/leave_types/detail_actions.html:32
+#: horilla_theme/templates/cbv/meetings/detail_action.html:18
+#: horilla_theme/templates/cbv/meetings/detail_action.html:20
+#: horilla_theme/templates/cbv/meetings/detail_action.html:22
+#: horilla_theme/templates/cbv/multiple_approval_condition/detail_action.html:19
+#: horilla_theme/templates/cbv/multiple_approval_condition/detail_action.html:20
+#: horilla_theme/templates/cbv/multiple_approval_condition/detail_action.html:22
+#: horilla_theme/templates/cbv/my_leave_request/detail_leave_actions.html:20
+#: horilla_theme/templates/cbv/my_leave_request/detail_leave_actions.html:22
+#: horilla_theme/templates/cbv/period/detail_view_actions.html:18
+#: horilla_theme/templates/cbv/period/detail_view_actions.html:20
+#: horilla_theme/templates/cbv/reimbursements/detail_actions.html:29
+#: horilla_theme/templates/cbv/reimbursements/detail_actions.html:31
+#: horilla_theme/templates/cbv/restricted_days/detail_action.html:20
+#: horilla_theme/templates/cbv/restricted_days/detail_action.html:22
+#: horilla_theme/templates/cbv/rotating_shift/rotating_shift_detail_actions.html:20
+#: horilla_theme/templates/cbv/rotating_shift/rotating_shift_detail_actions.html:35
+#: horilla_theme/templates/cbv/rotating_shift/rotating_shift_detail_actions.html:37
+#: horilla_theme/templates/cbv/rotating_work_type/rotate_detail_view_actions.html:21
+#: horilla_theme/templates/cbv/rotating_work_type/rotate_detail_view_actions.html:36
+#: horilla_theme/templates/cbv/rotating_work_type/rotate_detail_view_actions.html:38
+#: horilla_theme/templates/cbv/settings/employee_shift_schedule_detail_action.html:16
+#: horilla_theme/templates/cbv/settings/employee_shift_schedule_detail_action.html:18
+#: horilla_theme/templates/cbv/shift_request/shift_detail_actions.html:34
+#: horilla_theme/templates/cbv/tasks/task_detail_actions.html:17
+#: horilla_theme/templates/cbv/tasks/task_detail_actions.html:26
+#: horilla_theme/templates/cbv/tasks/task_detail_actions.html:28
+#: horilla_theme/templates/cbv/timesheet/detail_actions.html:15
+#: horilla_theme/templates/cbv/timesheet/detail_actions.html:24
+#: horilla_theme/templates/cbv/timesheet/detail_actions.html:26
+#: horilla_theme/templates/cbv/work_type_request/detail_view_actions.html:26
+#: horilla_theme/templates/cbv/work_type_request/detail_view_actions.html:33
+#: horilla_theme/templates/cbv/work_type_request/detail_view_actions.html:35
+#: horilla_theme/templates/documents/requests.html:57
+#: horilla_theme/templates/feedback/feedback_detailed_view.html:130
+#: horilla_theme/templates/generic/delete_confirmation.html:178
+#: horilla_theme/templates/helpdesk/faq/faq_category_list.html:48
+#: horilla_theme/templates/helpdesk/ticket/ticket_detail.html:433
+#: horilla_theme/templates/horilla_automations/detail_actions.html:18
+#: horilla_theme/templates/horilla_automations/detail_actions.html:20
+#: horilla_theme/templates/leave/leave_allocation_request/leave_allocation_comment.html:119
+#: horilla_theme/templates/leave/leave_request/leave_comment.html:118
+#: horilla_theme/templates/mail/view_templates.html:33
+#: horilla_theme/templates/offboarding/note/view_notes.html:130
+#: horilla_theme/templates/okr/emp_objective/emp_objective_list.html:156
+#: horilla_theme/templates/payroll/reimbursement/reimbursement_comment.html:126
+#: horilla_theme/templates/payroll/tax/filing_status_actions.html:38
+#: horilla_theme/templates/payroll/tax/tax_bracket_actions.html:18
+#: horilla_theme/templates/pipeline/pipeline_components/view_note.html:155
+#: horilla_theme/templates/policies/records.html:43
+#: horilla_theme/templates/shift_request/htmx/shift_comment.html:130
+#: horilla_theme/templates/survey/survey_card.html:70
+#: horilla_theme/templates/survey/template_accordion.html:57
+#: horilla_theme/templates/tabs/document_tab.html:203
+#: horilla_theme/templates/tabs/note_tab.html:87
+#: horilla_theme/templates/task/new/task_kanban_view.html:120
+#: horilla_theme/templates/task/new/task_kanban_view.html:196
+#: horilla_theme/templates/task/new/task_list_view.html:67
+#: horilla_theme/templates/work_type_request/htmx/work_type_comment.html:129
+msgid "Delete"
+msgstr ""
+
+#: horilla_theme/templates/announcement/announcement_one.html:92
+msgid "Posted on"
+msgstr ""
+
+#: horilla_theme/templates/announcement/announcement_one.html:92
+#: horilla_theme/templates/announcement/comment_view.html:117
+#: horilla_theme/templates/leave/leave_allocation_request/leave_allocation_comment.html:182
+#: horilla_theme/templates/leave/leave_request/leave_comment.html:181
+#: horilla_theme/templates/offboarding/note/view_notes.html:214
+#: horilla_theme/templates/payroll/reimbursement/reimbursement_comment.html:208
+#: horilla_theme/templates/shift_request/htmx/shift_comment.html:216
+#: horilla_theme/templates/work_type_request/htmx/work_type_comment.html:215
+msgid "at"
+msgstr ""
+
+#: horilla_theme/templates/announcement/announcement_one.html:156
+msgid "Comments disabled"
+msgstr ""
+
+#: horilla_theme/templates/announcement/announcement_one.html:159
+#: horilla_theme/templates/announcement/announcement_one.html:167
+#: horilla_theme/templates/announcement/announcement_one.html:170
+#: horilla_theme/templates/leave/leave_allocation_request/leave_allocation_comment.html:65
+#: horilla_theme/templates/leave/leave_request/leave_comment.html:65
+#: horilla_theme/templates/payroll/reimbursement/reimbursement_comment.html:74
+#: horilla_theme/templates/shift_request/htmx/shift_comment.html:77
+#: horilla_theme/templates/work_type_request/htmx/work_type_comment.html:76
+msgid "Comments"
+msgstr ""
+
+#: horilla_theme/templates/announcement/announcement_one.html:198
+#: horilla_theme/templates/payroll/payslip/individual_payslip_summery.html:74
+#: horilla_theme/templates/report/attendance_report.html:51
+#: horilla_theme/templates/report/employee_report.html:78
+#: horilla_theme/templates/report/leave_report.html:103
+#: horilla_theme/templates/report/recruitment_report.html:94
+#: horilla_theme/templates/settings.html:142
+msgid "Department"
+msgstr ""
+
+#: horilla_theme/templates/announcement/announcement_one.html:208
+#: horilla_theme/templates/biometric/list_employees_biometric.html:52
+#: horilla_theme/templates/biometric/list_employees_cosec_biometric.html:53
+#: horilla_theme/templates/biometric_users/dahua/list_dahua_employees.html:30
+#: horilla_theme/templates/biometric_users/etimeoffice/list_etimeoffice_employees.html:30
+#: horilla_theme/templates/report/attendance_report.html:66
+#: horilla_theme/templates/report/employee_report.html:96
+#: horilla_theme/templates/report/leave_report.html:109
+#: horilla_theme/templates/report/recruitment_report.html:61
+#: horilla_theme/templates/report/recruitment_report.html:140
+msgid "Job Position"
+msgstr ""
+
+#: horilla_theme/templates/announcement/comment_view.html:18
+msgid "Comments of - "
+msgstr ""
+
+#: horilla_theme/templates/announcement/comment_view.html:31
+#: horilla_theme/templates/okr/objective_detailed_view_activity.html:166
+msgid "Comment"
+msgstr ""
+
+#: horilla_theme/templates/announcement/comment_view.html:43
+msgid "There are no comments to show."
+msgstr ""
+
+#: horilla_theme/templates/announcement/comment_view.html:99
+#: horilla_theme/templates/leave/leave_allocation_request/leave_allocation_comment.html:110
+#: horilla_theme/templates/leave/leave_request/leave_comment.html:109
+#: horilla_theme/templates/payroll/reimbursement/reimbursement_comment.html:116
+#: horilla_theme/templates/shift_request/htmx/shift_comment.html:120
+#: horilla_theme/templates/work_type_request/htmx/work_type_comment.html:119
+msgid "Are you sure you want to delete this comment?"
+msgstr ""
+
+#: horilla_theme/templates/announcement/comment_view.html:114
+#: horilla_theme/templates/candidate/individual_view_note.html:81
+#: horilla_theme/templates/leave/leave_allocation_request/leave_allocation_comment.html:176
+#: horilla_theme/templates/leave/leave_request/leave_comment.html:175
+#: horilla_theme/templates/offboarding/note/view_notes.html:211
+#: horilla_theme/templates/payroll/reimbursement/reimbursement_comment.html:205
+#: horilla_theme/templates/pipeline/pipeline_components/view_note.html:234
+#: horilla_theme/templates/shift_request/htmx/shift_comment.html:213
+#: horilla_theme/templates/tabs/note_tab.html:129
+#: horilla_theme/templates/work_type_request/htmx/work_type_comment.html:212
+msgid "By"
+msgstr ""
+
+#: horilla_theme/templates/announcement/comment_view.html:117
+#: horilla_theme/templates/leave/leave_allocation_request/leave_allocation_comment.html:178
+#: horilla_theme/templates/leave/leave_allocation_request/leave_allocation_comment.html:181
+#: horilla_theme/templates/leave/leave_request/leave_comment.html:177
+#: horilla_theme/templates/leave/leave_request/leave_comment.html:180
+#: horilla_theme/templates/offboarding/note/view_notes.html:212
+#: horilla_theme/templates/offboarding/note/view_notes.html:214
+#: horilla_theme/templates/payroll/reimbursement/reimbursement_comment.html:206
+#: horilla_theme/templates/payroll/reimbursement/reimbursement_comment.html:208
+#: horilla_theme/templates/shift_request/htmx/shift_comment.html:214
+#: horilla_theme/templates/shift_request/htmx/shift_comment.html:216
+#: horilla_theme/templates/work_type_request/htmx/work_type_comment.html:213
+#: horilla_theme/templates/work_type_request/htmx/work_type_comment.html:215
+msgid "on"
+msgstr ""
+
+#: horilla_theme/templates/announcement/comment_view.html:127
+msgid "Comments have been disabled for this announcement."
+msgstr ""
+
+#: horilla_theme/templates/announcement/expiry_day.html:8
+msgid "Default Expire Days"
+msgstr ""
+
+#: horilla_theme/templates/announcement/expiry_day.html:9
+msgid "Set default announcement expire days"
+msgstr ""
+
+#: horilla_theme/templates/announcement/expiry_day.html:13
+msgid "Days"
+msgstr ""
+
+#: horilla_theme/templates/announcement/viewed_by.html:4
+msgid "Viewed By"
+msgstr ""
+
+#: horilla_theme/templates/asset/asset_list.html:12
+#: horilla_theme/templates/report/asset_report.html:43
+msgid "Asset"
+msgstr ""
+
+#: horilla_theme/templates/asset/asset_list.html:15
+msgid "Tracking ID"
+msgstr ""
+
+#: horilla_theme/templates/asset/asset_list.html:18
+msgid "Batch No"
+msgstr ""
+
+#: horilla_theme/templates/asset/asset_list.html:67
+#: horilla_theme/templates/category/asset_category.html:45
+#: horilla_theme/templates/mail/view_templates.html:23
+#: horilla_theme/templates/payroll/tax/filing_status_actions.html:18
+#: horilla_theme/templates/survey/survey_card.html:56
+msgid "Duplicate"
+msgstr ""
+
+#: horilla_theme/templates/asset/asset_list.html:77
+#: horilla_theme/templates/asset/asset_list.html:83
+msgid "Report"
+msgstr ""
+
+#: horilla_theme/templates/asset/asset_list.html:88
+msgid "Do you want to delete this asset?"
+msgstr ""
+
+#: horilla_theme/templates/asset/asset_list.html:107
+#: horilla_theme/templates/attendance/work_record/work_record_list.html:115
+#: horilla_theme/templates/base/auth/group_lines.html:83
+#: horilla_theme/templates/base/auth/permission_lines.html:39
+#: horilla_theme/templates/base/auth/permission_lines.html:43
+#: horilla_theme/templates/biometric/list_employees_biometric.html:293
+#: horilla_theme/templates/biometric/list_employees_cosec_biometric.html:192
+#: horilla_theme/templates/biometric_users/dahua/list_dahua_employees.html:112
+#: horilla_theme/templates/biometric_users/etimeoffice/list_etimeoffice_employees.html:112
+#: horilla_theme/templates/category/asset_category.html:82
+#: horilla_theme/templates/cbv/attendance_request/attendance_request_tab.html:317
+#: horilla_theme/templates/cbv/documents/document_list.html:222
+#: horilla_theme/templates/documents/requests.html:176
+#: horilla_theme/templates/documents/requests.html:205
+#: horilla_theme/templates/generic/group_by_table.html:304
+#: horilla_theme/templates/generic/group_by_table.html:354
+#: horilla_theme/templates/generic/horilla_card.html:139
+#: horilla_theme/templates/generic/horilla_list_table.html:275
+#: horilla_theme/templates/okr/emp_objective/emp_objective_list.html:194
+#: horilla_theme/templates/skill_zone/skill_zone_list.html:223
+#: horilla_theme/templates/skill_zone/skill_zone_list.html:269
+#: horilla_theme/templates/survey/survey_card.html:96
+#: horilla_theme/templates/survey/template_accordion.html:143
+#: horilla_theme/templates/survey/template_accordion.html:201
+msgid "Page"
+msgstr ""
+
+#: horilla_theme/templates/asset/asset_list.html:107
+#: horilla_theme/templates/attendance/work_record/work_record_list.html:115
+#: horilla_theme/templates/base/auth/group_lines.html:83
+#: horilla_theme/templates/base/auth/permission_lines.html:39
+#: horilla_theme/templates/base/auth/permission_lines.html:46
+#: horilla_theme/templates/biometric/list_employees_biometric.html:293
+#: horilla_theme/templates/biometric/list_employees_cosec_biometric.html:192
+#: horilla_theme/templates/biometric_users/dahua/list_dahua_employees.html:112
+#: horilla_theme/templates/biometric_users/etimeoffice/list_etimeoffice_employees.html:112
+#: horilla_theme/templates/category/asset_category.html:82
+#: horilla_theme/templates/cbv/attendance_request/attendance_request_tab.html:317
+#: horilla_theme/templates/cbv/documents/document_list.html:222
+#: horilla_theme/templates/documents/requests.html:177
+#: horilla_theme/templates/documents/requests.html:205
+#: horilla_theme/templates/generic/group_by_table.html:304
+#: horilla_theme/templates/generic/group_by_table.html:354
+#: horilla_theme/templates/generic/horilla_card.html:139
+#: horilla_theme/templates/generic/horilla_list_table.html:275
+#: horilla_theme/templates/okr/emp_objective/emp_objective_list.html:194
+#: horilla_theme/templates/recruitment/open_recruitments.html:116
+#: horilla_theme/templates/skill_zone/skill_zone_list.html:223
+#: horilla_theme/templates/skill_zone/skill_zone_list.html:269
+#: horilla_theme/templates/survey/survey_card.html:96
+#: horilla_theme/templates/survey/template_accordion.html:143
+#: horilla_theme/templates/survey/template_accordion.html:201
+msgid "of"
+msgstr ""
+
+#: horilla_theme/templates/asset/asset_list.html:112
+#: horilla_theme/templates/base/auth/permission_lines.html:55
+#: horilla_theme/templates/payroll/dashboard.html:223
+#: horilla_theme/templates/time_sheet/chart.html:35
+msgid "Previous"
+msgstr ""
+
+#: horilla_theme/templates/asset/asset_list.html:121
+#: horilla_theme/templates/base/auth/permission_lines.html:60
+#: horilla_theme/templates/cbv/allocations/summary.html:113
+#: horilla_theme/templates/payroll/dashboard.html:232
+#: horilla_theme/templates/time_sheet/chart.html:38
+msgid "Next"
+msgstr ""
+
+#: horilla_theme/templates/asset/asset_return_form.html:5
+#: horilla_theme/templates/cbv/allocations/asset/return_form.html:5
+msgid "Asset Return"
+msgstr ""
+
+#: horilla_theme/templates/asset/asset_return_form.html:32
+#: horilla_theme/templates/cbv/allocations/asset/return_form.html:32
+msgid "Return Status"
+msgstr ""
+
+#: horilla_theme/templates/asset/asset_return_form.html:38
+#: horilla_theme/templates/cbv/allocations/asset/return_form.html:38
+msgid "Return Date"
+msgstr ""
+
+#: horilla_theme/templates/asset/asset_return_form.html:45
+#: horilla_theme/templates/cbv/allocations/asset/return_form.html:45
+msgid "Return Condition"
+msgstr ""
+
+#: horilla_theme/templates/asset/asset_return_form.html:67
+#: horilla_theme/templates/cbv/allocations/asset/return_form.html:67
+msgid "Add Fine"
+msgstr ""
+
+#: horilla_theme/templates/asset/asset_return_form.html:75
+#: horilla_theme/templates/attendance/penalty/form.html:161
+#: horilla_theme/templates/cbv/allocations/asset/return_form.html:75
+#: horilla_theme/templates/cbv/allocations/employee/forms.html:62
+#: horilla_theme/templates/cbv/exit_process/stage_order.html:38
+#: horilla_theme/templates/cbv/pipeline/onboarding/stage_order.html:38
+#: horilla_theme/templates/cbv/pipeline/stage_order.html:38
+#: horilla_theme/templates/common_form.html:50
+#: horilla_theme/templates/contract_form.html:96
+#: horilla_theme/templates/dashboard_chart_form.html:98
+#: horilla_theme/templates/employee/update_form/bank_details.html:14
+#: horilla_theme/templates/employee/update_form/personal_info.html:30
+#: horilla_theme/templates/employee/update_form/work_details.html:94
+#: horilla_theme/templates/feedback/answer/feedback_answer.html:164
+#: horilla_theme/templates/generic/form.html:111
+#: horilla_theme/templates/helpdesk/ticket/forms/change_assinees.html:29
+#: horilla_theme/templates/helpdesk/ticket/forms/change_raised_on.html:39
+#: horilla_theme/templates/horilla_theme/components/reorder_dashboard_charts.html:53
+#: horilla_theme/templates/leave/leave_request/penalty/form.html:161
+#: horilla_theme/templates/leave/leave_type/leave_type_creation.html:411
+#: horilla_theme/templates/requests/attendance/request_new_form.html:81
+msgid "Save"
+msgstr ""
+
+#: horilla_theme/templates/asset/dashboard.html:18
+#: horilla_theme/templates/category/asset_category.html:14
+#: horilla_theme/templates/cbv/allocations/summary.html:80
+msgid "Assets"
+msgstr ""
+
+#: horilla_theme/templates/asset/dashboard.html:37
+msgid "Asset request"
+msgstr ""
+
+#: horilla_theme/templates/asset/dashboard.html:57
+msgid "Assets in use"
+msgstr ""
+
+#: horilla_theme/templates/asset/dashboard.html:76
+msgid "Asset Chart"
+msgstr ""
+
+#: horilla_theme/templates/asset/dashboard.html:92
+#: horilla_theme/templates/horilla_theme/components/dashboard_tiles.html:313
+msgid "Asset Requests To Approve"
+msgstr ""
+
+#: horilla_theme/templates/asset/dashboard.html:108
+msgid "Assets In Use"
+msgstr ""
+
+#: horilla_theme/templates/asset/dashboard.html:125
+msgid "Allocated Assets"
+msgstr ""
+
+#: horilla_theme/templates/attendance/components/in_out_component.html:29
+#: horilla_theme/templates/attendance/components/in_out_component.html:32
+msgid "Check Out"
+msgstr ""
+
+#: horilla_theme/templates/attendance/components/in_out_component.html:61
+#: horilla_theme/templates/attendance/components/in_out_component.html:64
+msgid "Check In"
+msgstr ""
+
+#: horilla_theme/templates/attendance/dashboard/dashboard.html:29
+msgid "Today's Attendances"
+msgstr ""
+
+#: horilla_theme/templates/attendance/dashboard/dashboard.html:47
+msgid "On Time"
+msgstr ""
+
+#: horilla_theme/templates/attendance/dashboard/dashboard.html:65
+msgid "Late Come"
+msgstr ""
+
+#: horilla_theme/templates/attendance/dashboard/dashboard.html:83
+#: horilla_theme/templates/horilla_theme/components/dashboard_tiles.html:234
+msgid "Attendance To Validate"
+msgstr ""
+
+#: horilla_theme/templates/attendance/dashboard/dashboard.html:98
+#: horilla_theme/templates/horilla_theme/components/dashboard_tiles.html:389
+msgid "Overtime To Approve"
+msgstr ""
+
+#: horilla_theme/templates/attendance/dashboard/dashboard.html:113
+#: horilla_theme/templates/horilla_theme/components/dashboard_tiles.html:364
+msgid "Offline Employees"
+msgstr ""
+
+#: horilla_theme/templates/attendance/dashboard/dashboard.html:128
+msgid "Attendance Analytics"
+msgstr ""
+
+#: horilla_theme/templates/attendance/dashboard/dashboard.html:139
+#: horilla_theme/templates/attendance/dashboard/dashboard.html:209
+#: horilla_theme/templates/horilla_theme/components/dashboard_tiles.html:431
+msgid "Day"
+msgstr ""
+
+#: horilla_theme/templates/attendance/dashboard/dashboard.html:140
+#: horilla_theme/templates/attendance/dashboard/dashboard.html:210
+#: horilla_theme/templates/horilla_theme/components/dashboard_tiles.html:432
+msgid "Weekly"
+msgstr ""
+
+#: horilla_theme/templates/attendance/dashboard/dashboard.html:141
+#: horilla_theme/templates/attendance/dashboard/dashboard.html:211
+#: horilla_theme/templates/horilla_theme/components/dashboard_tiles.html:433
+msgid "Monthly"
+msgstr ""
+
+#: horilla_theme/templates/attendance/dashboard/dashboard.html:142
+#: horilla_theme/templates/attendance/dashboard/dashboard.html:212
+#: horilla_theme/templates/horilla_theme/components/dashboard_tiles.html:434
+msgid "Date range"
+msgstr ""
+
+#: horilla_theme/templates/attendance/dashboard/dashboard.html:164
+#: horilla_theme/templates/horilla_theme/components/dashboard_tiles.html:339
+msgid "Online Employees"
+msgstr ""
+
+#: horilla_theme/templates/attendance/dashboard/dashboard.html:179
+#: horilla_theme/templates/horilla_theme/components/dashboard_tiles.html:457
+msgid "Hours Chart"
+msgstr ""
+
+#: horilla_theme/templates/attendance/dashboard/dashboard.html:200
+msgid "Department Overtime Chart"
+msgstr ""
+
+#: horilla_theme/templates/attendance/dashboard/dashboard.html:237
+msgid "On Break"
+msgstr ""
+
+#: horilla_theme/templates/attendance/ip_restriction/ip_restriction.html:9
+#: horilla_theme/templates/settings.html:413
+msgid "IP Restriction"
+msgstr ""
+
+#: horilla_theme/templates/attendance/ip_restriction/ip_restriction.html:18
+msgid "IP Login Restriction"
+msgstr ""
+
+#: horilla_theme/templates/attendance/late_come_early_out/tracking.html:3
+#: horilla_theme/templates/attendance/late_come_early_out/tracking.html:10
+msgid "Tracking Enable"
+msgstr ""
+
+#: horilla_theme/templates/attendance/penalty/form.html:81
+#: horilla_theme/templates/attendance/penalty/form.html:113
+#: horilla_theme/templates/cbv/reimbursements/forms.html:15
+#: horilla_theme/templates/leave/leave_request/dashboard_leave_requests.html:69
+#: horilla_theme/templates/leave/leave_request/penalty/form.html:81
+#: horilla_theme/templates/leave/leave_request/penalty/form.html:113
+#: horilla_theme/templates/report/leave_report.html:52
+#: horilla_theme/templates/report/leave_report.html:141
+msgid "Leave Type"
+msgstr ""
+
+#: horilla_theme/templates/attendance/penalty/form.html:87
+#: horilla_theme/templates/leave/leave_request/penalty/form.html:87
+msgid "Minius Leave"
+msgstr ""
+
+#: horilla_theme/templates/attendance/penalty/form.html:93
+#: horilla_theme/templates/leave/leave_request/penalty/form.html:93
+msgid "Deduct From Carryforward"
+msgstr ""
+
+#: horilla_theme/templates/attendance/penalty/form.html:99
+#: horilla_theme/templates/leave/leave_request/penalty/form.html:99
+msgid "Penalty Amount"
+msgstr ""
+
+#: horilla_theme/templates/attendance/penalty/form.html:116
+#: horilla_theme/templates/cbv/allocations/leave/type_list.html:10
+#: horilla_theme/templates/cbv/reimbursements/forms.html:16
+#: horilla_theme/templates/leave/leave_request/penalty/form.html:116
+#: horilla_theme/templates/report/leave_report.html:149
+msgid "Available Days"
+msgstr ""
+
+#: horilla_theme/templates/attendance/penalty/form.html:119
+#: horilla_theme/templates/cbv/reimbursements/forms.html:17
+#: horilla_theme/templates/leave/leave_request/penalty/form.html:119
+msgid "Carry Forward Days"
+msgstr ""
+
+#: horilla_theme/templates/attendance/penalty/form.html:143
+#: horilla_theme/templates/leave/leave_request/penalty/form.html:143
+msgid "Leave type is optional when 'minus leave' is 0"
+msgstr ""
+
+#: horilla_theme/templates/attendance/penalty/form.html:146
+#: horilla_theme/templates/leave/leave_request/penalty/form.html:146
+msgid "Penalty amount will affect payslip on the date"
+msgstr ""
+
+#: horilla_theme/templates/attendance/penalty/form.html:149
+#: horilla_theme/templates/leave/leave_request/penalty/form.html:149
+msgid "By default minus leave will cut/deduct from available leaves"
+msgstr ""
+
+#: horilla_theme/templates/attendance/penalty/form.html:152
+#: horilla_theme/templates/leave/leave_request/penalty/form.html:152
+msgid ""
+"By enabling 'Deduct from carry forward' leave will cut/deduct from carry "
+"forward days"
+msgstr ""
+
+#: horilla_theme/templates/attendance/settings/settings.html:7
+msgid "At-Work Tracker"
+msgstr ""
+
+#: horilla_theme/templates/attendance/settings/settings.html:8
+msgid ""
+"By enabling this feature user's will be able to see their current day worked "
+"hours in live on the navbar (inside the check in button)."
+msgstr ""
+
+#: horilla_theme/templates/attendance/work_record/work_record_list.html:13
+msgid "Present"
+msgstr ""
+
+#: horilla_theme/templates/attendance/work_record/work_record_list.html:14
+#: horilla_theme/templates/settings.html:441
+msgid "Leave"
+msgstr ""
+
+#: horilla_theme/templates/attendance/work_record/work_record_list.html:15
+msgid "Half Day Present"
+msgstr ""
+
+#: horilla_theme/templates/attendance/work_record/work_record_list.html:16
+msgid "Absent"
+msgstr ""
+
+#: horilla_theme/templates/attendance/work_record/work_record_list.html:17
+msgid "On Leave, But Attendance Exist"
+msgstr ""
+
+#: horilla_theme/templates/attendance/work_record/work_record_list.html:18
+msgid "Conflict"
+msgstr ""
+
+#: horilla_theme/templates/attendance/work_record/work_record_list.html:30
+#: horilla_theme/templates/biometric/list_employees_biometric.html:37
+#: horilla_theme/templates/biometric/list_employees_cosec_biometric.html:18
+#: horilla_theme/templates/biometric_users/dahua/list_dahua_employees.html:18
+#: horilla_theme/templates/biometric_users/etimeoffice/list_etimeoffice_employees.html:18
+#: horilla_theme/templates/cbv/allocations/summary.html:5
+#: horilla_theme/templates/feedback/feedback_detailed_view.html:246
+#: horilla_theme/templates/feedback/feedback_overview.html:25
+#: horilla_theme/templates/helpdesk/ticket/ticket_claim_requests.html:32
+#: horilla_theme/templates/horilla_widgets/multiselect_components/table.html:57
+#: horilla_theme/templates/leave/leave_request/dashboard_leave_requests.html:39
+#: horilla_theme/templates/payroll/dashboard.html:172
+#: horilla_theme/templates/report/attendance_report.html:47
+#: horilla_theme/templates/report/employee_report.html:38
+#: horilla_theme/templates/report/payroll_report.html:46
+#: horilla_theme/templates/report/pms_report.html:133
+#: horilla_theme/templates/settings.html:245
+msgid "Employee"
+msgstr ""
+
+#: horilla_theme/templates/attendance/work_record/work_record_view.html:9
+msgid "Work Records"
+msgstr ""
+
+#: horilla_theme/templates/attendance/work_record/work_record_view.html:35
+#: horilla_theme/templates/attendance/work_record/work_record_view.html:65
+#: horilla_theme/templates/generic/horilla_nav.html:65
+#: horilla_theme/templates/generic/horilla_nav.html:67
+#: horilla_theme/templates/generic/horilla_nav.html:107
+#: horilla_theme/templates/generic/horilla_nav.html:108
+#: horilla_theme/templates/generic/horilla_nav.html:116
+#: horilla_theme/templates/generic/quick_actions.html:60
+#: horilla_theme/templates/helpdesk/faq/faq_nav.html:37
+#: horilla_theme/templates/helpdesk/faq/faq_nav.html:56
+#: horilla_theme/templates/horilla_widgets/horilla_multiselect_widget.html:181
+#: horilla_theme/templates/horilla_widgets/multiselect_components/nav.html:36
+#: horilla_theme/templates/horilla_widgets/multiselect_components/nav.html:37
+#: horilla_theme/templates/horilla_widgets/multiselect_components/nav.html:56
+#: horilla_theme/templates/okr/emp_objective/emp_objective_nav.html:43
+#: horilla_theme/templates/okr/emp_objective/emp_objective_nav.html:186
+#: horilla_theme/templates/report/asset_report.html:31
+#: horilla_theme/templates/report/asset_report.html:32
+#: horilla_theme/templates/report/asset_report.html:96
+#: horilla_theme/templates/report/asset_report.html:97
+#: horilla_theme/templates/report/attendance_report.html:29
+#: horilla_theme/templates/report/attendance_report.html:30
+#: horilla_theme/templates/report/attendance_report.html:155
+#: horilla_theme/templates/report/attendance_report.html:156
+#: horilla_theme/templates/report/employee_report.html:26
+#: horilla_theme/templates/report/employee_report.html:27
+#: horilla_theme/templates/report/employee_report.html:120
+#: horilla_theme/templates/report/employee_report.html:121
+#: horilla_theme/templates/report/leave_report.html:28
+#: horilla_theme/templates/report/leave_report.html:29
+#: horilla_theme/templates/report/leave_report.html:239
+#: horilla_theme/templates/report/leave_report.html:240
+#: horilla_theme/templates/report/payroll_report.html:28
+#: horilla_theme/templates/report/payroll_report.html:29
+#: horilla_theme/templates/report/payroll_report.html:223
+#: horilla_theme/templates/report/payroll_report.html:224
+#: horilla_theme/templates/report/pms_report.html:27
+#: horilla_theme/templates/report/pms_report.html:28
+#: horilla_theme/templates/report/pms_report.html:173
+#: horilla_theme/templates/report/pms_report.html:174
+#: horilla_theme/templates/report/recruitment_report.html:26
+#: horilla_theme/templates/report/recruitment_report.html:27
+#: horilla_theme/templates/report/recruitment_report.html:225
+#: horilla_theme/templates/report/recruitment_report.html:226
+#: horilla_theme/templates/skill_zone/skill_zone_nav.html:59
+#: horilla_theme/templates/skill_zone/skill_zone_nav.html:63
+#: horilla_theme/templates/skill_zone/skill_zone_nav.html:165
+#: horilla_theme/templates/skill_zone/skill_zone_nav.html:169
+#: horilla_theme/templates/survey/view_question_templates.html:83
+#: horilla_theme/templates/survey/view_question_templates.html:85
+#: horilla_theme/templates/task/new/task_navbar.html:59
+msgid "Filter"
+msgstr ""
+
+#: horilla_theme/templates/attendance/work_record/work_record_view.html:42
+msgid "Date Range"
+msgstr ""
+
+#: horilla_theme/templates/attendance/work_record/work_record_view.html:47
+#: horilla_theme/templates/cbv/projects/project_details.html:56
+#: horilla_theme/templates/feedback/feedback_detailed_view.html:161
+#: horilla_theme/templates/leave/leave_request/dashboard_leave_requests.html:99
+#: horilla_theme/templates/payroll/dashboard.html:156
+#: horilla_theme/templates/report/leave_report.html:58
+#: horilla_theme/templates/report/pms_report.html:147
+#: horilla_theme/templates/report/recruitment_report.html:126
+msgid "Start Date"
+msgstr ""
+
+#: horilla_theme/templates/attendance/work_record/work_record_view.html:53
+#: horilla_theme/templates/cbv/projects/project_details.html:65
+#: horilla_theme/templates/feedback/feedback_detailed_view.html:166
+#: horilla_theme/templates/leave/leave_request/dashboard_leave_requests.html:129
+#: horilla_theme/templates/payroll/dashboard.html:164
+#: horilla_theme/templates/report/leave_report.html:64
+#: horilla_theme/templates/report/pms_report.html:157
+#: horilla_theme/templates/report/recruitment_report.html:148
+#: horilla_theme/templates/task/new/task_kanban_view.html:226
+#: horilla_theme/templates/task/new/task_list_view.html:90
+msgid "End Date"
+msgstr ""
+
+#: horilla_theme/templates/attendance/work_record/work_record_view.html:83
+#: horilla_theme/templates/employee/export_data_employee.html:64
+#: horilla_theme/templates/employee/export_data_employee.html:112
+#: horilla_theme/templates/employee/export_data_employee.html:162
+#: horilla_theme/templates/generic/export_fields_modal.html:13
+#: horilla_theme/templates/generic/quick_actions.html:35
+#: horilla_theme/templates/payroll/dashboard.html:139
+#: horilla_theme/templates/payroll/dashboard.html:207
+msgid "Export"
+msgstr ""
+
+#: horilla_theme/templates/base/audit_tag/employee_account_block_unblock.html:8
+msgid "Restrict Login Account"
+msgstr ""
+
+#: horilla_theme/templates/base/audit_tag/employee_account_block_unblock.html:9
+msgid "By enabling this feature, you can block or unblock an employee account."
+msgstr ""
+
+#: horilla_theme/templates/base/audit_tag/employee_account_block_unblock.html:26
+msgid "Restrict Profile Edit"
+msgstr ""
+
+#: horilla_theme/templates/base/audit_tag/employee_account_block_unblock.html:27
+msgid ""
+"By enabling this feature, you can restrict an employee from editing their "
+"profile."
+msgstr ""
+
+#: horilla_theme/templates/base/audit_tag/employee_account_block_unblock.html:48
+msgid ""
+"Are you sure you want to restrict all employees from editing their profiles?"
+msgstr ""
+
+#: horilla_theme/templates/base/audit_tag/employee_account_block_unblock.html:49
+msgid "Are you sure you want to allow all employees to edit their profiles?"
+msgstr ""
+
+#: horilla_theme/templates/base/audit_tag/employee_account_block_unblock.html:53
+msgid "Please Confirm"
+msgstr ""
+
+#: horilla_theme/templates/base/audit_tag/employee_account_block_unblock.html:57
+msgid "Confirm"
+msgstr ""
+
+#: horilla_theme/templates/base/audit_tag/employee_account_block_unblock.html:58
+#: horilla_theme/templates/generic/delete_confirmation.html:185
+#: horilla_theme/templates/related_models.html:98
+#: horilla_theme/templates/task/new/forms/quick_create_task_form.html:40
+msgid "Cancel"
+msgstr ""
+
+#: horilla_theme/templates/base/audit_tag/employee_account_block_unblock.html:80
+msgid "Error"
+msgstr ""
+
+#: horilla_theme/templates/base/audit_tag/employee_account_block_unblock.html:80
+msgid "Something went wrong while updating."
+msgstr ""
+
+#: horilla_theme/templates/base/audit_tag/history_tracking_fields.html:8
+msgid "Tracking Fields"
+msgstr ""
+
+#: horilla_theme/templates/base/audit_tag/history_tracking_fields.html:9
+msgid ""
+"Employee history will be stored during updation of the fields that selected "
+"here."
+msgstr ""
+
+#: horilla_theme/templates/base/audit_tag/history_tracking_fields.html:15
+#: horilla_theme/templates/employee/create_form/personal_info.html:84
+#: horilla_theme/templates/payroll/settings/payroll_settings.html:33
+#: horilla_theme/templates/settings/encashment_settings.html:31
+#: horilla_theme/templates/settings/settings.html:33
+msgid "Save Changes"
+msgstr ""
+
+#: horilla_theme/templates/base/audit_tag/history_tracking_fields.html:25
+msgid "Work Information Tracking"
+msgstr ""
+
+#: horilla_theme/templates/base/audit_tag/history_tracking_fields.html:26
+msgid ""
+"By enabling this feature, you can save the history of employee work "
+"information during updates."
+msgstr ""
+
+#: horilla_theme/templates/base/auth/group_accordion.html:42
+#: horilla_theme/templates/biometric/nav_employees_biometric.html:68
+#: horilla_theme/templates/biometric/nav_employees_cosec_biometric.html:68
+#: horilla_theme/templates/biometric_users/dahua/nav_dahua_employees.html:77
+#: horilla_theme/templates/candidate/document.html:51
+#: horilla_theme/templates/category/asset_category.html:35
+#: horilla_theme/templates/generic/horilla_nav.html:149
+#: horilla_theme/templates/generic/horilla_nav.html:150
+#: horilla_theme/templates/helpdesk/faq/faq_category_nav.html:86
+#: horilla_theme/templates/helpdesk/faq/faq_nav.html:73
+#: horilla_theme/templates/okr/okr_detailed_view.html:41
+#: horilla_theme/templates/payroll/payslip/individual_payslip_summery.html:100
+#: horilla_theme/templates/payroll/payslip/individual_payslip_summery.html:161
+#: horilla_theme/templates/payroll/tax/filing_status_actions.html:8
+#: horilla_theme/templates/skill_zone/skill_zone_nav.html:183
+#: horilla_theme/templates/tabs/document_tab.html:14
+#: horilla_theme/templates/task/new/task_navbar.html:88
+msgid "Create"
+msgstr ""
+
+#: horilla_theme/templates/base/auth/group_accordion.html:64
+msgid "Group Permissions"
+msgstr ""
+
+#: horilla_theme/templates/base/auth/group_accordion.html:92
+msgid "Group Assign"
+msgstr ""
+
+#: horilla_theme/templates/base/auth/group_lines.html:16
+#: horilla_theme/templates/tabs/group_permissions.html:42
+msgid "Total"
+msgstr ""
+
+#: horilla_theme/templates/base/auth/group_lines.html:16
+#: horilla_theme/templates/tabs/group_permissions.html:42
+msgid "users in this group"
+msgstr ""
+
+#: horilla_theme/templates/base/auth/group_lines.html:72
+msgid "There is no employee group at this moment."
+msgstr ""
+
+#: horilla_theme/templates/base/auth/group_lines.html:94
+msgid "Previous Page"
+msgstr ""
+
+#: horilla_theme/templates/base/auth/group_lines.html:114
+msgid "Next Page"
+msgstr ""
+
+#: horilla_theme/templates/base/auth/password_change_form.html:20
+#: horilla_theme/templates/base/navbar_components/profile_section.html:55
+msgid "Change Password"
+msgstr ""
+
+#: horilla_theme/templates/base/auth/password_change_form.html:31
+msgid "Old password"
+msgstr ""
+
+#: horilla_theme/templates/base/auth/password_change_form.html:49
+#: horilla_theme/templates/base/auth/password_change_form.html:82
+#: horilla_theme/templates/base/auth/password_change_form.html:114
+#: horilla_theme/templates/base/auth/username_change_form.html:78
+#: horilla_theme/templates/login.html:95
+#: horilla_theme/templates/onboarding/user_creation.html:94
+#: horilla_theme/templates/onboarding/user_creation.html:106
+msgid "Show Password"
+msgstr ""
+
+#: horilla_theme/templates/base/auth/password_change_form.html:54
+#: horilla_theme/templates/base/auth/password_change_form.html:87
+#: horilla_theme/templates/base/auth/password_change_form.html:119
+#: horilla_theme/templates/base/auth/username_change_form.html:83
+#: horilla_theme/templates/login.html:100
+#: horilla_theme/templates/onboarding/user_creation.html:95
+#: horilla_theme/templates/onboarding/user_creation.html:107
+msgid "Hide Password"
+msgstr ""
+
+#: horilla_theme/templates/base/auth/password_change_form.html:64
+msgid "New Password"
+msgstr ""
+
+#: horilla_theme/templates/base/auth/password_change_form.html:97
+#: horilla_theme/templates/onboarding/user_creation.html:102
+msgid "Confirm Password"
+msgstr ""
+
+#: horilla_theme/templates/base/auth/password_change_form.html:133
+#: horilla_theme/templates/base/auth/username_change_form.html:97
+#: horilla_theme/templates/login.html:111
+msgid "Forgot Password ?"
+msgstr ""
+
+#: horilla_theme/templates/base/auth/password_change_form.html:146
+msgid "Save Password"
+msgstr ""
+
+#: horilla_theme/templates/base/auth/permission_accordion.html:28
+#: horilla_theme/templates/cbv/leave_types/detail_actions.html:23
+#: horilla_theme/templates/cbv/pipeline/onboarding/tasks.html:20
+msgid "Assign"
+msgstr ""
+
+#: horilla_theme/templates/base/auth/permission_accordion.html:43
+msgid "Permissions"
+msgstr ""
+
+#: horilla_theme/templates/base/auth/permission_lines.html:52
+msgid "First"
+msgstr ""
+
+#: horilla_theme/templates/base/auth/permission_lines.html:63
+msgid "Last"
+msgstr ""
+
+#: horilla_theme/templates/base/auth/permission_table.html:36
+msgid "Can create"
+msgstr ""
+
+#: horilla_theme/templates/base/auth/permission_table.html:41
+msgid "Can view"
+msgstr ""
+
+#: horilla_theme/templates/base/auth/permission_table.html:46
+msgid "Can edit"
+msgstr ""
+
+#: horilla_theme/templates/base/auth/permission_table.html:51
+msgid "Can delete"
+msgstr ""
+
+#: horilla_theme/templates/base/auth/username_change_form.html:20
+#: horilla_theme/templates/base/navbar_components/profile_section.html:48
+msgid "Change Username"
+msgstr ""
+
+#: horilla_theme/templates/base/auth/username_change_form.html:31
+msgid "Old Username"
+msgstr ""
+
+#: horilla_theme/templates/base/auth/username_change_form.html:46
+msgid "New Username"
+msgstr ""
+
+#: horilla_theme/templates/base/auth/username_change_form.html:61
+#: horilla_theme/templates/login.html:79
+#: horilla_theme/templates/onboarding/user_creation.html:90
+msgid "Password"
+msgstr ""
+
+#: horilla_theme/templates/base/auth/username_change_form.html:107
+#: horilla_theme/templates/generic/quick_actions.html:44
+#: horilla_theme/templates/leave/leave_type/leave_type_update.html:413
+msgid "Update"
+msgstr ""
+
+#: horilla_theme/templates/base/company/date.html:4
+msgid "Date Format"
+msgstr ""
+
+#: horilla_theme/templates/base/company/date.html:10
+msgid "Select Date Format:"
+msgstr ""
+
+#: horilla_theme/templates/base/company/date.html:14
+#: horilla_theme/templates/base/company/date.html:134
+msgid "Day, Month, Year (e.g., 30-12-2023)"
+msgstr ""
+
+#: horilla_theme/templates/base/company/date.html:15
+#: horilla_theme/templates/base/company/date.html:135
+msgid "Day, Month, Year (e.g., 30.12.2023)"
+msgstr ""
+
+#: horilla_theme/templates/base/company/date.html:16
+#: horilla_theme/templates/base/company/date.html:136
+msgid "Day, Month, Year (e.g., 30/12/2023)"
+msgstr ""
+
+#: horilla_theme/templates/base/company/date.html:17
+#: horilla_theme/templates/base/company/date.html:137
+msgid "Month, Day, Year (e.g., 12/30/2023)"
+msgstr ""
+
+#: horilla_theme/templates/base/company/date.html:18
+#: horilla_theme/templates/base/company/date.html:138
+msgid "Year, Month, Day (e.g., 2023-12-30)"
+msgstr ""
+
+#: horilla_theme/templates/base/company/date.html:19
+#: horilla_theme/templates/base/company/date.html:139
+msgid "Year, Month, Day (e.g., 2023/12/30)"
+msgstr ""
+
+#: horilla_theme/templates/base/company/date.html:20
+#: horilla_theme/templates/base/company/date.html:140
+msgid "Full Month Name, Day, Year (e.g., January 1, 2023)"
+msgstr ""
+
+#: horilla_theme/templates/base/company/date.html:21
+#: horilla_theme/templates/base/company/date.html:141
+msgid "Day, Full Month Name, Year (e.g., 1 January, 2023)"
+msgstr ""
+
+#: horilla_theme/templates/base/company/date.html:22
+#: horilla_theme/templates/base/company/date.html:142
+msgid "Abbreviated Month Name, Day, Year (e.g., Jan. 1, 2023)"
+msgstr ""
+
+#: horilla_theme/templates/base/company/date.html:23
+#: horilla_theme/templates/base/company/date.html:143
+msgid "Day, Abbreviated Month Name, Year (e.g., 1 Jan. 2023)"
+msgstr ""
+
+#: horilla_theme/templates/base/company/date.html:24
+#: horilla_theme/templates/base/company/date.html:144
+msgid ""
+"Full Day Name, Full Month Name, Day, Year (e.g., Monday, January 1, 2023)"
+msgstr ""
+
+#: horilla_theme/templates/base/company/date.html:28
+msgid "Save Date Format"
+msgstr ""
+
+#: horilla_theme/templates/base/company/date.html:33
+msgid "Current Date Format"
+msgstr ""
+
+#: horilla_theme/templates/base/company/date.html:63
+msgid "Time Format"
+msgstr ""
+
+#: horilla_theme/templates/base/company/date.html:98
+msgid "Select Time Format:"
+msgstr ""
+
+#: horilla_theme/templates/base/company/date.html:102
+#: horilla_theme/templates/base/company/date.html:159
+msgid "12 Hr. (e.g., 06:00 AM or 06:00 PM)"
+msgstr ""
+
+#: horilla_theme/templates/base/company/date.html:103
+#: horilla_theme/templates/base/company/date.html:160
+msgid "24 Hr. (e.g., 06:00 or 18:00)"
+msgstr ""
+
+#: horilla_theme/templates/base/company/date.html:107
+msgid "Save Time Format"
+msgstr ""
+
+#: horilla_theme/templates/base/company/date.html:112
+msgid "Current Time Format"
+msgstr ""
+
+#: horilla_theme/templates/base/dynamic_pagination/pagination_settings.html:8
+msgid "Default Records Per Page"
+msgstr ""
+
+#: horilla_theme/templates/base/dynamic_pagination/pagination_settings.html:9
+msgid "Default pagination for all views."
+msgstr ""
+
+#: horilla_theme/templates/base/dynamic_pagination/pagination_settings.html:13
+#: horilla_theme/templates/payroll/settings/settings.html:12
+msgid "Pagination"
+msgstr ""
+
+#: horilla_theme/templates/base/general_settings.html:4
+#: horilla_theme/templates/settings.html:26
+msgid "General"
+msgstr ""
+
+#: horilla_theme/templates/base/general_settings.html:21
+msgid "Employee Account Restrictions"
+msgstr ""
+
+#: horilla_theme/templates/base/general_settings.html:33
+#: horilla_theme/templates/offboarding/settings/settings.html:9
+msgid "Resignation Request"
+msgstr ""
+
+#: horilla_theme/templates/base/general_settings.html:45
+msgid "Time Runner"
+msgstr ""
+
+#: horilla_theme/templates/base/general_settings.html:56
+msgid "Notice Period"
+msgstr ""
+
+#: horilla_theme/templates/base/general_settings.html:67
+msgid "Badge Prefix"
+msgstr ""
+
+#: horilla_theme/templates/base/general_settings.html:78
+msgid "Encashment Redeem Condition"
+msgstr ""
+
+#: horilla_theme/templates/base/general_settings.html:89
+msgid "Employee History Tracking"
+msgstr ""
+
+#: horilla_theme/templates/base/general_settings.html:100
+msgid "Currency"
+msgstr ""
+
+#: horilla_theme/templates/base/install_biometric_attendance.html:3
+#: horilla_theme/templates/settings.html:402
+msgid "Biometric Attendance"
+msgstr ""
+
+#: horilla_theme/templates/base/install_biometric_attendance.html:10
+msgid "Activate Biometric Attendance"
+msgstr ""
+
+#: horilla_theme/templates/base/install_biometric_attendance.html:11
+msgid ""
+"Once you enable this option, a new submenu called Biometric Devices will be "
+"added under the Attendance menu."
+msgstr ""
+
+#: horilla_theme/templates/base/install_biometric_attendance.html:15
+msgid "Activated"
+msgstr ""
+
+#: horilla_theme/templates/base/install_biometric_attendance.html:15
+msgid "Activate"
+msgstr ""
+
+#: horilla_theme/templates/base/navbar_components/profile_section.html:20
+msgid "Online"
+msgstr ""
+
+#: horilla_theme/templates/base/navbar_components/profile_section.html:20
+msgid "Offline"
+msgstr ""
+
+#: horilla_theme/templates/base/navbar_components/profile_section.html:41
+msgid "My Profile"
+msgstr ""
+
+#: horilla_theme/templates/base/navbar_components/profile_section.html:65
+msgid "Logout"
+msgstr ""
+
+#: horilla_theme/templates/biometric/list_employees_biometric.html:40
+#: horilla_theme/templates/biometric/list_employees_cosec_biometric.html:21
+#: horilla_theme/templates/biometric_users/dahua/list_dahua_employees.html:21
+msgid "User ID"
+msgstr ""
+
+#: horilla_theme/templates/biometric/list_employees_biometric.html:43
+#: horilla_theme/templates/biometric_users/dahua/list_dahua_employees.html:24
+#: horilla_theme/templates/biometric_users/etimeoffice/list_etimeoffice_employees.html:24
+#: horilla_theme/templates/payroll/payslip/individual_payslip_summery.html:66
+msgid "Badge ID"
+msgstr ""
+
+#: horilla_theme/templates/biometric/list_employees_biometric.html:46
+msgid "Fingerprint"
+msgstr ""
+
+#: horilla_theme/templates/biometric/list_employees_biometric.html:49
+#: horilla_theme/templates/biometric/list_employees_cosec_biometric.html:50
+#: horilla_theme/templates/biometric_users/dahua/list_dahua_employees.html:27
+#: horilla_theme/templates/biometric_users/etimeoffice/list_etimeoffice_employees.html:27
+msgid "Work Email"
+msgstr ""
+
+#: horilla_theme/templates/biometric/list_employees_biometric.html:267
+#: horilla_theme/templates/biometric/list_employees_cosec_biometric.html:123
+#: horilla_theme/templates/biometric/list_employees_cosec_biometric.html:151
+msgid "Do you want to delete this user from the biometric device?"
+msgstr ""
+
+#: horilla_theme/templates/biometric/list_employees_biometric.html:283
+#: horilla_theme/templates/biometric/list_employees_cosec_biometric.html:181
+#: horilla_theme/templates/biometric_users/dahua/list_dahua_employees.html:101
+#: horilla_theme/templates/biometric_users/etimeoffice/list_etimeoffice_employees.html:101
+#: horilla_theme/templates/cbv/attendance_request/attendance_request_tab.html:349
+#: horilla_theme/templates/generic/group_by_table.html:342
+#: horilla_theme/templates/generic/horilla_card.html:127
+#: horilla_theme/templates/generic/horilla_list_table.html:308
+#: horilla_theme/templates/policies/records.html:76
+#: horilla_theme/templates/skill_zone/skill_zone_list.html:252
+#: horilla_theme/templates/skill_zone/skill_zone_list.html:298
+#: horilla_theme/templates/survey/survey_card.html:136
+#: horilla_theme/templates/survey/template_accordion.html:184
+msgid "No records available at the moment"
+msgstr ""
+
+#: horilla_theme/templates/biometric/list_employees_cosec_biometric.html:24
+msgid "Reference ID"
+msgstr ""
+
+#: horilla_theme/templates/biometric/list_employees_cosec_biometric.html:27
+msgid "Active"
+msgstr ""
+
+#: horilla_theme/templates/biometric/list_employees_cosec_biometric.html:32
+msgid "Finger Count"
+msgstr ""
+
+#: horilla_theme/templates/biometric/list_employees_cosec_biometric.html:34
+msgid "Face Count"
+msgstr ""
+
+#: horilla_theme/templates/biometric/list_employees_cosec_biometric.html:37
+msgid "Biometric Template"
+msgstr ""
+
+#: horilla_theme/templates/biometric/list_employees_cosec_biometric.html:41
+msgid "Card Count"
+msgstr ""
+
+#: horilla_theme/templates/biometric/list_employees_cosec_biometric.html:44
+msgid "Valid Active"
+msgstr ""
+
+#: horilla_theme/templates/biometric/list_employees_cosec_biometric.html:47
+msgid "Valid End Date"
+msgstr ""
+
+#: horilla_theme/templates/biometric/list_employees_cosec_biometric.html:84
+#: horilla_theme/templates/biometric/list_employees_cosec_biometric.html:105
+#: horilla_theme/templates/feedback/answer/feedback_answer.html:60
+#: horilla_theme/templates/survey_preview_form.html:169
+msgid "No"
+msgstr ""
+
+#: horilla_theme/templates/biometric/list_employees_cosec_biometric.html:95
+msgid "Not Enrolled"
+msgstr ""
+
+#: horilla_theme/templates/biometric/list_employees_cosec_biometric.html:124
+msgid "Enable Face"
+msgstr ""
+
+#: horilla_theme/templates/biometric/nav_employees_biometric.html:72
+#: horilla_theme/templates/biometric/nav_employees_cosec_biometric.html:72
+#: horilla_theme/templates/biometric_users/dahua/nav_dahua_employees.html:81
+#: horilla_theme/templates/candidate/individual_view_note.html:21
+#: horilla_theme/templates/cbv/allocations/asset/assets.html:51
+#: horilla_theme/templates/cbv/allocations/leave/types.html:51
+#: horilla_theme/templates/cbv/allocations/payroll/allowance/allowance_view.html:51
+#: horilla_theme/templates/cbv/allocations/payroll/deduction/deduction_view.html:51
+#: horilla_theme/templates/cbv/candidates/profile_interview_tab.html:28
+#: horilla_theme/templates/cbv/candidates/profile_interview_tab.html:150
+#: horilla_theme/templates/helpdesk/faq/load_faq.html:115
+#: horilla_theme/templates/horilla_automations/load_automation.html:79
+#: horilla_theme/templates/horilla_widgets/horilla_multiselect_widget.html:220
+#: horilla_theme/templates/leave/leave_allocation_request/leave_allocation_comment.html:93
+#: horilla_theme/templates/leave/leave_request/leave_comment.html:92
+#: horilla_theme/templates/offboarding/note/view_notes.html:102
+#: horilla_theme/templates/payroll/reimbursement/reimbursement_comment.html:98
+#: horilla_theme/templates/pipeline/pipeline_components/view_note.html:127
+#: horilla_theme/templates/shift_request/htmx/shift_comment.html:102
+#: horilla_theme/templates/tabs/note_tab.html:68
+#: horilla_theme/templates/tabs/note_tab.html:153
+#: horilla_theme/templates/task/new/forms/quick_create_task_form.html:44
+#: horilla_theme/templates/work_type_request/htmx/work_type_comment.html:101
+msgid "Add"
+msgstr ""
+
+#: horilla_theme/templates/biometric_users/dahua/list_dahua_employees.html:68
+#: horilla_theme/templates/biometric_users/etimeoffice/list_etimeoffice_employees.html:68
+msgid "Are you sure you want to delete this user?"
+msgstr ""
+
+#: horilla_theme/templates/biometric_users/dahua/nav_dahua_employees.html:48
+#: horilla_theme/templates/biometric_users/etimeoffice/nav_etimeoffice_employees.html:48
+msgid "Map Employee"
+msgstr ""
+
+#: horilla_theme/templates/biometric_users/etimeoffice/list_etimeoffice_employees.html:21
+msgid "Emp Code"
+msgstr ""
+
+#: horilla_theme/templates/candidate/application_form.html:54
+msgid "Application Form"
+msgstr ""
+
+#: horilla_theme/templates/candidate/application_form.html:64
+msgid "Job Description"
+msgstr ""
+
+#: horilla_theme/templates/candidate/application_form.html:99
+#: horilla_theme/templates/horilla_automations/load_automation.html:49
+#: horilla_theme/templates/horilla_automations/load_automation.html:61
+#: horilla_theme/templates/report/employee_report.html:48
+#: horilla_theme/templates/report/recruitment_report.html:78
+msgid "Email"
+msgstr ""
+
+#: horilla_theme/templates/candidate/application_form.html:109
+#: horilla_theme/templates/onboarding/employee_creation.html:79
+#: horilla_theme/templates/report/employee_report.html:63
+#: horilla_theme/templates/report/recruitment_report.html:47
+msgid "Phone"
+msgstr ""
+
+#: horilla_theme/templates/candidate/application_form.html:125
+msgid "Choose Job Position"
+msgstr ""
+
+#: horilla_theme/templates/candidate/application_form.html:139
+msgid "Portfolio"
+msgstr ""
+
+#: horilla_theme/templates/candidate/application_form.html:150
+#: horilla_theme/templates/onboarding/employee_creation.html:127
+#: horilla_theme/templates/report/employee_report.html:67
+#: horilla_theme/templates/report/recruitment_report.html:83
+#: horilla_theme/templates/tabs/personal_tab.html:54
+msgid "Gender"
+msgstr ""
+
+#: horilla_theme/templates/candidate/application_form.html:162
+#: horilla_theme/templates/cbv/candidates/profile_about_tab.html:18
+#: horilla_theme/templates/onboarding/employee_bank_details.html:97
+#: horilla_theme/templates/onboarding/employee_creation.html:86
+#: horilla_theme/templates/tabs/personal_tab.html:58
+msgid "Address"
+msgstr ""
+
+#: horilla_theme/templates/candidate/application_form.html:178
+msgid "Profile Image"
+msgstr ""
+
+#: horilla_theme/templates/candidate/application_form.html:202
+#: horilla_theme/templates/pipeline/matching_resumes.html:30
+#: horilla_theme/templates/pipeline/matching_resumes.html:37
+#: horilla_theme/templates/skill_zone/skill_zone_list.html:128
+#: horilla_theme/templates/skill_zone/skill_zone_list.html:165
+msgid "Resume"
+msgstr ""
+
+#: horilla_theme/templates/candidate/application_form.html:227
+#: horilla_theme/templates/cbv/candidates/profile_about_tab.html:26
+#: horilla_theme/templates/employee/create_form/personal_info_as_p.html:43
+#: horilla_theme/templates/employee/update_form/bank_info_as_p.html:43
+#: horilla_theme/templates/report/employee_report.html:52
+#: horilla_theme/templates/report/recruitment_report.html:51
+#: horilla_theme/templates/tabs/personal_tab.html:62
+msgid "Country"
+msgstr ""
+
+#: horilla_theme/templates/candidate/application_form.html:237
+#: horilla_theme/templates/cbv/candidates/profile_about_tab.html:34
+#: horilla_theme/templates/employee/create_form/personal_info_as_p.html:60
+#: horilla_theme/templates/employee/update_form/bank_info_as_p.html:52
+#: horilla_theme/templates/report/recruitment_report.html:88
+#: horilla_theme/templates/tabs/personal_tab.html:66
+msgid "State"
+msgstr ""
+
+#: horilla_theme/templates/candidate/application_form.html:248
+#: horilla_theme/templates/cbv/candidates/profile_about_tab.html:42
+#: horilla_theme/templates/onboarding/employee_bank_details.html:120
+#: horilla_theme/templates/tabs/personal_tab.html:70
+msgid "City"
+msgstr ""
+
+#: horilla_theme/templates/candidate/application_form.html:258
+msgid "Zip Code"
+msgstr ""
+
+#: horilla_theme/templates/candidate/application_form.html:273
+msgid "Submit Application"
+msgstr ""
+
+#: horilla_theme/templates/candidate/document.html:40
+#: horilla_theme/templates/helpdesk/ticket/ticket_detail.html:246
+#: horilla_theme/templates/tabs/document_tab.html:4
+msgid "Documents"
+msgstr ""
+
+#: horilla_theme/templates/candidate/document.html:140
+#: horilla_theme/templates/cbv/documents/document_list.html:106
+#: horilla_theme/templates/tabs/document_tab.html:102
+msgid "No Document"
+msgstr ""
+
+#: horilla_theme/templates/candidate/document.html:152
+#: horilla_theme/templates/candidate/document.html:170
+#: horilla_theme/templates/candidate/document.html:190
+#: horilla_theme/templates/cbv/attendances/ot_tab_action.html:30
+#: horilla_theme/templates/cbv/attendances/ot_tab_action.html:40
+#: horilla_theme/templates/cbv/attendances/ot_tab_action.html:70
+#: horilla_theme/templates/cbv/documents/document_list.html:122
+#: horilla_theme/templates/cbv/documents/document_list.html:141
+#: horilla_theme/templates/cbv/documents/document_list.html:162
+#: horilla_theme/templates/cbv/leave_requests/leave_request_detail_actions.html:6
+#: horilla_theme/templates/cbv/leave_requests/leave_request_detail_actions.html:14
+#: horilla_theme/templates/cbv/leave_requests/leave_request_detail_actions.html:20
+#: horilla_theme/templates/cbv/leave_requests/leave_request_detail_actions.html:23
+#: horilla_theme/templates/cbv/request_and_allocation/asset_request_detail_action.html:9
+#: horilla_theme/templates/cbv/shift_request/confirmations.html:16
+#: horilla_theme/templates/cbv/shift_request/confirmations.html:25
+#: horilla_theme/templates/cbv/work_type_request/confirmation.html:11
+#: horilla_theme/templates/cbv/work_type_request/confirmation.html:13
+#: horilla_theme/templates/cbv/work_type_request/confirmation.html:16
+#: horilla_theme/templates/cbv/work_type_request/confirmation.html:20
+#: horilla_theme/templates/documents/requests.html:133
+#: horilla_theme/templates/requests/attendance/individual_view.html:65
+#: horilla_theme/templates/tabs/document_tab.html:118
+#: horilla_theme/templates/tabs/document_tab.html:137
+#: horilla_theme/templates/tabs/document_tab.html:158
+msgid "Approve"
+msgstr ""
+
+#: horilla_theme/templates/candidate/document.html:161
+#: horilla_theme/templates/candidate/document.html:180
+#: horilla_theme/templates/candidate/document.html:197
+#: horilla_theme/templates/candidate/document.html:316
+#: horilla_theme/templates/cbv/documents/document_list.html:133
+#: horilla_theme/templates/cbv/documents/document_list.html:153
+#: horilla_theme/templates/cbv/documents/document_list.html:169
+#: horilla_theme/templates/cbv/leave_requests/leave_request_detail_actions.html:52
+#: horilla_theme/templates/cbv/leave_requests/leave_request_detail_actions.html:55
+#: horilla_theme/templates/cbv/leave_requests/leave_request_detail_actions.html:61
+#: horilla_theme/templates/cbv/leave_requests/leave_request_detail_actions.html:64
+#: horilla_theme/templates/cbv/request_and_allocation/asset_request_detail_action.html:12
+#: horilla_theme/templates/cbv/request_and_allocation/asset_request_detail_action.html:13
+#: horilla_theme/templates/cbv/shift_request/confirmations.html:36
+#: horilla_theme/templates/cbv/shift_request/confirmations.html:45
+#: horilla_theme/templates/cbv/work_type_request/confirmation.html:25
+#: horilla_theme/templates/cbv/work_type_request/confirmation.html:27
+#: horilla_theme/templates/cbv/work_type_request/confirmation.html:30
+#: horilla_theme/templates/cbv/work_type_request/confirmation.html:34
+#: horilla_theme/templates/documents/requests.html:149
+#: horilla_theme/templates/horilla_theme/components/dashboard.html:221
+#: horilla_theme/templates/requests/attendance/individual_view.html:60
+#: horilla_theme/templates/tabs/document_tab.html:129
+#: horilla_theme/templates/tabs/document_tab.html:149
+#: horilla_theme/templates/tabs/document_tab.html:165
+msgid "Reject"
+msgstr ""
+
+#: horilla_theme/templates/candidate/document.html:207
+#: horilla_theme/templates/cbv/documents/document_list.html:179
+#: horilla_theme/templates/tabs/document_tab.html:175
+msgid "Upload Document"
+msgstr ""
+
+#: horilla_theme/templates/candidate/document.html:224
+#: horilla_theme/templates/cbv/documents/document_list.html:196
+#: horilla_theme/templates/documents/requests.html:23
+#: horilla_theme/templates/documents/requests.html:156
+#: horilla_theme/templates/tabs/document_tab.html:192
+msgid "Are you sure you want to delete this Document Request?"
+msgstr ""
+
+#: horilla_theme/templates/candidate/document.html:261
+#: horilla_theme/templates/tabs/document_tab.html:229
+msgid "No documents have been uploaded yet."
+msgstr ""
+
+#: horilla_theme/templates/candidate/document.html:279
+#: horilla_theme/templates/documents/document_requests.html:29
+#: horilla_theme/templates/documents/requests.html:7
+#: horilla_theme/templates/helpdesk/ticket/ticket_detail.html:576
+#: horilla_theme/templates/tabs/document_tab.html:247
+msgid "View File"
+msgstr ""
+
+#: horilla_theme/templates/candidate/history.html:69
+#: horilla_theme/templates/generic/horilla_history_view.html:57
+#: horilla_theme/templates/tabs/history.html:59
+msgid "Changes"
+msgstr ""
+
+#: horilla_theme/templates/candidate/history.html:97
+#: horilla_theme/templates/generic/horilla_history_view.html:102
+#: horilla_theme/templates/tabs/history.html:87
+msgid "No history found."
+msgstr ""
+
+#: horilla_theme/templates/candidate/individual_view_note.html:5
+#: horilla_theme/templates/pipeline/pipeline_components/view_note.html:102
+#: horilla_theme/templates/tabs/note_tab.html:55
+#: horilla_theme/templates/tabs/note_tab.html:145
+msgid "Notes"
+msgstr ""
+
+#: horilla_theme/templates/candidate/individual_view_note.html:15
+#: horilla_theme/templates/pipeline/pipeline_components/view_note.html:117
+#: horilla_theme/templates/tabs/note_tab.html:63
+#: horilla_theme/templates/tabs/note_tab.html:148
+msgid "Add notes"
+msgstr ""
+
+#: horilla_theme/templates/candidate/individual_view_note.html:35
+#: horilla_theme/templates/offboarding/note/view_notes.html:120
+#: horilla_theme/templates/pipeline/pipeline_components/view_note.html:145
+#: horilla_theme/templates/tabs/note_tab.html:82
+msgid "Are you sure you want to delete this note?"
+msgstr ""
+
+#: horilla_theme/templates/candidate/individual_view_note.html:84
+#: horilla_theme/templates/offboarding/note/view_notes.html:212
+msgid "stage"
+msgstr ""
+
+#: horilla_theme/templates/candidate/individual_view_note.html:97
+msgid "No notes have been added for this candidate"
+msgstr ""
+
+#: horilla_theme/templates/candidate/rating_tab.html:47
+msgid "No rating found."
+msgstr ""
+
+#: horilla_theme/templates/cbv/allocations/asset/allocation_status.html:6
+msgid "Allocated"
+msgstr ""
+
+#: horilla_theme/templates/cbv/allocations/asset/allocation_status.html:11
+msgid "Available"
+msgstr ""
+
+#: horilla_theme/templates/cbv/allocations/asset/asset_list.html:10
+#: horilla_theme/templates/report/asset_report.html:75
+msgid "Category"
+msgstr ""
+
+#: horilla_theme/templates/cbv/allocations/asset/asset_list.html:11
+msgid "Tracking"
+msgstr ""
+
+#: horilla_theme/templates/cbv/allocations/asset/asset_list.html:25
+#: horilla_theme/templates/cbv/allocations/leave/type_list.html:26
+#: horilla_theme/templates/cbv/allocations/payroll/allowance/allowance_list.html:25
+#: horilla_theme/templates/cbv/allocations/payroll/deduction/deduction_list.html:25
+msgid "Allocate"
+msgstr ""
+
+#: horilla_theme/templates/cbv/allocations/employee/forms.html:15
+#: horilla_theme/templates/cbv/allocations/summary.html:33
+#: horilla_theme/templates/employee/create_form/form_view.html:24
+#: horilla_theme/templates/employee/update_form/form_view.html:12
+msgid "Personal Info"
+msgstr ""
+
+#: horilla_theme/templates/cbv/allocations/employee/forms.html:26
+#: horilla_theme/templates/cbv/allocations/summary.html:45
+#: horilla_theme/templates/employee/update_form/form_view.html:15
+msgid "Work Info"
+msgstr ""
+
+#: horilla_theme/templates/cbv/allocations/employee/forms.html:37
+#: horilla_theme/templates/cbv/allocations/summary.html:57
+#: horilla_theme/templates/employee/update_form/form_view.html:18
+msgid "Bank Info"
+msgstr ""
+
+#: horilla_theme/templates/cbv/allocations/leave/type_list.html:11
+#: horilla_theme/templates/leave/compensatory_leave/compensatory_leave_type.html:76
+#: horilla_theme/templates/leave/leave_type/leave_type_creation.html:169
+#: horilla_theme/templates/leave/leave_type/leave_type_update.html:171
+msgid "Total Days"
+msgstr ""
+
+#: horilla_theme/templates/cbv/allocations/summary.html:9
+msgid "Dashboard Access"
+msgstr ""
+
+#: horilla_theme/templates/cbv/allocations/summary.html:71
+msgid "Leave Policy"
+msgstr ""
+
+#: horilla_theme/templates/cbv/allocations/summary.html:90
+msgid "Allowance"
+msgstr ""
+
+#: horilla_theme/templates/cbv/allocations/summary.html:100
+#: horilla_theme/templates/payroll/payslip/individual_payslip_summery.html:148
+msgid "Deductions"
+msgstr ""
+
+#: horilla_theme/templates/cbv/allowance_deduction/allowance/detail_view_actions.html:15
+msgid "Do you want to delete this allowance ?"
+msgstr ""
+
+#: horilla_theme/templates/cbv/allowance_deduction/allowance_deduction.html:28
+msgid ""
+"This employee doesn't have an active contract. Please check the employee's "
+"contract"
+msgstr ""
+
+#: horilla_theme/templates/cbv/allowance_deduction/deductions/detail_view_actions.html:16
+msgid "Do you want to delete this deduction?"
+msgstr ""
+
+#: horilla_theme/templates/cbv/asset/detail_action.html:16
+msgid "Do you want to delete this asset ?"
+msgstr ""
+
+#: horilla_theme/templates/cbv/asset_batch_no/detail_actions.html:16
+msgid "Do you want to delete this batch number ?"
+msgstr ""
+
+#: horilla_theme/templates/cbv/assigned_leave/assigned_leave_detail_actions.html:17
+msgid "Are you sure you want to delete this assigned leave request?"
+msgstr ""
+
+#: horilla_theme/templates/cbv/attendance_activity/detail_delete_action.html:7
+#: horilla_theme/templates/cbv/company_leaves/detail_view_actions.html:15
+#: horilla_theme/templates/cbv/leave_allocation_request/detail_action.html:29
+#: horilla_theme/templates/cbv/multiple_approval_condition/detail_action.html:15
+msgid "Are you sure you want to delete ?"
+msgstr ""
+
+#: horilla_theme/templates/cbv/attendance_request/attendance_request_tab.html:127
+#: horilla_theme/templates/cbv/recruitment_survey/option_col.html:6
+#: horilla_theme/templates/generic/group_by_table.html:131
+#: horilla_theme/templates/generic/horilla_list_table.html:130
+msgid "Options"
+msgstr ""
+
+#: horilla_theme/templates/cbv/attendance_request/attendance_request_tab.html:149
+#: horilla_theme/templates/generic/group_by_table.html:159
+#: horilla_theme/templates/generic/horilla_list_table.html:157
+msgid "Select Row"
+msgstr ""
+
+#: horilla_theme/templates/cbv/attendances/ot_tab_action.html:25
+#: horilla_theme/templates/documents/requests.html:86
+#: horilla_theme/templates/helpdesk/ticket/ticket_claim_requests.html:68
+#: horilla_theme/templates/leave/leave_request/dashboard_leave_requests.html:239
+msgid "Approved"
+msgstr ""
+
+#: horilla_theme/templates/cbv/attendances/ot_tab_action.html:35
+#: horilla_theme/templates/cbv/attendances/ot_tab_action.html:76
+msgid "Approve Overtime"
+msgstr ""
+
+#: horilla_theme/templates/cbv/attendances/ot_tab_action.html:45
+msgid "Approve Overtime (OT < min.OT)"
+msgstr ""
+
+#: horilla_theme/templates/cbv/attendances/ot_tab_action.html:50
+msgid "This does not satisfy the minimum OT requirement!"
+msgstr ""
+
+#: horilla_theme/templates/cbv/attendances/ot_tab_action.html:61
+msgid "Approved!"
+msgstr ""
+
+#: horilla_theme/templates/cbv/attendances/ot_tab_action.html:62
+msgid "Your action has been approved."
+msgstr ""
+
+#: horilla_theme/templates/cbv/attendances/ot_tab_action.html:85
+msgid "Are you sure you want to delete this attendance?"
+msgstr ""
+
+#: horilla_theme/templates/cbv/attendances/validate_tab_action.html:18
+msgid "Validate"
+msgstr ""
+
+#: horilla_theme/templates/cbv/attendances/validate_tab_action.html:22
+#: horilla_theme/templates/cbv/attendances/validated_tab_action.html:14
+#: horilla_theme/templates/cbv/late_come_and_early_out/detail_action.html:16
+msgid "Are you sure want to delete this attendance?"
+msgstr ""
+
+#: horilla_theme/templates/cbv/candidates/profile_about_tab.html:6
+#: horilla_theme/templates/tabs/personal_tab.html:48
+msgid "Personal Information"
+msgstr ""
+
+#: horilla_theme/templates/cbv/candidates/profile_about_tab.html:10
+#: horilla_theme/templates/tabs/personal_tab.html:50
+msgid "Date of birth"
+msgstr ""
+
+#: horilla_theme/templates/cbv/candidates/profile_about_tab.html:21
+#: horilla_theme/templates/cbv/candidates/profile_about_tab.html:29
+#: horilla_theme/templates/cbv/candidates/profile_about_tab.html:37
+#: horilla_theme/templates/cbv/candidates/profile_about_tab.html:45
+#: horilla_theme/templates/cbv/candidates/profile_about_tab.html:68
+#: horilla_theme/templates/cbv/candidates/profile_about_tab.html:76
+#: horilla_theme/templates/cbv/candidates/profile_about_tab.html:84
+#: horilla_theme/templates/tabs/personal_tab.html:59
+#: horilla_theme/templates/tabs/personal_tab.html:63
+#: horilla_theme/templates/tabs/personal_tab.html:67
+#: horilla_theme/templates/tabs/personal_tab.html:71
+#: horilla_theme/templates/tabs/personal_tab.html:75
+#: horilla_theme/templates/tabs/personal_tab.html:79
+#: horilla_theme/templates/tabs/personal_tab.html:83
+#: horilla_theme/templates/tabs/personal_tab.html:87
+#: horilla_theme/templates/tabs/personal_tab.html:91
+#: horilla_theme/templates/task/new/task_list_view.html:140
+msgid "None"
+msgstr ""
+
+#: horilla_theme/templates/cbv/candidates/profile_about_tab.html:53
+msgid "Recruitment Information"
+msgstr ""
+
+#: horilla_theme/templates/cbv/candidates/profile_about_tab.html:57
+#: horilla_theme/templates/report/recruitment_report.html:57
+#: horilla_theme/templates/report/recruitment_report.html:113
+#: horilla_theme/templates/report/recruitment_report.html:118
+#: horilla_theme/templates/report/recruitment_report.html:183
+#: horilla_theme/templates/report/recruitment_report.html:249
+#: horilla_theme/templates/settings.html:192
+msgid "Recruitment"
+msgstr ""
+
+#: horilla_theme/templates/cbv/candidates/profile_about_tab.html:65
+msgid "Applied Position"
+msgstr ""
+
+#: horilla_theme/templates/cbv/candidates/profile_about_tab.html:73
+msgid "Current Stage"
+msgstr ""
+
+#: horilla_theme/templates/cbv/candidates/profile_about_tab.html:81
+#: horilla_theme/templates/skill_zone/skill_zone_nav.html:134
+msgid "Offer Letter Status"
+msgstr ""
+
+#: horilla_theme/templates/cbv/candidates/profile_about_tab.html:89
+#: horilla_theme/templates/report/recruitment_report.html:66
+msgid "Is Hired"
+msgstr ""
+
+#: horilla_theme/templates/cbv/candidates/profile_interview_tab.html:9
+#: horilla_theme/templates/cbv/candidates/profile_interview_tab.html:131
+#: horilla_theme/templates/tabs/scheduled_interview.html:64
+msgid "Scheduled Interviews"
+msgstr ""
+
+#: horilla_theme/templates/cbv/candidates/profile_interview_tab.html:15
+#: horilla_theme/templates/cbv/candidates/profile_interview_tab.html:137
+msgid "Schedule Interview"
+msgstr ""
+
+#: horilla_theme/templates/cbv/candidates/profile_interview_tab.html:49
+#: horilla_theme/templates/cbv/pipeline/interview_template.html:70
+#: horilla_theme/templates/tabs/scheduled_interview.html:114
+msgid "Time"
+msgstr ""
+
+#: horilla_theme/templates/cbv/candidates/profile_interview_tab.html:54
+msgid "Interviewers"
+msgstr ""
+
+#: horilla_theme/templates/cbv/candidates/profile_interview_tab.html:66
+#: horilla_theme/templates/cbv/interview/status_custom_col.html:8
+#: horilla_theme/templates/tabs/scheduled_interview.html:135
+msgid "Interview Completed"
+msgstr ""
+
+#: horilla_theme/templates/cbv/candidates/profile_interview_tab.html:71
+#: horilla_theme/templates/cbv/interview/status_custom_col.html:18
+#: horilla_theme/templates/tabs/scheduled_interview.html:152
+msgid "Interview Today"
+msgstr ""
+
+#: horilla_theme/templates/cbv/candidates/profile_interview_tab.html:76
+#: horilla_theme/templates/cbv/interview/status_custom_col.html:13
+#: horilla_theme/templates/tabs/scheduled_interview.html:142
+msgid "Expired Interview"
+msgstr ""
+
+#: horilla_theme/templates/cbv/candidates/profile_interview_tab.html:81
+#: horilla_theme/templates/cbv/interview/status_custom_col.html:26
+#: horilla_theme/templates/tabs/scheduled_interview.html:147
+msgid "Upcoming Interview"
+msgstr ""
+
+#: horilla_theme/templates/cbv/candidates/profile_interview_tab.html:166
+msgid "No interviews are scheduled for this candidate."
+msgstr ""
+
+#: horilla_theme/templates/cbv/candidates/profile_survey_tab.html:35
+#: horilla_theme/templates/cbv/candidates/profile_survey_tab.html:37
+#: horilla_theme/templates/cbv/candidates/profile_survey_tab.html:39
+#: horilla_theme/templates/cbv/candidates/profile_survey_tab.html:41
+#: horilla_theme/templates/feedback/answer/feedback_answer.html:34
+#: horilla_theme/templates/feedback/answer/feedback_answer.html:37
+#: horilla_theme/templates/feedback/answer/feedback_answer.html:40
+#: horilla_theme/templates/feedback/answer/feedback_answer.html:43
+#: horilla_theme/templates/feedback/answer/feedback_answer_view.html:40
+#: horilla_theme/templates/feedback/answer/feedback_answer_view.html:42
+#: horilla_theme/templates/feedback/answer/feedback_answer_view.html:44
+#: horilla_theme/templates/feedback/answer/feedback_answer_view.html:46
+msgid "Stars"
+msgstr ""
+
+#: horilla_theme/templates/cbv/candidates/profile_survey_tab.html:43
+#: horilla_theme/templates/feedback/answer/feedback_answer.html:46
+#: horilla_theme/templates/feedback/answer/feedback_answer_view.html:48
+msgid "Star"
+msgstr ""
+
+#: horilla_theme/templates/cbv/candidates/profile_survey_tab.html:60
+msgid "No survey templates have been established yet."
+msgstr ""
+
+#: horilla_theme/templates/cbv/contracts/cal_leave_amount.html:5
+msgid "Calculate Leave Amount"
+msgstr ""
+
+#: horilla_theme/templates/cbv/contracts/cal_leave_amount.html:7
+msgid "Deduction Amount For One Leave"
+msgstr ""
+
+#: horilla_theme/templates/cbv/contracts/detail_action.html:15
+msgid "Do you want to delete this Contract?"
+msgstr ""
+
+#: horilla_theme/templates/cbv/contracts/note.html:4
+msgid "Note"
+msgstr ""
+
+#: horilla_theme/templates/cbv/disciplinary_actions/detail_action.html:17
+msgid "Are you sure you want to delete this disciplinary action?"
+msgstr ""
+
+#: horilla_theme/templates/cbv/documents/document_list.html:252
+msgid "No Documents available at the moment"
+msgstr ""
+
+#: horilla_theme/templates/cbv/exit_process/detail_view_tasks.html:26
+#: horilla_theme/templates/task/new/task_list_view.html:88
+msgid "Tasks"
+msgstr ""
+
+#: horilla_theme/templates/cbv/exit_process/stage_order.html:4
+#: horilla_theme/templates/cbv/pipeline/onboarding/stage_order.html:4
+#: horilla_theme/templates/cbv/pipeline/stage_order.html:4
+msgid "Update Stage Order"
+msgstr ""
+
+#: horilla_theme/templates/cbv/holidays/detail_view_actions.html:15
+#: horilla_theme/templates/cbv/restricted_days/detail_action.html:17
+msgid "Are you sure you want to delete?"
+msgstr ""
+
+#: horilla_theme/templates/cbv/key_results/detail_view_actions.html:14
+msgid "Do you want to delete this Key result?"
+msgstr ""
+
+#: horilla_theme/templates/cbv/late_come_and_early_out/detail_action.html:12
+#: horilla_theme/templates/cbv/leave_requests/leave_request_detail_actions.html:34
+#: horilla_theme/templates/cbv/leave_requests/leave_request_detail_actions.html:42
+msgid "Penalty"
+msgstr ""
+
+#: horilla_theme/templates/cbv/leave_types/detail_actions.html:27
+msgid "Are you sure you want to delete this leave type?"
+msgstr ""
+
+#: horilla_theme/templates/cbv/meetings/detail_action.html:16
+msgid "Are you sure to delete this meeting?"
+msgstr ""
+
+#: horilla_theme/templates/cbv/my_leave_request/detail_leave_actions.html:14
+msgid "Are you sure you want to delete this leave request?"
+msgstr ""
+
+#: horilla_theme/templates/cbv/period/detail_view_actions.html:16
+msgid "Do you want to delete this period ?"
+msgstr ""
+
+#: horilla_theme/templates/cbv/pipeline/candidate_column.html:55
+msgid "INTERVIEW : Today at"
+msgstr ""
+
+#: horilla_theme/templates/cbv/pipeline/candidate_column.html:56
+msgid "with"
+msgstr ""
+
+#: horilla_theme/templates/cbv/pipeline/interview_template.html:68
+msgid "Sl No."
+msgstr ""
+
+#: horilla_theme/templates/cbv/pipeline/interview_template.html:84
+msgid "Completed"
+msgstr ""
+
+#: horilla_theme/templates/cbv/pipeline/interview_template.html:86
+msgid "Pending"
+msgstr ""
+
+#: horilla_theme/templates/cbv/pipeline/stages.html:27
+msgid "Bulk mail"
+msgstr ""
+
+#: horilla_theme/templates/cbv/projects/project_details.html:111
+msgid "Members"
+msgstr ""
+
+#: horilla_theme/templates/cbv/projects/project_details.html:146
+msgid "No Description Available"
+msgstr ""
+
+#: horilla_theme/templates/cbv/projects/project_tab.html:13
+msgid "'s Projects"
+msgstr ""
+
+#: horilla_theme/templates/cbv/projects/project_tab.html:27
+msgid "View Project"
+msgstr ""
+
+#: horilla_theme/templates/cbv/projects/project_tab.html:57
+msgid "No projects assigned to this employee."
+msgstr ""
+
+#: horilla_theme/templates/cbv/recruitment_survey/survey_form.html:12
+msgid "Add more options.."
+msgstr ""
+
+#: horilla_theme/templates/cbv/reimbursements/forms.html:18
+msgid "CFD"
+msgstr ""
+
+#: horilla_theme/templates/cbv/request_and_allocation/asset_request_detail_action.html:12
+#: horilla_theme/templates/cbv/shift_request/confirmations.html:41
+#: horilla_theme/templates/cbv/work_type_request/confirmation.html:31
+msgid "Do you want to reject this request?"
+msgstr ""
+
+#: horilla_theme/templates/cbv/rotating_shift/rotating_shift_detail_actions.html:14
+msgid "Do you want to archive this rotating shift assign?"
+msgstr ""
+
+#: horilla_theme/templates/cbv/rotating_shift/rotating_shift_detail_actions.html:16
+msgid "Do you want to un-archive this rotating shift assign?"
+msgstr ""
+
+#: horilla_theme/templates/cbv/rotating_shift/rotating_shift_detail_actions.html:23
+#: horilla_theme/templates/cbv/rotating_work_type/rotate_detail_view_actions.html:24
+#: horilla_theme/templates/feedback/feedback_detailed_view.html:121
+#: horilla_theme/templates/okr/emp_objective/emp_objective_list.html:146
+#: horilla_theme/templates/okr/emp_objective/emp_objective_nav.html:99
+#: horilla_theme/templates/skill_zone/skill_zone_list.html:75
+msgid "Archive"
+msgstr ""
+
+#: horilla_theme/templates/cbv/rotating_shift/rotating_shift_detail_actions.html:25
+#: horilla_theme/templates/cbv/rotating_work_type/rotate_detail_view_actions.html:26
+msgid "Un-archive"
+msgstr ""
+
+#: horilla_theme/templates/cbv/rotating_shift/rotating_shift_detail_actions.html:32
+msgid "Are you sure you want to delete this rotating shift assign?"
+msgstr ""
+
+#: horilla_theme/templates/cbv/rotating_work_type/rotate_detail_view_actions.html:15
+msgid "Do you want to archive this rotating work type assign?"
+msgstr ""
+
+#: horilla_theme/templates/cbv/rotating_work_type/rotate_detail_view_actions.html:17
+msgid "Do you want to Un-archive this rotating work type assign?"
+msgstr ""
+
+#: horilla_theme/templates/cbv/rotating_work_type/rotate_detail_view_actions.html:33
+msgid "Are you sure you want to delete this rotating work type assign?"
+msgstr ""
+
+#: horilla_theme/templates/cbv/settings/employee_shift_schedule_detail_action.html:13
+msgid "Are you sure you want to delete this schedule?"
+msgstr ""
+
+#: horilla_theme/templates/cbv/shift_request/confirmations.html:21
+#: horilla_theme/templates/cbv/work_type_request/confirmation.html:17
+msgid "Do you want to approve this request?"
+msgstr ""
+
+#: horilla_theme/templates/cbv/shift_request/shift_detail_actions.html:22
+msgid "Are you sure you want to delete this shift request?"
+msgstr ""
+
+#: horilla_theme/templates/cbv/tasks/task_detail_actions.html:19
+msgid "Time sheet"
+msgstr ""
+
+#: horilla_theme/templates/cbv/tasks/task_detail_actions.html:25
+msgid "Do you want to delete this task?"
+msgstr ""
+
+#: horilla_theme/templates/cbv/timesheet/detail_actions.html:17
+msgid "View Timesheet Chart"
+msgstr ""
+
+#: horilla_theme/templates/cbv/timesheet/detail_actions.html:23
+msgid "Do you want to delete this project?"
+msgstr ""
+
+#: horilla_theme/templates/cbv/work_type_request/detail_view_actions.html:29
+msgid "Are you sure you want to delete this work type request?"
+msgstr ""
+
+#: horilla_theme/templates/compensatory_settings.html:9
+#: horilla_theme/templates/settings.html:466
+msgid "Compensatory Leave"
+msgstr ""
+
+#: horilla_theme/templates/compensatory_settings.html:18
+msgid "Compensatory Leave Request"
+msgstr ""
+
+#: horilla_theme/templates/compensatory_settings.html:22
+msgid "By enabling this compensatory leave feature will avilable on Leave."
+msgstr ""
+
+#: horilla_theme/templates/dashboard/dashboard.html:22
+msgid "Total Vacancies"
+msgstr ""
+
+#: horilla_theme/templates/dashboard/dashboard.html:49
+msgid "Ongoing Recruitments"
+msgstr ""
+
+#: horilla_theme/templates/dashboard/dashboard.html:76
+#: horilla_theme/templates/horilla_theme/components/dashboard_tiles.html:286
+msgid "Hired Candidates"
+msgstr ""
+
+#: horilla_theme/templates/dashboard/dashboard.html:100
+msgid "Conversion Rate"
+msgstr ""
+
+#: horilla_theme/templates/dashboard/dashboard.html:130
+msgid "Offer Acceptance Rate"
+msgstr ""
+
+#: horilla_theme/templates/dashboard/dashboard.html:157
+msgid "Skill Zone Status"
+msgstr ""
+
+#: horilla_theme/templates/dashboard/dashboard.html:172
+msgid "Candidate Offer Letter Status"
+msgstr ""
+
+#: horilla_theme/templates/dashboard/dashboard.html:192
+msgid "Candidate on Onboard"
+msgstr ""
+
+#: horilla_theme/templates/dashboard/dashboard.html:217
+msgid "Joinings Per Month"
+msgstr ""
+
+#: horilla_theme/templates/dashboard/dashboard.html:233
+msgid "Current Hiring Pipeline"
+msgstr ""
+
+#: horilla_theme/templates/dashboard/dashboard.html:252
+msgid "Ongoing Recruitments & Hiring Managers"
+msgstr ""
+
+#: horilla_theme/templates/dashboard/dashboard.html:271
+msgid "Candidates Per Stage"
+msgstr ""
+
+#: horilla_theme/templates/dashboard/dashboard.html:293
+msgid "My Onboarding Tasks"
+msgstr ""
+
+#: horilla_theme/templates/dashboard/pms_dashboard.html:17
+#: horilla_theme/templates/leave/dashboard.html:46
+msgid "Back"
+msgstr ""
+
+#: horilla_theme/templates/dashboard/pms_dashboard.html:39
+msgid "Total employee objectives"
+msgstr ""
+
+#: horilla_theme/templates/dashboard/pms_dashboard.html:56
+msgid "Total key results"
+msgstr ""
+
+#: horilla_theme/templates/dashboard/pms_dashboard.html:71
+msgid "Total feedbacks"
+msgstr ""
+
+#: horilla_theme/templates/dashboard/pms_dashboard.html:86
+msgid "Objective status"
+msgstr ""
+
+#: horilla_theme/templates/dashboard/pms_dashboard.html:97
+msgid "No objectives are available."
+msgstr ""
+
+#: horilla_theme/templates/dashboard/pms_dashboard.html:108
+msgid "Key result status"
+msgstr ""
+
+#: horilla_theme/templates/dashboard/pms_dashboard.html:118
+msgid "No key results are available."
+msgstr ""
+
+#: horilla_theme/templates/dashboard/pms_dashboard.html:129
+msgid "Feedback status"
+msgstr ""
+
+#: horilla_theme/templates/dashboard/pms_dashboard.html:139
+msgid "No feedbacks are available."
+msgstr ""
+
+#: horilla_theme/templates/dashboard/pms_dashboard.html:161
+msgid "Objectives At-Risk"
+msgstr ""
+
+#: horilla_theme/templates/dashboard/project_dashboard.html:24
+msgid "Total Projects"
+msgstr ""
+
+#: horilla_theme/templates/dashboard/project_dashboard.html:45
+msgid "New Projects"
+msgstr ""
+
+#: horilla_theme/templates/dashboard/project_dashboard.html:66
+msgid "Projects in progress"
+msgstr ""
+
+#: horilla_theme/templates/dashboard/project_dashboard.html:81
+msgid "Project Status"
+msgstr ""
+
+#: horilla_theme/templates/dashboard/project_dashboard.html:103
+msgid "Projects due in this month"
+msgstr ""
+
+#: horilla_theme/templates/dashboard/project_dashboard.html:117
+#: horilla_theme/templates/offboarding/dashboard/dashboard.html:140
+msgid "Task Status"
+msgstr ""
+
+#: horilla_theme/templates/dashboard_chart_form.html:5
+msgid "Dashboard Chart Select"
+msgstr ""
+
+#: horilla_theme/templates/dashboard_chart_form.html:20
+msgid "Select All Charts"
+msgstr ""
+
+#: horilla_theme/templates/dashboard_chart_form.html:26
+msgid "Unselect All Charts"
+msgstr ""
+
+#: horilla_theme/templates/dashboard_chart_form.html:37
+msgid "Reorder Charts"
+msgstr ""
+
+#: horilla_theme/templates/dashboard_chart_form.html:53
+msgid "Charts"
+msgstr ""
+
+#: horilla_theme/templates/dashboard_chart_form.html:56
+#: horilla_theme/templates/okr/emp_objective/emp_objective_list.html:84
+#: horilla_theme/templates/recruitment/open_recruitments.html:133
+#: horilla_theme/templates/skill_zone/skill_zone_list.html:171
+#: horilla_theme/templates/task/new/task_list_view.html:137
+msgid "View"
+msgstr ""
+
+#: horilla_theme/templates/documents/requests.html:33
+msgid "Uploaded / Requested"
+msgstr ""
+
+#: horilla_theme/templates/documents/requests.html:90
+#: horilla_theme/templates/helpdesk/ticket/ticket_claim_requests.html:89
+msgid "Rejected"
+msgstr ""
+
+#: horilla_theme/templates/documents/requests.html:94
+msgid "File Uploaded"
+msgstr ""
+
+#: horilla_theme/templates/documents/requests.html:99
+msgid "Upload"
+msgstr ""
+
+#: horilla_theme/templates/documents/requests.html:130
+msgid "Do you want to approve this request"
+msgstr ""
+
+#: horilla_theme/templates/documents/requests.html:145
+msgid "Do you want to reject this request"
+msgstr ""
+
+#: horilla_theme/templates/employee/create_form/form_view.html:11
+msgid "Add Employee"
+msgstr ""
+
+#: horilla_theme/templates/employee/create_form/personal_info.html:46
+#: horilla_theme/templates/employee/update_form/personal_info.html:39
+#: horilla_theme/templates/onboarding/profile_view.html:92
+msgid "Upload Photo"
+msgstr ""
+
+#: horilla_theme/templates/employee/create_form/personal_info.html:71
+#: horilla_theme/templates/employee/update_form/personal_info.html:22
+msgid "Badge Id"
+msgstr ""
+
+#: horilla_theme/templates/employee/create_form/personal_info.html:73
+msgid "Show"
+msgstr ""
+
+#: horilla_theme/templates/employee/export_data_employee.html:36
+msgid "Attendance Records"
+msgstr ""
+
+#: horilla_theme/templates/employee/export_data_employee.html:52
+#: horilla_theme/templates/employee/export_data_employee.html:100
+#: horilla_theme/templates/employee/export_data_employee.html:150
+msgid "From"
+msgstr ""
+
+#: horilla_theme/templates/employee/export_data_employee.html:57
+#: horilla_theme/templates/employee/export_data_employee.html:105
+#: horilla_theme/templates/employee/export_data_employee.html:155
+msgid "To"
+msgstr ""
+
+#: horilla_theme/templates/employee/export_data_employee.html:84
+msgid "Leave Records"
+msgstr ""
+
+#: horilla_theme/templates/employee/export_data_employee.html:134
+msgid "Payroll Records"
+msgstr ""
+
+#: horilla_theme/templates/employee/update_form/personal_info.html:60
+msgid "Delete Image"
+msgstr ""
+
+#: horilla_theme/templates/employee/update_form/personal_info.html:63
+#: horilla_theme/templates/onboarding/profile_view.html:111
+msgid "Update Image"
+msgstr ""
+
+#: horilla_theme/templates/employee/view/individual.html:36
+msgid "Employee Group Assign"
+msgstr ""
+
+#: horilla_theme/templates/feedback/answer/feedback_answer.html:14
+msgid "Feedback Answer"
+msgstr ""
+
+#: horilla_theme/templates/feedback/answer/feedback_answer.html:99
+msgid "Strongly Disagree"
+msgstr ""
+
+#: horilla_theme/templates/feedback/answer/feedback_answer.html:103
+msgid "Disagree"
+msgstr ""
+
+#: horilla_theme/templates/feedback/answer/feedback_answer.html:107
+msgid "Neutral"
+msgstr ""
+
+#: horilla_theme/templates/feedback/answer/feedback_answer.html:111
+msgid "Agree"
+msgstr ""
+
+#: horilla_theme/templates/feedback/answer/feedback_answer.html:115
+msgid "Strongly Agree"
+msgstr ""
+
+#: horilla_theme/templates/feedback/answer/feedback_answer.html:128
+#: horilla_theme/templates/okr/emp_objective/emp_objective_nav.html:68
+#: horilla_theme/templates/report/pms_report.html:51
+#: horilla_theme/templates/report/pms_report.html:87
+msgid "Key Result"
+msgstr ""
+
+#: horilla_theme/templates/feedback/answer/feedback_answer.html:140
+msgid "Perfect"
+msgstr ""
+
+#: horilla_theme/templates/feedback/answer/feedback_answer.html:144
+msgid "Good"
+msgstr ""
+
+#: horilla_theme/templates/feedback/answer/feedback_answer.html:148
+msgid "Average"
+msgstr ""
+
+#: horilla_theme/templates/feedback/answer/feedback_answer.html:152
+msgid "Bad"
+msgstr ""
+
+#: horilla_theme/templates/feedback/answer/feedback_answer_view.html:24
+msgid "Feedback Responses"
+msgstr ""
+
+#: horilla_theme/templates/feedback/answer/feedback_answer_view.html:91
+#: horilla_theme/templates/okr/emp_objective/emp_objective_nav.html:115
+msgid "Key Results"
+msgstr ""
+
+#: horilla_theme/templates/feedback/feedback_detailed_view.html:118
+msgid "Do you want archive this Feedback ?"
+msgstr ""
+
+#: horilla_theme/templates/feedback/feedback_detailed_view.html:127
+msgid "Do you want Delete this Feedback ?"
+msgstr ""
+
+#: horilla_theme/templates/feedback/feedback_detailed_view.html:142
+msgid "Request feedback"
+msgstr ""
+
+#: horilla_theme/templates/feedback/feedback_detailed_view.html:153
+#: horilla_theme/templates/helpdesk/ticket/ticket_detail.html:71
+msgid "Owner"
+msgstr ""
+
+#: horilla_theme/templates/feedback/feedback_detailed_view.html:178
+msgid "Answered Employees"
+msgstr ""
+
+#: horilla_theme/templates/feedback/feedback_detailed_view.html:190
+msgid "Employees not answered yet"
+msgstr ""
+
+#: horilla_theme/templates/feedback/feedback_detailed_view.html:203
+msgid "Cyclic feedback period"
+msgstr ""
+
+#: horilla_theme/templates/feedback/feedback_detailed_view.html:207
+msgid "Next feedback on"
+msgstr ""
+
+#: horilla_theme/templates/feedback/feedback_detailed_view.html:227
+msgid "Feedback Answers"
+msgstr ""
+
+#: horilla_theme/templates/feedback/feedback_detailed_view.html:234
+msgid "Feedback Overview"
+msgstr ""
+
+#: horilla_theme/templates/feedback/feedback_detailed_view.html:267
+#: horilla_theme/templates/feedback/feedback_detailed_view.html:302
+#: horilla_theme/templates/feedback/feedback_detailed_view.html:339
+#: horilla_theme/templates/feedback/feedback_detailed_view.html:377
+#: horilla_theme/templates/feedback/feedback_detailed_view.html:415
+msgid "Answer View"
+msgstr ""
+
+#: horilla_theme/templates/feedback/feedback_detailed_view.html:281
+#: horilla_theme/templates/report/pms_report.html:137
+msgid "Manager"
+msgstr ""
+
+#: horilla_theme/templates/feedback/feedback_detailed_view.html:317
+msgid "Subordinates"
+msgstr ""
+
+#: horilla_theme/templates/feedback/feedback_detailed_view.html:355
+#: horilla_theme/templates/report/pms_report.html:143
+msgid "Colleague"
+msgstr ""
+
+#: horilla_theme/templates/feedback/feedback_detailed_view.html:393
+msgid "Other Employees"
+msgstr ""
+
+#: horilla_theme/templates/feedback/feedback_detailed_view.html:457
+msgid "Close"
+msgstr ""
+
+#: horilla_theme/templates/feedback/feedback_detailed_view.html:465
+msgid "Answers"
+msgstr ""
+
+#: horilla_theme/templates/feedback/feedback_detailed_view_answer.html:60
+msgid "Key results"
+msgstr ""
+
+#: horilla_theme/templates/feedback/feedback_overview.html:26
+msgid "Answer"
+msgstr ""
+
+#: horilla_theme/templates/feedback/feedback_overview.html:94
+msgid "No answers yet."
+msgstr ""
+
+#: horilla_theme/templates/feedback/question/question_all.html:11
+msgid "Hide Questions"
+msgstr ""
+
+#: horilla_theme/templates/feedback/question/question_all.html:17
+msgid "Show Questions"
+msgstr ""
+
+#: horilla_theme/templates/feedback/question/question_all.html:26
+msgid "Question Type"
+msgstr ""
+
+#: horilla_theme/templates/feedback/question/question_all.html:27
+#: horilla_theme/templates/survey/template_accordion.html:74
+msgid "Question"
+msgstr ""
+
+#: horilla_theme/templates/feedback/question/question_all.html:46
+msgid "Hide Options"
+msgstr ""
+
+#: horilla_theme/templates/feedback/question/question_all.html:46
+msgid "Show Options"
+msgstr ""
+
+#: horilla_theme/templates/feedback/question/question_all.html:89
+msgid "Do you want to delete the question?"
+msgstr ""
+
+#: horilla_theme/templates/feedback/question/question_all.html:105
+msgid "Edit Question"
+msgstr ""
+
+#: horilla_theme/templates/feedback/question_template/question_template_detailed_view.html:10
+msgid "Add A Question"
+msgstr ""
+
+#: horilla_theme/templates/feedback/question_template/question_template_detailed_view.html:30
+msgid "Add Question"
+msgstr ""
+
+#: horilla_theme/templates/feedback/question_template/question_template_detailed_view.html:38
+#: horilla_theme/templates/feedback/question_template/question_template_detailed_view.html:42
+#: horilla_theme/templates/feedback/question_template/question_template_detailed_view.html:46
+#: horilla_theme/templates/feedback/question_template/question_template_detailed_view.html:50
+msgid "Option"
+msgstr ""
+
+#: horilla_theme/templates/feedback/question_template/question_template_detailed_view.html:61
+#: horilla_theme/templates/survey/template_accordion.html:12
+#: horilla_theme/templates/survey/view_question_templates.html:176
+msgid "Questions"
+msgstr ""
+
+#: horilla_theme/templates/forgot_password.html:58
+msgid "Forgot Password"
+msgstr ""
+
+#: horilla_theme/templates/forgot_password.html:61
+msgid "Type in your username to reset the password."
+msgstr ""
+
+#: horilla_theme/templates/forgot_password.html:68
+#: horilla_theme/templates/login.html:68
+msgid "Username"
+msgstr ""
+
+#: horilla_theme/templates/forgot_password.html:87
+msgid "Send reset link"
+msgstr ""
+
+#: horilla_theme/templates/forgot_password.html:93
+msgid "Reset link will be sent to your registered email"
+msgstr ""
+
+#: horilla_theme/templates/generic/as_list.html:11
+msgid "Select All Records"
+msgstr ""
+
+#: horilla_theme/templates/generic/as_list.html:18
+msgid "Unselect All Records"
+msgstr ""
+
+#: horilla_theme/templates/generic/delete_confirmation.html:12
+msgid "Delete Confirmation"
+msgstr ""
+
+#: horilla_theme/templates/generic/delete_confirmation.html:43
+msgid "Summary"
+msgstr ""
+
+#: horilla_theme/templates/generic/delete_confirmation.html:63
+msgid "Deleting the record"
+msgstr ""
+
+#: horilla_theme/templates/generic/delete_confirmation.html:65
+msgid "would require managing the following related objects:"
+msgstr ""
+
+#: horilla_theme/templates/generic/delete_confirmation.html:79
+msgid "Protected Records"
+msgstr ""
+
+#: horilla_theme/templates/generic/delete_confirmation.html:109
+msgid "Other Related Records"
+msgstr ""
+
+#: horilla_theme/templates/generic/delete_confirmation.html:144
+msgid "I have took manual action for the protected records"
+msgstr ""
+
+#: horilla_theme/templates/generic/delete_confirmation.html:157
+msgid "I acknowledge, i wont be able to revert this"
+msgstr ""
+
+#: horilla_theme/templates/generic/delete_confirmation.html:170
+msgid "Confirming to delete the related and protected records"
+msgstr ""
+
+#: horilla_theme/templates/generic/delete_confirmation.html:233
+msgid "Action Required"
+msgstr ""
+
+#: horilla_theme/templates/generic/export_fields_modal.html:43
+msgid "Select All Columns"
+msgstr ""
+
+#: horilla_theme/templates/generic/group_by_table.html:45
+msgid "Records"
+msgstr ""
+
+#: horilla_theme/templates/generic/horilla_history_view.html:87
+msgid "Revert"
+msgstr ""
+
+#: horilla_theme/templates/generic/horilla_nav.html:77
+msgid "Group By"
+msgstr ""
+
+#: horilla_theme/templates/generic/horilla_nav.html:83
+#: horilla_theme/templates/requests/attendance/individual_view.html:23
+msgid "Field"
+msgstr ""
+
+#: horilla_theme/templates/generic/horilla_nav.html:91
+#: horilla_theme/templates/generic/quick_actions.html:17
+msgid "Select"
+msgstr ""
+
+#: horilla_theme/templates/generic/horilla_tabs.html:62
+msgid "Items"
+msgstr ""
+
+#: horilla_theme/templates/generic/import_block.html:7
+msgid "Import"
+msgstr ""
+
+#: horilla_theme/templates/generic/quick_actions.html:30
+msgid "Unselect"
+msgstr ""
+
+#: horilla_theme/templates/generic/quick_actions.html:71
+msgid "Show All"
+msgstr ""
+
+#: horilla_theme/templates/helpdesk/faq/faq_category_list.html:37
+msgid "Are you sure you want to delete this FAQ Category?"
+msgstr ""
+
+#: horilla_theme/templates/helpdesk/faq/faq_category_list.html:65
+msgid "View FAQs"
+msgstr ""
+
+#: horilla_theme/templates/helpdesk/faq/faq_category_list.html:73
+#: horilla_theme/templates/payroll/tax/filing_status_list.html:80
+#: horilla_theme/templates/survey/template_accordion.html:240
+msgid "No Records found."
+msgstr ""
+
+#: horilla_theme/templates/helpdesk/faq/faq_category_list.html:74
+#: horilla_theme/templates/helpdesk/faq/faq_list.html:121
+#: horilla_theme/templates/helpdesk/faq/faq_view.html:17
+msgid "There are no FAQs at the moment."
+msgstr ""
+
+#: horilla_theme/templates/helpdesk/faq/faq_category_nav.html:35
+msgid "FAQ Categories"
+msgstr ""
+
+#: horilla_theme/templates/helpdesk/faq/faq_category_nav.html:45
+msgid "Search in FAQs..."
+msgstr ""
+
+#: horilla_theme/templates/helpdesk/faq/faq_category_nav.html:71
+msgid "Load Faqs"
+msgstr ""
+
+#: horilla_theme/templates/helpdesk/faq/faq_list.html:80
+msgid "Are you sure you want to delete this FAQ?"
+msgstr ""
+
+#: horilla_theme/templates/helpdesk/faq/faq_list_view.html:31
+msgid "Create Tag"
+msgstr ""
+
+#: horilla_theme/templates/helpdesk/faq/faq_nav.html:7
+msgid "FAQs"
+msgstr ""
+
+#: horilla_theme/templates/helpdesk/faq/faq_nav.html:17
+#: horilla_theme/templates/horilla_widgets/multiselect_components/nav.html:15
+#: horilla_theme/templates/skill_zone/skill_zone_nav.html:34
+#: horilla_theme/templates/survey/view_question_templates.html:72
+msgid "Search"
+msgstr ""
+
+#: horilla_theme/templates/helpdesk/faq/faq_nav.html:47
+msgid "Tags"
+msgstr ""
+
+#: horilla_theme/templates/helpdesk/faq/load_faq.html:3
+msgid "Load FAQs"
+msgstr ""
+
+#: horilla_theme/templates/helpdesk/faq/load_faq.html:26
+msgid "Select All Faqs"
+msgstr ""
+
+#: horilla_theme/templates/helpdesk/faq/load_faq.html:34
+msgid "Unselect All Faqs"
+msgstr ""
+
+#: horilla_theme/templates/helpdesk/faq/load_faq.html:63
+msgid "Select All"
+msgstr ""
+
+#: horilla_theme/templates/helpdesk/ticket/forms/change_assinees.html:4
+#: horilla_theme/templates/helpdesk/ticket/forms/change_raised_on.html:4
+#: horilla_theme/templates/helpdesk/ticket/ticket_detail.html:162
+msgid "Responsibility"
+msgstr ""
+
+#: horilla_theme/templates/helpdesk/ticket/forms/change_assinees.html:20
+#: horilla_theme/templates/okr/emp_objective/emp_objective_nav.html:64
+#: horilla_theme/templates/report/pms_report.html:57
+msgid "Assignees"
+msgstr ""
+
+#: horilla_theme/templates/helpdesk/ticket/ticket_claim_requests.html:10
+msgid "Claim Requests"
+msgstr ""
+
+#: horilla_theme/templates/helpdesk/ticket/ticket_claim_requests.html:33
+msgid "Action"
+msgstr ""
+
+#: horilla_theme/templates/helpdesk/ticket/ticket_claim_requests.html:60
+msgid "Approve request"
+msgstr ""
+
+#: horilla_theme/templates/helpdesk/ticket/ticket_claim_requests.html:81
+msgid "Reject request"
+msgstr ""
+
+#: horilla_theme/templates/helpdesk/ticket/ticket_claim_requests.html:110
+msgid "There are no claim requests at the moment."
+msgstr ""
+
+#: horilla_theme/templates/helpdesk/ticket/ticket_detail.html:64
+msgid "Ticket ID"
+msgstr ""
+
+#: horilla_theme/templates/helpdesk/ticket/ticket_detail.html:77
+msgid "Created"
+msgstr ""
+
+#: horilla_theme/templates/helpdesk/ticket/ticket_detail.html:83
+msgid "Deadline"
+msgstr ""
+
+#: horilla_theme/templates/helpdesk/ticket/ticket_detail.html:90
+msgid "Priority"
+msgstr ""
+
+#: horilla_theme/templates/helpdesk/ticket/ticket_detail.html:102
+msgid "Low"
+msgstr ""
+
+#: horilla_theme/templates/helpdesk/ticket/ticket_detail.html:103
+msgid "Medium"
+msgstr ""
+
+#: horilla_theme/templates/helpdesk/ticket/ticket_detail.html:104
+msgid "High"
+msgstr ""
+
+#: horilla_theme/templates/helpdesk/ticket/ticket_detail.html:131
+msgid "Last Activity"
+msgstr ""
+
+#: horilla_theme/templates/helpdesk/ticket/ticket_detail.html:141
+msgid "Tags:"
+msgstr ""
+
+#: horilla_theme/templates/helpdesk/ticket/ticket_detail.html:153
+msgid "No tags assigned"
+msgstr ""
+
+#: horilla_theme/templates/helpdesk/ticket/ticket_detail.html:173
+msgid "Forwarded to"
+msgstr ""
+
+#: horilla_theme/templates/helpdesk/ticket/ticket_detail.html:193
+msgid "Assigned to"
+msgstr ""
+
+#: horilla_theme/templates/helpdesk/ticket/ticket_detail.html:202
+msgid " Claim Requests"
+msgstr ""
+
+#: horilla_theme/templates/helpdesk/ticket/ticket_detail.html:260
+msgid "Choose or Drop Files Here"
+msgstr ""
+
+#: horilla_theme/templates/helpdesk/ticket/ticket_detail.html:353
+msgid "Edit Ticket"
+msgstr ""
+
+#: horilla_theme/templates/helpdesk/ticket/ticket_detail.html:475
+msgid "Created the ticket "
+msgstr ""
+
+#: horilla_theme/templates/helpdesk/ticket/ticket_detail.html:482
+#: horilla_theme/templates/helpdesk/ticket/ticket_detail.html:496
+msgid "changed the ticket "
+msgstr ""
+
+#: horilla_theme/templates/helpdesk/ticket/ticket_detail.html:482
+#: horilla_theme/templates/helpdesk/ticket/ticket_detail.html:498
+msgid " from"
+msgstr ""
+
+#: horilla_theme/templates/helpdesk/ticket/ticket_detail.html:483
+#: horilla_theme/templates/helpdesk/ticket/ticket_detail.html:500
+#: horilla_theme/templates/okr/objective_detailed_view_activity.html:182
+#: horilla_theme/templates/okr/objective_detailed_view_activity.html:204
+#: horilla_theme/templates/payroll/payslip/individual_payslip.html:24
+msgid "to"
+msgstr ""
+
+#: horilla_theme/templates/helpdesk/ticket/ticket_detail.html:527
+msgid "Toggle Rich Text"
+msgstr ""
+
+#: horilla_theme/templates/helpdesk/ticket/ticket_detail.html:537
+msgid "Add attachments"
+msgstr ""
+
+#: horilla_theme/templates/helpdesk/ticket/ticket_detail.html:560
+msgid "Send"
+msgstr ""
+
+#: horilla_theme/templates/horilla_automations/load_automation.html:3
+msgid "Load Automations"
+msgstr ""
+
+#: horilla_theme/templates/horilla_automations/load_automation.html:55
+#: horilla_theme/templates/horilla_automations/load_automation.html:66
+msgid "Notification"
+msgstr ""
+
+#: horilla_theme/templates/horilla_theme/components/dashboard.html:38
+msgid "Todays's New Joiners"
+msgstr ""
+
+#: horilla_theme/templates/horilla_theme/components/dashboard.html:65
+msgid "Leave on today"
+msgstr ""
+
+#: horilla_theme/templates/horilla_theme/components/dashboard.html:91
+msgid "Joining this week"
+msgstr ""
+
+#: horilla_theme/templates/horilla_theme/components/dashboard.html:114
+msgid "Total Strength"
+msgstr ""
+
+#: horilla_theme/templates/horilla_theme/components/dashboard.html:133
+msgid "Announcements"
+msgstr ""
+
+#: horilla_theme/templates/horilla_theme/components/dashboard.html:143
+msgid "Create Announcement"
+msgstr ""
+
+#: horilla_theme/templates/horilla_theme/components/dashboard.html:165
+#: horilla_theme/templates/leave/dashboard.html:112
+msgid "On Leave"
+msgstr ""
+
+#: horilla_theme/templates/horilla_theme/components/dashboard.html:185
+#: horilla_theme/templates/offboarding/dashboard/dashboard.html:221
+msgid "Send Mail"
+msgstr ""
+
+#: horilla_theme/templates/horilla_theme/components/dashboard.html:199
+msgid " Activities"
+msgstr ""
+
+#: horilla_theme/templates/horilla_theme/components/dashboard_tiles.html:11
+msgid "Gender Chart"
+msgstr ""
+
+#: horilla_theme/templates/horilla_theme/components/dashboard_tiles.html:33
+msgid "Employees Chart"
+msgstr ""
+
+#: horilla_theme/templates/horilla_theme/components/dashboard_tiles.html:61
+msgid "Shift Requests to Approve"
+msgstr ""
+
+#: horilla_theme/templates/horilla_theme/components/dashboard_tiles.html:86
+msgid "Work Type Requests to Approve"
+msgstr ""
+
+#: horilla_theme/templates/horilla_theme/components/dashboard_tiles.html:111
+msgid "Employee Work Information"
+msgstr ""
+
+#: horilla_theme/templates/horilla_theme/components/dashboard_tiles.html:154
+msgid "Recruitment Analytics"
+msgstr ""
+
+#: horilla_theme/templates/horilla_theme/components/dashboard_tiles.html:179
+#: horilla_theme/templates/payroll/dashboard.html:397
+msgid "Department Chart"
+msgstr ""
+
+#: horilla_theme/templates/horilla_theme/components/dashboard_tiles.html:211
+msgid "Key Result Status"
+msgstr ""
+
+#: horilla_theme/templates/horilla_theme/components/dashboard_tiles.html:259
+msgid "Candidates Started Onboarding"
+msgstr ""
+
+#: horilla_theme/templates/horilla_theme/components/dashboard_tiles.html:414
+msgid "Attendance Analytic"
+msgstr ""
+
+#: horilla_theme/templates/horilla_theme/components/dashboard_tiles.html:487
+msgid "Overall Leave"
+msgstr ""
+
+#: horilla_theme/templates/horilla_theme/components/dashboard_tiles.html:494
+msgid "Today"
+msgstr ""
+
+#: horilla_theme/templates/horilla_theme/components/dashboard_tiles.html:495
+msgid "This Week"
+msgstr ""
+
+#: horilla_theme/templates/horilla_theme/components/dashboard_tiles.html:496
+msgid "This Month"
+msgstr ""
+
+#: horilla_theme/templates/horilla_theme/components/dashboard_tiles.html:497
+msgid "This Year"
+msgstr ""
+
+#: horilla_theme/templates/horilla_theme/components/dashboard_tiles.html:523
+msgid "Leave Requests To Approve"
+msgstr ""
+
+#: horilla_theme/templates/horilla_theme/components/dashboard_tiles.html:548
+msgid "Leave Allocation Request To Approve"
+msgstr ""
+
+#: horilla_theme/templates/horilla_theme/components/dashboard_tiles.html:573
+msgid "Feedback To Answers"
+msgstr ""
+
+#: horilla_theme/templates/horilla_theme/components/dashboard_tiles.html:597
+msgid "Feedback Status"
+msgstr ""
+
+#: horilla_theme/templates/horilla_theme/components/dashboard_tiles.html:625
+msgid "Objective Status"
+msgstr ""
+
+#: horilla_theme/templates/horilla_theme/components/dashboard_tiles.html:651
+msgid "No charts are available at the moment..."
+msgstr ""
+
+#: horilla_theme/templates/horilla_theme/components/header.html:117
+msgid "All Notifications"
+msgstr ""
+
+#: horilla_theme/templates/horilla_theme/components/header.html:122
+msgid "Clear All"
+msgstr ""
+
+#: horilla_theme/templates/horilla_theme/components/reorder_dashboard_charts.html:22
+msgid "Reorder Dashboard Charts"
+msgstr ""
+
+#: horilla_theme/templates/horilla_theme/components/sidebar/bottom_menu.html:3
+msgid "Configurations"
+msgstr ""
+
+#: horilla_theme/templates/horilla_theme/components/sidebar/bottom_menu.html:26
+msgid "Multiple Approvals"
+msgstr ""
+
+#: horilla_theme/templates/horilla_theme/components/sidebar/bottom_menu.html:31
+msgid "Mail Templates"
+msgstr ""
+
+#: horilla_theme/templates/horilla_theme/components/sidebar/bottom_menu.html:36
+msgid "Mail Automations"
+msgstr ""
+
+#: horilla_theme/templates/horilla_theme/components/sidebar/bottom_menu.html:41
+msgid "Holidays"
+msgstr ""
+
+#: horilla_theme/templates/horilla_theme/components/sidebar/bottom_menu.html:46
+msgid "Company Leaves"
+msgstr ""
+
+#: horilla_theme/templates/horilla_theme/components/sidebar/bottom_menu.html:51
+msgid "Restrict Leaves"
+msgstr ""
+
+#: horilla_theme/templates/horilla_theme/components/sidebar/bottom_menu.html:56
+#: horilla_theme/templates/settings.html:673
+msgid "Google Meet"
+msgstr ""
+
+#: horilla_theme/templates/horilla_theme/components/sidebar/top_menu.html:2
+#: horilla_theme/templates/onboarding/employee_bank_details.html:11
+#: horilla_theme/templates/onboarding/employee_creation.html:10
+#: horilla_theme/templates/onboarding/profile_view.html:12
+#: horilla_theme/templates/onboarding/user_creation.html:11
+#: horilla_theme/templates/onboarding/welcome_aboard.html:11
+msgid "Dashboard"
+msgstr ""
+
+#: horilla_theme/templates/leave/compensatory_leave/compensatory_leave_type.html:6
+msgid "Compensatory Leave Type"
+msgstr ""
+
+#: horilla_theme/templates/leave/compensatory_leave/compensatory_leave_type.html:10
+msgid "This leave type will be used for assigning compensatory leaves."
+msgstr ""
+
+#: horilla_theme/templates/leave/compensatory_leave/compensatory_leave_type.html:70
+msgid "Payment"
+msgstr ""
+
+#: horilla_theme/templates/leave/dashboard.html:59
+msgid "Requests to Approve"
+msgstr ""
+
+#: horilla_theme/templates/leave/dashboard.html:72
+#: horilla_theme/templates/leave/employee_dashboard.html:49
+msgid "Approved Leaves In This Month"
+msgstr ""
+
+#: horilla_theme/templates/leave/dashboard.html:85
+#: horilla_theme/templates/leave/employee_dashboard.html:62
+msgid "Rejected Leaves In This Month"
+msgstr ""
+
+#: horilla_theme/templates/leave/dashboard.html:98
+msgid "Employee Leaves"
+msgstr ""
+
+#: horilla_theme/templates/leave/dashboard.html:124
+msgid "Weekly Leave Analytics"
+msgstr ""
+
+#: horilla_theme/templates/leave/dashboard.html:134
+msgid "Department Leaves"
+msgstr ""
+
+#: horilla_theme/templates/leave/dashboard.html:147
+msgid "Leave Type - Count of leaves"
+msgstr ""
+
+#: horilla_theme/templates/leave/dashboard.html:167
+msgid "View Personal Dashboard"
+msgstr ""
+
+#: horilla_theme/templates/leave/dashboard.html:178
+#: horilla_theme/templates/leave/employee_dashboard.html:119
+msgid "Next Holiday"
+msgstr ""
+
+#: horilla_theme/templates/leave/dashboard.html:187
+#: horilla_theme/templates/leave/employee_dashboard.html:129
+msgid "Upcoming holidays"
+msgstr ""
+
+#: horilla_theme/templates/leave/dashboard.html:198
+msgid "Upcoming holidays in this year."
+msgstr ""
+
+#: horilla_theme/templates/leave/employee_dashboard.html:36
+msgid "New Requests"
+msgstr ""
+
+#: horilla_theme/templates/leave/employee_dashboard.html:75
+msgid "Available Leaves"
+msgstr ""
+
+#: horilla_theme/templates/leave/employee_dashboard.html:86
+msgid "Total Leave Requests"
+msgstr ""
+
+#: horilla_theme/templates/leave/employee_dashboard.html:109
+msgid "View Admin Dashboard"
+msgstr ""
+
+#: horilla_theme/templates/leave/leave_allocation_request/leave_allocation_comment.html:83
+#: horilla_theme/templates/leave/leave_request/leave_comment.html:82
+#: horilla_theme/templates/offboarding/note/view_notes.html:92
+#: horilla_theme/templates/payroll/reimbursement/reimbursement_comment.html:88
+#: horilla_theme/templates/shift_request/htmx/shift_comment.html:92
+#: horilla_theme/templates/work_type_request/htmx/work_type_comment.html:91
+msgid "Add Comments"
+msgstr ""
+
+#: horilla_theme/templates/leave/leave_allocation_request/leave_allocation_comment.html:157
+#: horilla_theme/templates/leave/leave_request/leave_comment.html:156
+#: horilla_theme/templates/offboarding/note/view_notes.html:180
+#: horilla_theme/templates/payroll/reimbursement/reimbursement_comment.html:174
+#: horilla_theme/templates/pipeline/pipeline_components/view_note.html:205
+#: horilla_theme/templates/shift_request/htmx/shift_comment.html:181
+#: horilla_theme/templates/tabs/note_tab.html:116
+#: horilla_theme/templates/work_type_request/htmx/work_type_comment.html:180
+msgid "Add Files"
+msgstr ""
+
+#: horilla_theme/templates/leave/leave_allocation_request/leave_allocation_comment.html:179
+msgid "'s leave allocation request"
+msgstr ""
+
+#: horilla_theme/templates/leave/leave_allocation_request/leave_allocation_comment.html:194
+msgid "No Comments have been added for this Leave Allocation Request"
+msgstr ""
+
+#: horilla_theme/templates/leave/leave_request/dashboard_leave_requests.html:159
+msgid "Requested Days"
+msgstr ""
+
+#: horilla_theme/templates/leave/leave_request/dashboard_leave_requests.html:255
+msgid "You have No leave requests for this month."
+msgstr ""
+
+#: horilla_theme/templates/leave/leave_request/leave_comment.html:178
+msgid "'s leave request"
+msgstr ""
+
+#: horilla_theme/templates/leave/leave_request/leave_comment.html:193
+msgid "No Comments have been added for this Leave request"
+msgstr ""
+
+#: horilla_theme/templates/leave/leave_type/leave_type_creation.html:132
+msgid "Create Leave Type"
+msgstr ""
+
+#: horilla_theme/templates/leave/leave_type/leave_type_creation.html:144
+#: horilla_theme/templates/leave/leave_type/leave_type_update.html:146
+msgid "Is paid"
+msgstr ""
+
+#: horilla_theme/templates/leave/leave_type/leave_type_creation.html:152
+#: horilla_theme/templates/leave/leave_type/leave_type_update.html:154
+msgid "Limit Leave Days"
+msgstr ""
+
+#: horilla_theme/templates/leave/leave_type/leave_type_creation.html:153
+#: horilla_theme/templates/leave/leave_type/leave_type_update.html:155
+msgid "Do you want to limit leave days for this leave type?"
+msgstr ""
+
+#: horilla_theme/templates/leave/leave_type/leave_type_creation.html:187
+#: horilla_theme/templates/leave/leave_type/leave_type_update.html:189
+msgid "Require Approval"
+msgstr ""
+
+#: horilla_theme/templates/leave/leave_type/leave_type_creation.html:188
+#: horilla_theme/templates/leave/leave_type/leave_type_update.html:190
+msgid "Do you need approval for leave from the authority?"
+msgstr ""
+
+#: horilla_theme/templates/leave/leave_type/leave_type_creation.html:205
+#: horilla_theme/templates/leave/leave_type/leave_type_update.html:207
+msgid "Reset"
+msgstr ""
+
+#: horilla_theme/templates/leave/leave_type/leave_type_creation.html:206
+#: horilla_theme/templates/leave/leave_type/leave_type_update.html:208
+msgid "Do you need to reset leaves based on conditions?"
+msgstr ""
+
+#: horilla_theme/templates/leave/leave_type/leave_type_creation.html:221
+#: horilla_theme/templates/leave/leave_type/leave_type_update.html:223
+msgid "Reset Period"
+msgstr ""
+
+#: horilla_theme/templates/leave/leave_type/leave_type_creation.html:223
+#: horilla_theme/templates/leave/leave_type/leave_type_update.html:225
+msgid "The time period for the leave to reset."
+msgstr ""
+
+#: horilla_theme/templates/leave/leave_type/leave_type_creation.html:229
+#: horilla_theme/templates/leave/leave_type/leave_type_update.html:231
+msgid "Reset Month"
+msgstr ""
+
+#: horilla_theme/templates/leave/leave_type/leave_type_creation.html:235
+#: horilla_theme/templates/leave/leave_type/leave_type_update.html:237
+msgid "Reset Day"
+msgstr ""
+
+#: horilla_theme/templates/leave/leave_type/leave_type_creation.html:241
+#: horilla_theme/templates/leave/leave_type/leave_type_update.html:243
+msgid "Reset Weekday"
+msgstr ""
+
+#: horilla_theme/templates/leave/leave_type/leave_type_creation.html:250
+#: horilla_theme/templates/leave/leave_type/leave_type_update.html:252
+msgid "Carryforward Type"
+msgstr ""
+
+#: horilla_theme/templates/leave/leave_type/leave_type_creation.html:252
+#: horilla_theme/templates/leave/leave_type/leave_type_update.html:254
+msgid "The conditions for carrying forward the balance of leave."
+msgstr ""
+
+#: horilla_theme/templates/leave/leave_type/leave_type_creation.html:261
+#: horilla_theme/templates/leave/leave_type/leave_type_update.html:263
+msgid "Carryforward Max"
+msgstr ""
+
+#: horilla_theme/templates/leave/leave_type/leave_type_creation.html:263
+#: horilla_theme/templates/leave/leave_type/leave_type_update.html:265
+msgid "The maximum number of leave that can be carried forward."
+msgstr ""
+
+#: horilla_theme/templates/leave/leave_type/leave_type_creation.html:272
+#: horilla_theme/templates/leave/leave_type/leave_type_update.html:274
+msgid "Carryforward Expire In"
+msgstr ""
+
+#: horilla_theme/templates/leave/leave_type/leave_type_creation.html:274
+#: horilla_theme/templates/leave/leave_type/leave_type_update.html:276
+msgid "The count of carryforward expire period"
+msgstr ""
+
+#: horilla_theme/templates/leave/leave_type/leave_type_creation.html:283
+#: horilla_theme/templates/leave/leave_type/leave_type_update.html:285
+msgid "Carryforward Expire Period"
+msgstr ""
+
+#: horilla_theme/templates/leave/leave_type/leave_type_creation.html:285
+#: horilla_theme/templates/leave/leave_type/leave_type_update.html:287
+msgid "The time period for the expiration of carryforward leave."
+msgstr ""
+
+#: horilla_theme/templates/leave/leave_type/leave_type_creation.html:294
+#: horilla_theme/templates/leave/leave_type/leave_type_update.html:296
+msgid "Carryforward Expire Date"
+msgstr ""
+
+#: horilla_theme/templates/leave/leave_type/leave_type_creation.html:296
+#: horilla_theme/templates/leave/leave_type/leave_type_update.html:298
+msgid ""
+"The date on which carryforward leave resets to 0. After this reset, the date "
+"will be updated to the next expiration period."
+msgstr ""
+
+#: horilla_theme/templates/leave/leave_type/leave_type_creation.html:307
+#: horilla_theme/templates/leave/leave_type/leave_type_update.html:309
+msgid "Icon"
+msgstr ""
+
+#: horilla_theme/templates/leave/leave_type/leave_type_creation.html:314
+#: horilla_theme/templates/leave/leave_type/leave_type_update.html:316
+msgid "Choose Icon"
+msgstr ""
+
+#: horilla_theme/templates/leave/leave_type/leave_type_creation.html:321
+#: horilla_theme/templates/leave/leave_type/leave_type_update.html:323
+msgid "Color"
+msgstr ""
+
+#: horilla_theme/templates/leave/leave_type/leave_type_creation.html:328
+#: horilla_theme/templates/leave/leave_type/leave_type_update.html:330
+msgid "Require Attachment"
+msgstr ""
+
+#: horilla_theme/templates/leave/leave_type/leave_type_creation.html:329
+#: horilla_theme/templates/leave/leave_type/leave_type_update.html:331
+msgid "Do you need to attach a document for leave?"
+msgstr ""
+
+#: horilla_theme/templates/leave/leave_type/leave_type_creation.html:344
+#: horilla_theme/templates/leave/leave_type/leave_type_update.html:346
+msgid "Exclude Company Holidays"
+msgstr ""
+
+#: horilla_theme/templates/leave/leave_type/leave_type_creation.html:345
+#: horilla_theme/templates/leave/leave_type/leave_type_update.html:347
+msgid "Do you need to exclude company holidays from the requested leave days?"
+msgstr ""
+
+#: horilla_theme/templates/leave/leave_type/leave_type_creation.html:360
+#: horilla_theme/templates/leave/leave_type/leave_type_update.html:362
+msgid "Exclude Holidays"
+msgstr ""
+
+#: horilla_theme/templates/leave/leave_type/leave_type_creation.html:361
+#: horilla_theme/templates/leave/leave_type/leave_type_update.html:363
+msgid "Do you need to exclude public holidays from the requested leave days?"
+msgstr ""
+
+#: horilla_theme/templates/leave/leave_type/leave_type_creation.html:376
+#: horilla_theme/templates/leave/leave_type/leave_type_update.html:378
+msgid "Is Encashable"
+msgstr ""
+
+#: horilla_theme/templates/leave/leave_type/leave_type_creation.html:377
+#: horilla_theme/templates/leave/leave_type/leave_type_update.html:379
+msgid "Do you need to encash pending leave days?"
+msgstr ""
+
+#: horilla_theme/templates/leave/leave_type/leave_type_creation.html:394
+#: horilla_theme/templates/leave/leave_type/leave_type_update.html:396
+msgid "Assign to Employees"
+msgstr ""
+
+#: horilla_theme/templates/leave/leave_type/leave_type_creation.html:396
+#: horilla_theme/templates/leave/leave_type/leave_type_update.html:398
+msgid "choose employees to assign this leave type"
+msgstr ""
+
+#: horilla_theme/templates/leave/leave_type/leave_type_update.html:134
+msgid "Update Leave Type"
+msgstr ""
+
+#: horilla_theme/templates/leave/settings/past_leave_restrict_view.html:3
+msgid "Restrict Past Leave"
+msgstr ""
+
+#: horilla_theme/templates/leave/settings/past_leave_restrict_view.html:11
+msgid "Restricts Past Date Leave Request Creation"
+msgstr ""
+
+#: horilla_theme/templates/leave/settings/past_leave_restrict_view.html:12
+msgid ""
+"By enabling this only admins and managers can create leave requests for the "
+"past dates"
+msgstr ""
+
+#: horilla_theme/templates/leave/user_leave/user_leave.html:21
+msgid "Available Leave Days"
+msgstr ""
+
+#: horilla_theme/templates/leave/user_leave/user_leave.html:22
+#: horilla_theme/templates/leave/user_leave/user_leave.html:30
+msgid "No Limit"
+msgstr ""
+
+#: horilla_theme/templates/leave/user_leave/user_leave.html:25
+msgid "Carryforwrad Leave Days"
+msgstr ""
+
+#: horilla_theme/templates/leave/user_leave/user_leave.html:29
+#: horilla_theme/templates/report/leave_report.html:163
+msgid "Total Leave Days"
+msgstr ""
+
+#: horilla_theme/templates/leave/user_leave/user_leave.html:33
+msgid "Total Leave Taken"
+msgstr ""
+
+#: horilla_theme/templates/login.html:59
+msgid "Welcome to"
+msgstr ""
+
+#: horilla_theme/templates/login.html:59
+msgid "HR"
+msgstr ""
+
+#: horilla_theme/templates/login.html:62
+msgid "Please login to access the dashboard."
+msgstr ""
+
+#: horilla_theme/templates/login.html:119
+msgid "Sign In"
+msgstr ""
+
+#: horilla_theme/templates/login.html:134
+msgid "Initialize Database"
+msgstr ""
+
+#: horilla_theme/templates/login.html:146
+msgid "Load Demo Data"
+msgstr ""
+
+#: horilla_theme/templates/mail/view_templates.html:54
+msgid "View Template"
+msgstr ""
+
+#: horilla_theme/templates/notification/all_notifications.html:30
+msgid "ago by "
+msgstr ""
+
+#: horilla_theme/templates/notification/all_notifications.html:40
+#: horilla_theme/templates/notification/notification_items.html:51
+msgid "All Caught Up!"
+msgstr ""
+
+#: horilla_theme/templates/notification/all_notifications.html:41
+#: horilla_theme/templates/notification/notification_items.html:52
+msgid "You have no new notifications at the moment"
+msgstr ""
+
+#: horilla_theme/templates/notification/notification.html:6
+msgid "Notifications"
+msgstr ""
+
+#: horilla_theme/templates/notification/notification.html:34
+msgid "Clear Notifications"
+msgstr ""
+
+#: horilla_theme/templates/notification/notification.html:47
+msgid "View all Notification"
+msgstr ""
+
+#: horilla_theme/templates/notification/notification_items.html:32
+msgid "Anonymous"
+msgstr ""
+
+#: horilla_theme/templates/offboarding/dashboard/dashboard.html:41
+msgid "Exit Ratio"
+msgstr ""
+
+#: horilla_theme/templates/offboarding/dashboard/dashboard.html:44
+msgid "Archived Employees / Total Employees"
+msgstr ""
+
+#: horilla_theme/templates/offboarding/dashboard/dashboard.html:71
+msgid "Exiting to Joining Ratio"
+msgstr ""
+
+#: horilla_theme/templates/offboarding/dashboard/dashboard.html:75
+msgid "Exiting Employees : Joining Employees"
+msgstr ""
+
+#: horilla_theme/templates/offboarding/dashboard/dashboard.html:100
+msgid "Archived Employees"
+msgstr ""
+
+#: horilla_theme/templates/offboarding/dashboard/dashboard.html:116
+msgid "Joining and Offboarding Chart"
+msgstr ""
+
+#: horilla_theme/templates/offboarding/dashboard/dashboard.html:157
+msgid "Department - JobPosition Offboarding"
+msgstr ""
+
+#: horilla_theme/templates/offboarding/dashboard/dashboard.html:179
+msgid "Not Returned Assets"
+msgstr ""
+
+#: horilla_theme/templates/offboarding/dashboard/dashboard.html:198
+msgid "Offboarding Employees Feedbacks"
+msgstr ""
+
+#: horilla_theme/templates/offboarding/note/view_notes.html:77
+msgid "'s Note"
+msgstr ""
+
+#: horilla_theme/templates/offboarding/note/view_notes.html:234
+#: horilla_theme/templates/shift_request/htmx/shift_comment.html:236
+msgid "No Comments have been added for this Shift request"
+msgstr ""
+
+#: horilla_theme/templates/offboarding/settings/settings.html:10
+msgid ""
+"By enabling this normal users can request for their resignation progress"
+msgstr ""
+
+#: horilla_theme/templates/okr/emp_objective/emp_objective_list.html:96
+msgid "Activites"
+msgstr ""
+
+#: horilla_theme/templates/okr/emp_objective/emp_objective_list.html:134
+msgid "Do you want to un-archive this employee objective?"
+msgstr ""
+
+#: horilla_theme/templates/okr/emp_objective/emp_objective_list.html:137
+msgid "Unarchive"
+msgstr ""
+
+#: horilla_theme/templates/okr/emp_objective/emp_objective_list.html:143
+msgid "Do you want to archive this employee objective?"
+msgstr ""
+
+#: horilla_theme/templates/okr/emp_objective/emp_objective_list.html:153
+msgid "Do you want to delete this employee objective?"
+msgstr ""
+
+#: horilla_theme/templates/okr/emp_objective/emp_objective_nav.html:12
+msgid "Employee Objectives"
+msgstr ""
+
+#: horilla_theme/templates/okr/emp_objective/emp_objective_nav.html:20
+msgid "Search by Employee or Objective..."
+msgstr ""
+
+#: horilla_theme/templates/okr/emp_objective/emp_objective_nav.html:58
+#: horilla_theme/templates/report/pms_report.html:39
+msgid "Objective"
+msgstr ""
+
+#: horilla_theme/templates/okr/emp_objective/emp_objective_nav.html:72
+#: horilla_theme/templates/okr/emp_objective/emp_objective_nav.html:121
+#: horilla_theme/templates/report/payroll_report.html:72
+#: horilla_theme/templates/report/payroll_report.html:187
+#: horilla_theme/templates/report/pms_report.html:81
+#: horilla_theme/templates/report/recruitment_report.html:158
+msgid "Start Date From"
+msgstr ""
+
+#: horilla_theme/templates/okr/emp_objective/emp_objective_nav.html:76
+#: horilla_theme/templates/okr/emp_objective/emp_objective_nav.html:125
+#: horilla_theme/templates/report/payroll_report.html:78
+#: horilla_theme/templates/report/payroll_report.html:193
+#: horilla_theme/templates/report/pms_report.html:91
+msgid "Start Date Till"
+msgstr ""
+
+#: horilla_theme/templates/okr/emp_objective/emp_objective_nav.html:80
+#, python-format
+msgid "Objective Progress %% (GTE)"
+msgstr ""
+
+#: horilla_theme/templates/okr/emp_objective/emp_objective_nav.html:87
+#: horilla_theme/templates/okr/emp_objective/emp_objective_nav.html:129
+#: horilla_theme/templates/report/payroll_report.html:86
+#: horilla_theme/templates/report/payroll_report.html:201
+#: horilla_theme/templates/report/pms_report.html:98
+msgid "End Date From"
+msgstr ""
+
+#: horilla_theme/templates/okr/emp_objective/emp_objective_nav.html:91
+#: horilla_theme/templates/okr/emp_objective/emp_objective_nav.html:136
+#: horilla_theme/templates/report/payroll_report.html:92
+#: horilla_theme/templates/report/payroll_report.html:207
+#: horilla_theme/templates/report/pms_report.html:109
+msgid "End Date Till"
+msgstr ""
+
+#: horilla_theme/templates/okr/emp_objective/emp_objective_nav.html:103
+#, python-format
+msgid "Objective Progress %% (LTE)"
+msgstr ""
+
+#: horilla_theme/templates/okr/emp_objective/emp_objective_nav.html:140
+#, python-format
+msgid "KR Progress %% (GTE)"
+msgstr ""
+
+#: horilla_theme/templates/okr/emp_objective/emp_objective_nav.html:144
+#, python-format
+msgid "KR Progress %% (LTE)"
+msgstr ""
+
+#: horilla_theme/templates/okr/emp_objective/emp_objective_nav.html:152
+msgid "Quick Filters"
+msgstr ""
+
+#: horilla_theme/templates/okr/objective_detailed_view_activity.html:180
+#: horilla_theme/templates/okr/objective_detailed_view_activity.html:201
+msgid "updated"
+msgstr ""
+
+#: horilla_theme/templates/okr/objective_detailed_view_activity.html:181
+#: horilla_theme/templates/okr/objective_detailed_view_activity.html:203
+#: horilla_theme/templates/related_models.html:78
+msgid "from"
+msgstr ""
+
+#: horilla_theme/templates/okr/objective_detailed_view_activity.html:202
+msgid "field of "
+msgstr ""
+
+#: horilla_theme/templates/okr/objective_detailed_view_activity.html:203
+msgid "key result"
+msgstr ""
+
+#: horilla_theme/templates/okr/objective_detailed_view_activity.html:229
+msgid "added a comment"
+msgstr ""
+
+#: horilla_theme/templates/okr/objective_detailed_view_activity.html:253
+msgid "updated objective details"
+msgstr ""
+
+#: horilla_theme/templates/okr/okr_detailed_view.html:59
+#: horilla_theme/templates/report/pms_report.html:61
+msgid "Duration"
+msgstr ""
+
+#: horilla_theme/templates/okr/okr_detailed_view.html:79
+msgid "There are no assignees for this objective at the moment."
+msgstr ""
+
+#: horilla_theme/templates/onboarding/employee_bank_details.html:11
+#: horilla_theme/templates/onboarding/employee_creation.html:10
+#: horilla_theme/templates/onboarding/profile_view.html:12
+#: horilla_theme/templates/onboarding/user_creation.html:11
+#: horilla_theme/templates/onboarding/welcome_aboard.html:11
+msgid "Employee Onboarding"
+msgstr ""
+
+#: horilla_theme/templates/onboarding/employee_bank_details.html:53
+#: horilla_theme/templates/onboarding/employee_creation.html:42
+#: horilla_theme/templates/onboarding/profile_view.html:41
+#: horilla_theme/templates/onboarding/user_creation.html:69
+msgid "Login"
+msgstr ""
+
+#: horilla_theme/templates/onboarding/employee_bank_details.html:57
+#: horilla_theme/templates/onboarding/employee_creation.html:46
+#: horilla_theme/templates/onboarding/profile_view.html:45
+#: horilla_theme/templates/onboarding/user_creation.html:73
+msgid "Profile Setup"
+msgstr ""
+
+#: horilla_theme/templates/onboarding/employee_bank_details.html:61
+#: horilla_theme/templates/onboarding/employee_creation.html:50
+#: horilla_theme/templates/onboarding/employee_creation.html:61
+#: horilla_theme/templates/onboarding/profile_view.html:49
+#: horilla_theme/templates/onboarding/user_creation.html:77
+msgid "Personal Details"
+msgstr ""
+
+#: horilla_theme/templates/onboarding/employee_bank_details.html:65
+#: horilla_theme/templates/onboarding/employee_bank_details.html:72
+#: horilla_theme/templates/onboarding/employee_creation.html:54
+#: horilla_theme/templates/onboarding/profile_view.html:53
+#: horilla_theme/templates/onboarding/user_creation.html:81
+msgid "Bank Details"
+msgstr ""
+
+#: horilla_theme/templates/onboarding/employee_bank_details.html:76
+msgid "Bank Name"
+msgstr ""
+
+#: horilla_theme/templates/onboarding/employee_bank_details.html:83
+msgid "Account number"
+msgstr ""
+
+#: horilla_theme/templates/onboarding/employee_bank_details.html:90
+msgid "Branch"
+msgstr ""
+
+#: horilla_theme/templates/onboarding/employee_bank_details.html:104
+#: horilla_theme/templates/onboarding/employee_creation.html:93
+msgid "Country *"
+msgstr ""
+
+#: horilla_theme/templates/onboarding/employee_bank_details.html:112
+#: horilla_theme/templates/onboarding/employee_creation.html:103
+msgid "State *"
+msgstr ""
+
+#: horilla_theme/templates/onboarding/employee_bank_details.html:127
+#: horilla_theme/templates/onboarding/employee_bank_details.html:134
+msgid "Bank Code"
+msgstr ""
+
+#: horilla_theme/templates/onboarding/employee_bank_details.html:146
+msgid "Finish Onboarding"
+msgstr ""
+
+#: horilla_theme/templates/onboarding/employee_creation.html:65
+#: horilla_theme/templates/report/employee_report.html:44
+msgid "First Name"
+msgstr ""
+
+#: horilla_theme/templates/onboarding/employee_creation.html:72
+#: horilla_theme/templates/report/employee_report.html:59
+msgid "Last Name"
+msgstr ""
+
+#: horilla_theme/templates/onboarding/employee_creation.html:113
+msgid "Zip"
+msgstr ""
+
+#: horilla_theme/templates/onboarding/employee_creation.html:120
+msgid "DOB"
+msgstr ""
+
+#: horilla_theme/templates/onboarding/employee_creation.html:134
+#: horilla_theme/templates/tabs/personal_tab.html:74
+msgid "Qualification"
+msgstr ""
+
+#: horilla_theme/templates/onboarding/employee_creation.html:141
+#: horilla_theme/templates/tabs/personal_tab.html:78
+msgid "Experience"
+msgstr ""
+
+#: horilla_theme/templates/onboarding/employee_creation.html:148
+msgid "Marital Status"
+msgstr ""
+
+#: horilla_theme/templates/onboarding/employee_creation.html:155
+msgid "Children"
+msgstr ""
+
+#: horilla_theme/templates/onboarding/employee_creation.html:162
+msgid "Emergency Contact Number"
+msgstr ""
+
+#: horilla_theme/templates/onboarding/employee_creation.html:169
+#: horilla_theme/templates/tabs/personal_tab.html:86
+msgid "Emergency Contact Name"
+msgstr ""
+
+#: horilla_theme/templates/onboarding/employee_creation.html:176
+#: horilla_theme/templates/tabs/personal_tab.html:90
+msgid "Emergency Contact Relation"
+msgstr ""
+
+#: horilla_theme/templates/onboarding/employee_creation.html:187
+#: horilla_theme/templates/onboarding/profile_view.html:80
+#: horilla_theme/templates/onboarding/user_creation.html:115
+#: horilla_theme/templates/onboarding/welcome_aboard.html:44
+msgid "Next Step"
+msgstr ""
+
+#: horilla_theme/templates/onboarding/empty_task.html:11
+msgid "No Tasks found."
+msgstr ""
+
+#: horilla_theme/templates/onboarding/profile_view.html:71
+msgid "Welcome Aboard"
+msgstr ""
+
+#: horilla_theme/templates/onboarding/user_creation.html:86
+msgid "Authentication"
+msgstr ""
+
+#: horilla_theme/templates/onboarding/welcome_aboard.html:38
+msgid "Welcome Aboard!"
+msgstr ""
+
+#: horilla_theme/templates/onboarding/welcome_aboard.html:41
+msgid "Hey there, welcome to our team. Let's get you started."
+msgstr ""
+
+#: horilla_theme/templates/organisation_chart/org_chart.html:21
+msgid "Organization Chart"
+msgstr ""
+
+#: horilla_theme/templates/organisation_chart/org_chart.html:26
+#: horilla_theme/templates/organisation_chart/org_chart.html:39
+msgid "Reporting Managers"
+msgstr ""
+
+#: horilla_theme/templates/payroll/dashboard.html:29
+msgid "Paid"
+msgstr ""
+
+#: horilla_theme/templates/payroll/dashboard.html:52
+msgid "Confirmed"
+msgstr ""
+
+#: horilla_theme/templates/payroll/dashboard.html:76
+msgid "Review Ongoing"
+msgstr ""
+
+#: horilla_theme/templates/payroll/dashboard.html:100
+msgid "Draft"
+msgstr ""
+
+#: horilla_theme/templates/payroll/dashboard.html:119
+msgid "Select Month and Year:"
+msgstr ""
+
+#: horilla_theme/templates/payroll/dashboard.html:190
+msgid "Contributions"
+msgstr ""
+
+#: horilla_theme/templates/payroll/dashboard.html:228
+msgid "Employee Payslips"
+msgstr ""
+
+#: horilla_theme/templates/payroll/dashboard.html:248
+msgid "Total Payslips"
+msgstr ""
+
+#: horilla_theme/templates/payroll/dashboard.html:251
+msgid "Total Payslips Genarated :"
+msgstr ""
+
+#: horilla_theme/templates/payroll/dashboard.html:257
+#: horilla_theme/templates/payroll/dashboard.html:262
+msgid "Total Amount :"
+msgstr ""
+
+#: horilla_theme/templates/payroll/dashboard.html:272
+msgid "Department Total Amount"
+msgstr ""
+
+#: horilla_theme/templates/payroll/dashboard.html:288
+msgid "Employer Contributions"
+msgstr ""
+
+#: horilla_theme/templates/payroll/dashboard.html:340
+msgid "Contracts Ending "
+msgstr ""
+
+#: horilla_theme/templates/payroll/dashboard.html:343
+msgid "Number of contracts expiring in "
+msgstr ""
+
+#: horilla_theme/templates/payroll/dashboard.html:367
+msgid "Contracts Expired"
+msgstr ""
+
+#: horilla_theme/templates/payroll/dashboard.html:370
+msgid "Number of contracts expired in "
+msgstr ""
+
+#: horilla_theme/templates/payroll/dashboard/contribution.html:9
+msgid "Deduction"
+msgstr ""
+
+#: horilla_theme/templates/payroll/dashboard/contribution.html:12
+msgid "Employee Contribution"
+msgstr ""
+
+#: horilla_theme/templates/payroll/dashboard/contribution.html:15
+msgid "Employer Contribution"
+msgstr ""
+
+#: horilla_theme/templates/payroll/loan/installments.html:7
+msgid "Details"
+msgstr ""
+
+#: horilla_theme/templates/payroll/loan/installments.html:44
+msgid "Total Amount"
+msgstr ""
+
+#: horilla_theme/templates/payroll/loan/installments.html:52
+msgid "Paid Amount"
+msgstr ""
+
+#: horilla_theme/templates/payroll/loan/installments.html:60
+msgid "Balance Amount"
+msgstr ""
+
+#: horilla_theme/templates/payroll/loan/installments.html:88
+msgid "S/N"
+msgstr ""
+
+#: horilla_theme/templates/payroll/loan/installments.html:91
+msgid "One Time Date"
+msgstr ""
+
+#: horilla_theme/templates/payroll/payslip/individual_payslip.html:24
+#: horilla_theme/templates/report/payroll_report.html:40
+#: horilla_theme/templates/report/payroll_report.html:246
+msgid "Payslip"
+msgstr ""
+
+#: horilla_theme/templates/payroll/payslip/individual_payslip.html:31
+msgid "Do you want to send the payslip by mail?"
+msgstr ""
+
+#: horilla_theme/templates/payroll/payslip/individual_payslip.html:34
+msgid "Send via mail"
+msgstr ""
+
+#: horilla_theme/templates/payroll/payslip/individual_payslip.html:38
+#: horilla_theme/templates/payroll/payslip/individual_payslip.html:40
+msgid "Download"
+msgstr ""
+
+#: horilla_theme/templates/payroll/payslip/individual_payslip.html:67
+msgid "Total Net Payable"
+msgstr ""
+
+#: horilla_theme/templates/payroll/payslip/individual_payslip.html:68
+msgid "Gross Earnings - Total Deductions"
+msgstr ""
+
+#: horilla_theme/templates/payroll/payslip/individual_payslip_summery.html:7
+msgid "Employee Net Pay"
+msgstr ""
+
+#: horilla_theme/templates/payroll/payslip/individual_payslip_summery.html:11
+msgid "Actual Basic Pay"
+msgstr ""
+
+#: horilla_theme/templates/payroll/payslip/individual_payslip_summery.html:19
+msgid "Paid Days"
+msgstr ""
+
+#: horilla_theme/templates/payroll/payslip/individual_payslip_summery.html:25
+msgid "LOP Days"
+msgstr ""
+
+#: horilla_theme/templates/payroll/payslip/individual_payslip_summery.html:30
+msgid "Updated Basic Pay"
+msgstr ""
+
+#: horilla_theme/templates/payroll/payslip/individual_payslip_summery.html:34
+#: horilla_theme/templates/payroll/payslip/individual_payslip_summery.html:49
+#: horilla_theme/templates/payroll/payslip/individual_payslip_summery.html:112
+#: horilla_theme/templates/payroll/payslip/individual_payslip_summery.html:136
+#: horilla_theme/templates/payroll/payslip/individual_payslip_summery.html:180
+#: horilla_theme/templates/payroll/payslip/individual_payslip_summery.html:196
+#: horilla_theme/templates/payroll/payslip/individual_payslip_summery.html:242
+#: horilla_theme/templates/payroll/payslip/individual_payslip_summery.html:260
+msgid "Info"
+msgstr ""
+
+#: horilla_theme/templates/payroll/payslip/individual_payslip_summery.html:35
+msgid "The payslip is calculated based on the updated basic pay"
+msgstr ""
+
+#: horilla_theme/templates/payroll/payslip/individual_payslip_summery.html:45
+msgid "Taxable Gross Pay"
+msgstr ""
+
+#: horilla_theme/templates/payroll/payslip/individual_payslip_summery.html:50
+msgid "Taxable amount"
+msgstr ""
+
+#: horilla_theme/templates/payroll/payslip/individual_payslip_summery.html:63
+msgid "Employee Details"
+msgstr ""
+
+#: horilla_theme/templates/payroll/payslip/individual_payslip_summery.html:70
+msgid "Employee Name"
+msgstr ""
+
+#: horilla_theme/templates/payroll/payslip/individual_payslip_summery.html:80
+msgid "Bank Acc."
+msgstr ""
+
+#: horilla_theme/templates/payroll/payslip/individual_payslip_summery.html:88
+msgid "Allowances"
+msgstr ""
+
+#: horilla_theme/templates/payroll/payslip/individual_payslip_summery.html:92
+msgid "Add Allowance"
+msgstr ""
+
+#: horilla_theme/templates/payroll/payslip/individual_payslip_summery.html:109
+msgid "Basic Pay"
+msgstr ""
+
+#: horilla_theme/templates/payroll/payslip/individual_payslip_summery.html:114
+msgid ""
+"Some deductions will update basic pay before payslip calculation starts, eg: "
+"LOP is Deduducted from basic pay if `Deduct leave from basic pay` field is "
+"enabled on the contract, and also with the update compensation deduction "
+"through"
+msgstr ""
+
+#: horilla_theme/templates/payroll/payslip/individual_payslip_summery.html:133
+msgid "Total Gross Pay"
+msgstr ""
+
+#: horilla_theme/templates/payroll/payslip/individual_payslip_summery.html:138
+msgid ""
+"Some Deduction will update the total gross pay using the deductions that are "
+"enabled update compensation"
+msgstr ""
+
+#: horilla_theme/templates/payroll/payslip/individual_payslip_summery.html:153
+msgid "Add Deduction"
+msgstr ""
+
+#: horilla_theme/templates/payroll/payslip/individual_payslip_summery.html:169
+msgid "Loss of Pay"
+msgstr ""
+
+#: horilla_theme/templates/payroll/payslip/individual_payslip_summery.html:182
+msgid "Basic Pay Deductions"
+msgstr ""
+
+#: horilla_theme/templates/payroll/payslip/individual_payslip_summery.html:198
+msgid "Gross Pay Deductions"
+msgstr ""
+
+#: horilla_theme/templates/payroll/payslip/individual_payslip_summery.html:223
+msgid "Federal Tax"
+msgstr ""
+
+#: horilla_theme/templates/payroll/payslip/individual_payslip_summery.html:244
+msgid "Net Pay Deductions"
+msgstr ""
+
+#: horilla_theme/templates/payroll/payslip/individual_payslip_summery.html:255
+msgid "Total Deductions"
+msgstr ""
+
+#: horilla_theme/templates/payroll/payslip/individual_payslip_summery.html:259
+msgid ""
+"Some deductions are not included in the total deductions because they are "
+"given as updated compensations. These deductions may be applied before the "
+"main calculation begins, such as from the basic pay or gross pay, while "
+"others are deducted after calculating the net pay."
+msgstr ""
+
+#: horilla_theme/templates/payroll/reimbursement/reimbursement_comment.html:206
+msgid "'s reimbursement request"
+msgstr ""
+
+#: horilla_theme/templates/payroll/reimbursement/reimbursement_comment.html:228
+msgid "No Comments have been added for this reimbursement request"
+msgstr ""
+
+#: horilla_theme/templates/payroll/settings/payroll_settings.html:15
+msgid "Currency Symbol"
+msgstr ""
+
+#: horilla_theme/templates/payroll/settings/payroll_settings.html:19
+msgid "Position"
+msgstr ""
+
+#: horilla_theme/templates/payroll/settings/settings.html:8
+msgid "Default Notice Period"
+msgstr ""
+
+#: horilla_theme/templates/payroll/settings/settings.html:9
+msgid " Set initial notice period (in days)"
+msgstr ""
+
+#: horilla_theme/templates/payroll/tax/filing_status_list.html:81
+msgid "No tax filing status has been recorded."
+msgstr ""
+
+#: horilla_theme/templates/payroll/tax/tax_bracket_actions.html:12
+msgid "Are you sure to delete this Tax bracket ?"
+msgstr ""
+
+#: horilla_theme/templates/pipeline/matching_resumes.html:33
+msgid "Score"
+msgstr ""
+
+#: horilla_theme/templates/pipeline/matching_resumes.html:58
+msgid "Need verification"
+msgstr ""
+
+#: horilla_theme/templates/pipeline/matching_resumes.html:67
+msgid "Candidated Added"
+msgstr ""
+
+#: horilla_theme/templates/pipeline/matching_resumes.html:75
+msgid "Create Candidate"
+msgstr ""
+
+#: horilla_theme/templates/pipeline/pipeline_components/view_note.html:238
+#: horilla_theme/templates/tabs/note_tab.html:132
+msgid "At"
+msgstr ""
+
+#: horilla_theme/templates/pipeline/pipeline_components/view_note.html:283
+#: horilla_theme/templates/tabs/note_tab.html:164
+msgid "No notes have been added for this employee"
+msgstr ""
+
+#: horilla_theme/templates/policies/records.html:66
+msgid "View Policy"
+msgstr ""
+
+#: horilla_theme/templates/recruitment/open_recruitments.html:13
+msgid " - Open Recruitments"
+msgstr ""
+
+#: horilla_theme/templates/recruitment/open_recruitments.html:78
+msgid "Open Job Listings"
+msgstr ""
+
+#: horilla_theme/templates/recruitment/open_recruitments.html:83
+msgid ""
+"We're hiring! Join our team and be part of a vibrant workplace where your "
+"talents make a difference. Here are the open Recruitments...."
+msgstr ""
+
+#: horilla_theme/templates/recruitment/open_recruitments.html:116
+msgid "Applied"
+msgstr ""
+
+#: horilla_theme/templates/recruitment/open_recruitments.html:116
+msgid "Capacity"
+msgstr ""
+
+#: horilla_theme/templates/recruitment/open_recruitments.html:123
+msgid "Total vacancies"
+msgstr ""
+
+#: horilla_theme/templates/recruitment/open_recruitments.html:137
+msgid "Apply"
+msgstr ""
+
+#: horilla_theme/templates/recruitment/open_recruitments.html:164
+msgid "Recruitment Details"
+msgstr ""
+
+#: horilla_theme/templates/recruitment/recruitment_details.html:5
+msgid "Job positions :"
+msgstr ""
+
+#: horilla_theme/templates/recruitment/recruitment_details.html:15
+msgid "Apply Now"
+msgstr ""
+
+#: horilla_theme/templates/recruitment/settings/settings.html:4
+#: horilla_theme/templates/settings.html:206
+msgid "Candidate Self Tracking"
+msgstr ""
+
+#: horilla_theme/templates/recruitment/settings/settings.html:11
+msgid "Application Tracking"
+msgstr ""
+
+#: horilla_theme/templates/recruitment/settings/settings.html:12
+msgid "By enabling the feature candidates can track their recruitment progress"
+msgstr ""
+
+#: horilla_theme/templates/recruitment/settings/settings.html:25
+msgid "Rating Visiblity"
+msgstr ""
+
+#: horilla_theme/templates/recruitment/settings/settings.html:26
+msgid ""
+"By enabling the feature candidates can view their recruitment overall rating"
+msgstr ""
+
+#: horilla_theme/templates/related_models.html:34
+msgid "assigned as"
+msgstr ""
+
+#: horilla_theme/templates/related_models.html:40
+msgid "Assigned As"
+msgstr ""
+
+#: horilla_theme/templates/related_models.html:43
+msgid "Replace Employee"
+msgstr ""
+
+#: horilla_theme/templates/related_models.html:78
+msgid "Replace"
+msgstr ""
+
+#: horilla_theme/templates/related_models.html:90
+msgid "Submit"
+msgstr ""
+
+#: horilla_theme/templates/report/asset_report.html:14
+msgid "Asset Reports"
+msgstr ""
+
+#: horilla_theme/templates/report/asset_report.html:48
+msgid "Asset Name"
+msgstr ""
+
+#: horilla_theme/templates/report/asset_report.html:52
+msgid "Tracking Id"
+msgstr ""
+
+#: horilla_theme/templates/report/asset_report.html:59
+msgid "Purchase Date"
+msgstr ""
+
+#: horilla_theme/templates/report/asset_report.html:63
+msgid "Purchase Cost"
+msgstr ""
+
+#: horilla_theme/templates/report/asset_report.html:69
+msgid "Asset Batch Number"
+msgstr ""
+
+#: horilla_theme/templates/report/asset_report.html:111
+#: horilla_theme/templates/report/attendance_report.html:170
+#: horilla_theme/templates/report/employee_report.html:135
+#: horilla_theme/templates/report/leave_report.html:253
+#: horilla_theme/templates/report/payroll_report.html:237
+#: horilla_theme/templates/report/pms_report.html:189
+#: horilla_theme/templates/report/recruitment_report.html:239
+msgid "Export Table"
+msgstr ""
+
+#: horilla_theme/templates/report/attendance_report.html:12
+msgid "Attendance Reports"
+msgstr ""
+
+#: horilla_theme/templates/report/attendance_report.html:41
+#: horilla_theme/templates/settings.html:347
+msgid "Attendance"
+msgstr ""
+
+#: horilla_theme/templates/report/attendance_report.html:55
+#: horilla_theme/templates/report/employee_report.html:86
+#: horilla_theme/templates/report/leave_report.html:115
+msgid "Shift"
+msgstr ""
+
+#: horilla_theme/templates/report/attendance_report.html:70
+#: horilla_theme/templates/report/employee_report.html:100
+#: horilla_theme/templates/report/leave_report.html:121
+#: horilla_theme/templates/settings.html:259
+msgid "Work Type"
+msgstr ""
+
+#: horilla_theme/templates/report/attendance_report.html:77
+msgid "Attendance Date"
+msgstr ""
+
+#: horilla_theme/templates/report/attendance_report.html:81
+msgid "In Time"
+msgstr ""
+
+#: horilla_theme/templates/report/attendance_report.html:85
+msgid "Min Hour"
+msgstr ""
+
+#: horilla_theme/templates/report/attendance_report.html:91
+#: horilla_theme/templates/report/payroll_report.html:61
+msgid "Batch"
+msgstr ""
+
+#: horilla_theme/templates/report/attendance_report.html:95
+msgid "Out Time"
+msgstr ""
+
+#: horilla_theme/templates/report/attendance_report.html:101
+msgid "Attendance From"
+msgstr ""
+
+#: horilla_theme/templates/report/attendance_report.html:105
+msgid "In From"
+msgstr ""
+
+#: horilla_theme/templates/report/attendance_report.html:109
+msgid "Out From"
+msgstr ""
+
+#: horilla_theme/templates/report/attendance_report.html:113
+msgid "At Work Greater or Equal"
+msgstr ""
+
+#: horilla_theme/templates/report/attendance_report.html:117
+msgid "OT Greater or Equal"
+msgstr ""
+
+#: horilla_theme/templates/report/attendance_report.html:124
+msgid "Attendance Till"
+msgstr ""
+
+#: horilla_theme/templates/report/attendance_report.html:128
+msgid "In Till"
+msgstr ""
+
+#: horilla_theme/templates/report/attendance_report.html:132
+msgid "Out Till"
+msgstr ""
+
+#: horilla_theme/templates/report/attendance_report.html:136
+msgid "At Work Less Than or Equal"
+msgstr ""
+
+#: horilla_theme/templates/report/attendance_report.html:140
+msgid "OT Less Than or Equal"
+msgstr ""
+
+#: horilla_theme/templates/report/employee_report.html:11
+msgid "Employee Reports"
+msgstr ""
+
+#: horilla_theme/templates/report/employee_report.html:82
+#: horilla_theme/templates/settings.html:162
+msgid "Job Role"
+msgstr ""
+
+#: horilla_theme/templates/report/employee_report.html:92
+#: horilla_theme/templates/report/leave_report.html:97
+msgid "Reporting Manager"
+msgstr ""
+
+#: horilla_theme/templates/report/employee_report.html:104
+#: horilla_theme/templates/settings.html:309
+msgid "Employee Type"
+msgstr ""
+
+#: horilla_theme/templates/report/leave_report.html:12
+msgid "Leave Reports"
+msgstr ""
+
+#: horilla_theme/templates/report/leave_report.html:40
+#: horilla_theme/templates/report/leave_report.html:263
+msgid "Leave Request"
+msgstr ""
+
+#: horilla_theme/templates/report/leave_report.html:77
+msgid "From Date"
+msgstr ""
+
+#: horilla_theme/templates/report/leave_report.html:84
+msgid "To Date"
+msgstr ""
+
+#: horilla_theme/templates/report/leave_report.html:130
+#: horilla_theme/templates/report/leave_report.html:264
+msgid "Available Leave"
+msgstr ""
+
+#: horilla_theme/templates/report/leave_report.html:155
+msgid "Carryforward Days"
+msgstr ""
+
+#: horilla_theme/templates/report/leave_report.html:169
+msgid "Assigned Date"
+msgstr ""
+
+#: horilla_theme/templates/report/leave_report.html:179
+msgid "Available Days Greater or Equal"
+msgstr ""
+
+#: horilla_theme/templates/report/leave_report.html:187
+msgid "Available Days Less Than or Equal"
+msgstr ""
+
+#: horilla_theme/templates/report/leave_report.html:197
+msgid "Carryforward Days Greater or Equal"
+msgstr ""
+
+#: horilla_theme/templates/report/leave_report.html:205
+msgid "Carryforward Days Less Than or Equal"
+msgstr ""
+
+#: horilla_theme/templates/report/leave_report.html:215
+msgid "Total Leave Days Greater or Equal"
+msgstr ""
+
+#: horilla_theme/templates/report/leave_report.html:223
+msgid "Total Leave Days Less Than or Equal"
+msgstr ""
+
+#: horilla_theme/templates/report/leave_report.html:261
+#: horilla_theme/templates/report/payroll_report.html:244
+#: horilla_theme/templates/report/pms_report.html:196
+#: horilla_theme/templates/report/recruitment_report.html:246
+msgid "Choose Report"
+msgstr ""
+
+#: horilla_theme/templates/report/payroll_report.html:11
+msgid "Payroll Reports"
+msgstr ""
+
+#: horilla_theme/templates/report/payroll_report.html:101
+msgid "Gross Pay Less Than or Equal"
+msgstr ""
+
+#: horilla_theme/templates/report/payroll_report.html:109
+msgid "Gross Pay Greater or Equal"
+msgstr ""
+
+#: horilla_theme/templates/report/payroll_report.html:119
+msgid "Deduction Less Than or Equal"
+msgstr ""
+
+#: horilla_theme/templates/report/payroll_report.html:127
+msgid "Deduction Greater or Equal"
+msgstr ""
+
+#: horilla_theme/templates/report/payroll_report.html:137
+msgid "Net Pay Less Than or Equal"
+msgstr ""
+
+#: horilla_theme/templates/report/payroll_report.html:145
+msgid "Net Pay Greater or Equal"
+msgstr ""
+
+#: horilla_theme/templates/report/payroll_report.html:154
+#: horilla_theme/templates/report/payroll_report.html:247
+msgid "Allowance & Deduction"
+msgstr ""
+
+#: horilla_theme/templates/report/payroll_report.html:159
+msgid "Allowance Greater than"
+msgstr ""
+
+#: horilla_theme/templates/report/payroll_report.html:165
+msgid "Allowance Less than"
+msgstr ""
+
+#: horilla_theme/templates/report/payroll_report.html:173
+msgid "Deduction Greater than"
+msgstr ""
+
+#: horilla_theme/templates/report/payroll_report.html:179
+msgid "Deduction Less than"
+msgstr ""
+
+#: horilla_theme/templates/report/pms_report.html:11
+msgid "Performance Reports"
+msgstr ""
+
+#: horilla_theme/templates/report/pms_report.html:70
+#: horilla_theme/templates/report/pms_report.html:199
+msgid "Employee Objective"
+msgstr ""
+
+#: horilla_theme/templates/report/pms_report.html:118
+#: horilla_theme/templates/report/pms_report.html:200
+msgid "Feedback"
+msgstr ""
+
+#: horilla_theme/templates/report/pms_report.html:123
+msgid "Feedback Title"
+msgstr ""
+
+#: horilla_theme/templates/report/pms_report.html:153
+msgid "Subordinate"
+msgstr ""
+
+#: horilla_theme/templates/report/pms_report.html:198
+msgid "Objectives"
+msgstr ""
+
+#: horilla_theme/templates/report/recruitment_report.html:11
+msgid "Candidate Reports"
+msgstr ""
+
+#: horilla_theme/templates/report/recruitment_report.html:38
+#: horilla_theme/templates/report/recruitment_report.html:248
+#: horilla_theme/templates/skill_zone/skill_zone_list.html:125
+msgid "Candidate"
+msgstr ""
+
+#: horilla_theme/templates/report/recruitment_report.html:71
+msgid "Offer Status"
+msgstr ""
+
+#: horilla_theme/templates/report/recruitment_report.html:99
+msgid "Stage Type"
+msgstr ""
+
+#: horilla_theme/templates/report/recruitment_report.html:104
+msgid "Is Canceled"
+msgstr ""
+
+#: horilla_theme/templates/report/recruitment_report.html:130
+msgid "Is Closed"
+msgstr ""
+
+#: horilla_theme/templates/report/recruitment_report.html:132
+msgid "Unknown"
+msgstr ""
+
+#: horilla_theme/templates/report/recruitment_report.html:133
+msgid "True"
+msgstr ""
+
+#: horilla_theme/templates/report/recruitment_report.html:134
+msgid "False"
+msgstr ""
+
+#: horilla_theme/templates/report/recruitment_report.html:152
+msgid "Is Published"
+msgstr ""
+
+#: horilla_theme/templates/report/recruitment_report.html:162
+msgid "Is Active"
+msgstr ""
+
+#: horilla_theme/templates/report/recruitment_report.html:168
+msgid "Till End Date"
+msgstr ""
+
+#: horilla_theme/templates/report/recruitment_report.html:178
+#: horilla_theme/templates/report/recruitment_report.html:250
+msgid "Onboarding"
+msgstr ""
+
+#: horilla_theme/templates/report/recruitment_report.html:187
+#: horilla_theme/templates/task/new/task_kanban_view.html:33
+#: horilla_theme/templates/task/new/task_list_view.html:24
+msgid "Stage"
+msgstr ""
+
+#: horilla_theme/templates/report/recruitment_report.html:191
+msgid "Task"
+msgstr ""
+
+#: horilla_theme/templates/report/recruitment_report.html:202
+msgid "Candidates"
+msgstr ""
+
+#: horilla_theme/templates/report/recruitment_report.html:206
+msgid "Stage Manager"
+msgstr ""
+
+#: horilla_theme/templates/report/recruitment_report.html:210
+msgid "Task Manager"
+msgstr ""
+
+#: horilla_theme/templates/requests/attendance/individual_view.html:24
+msgid "Current Value"
+msgstr ""
+
+#: horilla_theme/templates/requests/attendance/individual_view.html:26
+msgid "Requested Value"
+msgstr ""
+
+#: horilla_theme/templates/requests/attendance/request_new_form.html:6
+msgid "New Attendances Request"
+msgstr ""
+
+#: horilla_theme/templates/settings.html:10
+msgid "Settings"
+msgstr ""
+
+#: horilla_theme/templates/settings.html:40
+msgid "General Settings"
+msgstr ""
+
+#: horilla_theme/templates/settings.html:50
+msgid "Employee Permission"
+msgstr ""
+
+#: horilla_theme/templates/settings.html:60
+msgid "User Group"
+msgstr ""
+
+#: horilla_theme/templates/settings.html:70
+msgid "Accessibility Restriction"
+msgstr ""
+
+#: horilla_theme/templates/settings.html:80
+msgid "Date & Time Format"
+msgstr ""
+
+#: horilla_theme/templates/settings.html:90
+msgid "History Tags"
+msgstr ""
+
+#: horilla_theme/templates/settings.html:100
+msgid "Mail Server"
+msgstr ""
+
+#: horilla_theme/templates/settings.html:109
+msgid "Outlook Mail"
+msgstr ""
+
+#: horilla_theme/templates/settings.html:128
+msgid "Base"
+msgstr ""
+
+#: horilla_theme/templates/settings.html:152
+msgid "Job Positions"
+msgstr ""
+
+#: horilla_theme/templates/settings.html:216
+msgid "Candidate Reject Reason"
+msgstr ""
+
+#: horilla_theme/templates/settings.html:226
+msgid "Skills"
+msgstr ""
+
+#: horilla_theme/templates/settings.html:269
+msgid "Rotating Work Type"
+msgstr ""
+
+#: horilla_theme/templates/settings.html:279
+msgid "Employee Shift"
+msgstr ""
+
+#: horilla_theme/templates/settings.html:289
+msgid "Rotating Shift"
+msgstr ""
+
+#: horilla_theme/templates/settings.html:299
+msgid "Employee Shift Schedule"
+msgstr ""
+
+#: horilla_theme/templates/settings.html:319
+msgid "Disciplinary Action Type"
+msgstr ""
+
+#: horilla_theme/templates/settings.html:329
+msgid "Employee Tags"
+msgstr ""
+
+#: horilla_theme/templates/settings.html:361
+msgid "Track Late Come & Early Out"
+msgstr ""
+
+#: horilla_theme/templates/settings.html:371
+msgid "Attendance Break Point"
+msgstr ""
+
+#: horilla_theme/templates/settings.html:381
+msgid "Check In/Check Out"
+msgstr ""
+
+#: horilla_theme/templates/settings.html:391
+msgid "Grace Time"
+msgstr ""
+
+#: horilla_theme/templates/settings.html:423
+msgid "Geo & Face Config"
+msgstr ""
+
+#: horilla_theme/templates/settings.html:455
+msgid "Restrictions"
+msgstr ""
+
+#: horilla_theme/templates/settings.html:485
+msgid "Payroll"
+msgstr ""
+
+#: horilla_theme/templates/settings.html:499
+msgid "Payslip Auto Generation"
+msgstr ""
+
+#: horilla_theme/templates/settings.html:516
+msgid "Performance"
+msgstr ""
+
+#: horilla_theme/templates/settings.html:530
+msgid "Bonus Point Setting"
+msgstr ""
+
+#: horilla_theme/templates/settings.html:548
+msgid "Help Desk"
+msgstr ""
+
+#: horilla_theme/templates/settings.html:562
+msgid "Department Managers"
+msgstr ""
+
+#: horilla_theme/templates/settings.html:572
+msgid "Ticket Type"
+msgstr ""
+
+#: horilla_theme/templates/settings.html:582
+msgid "Helpdesk Tags"
+msgstr ""
+
+#: horilla_theme/templates/settings.html:623
+msgid "Integrations"
+msgstr ""
+
+#: horilla_theme/templates/settings.html:637
+msgid "Gdrive Backup"
+msgstr ""
+
+#: horilla_theme/templates/settings.html:648
+msgid "Linkedin"
+msgstr ""
+
+#: horilla_theme/templates/settings.html:660
+msgid "LDAP"
+msgstr ""
+
+#: horilla_theme/templates/settings.html:686
+msgid "Whatsapp"
+msgstr ""
+
+#: horilla_theme/templates/settings/encashment_settings.html:16
+msgid "Bonus Unit"
+msgstr ""
+
+#: horilla_theme/templates/settings/encashment_settings.html:17
+msgid "Set the amount for one bonus points encashment (unit)"
+msgstr ""
+
+#: horilla_theme/templates/settings/encashment_settings.html:24
+msgid "Leave Unit"
+msgstr ""
+
+#: horilla_theme/templates/settings/encashment_settings.html:25
+msgid "Set the amout for one leave encashment"
+msgstr ""
+
+#: horilla_theme/templates/settings/linkedin/linkedin_setting_section.html:7
+msgid "LinkedIn Integration"
+msgstr ""
+
+#: horilla_theme/templates/settings/linkedin/linkedin_setting_section.html:15
+msgid "Enable Linkedin"
+msgstr ""
+
+#: horilla_theme/templates/settings/linkedin/linkedin_setting_section.html:19
+msgid "Enable this to integrate linkedin to Horilla."
+msgstr ""
+
+#: horilla_theme/templates/settings/settings.html:15
+msgid "Prefix"
+msgstr ""
+
+#: horilla_theme/templates/settings/settings.html:16
+msgid "Set initial badge-id"
+msgstr ""
+
+#: horilla_theme/templates/shift_request/htmx/shift_comment.html:214
+msgid "'s shift request"
+msgstr ""
+
+#: horilla_theme/templates/skill_zone/skill_zone_list.html:67
+msgid "Do you want to archive this skill zone ?"
+msgstr ""
+
+#: horilla_theme/templates/skill_zone/skill_zone_list.html:83
+msgid "Do you want to unarchive this skill zone?"
+msgstr ""
+
+#: horilla_theme/templates/skill_zone/skill_zone_list.html:91
+msgid "Un-Archive"
+msgstr ""
+
+#: horilla_theme/templates/skill_zone/skill_zone_list.html:102
+msgid "Are you sure want to delete this skill zone?"
+msgstr ""
+
+#: horilla_theme/templates/skill_zone/skill_zone_list.html:109
+msgid "Remove"
+msgstr ""
+
+#: horilla_theme/templates/skill_zone/skill_zone_list.html:126
+msgid "Reason"
+msgstr ""
+
+#: horilla_theme/templates/skill_zone/skill_zone_list.html:127
+msgid "Added on"
+msgstr ""
+
+#: horilla_theme/templates/skill_zone/skill_zone_list.html:194
+msgid "Do you want to remove this candidate"
+msgstr ""
+
+#: horilla_theme/templates/skill_zone/skill_zone_nav.html:12
+msgid "Skill Zone"
+msgstr ""
+
+#: horilla_theme/templates/skill_zone/skill_zone_nav.html:80
+msgid "Candidate Filter"
+msgstr ""
+
+#: horilla_theme/templates/skill_zone/skill_zone_nav.html:109
+msgid "Reject Reason"
+msgstr ""
+
+#: horilla_theme/templates/survey/survey_card.html:66
+msgid "Are you sure want to delete?"
+msgstr ""
+
+#: horilla_theme/templates/survey/template_accordion.html:31
+msgid "Preview"
+msgstr ""
+
+#: horilla_theme/templates/survey/template_accordion.html:39
+msgid "Add Questions"
+msgstr ""
+
+#: horilla_theme/templates/survey/template_accordion.html:55
+msgid "Do you want to delete this template"
+msgstr ""
+
+#: horilla_theme/templates/survey/template_accordion.html:79
+msgid "Type"
+msgstr ""
+
+#: horilla_theme/templates/survey/template_accordion.html:125
+#: horilla_theme/templates/tabs/scheduled_interview.html:76
+msgid "delete"
+msgstr ""
+
+#: horilla_theme/templates/survey/template_accordion.html:241
+msgid "No template groups have been established yet."
+msgstr ""
+
+#: horilla_theme/templates/survey/view_question_templates.html:21
+msgid "Create Survey Template"
+msgstr ""
+
+#: horilla_theme/templates/survey/view_question_templates.html:52
+msgid "Duplicate Survey Template"
+msgstr ""
+
+#: horilla_theme/templates/survey/view_question_templates.html:64
+msgid "Survey Templates"
+msgstr ""
+
+#: horilla_theme/templates/survey/view_question_templates.html:124
+msgid "Template"
+msgstr ""
+
+#: horilla_theme/templates/survey/view_question_templates.html:155
+msgid "Add Template"
+msgstr ""
+
+#: horilla_theme/templates/survey/view_question_templates.html:206
+msgid "Create survey questions"
+msgstr ""
+
+#: horilla_theme/templates/survey_preview_form.html:34
+msgid "Please select one option"
+msgstr ""
+
+#: horilla_theme/templates/tabs/bonus_points.html:12
+msgid "Bonus Points"
+msgstr ""
+
+#: horilla_theme/templates/tabs/bonus_points.html:36
+msgid "Balance point(s) to redeem"
+msgstr ""
+
+#: horilla_theme/templates/tabs/bonus_points.html:45
+msgid "Redeem"
+msgstr ""
+
+#: horilla_theme/templates/tabs/bonus_points.html:56
+msgid "Points History"
+msgstr ""
+
+#: horilla_theme/templates/tabs/bonus_points.html:67
+msgid "Bonus account Created"
+msgstr ""
+
+#: horilla_theme/templates/tabs/bonus_points.html:78
+msgid "Redeem request created for"
+msgstr ""
+
+#: horilla_theme/templates/tabs/bonus_points.html:79
+msgid "points"
+msgstr ""
+
+#: horilla_theme/templates/tabs/bonus_points.html:93
+msgid "Added "
+msgstr ""
+
+#: horilla_theme/templates/tabs/bonus_points.html:94
+msgid "bonus points for "
+msgstr ""
+
+#: horilla_theme/templates/tabs/group_permissions.html:9
+msgid "Employee Permissions"
+msgstr ""
+
+#: horilla_theme/templates/tabs/group_permissions.html:22
+msgid "Groups"
+msgstr ""
+
+#: horilla_theme/templates/tabs/group_permissions.html:51
+msgid "This employee is not assigned to any groups."
+msgstr ""
+
+#: horilla_theme/templates/tabs/personal_tab.html:82
+msgid "Emergency Contact"
+msgstr ""
+
+#: horilla_theme/templates/tabs/scheduled_interview.html:93
+msgid "edit"
+msgstr ""
+
+#: horilla_theme/templates/tabs/scheduled_interview.html:117
+msgid "Interviewer"
+msgstr ""
+
+#: horilla_theme/templates/tabs/scheduled_interview.html:162
+msgid "No interviews are scheduled for this candidate"
+msgstr ""
+
+#: horilla_theme/templates/task/new/task_kanban_view.html:19
+msgid "Kanban View"
+msgstr ""
+
+#: horilla_theme/templates/task/new/task_kanban_view.html:77
+msgid "Add task"
+msgstr ""
+
+#: horilla_theme/templates/task/new/task_kanban_view.html:115
+#: horilla_theme/templates/task/new/task_list_view.html:62
+msgid "Are you sure you want to delete this stage?"
+msgstr ""
+
+#: horilla_theme/templates/task/new/task_kanban_view.html:191
+#: horilla_theme/templates/task/new/task_list_view.html:166
+msgid "Do you really want to delete this task?"
+msgstr ""
+
+#: horilla_theme/templates/task/new/task_list_view.html:15
+msgid "List View"
+msgstr ""
+
+#: horilla_theme/templates/task/new/task_list_view.html:45
+msgid "Add Task"
+msgstr ""
+
+#: horilla_theme/templates/task/new/task_list_view.html:89
+msgid "Task Managers"
+msgstr ""
+
+#: horilla_theme/templates/task/new/task_list_view.html:187
+msgid "No tasks found in this stage."
+msgstr ""
+
+#: horilla_theme/templates/task/new/task_navbar.html:19
+msgid "Search by Task Name..."
+msgstr ""
+
+#: horilla_theme/templates/theme/theme_cards.html:58
+msgid "Remove as default"
+msgstr ""
+
+#: horilla_theme/templates/theme/theme_cards.html:60
+msgid "Default Theme"
+msgstr ""
+
+#: horilla_theme/templates/theme/theme_cards.html:67
+msgid "Set as default for login page"
+msgstr ""
+
+#: horilla_theme/templates/theme/theme_cards.html:69
+msgid "Set as Default"
+msgstr ""
+
+#: horilla_theme/templates/theme/theme_cards.html:78
+msgid "No themes available"
+msgstr ""
+
+#: horilla_theme/templates/theme/theme_view.html:7
+msgid "Theme Management"
+msgstr ""
+
+#: horilla_theme/templates/theme/theme_view.html:8
+msgid "Select a theme to customize the appearance of your application"
+msgstr ""
+
+#: horilla_theme/templates/time_sheet/chart.html:21
+msgid "Personal Timesheet of"
+msgstr ""
+
+#: horilla_theme/templates/time_sheet/chart.html:31
+msgid "Week"
+msgstr ""
+
+#: horilla_theme/templates/time_sheet/chart.html:32
+msgid "Month"
+msgstr ""
+
+#: horilla_theme/templates/work_type_request/htmx/work_type_comment.html:213
+msgid "'s worktype request"
+msgstr ""
+
+#: horilla_theme/templates/work_type_request/htmx/work_type_comment.html:235
+msgid "No Comments have been added for this worktype request"
+msgstr ""
+
+#: horilla_theme/views.py:66 horilla_theme/views.py:163
+msgid "Theme ID is required"
+msgstr ""
+
+#: horilla_theme/views.py:75
+msgid "No active company found"
+msgstr ""
+
+#: horilla_theme/views.py:84
+msgid "Theme changed successfully and set as default for login page"
+msgstr ""
+
+#: horilla_theme/views.py:87
+msgid "Theme changed successfully"
+msgstr ""
+
+#: horilla_theme/views.py:92
+msgid "Theme not found"
+msgstr ""
+
+#: horilla_theme/views.py:95
+msgid "An error occurred while changing the theme"
+msgstr ""
+
+#: horilla_theme/views.py:179
+msgid "Theme removed as default for login page"
+msgstr ""
+
+#: horilla_theme/views.py:184
+msgid "Theme set as default for login page"
+msgstr ""
