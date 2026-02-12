@@ -1,0 +1,126 @@
+# SOME DESCRIPTIVE TITLE.
+# Copyright (C) YEAR THE PACKAGE'S COPYRIGHT HOLDER
+# This file is distributed under the same license as the PACKAGE package.
+# FIRST AUTHOR <EMAIL@ADDRESS>, YEAR.
+#
+#, fuzzy
+msgid ""
+msgstr ""
+"Project-Id-Version: PACKAGE VERSION\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2026-02-11 13:01+0530\n"
+"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
+"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"Language-Team: LANGUAGE <LL@li.org>\n"
+"Language: \n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=2; plural=(n != 1);\n"
+#: notifications/admin.py:13
+msgid "Mark selected notifications as unread"
+msgstr ""
+
+#: notifications/apps.py:10 notifications/base/models.py:243
+msgid "Notifications"
+msgstr ""
+
+#: notifications/base/models.py:168
+msgid "level"
+msgstr ""
+
+#: notifications/base/models.py:175
+msgid "recipient"
+msgstr ""
+
+#: notifications/base/models.py:178
+msgid "unread"
+msgstr ""
+
+#: notifications/base/models.py:184
+msgid "actor content type"
+msgstr ""
+
+#: notifications/base/models.py:186
+msgid "actor object id"
+msgstr ""
+
+#: notifications/base/models.py:188
+msgid "actor"
+msgstr ""
+
+#: notifications/base/models.py:190
+msgid "verb"
+msgstr ""
+
+#: notifications/base/models.py:191
+msgid "description"
+msgstr ""
+
+#: notifications/base/models.py:197
+msgid "target content type"
+msgstr ""
+
+#: notifications/base/models.py:202
+msgid "target object id"
+msgstr ""
+
+#: notifications/base/models.py:205
+msgid "target"
+msgstr ""
+
+#: notifications/base/models.py:211
+msgid "action object content type"
+msgstr ""
+
+#: notifications/base/models.py:216
+msgid "action object object id"
+msgstr ""
+
+#: notifications/base/models.py:221
+msgid "action object"
+msgstr ""
+
+#: notifications/base/models.py:224
+msgid "timestamp"
+msgstr ""
+
+#: notifications/base/models.py:227
+msgid "public"
+msgstr ""
+
+#: notifications/base/models.py:228
+msgid "deleted"
+msgstr ""
+
+#: notifications/base/models.py:229
+msgid "emailed"
+msgstr ""
+
+#: notifications/base/models.py:231
+msgid "data"
+msgstr ""
+
+#: notifications/base/models.py:242
+msgid "Notification"
+msgstr ""
+
+#: notifications/base/models.py:257
+#, python-format
+msgid "%(actor)s %(verb)s %(action_object)s on %(target)s %(timesince)s ago"
+msgstr ""
+
+#: notifications/base/models.py:261
+#, python-format
+msgid "%(actor)s %(verb)s %(target)s %(timesince)s ago"
+msgstr ""
+
+#: notifications/base/models.py:263
+#, python-format
+msgid "%(actor)s %(verb)s %(action_object)s %(timesince)s ago"
+msgstr ""
+
+#: notifications/base/models.py:264
+#, python-format
+msgid "%(actor)s %(verb)s %(timesince)s ago"
+msgstr ""
