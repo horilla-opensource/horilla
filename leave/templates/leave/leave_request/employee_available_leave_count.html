@@ -1,15 +1,15 @@
 {% load i18n %} {% load static %}
 <div
-    id="{{hx_target}}"
-    class="d-flex"
-    style="{% if not available_leave and not leave_type_id %}height: 1px;display:none;{% else %}height: 40px;{% endif %}"
+        id="{{ hx_target }}"
+        class="d-flex"
+        style="{% if not available_leave and not leave_type_id %}height: 1px;display:none;{% else %}height: 40px;{% endif %}"
 >
     {% if not leave_type_id %}
         <div id="messageDiv" style="display: none"></div>
     {% elif not available_leave %}
         <div
-            id="messageDiv"
-            style="
+                id="messageDiv"
+                style="
                 background-color: rgba(229, 79, 56, 0.17);
                 border: 2px solid hsl(8, 77%, 56%);
                 border-radius: 18px;
@@ -22,8 +22,8 @@
         </div>
     {% elif total_leave_days == 0.0 %}
         <div
-            id="messageDiv"
-            style="
+                id="messageDiv"
+                style="
                 background-color: rgba(229, 79, 56, 0.17);
                 border: 2px solid hsl(8, 77%, 56%);
                 border-radius: 18px;
@@ -36,8 +36,8 @@
         </div>
     {% else %}
         <div
-            id="messageDiv"
-            style="
+                id="messageDiv"
+                style="
                 background-color: #dff0d8;
                 border: 2px solid #3c763d;
                 border-radius: 18px;
@@ -50,19 +50,19 @@
             {% trans "Available Leaves" %} : {{ total_leave_days }}
             {% if forcasted_days and forcasted_days > 0 %}
                 <img
-                    style="width: 20px; height: 20px; cursor: pointer"
-                    src="{% static 'images/ui/info.png' %}"
-                    class="ml-2"
-                    title="{% trans 'Forecasted available days added to this Available Days (Carryforward Max. + Forcasted Days)' %}"
+                        style="width: 20px; height: 20px; cursor: pointer"
+                        src="{% static 'images/ui/info.png' %}"
+                        class="ml-2"
+                        title="{% trans 'Forecasted available days added to this Available Days (Carryforward Max. + Forcasted Days)' %}"
                 />
             {% endif %}
         </div>
     {% endif %}
     {% if pending_requests %}
         <div
-            id="pendingDiv"
-            class="ms-2"
-            style="
+                id="pendingDiv"
+                class="ms-2"
+                style="
                 background-color: rgba(229, 79, 56, 0.17);
                 border: 2px solid hsl(8, 77%, 56%);
                 border-radius: 18px;
@@ -76,3 +76,10 @@
         </div>
     {% endif %}
 </div>
+
+<div id="attachmentLabelWrapper" hx-swap-oob="outerHTML">
+    <label class="oh-label {% if require_attachment %}required-star{% endif %}">
+        Attachment
+    </label>
+</div>
+
