@@ -29,7 +29,7 @@
         <div class="row mt-3">
             <div class="col-sm-6">
                 <label class="oh-label">{% trans "Start Date" %}</label>
-                <input type="date" id="start_date" name="start_date" required class="oh-input">
+                <input type="date" id="start_date" name="start_date" required class="oh-input" onchange="syncEndDateMin()">
             </div>
 
             <div class="col-sm-6">
@@ -66,6 +66,21 @@ function afterReportSubmit() {
 
     }, 100);
 }
+function syncEndDateMin() {
+    const startEl = document.getElementById("start_date");
+    const endEl = document.getElementById("end_date");
+    const start = startEl.value;
+
+    if (start) {
+        endEl.min = start;
+        if (endEl.value && endEl.value < start) {
+            endEl.value = start;
+        }
+    } else {
+        endEl.min = "";
+    }
+}
+
 function validateMonthlyLeaveDates() {
     const start = document.getElementById("start_date").value;
     const end = document.getElementById("end_date").value;
