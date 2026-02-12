@@ -250,16 +250,15 @@ def self_info_update(request):
         return redirect("employee-profile")
 
     badge_id = employee.badge_id
-
-    bank_instance = EmployeeBankDetails.objects.filter(employee_id=employee).first()
-    bank_form = EmployeeBankDetailsForm(instance=bank_instance)
-
-    form = EmployeeForm(instance=employee)
-
-    if request.method == "POST":
-        if request.POST.get("form_type") == "personal" or request.POST.get("employee_first_name") is not None:
-            form = EmployeeForm(request.POST, request.FILES, instance=employee)
-
+    bank_form = EmployeeBankDetailsForm(
+        instance=EmployeeBankDetails.objects.filter(employee_id=employee).first()
+    )
+    form = EmployeeForm(instance=Employee.objects.filter(employee_user_id=user).first())
+    if request.POST:
+        if request.POST.get("profile_update"):
+            instance = Employee.objects.filter(employee_user_id=request.user).first()
+            form = EmployeeForm(request.POST, instance=instance)
+            del form.fields["badge_id"]
             if form.is_valid():
                 inst = form.save(commit=False)
                 inst.employee_user_id = user
