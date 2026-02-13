@@ -118,7 +118,7 @@ function toggleCommentButton(input) {
     }
 
     if (len > maxLen) {
-        error.textContent = "Comment cannot exceed 255 characters.";
+        error.textContent = gettext("Comment cannot exceed 255 characters.");
         error.style.display = "block";
     } else {
         error.style.display = "none";
