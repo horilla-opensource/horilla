@@ -3999,8 +3999,6 @@ def employee_available_leave_count(request):
         "require_attachment": require_attachment,
     }
 
-    print(require_attachment)
-
     return render(
         request, "leave/leave_request/employee_available_leave_count.html", context
     )
