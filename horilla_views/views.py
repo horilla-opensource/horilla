@@ -933,26 +933,16 @@ def export_data(request, *args, **kwargs):
     base_table = model._meta.db_table
 
     # =====================================================
-    # SQL BUILD (IDS + SIMPLE FIELDS ONLY)
+    # SQL BUILD
     # =====================================================
     headers = []
-    select_sql = [f"{base_table}.id"]  # index 0 = object id
-    joins = {}
-    alias_count = 0
-
-    method_columns = {}  # sql_index -> attribute name
-
-    def next_alias():
-        nonlocal alias_count
-        alias_count += 1
-        return f"t{alias_count}"
-
+    select_sql = [f"{base_table}.id"]
+    method_columns = {}
     select_index = 1
 
     for label, field in columns:
         headers.append(label)
 
-        # Empty column
         if not field:
             select_sql.append("''")
             select_index += 1
@@ -960,37 +950,27 @@ def export_data(request, *args, **kwargs):
 
         parts = field.split("__")
 
-        # =================================================
-        # SIMPLE FIELD (no relation)
-        # =================================================
         if len(parts) == 1:
             try:
                 f = model._meta.get_field(parts[0])
-
-                # FK / relation → resolve via ORM
                 if isinstance(f, (ForeignKey, OneToOneField)):
                     select_sql.append(f"{base_table}.id")
                     method_columns[select_index] = parts[0]
                 else:
                     select_sql.append(f"{base_table}.{f.column}")
-
             except FieldDoesNotExist:
-                # property / method
                 select_sql.append(f"{base_table}.id")
                 method_columns[select_index] = parts[0]
 
             select_index += 1
             continue
 
-        # =================================================
-        # RELATED / COMPUTED FIELD (always ORM)
-        # =================================================
         select_sql.append(f"{base_table}.id")
         method_columns[select_index] = field
         select_index += 1
 
     # =====================================================
-    # EXECUTE SQL (SQLite + PostgreSQL SAFE)
+    # EXECUTE SQL
     # =====================================================
     if not ids:
         return HttpResponse("No IDs provided")
@@ -1008,29 +988,21 @@ def export_data(request, *args, **kwargs):
         rows = cursor.fetchall()
 
     # =====================================================
-    # ORM OBJECT CACHE
+    # ORM CACHE
     # =====================================================
     objs = {o.id: o for o in model.objects.filter(id__in=ids)}
 
-    # =====================================================
-    # METHOD MAPS (FK / PROPERTIES / CALLABLES)
-    # =====================================================
     method_maps = {}
-
     for idx, attr in method_columns.items():
         method_maps[idx] = {}
-
         for obj_id, obj in objs.items():
             value = obj
-
             for part in attr.split("__"):
                 if value is None:
                     break
-
                 value = getattr(value, part, None)
                 if callable(value):
                     value = value()
-
             method_maps[idx][obj_id] = str(value) if value is not None else ""
 
     # =====================================================
@@ -1041,14 +1013,12 @@ def export_data(request, *args, **kwargs):
     for row in rows:
         row = list(row)
         obj_id = row[0]
-
         for idx, mmap in method_maps.items():
             row[idx] = mmap.get(obj_id, "")
-
         final_rows.append(row[1:])
 
     # =====================================================
-    # XLSX EXPORT
+    # XLSX EXPORT (FIXED WIDTH – PERFORMANCE SAFE)
     # =====================================================
     if export_format == "xlsx":
         wb = Workbook()
@@ -1062,43 +1032,39 @@ def export_data(request, *args, **kwargs):
         thin = Side(style="thin")
         border = Border(left=thin, right=thin, top=thin, bottom=thin)
 
-        has_logo = logo_path and os.path.exists(logo_path)
-        if has_logo:
+        # Logo
+        if logo_path and os.path.exists(logo_path):
             img = Image(logo_path)
             img.width = 120
             img.height = 60
             ws.add_image(img, "A1")
 
-        start_col = 1
+        ws.merge_cells(start_row=1, start_column=1, end_row=1, end_column=total_columns)
+        ws.cell(row=1, column=1).value = company_name
+        ws.cell(row=1, column=1).font = Font(size=14, bold=True)
+        ws.cell(row=1, column=1).alignment = center
 
-        ws.merge_cells(
-            start_row=1, start_column=start_col, end_row=1, end_column=total_columns
-        )
-        ws.cell(row=1, column=start_col).value = company_name
-        ws.cell(row=1, column=start_col).font = Font(size=14, bold=True)
-        ws.cell(row=1, column=start_col).alignment = center
+        ws.merge_cells(start_row=2, start_column=1, end_row=3, end_column=total_columns)
+        ws.cell(row=2, column=1).value = file_name
+        ws.cell(row=2, column=1).font = Font(size=14, bold=True, color="FF0000")
+        ws.cell(row=2, column=1).alignment = center
 
-        ws.merge_cells(
-            start_row=2, start_column=start_col, end_row=3, end_column=total_columns
-        )
-        ws.cell(row=2, column=start_col).value = file_name
-        ws.cell(row=2, column=start_col).font = Font(size=14, bold=True, color="FF0000")
-        ws.cell(row=2, column=start_col).alignment = center
-
-        ws.merge_cells(
-            start_row=4, start_column=start_col, end_row=4, end_column=total_columns
-        )
-        ws.cell(row=4, column=start_col).value = date_range
-        ws.cell(row=4, column=start_col).alignment = center
+        ws.merge_cells(start_row=4, start_column=1, end_row=4, end_column=total_columns)
+        ws.cell(row=4, column=1).value = date_range
+        ws.cell(row=4, column=1).alignment = center
 
         HEADER_ROW = 5
+
         for col, header in enumerate(headers, start=1):
-            c = ws.cell(row=HEADER_ROW, column=col)
-            c.value = header
-            c.fill = header_fill
-            c.font = header_font
-            c.border = border
-            c.alignment = center
+            cell = ws.cell(row=HEADER_ROW, column=col)
+            cell.value = header
+            cell.fill = header_fill
+            cell.font = header_font
+            cell.border = border
+            cell.alignment = center
+
+            # ✅ FIXED WIDTH (NO PERFORMANCE HIT)
+            ws.column_dimensions[cell.column_letter].width = 25
 
         for r_idx, row in enumerate(final_rows, start=HEADER_ROW + 1):
             for c_idx, val in enumerate(row, start=1):
@@ -1118,51 +1084,25 @@ def export_data(request, *args, **kwargs):
     # PDF EXPORT
     # =====================================================
     if export_format == "pdf":
-
-        original_headers = headers
-        display_headers = [
-            reshape_text(h) if isinstance(h, str) else h for h in headers
-        ]
-
-        raw_rows = final_rows
-        processed_rows = []
-
-        for row in raw_rows:
-            new_row = []
-
-            for value in row:
-                if isinstance(value, str):
-                    new_row.append(reshape_text(value))
-                elif isinstance(value, (list, tuple)):
-                    new_row.append(
-                        [reshape_text(v) if isinstance(v, str) else v for v in value]
-                    )
-                else:
-                    new_row.append(value)
-
-            processed_rows.append(new_row)
-        rows = processed_rows
+        from xhtml2pdf import pisa
 
         html = render_to_string(
             "generic/export_pdf.html",
             {
-                "headers": display_headers,
-                "lookup_headers": original_headers,
-                "rows": [dict(zip(original_headers, r)) for r in rows],
-                "company_name": reshape_text(company_name),
-                "date_range": reshape_text(date_range),
-                "report_title": reshape_text(file_name),
+                "headers": headers,
+                "rows": [dict(zip(headers, r)) for r in final_rows],
+                "company_name": company_name,
+                "date_range": date_range,
+                "report_title": file_name,
                 "logo_path": (
                     logo_path if logo_path and os.path.exists(logo_path) else None
                 ),
                 "landscape": len(headers) > 5,
             },
-            request=request,
         )
 
         buf = BytesIO()
-        pisaFileObject.getNamedFile = lambda self: self.uri
-        pisa.CreatePDF(html, dest=buf, link_callback=link_callback)
+        pisa.CreatePDF(html, dest=buf)
 
         return HttpResponse(
             buf.getvalue(),

@@ -10,6 +10,7 @@ from datetime import datetime
 from uuid import uuid4
 
 from django.contrib import messages
+from django.contrib.auth.models import User
 from django.core import serializers
 from django.core.files.storage import default_storage
 from django.core.files.uploadedfile import SimpleUploadedFile
@@ -120,9 +121,15 @@ def candidate_survey(request):
     job = JobPosition.objects.get(id=job_id)
     recruitment = Recruitment.objects.get(id=rec_id)
     stage_id = candidate_dict[0]["fields"]["stage_id"]
+    created_by = candidate_dict[0]["fields"].get("created_by")
+    modified_by = candidate_dict[0]["fields"].get("modified_by")
     candidate_dict[0]["fields"]["recruitment_id"] = recruitment
     candidate_dict[0]["fields"]["job_position_id"] = job
     candidate_dict[0]["fields"]["stage_id"] = Stage.objects.get(id=stage_id)
+    if created_by:
+        candidate_dict[0]["fields"]["created_by"] = User(id=created_by)
+    if modified_by:
+        candidate_dict[0]["fields"]["modified_by"] = User(id=modified_by)
     candidate = Candidate(**candidate_dict[0]["fields"])
     form = SurveyForm(recruitment=recruitment).form
     if request.method == "POST":

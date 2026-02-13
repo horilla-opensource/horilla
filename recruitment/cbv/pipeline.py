@@ -266,6 +266,17 @@ class CandidateList(HorillaListView):
         (_("Contact"), "mobile"),
     ]
 
+    export_columns = [
+        (_("Name"), "candidate_name", "get_avatar"),
+        (_("Email"), "mail_indication"),
+        (_("Stage"), "stage_id"),
+        (_("Rating"), "get_avg_rating"),
+        (_("Hired Date"), "hired_date"),
+        (_("Scheduled Interview"), "get_total_interview"),
+        (_("Job Position"), "job_position_id__job_position"),
+        (_("Contact"), "mobile"),
+    ]
+
     default_columns = [
         (_("Name"), "candidate_name", "get_avatar"),
         (_("Email"), "mail_indication"),
