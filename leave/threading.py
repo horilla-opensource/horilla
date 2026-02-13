@@ -90,8 +90,8 @@ class LeaveMailSendThread(Thread):
             content_manager = (
                 f"A new leave request has been submitted by {leave_details['employee_name']} "
                 f"from {leave_details['from_date']} to {leave_details['to_date']} for"
-                f" {leave_details['total_days']} day."
-                f"The leave type is {leave_details['leave_type']}"
+                f" {leave_details['total_days']} day(s). "
+                f"The leave type is {leave_details['leave_type']}."
             )
 
             subject_manager = f"Leave request has been requested by {owner}"
