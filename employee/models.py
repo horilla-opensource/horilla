@@ -9,6 +9,7 @@ from datetime import date, datetime, timedelta
 
 from django.apps import apps
 from django.conf import settings
+from django.db import transaction, IntegrityError
 from django.contrib.auth.models import Permission, User
 from django.core.exceptions import ValidationError
 from django.core.files.storage import default_storage
@@ -63,7 +64,7 @@ class Employee(models.Model):
         ("married", trans("Married")),
         ("divorced", trans("Divorced")),
     )
-    badge_id = models.CharField(max_length=50,  unique=True, null=True, blank=True , verbose_name=_("Employee ID"))
+    badge_id = models.CharField(max_length=50,  unique=True, null=False, blank=False , verbose_name=_("Employee ID"))
     employee_user_id = models.OneToOneField(
         User,
         on_delete=models.CASCADE,
@@ -97,7 +98,7 @@ class Employee(models.Model):
     state = models.CharField(max_length=100, null=True, blank=True)
     city = models.CharField(max_length=30, null=True, blank=True)
     zip = models.CharField(max_length=20, null=True, blank=True)
-    dob = models.DateField(null=True, blank=True , verbose_name="Date Of Birth")
+    dob = models.DateField(null=True, blank=False , verbose_name="Date Of Birth")
     gender = models.CharField(
         max_length=10, null=True, choices=choice_gender, default="male"
     )
@@ -116,7 +117,7 @@ class Employee(models.Model):
         blank=True,
         null=True
     )
-    qualification = models.CharField(max_length=50, blank=True, null=True)
+    qualification = models.CharField(blank=True, null=True)
     experience = models.IntegerField(null=True, blank=True)
     marital_status = models.CharField(
         max_length=50, blank=True, null=True, choices=choice_marital, default="single"
@@ -488,6 +489,16 @@ class Employee(models.Model):
                 return self.pk in working_employees
         return False
 
+    def is_logged_in(self):
+        """"
+        Check if user is logged in
+        """
+        from django.core.cache import cache
+        user = getattr(self, "employee_user_id", None)
+        if not user:
+            return False
+        return cache.get(f"online_user_{user.id}") is not None
+
     class Meta:
         """
         Recruitment model
@@ -547,44 +558,45 @@ class Employee(models.Model):
         # your custom code here
         # ...
         # call the parent class's save method to save the object
-        prev_employee = Employee.objects.filter(id=self.id).first()
-        super().save(*args, **kwargs)
+        creating = self.pk is None
         request = getattr(horilla_middlewares._thread_locals, "request", None)
-        if request and not self.is_active and self.get_archive_condition() is not False:
-            self.is_active = True
+
+        with transaction.atomic():
             super().save(*args, **kwargs)
-        employee = self
+            if request and not self.is_active and self.get_archive_condition() is not False:
+                self.is_active = True
+                super().save(update_fields=["is_active"])
 
-        if employee.employee_user_id is None:
-            # Create user if no corresponding user exists
-            username = self.email
-            password = self.phone
+            if self.employee_user_id_id is None:
+                username = (self.email or "").strip().lower()
+                password = str(self.phone or "").strip()
 
-            is_new_employee_flag = (
-                not employee.employee_user_id.is_new_employee
-                if employee.employee_user_id
-                else True
-            )
-            user = User.objects.create_user(
-                username=username,
-                email=username,
-                password=password,
-                is_new_employee=is_new_employee_flag,
-            )
-            if not user:
-                user = User.objects.create_user(
-                    username=username, email=username, password=password
-                )
-            self.employee_user_id = user
-            # default permissions
-            change_ownprofile = Permission.objects.get(codename="change_ownprofile")
-            view_ownprofile = Permission.objects.get(codename="view_ownprofile")
-            user.user_permissions.add(view_ownprofile)
-            user.user_permissions.add(change_ownprofile)
+                user = User.objects.filter(username=username).first()
+                if user is None:
+                    user = User.objects.create_user(
+                        username=username,
+                        email=username,
+                        password=password,
+                    )
 
-        if not hasattr(self, "employee_work_info"):
-            EmployeeWorkInformation.objects.get_or_create(employee_id=self)
-            return self.save()
+                self.employee_user_id = user
+                super().save(update_fields=["employee_user_id"])
+
+                change_ownprofile = Permission.objects.get(codename="change_ownprofile")
+                view_ownprofile = Permission.objects.get(codename="view_ownprofile")
+                user.user_permissions.add(view_ownprofile, change_ownprofile)
+
+            else:
+                new_username = (self.email or "").strip().lower()
+                user = self.employee_user_id
+                if user.username != new_username:
+                    if not User.objects.exclude(pk=user.pk).filter(username=new_username).exists():
+                        user.username = new_username
+                        user.email = new_username
+                        user.save(update_fields=["username", "email"])
+
+            if not hasattr(self, "employee_work_info"):
+                EmployeeWorkInformation.objects.get_or_create(employee_id=self)
 
         return self
 

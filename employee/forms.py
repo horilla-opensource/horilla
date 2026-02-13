@@ -23,7 +23,7 @@ class YourForm(forms.Form):
 
 import logging
 import re
-from datetime import date
+from datetime import date, timedelta
 from typing import Any
 
 from django import forms
@@ -203,15 +203,64 @@ class EmployeeForm(ModelForm):
 
     def clean(self):
         super().clean()
-        email = self.cleaned_data["email"]
+        email = self.cleaned_data.get("email")
         phone = self.cleaned_data.get("phone")
+        dob = self.cleaned_data.get("dob")
+        country = self.cleaned_data.get("country")
         query = Employee.objects.entire().filter(email=email)
+        children = self.cleaned_data.get("children")
+        experience = self.cleaned_data.get("experience")
+
+        if dob is not None and dob >= date.today():
+            self.add_error("dob", _("Date cannot be in the future."))
+
+        #Country based
+        if dob and country:
+            country_name = str(country).strip().lower()
+
+            if country_name == "united kingdom":
+                min_age = 13
+            elif country_name == "sri lanka":
+                min_age = 16
+            else:
+                min_age = None
+
+            if min_age is not None:
+                today = date.today()
+                try:
+                    cutoff = today.replace(year=today.year - min_age)
+                except ValueError:
+                    cutoff = today.replace(month=2, day=28, year=today.year - min_age)
+
+                if dob > cutoff:
+                    self.add_error("dob", _("Employee must be atleast %(age)s years old for the selected country.") % {"age": min_age})
+
+        if children is not None and children < 0:
+            self.add_error(
+                "children",
+                _("Number of children cannot be negative.")
+            )
+        if experience is not None and experience < 0:
+            self.add_error(
+                "experience",
+                _("Experience cannot be negative.")
+            )
 
         if email:
             try:
                 validate_email(email)
             except ValidationError:
                 self.add_error("email", _("Enter a valid email address."))
+
+        if email:
+            user_q = User.objects.filter(username=email)
+            if self.instance and self.instance.pk and self.instance.employee_user_id:
+                user_q = user_q.exclude(pk=self.instance.employee_user_id.pk)
+
+            if user_q.exists():
+                user = user_q.first()
+                if hasattr(user, 'employee_get'):
+                    self.add_error("email", _("This email is already in use by another employee."))
 
         if self.instance and self.instance.id:
             query = query.exclude(id=self.instance.id)
@@ -253,11 +302,16 @@ class EmployeeForm(ModelForm):
         contact_number = self.cleaned_data.get("emergency_contact")
         contact_relationship = self.cleaned_data.get("emergency_contact_relation")
 
-        if contact_name:
+        if contact_name or contact_number or contact_relationship:
+            if not contact_name:
+                self.add_error(
+                    "emergency_contact_name",
+                    _("This field is required.")
+                )
             if not contact_number:
                 self.add_error(
                     "emergency_contact",
-                    _("This field is required when Emergency Contact Name is filled.")
+                    _("This field is required.")
                 )
             else:
                 if not re.fullmatch(r"07\d{8}", str(contact_number)):
@@ -269,7 +323,7 @@ class EmployeeForm(ModelForm):
             if not contact_relationship:
                 self.add_error(
                     "emergency_contact_relation",
-                    _("This field is required when Emergency Contact Name is filled.")
+                    _("This field is required.")
                 )
 
     def get_next_badge_id(self):
@@ -338,11 +392,10 @@ class EmployeeWorkInformationForm(ModelForm):
 
         model = EmployeeWorkInformation
         fields = "__all__"
-        exclude = ("employee_id", "additional_info", "experience")
+        exclude = ("employee_id", "additional_info", "experience" , "contract_end_date")
 
         widgets = {
             "date_joining": DateInput(attrs={"type": "date"}),
-            "contract_end_date": DateInput(attrs={"type": "date"}),
             "probation_end_date": DateInput(attrs={"type": "date"}),
         }
 
@@ -403,11 +456,71 @@ class EmployeeWorkInformationForm(ModelForm):
                             ("create", _("Create New {} ").format(translated_label))
                         ]
 
+        rm_field = "reporting_manager_id" if "reporting_manager_id" in self.fields else "reporting_manager"
+        current_employee = getattr(self.instance, "employee_id", None)
+        if current_employee and rm_field in self.fields:
+            self.fields[rm_field].queryset = self.fields[rm_field].queryset.exclude(pk=current_employee.pk)
+
     def clean(self):
-        cleaned_data = super().clean()
+        super().clean()
+        work_phone = self.cleaned_data.get("mobile")
+        date_joining = self.cleaned_data.get("date_joining")
+        email = self.cleaned_data.get("email")
+        salary_hour = self.cleaned_data.get("salary_hour")
+        basic_salary = self.cleaned_data.get("basic_salary")
+        probation_period_end = self.cleaned_data.get("probation_end_date")
+
+
+        if salary_hour < 0:
+            self.add_error(
+                "salary_hour",
+                _("Salary per hour must be greater than zero.")
+            )
+        if basic_salary < 0:
+            self.add_error(
+                "basic_salary",
+                _("Basic salary must be greater than zero.")
+            )
+        if not date_joining:
+            self.add_error(
+                "date_joining",
+                _("This field is required.")
+            )
+        if not probation_period_end:
+            self.add_error(
+                "probation_end_date",
+                _("This field is required.")
+            )
+        if date_joining:
+            if probation_period_end and probation_period_end < date_joining:
+                self.add_error(
+                    "probation_end_date",
+                    _("Probation end date cannot be earlier than date of joining.")
+                )
+
+
+        if not email:
+            self.add_error(
+                "email",
+                _("This field is required.")
+            )
+
+        if email:
+            try:
+                validate_email(email)
+            except ValidationError:
+                self.add_error("email", _("Enter a valid email address."))
+
+        if work_phone:
+            if not re.fullmatch(r"07\d{8}", str(work_phone)):
+                self.add_error(
+                    "mobile",
+                    _("Enter a valid mobile number (e.g. 07XXXXXXXX).")
+                )
+
         if "employee_id" in self.errors:
             del self.errors["employee_id"]
-        return cleaned_data
+
 
     def as_p(self, *args, **kwargs):
         context = {"form": self}
@@ -426,16 +539,83 @@ class EmployeeWorkInformationUpdateForm(ModelForm):
 
         model = EmployeeWorkInformation
         fields = "__all__"
-        exclude = ("employee_id",)
+        exclude = ("employee_id","contract_end_date")
 
         widgets = {
             "date_joining": DateInput(attrs={"type": "date"}),
-            "contract_end_date": DateInput(attrs={"type": "date"}),
+            "probation_end_date": DateInput(attrs={"type": "date"}),
         }
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+
+        rm_field = "reporting_manager_id" if "reporting_manager_id" in self.fields else "reporting_manager"
+        current_employee = getattr(self.instance, "employee_id", None)
+
+        # Hide current employee from the dropdown
+        if current_employee and rm_field in self.fields:
+            self.fields[rm_field].queryset = self.fields[rm_field].queryset.exclude(pk=current_employee.pk)
 
     def as_p(self, *args, **kwargs):
         context = {"form": self}
         return render_to_string("employee/create_form/personal_info_as_p.html", context)
+
+    def clean(self):
+        super().clean()
+        work_phone = self.cleaned_data.get("mobile")
+        date_joining = self.cleaned_data.get("date_joining")
+        email = self.cleaned_data.get("email")
+        salary_hour = self.cleaned_data.get("salary_hour")
+        basic_salary = self.cleaned_data.get("basic_salary")
+        probation_period_end = self.cleaned_data.get("probation_end_date")
+
+        if salary_hour < 0:
+            self.add_error(
+                "salary_hour",
+                _("Salary per hour must be greater than zero.")
+            )
+        if basic_salary < 0:
+            self.add_error(
+                "basic_salary",
+                _("Basic salary must be greater than zero.")
+            )
+
+        if not email:
+            self.add_error(
+                "email",
+                _("This field is required.")
+            )
+        if email:
+            try:
+                validate_email(email)
+            except ValidationError:
+                self.add_error("email", _("Enter a valid email address."))
+
+        if not date_joining:
+            self.add_error(
+                "date_joining",
+                _("This field is required.")
+            )
+        if not probation_period_end:
+            self.add_error(
+                "probation_end_date",
+                _("This field is required.")
+            )
+        if date_joining:
+            if probation_period_end and probation_period_end < date_joining:
+                self.add_error(
+                    "probation_end_date",
+                    _("Probation end date cannot be earlier than date of joining.")
+                )
+
+
+        if work_phone:
+            if not re.fullmatch(r"07\d{8}", str(work_phone)):
+                self.add_error(
+                    "mobile",
+                    _("Enter a valid mobile number (e.g. 07XXXXXXXX).")
+                )
+
 
 
 class EmployeeBankDetailsForm(ModelForm):

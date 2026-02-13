@@ -236,7 +236,7 @@ def employee_profile(request):
 @login_required
 @enter_if_accessible(
     feature="profile_edit",
-    perm="employee.change_employee",
+    perm="employee.change_ownprofile",
 )
 def self_info_update(request):
     """
@@ -244,30 +244,44 @@ def self_info_update(request):
     """
     user = request.user
     employee = Employee.objects.filter(employee_user_id=user).first()
+
+    if not employee:
+        messages.error(request, _("Employee profile not found."))
+        return redirect("employee-profile")
+
     badge_id = employee.badge_id
     bank_form = EmployeeBankDetailsForm(
         instance=EmployeeBankDetails.objects.filter(employee_id=employee).first()
     )
     form = EmployeeForm(instance=Employee.objects.filter(employee_user_id=user).first())
     if request.POST:
-        if request.POST.get("employee_first_name") is not None:
+        if request.POST.get("profile_update"):
             instance = Employee.objects.filter(employee_user_id=request.user).first()
             form = EmployeeForm(request.POST, instance=instance)
+            del form.fields["badge_id"]
             if form.is_valid():
-                instance = form.save(commit=False)
-                instance.employee_user_id = user
-                if instance.badge_id is None:
-                    instance.badge_id = badge_id
-                instance.save()
+                inst = form.save(commit=False)
+                inst.employee_user_id = user
+                if not inst.badge_id:
+                    inst.badge_id = badge_id
+                inst.save()
                 messages.success(request, _("Profile updated."))
-        elif request.POST.get("any_other_code1") is not None:
-            instance = EmployeeBankDetails.objects.filter(employee_id=employee).first()
-            bank_form = EmployeeBankDetailsForm(request.POST, instance=instance)
+                return redirect("employee-profile")
+            else:
+                messages.error(request, _("Profile update failed. Please fix the errors below."))
+
+        elif request.POST.get("form_type") == "bank" or request.POST.get("any_other_code1") is not None:
+            bank_form = EmployeeBankDetailsForm(request.POST, request.FILES, instance=bank_instance)
+
             if bank_form.is_valid():
-                instance = bank_form.save(commit=False)
-                instance.employee_id = employee
-                instance.save()
+                bank = bank_form.save(commit=False)
+                bank.employee_id = employee
+                bank.save()
                 messages.success(request, _("Bank details updated."))
+                return redirect("employee-profile")
+            else:
+                messages.error(request, _("Bank update failed. Please fix the errors below."))
+
     return render(
         request,
         "employee/profile/profile.html",
@@ -1474,11 +1488,7 @@ def employee_view_update(request, obj_id, **kwargs):
                         icon="briefcase",
                     )
                     messages.success(request, _("Employee work information updated."))
-                work_form = EmployeeWorkInformationForm(
-                    instance=EmployeeWorkInformation.objects.filter(
-                        employee_id=employee
-                    ).first()
-                )
+
             elif request.POST.get("form") == "bank":
                 instance = EmployeeBankDetails.objects.filter(
                     employee_id=employee
@@ -1624,7 +1634,7 @@ def employee_create_update_personal_info(request, obj_id=None):
     This method is used to update employee's personal info.
     """
     employee = Employee.objects.filter(id=obj_id).first()
-    form = EmployeeForm(request.POST, instance=employee)
+    form = EmployeeForm(request.POST, request.FILES, instance=employee)
     if form.is_valid():
         form.save()
         if obj_id is None:
@@ -1655,6 +1665,7 @@ def employee_create_update_personal_info(request, obj_id=None):
         """
         )
     if obj_id is None:
+        form.add_error(None, _("Please fill the mandatory fields."))
         return render(
             request,
             "employee/create_form/form_view.html",
@@ -1742,6 +1753,7 @@ def employee_update_bank_details(request, obj_id=None):
     )
     return HttpResponse(f'<ul class="alert alert-danger">{errors}</ul>')
 
+from django.core.exceptions import FieldDoesNotExist
 
 @login_required
 @hx_request_required
@@ -1777,11 +1789,32 @@ def employee_filter_view(request):
         employees = group_by_queryset(employees, field, page_number, "page")
         template = "employee_personal_info/group_by.html"
     else:
-        employees = sortby(request, employees, "orderby")
-        employees = paginator_qry(employees, page_number)
+        orderby = request.GET.get("orderby")
 
-        # Store the employees in the session
-        request.session["filtered_employees"] = [employee.id for employee in employees]
+        ORDERBY_FIELD_MAP = {
+            "reporting_manager_id": "employee_work_info__reporting_manager",
+        }
+
+        if orderby:
+            clean = orderby.lstrip("-")
+
+            mapped = ORDERBY_FIELD_MAP.get(clean)
+
+            if mapped:
+                if orderby.startswith("-"):
+                    orderby = f"-{mapped}"
+                else:
+                    orderby = mapped
+
+                employees = employees.order_by(orderby)
+
+            else:
+                try:
+                    Employee._meta.get_field(clean)
+                    employees = employees.order_by(orderby)
+                except FieldDoesNotExist:
+                    employees = employees.order_by("id")
+        employees = paginator_qry(employees, page_number)
 
     return render(
         request,

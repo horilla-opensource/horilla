@@ -270,7 +270,7 @@
                                                 <ion-icon class="me-1" name="checkmark-outline"></ion-icon>
                                             </a>
                                         {% endif %}
-                                        {% if leave_request.status != 'rejected' and leave_request.end_date >= current_date %}
+                                        {% if leave_request.status == 'requested' %}
                                             <a type="submit" data-toggle="oh-modal-toggle" data-target="#rejectModal"
                                                 hx-get="{% url 'request-cancel' leave_request.id %}" hx-target="#rejectForm"
                                                 title="{% trans 'Reject' %}" class="oh-btn oh-btn--danger w-100">

@@ -7,25 +7,33 @@
 <div class="oh-general__tab-target oh-profile-section" id="personal">
     <div class="oh-profile-section__card">
         <div class="row">
-            <div class="col-12">{{form.non_field_errors}}</div>
+            <div class="col-12">{{ form.non_field_errors }}</div>
             {% for field in form.visible_fields %}
                 {% if field.field.widget|is_select_multiple or field.field.widget|is_text_area %}
                     <div class="oh-label__info" for="id_{{ field.name }}">
                         <label class="oh-label {% if field.field.required %} required-star{% endif %}"
-                            for="id_{{ field.name }}">{% trans field.label %}</label>
+                               for="id_{{ field.name }}">{% trans field.label %}</label>
                         {% if field.help_text != '' %}
-                        <span class="oh-info mr-2" title="{{ field.help_text|safe }}"></span>
+                            <span class="oh-info mr-2" title="{{ field.help_text|safe }}"></span>
                         {% endif %}
                     </div>
                     <div style="width: 100%; padding: 12px;" id="id_{{ field.name }}_parent_div">
                         {{ field|add_class:"form-control" }}
                     </div>
-                    {{field.errors}}
+                    {{ field.errors }}
                 {% else %}
                     <div class="col-12 col-md-6" id="id_{{ field.name }}_parent_div">
                         <div class="oh-label__info" for="id_{{ field.name }}">
-                            <label class="oh-label {% if field.field.required %} required-star{% endif %}"
-                                for="id_{{ field.name }}">{% trans field.label %}</label>
+                            <div class="oh-label__info"
+                                 {% if field.name == "attachment" %}id="attachmentLabelWrapper"{% endif %}
+                                 for="id_{{ field.name }}">
+                                <label class="oh-label {% if field.field.required %} required-star{% endif %}"
+                                       for="id_{{ field.name }}">{% trans field.label %}</label>
+                                {% if field.help_text != '' %}
+                                    <span class="oh-info mr-2" title="{{ field.help_text|safe }}"></span>
+                                {% endif %}
+                            </div>
+
                             {% if field.help_text != '' %}
                                 <span class="oh-info mr-2" title="{{ field.help_text|safe }}"></span>
                             {% endif %}
@@ -37,7 +45,7 @@
                         {% else %}
                             {{ field|add_class:"form-control" }}
                         {% endif %}
-                        {{field.errors}}
+                        {{ field.errors }}
                     </div>
                 {% endif %}
             {% endfor %}

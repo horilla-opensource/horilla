@@ -74,7 +74,6 @@ APSCHEDULER_DATETIME_FORMAT = "N j, Y, f:s a"
 
 APSCHEDULER_RUN_NOW_TIMEOUT = 25  # Seconds
 
-
 MIDDLEWARE = [
     "django.middleware.security.SecurityMiddleware",
     "whitenoise.middleware.WhiteNoiseMiddleware",
@@ -85,6 +84,7 @@ MIDDLEWARE = [
     "django.middleware.locale.LocaleMiddleware",
     "django.middleware.csrf.CsrfViewMiddleware",
     "django.contrib.auth.middleware.AuthenticationMiddleware",
+    "horilla.horilla_middlewares.ActiveUserMiddleware",
     "django.contrib.messages.middleware.MessageMiddleware",
     "django.middleware.clickjacking.XFrameOptionsMiddleware",
 ]
@@ -111,7 +111,6 @@ TEMPLATES = [
 
 WSGI_APPLICATION = "horilla.wsgi.application"
 
-
 # Database
 # https://docs.djangoproject.com/en/4.1/ref/settings/#databases
 
@@ -119,7 +118,14 @@ if env("DATABASE_URL", default=None):
     DATABASES = {
         "default": {
             **env.db(),
-            "CONN_MAX_AGE": 0,
+            "POOL_OPTIONS": {
+                "POOL_SIZE": 10,
+                "MAX_OVERFLOW": 5,
+                "RECYCLE": 300,
+                "PRE_PING": True,
+                "POOL_RESET_ON_RETURN": "rollback",
+                "POOL_TIMEOUT": 3,
+            },
         }
     }
 else:
@@ -159,7 +165,6 @@ AUTH_PASSWORD_VALIDATORS = [
     },
 ]
 
-
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/4.1/howto/static-files/
 
@@ -179,7 +184,6 @@ MEDIA_ROOT = os.path.join(BASE_DIR, "media/")
 
 DEFAULT_AUTO_FIELD = "django.db.models.BigAutoField"
 
-
 MESSAGE_TAGS = {
     messages.DEBUG: "oh-alert--warning",
     messages.INFO: "oh-alert--info",
@@ -188,14 +192,11 @@ MESSAGE_TAGS = {
     messages.ERROR: "oh-alert--danger",
 }
 
-
 CSRF_TRUSTED_ORIGINS = env("CSRF_TRUSTED_ORIGINS")
 
 LOGIN_URL = "/login"
 
-
 SIMPLE_HISTORY_REVERT_DISABLED = True
-
 
 DJANGO_NOTIFICATIONS_CONFIG = {
     "USE_JSONFIELD": True,
@@ -220,7 +221,6 @@ LANGUAGES = (
 LOCALE_PATHS = [
     join(BASE_DIR, "horilla", "locale"),
 ]
-
 
 # Internationalization
 # https://docs.djangoproject.com/en/4.1/topics/i18n/
