@@ -20,7 +20,7 @@ class Command(BaseCommand):
         os.makedirs(dump_dir, exist_ok=True)
 
         data_files = [
-            ("auth.User", "user_data.json"),
+            ("horilla_auth.HorillaUser", "user_data.json"),
             ("employee.Employee", "employee_info_data.json"),
             ("base", "base_data.json"),
             ("employee.employeeworkinformation", "work_info_data.json"),
