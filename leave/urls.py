@@ -230,7 +230,7 @@ urlpatterns = [
         "assign-delete/<int:obj_id>/", views.leave_assign_delete, name="assign-delete"
     ),
     path(
-        "assigned-leave-bulk-delete",
+        "assigned-leave-bulk-delete/",
         views.leave_assign_bulk_delete,
         name="assigned-leave-bulk-delete",
     ),
@@ -272,7 +272,7 @@ urlpatterns = [
     ),
     path("restrict-delete/<int:id>/", views.restrict_delete, name="restrict-delete"),
     path(
-        "restrict-days-bulk-delete",
+        "restrict-days-bulk-delete/",
         views.restrict_days_bulk_delete,
         name="restrict-days-bulk-delete",
     ),
@@ -425,7 +425,7 @@ urlpatterns = [
         name="assigned-leave-select-filter",
     ),
     path(
-        "leave-request-bulk-delete",
+        "leave-request-bulk-delete/",
         views.leave_request_bulk_delete,
         name="leave-request-bulk-delete",
     ),
@@ -440,7 +440,7 @@ urlpatterns = [
         name="leave-request-select-filter",
     ),
     path(
-        "user-request-bulk-delete",
+        "user-request-bulk-delete/",
         views.user_request_bulk_delete,
         name="user-request-bulk-delete",
     ),

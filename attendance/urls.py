@@ -208,7 +208,7 @@ urlpatterns = [
         name="attendance-delete",
     ),
     path(
-        "attendance-bulk-delete",
+        "attendance-bulk-delete/",
         views.attendance_bulk_delete,
         name="attendance-bulk-delete",
     ),
@@ -273,7 +273,7 @@ urlpatterns = [
         name="attendance-activity-delete",
     ),
     path(
-        "attendance-activity-bulk-delete",
+        "attendance-activity-bulk-delete/",
         views.attendance_activity_bulk_delete,
         name="attendance-activity-bulk-delete",
     ),
@@ -331,7 +331,7 @@ urlpatterns = [
         name="late-come-early-out-delete",
     ),
     path(
-        "late-come-early-out-bulk-delete",
+        "late-come-early-out-bulk-delete/",
         views.late_come_early_out_bulk_delete,
         name="late-come-early-out-bulk-delete",
     ),
@@ -356,7 +356,7 @@ urlpatterns = [
         name="validation-condition-delete",
     ),
     path(
-        "validate-bulk-attendance",
+        "validate-bulk-attendance/",
         views.validate_bulk_attendance,
         name="validate-bulk-attendance",
     ),
@@ -376,7 +376,7 @@ urlpatterns = [
         name="approve-overtime",
     ),
     path(
-        "approve-bulk-overtime",
+        "approve-bulk-overtime/",
         views.approve_bulk_overtime,
         name="approve-bulk-overtime",
     ),
@@ -487,7 +487,7 @@ urlpatterns = [
         name="request-new-attendance",
     ),
     path(
-        "request-bulk-attendance",
+        "request-bulk-attendance/",
         attendance_request.BulkAttendanceRequestFormView.as_view(),
         name="request-bulk-attendance",
     ),
@@ -559,7 +559,7 @@ urlpatterns = [
         name="hour-attendance-select-filter",
     ),
     path(
-        "attendance-account-bulk-delete",
+        "attendance-account-bulk-delete/",
         views.attendance_account_bulk_delete,
         name="attendance-account-bulk-delete",
     ),
