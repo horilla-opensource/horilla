@@ -374,6 +374,37 @@ def get_company(context):
     return HorillaColorTheme.objects.filter(is_default=True).first()
 
 
+@register.simple_tag
+def remove_item_at(obj, idx):
+    try:
+        idx = int(idx)
+    except (ValueError, TypeError):
+        return obj
+
+    # Handle dictionary
+    if isinstance(obj, dict):
+        items = list(obj.items())
+        if 0 <= idx < len(items):
+            items.pop(idx)
+        return items
+
+    # Handle list
+    if isinstance(obj, list):
+        new_list = obj.copy()
+        if 0 <= idx < len(new_list):
+            new_list.pop(idx)
+        return new_list
+
+    # Handle tuple
+    if isinstance(obj, tuple):
+        temp = list(obj)
+        if 0 <= idx < len(temp):
+            temp.pop(idx)
+        return tuple(temp)
+
+    return obj
+
+
 @register.simple_tag(takes_context=True)
 def get_def_theme(context):
     return HorillaColorTheme.objects.filter(is_default=True).first()
