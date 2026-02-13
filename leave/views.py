@@ -16,7 +16,7 @@ from django.contrib import messages
 from django.core.paginator import Paginator
 from django.db import transaction
 from django.db.models import ProtectedError, Q
-from django.http import HttpResponse, JsonResponse
+from django.http import HttpResponse, JsonResponse, HttpResponseBadRequest
 from django.shortcuts import get_object_or_404, redirect, render
 from django.urls import reverse
 from django.utils.encoding import force_str
@@ -5408,8 +5408,14 @@ def monthly_leave_report(request):
 @login_required
 @manager_can_enter("leave.view_leaverequest")
 def monthly_leave_report_pdf(request):
+    if request.method != "POST":
+        return HttpResponseBadRequest(_("Invalid request method."))
+
     start = request.POST.get("start_date")
     end = request.POST.get("end_date")
+
+    if not start or not end:
+        return HttpResponseBadRequest(_("Start date and end date are required."))
 
     request_employee = getattr(request.user, "employee_get", None)  # don't call it
     # print("REQUEST EMPLOYEE:", request_employee)
