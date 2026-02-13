@@ -15,6 +15,7 @@ from datetime import date, datetime, timedelta
 from django.contrib import messages
 from django.db.models import Q
 from django.http import HttpResponse
+from django.utils import timezone
 from django.utils.translation import gettext_lazy as _
 
 from attendance.methods.utils import (
@@ -246,7 +247,7 @@ def clock_in(request):
                 return HttpResponse(_("You cannot mark attendance from this network"))
 
         employee, work_info = employee_exists(request)
-        datetime_now = datetime.now()
+        datetime_now = timezone.localtime()
         if request.__dict__.get("datetime"):
             datetime_now = request.datetime
         if employee and work_info is not None:
@@ -455,7 +456,7 @@ def clock_out(request):
         and attendance_general_settings.enable_check_in
         or request.__dict__.get("datetime")
     ):
-        datetime_now = datetime.now()
+        datetime_now = timezone.localtime()
         if request.__dict__.get("datetime"):
             datetime_now = request.datetime
         employee, work_info = employee_exists(request)
