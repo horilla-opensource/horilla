@@ -13,7 +13,7 @@
       {% for question in questions %}
 
       {% if question.type == "textarea" %}
-      <div class="d-flex oh-card mt-2">
+      <div class="d-block oh-card mt-2">
         {% if question.is_mandatory %}
           <span class="oh-label oh-label--question">{{ question.question }}<span class='text-danger'> * {% trans "Mandatory Question" %}</span></span>
         {% else %}
@@ -23,7 +23,7 @@
           type="text"
           name="{{question.question}}"
           class="oh-input w-100"
-          id="id_{{qgvuestion.id}}"
+          id="id_{{question.id}}"
           {% if question.is_mandatory %}required{% endif %}
         ></textarea>
       </div>

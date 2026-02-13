@@ -1,65 +1,71 @@
-{% load i18n %}
-{% load horillafilters %}
-{% load static %}
+{% load i18n horillafilters static %}
 
-{% if candidate.recruitmentsurveyanswer_set.all %}
-            {% for surveys in candidate.recruitmentsurveyanswer_set.all %}
-            <div class="oh-survey__table">
-              {% for question, answer_list in surveys.answer.items %}
-              {% if question != "csrfmiddlewaretoken" %}
-                  <div class="oh-survey__table-row">
-                    <div class="oh-survey__table-col">
-                      {% if question|slice:"0:11" == "percentage_" %}
-                        {{ question|slice:"11:" }}
-                      {% elif question|slice:"0:7" == "rating_" %}
-                        {{ question|slice:"7:" }}
-                      {% elif question|slice:"0:5" == "file_" %}
-                        {{ question|slice:"5:" }}
-                      {% else %}
-                        {{ question }}
-                      {% endif %}
-                    </div>
-                    <div class="oh-survey__table-col">
-                      {% if answer_list|length > 1 %}
-                        {{ answer_list|join:", " }}
-                      {% else %}
-                        {% if answer_list.0 == "on" or answer_list.0 == "off"%}
-                          {{ answer_list.0|on_off }}
-                        {% elif question|slice:"0:11" == "percentage_" %}
-                          {{ answer_list.0 }}%
-                        {% elif question|slice:"0:5" == "file_" %}
-                          <a href="/media/{{ answer_list.0 }}" target="_blank">{{ answer_list.0 }}</a>
-                        {% elif question|slice:"0:7" == "rating_" %}
-                            <div class="oh-rate">
-                              <input type="radio" id="star5{{question.id}}" value="5" disabled {% if answer_list.0 == '5' %} checked {% endif %} />
-                              <label for="star5{{question.id}}" title="5 Stars">5 {% trans "Stars" %}</label>
-                              <input type="radio" id="star4{{question.id}}" value="4" disabled  {% if answer_list.0 == '4' %} checked {% endif %} />
-                              <label for="star4{{question.id}}" title="4 Stars">4 {% trans "Stars" %}</label>
-                              <input type="radio" id="star3{{question.id}}" value="3" disabled  {% if answer_list.0 == '3' %} checked {% endif %} />
-                              <label for="star3{{question.id}}" title="3 Stars">3 {% trans "Stars" %}</label>
-                              <input type="radio" id="star2{{question.id}}" value="2" disabled  {% if answer_list.0 == '2' %} checked {% endif %}  />
-                              <label for="star2{{question.id}}" title="2 Stars">2 {% trans "Stars" %}</label>
-                              <input type="radio" id="star1{{question.id}}" value="1" disabled  {% if answer_list.0 == '1' %} checked {% endif %} />
-                              <label for="star1{{question.id}}" title="1 Star">1 {% trans "Star" %}</label>
-                            </div>
-                        {% else %}
-                          {{ answer_list.0 }}
-                        {% endif %}
-                      {% endif %}
-                    </div>
-                  </div>
-              {% endif %}
-            {% endfor %}
+<style>
+.oh-rate:not(:checked)>label{
+    font-size: 20px;
+}
+</style>
+
+{% remove_item_at survey.answer 0 as filtered_answers %}
+
+<div class="space-y-2">
+    {% for question, answer_list in filtered_answers %}
+        {% if question|slice:"0:11" == "percentage_" %}
+            <div class="bg-white rounded-lg border border-[#e7e7e7] p-4 hover:shadow-md transition-shadow">
+                <div class="text-base font-semibold text-gray-900 mb-2">
+                    {{forloop.counter}}. {{ question|slice:"11:" }}
+                </div>
+                <div class="text-gray-600">
+                    {{ answer_list.0 }}%
+                </div>
             </div>
-            {% endfor %}
-            {% else %}
-              <div class="oh-wrapper h-full" align="center">
-                  <div class="xl:col-span-4 md:col-span-6 col-span-12 bg-white p-6 rounded-md shadow-card h-[70%]">
-                      <div class="flex flex-col items-center justify-center h-full">
-                          <img src="/static/horilla_theme/assets/img/no-records.svg" alt="" width="300" class="mb-4">
-                          <p class="text-[#666] mb-5">{% trans "No survey templates have been established yet." %}</p>
-                      </div>
-                  </div>
-              </div>
-            {% endif %}
-        </div>
+        {% elif question|slice:"0:7" == "rating_" %}
+            <div class="bg-white rounded-lg border border-[#e7e7e7] p-4 hover:shadow-md transition-shadow">
+                <div class="text-base font-semibold text-gray-900 mb-3">
+                    {{forloop.counter}}. {{ question|slice:"7:" }}
+                </div>
+                <div class="oh-rate">
+                    <input type="radio" id="star5{{question.id}}" value="5" disabled {% if answer_list.0 == '5' %} checked {% endif %} />
+                    <label for="star5{{question.id}}" title="5 {% trans 'Stars' %}"></label>
+                    <input type="radio" id="star4{{question.id}}" value="4" disabled  {% if answer_list.0 == '4' %} checked {% endif %} />
+                    <label for="star4{{question.id}}" title="4 {% trans 'Stars' %}"></label>
+                    <input type="radio" id="star3{{question.id}}" value="3" disabled  {% if answer_list.0 == '3' %} checked {% endif %} />
+                    <label for="star3{{question.id}}" title="3 {% trans 'Stars' %}"></label>
+                    <input type="radio" id="star2{{question.id}}" value="2" disabled  {% if answer_list.0 == '2' %} checked {% endif %}  />
+                    <label for="star2{{question.id}}" title="2 {% trans 'Stars' %}"></label>
+                    <input type="radio" id="star1{{question.id}}" value="1" disabled  {% if answer_list.0 == '1' %} checked {% endif %} />
+                    <label for="star1{{question.id}}" title="1 {% trans 'Stars' %}"></label>
+                </div>
+            </div>
+        {% elif question|slice:"0:5" == "file_" %}
+            <div class="bg-white rounded-lg border border-[#e7e7e7] p-4 hover:shadow-md transition-shadow">
+                <div class="text-base font-semibold text-gray-900 mb-2">
+                    {{forloop.counter}}. {{ question|slice:"5:" }}
+                </div>
+                <div class="flex items-center text-gray-600">
+                    <svg class="w-5 h-5 mr-2 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path>
+                    </svg>
+                    <a href="/media/{{ answer_list.0 }}" class="text-blue-600 hover:underline" target="_blank">{{ answer_list.0 }}</a>
+                </div>
+            </div>
+        {% else %}
+            <div class="bg-white rounded-lg border border-[#e7e7e7] p-4 hover:shadow-md transition-shadow">
+                <div class="text-base font-semibold text-gray-900 mb-2">
+                    {{forloop.counter}}. {{ question }}
+                </div>
+                <div class="text-gray-600">
+                    {% if answer_list|length > 1 %}
+                        {{ answer_list|join:", " }}
+                    {% else %}
+                        {% if answer_list.0 == "on" or answer_list.0 == "off"%}
+                            {{ answer_list.0|on_off }}
+                        {% else %}
+                            {{ answer_list.0 }}
+                        {% endif %}
+                    {% endif %}
+                </div>
+            </div>
+        {% endif %}
+    {% endfor %}
+</div>

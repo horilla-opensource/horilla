@@ -111,6 +111,7 @@ from recruitment.models import (
     Recruitment,
     RecruitmentGeneralSetting,
     RecruitmentSurvey,
+    RecruitmentSurveyAnswer,
     RejectedCandidate,
     RejectReason,
     Resume,
@@ -1651,11 +1652,13 @@ def candidate_survey_tab(request, pk, **kwargs):
     """
 
     candidate_obj = Candidate.find(pk)
+    survey = RecruitmentSurveyAnswer.objects.filter(candidate_id=pk).first()
     return render(
         request,
         "cbv/candidates/profile_survey_tab.html",
         {
             "candidate": candidate_obj,
+            "survey": survey,
         },
     )
 
