@@ -5417,7 +5417,7 @@ def monthly_leave_report_pdf(request):
     if not start or not end:
         return HttpResponseBadRequest(_("Start date and end date are required."))
 
-    request_employee = getattr(request.user, "employee_get", None)  # don't call it
+    request_employee = getattr(request.user, "employee_get", None)
     # print("REQUEST EMPLOYEE:", request_employee)
 
     leaves = (
@@ -5467,6 +5467,11 @@ def monthly_leave_report_pdf(request):
     }
 
     template_path = "leave/reports/monthly_leave_report_pdf.html"
-    resp = generate_leave_request_pdf(template_path, context=context, html=False)
+    try:
+        resp = generate_leave_request_pdf(template_path, context=context, html=False)
+    except Exception:
+        logger.exception("PDF generation crashed for monthly leave report.")
+        return HttpResponse(_("Failed to generate PDF report."), status=500)
+
     resp["Content-Disposition"] = 'attachment; filename="monthly_leave_report.pdf"'
     return resp
