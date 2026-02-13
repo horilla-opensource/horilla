@@ -3987,8 +3987,6 @@ def employee_available_leave_count(request):
 
     available_days_for_request = total_leave_days - pending_requests_days
 
-
-
     context = {
         "hx_target": hx_target,
         "leave_type_id": leave_type_id,
