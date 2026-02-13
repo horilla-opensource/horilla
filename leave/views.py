@@ -5451,7 +5451,7 @@ def monthly_leave_report_pdf(request):
                     if user_full:
                         name = user_full
 
-            user_map[emp.id] = name
+            user_map[emp.id] = name or "-"
 
     for l in leaves:
         key = getattr(l, "modified_by_id", None)
