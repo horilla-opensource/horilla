@@ -402,22 +402,22 @@ urlpatterns = [
         name="create-period",
     ),
     path(
-        "objective-bulk-archive",
+        "objective-bulk-archive/",
         views.objective_bulk_archive,
         name="objective-bulk-archive",
     ),
     path(
-        "objective-bulk-delete",
+        "objective-bulk-delete/",
         views.objective_bulk_delete,
         name="objective-bulk-delete",
     ),
     path(
-        "feedback-bulk-archive",
+        "feedback-bulk-archive/",
         views.feedback_bulk_archive,
         name="feedback-bulk-archive",
     ),
     path(
-        "feedback-bulk-delete",
+        "feedback-bulk-delete/",
         views.feedback_bulk_delete,
         name="feedback-bulk-delete",
     ),
