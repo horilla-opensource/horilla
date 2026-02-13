@@ -3930,6 +3930,9 @@ def employee_available_leave_count(request):
     except (ValueError, TypeError):
         start_date = None
 
+    require_attachment = False
+    leave_type = None
+
     if not leave_type_id or not start_date:
         return render(
             request,
@@ -3953,6 +3956,11 @@ def employee_available_leave_count(request):
     if available_leave:
         leave_type = available_leave.leave_type_id
         total_leave_days = available_leave.total_leave_days
+
+        if leave_type:
+            require_attachment = leave_type.require_attachment == "yes"
+        else:
+            require_attachment = False
 
         next_reset = leave_type.leave_type_next_reset_date()
         if next_reset and start_date >= next_reset:
@@ -3986,7 +3994,9 @@ def employee_available_leave_count(request):
         "total_leave_days": available_days_for_request,
         "forcasted_days": forcasted_days,
         "pending_requests": pending_requests_days,
+        "require_attachment": require_attachment,
     }
+
     return render(
         request, "leave/leave_request/employee_available_leave_count.html", context
     )
