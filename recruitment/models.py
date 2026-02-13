@@ -5,10 +5,12 @@ This module is used to register models for recruitment app
 
 """
 
+import ast
 import json
 import os
 import re
 from datetime import datetime, timezone
+from functools import lru_cache
 from urllib.parse import urlencode
 from uuid import uuid4
 
@@ -20,9 +22,11 @@ from django.core.exceptions import ValidationError
 from django.core.files.storage import default_storage
 from django.core.validators import MaxValueValidator, MinValueValidator
 from django.db import models
+from django.db.models import Avg, Min
 from django.templatetags.static import static
 from django.urls import reverse, reverse_lazy
 from django.utils import timezone as tz
+from django.utils.functional import cached_property
 from django.utils.html import format_html
 from django.utils.text import slugify
 from django.utils.translation import gettext_lazy as _
@@ -774,6 +778,26 @@ class Candidate(HorillaModel):
             path="cbv/pipeline/rating.html", context={"instance": self}
         )
 
+    def get_avg_rating(self):
+        """
+        Docstring for get_avg_rating
+
+        :param self: Candidate instance
+        :return: Avg rating got for the candidate
+        :rtype: float/int
+        """
+        return self.candidate_rating.aggregate(avg=Avg("rating"))["avg"]
+
+    def get_total_interview(self):
+        """
+        Docstring for get_total_interview
+
+        :param self: Total interview assigned for candidate
+        :return: Total assigned
+        :rtype: Any
+        """
+        return self.candidate_interview.count()
+
     def get_interview_count(self):
         """
         Scheduled interviews count
@@ -1245,6 +1269,51 @@ class Candidate(HorillaModel):
             context={"instance": self},
         )
 
+    @classmethod
+    @lru_cache(maxsize=1)
+    def get_unique_questions(cls):
+        return dict(
+            RecruitmentSurvey.objects.values("question")
+            .annotate(pk=Min("pk"))
+            .values_list("pk", "question")
+        )
+
+    @cached_property
+    def survey_answer_dict(self):
+        answer_instance = (
+            RecruitmentSurveyAnswer.objects.filter(candidate_id=self)
+            .only("answer_json")
+            .first()
+        )
+
+        if answer_instance and answer_instance.answer_json:
+            return json.loads(
+                answer_instance.answer_json
+            )  # faster than ast.literal_eval
+        return {}
+
+    def __getattr__(self, name):
+        if name.startswith("get_survy_question_"):
+            try:
+                question_id = int(name.split("_")[-1])
+
+                unique_questions = self.get_unique_questions()
+                question_text = unique_questions.get(question_id)
+
+                if not question_text:
+                    return None
+
+                result = self.survey_answer_dict.get(question_text)
+
+                if isinstance(result, list):
+                    return ",".join(result)
+
+                return result
+            except Exception:
+                return None
+
+        raise AttributeError(name)
+
     class Meta:
         """
         Meta class to add the additional info
@@ -1390,7 +1459,6 @@ class RecruitmentSurvey(HorillaModel):
         ("file", _("File Upload")),
         ("rating", _("Rating")),
     ]
-    question = models.TextField(null=False, max_length=255)
     template_id = models.ManyToManyField(
         SurveyTemplate, verbose_name="Template", blank=True
     )
