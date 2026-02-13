@@ -158,7 +158,7 @@ class ListCandidates(HorillaListView):
         for question in unique_questions:
             survey_question = (
                 question["question"],
-                f"get_survy_question_{question['pk']}",
+                f"get_survey_question_{question['pk']}",
             )
             if not survey_question in self.export_fields:
                 self.export_fields.append(survey_question)

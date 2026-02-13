@@ -1272,7 +1272,7 @@ class Candidate(HorillaModel):
         return {}
 
     def __getattr__(self, name):
-        if name.startswith("get_survy_question_"):
+        if name.startswith("get_survey_question_"):
             try:
                 question_id = int(name.split("_")[-1])
 
