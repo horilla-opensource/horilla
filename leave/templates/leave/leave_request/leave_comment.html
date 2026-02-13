@@ -26,8 +26,8 @@
 		<div>
 			<input type="text" name="comment" id="commentInput" hx-on:keyup="toggleCommentButton(this);"
 				class="oh-input w-100" placeholder="Comment here">
-			<small id="charInfo" class="mt-2" style="font-size: 12px; color: #666;"></small>
-			<div id="charError" class="mt-2" style="display: none; color: red;"></div>
+              <small id="charInfo" class="mt-2" style="font-size: 12px; color: #666;"></small>
+        <div id="charError" class="mt-2" style="display: none; color: red;"></div>
 			<button type="submit" id="commentButton" class="oh-btn oh-btn--secondary mt-2 mr-0 oh-btn--w-100-resp"
 				style="display: none;">
 				{% trans "Comment" %}
@@ -108,8 +108,9 @@ function toggleCommentButton(input) {
     const error = document.getElementById("charError");
     const maxLen = 255;
     const len = input.value.length;
-
-    info.textContent = len + "/" + maxLen + " characters";
+    const CHAR_COUNT_TEXT = "{% trans 'characters' %}";
+    const COMMENT_LIMIT_ERROR = "{% trans 'Comment cannot exceed 255 characters.' %}";
+    info.textContent = len + "/" + maxLen + " " + CHAR_COUNT_TEXT;
 
     if (len === 0 || len > maxLen) {
         btn.style.display = "none";
@@ -118,7 +119,7 @@ function toggleCommentButton(input) {
     }
 
     if (len > maxLen) {
-        error.textContent = gettext("Comment cannot exceed 255 characters.");
+        error.textContent = COMMENT_LIMIT_ERROR;
         error.style.display = "block";
     } else {
         error.style.display = "none";
