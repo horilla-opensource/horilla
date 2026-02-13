@@ -1,494 +1,431 @@
-{% load static %} {% load i18n %} {% load horillafilters  %}
+{% load static %} {% load i18n %} {% load horillafilters %}
 {% load basefilters %}
 {% verbatim %}
 <script>
-  function activeNav(id) {
-    const navElement = $(`#${id}`);
-    const activeNavElement = navElement.after();
-  }
-  function preloadData(item, candId,preloadedData,callback) {
-    $.ajax({
-        type: "get",
-        url: `/recruitment/get-template-hint/`,
-        data: { "candidate_id": candId, 'word': item },
-        success: function(response) {
-            preloadedData[item] = response.body;
-            callback();
-            $('.note-hint-popover').hide()
-        }
-    });
-}
+    function activeNav(id) {
+        const navElement = $(`#${id}`);
+        const activeNavElement = navElement.after();
+    }
+    function preloadData(item, candId, preloadedData, callback) {
+        $.ajax({
+            type: "get",
+            url: `/recruitment/get-template-hint/`,
+            data: { "candidate_id": candId, 'word': item },
+            success: function (response) {
+                preloadedData[item] = response.body;
+                callback();
+                $('.note-hint-popover').hide()
+            }
+        });
+    }
 
-function initializeSummernote(candId,searchWords,) {
-    var preloadedData = {};
-    var searchWords = searchWords;
-    var mentions = Object.keys(searchWords);
-    $("[name='body']").summernote({
-        hint: {
-            mentions: mentions,
-            match: /\B\{(\w*)$/,
-            search: function(keyword, callback) {
-                var pattern = new RegExp(keyword, "i"); // Case-insensitive search
-                callback($.grep(this.mentions, function(item) {
-                    return pattern.test(item);
-                }));
-            },
-            content: function(item) {
-              var word = searchWords[item];
-              var insertText = `{{${word}}}`; // Correct string formatting
+    function initializeSummernote(candId, searchWords,) {
+        var preloadedData = {};
+        var searchWords = searchWords;
+        var mentions = Object.keys(searchWords);
+        $("[name='body']").summernote({
+            hint: {
+                mentions: mentions,
+                match: /\B\{(\w*)$/,
+                search: function (keyword, callback) {
+                    var pattern = new RegExp(keyword, "i"); // Case-insensitive search
+                    callback($.grep(this.mentions, function (item) {
+                        return pattern.test(item);
+                    }));
+                },
+                content: function (item) {
+                    var word = searchWords[item];
+                    var insertText = `{{${word}}}`; // Correct string formatting
 
-              if (preloadedData[word]) {
-                  $("[name='body']").summernote('pasteHTML', insertText); // Use pasteHTML instead
-                  $('.note-hint-popover').hide();
-              } else {
-                  preloadData(word, candId, preloadedData, function() {
-                      $("[name='body']").summernote('pasteHTML', insertText);
-                      $('.note-hint-popover').hide();
-                  });
-              }
-          }
-        }
-    });
-}
+                    if (preloadedData[word]) {
+                        $("[name='body']").summernote('pasteHTML', insertText); // Use pasteHTML instead
+                        $('.note-hint-popover').hide();
+                    } else {
+                        preloadData(word, candId, preloadedData, function () {
+                            $("[name='body']").summernote('pasteHTML', insertText);
+                            $('.note-hint-popover').hide();
+                        });
+                    }
+                }
+            }
+        });
+    }
 </script>
 {% endverbatim %}
 
 <style>
-  .oh-sidebar__submenu-items_re li::before {
-    content: "★";
-    color:rgb(231, 105, 85);
-    font-size: 15px;
-    padding-right: 4px;
-  }
+    .oh-sidebar__submenu-items_re li::before {
+        content: "★";
+        color: rgb(231, 105, 85);
+        font-size: 15px;
+        padding-right: 4px;
+    }
 </style>
 
-<div
-  class="oh-sidebar"
-  style="position: -webkit-sticky; position: sticky; top: 0;height:100vh; overflow-x:hidden;"
->
-<div class="oh-sidebar__company" style="padding: 14px">
-    {% if request.session.selected_company_instance %}
-    <span class="mr-3">
-      {% if not request.session.selected_company_instance %}
-      <img
-      src="https://ui-avatars.com/api/?name=C&background=random"
-      style="width: 34px; border-radius: 3px"
-      />
-      {% else %}
-      <img
-      src="{{request.session.selected_company_instance.icon}}"
-      style="width: 34px; border-radius: 3px"
-      />
-      {% endif %}
-    </span>
-    <div class="oh-sidebar__company-details">
-      <span class="oh-sidebar__company-title" style="font-size: 13px"
-      >{{request.session.selected_company_instance.company}}.</span
-      >
-      <a href="#" class="oh-sidebar__company-link" style="font-size: 10px"
-      >{% trans request.session.selected_company_instance.text %}</a
-      >
+<div class="oh-sidebar" style="position: -webkit-sticky; position: sticky; top: 0;height:100vh; overflow-x:hidden;">
+    <div class="oh-sidebar__company" style="padding: 14px">
+        {% if request.session.selected_company_instance %}
+            <span class="mr-3">
+                {% if not request.session.selected_company_instance %}
+                    <img src="https://ui-avatars.com/api/?name=C&background=random" style="width: 34px; border-radius: 3px" />
+                {% else %}
+                    <img src="{{request.session.selected_company_instance.icon}}" style="width: 34px; border-radius: 3px" />
+                {% endif %}
+            </span>
+            <div class="oh-sidebar__company-details">
+                <span class="oh-sidebar__company-title"
+                    style="font-size: 13px">{{request.session.selected_company_instance.company}}.</span>
+                <a href="#" class="oh-sidebar__company-link" style="font-size: 10px">
+                    {% trans request.session.selected_company_instance.text %}
+                </a>
+            </div>
+        {% else %}
+            <span class="mr-3">
+                {% if request.user.employee_get.employee_work_info.company_id.icon == None %}
+                    <img src="https://ui-avatars.com/api/?name=C&background=random" style="width: 34px; border-radius: 3px" />
+                {% else %}
+                    <img src="{{request.user.employee_get.employee_work_info.company_id.icon.url}}"
+                        style="width: 34px; border-radius: 3px" />
+                {% endif %}
+            </span>
+            <div class="oh-sidebar__company-details">
+                <span class="oh-sidebar__company-title"
+                    style="font-size: 13px">{{request.user.employee_get.employee_work_info.company_id}}.</span>
+                <a href="#" class="oh-sidebar__company-link" style="font-size: 10px">{% trans "My Company" %}</a>
+            </div>
+        {% endif %}
     </div>
-    {% else %}
-    <span class="mr-3">
-      {% if request.user.employee_get.employee_work_info.company_id.icon == None %}
-      <img
-      src="https://ui-avatars.com/api/?name=C&background=random"
-      style="width: 34px; border-radius: 3px"
-      />
-      {% else %}
-      <img
-      src="{{request.user.employee_get.employee_work_info.company_id.icon.url}}"
-      style="width: 34px; border-radius: 3px"
-      />
-      {% endif %}
-    </span>
-    <div class="oh-sidebar__company-details">
-      <span class="oh-sidebar__company-title" style="font-size: 13px"
-      >{{request.user.employee_get.employee_work_info.company_id}}.</span
-      >
-      <a href="#" class="oh-sidebar__company-link" style="font-size: 10px"
-      >{% trans "My Company" %}</a
-      >
-    </div>
-    {% endif %}
-  </div>
-  <div class="oh-sidebar__menu">
-    <ul class="oh-sidebar__menu-items">
-      <li
-        class="oh-sidebar__menu-item"
-        x-data="{ isOpen: getOpenState('dashboardNav') }"
-      >
-        <a
-          href="{%url 'home-page' %}"
-          onclick="window.location.href=this.href; return false;"
-          class="oh-sidebar__menu-link"
-          data-id="dashboardNav"
-          x-on:click.prevent="isOpen = !isOpen; saveOpenState('dashboardNav', isOpen)"
-          x-bind:class="isOpen ? 'oh-sidebar__menu-link--active' : ''"
-        >
-          <div class="oh-sidebar__menu-icon">
-            <img
-              src="{% static 'images/ui/dashboard.svg' %}"
-              alt="Dashboard"
-              width="24"
-              height="24"
-            />
-          </div>
-          <span>{% trans "Dashboard" %}</span>
-        </a>
-      </li>
-      {% for menues in sidebar %}
-      <li
-        class="oh-sidebar__menu-item"
-        x-data="{ isOpen: getOpenState('{{menues.app}}GenericNav') }"
-      >
-        <a
-          class="oh-sidebar__menu-link"
-          data-id="{{menues.app}}GenericNav"
-          x-on:click.prevent="isOpen = !isOpen; saveOpenState('{{menues.app}}GenericNav', isOpen)"
-          x-bind:class="isOpen ? 'oh-sidebar__menu-link--active' : ''"
-          style="cursor: pointer"
-        >
-        <div class="oh-sidebar__menu-icon">
-          <img
-            src="{% static menues.img_src %}"
-            alt="Dashboard"
-            style="filter: brightness(0) invert(1);"
-            width="24"
-            height="24"
-          />
-        </div>
-        <span>
-            {{menues.menu}}
-        </span>
-        </a>
-        <div
-          class="oh-sidebar__submenu"
-          id="{{menues.app}}GenericNav"
-          style="display: none"
-          x-show="isOpen"
-          x-transition
-        >
-          <ul class="oh-sidebar__submenu-items">
-              {% for submenu in menues.submenu %}
-              <li class="oh-sidebar__submenu-item">
-              <a
-                  href="{{submenu.redirect}}"
-                  class="oh-sidebar__submenu-link"
-              >
-                  {{submenu.menu}}
-              </a>
-              </li>
-              {% endfor %}
-          </ul>
-        </div>
-      </li>
-      {% endfor %}
+    <div class="oh-sidebar__menu">
+        <ul class="oh-sidebar__menu-items">
+            <li class="oh-sidebar__menu-item" x-data="{ isOpen: getOpenState('dashboardNav') }">
+                <a href="{%url 'home-page' %}" onclick="window.location.href=this.href; return false;"
+                    class="oh-sidebar__menu-link" data-id="dashboardNav"
+                    x-on:click.prevent="isOpen = !isOpen; saveOpenState('dashboardNav', isOpen)"
+                    x-bind:class="isOpen ? 'oh-sidebar__menu-link--active' : ''">
+                    <div class="oh-sidebar__menu-icon">
+                        <img src="{% static 'images/ui/dashboard.svg' %}" alt="Dashboard" width="24" height="24" />
+                    </div>
+                    <span>{% trans "Dashboard" %}</span>
+                </a>
+            </li>
+            {% for menues in sidebar %}
+                <li class="oh-sidebar__menu-item" x-data="{ isOpen: getOpenState('{{menues.app}}GenericNav') }">
+                    <a class="oh-sidebar__menu-link" data-id="{{menues.app}}GenericNav"
+                        x-on:click.prevent="isOpen = !isOpen; saveOpenState('{{menues.app}}GenericNav', isOpen)"
+                        x-bind:class="isOpen ? 'oh-sidebar__menu-link--active' : ''" style="cursor: pointer">
+                        <div class="oh-sidebar__menu-icon">
+                            <img src="{% static menues.img_src %}" alt="Dashboard" style="filter: brightness(0) invert(1);"
+                                width="24" height="24" />
+                        </div>
+                        <span>
+                            {{menues.menu}}
+                        </span>
+                    </a>
+                    <div class="oh-sidebar__submenu" id="{{menues.app}}GenericNav" style="display: none" x-show="isOpen"
+                        x-transition>
+                        <ul class="oh-sidebar__submenu-items">
+                            {% for submenu in menues.submenu %}
+                                <li class="oh-sidebar__submenu-item">
+                                    <a href="{{submenu.redirect}}" class="oh-sidebar__submenu-link">
+                                        {{submenu.menu}}
+                                    </a>
+                                </li>
+                            {% endfor %}
+                        </ul>
+                    </div>
+                </li>
+            {% endfor %}
 
-      {% if request.user|config_perms %}
-      <li
-        class="oh-sidebar__menu-item"
-        x-data="{ isOpen: getOpenState('configNav') }"
-       >
-        <a
-          class="oh-sidebar__menu-link"
-          data-id="configNav"
-          x-on:click.prevent="isOpen = !isOpen; saveOpenState('configNav', isOpen)"
-          x-bind:class="isOpen ? 'oh-sidebar__menu-link--active' : ''"
-          style="cursor: pointer"
-        >
-          <div class="oh-sidebar__menu-icon">
-            <svg
-              fill="#ffffff"
-              height="20"
-              width="24"
-              version="1.1"
-              id="Capa_1"
-              xmlns="http://www.w3.org/2000/svg"
-              xmlns:xlink="http://www.w3.org/1999/xlink"
-              viewBox="0 0 482.568 482.568"
-              xml:space="preserve"
-              stroke="#ffffff"
-            >
-              <g id="SVGRepo_bgCarrier" stroke-width="0"></g>
-              <g
-                id="SVGRepo_tracerCarrier"
-                stroke-linecap="round"
-                stroke-linejoin="round"
-              ></g>
-              <g id="SVGRepo_iconCarrier">
-                <g>
-                  <g>
-                    <path
-                      d="M116.993,203.218c13.4-1.8,26.8,2.8,36.3,12.3l24,24l22.7-22.6l-32.8-32.7c-5.1-5.1-5.1-13.4,0-18.5s13.4-5.1,18.5,0 l32.8,32.8l22.7-22.6l-24.1-24.1c-9.5-9.5-14.1-23-12.3-36.3c4-30.4-5.7-62.2-29-85.6c-23.8-23.8-56.4-33.4-87.3-28.8 c-4.9,0.7-6.9,6.8-3.4,10.3l30.9,30.9c14.7,14.7,14.7,38.5,0,53.1l-19,19c-14.7,14.7-38.5,14.7-53.1,0l-31-30.9 c-3.5-3.5-9.5-1.5-10.3,3.4c-4.6,30.9,5,63.5,28.8,87.3C54.793,197.518,86.593,207.218,116.993,203.218z"
-                    ></path>
-                    <path
-                      d="M309.193,243.918l-22.7,22.6l134.8,134.8c5.1,5.1,5.1,13.4,0,18.5s-13.4,5.1-18.5,0l-134.8-134.8l-22.7,22.6l138.9,138.9 c17.6,17.6,46.1,17.5,63.7-0.1s17.6-46.1,0.1-63.7L309.193,243.918z"
-                    ></path>
-                    <path
-                      d="M361.293,153.918h59.9l59.9-119.7l-29.9-29.9l-119.8,59.8v59.9l-162.8,162.3l-29.3-29.2l-118,118 c-24.6,24.6-24.6,64.4,0,89s64.4,24.6,89,0l118-118l-29.9-29.9L361.293,153.918z"
-                    ></path>
-                  </g>
-                </g>
-              </g>
-            </svg>
-          </div>
-          <span>{% trans "Configuration" %}</span>
-        </a>
-        <div
-          class="oh-sidebar__submenu"
-          id="configNav"
-          x-show="isOpen"
-          x-transition
-          style="display: none"
-          >
-          <ul class="oh-sidebar__submenu-items">
-            {% if "leave"|app_installed and perms.base.view_multipleapprovalcondition %}
-            <li class="oh-sidebar__submenu-item">
-              <a
-                href="{% url 'multiple-approval-condition' %}"
-                class="oh-sidebar__submenu-link"
-                >{% trans "Multiple Approvals" %}</a
-              >
-            </li>
+            {% if request.user|config_perms %}
+                <li class="oh-sidebar__menu-item" x-data="{ isOpen: getOpenState('configNav') }">
+                    <a class="oh-sidebar__menu-link" data-id="configNav"
+                        x-on:click.prevent="isOpen = !isOpen; saveOpenState('configNav', isOpen)"
+                        x-bind:class="isOpen ? 'oh-sidebar__menu-link--active' : ''" style="cursor: pointer">
+                        <div class="oh-sidebar__menu-icon">
+                            <svg fill="#ffffff" height="20" width="24" version="1.1" id="Capa_1"
+                                xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink"
+                                viewBox="0 0 482.568 482.568" xml:space="preserve" stroke="#ffffff">
+                                <g id="SVGRepo_bgCarrier" stroke-width="0"></g>
+                                <g id="SVGRepo_tracerCarrier" stroke-linecap="round" stroke-linejoin="round"></g>
+                                <g id="SVGRepo_iconCarrier">
+                                    <g>
+                                        <g>
+                                            <path
+                                                d="M116.993,203.218c13.4-1.8,26.8,2.8,36.3,12.3l24,24l22.7-22.6l-32.8-32.7c-5.1-5.1-5.1-13.4,0-18.5s13.4-5.1,18.5,0 l32.8,32.8l22.7-22.6l-24.1-24.1c-9.5-9.5-14.1-23-12.3-36.3c4-30.4-5.7-62.2-29-85.6c-23.8-23.8-56.4-33.4-87.3-28.8 c-4.9,0.7-6.9,6.8-3.4,10.3l30.9,30.9c14.7,14.7,14.7,38.5,0,53.1l-19,19c-14.7,14.7-38.5,14.7-53.1,0l-31-30.9 c-3.5-3.5-9.5-1.5-10.3,3.4c-4.6,30.9,5,63.5,28.8,87.3C54.793,197.518,86.593,207.218,116.993,203.218z">
+                                            </path>
+                                            <path
+                                                d="M309.193,243.918l-22.7,22.6l134.8,134.8c5.1,5.1,5.1,13.4,0,18.5s-13.4,5.1-18.5,0l-134.8-134.8l-22.7,22.6l138.9,138.9 c17.6,17.6,46.1,17.5,63.7-0.1s17.6-46.1,0.1-63.7L309.193,243.918z">
+                                            </path>
+                                            <path
+                                                d="M361.293,153.918h59.9l59.9-119.7l-29.9-29.9l-119.8,59.8v59.9l-162.8,162.3l-29.3-29.2l-118,118 c-24.6,24.6-24.6,64.4,0,89s64.4,24.6,89,0l118-118l-29.9-29.9L361.293,153.918z">
+                                            </path>
+                                        </g>
+                                    </g>
+                                </g>
+                            </svg>
+                        </div>
+                        <span>{% trans "Configuration" %}</span>
+                    </a>
+                    <div class="oh-sidebar__submenu" id="configNav" x-show="isOpen" x-transition style="display: none">
+                        <ul class="oh-sidebar__submenu-items">
+                            {% if "leave"|app_installed and perms.base.view_multipleapprovalcondition %}
+                                <li class="oh-sidebar__submenu-item">
+                                    <a href="{% url 'multiple-approval-condition' %}" class="oh-sidebar__submenu-link">
+                                        {% trans "Multiple Approvals" %}</a>
+                                </li>
+                            {% endif %}
+                            {% if perms.base.view_horillamailtemplate %}
+                                <li class="oh-sidebar__submenu-item">
+                                    <a class="oh-sidebar__submenu-link" href="{% url 'view-mail-templates' %}"
+                                        class="oh-sidebar__submenu-link">{% trans "Mail Templates" %}</a>
+                                </li>
+                            {% endif %}
+                            {% if "horilla_automations"|app_installed and perms.horilla_automations.view_mailautomation %}
+                                <li class="oh-sidebar__submenu-item">
+                                    <a class="oh-sidebar__submenu-link" href="{% url 'mail-automations' %}"
+                                        class="oh-sidebar__submenu-link">{% trans "Mail Automations" %}</a>
+                                </li>
+                            {% endif %}
+                            {% if perms.base.add_holidays %}
+                                <li class="oh-sidebar__submenu-item">
+                                    <a href="{% url 'holiday-view' %}" class="oh-sidebar__submenu-link">{% trans "Holidays" %}</a>
+                                </li>
+                            {% endif %}
+                            {% if perms.base.view_companyleaves %}
+                                <li class="oh-sidebar__submenu-item">
+                                    <a href="{% url 'company-leave-view' %}" class="oh-sidebar__submenu-link">{% trans "Company Leaves" %}</a>
+                                </li>
+                            {% endif %}
+                            {% if "leave"|app_installed %}
+                                <li class="oh-sidebar__submenu-item">
+                                    <a href="{% url 'restrict-view' %}" class="oh-sidebar__submenu-link">{% trans "Restrict Leaves" %}</a>
+                                </li>
+                            {% endif %}
+                        </ul>
+                    </div>
+                </li>
             {% endif %}
-            {% if perms.base.view_horillamailtemplate %}
-            <li class="oh-sidebar__submenu-item">
-              <a
-                class="oh-sidebar__submenu-link"
-                href="{% url 'view-mail-templates' %}"
-                class="oh-sidebar__submenu-link"
-                >{% trans "Mail Templates" %}</a
-              >
-            </li>
-            {% endif %}
-            {% if "horilla_automations"|app_installed and perms.horilla_automations.view_mailautomation %}
-            <li class="oh-sidebar__submenu-item">
-              <a
-                class="oh-sidebar__submenu-link"
-                href="{% url 'mail-automations' %}"
-                class="oh-sidebar__submenu-link"
-                >{% trans "Mail Automations" %}</a
-              >
-            </li>
-            {% endif %}
-            {% if perms.base.add_holidays %}
-            <li class="oh-sidebar__submenu-item">
-              <a
-                href="{% url 'holiday-view' %}"
-                class="oh-sidebar__submenu-link"
-                >{% trans "Holidays" %}</a
-              >
-            </li>
-            {% endif %}
-            {% if perms.base.view_companyleaves %}
-            <li class="oh-sidebar__submenu-item">
-              <a
-              href="{% url 'company-leave-view' %}"
-              class="oh-sidebar__submenu-link"
-              >{% trans "Company Leaves" %}</a
-              >
-            </li>
-            {% endif %}
-            {% if "leave"|app_installed %}
-            <li class="oh-sidebar__submenu-item">
-              <a
-                href="{% url 'restrict-view' %}"
-                class="oh-sidebar__submenu-link"
-                >{% trans "Restrict Leaves" %}</a
-              >
-            </li>
-            {% endif %}
-          </ul>
-        </div>
-      </li>
-      {% endif %}
-    </ul>
-  </div>
+        </ul>
+    </div>
 </div>
 <style>
-  .highlight-selected{
-    background-color: rgba(255, 68, 0, 0.134);
-  }
-  .highlight-selected:hover{
-    background-color: rgba(255, 68, 0, 0.1);
-  }
-  .fade-me-out.htmx-swapping {
-		opacity: 0;
-		transition: opacity 1s ease-out;
-	}
+    .highlight-selected {
+        background-color: rgba(255, 68, 0, 0.134);
+    }
+
+    .highlight-selected:hover {
+        background-color: rgba(255, 68, 0, 0.1);
+    }
+
+    .fade-me-out.htmx-swapping {
+        opacity: 0;
+        transition: opacity 1s ease-out;
+    }
 </style>
 <script>
-  $("#sidebar").mouseover(function (e) {
-    e.preventDefault();
-    var sidebarContainer = $(".oh-wrapper-main");
-    if (sidebarContainer.hasClass("oh-wrapper-main--closed")) {
-      sidebarContainer.removeClass("oh-wrapper-main--closed");
-    }
-  });
-
-  $("#sidebar").mouseleave(function (e) {
-    var sidebarContainer = $(".oh-wrapper-main");
-    if (sidebarContainer.hasClass("oh-wrapper-main--closed")) {
-      sidebarContainer.removeClass("oh-wrapper-main--closed");
-    } else {
-      if (sidebarContainer.hasClass("toggle-clicked")) {
-        sidebarContainer.addClass("oh-wrapper-main--closed");
-      }
-    }
-  });
-
-  $(".oh-sidebar__menu-link").click(function (e) {
-    e.preventDefault();
-    const currentActiveNav = $(".oh-sidebar__menu-link--active");
-    $(currentActiveNav).removeClass("oh-sidebar__menu-link--active");
-    const activeSubMenuId = $(currentActiveNav).attr("data-id");
-    $(`#${activeSubMenuId}`).attr("style", "display:none;");
-    // Get the JSON object from local storage
-    const menuStates = JSON.parse(localStorage.getItem("menuStates"));
-
-    // Update the value of a key to false
-    menuStates[activeSubMenuId] = false;
-
-    // Save the updated object to local storage
-    localStorage.setItem("menuStates", JSON.stringify(menuStates));
-
-    $(this).toggleClass("oh-sidebar__menu-link--active");
-    const submenuId = $(this).attr("data-id");
-    const submenu = $(`#${submenuId}`);
-    if (submenu.attr("style")) {
-      submenu.removeAttr("style");
-    } else {
-      submenu.attr("style", "display:none;");
-    }
-  });
-  function getOpenState(id) {
-    const menuStates = JSON.parse(localStorage.getItem("menuStates") || "{}");
-    return menuStates[id] || false;
-  }
-
-  function saveOpenState(id, isOpen) {
-    const menuStates = JSON.parse(localStorage.getItem("menuStates") || "{}");
-    menuStates[id] = isOpen;
-    localStorage.setItem("menuStates", JSON.stringify(menuStates));
-  }
-
-  function getActiveState(id) {
-    const activeMenu = JSON.parse(localStorage.getItem("activeMenu") || "{}");
-    return activeMenu === id;
-  }
-
-  function setActiveState(id) {
-    localStorage.setItem("activeMenu", id);
-  }
-
-  var message;
-
-  function emptyChart(chart, args, options) {
-    flag = false;
-    for (let i = 0; i < chart.data.datasets.length; i++) {
-      flag = flag + chart.data.datasets[i].data.some(Boolean);
-    }
-    if (!flag) {
-      const { ctx, canvas } = chart;
-      chart.clear();
-      const parent = canvas.parentElement;
-
-      // Set canvas width/height to match
-      canvas.width = parent.clientWidth;
-      canvas.height = parent.clientHeight;
-      // Calculate center position
-      const x = canvas.width / 2;
-      const y = (canvas.height - 70) / 2;
-      var noDataImage = new Image();
-      noDataImage.src = chart.data.emptyImageSrc
-        ? chart.data.emptyImageSrc
-        : "{% static '/images/ui/no_records.svg' %}";
-
-      message = chart.data.message
-        ? chart.data.message
-        : i18nMessages.emptyMessages;
-
-      noDataImage.onload = () => {
-        // Draw image first at center
-        ctx.drawImage(noDataImage, x - 35, y, 70, 70);
-
-        // Draw text below image
-        ctx.textAlign = "center";
-        ctx.textBaseline = "middle";
-        ctx.fillStyle = "hsl(0,0%,45%)";
-        ctx.font = "16px Poppins";
-        ctx.fillText(message, x, y + 70 + 30);
-      };
-    }
-  }
-
-  function highlightRow(checkbox) {
-    checkbox.closest(".oh-sticky-table__tr").removeClass("highlight-selected");
-    checkbox.closest("tr").removeClass("highlight-selected");
-    if (checkbox.is(":checked")) {
-      checkbox.closest(".oh-sticky-table__tr").addClass("highlight-selected");
-      checkbox.closest("tr").addClass("highlight-selected");
-    }
-  }
-  function toggleHighlight(ids) {
-    $.each(ids, function (indexInArray, id) {
-      setTimeout(() => {
-        $(`#${id}`)
-          .closest(".oh-sticky-table__tr")
-          .removeClass("highlight-selected");
-        if ($(`#${id}`).is(":checked")) {
-          $(`#${id}`)
-            .closest(".oh-sticky-table__tr")
-            .addClass("highlight-selected");
+    $("#sidebar").mouseover(function (e) {
+        e.preventDefault();
+        var sidebarContainer = $(".oh-wrapper-main");
+        if (sidebarContainer.hasClass("oh-wrapper-main--closed")) {
+            sidebarContainer.removeClass("oh-wrapper-main--closed");
         }
-      }, 1);
     });
-  }
 
-  function validateFile(element,fileTarget,reload=false) {
-    var fileInput = document.getElementById(fileTarget);
-    var filePath = fileInput.value;
-    var allowedExtensions = /(\.xlsx|\.csv)$/i;
+    $("#sidebar").mouseleave(function (e) {
+        var sidebarContainer = $(".oh-wrapper-main");
+        if (sidebarContainer.hasClass("oh-wrapper-main--closed")) {
+            sidebarContainer.removeClass("oh-wrapper-main--closed");
+        } else {
+            if (sidebarContainer.hasClass("toggle-clicked")) {
+                sidebarContainer.addClass("oh-wrapper-main--closed");
+            }
+        }
+    });
 
-    if (!allowedExtensions.exec(filePath)) {
-      Swal.fire({
-        icon: 'error',
-        title: '{% trans "Invalid File" %}',
-        text: '{% trans "Please upload a valid XLSX file." %}',
-        customClass: {
-          popup: 'file-xlsx-validation',
+    $(".oh-sidebar__menu-link").click(function (e) {
+        e.preventDefault();
+        const currentActiveNav = $(".oh-sidebar__menu-link--active");
+        $(currentActiveNav).removeClass("oh-sidebar__menu-link--active");
+        const activeSubMenuId = $(currentActiveNav).attr("data-id");
+        $(`#${activeSubMenuId}`).attr("style", "display:none;");
+        // Get the JSON object from local storage
+        const menuStates = JSON.parse(localStorage.getItem("menuStates"));
+
+        // Update the value of a key to false
+        menuStates[activeSubMenuId] = false;
+
+        // Save the updated object to local storage
+        localStorage.setItem("menuStates", JSON.stringify(menuStates));
+
+        $(this).toggleClass("oh-sidebar__menu-link--active");
+        const submenuId = $(this).attr("data-id");
+        const submenu = $(`#${submenuId}`);
+        if (submenu.attr("style")) {
+            submenu.removeAttr("style");
+        } else {
+            submenu.attr("style", "display:none;");
+        }
+    });
+    function getOpenState(id) {
+        const menuStates = JSON.parse(localStorage.getItem("menuStates") || "{}");
+        return menuStates[id] || false;
+    }
+
+    function saveOpenState(id, isOpen) {
+        const menuStates = JSON.parse(localStorage.getItem("menuStates") || "{}");
+        menuStates[id] = isOpen;
+        localStorage.setItem("menuStates", JSON.stringify(menuStates));
+    }
+
+    function getActiveState(id) {
+        const activeMenu = JSON.parse(localStorage.getItem("activeMenu") || "{}");
+        return activeMenu === id;
+    }
+
+    function setActiveState(id) {
+        localStorage.setItem("activeMenu", id);
+    }
+
+    var message;
+    var languageCode = "en";
+    var emptyMessages = {
+        ar: "...لم يتم العثور على بيانات",
+        de: "Keine Daten gefunden...",
+        es: "No se encontraron datos...",
+        en: "No records available at the moment.",
+        fr: "Aucune donnée trouvée...",
+    };
+
+    $.ajax({
+        type: "GET",
+        url: "/employee/get-language-code/",
+        success: function (response) {
+            languageCode = response.language_code;
+            message = emptyMessages[languageCode];
         },
-      })
-      .then((result) => {
-        if (result.isConfirmed && reload) {
-          $(".oh-modal--show").removeClass("oh-modal--show");
-          window.location.reload()
-        }
-      })
-      ;
-      fileInput.value = '';
-      return false;
-    }
-    $(this).closest("form").submit();
-  }
-
-  function filterCountUpdate(formId) {
-    var formData = $("#" + formId).serialize();
-    var count = 0;
-    formData.split("&").forEach(function (field) {
-      var parts = field.split("=");
-      var value = parts[1];
-      if (parts[0] !== "view" && parts[0] !== "filter_applied"){
-        if (value && value !== "unknown") {
-          count++;
-        }
-      }
     });
-    $("#filterCount").empty();
-    if (count > 0) {
-      $("#filterCount").text(`(${count})`);
+
+    function emptyChart(chart, args, options) {
+        // Guard: chart/canvas from HTMX swap / destroy / rerender
+        const canvas = chart?.canvas;
+        if (!canvas || !canvas.isConnected) return;
+
+        const parent = canvas.parentElement;
+        if (!parent) return;
+
+        const datasets = chart?.data?.datasets;
+        if (!Array.isArray(datasets)) return;
+
+        let hasData = false;
+        for (let i = 0; i < datasets.length; i++) {
+            const arr = datasets[i]?.data;
+            if (Array.isArray(arr) && arr.some(Boolean)) {
+                hasData = true;
+                break;
+            }
+        }
+        if (hasData) return;
+
+        const ctx = chart?.ctx;
+        if (!ctx) return;
+
+        chart.clear();
+
+        // Set canvas width/height to match parent
+        canvas.width = parent.clientWidth;
+        canvas.height = parent.clientHeight;
+
+        // Calculate center position
+        const x = canvas.width / 2;
+        const y = (canvas.height - 70) / 2;
+
+        const noDataImage = new Image();
+        noDataImage.src = chart?.data?.emptyImageSrc
+            ? chart.data.emptyImageSrc
+            : "{% static '/images/ui/no_records.svg' %}";
+
+        const message = chart?.data?.message
+            ? chart.data.message
+            : emptyMessages[languageCode];
+
+        noDataImage.onload = () => {
+            // Guard
+            if (!canvas.isConnected) return;
+
+            ctx.drawImage(noDataImage, x - 35, y, 70, 70);
+            ctx.textAlign = "center";
+            ctx.textBaseline = "middle";
+            ctx.fillStyle = "hsl(0,0%,45%)";
+            ctx.font = "16px Poppins";
+            ctx.fillText(message, x, y + 70 + 30);
+        };
     }
-  }
+
+    function highlightRow(checkbox) {
+        checkbox.closest(".oh-sticky-table__tr").removeClass("highlight-selected");
+        checkbox.closest("tr").removeClass("highlight-selected");
+        if (checkbox.is(":checked")) {
+            checkbox.closest(".oh-sticky-table__tr").addClass("highlight-selected");
+            checkbox.closest("tr").addClass("highlight-selected");
+        }
+    }
+    function toggleHighlight(ids) {
+        $.each(ids, function (indexInArray, id) {
+            setTimeout(() => {
+                $(`#${id}`)
+                    .closest(".oh-sticky-table__tr")
+                    .removeClass("highlight-selected");
+                if ($(`#${id}`).is(":checked")) {
+                    $(`#${id}`)
+                        .closest(".oh-sticky-table__tr")
+                        .addClass("highlight-selected");
+                }
+            }, 1);
+        });
+    }
+
+    function validateFile(element, fileTarget, reload = false) {
+        var fileInput = document.getElementById(fileTarget);
+        var filePath = fileInput.value;
+        var allowedExtensions = /(\.xlsx|\.csv)$/i;
+
+        if (!allowedExtensions.exec(filePath)) {
+            Swal.fire({
+                icon: 'error',
+                title: '{% trans "Invalid File" %}',
+                text: '{% trans "Please upload a valid XLSX file." %}',
+                customClass: {
+                    popup: 'file-xlsx-validation',
+                },
+            })
+                .then((result) => {
+                    if (result.isConfirmed && reload) {
+                        $(".oh-modal--show").removeClass("oh-modal--show");
+                        window.location.reload()
+                    }
+                })
+                ;
+            fileInput.value = '';
+            return false;
+        }
+        $(this).closest("form").submit();
+    }
+
+    function filterCountUpdate(formId) {
+        var formData = $("#" + formId).serialize();
+        var count = 0;
+        formData.split("&").forEach(function (field) {
+            var parts = field.split("=");
+            var value = parts[1];
+            if (parts[0] !== "view" && parts[0] !== "filter_applied") {
+                if (value && value !== "unknown") {
+                    count++;
+                }
+            }
+        });
+        $("#filterCount").empty();
+        if (count > 0) {
+            $("#filterCount").text(`(${count})`);
+        }
+    }
 </script>
