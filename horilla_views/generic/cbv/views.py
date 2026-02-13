@@ -80,6 +80,7 @@ class HorillaListView(ListView):
     context_object_name = "queryset"
     # column = [("Verbose Name","field_name","avatar_mapping")], opt: avatar_mapping
     columns: list = []
+    export_columns = []
     default_columns: list = []
     search_url: str = ""
     bulk_select_option: bool = True
@@ -340,6 +341,9 @@ class HorillaListView(ListView):
         ]
 
         context["columns"] = self.visible_column
+        context["export_columns"] = (
+            self.visible_column if not self.export_columns else self.export_columns
+        )
         context["hidden_columns"] = list(set(self.columns) - set(self.visible_column))
         context["toggle_form"] = self.toggle_form
         context["show_toggle_form"] = self.show_toggle_form
@@ -1251,186 +1255,186 @@ class HorillaListView(ListView):
         """
         return json.dumps(list(self.get_queryset().values_list("id", flat=True)))
 
-    def export_data(self, *args, **kwargs):
-        """
-        Export list view visible columns
-        """
-        from import_export import fields, resources
+    # def export_data(self, *args, **kwargs):
+    #     """
+    #     Export list view visible columns
+    #     """
+    #     from import_export import fields, resources
 
-        request = getattr(_thread_locals, "request", None)
-        ids = eval_validate(request.POST["ids"])
-        _columns = eval_validate(request.POST["columns"])
-        export_format = request.POST.get("format", "xlsx")
-        queryset = self.model.objects.filter(id__in=ids)
+    #     request = getattr(_thread_locals, "request", None)
+    #     ids = eval_validate(request.POST["ids"])
+    #     _columns = eval_validate(request.POST["columns"])
+    #     export_format = request.POST.get("format", "xlsx")
+    #     queryset = self.model.objects.filter(id__in=ids)
 
-        _model = self.model
+    #     _model = self.model
 
-        class HorillaListViewResorce(resources.ModelResource):
-            """
-            Instant Resource class
-            """
+    #     class HorillaListViewResorce(resources.ModelResource):
+    #         """
+    #         Instant Resource class
+    #         """
 
-            id = fields.Field(column_name="ID")
+    #         id = fields.Field(column_name="ID")
 
-            class Meta:
-                """
-                Meta class for additional option
-                """
+    #         class Meta:
+    #             """
+    #             Meta class for additional option
+    #             """
 
-                model = _model
-                fields = [field[1] for field in _columns]  # 773
+    #             model = _model
+    #             fields = [field[1] for field in _columns]  # 773
 
-            def dehydrate_id(self, instance):
-                """
-                Dehydrate method for id field
-                """
-                return instance.pk
+    #         def dehydrate_id(self, instance):
+    #             """
+    #             Dehydrate method for id field
+    #             """
+    #             return instance.pk
 
-            for field_tuple in _columns:
-                dynamic_fn_str = f"def dehydrate_{field_tuple[1]}(self, instance):return self.remove_extra_spaces(getattribute(instance, '{field_tuple[1]}'),{field_tuple})"
-                exec(dynamic_fn_str)
-                dynamic_fn = locals()[f"dehydrate_{field_tuple[1]}"]
-                locals()[field_tuple[1]] = fields.Field(column_name=field_tuple[0])
+    #         for field_tuple in _columns:
+    #             dynamic_fn_str = f"def dehydrate_{field_tuple[1]}(self, instance):return self.remove_extra_spaces(getattribute(instance, '{field_tuple[1]}'),{field_tuple})"
+    #             exec(dynamic_fn_str)
+    #             dynamic_fn = locals()[f"dehydrate_{field_tuple[1]}"]
+    #             locals()[field_tuple[1]] = fields.Field(column_name=field_tuple[0])
 
-            def remove_extra_spaces(self, text, field_tuple):
-                """
-                Clean the text:
-                - If it's a <select> element, extract the selected option's value.
-                - If it's an <input> or <textarea>, extract its 'value'.
-                - Otherwise, remove blank spaces, keep line breaks, and handle <li> tags.
-                """
-                soup = BeautifulSoup(str(text), "html.parser")
+    #         def remove_extra_spaces(self, text, field_tuple):
+    #             """
+    #             Clean the text:
+    #             - If it's a <select> element, extract the selected option's value.
+    #             - If it's an <input> or <textarea>, extract its 'value'.
+    #             - Otherwise, remove blank spaces, keep line breaks, and handle <li> tags.
+    #             """
+    #             soup = BeautifulSoup(str(text), "html.parser")
 
-                # Handle <select> tag
-                select_tag = soup.find("select")
-                if select_tag:
-                    selected_option = select_tag.find("option", selected=True)
-                    if selected_option:
-                        return selected_option["value"]
-                    else:
-                        first_option = select_tag.find("option")
-                        return first_option["value"] if first_option else ""
+    #             # Handle <select> tag
+    #             select_tag = soup.find("select")
+    #             if select_tag:
+    #                 selected_option = select_tag.find("option", selected=True)
+    #                 if selected_option:
+    #                     return selected_option["value"]
+    #                 else:
+    #                     first_option = select_tag.find("option")
+    #                     return first_option["value"] if first_option else ""
 
-                # Handle <input> tag
-                input_tag = soup.find("input")
-                if input_tag:
-                    return input_tag.get("value", "")
+    #             # Handle <input> tag
+    #             input_tag = soup.find("input")
+    #             if input_tag:
+    #                 return input_tag.get("value", "")
 
-                # Handle <textarea> tag
-                textarea_tag = soup.find("textarea")
-                if textarea_tag:
-                    return textarea_tag.text.strip()
+    #             # Handle <textarea> tag
+    #             textarea_tag = soup.find("textarea")
+    #             if textarea_tag:
+    #                 return textarea_tag.text.strip()
 
-                # Default: clean normal text and <li> handling
-                for li in soup.find_all("li"):
-                    li.insert_before("\n")
-                    li.unwrap()
+    #             # Default: clean normal text and <li> handling
+    #             for li in soup.find_all("li"):
+    #                 li.insert_before("\n")
+    #                 li.unwrap()
 
-                text = soup.get_text()
-                lines = text.splitlines()
-                non_blank_lines = [line.strip() for line in lines if line.strip()]
-                cleaned_text = "\n".join(non_blank_lines)
-                return cleaned_text
+    #             text = soup.get_text()
+    #             lines = text.splitlines()
+    #             non_blank_lines = [line.strip() for line in lines if line.strip()]
+    #             cleaned_text = "\n".join(non_blank_lines)
+    #             return cleaned_text
 
-        book_resource = HorillaListViewResorce()
+    #     book_resource = HorillaListViewResorce()
 
-        # Export the data using the resource
-        dataset = book_resource.export(queryset)
+    #     # Export the data using the resource
+    #     dataset = book_resource.export(queryset)
 
-        # excel_data = dataset.export("xls")
+    #     # excel_data = dataset.export("xls")
 
-        # Set the response headers
-        # file_name = self.export_file_name
-        # if not file_name:
-        #     file_name = "quick_export"
-        # response = HttpResponse(excel_data, content_type="application/vnd.ms-excel")
-        # response["Content-Disposition"] = f'attachment; filename="{file_name}.xls"'
-        # return response
-        json_data = json.loads(dataset.export("json"))
-        merged = []
+    #     # Set the response headers
+    #     # file_name = self.export_file_name
+    #     # if not file_name:
+    #     #     file_name = "quick_export"
+    #     # response = HttpResponse(excel_data, content_type="application/vnd.ms-excel")
+    #     # response["Content-Disposition"] = f'attachment; filename="{file_name}.xls"'
+    #     # return response
+    #     json_data = json.loads(dataset.export("json"))
+    #     merged = []
 
-        for item in _columns:
-            # Check if item has exactly 2 elements
-            if len(item) == 2:
-                # Check if there's a matching (type, key) in export_fields (t, k, _)
-                match_found = any(
-                    export_item[0] == item[0] and export_item[1] == item[1]
-                    for export_item in self.export_fields
-                )
+    #     for item in _columns:
+    #         # Check if item has exactly 2 elements
+    #         if len(item) == 2:
+    #             # Check if there's a matching (type, key) in export_fields (t, k, _)
+    #             match_found = any(
+    #                 export_item[0] == item[0] and export_item[1] == item[1]
+    #                 for export_item in self.export_fields
+    #             )
 
-                if match_found:
-                    # Find the first matching metadata or use {} as fallback
-                    try:
-                        metadata = next(
-                            (
-                                export_item[2]
-                                for export_item in self.export_fields
-                                if export_item[0] == item[0]
-                                and export_item[1] == item[1]
-                            ),
-                            {},
-                        )
-                    except Exception as e:
-                        merged.append(item)
-                        continue
+    #             if match_found:
+    #                 # Find the first matching metadata or use {} as fallback
+    #                 try:
+    #                     metadata = next(
+    #                         (
+    #                             export_item[2]
+    #                             for export_item in self.export_fields
+    #                             if export_item[0] == item[0]
+    #                             and export_item[1] == item[1]
+    #                         ),
+    #                         {},
+    #                     )
+    #                 except Exception as e:
+    #                     merged.append(item)
+    #                     continue
 
-                    merged.append([*item, metadata])
-                else:
-                    merged.append(item)
-            else:
-                merged.append(item)
-        columns = []
-        for column in merged:
-            if len(column) >= 3 and isinstance(column[2], dict):
-                column = (column[0], column[0], column[2])
-            elif len(column) >= 3:
-                column = (column[0], column[1])
-            columns.append(column)
+    #                 merged.append([*item, metadata])
+    #             else:
+    #                 merged.append(item)
+    #         else:
+    #             merged.append(item)
+    #     columns = []
+    #     for column in merged:
+    #         if len(column) >= 3 and isinstance(column[2], dict):
+    #             column = (column[0], column[0], column[2])
+    #         elif len(column) >= 3:
+    #             column = (column[0], column[1])
+    #         columns.append(column)
 
-        if export_format == "json":
-            response = HttpResponse(
-                json.dumps(json_data, indent=4), content_type="application/json"
-            )
-            response["Content-Disposition"] = (
-                f'attachment; filename="{self.export_file_name}.json"'
-            )
-            return response
-        # CSV
-        elif export_format == "csv":
-            csv_data = dataset.export("csv")
-            response = HttpResponse(csv_data, content_type="text/csv")
-            response["Content-Disposition"] = (
-                f'attachment; filename="{self.export_file_name}.csv"'
-            )
-            return response
-        elif export_format == "pdf":
+    #     if export_format == "json":
+    #         response = HttpResponse(
+    #             json.dumps(json_data, indent=4), content_type="application/json"
+    #         )
+    #         response["Content-Disposition"] = (
+    #             f'attachment; filename="{self.export_file_name}.json"'
+    #         )
+    #         return response
+    #     # CSV
+    #     elif export_format == "csv":
+    #         csv_data = dataset.export("csv")
+    #         response = HttpResponse(csv_data, content_type="text/csv")
+    #         response["Content-Disposition"] = (
+    #             f'attachment; filename="{self.export_file_name}.csv"'
+    #         )
+    #         return response
+    #     elif export_format == "pdf":
 
-            headers = dataset.headers
-            rows = dataset.dict
+    #         headers = dataset.headers
+    #         rows = dataset.dict
 
-            # Render to HTML using a template
-            html_string = render_to_string(
-                "generic/export_pdf.html",
-                {
-                    "headers": headers,
-                    "rows": rows,
-                },
-            )
+    #         # Render to HTML using a template
+    #         html_string = render_to_string(
+    #             "generic/export_pdf.html",
+    #             {
+    #                 "headers": headers,
+    #                 "rows": rows,
+    #             },
+    #         )
 
-            # Convert HTML to PDF using xhtml2pdf
-            result = io.BytesIO()
-            pisa_status = pisa.CreatePDF(html_string, dest=result)
+    #         # Convert HTML to PDF using xhtml2pdf
+    #         result = io.BytesIO()
+    #         pisa_status = pisa.CreatePDF(html_string, dest=result)
 
-            if pisa_status.err:
-                return HttpResponse("PDF generation failed", status=500)
+    #         if pisa_status.err:
+    #             return HttpResponse("PDF generation failed", status=500)
 
-            # Return response
-            response = HttpResponse(result.getvalue(), content_type="application/pdf")
-            response["Content-Disposition"] = (
-                f'attachment; filename="{self.export_file_name}.pdf"'
-            )
-            return response
-        return export_xlsx(json_data, columns, file_name=self.export_file_name)
+    #         # Return response
+    #         response = HttpResponse(result.getvalue(), content_type="application/pdf")
+    #         response["Content-Disposition"] = (
+    #             f'attachment; filename="{self.export_file_name}.pdf"'
+    #         )
+    #         return response
+    #     return export_xlsx(json_data, columns, file_name=self.export_file_name)
 
 
 class HorillaSectionView(TemplateView):

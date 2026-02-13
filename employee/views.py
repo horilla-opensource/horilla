@@ -803,22 +803,29 @@ def document_delete(request, id):
     cannot be deleted, it handles the exception and informs the user.
     """
     try:
-        document = Document.objects.filter(id=id)
+        document_qs = Document.objects.filter(id=id)
+
         if not request.user.has_perm("horilla_documents.delete_document"):
-            document = document.filter(
+            document_qs = document_qs.filter(
                 employee_id__employee_user_id=request.user
             ).exclude(document_request_id__isnull=False)
+
+        document = document_qs.first()
+
         if document:
-            document_first = document.first()
+            document_first = document
             document.delete()
+
             messages.success(
                 request,
                 _(
                     f"Document request {document_first} for {document_first.employee_id} deleted successfully"
                 ),
             )
+
             referrer = request.META.get("HTTP_REFERER", "")
             referrer = "/" + "/".join(referrer.split("/")[3:])
+
             if referrer.startswith("/employee/employee-view/") or referrer.endswith(
                 "/employee/employee-profile/"
             ):
@@ -828,15 +835,19 @@ def document_delete(request, id):
                 if not existing_documents:
                     return HttpResponse(
                         f"""
-                            <span hx-get='/employee/document-tab/{document_first.employee_id.id}?employee_view=true'
-                            hx-target='#document_target' hx-trigger='load'></span>
+                        <span hx-get='/employee/document-tab/{document_first.employee_id.id}?employee_view=true'
+                            hx-target='#document_target'
+                            hx-trigger='load'></span>
                         """
                     )
+
             return HttpResponse("<script>$('#reloadMessagesButton').click();</script>")
         else:
             messages.error(request, _("Document not found"))
+
     except ProtectedError:
         messages.error(request, _("You cannot delete this document."))
+
     return HttpResponse(status=204, headers={"HX-Refresh": "true"})
 
 

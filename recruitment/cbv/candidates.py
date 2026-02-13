@@ -11,6 +11,7 @@ from typing import Any
 from bs4 import BeautifulSoup
 from django import forms
 from django.contrib import messages
+from django.db.models import Min
 from django.http import HttpResponse
 from django.shortcuts import render
 from django.template.loader import render_to_string
@@ -149,14 +150,15 @@ class ListCandidates(HorillaListView):
         else:
             self.option_method = None
 
-        unique_questions = RecruitmentSurvey.objects.values_list(
-            "question", flat=True
-        ).distinct()
+        unique_questions = RecruitmentSurvey.objects.values("question").annotate(
+            pk=Min("pk")
+        )
         self.survey_question_mapping = {}
+
         for question in unique_questions:
-            survey_question = (question, f"question_{clean_column_name(question)}")
-            self.survey_question_mapping[f"question_{clean_column_name(question)}"] = (
-                question
+            survey_question = (
+                question["question"],
+                f"get_survy_question_{question['pk']}",
             )
             if not survey_question in self.export_fields:
                 self.export_fields.append(survey_question)
@@ -170,6 +172,17 @@ class ListCandidates(HorillaListView):
         (_("Job Position"), "job_position_id"),
         (_("Hired Date"), "hired_date"),
         (_("Resume"), "resume_pdf"),
+    ]
+
+    export_columns = [
+        (_("Candidates"), "name"),
+        (_("Email"), "email"),
+        (_("Phone"), "mobile"),
+        (_("Rating"), "get_avg_rating"),
+        (_("Scheduled Interview"), "get_total_interview"),
+        (_("Recruitment"), "recruitment_id"),
+        (_("Job Position"), "job_position_id"),
+        (_("Hired Date"), "hired_date"),
     ]
     default_columns = columns
 
