@@ -11,6 +11,18 @@
         <h3 class="oh-card__title">{{ reason.title }}</h3>
         <p class="text-muted mb-2"><strong>Type:</strong> {{ reason.get_reason_type_display }}</p>
         <p>{{ reason.description|truncatewords:20 }}</p>
+        <div class="oh-btn-group" style="margin-top: 20px;">
+            <a hx-get="{% url 'edit-resignation-reason' reason.id %}" hx-target="#resignationReasonModalBody"
+                data-toggle="oh-modal-toggle" data-target="#resignationReasonModal" class="oh-btn oh-btn--light-bkg w-100"
+                title="{% trans 'Edit' %}">
+            <ion-icon name="create-outline"></ion-icon>
+            </a>
+            <a href="{% url 'delete-resignation-reason' reason.id %}"
+                onclick="return confirm('{% trans 'Are you sure you want to delete this reason?' %}')"
+                class="oh-btn oh-btn--danger-outline w-100" title="{% trans 'Delete' %}">
+            <ion-icon name="trash-outline"></ion-icon>
+            </a>
+        </div>
       </div>
     {% empty %}
       <div class="oh-card text-center p-4">
