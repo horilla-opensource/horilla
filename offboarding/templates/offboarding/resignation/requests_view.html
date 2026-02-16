@@ -14,23 +14,15 @@
 {% include "offboarding/resignation/nav.html" %}
 {% if letters %}
     {% include "filter_tags.html" %}
-    <div
-        id="resignationLetterContianer"
-        hx-get="{% url 'search-resignation-request' %}?status=requested"
-        hx-target="#resignationLetterContianer"
-        hx-trigger="load"
-    >
+    <div id="resignationLetterContianer" hx-get="{% url 'search-resignation-request' %}"
+    hx-target="#resignationLetterContianer" hx-trigger="load">
 
     </div>
     {% else %}
     <div class="d-flex justify-content-center align-items-center" style="height: 40vh;">
         <div class="text-center">
-            <img
-                class="oh-404__image mb-3"
-                style="width: 150px; height: 150px;"
-                src="{% static 'images/ui/no_resignation.png' %}"
-                alt="No documents"
-            />
+            <img class="oh-404__image mb-3" style="width: 150px; height: 150px;"
+            src="{% static 'images/ui/no_resignation.png' %}" alt="No documents" />
             <h5 class="oh-404__subtitle">{% trans "No resignation has been created yet." %}</h5>
         </div>
     </div>
