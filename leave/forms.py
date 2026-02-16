@@ -209,6 +209,7 @@ class LeaveRequestCreationForm(BaseModelForm):
     def __init__(self, *args, **kwargs):
 
         super().__init__(*args, **kwargs)
+        self.fields["leave_type_id"].empty_label = _("Select leave type")
         self.fields["attachment"].widget.attrs["accept"] = ".jpg, .jpeg, .png, .pdf"
         self.fields["leave_type_id"].widget.attrs.update(
             {
@@ -306,7 +307,7 @@ class LeaveRequestUpdationForm(BaseModelForm):
                 "hx-include": "#leaveRequestUpdateForm",
                 "hx-target": "#assinedLeaveAvailableCount",
                 "hx-swap": "outerHTML",
-                "hx-trigger": "change",
+                "hx-trigger": "load, change",
                 "hx-get": "/leave/employee-available-leave-count",
             }
         )
