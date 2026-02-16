@@ -73,6 +73,16 @@ urlpatterns = [
         views.create_exit_reason,
         name="create-resignation-reason",
     ),
+        path(
+            "edit-resignation-reason/<int:id>/",
+            views.edit_resignation_reason,
+            name="edit-resignation-reason",
+        ),
+        path(
+            "delete-resignation-reason/<int:id>/",
+            views.delete_resignation_reason,
+            name="delete-resignation-reason",
+        ),
     path(
         "common-tasks/",
         views.common_offboarding_tasks_view,
