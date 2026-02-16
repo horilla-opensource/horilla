@@ -215,7 +215,7 @@ class LeaveRequestCreationForm(BaseModelForm):
                 "hx-include": "#leaveRequestCreateForm",
                 "hx-target": "#availableLeaveCount",
                 "hx-swap": "outerHTML",
-                "hx-trigger": "change",
+                "hx-trigger": "load, change",
                 "hx-get": "/leave/employee-available-leave-count",
             }
         )
@@ -288,7 +288,7 @@ class LeaveRequestUpdationForm(BaseModelForm):
                 "hx-include": "#leaveRequestUpdateForm",
                 "hx-target": "#assinedLeaveAvailableCount",
                 "hx-swap": "outerHTML",
-                "hx-trigger": "change",
+                "hx-trigger": "load, change",
                 "hx-get": "/leave/employee-available-leave-count",
             }
         )
@@ -577,7 +577,7 @@ class UserLeaveRequestCreationForm(BaseModelForm):
                 "hx-include": "#userLeaveForm",
                 "hx-target": "#availableLeaveCount",
                 "hx-swap": "outerHTML",
-                "hx-trigger": "change",
+                "hx-trigger": "load, change",
                 "hx-get": f"/leave/employee-available-leave-count",
             }
         )
