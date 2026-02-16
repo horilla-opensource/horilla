@@ -167,6 +167,7 @@
                                     ></ion-icon>
                                 </button>
                                 {% endif %}
+                                {% if letter.status != "rejected" %}
                                 <button
                                     type="button"
                                     onclick="event.stopPropagation();$(this).closest('form').find('input[name=status]').val('rejected');resignLetterConfirmation('{% trans 'Do You really want to reject the request?' %}',$(this).closest('form').find('[type=submit]'));"
@@ -185,6 +186,13 @@
                                     name="letter_ids"
                                     value="{{letter.id}}"
                                 />
+                                {% else %}
+                                <button type="button"
+                                    class="oh-btn oh-btn--danger oh-btn--disabled oh-btn--block w-100">
+                                    <ion-icon name="close-circle-outline" class="mr-1 md hydrated" role="img"
+                                        aria-label="close"></ion-icon>
+                                </button>
+                                {% endif %}
                                 <input type="hidden" name="offboarding_id" />
                                 <input type="hidden" name="employee_id" value="{{letter.employee_id.id}}" />
                                 <input type="hidden" name="notice_period_starts"
