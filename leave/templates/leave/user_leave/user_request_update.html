@@ -46,7 +46,7 @@
 {% endif %}
     <div class="row">
         {% for field in form.visible_fields %}
-            {% if field.name != "description" %}
+             {% if field.name != "description" and field.name != "attachment" %}
                 <div class="col-12 col-md-6">
                     <div class="form-group oh-form-group">
                         <label class="oh-label {% if field.field.required %}required-star{% endif %}">
@@ -65,7 +65,24 @@
             {% endif %}
         {% endfor %}
     </div>
+     <div class="row" style="margin-top: 10px;">
+            <div class="col-12">
+                <div id="attachmentLabelWrapper">
+                    <label class="oh-label {% if form.attachment.field.required %}required-star{% endif %}">
+                        {{ form.attachment.label }}
+                    </label>
+                </div>
 
+                {{ form.attachment|add_class:"form-control oh-input w-100" }}
+
+                {% if form.attachment.errors %}
+                    <div class="text-danger text-sm mt-1">
+                        {{ form.attachment.errors }}
+                    </div>
+                {% endif %}
+
+            </div>
+        </div>
     <div class="row">
         <div class="col-12">
             <div class="form-group oh-form-group">
