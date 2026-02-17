@@ -23,7 +23,7 @@
                         <div class="flex gap-5 relative z-0">
                             <span class="absolute -left-3 -top-3 bg-green-500 w-2 h-2 rounded-full"></span>
                             {% if perms.recruitment.delete_recruitmentsurvey or perms.recruitment.change_recruitmentsurvey or perms.recruitment.add_recruitmentsurvey %}
-                                <div class="absolute inline-block dropdown-wrapper right-0 -top-1">
+                                <div class="absolute inline-block dropdown-wrapper right-0 -top-1" onclick="event.stopPropagation()" >
                                     <a class="cursor-pointer dropdown-toggle">
                                         <i class="fa-solid fa-ellipsis-vertical text-black"></i>
                                     </a>

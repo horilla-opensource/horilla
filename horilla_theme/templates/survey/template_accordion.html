@@ -8,7 +8,7 @@
                         <span class="oh-accordion-title text-sm d-flex items-center">
                             {{grouper.grouper}}
                             <div class="flex items-center">
-                                <span class="inline-block p-1 text-center w-[22px] h-[22px] text-xs flex justify-center items-center rounded-full bg-primary-600 text-primary-50 ms-2 mr-2"
+                                <span class="p-1 text-center w-[22px] h-[22px] text-xs flex justify-center items-center rounded-full bg-primary-600 text-primary-50 ms-2 mr-2"
                                     id="recruitmentCandidateCount1" title="{{grouper.list|length}} {% trans 'Questions' %}"
                                     onclick="event.stopPropagation()">
                                     {{grouper.list|length}}
@@ -43,8 +43,11 @@
                                             {% if perms.recruitment.change_surveytemplate %}
                                                 <li class="oh-dropdown__item">
                                                     <a hx-get="{% url 'survey-template-create' %}?title={{grouper.grouper}}"
-                                                        hx-target="#templateModalBody" data-toggle="oh-modal-toggle"
-                                                        data-target="#templateModal" class="oh-dropdown__link">
+                                                        hx-target="#genericModalBody"
+                                                        data-toggle="oh-modal-toggle"
+                                                        data-target="#genericModal"
+                                                        class="oh-dropdown__link"
+                                                    >
                                                         {% trans "Edit" %}
                                                     </a>
                                                 </li>
