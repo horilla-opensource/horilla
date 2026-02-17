@@ -26,7 +26,7 @@ $(document).ready(function () {
       var csrf_token = getCookie("csrftoken")
 
       $.ajax({
-            url: '/pms/feedback-status',
+            url: '/pms/feedback-status/',
             type: "POST",
             dataType: "json",
             data: {'employee_id':employeeId,'feedback_id': feedbackId, 'csrfmiddlewaretoken':csrf_token},

@@ -68,7 +68,7 @@ function leaveAssigBulkDelete() {
                 ids = JSON.parse($("#selectedInstances").attr("data-ids"));
                 $.ajax({
                     type: "POST",
-                    url: "/leave/assigned-leave-bulk-delete",
+                    url: "/leave/assigned-leave-bulk-delete/",
                     data: {
                         csrfmiddlewaretoken: getCookie("csrftoken"),
                         ids: JSON.stringify(ids),

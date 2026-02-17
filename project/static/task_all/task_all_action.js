@@ -52,7 +52,7 @@ $("#archiveTaskAll").click(function (e) {
 
                 $.ajax({
                     type: "POST",
-                    url: "/project/task-all-bulk-archive?is_active=False",
+                    url: "/project/task-all-bulk-archive/?is_active=False",
                     data: {
                         csrfmiddlewaretoken: getCookie("csrftoken"),
                         ids: JSON.stringify(ids),
@@ -98,7 +98,7 @@ $(document).on('click', '#archiveTask', function (e) {
 
                 $.ajax({
                     type: "POST",
-                    url: "/project/task-all-bulk-archive?is_active=False",
+                    url: "/project/task-all-bulk-archive/?is_active=False",
                     data: {
                         csrfmiddlewaretoken: getCookie("csrftoken"),
                         ids: JSON.stringify(ids),
@@ -147,7 +147,7 @@ $("#unArchiveTaskAll").click(function (e) {
 
                 $.ajax({
                     type: "POST",
-                    url: "/project/task-all-bulk-archive?is_active=True",
+                    url: "/project/task-all-bulk-archive/?is_active=True",
                     data: {
                         csrfmiddlewaretoken: getCookie("csrftoken"),
                         ids: JSON.stringify(ids),
@@ -193,7 +193,7 @@ $(document).on('click', '#unArchiveTask', function (e) {
 
                 $.ajax({
                     type: "POST",
-                    url: "/project/task-all-bulk-archive?is_active=True",
+                    url: "/project/task-all-bulk-archive/?is_active=True",
                     data: {
                         csrfmiddlewaretoken: getCookie("csrftoken"),
                         ids: JSON.stringify(ids),
@@ -240,7 +240,7 @@ $("#deleteTaskAll").click(function (e) {
 
                 $.ajax({
                     type: "POST",
-                    url: "/project/task-all-bulk-delete",
+                    url: "/project/task-all-bulk-delete/",
                     data: {
                         csrfmiddlewaretoken: getCookie("csrftoken"),
                         ids: JSON.stringify(ids),
@@ -286,7 +286,7 @@ $(document).on('click', '#deleteTask', function (e) {
 
                 $.ajax({
                     type: "POST",
-                    url: "/project/task-all-bulk-delete",
+                    url: "/project/task-all-bulk-delete/",
                     data: {
                         csrfmiddlewaretoken: getCookie("csrftoken"),
                         ids: JSON.stringify(ids),

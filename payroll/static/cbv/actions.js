@@ -42,7 +42,7 @@ function DeleteContractBulk() {
 
                 $.ajax({
                     type: "POST",
-                    url: "/payroll/contract-bulk-delete",
+                    url: "/payroll/contract-bulk-delete/",
                     data: {
                         csrfmiddlewaretoken: getCookie("csrftoken"),
                         ids: JSON.stringify(ids),

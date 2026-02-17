@@ -123,7 +123,7 @@ $("#archiveCandidates").click(function (e) {
                 e.preventDefault();
                 $.ajax({
                     type: "POST",
-                    url: "/recruitment/candidate-bulk-archive?is_active=False",
+                    url: "/recruitment/candidate-bulk-archive/?is_active=False",
                     data: {
                         csrfmiddlewaretoken: getCookie("csrftoken"),
                         ids: JSON.stringify(ids),
@@ -166,7 +166,7 @@ $("#unArchiveCandidates").click(function (e) {
                 e.preventDefault();
                 $.ajax({
                     type: "POST",
-                    url: "/recruitment/candidate-bulk-archive?is_active=True",
+                    url: "/recruitment/candidate-bulk-archive/?is_active=True",
                     data: {
                         csrfmiddlewaretoken: getCookie("csrftoken"),
                         ids: JSON.stringify(ids),
@@ -213,7 +213,7 @@ $("#deleteCandidates").click(function (e) {
 
                 $.ajax({
                     type: "POST",
-                    url: "/recruitment/candidate-bulk-delete",
+                    url: "/recruitment/candidate-bulk-delete/",
                     data: {
                         csrfmiddlewaretoken: getCookie("csrftoken"),
                         ids: JSON.stringify(ids),

@@ -326,7 +326,7 @@ $("#leaveRequestBulkDelete").click(function (e) {
                 ids = JSON.parse($("#selectedLeaverequests").attr("data-ids"));
                 $.ajax({
                     type: "POST",
-                    url: "/leave/leave-request-bulk-delete",
+                    url: "/leave/leave-request-bulk-delete/",
                     data: {
                         csrfmiddlewaretoken: getCookie("csrftoken"),
                         ids: JSON.stringify(ids),
@@ -518,7 +518,7 @@ $("#userrequestbulkDelete").click(function (e) {
                 ids = JSON.parse($("#selectedUserrequests").attr("data-ids"));
                 $.ajax({
                     type: "POST",
-                    url: "/leave/user-request-bulk-delete",
+                    url: "/leave/user-request-bulk-delete/",
                     data: {
                         csrfmiddlewaretoken: getCookie("csrftoken"),
                         ids: JSON.stringify(ids),

@@ -74,46 +74,34 @@
 	var timeout
 
 	function updatePermissions(elem){
-		var permissions = [];
-		var panelId =
-		"#" +
-		$(elem).closest(".panel.view-employees").closest(".panel").attr("id");
-		var userId = $(panelId).attr("data-user-id");
+    var $panel = $(elem).closest(".panel").closest(".panel.view-employees");
+    var userId = $panel.data("user-id");
+    var permissions = [];
 
-		$(panelId + " [name=permissions]").each(function () {
-			if ($(this).is(":checked")) {
-				var permissionValue = $(this).val();
-				permissions.push(permissionValue);
-			}
-		});
+    $panel.find("[name=permissions]").each(function () {
+      permissions.push({
+        codename: $(this).val(),
+        checked: $(this).is(":checked")
+      });
+    });
 
-		$.ajax({
-			type: "post",
-			url: '{% url "update-user-permission" %}',
-			traditional: true,
-			data: {
-				csrfmiddlewaretoken: getCookie("csrftoken"),
-				permissions: permissions,
-				employee: userId,
-			},
-			success: function (response) {
-				$("#messages").html(
-					$(`
-						<div class="oh-alert oh-alert--animated oh-alert--${response.type}">
-							${response.message}.
-						</div>
-					`)
-				);
-			},
-			error: function (response) {
-				$("#messages").html(
-					$(`
-						<div class="oh-alert oh-alert--animated oh-alert--danger">
-							Sever error.
-						</div>
-					`)
-				);
-			},
+    $.ajax({
+      type: "post",
+      url: '{% url "update-user-permission" %}',
+      contentType: "application/json",
+      data: JSON.stringify({
+        permissions: permissions,
+        employee: userId,
+      }),
+      headers: {
+        "X-CSRFToken": getCookie("csrftoken"),
+      },
+      success: function (response) {
+        reloadMessage()
+      },
+      error: function () {
+        reloadMessage()
+      }
 		});
 	}
 
