@@ -73,7 +73,7 @@ function shiftRequestApprove() {
                 // ids = JSON.parse($("#selectedInstances").attr("data-ids"));
                 $.ajax({
                     type: "POST",
-                    url: "/shift-request-bulk-approve",
+                    url: "/shift-request-bulk-approve/",
                     data: {
                         csrfmiddlewaretoken: getCookie("csrftoken"),
                         ids: JSON.stringify(ids),
@@ -122,7 +122,7 @@ function shiftRequestReject() {
             if (result.isConfirmed) {
                 $.ajax({
                     type: "POST",
-                    url: "/shift-request-bulk-cancel",
+                    url: "/shift-request-bulk-cancel/",
                     data: {
                         csrfmiddlewaretoken: getCookie("csrftoken"),
                         ids: JSON.stringify(ids),
@@ -171,7 +171,7 @@ function shiftRequestDelete() {
             if (result.isConfirmed) {
                 $.ajax({
                     type: "POST",
-                    url: "/shift-request-bulk-delete",
+                    url: "/shift-request-bulk-delete/",
                     data: {
                         csrfmiddlewaretoken: getCookie("csrftoken"),
                         ids: JSON.stringify(ids),
@@ -216,7 +216,7 @@ function archiveRotateShift() {
                 ids = JSON.parse($("#selectedInstances").attr("data-ids"));
                 $.ajax({
                     type: "POST",
-                    url: "/rotating-shift-assign-bulk-archive?is_active=False",
+                    url: "/rotating-shift-assign-bulk-archive/?is_active=False",
                     data: {
                         csrfmiddlewaretoken: getCookie("csrftoken"),
                         ids: JSON.stringify(ids),
@@ -260,7 +260,7 @@ function un_archiveRotateShift() {
                 ids = JSON.parse($("#selectedInstances").attr("data-ids"));
                 $.ajax({
                     type: "POST",
-                    url: "/rotating-shift-assign-bulk-archive?is_active=True",
+                    url: "/rotating-shift-assign-bulk-archive/?is_active=True",
                     data: {
                         csrfmiddlewaretoken: getCookie("csrftoken"),
                         ids: JSON.stringify(ids),
@@ -304,7 +304,7 @@ function deleteRotatingShift() {
                 ids = JSON.parse($("#selectedInstances").attr("data-ids"));
                 $.ajax({
                     type: "POST",
-                    url: "/rotating-shift-assign-bulk-delete",
+                    url: "/rotating-shift-assign-bulk-delete/",
                     data: {
                         csrfmiddlewaretoken: getCookie("csrftoken"),
                         ids: JSON.stringify(ids),

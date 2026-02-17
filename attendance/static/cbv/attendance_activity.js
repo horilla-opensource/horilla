@@ -55,7 +55,7 @@ function deleteAttendanceNav() {
                 ids = JSON.parse($("#selectedInstances").attr("data-ids"));
                 $.ajax({
                     type: "POST",
-                    url: "/attendance/attendance-activity-bulk-delete",
+                    url: "/attendance/attendance-activity-bulk-delete/",
                     data: {
                         csrfmiddlewaretoken: getCookie("csrftoken"),
                         ids: JSON.stringify(ids),
@@ -175,7 +175,7 @@ function bulkDeleteAttendanceNav() {
                 ids = JSON.parse($("#selectedInstances").attr("data-ids"));
                 $.ajax({
                     type: "POST",
-                    url: "/attendance/attendance-bulk-delete",
+                    url: "/attendance/attendance-bulk-delete/",
                     data: {
                         csrfmiddlewaretoken: getCookie("csrftoken"),
                         ids: JSON.stringify(ids),
@@ -238,7 +238,7 @@ function bulkValidateTabAttendance(dataReqValue) {
                 ids = JSON.parse($("#validateselectedInstances").attr("data-ids"));
                 $.ajax({
                     type: "POST",
-                    url: "/attendance/validate-bulk-attendance",
+                    url: "/attendance/validate-bulk-attendance/",
                     data: {
                         csrfmiddlewaretoken: getCookie("csrftoken"),
                         ids: JSON.stringify(ids),
@@ -282,7 +282,7 @@ function otBulkValidateTabAttendance(dataReqValue) {
 
                 $.ajax({
                     type: "POST",
-                    url: "/attendance/approve-bulk-overtime",
+                    url: "/attendance/approve-bulk-overtime/",
                     data: {
                         csrfmiddlewaretoken: getCookie("csrftoken"),
                         ids: JSON.stringify(ids),

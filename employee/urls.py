@@ -195,7 +195,7 @@ urlpatterns = [
         "employee-bulk-delete/", views.employee_bulk_delete, name="employee-bulk-delete"
     ),
     path(
-        "employee-bulk-archive",
+        "employee-bulk-archive/",
         views.employee_bulk_archive,
         name="employee-bulk-archive",
     ),

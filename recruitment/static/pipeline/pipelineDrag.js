@@ -58,7 +58,7 @@ function stageSequenceGet(stage) {
 
   $.ajax({
     type: "POST",
-    url: "/recruitment/stage-sequence-update",
+    url: "/recruitment/stage-sequence-update/",
     data: {
       csrfmiddlewaretoken: getCookie("csrftoken"),
       sequence: JSON.stringify(sequence),
@@ -139,7 +139,7 @@ function countSequence(letmessage=true) {
   });
   $.ajax({
     type: "post",
-    url: "/recruitment/candidate-sequence-update",
+    url: "/recruitment/candidate-sequence-update/",
     data: {
       csrfmiddlewaretoken: getCookie("csrftoken"),
       sequenceData: JSON.stringify(data),
@@ -252,7 +252,7 @@ $(".schedule").change(function (e) {
   candidateId = $(this).data("candidate-id");
   $.ajax({
     type: "post",
-    url: `/recruitment/candidate-schedule-date-update`,
+    url: `/recruitment/candidate-schedule-date-update/`,
     data: {
       csrfmiddlewaretoken: getCookie("csrftoken"),
       candidateId: candidateId,

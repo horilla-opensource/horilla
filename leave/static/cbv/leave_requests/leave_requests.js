@@ -144,7 +144,7 @@ function bulkDeleteLeaveRequests() {
                 ids = JSON.parse($("#selectedInstances").attr("data-ids"));
                 $.ajax({
                     type: "POST",
-                    url: "/leave/leave-request-bulk-delete",
+                    url: "/leave/leave-request-bulk-delete/",
                     data: {
                         csrfmiddlewaretoken: getCookie("csrftoken"),
                         ids: JSON.stringify(ids),

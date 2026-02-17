@@ -67,7 +67,7 @@ $('.stage').mouseup(function () {
   if (oldSequences !== JSON.stringify(newSequences)) {
     $.ajax({
       type: "POST",
-      url: "/recruitment/stage-sequence-update",
+      url: "/recruitment/stage-sequence-update/",
       data: {
         'csrfmiddlewaretoken': getCookie('csrftoken'),
         'recruitmentId':recruitmentId,
@@ -128,7 +128,7 @@ $('.schedule').change(function (e) {
   candidateId = $(this).data('candidate-id');
   $.ajax({
     type: "post",
-    url: `/recruitment/candidate-schedule-date-update`,
+    url: `/recruitment/candidate-schedule-date-update/`,
     data:{
       'csrfmiddlewaretoken': getCookie('csrftoken'),
       'candidateId':candidateId,

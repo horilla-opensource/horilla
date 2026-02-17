@@ -30,7 +30,7 @@ form.addEventListener("submit", function (event) {
     formData.append("file", fileInput.files[0]);
     $.ajax({
         type: "POST",
-        url: "/project/project-import",
+        url: "/project/project-import/",
         dataType: "binary",
         data: formData,
         processData: false,

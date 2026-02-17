@@ -119,7 +119,7 @@ $(document).ready(function () {
                 // Trigger AJAX if the task has changed stages
                 $.ajax({
                     type: "post",
-                    url: '/project/drag-and-drop-task',
+                    url: '/project/drag-and-drop-task/',
                     data: {
                         csrfmiddlewaretoken: getCookie("csrftoken"),
                         updated_task_id: taskId,
