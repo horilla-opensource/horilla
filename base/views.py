@@ -3637,19 +3637,50 @@ def update_permission(
     """
     This method is used to remove user permission.
     """
-    form = AssignPermission(request.POST)
-    if form.is_valid():
-        form.save()
-        return JsonResponse({"message": "Updated the permissions", "type": "success"})
-    if (
-        form.data.get("employee")
-        and Employee.objects.filter(id=form.data["employee"]).first()
-    ):
-        Employee.objects.filter(
-            id=form.data["employee"]
-        ).first().employee_user_id.user_permissions.clear()
-        return JsonResponse({"message": "All permission cleared", "type": "info"})
-    return JsonResponse({"message": "Something went wrong", "type": "danger"})
+    try:
+        data = json.loads(request.body)
+
+        employee_id = data.get("employee")
+        permissions_data = data.get("permissions", [])
+
+        if not employee_id:
+            messages.error(request, _("Employee not provided"))
+            return JsonResponse(
+                {"message": "Employee not provided", "type": "danger"}, status=400
+            )
+
+        employee = Employee.objects.select_related("employee_user_id").get(
+            id=employee_id
+        )
+        user = employee.employee_user_id
+
+        all_codenames = [p["codename"] for p in permissions_data]
+        checked_codenames = [p["codename"] for p in permissions_data if p["checked"]]
+
+        existing_managed = user.user_permissions.filter(codename__in=all_codenames)
+        managed_permissions = Permission.objects.filter(codename__in=all_codenames)
+        checked_permissions = managed_permissions.filter(codename__in=checked_codenames)
+
+        user.user_permissions.remove(*existing_managed)
+        user.user_permissions.add(*checked_permissions)
+
+        messages.success(request, _("Permissions updated successfully"))
+
+        return JsonResponse(
+            {"message": "Permissions updated successfully", "type": "success"}
+        )
+
+    except Employee.DoesNotExist:
+        messages.error(request, _("Employee not found"))
+        return JsonResponse(
+            {"message": "Employee not found", "type": "danger"}, status=404
+        )
+
+    except Exception as e:
+        messages.error(request, _("Something went wrong"))
+        return JsonResponse(
+            {"message": "Something went wrong", "type": "danger"}, status=500
+        )
 
 
 @login_required
