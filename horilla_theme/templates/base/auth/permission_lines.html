@@ -1,73 +1,80 @@
 {% load basefilters i18n %}
-  {% for employee in employees %}
-  <div class="accordion-wrapper space-y-2">
-    <div class="accordion-item border border-primary-300 rounded-md perm-accordion" id="userPanel{{employee.id}}">
-      <button
-        onclick="event.preventDefault()"
-        class="accordion-btn-gp w-full flex justify-between gap-5 md:gap-0 items-center flex-wrap px-4 py-2 bg-primary-100 text-primary-600 text-sm transition-all">
+<div class="accordion-wrapper space-y-2">
+    {% for employee in employees %}
+        <div class="accordion-item border border-primary-300 rounded-md perm-accordion" id="userPanel{{employee.id}}">
+            <button
+                onclick="event.preventDefault()"
+                class="accordion-btn-gp w-full flex justify-between gap-5 md:gap-0 items-center flex-wrap px-4 py-2 bg-primary-100 text-primary-600 text-sm transition-all"
+            >
+                <div class="flex flex-wrap items-center gap-2">
+                    <span class="w-6 h-6 bg-primary-600 rounded-full text-white flex items-center justify-center text-xs">
+                        <img src="{{ employee.get_avatar }}" class="w-6 h-6 rounded-full" loading="lazy" />
+                    </span>
+                    <span class="font-semibold">{{ employee }}</span>
+                    <span class="text-xs mt-1 text-dark-300">
+                        {{ employee.employee_work_info.job_role_id.job_role }} |
+                        {{ employee.employee_work_info.job_position_id }} |
+                        {{ employee.employee_work_info.department_id }}
+                    </span>
+                </div>
+                <div class="flex items-center flex-wrap gap-2 md:gap-8">
+                    <span class="icon text-xl font-bold">+</span>
+                </div>
+            </button>
 
-        <div class="flex flex-wrap items-center gap-2">
-          <span class="w-6 h-6 bg-primary-600 rounded-full text-white flex items-center justify-center text-xs">
-            <img src="{{ employee.get_avatar }}" class="w-6 h-6 rounded-full" loading="lazy" />
-          </span>
-            <span class="font-semibold">{{ employee }}</span>
-            <span class="text-xs mt-1 text-dark-300">{{ employee.employee_work_info.job_role_id.job_role }} | {{ employee.employee_work_info.job_position_id }} | {{ employee.employee_work_info.department_id }}</span>
+            <div class="panel view-employees accordion-panel-gp max-h-0 overflow-hidden transition-all duration-300 bg-white px-4 text-sm text-gray-700" id="panel{{employee.id}}" data-user-id="{{ employee.id }}">
+                <div class="py-3">
+                    <script>
+                        $(document).ready(function () {
+                            checkSelected(`{{employee.employee_user_id.user_permissions.all|user_perms|safe}}`, '#panel{{employee.id}}', true)
+                        })
+                    </script>
+                    {% if perms.auth.add_permission or perms.auth.change_permission or perms.auth.delete_permission %}
+                        {% include 'base/auth/permission_table.html' %}
+                    {% endif %}
+                </div>
+            </div>
         </div>
-        <div class="flex items-center flex-wrap gap-2 md:gap-8">
-          <span class="icon text-xl font-bold">+</span>
+    {% endfor %}
+
+    {% if employees.has_previous or employees.has_next %}
+        <div
+            class="flex justify-between items-center mt-4 w-full inset-0"
+        >
+            <p class="text-xs text-[#666]">{% trans "Page" %} {{ employees.number }} {% trans "of" %} {{ employees.paginator.num_pages }}</p>
+            <div class="flex gap-3 text-[#666] items-center">
+                {% if employees.has_previous %}
+                    <button
+                        class="text-xs hover:text-primary-600 transition duration-300"
+                        hx-target="#permissionContainer"
+                        hx-get="{% url 'permission-search' %}?{{ pd }}&page={{ employees.previous_page_number }}"
+                    >
+                        <i class="fa-solid fa-arrow-left"></i>
+                    </button>
+                {% endif %}
+                <div>
+                    <input
+                        type="number"
+                        name="page"
+                        class="w-[30px]"
+                        value="{{employees.number}}"
+                        hx-get="{% url 'permission-search' %}?{{pd}}"
+                        hx-target="#permissionContainer"
+                        min="1"
+                    /> / {{ employees.paginator.num_pages }}
+                </div>
+                {% if employees.has_next %}
+                    <button
+                        class="text-xs hover:text-primary-600 transition duration-300"
+                        hx-target="#permissionContainer"
+                        hx-get="{% url 'permission-search' %}?{{ pd }}&page={{ employees.next_page_number }}"
+                    >
+                        <i class="fa-solid fa-arrow-right"></i>
+                    </button>
+                {% endif %}
+            </div>
         </div>
-
-      </button>
-    <div class="panel view-employees accordion-panel-gp max-h-0 overflow-hidden transition-all duration-300 bg-white px-4 text-sm text-gray-700" id="panel{{employee.id}}" data-user-id="{{ employee.id }}">
-      <div class="py-3">
-        <script>
-          $(document).ready(function () {
-            checkSelected(`{{employee.employee_user_id.user_permissions.all|user_perms|safe}}`, '#panel{{employee.id}}', true)
-          })
-        </script>
-        {% if perms.auth.add_permission or perms.auth.change_permission or perms.auth.delete_permission %}
-          {% include 'base/auth/permission_table.html' %}
-        {% endif %}
-      </div>
-    </div>
-  </div>
-
-  {% endfor %}
-  {% if employees.has_previous or employees.has_next %}
-  <div class="oh-wrapper w-100">
-    <div class="oh-pagination">
-      <span class="oh-pagination__page" data-toggle="modal" data-target="#addEmployeeModal">{% trans 'Page' %} {{ employees.number }} {% trans 'of' %} {{ employees.paginator.num_pages }}.</span>
-
-      <nav class="oh-pagination__nav">
-        <div class="oh-pagination__input-container me-3">
-          <span class="oh-pagination__label me-1">{% trans 'Page' %}</span>
-
-          <input type="number" name="page" class="oh-pagination__input" value="{{ employees.number }}" hx-get="{% url 'permission-search' %}?{{ pd }}" hx-target="#permissionContainer" min="1" />
-          <span class="oh-pagination__label">{% trans 'of' %} {{ employees.paginator.num_pages }}</span>
-        </div>
-
-        <ul class="oh-pagination__items">
-          {% if employees.has_previous %}
-            <li class="oh-pagination__item oh-pagination__item--wide">
-              <a hx-target="#permissionContainer" hx-get="{% url 'permission-search' %}?{{ pd }}&page=1" class="oh-pagination__link">{% trans 'First' %}</a>
-            </li>
-            <li class="oh-pagination__item oh-pagination__item--wide">
-              <a hx-target="#permissionContainer" hx-get="{% url 'permission-search' %}?{{ pd }}&page={{ employees.previous_page_number }}" class="oh-pagination__link">{% trans 'Previous' %}</a>
-            </li>
-          {% endif %}
-          {% if employees.has_next %}
-            <li class="oh-pagination__item oh-pagination__item--wide">
-              <a hx-target="#permissionContainer" hx-get="{% url 'permission-search' %}?{{ pd }}&page={{ employees.next_page_number }}" class="oh-pagination__link">{% trans 'Next' %}</a>
-            </li>
-            <li class="oh-pagination__item oh-pagination__item--wide">
-              <a hx-target="#permissionContainer" hx-get="{% url 'permission-search' %}?{{ pd }}&page={{ employees.paginator.num_pages }}" class="oh-pagination__link">{% trans 'Last' %}</a>
-            </li>
-          {% endif %}
-        </ul>
-      </nav>
-    </div>
-  </div>
-  {% endif %}
+    {% endif %}
 </div>
 <script>
   document.body.addEventListener("htmx:afterSwap", function () {
@@ -85,32 +92,29 @@
     var userId = panelElem.data("user-id");
     var permissions = [];
 
-    panelElem.find("[name=permissions]:checked").each(function () {
-      permissions.push($(this).val());
+    panelElem.find("[name=permissions]").each(function () {
+      permissions.push({
+        codename: $(this).val(),
+        checked: $(this).is(":checked")
+      });
     });
 
     $.ajax({
       type: "post",
       url: '{% url "update-user-permission" %}',
-      traditional: true,
-      data: {
-        csrfmiddlewaretoken: getCookie("csrftoken"),
+      contentType: "application/json",
+      data: JSON.stringify({
         permissions: permissions,
         employee: userId,
+      }),
+      headers: {
+        "X-CSRFToken": getCookie("csrftoken"),
       },
       success: function (response) {
-        $("#messages").html(`
-          <div class="oh-alert oh-alert--animated oh-alert--${response.type}">
-            ${response.message}
-          </div>
-        `);
+        reloadMessage()
       },
       error: function () {
-        $("#messages").html(`
-          <div class="oh-alert oh-alert--animated oh-alert--danger">
-            Something went wrong.
-          </div>
-        `);
+        reloadMessage()
       }
     });
   }
