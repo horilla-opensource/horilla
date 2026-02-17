@@ -168,7 +168,14 @@ class EmployeeForm(ModelForm):
             "is_active",
         )
         widgets = {
-            "dob": TextInput(attrs={"type": "date", "id": "dob"}),
+            "dob": TextInput(attrs={
+                "type": "date",
+                "id": "dob"
+            }),
+            "qualifications": forms.Textarea(attrs={
+                "class": "form-control auto-resize",
+                "rows": 3,
+            }),
         }
 
     def __init__(self, *args, **kwargs):
