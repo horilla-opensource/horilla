@@ -54,7 +54,7 @@
   document.addEventListener("DOMContentLoaded", bindInnerAccordions);
 
   // Run after HTMX replaces any HTML
-  document.body.addEventListener("htmx:afterSwap", bindInnerAccordions);
+  $("#permissionContainer").on("htmx:afterSwap", bindInnerAccordions);
 </script>
 
 
@@ -94,15 +94,15 @@
   // Debounced permission update + badge refresh
   let permissionChangeTimeout;
 
-  $(document).on("change", ".view-employees [name=permissions]", function (e) {
-    clearTimeout(permissionChangeTimeout);
+  // $(document).on("change", ".view-employees [name=permissions]", function (e) {
+  //   clearTimeout(permissionChangeTimeout);
 
-    const target = $(this);
-    permissionChangeTimeout = setTimeout(function () {
-      updateBadge();
-      updatePermissions(target.closest(".panel.view-employees"));
-    }, 150);
-  });
+  //   const target = $(this);
+  //   permissionChangeTimeout = setTimeout(function () {
+  //     updateBadge();
+  //     updatePermissions(target.closest(".panel.view-employees"));
+  //   }, 150);
+  // });
 
   // Select all per table
   function selectAllPermissions(source) {
