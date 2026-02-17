@@ -171,12 +171,12 @@ urlpatterns = [
         name="delete-cosec-user",
     ),
     path(
-        "biometric-users-bulk-delete",
+        "biometric-users-bulk-delete/",
         views.bio_users_bulk_delete,
         name="biometric-users-bulk-delete",
     ),
     path(
-        "cosec-users-bulk-delete",
+        "cosec-users-bulk-delete/",
         views.cosec_users_bulk_delete,
         name="cosec-users-bulk-delete",
     ),

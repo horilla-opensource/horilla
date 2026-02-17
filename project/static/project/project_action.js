@@ -95,7 +95,7 @@ $("#exportProject").click(function (e) {
 
                 $.ajax({
                     type: "POST",
-                    url: "/project/project-bulk-export",
+                    url: "/project/project-bulk-export/",
                     dataType: "binary",
                     xhrFields: {
                         responseType: "blob",
@@ -152,7 +152,7 @@ $(document).on('click', '#exportProject', function (e) {
 
                 $.ajax({
                     type: "POST",
-                    url: "/project/project-bulk-export",
+                    url: "/project/project-bulk-export/",
                     dataType: "binary",
                     xhrFields: {
                         responseType: "blob",

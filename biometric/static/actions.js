@@ -54,7 +54,7 @@ $("#deleteBioUsers").click(function (e) {
                 $("#BiometricDeviceTestModal").toggleClass("oh-modal--show")
                 $.ajax({
                     type: "POST",
-                    url: "/biometric/biometric-users-bulk-delete",
+                    url: "/biometric/biometric-users-bulk-delete/",
                     data: {
                         csrfmiddlewaretoken: getCookie("csrftoken"),
                         ids: JSON.stringify(ids),
@@ -100,7 +100,7 @@ $("#deleteCosecUsers").click(function (e) {
                 $("#BiometricDeviceTestModal").toggleClass("oh-modal--show");
                 $.ajax({
                     type: "POST",
-                    url: "/biometric/cosec-users-bulk-delete",
+                    url: "/biometric/cosec-users-bulk-delete/",
                     data: {
                         csrfmiddlewaretoken: getCookie("csrftoken"),
                         ids: JSON.stringify(ids),

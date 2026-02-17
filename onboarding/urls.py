@@ -145,12 +145,12 @@ urlpatterns = [
     ),
     path("stage-chart", views.dashboard_stage_chart, name="stage-chart"),
     path(
-        "candidate-sequence-update",
+        "candidate-sequence-update/",
         views.candidate_sequence_update,
         name="onboarding-candidate-sequence-update",
     ),
     path(
-        "stage-sequence-update",
+        "stage-sequence-update/",
         views.stage_sequence_update,
         name="onboarding-stage-sequence-update",
     ),

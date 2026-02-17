@@ -61,7 +61,7 @@ function handleApproveRequestsClick() {
                 ids = JSON.parse($("#selectedInstances").attr("data-ids"));
                 $.ajax({
                     type: "POST",
-                    url: "/work-type-request-bulk-approve",
+                    url: "/work-type-request-bulk-approve/",
                     data: {
                         csrfmiddlewaretoken: getCookie("csrftoken"),
                         ids: JSON.stringify(ids),
@@ -106,7 +106,7 @@ function handleRejectRequestsClick() {
                 ids = JSON.parse($("#selectedInstances").attr("data-ids"));
                 $.ajax({
                     type: "POST",
-                    url: "/work-type-request-bulk-cancel",
+                    url: "/work-type-request-bulk-cancel/",
                     data: {
                         csrfmiddlewaretoken: getCookie("csrftoken"),
                         ids: JSON.stringify(ids),
@@ -150,7 +150,7 @@ function handleDeleteRequestsClick() {
                 ids = JSON.parse($("#selectedInstances").attr("data-ids"));
                 $.ajax({
                     type: "POST",
-                    url: "/work-type-request-bulk-delete",
+                    url: "/work-type-request-bulk-delete/",
                     data: {
                         csrfmiddlewaretoken: getCookie("csrftoken"),
                         ids: JSON.stringify(ids),
@@ -197,7 +197,7 @@ $(document).on('click', '#archiveWorkRotateNav', function (e) {
                 ids = JSON.parse($("#selectedInstances").attr("data-ids"));
                 $.ajax({
                     type: "POST",
-                    url: "/rotating-work-type-assign-bulk-archive?is_active=False",
+                    url: "/rotating-work-type-assign-bulk-archive/?is_active=False",
                     data: {
                         csrfmiddlewaretoken: getCookie("csrftoken"),
                         ids: JSON.stringify(ids),
@@ -242,7 +242,7 @@ function UnarchiveWorkRotateNav() {
                 ids = JSON.parse($("#selectedInstances").attr("data-ids"));
                 $.ajax({
                     type: "POST",
-                    url: "/rotating-work-type-assign-bulk-archive?is_active=True",
+                    url: "/rotating-work-type-assign-bulk-archive/?is_active=True",
                     data: {
                         csrfmiddlewaretoken: getCookie("csrftoken"),
                         ids: JSON.stringify(ids),
@@ -286,7 +286,7 @@ function deleteWorkRotateNav() {
                 ids = JSON.parse($("#selectedInstances").attr("data-ids"));
                 $.ajax({
                     type: "POST",
-                    url: "/rotating-work-type-assign-bulk-delete",
+                    url: "/rotating-work-type-assign-bulk-delete/",
                     data: {
                         csrfmiddlewaretoken: getCookie("csrftoken"),
                         ids: JSON.stringify(ids),

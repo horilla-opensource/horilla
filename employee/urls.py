@@ -190,10 +190,10 @@ urlpatterns = [
         name="employee-account-block-unblock",
     ),
     path(
-        "employee-bulk-delete", views.employee_bulk_delete, name="employee-bulk-delete"
+        "employee-bulk-delete/", views.employee_bulk_delete, name="employee-bulk-delete"
     ),
     path(
-        "employee-bulk-archive",
+        "employee-bulk-archive/",
         views.employee_bulk_archive,
         name="employee-bulk-archive",
     ),
@@ -239,7 +239,7 @@ urlpatterns = [
     ),
     path("employee-import", views.employee_import, name="employee-import"),
     path("employee-export", views.employee_export, name="employee-export"),
-    path("work-info-import", views.work_info_import, name="work-info-import"),
+    path("work-info-import/", views.work_info_import, name="work-info-import"),
     # path(
     #     "work-info-import-file",
     #     views.work_info_import_file,

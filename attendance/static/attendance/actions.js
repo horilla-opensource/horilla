@@ -783,7 +783,7 @@ $("#validateAttendances").click(function (e) {
                 });
                 $.ajax({
                     type: "POST",
-                    url: "/attendance/validate-bulk-attendance",
+                    url: "/attendance/validate-bulk-attendance/",
                     data: {
                         csrfmiddlewaretoken: getCookie("csrftoken"),
                         ids: JSON.stringify(ids),
@@ -830,7 +830,7 @@ $("#approveOt").click(function (e) {
                 });
                 $.ajax({
                     type: "POST",
-                    url: "/attendance/approve-bulk-overtime",
+                    url: "/attendance/approve-bulk-overtime/",
                     data: {
                         csrfmiddlewaretoken: getCookie("csrftoken"),
                         ids: JSON.stringify(ids),
@@ -1069,7 +1069,7 @@ $("#hourAccountbulkDelete").click(function (e) {
                 ids = JSON.parse($("#selectedInstances").attr("data-ids"));
                 $.ajax({
                     type: "POST",
-                    url: "/attendance/attendance-account-bulk-delete",
+                    url: "/attendance/attendance-account-bulk-delete/",
                     data: {
                         csrfmiddlewaretoken: getCookie("csrftoken"),
                         ids: JSON.stringify(ids),
@@ -1160,7 +1160,7 @@ cancelButtonText: i18nMessages.cancel,
                     ids = JSON.parse($("#selectedLatecome").attr("data-ids"));
                     $.ajax({
                         type: "POST",
-                        url: "/attendance/late-come-early-out-bulk-delete",
+                        url: "/attendance/late-come-early-out-bulk-delete/",
                         data: {
                             csrfmiddlewaretoken: getCookie("csrftoken"),
                             ids: JSON.stringify(ids),
@@ -1362,7 +1362,7 @@ $("#reqAttendanceBulkApprove").click(function (e) {
                 ids = JSON.parse($("#selectedInstances").attr("data-ids") || "[]");
                 $.ajax({
                     type: "POST",
-                    url: "/attendance/bulk-approve-attendance-request",
+                    url: "/attendance/bulk-approve-attendance-request/",
                     data: {
                         csrfmiddlewaretoken: getCookie("csrftoken"),
                         ids: JSON.stringify(ids),
@@ -1401,7 +1401,7 @@ $("#reqAttendanceBulkReject").click(function (e) {
                 ids = JSON.parse($("#selectedInstances").attr("data-ids") || "[]");
                 $.ajax({
                     type: "POST",
-                    url: "/attendance/bulk-reject-attendance-request",
+                    url: "/attendance/bulk-reject-attendance-request/",
                     data: {
                         csrfmiddlewaretoken: getCookie("csrftoken"),
                         ids: JSON.stringify(ids),

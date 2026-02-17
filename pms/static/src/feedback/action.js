@@ -75,7 +75,7 @@ $("#archiveFeedback").click(function (e) {
                 });
                 $.ajax({
                     type: "POST",
-                    url: "/pms/feedback-bulk-archive?is_active=False",
+                    url: "/pms/feedback-bulk-archive/?is_active=False",
                     data: {
                         csrfmiddlewaretoken: getCookie("csrftoken"),
                         ids: JSON.stringify(ids),
@@ -128,7 +128,7 @@ $("#unArchiveFeedback").click(function (e) {
 
                 $.ajax({
                     type: "POST",
-                    url: "/pms/feedback-bulk-archive?is_active=True",
+                    url: "/pms/feedback-bulk-archive/?is_active=True",
                     data: {
                         csrfmiddlewaretoken: getCookie("csrftoken"),
                         ids: JSON.stringify(ids),
@@ -176,7 +176,7 @@ $("#deleteFeedback").click(function (e) {
 
                 $.ajax({
                     type: "POST",
-                    url: "/pms/feedback-bulk-delete",
+                    url: "/pms/feedback-bulk-delete/",
                     data: {
                         csrfmiddlewaretoken: getCookie("csrftoken"),
                         ids: JSON.stringify(ids),
