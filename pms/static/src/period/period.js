@@ -34,7 +34,7 @@ $(document).ready(function () {
         // Check if period_id is not "create_new_period" before making the request
         if (period_id !== "create_new_period") {
             $.ajax({
-                url: '/pms/period-change',
+                url: '/pms/period-change/',
                 type: "POST",
                 dataType: "json",
                 data: JSON.stringify(period_id),

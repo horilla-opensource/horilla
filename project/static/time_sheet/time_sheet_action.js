@@ -54,7 +54,7 @@ $("#deleteTimeSheet").click(function (e) {
 
                 $.ajax({
                     type: "POST",
-                    url: "/project/time-sheet-bulk-delete",
+                    url: "/project/time-sheet-bulk-delete/",
                     data: {
                         csrfmiddlewaretoken: getCookie("csrftoken"),
                         ids: JSON.stringify(ids),
@@ -102,7 +102,7 @@ function deleteTimeSheet() {
 
                 $.ajax({
                     type: "POST",
-                    url: "/project/time-sheet-bulk-delete",
+                    url: "/project/time-sheet-bulk-delete/",
                     data: {
                         csrfmiddlewaretoken: getCookie("csrftoken"),
                         ids: JSON.stringify(ids),

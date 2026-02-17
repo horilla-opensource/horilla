@@ -151,7 +151,7 @@ $("#archiveRotatingShiftAssign").click(function (e) {
                 ids = JSON.parse($("#selectedRShifts").attr("data-ids"));
                 $.ajax({
                     type: "POST",
-                    url: "/rotating-shift-assign-bulk-archive?is_active=False",
+                    url: "/rotating-shift-assign-bulk-archive/?is_active=False",
                     data: {
                         csrfmiddlewaretoken: getCookie("csrftoken"),
                         ids: JSON.stringify(ids),
@@ -196,7 +196,7 @@ $("#unArchiveRotatingShiftAssign").click(function (e) {
                 ids = JSON.parse($("#selectedRShifts").attr("data-ids"));
                 $.ajax({
                     type: "POST",
-                    url: "/rotating-shift-assign-bulk-archive?is_active=True",
+                    url: "/rotating-shift-assign-bulk-archive/?is_active=True",
                     data: {
                         csrfmiddlewaretoken: getCookie("csrftoken"),
                         ids: JSON.stringify(ids),
@@ -241,7 +241,7 @@ $("#deleteRotatingShiftAssign").click(function (e) {
                 ids = JSON.parse($("#selectedRShifts").attr("data-ids"));
                 $.ajax({
                     type: "POST",
-                    url: "/rotating-shift-assign-bulk-delete",
+                    url: "/rotating-shift-assign-bulk-delete/",
                     data: {
                         csrfmiddlewaretoken: getCookie("csrftoken"),
                         ids: JSON.stringify(ids),
@@ -435,7 +435,7 @@ $("#deleteRotatingWorkTypeAssign").click(function (e) {
                 ids = JSON.parse($("#selectedRWorktypes").attr("data-ids"));
                 $.ajax({
                     type: "POST",
-                    url: "/rotating-work-type-assign-bulk-delete",
+                    url: "/rotating-work-type-assign-bulk-delete/",
                     data: {
                         csrfmiddlewaretoken: getCookie("csrftoken"),
                         ids: JSON.stringify(ids),
@@ -570,7 +570,7 @@ $("#approveShiftRequest").click(function (e) {
                 ids = JSON.parse($("#selectedShifts").attr("data-ids"));
                 $.ajax({
                     type: "POST",
-                    url: "/shift-request-bulk-approve",
+                    url: "/shift-request-bulk-approve/",
                     data: {
                         csrfmiddlewaretoken: getCookie("csrftoken"),
                         ids: JSON.stringify(ids),
@@ -615,7 +615,7 @@ $("#cancelShiftRequest").click(function (e) {
                 ids = JSON.parse($("#selectedShifts").attr("data-ids"));
                 $.ajax({
                     type: "POST",
-                    url: "/shift-request-bulk-cancel",
+                    url: "/shift-request-bulk-cancel/",
                     data: {
                         csrfmiddlewaretoken: getCookie("csrftoken"),
                         ids: JSON.stringify(ids),
@@ -660,7 +660,7 @@ $("#deleteShiftRequest").click(function (e) {
                 ids = JSON.parse($("#selectedShifts").attr("data-ids"));
                 $.ajax({
                     type: "POST",
-                    url: "/shift-request-bulk-delete",
+                    url: "/shift-request-bulk-delete/",
                     data: {
                         csrfmiddlewaretoken: getCookie("csrftoken"),
                         ids: JSON.stringify(ids),
@@ -795,7 +795,7 @@ $("#approveWorkTypeRequest").click(function (e) {
                 ids = JSON.parse($("#selectedWorktypes").attr("data-ids"));
                 $.ajax({
                     type: "POST",
-                    url: "/work-type-request-bulk-approve",
+                    url: "/work-type-request-bulk-approve/",
                     data: {
                         csrfmiddlewaretoken: getCookie("csrftoken"),
                         ids: JSON.stringify(ids),
@@ -840,7 +840,7 @@ $("#cancelWorkTypeRequest").click(function (e) {
                 ids = JSON.parse($("#selectedWorktypes").attr("data-ids"));
                 $.ajax({
                     type: "POST",
-                    url: "/work-type-request-bulk-cancel",
+                    url: "/work-type-request-bulk-cancel/",
                     data: {
                         csrfmiddlewaretoken: getCookie("csrftoken"),
                         ids: JSON.stringify(ids),
@@ -886,7 +886,7 @@ $("#deleteWorkTypeRequest").click(function (e) {
                 ids = JSON.parse($("#selectedWorktypes").attr("data-ids"));
                 $.ajax({
                     type: "POST",
-                    url: "/work-type-request-bulk-delete",
+                    url: "/work-type-request-bulk-delete/",
                     data: {
                         csrfmiddlewaretoken: getCookie("csrftoken"),
                         ids: JSON.stringify(ids),
