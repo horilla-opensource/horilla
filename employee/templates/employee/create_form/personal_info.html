@@ -161,40 +161,4 @@
 
 
     })();
-  (function () {
-  function autoResize(textarea) {
-    if (!textarea) return;
-    textarea.style.height = "auto";
-    textarea.style.height = textarea.scrollHeight + "px";
-  }
-
-  function init() {
-    const el = document.getElementById("id_qualifications");
-    if (el) {
-      el.style.overflow = "hidden";
-      el.style.resize = "none";
-
-      autoResize(el);
-
-      if (!el.dataset.autoresizeBound) {
-        el.addEventListener("input", function () { autoResize(el); });
-        el.dataset.autoresizeBound = "1";
-      }
-    }
-
-    document.querySelectorAll("textarea.auto-resize").forEach(function (t) {
-      t.style.overflow = "hidden";
-      t.style.resize = "none";
-      autoResize(t);
-
-      if (!t.dataset.autoresizeBound) {
-        t.addEventListener("input", function () { autoResize(t); });
-        t.dataset.autoresizeBound = "1";
-      }
-    });
-  }
-
-  document.addEventListener("DOMContentLoaded", init);
-  document.addEventListener("htmx:afterSwap", init);
-})();
 </script>
