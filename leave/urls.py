@@ -461,7 +461,7 @@ if apps.is_installed("attendance"):
 
             path(
                 "monthly-leave-report",
-                views.monthly_leave_report,
+                views.monthly_leave_report_pdf,
                 name="monthly-leave-report"
             ),
 

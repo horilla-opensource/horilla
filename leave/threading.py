@@ -89,11 +89,9 @@ class LeaveMailSendThread(Thread):
 
             content_manager = (
                 f"A new leave request has been submitted by {leave_details['employee_name']} "
-                f"This is for {leave_details['leave_type']}, "
-                f"starting from {leave_details['from_date']} to {leave_details['to_date']}, "
-                f"for a total of {leave_details['total_days']} day"
-                f"{'s' if leave_details['total_days'] > 1 else ''}. "
-                f"The current status of the leave request is {leave_details['status']}."
+                f"from {leave_details['from_date']} to {leave_details['to_date']} for"
+                f" {leave_details['total_days']} day(s). "
+                f"The leave type is {leave_details['leave_type']}."
             )
 
             subject_manager = f"Leave request has been requested by {owner}"

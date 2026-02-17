@@ -138,9 +138,9 @@
                 <div class="oh-dropdown__menu oh-dropdown__menu--right" x-show="open" style="display: none">
                     <ul class="oh-dropdown__items">
                         {% if perms.leave.change_leaverequest or request.user|is_reportingmanager %}
-                            <li class="oh-dropdown__item">
-                                <a href="#" class="oh-dropdown__link" id="createLeaveReport">{% trans "Leave Report" %}</a>
-                            </li>
+{#                            <li class="oh-dropdown__item">#}
+{#                                <a href="#" class="oh-dropdown__link" id="createLeaveReport">{% trans "Leave Report" %}</a>#}
+{#                            </li>#}
                             <li class="oh-dropdown__item">
                             <a
                                 hx-get="{% url 'monthly-leave-report-form' %}"
@@ -149,7 +149,7 @@
                                 data-toggle="oh-modal-toggle"
                                 data-target="#objectDetailsModal"
                             >
-                                {% trans "Monthly Leave Report" %}
+                                {% trans "Leave Report" %}
                             </a>
                             </li>
                             <li class="oh-dropdown__item">
