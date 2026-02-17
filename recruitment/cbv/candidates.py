@@ -154,13 +154,13 @@ class ListCandidates(HorillaListView):
             pk=Min("pk")
         )
         self.survey_question_mapping = {}
-        for idx, question in enumerate(unique_questions, start=1):
-            key = f"question_{idx}"
 
-            survey_question = (question, key)
-            self.survey_question_mapping[key] = question
-
-            if survey_question not in self.export_fields:
+        for question in unique_questions:
+            survey_question = (
+                question["question"],
+                f"get_survey_question_{question['pk']}",
+            )
+            if not survey_question in self.export_fields:
                 self.export_fields.append(survey_question)
 
     columns = [
