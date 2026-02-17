@@ -74,27 +74,27 @@
 	var timeout
 
 	function updatePermissions(elem){
+		var $panel = $(elem).closest(".panel").closest(".panel.view-employees");
+		var userId = $panel.data("user-id");
 		var permissions = [];
-		var panelId =
-		"#" +
-		$(elem).closest(".panel.view-employees").closest(".panel").attr("id");
-		var userId = $(panelId).attr("data-user-id");
 
-		$(panelId + " [name=permissions]").each(function () {
-			if ($(this).is(":checked")) {
-				var permissionValue = $(this).val();
-				permissions.push(permissionValue);
-			}
+		$panel.find("[name=permissions]").each(function () {
+			permissions.push({
+				codename: $(this).val(),
+				checked: $(this).is(":checked")
+			});
 		});
 
 		$.ajax({
 			type: "post",
 			url: '{% url "update-user-permission" %}',
-			traditional: true,
-			data: {
-				csrfmiddlewaretoken: getCookie("csrftoken"),
+			contentType: "application/json",
+			data: JSON.stringify({
 				permissions: permissions,
 				employee: userId,
+			}),
+			headers: {
+				"X-CSRFToken": getCookie("csrftoken"),
 			},
 			success: function (response) {
 				$("#messages").html(

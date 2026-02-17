@@ -485,7 +485,7 @@ class AssignPermission(Form):
         permissions = Permission.objects.filter(codename__in=permissions)
         users = User.objects.filter(id__in=user_ids)
         for user in users:
-            user.user_permissions.set(permissions)
+            user.user_permissions.add(*permissions)
 
         return self
 
