@@ -441,6 +441,16 @@ class UserLeaveRequestForm(BaseModelForm):
             self.fields["leave_type_id"].initial = leave_type["leave_type_id"].id
             self.fields["leave_type_id"].empty_label = None
 
+        #check if employee in offboarding and restrict leave
+        try:
+            from offboarding.models import OffboardingEmployee
+            if hasattr(employee, "offboardingemployee"):
+                 offboarding_emp = employee.offboardingemployee
+                 if offboarding_emp.stage_id and offboarding_emp.stage_id.type != "archived":
+                     self.fields["leave_type_id"].queryset = self.fields["leave_type_id"].queryset.filter(name__icontains="Annual Leave")
+        except Exception:
+            pass
+
         self.fields["attachment"].required = False
 
         selected_leave_type_id = None
@@ -602,6 +612,16 @@ class UserLeaveRequestCreationForm(BaseModelForm):
             }
         )
         self.fields["employee_id"].initial = employee
+
+        #check if employee in offboarding and restrict leave
+        try:
+            from offboarding.models import OffboardingEmployee
+            if hasattr(employee, "offboardingemployee"):
+                 offboarding_emp = employee.offboardingemployee
+                 if offboarding_emp.stage_id and offboarding_emp.stage_id.type != "archived":
+                     self.fields["leave_type_id"].queryset = self.fields["leave_type_id"].queryset.filter(name__icontains="Annual Leave")
+        except Exception:
+            pass
 
     class Meta:
         """
