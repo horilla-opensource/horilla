@@ -150,48 +150,65 @@ function importAttendanceActivity() {
 
 
 function bulkDeleteAttendanceNav() {
-    ids = [];
-    ids.push($("#selectedInstances").attr("data-ids"));
-    ids = JSON.parse($("#selectedInstances").attr("data-ids"));
+    let ids = [];
+
+    // Collect data-ids from all three elements
+    const selectors = [
+        "#validateselectedInstances",
+        "#overtimeselectedInstances",
+        "#validatedselectedInstances"
+    ];
+
+    selectors.forEach(function (selector) {
+        const element = $(selector);
+        if (element.length && element.attr("data-ids")) {
+            try {
+                const parsedIds = JSON.parse(element.attr("data-ids"));
+                if (Array.isArray(parsedIds)) {
+                    ids = ids.concat(parsedIds);
+                }
+            } catch (e) {
+                console.error("Invalid JSON in", selector);
+            }
+        }
+    });
+
     if (ids.length === 0) {
         Swal.fire({
             text: i18nMessages.noRowsSelected,
             icon: "warning",
             confirmButtonText: i18nMessages.close,
         });
-    } else {
-        Swal.fire({
-            text: i18nMessages.confirmBulkDelete,
-            icon: "error",
-            showCancelButton: true,
-            confirmButtonColor: "#008000",
-            cancelButtonColor: "#d33",
-            confirmButtonText: i18nMessages.confirm,
-            cancelButtonText: i18nMessages.cancel,
-        }).then(function (result) {
-            if (result.isConfirmed) {
-                ids = [];
-                ids.push($("#selectedInstances").attr("data-ids"));
-                ids = JSON.parse($("#selectedInstances").attr("data-ids"));
-                $.ajax({
-                    type: "POST",
-                    url: "/attendance/attendance-bulk-delete/",
-                    data: {
-                        csrfmiddlewaretoken: getCookie("csrftoken"),
-                        ids: JSON.stringify(ids),
-                    },
-                    success: function (response, textStatus, jqXHR) {
-                        if (jqXHR.status === 200) {
-                            location.reload();
-                        }
-                    },
-                });
-            }
-        });
+        return;
     }
+
+    Swal.fire({
+        text: i18nMessages.confirmBulkDelete,
+        icon: "error",
+        showCancelButton: true,
+        confirmButtonColor: "#008000",
+        cancelButtonColor: "#d33",
+        confirmButtonText: i18nMessages.confirm,
+        cancelButtonText: i18nMessages.cancel,
+    }).then(function (result) {
+        if (result.isConfirmed) {
+            $.ajax({
+                type: "POST",
+                url: "/attendance/attendance-bulk-delete/",
+                traditional: true,
+                data: {
+                    csrfmiddlewaretoken: getCookie("csrftoken"),
+                    ids: ids,
+                },
+                success: function (response, textStatus, jqXHR) {
+                    if (jqXHR.status === 200) {
+                        location.reload();
+                    }
+                },
+            });
+        }
+    });
 }
-
-
 
 
 function showApproveAlert(dataReqValue) {
