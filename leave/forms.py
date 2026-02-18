@@ -57,7 +57,7 @@ class ConditionForm(forms.ModelForm):
                 field.initial = date.today()
 
             elif isinstance(
-                widget, (forms.NumberInput, forms.EmailInput, forms.TextInput)
+                    widget, (forms.NumberInput, forms.EmailInput, forms.TextInput)
             ):
                 field.widget.attrs.update(
                     {"class": "oh-input w-100", "placeholder": field.label}
@@ -72,11 +72,11 @@ class ConditionForm(forms.ModelForm):
                     }
                 )
             elif isinstance(
-                widget,
-                (
-                    forms.CheckboxInput,
-                    forms.CheckboxSelectMultiple,
-                ),
+                    widget,
+                    (
+                            forms.CheckboxInput,
+                            forms.CheckboxSelectMultiple,
+                    ),
             ):
                 field.widget.attrs.update({"class": "oh-switch__checkbox"})
         try:
@@ -91,7 +91,6 @@ class ConditionForm(forms.ModelForm):
 
 
 class LeaveTypeForm(ConditionForm):
-
     employee_id = HorillaMultiSelectField(
         queryset=Employee.objects.all(),
         widget=HorillaMultiSelectWidget(
@@ -207,15 +206,15 @@ class LeaveRequestCreationForm(BaseModelForm):
     end_date = forms.DateField(widget=forms.DateInput(attrs={"type": "date"}))
 
     def __init__(self, *args, **kwargs):
-
         super().__init__(*args, **kwargs)
+        self.fields["leave_type_id"].empty_label = _("Select leave type")
         self.fields["attachment"].widget.attrs["accept"] = ".jpg, .jpeg, .png, .pdf"
         self.fields["leave_type_id"].widget.attrs.update(
             {
                 "hx-include": "#leaveRequestCreateForm",
                 "hx-target": "#availableLeaveCount",
                 "hx-swap": "outerHTML",
-                "hx-trigger": "change",
+                "hx-trigger": "load, change",
                 "hx-get": "/leave/employee-available-leave-count",
             }
         )
@@ -277,7 +276,7 @@ class LeaveRequestUpdationForm(BaseModelForm):
             )
 
             if leave_type and leave_type.id not in assigned_leave_types.values_list(
-                "id", flat=True
+                    "id", flat=True
             ):
                 assigned_leave_types |= LeaveType.objects.filter(id=leave_type.id)
 
@@ -288,7 +287,7 @@ class LeaveRequestUpdationForm(BaseModelForm):
                 "hx-include": "#leaveRequestUpdateForm",
                 "hx-target": "#assinedLeaveAvailableCount",
                 "hx-swap": "outerHTML",
-                "hx-trigger": "change",
+                "hx-trigger": "load, change",
                 "hx-get": "/leave/employee-available-leave-count",
             }
         )
@@ -306,7 +305,7 @@ class LeaveRequestUpdationForm(BaseModelForm):
                 "hx-include": "#leaveRequestUpdateForm",
                 "hx-target": "#assinedLeaveAvailableCount",
                 "hx-swap": "outerHTML",
-                "hx-trigger": "change",
+                "hx-trigger": "load, change",
                 "hx-get": "/leave/employee-available-leave-count",
             }
         )
@@ -441,6 +440,27 @@ class UserLeaveRequestForm(BaseModelForm):
             )
             self.fields["leave_type_id"].initial = leave_type["leave_type_id"].id
             self.fields["leave_type_id"].empty_label = None
+
+        self.fields["attachment"].required = False
+
+        selected_leave_type_id = None
+
+        if self.is_bound:
+            selected_leave_type_id = self.data.get("leave_type_id")
+        elif getattr(self.instance, "pk", None):
+            selected_leave_type_id = getattr(self.instance, "leave_type_id_id", None)
+        elif leave_type and leave_type.get("leave_type_id"):
+            selected_leave_type_id = leave_type["leave_type_id"].id
+
+        is_required = False
+        if selected_leave_type_id:
+            lt = LeaveType.objects.filter(id=selected_leave_type_id).only("id", "require_attachment").first()
+            val = getattr(lt, "require_attachment", False) if lt else False
+
+            is_required = (val is True) or (str(val).strip().lower() in ("yes", "true", "1"))
+
+        self.fields["attachment"].required = is_required
+
 
     def as_p(self, *args, **kwargs):
         """
@@ -577,7 +597,7 @@ class UserLeaveRequestCreationForm(BaseModelForm):
                 "hx-include": "#userLeaveForm",
                 "hx-target": "#availableLeaveCount",
                 "hx-swap": "outerHTML",
-                "hx-trigger": "change",
+                "hx-trigger": "load, change",
                 "hx-get": f"/leave/employee-available-leave-count",
             }
         )
@@ -909,6 +929,7 @@ class RestrictLeaveForm(BaseModelForm):
 if apps.is_installed("attendance"):
     from .models import CompensatoryLeaveRequest, CompensatoryLeaverequestComment
 
+
     class CompensatoryLeaveForm(BaseModelForm):
         """
         Form for creating a leave allocation request.
@@ -943,9 +964,9 @@ if apps.is_installed("attendance"):
             if self.instance:
                 instance_id = self.instance.id
             if (
-                request
-                and hasattr(request, "user")
-                and hasattr(request.user, "employee_get")
+                    request
+                    and hasattr(request, "user")
+                    and hasattr(request.user, "employee_get")
             ):
                 employee = request.user.employee_get
                 holiday_attendance = get_leave_day_attendance(
@@ -958,10 +979,10 @@ if apps.is_installed("attendance"):
                 # Set the queryset of attendance_id to the attendance_dates
                 self.fields["attendance_id"].choices = attendance_dates
             queryset = (
-                filtersubordinatesemployeemodel(
-                    request, Employee.objects.filter(is_active=True)
-                )
-                | Employee.objects.filter(employee_user_id=request.user)
+                    filtersubordinatesemployeemodel(
+                        request, Employee.objects.filter(is_active=True)
+                    )
+                    | Employee.objects.filter(employee_user_id=request.user)
             ).distinct()
             self.fields["employee_id"].queryset = queryset
             self.fields["employee_id"].widget.attrs.update(
@@ -994,11 +1015,11 @@ if apps.is_installed("attendance"):
                 instance_id = self.instance.id
             for attendance in attendance_id:
                 if (
-                    CompensatoryLeaveRequest.objects.filter(
-                        employee_id=employee, attendance_id=attendance
-                    )
-                    .exclude(Q(id=instance_id) | Q(status="rejected"))
-                    .exists()
+                        CompensatoryLeaveRequest.objects.filter(
+                            employee_id=employee, attendance_id=attendance
+                        )
+                                .exclude(Q(id=instance_id) | Q(status="rejected"))
+                                .exists()
                 ):
                     attendance_repeat = True
                     break
@@ -1009,6 +1030,7 @@ if apps.is_installed("attendance"):
                     }
                 )
             return cleaned_data
+
 
     class CompensatoryLeaveRequestRejectForm(forms.Form):
         """
@@ -1029,6 +1051,7 @@ if apps.is_installed("attendance"):
         class Meta:
             model = CompensatoryLeaveRequest
             fields = ["reject_reason"]
+
 
     class CompensatoryLeaveRequestcommentForm(BaseModelForm):
         """
