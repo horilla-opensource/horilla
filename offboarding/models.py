@@ -28,7 +28,6 @@ class Offboarding(HorillaModel):
 
     statuses = [("ongoing", _("Ongoing")), ("completed", _("Completed"))]
     title = models.CharField(max_length=20)
-    description = models.TextField(max_length=255)
     managers = models.ManyToManyField(Employee)
     status = models.CharField(max_length=10, default="ongoing", choices=statuses)
     company_id = models.ForeignKey(
