@@ -276,6 +276,11 @@ def breadcrumbs(request):
 
             new_dict = {"url": path, "name": item, "found": found}
 
+            if item == "offboarding-pipeline":
+                new_dict["name"] = "Exit Process"
+            elif item == "pipeline" and i > 0 and parts[i - 1] == "offboarding":
+                new_dict["name"] = "Exit Process"
+
             if item.isdigit() or is_valid_uuid(item):
                 # Handle the case when item is a digit (e.g., an ID)
                 current_url = resolve(request.path_info)
