@@ -198,6 +198,20 @@ def clock_in(request):
     """
     This method is used to mark the attendance once per a day and multiple attendance activities.
     """
+    # manual attendance permission check
+    # Check if the user has permission to manually clock in/out
+    if not request.user.has_perm('attendance.can_manual_login_logout'):
+        return HttpResponse(
+            """
+            <button class="oh-btn oh-btn--danger-outline" disabled>
+                <ion-icon class="oh-navbar__clock-icon mr-2 text-danger" name="lock-closed-outline"></ion-icon>
+                <span class="hr-check-in-out-text">{restricted}</span>
+            </button>
+            """.format(
+                restricted=_("Manual Attendance Restricted")
+            ),
+            status=200, # OK
+        )
     # check wether check in/check out feature is enabled
     selected_company = request.session.get("selected_company")
     if selected_company == "all":
@@ -479,6 +493,20 @@ def clock_out(request):
     """
     This method is used to set the out date and time for attendance and attendance activity
     """
+    # manual attendance permission check
+    # Check if the user has permission to manually clock in/out
+    if not request.user.has_perm('attendance.can_manual_login_logout'):
+        return HttpResponse(
+            """
+            <button class="oh-btn oh-btn--danger-outline" disabled>
+                <ion-icon class="oh-navbar__clock-icon mr-2 text-danger" name="lock-closed-outline"></ion-icon>
+                <span class="hr-check-in-out-text">{restricted}</span>
+            </button>
+            """.format(
+                restricted=_("Manual Attendance Restricted")
+            ),
+            status=200, # OK
+        )
     # check wether check in/check out feature is enabled
     selected_company = request.session.get("selected_company")
     if selected_company == "all":
