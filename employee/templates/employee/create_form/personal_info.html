@@ -1,103 +1,164 @@
 {% load i18n %}
 <div class="oh-modal" id="badgeModal" role="dialog" aria-hidden="true">
-  <div class="oh-modal__dialog" style="max-width: 550px">
-    <div class="oh-modal__dialog-header">
-      <button type="button" class="oh-modal__close" aria-label="Close"><ion-icon name="close-outline"></ion-icon></button>
-    </div>
+    <div class="oh-modal__dialog" style="max-width: 550px">
+        <div class="oh-modal__dialog-header">
+            <button type="button" class="oh-modal__close" aria-label="Close">
+                <ion-icon name="close-outline"></ion-icon>
+            </button>
+        </div>
 
-    <div class="oh-modal__dialog-body" id="badgeModalBody"></div>
-  </div>
+        <div class="oh-modal__dialog-body" id="badgeModalBody"></div>
+    </div>
 </div>
 <div class="oh-wrapper" data-select2-id="select2-data-40-yu7x">
 
-  <div class="oh-general__tab-target oh-profile-section mb-4" id="personal" data-select2-id="select2-data-personal">
-    <div class="oh-profile-section__card" data-select2-id="select2-data-48-0df8">
-        <form data-select2-id="select2-data-47-5jxy" method='post' action='{% url "employee-create-personal-info" %}' enctype="multipart/form-data" novalidate>
-            {% csrf_token %}
-            <div class="row">
-              <div
-                class="col-12 col-sm-12 col-md-12 col-lg-6 d-flex align-items-center"
-              >
-              <div
-                class="oh-profile-section__edit-photo me-4 mb-3"
-                data-toggle="oh-modal-toggle"
-                data-target="#uploadPhotoModal"
+    <div class="oh-general__tab-target oh-profile-section mb-4" id="personal" data-select2-id="select2-data-personal">
+        <div class="oh-profile-section__card" data-select2-id="select2-data-48-0df8">
+            <form data-select2-id="select2-data-47-5jxy" method='post'
+                  action='{% url "employee-create-personal-info" %}' enctype="multipart/form-data" novalidate>
+                {% csrf_token %}
+                <div class="row">
+                    <div
+                            class="col-12 col-sm-12 col-md-12 col-lg-6 d-flex align-items-center"
+                    >
+                        <div
+                                class="oh-profile-section__edit-photo me-4 mb-3"
+                                data-toggle="oh-modal-toggle"
+                                data-target="#uploadPhotoModal"
 
-              >
-                  <img
-                  src="https://ui-avatars.com/api/?name=N+P&background=random"
-                    class="oh-profile-section__avatar preview "
-                    alt=""
-                  />
-                </div>
-              </div>
-            </div>
-            {{form.employee_profile.errors}}
-            <div
-                  class="oh-modal"
-                  id="uploadPhotoModal"
-                  role="dialog"
-                  aria-labelledby="uploadPhotoModal"
-                  aria-hidden="true"
-            >
-            <div class="oh-modal__dialog">
-              <div class="oh-modal__dialog-header">
-                <span class="oh-modal__dialog-title" id="uploadPhotoModalLabel"
-                  >{% trans "Upload Photo" %}</span
-                >
-               <button type="button" class="oh-modal__close" aria-label="Close">
-                    <ion-icon name="close-outline"></ion-icon>
-               </button>
-              </div>
-              <div class="oh-modal__dialog-body">
-                <div class="oh-profile-section__image-container">
-                    {% csrf_token %}
-                    <div class="oh-profile-section__modal-avatar">
-                      <img
-                      src="https://ui-avatars.com/api/?name=N+P&background=random"
-                      class="oh-profile-section__modal-image preview"
-                      alt="Username"
-                      />
+                        >
+                            <img
+                                    src="https://ui-avatars.com/api/?name=N+P&background=random"
+                                    class="oh-profile-section__avatar preview "
+                                    alt=""
+                            />
+                        </div>
                     </div>
-                    {{form.employee_profile}}
-
-                  </div>
                 </div>
-              </div>
-            </div>
+                {{ form.employee_profile.errors }}
+                <div
+                        class="oh-modal"
+                        id="uploadPhotoModal"
+                        role="dialog"
+                        aria-labelledby="uploadPhotoModal"
+                        aria-hidden="true"
+                >
+                    <div class="oh-modal__dialog">
+                        <div class="oh-modal__dialog-header">
+                <span class="oh-modal__dialog-title" id="uploadPhotoModalLabel"
+                >{% trans "Upload Photo" %}</span
+                >
+                            <button type="button" class="oh-modal__close" aria-label="Close">
+                                <ion-icon name="close-outline"></ion-icon>
+                            </button>
+                        </div>
+                        <div class="oh-modal__dialog-body">
+                            <div class="oh-profile-section__image-container">
+                                {% csrf_token %}
+                                <div class="oh-profile-section__modal-avatar">
+                                    <img
+                                            src="https://ui-avatars.com/api/?name=N+P&background=random"
+                                            class="oh-profile-section__modal-image preview"
+                                            alt="Username"
+                                    />
+                                </div>
+                                {{ form.employee_profile }}
 
-            <div class="row">
-                  <div class="col-12 col-sm-12 col-md-12 col-lg-6">
-                      <div hx-get="{% url 'get-first-last-badge-id' %}" hx-target="#badgeModalBody" data-target="#badgeModal" data-toggle="oh-modal-toggle" class="oh-checkpoint-badge text-success mb-2" id="selectAllInstances" style="cursor: pointer">
-                        {% trans "Show Current ID" %}
-                      </div>
-                  </div>
-              </div>
-              {{form.as_p}}
-              <hr class="mt-5 mb-3 d-flex flex-row-reverse">
-              <div class="col-lg-12 d-flex flex-row-reverse">
-                <button type="submit" class="oh-btn oh-btn--secondary">
-                    {% trans "Save Changes" %}
-                </button>
-              </div>
-        </form>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="row">
+                    <div class="col-12 col-sm-12 col-md-12 col-lg-6">
+                        <div hx-get="{% url 'get-first-last-badge-id' %}" hx-target="#badgeModalBody"
+                             data-target="#badgeModal" data-toggle="oh-modal-toggle"
+                             class="oh-checkpoint-badge text-success mb-2" id="selectAllInstances"
+                             style="cursor: pointer">
+                            {% trans "Show Current ID" %}
+                        </div>
+                    </div>
+                </div>
+                {{ form.as_p }}
+                <hr class="mt-5 mb-3 d-flex flex-row-reverse">
+                <div class="col-lg-12 d-flex flex-row-reverse">
+                    <button type="submit" class="oh-btn oh-btn--secondary">
+                        {% trans "Save Changes" %}
+                    </button>
+                </div>
+            </form>
+        </div>
     </div>
-  </div>
 </div>
 <script>
-  $(document).ready(function () {
-    $('#id_employee_profile').change(function (e) {
+    $(document).ready(function () {
+        $('#id_employee_profile').change(function (e) {
 
-      const file = this.files[0];
-      const reader = new FileReader();
+            const file = this.files[0];
+            const reader = new FileReader();
 
-      reader.addEventListener("load", function() {
-        const imageUrl = reader.result;
-        $(".preview").attr("src", imageUrl);
-      });
+            reader.addEventListener("load", function () {
+                const imageUrl = reader.result;
+                $(".preview").attr("src", imageUrl);
+            });
 
-      reader.readAsDataURL(file);
+            reader.readAsDataURL(file);
+        });
     });
-  });
+    (function () {
+        const STORAGE_KEY = "employee_profile_preview";
 
+        function setPreview(src) {
+            if (src) {
+                document.querySelectorAll(".preview").forEach(img => img.src = src);
+            }
+        }
+
+        function savePreview(src) {
+            try {
+                sessionStorage.setItem(STORAGE_KEY, src);
+            } catch (e) {
+            }
+        }
+
+        function loadPreview() {
+            try {
+                return sessionStorage.getItem(STORAGE_KEY);
+            } catch (e) {
+                return null;
+            }
+        }
+
+        function bindFileInput() {
+            const input = document.getElementById("id_employee_profile");
+            if (!input) return;
+
+            input.addEventListener("change", function () {
+                const file = this.files && this.files[0];
+                if (!file) return;
+
+                const reader = new FileReader();
+                reader.onload = function () {
+                    const src = reader.result;
+                    setPreview(src);
+                    savePreview(src);
+                };
+                reader.readAsDataURL(file);
+            });
+        }
+
+        document.addEventListener("DOMContentLoaded", function () {
+            const saved = loadPreview();
+            if (saved) setPreview(saved);
+            bindFileInput();
+        });
+
+        document.addEventListener("htmx:afterSwap", function () {
+            const saved = loadPreview();
+            if (saved) setPreview(saved);
+            bindFileInput();
+        });
+
+
+    })();
 </script>
