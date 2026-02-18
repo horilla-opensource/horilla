@@ -4,7 +4,7 @@ services:
       context: .
       dockerfile: Dockerfile
     ports:
-      - 8000:8000
+      - "8000:8000"
     restart: unless-stopped
     environment:
       DATABASE_URL: "postgres://postgres:postgres@db:5432/horilla"
@@ -15,6 +15,8 @@ services:
     depends_on:
       db:
         condition: service_healthy
+    networks:
+      - horilla-net
 
   db:
     image: postgres:16-bullseye
@@ -25,15 +27,21 @@ services:
       POSTGRES_INITDB_ARGS: "--auth-host=scram-sha-256"
       PGDATA: /var/lib/postgresql/data/pgdata
     ports:
-      - 5432:5432
+      - "5432:5432"
     restart: unless-stopped
     volumes:
       - horilla-data:/var/lib/postgresql/data
     healthcheck:
-      test: ["CMD", "pg_isready", "-U", "postgres"]
+      test: ["CMD-SHELL", "pg_isready -U postgres"]
       interval: 10s
       timeout: 5s
       retries: 5
+    networks:
+      - horilla-net
 
 volumes:
   horilla-data:
+
+networks:
+  horilla-net:
+    driver: bridge
