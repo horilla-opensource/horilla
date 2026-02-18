@@ -456,11 +456,11 @@ def change_stage(request):
             logger.info("No active contracts found for FNF process.")
 
     if stage.type == "archived":
-    employee_ids = employees.values_list("employee_id__id", flat=True)
-    Employee.objects.filter(
-        id__in=employee_ids,
-            is_active=True,
-        ).update(is_active=False)
+        employee_ids = employees.values_list("employee_id__id", flat=True)
+        Employee.objects.filter(
+            id__in=employee_ids,
+                is_active=True,
+            ).update(is_active=False)
 
 
     tasks_for_stage = OffboardingTask.objects.filter(stage_id=stage, is_active=True)
