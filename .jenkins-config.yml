@@ -1,0 +1,185 @@
+# Jenkins Configuration as Code (JCasC) for Horilla HRMS
+# Use with Jenkins Configuration as Code plugin
+# Place in $JENKINS_HOME/jenkins.yaml
+
+jenkins:
+  systemMessage: "Horilla HRMS CI/CD Pipeline"
+
+  securityRealm:
+    local:
+      allowsSignup: false
+      users:
+        - id: "admin"
+          password: "${JENKINS_ADMIN_PASSWORD}"
+
+  authorizationStrategy:
+    projectMatrix:
+      permissions:
+        - "hudson.model.Item.Build:authenticated"
+        - "hudson.model.Item.Cancel:authenticated"
+        - "hudson.model.Item.Read:authenticated"
+        - "hudson.model.Run.Delete:authenticated"
+        - "hudson.model.View.Create:authenticated"
+        - "hudson.model.View.Delete:authenticated"
+        - "hudson.model.View.Read:authenticated"
+        - "hudson.model.Hudson.Read:authenticated"
+
+  remotingSecurity:
+    enabled: true
+
+unclassified:
+  # Jenkins Location
+  location:
+    url: "${JENKINS_URL}"
+
+  # GitHub Integration
+  gitHub:
+    apiUrl: "https://api.github.com"
+    clientID: "${GITHUB_CLIENT_ID}"
+    clientSecret: "${GITHUB_CLIENT_SECRET}"
+    credentialsId: "github-credentials"
+    manageHooks: true
+
+  # Slack Integration
+  slackNotifier:
+    baseUrl: ""
+    botUser: false
+    iconUrl: ""
+    room: "#horilla-ci"
+    sendAs: ""
+    teamDomain: "${SLACK_TEAM}"
+    token: "${SLACK_TOKEN}"
+    tokenCredentialId: "slack-webhook-url"
+
+  # Email Configuration
+  mailer:
+    smtpHost: "smtp.gmail.com"
+    smtpPort: 465
+    useSsl: true
+    useTls: false
+    smtpAuth: true
+    smtpUsername: "${SMTP_USERNAME}"
+    smtpPassword: "${SMTP_PASSWORD}"
+    charset: "UTF-8"
+    replyToAddress: "jenkins@horilla.example.com"
+    defaultSuffix: "@horilla.example.com"
+
+  # Pipeline Configuration
+  pipelineModel:
+    displayUrlProvider: "default"
+
+  # SonarQube
+  sonarGlobalConfiguration:
+    installations:
+      - name: "SonarQube"
+        serverUrl: "${SONAR_HOST_URL}"
+        credentialsId: "sonarqube-token"
+        msSonarEnabled: false
+        monoMsSonarEnabled: false
+
+# Credentials
+credentials:
+  system:
+    domainCredentials:
+      - credentials:
+          # GitHub Token
+          - id: "github-credentials"
+            scope: GLOBAL
+            description: "GitHub API Token"
+            secret: "${GITHUB_TOKEN}"
+            class: "org.jenkinsci.plugins.plaincredentials.impl.StringCredentialsImpl"
+
+          # Docker Hub
+          - id: "docker-hub-credentials"
+            scope: GLOBAL
+            description: "Docker Hub Credentials"
+            username: "${DOCKER_USERNAME}"
+            password: "${DOCKER_PASSWORD}"
+            class: "com.cloudbees.plugins.credentials.impl.UsernamePasswordCredentialsImpl"
+
+          # AWS Credentials
+          - id: "aws-credentials"
+            scope: GLOBAL
+            description: "AWS Credentials for ECR"
+            accessKey: "${AWS_ACCESS_KEY_ID}"
+            secretKey: "${AWS_SECRET_ACCESS_KEY}"
+            class: "com.cloudbees.jenkins.plugins.kubernetes.credentials.SecretCredential"
+
+          # Deploy SSH Key
+          - id: "deploy-ssh-key"
+            scope: GLOBAL
+            description: "SSH Key for Server Deployment"
+            username: "deploy"
+            privateKeySource: "directEntry"
+            privateKey: "${DEPLOY_SSH_KEY}"
+            passphrase: "${DEPLOY_SSH_PASSPHRASE}"
+            class: "com.cloudbees.jenkins.plugins.kubernetes.credentials.SecretCredential"
+
+          # Slack Webhook
+          - id: "slack-webhook-url"
+            scope: GLOBAL
+            description: "Slack Webhook URL"
+            secret: "${SLACK_WEBHOOK_URL}"
+            class: "org.jenkinsci.plugins.plaincredentials.impl.StringCredentialsImpl"
+
+          # Test Database Password
+          - id: "test-db-password"
+            scope: GLOBAL
+            description: "Test Database Password"
+            secret: "${TEST_DB_PASSWORD}"
+            class: "org.jenkinsci.plugins.plaincredentials.impl.StringCredentialsImpl"
+
+          # Django Secret Key
+          - id: "django-secret-key"
+            scope: GLOBAL
+            description: "Django Secret Key"
+            secret: "${DJANGO_SECRET_KEY}"
+            class: "org.jenkinsci.plugins.plaincredentials.impl.StringCredentialsImpl"
+
+          # Server Hosts
+          - id: "staging-host"
+            scope: GLOBAL
+            description: "Staging Server Hostname"
+            secret: "${STAGING_HOST}"
+            class: "org.jenkinsci.plugins.plaincredentials.impl.StringCredentialsImpl"
+
+          - id: "production-host"
+            scope: GLOBAL
+            description: "Production Server Hostname"
+            secret: "${PRODUCTION_HOST}"
+            class: "org.jenkinsci.plugins.plaincredentials.impl.StringCredentialsImpl"
+
+# Tools Configuration
+tool:
+  git:
+    installations:
+      - name: "Default"
+        home: "git"
+
+  maven:
+    installations:
+      - name: "Default"
+        properties:
+          - installSource:
+              installers:
+                - maven:
+                    id: "3.8.6"
+
+  docker:
+    installations:
+      - name: "Docker"
+        home: "/usr/bin"
+        apiVersion: "latest"
+
+security:
+  apiToken:
+    creationOfLegacyTokenEnabled: false
+  scriptApproval:
+    autoApproveStr: ""
+
+# Global Environment Variables
+global_env:
+  REPO_NAME: "horilla"
+  DOCKER_REGISTRY: "docker.io"
+  PYTHON_VERSION: "3.11"
+  DJANGO_SETTINGS_MODULE: "horilla.settings"
