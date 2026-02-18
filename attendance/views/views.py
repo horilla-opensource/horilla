@@ -568,7 +568,7 @@ def attendance_bulk_delete(request):
         messages.success(request, f"{success_count} attendances deleted successfully.")
     for error in error_messages:
         messages.error(request, error)
-    return redirect("/attendance/attendance-search")
+    return JsonResponse({"message": "Success"})
 
 
 @login_required
