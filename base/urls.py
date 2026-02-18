@@ -79,7 +79,9 @@ urlpatterns = [
         name="initialize-job-position-delete",
     ),
     path("404", views.custom404, name="404"),
+    path("upgrade/", views.upgrade, name="upgrade"),
     path("login/", views.login_user, name="login"),
+    path("register/", views.register_company, name="register"),
     path(
         "forgot-password",
         views.HorillaPasswordResetView.as_view(),

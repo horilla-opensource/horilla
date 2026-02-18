@@ -19,6 +19,7 @@ MIDDLEWARE.append("accessibility.middlewares.AccessibilityMiddleware")
 MIDDLEWARE.append("accessibility.middlewares.AccessibilityMiddleware")
 MIDDLEWARE.append("base.middleware.ForcePasswordChangeMiddleware")
 MIDDLEWARE.append("base.middleware.TwoFactorAuthMiddleware")
+MIDDLEWARE.append("base.middleware.TrialMiddleware")
 _thread_locals = threading.local()
 
 

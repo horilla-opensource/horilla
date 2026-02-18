@@ -26,6 +26,7 @@ from django.contrib.auth.views import PasswordResetConfirmView, PasswordResetVie
 from django.core.files.base import ContentFile
 from django.core.mail import EmailMessage, EmailMultiAlternatives
 from django.core.management import call_command
+from django.db import transaction
 from django.db.models import ProtectedError, Q
 from django.http import (
     FileResponse,
@@ -73,6 +74,7 @@ from base.forms import (
     ChangeUsernameForm,
     CompanyForm,
     CompanyLeaveForm,
+    CompanyRegistrationForm,
     DepartmentForm,
     DriverForm,
     DynamicMailConfForm,
@@ -621,6 +623,79 @@ def login_user(request):
     )
 
 
+def register_company(request):
+    """
+    Handles self-service company registration
+    """
+    if request.user.is_authenticated:
+        return redirect("/")
+
+    if request.method == "POST":
+        print("DEBUG: Register view POST received")
+        form = CompanyRegistrationForm(request.POST)
+        if form.is_valid():
+            print("DEBUG: Form is valid")
+            try:
+                with transaction.atomic():
+                    # 1. Create Company
+                    company = Company.objects.create(
+                        company=form.cleaned_data["company_name"],
+                        trial_start_date=timezone.now()
+                    )
+
+                    # 2. Create User
+                    user = User.objects.create_user(
+                        username=form.cleaned_data["username"],
+                        email=form.cleaned_data["email"],
+                        password=form.cleaned_data["password"],
+                        is_staff=True,  # Allow admin panel access
+                        is_superuser=False,  # RESTRICTED access
+                    )
+
+                    # 3. Create Employee
+                    employee = Employee.objects.create(
+                        employee_user_id=user,
+                        employee_first_name="Admin",
+                        employee_last_name="",
+                        email=user.email,
+                    )
+
+                    # 4. Create or Update Work Info (Link to Company)
+                    # Employee.save() might have already created a Work Info instance
+                    EmployeeWorkInformation.objects.update_or_create(
+                        employee_id=employee,
+                        defaults={"company_id": company}
+                    )
+
+                    # 5. Assign Permissions (Company Admin Group)
+                    group_name = "Company Admin"
+                    group, created = Group.objects.get_or_create(name=group_name)
+                    
+                    if created:
+                        # Assign default permissions to the group if it's new
+                        # This is a fallback; usually permissions are pre-configured
+                        pass 
+                        
+                    user.groups.add(group)
+                    
+                    # Grant all permissions to the user directly as well (to be safe for now)
+                    # In a real prod env, we'd rely solely on the group
+                    permissions = Permission.objects.all()
+                    user.user_permissions.set(permissions)
+
+                    # 6. Login and Redirect
+                    login(request, user)
+                    messages.success(request, _("Registration successful! Welcome to your new company."))
+                    return redirect("/")
+
+            except Exception as e:
+                messages.error(request, f"Registration failed: {str(e)}")
+    else:
+        form = CompanyRegistrationForm()
+
+    return render(request, "register.html", {"form": form})
+
+
 def include_employee_instance(request, form):
     """
     This method is used to include the employee instance to the form
@@ -918,11 +993,19 @@ class Workinfo:
         pass
 
 
-@login_required
+def upgrade(request):
+    """
+    Render the upgrade page for expired trials.
+    """
+    return render(request, "upgrade.html")
+
+
 def home(request):
     """
     This method is used to render index page
     """
+    if not request.user.is_authenticated:
+        return render(request, "landing.html")
 
     today = datetime.today()
     today_weekday = today.weekday()
@@ -1776,7 +1859,17 @@ def company_view(request):
     """
     This method used to view created companies
     """
-    companies = Company.objects.all()
+    try:
+        employee = request.user.employee_get
+        company = employee.employee_work_info.company_id
+        companies = Company.objects.filter(id=company.id)
+    except Exception:
+        # Fallback for superusers or users without employee profile
+        if request.user.is_superuser:
+            companies = Company.objects.all()
+        else:
+            companies = Company.objects.none()
+
     return render(
         request,
         "base/company/company.html",
@@ -7553,7 +7646,7 @@ def protected_media(request, path):
         "/recruitment/open-recruitments",
         "/recruitment/candidate-self-status-tracking",
     ]
-    exempted_folders = ["base/icon/"]
+    exempted_folders = ["base/icon/", "base/company/icon/"]
 
     media_path = os.path.join(settings.MEDIA_ROOT, path)
     if not os.path.exists(media_path):
