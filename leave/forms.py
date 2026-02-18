@@ -447,6 +447,7 @@ class UserLeaveRequestForm(BaseModelForm):
 
         if self.is_bound:
             selected_leave_type_id = self.data.get("leave_type_id")
+            print("Selected Leave Type ID from form data:", selected_leave_type_id)
         elif getattr(self.instance, "pk", None):
             selected_leave_type_id = getattr(self.instance, "leave_type_id_id", None)
         elif leave_type and leave_type.get("leave_type_id"):
@@ -457,7 +458,7 @@ class UserLeaveRequestForm(BaseModelForm):
             lt = LeaveType.objects.filter(id=selected_leave_type_id).only("id", "require_attachment").first()
             val = getattr(lt, "require_attachment", False) if lt else False
 
-            is_required = (val is True) or (str(val).strip().lower() in ("yes", "true", "1"))
+            is_required = (str(val).strip().lower() in ("yes", "true", "1"))
 
         self.fields["attachment"].required = is_required
 
