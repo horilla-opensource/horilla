@@ -103,7 +103,7 @@
 
 <body>
 <div class="report-header">
-    <div class="report-title">{% trans "Leave Report" %}</div>
+    <div class="report-title">{% trans "Leave Details Report" %}</div>
     <div class="report-meta">
         {% trans "Period" %}: {{ start }} → {{ end }} |
         {% trans "Generated on" %}: {{ report_creation_date }} |
@@ -129,7 +129,12 @@
     <tbody>
     {% for leave in leaves %}
         <tr>
-            <td style="width: 110px">{{ leave.employee_id.get_full_name }}</td>
+            <td style="width: 110px">
+                {{ leave.employee_id.get_full_name }}
+                {% if leave.employee_id.badge_id %}
+                    ({{ leave.employee_id.badge_id }})
+                {% endif %}
+            </td>
             <td style="width: 110px">{{ leave.employee_id.get_department }}</td>
             <td style="width: 110px">{{ leave.leave_type_id.name }}</td>
             <td style="width: 170px">{{ leave.description|default:"" }}</td>
