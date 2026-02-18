@@ -319,8 +319,8 @@ class ExitReason(HorillaModel):
     ExitReason model
     """
     REASON_TYPES = (
-        ("employee", "Employee Side"),
-        ("admin", "Admin Side"),
+        ("employee", "Voluntary"),
+        ("admin", "Involuntary"),
     )
 
 
@@ -331,7 +331,7 @@ class ExitReason(HorillaModel):
         default="employee",
         verbose_name=_("Reason Type"),
     )
-    description = models.TextField(max_length=255)
+    description = models.TextField()
     # offboarding_employee_id = models.ForeignKey(
     #     OffboardingEmployee, on_delete=models.CASCADE
     # )

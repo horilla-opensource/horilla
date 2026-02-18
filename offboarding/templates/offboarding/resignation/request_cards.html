@@ -178,6 +178,7 @@
                         ></ion-icon>
                     </button>
                     {% endif %}
+                    {% if record.status != "rejected" %}
                     <button
                         type="button"
                         onclick="$(this).closest('form').find('input[name=status]').val('rejected');
@@ -191,6 +192,12 @@
                             aria-label="close"
                         ></ion-icon>
                     </button>
+                    {% else %}
+                    <button type="button" class="oh-btn oh-btn--danger oh-btn--disabled oh-btn--block w-100">
+                        <ion-icon name="close-circle-outline" class="mr-1 md hydrated" role="img"
+                            aria-label="close"></ion-icon>
+                    </button>
+                    {% endif %}
                     <input type="hidden" name="status" />
                     <input type="hidden" name="letter_ids" value="{{record.id}}" />
                     <input type="hidden" name="offboarding_id" />

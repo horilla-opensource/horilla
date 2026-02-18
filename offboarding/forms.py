@@ -347,11 +347,19 @@ class ResignationReasonForm(ModelForm):
         model = ExitReason
         fields = "__all__"
         exclude = ["is_active"]
+        widgets = {
+            "description": forms.Textarea(attrs={"class": "oh-input w-100", "rows": 7, "cols": 120, "style": "width: 100%"}),
+        }
 
     def as_p(self):
         """
         Render the form fields as HTML table rows with Bootstrap styling.
         """
+        #context = {"form": self}
+        #table_html = render_to_string("common_form.html", context)
+        #return table_html
+        from django.utils.safestring import mark_safe
+        from django.template.loader import render_to_string
         context = {"form": self}
         table_html = render_to_string("common_form.html", context)
-        return table_html
+        return mark_safe(table_html)

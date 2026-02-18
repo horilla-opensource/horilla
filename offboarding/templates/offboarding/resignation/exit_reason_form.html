@@ -1,10 +1,11 @@
 {% load i18n %}
 
 <div class="oh-modal__dialog-body">
-    <form hx-post="{% url 'create-resignation-reason' %}" hx-target="#resignationReasonModalBody">
+    <form
+        hx-post="{% if form.instance.pk %}{% url 'edit-resignation-reason' form.instance.pk %}{% else %}{% url 'create-resignation-reason' %}{% endif %}"
+        hx-target="#resignationReasonModalBody">
     {% csrf_token %}
     {{ form.as_p }}
-
-</form>
+    </form>
 
 </div>

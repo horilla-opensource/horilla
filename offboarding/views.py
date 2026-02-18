@@ -853,7 +853,6 @@ def request_view(request):
     """
     This method is used to view the resignation request
     """
-    defatul_filter = {"status": "requested"}
     filter_instance = LetterFilter()
     letters = ResignationLetter.objects.all()
     offboardings = Offboarding.objects.all()
@@ -864,7 +863,7 @@ def request_view(request):
         {
             "letters": paginator_qry(letters, request.GET.get("page")),
             "f": filter_instance,
-            "filter_dict": {"status": ["Requested"]},
+            "filter_dict": {},
             "offboardings": offboardings,
             "gp_fields": LetterReGroup.fields,
         },
@@ -1097,6 +1096,8 @@ def update_status(request):
     # if use update method instead of save then save method will not trigger
     if status in ["approved", "rejected"]:
         for letter in letters:
+            if letter.status == status:
+                continue
             letter.status = status
             letter.save()
             if status == "approved":
@@ -1487,4 +1488,24 @@ def create_common_task(request):
         form = TaskForm()
 
     return render(request, "offboarding/task/common_task_form.html", {"form": form})
+
+@login_required
+def edit_resignation_reason(request, id):
+    instance = get_object_or_404(ExitReason, id=id)
+    form = ResignationReasonForm(instance=instance)
+    if request.method == "POST":
+        form = ResignationReasonForm(request.POST, request.FILES, instance=instance)
+        if form.is_valid():
+            form.save()
+            messages.success(request, _("Exit reason updated successfully"))
+            return HttpResponse("<script>window.location.reload()</script>")
+    return render(request, "offboarding/resignation/exit_reason_form.html", {"form": form})
+
+
+@login_required
+def delete_resignation_reason(request, id):
+    instance = get_object_or_404(ExitReason, id=id)
+    instance.delete()
+    messages.success(request, _("Exit reason deleted successfully"))
+    return redirect("resignation-reason-view")
 
