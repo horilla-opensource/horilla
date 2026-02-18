@@ -457,7 +457,7 @@ class UserLeaveRequestForm(BaseModelForm):
             lt = LeaveType.objects.filter(id=selected_leave_type_id).only("id", "require_attachment").first()
             val = getattr(lt, "require_attachment", False) if lt else False
 
-            is_required = (val is True) or (str(val).strip().lower() in ("yes", "true", "1"))
+            is_required = (str(val).strip().lower() in ("yes", "true", "1"))
 
         self.fields["attachment"].required = is_required
 
