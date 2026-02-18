@@ -129,7 +129,12 @@
     <tbody>
     {% for leave in leaves %}
         <tr>
-            <td style="width: 110px">{{ leave.employee_id.get_full_name }}</td>
+            <td style="width: 110px">
+                {{ leave.employee_id.get_full_name }}
+                {% if leave.employee_id.badge_id %}
+                    ({{ leave.employee_id.badge_id }})
+                {% endif %}
+            </td>
             <td style="width: 110px">{{ leave.employee_id.get_department }}</td>
             <td style="width: 110px">{{ leave.leave_type_id.name }}</td>
             <td style="width: 170px">{{ leave.description|default:"" }}</td>
