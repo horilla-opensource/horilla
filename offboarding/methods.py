@@ -59,13 +59,26 @@ def compute_resignation_balance(employee, last_working_date, notice_end_date):
 
                 off_emp = OffboardingEmployee.objects.filter(employee_id=employee).first()
                 if off_emp:
-                    emp_task, created = EmployeeTask.objects.get_or_create(
+                    #check for exisiting task assigned
+                    existing_emp_task = EmployeeTask.objects.filter(
                         employee_id=off_emp,
-                        task_id=deduction_task,
-                        defaults={
-                            "status": "todo",
-                            "description": f"Salary deduction of {amount_for_fine:.2f} due to early resignation.",
-                        },
+                        task_id__is_fine=True
+                    ).first()
+
+                    description = f"Salary deduction of {amount_for_fine:.2f} due to early resignation."
+
+                    if existing_emp_task:
+                        #update existing task
+                        existing_emp_task.task_id = deduction_task
+                        existing_emp_task.description = description
+                        existing_emp_task.save()
+                    else:
+                        #new task assignment
+                        EmployeeTask.objects.create(
+                            employee_id=off_emp,
+                            task_id=deduction_task,
+                            status="todo",
+                            description=description,
                     )
         except Exception as e:
                 logger.error("Error creating deduction task: %s", e)
