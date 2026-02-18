@@ -447,7 +447,6 @@ class UserLeaveRequestForm(BaseModelForm):
 
         if self.is_bound:
             selected_leave_type_id = self.data.get("leave_type_id")
-            print("Selected Leave Type ID from form data:", selected_leave_type_id)
         elif getattr(self.instance, "pk", None):
             selected_leave_type_id = getattr(self.instance, "leave_type_id_id", None)
         elif leave_type and leave_type.get("leave_type_id"):
