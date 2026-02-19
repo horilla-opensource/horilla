@@ -798,6 +798,15 @@ class EmployeeBankDetails(HorillaModel):
         verbose_name="Account Number",
     )
     branch = models.CharField(max_length=50, null=True ,blank=False , default="None")
+    swift_code = models.CharField(max_length=50, null=True, blank=True, verbose_name=_("SWIFT Code"))
+    currency_type = models.CharField(
+        max_length=3,
+        choices=EmployeeWorkInformation.CURRENCY_CHOICES,
+        default="LKR",
+        verbose_name=_("Currency Type"),
+        null=True,
+        blank=True,
+    )
     address = models.TextField(max_length=255, null=True)
     country = models.CharField(max_length=50, blank=True, null=True)
     state = models.CharField(max_length=50, blank=True)

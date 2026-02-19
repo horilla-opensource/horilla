@@ -17,3 +17,6 @@ with open(csv_path, newline='', encoding='cp1252') as csvfile:
         BANK_BRANCH_DATA[bank]["bank_code"] = bank_code
         BANK_BRANCH_DATA[bank]["branches"][branch] = branch_code
 
+#sort banks alphabetically
+for bank in BANK_BRANCH_DATA:
+    BANK_BRANCH_DATA[bank]["branches"] = dict(sorted(BANK_BRANCH_DATA[bank]["branches"].items()))
