@@ -228,6 +228,6 @@ def candidate_login_required(view_func):
                     return render(request, "went_wrong.html", status=404)
                 raise e
             return func
-        return redirect("candidate-login")
+        return redirect("candidate-login/")
 
     return _wrapped_view
