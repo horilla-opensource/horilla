@@ -37,7 +37,7 @@ class OffboardingForm(ModelForm):
     class Meta:
         model = Offboarding
         fields = "__all__"
-        exclude = ["is_active", "status"]
+        exclude = ["is_active"]
 
     def as_p(self):
         """
