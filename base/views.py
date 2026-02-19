@@ -587,7 +587,7 @@ def login_user(request):
                 messages.warning(request, _("Access Denied: Your account is blocked."))
             else:
                 messages.error(request, _("Invalid username or password."))
-            return redirect("login")
+            return redirect("login/")
 
         employee = getattr(user, "employee_get", None)
         if employee is None:
@@ -595,7 +595,7 @@ def login_user(request):
                 request,
                 _("An employee related to this user's credentials does not exist."),
             )
-            return redirect("login")
+            return redirect("login/")
         if not employee.is_active:
             messages.warning(
                 request,
@@ -603,7 +603,7 @@ def login_user(request):
                     "This user is archived. Please contact the manager for more information."
                 ),
             )
-            return redirect("login")
+            return redirect("login/")
 
         login(request, user)
 
@@ -909,7 +909,7 @@ def logout_user(request):
         <script>
             localStorage.clear();
         </script>
-        <meta http-equiv="refresh" content="0;url=/login">
+        <meta http-equiv="refresh" content="0;url=/login/">
     """
 
     return response
@@ -7786,7 +7786,7 @@ def protected_media(request, path):
                 request,
                 "You must be logged in or provide a valid token to access this file.",
             )
-            return redirect("login")
+            return redirect("login/")
 
     # Allow logo to be served publicly
     return FileResponse(open(media_path, "rb"))
