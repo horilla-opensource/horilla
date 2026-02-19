@@ -639,6 +639,8 @@ class EmployeeBankDetailsForm(ModelForm):
             "account_number",
             "bank_name",
             "branch",
+            "swift_code",
+            "currency_type",
             "any_other_code1",
             "any_other_code2",
         )
@@ -741,6 +743,8 @@ excel_columns = [
     ("employee_bank_details__account_number", trans("Account Number")),
     ("employee_bank_details__any_other_code1", trans("Bank Code #1")),
     ("employee_bank_details__any_other_code2", trans("Bank Code #2")),
+    ("employee_bank_details__swift_code", trans("SWIFT Code")),
+    ("employee_bank_details__currency_type", trans("Currency Type")),
     ("employee_bank_details__country", trans("Bank Country")),
     ("employee_bank_details__state", trans("Bank State")),
     ("employee_bank_details__city", trans("Bank City")),

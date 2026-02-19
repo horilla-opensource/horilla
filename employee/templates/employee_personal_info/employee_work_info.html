@@ -2,7 +2,7 @@
 {% load i18n %}
 <div>
     <div class="card rounded-3">
-        <form  enctype="multipart/form-data">
+        <form enctype="multipart/form-data">
         <div class="card-body pl-5 pr-5 pb-5 pt-5">
           <h3 class="mb-4">{{form.instance.employee_first_name}}'s {% trans "Work Info" %}</h3>
           <div class="row">
@@ -77,25 +77,17 @@
             </div>
             {% if perms.employee.change_employeeworkinformation %}
             {% if form.instance.employee_work_info %}
-                <button
-                hx-post="{% url 'employee-work-info-view-update' work_form.instance.id  %}"
-                hx-target = '#section'
-                hx-encoding = 'multipart/form-data'
-                class="btn btn-success btn-lg ml-auto mr-auto"
-                >
-                {% trans "Submit" %}
+                <button hx-post="{% url 'employee-work-info-view-update' work_form.instance.id  %}" hx-target='#section'
+                    hx-encoding='multipart/form-data' class="btn btn-success btn-lg ml-auto mr-auto">
+                    {% trans "Submit" %}
                 </button>
-            {% else %}
-            <button
-            hx-post="{% url 'employee-work-info-view-create' form.instance.id  %}"
-            hx-target = '#section'
-            hx-encoding = 'multipart/form-data'
-            class="btn btn-success btn-lg ml-auto mr-auto"
-            >
-            {% trans "Submit" %}
-            </button>
-            {% endif %}
-            {% endif %}
+                {% else %}
+                <button hx-post="{% url 'employee-work-info-view-create' form.instance.id  %}" hx-target='#section'
+                    hx-encoding='multipart/form-data' class="btn btn-success btn-lg ml-auto mr-auto">
+                    {% trans "Submit" %}
+                </button>
+                {% endif %}
+                {% endif %}
           </div>
           <div>
         </div>
@@ -104,7 +96,7 @@
     </div>
 
     <div class="card rounded-3 mt-4">
-        <form  enctype="multipart/form-data">
+        <form enctype="multipart/form-data">
             <div class="card-body pl-5 pr-5 pb-5 pt-5">
               <h3 class="mb-4">{{form.instance.employee_first_name}}'s {% trans "Bank Info" %}</h3>
               <div class="row">
@@ -123,6 +115,16 @@
                     <div class="col-md-6 mb-2">
                     {{bank_form.any_other_code1.errors}}
                     <div class="form-outline mb-4">{{bank_form.any_other_code1}}</div>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-md-6 mb-2">
+                        {{bank_form.swift_code.errors}}
+                        <div class="form-outline mb-4">{{bank_form.swift_code}}</div>
+                    </div>
+                    <div class="col-md-6 mb-2">
+                        {{bank_form.currency_type.errors}}
+                        <div class="form-outline mb-4">{{bank_form.currency_type}}</div>
                     </div>
                 </div>
                 <div class="mb-4">
@@ -152,22 +154,14 @@
                 </div>
                 {% if perms.employee.change_employeebankdetails %}
                 {% if form.instance.employee_bank_details %}
-                    <button
-                    hx-post="{% url 'employee-bank-details-view-update' bank_form.instance.id  %}"
-                    hx-target = '#section'
-                    hx-encoding = 'multipart/form-data'
-                    class="btn btn-success btn-lg ml-auto mr-auto"
-                    >
-                    {% trans "Submit" %}
-                    </button>
+                <button hx-post="{% url 'employee-bank-details-view-update' bank_form.instance.id  %}" hx-target='#section'
+                        hx-encoding='multipart/form-data' class="btn btn-success btn-lg ml-auto mr-auto">
+                        {% trans "Submit" %}
+                </button>
                 {% else %}
-                <button
-                hx-post="{% url 'employee-bank-details-view-create' form.instance.id  %}"
-                hx-target = '#section'
-                hx-encoding = 'multipart/form-data'
-                class="btn btn-success btn-lg ml-auto mr-auto"
-                >
-                {% trans "Submit" %}
+                <button hx-post="{% url 'employee-bank-details-view-create' form.instance.id  %}" hx-target='#section'
+                    hx-encoding='multipart/form-data' class="btn btn-success btn-lg ml-auto mr-auto">
+                    {% trans "Submit" %}
                 </button>
                 {% endif %}
                 {% endif %}
