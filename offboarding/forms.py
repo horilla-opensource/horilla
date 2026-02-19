@@ -10,6 +10,7 @@ from typing import Any
 from django import forms
 from django.contrib import messages
 from django.template.loader import render_to_string
+from datetime import date
 
 from base.forms import ModelForm
 from employee.forms import MultipleFileField
@@ -302,6 +303,17 @@ class ResignationLetterForm(ModelForm):
         exclude = list(set(exclude))
         for field in exclude:
             del self.fields[field]
+
+    def clean_planned_to_leave_on(self):
+        """
+        Validate planned_to_leave_on date
+        """
+        planned_date = self.cleaned_data.get("planned_to_leave_on")
+        request = getattr(horilla_middlewares._thread_locals, "request", None)
+        if planned_date and planned_date < date.today():
+             if request and not request.user.has_perm("offboarding.add_offboardingemployee"):
+                  raise forms.ValidationError("Planned Resignation Date cannot be a past date.")
+        return planned_date
 
     def save(self, commit: bool = ...) -> Any:
         request = getattr(horilla_middlewares._thread_locals, "request", None)
