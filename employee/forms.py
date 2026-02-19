@@ -217,7 +217,17 @@ class EmployeeForm(ModelForm):
         query = Employee.objects.entire().filter(email=email)
         children = self.cleaned_data.get("children")
         experience = self.cleaned_data.get("experience")
+        if "badge_id" in self.fields:
+            badge_id = (self.cleaned_data.get("badge_id") or "").strip()
 
+            if not badge_id:
+                self.add_error("badge_id", _("Employee ID is required."))
+            else:
+                qs = Employee.objects.filter(badge_id=badge_id)
+                if self.instance and self.instance.pk:
+                    qs = qs.exclude(pk=self.instance.pk)
+                if qs.exists():
+                    self.add_error("badge_id", _("Employee ID already exists."))
 
         if dob is not None and dob >= date.today():
             self.add_error("dob", _("Date cannot be in the future."))
