@@ -1,77 +1,78 @@
 {% load i18n %}{% load horillafilters %} {% if messages %}{% load widget_tweaks %}
-<div class="oh-wrapper">
-    {% for message in messages %}
-    <div class="oh-alert-container">
-        <div class="oh-alert oh-alert--animated {{message.tags}}">
-            {{ message }}
-        </div>
+    <div class="oh-wrapper">
+        {% for message in messages %}
+            <div class="oh-alert-container">
+                <div class="oh-alert oh-alert--animated {{ message.tags }}">
+                    {{ message }}
+                </div>
+            </div>
+        {% endfor %}
+        <script>
+            setTimeout(function () {
+                $(".oh-modal__close").click();
+            }, 1000);
+        </script>
     </div>
-    {% endfor %}
-    <script>
-        setTimeout(function () {
-            $(".oh-modal__close").click();
-        }, 1000);
-    </script>
-</div>
 {% endif %}
 <div class="oh-modal__dialog-header">
     <span class="oh-modal__dialog-title"
-        >{% trans "Leave Request Update" %}</span
+    >{% trans "Leave Request Update" %}</span
     >
     <button
-        class="oh-modal__close"
-        aria-label="Close"
-        {%
-        if
-        messages
-        %}
-        hx-get="{% url 'user-request-filter' %}?{{pd}}"
-        hx-target="#userRequest"
-        {%
-        endif
-        %}
+            class="oh-modal__close"
+            aria-label="Close"
+            {%
+            if
+            messages
+            %}
+            hx-get="{% url 'user-request-filter' %}?{{ pd }}"
+            hx-target="#userRequest"
+            {%
+            endif
+            %}
     >
         <ion-icon name="close-outline"></ion-icon>
     </button>
 </div>
 <div class="oh-modal__dialog-body">
     <form
-        hx-post="{% url 'user-request-update' id %}?{{pd}}"
-        hx-encoding="multipart/form-data"
-        hx-target="#objectUpdateModalTarget"
-        id="userLeaveForm"
+            hx-post="{% url 'user-request-update' id %}?{{ pd }}"
+            hx-encoding="multipart/form-data"
+            hx-target="#objectUpdateModalTarget"
+            id="userLeaveForm"
     >
-{% if form.non_field_errors %}
-   <div class="col-12">{{ form.non_field_errors }}</div>
-{% endif %}
-    <div class="row">
-        {% for field in form.visible_fields %}
-             {% if field.name != "description" and field.name != "attachment" %}
-                <div class="col-12 col-md-6">
-                    <div class="form-group oh-form-group">
-                        <label class="oh-label {% if field.field.required %}required-star{% endif %}">
-                            {{ field.label }}
-                        </label>
+        {% if form.non_field_errors %}
+            <div class="col-12">{{ form.non_field_errors }}</div>
+        {% endif %}
+        <div class="row">
+            {% for field in form.visible_fields %}
+                {% if field.name != "description" and field.name != "attachment" %}
+                    <div class="col-12 col-md-6">
+                        <div class="form-group oh-form-group">
+                            <label class="oh-label {% if field.field.required %}required-star{% endif %}">
+                                {{ field.label }}
+                            </label>
 
-                        {{ field|add_class:"form-control oh-input w-100" }}
+                            {{ field|add_class:"form-control oh-input w-100" }}
 
-                        {% if field.errors %}
-                            <div class="text-danger text-sm mt-1">
-                                {{ field.errors }}
-                            </div>
-                        {% endif %}
+                            {% if field.errors %}
+                                <div class="text-danger text-sm mt-1">
+                                    {{ field.errors }}
+                                </div>
+                            {% endif %}
+                        </div>
                     </div>
-                </div>
-            {% endif %}
-        {% endfor %}
-    </div>
-     <div class="row" style="margin-top: 10px;">
+                {% endif %}
+            {% endfor %}
+        </div>
+        <div class="row" style="margin-top: 10px;">
             <div class="col-12">
                 <div id="attachmentLabelWrapper">
                     <label class="oh-label {% if form.attachment.field.required %}required-star{% endif %}">
                         {{ form.attachment.label }}
                     </label>
                 </div>
+
 
                 {{ form.attachment|add_class:"form-control oh-input w-100" }}
 
@@ -83,40 +84,40 @@
 
             </div>
         </div>
-    <div class="row">
-        <div class="col-12">
-            <div class="form-group oh-form-group">
-                <label class="oh-label required-star">
-                    {{ form.description.label }}
-                </label>
+        <div class="row">
+            <div class="col-12">
+                <div class="form-group oh-form-group">
+                    <label class="oh-label required-star">
+                        {{ form.description.label }}
+                    </label>
 
-                {{ form.description|add_class:"form-control oh-input w-100" }}
+                    {{ form.description|add_class:"form-control oh-input w-100" }}
 
-                <small class="text-muted d-block mt-1" id="descriptionCounter">
-                    0 / 255 characters
-                </small>
+                    <small class="text-muted d-block mt-1" id="descriptionCounter">
+                        0 / 255 characters
+                    </small>
 
-                {% if form.description.errors %}
-                    <div class="text-danger text-sm mt-1">
-                        {{ form.description.errors }}
-                    </div>
-                {% endif %}
+                    {% if form.description.errors %}
+                        <div class="text-danger text-sm mt-1">
+                            {{ form.description.errors }}
+                        </div>
+                    {% endif %}
+                </div>
             </div>
         </div>
-    </div>
 
-    {% for field in form.hidden_fields %}
-        {{ field }}
-    {% endfor %}
+        {% for field in form.hidden_fields %}
+            {{ field }}
+        {% endfor %}
 
-    <div class="d-flex flex-row-reverse mt-3">
-        <button type="submit"
-                class="oh-btn oh-btn--secondary pl-4 pr-5 oh-btn--w-100-resp">
-            {% trans "Save" %}
-        </button>
-    </div>
+        <div class="d-flex flex-row-reverse mt-3">
+            <button type="submit"
+                    class="oh-btn oh-btn--secondary pl-4 pr-5 oh-btn--w-100-resp">
+                {% trans "Save" %}
+            </button>
+        </div>
 
-</form>
+    </form>
 </div>
 
 {#{% if "recruitment"|app_installed %}#}
@@ -185,31 +186,31 @@
 {#    </script>#}
 {#{% endif %}#}
 <script>
-document.body.addEventListener("htmx:afterSwap", function (event) {
-    if (!event.target.closest("#objectUpdateModalTarget")) return;
+    document.body.addEventListener("htmx:afterSwap", function (event) {
+        if (!event.target.closest("#objectUpdateModalTarget")) return;
 
-    const textarea = document.querySelector("#id_description");
-    const counter = document.querySelector("#descriptionCounter");
+        const textarea = document.querySelector("#id_description");
+        const counter = document.querySelector("#descriptionCounter");
 
-    if (!textarea || !counter) return;
+        if (!textarea || !counter) return;
 
-    const maxLength = 255;
+        const maxLength = 255;
 
-    function updateCounter() {
-        const length = textarea.value.length;
-        counter.textContent = `${length} / ${maxLength} characters`;
+        function updateCounter() {
+            const length = textarea.value.length;
+            counter.textContent = `${length} / ${maxLength} characters`;
 
-        if (length >= maxLength) {
-            counter.style.color = "red";
-        } else if (length >= maxLength - 20) {
-            counter.style.color = "orange";
-        } else {
-            counter.style.color = "#6b7280";
+            if (length >= maxLength) {
+                counter.style.color = "red";
+            } else if (length >= maxLength - 20) {
+                counter.style.color = "orange";
+            } else {
+                counter.style.color = "#6b7280";
+            }
         }
-    }
 
-    textarea.removeEventListener("input", updateCounter);
-    textarea.addEventListener("input", updateCounter);
-    updateCounter();
-});
+        textarea.removeEventListener("input", updateCounter);
+        textarea.addEventListener("input", updateCounter);
+        updateCounter();
+    });
 </script>
