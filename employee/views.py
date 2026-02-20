@@ -271,6 +271,7 @@ def self_info_update(request):
                 messages.error(request, _("Profile update failed. Please fix the errors below."))
 
         elif request.POST.get("form_type") == "bank" or request.POST.get("any_other_code1") is not None:
+            bank_instance = EmployeeBankDetails.objects.filter(employee_id=employee).first()
             bank_form = EmployeeBankDetailsForm(request.POST, request.FILES, instance=bank_instance)
 
             if bank_form.is_valid():
