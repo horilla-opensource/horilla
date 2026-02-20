@@ -106,7 +106,7 @@ We welcome contributions! Please see our [Contributing Guide](CONTRIBUTING.md) f
 
 ```bash
 # Fork and clone your fork
-git clone -b release/v2.0.0-beta https://github.com/YOUR_USERNAME/horilla.git
+git clone -b dev/v2.0 https://github.com/YOUR_USERNAME/horilla.git
 cd horilla
 
 # Add upstream remote
