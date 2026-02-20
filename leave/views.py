@@ -3987,6 +3987,15 @@ def employee_available_leave_count(request):
 
     available_days_for_request = total_leave_days - pending_requests_days
 
+    if hx_target == "attachmentLabelWrapper":
+        print("attachmentLabelWrapper")
+        return render(
+            request,
+            "leave/leave_request/attachment_label_wrapper.html",
+            {"require_attachment": require_attachment},
+        )
+
+
     context = {
         "hx_target": hx_target,
         "leave_type_id": leave_type_id,
@@ -4000,6 +4009,7 @@ def employee_available_leave_count(request):
     return render(
         request, "leave/leave_request/employee_available_leave_count.html", context
     )
+
 
 
 @login_required
