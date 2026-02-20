@@ -461,6 +461,14 @@ class UserLeaveRequestForm(BaseModelForm):
 
         self.fields["attachment"].required = is_required
 
+        if getattr(self.instance, "pk", None):
+            self.fields["leave_type_id"].widget.attrs.update({
+                "hx-include": "#userLeaveForm",
+                "hx-trigger": "change",  # only when selecting leave type
+                "hx-get": "/leave/employee-available-leave-count",
+                "hx-target": "#attachmentLabelWrapper",
+                "hx-swap": "outerHTML",
+            })
 
     def as_p(self, *args, **kwargs):
         """
