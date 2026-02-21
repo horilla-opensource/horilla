@@ -532,9 +532,11 @@ def stage_component(request, view: str = "list"):
     """
     recruitment_id = request.GET["rec_id"]
     recruitment = Recruitment.objects.get(id=recruitment_id)
-    ordered_stages = CACHE.get(request.session.session_key + "pipeline")[
-        "stages"
-    ].filter(recruitment_id__id=recruitment_id)
+    pipeline_cache = CACHE.get(request.session.session_key + "pipeline")
+    # 1060
+    if not pipeline_cache:
+        return HttpResponse(headers={"HX-Refresh": "true"})
+    ordered_stages = pipeline_cache["stages"].filter(recruitment_id__id=recruitment_id)
     template = "pipeline/components/stages_tab_content.html"
     if view == "card":
         template = "pipeline/kanban_components/kanban_stage_components.html"
@@ -544,9 +546,7 @@ def stage_component(request, view: str = "list"):
         {
             "rec": recruitment,
             "ordered_stages": ordered_stages,
-            "filter_dict": CACHE.get(request.session.session_key + "pipeline")[
-                "filter_dict"
-            ],
+            "filter_dict": pipeline_cache["filter_dict"],
         },
     )
 
@@ -620,20 +620,15 @@ def candidate_component(request):
     Candidate component
     """
     stage_id = request.GET.get("stage_id")
-    stage = (
-        CACHE.get(request.session.session_key + "pipeline")["stages"]
-        .filter(id=stage_id)
-        .first()
-    )
-    candidates = CACHE.get(request.session.session_key + "pipeline")[
-        "candidates"
-    ].filter(stage_id=stage)
+    pipeline_cache = CACHE.get(request.session.session_key + "pipeline")
+    # 1060
+    if not pipeline_cache:
+        return HttpResponse(headers={"HX-Refresh": "true"})
+    stage = pipeline_cache["stages"].filter(id=stage_id).first()
+    candidates = pipeline_cache["candidates"].filter(stage_id=stage)
 
     template = "pipeline/components/candidate_stage_component.html"
-    if (
-        CACHE.get(request.session.session_key + "pipeline")["filter_query"].get("view")
-        == "card"
-    ):
+    if pipeline_cache["filter_query"].get("view") == "card":
         template = "pipeline/kanban_components/candidate_kanban_components.html"
 
     now = timezone.now()
