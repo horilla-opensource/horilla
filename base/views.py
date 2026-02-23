@@ -40,6 +40,7 @@ from django.shortcuts import get_object_or_404, redirect, render
 from django.template.loader import render_to_string
 from django.urls import reverse, reverse_lazy
 from django.utils import timezone
+from django.utils._os import safe_join
 from django.utils.decorators import method_decorator
 from django.utils.html import strip_tags
 from django.utils.http import url_has_allowed_host_and_scheme
@@ -7739,32 +7740,34 @@ def is_jwt_token_valid(auth_header):
 
 def protected_media(request, path):
     public_pages = [
-        "/login/",
-        "/forgot-password/",
-        "/change-username/",
-        "/change-password/",
-        "/employee-reset-password/",
-        "/recruitment/candidate-survey/",
-        "/recruitment/open-recruitments/",
-        "/recruitment/candidate-self-status-tracking/",
+        "/login",
+        "/forgot-password",
+        "/change-username",
+        "/change-password",
+        "/employee-reset-password",
+        "/recruitment/candidate-survey",
+        "/recruitment/open-recruitments",
+        "/recruitment/candidate-self-status-tracking",
     ]
 
-    # EXACT folder where company logos exist
-    exempted_folders = [
-        "base/company/icon/",
-    ]
+    exempted_folders = ["base/icon/"]
 
-    media_path = os.path.join(settings.MEDIA_ROOT, path)
+    # Prevent path traversal
+    try:
+        media_path = safe_join(settings.MEDIA_ROOT, path)
+    except Exception:
+        # safe_join raises ValueError if traversal detected
+        raise Http404("Invalid file path")
 
-    if not os.path.exists(media_path):
+    if not os.path.exists(media_path) or not os.path.isfile(media_path):
         raise Http404("File not found")
 
     referer_path = urlparse(request.META.get("HTTP_REFERER", "")).path
 
-    # JWT support (your existing logic)
+    # Try Bearer token auth
     jwt_user = is_jwt_token_valid(request.META.get("HTTP_AUTHORIZATION", ""))
 
-    # Access control
+    # Access control logic
     if referer_path not in public_pages and not any(
         path.startswith(folder) for folder in exempted_folders
     ):
@@ -7775,5 +7778,4 @@ def protected_media(request, path):
             )
             return redirect("login")
 
-    # Allow logo to be served publicly
     return FileResponse(open(media_path, "rb"))
