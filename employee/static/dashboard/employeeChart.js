@@ -116,6 +116,8 @@ $(document).ready(function () {
             const ctx = document.getElementById("totalEmployees")?.getContext("2d");
             if (!ctx) return;
 
+            const { tickColor } = ChartTheme.getColors();
+
             const values = dataSet[0].data;
             const colors = [
                 "#34d399", // Active - green
@@ -163,10 +165,12 @@ $(document).ready(function () {
                     },
                 },
                 plugins: [
+
                     {
                         id: "centerText",
                         afterDraw(chart) {
                             const { width, height, ctx } = chart;
+                            const { tickColor } = ChartTheme.getColors();
                             ctx.save();
 
                             const total = chart.data.datasets[0].data.reduce(
@@ -175,13 +179,13 @@ $(document).ready(function () {
                             );
 
                             ctx.font = "bold 22px sans-serif";
-                            ctx.fillStyle = "#374151";
+                            ctx.fillStyle = tickColor;
                             ctx.textAlign = "center";
                             ctx.textBaseline = "middle";
                             ctx.fillText(total, width / 2, height / 2 - 5);
 
                             ctx.font = "15px sans-serif";
-                            ctx.fillStyle = "#9ca3af";
+                            ctx.fillStyle = tickColor;
                             ctx.fillText("Total", width / 2, height / 2 + 20);
 
                             ctx.restore();
@@ -234,6 +238,8 @@ $(document).ready(function () {
                     employeeChartInstance.update();
                 });
             });
+            window["employeeChartInstance"] = employeeChartInstance
+            ChartTheme.observe("employeeChartInstance")
         });
     }
 
@@ -243,6 +249,7 @@ $(document).ready(function () {
 
         if (document.getElementById("genderChart")) {
             const ctx = document.getElementById("genderChart").getContext("2d");
+            const { tickColor } = ChartTheme.getColors();
 
             // Override dataset background colors with new design colors
             const updatedDataSet = dataSet.map((ds) => ({
@@ -280,7 +287,7 @@ $(document).ready(function () {
                                 font: {
                                     size: 12,
                                 },
-                                color: "#000",
+                                color: tickColor,
                             },
                         },
                         tooltip: {
@@ -322,6 +329,8 @@ $(document).ready(function () {
                     },
                 ],
             });
+
+            ChartTheme.observe("genderChart");
         }
     }
 
@@ -329,6 +338,7 @@ $(document).ready(function () {
         $(document).ready(function () {
             const ctx = $("#departmentChart")[0]?.getContext("2d");
             if (!ctx) return;
+            const { tickColor } = ChartTheme.getColors();
 
             const values = dataSet[0].data;
             const colors = [
@@ -383,6 +393,7 @@ $(document).ready(function () {
                         id: "centerText",
                         afterDraw(chart) {
                             const { width, height, ctx } = chart;
+                            const { tickColor } = ChartTheme.getColors();
                             ctx.save();
 
                             const total = chart.data.datasets[0].data.reduce(
@@ -391,13 +402,13 @@ $(document).ready(function () {
                             );
 
                             ctx.font = "bold 22px sans-serif";
-                            ctx.fillStyle = "#374151";
+                            ctx.fillStyle = tickColor;
                             ctx.textAlign = "center";
                             ctx.textBaseline = "middle";
                             ctx.fillText(total, width / 2, height / 2 - 5);
 
                             ctx.font = "15px sans-serif";
-                            ctx.fillStyle = "#9ca3af";
+                            ctx.fillStyle = tickColor;
                             ctx.fillText("Total", width / 2, height / 2 + 20);
 
                             ctx.restore();
@@ -450,6 +461,9 @@ $(document).ready(function () {
                     departmentChartInstance.update();
                 });
             });
+
+            window["departmentChartInstance"] = departmentChartInstance
+            ChartTheme.observe("departmentChartInstance")
         });
     }
 
