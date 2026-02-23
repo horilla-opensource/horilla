@@ -38,6 +38,7 @@ from django.shortcuts import get_object_or_404, redirect, render
 from django.template.loader import render_to_string
 from django.urls import reverse, reverse_lazy
 from django.utils import timezone
+from django.utils._os import safe_join
 from django.utils.html import strip_tags
 from django.utils.http import url_has_allowed_host_and_scheme
 from django.utils.translation import gettext as _
@@ -7553,10 +7554,17 @@ def protected_media(request, path):
         "/recruitment/open-recruitments",
         "/recruitment/candidate-self-status-tracking",
     ]
+
     exempted_folders = ["base/icon/"]
 
-    media_path = os.path.join(settings.MEDIA_ROOT, path)
-    if not os.path.exists(media_path):
+    # Prevent path traversal
+    try:
+        media_path = safe_join(settings.MEDIA_ROOT, path)
+    except Exception:
+        # safe_join raises ValueError if traversal detected
+        raise Http404("Invalid file path")
+
+    if not os.path.exists(media_path) or not os.path.isfile(media_path):
         raise Http404("File not found")
 
     referer_path = urlparse(request.META.get("HTTP_REFERER", "")).path
@@ -7566,7 +7574,7 @@ def protected_media(request, path):
 
     # Access control logic
     if referer_path not in public_pages and not any(
-        path.startswith(f) for f in exempted_folders
+        path.startswith(folder) for folder in exempted_folders
     ):
         if not request.user.is_authenticated and not jwt_user:
             messages.error(
