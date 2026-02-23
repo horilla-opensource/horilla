@@ -5,6 +5,7 @@ $(document).ready(function () {
     const ctx = document.getElementById("overAllLeave")?.getContext("2d");
     if (!ctx) return;
 
+    const { tickColor } = ChartTheme.getColors();
     const dataset = [{
       label: "Leave count",
       data: data,
@@ -49,7 +50,7 @@ $(document).ready(function () {
               font: {
                 size: 12,
               },
-              color: "#000",
+              color: tickColor,
             },
           },
           tooltip: {
@@ -76,6 +77,9 @@ $(document).ready(function () {
         },
       ],
     });
+
+    window["overAllLeaveChart"] = overAllLeaveChart
+    ChartTheme.observe("overAllLeaveChart")
   }
 
   function fetchOverAllLeaveData(overallLeaveType = "today") {
