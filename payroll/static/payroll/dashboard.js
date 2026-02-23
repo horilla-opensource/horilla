@@ -14,6 +14,8 @@ $(document).ready(function () {
     var initialLoad = true;
 
     $("#monthYearField").val(formattedDate);
+    const themedOptions = ChartTheme.getThemedOptions();
+    const { tickColor } = ChartTheme.getColors();
 
     function isChartEmpty(chartData) {
         if (!chartData) {
@@ -30,14 +32,21 @@ $(document).ready(function () {
 
     function employee_chart(dataSet, labels) {
         $("#employee_canvas_body").html('<canvas id="employeeChart"></canvas>');
-
+        const styledDataSets = dataSet.map((dataset, index) => {
+            return {
+                ...dataset,
+                borderRadius: 25,
+                barPercentage: 0.6,
+                categoryPercentage: 0.8
+            };
+        });
         const employeeChart = document
             .getElementById("employeeChart")
             .getContext("2d");
 
         const employeeChartData = {
             labels: labels,
-            datasets: dataSet,
+            datasets: styledDataSets,
         };
 
         window["employeeChart"] = {};
@@ -57,7 +66,9 @@ $(document).ready(function () {
                                 weight: "bold",
                                 size: 16,
                             },
+                            color: tickColor,
                         },
+                        ...themedOptions.scales.x,
                     },
                     y: {
                         stacked: true,
@@ -68,11 +79,19 @@ $(document).ready(function () {
                                 weight: "bold",
                                 size: 16,
                             },
+                            color: tickColor,
                         },
+                        ...themedOptions.scales.y,
                     },
+                },
+                plugins: {
+                    ...themedOptions.plugins,
                 },
             },
         });
+
+        window["employeePayrollChart"] = employeePayrollChart
+        ChartTheme.observe("employeePayrollChart")
 
         $("#employeeChart").on("click", function (event) {
             var activeBars = employeePayrollChart.getElementsAtEventForMode(
@@ -199,7 +218,14 @@ $(document).ready(function () {
             var departmentPayrollChart = new Chart(departmentChart, {
                 type: "pie",
                 data: departmentChartData,
+                options: {
+                    plugins: {
+                        ...themedOptions.plugins,
+                    },
+                }
             });
+            window["departmentPayrollChart"] = departmentPayrollChart
+            ChartTheme.observe("departmentPayrollChart")
 
             $("#departmentChart").on("click", function (event) {
                 var activeBars = departmentPayrollChart.getElementsAtEventForMode(
