@@ -31,8 +31,8 @@
                         <span class="oh-dropdown__import-form-title">{% trans "Upload a File" %}</span>
                         <span class="oh-dropdown__import-form-text">{% trans "Drag and drop files here" %}</span>
                     </label>
-                    <input type="file" name="file"/ required>
-                    <div class="d-inline float-end">
+                    <input type="file" name="file"/ required style="margin-bottom: 0;">
+                    <div class="d-inline float-end mb-2">
                         <a href="{% static 'employee/work_info_import.xlsx' %}"
                             class="oh-dropdown__link"
                             id="workInfoImportButton"
@@ -46,8 +46,8 @@
                       </div>
                 </div>
             </div>
-            <div class="modal-footer d-flex flex-row-reverse">
-                <input type="submit" class="oh-btn oh-btn--small oh-btn--secondary w-100 mt-3"
+            <div class="modal-footer d-flex flex-row-reverse mt-6 w-100">
+                <input type="submit" class="oh-btn oh-btn--small oh-btn--secondary w-100"
                     value="{% trans 'Upload' %}" />
             </div>
         </form>
