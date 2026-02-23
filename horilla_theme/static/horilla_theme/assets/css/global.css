@@ -3,7 +3,9 @@
   opacity: 0;
   visibility: hidden;
   transform: translateY(10px);
-  transition: opacity 0.3s ease, transform 0.3s ease;
+  transition:
+    opacity 0.3s ease,
+    transform 0.3s ease;
 }
 
 /* .dropdown-wrapper {
@@ -95,7 +97,10 @@
   font-size: 0.85rem;
 }
 
-.sideboxmain:hover .sidebox {
+/* Hover no longer shows sidebox — click toggle is used instead */
+
+/* Show sidebox when sideboxmain has sidebox-active class */
+.sideboxmain.sidebox-active .sidebox {
   opacity: 1;
   visibility: visible;
   background: rgb(255 255 255 / 95%);
@@ -119,7 +124,8 @@
   background-color: #e34e38;
 } */
 
-.sideboxmain:hover img {
+/* Apply image filter when sidebox is active */
+.sideboxmain.sidebox-active img {
   filter: brightness(0) invert(1);
 }
 
@@ -1127,15 +1133,15 @@ input[type="checkbox"].custom-checkbox:hover {
 
 ::-webkit-scrollbar-track {
   background-color: #eee;
-  border-radius: 5px
+  border-radius: 5px;
 }
 
 ::-webkit-scrollbar-thumb {
   background-color: #acacac;
   border-radius: 5px;
-  transition: .3s;
+  transition: 0.3s;
 }
 
 ::-webkit-scrollbar-thumb:hover {
-  background-color: #8a8a8a
+  background-color: #8a8a8a;
 }

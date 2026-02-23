@@ -110,7 +110,7 @@
                 hx-get="{% url 'feedback-update' feedback.id %}"
                 hx-target="#genericModalBody"
                 title="{% trans 'Edit' %}">
-                <img src="/static/horilla_theme/assets/img/icons/edit.svg" width="16" alt="edit">
+                <img src="/static/horilla_theme/assets/img/icons/edit.svg" width="16" alt="edit" class="editicon">
             </button>
           {% endif %}
           {% if perms.pms.delete_feedback %}
@@ -128,7 +128,7 @@
                   {% csrf_token %}
                   <button class="w-8 h-8 flex justify-center items-center bg-white border border-primary-500 hover:border-primary-600 rounded-md"
                       title="{% trans 'Delete' %}">
-                      <img src="/static/horilla_theme/assets/img/icons/trash.svg" width="16" alt="delete">
+                      <img src="/static/horilla_theme/assets/img/icons/trash.svg" width="16" alt="delete" class="deleteicon">
                   </button>
               </form>
             {% endif %}

@@ -133,7 +133,7 @@
   padding: 0 1.75rem 1.75rem 1.75rem;
 }
 
-.oh-modal .oh-btn ion-icon{
+.oh-modal .oh-btn ion-icon {
   font-size: 1rem !important;
 }
 
@@ -162,6 +162,7 @@
   border: none;
   background: none;
   font-size: 1.5rem;
+
   position: absolute;
   top: 25px;
   right: 25px;
@@ -1146,7 +1147,7 @@ input[type="file"] {
 }
 
 .oh-btn--secondary {
-  background-color: hsl(8, 77%, 56%);
+  background-color: hsl(8, 77%, 56%) !important;
   color: hsl(0, 0%, 100%);
 }
 
@@ -1410,8 +1411,13 @@ input[type="file"] {
   justify-content: center;
   border-radius: 5px;
 }
+
 table .oh-btn-group {
   margin: 0 5px;
+}
+table .oh-btn-group a {
+  flex: 1 0 auto;
+  width: max-content !important;
 }
 
 .oh-btn-group > * {
@@ -2510,9 +2516,9 @@ ul.errorlist ul.errorlist li {
   border-left: none;
 }
 
-.fixed-table td {
-  max-width: 0; /* This forces cells to respect their width constraints */
-}
+/* .fixed-table td {
+  max-width: 0;
+} */
 
 .oh-permission-table__collapse {
   border: none;
@@ -3842,7 +3848,8 @@ ion-icon {
   font-size: 0.9rem;
 }
 input[type="file"] {
-  border: 1px solid #656565 !important;
+  border: unset !important;
+  padding-bottom: 32px;
 }
 table .oh-input,
 table .oh-select,
@@ -3876,10 +3883,10 @@ a,
   background: white;
   border-radius: 10px;
 }
-.oh-activity-sidebar__header span{
+.oh-activity-sidebar__header span {
   display: flex;
 }
 
-.sha h3{
+.sha h3 {
   text-align: left !important;
 }

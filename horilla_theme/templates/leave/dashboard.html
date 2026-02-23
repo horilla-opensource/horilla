@@ -99,7 +99,7 @@
                         <input type="month" class="mb-2 float-end pointer oh-select" id="dash_month"
                             style="width: 150px; padding: 5px; color: #5e5c5c; border-radius: 4px; border: 1px solid #d1d5db;" />
                     </div>
-                    <div class="w-full max-w-xs mx-auto" style="min-height:345px;">
+                    <div class="w-full mx-auto" style="min-height:345px;">
                         <div class="relative">
                             <canvas id="employeeLeave"></canvas>
                         </div>
@@ -117,11 +117,25 @@
                 </div>
             </div>
             <div class="grid grid-cols-12 gap-4">
+                <!-- Leave Type - Count of leaves -->
+                <div class="xl:col-span-4 md:col-span-4 col-span-12 bg-white p-6 rounded-md shadow-card">
+                    <div class="flex justify-between items-center mb-2">
+                        <h3 class="text-md font-semibold">{% trans "Leave Type - Count of leaves" %}</h3>
+                        <input type="month" class="mb-2 float-end pointer oh-select" id="dash_leave_type_month"
+                            style="width: 150px; padding: 5px; color: #5e5c5c; border-radius: 4px; border: 1px solid #d1d5db;" />
+                    </div>
+                    <div class="w-full max-w-xs mx-auto" style="min-height: 300px;">
+                        <div class="relative h-full" id="leave_type_canvas">
+                            <canvas id="leaveType" class="pointer"></canvas>
+                        </div>
+                        <div id="leaveTypeLegend" class="mt-4 flex justify-center flex-wrap gap-3 text-xs"></div>
+                    </div>
+                </div>
 
                 <!-- Weekly Leave Analytics -->
-                <div class="xl:col-span-6 md:col-span-6 col-span-12 bg-white p-6 rounded-md shadow-card">
+                <div class="xl:col-span-8 md:col-span-8 col-span-12 bg-white p-6 rounded-md shadow-card">
                     <div class="oh-card-dashboard__header oh-card-dashboard__header--divider">
-                        <span class="oh-card-dashboard__title">{% trans "Weekly Leave Analytics" %}</span>
+                        <span class="text-md font-semibold">{% trans "Weekly Leave Analytics" %}</span>
                     </div>
                     <div class="oh-card-dashboard__body">
                         <canvas id="leavePeriod" class="pointer"></canvas>
@@ -140,22 +154,6 @@
                     </div>
                     <div id="departmentPieLegend" class="mt-4 flex justify-center flex-wrap gap-3 text-xs"></div>
                 </div>
-
-                <!-- Leave Type - Count of leaves -->
-                <div class="xl:col-span-8 md:col-span-6 col-span-12 bg-white p-6 rounded-md shadow-card w-[50%]">
-                    <div class="flex justify-between items-center mb-2">
-                        <h3 class="text-md font-semibold">{% trans "Leave Type - Count of leaves" %}</h3>
-                        <input type="month" class="mb-2 float-end pointer oh-select" id="dash_leave_type_month"
-                            style="width: 150px; padding: 5px; color: #5e5c5c; border-radius: 4px; border: 1px solid #d1d5db;" />
-                    </div>
-                    <div class="w-full max-w-xs mx-auto" style="min-height: 300px;">
-                        <div class="relative h-full" id="leave_type_canvas">
-                            <canvas id="leaveType" class="pointer"></canvas>
-                        </div>
-                        <div id="leaveTypeLegend" class="mt-4 flex justify-center flex-wrap gap-3 text-xs"></div>
-                    </div>
-                </div>
-
             </div>
         </div>
 
