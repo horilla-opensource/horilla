@@ -989,7 +989,95 @@ $(document).on("htmx:afterSwap", function () {
         });
     }
 });
+
 function offboardingUpdateStage($element) {
     submitButton = $element.closest("form").find("input[type=submit]")
     submitButton.click()
 }
+
+const ChartTheme = {
+    getColors() {
+        const isDark = document.body?.classList.contains("dark");
+        return {
+            tickColor: isDark ? "#dddddd" : "#374151",
+            gridColor: isDark ? "rgba(255,255,255,0.06)" : "rgba(55,65,81,0.06)",
+        };
+    },
+
+    // Call this when building chart options to get pre-filled scale/plugin options
+    getThemedOptions() {
+        const { tickColor, gridColor } = this.getColors();
+        return {
+            scales: {
+                x: {
+                    ticks: { color: tickColor },
+                    grid: { color: gridColor },
+                },
+                y: {
+                    ticks: { color: tickColor },
+                    grid: { color: gridColor },
+                },
+            },
+            plugins: {
+                legend: { labels: { color: tickColor } },
+            },
+        };
+    },
+
+    applyTheme(chart) {
+        if (!chart?.options) return;
+
+        const { tickColor, gridColor } = this.getColors();
+
+        // ---- Update scales (if exist)
+        if (chart.options.scales) {
+            Object.keys(chart.options.scales).forEach((axis) => {
+                const scale = chart.options.scales[axis];
+
+                // ticks
+                if (scale.ticks) {
+                    scale.ticks.color = tickColor;
+                }
+
+                // grid
+                if (scale.grid) {
+                    scale.grid.color = gridColor;
+                }
+
+                // title (optional)
+                if (scale.title) {
+                    scale.title.color = tickColor;
+                }
+            });
+        }
+
+        // ---- Update legend
+        if (chart.options.plugins?.legend?.labels) {
+            chart.options.plugins.legend.labels.color = tickColor;
+        }
+
+        chart.update('none');
+    },
+
+    // Register a chart instance to auto-update on dark mode toggle
+    // Pass the window key (string) where the chart is stored, e.g. "pendingHoursCanvas"
+    observe(chartWindowKey) {
+
+        if (!window._chartThemeObserver) {
+            window._chartThemeObserver = new MutationObserver(() => {
+                (window._chartThemeRegistry || []).forEach((key) => {
+                    if (window[key]) ChartTheme.applyTheme(window[key]);
+                });
+            });
+            window._chartThemeObserver.observe(document.body, {
+                attributes: true,
+                attributeFilter: ["class"],
+            });
+        }
+
+        window._chartThemeRegistry = window._chartThemeRegistry || [];
+        if (!window._chartThemeRegistry.includes(chartWindowKey)) {
+            window._chartThemeRegistry.push(chartWindowKey);
+        }
+    },
+};
