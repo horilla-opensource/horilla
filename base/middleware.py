@@ -67,7 +67,7 @@ class CompanyMiddleware:
                 request,
                 _("An employee related to this user's credentials does not exist."),
             )
-            return redirect("login")
+            return redirect("login/")
         user_company_id = getattr(
             getattr(user, "employee_work_info", None), "company_id", None
         )

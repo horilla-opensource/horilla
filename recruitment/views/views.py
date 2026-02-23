@@ -2991,7 +2991,7 @@ def candidate_self_status_tracking(request):
         candidate_id = request.session.get("candidate_id")
 
         if not candidate_id:
-            return redirect("candidate-login")
+            return redirect("candidate-login/")
 
         candidate = Candidate.objects.get(pk=candidate_id)
         interviews = candidate.candidate_interview.annotate(
@@ -3031,7 +3031,7 @@ def candidate_self_status_tracking_managers_view(request, cand_id):
             candidate_id = cand_id
 
         if not candidate_id:
-            return redirect("candidate-login")
+            return redirect("candidate-login/")
 
         candidate = Candidate.objects.get(pk=candidate_id)
         interviews = candidate.candidate_interview.annotate(

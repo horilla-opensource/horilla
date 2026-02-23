@@ -1216,12 +1216,12 @@ def employee_creation(request, token):
     user = portal_user[session_key]
     if Employee.objects.filter(email=user).exists():
         messages.success(request, _("Employee with email id already exists."))
-        return redirect("login")
+        return redirect("login/")
     if Employee.objects.filter(employee_user_id=user).first() is not None:
         employee = Employee.objects.filter(employee_user_id=user).first()
         if employee.employee_bank_details:
             messages.success(request, _("Employee already exists.."))
-            return redirect("login")
+            return redirect("login/")
         initial = Employee.objects.filter(employee_user_id=user).first().__dict__
 
     form = EmployeeCreationForm(
