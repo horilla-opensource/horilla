@@ -86,7 +86,7 @@ urlpatterns = [
     ),
     path("candidate-filter/", views.candidate_filter, name="candidate-filter"),
     path("email-send/", views.email_send, name="email-send"),
-    path("onboarding-view/", views.onboarding_view, name="onboarding-view"),
+    # path("onboarding-view/", views.onboarding_view, name="onboarding-view"),
     path("kanban-view/", views.kanban_view, name="kanban-view"),
     path(
         "candidate-task-update/<int:taskId>/",
@@ -232,7 +232,9 @@ urlpatterns = [
         name="onboarding-cbv-change-stage",
     ),
     path(
-        "cbv-pipeline/", pipeline.PipelineView.as_view(), name="cbv-pipeline-onboarding"
+        "onboarding-view/",
+        pipeline.PipelineView.as_view(),
+        name="cbv-pipeline-onboarding",
     ),
     path(
         "cbv-pipeline-nav/",
