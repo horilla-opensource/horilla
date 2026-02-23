@@ -16,6 +16,7 @@ $(document).ready(function () {
   });
   var start_index = 0;
   var per_page = 10;
+  const themedOptions = ChartTheme.getThemedOptions();
 
   month = ("0" + (today.getMonth() + 1)).slice(-2);
   year = today.getFullYear();
@@ -46,7 +47,15 @@ $(document).ready(function () {
         labels: dataSet.labels,
         datasets: dataSet.dataset,
       },
+      options: {
+        plugins: {
+          ...themedOptions.plugins,
+        },
+      },
     });
+
+    window["availableLeaveChart"] = availableLeaveChart
+    ChartTheme.observe("availableLeaveChart")
   }
 
   function department_leave_chart(dataSet) {
@@ -57,7 +66,14 @@ $(document).ready(function () {
         labels: dataSet.labels,
         datasets: dataSet.dataset,
       },
+      options: {
+        plugins: {
+          ...themedOptions.plugins,
+        },
+      },
     });
+    window["departmentLeaveChart"] = departmentLeaveChart
+    ChartTheme.observe("departmentLeaveChart")
   }
 
   function leave_type_chart(dataSet) {
@@ -68,7 +84,15 @@ $(document).ready(function () {
         labels: dataSet.labels,
         datasets: dataSet.dataset,
       },
+      options: {
+        plugins: {
+          ...themedOptions.plugins,
+        },
+      },
     });
+
+    window["leaveTypeChart"] = leaveTypeChart
+    ChartTheme.observe("leaveTypeChart")
   }
 
   function leave_period_chart(dataSet) {
@@ -91,6 +115,7 @@ $(document).ready(function () {
                 size: 16,
               },
             },
+            ...themedOptions.scales.x,
           },
           y: {
             //   stacked: true,
@@ -102,16 +127,23 @@ $(document).ready(function () {
                 size: 16,
               },
             },
+            ...themedOptions.scales.y,
           },
+        },
+        plugins: {
+          ...themedOptions.plugins,
         },
       },
     });
+    window["leavePeriodChart"] = leavePeriodChart
+    ChartTheme.observe("leavePeriodChart")
   }
 
   //Chart of leave request by employees
   function employee_leave_chart(dataSet) {
     employeeLeaveChart.destroy();
 
+    const { tickColor } = ChartTheme.getColors();
     var myChart2 = document.getElementById("employeeLeave");
     employeeLeaveChart = new Chart(myChart2, {
       type: "bar",
@@ -130,7 +162,9 @@ $(document).ready(function () {
                 weight: "bold",
                 size: 16,
               },
+              color: tickColor,
             },
+            ...themedOptions.scales.x,
           },
           y: {
             stacked: true,
@@ -141,11 +175,18 @@ $(document).ready(function () {
                 weight: "bold",
                 size: 16,
               },
+              color: tickColor,
             },
+            ...themedOptions.scales.y,
           },
+        },
+        plugins: {
+          ...themedOptions.plugins,
         },
       },
     });
+    window["employeeLeaveChart"] = employeeLeaveChart
+    ChartTheme.observe("employeeLeaveChart")
   }
   $.ajax({
     type: "GET",
@@ -193,8 +234,7 @@ $(document).ready(function () {
         $("#employee_leave_canvas").html(
           `<div style="height: 380px; display:flex;align-items: center;justify-content: center;" class="">
 					<div style="" class="">
-					<img style=" display: block;width: 70px;margin: 20px auto ;" src="${
-            staticUrl + "images/ui/attendance.png"
+					<img style=" display: block;width: 70px;margin: 20px auto ;" src="${staticUrl + "images/ui/attendance.png"
           }" class="" alt=""/>
 					<h3 style="font-size:16px" class="oh-404__subtitle">${response.message}</h3>
 					</div>
@@ -219,8 +259,7 @@ $(document).ready(function () {
         $("#availableLeaveContainer").html(
           `<div style="height: 310px; display:flex;align-items: center;justify-content: center;" class="">
 					<div style="" class="">
-					<img style=" display: block;width: 70px;margin: 20px auto ;" src="${
-            staticUrl + "images/ui/sunbed outline.png"
+					<img style=" display: block;width: 70px;margin: 20px auto ;" src="${staticUrl + "images/ui/sunbed outline.png"
           }" class="" alt=""/>
 					<h3 style="font-size:16px" class="oh-404__subtitle">${response.message}</h3>
 					</div>
@@ -288,9 +327,8 @@ $(document).ready(function () {
           $("#employee_leave_canvas").html(
             `<div style="height: 310px; display:flex;align-items: center;justify-content: center;" class="">
 					<div style="" class="">
-					<img style=" display: block;width: 70px;margin: 20px auto ;" src="${
-            staticUrl + "images/ui/attendance.png"
-          }" class="" alt=""/>
+					<img style=" display: block;width: 70px;margin: 20px auto ;" src="${staticUrl + "images/ui/attendance.png"
+            }" class="" alt=""/>
 					<h3 style="font-size:16px" class="oh-404__subtitle">${response.message}</h3>
 					</div>
 				</div>`
@@ -410,9 +448,8 @@ $(document).ready(function () {
         $("#department_leave_canvas").html(
           `<div style="height: 310px; display:flex;align-items: center;justify-content: center;" class="">
 							<div style="" class="">
-							<img style=" display: block;width: 70px;margin: 20px auto ;" src="${
-                staticUrl + "images/ui/attendance.png"
-              }" class="" alt=""/>
+							<img style=" display: block;width: 70px;margin: 20px auto ;" src="${staticUrl + "images/ui/attendance.png"
+          }" class="" alt=""/>
 							<h3 style="font-size:16px" class="oh-404__subtitle">${response.message}</h3>
 						</div>
 					</div>`
@@ -443,9 +480,8 @@ $(document).ready(function () {
           $("#department_leave_canvas").html(
             `<div style="height: 310px; display:flex;align-items: center;justify-content: center;" class="">
 								<div style="" class="">
-								<img style=" display: block;width: 70px;margin: 20px auto ;" src="${
-                  staticUrl + "images/ui/attendance.png"
-                }" class="" alt=""/>
+								<img style=" display: block;width: 70px;margin: 20px auto ;" src="${staticUrl + "images/ui/attendance.png"
+            }" class="" alt=""/>
 								<h3 style="font-size:16px" class="oh-404__subtitle">${response.message}</h3>
 							</div>
 						</div>`
@@ -475,9 +511,8 @@ $(document).ready(function () {
         $("#leave_type_canvas").html(
           `<div style="height: 310px; display:flex;align-items: center;justify-content: center;" class="">
 							<div style="" class="">
-							<img style=" display: block;width: 70px;margin: 20px auto ;" src="${
-                staticUrl + "images/ui/leave_types.png"
-              }" class="" alt=""/>
+							<img style=" display: block;width: 70px;margin: 20px auto ;" src="${staticUrl + "images/ui/leave_types.png"
+          }" class="" alt=""/>
 							<h3 style="font-size:16px" class="oh-404__subtitle">${response.message}</h3>
 						</div>
 					</div>`
@@ -508,9 +543,8 @@ $(document).ready(function () {
           $("#leave_type_canvas").html(
             `<div style="height: 310px; display:flex;align-items: center;justify-content: center;" class="">
 								<div style="" class="">
-								<img style=" display: block;width: 70px;margin: 20px auto ;" src="${
-                  staticUrl + "images/ui/leave_types.png"
-                }" class="" alt=""/>
+								<img style=" display: block;width: 70px;margin: 20px auto ;" src="${staticUrl + "images/ui/leave_types.png"
+            }" class="" alt=""/>
 								<h3 style="font-size:16px" class="oh-404__subtitle">${response.message}</h3>
 							</div>
 						</div>`
