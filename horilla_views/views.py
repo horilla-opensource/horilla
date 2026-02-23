@@ -1,5 +1,6 @@
 import csv
 import importlib
+import json
 import os
 import re
 from collections import defaultdict
@@ -27,7 +28,6 @@ from openpyxl import Workbook
 from openpyxl.drawing.image import Image
 from openpyxl.styles import Alignment, Border, Font, PatternFill, Side
 from xhtml2pdf import pisa
-from xhtml2pdf.files import pisaFileObject
 
 from base.methods import eval_validate
 from horilla.decorators import login_required as func_login_required
@@ -1084,7 +1084,6 @@ def export_data(request, *args, **kwargs):
     # PDF EXPORT
     # =====================================================
     if export_format == "pdf":
-        from xhtml2pdf import pisa
 
         html = render_to_string(
             "generic/export_pdf.html",
