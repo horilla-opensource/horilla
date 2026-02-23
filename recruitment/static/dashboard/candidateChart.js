@@ -1,23 +1,31 @@
-$(document).ready(function(){
+$(document).ready(function () {
     let myChart; // Declare myChart globally to access it outside the scope
 
-    function candidateChart(dataSet, labels){
+    function candidateChart(dataSet, labels) {
         const data = {
             labels: labels,
             datasets: [{
                 data: dataSet.map(item => item.data),
+                borderRadius: 10,
+                borderWidth: 0,
                 backgroundColor: ['#C6BEC4', '#FFF255', '#55C4FF', '#FF4646', '#2AFF0C']
             }]
         };
+        const themedOptions = ChartTheme.getThemedOptions();
 
         const ctx = document.getElementById('candidateChart').getContext('2d');
         myChart = new Chart(ctx, {
             type: 'pie',
             data: data,
             options: {
+                plugins: {
+                    ...themedOptions.plugins,
+                },
                 onClick: handleClick // Attach onClick event handler
             }
         });
+        window["candidateChart"] = myChart
+        ChartTheme.observe("candidateChart");
     }
 
     function handleClick(event, chartElements) {
@@ -25,19 +33,19 @@ $(document).ready(function(){
             // Get the index of the clicked element
             const index = chartElements[0].index;
 
-            if(index === 0){
+            if (index === 0) {
                 // Assuming each data point corresponds to a URL
                 url = '/recruitment/candidate-view?offer_letter_status=not_sent'
-            }else if(index === 1){
+            } else if (index === 1) {
 
                 url = '/recruitment/candidate-view?offer_letter_status=sent'
-            }else if(index === 2){
+            } else if (index === 2) {
 
                 url = '/recruitment/candidate-view?offer_letter_status=accepted'
-            }else if(index === 3){
+            } else if (index === 3) {
 
                 url = '/recruitment/candidate-view?offer_letter_status=rejected'
-            }else{
+            } else {
 
                 url = '/recruitment/candidate-view?offer_letter_status=joined'
             }
@@ -49,7 +57,7 @@ $(document).ready(function(){
     $.ajax({
         url: "/recruitment/candidate-status",
         type: "GET",
-        success: function(response){
+        success: function (response) {
             dataSet = response.dataSet;
             labels = response.labels;
             candidateChart(dataSet, labels);
