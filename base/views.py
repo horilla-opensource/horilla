@@ -6891,7 +6891,7 @@ def generate_error_report(error_list, error_data, file_name):
         del error_data[key]
 
     data_frame = pd.DataFrame(error_data, columns=error_data.keys())
-    styled_data_frame = data_frame.style.applymap(
+    styled_data_frame = data_frame.style.map(
         lambda x: "text-align: center", subset=pd.IndexSlice[:, :]
     )
 
