@@ -403,6 +403,7 @@ def biometric_device_schedule(request, device_id):
     if request.method == "POST":
         scheduler_form = BiometricDeviceSchedulerForm(request.POST)
         if scheduler_form.is_valid():
+            duration = scheduler_form.cleaned_data["scheduler_duration"]
             if device.machine_type == "zk":
                 try:
                     port_no = device.port
@@ -419,7 +420,6 @@ def biometric_device_schedule(request, device_id):
                     )
                     conn = zk_device.connect()
                     conn.test_voice(index=0)
-                    duration = request.POST.get("scheduler_duration")
                     device = BiometricDevices.objects.get(id=device_id)
                     device.scheduler_duration = duration
                     device.is_scheduler = True
@@ -452,7 +452,6 @@ def biometric_device_schedule(request, device_id):
                     """
                     return HttpResponse(script)
             elif device.machine_type == "anviz":
-                duration = request.POST.get("scheduler_duration")
                 device.is_scheduler = True
                 device.scheduler_duration = duration
                 device.save()
@@ -465,7 +464,6 @@ def biometric_device_schedule(request, device_id):
                 scheduler.start()
                 return HttpResponse("<script>window.location.reload()</script>")
             elif device.machine_type == "dahua":
-                duration = request.POST.get("scheduler_duration")
                 device.is_scheduler = True
                 device.is_live = False
                 device.scheduler_duration = duration
@@ -479,7 +477,6 @@ def biometric_device_schedule(request, device_id):
                 scheduler.start()
                 return HttpResponse("<script>window.location.reload()</script>")
             elif device.machine_type == "cosec":
-                duration = request.POST.get("scheduler_duration")
                 device.is_scheduler = True
                 device.is_live = False
                 device.scheduler_duration = duration
@@ -497,7 +494,6 @@ def biometric_device_schedule(request, device_id):
                 scheduler.start()
                 return HttpResponse("<script>window.location.reload()</script>")
             elif device.machine_type == "etimeoffice":
-                duration = request.POST.get("scheduler_duration")
                 device.is_scheduler = True
                 device.is_live = False
                 device.scheduler_duration = duration
@@ -1875,13 +1871,13 @@ def add_dahua_biometric_user(request, device_id):
     if request.method == "POST":
         form = DahuaUserForm(request.POST)
         if form.is_valid():
-            employee_id = request.POST.get("employee")
-            card_no = request.POST.get("card_no")
-            user_id = request.POST.get("user_id")
-            card_status = request.POST.get("card_status")
-            card_type = request.POST.get("card_type")
-            password = request.POST.get("password")
-            valid_date_end = request.POST.get("valid_date_end")
+            employee_id = form.cleaned_data["employee"]
+            card_no = form.cleaned_data["card_no"]
+            user_id = form.cleaned_data["user_id"]
+            card_status = form.cleaned_data["card_status"]
+            card_type = form.cleaned_data["card_type"]
+            password = form.cleaned_data["password"]
+            valid_date_end = form.cleaned_data["valid_date_end"]
 
             try:
                 employee = Employee.objects.get(id=employee_id) if employee_id else None
