@@ -1,6 +1,7 @@
 $(document).ready(function () {
     var departmentChart;
     var joinChart;
+    const themedOptions = ChartTheme.getThemedOptions();
 
     var department_chart = () => {
         $.ajax({
@@ -23,10 +24,15 @@ $(document).ready(function () {
                         scales: {
                             x: {
                                 stacked: true,
+                                ...themedOptions.scales.x,
                             },
                             y: {
                                 stacked: true,
+                                ...themedOptions.scales.y,
                             },
+                        },
+                        plugins: {
+                            ...themedOptions.plugins,
                         },
                     },
                     plugins: [
@@ -35,6 +41,9 @@ $(document).ready(function () {
                         },
                     ],
                 });
+
+                window["departmentChart"] = departmentChart
+                ChartTheme.observe("departmentChart")
             },
             error: function (xhr, status, error) {
                 console.error("Error fetching department chart data:", error);
@@ -51,6 +60,7 @@ $(document).ready(function () {
                 if (joinChart) {
                     joinChart.destroy();
                 }
+                const isCartesian = !["pie", "doughnut", "polarArea"].includes(type);
                 joinChart = new Chart(ctx, {
                     type: type,
                     data: {
@@ -65,6 +75,15 @@ $(document).ready(function () {
                     options: {
                         responsive: true,
                         maintainAspectRatio: false,
+                        ...(isCartesian && {
+                            scales: {
+                                x: { ...themedOptions.scales.x },
+                                y: { ...themedOptions.scales.y },
+                            },
+                        }),
+                        plugins: {
+                            ...themedOptions.plugins,
+                        },
                     },
                     plugins: [
                         {
@@ -72,6 +91,9 @@ $(document).ready(function () {
                         },
                     ],
                 });
+
+                window["joinChart"] = joinChart
+                ChartTheme.observe("joinChart")
             },
             error: function (xhr, status, error) {
                 console.error("Error fetching department chart data:", error);
