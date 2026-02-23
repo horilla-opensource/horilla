@@ -138,9 +138,9 @@
                 data-toggle="oh-modal-toggle"
                 data-target="#objectCreateModal"
                 hx-target="#objectCreateModalTarget"
-                class="w-8 h-8 justify-center px-1 py-2 bg-primary-600 text-white rounded-md text-xs flex items-center gap-2 hover:bg-primary-800 transition duration-300"
+                class="w-8 h-8 justify-center bg-primary-600 text-white rounded-md text-xs flex items-center gap-2 hover:bg-primary-800 transition duration-300"
                 title="{% trans 'Request feedback' %}">
-                <img src="/static/horilla_theme/assets/img/create.svg" width="18" alt="request" class="filter brightness-0 invert">
+                <img src="/static/horilla_theme/assets/img/create.svg" width="13" alt="request" class="filter brightness-0 invert">
             </a>
           {% endif %}
         {% endif %}
@@ -150,7 +150,7 @@
     <!-- Feedback Info Section -->
     <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-3">
       <div class="mb-2 flex gap-5 items-center">
-        <span class="font-medium text-sm text-[#565E6C] w-28">{% trans "Owner" %}</span>
+        <span class="font-medium text-sm text-[#565E6C] w-48">{% trans "Owner" %}</span>
         <p class="text-sm font-semibold flex items-center gap-5">:
           <img src="{{ feedback.employee_id.get_avatar }}" alt="owner" class="w-6 h-6 rounded-full inline-block">
           <span>{{ feedback.employee_id }}</span>
@@ -158,12 +158,12 @@
       </div>
 
       <div class="mb-2 flex gap-5 items-center">
-        <span class="font-medium text-sm text-[#565E6C] w-28">{% trans "Start Date" %}</span>
+        <span class="font-medium text-sm text-[#565E6C] w-48">{% trans "Start Date" %}</span>
         <p class="text-sm font-semibold flex items-center gap-5">: <span>{{ feedback.start_date }}</span></p>
       </div>
 
       <div class="mb-2 flex gap-5 items-center">
-        <span class="font-medium text-sm text-[#565E6C] w-28">{% trans "End Date" %}</span>
+        <span class="font-medium text-sm text-[#565E6C] w-48">{% trans "End Date" %}</span>
         <p class="text-sm font-semibold flex items-center gap-5">:
           <span>  {{ feedback.end_date }}</span>
           <span title="Due {% if feedback.end_date == today %} today {% else %}in {{ feedback.end_date|sub:today }}{% endif %}">
@@ -211,12 +211,8 @@
     </div>
   </div>
 
-
-
   <div class="bg-white p-3 rounded-md shadow-card ">
-
     <div class="h-[calc(100vh_-_335px)] overflow-hidden overflow-y-auto">
-
       <!-- Tab Buttons -->
       <div class="mytab flex sticky top-0 bg-white" role="tablist">
           <button
@@ -429,14 +425,11 @@
   </div>
 </div>
 
-
-
 <button
   hx-get="{% url 'get-feedback-overview' feedback.id %}"
   hx-target="#feedback-overview" id="feedback-overview-button" hidden>
 </button>
 </main>
-
 
 <!-- modals -->
 <div
@@ -448,8 +441,6 @@
   >
   <div class="oh-modal__dialog" id="objectCreateModalTarget"></div>
 </div>
-
-
 
   <!-- answer off canvas -->
   <div class="oh-activity-sidebar" id="answerViewAccordion" style="z-index:1000">
@@ -469,8 +460,6 @@
       </ol>
     </div>
   </div>
-
-
 
 <script src="{% static 'src/feedback/feedback_answer.js' %}"></script>
 <script src="{% static 'src/feedback/feedback_detailed_view.js' %}"></script>
@@ -504,7 +493,6 @@
         else {
           var employee_id = element
         }
-
 
       // Check if the employee_id is valid
       if (employee_id) {
@@ -592,8 +580,6 @@
 
   <script src="https://cdn.jsdelivr.net/npm/flowbite@3.1.2/dist/flowbite.min.js"></script>
 
-
-
   <!--  TAB DESIGN  -->
   <script>
       const tabButtons = document.querySelectorAll(".tab-button");
@@ -649,8 +635,4 @@
           });
       });
   </script>
-
-
-
-
 {% endblock %}
