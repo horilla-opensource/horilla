@@ -71,7 +71,7 @@
                                                 type="checkbox"
                                                 value=""
                                                 class="bulk-list-table-row custom-checkbox w-4 h-4 bg-[#E9EDF7] rounded-sm text-primary-600 cursor-pointer"
-                                                title="Select All"
+                                                title="{% trans 'Select All' %}"
                                                 onchange="
                                                     $(this).closest('.fixed-table').find('.list-table-row').prop('checked',$(this).is(':checked')).change();
                                                     $(document).ready(function () {
@@ -124,7 +124,7 @@
                                     </th>
                                     {% endwith %}
                                 {% endfor %}
-                                {% if options or option_method%}
+                                {% if options or option_method %}
                                     <th class="text-sm font-medium min-w-[150px]" {{header_attrs.option|safe}}>
                                         <div class="p-3" {{header_attrs.option|safe}}>
                                             {% trans "Options" %}
@@ -153,7 +153,7 @@
                                             type="checkbox"
                                             class="list-table-row custom-checkbox w-4 h-4 bg-[#E9EDF7] rounded-sm text-primary-600 cursor-pointer"
                                             data-view-id="{{view_id|safe}}"
-                                            title="{% trans "Select Row" %}"
+                                            title="{% trans 'Select Row' %}"
                                             value = "{{instance.pk}}"
                                             onclick="
                                                 event.stopPropagation();
