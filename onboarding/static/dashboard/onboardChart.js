@@ -85,7 +85,7 @@ $(document).ready(function () {
 							margin-right: 8px;
 							transition: opacity 0.3s;
 						"></span>
-						<span class="legend-label" style="color: #111827; font-size: 14px;">${label}</span>
+						<span class="legend-label" style="font-size: 14px;">${label}</span>
 					</div>
 				`);
 
