@@ -27,7 +27,7 @@
     <div class="oh-dashboard row" id="dashboard">
         <div class="oh-dashboard__left col-12 col-sm-12 col-md-12 col-lg-9">
             <div class="grid grid-cols-1 xl:grid-cols-3 md:grid-cols-2 gap-4 mb-4">
-                <div class="bg-white p-6 rounded-md shadow-card relative" id="requestedLeaves">
+                <div class="bg-white p-6 rounded-md shadow-card relative cursor-pointer" id="requestedLeaves">
                     <div class="flex items-center gap-4">
                         <div class="bg-[#1cba5121] p-3 rounded-md">
                             <img src="/static/horilla_theme/assets/img/icons/request-to-approve.svg" width="20" />
@@ -40,7 +40,7 @@
                         </div>
                     </div>
                 </div>
-                <div class="bg-white p-6 rounded-md shadow-card relative" id="approvedLeaves">
+                <div class="bg-white p-6 rounded-md shadow-card relative cursor-pointer" id="approvedLeaves">
                     <div class="flex items-center gap-4">
                         <div class="bg-[#b71db01f] p-3 rounded-md">
                             <img src="/static/horilla_theme/assets/img/icons/approved.svg" width="20" />
@@ -53,7 +53,7 @@
                         </div>
                     </div>
                 </div>
-                <div class="bg-white p-6 rounded-md shadow-card relative" id="rejectedLeaves">
+                <div class="bg-white p-6 rounded-md shadow-card relative cursor-pointer" id="rejectedLeaves">
                     <div class="flex items-center gap-4">
                         <div class="bg-[#d821491c] p-3 rounded-md">
                             <img src="/static/horilla_theme/assets/img/icons/rejected.svg" width="20" />
@@ -72,9 +72,9 @@
                 <div class="col-12 col-sm-12 col-md-12 col-lg-4 mt-2">
                     <div class="oh-card-dashboard oh-card-dashboard--no-scale oh-card-dashboard--transparent">
                         <div class="oh-card-dashboard__header oh-card-dashboard__header--divider">
-                            <span class="oh-card-dashboard__title">{% trans "Available Leaves" %}</span>
+                            <span class="text-md font-semibold">{% trans "Available Leaves" %}</span>
                         </div>
-                        <div class="oh-card-dashboard__body" id="availableLeaveContainer">
+                        <div class="oh-card-dashboard__body cursor-pointer" id="availableLeaveContainer">
                             <canvas id="availableLeave"></canvas>
                         </div>
                         <div id="availableLeaveLegend" class="mt-4 flex justify-center flex-wrap gap-3 text-xs"></div>
@@ -82,10 +82,12 @@
                 </div>
                 <div class="col-12 col-sm-12 col-md-12 col-lg-8 mt-2">
                     <div class="oh-card-dashboard oh-card-dashboard--no-scale oh-card-dashboard--transparent">
-                        <div class="oh-card-dashboard__header oh-card-dashboard__header--divider">
-                            <span class="oh-card-dashboard__title">{% trans "Total Leave Requests" %}</span>
-                            <input type="month" hx-trigger="change delay:100ms" class="float-end month"
-                                hx-get="{% url 'dashboard-leave-requests' %}" hx-target="#leaveRequest">
+                        <div class="oh-card-dashboard__header oh-card-dashboard__header--divider mb-4">
+                            <span class="text-md font-semibold">{% trans "Total Leave Requests" %}</span>
+                            <span class="float-end w-[20%]">
+                                <input type="month" hx-trigger="change delay:100ms" class="oh-input month"
+                                    hx-get="{% url 'dashboard-total-leave-request' %}" hx-target="#leaveRequest">
+                            </span>
                         </div>
                         <div class=" oh-card-dashboard__body" id="leaveRequest"  style="height:80%">
                             <div class="oh-sticky-table h-100" hx-get="{% url 'dashboard-total-leave-request' %}" hx-trigger="load" style="border: none;">

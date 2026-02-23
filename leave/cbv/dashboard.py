@@ -1,4 +1,4 @@
-from datetime import date
+from datetime import date, datetime
 from typing import Any
 
 from django.urls import reverse
@@ -160,6 +160,7 @@ class DashboardTotalLeaveRequest(MyLeaveRequestListView):
     bulk_select_option = False
     row_status_class = None
     row_status_indications = None
+    show_filter_tags = False
 
     def __init__(self, **kwargs: Any) -> None:
         super().__init__(**kwargs)
@@ -170,6 +171,17 @@ class DashboardTotalLeaveRequest(MyLeaveRequestListView):
         to filter data
         """
         queryset = super().get_queryset()
-        employee = self.request.user.employee_get
-        queryset = queryset.filter(employee_id=employee, status="approved")
+
+        today = date.today()
+        day = self.request.GET.get("date")
+
+        if day:
+            day = datetime.strptime(day, "%Y-%m")
+            queryset = queryset.filter(
+                start_date__month=day.month, start_date__year=day.year
+            )
+        else:
+            queryset = queryset.filter(
+                start_date__month=today.month, start_date__year=today.year
+            )
         return queryset
