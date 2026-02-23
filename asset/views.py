@@ -835,9 +835,9 @@ def asset_allocate_return(request, asset_id):
 
         if asset_return_form.is_valid():
             asset = Asset.objects.filter(id=asset_id).first()
-            asset_return_status = request.POST.get("return_status")
-            asset_return_date = request.POST.get("return_date")
-            asset_return_condition = request.POST.get("return_condition")
+            asset_return_status = asset_return_form.cleaned_data["return_status"]
+            asset_return_date = asset_return_form.cleaned_data["return_date"]
+            asset_return_condition = asset_return_form.cleaned_data["return_condition"]
             files = request.FILES.getlist("return_images")
             attachments = []
             context = {"asset_return_form": asset_return_form, "asset_id": asset_id}
