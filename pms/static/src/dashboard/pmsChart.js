@@ -1,5 +1,6 @@
 $(document).ready(function () {
 	const objectiveChart = document.getElementById("objectiveChart");
+	const themedOptions = ChartTheme.getThemedOptions();
 	// data dictionary
 	var objectiveStatusData = {
 		labels: [],
@@ -9,6 +10,8 @@ $(document).ready(function () {
 				data: [],
 				backgroundColor: ["#8de5b3", "#f0a8a6", "#8ed1f7", "#f8e08e", "#c2c7cc"],
 				hoverOffset: 3,
+				borderRadius: 10,
+				borderWidth: 0
 			},
 		],
 		message: "",
@@ -22,6 +25,9 @@ $(document).ready(function () {
 			options: {
 				responsive: true,
 				maintainAspectRatio: false,
+				plugins: {
+					...themedOptions.plugins,
+				},
 				onClick: (e, activeEls) => {
 					if (!activeEls || activeEls.length === 0) return;
 					let datasetIndex = activeEls[0].datasetIndex;
@@ -55,6 +61,9 @@ $(document).ready(function () {
 				}
 			}],
 		});
+
+		window["objectiveStatusChart"] = objectiveStatusChart
+		ChartTheme.observe("objectiveStatusChart")
 	}
 
 	function objectiveStatusDataUpdate(data) {
@@ -114,6 +123,8 @@ $(document).ready(function () {
 				data: [],
 				backgroundColor: ["#8de5b3", "#f0a8a6", "#8ed1f7", "#f8e08e", "#c2c7cc"],
 				hoverOffset: 3,
+				borderRadius: 10,
+				borderWidth: 0
 			},
 		],
 		message: "",
@@ -127,6 +138,9 @@ $(document).ready(function () {
 			options: {
 				responsive: true,
 				maintainAspectRatio: false,
+				plugins: {
+					...themedOptions.plugins,
+				},
 				onClick: (e, activeEls) => {
 					if (!activeEls || activeEls.length === 0) return;
 					let datasetIndex = activeEls[0].datasetIndex;
@@ -160,6 +174,8 @@ $(document).ready(function () {
 				}
 			}],
 		});
+		window["keyResultStatusChart"] = keyResultStatusChart
+		ChartTheme.observe("keyResultStatusChart")
 	}
 
 	function keyResultStatusDataUpdate(data) {
@@ -218,6 +234,8 @@ $(document).ready(function () {
 				data: [],
 				backgroundColor: ["#8de5b3", "#f0a8a6", "#8ed1f7", "#f8e08e", "#c2c7cc"],
 				hoverOffset: 3,
+				borderRadius: 10,
+				borderWidth: 0
 			},
 		],
 		message: "",
@@ -231,6 +249,9 @@ $(document).ready(function () {
 			options: {
 				responsive: true,
 				maintainAspectRatio: false,
+				plugins: {
+					...themedOptions.plugins,
+				},
 				onClick: (e, activeEls) => {
 					if (!activeEls || activeEls.length === 0) return;
 					let datasetIndex = activeEls[0].datasetIndex;
@@ -250,6 +271,8 @@ $(document).ready(function () {
 				}
 			}],
 		});
+		window["feedbackStatusChart"] = feedbackStatusChart
+		ChartTheme.observe("feedbackStatusChart")
 	}
 
 	function feedbackStatusDataUpdate(data) {
