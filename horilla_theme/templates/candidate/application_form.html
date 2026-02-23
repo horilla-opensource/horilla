@@ -52,7 +52,7 @@
             <div class="pb-10 pt-3 pl-20 pr-20">
                 <h3 class="pb-4 pt-2 font-bold text-center text-2xl">{% trans "Application Form" %}</h3>
                 <div class="grid grid-cols-12 gap-4">
-                    <div class="col-span-12 lg:col-span-4 bg-[{{theme_obj.primary_50}}] rounded-md shadow-card p-5 [box-shadow:0px_0px_25px_#a1a1a1]">
+                    <div class="col-span-12 lg:col-span-4 bg-[{{theme_obj.primary_50}}] rounded-md shadow-card p-5">
                         <div class="lg:h-[calc(100vh_-_160px)] overflow-hidden overflow-y-auto">
                             {% if resume %}
                                 <div class="sticky">
@@ -79,7 +79,7 @@
                                 {% endfor %}
                             </div>
                         {% endif %}
-                        <form class="col-span-12 lg:col-span-8 bg-[{{theme_obj.primary_50}}] rounded-md shadow-card p-5 myform [box-shadow:0px_0px_25px_#a1a1a1]" method="post" enctype="multipart/form-data">
+                        <form class="col-span-12 lg:col-span-8 bg-[{{theme_obj.primary_50}}] rounded-md shadow-card p-5 myform" method="post" enctype="multipart/form-data">
                             {% csrf_token %}
                             <div class= "lg:h-[calc(100vh_-_160px)] overflow-hidden overflow-y-auto">
                                 <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4 ">

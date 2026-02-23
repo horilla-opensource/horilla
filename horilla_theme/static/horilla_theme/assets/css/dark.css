@@ -34,7 +34,8 @@ body.dark #pivot-container .pvtTable thead tr th,
 body.dark .pvtFilterBox p button,
 body.dark #pivot-container .pvtTable td,
 body.dark #pivot-container .pvtTable tr:nth-child(2n) td,
-body.dark .note-toolbar {
+body.dark .note-toolbar,
+body.dark .ansbox {
   background-color: #1b1b1b !important;
 }
 
@@ -94,7 +95,10 @@ body.dark .pvtFilterBox,
 body.dark #pivot-container .pvtTable tr:nth-child(2n) td,
 body.dark #pivot-container .pvtTable td,
 body.dark .note-toolbar,
-body.dark .note-btn {
+body.dark .note-btn,
+body.dark .ansbox,
+body.dark .ansbox .oh-main__titlebar,
+body.dark .oh-activity-sidebar__qa-item {
   border-color: #444444 !important;
 }
 body.dark .oh-input,
@@ -107,7 +111,7 @@ body.dark .form-input-items select,
 body.dark .form-input-items textarea,
 body.dark .form-input-items .oh-input,
 body.dark .form-input-items .oh-select,
-body.dark .note-btn{
+body.dark .note-btn {
   color: #dfdfdf !important;
   background-color: #111111;
   border-color: #656565 !important;
@@ -131,8 +135,12 @@ body.dark .mt-\[-1px\],
 /* body.dark .dropdown-wrapper .flex.items-center.gap-2 img, */
 body.dark #employee_canvas_body img,
 body.dark #department_canvas_body img,
-body.dark #detailViewContainer button img {
+body.dark #detailViewContainer button img,
+body.dark .dropdown-wrapper .flex.items-center.gap-2  img {
   filter: brightness(0) invert(1);
+}
+body.dark .dropdown-wrapper .flex.items-center.gap-2 .rounded-full img {
+  filter: unset;
 }
 body.dark .sideboxmain svg,
 body.dark .oh-btn--light-bkg,
@@ -146,8 +154,9 @@ body.dark .pvtRowOrder,
 body.dark .pvtFilterBox h4,
 body.dark .fa-solid.fa-clone,
 body.dark .form-input-items label,
-body.dark .form-input-items .text-xs {
-  color: white;
+body.dark .form-input-items .text-xs,
+body.dark .text-dark-400 {
+  color: white !important;
 }
 
 body.dark .sidebox ul li a:hover,
@@ -171,7 +180,9 @@ body.dark .hover\:bg-primary-100:hover,
 body.dark .oh-btn--danger-outline,
 body.dark .oh-btn--light,
 body.dark .pvtAxisContainer li span.pvtAttr,
-body.dark .pvtFilterBox {
+body.dark .pvtFilterBox,
+body.dark .oh-activity-sidebar__qa-item,
+body.dark .oh-accordion-header {
   background-color: #000000 !important;
 }
 body.dark .bg-primary-100,
@@ -242,17 +253,19 @@ body.dark ::-webkit-scrollbar {
 
 body.dark ::-webkit-scrollbar-track {
   background: #636363;
-  border-radius: 5px;
+  /* border-radius: 5px; */
   cursor: pointer;
 }
 
 body.dark ::-webkit-scrollbar-thumb {
   background: #334155;
-  border-radius: 5px;
+  /* border-radius: 5px; */
+  transition: 0.3s;
+  cursor: pointer;
 }
 
 body.dark ::-webkit-scrollbar-thumb:hover {
-  background: #192449;
+  background: #242f3f;
 }
 
 body.dark #sidebar ::-webkit-scrollbar-track {
@@ -331,12 +344,35 @@ body.dark .animated-background {
 }
 
 body.dark .sr-only.peer + div,
-body.dark .sr-only.peer + .relative ,
-body.dark .oh-switch .oh-switch__checkbox::after{
+body.dark .sr-only.peer + .relative,
+body.dark .oh-switch .oh-switch__checkbox::after {
   background: #747474;
 }
 body.dark .sr-only.peer + div::after,
 body.dark .sr-only.peer + .relative::after,
 body.dark .oh-switch .oh-switch__checkbox {
   background: #3a3a3a;
+}
+body.dark .oh-btn img {
+  filter: brightness(0) invert(1);
+}
+body.dark .oh-btn:hover {
+  background-color: #2a2a2a;
+}
+body.dark .oh-btn ion-icon {
+  color: white;
+}
+
+body.dark .oh-activity-sidebar {
+  border-left: 1px solid #444444;
+}
+
+body.dark .dropdown-content {
+  border: 1px solid #444444;
+}
+body.dark input:focus-visible {
+  outline: unset;
+}
+body.dark .hover\:bg-primary-50:hover {
+  background-color: #2a2a2a !important;
 }
