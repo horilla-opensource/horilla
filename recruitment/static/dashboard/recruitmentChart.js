@@ -21,6 +21,7 @@ $(document).ready(function () {
 		window["myChart"] = {};
 		if (document.getElementById("recruitmentChart1")) {
 			const ctx = document.getElementById("recruitmentChart1").getContext("2d");
+			const { tickColor } = ChartTheme.getColors();
 			myChart = new Chart(ctx, {
 				type: "bar",
 				data: data,
@@ -32,7 +33,7 @@ $(document).ready(function () {
 							beginAtZero: true,
 							ticks: {
 								stepSize: 20,
-								color: '#6b7280'
+								color: tickColor
 							},
 							grid: {
 								color: '#e5e7eb'
@@ -40,7 +41,7 @@ $(document).ready(function () {
 						},
 						x: {
 							ticks: {
-								color: '#6b7280'
+								color: tickColor
 							},
 							grid: {
 								display: false
@@ -56,7 +57,7 @@ $(document).ready(function () {
 								font: {
 									size: 12
 								},
-								color: '#374151',
+								color: tickColor,
 								padding: 15
 							},
 							onClick: (e, legendItem, legend) => {
@@ -102,6 +103,8 @@ $(document).ready(function () {
 				}]
 
 			});
+			window["recruitmentChart1"] = myChart
+			ChartTheme.observe("recruitmentChart1")
 		}
 	}
 	$.ajax({
@@ -138,11 +141,11 @@ $(document).ready(function () {
 			const values = response.data;
 			const colors = [
 				"#facc15",
-                "#f87171",
-                "#ddd6fe",
-                "#a5b4fc",
-                "#93c5fd",
-                "#d1d5db",
+				"#f87171",
+				"#ddd6fe",
+				"#a5b4fc",
+				"#93c5fd",
+				"#d1d5db",
 			];
 			const visibility = Array(labels.length).fill(true);
 
@@ -249,7 +252,7 @@ $(document).ready(function () {
 	});
 
 
-//og
+	//og
 	// $.ajax({
 	// 	type: "GET",
 	// 	url: "/recruitment/hired-candidate-chart",
