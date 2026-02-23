@@ -149,10 +149,11 @@
 </div>
 
 <div class="grid grid-cols-12 gap-4 mb-4">
+
 	<div
-		class="xl:col-span-4 md:col-span-6 col-span-12 bg-white p-6 rounded-md shadow-card"
+		class="xl:col-span-4 md:col-span-6 col-span-12 bg-white rounded-md shadow-card"
 	>
-		<div class="flex justify-between items-center mb-2">
+		<div class="flex justify-between items-center p-6 pb-0 mb-2">
 			<h3 class="text-md font-semibold">
 				{% trans "Skill Zone Status" %}
 			</h3>
@@ -185,9 +186,9 @@
 
 	{% if "onboarding"|app_installed %}
 	<div
-		class="xl:col-span-4 md:col-span-6 col-span-12 bg-white p-6 rounded-md shadow-card"
+		class="xl:col-span-4 md:col-span-6 col-span-12 bg-white rounded-md shadow-card"
 	>
-		<div class="flex justify-between items-center mb-4">
+		<div class="flex justify-between items-center p-6 pb-0 mb-4">
 			<h3 class="text-md font-semibold">
 				{% trans "Candidate on Onboard" %}
 			</h3>
@@ -226,37 +227,36 @@
 	</div>
 
 	<div
-		class="xl:col-span-6 md:col-span-6 col-span-12 bg-white p-6 rounded-md shadow-card"
+		class="xl:col-span-6 md:col-span-6 col-span-12 bg-white rounded-md shadow-card"
 	>
-		<div class="flex justify-between items-center mb-2">
+		<div class="flex justify-between items-center p-6 pb-0 mb-2">
 			<h3 class="text-md font-semibold">
 				{% trans "Current Hiring Pipeline" %}
 			</h3>
 		</div>
 		<div class="overflow-hidden overflow-x-auto">
 			<div
-				hx-get='{% url "current-hiring-pipeline-dashboard" %}'
+				hx-get="{% url 'current-hiring-pipeline-dashboard' %}"
 				hx-trigger="load"
-				class=""
-				style="max-height: 360px"
+				class="overflow-auto"
+				style="max-height: 420px;"
 			></div>
 		</div>
 	</div>
 
 	{% if ongoing_recruitments %}
 	<div
-		class="xl:col-span-5 md:col-span-6 col-span-12 bg-white p-6 rounded-md shadow-card"
+		class="xl:col-span-5 md:col-span-6 col-span-12 bg-white rounded-md shadow-card"
 	>
-		<div class="flex justify-between items-center mb-2">
+		<div class="flex justify-between items-center mb-2 p-6 pb-0">
 			<h3 class="text-md font-semibold">
 				{% trans "Ongoing Recruitments & Hiring Managers" %}
 			</h3>
 		</div>
 		<div class="overflow-hidden overflow-x-auto">
 			<div
-				hx-get='{% url "ongoing-recruitment-dashboard" %}'
+				hx-get="{% url 'ongoing-recruitment-dashboard' %}"
 				hx-trigger="load"
-				class=""
 				style="max-height: 360px"
 			></div>
 		</div>

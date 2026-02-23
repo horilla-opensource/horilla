@@ -3,7 +3,7 @@
 {% if perms.instance.change_attendance or perms.instance.delete_attendance or request.user|is_reportingmanager %}
 	<div class="oh-btn-group">
 		<a
-			class="oh-btn oh-btn-group oh-btn--info"
+			class="oh-btn oh-btn--info"
 			hx-get="{% url 'attendance-update' instance.id %}"
 			hx-target="#genericModalBody"
 			hx-swap="innerHTML"
@@ -23,7 +23,7 @@
 			<a
 				href="#"
 				title="{% trans 'Approved' %}"
-				class="oh-btn oh-btn-group oh-btn--success oh-btn--disabled"
+				class="oh-btn oh-btn--success oh-btn--disabled"
 				onclick="event.stopPropagation()"
 			>
 				<ion-icon class="me-1" name="checkmark-done-outline"></ion-icon>
@@ -33,7 +33,7 @@
 			<a
 				href="{% url 'approve-overtime' instance.id %}"
 				title="{% trans 'Approve Overtime' %}"
-				class="oh-btn oh-btn-group oh-btn--success w-50"
+				class="oh-btn oh-btn--success"
 				onclick="event.stopPropagation()"
 			>
 				<ion-icon class="me-1" name="checkmark-done-outline"></ion-icon>
@@ -43,7 +43,7 @@
 			<a
 				href="#"
 				title="{% trans 'Approve Overtime (OT < min.OT)' %}"
-				class="oh-btn oh-btn-group oh-btn--warning w-50 text-white"
+				class="oh-btn oh-btn--warning text-white"
 				onclick="event.stopPropagation();
 					Swal.fire({
 						title: '{% trans 'Are you sure?' %}',
@@ -84,7 +84,7 @@
 			action="{% url 'attendance-delete' instance.id  %}"
 			onsubmit="return confirm(`{% trans 'Are you sure you want to delete this attendance?' %}`)"
 			method="post"
-			class="oh-btn oh-btn-group oh-btn--danger w-100"
+			class="oh-btn oh-btn--danger"
 		>
 			{% csrf_token %}
 			<button type="submit">

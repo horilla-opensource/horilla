@@ -130,11 +130,32 @@ function removeId(element, storeKey = "selectedInstances") {
 
     // Set new active menu on click
     allMenus.forEach(btn => {
-      btn.addEventListener("click", function () {
+      btn.addEventListener("click", function (e) {
+        e.stopPropagation();
+        const isAlreadyOpen = btn.classList.contains("sidebox-active");
+
+        // Close all open sideboxes first
+        allMenus.forEach(el => el.classList.remove("sidebox-active"));
+
+        // If it wasn't open, open it; if it was open, leave it closed (toggle)
+        if (!isAlreadyOpen) {
+          btn.classList.add("sidebox-active");
+        }
+
+        // Persist the active (highlighted) menu
         localStorage.setItem("activeSidebarMenu", btn.dataset.menu);
         allMenus.forEach(el => el.classList.remove("active"));
         btn.classList.add("active");
       });
+    });
+
+    // Close sidebox when clicking outside (but not when clicking a sideboxmain button)
+    document.addEventListener("click", function (e) {
+      const clickedInsideMenu = e.target.closest(".sideboxmain");
+      const clickedInsideSidebox = e.target.closest(".sidebox");
+      if (!clickedInsideMenu && !clickedInsideSidebox) {
+        allMenus.forEach(el => el.classList.remove("sidebox-active"));
+      }
     });
   });
 

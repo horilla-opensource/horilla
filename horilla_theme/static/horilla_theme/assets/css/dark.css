@@ -26,7 +26,6 @@ body.dark .canvas-wrap,
 body.dark .bg-\[\#F4F4F4\],
 body.dark .holiday,
 body.dark .dropdown-content.bg-white,
-body.dark .oh-btn--danger-outline:hover,
 body.dark .oh-btn--light-bkg:hover,
 body.dark #pivot-container .pvtTable,
 body.dark #pivot-container .pvtTable tbody tr th,
@@ -103,6 +102,7 @@ body.dark .oh-activity-sidebar__qa-item {
 }
 body.dark .oh-input,
 body.dark .oh-select,
+body.dark .oh-label,
 body.dark select,
 body.dark .form-input-items input[type="text"],
 body.dark .form-input-items input[type="number"],
@@ -177,12 +177,12 @@ body.dark select,
 body.dark .bg-primary-300,
 body.dark .sidebarItemActive,
 body.dark .hover\:bg-primary-100:hover,
-body.dark .oh-btn--danger-outline,
 body.dark .oh-btn--light,
 body.dark .pvtAxisContainer li span.pvtAttr,
 body.dark .pvtFilterBox,
 body.dark .oh-activity-sidebar__qa-item,
-body.dark .oh-accordion-header {
+body.dark .oh-accordion-header,
+body.dark .bg-\[\#F6F6F6\] {
   background-color: #000000 !important;
 }
 body.dark .bg-primary-100,
@@ -201,7 +201,7 @@ body.dark .bg-\[\#e9edf090\],
 body.dark .oh-sticky-table__tr--custom:hover,
 body.dark .oh-titlebar__tag,
 body.dark #pivot-container .pvtUiCell {
-  background-color: #1a1a1a;
+  background-color: #1a1a1a !important;
 }
 body.dark .text-\[\#333\],
 body.dark .text-gray-700 {
@@ -239,7 +239,10 @@ body.dark .pvtAxisContainer li span.pvtAttr,
 body.dark #pivot-container .pvtTable tbody tr th,
 body.dark #pivot-container .pvtTable thead tr th,
 body.dark .pvtFilterBox p :nth-child(2),
-body.dark #pivot-container .pvtTable td {
+body.dark #pivot-container .pvtTable td,
+body.dark .dateformat_changer,
+body.dark .text-dark-500,
+body.dark .text-gray-600 {
   color: #bbbbbb !important;
 }
 body.dark .text-\[\#565E6C\],
@@ -344,8 +347,7 @@ body.dark .animated-background {
 }
 
 body.dark .sr-only.peer + div,
-body.dark .sr-only.peer + .relative,
-body.dark .oh-switch .oh-switch__checkbox::after {
+body.dark .sr-only.peer + .relative {
   background: #747474;
 }
 body.dark .sr-only.peer + div::after,
@@ -353,7 +355,12 @@ body.dark .sr-only.peer + .relative::after,
 body.dark .oh-switch .oh-switch__checkbox {
   background: #3a3a3a;
 }
-body.dark .oh-btn img {
+body.dark .oh-btn img,
+body.dark .sideboxmain svg,
+body.dark .target,
+body.dark .downarrow,
+body.dark .editicon,
+body.dark .deleteicon{
   filter: brightness(0) invert(1);
 }
 body.dark .oh-btn:hover {
