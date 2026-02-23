@@ -552,19 +552,23 @@ class AssetAssignment(HorillaModel):
             "send-mail-employee", kwargs={"emp_id": self.assigned_to_employee_id.id}
         )
         title = _("Send Mail")
-        html = f"""
-        <a
-            onclick="event.stopPropagation()"
-            hx-get="{url}"
-            data-toggle="oh-modal-toggle"
-            data-target="#sendMailModal"
-            title="{title}"
-            hx-target="#mail-content"
-        >
-            <ion-icon name="mail-outline"></ion-icon>
-        </a>
-        """
-        return format_html(html)
+        html = format_html(
+            """
+            <a
+                onclick="event.stopPropagation()"
+                hx-get="{}"
+                data-toggle="oh-modal-toggle"
+                data-target="#sendMailModal"
+                title="{}"
+                hx-target="#mail-content"
+            >
+                <ion-icon name="mail-outline"></ion-icon>
+            </a>
+            """,
+            url,
+            title,
+        )
+        return html
 
 
 class AssetRequest(HorillaModel):
