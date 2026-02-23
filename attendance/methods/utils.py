@@ -5,7 +5,7 @@ This module is used write custom methods
 """
 
 import calendar
-from datetime import datetime, time, timedelta
+from datetime import date, datetime, time, timedelta
 
 import pandas as pd
 from django.conf import settings
@@ -303,7 +303,7 @@ def get_week_start_end_dates(week):
     year, week_number = map(int, week.split("-W"))
 
     # Get the date of the first day of the week
-    start_date = datetime.strptime(f"{year}-W{week_number}-1", "%Y-W%W-%w").date()
+    start_date = date.fromisocalendar(year, week_number, 1)
 
     # Calculate the end date by adding 6 days to the start date
     end_date = start_date + timedelta(days=6)
