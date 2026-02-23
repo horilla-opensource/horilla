@@ -1,5 +1,6 @@
 staticUrl = $("#statiUrl").attr("data-url");
 $(document).ready(function () {
+    const themedOptions = ChartTheme.getThemedOptions();
     function available_asset_chart(dataSet) {
         var Asset_available_chart = document.getElementById("assetAvailableChart");
         if (Asset_available_chart) {
@@ -11,12 +12,20 @@ $(document).ready(function () {
                     emptyImageSrc: dataSet.emptyImageSrc,
                     message: dataSet.message,
                 },
+                options: {
+                    plugins: {
+                        ...themedOptions.plugins,
+                    },
+                },
                 plugins: [
                     {
                         afterRender: (assetAvailableChartChart) => emptyAssetAvialabeChart(assetAvailableChartChart),
                     },
                 ],
             });
+            window["assetAvailableChartChart"] = assetAvailableChartChart
+            ChartTheme.observe("assetAvailableChartChart")
+
         }
     }
 
@@ -31,18 +40,33 @@ $(document).ready(function () {
                     emptyImageSrc: dataSet.emptyImageSrc,
                     message: dataSet.message,
                 },
+                options: {
+                    scales: {
+                        x: {
+                            ...themedOptions.scales.x,
+                        },
+                        y: {
+                            ...themedOptions.scales.y,
+                        },
+                    },
+                    plugins: {
+                        ...themedOptions.plugins,
+                    },
+                },
                 plugins: [
                     {
                         afterRender: (assetCategoryChart) => emptyAssetAvialabeChart(assetCategoryChart),
                     },
                 ],
             });
+            window["assetCategoryChart"] = assetCategoryChart
+            ChartTheme.observe("assetCategoryChart")
         }
     }
 
     $.ajax({
         type: "GET",
-        url: "/asset/asset-available-chart",
+        url: "/asset/asset-available-chart/",
         dataType: "json",
         success: function (response) {
             available_asset_chart(response);
@@ -54,7 +78,7 @@ $(document).ready(function () {
 
     $.ajax({
         type: "GET",
-        url: "/asset/asset-category-chart",
+        url: "/asset/asset-category-chart/",
         dataType: "json",
         success: function (response) {
             asset_category_chart(response);
