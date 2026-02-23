@@ -41,6 +41,8 @@ def filter_by_name(queryset, name, value):
 
     queryset = (queryset | qs.filter(employee_id__badge_id__icontains=value)).distinct()
 
+    return queryset
+
 
 class FilterSet(django_filters.FilterSet):
     def __init__(self, *args, **kwargs):
