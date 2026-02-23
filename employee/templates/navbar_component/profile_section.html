@@ -13,20 +13,20 @@
         <ul class="oh-dropdown__items">
             {% if request.session.selected_company == "all" or request.user.employee_get.employee_work_info.company_id.id == request.session.selected_company|default:"-1"|add:"0" %}
                 <li class="oh-dropdown__item">
-                    <a href="/employee/employee-profile" class="oh-dropdown__link">{% trans "My Profile" %}</a>
+                    <a href="/employee/employee-profile/" class="oh-dropdown__link">{% trans "My Profile" %}</a>
                 </li>
                 <li class="oh-dropdown__item">
-                    <a href="/change-username" class="oh-dropdown__link">{% trans "Change Username" %}</a>
+                    <a href="/change-username/" class="oh-dropdown__link">{% trans "Change Username" %}</a>
                 </li>
                 <li class="oh-dropdown__item">
-                    <a href="/change-password" class="oh-dropdown__link">{% trans "Change Password" %}</a>
+                    <a href="/change-password/" class="oh-dropdown__link">{% trans "Change Password" %}</a>
                 </li>
             {% endif %}
         </ul>
         <hr />
         <ul class="oh-dropdown__items">
             <li class="oh-dropdown__item">
-                <a href="/logout" class="oh-dropdown__link">{% trans "Logout" %}</a>
+                <a href="/logout/" class="oh-dropdown__link">{% trans "Logout" %}</a>
             </li>
         </ul>
     </div>
