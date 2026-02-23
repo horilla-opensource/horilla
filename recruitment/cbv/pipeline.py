@@ -254,6 +254,7 @@ class CandidateList(HorillaListView):
         "mobile": """ style="width:100px;" """,
         "Stage": """ style="width:100px;" """,
         "get_interview_count": """ style="width:200px;" """,
+        "option": """ style="width:280px !important" """,
     }
     columns = [
         (_("Name"), "candidate_name", "get_avatar"),
@@ -295,11 +296,6 @@ class CandidateList(HorillaListView):
         hx-target="#genericModalBody"
     """
 
-    header_attrs = {
-        "option": """
-            style="width:280px !important"
-        """
-    }
     actions = [
         {
             "action": _("Schedule Interview"),
