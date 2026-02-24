@@ -152,3 +152,6 @@ whoosh_index/
 
 #PyCharm
 .idea/
+
+#macOS
+.DS_Store
