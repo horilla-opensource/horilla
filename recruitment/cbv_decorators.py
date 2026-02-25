@@ -4,6 +4,7 @@ from django.shortcuts import render
 
 from employee.models import Employee
 from horilla.horilla_middlewares import _thread_locals
+from horilla.methods import handle_no_permission
 from horilla_views.cbv_methods import decorator_with_arguments
 from recruitment.models import Recruitment, Stage
 
@@ -48,13 +49,8 @@ def manager_can_enter(function, perm):
         )
         if user.has_perm(perm) or is_manager:
             return function(self, *args, **kwargs)
-        messages.info(request, "You dont have permission.")
-        previous_url = request.META.get("HTTP_REFERER", "/")
-        script = f'<script>window.location.href = "{previous_url}"</script>'
-        key = "HTTP_HX_REQUEST"
-        if key in request.META.keys():
-            return render(request, "decorator_404.html")
-        return HttpResponse(script)
+
+        return handle_no_permission(request)
 
     return _function
 
@@ -101,12 +97,7 @@ def all_manager_can_enter(function, perm):
         )
         if user.has_perm(perm) or is_manager:
             return function(self, *args, **kwargs)
-        messages.info(request, "You dont have permission.")
-        previous_url = request.META.get("HTTP_REFERER", "/")
-        script = f'<script>window.location.href = "{previous_url}"</script>'
-        key = "HTTP_HX_REQUEST"
-        if key in request.META.keys():
-            return render(request, "decorator_404.html")
-        return HttpResponse(script)
+
+        return handle_no_permission(request)
 
     return _function
