@@ -19,6 +19,7 @@ from django.utils.translation import gettext_lazy as _
 
 from base.methods import filtersubordinates, get_key_instances
 from horilla.decorators import hx_request_required, login_required, permission_required
+from horilla.methods import handle_no_permission
 from notifications.signals import notify
 from project.cbv.projects import DynamicProjectCreationFormView
 from project.cbv.tasks import DynamicTaskCreateFormView
@@ -37,9 +38,6 @@ from .forms import *
 from .methods import (
     is_project_manager_or_super_user,
     is_projectmanager_or_member_or_perms,
-    is_task_manager,
-    is_task_member,
-    you_dont_have_permission,
 )
 from .models import *
 
@@ -1750,8 +1748,8 @@ def time_sheet_delete(request, time_sheet_id):
         if task_id:
             return redirect(f"/project/task-timesheet/{task_id}/")
         return redirect("/project/view-time-sheet" + "?view=" + view_type)
-    else:
-        return you_dont_have_permission(request)
+
+    return handle_no_permission(request)
 
 
 def time_sheet_filter(request):

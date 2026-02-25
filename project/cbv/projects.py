@@ -26,12 +26,7 @@ from horilla_views.generic.cbv.views import (
 from project.cbv.cbv_decorators import is_projectmanager_or_member_or_perms
 from project.filters import ProjectFilter
 from project.forms import ProjectForm
-from project.methods import (
-    any_project_manager,
-    any_project_member,
-    is_project_manager_or_super_user,
-    you_dont_have_permission,
-)
+from project.methods import any_project_manager, any_project_member
 from project.models import Project
 
 
