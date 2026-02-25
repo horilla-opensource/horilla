@@ -18,6 +18,7 @@ from base.forms import RotatingWorkTypeAssignExportForm, RotatingWorkTypeAssignF
 from base.methods import choosesubordinates, filtersubordinates, is_reportingmanager
 from base.models import RotatingWorkTypeAssign
 from employee.models import Employee
+from horilla.http.response import HorillaRedirect
 from horilla_views.cbv_methods import login_required
 from horilla_views.generic.cbv.views import (
     HorillaDetailedView,
@@ -394,6 +395,6 @@ class RotatingWorkTypeDuplicateForm(HorillaFormView):
             message = _("Rotating Work Assign Created")
             messages.success(self.request, message)
             form.save()
-            return self.HttpResponse("<script>window.location.reload();</script>")
+            return HorillaRedirect(self.request)
 
         return self.form_invalid(form)
