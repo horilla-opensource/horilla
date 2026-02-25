@@ -107,8 +107,8 @@
                 </div>
 
                 <!-- On Leave Card -->
-                <div class="xl:col-span-4 md:col-span-4 col-span-12 bg-white p-6 rounded-md shadow-card">
-                    <div class="flex justify-between items-center mb-2">
+                <div class="xl:col-span-4 md:col-span-4 col-span-12 bg-white rounded-md shadow-card">
+                    <div class="flex justify-between items-center mb-2 p-6 pb-0">
                         <h3 class="text-md font-semibold">{% trans "On Leave" %}</h3>
                     </div>
                     <div class="flex-col items-center justify-center" hx-get="{% url 'employee-leave' %}"
@@ -181,20 +181,12 @@
                 </div>
             </div>
             <div class="bg-white p-6 pt-5 rounded-md shadow-card h-[33%] flex flex-col">
-                <div class="flex items-center gap-1 shrink-0">
+                <div class="flex items-center gap-1 shrink-0 mb-2">
                     <span class="oh-card-dashboard__title me-1">{% trans "Upcoming holidays" %}</span>
 
-                    <div class="relative flex items-center group">
+                    <div class="relative flex items-center group target" title="{% trans 'Upcoming holidays in this year.' %}">
                         <!-- Hover target -->
                         <ion-icon name="help-circle-outline" class="text-gray-500 cursor-pointer"></ion-icon>
-
-                        <!-- Tooltip -->
-                        <div class="absolute left-full top-1/2 -translate-y-1/2 ml-2
-                                bg-black text-white text-xs rounded px-2 py-1 whitespace-nowrap
-                                opacity-0 group-hover:opacity-100 transition
-                                pointer-events-none">
-                            {% trans "Upcoming holidays in this year." %}
-                        </div>
                     </div>
                 </div>
                 <div class="oh-card-dashboard__body flex-1 overflow-y-auto" hx-get="{% url 'get-upcoming-holidays' %}"
