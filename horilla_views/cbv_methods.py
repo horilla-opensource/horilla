@@ -47,6 +47,7 @@ from openpyxl.utils import get_column_letter
 
 from horilla.config import logger
 from horilla.horilla_middlewares import _thread_locals
+from horilla.methods import handle_no_permission
 from horilla_views.templatetags.generic_template_filters import getattribute
 
 FIELD_WIDGET_MAP = {
@@ -205,14 +206,7 @@ def permission_required(function, perm):
 
         if request.user.has_perm(perm):
             return function(self, *args, **kwargs)
-        else:
-            messages.info(request, "You dont have permission.")
-            previous_url = request.META.get("HTTP_REFERER", "/")
-            key = "HTTP_HX_REQUEST"
-            if key in request.META.keys():
-                return render(request, "decorator_404.html")
-            script = f'<script>window.location.href = "{previous_url}"</script>'
-            return HttpResponse(script)
+        return handle_no_permission(request)
 
     return _function
 
@@ -228,13 +222,9 @@ def check_feature_enabled(function, feature_name, model_class: models.Model):
         enabled = getattr(general_setting, feature_name, False)
         if enabled:
             return function(self, request, *args, **kwargs)
-        messages.info(request, _("Feature is not enabled on the settings"))
-        previous_url = request.META.get("HTTP_REFERER", "/")
-        key = "HTTP_HX_REQUEST"
-        if key in request.META.keys():
-            return render(request, "decorator_404.html")
-        script = f'<script>window.location.href = "{previous_url}"</script>'
-        return HttpResponse(script)
+        return handle_no_permission(
+            request, message=_("Feature is not enabled on the settings")
+        )
 
     return _function
 
