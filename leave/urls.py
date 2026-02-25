@@ -77,6 +77,11 @@ urlpatterns = [
         name="leave-requests-detail-view",
     ),
     path(
+        "employee-leave/",
+        leave_requests.DashboardOnLeaveTable.as_view(),
+        name="employee-leave",
+    ),
+    path(
         "assign-view/",
         assigned_leave.AssignedLeaveViewPage.as_view(),
         name="assign-view",
@@ -307,7 +312,7 @@ urlpatterns = [
     path("one-request-view/<int:id>/", views.one_request_view, name="one-request-view"),
     # path("user-request-filter", views.user_request_filter, name="user-request-filter"),
     path("user-request-one/<int:id>/", views.user_request_one, name="user-request-one"),
-    path("employee-leave/", views.employee_leave, name="employee-leave"),
+    # path("employee-leave/", views.employee_leave, name="employee-leave"),
     path("overall-leave/", views.overall_leave, name="overall-leave"),
     path("leave-dashboard/", views.dashboard, name="leave-dashboard"),
     path(
