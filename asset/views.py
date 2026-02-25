@@ -16,7 +16,7 @@ from django.core.files.base import ContentFile
 from django.core.files.storage import FileSystemStorage
 from django.core.paginator import Paginator
 from django.db.models import ProtectedError
-from django.http import HttpResponse, HttpResponseRedirect, JsonResponse
+from django.http import HttpResponse, JsonResponse
 from django.shortcuts import get_object_or_404, redirect, render
 from django.urls import reverse
 from django.utils.translation import gettext_lazy as _
@@ -71,6 +71,7 @@ from horilla.decorators import (
     permission_required,
 )
 from horilla.group_by import group_by_queryset
+from horilla.http.response import HorillaRedirect
 from horilla.methods import horilla_users_with_perms
 from notifications.signals import notify
 
@@ -274,7 +275,7 @@ def asset_delete(request, asset_id):
         asset = Asset.objects.get(id=asset_id)
     except Asset.DoesNotExist:
         messages.error(request, _("Asset not found"))
-        return HttpResponseRedirect(request.META.get("HTTP_REFERER", "/"))
+        return HorillaRedirect(request)
     asset_cat_id = asset.asset_category_id.id
     status = asset.asset_status
     asset_list_filter = request.GET.get("asset_list")
@@ -301,7 +302,7 @@ def asset_delete(request, asset_id):
             messages.error(request, _("Asset is used in allocation!."))
         else:
             asset_del(request, asset)
-        return HttpResponseRedirect(request.META.get("HTTP_REFERER", "/"))
+        return HorillaRedirect(request)
 
     instances_ids = request.GET.get("requests_ids", "[]")
     instances_list = eval_validate(instances_ids)
@@ -689,7 +690,7 @@ def asset_request_approve(request, req_id):
 
 def reject_request_return(request, asset_request, req_id):
     if not request.META.get("HTTP_HX_REQUEST"):
-        return HttpResponseRedirect(request.META.get("HTTP_REFERER", "/"))
+        return HorillaRedirect(request)
 
     hx_target = request.META.get("HTTP_HX_TARGET")
     if hx_target == "objectDetailsModalW25Target":
@@ -738,7 +739,7 @@ def asset_request_reject(request, req_id):
         asset_request = AssetRequest.objects.get(id=req_id)
     except AssetRequest.DoesNotExist:
         messages.error(request, _("Asset request not found."))
-        return HttpResponseRedirect(request.META.get("HTTP_REFERER", "/"))
+        return HorillaRedirect(request)
 
     asset_request.asset_request_status = "Rejected"
     asset_request.save()
@@ -806,7 +807,7 @@ def asset_allocate_return_request(request, asset_id):
         asset_assign = AssetAssignment.objects.get(id=asset_id)
     except AssetAssignment.DoesNotExist:
         messages.error(request, _("Asset assignment not found."))
-        return HttpResponseRedirect(request.META.get("HTTP_REFERER", "/"))
+        return HorillaRedirect(request)
 
     asset_assign.return_request = True
     asset_assign.save()
@@ -835,7 +836,7 @@ def asset_allocate_return_request(request, asset_id):
         url = reverse("asset-request-allocation-view-search-filter")
         return redirect(f"{url}?{previous_data}")
 
-    return HttpResponseRedirect(request.META.get("HTTP_REFERER", "/"))
+    return HorillaRedirect(request)
 
 
 @login_required
@@ -1261,9 +1262,6 @@ def asset_import(request):
 
     Args:
         request (HttpRequest): The HTTP request object containing metadata about the request.
-
-    Returns:
-        HttpResponseRedirect: A redirect to the asset category view after processing the import.
     """
     if request.META.get("HTTP_HX_REQUEST"):
         return render(request, "asset/asset_import.html")
@@ -1770,7 +1768,7 @@ def asset_history_single_view(request, asset_id):
         asset_assignment = AssetAssignment.objects.get(id=asset_id)
     except AssetAssignment.DoesNotExist:
         messages.error(request, _("Asset assignment not found."))
-        return HttpResponseRedirect(request.META.get("HTTP_REFERER", "/"))
+        return HorillaRedirect(request)
 
     context = {"asset_assignment": asset_assignment}
     requests_ids_json = request.GET.get("requests_ids")
@@ -1855,7 +1853,7 @@ def asset_tab(request, pk):
         employee = Employee.objects.get(id=pk)
     except Employee.DoesNotExist:
         messages.error(request, _("Employee not found."))
-        return HttpResponseRedirect(request.META.get("HTTP_REFERER", "/"))
+        return HorillaRedirect(request)
 
     assets_requests = employee.requested_employee.all()
     assets = employee.allocated_employee.all()
