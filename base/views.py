@@ -29,13 +29,7 @@ from django.core.mail import EmailMessage, EmailMultiAlternatives
 from django.core.management import call_command
 from django.core.validators import validate_ipv46_address
 from django.db.models import ProtectedError, Q
-from django.http import (
-    FileResponse,
-    Http404,
-    HttpResponse,
-    HttpResponseRedirect,
-    JsonResponse,
-)
+from django.http import FileResponse, Http404, HttpResponse, JsonResponse
 from django.shortcuts import get_object_or_404, redirect, render
 from django.template.loader import render_to_string
 from django.urls import reverse, reverse_lazy
@@ -187,6 +181,7 @@ from horilla.decorators import (
     permission_required,
 )
 from horilla.group_by import group_by_queryset
+from horilla.http.response import HorillaRedirect
 from horilla.methods import get_horilla_model_class, remove_dynamic_url
 from horilla_audit.forms import HistoryTrackingFieldsForm
 from horilla_audit.models import AccountBlockUnblock, AuditTag, HistoryTrackingFields
@@ -710,7 +705,7 @@ class HorillaPasswordResetView(PasswordResetView):
                 messages.success(
                     self.request, _("Password reset link sent successfully")
                 )
-                return HttpResponseRedirect(self.request.META.get("HTTP_REFERER", "/"))
+                return HorillaRedirect(self.request)
 
             return redirect(reverse_lazy("reset-send-success"))
 
@@ -736,7 +731,7 @@ class EmployeePasswordResetView(PasswordResetView):
                 is_default_backend = False
             if is_default_backend and not email_backend.configuration:
                 messages.error(self.request, _("Primary mail server is not configured"))
-                return HttpResponseRedirect(self.request.META.get("HTTP_REFERER", "/"))
+                return HorillaRedirect(self.request)
 
             username = form.cleaned_data["email"]
             user = HorillaUser.objects.filter(username=username).first()
@@ -757,11 +752,11 @@ class EmployeePasswordResetView(PasswordResetView):
                 )
             else:
                 messages.error(self.request, _("No user with the given username"))
-            return HttpResponseRedirect(self.request.META.get("HTTP_REFERER", "/"))
+            return HorillaRedirect(self.request)
 
         except Exception as e:
             messages.error(self.request, f"Something went wrong.....")
-            return HttpResponseRedirect(self.request.META.get("HTTP_REFERER", "/"))
+            return HorillaRedirect(self.request)
 
 
 setattr(PasswordResetConfirmView, "template_name", "reset_password.html")
@@ -1322,7 +1317,7 @@ def user_group_permission_remove(request, pid, gid):
     group = Group.objects.get(id=1)
     permission = Permission.objects.get(id=2)
     group.permissions.remove(permission)
-    return HttpResponseRedirect(request.META.get("HTTP_REFERER", "/"))
+    return HorillaRedirect(request)
 
 
 @login_required
@@ -1338,7 +1333,7 @@ def group_remove_user(request, uid, gid):
     group = Group.objects.get(id=gid)
     user = HorillaUser.objects.get(id=uid)
     group.user_set.remove(user)
-    return HttpResponseRedirect(request.META.get("HTTP_REFERER", "/"))
+    return HorillaRedirect(request)
 
 
 @login_required
@@ -1407,7 +1402,7 @@ def object_delete(request, obj_id, **kwargs):
             return_part = kwargs.get("HttpResponse")
         return HttpResponse(f"{return_part}")
     else:
-        return HttpResponseRedirect(request.META.get("HTTP_REFERER", "/"))
+        return HorillaRedirect(request)
 
 
 @login_required
@@ -1440,9 +1435,7 @@ def object_duplicate(request, obj_id, **kwargs):
         messages.error(request, f"{model._meta.verbose_name} object does not exist.")
         if request.headers.get("HX-Request"):
             return HttpResponse(status=204, headers={"HX-Refresh": "true"})
-        else:
-            current_url = request.META.get("HTTP_REFERER", "/")
-            return HttpResponseRedirect(current_url)
+        return HorillaRedirect(request)
 
     form = form_class(instance=original_object)
     search_words = (
@@ -2524,7 +2517,7 @@ def rotating_work_type_assign_redirect(request, obj_id=None, employee_id=None):
     elif hx_target:
         return HttpResponse("<script>window.location.reload()</script>")
     else:
-        return HttpResponseRedirect(request.META.get("HTTP_REFERER", "/"))
+        return HorillaRedirect(request)
 
 
 @login_required
@@ -3399,7 +3392,7 @@ def rotating_shift_assign_redirect(request, obj_id, employee_id):
     elif hx_target:
         return HttpResponse("<script>window.location.reload()</script>")
     else:
-        return HttpResponseRedirect(request.META.get("HTTP_REFERER", "/"))
+        return HorillaRedirect(request)
 
 
 @login_required
@@ -3951,7 +3944,7 @@ def work_type_request(request):
 def handle_wtr_redirect(request, work_type_request):
     hx_request = request.META.get("HTTP_HX_REQUEST") == "true"
     if not hx_request:
-        return HttpResponseRedirect(request.META.get("HTTP_REFERER", "/"))
+        return HorillaRedirect(request)
 
     current_url = "/" + "/".join(
         request.META.get("HTTP_HX_CURRENT_URL", "").split("/")[3:]
@@ -3993,7 +3986,7 @@ def work_type_request_cancel(request, id):
     work_type_request = WorkTypeRequest.find(id)
     if not work_type_request:
         messages.error(request, _("Work type request not found."))
-        return HttpResponseRedirect(request.META.get("HTTP_REFERER", "/"))
+        return HorillaRedirect(request)
 
     if not (
         is_reportingmanger(request, work_type_request)
@@ -4002,7 +3995,7 @@ def work_type_request_cancel(request, id):
         and work_type_request.approved == False
     ):
         messages.error(request, _("You don't have permission"))
-        return HttpResponseRedirect(request.META.get("HTTP_REFERER", "/"))
+        return HorillaRedirect(request)
     work_type_request.canceled = True
     work_type_request.approved = False
     work_info = EmployeeWorkInformation.objects.filter(
@@ -4079,7 +4072,7 @@ def work_type_request_approve(request, id):
     work_type_request = WorkTypeRequest.find(id)
     if not work_type_request:
         messages.error(request, _("Work type request not found."))
-        return HttpResponseRedirect(request.META.get("HTTP_REFERER", "/"))
+        return HorillaRedirect(request)
     if not (
         is_reportingmanger(request, work_type_request)
         or request.user.has_perm("approve_worktyperequest")
@@ -4087,7 +4080,7 @@ def work_type_request_approve(request, id):
         and not work_type_request.approved
     ):
         messages.error(request, _("You don't have permission"))
-        return HttpResponseRedirect(request.META.get("HTTP_REFERER", "/"))
+        return HorillaRedirect(request)
     """
     Here the request will be approved, can send mail right here
     """
@@ -4868,7 +4861,7 @@ def shift_request_cancel(request, id):
     shift_request = ShiftRequest.find(id)
     if not shift_request:
         messages.error(request, _("Shift request not found."))
-        return HttpResponseRedirect(request.META.get("HTTP_REFERER", "/"))
+        return HorillaRedirect(request)
     if not (
         is_reportingmanger(request, shift_request)
         or request.user.has_perm("base.cancel_shiftrequest")
@@ -4876,7 +4869,7 @@ def shift_request_cancel(request, id):
         and shift_request.approved == False
     ):
         messages.error(request, _("You don't have permission"))
-        return HttpResponseRedirect(request.META.get("HTTP_REFERER", "/"))
+        return HorillaRedirect(request)
     today_date = datetime.today().date()
     if (
         shift_request.approved
@@ -4926,7 +4919,7 @@ def shift_request_cancel(request, id):
             redirect=reverse("shift-request-view") + f"?id={shift_request.id}",
             icon="close",
         )
-    return HttpResponseRedirect(request.META.get("HTTP_REFERER", "/"))
+    return HorillaRedirect(request)
 
 
 @login_required
@@ -4964,7 +4957,7 @@ def shift_allocation_request_cancel(request, id):
         icon="close",
     )
 
-    return HttpResponseRedirect(request.META.get("HTTP_REFERER", "/"))
+    return HorillaRedirect(request)
 
 
 @login_required
@@ -5039,7 +5032,7 @@ def shift_request_approve(request, id):
     shift_request = ShiftRequest.find(id)
     if not shift_request:
         messages.error(request, _("Shift request not found."))
-        return HttpResponseRedirect(request.META.get("HTTP_REFERER", "/"))
+        return HorillaRedirect(request)
 
     user = request.user
     if not (
@@ -5049,14 +5042,14 @@ def shift_request_approve(request, id):
         and not shift_request.approved
     ):
         messages.error(request, _("You don't have permission"))
-        return HttpResponseRedirect(request.META.get("HTTP_REFERER", "/"))
+        return HorillaRedirect(request)
 
     if shift_request.is_any_request_exists():
         messages.error(
             request,
             _("An approved shift request already exists during this time period."),
         )
-        return HttpResponseRedirect(request.META.get("HTTP_REFERER", "/"))
+        return HorillaRedirect(request)
 
     today_date = datetime.today().date()
     if not shift_request.is_permanent_shift:
@@ -5094,7 +5087,7 @@ def shift_request_approve(request, id):
             icon="checkmark",
         )
 
-    return HttpResponseRedirect(request.META.get("HTTP_REFERER", "/"))
+    return HorillaRedirect(request)
 
 
 @login_required
@@ -5123,13 +5116,13 @@ def shift_allocation_request_approve(request, id):
             redirect=reverse("shift-request-view") + f"?id={shift_request.id}",
             icon="checkmark",
         )
-        return HttpResponseRedirect(request.META.get("HTTP_REFERER", "/"))
+        return HorillaRedirect(request)
     else:
         messages.error(
             request,
             _("An approved shift request already exists during this time period."),
         )
-        return HttpResponseRedirect(request.META.get("HTTP_REFERER", "/"))
+        return HorillaRedirect(request)
 
 
 @login_required
@@ -5241,7 +5234,7 @@ def shift_request_delete(request, id):
         else:
             return HttpResponse(status=204, headers={"HX-Refresh": "true"})
 
-    return HttpResponseRedirect(request.META.get("HTTP_REFERER", "/"))
+    return HorillaRedirect(request)
 
 
 @login_required
@@ -5481,7 +5474,7 @@ def general_settings(request):
         if form.is_valid():
             form.save()
             messages.success(request, _("Settings updated."))
-            return HttpResponseRedirect(request.META.get("HTTP_REFERER", "/"))
+            return HorillaRedirect(request)
 
     return render(
         request,
@@ -6532,11 +6525,20 @@ def delete_shift_comment_file(request):
     """
     Used to delete attachment
     """
-    ids = request.GET.getlist("ids")
-    shift_id = request.GET["shift_id"]
-    comment_id = request.GET["comment_id"]
+
+    try:
+        ids = [int(i) for i in request.GET.getlist("ids") if i.isdigit()]
+        shift_id = int(request.GET["shift_id"])
+        comment_id = int(request.GET["comment_id"])
+    except (KeyError, ValueError):
+        return HorillaRedirect(
+            request,
+            message=_("Invalid Request"),
+        )
+
     comment = ShiftRequestComment.find(comment_id)
     script = ""
+
     if (
         request.user.employee_get == comment.employee_id
         or request.user.has_perm("base.delete_baserequestfile")
@@ -6546,7 +6548,14 @@ def delete_shift_comment_file(request):
         messages.success(request, _("File deleted successfully"))
     else:
         messages.warning(request, _("You don't have permission"))
-        script = f"""<span hx-get="/view-shift-comment/{shift_id}/" hx-trigger="load" hx-target="#commentContainer" data-target="#activitySidebar"></span>"""
+        script = f"""
+        <span hx-get="/view-shift-comment/{shift_id}/"
+            hx-trigger="load"
+            hx-target="#commentContainer"
+            data-target="#activitySidebar">
+        </span>
+        """
+
     return HttpResponse(script)
 
 
@@ -6592,11 +6601,19 @@ def delete_work_type_comment_file(request):
     """
     Used to delete attachment
     """
-    ids = request.GET.getlist("ids")
-    request_id = request.GET["request_id"]
-    comment_id = request.GET["comment_id"]
+
+    try:
+        ids = [int(i) for i in request.GET.getlist("ids") if i.isdigit()]
+        request_id = int(request.GET["request_id"])
+        comment_id = int(request.GET["comment_id"])
+    except (KeyError, ValueError):
+        return HorillaRedirect(
+            request, message=_("Invalid Request"), redirect_to="work-type-request-view"
+        )
+
     comment = WorkTypeRequestComment.find(comment_id)
     script = ""
+
     if (
         request.user.employee_get == comment.employee_id
         or request.user.has_perm("base.delete_baserequestfile")
@@ -6606,7 +6623,14 @@ def delete_work_type_comment_file(request):
         messages.success(request, _("File deleted successfully"))
     else:
         messages.warning(request, _("You don't have permission"))
-        script = f"""<span hx-get="/view-work-type-comment/{request_id}/" hx-trigger="load" hx-target="#commentContainer" data-target="#activitySidebar"></span>"""
+        script = f"""
+        <span hx-get="/view-work-type-comment/{request_id}/"
+            hx-trigger="load"
+            hx-target="#commentContainer"
+            data-target="#activitySidebar">
+        </span>
+        """
+
     return HttpResponse(script)
 
 
@@ -6793,7 +6817,7 @@ def pagination_settings_view(request):
                 messages.success(request, _("Default pagination updated."))
     if request.META.get("HTTP_HX_REQUEST"):
         return HttpResponse()
-    return HttpResponseRedirect(request.META.get("HTTP_REFERER", "/"))
+    return HorillaRedirect(request)
 
 
 @login_required
