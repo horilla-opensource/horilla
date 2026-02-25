@@ -1,14 +1,15 @@
-from django.contrib import messages
-from django.http import HttpResponse
-from django.shortcuts import render
+"""CBV decorators for offboarding permission checks."""
 
 from horilla.decorators import decorator_with_arguments
 from horilla.horilla_middlewares import _thread_locals
+from horilla.methods import handle_no_permission
 from offboarding.models import Offboarding, OffboardingStage, OffboardingTask
 
 
 @decorator_with_arguments
 def any_manager_can_enter(function, perm, offboarding_employee_can_enter=False):
+    """Allow access if user has perm, is offboarding employee, or is manager on any offboarding/stage/task."""
+
     def _function(self, *args, **kwargs):
         request = getattr(_thread_locals, "request")
         if not getattr(self, "request", None):
@@ -24,19 +25,16 @@ def any_manager_can_enter(function, perm, offboarding_employee_can_enter=False):
             )
         ):
             return function(self, *args, **kwargs)
-        else:
-            previous_url = request.META.get("HTTP_REFERER", "/")
-            script = f'<script>window.location.href = "{previous_url}"</script>'
-            key = "HTTP_HX_REQUEST"
-            if key in request.META.keys():
-                return render(self, "decorator_404.html")
-            return HttpResponse(script)
+
+        return handle_no_permission(request)
 
     return _function
 
 
 @decorator_with_arguments
 def offboarding_manager_can_enter(function, perm):
+    """Allow access if user has perm or is manager on an Offboarding."""
+
     def _function(self, *args, **kwargs):
         request = getattr(_thread_locals, "request")
         if not getattr(self, "request", None):
@@ -47,20 +45,16 @@ def offboarding_manager_can_enter(function, perm):
             or Offboarding.objects.filter(managers=employee).exists()
         ):
             return function(self, *args, **kwargs)
-        else:
-            messages.info(request, "You dont have permission.")
-            previous_url = request.META.get("HTTP_REFERER", "/")
-            script = f'<script>window.location.href = "{previous_url}"</script>'
-            key = "HTTP_HX_REQUEST"
-            if key in request.META.keys():
-                return render(self, "decorator_404.html")
-            return HttpResponse(script)
+
+        return handle_no_permission(request)
 
     return _function
 
 
 @decorator_with_arguments
 def offboarding_or_stage_manager_can_enter(function, perm):
+    """Allow access if user has perm or is manager on an Offboarding or OffboardingStage."""
+
     def _function(self, *args, **kwargs):
         request = getattr(_thread_locals, "request")
         if not getattr(self, "request", None):
@@ -72,13 +66,7 @@ def offboarding_or_stage_manager_can_enter(function, perm):
             or OffboardingStage.objects.filter(managers=employee).exists()
         ):
             return function(self, *args, **kwargs)
-        else:
-            messages.info(request, "You dont have permission.")
-            previous_url = request.META.get("HTTP_REFERER", "/")
-            key = "HTTP_HX_REQUEST"
-            if key in request.META.keys():
-                return render(request, "decorator_404.html")
-            script = f'<script>window.location.href = "{previous_url}"</script>'
-            return HttpResponse(script)
+
+        return handle_no_permission(request)
 
     return _function
