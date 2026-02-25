@@ -46,6 +46,7 @@ from horilla.decorators import (
     permission_required,
 )
 from horilla.group_by import group_by_queryset
+from horilla.methods import handle_no_permission
 from horilla_automations.methods.methods import generate_choices
 from horilla_automations.methods.serialize import serialize_form
 from notifications.signals import notify
@@ -1847,14 +1848,7 @@ def feedback_detailed_view(request, id, **kwargs):
             "today": datetime.datetime.today().date(),
         }
         return render(request, "feedback/feedback_detailed_view.html", context)
-    else:
-        messages.info(request, _("You dont have permission."))
-        previous_url = request.META.get("HTTP_REFERER", "/")
-        script = f'<script>window.location.href = "{previous_url}"</script>'
-        key = "HTTP_HX_REQUEST"
-        if key in request.META.keys():
-            return render(request, "decorator_404.html")
-        return HttpResponse(script)
+    return handle_no_permission(request)
 
 
 @login_required
@@ -1882,14 +1876,7 @@ def feedback_detailed_view_answer(request, id, emp_id):
             "kr_feedbacks": kr_feedbacks,
         }
         return render(request, "feedback/feedback_detailed_view_answer.html", context)
-    else:
-        messages.info(request, _("You dont have permission."))
-        previous_url = request.META.get("HTTP_REFERER", "/")
-        script = f'<script>window.location.href = "{previous_url}"</script>'
-        key = "HTTP_HX_REQUEST"
-        if key in request.META.keys():
-            return render(request, "decorator_404.html")
-        return HttpResponse(script)
+    return handle_no_permission(request)
 
 
 @login_required
@@ -2265,10 +2252,10 @@ def question_creation(request, id):
 
             if obj_question.question_type == "4":
                 # checking the question type is multichoice
-                option_a = request.POST.get("option_a")
-                option_b = request.POST.get("option_b")
-                option_c = request.POST.get("option_c")
-                option_d = request.POST.get("option_d")
+                option_a = form.cleaned_data["option_a"]
+                option_b = form.cleaned_data["option_b"]
+                option_c = form.cleaned_data["option_c"]
+                option_d = form.cleaned_data["option_d"]
                 QuestionOptions(
                     question_id=obj_question,
                     option_a=option_a,
