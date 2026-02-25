@@ -243,7 +243,8 @@ def absolute_url(url, request):
         return ""
     if url.startswith("http"):
         return url
-    return f"{request.scheme}://{request.get_host()}{url}"
+
+    return request.build_absolute_uri(url)
 
 
 @register.filter
