@@ -22,6 +22,7 @@ from employee.models import (
     ProfileEditFeature,
 )
 from horilla.decorators import hx_request_required, login_required, permission_required
+from horilla.http.response import HorillaRedirect
 from horilla.methods import get_horilla_model_class
 
 
@@ -144,7 +145,7 @@ def update_selected_company(request):
         "id": company.id,
     }
     request.session["selected_company_instance"] = company
-    return HttpResponse("<script>window.location.reload();</script>")
+    return HorillaRedirect(request)
 
 
 urlpatterns.append(

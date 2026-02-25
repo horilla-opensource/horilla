@@ -2674,7 +2674,7 @@ def employee_type_create(request):
             form.save()
             form = EmployeeTypeForm()
             messages.success(request, _("Employee type created."))
-            return HttpResponse("<script>window.location.reload();</script>")
+            return HorillaRedirect(request)
     return render(
         request,
         "base/employee_type/employee_type_form.html",
@@ -2700,7 +2700,7 @@ def employee_type_update(request, id, **kwargs):
         if form.is_valid():
             form.save()
             messages.success(request, _("Employee type updated."))
-            return HttpResponse("<script>window.location.reload();</script>")
+            return HorillaRedirect(request)
     return render(
         request,
         "base/employee_type/employee_type_form.html",
@@ -2744,7 +2744,7 @@ def employee_shift_create(request):
             messages.success(
                 request, _("Employee Shift has been created successfully!")
             )
-            return HttpResponse("<script>window.location.reload();</script>")
+            return HorillaRedirect(request)
     return render(
         request,
         "base/shift/shift_form.html",
@@ -2769,7 +2769,7 @@ def employee_shift_update(request, id, **kwargs):
         if form.is_valid():
             form.save()
             messages.success(request, _("Shift updated"))
-            return HttpResponse("<script>window.location.reload();</script>")
+            return HorillaRedirect(request)
     return render(
         request, "base/shift/shift_form.html", {"form": form, "shift": employee_shift}
     )
@@ -2811,7 +2811,7 @@ def employee_shift_schedule_create(request):
             messages.success(
                 request, _("Employee Shift Schedule has been created successfully!")
             )
-            return HttpResponse("<script>window.location.reload();</script>")
+            return HorillaRedirect(request)
 
     return render(
         request, "base/shift/schedule_form.html", {"form": form, "shifts": shifts}
@@ -2837,7 +2837,7 @@ def employee_shift_schedule_update(request, id, **kwargs):
         if form.is_valid():
             form.save()
             messages.success(request, _("Shift schedule created."))
-            return HttpResponse("<script>window.location.reload();</script>")
+            return HorillaRedirect(request)
     return render(
         request,
         "base/shift/schedule_form.html",
@@ -2874,7 +2874,7 @@ def rotating_shift_create(request):
             form.save()
             form = RotatingShiftForm()
             messages.success(request, _("Rotating shift created."))
-            return HttpResponse("<script>window.location.reload();</script>")
+            return HorillaRedirect(request)
     else:
         form = RotatingShiftForm()
     return render(
@@ -2902,7 +2902,7 @@ def rotating_shift_update(request, id, **kwargs):
             form.save()
             form = RotatingShiftForm()
             messages.success(request, _("Rotating shift updated."))
-            return HttpResponse("<script>window.location.reload();</script>")
+            return HorillaRedirect(request)
     return render(
         request,
         "base/rotating_shift/htmx/rotating_shift_form.html",
@@ -7126,7 +7126,7 @@ def holiday_creation(request):
             form = HolidayForm()
             messages.success(request, _("New holiday created successfully.."))
             if Holidays.objects.filter().count() == 1:
-                return HttpResponse("<script>window.location.reload();</script>")
+                return HorillaRedirect(request)
     return render(
         request, "holiday/holiday_form.html", {"form": form, "pd": previous_data}
     )
@@ -7486,7 +7486,7 @@ def holiday_delete(request, obj_id):
     except ProtectedError:
         messages.error(request, _("Related entries exists"))
     if not Holidays.objects.filter():
-        return HttpResponse("<script>window.location.reload();</script>")
+        return HorillaRedirect(request)
     return redirect(f"/holiday-filter?{query_string}")
 
 
@@ -7563,7 +7563,7 @@ def company_leave_creation(request):
             form.save()
             messages.success(request, _("New company leave created successfully.."))
             if CompanyLeaves.objects.filter().count() == 1:
-                return HttpResponse("<script>window.location.reload();</script>")
+                return HorillaRedirect(request)
     return render(
         request, "company_leave/company_leave_creation_form.html", {"form": form}
     )
@@ -7683,7 +7683,7 @@ def company_leave_delete(request, id):
     except ProtectedError:
         messages.error(request, _("Related entries exists"))
     if not CompanyLeaves.objects.filter():
-        return HttpResponse("<script>window.location.reload();</script>")
+        return HorillaRedirect(request)
     return redirect(f"/company-leave-filter?{query_string}")
 
 

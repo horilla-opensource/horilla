@@ -14,6 +14,7 @@ from base.forms import AnnouncementForm
 from base.methods import closest_numbers
 from base.models import Announcement, AnnouncementView, Attachment
 from employee.models import Employee
+from horilla.http.response import HorillaRedirect
 from horilla_auth.models import HorillaUser
 from horilla_views.cbv_methods import login_required, permission_required
 from horilla_views.generic.cbv.views import (
@@ -142,7 +143,7 @@ class AnnouncementFormView(HorillaFormView):
             )
 
             messages.success(self.request, message)
-            return HttpResponse("<script>window.location.reload();</script>")
+            return HorillaRedirect(self.request)
 
         return super().form_valid(form)
 
