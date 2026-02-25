@@ -18,7 +18,7 @@ from datetime import date, datetime, timedelta
 from django.contrib import messages
 from django.core.paginator import Paginator
 from django.db.models import Q
-from django.http import HttpResponse, HttpResponseRedirect, JsonResponse
+from django.http import HttpResponse, JsonResponse
 from django.shortcuts import redirect, render
 from django.urls import reverse
 from django.utils.translation import gettext_lazy as _
@@ -65,6 +65,7 @@ from horilla.decorators import (
     manager_can_enter,
     permission_required,
 )
+from horilla.http import HorillaRedirect
 from notifications.signals import notify
 
 # Create your views here.
@@ -374,7 +375,7 @@ def attendance_delete(request, obj_id):
         except Exception as error:
             messages.error(request, error)
             messages.error(request, _("You cannot delete this attendance"))
-    return HttpResponseRedirect(request.META.get("HTTP_REFERER", "/"))
+    return HorillaRedirect(request)
 
 
 @require_http_methods(["POST"])
@@ -607,7 +608,7 @@ def attendance_overtime_delete(request, obj_id):
     except Exception as e:
         messages.error(request, e)
         messages.error(request, _("You cannot delete this attendance OT"))
-    return HttpResponseRedirect(request.META.get("HTTP_REFERER", "/"))
+    return HorillaRedirect(request)
 
 
 @login_required
@@ -1090,7 +1091,7 @@ def validate_this_attendance(request, obj_id):
             redirect=reverse("view-my-attendance"),
             icon="checkmark",
         )
-        return HttpResponseRedirect(request.META.get("HTTP_REFERER", "/"))
+        return HorillaRedirect(request)
     return HttpResponse("You Dont Have Permission")
 
 
@@ -1123,7 +1124,7 @@ def revalidate_this_attendance(request, obj_id):
                 redirect=reverse("view-my-attendance"),
                 icon="refresh",
             )
-        return HttpResponseRedirect(request.META.get("HTTP_REFERER", "/"))
+        return HorillaRedirect(request)
     return HttpResponse("You Cannot Request for others attendance")
 
 
@@ -1150,7 +1151,7 @@ def approve_overtime(request, obj_id):
             redirect=reverse("attendance-overtime-view"),
             icon="checkmark",
         )
-    return HttpResponseRedirect(request.META.get("HTTP_REFERER", "/"))
+    return HorillaRedirect(request)
 
 
 @login_required

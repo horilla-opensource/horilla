@@ -6,12 +6,11 @@ This module is used to register the endpoints to the attendance requests
 
 import copy
 import json
-from datetime import date, datetime, time
 from urllib.parse import parse_qs
 
 from django.contrib import messages
 from django.db.models import ProtectedError, Q
-from django.http import HttpResponse, HttpResponseRedirect, JsonResponse
+from django.http import HttpResponse, JsonResponse
 from django.shortcuts import redirect, render
 from django.template.loader import render_to_string
 from django.urls import reverse
@@ -53,6 +52,7 @@ from horilla.decorators import (
     manager_can_enter,
     permission_required,
 )
+from horilla.http import HorillaRedirect
 from notifications.signals import notify
 
 
@@ -570,7 +570,7 @@ def approve_validate_attendance_request(request, attendance_id):
             redirect=reverse("request-attendance-view") + f"?id={attendance.id}",
             icon="checkmark-circle-outline",
         )
-    return HttpResponseRedirect(request.META.get("HTTP_REFERER", "/"))
+    return HorillaRedirect(request)
 
 
 @login_required
@@ -610,7 +610,7 @@ def cancel_attendance_request(request, attendance_id):
             )
     except (Attendance.DoesNotExist, OverflowError):
         messages.error(request, _("Attendance request not found"))
-    return HttpResponseRedirect(request.META.get("HTTP_REFERER", "/"))
+    return HorillaRedirect(request)
 
 
 @login_required
