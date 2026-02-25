@@ -43,11 +43,10 @@
                             <ul class="flex gap-2 text-lg ps-4 mb-4">
                                 {% for i in "12345" %}
                                   <li>
-                                    <i class="fa-solid fa-star {% if i <= value.0.answer %}text-[#FFA800]{% else %}text-[#dfdfdf]{% endif %}"></i>
+                                    <i class="fa-solid fa-star" style="{% if i <= value.0.answer %}color:#FFA800{% else %}color:#dfdfdf{% endif %}"></i>
                                   </li>
                                 {% endfor %}
                               </ul>
-
                           {% elif value.1.type == '3' %}
                             <div class="oh-input__group">
                               <div class="oh-input-picker-group">
