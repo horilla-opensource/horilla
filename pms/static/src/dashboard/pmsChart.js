@@ -1,319 +1,198 @@
+// PMS dashboard Charts.js
+
 $(document).ready(function () {
-	const objectiveChart = document.getElementById("objectiveChart");
-	const themedOptions = ChartTheme.getThemedOptions();
-	// data dictionary
-	var objectiveStatusData = {
-		labels: [],
-		datasets: [
-			{
-				label: "objective",
-				data: [],
-				backgroundColor: ["#8de5b3", "#f0a8a6", "#8ed1f7", "#f8e08e", "#c2c7cc"],
-				hoverOffset: 3,
-				borderRadius: 10,
-				borderWidth: 0
-			},
-		],
-		message: "",
-	};
 
-	// chart constructor
-	if (objectiveChart != null) {
-		var objectiveStatusChart = new Chart(objectiveChart, {
-			type: "doughnut",
-			data: objectiveStatusData,
-			options: {
-				responsive: true,
-				maintainAspectRatio: false,
-				plugins: {
-					...themedOptions.plugins,
-				},
-				onClick: (e, activeEls) => {
-					if (!activeEls || activeEls.length === 0) return;
-					let datasetIndex = activeEls[0].datasetIndex;
-					let dataIndex = activeEls[0].index;
-					let datasetLabel = e.chart.data.datasets[datasetIndex].label;
-					let value = e.chart.data.datasets[datasetIndex].data[dataIndex];
-					let label = e.chart.data.labels[dataIndex];
-					let params = "?status=" + label + "&archive=false" + "&dashboard=True";
+    /* ============================================================
+       CONFIG
+    ============================================================ */
 
-					$.ajax({
-						url: "/pms/objective-dashboard-view" + params,
-						type: "GET",
-						headers: {
-							"X-Requested-With": "XMLHttpRequest",
-						},
-						success: (response) => {
-							$("#dashboard").html(response);
-						},
-						error: (error) => {
-							console.log("Error", error);
-						},
-					});
-					$("#back_button").removeClass("d-none");
-				},
-			},
-			plugins: [{
-				afterRender: (chart) => {
-					if (typeof emptyChart === "function") {
-						emptyChart(chart);
-					}
-				}
-			}],
-		});
+    const COLORS = ["#8de5b3", "#f0a8a6", "#8ed1f7", "#f8e08e", "#c2c7cc"];
+    const CHART_TYPES = ["line", "bar", "doughnut", "pie"];
 
-		window["objectiveStatusChart"] = objectiveStatusChart
-		ChartTheme.observe("objectiveStatusChart")
-	}
 
-	function objectiveStatusDataUpdate(data) {
-		objectiveStatusData.labels = Array.isArray(data?.objective_label) ? data.objective_label : [];
-		objectiveStatusData.datasets[0].data = Array.isArray(data?.objective_value) ? data.objective_value : [];
-		objectiveStatusData.message = data.message;
-		if (objectiveStatusChart) {
-			objectiveStatusChart.update();
-		}
-	}
+    /* ============================================================
+       UTILITIES
+    ============================================================ */
 
-	$.ajax({
-		url: "/pms/dashboard-objective-status",
-		type: "GET",
-		dataType: "json",
-		headers: {
-			"X-Requested-With": "XMLHttpRequest",
-		},
-		success: (response) => {
-			objectiveStatusDataUpdate(response);
-		},
-		error: (error) => {
-			console.log("Error", error);
-		},
-	});
+    function cycleChartType(chart) {
+        if (!chart) return;
 
-	// chart change
-	$("#objective-status-chart").click(function (e) {
-		if (!objectiveStatusChart) return;
-		var chartType = objectiveStatusChart.config.type;
-		if (chartType === "line") {
-			chartType = "bar";
-		} else if (chartType === "bar") {
-			chartType = "doughnut";
-		} else if (chartType === "doughnut") {
-			chartType = "pie";
-		} else if (chartType === "pie") {
-			chartType = "line";
-		}
-		objectiveStatusChart.config.type = chartType;
-		if (objectiveStatusChart) {
-			objectiveStatusChart.update();
-		}
+        const currentIndex = CHART_TYPES.indexOf(chart.config.type);
+        const nextIndex = (currentIndex + 1) % CHART_TYPES.length;
 
-	});
+        chart.config.type = CHART_TYPES[nextIndex];
+        chart.update();
+    }
 
-	// objecitve chart section end
+    function fetchChartData(url, onSuccess) {
+        $.ajax({
+            url,
+            type: "GET",
+            dataType: "json",
+            headers: { "X-Requested-With": "XMLHttpRequest" },
+            success: onSuccess,
+            error: (error) => console.error("Chart Error:", error)
+        });
+    }
 
-	const keyResultStatusChartCtx = document.getElementById("keyResultChart");
 
-	// data dictionary
-	var keyResultStatusData = {
-		labels: [],
-		datasets: [
-			{
-				label: "key result",
-				data: [],
-				backgroundColor: ["#8de5b3", "#f0a8a6", "#8ed1f7", "#f8e08e", "#c2c7cc"],
-				hoverOffset: 3,
-				borderRadius: 10,
-				borderWidth: 0
-			},
-		],
-		message: "",
-	};
+    /* ============================================================
+       CHART FACTORY
+    ============================================================ */
 
-	// chart constructor
-	if (keyResultStatusChartCtx != null) {
-		var keyResultStatusChart = new Chart(keyResultStatusChartCtx, {
-			type: "pie",
-			data: keyResultStatusData,
-			options: {
-				responsive: true,
-				maintainAspectRatio: false,
-				plugins: {
-					...themedOptions.plugins,
-				},
-				onClick: (e, activeEls) => {
-					if (!activeEls || activeEls.length === 0) return;
-					let datasetIndex = activeEls[0].datasetIndex;
-					let dataIndex = activeEls[0].index;
-					let datasetLabel = e.chart.data.datasets[datasetIndex].label;
-					let value = e.chart.data.datasets[datasetIndex].data[dataIndex];
-					let label = e.chart.data.labels[dataIndex];
-					let params = "?status=" + label + "&archive=false";
+    function createStatusChart({
+        elementId,
+        label,
+        defaultType,
+        dataUrl,
+        viewUrl,
+        labelKey,
+        valueKey,
+        useAjaxNavigation = true,
+        extraParams = ""
+    }) {
 
-					$.ajax({
-						url: "/pms/key-result-view" + params,
-						type: "GET",
-						headers: {
-							"X-Requested-With": "XMLHttpRequest",
-						},
-						success: (response) => {
-							$("#dashboard").html(response);
-						},
-						error: (error, response) => {
-							console.log("Error", error);
-						},
-					});
-					$("#back_button").removeClass("d-none");
-				},
-			},
-			plugins: [{
-				afterRender: (chart) => {
-					if (typeof emptyChart === "function") {
-						emptyChart(chart);
-					}
-				}
-			}],
-		});
-		window["keyResultStatusChart"] = keyResultStatusChart
-		ChartTheme.observe("keyResultStatusChart")
-	}
+        const ctx = document.getElementById(elementId);
+        if (!ctx) return null;
 
-	function keyResultStatusDataUpdate(data) {
-		keyResultStatusData.labels = (data && data.key_result_label) ? data.key_result_label : [];
-		keyResultStatusData.datasets[0].data = (data && data.key_result_value) ? data.key_result_value : [];
-		keyResultStatusData.message = data.message;
-		if (keyResultStatusChart) {
-			keyResultStatusChart.update();
-		}
-	}
+        const themedOptions = ChartTheme.getThemedOptions();
 
-	$.ajax({
-		url: "/pms/dashbord-key-result-status",
-		type: "GET",
-		dataType: "json",
-		headers: {
-			"X-Requested-With": "XMLHttpRequest",
-		},
-		success: (response) => {
-			keyResultStatusDataUpdate(response);
-		},
-		error: (error) => {
-			console.log("Error", error);
-		},
-	});
+        const chartData = {
+            labels: [],
+            datasets: [{
+                label,
+                data: [],
+                backgroundColor: COLORS,
+                hoverOffset: 3,
+                borderRadius: 10,
+                borderWidth: 0
+            }],
+            message: ""
+        };
 
-	// chart change
-	$("#key-result-status-chart").click(function (e) {
-		if (!keyResultStatusChart) return;
-		var chartType = keyResultStatusChart.config.type;
-		if (chartType === "line") {
-			chartType = "bar";
-		} else if (chartType === "bar") {
-			chartType = "doughnut";
-		} else if (chartType === "doughnut") {
-			chartType = "pie";
-		} else if (chartType === "pie") {
-			chartType = "line";
-		}
-		keyResultStatusChart.config.type = chartType;
-		if (keyResultStatusChart) {
-			keyResultStatusChart.update();
-		}
-	});
+        const chart = new Chart(ctx, {
+            type: defaultType,
+            data: chartData,
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                plugins: {
+                    ...themedOptions.plugins,
+                    legend: {
+                        ...themedOptions.plugins?.legend,
+                        position: "bottom",
+                        labels: {
+                            ...themedOptions.plugins?.legend?.labels,
+                            usePointStyle: true,
+                            pointStyle: "circle",
+                            padding: 15
+                        }
+                    }
+                },
+                onClick: (e, activeEls) => {
+                    if (!activeEls?.length) return;
 
-	// key result chart section
+                    const index = activeEls[0].index;
+                    const selectedLabel = e.chart.data.labels[index];
 
-	const feedbackStatusChartCtx = document.getElementById("feedbackChart");
+                    const params =
+                        `?status=${encodeURIComponent(selectedLabel)}&archive=false${extraParams}`;
 
-	// data dictionary
-	var feedbackStatusData = {
-		labels: [],
-		datasets: [
-			{
-				label: "Feedback",
-				data: [],
-				backgroundColor: ["#8de5b3", "#f0a8a6", "#8ed1f7", "#f8e08e", "#c2c7cc"],
-				hoverOffset: 3,
-				borderRadius: 10,
-				borderWidth: 0
-			},
-		],
-		message: "",
-	};
+                    if (!viewUrl) return
 
-	// chart constructor
-	if (feedbackStatusChartCtx != null) {
-		var feedbackStatusChart = new Chart(feedbackStatusChartCtx, {
-			type: "pie",
-			data: feedbackStatusData,
-			options: {
-				responsive: true,
-				maintainAspectRatio: false,
-				plugins: {
-					...themedOptions.plugins,
-				},
-				onClick: (e, activeEls) => {
-					if (!activeEls || activeEls.length === 0) return;
-					let datasetIndex = activeEls[0].datasetIndex;
-					let dataIndex = activeEls[0].index;
-					let datasetLabel = e.chart.data.datasets[datasetIndex].label;
-					let value = e.chart.data.datasets[datasetIndex].data[dataIndex];
-					let label = e.chart.data.labels[dataIndex];
-					let params = "?status=" + label + "&archive=false";
-					window.location.href = "/pms/feedback-view" + params;
-				},
-			},
-			plugins: [{
-				afterRender: (chart) => {
-					if (typeof emptyChart === "function") {
-						emptyChart(chart);
-					}
-				}
-			}],
-		});
-		window["feedbackStatusChart"] = feedbackStatusChart
-		ChartTheme.observe("feedbackStatusChart")
-	}
+                    if (useAjaxNavigation) {
+                        $.ajax({
+                            url: viewUrl + params,
+                            type: "GET",
+                            headers: { "X-Requested-With": "XMLHttpRequest" },
+                            success: (response) => {
+                                $("#dashboard").html(response);
+                                $("#back_button").removeClass("d-none");
+                            },
+                            error: (error) => console.error("Navigation Error:", error)
+                        });
+                    } else {
+                        window.location.href = viewUrl + params;
+                    }
+                }
+            },
+            plugins: [{
+                afterRender: (chartInstance) => {
+                    if (typeof emptyChart === "function") {
+                        emptyChart(chartInstance);
+                    }
+                }
+            }]
+        });
 
-	function feedbackStatusDataUpdate(data) {
-		feedbackStatusData.labels = (data && data.feedback_label) ? data.feedback_label : [];
-		feedbackStatusData.datasets[0].data = (data && data.feedback_value) ? data.feedback_value : [];
-		feedbackStatusData.message = data.message;
-		if (feedbackStatusChart) {
-			feedbackStatusChart.update();
-		}
-	}
+        function updateData(data) {
+            chartData.labels = Array.isArray(data?.[labelKey]) ? data[labelKey] : [];
+            chartData.datasets[0].data = Array.isArray(data?.[valueKey]) ? data[valueKey] : [];
+            chartData.message = data?.message || "";
+            chart.update();
+        }
 
-	$.ajax({
-		url: "/pms/dashboard-feedback-status",
-		type: "GET",
-		dataType: "json",
-		headers: {
-			"X-Requested-With": "XMLHttpRequest",
-		},
-		success: (response) => {
-			feedbackStatusDataUpdate(response);
-		},
-		error: (error) => {
-			console.log("Error", error);
-		},
-	});
+        fetchChartData(dataUrl, updateData);
 
-	// chart change
-	$("#feedback-status-chart").click(function (e) {
-		var chartType = feedbackStatusChart.config.type;
-		if (chartType === "line") {
-			chartType = "bar";
-		} else if (chartType === "bar") {
-			chartType = "doughnut";
-		} else if (chartType === "doughnut") {
-			chartType = "pie";
-		} else if (chartType === "pie") {
-			chartType = "line";
-		}
-		feedbackStatusChart.config.type = chartType;
-		if (feedbackStatusChart) {
-			feedbackStatusChart.update();
-		}
-	});
+        return chart;
+    }
+
+
+    /* ============================================================
+       INITIALIZE CHARTS
+    ============================================================ */
+
+    const objectiveChart = createStatusChart({
+        elementId: "objectiveChart",
+        label: "Objective",
+        defaultType: "doughnut",
+        dataUrl: "/pms/dashboard-objective-status",
+        labelKey: "objective_label",
+        valueKey: "objective_value",
+        extraParams: "&dashboard=True"
+    });
+
+    const keyResultChart = createStatusChart({
+        elementId: "keyResultChart",
+        label: "Key Result",
+        defaultType: "pie",
+        dataUrl: "/pms/dashbord-key-result-status",
+        viewUrl: "/pms/key-result-view",
+        labelKey: "key_result_label",
+        valueKey: "key_result_value"
+    });
+
+    const feedbackChart = createStatusChart({
+        elementId: "feedbackChart",
+        label: "Feedback",
+        defaultType: "pie",
+        dataUrl: "/pms/dashboard-feedback-status",
+        viewUrl: "/pms/feedback-view",
+        labelKey: "feedback_label",
+        valueKey: "feedback_value",
+        useAjaxNavigation: false
+    });
+
+
+    /* ============================================================
+       CHART TYPE TOGGLE HANDLERS
+    ============================================================ */
+
+    $("#objective-status-chart").click(() => cycleChartType(objectiveChart));
+    $("#key-result-status-chart").click(() => cycleChartType(keyResultChart));
+    $("#feedback-status-chart").click(() => cycleChartType(feedbackChart));
+
+
+    /* ============================================================
+       OPTIONAL: Expose Globally (if needed)
+    ============================================================ */
+
+    window.objectiveStatusChart = objectiveChart;
+    window.keyResultStatusChart = keyResultChart;
+    window.feedbackStatusChart = feedbackChart;
+
+    if (objectiveChart) ChartTheme.observe("objectiveStatusChart");
+    if (keyResultChart) ChartTheme.observe("keyResultStatusChart");
+    if (feedbackChart) ChartTheme.observe("feedbackStatusChart");
+
 });
