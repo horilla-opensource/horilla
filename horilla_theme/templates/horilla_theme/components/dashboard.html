@@ -159,9 +159,9 @@
 		{% if "leave"|app_installed %}
 			{% if perms.leave.view_leaverequest or request.user|is_reportingmanager %}
 				<div
-					class="xl:col-span-6 md:col-span-12 col-span-12 bg-white p-6 rounded-md shadow-card group"
+					class="xl:col-span-6 md:col-span-12 col-span-12 bg-white rounded-md shadow-card group"
 				>
-					<div class="flex justify-between items-center mb-2">
+					<div class="flex justify-between items-center mb-2 p-6 pb-0">
 						<h3 class="text-md font-semibold">{% trans "On Leave" %}</h3>
 					</div>
 					<div

@@ -11,7 +11,7 @@
       <ul class="flex gap-2 text-lg ps-4 mb-4">
         {% for i in "12345" %}
           <li>
-            <i class="fa-solid fa-star {% if i <= answer.answer.answer %}text-[#FFA800]{% else %}text-[#dfdfdf]{% endif %}"></i>
+            <i class="fa-solid fa-star" style="{% if i <= answer.answer.answer %}color:#FFA800{% else %}color:#dfdfdf{% endif %}"></i>
           </li>
         {% endfor %}
       </ul>
