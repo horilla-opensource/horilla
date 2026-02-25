@@ -13,6 +13,7 @@ from django.utils.translation import gettext_lazy as _
 
 from base.forms import MailTemplateForm
 from base.models import HorillaMailTemplate
+from horilla.http.response import HorillaRedirect
 from horilla_views.cbv_methods import login_required, permission_required
 from horilla_views.generic.cbv.views import HorillaFormView
 
@@ -45,7 +46,7 @@ class MailTemplateFormView(HorillaFormView):
             form.save()
 
             messages.success(self.request, message)
-            return self.HttpResponse("<script>window.location.reload()</script>")
+            return HorillaRedirect(self.request)
         return super().form_valid(form)
 
 
@@ -95,5 +96,5 @@ class MailTemplateDuplicateForm(HorillaFormView):
             message = _("Template Added")
             messages.success(self.request, message)
             form.save()
-            return self.HttpResponse("<script>window.location.reload()</script>")
+            return HorillaRedirect(self.request)
         return self.form_invalid(form)

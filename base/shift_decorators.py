@@ -2,12 +2,9 @@
 decorator functions for base
 """
 
-from django.contrib import messages
-from django.http import HttpResponse
-from django.shortcuts import render
-
 from base.models import MultipleApprovalManagers
 from employee.models import EmployeeWorkInformation
+from horilla.methods import handle_no_permission
 
 decorator_with_arguments = (
     lambda decorator: lambda *args, **kwargs: lambda func: decorator(
@@ -42,13 +39,7 @@ def report_manager_can_enter(function, perm):
         ).exists()
         if user.has_perm(perm) or is_manager:
             return function(request, *args, **kwargs)
-        else:
-            messages.info(request, "You dont have permission.")
-            previous_url = request.META.get("HTTP_REFERER", "/")
-            script = f'<script>window.location.href = "{previous_url}"</script>'
-            key = "HTTP_HX_REQUEST"
-            if key in request.META.keys():
-                return render(request, "decorator_404.html")
-            return HttpResponse(script)
+
+        return handle_no_permission(request)
 
     return _function

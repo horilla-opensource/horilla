@@ -16,6 +16,7 @@ from django.utils.functional import cached_property
 from django.utils.translation import gettext_lazy as _
 
 from base.methods import get_subordinates
+from horilla.methods import handle_no_permission
 from horilla_views.cbv_methods import login_required
 from horilla_views.generic.cbv.views import (
     HorillaCardView,
@@ -29,7 +30,6 @@ from project.cbv.project_stage import StageDynamicCreateForm
 from project.cbv.projects import DynamicProjectCreationFormView
 from project.filters import TaskAllFilter
 from project.forms import TaskAllForm
-from project.methods import you_dont_have_permission
 from project.models import Project, ProjectStage, Task
 from project.templatetags.taskfilters import task_crud_perm
 
@@ -300,7 +300,7 @@ class TaskCreateForm(HorillaFormView):
                 return super().get(request, *args, pk=pk, **kwargs)
 
         else:
-            return you_dont_have_permission(request)
+            return handle_no_permission(request)
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)

@@ -3,11 +3,11 @@ decorator functions for base
 """
 
 from django.contrib import messages
-from django.http import HttpResponse, HttpResponseRedirect
-from django.shortcuts import render
 
 from employee.models import EmployeeWorkInformation
 from horilla.horilla_middlewares import _thread_locals
+from horilla.http.response import HorillaRedirect
+from horilla.methods import handle_no_permission
 
 from .models import MultipleApprovalManagers, ShiftRequest, WorkTypeRequest
 
@@ -38,7 +38,7 @@ def shift_request_change_permission(function=None, *args, **kwargs):
         ):
             return function(request, *args, shift_request_id=shift_request_id, **kwargs)
         messages.info(request, "You dont have permission.")
-        return HttpResponseRedirect(request.META.get("HTTP_REFERER", "/"))
+        return HorillaRedirect(request)
         # return function(request, *args, **kwargs)
 
     return check_permission
@@ -66,7 +66,7 @@ def work_type_request_change_permission(function=None, *args, **kwargs):
                 request, *args, work_type_request_id=work_type_request_id, **kwargs
             )
         messages.info(request, "You dont have permission.")
-        return HttpResponseRedirect(request.META.get("HTTP_REFERER", "/"))
+        return HorillaRedirect(request)
         # return function(request, *args, **kwargs)
 
     return check_permission
@@ -101,13 +101,7 @@ def manager_can_enter(function, perm):
         ).exists()
         if user.has_perm(perm) or is_manager:
             return function(self, *args, **kwargs)
-        else:
-            messages.info(request, "You dont have permission.")
-            previous_url = request.META.get("HTTP_REFERER", "/")
-            script = f'<script>window.location.href = "{previous_url}"</script>'
-            key = "HTTP_HX_REQUEST"
-            if key in request.META.keys():
-                return render(request, "decorator_404.html")
-            return HttpResponse(script)
+
+        return handle_no_permission(request)
 
     return _function
