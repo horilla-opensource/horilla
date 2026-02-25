@@ -41,6 +41,7 @@ from horilla.decorators import (
     permission_required,
 )
 from horilla.group_by import group_by_queryset
+from horilla.http.response import HorillaRedirect
 from notifications.signals import notify
 from payroll.context_processors import get_active_employees
 from payroll.filters import ContractFilter, ContractReGroup, PayslipFilter
@@ -275,7 +276,7 @@ def contract_delete(request, contract_id):
                 urls = f"/payroll/single-contract-view/{next_instance}/"
                 params = f"?{previous_data}&instances_ids={instances_list}"
                 return redirect(urls + params)
-            return HttpResponse("<script>window.location.reload();</script>")
+            return HorillaRedirect(request)
         else:
             return redirect(f"/payroll/contract-filter?{request.GET.urlencode()}")
     except Contract.DoesNotExist:
@@ -659,7 +660,7 @@ def delete_payslip(request, payslip_id):
     except ProtectedError:
         messages.error(request, _("Something went wrong"))
     if not Payslip.objects.filter():
-        return HttpResponse("<script>window.location.reload()</script>")
+        return HorillaRedirect(request)
     return redirect(reverse("payslip-list"))
 
 
@@ -1890,7 +1891,7 @@ def create_or_update_auto_payslip(request, auto_id=None):
             messages.success(
                 request, _(f"Payslip Auto generate for {company} created successfully ")
             )
-            return HttpResponse("<script>window.location.reload()</script>")
+            return HorillaRedirect(request)
     return render(
         request, "payroll/settings/auto_payslip_create_or_update.html", {"form": form}
     )
