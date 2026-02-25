@@ -32,7 +32,7 @@ from django.db import models
 from django.db.models import F, ProtectedError
 from django.db.models.query import QuerySet
 from django.forms import DateInput, HiddenInput, Select
-from django.http import HttpResponse, HttpResponseRedirect, JsonResponse
+from django.http import HttpResponse, JsonResponse
 from django.shortcuts import get_object_or_404, redirect, render
 from django.template.loader import render_to_string
 from django.urls import reverse
@@ -119,6 +119,7 @@ from horilla.decorators import (
 from horilla.filters import HorillaPaginator
 from horilla.group_by import group_by_queryset
 from horilla.horilla_settings import HORILLA_DATE_FORMATS
+from horilla.http.response import HorillaRedirect
 from horilla.methods import dynamic_attr, get_horilla_model_class
 from horilla_audit.models import AccountBlockUnblock, HistoryTrackingFields
 from horilla_documents.forms import (
@@ -298,7 +299,7 @@ def profile_edit_access(request, emp_id):
                 cache.delete(user_cache_key[-1])
                 update_employee_accessibility_cache(user_cache_key[-1], employee)
 
-    return HttpResponseRedirect(request.META.get("HTTP_REFERER", "/"))
+    return HorillaRedirect(request)
 
 
 @login_required
@@ -1112,7 +1113,7 @@ def employee_profile_bank_details(request):
         bank_info.employee_id = employee
         bank_info.save()
         messages.success(request, _("Bank details updated"))
-    return HttpResponseRedirect(request.META.get("HTTP_REFERER"))
+    return HorillaRedirect(request)
 
 
 @login_required
@@ -1646,9 +1647,7 @@ def employee_view_update(request, obj_id, **kwargs):
                 "work_info_history": work_info_history,
             },
         )
-    return HttpResponseRedirect(
-        request.META.get("HTTP_REFERER", "/employee/employee-view")
-    )
+    return HorillaRedirect(request, fallback_url="/employee/employee-view")
 
 
 @login_required
@@ -2090,7 +2089,7 @@ def employee_delete(request, obj_id):
         error_message = str(error_message)
         request.session["error_message"] = error_message
         return redirect(reverse("employee-view") + "?error_message=true")
-    return HttpResponseRedirect(request.META.get("HTTP_REFERER", f"/view={view}"))
+    return HorillaRedirect(request, fallback_url=f"/view={view}")
 
 
 @login_required
@@ -2206,7 +2205,7 @@ def employee_archive(request, obj_id):
         messages.success(request, message)
         key = "HTTP_HX_REQUEST"
         if key not in request.META.keys():
-            return HttpResponseRedirect(request.META.get("HTTP_REFERER", "/"))
+            return HorillaRedirect(request)
         else:
             return HttpResponse("<script>$('#applyFilter').click();</script>")
     else:
@@ -2345,7 +2344,7 @@ def get_manager_in(request):
         messages.success(request, message)
         key = "HTTP_HX_REQUEST"
         if key not in request.META.keys():
-            return HttpResponseRedirect(request.META.get("HTTP_REFERER", "/"))
+            return HorillaRedirect(request)
         else:
             return HttpResponse("<script>window.location.reload()</script>")
     else:
@@ -3419,7 +3418,7 @@ def add_bonus_points(request, emp_id):
                     form.cleaned_data["points"]
                 ),
             )
-            return HttpResponseRedirect(request.META.get("HTTP_REFERER", "/"))
+            return HorillaRedirect(request)
 
     return render(
         request,
@@ -3637,7 +3636,7 @@ def encashment_condition_create(request):
             if encashment_form.is_valid():
                 encashment_form.save()
                 messages.success(request, _("Settings updated."))
-                return HttpResponseRedirect(request.META.get("HTTP_REFERER", "/"))
+                return HorillaRedirect(request)
         else:
             encashment_form = EncashmentGeneralSettingsForm(instance=instance)
 
@@ -3648,7 +3647,7 @@ def encashment_condition_create(request):
         )
 
     messages.warning(request, _("Payroll app not installed"))
-    return HttpResponseRedirect(request.META.get("HTTP_REFERER", "/"))
+    return HorillaRedirect(request)
 
 
 @login_required
@@ -3666,7 +3665,7 @@ def initial_prefix(request):
         if form.is_valid():
             form.save()
             messages.success(request, "Initial prefix updated successfully.")
-            return HttpResponseRedirect(request.META.get("HTTP_REFERER", "/"))
+            return HorillaRedirect(request)
         else:
             messages.error(request, "There was an error updating the prefix.")
     else:

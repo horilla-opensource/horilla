@@ -9,10 +9,11 @@ from django.conf import settings
 from django.contrib import messages
 from django.core import serializers
 from django.db.models import ProtectedError
-from django.http import HttpResponse, HttpResponseRedirect, JsonResponse
+from django.http import HttpResponse, JsonResponse
 from django.shortcuts import redirect, render
 from django.template.loader import render_to_string
 from django.urls import reverse
+from django.utils.http import url_has_allowed_host_and_scheme
 from django.utils.translation import gettext as _
 from django.views.decorators.http import require_http_methods
 
@@ -68,6 +69,8 @@ from horilla.decorators import (
     permission_required,
 )
 from horilla.group_by import group_by_queryset
+from horilla.http.response import HorillaRedirect
+from horilla.methods import handle_no_permission
 from notifications.signals import notify
 
 BLOCKED_EXTENSIONS = {
@@ -555,17 +558,7 @@ def ticket_update(request, ticket_id):
         }
         return render(request, "helpdesk/ticket/ticket_form.html", context)
     else:
-        messages.info(request, _("You don't have permission."))
-
-        previous_url = request.META.get("HTTP_REFERER", "/")
-
-        # Handle request for HTMX if needed
-        if "HTTP_HX_REQUEST" in request.META:
-            return render(request, "decorator_404.html")
-        else:
-            return HttpResponse(
-                f'<script>window.location.href = "{previous_url}"</script>'
-            )
+        return handle_no_permission(request)
 
 
 @login_required
@@ -593,25 +586,15 @@ def ticket_archive(request, ticket_id):
         ticket.is_active = not ticket.is_active
         ticket.save()
 
-        if ticket.is_active:
-            messages.success(request, _("The Ticket un-archived successfully."))
-        else:
-            messages.success(request, _("The Ticket archived successfully."))
+        messsage = (
+            _("The Ticket un-archived successfully.")
+            if ticket.is_active
+            else _("The Ticket archived successfully.")
+        )
+        messages.success(request, messsage)
 
-        return HttpResponseRedirect(request.META.get("HTTP_REFERER", "/"))
-
-    else:
-        messages.info(request, _("You don't have permission."))
-
-        previous_url = request.META.get("HTTP_REFERER", "/")
-
-        # Handle request for HTMX if needed
-        if "HTTP_HX_REQUEST" in request.META:
-            return render(request, "decorator_404.html")
-        else:
-            return HttpResponse(
-                f'<script>window.location.href = "{previous_url}"</script>'
-            )
+        return HorillaRedirect(request)
+    return handle_no_permission(request)
 
 
 @login_required
@@ -777,7 +760,7 @@ def ticket_delete(request, ticket_id):
             messages.error(request, _('The ticket is not in the "New" status'))
     except ProtectedError:
         messages.error(request, _("You cannot delete this Ticket."))
-    return HttpResponseRedirect(request.META.get("HTTP_REFERER", "/"))
+    return HorillaRedirect(request)
 
 
 def get_allocated_tickets(request):
@@ -979,16 +962,7 @@ def ticket_detail(request, ticket_id, **kwargs):
         }
         return render(request, "helpdesk/ticket/ticket_detail.html", context=context)
     else:
-        messages.info(request, _("You don't have permission."))
-        previous_url = request.META.get("HTTP_REFERER", "/")
-
-        # Handle request for HTMX if needed
-        if "HTTP_HX_REQUEST" in request.META:
-            return render(request, "decorator_404.html")
-        else:
-            return HttpResponse(
-                f'<script>window.location.href = "{previous_url}"</script>'
-            )
+        return handle_no_permission(request)
 
 
 @login_required
@@ -1017,16 +991,7 @@ def view_ticket_claim_request(request, ticket_id):
         }
         return render(request, "helpdesk/ticket/ticket_claim_requests.html", context)
     else:
-        messages.info(request, _("You don't have permission."))
-        previous_url = request.META.get("HTTP_REFERER", "/")
-
-        # Handle request for HTMX if needed
-        if "HTTP_HX_REQUEST" in request.META:
-            return render(request, "decorator_404.html")
-        else:
-            return HttpResponse(
-                f'<script>window.location.href = "{previous_url}"</script>'
-            )
+        return handle_no_permission(request)
 
 
 @login_required
@@ -1052,16 +1017,7 @@ def ticket_update_tag(request):
         }
         return JsonResponse(response)
     else:
-        messages.info(request, _("You don't have permission."))
-        previous_url = request.META.get("HTTP_REFERER", "/")
-
-        # Handle request for HTMX if needed
-        if "HTTP_HX_REQUEST" in request.META:
-            return render(request, "decorator_404.html")
-        else:
-            return HttpResponse(
-                f'<script>window.location.href = "{previous_url}"</script>'
-            )
+        return handle_no_permission(request)
 
 
 @login_required
@@ -1085,16 +1041,7 @@ def ticket_change_raised_on(request, ticket_id):
             {"form": form, "ticket_id": ticket_id},
         )
     else:
-        messages.info(request, _("You don't have permission."))
-        previous_url = request.META.get("HTTP_REFERER", "/")
-
-        # Handle request for HTMX if needed
-        if "HTTP_HX_REQUEST" in request.META:
-            return render(request, "decorator_404.html")
-        else:
-            return HttpResponse(
-                f'<script>window.location.href = "{previous_url}"</script>'
-            )
+        return handle_no_permission(request)
 
 
 @login_required
@@ -1143,16 +1090,7 @@ def ticket_change_assignees(request, ticket_id):
             {"form": form, "ticket_id": ticket_id},
         )
     else:
-        messages.info(request, _("You don't have permission."))
-        previous_url = request.META.get("HTTP_REFERER", "/")
-
-        # Handle request for HTMX if needed
-        if "HTTP_HX_REQUEST" in request.META:
-            return render(request, "decorator_404.html")
-        else:
-            return HttpResponse(
-                f'<script>window.location.href = "{previous_url}"</script>'
-            )
+        return handle_no_permission(request)
 
 
 @login_required
@@ -1335,7 +1273,7 @@ def comment_delete(request, comment_id):
     messages.success(
         request, _("{}'s comment has been deleted successfully.").format(employee)
     )
-    return HttpResponseRedirect(request.META.get("HTTP_REFERER", "/"))
+    return HorillaRedirect(request)
 
 
 @login_required
@@ -1383,7 +1321,7 @@ def claim_ticket(request, id):
         employee_id=request.user.employee_get, ticket_id=ticket
     ).exists():
         ClaimRequest(employee_id=request.user.employee_get, ticket_id=ticket).save()
-    return HttpResponseRedirect(request.META.get("HTTP_REFERER", "/"))
+    return HorillaRedirect(request)
 
 
 @login_required
@@ -1539,8 +1477,16 @@ def tickets_bulk_archive(request):
         ticket.save()
     messages.success(request, _("The Ticket updated successfully."))
     previous_url = request.META.get("HTTP_REFERER", "/")
-    script = f'<script>window.location.href = "{previous_url}"</script>'
-    return HttpResponse(script)
+
+    # Prevent XSS / open redirect
+    if not url_has_allowed_host_and_scheme(
+        previous_url,
+        allowed_hosts={request.get_host()},
+        require_https=request.is_secure(),
+    ):
+        previous_url = "/"
+
+    return redirect(previous_url)
 
 
 @login_required
@@ -1589,8 +1535,16 @@ def tickets_bulk_delete(request):
         except ProtectedError:
             messages.error(request, _("You cannot delete this Ticket."))
     previous_url = request.META.get("HTTP_REFERER", "/")
-    script = f'<script>window.location.href = "{previous_url}"</script>'
-    return HttpResponse(script)
+
+    # Prevent XSS / open redirect
+    if not url_has_allowed_host_and_scheme(
+        previous_url,
+        allowed_hosts={request.get_host()},
+        require_https=request.is_secure(),
+    ):
+        previous_url = "/"
+
+    return redirect(previous_url)
 
 
 @login_required
@@ -1664,18 +1618,8 @@ def update_priority(request, ticket_id):
             ticket.priority = "high"
         ticket.save()
         messages.success(request, _("Priority updated successfully."))
-        return HttpResponseRedirect(request.META.get("HTTP_REFERER", "/"))
-    else:
-        messages.info(request, _("You don't have permission."))
-        previous_url = request.META.get("HTTP_REFERER", "/")
-
-        # Handle request for HTMX if needed
-        if "HTTP_HX_REQUEST" in request.META:
-            return render(request, "decorator_404.html")
-        else:
-            return HttpResponse(
-                f'<script>window.location.href = "{previous_url}"</script>'
-            )
+        return HorillaRedirect(request)
+    return handle_no_permission(request)
 
 
 @login_required
@@ -1768,7 +1712,6 @@ def ticket_type_delete(request, t_type_id):
         except:
             messages.error(request, _("Ticket type can not delete"))
             return HttpResponse("<script>$('.reload-record').click()</script>")
-    # return HttpResponseRedirect(request.META.get("HTTP_REFERER", "/"))
     return HttpResponse("<script>$('#reloadMessagesButton').click()</script>")
 
 

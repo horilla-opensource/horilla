@@ -224,16 +224,3 @@ def is_project_manager_or_super_user(request, project):
     return (
         request.user.employee_get in project.managers.all() or request.user.is_superuser
     )
-
-
-def you_dont_have_permission(request):
-    """
-    Method to return you dont have permission
-    """
-    messages.info(request, "You dont have permission.")
-    previous_url = request.META.get("HTTP_REFERER", "/")
-    key = "HTTP_HX_REQUEST"
-    if key in request.META.keys():
-        return render(request, "decorator_404.html")
-    script = f'<script>window.location.href = "{previous_url}"</script>'
-    return HttpResponse(script)

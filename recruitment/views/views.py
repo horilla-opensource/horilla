@@ -33,7 +33,7 @@ from django.core.mail import EmailMessage
 from django.core.paginator import Paginator
 from django.db import IntegrityError, transaction
 from django.db.models import Case, IntegerField, ProtectedError, Q, When
-from django.http import HttpResponse, HttpResponseRedirect, JsonResponse
+from django.http import HttpResponse, JsonResponse
 from django.shortcuts import get_object_or_404, redirect, render
 from django.urls import reverse
 from django.utils import timezone
@@ -63,6 +63,7 @@ from horilla.decorators import (
     permission_required,
 )
 from horilla.group_by import group_by_queryset
+from horilla.http import HorillaRedirect
 from horilla_documents.models import Document
 from notifications.signals import notify
 from recruitment.auth import CandidateAuthenticationBackend
@@ -748,7 +749,7 @@ def recruitment_archive(request, rec_id):
         recruitment.save()
     except (Recruitment.DoesNotExist, OverflowError):
         messages.error(request, _("Recruitment Does not exists.."))
-    return HttpResponseRedirect(request.META.get("HTTP_REFERER", "/"))
+    return HorillaRedirect(request)
 
 
 @login_required
@@ -846,7 +847,7 @@ def recruitment_close_pipeline(request, rec_id):
         messages.success(request, "Recruitment closed successfully")
     except (Recruitment.DoesNotExist, OverflowError):
         messages.error(request, _("Recruitment Does not exists.."))
-    return HttpResponseRedirect(request.META.get("HTTP_REFERER", "/"))
+    return HorillaRedirect(request)
 
 
 @login_required
@@ -860,7 +861,7 @@ def recruitment_reopen_pipeline(request, rec_id):
     recruitment_obj.save()
 
     messages.success(request, "Recruitment reopend successfully")
-    return HttpResponseRedirect(request.META.get("HTTP_REFERER", "/"))
+    return HorillaRedirect(request)
 
 
 @login_required
@@ -1619,7 +1620,7 @@ def candidate_about_tab(request, pk, **kwargs):
     candidate_obj = Candidate.find(pk)
     if not candidate_obj:
         messages.error(request, _("Candidate not found"))
-        return HttpResponseRedirect(request.META.get("HTTP_REFERER", "/"))
+        return HorillaRedirect(request)
     return render(
         request,
         "cbv/candidates/profile_about_tab.html",
@@ -1791,7 +1792,7 @@ def candidate_view_individual(request, cand_id, **kwargs):
     # candidate_obj = Candidate.find(cand_id)
     # # if not candidate_obj:
     # #     messages.error(request, _("Candidate not found"))
-    # #     return HttpResponseRedirect(request.META.get("HTTP_REFERER", "/"))
+    # #     return HorillaRedirect(request)
 
     # mails = list(Candidate.objects.values_list("email", flat=True))
     # # Query the User model to check if any email is present
@@ -1895,7 +1896,7 @@ def candidate_update(request, cand_id, **kwargs):
         return render(request, "candidate/candidate_create_form.html", {"form": form})
     except (Candidate.DoesNotExist, OverflowError):
         messages.error(request, _("Candidate Does not exists.."))
-    return HttpResponseRedirect(request.META.get("HTTP_REFERER", "/"))
+    return HorillaRedirect(request)
 
 
 @transaction.atomic
@@ -1906,11 +1907,11 @@ def candidate_conversion(request, cand_id, **kwargs):
 
     if not candidate_obj:
         messages.error(request, ("Candidate not found"))
-        return HttpResponseRedirect(request.META.get("HTTP_REFERER", "/"))
+        return HorillaRedirect(request)
 
     if candidate_obj.converted_employee_id:
         messages.info(request, "This candidate is already converted to an employee.")
-        return HttpResponseRedirect(request.META.get("HTTP_REFERER", "/"))
+        return HorillaRedirect(request)
 
     user_exists = User.objects.filter(username=candidate_obj.email).exists()
     employee_exists = Employee.objects.filter(
@@ -1964,7 +1965,7 @@ def candidate_conversion(request, cand_id, **kwargs):
     if "HTTP_HX_REQUEST" in request.META:
         return HttpResponse(status=204, headers={"HX-Refresh": "true"})
 
-    return HttpResponseRedirect(request.META.get("HTTP_REFERER", "/"))
+    return HorillaRedirect(request)
 
 
 @login_required
