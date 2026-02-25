@@ -280,7 +280,17 @@
                                     <i class="fa-solid fa-arrow-left"></i>
                                 </button>
                             {% endif %}
-                            {{ queryset.number }} / {{ queryset.paginator.num_pages }}
+                            <div>
+                                <input
+                                    type="number"
+                                    name="page"
+                                    class="w-[30px]"
+                                    value="{{queryset.number}}"
+                                    hx-get="{{search_url}}?{{request.GET.urlencode}}"
+                                    hx-target="#{{view_id}}"
+                                    min="1"
+                                /> / {{ queryset.paginator.num_pages }}
+                            </div>
                             {% if queryset.has_next %}
                                 <button
                                     class="text-xs hover:text-primary-600 transition duration-300"
