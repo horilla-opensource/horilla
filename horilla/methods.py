@@ -2,7 +2,11 @@ import contextlib
 import importlib
 
 from django.conf import settings
+from django.contrib import messages
 from django.contrib.contenttypes.models import ContentType
+from django.shortcuts import redirect, render
+from django.utils.http import url_has_allowed_host_and_scheme
+from django.utils.translation import gettext as _
 
 from horilla_auth.models import HorillaUser
 
@@ -74,6 +78,24 @@ def horilla_users_with_perms(permissions):
         )
 
     return users_with_permissions.distinct()
+
+
+def handle_no_permission(request, message=_("You don't have permission.")):
+    messages.info(request, message)
+    if request.headers.get("HX-Request"):
+        return render(request, "decorator_404.html")
+
+    previous_url = request.META.get("HTTP_REFERER", "/")
+
+    # Prevent open redirect + XSS
+    if not url_has_allowed_host_and_scheme(
+        previous_url,
+        allowed_hosts={request.get_host()},
+        require_https=request.is_secure(),
+    ):
+        previous_url = "/"
+
+    return redirect(previous_url)
 
 
 def get_urlencode(request):
