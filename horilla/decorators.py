@@ -5,7 +5,7 @@ from urllib.parse import urlencode
 
 from django.apps import apps
 from django.contrib import messages
-from django.http import HttpResponse, HttpResponseRedirect
+from django.http import HttpResponse
 from django.shortcuts import redirect, render
 from django.urls import reverse
 from django.utils.datastructures import MultiValueDictKeyError
@@ -13,6 +13,7 @@ from django.utils.http import url_has_allowed_host_and_scheme
 from django.utils.translation import gettext as _
 
 from horilla import settings
+from horilla.http import HorillaRedirect
 from horilla.methods import handle_no_permission
 from horilla.settings import BASE_DIR, TEMPLATES
 
@@ -298,7 +299,7 @@ def owner_can_enter(function, perm: str, model: object, manager_access=False):
                 )
             except:
                 messages.error(request, ("Sorry, something went wrong!"))
-                return HttpResponseRedirect(request.META.get("HTTP_REFERER", "/"))
+                return HorillaRedirect(request)
         can_enter = (
             request.user.employee_get == employee
             or request.user.has_perm(perm)
@@ -331,7 +332,7 @@ def install_required(function):
                     request,
                     _("Please enable the Track Late Come & Early Out from settings"),
                 )
-                return HttpResponseRedirect(request.META.get("HTTP_REFERER", "/"))
+                return HorillaRedirect(request)
         object = BiometricAttendance.objects.all().first()
         if not object or object.is_installed:
             return function(request, *args, **kwargs)
@@ -342,7 +343,7 @@ def install_required(function):
                     "Please activate the biometric attendance feature in the settings menu."
                 ),
             )
-            return HttpResponseRedirect(request.META.get("HTTP_REFERER", "/"))
+            return HorillaRedirect(request)
 
     return _function
 
