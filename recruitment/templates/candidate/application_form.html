@@ -271,49 +271,48 @@
         }
 
         function setIfEmpty(selector, value) {
-            if ($(selector).val() === "") {
-                $(selector).val(value);
-                $(selector).change();
-
-                $("[name=country]").parent().find("span").remove()
-                $("[name=country]").select2()
+            if (value === undefined || value === null) return;
+            var $el = $(selector);
+            if ($el.length && ($el.val() === "" || $el.val() == "None")) {
+                $el.val(value);
+                $el.change();
+                $("[name=country]").parent().find("span").remove();
+                $("[name=country]").select2();
             }
         }
 
+        function fillFormFromResume(response) {
+            if (response.error) {
+                console.error('Resume parse error: ', response.error);
+                return;
+            }
+            setIfEmpty("[name='name']", response.full_name);
+            setIfEmpty("[name='email']", response.email_id);
+            setIfEmpty("[name='mobile']", response.phone_number);
+            setIfEmpty("[name='address']", response.address);
+            setIfEmpty("[name='country']", response.country);
+            setIfEmpty("[name='state']", response.state);
+            setIfEmpty("[name='city']", response.city);
+            setIfEmpty("[name='zip']", response.zip);
+            setIfEmpty("[name='gender']", response.gender);
+            setIfEmpty("[name='portfolio']", response.portfolio);
+            if (response.dob) $("[name='dob']").val(response.dob);
+        }
 
         $("#matching_resume").on("click", function () {
-            var file = $(this).data("value");
             var resume_id = $(this).data("id");
 
             $.ajax({
                 url: "{% url 'matching-resume-completion' %}",
                 type: 'GET',
-                data: {
-                    "resume_id": resume_id,
-                    "file": file
-                },
+                data: { "resume_id": resume_id },
                 success: function (response) {
-                    var full_name = response.full_name;
-                    var address = response.address;
-                    var country = response.country;
-                    var state = response.state;
-                    var phone = response.phone_number;
-                    var dob = response.dob;
-                    var email = response.email_id;
-                    var zip = response.zip;
-
-                    setIfEmpty("[name='name']", full_name);
-                    setIfEmpty("[name='email']", email);
-                    setIfEmpty("[name='mobile']", phone);
-                    setIfEmpty("[name='address']", address);
-                    setIfEmpty("[name='country']", country);
-                    setIfEmpty("[name='state']", state);
-                    setIfEmpty("[name='zip']", zip);
-                    $("[name='dob']").val(dob);
-
+                    fillFormFromResume(response);
                 },
                 error: function (xhr, status, error) {
-                    console.error('File upload failed: ', status, error);
+                    console.error('Resume parse failed: ', status, error);
+                    var msg = (xhr.responseJSON && xhr.responseJSON.error) || error;
+                    if (msg) alert(msg);
                 }
             });
         })
@@ -323,6 +322,7 @@
         $("[name='resume']").on("change", function () {
             var formData = new FormData();
             var file = this.files[0];
+            if (!file) return;
             formData.append('resume', file);
 
             $.ajax({
@@ -335,28 +335,12 @@
                     'X-CSRFToken': getCookie("csrftoken")
                 },
                 success: function (response) {
-
-                    var full_name = response.full_name;
-                    var address = response.address;
-                    var country = response.country;
-                    var state = response.state;
-                    var phone = response.phone_number;
-                    var dob = response.dob;
-                    var email = response.email_id;
-                    var zip = response.zip;
-
-                    setIfEmpty("[name='name']", full_name);
-                    setIfEmpty("[name='email']", email);
-                    setIfEmpty("[name='mobile']", phone);
-                    setIfEmpty("[name='address']", address);
-                    setIfEmpty("[name='country']", country);
-                    setIfEmpty("[name='state']", state);
-                    setIfEmpty("[name='zip']", zip);
-                    $("[name='dob']").val(dob);
-
+                    fillFormFromResume(response);
                 },
                 error: function (xhr, status, error) {
-                    console.error('File upload failed: ', status, error);
+                    console.error('Resume parse failed: ', status, error);
+                    var msg = (xhr.responseJSON && xhr.responseJSON.error) || error;
+                    if (msg) alert(msg);
                 }
             });
         })

@@ -41,7 +41,6 @@ from django.views.decorators.http import require_http_methods
 
 from base.backends import ConfiguredEmailBackend
 from base.context_processors import check_candidate_self_tracking
-from base.countries import country_arr, s_a, states
 from base.forms import MailTemplateForm
 from base.methods import (
     eval_validate,
@@ -123,6 +122,8 @@ from recruitment.models import (
     StageFiles,
     StageNote,
 )
+from recruitment.services.legacy_resume_parser import extract_words_from_pdf
+from recruitment.services.resume_parser import ResumeParseError, ResumeParseOrchestrator
 from recruitment.views.linkedin import delete_post, post_recruitment_in_linkedin
 from recruitment.views.paginator_qry import paginator_qry
 
@@ -3097,170 +3098,26 @@ def delete_reject_reason(request):
     return HttpResponse("<script>$('#reloadMessagesButton').click();</script>")
 
 
-def extract_text_with_font_info(pdf):
-    """
-    This method is used to extract text from the pdf and create a list of dictionaries containing details about the extracted text.
-    Args:
-        pdf (): pdf file to extract text from
-    """
-    pdf_bytes = pdf.read()
-    pdf_doc = io.BytesIO(pdf_bytes)
-    doc = fitz.open("pdf", pdf_doc)
-    text_info = []
-
-    for page_num in range(len(doc)):
-        page = doc[page_num]
-        blocks = page.get_text("dict")["blocks"]
-        for block in blocks:
-            try:
-                for line in block["lines"]:
-                    for span in line["spans"]:
-                        text_info.append(
-                            {
-                                "text": span["text"],
-                                "font_size": span["size"],
-                                "capitalization": sum(
-                                    1 for c in span["text"] if c.isupper()
-                                )
-                                / len(span["text"]),
-                            }
-                        )
-            except:
-                pass
-
-    return text_info
-
-
-def rank_text(text_info):
-    """
-    This method is used to rank the text
-
-    Args:
-        text_info: List of dictionary containing the details
-
-    Returns:
-        Returns a sorted list
-    """
-    ranked_text = sorted(
-        text_info, key=lambda x: (x["font_size"], x["capitalization"]), reverse=True
-    )
-    return ranked_text
-
-
-def dob_matching(dob):
-    """
-    This method is used to change the date format to YYYY-MM-DD
-
-    Args:
-        dob: Date
-
-    Returns:
-        Return date in YYYY-MM-DD
-    """
-    date_formats = [
-        "%Y-%m-%d",
-        "%Y/%m/%d",
-        "%d-%m-%Y",
-        "%d/%m/%Y",
-        "%Y.%m.%d",
-        "%d.%m.%Y",
-    ]
-
-    for fmt in date_formats:
-        try:
-            parsed_date = datetime.strptime(dob, fmt)
-            return parsed_date.strftime("%Y-%m-%d")
-        except ValueError:
-            continue
-
-    return dob
-
-
-def extract_info(pdf):
-    """
-    This method creates the contact information dictionary from the provided pdf file
-    Args:
-        pdf_file: pdf file
-    """
-
-    text_info = extract_text_with_font_info(pdf)
-    ranked_text = rank_text(text_info)
-
-    phone_pattern = re.compile(r"\b\+?\d{1,2}\s?\d{9,10}\b")
-    dob_pattern = re.compile(
-        r"\b(?:\d{1,2}|\d{4})[-/.,]\d{1,2}[-/.,](?:\d{1,2}|\d{4})\b"
-    )
-    email_pattern = re.compile(r"\b[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.[A-Z|a-z]{2,}\b")
-    zip_code_pattern = re.compile(r"\b\d{5,6}(?:-\d{4})?\b")
-
-    extracted_info = {
-        "full_name": "",
-        "address": "",
-        "country": "",
-        "state": "",
-        "phone_number": "",
-        "dob": "",
-        "email_id": "",
-        "zip": "",
-    }
-
-    name_candidates = [
-        item["text"]
-        for item in ranked_text
-        if item["font_size"] == max(item["font_size"] for item in ranked_text)
-    ]
-
-    if name_candidates:
-        extracted_info["full_name"] = " ".join(name_candidates)
-
-    for item in ranked_text:
-        text = item["text"]
-
-        if not text:
-            continue
-
-        if not extracted_info["phone_number"]:
-            phone_match = phone_pattern.search(text)
-            if phone_match:
-                extracted_info["phone_number"] = phone_match.group()
-
-        if not extracted_info["dob"]:
-            dob_match = dob_pattern.search(text)
-            if dob_match:
-                extracted_info["dob"] = dob_matching(dob_match.group())
-
-        if not extracted_info["zip"]:
-            zip_match = zip_code_pattern.search(text)
-            if zip_match:
-                extracted_info["zip"] = zip_match.group()
-
-        if not extracted_info["email_id"]:
-            email_match = email_pattern.search(text)
-            if email_match:
-                extracted_info["email_id"] = email_match.group()
-
-        if "address" in text.lower() and not extracted_info["address"]:
-            extracted_info["address"] = text.replace("Address:", "").strip()
-
-        for item in text.split(" "):
-            if item.capitalize() in country_arr:
-                extracted_info["country"] = item
-
-        for item in text.split(" "):
-            if item.capitalize() in states:
-                extracted_info["state"] = item
-
-    return extracted_info
-
-
 def resume_completion(request):
     """
-    This function is returns the data for completing the candidate creation form
+    Returns parsed resume data for completing the candidate creation form.
+    Uses smart resume parsing (AI path with legacy fallback).
     """
-    resume_file = request.FILES["resume"]
-    contact_info = extract_info(resume_file)
-
-    return JsonResponse(contact_info)
+    if "resume" not in request.FILES:
+        return JsonResponse(
+            {"error": "No resume file provided."},
+            status=400,
+        )
+    try:
+        contact_info = ResumeParseOrchestrator.parse(
+            file_object=request.FILES["resume"],
+        )
+        return JsonResponse(contact_info)
+    except ResumeParseError as e:
+        return JsonResponse(
+            {"error": e.message},
+            status=e.status_code,
+        )
 
 
 def check_vaccancy(request):
@@ -3409,30 +3266,6 @@ def delete_resume_file(request):
     return redirect(f"{url}{query_params}")
 
 
-def extract_words_from_pdf(pdf_file):
-    """
-    This method is used to extract the words from the pdf file into a list.
-    Args:
-        pdf_file: pdf file
-
-    """
-    pdf_document = fitz.open(pdf_file.path)
-
-    words = []
-
-    for page_num in range(len(pdf_document)):
-        page = pdf_document.load_page(page_num)
-        page_text = page.get_text()
-
-        page_words = re.findall(r"\b\w+\b", page_text.lower())
-
-        words.extend(page_words)
-
-    pdf_document.close()
-
-    return words
-
-
 @login_required
 @hx_request_required
 @manager_can_enter("recruitment.add_candidate")
@@ -3491,14 +3324,23 @@ def matching_resumes(request, rec_id):
 @manager_can_enter("recruitment.add_candidate")
 def matching_resume_completion(request):
     """
-    This function is returns the data for completing the candidate creation form
+    Returns parsed resume data for completing the candidate form (from stored resume).
+    Uses smart resume parsing (AI path with legacy fallback).
     """
     resume_id = request.GET.get("resume_id")
-    resume_obj = get_object_or_404(Resume, id=resume_id)
-    resume_file = resume_obj.file
-    contact_info = extract_info(resume_file)
-
-    return JsonResponse(contact_info)
+    if not resume_id:
+        return JsonResponse(
+            {"error": "resume_id is required."},
+            status=400,
+        )
+    try:
+        contact_info = ResumeParseOrchestrator.parse(resume_id=int(resume_id))
+        return JsonResponse(contact_info)
+    except ResumeParseError as e:
+        return JsonResponse(
+            {"error": e.message},
+            status=e.status_code,
+        )
 
 
 @login_required

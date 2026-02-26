@@ -1,6 +1,6 @@
+from django.contrib import messages
 from django.http import HttpResponseRedirect
 from django.utils.http import url_has_allowed_host_and_scheme
-from django.contrib import messages
 
 
 class HorillaRedirect(HttpResponseRedirect):

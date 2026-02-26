@@ -403,6 +403,20 @@ HORILLA_TIME_FORMATS = {
 
 BIO_DEVICE_THREADS = {}
 
+# ========================================
+# SMART RESUME PARSING
+# ========================================
+RESUME_PARSING_USE_AI = env("RESUME_PARSING_USE_AI", default=True)
+RESUME_PARSING_AI_TIMEOUT_SECONDS = float(
+    env("RESUME_PARSING_AI_TIMEOUT_SECONDS", default="8.0")
+)
+RESUME_PARSING_MAX_FILE_SIZE_MB = float(
+    env("RESUME_PARSING_MAX_FILE_SIZE_MB", default="10.0")
+)
+# Optional: for external resume parsing API (e.g. Affinda, Sovren)
+RESUME_PARSING_AI_ENDPOINT = env("RESUME_PARSING_AI_ENDPOINT", default=None)
+RESUME_PARSING_AI_API_KEY = env("RESUME_PARSING_AI_API_KEY", default=None)
+
 DYNAMIC_URL_PATTERNS = []
 
 APP_URLS = [

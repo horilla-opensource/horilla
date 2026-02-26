@@ -134,21 +134,20 @@
             });
             {% if not form.instance.pk %}
               function setIfEmpty(selector, value) {
-                if ($(selector).val() === "" ){
-                  $(selector).val(value);
-                }
-                if ($(selector).val() == "None") {
-                  $(selector).val(value);
-                  $(selector).change();
-
-                  $("[name=country]").parent().find("span").remove()
-                  $("[name=country]").select2()
+                if (value === undefined || value === null) return;
+                var $el = $(selector);
+                if ($el.length && ($el.val() === "" || $el.val() == "None")) {
+                  $el.val(value);
+                  $el.change();
+                  $("[name=country]").parent().find("span").remove();
+                  $("[name=country]").select2();
                 }
               }
 
               $("[name='resume']").on("change", function(){
                 var formData = new FormData();
                 var file = this.files[0];
+                if (!file) return;
                 formData.append('resume', file);
 
                 $.ajax({
@@ -161,28 +160,27 @@
                       'X-CSRFToken': getCookie("csrftoken")
                   },
                   success: function(response) {
-
-                    var full_name = response.full_name;
-                    var address = response.address;
-                    var country = response.country;
-                    var state = response.state;
-                    var phone = response.phone_number;
-                    var dob = response.dob;
-                    var email = response.email_id;
-                    var zip = response.zip;
-
-                    setIfEmpty("[name='name']", full_name);
-                    setIfEmpty("[name='email']", email);
-                    setIfEmpty("[name='mobile']", phone);
-                    setIfEmpty("[name='address']", address);
-                    setIfEmpty("[name='country']", country);
-                    setIfEmpty("[name='state']", state);
-                    setIfEmpty("[name='zip']", zip);
-                    $("[name='dob']").val(dob);
-
+                    if (response.error) {
+                      console.error('Resume parse error: ', response.error);
+                      if (typeof toastr !== 'undefined') toastr.error(response.error);
+                      return;
+                    }
+                    setIfEmpty("[name='name']", response.full_name);
+                    setIfEmpty("[name='email']", response.email_id);
+                    setIfEmpty("[name='mobile']", response.phone_number);
+                    setIfEmpty("[name='address']", response.address);
+                    setIfEmpty("[name='country']", response.country);
+                    setIfEmpty("[name='state']", response.state);
+                    setIfEmpty("[name='city']", response.city);
+                    setIfEmpty("[name='zip']", response.zip);
+                    setIfEmpty("[name='gender']", response.gender);
+                    setIfEmpty("[name='portfolio']", response.portfolio);
+                    if (response.dob) $("[name='dob']").val(response.dob);
                   },
                   error: function(xhr, status, error) {
-                      console.error('File upload failed: ', status, error);
+                    console.error('File upload failed: ', status, error);
+                    var msg = (xhr.responseJSON && xhr.responseJSON.error) || error || 'Could not parse resume.';
+                    if (typeof toastr !== 'undefined') toastr.error(msg);
                   }
                 });
               })
