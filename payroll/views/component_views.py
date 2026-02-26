@@ -5,6 +5,7 @@ This module is used to write methods to the component_urls patterns respectively
 """
 
 import json
+import math
 import operator
 from collections import defaultdict
 from datetime import date, datetime, timedelta
@@ -44,6 +45,7 @@ from horilla.decorators import (
 )
 from horilla.group_by import group_by_queryset
 from horilla.horilla_settings import HORILLA_DATE_FORMATS
+from horilla.http.response import HorillaRedirect
 from horilla.methods import dynamic_attr, get_horilla_model_class, get_urlencode
 
 # from leave.models import AvailableLeave
@@ -511,7 +513,7 @@ def delete_allowance(request, allowance_id):
         request.path.split("/")[2] == "delete-employee-allowance"
         or not Allowance.objects.exists()
     ):
-        return HttpResponse("<script>window.location.reload();</script>")
+        return HorillaRedirect(request)
 
     instances_ids = request.GET.get("instances_ids")
     if instances_ids:
@@ -697,7 +699,7 @@ def delete_deduction(request, deduction_id, emp_id=None):
             http_hx_target == "payroll-deduction-container"
             and not Deduction.objects.filter()
         ):
-            return HttpResponse("<script>window.location.reload();</script>")
+            return HorillaRedirect(request)
         if redirected_path:
             return redirect(redirected_path)
     default_redirect = (
@@ -926,9 +928,13 @@ def create_payslip(request, new_post_data=None):
                     ),
                     icon="close",
                 )
-                return HttpResponse(
-                    f'<script>window.location.href = "/payroll/view-payslip/{payslip_data["instance"].id}/"</script>'
+                return HorillaRedirect(
+                    request,
+                    redirect_to=reverse(
+                        "view-payslip", kwargs={"payslip_id": payslip.pk}
+                    ),
                 )
+
     return render(
         request,
         "payroll/payslip/create_payslip.html",
@@ -944,42 +950,59 @@ def validate_start_date(request):
     """
     end_datetime = None
     start_datetime = None
+    errors = []
+    valid = True
     start_date = request.GET.get("start_date")
     end_date = request.GET.get("end_date")
-    employee_id = request.GET.getlist("employee_id")
+    try:
+        employee_id = [
+            int(e) for e in request.GET.getlist("employee_id") if e.isdigit()
+        ]
+    except:
+        return HorillaRedirect(request, message=_("Invalid Request"))
+
     if start_date:
         start_datetime = datetime.strptime(start_date, "%Y-%m-%d").date()
     if end_date:
         end_datetime = datetime.strptime(end_date, "%Y-%m-%d").date()
-    error_message = ""
-    response = {"valid": True, "message": error_message}
     for emp_id in employee_id:
         contract = Contract.objects.filter(
             employee_id__id=emp_id, contract_status="active"
         ).first()
 
+        if not contract:
+            continue
+
         if start_datetime is not None and start_datetime < contract.contract_start_date:
-            error_message = f"<ul class='errorlist'><li>The {contract.employee_id}'s \
-                contract start date is smaller than pay period start date</li></ul>"
-            response["message"] = error_message
-            response["valid"] = False
+            errors.append(
+                _(
+                    "The %(employee)s's contract start date is smaller than pay period start date"
+                )
+                % {"employee": contract.employee_id}
+            )
+            valid = False
 
     if (
         start_datetime is not None
         and end_datetime is not None
         and start_datetime > end_datetime
     ):
-        error_message = "<ul class='errorlist'><li>The end date must be greater than \
-                or equal to the start date.</li></ul>"
-        response["message"] = error_message
-        response["valid"] = False
+        errors.append(
+            _("The end date must be greater than or equal to the start date.")
+        )
+        valid = False
 
     if end_datetime is not None:
         if end_datetime > datetime.today().date():
-            error_message = '<ul class="errorlist"><li>The end date cannot be in the future.</li></ul>'
-            response["message"] = error_message
-            response["valid"] = False
-    return JsonResponse(response)
+            errors.append(_("The end date cannot be in the future."))
+            valid = False
+
+    return JsonResponse(
+        {
+            "valid": valid,
+            "errors": errors,
+        }
+    )
 
 
 @login_required
@@ -1187,7 +1210,7 @@ def send_slip(request):
     ) or not len(email_backend.dynamic_from_email_with_display_name):
         messages.error(request, "Email server is not configured")
         if view:
-            return HttpResponse("<script>window.location.reload()</script>")
+            return HorillaRedirect(request)
         else:
             return redirect(filter_payslip)
 
@@ -1203,7 +1226,7 @@ def send_slip(request):
     mail_thread.start()
     messages.info(request, "Mail processing")
     if view:
-        return HttpResponse("<script>window.location.reload()</script>")
+        return HorillaRedirect(request)
     else:
         return redirect(filter_payslip)
 
@@ -1257,7 +1280,7 @@ def add_bonus(request):
                             "No active contract found for  {} during this payslip period"
                         ).format(employee),
                     )
-            return HttpResponse("<script>window.location.reload()</script>")
+            return HorillaRedirect(request)
     return render(
         request,
         "payroll/bonus/form.html",
@@ -1368,7 +1391,7 @@ def create_loan(request):
         if form.is_valid():
             form.save()
             messages.success(request, "Loan created/updated")
-            return HttpResponse("<script>window.location.reload()</script>")
+            return HorillaRedirect(request)
     return render(
         request, "payroll/loan/form.html", {"form": form, "instance_id": instance_id}
     )
@@ -1432,7 +1455,13 @@ def delete_loan(request):
 def edit_installment_amount(request):
     loan_id = request.GET.get("loan_id")
     ded_id = request.GET.get("ded_id")
-    value = float(request.POST.get("amount")) if request.POST.get("amount") else 0
+    amount_raw = request.POST.get("amount")
+    try:
+        value = float(amount_raw) if amount_raw else 0.0
+        if not math.isfinite(value):
+            value = 0.0
+    except (TypeError, ValueError):
+        value = 0.0
 
     loan = LoanAccount.objects.filter(id=loan_id).first()
     deductions = loan.deduction_ids.all().order_by("one_time_date")
@@ -1611,7 +1640,7 @@ def create_reimbursement(request):
         if form.is_valid():
             form.save()
             messages.success(request, "Reimbursement saved successfully")
-            return HttpResponse(status=204, headers={"HX-Refresh": "true"})
+            return HorillaRedirect(request)
     else:
         form = forms.ReimbursementForm(instance=instance)
 
