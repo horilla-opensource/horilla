@@ -1029,6 +1029,12 @@ class Candidate(HorillaModel):
         )
         return url
 
+    def get_similar_candidates_url(self):
+        """
+        URL for "Find similar candidates" (search by example).
+        """
+        return reverse_lazy("similar-candidates", kwargs={"cand_id": self.pk})
+
     def get_document_request_doc(self):
         """
         This method to get document request url

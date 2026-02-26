@@ -204,3 +204,92 @@ def get_ranked_resumes_for_view(recruitment, resumes):
     non_candidate.sort(key=lambda x: x["combined_score"], reverse=True)
     candidate.sort(key=lambda x: x["combined_score"], reverse=True)
     return non_candidate + candidate
+
+
+# ---------------------------------------------------------------------------
+# Similar candidates (search by example)
+# ---------------------------------------------------------------------------
+
+
+def _get_candidate_resume_text(candidate):
+    """Extract text from candidate's resume file. Returns empty string on failure."""
+    from recruitment.services.legacy_resume_parser import extract_words_from_pdf
+
+    if not getattr(candidate, "resume", None) or not candidate.resume:
+        return ""
+    try:
+        words = extract_words_from_pdf(candidate.resume)
+        return " ".join(words) if words else ""
+    except Exception:
+        return ""
+
+
+def build_candidate_text(candidate):
+    """
+    Build a single text representation of the candidate for semantic comparison.
+    Uses resume text (from PDF) plus name, job position, recruitment title/skills.
+    """
+    parts = []
+    if getattr(candidate, "name", None) and candidate.name:
+        parts.append(f"Name: {candidate.name}")
+    # Job position: from candidate or from recruitment
+    position = None
+    if getattr(candidate, "job_position_id", None) and candidate.job_position_id:
+        position = getattr(candidate.job_position_id, "job_position", None)
+    if (
+        not position
+        and getattr(candidate, "recruitment_id", None)
+        and candidate.recruitment_id
+    ):
+        rec = candidate.recruitment_id
+        if getattr(rec, "job_position_id", None) and rec.job_position_id:
+            position = getattr(rec.job_position_id, "job_position", None)
+    if position:
+        parts.append(f"Position: {position}")
+    # Recruitment title and skills
+    if getattr(candidate, "recruitment_id", None) and candidate.recruitment_id:
+        rec = candidate.recruitment_id
+        if getattr(rec, "title", None) and rec.title:
+            parts.append(f"Recruitment: {rec.title}")
+        if getattr(rec, "skills", None):
+            skills = list(rec.skills.values_list("title", flat=True))
+            if skills:
+                parts.append("Skills: " + ", ".join(skills))
+    # Resume body
+    resume_text = _get_candidate_resume_text(candidate)
+    if resume_text:
+        parts.append("Resume: " + resume_text)
+    return " ".join(parts) if parts else ""
+
+
+def find_similar_candidates(
+    reference_candidate,
+    candidate_queryset=None,
+    *,
+    top_k=None,
+    exclude_self=True,
+):
+    """
+    Return candidates ordered by similarity to reference_candidate (TF-IDF + cosine).
+
+    Returns list of (candidate, similarity_score) sorted by score descending.
+    """
+    from recruitment.models import Candidate
+
+    if candidate_queryset is None:
+        candidate_queryset = Candidate.objects.filter(is_active=True)
+    if exclude_self:
+        candidate_queryset = candidate_queryset.exclude(pk=reference_candidate.pk)
+    candidate_list = list(candidate_queryset)
+    if not candidate_list:
+        return []
+
+    reference_text = build_candidate_text(reference_candidate)
+    candidate_texts = [build_candidate_text(c) for c in candidate_list]
+    backend = LocalSemanticMatchingBackend()
+    scores = backend.score(reference_text, candidate_texts)
+    pairs = list(zip(candidate_list, scores))
+    pairs.sort(key=lambda x: x[1], reverse=True)
+    if top_k is not None:
+        pairs = pairs[:top_k]
+    return pairs

@@ -426,6 +426,8 @@ SEMANTIC_MATCHING_BACKEND = env("SEMANTIC_MATCHING_BACKEND", default="local")
 # Optional: for Phase 2 external embedding API
 SEMANTIC_MATCHING_ENDPOINT = env("SEMANTIC_MATCHING_ENDPOINT", default="")
 SEMANTIC_MATCHING_API_KEY = env("SEMANTIC_MATCHING_API_KEY", default="")
+# Similar candidates: max number of candidates to score and return
+SIMILAR_CANDIDATES_TOP_K = int(env("SIMILAR_CANDIDATES_TOP_K", default="100"))
 
 DYNAMIC_URL_PATTERNS = []
 

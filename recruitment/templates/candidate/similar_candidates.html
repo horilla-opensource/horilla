@@ -1,0 +1,106 @@
+{% extends "index.html" %}
+{% load i18n static basefilters recruitmentfilters horillafilters %}
+
+{% block styles %}
+{{ block.super }}
+{# Theme index does not load style.min.css; our content uses oh-* component classes from it #}
+<link rel="stylesheet" href="{% static 'build/css/style.min.css' %}" />
+<link rel="stylesheet" type="text/css" href="{% static 'css/style.css' %}" />
+{% endblock %}
+
+{% block content %}
+<section class="oh-wrapper oh-main__topbar">
+    <div class="oh-main__titlebar oh-main__titlebar--left">
+        <a href="{% url 'similar-candidates' similar_to.pk %}" class="oh-main__titlebar-title fw-bold mb-0 text-dark text-decoration-none">
+            {% trans "Candidates similar to" %} {{ similar_to_name|default:similar_to }}
+        </a>
+        <a href="{% url 'candidate-view-individual' similar_to.pk %}" class="oh-btn oh-btn--secondary ms-2">
+            <ion-icon name="arrow-back-outline"></ion-icon> {% trans "Back to candidate" %}
+        </a>
+    </div>
+</section>
+
+<div class="oh-wrapper">
+    {% if semantic_disabled %}
+    <div class="oh-card mt-4">
+        <p class="text-muted mb-0">{% trans "Similar candidates (search by example) is currently disabled. Enable SEMANTIC_MATCHING_ENABLED in settings to use this feature." %}</p>
+    </div>
+    {% elif data.object_list %}
+    <div class="oh-layout--grid-3 mt-4">
+        {% for item in data %}
+        {% with cand=item.candidate %}
+        <div
+            class="oh-kanban-card candidate
+                {% if cand.canceled %} row-status--red
+                {% elif cand.hired %} row-status--yellow
+                {% elif cand.converted %} row-status--blue
+                {% elif cand.hired == False %} row-status--purple
+                {% endif %}"
+            style="color: inherit; text-decoration: none; {% if cand.recruitment_id.closed %}background: #8080800f;{% endif %}"
+        >
+            <a href="{% url 'candidate-view-individual' cand.id %}" style="color: inherit; text-decoration: none; display: flex">
+                {% if cand.email in emp_list %}
+                <div class="banner-container fw-bold" style="position: absolute; top: 20px; right: -40px; transform: rotate(37deg); background-color: #40ac40; color: white; padding: 5px 60px; font-size: 12px; z-index: 2; clip-path: polygon(29% 0, 80% 0, 91% 96%, 0 150%); text-align: center;">
+                    <span style="font-weight: bold;">{% trans "Converted" %}</span>
+                </div>
+                {% endif %}
+                <div class="oh-kanban-card__avatar">
+                    <div class="oh-kanban-card__profile-container">
+                        <img src="{{ cand.get_avatar }}" class="oh-kanban-card__profile-image" alt="" />
+                    </div>
+                </div>
+                <div class="oh-kanban-card__details">
+                    <span class="oh-kanban-card__title" {% if cand.name %}{% if cand.name|length >= 30 %}title="{{ cand.name }}"{% endif %}{% endif %}>
+                        {{ cand.name|truncatechars:30|default:"—" }}
+                    </span>
+                    <span class="oh-kanban-card__subtitle" {% if cand.email|length >= 30 %}title="{{ cand.email }}"{% endif %}>
+                        {{ cand.email|truncatechars:30 }}
+                    </span>
+                    <br />
+                    <span class="oh-kanban-card__subtitle">{{ cand.job_position_id|default:"—" }}</span>
+                    {% if item.similarity_score is not None %}
+                    <span class="badge oh-btn--secondary mt-1">{% trans "Match" %}: {{ item.similarity_score|floatformat:0 }}%</span>
+                    {% endif %}
+                </div>
+            </a>
+        </div>
+        {% endwith %}
+        {% endfor %}
+    </div>
+
+    {% if data.paginator.num_pages > 1 %}
+    <div class="oh-pagination mt-4">
+        <span class="oh-pagination__page">{% trans "Page" %} {{ data.number }} {% trans "of" %} {{ data.paginator.num_pages }}.</span>
+        <nav class="oh-pagination__nav">
+            <ul class="oh-pagination__items">
+                {% if data.has_previous %}
+                <li class="oh-pagination__item oh-pagination__item--wide">
+                    <a href="{% url 'similar-candidates' similar_to.pk %}?page=1" class="oh-pagination__link">{% trans "First" %}</a>
+                </li>
+                <li class="oh-pagination__item oh-pagination__item--wide">
+                    <a href="{% url 'similar-candidates' similar_to.pk %}?page={{ data.previous_page_number }}" class="oh-pagination__link">{% trans "Previous" %}</a>
+                </li>
+                {% endif %}
+                {% if data.has_next %}
+                <li class="oh-pagination__item oh-pagination__item--wide">
+                    <a href="{% url 'similar-candidates' similar_to.pk %}?page={{ data.next_page_number }}" class="oh-pagination__link">{% trans "Next" %}</a>
+                </li>
+                <li class="oh-pagination__item oh-pagination__item--wide">
+                    <a href="{% url 'similar-candidates' similar_to.pk %}?page={{ data.paginator.num_pages }}" class="oh-pagination__link">{% trans "Last" %}</a>
+                </li>
+                {% endif %}
+            </ul>
+        </nav>
+    </div>
+    {% endif %}
+    {% else %}
+    <div class="oh-card mt-4">
+        <div class="oh-404">
+            <img style="width: 150px; height: 150px" src="{% static 'images/ui/no-results.png' %}" class="oh-404__image mb-4" alt="" />
+            <h5 class="oh-404__subtitle">{% trans "No similar candidates found." %}</h5>
+            <a href="{% url 'candidate-view-individual' similar_to.pk %}" class="oh-btn oh-btn--secondary mt-2">{% trans "Back to candidate" %}</a>
+        </div>
+    </div>
+    {% endif %}
+</div>
+{% endblock %}

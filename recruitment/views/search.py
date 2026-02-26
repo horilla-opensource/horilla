@@ -7,8 +7,9 @@ This module is used to register search/filter views methods
 import json
 from urllib.parse import parse_qs
 
+from django.conf import settings
 from django.core.paginator import Paginator
-from django.shortcuts import render
+from django.shortcuts import get_object_or_404, render
 
 from base.methods import get_key_instances, get_pagination, sortby
 from horilla.decorators import (
@@ -34,6 +35,7 @@ from recruitment.models import (
     Stage,
     SurveyTemplate,
 )
+from recruitment.services.semantic_matching import find_similar_candidates
 from recruitment.views.paginator_qry import paginator_qry
 
 
@@ -146,6 +148,59 @@ def candidate_search(request):
             "pd": previous_data,
             "filter_dict": data_dict,
             "field": field,
+            "emp_list": existing_emails,
+        },
+    )
+
+
+@login_required
+@permission_required(perm="recruitment.view_candidate")
+def similar_candidates(request, cand_id):
+    """
+    List candidates similar to the given candidate (search by example).
+    When the request is from HTMX (HX-Request header), returns only the content fragment
+    so that styles from the parent page apply; otherwise returns the full page.
+    """
+    reference = get_object_or_404(Candidate, pk=cand_id)
+    use_semantic = getattr(settings, "SEMANTIC_MATCHING_ENABLED", False)
+    top_k = getattr(settings, "SIMILAR_CANDIDATES_TOP_K", 100)
+    is_htmx = request.headers.get("HX-Request") == "true"
+    template = (
+        "candidate/similar_candidates_fragment.html"
+        if is_htmx
+        else "candidate/similar_candidates.html"
+    )
+
+    if not use_semantic:
+        return render(
+            request,
+            template,
+            {
+                "data": paginator_qry([], request.GET.get("page")),
+                "similar_to": reference,
+                "similar_to_name": reference.name or "",
+                "semantic_disabled": True,
+                "emp_list": [],
+            },
+        )
+
+    pairs = find_similar_candidates(reference, top_k=top_k)
+    wrapped = [
+        {"candidate": c, "similarity_score": round(s * 100, 0)} for c, s in pairs
+    ]
+    page = paginator_qry(wrapped, request.GET.get("page"))
+    mails = list(Candidate.objects.values_list("email", flat=True))
+    existing_emails = list(
+        HorillaUser.objects.filter(username__in=mails).values_list("email", flat=True)
+    )
+    return render(
+        request,
+        template,
+        {
+            "data": page,
+            "similar_to": reference,
+            "similar_to_name": reference.name or "",
+            "semantic_disabled": False,
             "emp_list": existing_emails,
         },
     )

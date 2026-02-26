@@ -332,6 +332,11 @@ urlpatterns = [
         search.candidate_search,
         name="search-candidate",
     ),
+    path(
+        "similar-candidates/<int:cand_id>/",
+        search.similar_candidates,
+        name="similar-candidates",
+    ),
     # path("candidate-view-list/", views.candidate_view_list, name="candidate-view-list"),
     path("candidate-view-card/", views.candidate_view_card, name="candidate-view-card"),
     path(

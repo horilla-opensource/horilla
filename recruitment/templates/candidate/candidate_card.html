@@ -184,6 +184,13 @@
                                 </li>
                             {% endif %}
                         {% endif %}
+                        <li class="oh-dropdown__item">
+                            <a
+                                href="{% url 'similar-candidates' cand.id %}"
+                                class="oh-dropdown__link"
+                                >{% trans "Find similar candidates" %}</a
+                            >
+                        </li>
                         {% if perms.recruitment.change_candidate %}
                             <li class="oh-dropdown__item">
                                 <a

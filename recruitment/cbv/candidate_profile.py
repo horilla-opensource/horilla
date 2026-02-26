@@ -43,6 +43,14 @@ class CandidateProfileView(HorillaProfileView):
                     """,
         },
         {
+            "title": _("Find similar candidates"),
+            "src": f"/{settings.STATIC_URL}images/ui/exit-outline.svg",
+            "attrs": """
+                href="{get_similar_candidates_url}"
+                class="oh-dropdown__link"
+            """,
+        },
+        {
             "title": _("View candidate self tracking"),
             "src": f"/{settings.STATIC_URL}images/ui/exit-outline.svg",
             "accessibility": "recruitment.cbv.accessibility.view_candidate_self_tracking",
