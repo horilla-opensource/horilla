@@ -15,6 +15,7 @@ from django.views.generic import ListView
 
 from employee.models import Employee
 from horilla.horilla_middlewares import _thread_locals
+from horilla.http import HorillaRedirect
 from horilla_views.cbv_methods import login_required, permission_required
 from horilla_views.generic.cbv.views import (
     HorillaCardView,
@@ -301,9 +302,8 @@ class ProjectFormView(HorillaFormView):
                 if HTTP_REFERER and "task-view/" in HTTP_REFERER:
                     form.save()
                     messages.success(self.request, message)
-                    return self.HttpResponse(
-                        "<script>window.location.reload()</script>"
-                    )
+                    return HorillaRedirect(self.request)
+
             else:
                 message = _("New project created")
             form.save()

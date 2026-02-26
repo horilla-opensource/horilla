@@ -1,17 +1,11 @@
-from django.contrib import messages
-from django.http import HttpResponseRedirect
-
 from horilla.horilla_middlewares import _thread_locals
+from horilla.methods import handle_no_permission
 from project.methods import (
     any_project_manager,
     any_project_member,
     any_task_manager,
     any_task_member,
-    has_subordinates,
 )
-
-# from project.sidebar import has_subordinates
-
 
 decorator_with_arguments = (
     lambda decorator: lambda *args, **kwargs: lambda func: decorator(
@@ -38,7 +32,6 @@ def is_projectmanager_or_member_or_perms(function, perm):
             or any_task_member(user)
         ):
             return function(self, *args, **kwargs)
-        messages.info(request, "You don't have permission.")
-        return HttpResponseRedirect(request.META.get("HTTP_REFERER", "/"))
+        return handle_no_permission(request)
 
     return _function
