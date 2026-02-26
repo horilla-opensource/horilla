@@ -4,7 +4,7 @@
 		<div class="oh-sticky-table__thead">
 			<div class="oh-sticky-table__tr">
 				<div class="oh-sticky-table__th" align="center">{% trans "Resume" %}</div>
-				<div class="oh-sticky-table__th" align="center">{% trans "Score" %}</div>
+				<div class="oh-sticky-table__th" align="center">{% if semantic_matching_enabled %}{% trans "Fit %" %}{% else %}{% trans "Score" %}{% endif %}</div>
 				{% if perms.recruitment.change_recruitment or perms.recruitment.delete_recruitment or perms.recruitment.add_recruitment %}
 					<div class="oh-sticky-table__th" align="center">{% trans "Actions" %}</div>
 				{% endif %}
@@ -16,7 +16,7 @@
 				<div class="oh-sticky-table__td" align="center">
                     <a href="{{ resume.resume.file.url }}" onmouseover="enlargeImage('{{ resume.resume.file.url }}',$(this))" rel="noopener noreferrer" target="_blank"> {{resume.resume}} </a>
                 </div>
-				<div class="oh-sticky-table__td" align="center">{% if resume.image_pdf %}<p class="text-danger">{% trans "Need verification" %}</p>{% else %}{{resume.matching_skills_count}}{% endif %}</div>
+				<div class="oh-sticky-table__td" align="center">{% if resume.image_pdf %}<p class="text-danger">{% trans "Need verification" %}</p>{% elif semantic_matching_enabled %}{{ resume.combined_score|floatformat:0 }}%{% else %}{{ resume.matching_skills_count }}{% endif %}</div>
 				{% if perms.base.change_department or perms.base.delete_department %}
 					<div class="oh-sticky-table__td">
                         {% if resume.resume.is_candidate %}

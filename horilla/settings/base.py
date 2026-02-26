@@ -417,6 +417,16 @@ RESUME_PARSING_MAX_FILE_SIZE_MB = float(
 RESUME_PARSING_AI_ENDPOINT = env("RESUME_PARSING_AI_ENDPOINT", default=None)
 RESUME_PARSING_AI_API_KEY = env("RESUME_PARSING_AI_API_KEY", default=None)
 
+# ========================================
+# SEMANTIC CANDIDATE–JOB FIT
+# ========================================
+SEMANTIC_MATCHING_ENABLED = env.bool("SEMANTIC_MATCHING_ENABLED", default=True)
+SEMANTIC_MATCHING_WEIGHT = float(env("SEMANTIC_MATCHING_WEIGHT", default="0.7"))
+SEMANTIC_MATCHING_BACKEND = env("SEMANTIC_MATCHING_BACKEND", default="local")
+# Optional: for Phase 2 external embedding API
+SEMANTIC_MATCHING_ENDPOINT = env("SEMANTIC_MATCHING_ENDPOINT", default="")
+SEMANTIC_MATCHING_API_KEY = env("SEMANTIC_MATCHING_API_KEY", default="")
+
 DYNAMIC_URL_PATTERNS = []
 
 APP_URLS = [
