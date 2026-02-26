@@ -54,6 +54,7 @@ from horilla.decorators import (
     permission_required,
 )
 from horilla.group_by import group_by_queryset as general_group_by
+from horilla.http.response import HorillaRedirect
 from horilla_documents.models import Document
 from notifications.signals import notify
 from onboarding.decorators import (
@@ -281,7 +282,7 @@ def task_creation(request):
                 redirect=reverse("onboarding-view"),
             )
             messages.success(request, _("New task created successfully..."))
-            return HttpResponse(status=204, headers={"HX-Refresh": "true"})
+            return HorillaRedirect(request)
     return render(
         request, "onboarding/task_form.html", {"form": form, "stage_id": stage_id}
     )
@@ -332,7 +333,7 @@ def task_update(
                 icon="people-circle",
                 redirect=reverse("onboarding-view"),
             )
-            return HttpResponse(status=204, headers={"HX-Refresh": "true"})
+            return HorillaRedirect(request)
     return render(
         request,
         "onboarding/task_update.html",
@@ -641,7 +642,7 @@ def email_send(request):
     email_backend = ConfiguredEmailBackend()
     if not candidates:
         messages.info(request, "Please choose candidates")
-        return HttpResponse("<script>window.location.reload()</script>")
+        return HorillaRedirect(request)
 
     bodys = list(
         HorillaMailTemplate.objects.filter(id__in=template_attachment_ids).values_list(
@@ -726,7 +727,7 @@ def email_send(request):
         except Exception as e:
             logger.error(e)
 
-    return HttpResponse("<script>window.location.reload()</script>")
+    return HorillaRedirect(request)
 
 
 def onboarding_query_grouper(request, queryset):
@@ -1798,7 +1799,7 @@ def add_to_rejected_candidates(request):
             form.save()
             form = RejectedCandidateForm()
             messages.success(request, "Candidate reject reason saved")
-            return HttpResponse("<script>window.location.reload()</script>")
+            return HorillaRedirect(request)
     return render(request, "onboarding/rejection/form.html", {"form": form})
 
 
@@ -1818,7 +1819,7 @@ def delete_candidate_rejection(request, rej_id):
             messages.error(request, "Candidate rejection not found")
     except Exception as e:
         messages.error(request, "Error occurred while deleting candidate rejection")
-    return HttpResponse("<script>window.location.reload()</script>")
+    return HorillaRedirect(request)
 
 
 @login_required
