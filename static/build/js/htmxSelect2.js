@@ -4000,7 +4000,7 @@
 staticUrl = $("#statiUrl").attr("data-url");
 
 function initSelect2(context) {
-    $(context).find(".oh-select").each(function () {
+    $(context).find("select[class*='oh-select']").each(function () {
         if ($(this).data("select2")) {
             $(this).select2("destroy");  // only destroy if initialized
         }
