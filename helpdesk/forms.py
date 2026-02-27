@@ -25,6 +25,7 @@ from typing import Any
 
 from django import forms
 from django.template.loader import render_to_string
+from django.utils.translation import gettext_lazy as _
 
 from base.forms import ModelForm
 from base.methods import filtersubordinatesemployeemodel, is_reportingmanager
@@ -37,6 +38,7 @@ from helpdesk.models import (
     Comment,
     DepartmentManager,
     FAQCategory,
+    PasswordResetRequest,
     Ticket,
     TicketType,
 )
@@ -154,6 +156,124 @@ class TicketForm(ModelForm):
         if is_reportingmanager(request) or request.user.has_perm("base.add_tags"):
             self.fields["tags"].choices = list(self.fields["tags"].choices)
             self.fields["tags"].choices.append(("create_new_tag", "Create new tag"))
+
+
+class PasswordResetRequestForm(forms.ModelForm):
+    """
+    Form for employees to submit a Password Reset request.
+
+    The `employee` field is a dropdown:
+      - Regular users only see themselves (pre-selected, read-only effectively).
+      - Superusers/admins see all active employees.
+
+    On save, user_email is populated from the selected employee's company email.
+    """
+
+    employee = forms.ModelChoiceField(
+        queryset=Employee.objects.none(),  # populated in __init__
+        label=_("User ID (Email)"),
+        widget=forms.Select(attrs={"class": "oh-select oh-select-2 w-100"}),
+    )
+
+    class Meta:
+        model = PasswordResetRequest
+        fields = ["platform", "employee", "reason"]
+        widgets = {
+            "platform": forms.Select(
+                attrs={"class": "oh-select oh-select-2 w-100"}
+            ),
+            "reason": forms.Textarea(
+                attrs={
+                    "class": "oh-input w-100",
+                    "rows": 4,
+                    "placeholder": _("Describe why you need a password reset"),
+                }
+            ),
+        }
+        labels = {
+            "platform": _("Platform"),
+            "reason": _("Reason for request"),
+        }
+
+    def __init__(self, *args, request=None, **kwargs):
+        super().__init__(*args, **kwargs)
+
+        if request and request.user.is_superuser:
+            # Admins can pick any active employee
+            self.fields["employee"].queryset = Employee.objects.filter(
+                is_active=True
+            ).order_by("employee_first_name")
+        elif request:
+            # Regular users can only pick themselves
+            try:
+                emp = request.user.employee_get
+                self.fields["employee"].queryset = Employee.objects.filter(pk=emp.pk)
+                self.fields["employee"].initial = emp
+            except Exception:
+                self.fields["employee"].queryset = Employee.objects.none()
+
+        # If editing an existing request, pre-select the matching employee
+        if self.instance and self.instance.pk and self.instance.user_id:
+            try:
+                emp = Employee.objects.get(
+                    employee_work_info__company_email=self.instance.user_id
+                )
+                self.fields["employee"].initial = emp
+            except Exception:
+                pass
+
+    def save(self, commit=True):
+        instance = super().save(commit=False)
+        # Derive user_id from the selected employee's company email
+        employee = self.cleaned_data.get("employee")
+        if employee:
+            try:
+                instance.user_id = (
+                    employee.employee_work_info.company_email or ""
+                )
+            except Exception:
+                instance.user_id = ""
+        if commit:
+            instance.save()
+        return instance
+
+
+class ISOReviewForm(forms.Form):
+    """
+    Form used by ISO/Admin to approve or reject a Password Reset request.
+    iso_feedback is required when action == 'reject'.
+    """
+
+    ACTION_CHOICES = [
+        ("approve", _("Approve")),
+        ("reject", _("Reject")),
+    ]
+
+    action = forms.ChoiceField(
+        choices=ACTION_CHOICES,
+        widget=forms.HiddenInput(),
+    )
+    iso_feedback = forms.CharField(
+        required=False,
+        label=_("Feedback / Reason for Rejection"),
+        widget=forms.Textarea(
+            attrs={
+                "class": "oh-input w-100",
+                "rows": 3,
+                "placeholder": _("Provide feedback (required when rejecting)..."),
+            }
+        ),
+    )
+
+    def clean(self):
+        cleaned_data = super().clean()
+        action = cleaned_data.get("action")
+        feedback = cleaned_data.get("iso_feedback", "").strip()
+        if action == "reject" and not feedback:
+            raise forms.ValidationError(
+                _("Feedback is required when rejecting a request.")
+            )
+        return cleaned_data
 
 
 class TicketTagForm(ModelForm):

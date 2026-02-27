@@ -87,8 +87,13 @@
 											<div data-cell-index="3" class="oh-sticky-table__td">{{ticket.ticket_type}}</div>
 											<div data-cell-index="4" class="oh-sticky-table__td">{{ticket.get_raised_on}}</div>
 											<div data-cell-index="5" class="oh-sticky-table__td">{{ticket.assigned_to.all|join:" , "}}</div>
-											<div data-cell-index="6" class="oh-sticky-table__td">{{ticket.get_status_display}}</div>
+											<div data-cell-index="6" class="oh-sticky-table__td">
+												{% if ticket.ticket_type.title != 'Password Reset' %}
+													{{ticket.get_status_display}}
+												{% endif %}
+											</div>
 											<div data-cell-index="7" class="oh-sticky-table__td" onclick="event.stopPropagation()">
+												{% if ticket.ticket_type.title != 'Password Reset' %}
 												{% if ticket.priority == 'low' %}
 													<form hx-swap="none" hx-post='{% url "update-priority" ticket.id %}' method="post">
 														{% csrf_token %}
@@ -135,9 +140,13 @@
 														</div>
 													</form>
 												{% endif %}
-											</div>
+												{% endif %}</div>
 
-											<div data-cell-index="8" class="oh-sticky-table__td">{{ticket.tags.all|join:" , "}}</div>
+											<div data-cell-index="8" class="oh-sticky-table__td">
+												{% if ticket.ticket_type.title != 'Password Reset' %}
+													{{ticket.tags.all|join:" , "}}
+												{% endif %}
+											</div>
 											<div class="oh-sticky-table__td oh-sticky-table__right" onclick="event.stopPropagation()">
 												<div class="oh-btn-group">
 													<button
@@ -413,8 +422,13 @@
 											<div data-cell-index="13" class="oh-sticky-table__td">{{ticket.ticket_type}}</div>
 											<div data-cell-index="14" class="oh-sticky-table__td">{{ticket.get_raised_on}}</div>
 											<div data-cell-index="15" class="oh-sticky-table__td">{{ticket.assigned_to.all|join:" , "}}</div>
-											<div data-cell-index="16" class="oh-sticky-table__td">{{ticket.get_status_display}}</div>
+											<div data-cell-index="16" class="oh-sticky-table__td">
+												{% if ticket.ticket_type.title != 'Password Reset' %}
+													{{ticket.get_status_display}}
+												{% endif %}
+											</div>
 											<div data-cell-index="17" class="oh-sticky-table__td">
+												{% if ticket.ticket_type.title != 'Password Reset' %}
 												{% if perms.helpdesk.change_ticket or request.user.employee_get|is_department_manager:ticket %}
 													{% if ticket.priority == 'low' %}
 														<form hx-swap="none" hx-post='{% url "update-priority" ticket.id %}' method="post">
@@ -495,11 +509,16 @@
 														</div>
 													{% endif %}
 												{% endif %}
+												{% endif %}</div>
+											<div data-cell-index="18" class="oh-sticky-table__td">
+												{% if ticket.ticket_type.title != 'Password Reset' %}
+													{{ticket.tags.all|join:" , "}}
+												{% endif %}
 											</div>
-											<div data-cell-index="18" class="oh-sticky-table__td">{{ticket.tags.all|join:" , "}}</div>
 											{% if perms.helpdesk.change_ticket or perms.helpdesk.delete_ticket or request.user.employee_get|is_department_manager:ticket or perms.helpdesk.change_claimrequest %}
 												<div class="oh-sticky-table__td oh-sticky-table__right" onclick="event.stopPropagation()">
 													<div class="oh-btn-group" style="border:none">
+														{% if ticket.ticket_type.title != 'Password Reset' %}
 														{% if perms.helpdesk.change_ticket or perms.helpdesk.change_claimrequest or request.user.employee_get|is_department_manager:ticket %}
 															<button
 																hx-get = "{% url "view-ticket-claim-request" ticket.id %}"
@@ -534,6 +553,7 @@
 																	<ion-icon name="checkmark-done-outline"></ion-icon>
 																</a>
 															{% endif %}
+														{% endif %}
 														{% endif %}
 														{% if perms.helpdesk.change_ticket or request.user.employee_get|is_department_manager:ticket %}
 															<button
@@ -797,8 +817,13 @@
 										<div data-cell-index="23" class="oh-sticky-table__td">{{ticket.ticket_type}}</div>
 										<div data-cell-index="24" class="oh-sticky-table__td">{{ticket.get_raised_on}}</div>
 										<div data-cell-index="25" class="oh-sticky-table__td">{{ticket.assigned_to.all|join:" , "}}</div>
-										<div data-cell-index="26" class="oh-sticky-table__td">{{ticket.get_status_display}}</div>
+										<div data-cell-index="26" class="oh-sticky-table__td">
+												{% if ticket.ticket_type.title != 'Password Reset' %}
+													{{ticket.get_status_display}}
+												{% endif %}
+											</div>
 										<div data-cell-index="27" class="oh-sticky-table__td">
+												{% if ticket.ticket_type.title != 'Password Reset' %}
 											{% if perms.helpdesk.change_ticket or request.user.employee_get|is_department_manager:ticket %}
 												{% if ticket.priority == 'low' %}
 													<form hx-swap="none" hx-post='{% url "update-priority" ticket.id %}' method="post">
@@ -879,11 +904,17 @@
 													</div>
 												{% endif %}
 											{% endif %}
+											{% endif %}
 										</div>
-										<div data-cell-index="28" class="oh-sticky-table__td">{{ticket.tags.all|join:" , "}}</div>
+										<div data-cell-index="28" class="oh-sticky-table__td">
+												{% if ticket.ticket_type.title != 'Password Reset' %}
+													{{ticket.tags.all|join:" , "}}
+												{% endif %}
+											</div>
 										{% if perms.helpdesk.change_ticket or perms.helpdesk.delete_ticket or request.user.employee_get|is_department_manager:ticket or perms.helpdesk.change_claimrequest %}
 											<div class="oh-sticky-table__td oh-sticky-table__right" onclick="event.stopPropagation()">
 												<div class="oh-btn-group">
+													{% if ticket.ticket_type.title != 'Password Reset' %}
 													{% if perms.helpdesk.change_ticket or request.user.employee_get|is_department_manager:ticket or perms.helpdesk.change_claimrequest %}
 														<button
 																hx-get = "{% url "view-ticket-claim-request" ticket.id %}"
@@ -896,6 +927,7 @@
 															<ion-icon name="eye-outline"></ion-icon>
 
 														</button>
+													{% endif %}
 													{% endif %}
 													{% if perms.helpdesk.change_ticket or request.user.employee_get|is_department_manager:ticket %}
 														<button
