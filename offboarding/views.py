@@ -1509,7 +1509,12 @@ def edit_resignation_reason(request, id):
 @login_required
 def delete_resignation_reason(request, id):
     instance = get_object_or_404(ExitReason, id=id)
-    instance.delete()
-    messages.success(request, _("Exit reason deleted successfully"))
+    if ResignationLetter.objects.filter(exit_reason=instance).exists():
+        messages.error(
+            request, _("This resignation reason is currently in use and cannot be deleted.")
+        )
+    else:
+        instance.delete()
+        messages.success(request, _("Exit reason deleted successfully"))
     return redirect("resignation-reason-view")
 
