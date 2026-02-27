@@ -1711,6 +1711,18 @@ def user_request_one_view(request, id):
     """
     attendance_request = Attendance.objects.get(id=id)
 
+    # Attached proof files (uploaded via mobile/API): AttendanceRequestComment.files
+    attachments = []
+    try:
+        comments = AttendanceRequestComment.objects.filter(request_id=attendance_request).prefetch_related('files')
+        for c in comments:
+            for f in c.files.all():
+                if getattr(f, 'file', None) and getattr(f.file, 'url', None):
+                    attachments.append(f.file.url)
+    except Exception:
+        attachments = []
+
+
     at_work_seconds = attendance_request.at_work_second
     hours_at_work = at_work_seconds // 3600
     minutes_at_work = (at_work_seconds % 3600) // 60
@@ -1730,6 +1742,7 @@ def user_request_one_view(request, id):
             "attendance_request": attendance_request,
             "at_work": at_work,
             "over_time": over_time,
+            "attachments": attachments,
             "previous_instance": previous_instance,
             "next_instance": next_instance,
             "instance_ids_json": instance_ids_json,
