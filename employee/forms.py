@@ -682,6 +682,18 @@ class EmployeeBankDetailsForm(ModelForm):
                     _("Invalid SWIFT Code format. It must be 8 or 11 characters (4 letters bank code, 2 letters country code, 2 alphanumeric location code, and optional 3 alphanumeric branch code)."))
         return swift_code
 
+    def clean(self):
+        cleaned_data = super().clean()
+        currency_type = cleaned_data.get("currency_type")
+        swift_code = cleaned_data.get("swift_code")
+
+        if currency_type == "LKR" and swift_code:
+            self.add_error(
+                "swift_code",
+                _("SWIFT code is not applicable for LKR transactions. Please select a different currency or remove the SWIFT code.")
+            )
+        return cleaned_data
+
     def as_p(self, *args, **kwargs):
         context = {"form": self}
         return render_to_string("employee/update_form/bank_info_as_p.html", context)
