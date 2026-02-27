@@ -704,7 +704,10 @@ class EmployeeBankDetailsUpdateForm(ModelForm):
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
         for visible in self.visible_fields():
-            visible.field.widget.attrs["class"] = "oh-input w-100"
+            if isinstance(visible.field.widget, forms.Select):
+                visible.field.widget.attrs["class"] = "oh-select oh-select-2 w-100"
+            else:
+                visible.field.widget.attrs["class"] = "oh-input w-100"
         for field in self.fields:
             self.fields[field].widget.attrs["placeholder"] = self.fields[field].label
 
