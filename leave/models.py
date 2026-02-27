@@ -707,17 +707,20 @@ class AvailableLeave(HorillaModel):
                 return self.leave_type_id.total_days
             return 0
         
-        # For monthly resets, count how many resets occur between now and the given date
-        today = datetime.now().date()
+        # For monthly resets, count how many resets occur up to the given date,
+        # starting from the next scheduled reset date (not from today).
+        next_reset_date = self.leave_type_id.leave_type_next_reset_date()
+        if not next_reset_date:
+            return 0
+
         reset_count = 0
-        
-        for i in range(1, 13):  # Check up to 12 months ahead
-            next_month = today + relativedelta(months=i)
-            if next_month <= date:
+        for i in range(13):  # Check up to 12 months of resets
+            reset_date = next_reset_date + relativedelta(months=i)
+            if reset_date <= date:
                 reset_count += 1
             else:
                 break
-        
+
         # Return total forecasted days from all resets
         return self.leave_type_id.total_days * reset_count
 
@@ -2405,4 +2408,5 @@ if apps.is_installed("attendance"):
 
 #     thread = threading.Thread(target=update_leaves)
 #     thread.start()
+
 
