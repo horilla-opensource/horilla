@@ -699,11 +699,27 @@ class AvailableLeave(HorillaModel):
     def forcasted_leaves(self, date):
         if isinstance(date, str):
             date = datetime.strptime(date, "%Y-%m-%d").date()
-        next_reset_date = self.leave_type_id.leave_type_next_reset_date()
-        if next_reset_date and next_reset_date <= date:
-            return self.leave_type_id.total_days
-
-        return 0
+        
+        if self.leave_type_id.reset_based != "monthly":
+            # For non-monthly resets, use original logic
+            next_reset_date = self.leave_type_id.leave_type_next_reset_date()
+            if next_reset_date and next_reset_date <= date:
+                return self.leave_type_id.total_days
+            return 0
+        
+        # For monthly resets, count how many resets occur between now and the given date
+        today = datetime.now().date()
+        reset_count = 0
+        
+        for i in range(1, 13):  # Check up to 12 months ahead
+            next_month = today + relativedelta(months=i)
+            if next_month <= date:
+                reset_count += 1
+            else:
+                break
+        
+        # Return total forecasted days from all resets
+        return self.leave_type_id.total_days * reset_count
 
     # Resetting carryforward days
 
@@ -2389,3 +2405,4 @@ if apps.is_installed("attendance"):
 
 #     thread = threading.Thread(target=update_leaves)
 #     thread.start()
+
