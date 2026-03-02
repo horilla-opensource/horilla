@@ -15,7 +15,7 @@
             <div class="flex items-center gap-5 mb-5" {{header.attrs|format:object|safe}} >
                 {% if header.avatar %}
                     <div>
-                        <img src="{{object|getattribute:header.avatar}}" alt="" class="w-[50px] h-[50px] rounded-full" />
+                        <img src="{{object|getattribute:header.avatar}}" data-src="{{object|getattribute:header.avatar}}" alt="" class="w-[50px] h-[50px] rounded-full avatar-thumb" />
                     </div>
                 {% endif %}
                 <div>
