@@ -11,163 +11,140 @@
     </div>
 
     <div class="oh-modal__dialog-relative">
-        {% if request.user.employee_get|is_any_stage_manager or perms.offboarding.change_offboarding or
-        perms.offboarding.change_offboardingemployee %}
-        {% if request.GET.requests_ids %}
-        <div class="oh-modal__dialog oh-modal__dialog--navigation m-0 p-0">
-            <button hx-get="{% url " offboarding-individual-view" previous %}?requests_ids={{ requests_ids }}"
-                hx-target="#objectDetailsModalTarget" class="oh-modal__diaglog-nav oh-modal__nav-prev">
-                <ion-icon name="chevron-back-outline" class="md hydrated" role="img"
-                    aria-label="chevron back outline"></ion-icon>
-            </button>
+        {% if request.user.employee_get|is_any_stage_manager or perms.offboarding.change_offboarding or perms.offboarding.change_offboardingemployee %}
+            {% if request.GET.requests_ids %}
+            <div class="oh-modal__dialog oh-modal__dialog--navigation m-0 p-0">
+                <button hx-get="{% url 'offboarding-individual-view' previous %}?requests_ids={{ requests_ids }}"
+                    hx-target="#objectDetailsModalTarget" class="oh-modal__diaglog-nav oh-modal__nav-prev">
+                    <ion-icon name="chevron-back-outline" class="md hydrated" role="img"
+                        aria-label="chevron back outline"></ion-icon>
+                </button>
 
-            <button hx-get="{% url " offboarding-individual-view" next %}?requests_ids={{ requests_ids }}"
-                hx-target="#objectDetailsModalTarget" class="oh-modal__diaglog-nav oh-modal__nav-next">
-                <ion-icon name="chevron-forward-outline" class="md hydrated" role="img"
-                    aria-label="chevron forward outline"></ion-icon>
-            </button>
+                <button hx-get="{% url 'offboarding-individual-view' next %}?requests_ids={{ requests_ids }}"
+                    hx-target="#objectDetailsModalTarget" class="oh-modal__diaglog-nav oh-modal__nav-next">
+                    <ion-icon name="chevron-forward-outline" class="md hydrated" role="img"
+                        aria-label="chevron forward outline"></ion-icon>
+                </button>
+            </div>
+            {% endif %}
+        {% endif %}
+    </div> <div class="oh-modal__dialog-body oh-timeoff-modal__body">
+        <div class="oh-timeoff-modal__profile-content">
+            <div class="oh-profile">
+                <div class="oh-profile-section__edit-photo me-3" style="width: 80px; height: 80px;">
+                    <img src="{{ employee.employee_id.get_avatar }}" class="oh-profile-section__modal-image" alt="" />
+                </div>
+                <div>
+                    <a class="oh-timeoff-modal__profile-content" style="text-decoration:none;"
+                        href="{% url 'employee-view-individual' employee.employee_id.id %}">
+                        <div class="oh-timeoff-modal__profile-info mb-2">
+                            <span class="oh-timeoff-modal__user fw-bold">{{ employee.employee_id }}</span>
+                            <span class="oh-timeoff-modal__position">{{ employee.employee_id.employee_work_info.department_id }} / {{ employee.employee_id.employee_work_info.job_position_id }}</span>
+                        </div>
+                    </a>
+                </div>
+            </div>
+        </div>
+
+        <div class="oh-timeoff-modal__stats-container">
+            <div class="oh-timeoff-modal__stat">
+                <span class="oh-timeoff-modal__stat-title">{% trans "Email" %}</span>
+                <span class="oh-timeoff-modal__stat-count">{{ employee.employee_id.email }}</span>
+            </div>
+            <div class="oh-timeoff-modal__stat">
+                <span class="oh-timeoff-modal__stat-title">{% trans "Job Position" %}</span>
+                <span class="oh-timeoff-modal__stat-count">{{ employee.employee_id.get_job_position }}</span>
+            </div>
+        </div>
+
+        <div class="oh-timeoff-modal__stats-container mt-3">
+            <div class="oh-timeoff-modal__stat">
+                <span class="oh-timeoff-modal__stat-title">{% trans "Contact" %}</span>
+                <span class="oh-timeoff-modal__stat-count">{{ employee.employee_id.employee_work_info.mobile }}</span>
+            </div>
+            <div class="oh-timeoff-modal__stat">
+                <span class="oh-timeoff-modal__stat-title">{% trans "Notice Period start Date" %}</span>
+                <span class="oh-timeoff-modal__stat-count dateformat_changer">{{ employee.notice_period_starts }}</span>
+            </div>
+        </div>
+        {% if employee.employee_id.resignationletter_set.all %}
+        <div class="oh-timeoff-modal__stats-container mt-3">
+            <div class="oh-timeoff-modal__stat">
+                <span class="oh-timeoff-modal__stat-title">{% trans "Planned Leave Date" %}</span>
+                <span class="oh-timeoff-modal__stat-count dateformat_changer">{{ employee.employee_id.resignationletter_set.last.planned_to_leave_on }}</span>
+            </div>
         </div>
         {% endif %}
-        {% endif %}
-        <div class="oh-modal__dialog-body oh-timeoff-modal__body">
-            <div class="oh-timeoff-modal__profile-content">
-                <div class="oh-profile">
-                    <div class="oh-profile-section__edit-photo me-3" style="width: 80px; height: 80px;">
-                        <img src="{{ employee.employee_id.get_avatar }}" class="oh-profile-section__modal-image"
-                            alt="" />
-                    </div>
-                    <div>
-                        <a class="oh-timeoff-modal__profile-content" style="text-decoration:none;"
-                            href="{% url 'employee-view-individual' employee.employee_id.id %}">
-                            <div class="oh-timeoff-modal__profile-info mb-2">
-                                <span class="oh-timeoff-modal__user fw-bold">{{ employee.employee_id }}</span>
-                                <span class="oh-timeoff-modal__position">{{
-                                    employee.employee_id.employee_work_info.department_id }} / {{
-                                    employee.employee_id.employee_work_info.job_position_id }}</span>
+        <div class="oh-timeoff-modal__stats-container mt-3">
+            <div class="oh-timeoff-modal__stat">
+                <span class="oh-timeoff-modal__stat-title">{% trans "Notice Period end Date" %}</span>
+                <span class="oh-timeoff-modal__stat-count dateformat_changer">{{ employee.notice_period_ends }}</span>
+            </div>
+            <div class="oh-timeoff-modal__stat">
+                <span class="oh-timeoff-modal__stat-title">{% trans "Last Working Date" %}</span>
+                <span class="oh-timeoff-modal__stat-count dateformat_changer">{{ employee.last_working_date }}</span>
+            </div>
+            <div class="oh-timeoff-modal__stat" style="margin-top: 8px">
+                <span class="oh-timeoff-modal__stat-title">{% trans "Stage" %}</span>
+                <span class="oh-timeoff-modal__stat-count">
+                    {% if perms.offboarding.change_offboardingstage or request.user.employee_get|any_manager %}
+                    <span class="oh-timeoff-modal__stat-count">{{ employee.stage_id }}</span>
+                    {% else %}
+                    <span class="oh-timeoff-modal__stat-count">{{ employee.stage_id }}</span>
+                    {% endif %}
+                </span>
+            </div>
+        </div>
+        {% if employee.employeetask_set.all %}
+        <div class="w-100 mt-3">
+
+            <div class="d-flex justify-content-between align-items-center mb-3">
+                <h5 class="fw-semibold m-0">{% trans "Tasks" %}</h5>
+                <span class="text-muted small">{{ employee.employeetask_set.all.count }} tasks</span>
+            </div>
+
+            <div class="d-flex flex-column gap-3">
+
+                {% for task in employee.employeetask_set.all %}
+                <div class="p-3 rounded-3 border bg-white shadow-sm d-flex flex-column gap-2"
+                    style="border-color:#e5e7eb !important;">
+
+                    <div class="d-flex justify-content-between align-items-start">
+                        <div class="d-flex flex-column">
+                            <div class="d-flex align-items-center gap-2">
+                                <span class="oh-dot oh-dot--small oh-dot--color-{{ task.status }}"></span>
+                                <span class="fw-bold">{{ task.task_id.title }}</span>
                             </div>
+                            <div class="text-muted small mt-1">
+                                {{ task.task_id.description }}
+                            </div>
+                        </div>
+
+                        {% if perms.offboarding.delete_offboardingtask or perms.offboarding.edit_offboardingtask or request.user.employee_get|is_stage_manager:task.stage.grouper.title or request.user.employee_get|is_task_manager:task.title or request.user.employee_get|is_offboarding_manager %}
+                        <a hx-confirm="Do you want to delete task?"
+                            hx-post="{% url 'delete-offboarding-task' %}?task_ids={{ task.task_id.id }}&employee_id={{ employee.id }}"
+                            hx-target="#objectDetailsModalTarget" hx-swap="innerHTML"
+                            class="btn btn-sm btn-outline-danger">
+                            <ion-icon name="trash-outline"></ion-icon>
+                            Delete
                         </a>
-                    </div>
-                </div>
-            </div>
-
-            <div class="oh-timeoff-modal__stats-container">
-                <div class="oh-timeoff-modal__stat">
-                    <span class="oh-timeoff-modal__stat-title">{% trans "Email" %}</span>
-                    <span class="oh-timeoff-modal__stat-count">{{ employee.employee_id.email }}</span>
-                </div>
-                <div class="oh-timeoff-modal__stat">
-                    <span class="oh-timeoff-modal__stat-title">{% trans "Job Position" %}</span>
-                    <span class="oh-timeoff-modal__stat-count">{{ employee.employee_id.get_job_position }}</span>
-                </div>
-            </div>
-
-            <div class="oh-timeoff-modal__stats-container mt-3">
-                <div class="oh-timeoff-modal__stat">
-                    <span class="oh-timeoff-modal__stat-title">{% trans "Contact" %}</span>
-                    <span class="oh-timeoff-modal__stat-count">{{ employee.employee_id.employee_work_info.mobile
-                        }}</span>
-                </div>
-                <div class="oh-timeoff-modal__stat">
-                    <span class="oh-timeoff-modal__stat-title">{% trans "Notice Period start Date" %}</span>
-                    <span class="oh-timeoff-modal__stat-count dateformat_changer">{{ employee.notice_period_starts
-                        }}</span>
-                </div>
-            </div>
-            {% if employee.employee_id.resignationletter_set.all %}
-            <div class="oh-timeoff-modal__stats-container mt-3">
-                <div class="oh-timeoff-modal__stat">
-                    <span class="oh-timeoff-modal__stat-title">{% trans "Planned Leave Date" %}</span>
-                    <span class="oh-timeoff-modal__stat-count dateformat_changer">{{
-                        employee.employee_id.resignationletter_set.last.planned_to_leave_on }}</span>
-                </div>
-            </div>
-            {% endif %}
-            <div class="oh-timeoff-modal__stats-container mt-3">
-                <div class="oh-timeoff-modal__stat">
-                    <span class="oh-timeoff-modal__stat-title">{% trans "Notice Period end Date" %}</span>
-                    <span class="oh-timeoff-modal__stat-count dateformat_changer">
-                        {{ employee.notice_period_ends }}
-                    </span>
-                </div>
-                <div class="oh-timeoff-modal__stat">
-                    <span class="oh-timeoff-modal__stat-title">{% trans "Last Working Date" %}</span>
-                    <span class="oh-timeoff-modal__stat-count dateformat_changer">
-                        {{ employee.last_working_date }}
-                    </span>
-                </div>
-                <div class="oh-timeoff-modal__stat" style="margin-top: 8px">
-                    <span class="oh-timeoff-modal__stat-title">{% trans "Stage" %}</span>
-                    <span class="oh-timeoff-modal__stat-count">
-                        {% if perms.offboarding.change_offboardingstage or request.user.employee_get|any_manager %}
-                        <span class="oh-timeoff-modal__stat-count">
-                            {{ employee.stage_id }}
-                        </span>
-                        {% else %}
-                        <span class="oh-timeoff-modal__stat-count">
-                            {{ employee.stage_id }}
-                        </span>
                         {% endif %}
-                    </span>
-                </div>
-            </div>
-            {% if employee.employeetask_set.all %}
-            <div class="w-100 mt-3">
-
-                <div class="d-flex justify-content-between align-items-center mb-3">
-                    <h5 class="fw-semibold m-0">{% trans "Tasks" %}</h5>
-                    <span class="text-muted small">{{ employee.employeetask_set.all.count }} tasks</span>
-                </div>
-
-                <div class="d-flex flex-column gap-3">
-
-                    {% for task in employee.employeetask_set.all %}
-                    <div class="p-3 rounded-3 border bg-white shadow-sm d-flex flex-column gap-2"
-                        style="border-color:#e5e7eb !important;">
-
-                        <div class="d-flex justify-content-between align-items-start">
-                            <!-- Task title and status dot -->
-                            <div class="d-flex flex-column">
-                                <div class="d-flex align-items-center gap-2">
-                                    <span class="oh-dot oh-dot--small oh-dot--color-{{ task.status }}"></span>
-                                    <span class="fw-bold">{{ task.task_id.title }}</span>
-                                </div>
-                                <!-- Task description -->
-                                <div class="text-muted small mt-1">
-                                    {{ task.task_id.description }}
-                                </div>
-                            </div>
-
-                            {% if perms.offboarding.delete_offboardingtask or perms.offboarding.edit_offboardingtask or
-                            request.user.employee_get|is_stage_manager:task.stage.grouper.title or
-                            request.user.employee_get|is_task_manager:task.title or
-                            request.user.employee_get|is_offboarding_manager %}
-                            <a hx-confirm="Do you want to delete task?"
-                                hx-post="{% url 'delete-offboarding-task' %}?task_ids={{ task.task_id.id }}&employee_id={{ employee.id }}"
-                                hx-target="#objectDetailsModalTarget" hx-swap="innerHTML"
-                                class="btn btn-sm btn-outline-danger">
-                                <ion-icon name="trash-outline"></ion-icon>
-                                Delete
-                            </a>
-
-                            {% endif %}
-                        </div>
-
-                        <div class="w-100 mt-2" id="task{{ task.id }}{{ employee.id }}">
-                            {% include 'offboarding/pipeline/employee_task.html' %}
-                        </div>
-
                     </div>
-                    {% endfor %}
+
+                    <div class="w-100 mt-2" id="task{{ task.id }}{{ employee.id }}">
+                        {% include 'offboarding/pipeline/employee_task.html' %}
+                    </div>
 
                 </div>
+                {% endfor %}
 
             </div>
-            {% endif %}
 
         </div>
+        {% endif %}
+
     </div>
 </div>
-
 <script>
     $(document).ready(function () {
         var selects = $("[name=stage_id][data-selected-stage]");

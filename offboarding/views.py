@@ -354,6 +354,19 @@ def add_employee(request):
             instance = form.save(commit=False)
             instance.stage_id = stage
             instance.save()
+
+            from django.db.models import Q
+            tasks_for_stage = OffboardingTask.objects.filter(
+                Q(stage_id=stage) | Q(stage_id__isnull=True),
+                is_active=True
+            )
+            for task in tasks_for_stage:
+                EmployeeTask.objects.get_or_create(
+                    employee_id=instance,
+                    task_id=task,
+                    defaults={"status": "todo"}
+                )
+
             messages.success(request, _("Employee saved"))
             if not instance_id:
                 notify.send(
@@ -459,22 +472,22 @@ def change_stage(request):
         employee_ids = employees.values_list("employee_id__id", flat=True)
         Employee.objects.filter(
             id__in=employee_ids,
-                is_active=True,
-            ).update(is_active=False)
+            is_active=True,
+        ).update(is_active=False)
 
-
-    tasks_for_stage = OffboardingTask.objects.filter(stage_id=stage, is_active=True)
-
-    tasks_to_create = [
-        EmployeeTask(employee_id=employee, task_id=task)
-        for employee in employees
-        for task in tasks_for_stage
-    ]
-
-    EmployeeTask.objects.bulk_create(
-        tasks_to_create,
-        ignore_conflicts=True
+    from django.db.models import Q
+    tasks_for_stage = OffboardingTask.objects.filter(
+        Q(stage_id=stage) | Q(stage_id__isnull=True),
+        is_active=True
     )
+
+    for employee in employees:
+        for task in tasks_for_stage:
+            EmployeeTask.objects.get_or_create(
+                employee_id=employee,
+                task_id=task,
+                defaults={"status": "todo"}
+            )
 
     stage_forms = {}
     stage_forms[str(stage.offboarding_id.id)] = StageSelectForm(
@@ -538,7 +551,7 @@ def update_last_working_date(request):
 
     try:
         stage = OffboardingStage.objects.get(id=int(stage_id))
-        print("Stage" , stage)
+        print("Stage", stage)
     except OffboardingStage.DoesNotExist:
         return HttpResponseBadRequest("Invalid stage_id")
 
@@ -814,7 +827,6 @@ def delete_task(request):
     return redirect(filter_pipeline)
 
 
-
 @login_required
 @hx_request_required
 def offboarding_individual_view(request, emp_id):
@@ -1033,6 +1045,7 @@ def create_resignation_request(request):
             messages.success(request, _("Resignation letter saved"))
             return HttpResponse("<script>window.location.reload()</script>")
     return render(request, "offboarding/resignation/form.html", {"form": form})
+
 
 @login_required
 def create_exit_reason(request):
@@ -1412,6 +1425,7 @@ def department_job_postion_chart(request):
 
     return JsonResponse({"labels": labels, "datasets": datasets})
 
+
 @login_required
 @any_manager_can_enter("offboarding.view_offboarding")
 def view_resignation_reason(request):
@@ -1430,8 +1444,7 @@ def view_resignation_reason(request):
 
 @login_required
 def common_offboarding_tasks_view(request):
-
-    task_list = OffboardingTask.objects.filter(is_active=True , is_fine=False).order_by("-id")
+    task_list = OffboardingTask.objects.filter(is_active=True, is_fine=False).order_by("-id")
 
     paginator = Paginator(task_list, 5)
 
@@ -1451,6 +1464,7 @@ def common_offboarding_tasks_view(request):
         {"tasks": tasks},
     )
 
+
 def edit_common_task(request, task_id):
     task = get_object_or_404(OffboardingTask, id=task_id)
 
@@ -1468,15 +1482,13 @@ def edit_common_task(request, task_id):
     return render(request, "offboarding/task/common_task_form.html", {"form": form})
 
 
-
 @login_required
 def delete_common_task(request, task_id):
     task = get_object_or_404(OffboardingTask, id=task_id)
     task.delete()
 
-    tasks = OffboardingTask.objects.filter(is_active=True , is_fine=False)
+    tasks = OffboardingTask.objects.filter(is_active=True, is_fine=False)
     return render(request, "offboarding/task/common_task_list.html", {"tasks": tasks})
-
 
 
 def create_common_task(request):
@@ -1485,13 +1497,14 @@ def create_common_task(request):
         if form.is_valid():
             form.save()
 
-            tasks = OffboardingTask.objects.filter(is_active=True , is_fine=False)
+            tasks = OffboardingTask.objects.filter(is_active=True, is_fine=False)
             return render(request, "offboarding/task/common_task_list.html", {"tasks": tasks})
 
     else:
         form = TaskForm()
 
     return render(request, "offboarding/task/common_task_form.html", {"form": form})
+
 
 @login_required
 def edit_resignation_reason(request, id):
