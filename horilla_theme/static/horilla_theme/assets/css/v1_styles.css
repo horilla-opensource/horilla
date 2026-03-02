@@ -1431,7 +1431,6 @@ table .oh-btn-group a {
 }
 
 .oh-btn-group > *:last-child {
-  border-right: none;
   border-top-right-radius: 0.375rem;
   border-bottom-right-radius: 0.375rem;
 }
