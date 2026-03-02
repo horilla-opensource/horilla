@@ -145,12 +145,7 @@ def recruitment(request):
                     icon="people-circle",
                     redirect=reverse("pipeline"),
                 )
-            response = render(
-                request, "recruitment/recruitment_form.html", {"form": form}
-            )
-            return HttpResponse(
-                response.content.decode("utf-8") + "<script>location.reload();</script>"
-            )
+            return HorillaRedirect(request)
     return render(request, "recruitment/recruitment_form.html", {"form": form})
 
 
@@ -513,13 +508,7 @@ def recruitment_update_pipeline(request, rec_id):
                     icon="people-circle",
                     redirect=reverse("pipeline"),
                 )
-
-            response = render(
-                request, "pipeline/form/recruitment_update.html", {"form": form}
-            )
-            return HttpResponse(
-                response.content.decode("utf-8") + "<script>location.reload();</script>"
-            )
+            return HorillaRedirect(request)
     return render(request, "pipeline/form/recruitment_update.html", {"form": form})
 
 
@@ -624,12 +613,7 @@ def add_note(request, cand_id=None):
             note.updated_by = request.user.employee_get
             note.save()
             messages.success(request, _("Note added successfully.."))
-            response = render(
-                request, "pipeline/pipeline_components/add_note.html", {"form": form}
-            )
-            return HttpResponse(
-                response.content.decode("utf-8") + "<script>location.reload();</script>"
-            )
+            return HorillaRedirect(request)
     return render(
         request,
         "pipeline/pipeline_components/add_note.html",
@@ -669,12 +653,7 @@ def note_update(request, note_id):
         if form.is_valid():
             form.save()
             messages.success(request, _("Note updated successfully..."))
-            response = render(
-                request, "pipeline/pipeline_components/update_note.html", {"form": form}
-            )
-            return HttpResponse(
-                response.content.decode("utf-8") + "<script>location.reload();</script>"
-            )
+            return HorillaRedirect(request)
     return render(
         request, "pipeline/pipeline_components/update_note.html", {"form": form}
     )
@@ -775,10 +754,7 @@ def stage(request):
                     redirect=reverse("pipeline"),
                 )
 
-            response = render(request, "stage/stage_form.html", {"form": form})
-            return HttpResponse(
-                response.content.decode("utf-8") + "<script>location.reload();</script>"
-            )
+            return HorillaRedirect(request)
     return render(request, "stage/stage_form.html", {"form": form})
 
 

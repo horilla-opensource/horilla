@@ -448,7 +448,7 @@ def create_template(request):
         or request.user.has_perm("recruitment.change_surveytemplate")
     ):
         messages.info(request, "You dont have permission.")
-        return HttpResponse("<script>window.location.reload()</script>")
+        return HorillaRedirect(request)
 
     title = request.GET.get("title")
     instance = None
@@ -460,7 +460,7 @@ def create_template(request):
         if form.is_valid():
             form.save()
             messages.success(request, "Template saved")
-            return HttpResponse("<script>window.location.reload()</script>")
+            return HorillaRedirect(request)
     return render(request, "survey/main_form.html", {"form": form})
 
 
@@ -498,5 +498,5 @@ def question_add(request):
         if form.is_valid():
             form.save()
             messages.success(request, "Question added")
-            return HttpResponse("<script>window.location.reload()</script>")
+            return HorillaRedirect(request)
     return render(request, "survey/add_form.html", {"form": form})
