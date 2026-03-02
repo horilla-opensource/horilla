@@ -387,13 +387,17 @@
           var form = $(this); // Get the form element
           var formData = form.serialize(); // Serialize the form data as a URL-encoded string
 
-          $(".errorlist").remove();
           $.ajax({
             type: "get",
             url: "{% url 'validate-start-date' %}",
             data: formData,
             success: function (response) {
-              form.prepend(response.message);
+              let ul = $(".errorlist")
+              response.errors.forEach(msg => {
+                const li = document.createElement("li");
+                li.textContent = msg;
+                ul.appendChild(li);
+              });
               if (response.valid) {
                 form[0].submit();
               }

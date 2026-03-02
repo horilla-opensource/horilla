@@ -14,6 +14,7 @@ from django.utils.decorators import method_decorator
 from django.utils.translation import gettext_lazy as _
 
 from employee.models import Employee
+from horilla.http.response import HorillaRedirect
 from horilla_views.cbv_methods import login_required
 from horilla_views.generic.cbv.views import HorillaDetailedView, HorillaFormView
 from notifications.signals import notify
@@ -77,7 +78,7 @@ class StageCreateForm(HorillaFormView):
                     redirect=reverse("onboarding-view"),
                 )
 
-            return self.HttpResponse("<script>window.location.reload();</script>")
+            return HorillaRedirect(self.request)
         return super().form_valid(form)
 
 
