@@ -50,6 +50,7 @@ from horilla.decorators import (
 )
 from horilla.group_by import group_by_queryset
 from horilla.horilla_settings import DYNAMIC_URL_PATTERNS
+from horilla.http import HorillaRedirect
 from horilla.methods import get_horilla_model_class, remove_dynamic_url
 from leave.decorators import *
 from leave.filters import *
@@ -506,11 +507,11 @@ def leave_request_creation(request, type_id=None, emp_id=None):
                     )
                 form = LeaveRequestCreationForm()
                 if referer_parts[-2] == "employee-view":
-                    return HttpResponse("<script>window.location.reload();</script>")
+                    return HorillaRedirect(request)
 
             leave_requests = LeaveRequest.objects.all()
             if len(leave_requests) == 1:
-                return HttpResponse("<script>window.location.reload()</script>")
+                return HorillaRedirect(request)
     referrer = request.META.get("HTTP_REFERER", "")
     referrer = "/" + "/".join(referrer.split("/")[3:])
     if referrer == "/":
@@ -924,15 +925,7 @@ def leave_request_update(request, id):
                         icon="people-circle",
                         redirect=reverse("request-view") + f"?id={leave_request.id}",
                     )
-                response = render(
-                    request,
-                    "leave/leave_request/request_update_form.html",
-                    {"form": form, "id": id},
-                )
-                return HttpResponse(
-                    response.content.decode("utf-8")
-                    + "<script>location.reload();</script>"
-                )
+                return HorillaRedirect(request)
     else:
         form = LeaveRequestUpdationForm(instance=leave_request)
         form = choosesubordinates(request, form, "leave.add_leaverequest")
@@ -976,7 +969,7 @@ def leave_request_delete(request, id):
         if leave_requests.exists():
             return redirect(f"/leave/request-filter?{previous_data}")
         else:
-            return HttpResponse("<script>window.location.reload();</script>")
+            return HorillaRedirect(request)
     return redirect(leave_request_view)
 
 
@@ -1142,7 +1135,7 @@ def leave_request_bulk_approve(request):
             except (ValueError, OverflowError, LeaveRequest.DoesNotExist):
                 messages.error(request, _("Leave request not found"))
                 pass
-    return HttpResponse("<script>window.location.reload();</script>")
+    return HorillaRedirect(request)
 
 
 @login_required
@@ -1156,7 +1149,7 @@ def leave_bulk_reject(request):
         )
         leave_request_cancel(request, leave_request.id)
 
-    return HttpResponse("<script>window.location.reload();</script>")
+    return HorillaRedirect(request)
 
 
 @login_required
@@ -1241,7 +1234,7 @@ def leave_request_cancel(request, id, emp_id=None):
             if emp_id is not None:
                 employee_id = emp_id
                 return redirect(f"/employee/employee-view/{employee_id}/")
-            return HttpResponse("<script>location.reload();</script>")
+            return HorillaRedirect(request)
     return render(
         request, "leave/leave_request/cancel_form.html", {"form": form, "id": id}
     )
@@ -1284,16 +1277,16 @@ def user_leave_cancel(request, id):
                         request, leave_request, type="cancel"
                     )
                     mail_thread.start()
-                    return HttpResponse("<script>location.reload();</script>")
+                    return HorillaRedirect(request)
             return render(
                 request,
                 "leave/leave_request/user_cancel_form.html",
                 {"form": form, "id": id},
             )
         messages.error(request, _("You can't cancel this leave request."))
-        return HttpResponse("<script>location.reload();</script>")
+        return HorillaRedirect(request)
     messages.error(request, _("You don't have the permission."))
-    return HttpResponse("<script>location.reload();</script>")
+    return HorillaRedirect(request)
 
 
 @login_required
@@ -1657,7 +1650,7 @@ def leave_assign(request):
                 )
 
         if page_reload:
-            return HttpResponse("<script>window.location.reload()</script>")
+            return HorillaRedirect(request)
 
     return render(
         request, "leave/leave_assign/leave_assign_form.html", {"assign_form": form}
@@ -1740,7 +1733,7 @@ def leave_assign_delete(request, obj_id):
         )
 
     if not AvailableLeave.objects.exists():
-        return HttpResponse("<script>window.location.reload()</script>")
+        return HorillaRedirect(request)
     return redirect(f"/leave/assign-filter?{pd}")
 
 
@@ -1982,7 +1975,7 @@ def restrict_creation(request):
             form = RestrictLeaveForm()
             messages.success(request, _("Restricted day created successfully.."))
             if RestrictLeave.objects.filter().count() == 1:
-                return HttpResponse("<script>window.location.reload();</script>")
+                return HorillaRedirect(request)
     return render(
         request,
         "leave/restrict/restrict_form.html",
@@ -2102,7 +2095,7 @@ def restrict_delete(request, id):
     except ProtectedError:
         messages.error(request, _("Related entries exists"))
     if not RestrictLeave.objects.filter():
-        return HttpResponse("<script>window.location.reload();</script>")
+        return HorillaRedirect(request)
     return redirect(f"/leave/restrict-filter?{query_string}")
 
 
@@ -2306,7 +2299,7 @@ def user_leave_request(request, id):
                 ) == 1 or request.META.get("HTTP_REFERER").endswith(
                     "employee-profile/"
                 ):
-                    return HttpResponse("<script>window.location.reload();</script>")
+                    return HorillaRedirect(request)
 
         return render(
             request,
@@ -2432,7 +2425,7 @@ def user_request_update(request, id):
             )
         else:
             messages.error(request, _("You can't update this leave request..."))
-            return HttpResponse("<script>window.location.reload();</script>")
+            return HorillaRedirect(request)
     except Exception as e:
         messages.error(request, _("User has no leave request.."))
     return render(
@@ -2470,7 +2463,7 @@ def user_request_delete(request, id):
     except ProtectedError:
         messages.error(request, _("Related entries exists"))
     if not LeaveRequest.objects.filter(employee_id=request.user.employee_get):
-        return HttpResponse("<script>window.location.reload();</script>")
+        return HorillaRedirect(request)
     else:
         return redirect(f"/leave/user-request-filter?{previous_data}")
 
@@ -3218,9 +3211,7 @@ def leave_request_create(request):
                     mail_thread.start()
                     form = UserLeaveRequestCreationForm(employee=emp)
                     if len(LeaveRequest.objects.filter(employee_id=emp_id)) == 1:
-                        return HttpResponse(
-                            "<script>window.location.reload();</script>"
-                        )
+                        return HorillaRedirect(request)
             return render(
                 request,
                 "leave/user_leave/request_form.html",
@@ -3234,9 +3225,7 @@ def leave_request_create(request):
             response = render(
                 request, "leave/user_leave/request_form.html", {"form": form}
             )
-            return HttpResponse(
-                response.content.decode("utf-8") + "<script>location.reload();</script>"
-            )
+            return HorillaRedirect(request)
     return render(
         request,
         "leave/user_leave/request_form.html",
@@ -3383,15 +3372,7 @@ def leave_allocation_request_create(request):
                     redirect=reverse("leave-allocation-request-view")
                     + f"?id={leave_allocation_request.id}",
                 )
-            response = render(
-                request,
-                "leave/leave_allocation_request/leave_allocation_request_create.html",
-                {"form": form},
-            )
-            return HttpResponse(
-                response.content.decode("utf-8")
-                + "<script>location. reload();</script>"
-            )
+            return HorillaRedirect(request)
     context = {"form": form}
     return render(
         request,
@@ -3531,15 +3512,7 @@ def leave_allocation_request_update(request, req_id):
                         redirect=reverse("leave-allocation-request-view")
                         + f"?id={leave_allocation_request.id}",
                     )
-                response = render(
-                    request,
-                    "leave/leave_allocation_request/leave_allocation_request_update.html",
-                    {"form": form, "req_id": req_id},
-                )
-                return HttpResponse(
-                    response.content.decode("utf-8")
-                    + "<script>location. reload();</script>"
-                )
+                return HorillaRedirect(request)
         return render(
             request,
             "leave/leave_allocation_request/leave_allocation_request_update.html",
@@ -3547,7 +3520,7 @@ def leave_allocation_request_update(request, req_id):
         )
     else:
         messages.error(request, _("You can't update this request..."))
-        return HttpResponse("<script>window.location.reload();</script>")
+        return HorillaRedirect(request)
 
 
 @login_required
@@ -3659,7 +3632,7 @@ def leave_allocation_request_reject(request, req_id):
                         redirect=reverse("leave-allocation-request-view")
                         + f"?id={leave_allocation_request.id}",
                     )
-                return HttpResponse("<script>location.reload();</script>")
+                return HorillaRedirect(request)
         return render(
             request,
             "leave/leave_allocation_request/leave_allocation_request_reject_form.html",
@@ -3667,7 +3640,7 @@ def leave_allocation_request_reject(request, req_id):
         )
     else:
         messages.error(request, _("The leave allocation request can't be rejected"))
-        return HttpResponse("<script>location.reload();</script>")
+        return HorillaRedirect(request)
 
 
 @login_required
@@ -3709,7 +3682,7 @@ def leave_allocation_request_delete(request, req_id):
         if leave_allocations.exists():
             return redirect(f"/leave/leave-allocation-request-filter?{previous_data}")
         else:
-            return HttpResponse("<script>location.reload();</script>")
+            return HorillaRedirect(request)
     elif hx_target and hx_target == "objectDetailsModalW25Target":
         instances_ids = request.GET.get("instances_ids")
         instances_list = json.loads(instances_ids)
@@ -4813,7 +4786,7 @@ if apps.is_installed("attendance"):
                     messages.success(request, _("Compensatory Leave updated."))
                 else:
                     messages.success(request, _("Compensatory Leave created."))
-                return HttpResponse("<script>window.location.reload();</script>")
+                return HorillaRedirect(request)
 
         context = {
             "employee": employee,
@@ -4843,7 +4816,7 @@ if apps.is_installed("attendance"):
         if request.GET.get("list") == "True":
             return redirect(filter_compensatory_leave)
         else:
-            return HttpResponse("<script>location.reload();</script>")
+            return HorillaRedirect(request)
 
     @login_required
     @is_compensatory_leave_enabled()
@@ -4883,7 +4856,7 @@ if apps.is_installed("attendance"):
         except:
             messages.error(request, _("Sorry, something went wrong!"))
         if request.GET.get("individual"):
-            return HttpResponse("<script>location.reload();</script>")
+            return HorillaRedirect(request)
         return redirect(filter_compensatory_leave)
 
     @login_required
@@ -4925,7 +4898,7 @@ if apps.is_installed("attendance"):
                             redirect=reverse("view-compensatory-leave")
                             + f"?id={comp_leave_req.id}",
                         )
-                    return HttpResponse("<script>location.reload();</script>")
+                    return HorillaRedirect(request)
             return render(
                 request,
                 "leave/compensatory_leave/compensatory_leave_reject_form..html",
@@ -4933,7 +4906,7 @@ if apps.is_installed("attendance"):
             )
         else:
             messages.error(request, _("The leave allocation request can't be rejected"))
-            return HttpResponse("<script>location.reload();</script>")
+            return HorillaRedirect(request)
 
     @login_required
     @is_compensatory_leave_enabled()
