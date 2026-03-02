@@ -675,3 +675,39 @@ $(document).on("click", ".oh-accordion-header", function (event) {
     event.stopImmediatePropagation();
     $(this).closest(".oh-accordion").toggleClass("oh-accordion--show");
 });
+
+$(document).on("mouseenter", ".avatar-thumb", function (e) {
+    var src = $(this).data("src");
+
+    var thumbWidth = this.offsetWidth;
+    var thumbHeight = this.offsetHeight;
+
+    $("#previewImg")
+        .attr("src", src)
+        .css({
+            width: thumbWidth * 5 + "px",
+            height: thumbHeight * 5 + "px",
+            boxShadow: "0 10px 20px rgba(0,0,0,0.3)",
+            background: "white"
+        });
+
+    $("#imagePreview")
+        .css({
+            top: e.pageY + 15 + "px",
+            left: e.pageX + 15 + "px"
+        })
+        .show();
+});
+
+// Mouse move
+$(document).on("mousemove", ".avatar-thumb", function (e) {
+    $("#imagePreview").css({
+        top: e.pageY + 15 + "px",
+        left: e.pageX + 15 + "px"
+    });
+});
+
+// Mouse leave
+$(document).on("mouseleave", ".avatar-thumb", function () {
+    $("#imagePreview").hide();
+});
