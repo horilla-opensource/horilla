@@ -9,6 +9,8 @@ import logging
 
 from django.shortcuts import render
 
+from horilla.http.response import HorillaRedirect
+
 logger = logging.getLogger(__name__)
 from datetime import date, datetime, timedelta
 
@@ -305,7 +307,7 @@ def clock_in(request):
         )
     else:
         messages.error(request, _("Check in/Check out feature is not enabled."))
-        return HttpResponse("<script>location.reload();</script>")
+        return HorillaRedirect(request)
 
 
 def clock_out_attendance_and_activity(employee, date_today, now, out_datetime=None):
@@ -520,4 +522,4 @@ def clock_out(request):
 
     else:
         messages.error(request, _("Check in/Check out feature is not enabled."))
-        return HttpResponse("<script>location.reload();</script>")
+        return HorillaRedirect(request)
