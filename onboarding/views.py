@@ -189,14 +189,7 @@ def stage_update(request, stage_id, recruitment_id):
                 icon="people-circle",
                 redirect=reverse("onboarding-view"),
             )
-            response = render(
-                request,
-                "onboarding/stage_update.html",
-                {"form": form, "stage_id": stage_id, "recruitment_id": recruitment_id},
-            )
-            return HttpResponse(
-                response.content.decode("utf-8") + "<script>location.reload();</script>"
-            )
+            return HorillaRedirect(request)
     return render(
         request,
         "onboarding/stage_update.html",
