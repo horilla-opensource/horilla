@@ -6,12 +6,9 @@ from collections import defaultdict
 from urllib.parse import parse_qs, urlparse
 
 import pandas as pd
-import xlsxwriter
 from django.contrib import messages
 from django.core import serializers
-from django.core.exceptions import ValidationError
-from django.core.paginator import Paginator
-from django.http import Http404, HttpResponse, HttpResponseRedirect, JsonResponse
+from django.http import Http404, HttpResponse, JsonResponse
 from django.shortcuts import get_object_or_404, redirect, render
 from django.template.loader import render_to_string
 from django.urls import reverse
@@ -19,11 +16,9 @@ from django.utils.translation import gettext_lazy as _
 
 from base.methods import filtersubordinates, get_key_instances
 from horilla.decorators import hx_request_required, login_required, permission_required
+from horilla.http import HorillaRedirect
 from horilla.methods import handle_no_permission
 from notifications.signals import notify
-from project.cbv.projects import DynamicProjectCreationFormView
-from project.cbv.tasks import DynamicTaskCreateFormView
-from project.cbv.timesheet import TimeSheetFormView
 from project.methods import (
     generate_colors,
     paginator_qry,
@@ -207,10 +202,7 @@ def create_project(request):
                 "project/new/forms/project_creation.html",
                 context={"form": form},
             )
-
-            return HttpResponse(
-                response.content.decode("utf-8") + "<script>location.reload();</script>"
-            )
+            return HorillaRedirect(request)
     return render(
         request, "project/new/forms/project_creation.html", context={"form": form}
     )
@@ -243,9 +235,7 @@ def project_update(request, project_id):
                 "project/new/forms/project_update.html",
                 {"form": project_form, "project_id": project_id},
             )
-            return HttpResponse(
-                response.content.decode("utf-8") + "<script>location.reload();</script>"
-            )
+            return HorillaRedirect(request)
     return render(
         request,
         "project/new/forms/project_update.html",
@@ -711,7 +701,7 @@ def project_archive(request, project_id):
     if not project.is_active:
         message = _(f"{project} Archived successfully.")
     messages.success(request, message)
-    return HttpResponseRedirect(request.META.get("HTTP_REFERER"))
+    return HorillaRedirect(request)
 
 
 # Task views
@@ -809,17 +799,14 @@ def create_task(request, stage_id):
                     "task/new/forms/create_task.html",
                     context={"form": form, "stage_id": stage_id},
                 )
-                return HttpResponse(
-                    response.content.decode("utf-8")
-                    + "<script>location.reload();</script>"
-                )
+                return HorillaRedirect(request)
         return render(
             request,
             "task/new/forms/create_task.html",
             context={"form": form, "stage_id": stage_id},
         )
     messages.info(request, "You dont have permission.")
-    return HttpResponseRedirect(request.META.get("HTTP_REFERER", "/"))
+    return HorillaRedirect(request)
 
 
 @login_required
@@ -847,10 +834,7 @@ def create_task_in_project(request, project_id):
                     "task/new/forms/create_task_project.html",
                     context={"form": form, "project_id": project_id},
                 )
-                return HttpResponse(
-                    response.content.decode("utf-8")
-                    + "<script>location.reload();</script>"
-                )
+                return HorillaRedirect(request)
         context = {
             "form": form,
             "project_id": project_id,
@@ -860,7 +844,7 @@ def create_task_in_project(request, project_id):
             request, "task/new/forms/create_task_project.html", context=context
         )
     messages.info(request, "You dont have permission.")
-    return HttpResponseRedirect(request.META.get("HTTP_REFERER", "/"))
+    return HorillaRedirect(request)
 
 
 @login_required
@@ -883,9 +867,7 @@ def update_task(request, task_id):
                 "task/new/forms/update_task.html",
                 {"form": task_form, "task_id": task_id},
             )
-            return HttpResponse(
-                response.content.decode("utf-8") + "<script>location.reload();</script>"
-            )
+            return HorillaRedirect(request)
     return render(
         request,
         "task/new/forms/update_task.html",
@@ -1018,9 +1000,7 @@ def create_timesheet_task(request, task_id):
                 "task/new/forms/create_timesheet.html",
                 {"form": form, "task_id": task_id},
             )
-            return HttpResponse(
-                response.content.decode("utf-8") + "<script>location.reload();</script>"
-            )
+            return HorillaRedirect(request)
     context = {
         "form": form,
         "task_id": task_id,
@@ -1042,9 +1022,7 @@ def update_timesheet_task(request, timesheet_id):
                 "task/new/forms/update_timesheet.html",
                 {"form": form, "timesheet_id": timesheet_id},
             )
-            return HttpResponse(
-                response.content.decode("utf-8") + "<script>location.reload();</script>"
-            )
+            return HorillaRedirect(request)
     context = {
         "form": form,
         "timesheet_id": timesheet_id,
@@ -1132,9 +1110,7 @@ def task_all_create(request):
                     "form": form,
                 },
             )
-            return HttpResponse(
-                response.content.decode("utf-8") + "<script>location.reload();</script>"
-            )
+            return HorillaRedirect(request)
     return render(
         request,
         "task_all/forms/create_taskall.html",
@@ -1173,9 +1149,7 @@ def update_task_all(request, task_id):
                 "task_all/forms/update_taskall.html",
                 context={"form": form, "task_id": task_id},
             )
-            return HttpResponse(
-                response.content.decode("utf-8") + "<script>location.reload();</script>"
-            )
+            return HorillaRedirect(request)
     return render(
         request,
         "task_all/forms/update_taskall.html",
@@ -1272,7 +1246,7 @@ def task_all_archive(request, task_id):
     # return HttpResponse("<script>$('.oh-btn--view').click();</script>")
     # return HttpResponse("<script>$('#hiddenbutton').click();</script>")
 
-    return HttpResponseRedirect(request.META.get("HTTP_REFERER"))
+    return HorillaRedirect(request)
 
 
 # Project stage views
@@ -1300,9 +1274,7 @@ def create_project_stage(request, project_id):
                 "project_stage/forms/create_project_stage.html",
                 context,
             )
-            return HttpResponse(
-                response.content.decode("utf-8") + "<script>location.reload();</script>"
-            )
+            return HorillaRedirect(request)
     context = {"form": form, "project_id": project_id}
     return render(request, "project_stage/forms/create_project_stage.html", context)
 
@@ -1325,9 +1297,7 @@ def update_project_stage(request, stage_id):
                 "project_stage/forms/update_project_stage.html",
                 context={"form": form, "stage_id": stage_id},
             )
-            return HttpResponse(
-                response.content.decode("utf-8") + "<script>location.reload();</script>"
-            )
+            return HorillaRedirect(request)
     return render(
         request,
         "project_stage/forms/update_project_stage.html",
@@ -1614,9 +1584,7 @@ def time_sheet_creation(request):
             response = render(
                 request, "time_sheet/form-create.html", context={"form": form}
             )
-            return HttpResponse(
-                response.content.decode("utf-8") + "<script>location.reload();</script>"
-            )
+            return HorillaRedirect(request)
     return render(request, "time_sheet/form-create.html", context={"form": form})
 
 
@@ -1713,10 +1681,7 @@ def time_sheet_update(request, time_sheet_id):
                 response = render(
                     request, "time_sheet/form-create.html", context={"form": form}
                 )
-                return HttpResponse(
-                    response.content.decode("utf-8")
-                    + "<script>location.reload();</script>"
-                )
+                return HorillaRedirect(request)
         return render(
             request,
             "time_sheet/form-update.html",
@@ -1726,7 +1691,7 @@ def time_sheet_update(request, time_sheet_id):
         )
     else:
         messages.error(request, "You dont have permission.")
-        return HttpResponseRedirect(request.META.get("HTTP_REFERER", "/"))
+        return HorillaRedirect(request)
 
 
 @login_required
@@ -1739,7 +1704,7 @@ def time_sheet_delete(request, time_sheet_id):
         time_sheet_id (int): The ID of the time sheet to be deleted.
 
     Returns:
-        HttpResponseRedirect: A redirect response to the time sheet view page.
+        HorillaRedirect: A redirect response to the time sheet view page.
     """
     if time_sheet_delete_permissions(request, time_sheet_id):
         TimeSheet.objects.get(id=time_sheet_id).delete()

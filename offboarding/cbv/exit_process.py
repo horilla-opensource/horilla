@@ -14,6 +14,7 @@ from django.utils.translation import gettext_lazy as _
 
 from base.context_processors import intial_notice_period
 from base.methods import eval_validate
+from horilla.http.response import HorillaRedirect
 from horilla_views.cbv_methods import login_required, permission_required
 from horilla_views.generic.cbv.pipeline import Pipeline
 from horilla_views.generic.cbv.views import (
@@ -85,7 +86,8 @@ class OffboardingStageFormView(HorillaFormView):
             form.save()
 
             messages.success(self.request, message)
-            return self.HttpResponse("<script>window.location.reload</script>")
+            return HorillaRedirect(self.request)
+
         return super().form_valid(form)
 
 
@@ -139,7 +141,7 @@ class OffboardingStageAddEmployeeForm(HorillaFormView):
                 )
             form.save()
             messages.success(self.request, message)
-            return self.HttpResponse("<script>window.location.reload</script>")
+            return HorillaRedirect(self.request)
 
 
 @method_decorator(login_required, name="dispatch")
@@ -169,7 +171,8 @@ class OffboardingCreateFormView(HorillaFormView):
             form.save()
 
             messages.success(self.request, message)
-            return HttpResponse("<script>window.location.reload()</script>")
+            return HorillaRedirect(self.request)
+
         return super().form_valid(form)
 
 

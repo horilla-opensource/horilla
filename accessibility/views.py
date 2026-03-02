@@ -12,6 +12,7 @@ from django.utils.translation import gettext_lazy as _
 from accessibility.accessibility import ACCESSBILITY_FEATURE
 from accessibility.filters import AccessibilityFilter
 from accessibility.models import DefaultAccessibility
+from employee.models import Employee
 from horilla.decorators import login_required, permission_required
 
 
@@ -46,6 +47,37 @@ def user_accessibility(request):
         {
             "accessibility": ACCESSBILITY_FEATURE,
             "accessibility_filter": accessibility_filter,
+        },
+    )
+
+
+@login_required
+@permission_required("auth.change_permission")
+def load_accessibility_form(request):
+    feature = request.GET.get("feature")
+
+    accessibility = DefaultAccessibility.objects.filter(feature=feature).first()
+
+    filter_data = {}
+    exclude_all = False
+
+    if accessibility:
+        filter_data = accessibility.filter or {}
+        exclude_all = accessibility.exclude_all
+
+    filterset = AccessibilityFilter(
+        data=filter_data if filter_data else None,
+        queryset=Employee.objects.all(),
+    )
+
+    return render(
+        request,
+        "accessibility/accessibility_form.html",
+        {
+            "filter": filterset,
+            "display": dict(ACCESSBILITY_FEATURE).get(feature),
+            "feature": feature,
+            "exclude_all": exclude_all,
         },
     )
 
