@@ -326,11 +326,17 @@ def process_employee_records(data_frame):
             save = False
 
         # Badge ID validation
-        if badge_id in seen_badge_ids:
+        if not badge_id:
+            errors["Badge ID Error"] = "Badge ID cannot be empty."
+            save = False
+
+        elif badge_id in seen_badge_ids:
             errors["Badge ID Error"] = "An employee with this badge ID already exists."
             save = False
+
         else:
-            # To resolve Badge ID Type Mismatch (Float vs String)
+            # Ensure consistent type (convert to string if needed)
+            badge_id = str(badge_id).strip()
             emp["Badge ID"] = badge_id
             seen_badge_ids.add(badge_id)
 
