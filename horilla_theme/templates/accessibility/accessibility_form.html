@@ -1,0 +1,45 @@
+{% load i18n %}
+
+<form
+    class="p-2"
+    hx-post=""
+    hx-target="#response"
+    hx-swap="afterend"
+>
+    <input hidden type="text" name="feature" value="{{ feature }}" />
+
+    <div class="oh-label__info" for="id_pk">
+        <label class="oh-label font-medium text-xs" for="id_pk"
+            ><b>{% trans "Restrict All" %}</b></label
+        >
+    </div>
+    <div id="dynamic_field_pk">
+        <div
+            class="oh-switch"
+            onclick="event.stopPropagation()"
+        >
+            <input
+                data-accessibility="{{feature}}"
+                type="checkbox"
+                class="oh-switch__checkbox excludeAll"
+                name="exclude_all"
+                {% if exclude_all %}checked{% endif %}
+            />
+        </div>
+    </div>
+
+    <div style="{% if exclude_all %}display:none;{% endif %}" id="{{feature}}formcontainer">
+        <div
+            class="text-xs mt-3 p-4 bg-[#87cefa38] rounded-md border border-l-4 border-sky-300 border-l-[#27a3ef]"
+        >
+            {% trans "Only the employees selected in any of the fields will have access to the " %} `<b>{{display}}</b>`
+            {% trans "feature" %}
+            <br />
+            {% trans "If none are selected, the feature will be available to all normal users and employees." %}
+        </div>
+
+        {{ filter.form.structured }}
+    </div>
+
+    <input hidden type="submit" value="submit" />
+</form>
