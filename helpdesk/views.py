@@ -179,7 +179,7 @@ def faq_category_delete(request, id):
         return HttpResponse("")
     except ProtectedError:
         messages.error(request, _("You cannot delete this FAQ category."))
-    return HttpResponse("<script>window.location.reload()</script>")
+    return HorillaRedirect(request)
 
 
 @login_required
@@ -389,7 +389,7 @@ def faq_delete(request, id):
         return HttpResponse("")
     except ProtectedError:
         messages.error(request, _("You cannot delete this FAQ."))
-    return HttpResponse("<script>window.location.reload()</script>")
+    return HorillaRedirect(request)
 
 
 @login_required
@@ -524,7 +524,7 @@ def ticket_create(request):
                 redirect=reverse("ticket-detail", kwargs={"ticket_id": ticket.id}),
             )
 
-            return HttpResponse("<script>window.location.reload()</script>")
+            return HorillaRedirect(request)
 
     context = {
         "form": form,
@@ -564,7 +564,7 @@ def ticket_update(request, ticket_id):
                     attachment_instance = Attachment(file=attachment, ticket=ticket)
                     attachment_instance.save()
                 messages.success(request, _("The Ticket updated successfully."))
-                return HttpResponse("<script>window.location.reload()</script>")
+                return HorillaRedirect(request)
         context = {
             "form": form,
             "ticket_id": ticket_id,
@@ -1049,7 +1049,7 @@ def ticket_change_assignees(request, ticket_id):
                 mail_thread.start()
 
                 messages.success(request, _("Assinees updated for the Ticket"))
-                return HttpResponse("<script>window.location.reload()</script>")
+                return HorillaRedirect(request)
 
         return render(
             request,
@@ -1152,7 +1152,7 @@ def delete_ticket_document(request, doc_id):
     """
     Attachment.objects.get(id=doc_id).delete()
     messages.success(request, _("Document has been deleted."))
-    return HttpResponse("<script>window.location.reload()</script>")
+    return HorillaRedirect(request)
 
 
 @login_required
@@ -1516,7 +1516,7 @@ def create_department_manager(request):
             form.save()
             messages.success(request, _("The department manager created successfully."))
 
-            return HttpResponse("<script>window.location.reload()</script>")
+            return HorillaRedirect(request)
     context = {
         "form": form,
     }
@@ -1533,7 +1533,7 @@ def update_department_manager(request, dep_id):
         if form.is_valid():
             form.save()
             messages.success(request, _("The department manager updated successfully."))
-            return HttpResponse("<script>window.location.reload()</script>")
+            return HorillaRedirect(request)
     context = {
         "form": form,
         "dep_id": dep_id,
@@ -1617,7 +1617,7 @@ def ticket_type_create(request):
             form.save()
             form = TicketTypeForm()
             messages.success(request, _("Ticket type has been created successfully!"))
-            return HttpResponse("<script>window.location.reload()</script>")
+            return HorillaRedirect(request)
     return render(
         request,
         "base/ticket_type/ticket_type_form.html",
@@ -1642,7 +1642,7 @@ def ticket_type_update(request, t_type_id):
             form.save()
             form = TicketTypeForm()
             messages.success(request, _("Ticket type has been updated successfully!"))
-            return HttpResponse("<script>window.location.reload()</script>")
+            return HorillaRedirect(request)
     return render(
         request,
         "base/ticket_type/ticket_type_form.html",
