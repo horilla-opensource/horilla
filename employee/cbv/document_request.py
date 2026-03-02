@@ -17,6 +17,7 @@ from base.methods import choosesubordinates, is_reportingmanager
 from employee.filters import DocumentPipelineFilter, DocumentRequestFilter
 from employee.models import Employee
 from horilla.decorators import manager_can_enter
+from horilla.http.response import HorillaRedirect
 from horilla_documents.forms import DocumentForm
 from horilla_documents.forms import DocumentRejectCbvForm as RejectForm
 from horilla_documents.forms import DocumentRequestForm, DocumentUpdateForm
@@ -97,7 +98,8 @@ class DocumentRequestCreateForm(HorillaFormView):
                     icon="chatbox-ellipses",
                 )
                 form.save()
-            return self.HttpResponse("<script>window.location.reload();</script>")
+            return HorillaRedirect(self.request)
+
         return super().form_valid(form)
 
 
@@ -126,11 +128,11 @@ class DocumentCreateForm(HorillaFormView):
                 messages.error(
                     self.request, _("File type %(ext)s is not allowed.") % {"ext": ext}
                 )
-                return HttpResponse("<script>window.location.reload();</script>")
+                return HorillaRedirect(self.request)
 
         form.save()
         messages.success(self.request, _("Document Uploaded Successfully"))
-        return HttpResponse("<script>window.location.reload();</script>")
+        return HorillaRedirect(self.request)
 
 
 @method_decorator(login_required, name="dispatch")
@@ -158,7 +160,8 @@ class DocumentRejectCbvForm(HorillaFormView):
                 messages.success(self.request, _("Document request rejected"))
             else:
                 messages.error(self.request, _("No document uploaded"))
-            return HttpResponse("<script>window.location.reload();</script>")
+            return HorillaRedirect(self.request)
+
         return super().form_valid(form)
 
 
@@ -194,7 +197,7 @@ class DocumentUploadForm(HorillaFormView):
                 messages.error(
                     self.request, _("File type %(ext)s is not allowed.") % {"ext": ext}
                 )
-                return HttpResponse("<script>window.location.reload();</script>")
+                return HorillaRedirect(self.request)
 
         if form.is_valid():
             if form.instance.pk:
@@ -218,7 +221,8 @@ class DocumentUploadForm(HorillaFormView):
                     pass
             form.instance.status = "requested"
             form.save()
-            return HttpResponse("<script>window.location.reload();</script>")
+            return HorillaRedirect(self.request)
+
         return super().form_valid(form)
 
 

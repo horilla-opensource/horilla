@@ -33,6 +33,7 @@ from employee.models import (
     PolicyMultipleFile,
 )
 from horilla.decorators import hx_request_required, login_required, permission_required
+from horilla.http.response import HorillaRedirect
 from horilla_auth.models import HorillaUser
 from notifications.signals import notify
 
@@ -236,19 +237,6 @@ def get_action_type_delete(action_id):
     return action.action_type
 
 
-def employee_account_block_unblock(emp_id, result):
-
-    employee = get_object_or_404(Employee, id=emp_id)
-    if not employee:
-        return redirect(disciplinary_actions)
-    user = get_object_or_404(HorillaUser, id=employee.employee_user_id.id)
-    if not user:
-        return redirect(disciplinary_actions)
-    user.is_active = result
-    user.save()
-    return HttpResponse("<script>window.location.reload()</script>")
-
-
 @login_required
 @hx_request_required
 @permission_required("employee.add_disciplinaryaction")
@@ -288,7 +276,7 @@ def create_actions(request):
             )
         dis = DisciplinaryAction.objects.all()
         if len(dis) == 1:
-            return HttpResponse("<script>window.location.reload()</script>")
+            return HorillaRedirect(request)
 
     return render(
         request, "disciplinary_actions/form.html", {"form": form, "dynamic": dynamic}
@@ -415,7 +403,7 @@ def delete_actions(request, action_id):
 
     if dis_actions.exists():
         return redirect(reverse("disciplinary-actions-list"))
-    return HttpResponse("<script>window.location.reload()</script>")
+    return HorillaRedirect(request)
 
 
 @login_required

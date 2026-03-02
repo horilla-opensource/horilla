@@ -19,6 +19,7 @@ from employee import views
 from employee.filters import EmployeeFilter
 from employee.models import Employee
 from horilla import settings
+from horilla.http.response import HorillaRedirect
 from horilla_views.cbv_methods import login_required, permission_required
 from horilla_views.generic.cbv.views import HorillaProfileView
 
@@ -170,7 +171,7 @@ class GroupAssignView(View):
         if form.is_valid():
             form.save()
             messages.success(request, _("Employee assigned to group"))
-            return HttpResponse("<script>window.location.reload()</script>")
+            return HorillaRedirect(request)
         return render(
             request,
             "cbv/auth/user_assign_to_group.html",
