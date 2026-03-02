@@ -18,7 +18,7 @@ import operator
 import os
 import threading
 from datetime import date, datetime, timedelta
-from urllib.parse import parse_qs
+from urllib.parse import parse_qs, urlparse
 
 import pandas as pd
 from django.apps import apps
@@ -36,6 +36,7 @@ from django.shortcuts import get_object_or_404, redirect, render
 from django.template.loader import render_to_string
 from django.urls import reverse
 from django.utils import timezone
+from django.utils.html import format_html
 from django.utils.translation import gettext as __
 from django.utils.translation import gettext_lazy as _
 from django.views.decorators.http import require_http_methods
@@ -579,7 +580,7 @@ def document_request_create(request):
                 redirect=reverse("employee-profile"),
                 icon="chatbox-ellipses",
             )
-            return HttpResponse("<script>window.location.reload();</script>")
+            return HorillaRedirect(request)
 
     context = {
         "form": form,
@@ -612,7 +613,7 @@ def document_request_update(request, id):
                 Employee.objects.filter(id__in=form.data.getlist("employee_id"))
             )
             documents.exclude(employee_id__in=doc_obj.employee_id.all()).delete()
-            return HttpResponse("<script>window.location.reload();</script>")
+            return HorillaRedirect(request)
 
     context = {
         "form": form,
@@ -669,7 +670,7 @@ def document_create(request, emp_id):
         if form.is_valid():
             form.save()
             messages.success(request, _("Document created successfully."))
-            return HttpResponse("<script>window.location.reload();</script>")
+            return HorillaRedirect(request)
 
     context = {
         "form": form,
@@ -722,31 +723,41 @@ def document_delete(request, id):
             document.delete()
             messages.success(
                 request,
-                _(
-                    f"Document request {document_first} for {document_first.employee_id} deleted successfully"
-                ),
+                _("Document request %(doc)s for %(employee)s deleted successfully")
+                % {
+                    "doc": document_first,
+                    "employee": document_first.employee_id,
+                },
             )
             referrer = request.META.get("HTTP_REFERER", "")
-            referrer = "/" + "/".join(referrer.split("/")[3:])
-            if referrer.startswith("/employee/employee-view/") or referrer.endswith(
+            path = urlparse(referrer).path or ""
+
+            if path.startswith("/employee/employee-view/") or path.endswith(
                 "/employee/employee-profile/"
             ):
                 existing_documents = Document.objects.filter(
                     employee_id=document_first.employee_id
                 )
                 if not existing_documents:
-                    return HttpResponse(
-                        f"""
-                            <span hx-get='/employee/document-tab/{document_first.employee_id.id}?employee_view=true'
-                            hx-target='#document_target' hx-trigger='load'></span>
-                        """
+                    url = reverse(
+                        "employee-document-tab",
+                        kwargs={"employee_id": document_first.employee_id.id},
                     )
+
+                    html = format_html(
+                        "<span hx-get='{}?employee_view=true' "
+                        "hx-target='#document_target' "
+                        "hx-trigger='load'></span>",
+                        url,
+                    )
+                    return HttpResponse(html)
+
             return HttpResponse("<script>$('#reloadMessagesButton').click();</script>")
         else:
             messages.error(request, _("Document not found"))
     except ProtectedError:
         messages.error(request, _("You cannot delete this document."))
-    return HttpResponse(status=204, headers={"HX-Refresh": "true"})
+    return HorillaRedirect(request)
 
 
 @login_required
@@ -786,7 +797,7 @@ def file_upload(request, id):
                 )
             except:
                 pass
-            return HttpResponse("<script>window.location.reload();</script>")
+            return HorillaRedirect(request)
         else:
             logger.error(f"Document upload form errors: {form.errors}")
     context = {"form": form, "document": document_item}
@@ -889,16 +900,16 @@ def document_approve(request, id):
             attrs.append(f'hx-swap="{hx_swap}"')
 
         span = f"""
-        <span
-            hx-trigger="load"
-            hx-get="{refresh_url}"
-            {' '.join(attrs)}
-            >
-        </span>
+            <span
+                hx-trigger="load"
+                hx-get="{refresh_url}"
+                {' '.join(attrs)}
+                >
+            </span>
         """
         return HttpResponse(span)
 
-    return HttpResponse(status=204, headers={"HX-Refresh": "true"})
+    return HorillaRedirect(request)
 
 
 @login_required
@@ -925,10 +936,10 @@ def document_reject(request, id):
                 document_obj.save()
                 messages.error(request, _("Document request rejected"))
 
-                return HttpResponse("<script>window.location.reload();</script>")
+                return HorillaRedirect(request)
     else:
         messages.error(request, _("No document uploaded"))
-        return HttpResponse("<script>window.location.reload();</script>")
+        return HorillaRedirect(request)
 
     return render(
         request,
@@ -969,7 +980,7 @@ def document_bulk_approve(request):
                 request, _(f"{not_uploaded_count} document(s) skipped (not uploaded)")
             )
 
-    return HttpResponse(status=204, headers={"HX-Refresh": "true"})
+    return HorillaRedirect(request)
 
 
 @login_required
@@ -999,7 +1010,7 @@ def document_bulk_reject(request):
         messages.success(
             request, _("{} Document request rejected").format(updated_count)
         )
-        return HttpResponse(status=204, headers={"HX-Refresh": "true"})
+        return HorillaRedirect(request)
 
     return render(
         request, "documents/document_reject_reason.html", {"ids": ids, "form": form}
@@ -2251,11 +2262,7 @@ def get_manager_in(request):
     if save:
         employee.save()
         messages.success(request, message)
-        key = "HTTP_HX_REQUEST"
-        if key not in request.META.keys():
-            return HorillaRedirect(request)
-        else:
-            return HttpResponse("<script>window.location.reload()</script>")
+        return HorillaRedirect(request)
     else:
         return render(
             request,
@@ -3360,7 +3367,7 @@ def redeem_points(request, emp_id):
                     description=f"{employee} want to redeem {points} points",
                     allowance_on=date.today(),
                 )
-            return HttpResponse("<script>window.location.reload();</script>")
+            return HorillaRedirect(request)
     return render(
         request,
         "tabs/forms/redeem_points_form.html",
@@ -3671,7 +3678,7 @@ def employee_tag_update(request, tag_id):
             form.save()
             form = EmployeeTagForm()
             messages.success(request, _("Tag has been updated successfully!"))
-            return HttpResponse("<script>window.location.reload()</script>")
+            return HorillaRedirect(request)
     return render(
         request,
         "base/employee_tag/employee_tag_form.html",
