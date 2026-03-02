@@ -22,7 +22,8 @@
 							src="{{ object.get_avatar }}"
 							alt=""
 							width="120"
-							class="rounded-md"
+							data-src="{{ object.get_avatar }}"
+							class="rounded-md avatar-thumb"
 						/>
 					</div>
 					<div
@@ -54,13 +55,14 @@
 							>
 								<div class="flex items-center gap-4">
 									<!-- Settings Button -->
+									{% if actions %}
 									<div
 										class="relative inline-block"
 										x-data="{open: false}"
 									>
 										<button
 											class="p-2 group text-primary-600 w-8 h-8 text-sm bg-white shadow-card hover:bg-primary-600 rounded-full transition duration-300 flex items-center justify-center"
-											title = "Actions"
+											title = "{% trans 'Actions' %}"
 											@click="open = !open" @click.outside="open = false"
 										>
 											<i
@@ -91,9 +93,10 @@
 											</ul>
 										</div>
 									</div>
+									{% endif %}
 
 									<!-- Pagination Buttons -->
-									{% if previous_url and next_url %}
+									{% if instance_ids and previous_url and next_url %}
 									<div class="flex gap-1 ml-auto">
 										<button
 											data-action="previous"
