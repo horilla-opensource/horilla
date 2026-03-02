@@ -37,6 +37,7 @@ from horilla.decorators import (
 )
 from horilla.filters import HorillaPaginator
 from horilla.horilla_settings import BIO_DEVICE_THREADS
+from horilla.http.response import HorillaRedirect
 from horilla.settings import TIME_ZONE
 
 from .anviz import CrossChexCloudAPI
@@ -436,7 +437,7 @@ def biometric_device_schedule(request, device_id):
                         seconds=str_time_seconds(device.scheduler_duration),
                     )
                     scheduler.start()
-                    return HttpResponse("<script>window.location.reload()</script>")
+                    return HorillaRedirect(request)
                 except Exception as error:
                     logger.error("An error comes in biometric_device_schedule ", error)
                     script = """
@@ -466,7 +467,7 @@ def biometric_device_schedule(request, device_id):
                     seconds=str_time_seconds(device.scheduler_duration),
                 )
                 scheduler.start()
-                return HttpResponse("<script>window.location.reload()</script>")
+                return HorillaRedirect(request)
             elif device.machine_type == "dahua":
                 device.is_scheduler = True
                 device.is_live = False
@@ -479,7 +480,7 @@ def biometric_device_schedule(request, device_id):
                     seconds=str_time_seconds(device.scheduler_duration),
                 )
                 scheduler.start()
-                return HttpResponse("<script>window.location.reload()</script>")
+                return HorillaRedirect(request)
             elif device.machine_type == "cosec":
                 device.is_scheduler = True
                 device.is_live = False
@@ -496,7 +497,7 @@ def biometric_device_schedule(request, device_id):
                     seconds=str_time_seconds(device.scheduler_duration),
                 )
                 scheduler.start()
-                return HttpResponse("<script>window.location.reload()</script>")
+                return HorillaRedirect(request)
             elif device.machine_type == "etimeoffice":
                 device.is_scheduler = True
                 device.is_live = False
@@ -509,9 +510,9 @@ def biometric_device_schedule(request, device_id):
                     seconds=str_time_seconds(device.scheduler_duration),
                 )
                 scheduler.start()
-                return HttpResponse("<script>window.location.reload()</script>")
+                return HorillaRedirect(request)
             else:
-                return HttpResponse("<script>window.location.reload()</script>")
+                return HorillaRedirect(request)
 
         context["scheduler_form"] = scheduler_form
         response = render(request, "biometric/scheduler_device_form.html", context)
@@ -1526,7 +1527,7 @@ def edit_cosec_user(request, user_id, device_id):
                     messages.success(
                         request, _("Biometric user data updated successfully")
                     )
-                    return HttpResponse("<script>window.location.reload()</script>")
+                    return HorillaRedirect(request)
                 if update_user.get("error"):
                     error = update_user.get("error")
                     if "validity-date-yyyy" in error:
@@ -1808,7 +1809,7 @@ def add_biometric_user(request, device_id):
             if device.machine_type == "zk":
                 conn.disable_device()
                 logger.error("An error occurred: ", str(error))
-        return HttpResponse("<script>window.location.reload()</script>")
+        return HorillaRedirect(request)
     return render(
         request,
         "biometric/add_biometric_user.html",
