@@ -226,12 +226,7 @@ def attendance_create(request):
         if form.is_valid():
             form.save()
             messages.success(request, _("Attendance added."))
-            response = render(
-                request, "attendance/attendance/form.html", {"form": form}
-            )
-            return HttpResponse(
-                response.content.decode("utf-8") + "<script>location.reload();</script>"
-            )
+            return HorillaRedirect(request)
     return render(request, "attendance/attendance/form.html", {"form": form})
 
 
@@ -449,13 +444,7 @@ def attendance_update(request, obj_id):
             messages.success(request, _("Attendance Updated."))
             urlencode = request.GET.urlencode()
             modified_url = f"/attendance/attendance-view/?{urlencode}"
-            return HttpResponse(
-                f"""
-                    <script>
-                        window.location.reload();
-                    </script>
-                """
-            )
+            return HorillaRedirect(request)
     return render(
         request,
         "attendance/attendance/update_form.html",
@@ -616,12 +605,7 @@ def attendance_overtime_create(request):
         if form.is_valid():
             form.save()
             messages.success(request, _("Attendance account added."))
-            response = render(
-                request, "attendance/attendance_account/form.html", {"form": form}
-            )
-            return HttpResponse(
-                response.content.decode("utf-8") + "<script>location.reload();</script>"
-            )
+            return HorillaRedirect(request)
     return render(request, "attendance/attendance_account/form.html", {"form": form})
 
 
@@ -699,14 +683,7 @@ def attendance_overtime_update(request, obj_id):
         if form.is_valid():
             form.save()
             messages.success(request, _("Attendance account updated successfully."))
-            response = render(
-                request,
-                "attendance/attendance_account/update_form.html",
-                {"form": form},
-            )
-            return HttpResponse(
-                response.content.decode("utf-8") + "<script>location.reload();</script>"
-            )
+            return HorillaRedirect(request)
     return render(
         request, "attendance/attendance_account/update_form.html", {"form": form}
     )
@@ -739,7 +716,7 @@ def attendance_overtime_delete(request, obj_id):
         if hour_account.exists():
             return redirect(f"/attendance/attendance-overtime-search?{previous_data}")
         else:
-            return HttpResponse("<script>window.location.reload()</script>")
+            return HorillaRedirect(request)
     elif hx_target:
         return HttpResponse()
 
@@ -1522,12 +1499,12 @@ def attendance_add_to_batch(request):
                 except Exception as e:
                     logger.error(e)
                     messages.error(request, _("Something went wrong."))
-                    return HttpResponse("<script>window.location.reload()</script>")
+                    return HorillaRedirect(request)
             messages.success(request, _(f"Attendances added to {batch}."))
-            return HttpResponse("<script>window.location.reload()</script>")
+            return HorillaRedirect(request)
         else:
             messages.error(request, _("Something went wrong."))
-            return HttpResponse("<script>window.location.reload()</script>")
+            return HorillaRedirect(request)
     return render(
         request,
         "attendance/attendance/attendance_add_batch.html",
@@ -1936,7 +1913,7 @@ def create_grace_time(request):
                 shift.grace_time_id = gracetime
                 shift.save()
             messages.success(request, _("Grace time created successfully."))
-            return HttpResponse("<script>window.location.reload()</script>")
+            return HorillaRedirect(request)
     return render(
         request,
         "attendance/grace_time/grace_time_form.html",
@@ -1960,7 +1937,7 @@ def assign_shift(request, grace_id):
                     shift.grace_time_id = gracetime
                     shift.save()
                 messages.success(request, _("Grace time added to shifts successfully."))
-                return HttpResponse("<script>window.location.reload()</script>")
+                return HorillaRedirect(request)
         return render(
             request,
             "attendance/grace_time/assign_shift.html",
@@ -1989,7 +1966,7 @@ def update_grace_time(request, grace_id):
             instance = form.save(commit=False)
             instance.save()
             messages.success(request, _("Grace time updated successfully."))
-            return HttpResponse("<script>window.location.reload()</script>")
+            return HorillaRedirect(request)
     context = {
         "form": form,
         "grace_id": grace_id,
@@ -2472,7 +2449,7 @@ def enable_disable_tracking_late_come_early_out(request):
         messages.success(
             request, _("Tracking late come early out {} successfully").format(message)
         )
-    return HttpResponse("<script>window.location.reload()</script>")
+    return HorillaRedirect(request)
 
 
 @login_required
@@ -2621,7 +2598,7 @@ def enable_ip_restriction(request):
 
         if not ip_restiction:
             ip_restiction = AttendanceAllowedIP.objects.create(is_enabled=True)
-            return HttpResponse("<script>window.location.reload()</script>")
+            return HorillaRedirect(request)
 
         if not ip_restiction.is_enabled:
             ip_restiction.is_enabled = True
@@ -2629,7 +2606,7 @@ def enable_ip_restriction(request):
             ip_restiction.is_enabled = False
 
         ip_restiction.save()
-        return HttpResponse("<script>window.location.reload()</script>")
+        return HorillaRedirect(request)
 
 
 def validate_ip_address(self, value):
@@ -2687,7 +2664,7 @@ def create_allowed_ips(request):
                 )
                 messages.success(request, "IP addresses saved successfully")
 
-            return HttpResponse("<script>window.location.reload()</script>")
+            return HorillaRedirect(request)
     else:
         form = AttendanceAllowedIPForm()
 
@@ -2756,7 +2733,7 @@ def edit_allowed_ips(request):
                     allowed_ips.additional_data["allowed_ips"] = list(existing_ips)
                     allowed_ips.save()
                     messages.success(request, "IP address updated successfully")
-                return HttpResponse("<script>window.location.reload()</script>")
+                return HorillaRedirect(request)
 
     except (ValueError, IndexError):
         messages.error(request, "Invalid ID provided.")
