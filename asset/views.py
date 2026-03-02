@@ -332,7 +332,7 @@ def asset_delete(request, asset_id):
             )
 
         if len(eval_validate(instances_ids)) <= 1:
-            return HttpResponse("<script>window.location.reload();</script>")
+            return HorillaRedirect(request)
 
         if Asset.find(asset.id):
             return redirect(
@@ -676,7 +676,7 @@ def asset_request_approve(request, req_id):
                 )
 
                 messages.success(request, _("Asset request approved successfully!"))
-                return HttpResponse("<script>window.location.reload();</script>")
+                return HorillaRedirect(request)
             except Exception as e:
                 messages.error(request, _("An error occurred: ") + str(e))
                 return HttpResponse(error_response)
@@ -865,7 +865,6 @@ def asset_allocate_return(request, asset_id):
             files = request.FILES.getlist("return_images")
             attachments = []
             context = {"asset_return_form": asset_return_form, "asset_id": asset_id}
-            response = render(request, "asset/asset_return_form.html", context)
             if asset_return_status == "Healthy":
                 asset_allocation = AssetAssignment.objects.filter(
                     asset_id=asset_id, return_status__isnull=True
@@ -885,10 +884,7 @@ def asset_allocate_return(request, asset_id):
                 asset.asset_status = "Available"
                 asset.save()
                 messages.success(request, _("Asset Returned Successfully..."))
-                return HttpResponse(
-                    response.content.decode("utf-8")
-                    + "<script>location.reload();</script>"
-                )
+                return HorillaRedirect(request)
             asset.asset_status = "Not-Available"
             asset.save()
             asset_allocation = AssetAssignment.objects.filter(
@@ -906,10 +902,7 @@ def asset_allocate_return(request, asset_id):
                     attachments.append(attachment)
                 asset_allocation.return_images.add(*attachments)
             messages.info(request, _("Asset Return Successful!."))
-            return HttpResponse(
-                response.content.decode("utf-8") + "<script>location.reload();</script>"
-            )
-
+            return HorillaRedirect(request)
     context = {"asset_return_form": asset_return_form, "asset_id": asset_id}
     context["asset_alocation"] = asset_allocation
     return render(request, "asset/asset_return_form.html", context)
