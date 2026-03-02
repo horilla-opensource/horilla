@@ -16,6 +16,7 @@ from base.decorators import manager_can_enter
 from base.methods import choosesubordinates, is_reportingmanager
 from employee.cbv.employee_profile import EmployeeProfileView
 from employee.models import Employee
+from horilla.http.response import HorillaRedirect
 from horilla_auth.models import HorillaUser
 from horilla_views.cbv_methods import login_required
 from horilla_views.generic.cbv.views import (
@@ -475,7 +476,7 @@ class AddAnonymousFeedbackForm(HorillaFormView):
                     )
             feedback.save()
             messages.success(self.request, message)
-            return HttpResponse("<script>window.location.reload();</script>")
+            return HorillaRedirect(self.request)
         return super().form_valid(form)
 
 
