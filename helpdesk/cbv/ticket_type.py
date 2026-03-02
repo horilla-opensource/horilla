@@ -18,6 +18,7 @@ from helpdesk.filter import TicketTypeFilter
 from helpdesk.forms import TicketForm, TicketTypeForm
 from helpdesk.models import Attachment, Ticket, TicketType
 from helpdesk.threading import TicketSendThread
+from horilla.http.response import HorillaRedirect
 from horilla_views.cbv_methods import login_required, permission_required
 from horilla_views.generic.cbv.views import (
     HorillaFormView,
@@ -281,6 +282,6 @@ class TicketsCreateFormView(HorillaFormView):
                 ticket = form.save()
                 messages.success(self.request, _("The Ticket updated successfully."))
 
-            return HttpResponse("<script>window.location.reload();</script>")
+            return HorillaRedirect(self.request)
 
         return super().form_valid(form)
