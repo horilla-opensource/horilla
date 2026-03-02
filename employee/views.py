@@ -3258,9 +3258,7 @@ def employee_note_update(request, note_id):
                 "tabs/update_note.html",
                 {"form": form},
             )
-            return HttpResponse(
-                response.content.decode("utf-8") + "<script>location.reload();</script>"
-            )
+            return HorillaRedirect(request)
     return render(
         request,
         "tabs/update_note.html",
