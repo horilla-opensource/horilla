@@ -202,7 +202,6 @@ def create_project(request):
                 "project/new/forms/project_creation.html",
                 context={"form": form},
             )
-            print("PPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPP")
             return HorillaRedirect(request)
     return render(
         request, "project/new/forms/project_creation.html", context={"form": form}
