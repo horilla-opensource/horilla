@@ -7,6 +7,7 @@ import threading
 from typing import Any
 
 from django import forms
+from django.apps import apps
 from django.contrib.auth.hashers import identify_hasher, make_password
 from django.core.exceptions import ImproperlyConfigured
 from django.db import transaction
@@ -352,39 +353,38 @@ class TabEmployeeWorkList(HorillaListView):
 
     columns = [
         (_("Badge Id"), "badge_id"),
-        (_("Job Position"), "employee_work_info__job_position_id"),
+        (_("Work Email"), "employee_work_info__email"),
+        (
+            _("Reporting Manager"),
+            "employee_work_info__reporting_manager_id__get_full_name",
+        ),
         (_("Department"), "employee_work_info__department_id"),
+        (_("Job Position"), "employee_work_info__job_position_id__job_position"),
+        (_("Job Role"), "employee_work_info__job_role_id__job_role"),
         (_("Shift"), "employee_work_info__shift_id"),
         (_("Work Type"), "employee_work_info__work_type_id"),
         (_("Employee Type"), "employee_work_info__employee_type_id"),
-        (_("Job Role"), "employee_work_info__job_role_id"),
-        (_("Reporting Manager"), "employee_work_info__reporting_manager_id"),
         (_("Company"), "employee_work_info__company_id"),
-        (_("Work Email"), "employee_work_info__email"),
         (_("Date of Joining"), "employee_work_info__date_joining"),
     ]
 
     def __init__(self, **kwargs):
         super().__init__(**kwargs)
+        self.ordered_ids_key = "work_tab_instance_ids"
         self.row_attrs = """
-        hx-get="{get_detailed_work_url}"
-        hx-target="#genericModalBody"
-        data-toggle="oh-modal-toggle"
-        data-target="#genericModal"
+            hx-get="{get_detailed_work_url}"
+            hx-target="#genericModalBody"
+            data-toggle="oh-modal-toggle"
+            data-target="#genericModal"
+            style = "cursor:pointer"
         """
 
     def get_queryset(self):
         """
         Get Queryset
         """
-        if self.request.user.has_perm("employee.view_employee"):
-            # If user has permission to view all employees
-            return super().get_queryset().filter(id=self.request.GET.get("pk"))
 
-        return super().get_queryset(
-            queryset=self.model.objects.filter(employee_user_id=self.request.user.id),
-            filtered=True,
-        )
+        return super().get_queryset().filter(id=self.request.GET.get("pk"))
 
 
 @method_decorator(login_required, name="dispatch")
@@ -398,15 +398,18 @@ class EmployeeWorkDetails(HorillaDetailedView):
 
     body = [
         (_("Badge Id"), "badge_id"),
-        (_("Job Position"), "employee_work_info__job_position_id"),
+        (_("Work Email"), "employee_work_info__email"),
+        (
+            _("Reporting Manager"),
+            "employee_work_info__reporting_manager_id__get_full_name",
+        ),
         (_("Department"), "employee_work_info__department_id"),
+        (_("Job Position"), "employee_work_info__job_position_id__job_position"),
+        (_("Job Role"), "employee_work_info__job_role_id__job_role"),
         (_("Shift"), "employee_work_info__shift_id"),
         (_("Work Type"), "employee_work_info__work_type_id"),
         (_("Employee Type"), "employee_work_info__employee_type_id"),
-        (_("Job Role"), "employee_work_info__job_role_id"),
-        (_("Reporting Manager"), "employee_work_info__reporting_manager_id"),
         (_("Company"), "employee_work_info__company_id"),
-        (_("Work Email"), "employee_work_info__email"),
         (_("Date of Joining"), "employee_work_info__date_joining"),
     ]
 
@@ -414,10 +417,7 @@ class EmployeeWorkDetails(HorillaDetailedView):
         """
         Get Queryset
         """
-        if self.request.user.has_perm("employee.view_employee"):
-            return super().get_queryset().filter(id=self.kwargs.get("pk"))
-
-        return self.model.objects.filter(employee_user_id=self.request.user.id)
+        return super().get_queryset().filter(id=self.kwargs.get("pk"))
 
 
 @method_decorator(login_required, name="dispatch")
@@ -437,6 +437,17 @@ class WorkTab(HorillaTabView):
                 "url": f"{reverse_lazy('employee-work-tab')}",
             },
         ] + self.additional_tabs
+
+    # def get_context_data(self, **kwargs):
+    #     if apps.is_installed("payroll"):
+    #         employee = self.model.objects.get(id=self.request.GET.get("pk"))
+    #         self.tabs.append(
+    #             {
+    #                 "title": _("Contract details"),
+    #                 "url": f"{reverse_lazy('contract-filter')}?search={employee.get_full_name()}",
+    #             },
+    #         )
+    #     return super().get_context_data(**kwargs)
 
 
 @method_decorator(login_required, name="dispatch")
