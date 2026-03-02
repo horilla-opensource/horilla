@@ -13,6 +13,7 @@ from django.urls import resolve, reverse, reverse_lazy
 from django.utils.decorators import method_decorator
 from django.utils.translation import gettext_lazy as _
 
+from horilla.http.response import HorillaRedirect
 from horilla_views.cbv_methods import login_required
 from horilla_views.generic.cbv.views import (
     HorillaDetailedView,
@@ -442,16 +443,14 @@ class MyLeaveRequestForm(HorillaFormView):
                                 len(LeaveRequest.objects.filter(employee_id=emp_id))
                                 == 1
                             ):
-                                return HttpResponse(
-                                    "<script>window.location.reload();</script>"
-                                )
+                                return HorillaRedirect(self.request)
                             form.save(commit=False)
 
-                        return HttpResponse("<script>location.reload();</script>")
+                        return HorillaRedirect(self.request)
                 else:
                     messages.error(self.request, _("You don't have permission"))
 
-            return HttpResponse("<script>location.reload();</script>")
+            return HorillaRedirect(self.request)
         return super().form_valid(form)
 
 
@@ -603,20 +602,20 @@ class MyLeaveRequestSingleForm(HorillaFormView):
                             redirect=reverse("request-view")
                             + f"?id={leave_request.id}",
                         )
-                        return HttpResponse("<script>window.location.reload()</script>")
+                        return HorillaRedirect(self.request)
                     if len(
                         LeaveRequest.objects.filter(employee_id=employee)
                     ) == 1 or self.request.META.get("HTTP_REFERER").endswith(
                         "employee-profile/"
                     ):
-                        return HttpResponse("<script>window.location.reload()</script>")
+                        return HorillaRedirect(self.request)
                 else:
                     form.add_error(
                         None,
                         _("You dont have enough leave days to make the request"),
                     )
 
-                return HttpResponse("<script>window.location.reload()</script>")
+                return HorillaRedirect(self.request)
             else:
                 return self.form_invalid(form)
         return super().form_valid(form)
