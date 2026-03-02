@@ -114,7 +114,7 @@ def asset_creation(request, asset_category_id):
     asset_category = AssetCategory.find(asset_category_id)
     if not asset_category:
         messages.error(request, _("Asset category not found"))
-        return HttpResponse(status=204, headers={"HX-Refresh": "true"})
+        return HorillaRedirect(request)
 
     initial_data = {"asset_category_id": asset_category_id}
     # Use request.GET to pre-fill the form with dynamic create batch number data if available
@@ -320,7 +320,7 @@ def asset_delete(request, asset_id):
     else:
         asset_del(request, asset)
         if len(eval_validate(instances_ids)) <= 1:
-            return HttpResponse("<script>window.location.reload();</script>")
+            return HorillaRedirect(request)
 
         if Asset.find(asset.id):
             return redirect(
@@ -402,7 +402,7 @@ def asset_category_creation(request):
             form = AssetCategoryForm()
             if AssetCategory.objects.filter().count() == 1:
                 if AssetCategory.objects.count() == 1:
-                    return HttpResponse(status=204, headers={"HX-Refresh": "true"})
+                    return HorillaRedirect(request)
     context = {"form": form}
     return render(request, "category/asset_category_form.html", context)
 
@@ -424,7 +424,7 @@ def asset_category_update(request, cat_id):
     asset_category = AssetCategory.find(cat_id)
     if not asset_category:
         messages.error(request, _("Asset category not found"))
-        return HttpResponse(status=204, headers={"HX-Refresh": "true"})
+        return HorillaRedirect(request)
 
     form = AssetCategoryForm(instance=asset_category)
     context = {"form": form, "pg": previous_data}
@@ -459,7 +459,7 @@ def delete_asset_category(request, cat_id):
         messages.error(request, _("Assets are located within this category."))
 
     if not AssetCategory.objects.exists():
-        return HttpResponse(status=204, headers={"HX-Refresh": "true"})
+        return HorillaRedirect(request)
 
     return redirect(f"/asset/asset-category-view-search-filter?{previous_data}")
 
@@ -662,7 +662,7 @@ def asset_request_approve(request, req_id):
                 )
 
                 messages.success(request, _("Asset request approved successfully!"))
-                return HttpResponse("<script>window.location.reload();</script>")
+                return HorillaRedirect(request)
             except Exception as e:
                 messages.error(request, _("An error occurred: ") + str(e))
                 return HttpResponse(error_response)
@@ -862,10 +862,7 @@ def asset_allocate_return(request, asset_id):
                 asset.asset_status = "Available"
                 asset.save()
                 messages.info(request, _("Asset Return Successful !."))
-                return HttpResponse(
-                    response.content.decode("utf-8")
-                    + "<script>location.reload();</script>"
-                )
+                return HorillaRedirect(request)
             asset.asset_status = "Not-Available"
             asset.save()
             asset_allocation = AssetAssignment.objects.filter(
@@ -883,9 +880,7 @@ def asset_allocate_return(request, asset_id):
                     attachments.append(attachment)
                 asset_allocation.return_images.add(*attachments)
             messages.info(request, _("Asset Return Successful!."))
-            return HttpResponse(
-                response.content.decode("utf-8") + "<script>location.reload();</script>"
-            )
+            return HorillaRedirect(request)
 
     context = {"asset_return_form": asset_return_form, "asset_id": asset_id}
     context["asset_alocation"] = asset_allocation
@@ -1423,7 +1418,7 @@ def asset_batch_number_creation(request):
             asset_batch_form = AssetBatchForm()
             messages.success(request, _("Batch number created successfully."))
             if AssetLot.objects.filter().count() == 1 and not hx_vals:
-                return HttpResponse(status=204, headers={"HX-Refresh": "true"})
+                return HorillaRedirect(request)
             if hx_vals:
                 category_id = request.GET.get("asset_category_id")
                 url = reverse("asset-creation", args=[category_id])
@@ -1528,7 +1523,7 @@ def asset_batch_number_delete(request, batch_id):
     except ProtectedError:
         messages.error(request, _("You cannot delete this Batch number."))
     if not AssetLot.objects.filter():
-        return HttpResponse(status=204, headers={"HX-Refresh": "true"})
+        return HorillaRedirect(request)
     return redirect(f"/asset/asset-batch-number-search?{previous_data}")
 
 
