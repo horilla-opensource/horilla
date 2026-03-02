@@ -27,6 +27,7 @@ from xhtml2pdf import pisa
 
 from employee.forms import BulkUpdateFieldForm
 from horilla.horilla_middlewares import _thread_locals
+from horilla.http.response import HorillaRedirect
 from horilla_views.cbv_methods import export_xlsx, login_required, permission_required
 from horilla_views.forms import DynamicBulkUpdateForm
 from horilla_views.generic.cbv.views import (
@@ -850,7 +851,7 @@ class AddToRejectedCandidatesView(View):
         if form.is_valid():
             form.save()
             messages.success(request, _("Candidate reject reason saved"))
-            return HttpResponse("<script>window.location.reload()</script>")
+            return HorillaRedirect(request)
         return render(request, self.template_name, {"form": form})
 
 

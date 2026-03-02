@@ -12,6 +12,7 @@ from django.utils.decorators import method_decorator
 from django.utils.translation import gettext_lazy as _
 
 from base.models import IntegrationApps
+from horilla.http.response import HorillaRedirect
 from horilla_views.cbv_methods import login_required, permission_required
 from horilla_views.generic.cbv.views import (
     HorillaDetailedView,
@@ -292,7 +293,7 @@ class RecruitmentForm(HorillaFormView):
                 message = _("Recruitment Created Successfully")
             messages.success(self.request, message)
             if self.request.GET.get("pipeline") == "true":
-                return HttpResponse("<script>window.location.reload();</script>")
+                return HorillaRedirect(self.request)
             return self.HttpResponse()
         return super().form_valid(form)
 
