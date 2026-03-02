@@ -655,7 +655,7 @@ urlpatterns = [
     ),
     path(
         "employee-profile/<int:pk>/",
-        employee_profile.EmployeeProfileView.as_view(),
+        employee_profile.UserProfileView.as_view(),
         name="employee-profile",
     ),
     path(

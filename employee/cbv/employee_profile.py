@@ -101,6 +101,14 @@ class EmployeeProfileView(HorillaProfileView):
             ]
 
 
+class UserProfileView(EmployeeProfileView):
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context["instance_ids"] = None
+        return context
+
+
 EmployeeProfileView.add_tab(
     tabs=[
         {
