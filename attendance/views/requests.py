@@ -161,14 +161,7 @@ def request_new(request):
             if form.is_valid():
                 instance = form.save(commit=False)
                 messages.success(request, _("Attendance request created"))
-                return HttpResponse(
-                    render(
-                        request,
-                        "requests/attendance/request_new_form.html",
-                        {"form": form},
-                    ).content.decode("utf-8")
-                    + "<script>location.reload();</script>"
-                )
+                return HorillaRedirect(request)
         return render(
             request,
             "requests/attendance/request_new_form.html",
@@ -201,23 +194,9 @@ def request_new(request):
             if form.new_instance is not None:
                 form.new_instance.save()
                 messages.success(request, _("New attendance request created"))
-                return HttpResponse(
-                    render(
-                        request,
-                        "requests/attendance/request_new_form.html",
-                        {"form": form},
-                    ).content.decode("utf-8")
-                    + "<script>location.reload();</script>"
-                )
+                return HorillaRedirect(request)
             messages.success(request, _("Update request updated"))
-            return HttpResponse(
-                render(
-                    request,
-                    "requests/attendance/request_new_form.html",
-                    {"form": form},
-                ).content.decode("utf-8")
-                + "<script>location.reload();</script>"
-            )
+            return HorillaRedirect(request)
     return render(
         request,
         "requests/attendance/request_new_form.html",
@@ -399,14 +378,7 @@ def attendance_request_changes(request, attendance_id):
                     + f"?id={attendance.id}",
                     icon="checkmark-circle-outline",
                 )
-            return HttpResponse(
-                render(
-                    request,
-                    "requests/attendance/form.html",
-                    {"form": form, "attendance_id": attendance_id},
-                ).content.decode("utf-8")
-                + "<script>location.reload();</script>"
-            )
+            return HorillaRedirect(request)
     return render(
         request,
         "requests/attendance/form.html",

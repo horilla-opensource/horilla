@@ -182,12 +182,7 @@ def attendance_create(request):
         if form.is_valid():
             form.save()
             messages.success(request, _("Attendance added."))
-            response = render(
-                request, "attendance/attendance/form.html", {"form": form}
-            )
-            return HttpResponse(
-                response.content.decode("utf-8") + "<script>location.reload();</script>"
-            )
+            return HorillaRedirect(request)
     return render(request, "attendance/attendance/form.html", {"form": form})
 
 
@@ -328,12 +323,7 @@ def attendance_update(request, obj_id):
         if form.is_valid():
             form.save()
             messages.success(request, _("Attendance Updated."))
-            response = render(
-                request, "attendance/attendance/update_form.html", {"form": form}
-            )
-            return HttpResponse(
-                response.content.decode("utf-8") + "<script>location.reload();</script>"
-            )
+            return HorillaRedirect(request)
     return render(
         request,
         "attendance/attendance/update_form.html",
@@ -494,12 +484,7 @@ def attendance_overtime_create(request):
         if form.is_valid():
             form.save()
             messages.success(request, _("Attendance account added."))
-            response = render(
-                request, "attendance/attendance_account/form.html", {"form": form}
-            )
-            return HttpResponse(
-                response.content.decode("utf-8") + "<script>location.reload();</script>"
-            )
+            return HorillaRedirect(request)
     return render(request, "attendance/attendance_account/form.html", {"form": form})
 
 
@@ -580,14 +565,7 @@ def attendance_overtime_update(request, obj_id):
         if form.is_valid():
             form.save()
             messages.success(request, _("Attendance account updated successfully."))
-            response = render(
-                request,
-                "attendance/attendance_account/update_form.html",
-                {"form": form},
-            )
-            return HttpResponse(
-                response.content.decode("utf-8") + "<script>location.reload();</script>"
-            )
+            return HorillaRedirect(request)
     return render(
         request, "attendance/attendance_account/update_form.html", {"form": form}
     )
