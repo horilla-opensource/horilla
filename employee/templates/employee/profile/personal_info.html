@@ -10,9 +10,9 @@
                 <div class="row">
                     <div class="col-12 col-sm-12 col-md-12 col-lg-6 d-flex align-items-center">
                         <div class="oh-profile-section__edit-photo me-4 mb-3" data-toggle="oh-modal-toggle"
-                             data-target="#uploadPhotoModal">
+                            data-target="#uploadPhotoModal">
                             <img src="{{ form.instance.get_avatar }}" class="oh-profile-section__avatar preview"
-                                 alt="Username"/>
+                                alt="Username" />
                         </div>
                     </div>
                 </div>
@@ -46,11 +46,11 @@
                 <div class="row">
                     <div class="col-12 col-sm-12 col-md-12 col-lg-6">
                         <label class="oh-label" for="email">{% trans "Email *" %}</label>
-                        {{ form.email }} {{ form.email.errors }}
+                        {{ form.email }}
                     </div>
                     <div class="col-12 col-sm-12 col-md-12 col-lg-6">
                         <label class="oh-label" for="phone">{% trans "Mobile Number *" %}</label>
-                        {{ form.phone }} {{ form.phone.errors }}
+                        {{ form.phone }}
                     </div>
                 </div>
                 <div class="row" data-select2-id="select2-data-46-nz80">
@@ -87,14 +87,14 @@
                     <div class="col-12 col-sm-12 col-md-12 col-lg-6">
                         <label class="oh-label" for="{{ form.country.id_for_label }}">{% trans "Country" %}</label>
                         <select class="oh-select-2 oh-select w-100" name="country" id="{{ form.country.id_for_label }}"
-                                data-selected="{{ form.country.value|default:'' }}">
+                            data-selected="{{ form.country.value|default:'' }}">
                         </select>
                         {{ form.country.errors }}
                     </div>
                     <div class="col-12 col-sm-12 col-md-12 col-lg-6">
                         <label class="oh-label d-block" for="{{ form.state.id_for_label }}">{% trans "State" %}</label>
                         <select name="state" class="oh-select oh-select-2" id="{{ form.state.id_for_label }}"
-                                data-selected="{{ form.state.value|default:'' }}">
+                            data-selected="{{ form.state.value|default:'' }}">
                         </select>
                         {{ form.country.errors }}
                     </div>
@@ -140,7 +140,7 @@
                         {{ form.children }} {{ form.children.errors }}
                     </div>
                 </div>
-                <hr class="mt-5 mb-3"/>
+                <hr class="mt-5 mb-3" />
                 <div class="w-100 d-flex align-items-center justify-content-end">
                     <button type="submit" class="oh-btn oh-btn--secondary oh-btn--w-100-resp">
                         {% trans "Save" %}
@@ -161,17 +161,17 @@
             <div class="oh-modal__dialog-body" id="uploadPhotoModalBody">
                 <div class="oh-profile-section__image-container">
                     <form hx-post="{% url 'update-own-profile-image' %}" hx-target="#uploadPhotoModalBody"
-                          hx-encoding="multipart/form-data" id="file-form">
+                        hx-encoding="multipart/form-data" id="file-form">
                         {% csrf_token %}
                         <div class="oh-profile-section__modal-avatar">
                             <img src="{{ form.instance.get_avatar }}" class="oh-profile-section__modal-image preview"
-                                 alt="Username"/>
+                                alt="Username" />
                         </div>
                         <input type="file" name="employee_profile" id="id_employee_profile"
-                               class="oh-input oh-input--file oh-input--file-sm mt-4"/>
+                            class="oh-input oh-input--file oh-input--file-sm mt-4" />
                         <div class="d-flex justify-content-between w-100 align-items-center mt-4">
                             <button class="oh-btn oh-btn--light-danger mr-1" hx-target="#personalMessage"
-                                    hx-delete="{% url 'remove-own-profile-image' %}">
+                                hx-delete="{% url 'remove-own-profile-image' %}">
                                 <ion-icon class="me-1" name="trash-outline"></ion-icon>
                                 {% trans "Delete Image" %}
                             </button>
