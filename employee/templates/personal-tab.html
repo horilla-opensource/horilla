@@ -228,6 +228,13 @@
               </li>
               <li class="oh-profile__card-info-item">
                 <span class="oh-profile__info-label mb-1">
+                  <ion-icon name="briefcase-outline"></ion-icon>
+                  <span>{% trans "Job Role" %}</span>
+                </span>
+                <span class="oh-profile__info-value">{{employee.employee_work_info.job_role_id}}</span>
+              </li>
+              <li class="oh-profile__card-info-item">
+                <span class="oh-profile__info-label mb-1">
                   <ion-icon name="time-outline"></ion-icon>
                   <span>{% trans "Work Type" %}</span>
                 </span>
@@ -239,6 +246,13 @@
                   <span>{% trans "Salary" %}</span>
                 </span>
                 <span class="oh-profile__info-value">{{employee.employee_work_info.basic_salary}}</span>
+              </li>
+              <li class="oh-profile__card-info-item">
+                <span class="oh-profile__info-label mb-1">
+                  <ion-icon name="cash-outline"></ion-icon>
+                  <span>{% trans "Salary Per Hour" %}</span>
+                </span>
+                <span class="oh-profile__info-value">{{employee.employee_work_info.salary_hour}}</span>
               </li>
               <li class="oh-profile__card-info-item">
                 <span class="oh-profile__info-label mb-1">
