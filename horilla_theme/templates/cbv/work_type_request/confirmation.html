@@ -1,4 +1,4 @@
-{% load basefilters i18n %}
+{% load basefilters static i18n %}
 <style>
 	tr span.txt {
 		display: none;
@@ -8,30 +8,32 @@
 {% if perms.base.change_worktyperequest or can_manage %}
 	<div class="oh-btn-group w-100" onclick="event.stopPropagation();">
 		{% if instance.approved or instance.canceled %}
-			<a type="submit" href="#" title="{% trans 'Approve' %}" class="h-8 oh-btn oh-btn--success oh-btn--disabled w-50">
-				<ion-icon class="me-1" name="checkmark-outline"></ion-icon>
-				<span class="txt">{% trans 'Approve' %}</span>
+			<a type="submit" href="#" title="{% trans 'Approve' %}" class="w-24 px-4 py-2 bg-primary-600 text-white rounded-md text-xs flex items-center justify-center gap-2 hover:bg-primary-800 transition duration-300 oh-btn--disabled">
+				<img src="{% static 'horilla_theme/assets/img/icons/check.svg' %}" alt="{% trans 'Approve' %}" width="13"
+			class="filter brightness-0 invert" />
+				{% trans 'Approve' %}
 			</a>
 		{% else %}
 			<a href="{% url 'work-type-request-approve' instance.id %}" title="{% trans 'Approve' %}"
 				onclick="return confirm(`{% trans 'Do you want to approve this request?' %}`)"
-				class="h-8 oh-btn oh-btn--success w-50">
-				<ion-icon class="me-1" name="checkmark-outline"></ion-icon>
-				<span class="txt">{% trans 'Approve' %}</span>
+				class="w-24 px-4 py-2 bg-primary-600 text-white rounded-md text-xs flex items-center justify-center gap-2 hover:bg-primary-800 transition duration-300">
+				<img src="{% static 'horilla_theme/assets/img/icons/check.svg' %}" alt="{% trans 'Approve' %}" width="13"
+			class="filter brightness-0 invert" />
+				{% trans 'Approve' %}
 			</a>
 		{% endif %}
 
 		{% if instance.canceled %}
-			<a type="submit" href="#" title="{% trans 'Reject' %}" class="h-8 oh-btn oh-btn--danger oh-btn--disabled w-50">
-				<ion-icon class="me-1" name="close-circle-outline"></ion-icon>
-				<span class="txt">{% trans 'Reject' %}</span>
+			<a type="submit" href="#" title="{% trans 'Reject' %}" class="w-24 px-4 py-2 bg-white rounded-md text-xs flex items-center justify-center gap-2 border border-primary-500 hover:border-primary-600 transition duration-300 oh-btn--disabled">
+				<img src="{% static 'horilla_theme/assets/img/icons/close.svg' %}" alt="{% trans 'Reject' %}" width="13"
+			 />{% trans 'Reject' %}
 			</a>
 		{% else %}
 			<a href="{% url 'work-type-request-cancel' instance.id %}" title="{% trans 'Reject' %}"
 				onclick="return confirm(`{% trans 'Do you want to reject this request?' %}`)"
-				class="h-8 oh-btn oh-btn--danger w-50">
-				<ion-icon class="me-1" name="close-circle-outline"></ion-icon>
-				<span class="txt">{% trans 'Reject' %}</span>
+				class="w-24 px-4 py-2 bg-white rounded-md text-xs flex items-center justify-center gap-2 border border-primary-500 hover:border-primary-600 transition duration-300">
+				<img src="{% static 'horilla_theme/assets/img/icons/close.svg' %}" alt="{% trans 'Reject' %}" width="13"
+			 />{% trans 'Reject' %}
 			</a>
 		{% endif %}
 	</div>

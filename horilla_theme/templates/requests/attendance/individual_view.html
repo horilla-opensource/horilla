@@ -1,4 +1,20 @@
 {% load static i18n basefilters %}
+{% if requests_ids %}
+{% comment %} <div class="flex gap-1 ml-auto">
+    <button data-action="previous"
+        hx-get="{% url 'validate-attendance-request' previous %}?requests_ids={{requests_ids}}"
+        hx-on:click="$('#detailViewContainer').toggleClass('animate-pulse');" hx-target="#validateAttendanceRequestModalBody"
+        class="p-2 w-8 h-8 justify-center bg-primary-600 text-white rounded-full text-xs flex items-center gap-2 hover:bg-primary-800 transition duration-300">
+        <i class="fa-solid fa-angle-left"></i>
+    </button>
+    <button data-action="next"
+        hx-get="{% url 'validate-attendance-request' next %}?requests_ids={{requests_ids}}"
+        hx-target="#validateAttendanceRequestModalBody" hx-on:click="$('#detailViewContainer').toggleClass('animate-pulse');"
+        class="p-2 w-8 h-8 justify-center bg-primary-600 text-white rounded-full text-xs flex items-center gap-2 hover:bg-primary-800 transition duration-300">
+        <i class="fa-solid fa-angle-right"></i>
+    </button>
+</div> {% endcomment %}
+{% endif %}
 <div
     class="modal-box w-full rounded-lg p-0 transition-all duration-300 opacity-100 scale-100"
 >
@@ -54,42 +70,35 @@
 
         <div class="flex flex-wrap justify-between gap-2 md:gap-1">
             <div class="oh-btn-group">
-                <a href="{% url 'cancel-validate-attendance-request' attendance.id %}" data-toggle="oh-modal-toggle"
-                    class="oh-btn oh-btn--secondary w-100">
-                    <ion-icon name="close-circle-outline"></ion-icon>
-                    {% trans "Reject" %}
-                </a>
                 {% if request.user|is_reportingmanager or perms.attendance.change_attendance %}
-                <a href="{% url 'approve-validate-attendance-request' attendance.id %}" class="oh-btn oh-btn--success w-100">
-                    <ion-icon name="checkmark-outline"></ion-icon>
-                    {% trans "Approve" %}
-                </a>
+                    <a hx-get="{% url 'update-attendance-request' attendance.id %}?detail_view=true"
+                        hx-target="#genericModalEditBody" data-target="#genericModalEdit"
+                        data-toggle="oh-modal-toggle"
+                        class="h-8 w-24 px-4 py-2 bg-primary-600 text-white rounded-md text-xs flex items-center justify-center gap-2 hover:bg-primary-800 transition duration-300">
+                        <img src="{% static 'horilla_theme/assets/img/icons/edit.svg' %}" alt="{% trans 'Edit' %}" width="13"
+                        class="filter brightness-0 invert"
+                    />
+                        {% trans "Edit" %}
+                    </a>
                 {% endif %}
                 {% if request.user|is_reportingmanager or perms.attendance.change_attendance %}
-                <a hx-get="{% url 'update-attendance-request' attendance.id %}?detail_view=true"
-                    hx-target="#genericModalEditBody" data-target="#genericModalEdit"
-                    data-toggle="oh-modal-toggle" class="oh-btn oh-btn--info w-100">
-                    <ion-icon name="create-outline"></ion-icon>
-                    {% trans "Edit" %}
-                </a>
+                    <a href="{% url 'approve-validate-attendance-request' attendance.id %}"
+                    class="w-24 px-4 py-2 bg-white rounded-md text-xs flex items-center justify-center gap-2 border border-primary-500 hover:border-primary-600 transition duration-300">
+                        <img src="{% static 'horilla_theme/assets/img/icons/check.svg' %}" alt="{% trans 'Approve' %}" width="13"
+                       />
+                        {% trans "Approve" %}
+                    </a>
+                {% endif %}
+                {% if request.user|is_reportingmanager or perms.attendance.change_attendance %}
+                    <a href="{% url 'cancel-validate-attendance-request' attendance.id %}" data-toggle="oh-modal-toggle"
+                        class="w-24 px-4 py-2 bg-white rounded-md text-xs flex items-center justify-center gap-2 border border-primary-500 hover:border-primary-600 transition duration-300">
+                        <img src="{% static 'horilla_theme/assets/img/icons/close.svg' %}" alt="{% trans 'Reject' %}" width="13"
+                    />
+                        {% trans "Reject" %}
+                    </a>
                 {% endif %}
             </div>
-            {% if requests_ids %}
-                <div class="flex gap-1 ml-auto">
-                    <button data-action="previous"
-                        hx-get="{% url 'validate-attendance-request' previous %}?requests_ids={{requests_ids}}"
-                        hx-on:click="$('#detailViewContainer').toggleClass('animate-pulse');" hx-target="#validateAttendanceRequestModalBody"
-                        class="p-2 w-8 h-8 justify-center bg-primary-600 text-white rounded-full text-xs flex items-center gap-2 hover:bg-primary-800 transition duration-300">
-                        <i class="fa-solid fa-angle-left"></i>
-                    </button>
-                    <button data-action="next"
-                        hx-get="{% url 'validate-attendance-request' next %}?requests_ids={{requests_ids}}"
-                        hx-target="#validateAttendanceRequestModalBody" hx-on:click="$('#detailViewContainer').toggleClass('animate-pulse');"
-                        class="p-2 w-8 h-8 justify-center bg-primary-600 text-white rounded-full text-xs flex items-center gap-2 hover:bg-primary-800 transition duration-300">
-                        <i class="fa-solid fa-angle-right"></i>
-                    </button>
-                </div>
-            {% endif %}
+
         </div>
     </div>
 </div>

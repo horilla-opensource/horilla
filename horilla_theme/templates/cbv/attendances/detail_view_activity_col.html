@@ -1,0 +1,29 @@
+{% load i18n %}
+{% include "generic/components.html" %}
+
+    <div class="col-span-1 md:col-span-6 mb-2 flex gap-5">
+        <span class="font-medium text-xs text-[#565E6C] w-32">
+            Activities
+        </span>
+        <div class="text-xs font-semibold flex items-center gap-5">
+            :
+            <span
+                data-target="#activityViewModal"
+                data-toggle="oh-modal-toggle"
+                hx-get="{% url 'get-attendance-activities' instance.id %}"
+                hx-target="#activityViewModalBody"
+                class="oh-timeoff-modal__stat-count inline-flex items-center gap-1"
+                title="{% trans 'View Activities' %}"
+            >
+                <p class="m-0 inline-flex items-center">
+                    {{ instance.activities.count }} {% trans "Activity" %}
+                </p>
+                <ion-icon
+                    name="eye-outline"
+                    class="hydrated"
+                    role="img"
+                    aria-label="view activities"
+                ></ion-icon>
+            </span>
+        </div>
+    </div>

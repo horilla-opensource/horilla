@@ -1,5 +1,5 @@
 {% load i18n %} {% load basefilters %}
-<div class="oh-modal__dialog oh-modal__dialog--navigation m-0 p-0">
+{% comment %} <div class="oh-modal__dialog oh-modal__dialog--navigation m-0 p-0">
     <button hx-get="{% url 'validate-attendance-request' previous %}?requests_ids={{request.GET.instance_ids}}"
         hx-target="#validateAttendanceRequestModalBody" class="oh-modal__diaglog-nav oh-modal__nav-prev"
         data-action="previous">
@@ -13,7 +13,7 @@
         <ion-icon name="chevron-forward-outline" class="md hydrated" role="img"
             aria-label="chevron forward outline"></ion-icon>
     </button>
-</div>
+</div> {% endcomment %}
 <a class="oh-timeoff-modal__profile-content pt-4" style="text-decoration:none;"
     href="{% url 'employee-view-individual' attendance.employee_id.id %}">
     <div class="oh-profile mb-2">
