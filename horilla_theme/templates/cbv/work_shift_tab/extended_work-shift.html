@@ -1,0 +1,23 @@
+{% load i18n %}
+<div class="oh-wrapper mt-4">
+    {% if employee.employee_work_info.shift_id %}
+    <div class="flex items-center justify-end gap-3">
+        <h2 class="">
+            {% trans "Current Shift" %} &nbsp; : &nbsp; {{ employee.employee_work_info.shift_id }}</b>
+        </h2>
+
+        <button
+            class="oh-btn oh-btn--secondary"
+            data-toggle="oh-modal-toggle"
+            data-target="#genericModal"
+            hx-get="{% url 'shift-request-reallocate' %}?emp_id={{ emp_id }}"
+            hx-target="#genericModalBody"
+            title="{% trans 'Reallocate Shift' %}"
+        >
+            <ion-icon name="add-sharp" class="mr-1 hydrated" role="img" aria-label="add"></ion-icon>
+        </button>
+    </div>
+    {% endif %}
+
+    {% include "generic/horilla_tabs.html" %}
+</div>
