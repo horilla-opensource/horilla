@@ -6,6 +6,24 @@
     <div class="p-5" id="detailViewContainer">
         <div class="flex justify-between items-center mb-2">
             <h2 class="text-md font-semibold">{{ title }}</h2>
+            {% if instance_ids %}
+                <div class="flex ml-auto mr-5">
+                    <div class="flex gap-1 ml-auto">
+                        <button data-action="previous"
+                            hx-get="{{ previous_url }}?{{ ids_key }}={{ instance_ids }}{% if extra_query %}&{{ extra_query }}{% endif %}"
+                            hx-on:click="$('#detailViewContainer').toggleClass('animate-pulse');" hx-target="#genericModalBody"
+                            class="p-2 w-8 h-8 justify-center bg-primary-600 text-white rounded-full text-xs flex items-center gap-2 hover:bg-primary-800 transition duration-300">
+                            <i class="fa-solid fa-angle-left"></i>
+                        </button>
+                        <button data-action="next"
+                            hx-get="{{ next_url }}?{{ ids_key }}={{ instance_ids }}{% if extra_query %}&{{ extra_query }}{% endif %}"
+                            hx-target="#genericModalBody" hx-on:click="$('#detailViewContainer').toggleClass('animate-pulse');"
+                            class="p-2 w-8 h-8 justify-center bg-primary-600 text-white rounded-full text-xs flex items-center gap-2 hover:bg-primary-800 transition duration-300">
+                            <i class="fa-solid fa-angle-right"></i>
+                        </button>
+                    </div>
+                </div>
+            {% endif %}
             <button class="text-gray-500 hover:text-red-500 text-xl static oh-modal__close oh-modal__close--custom"
                 onclick="$(this).closest('.oh-modal--show').removeClass('oh-modal--show');">
                 <img src="{% static 'horilla_theme/assets/icons/close.svg' %} " alt="" />
@@ -28,6 +46,7 @@
                 </div>
             </div>
         {% endif %}
+
 
         <div class="grid grid-cols-1 md:grid-cols-12 gap-3 mb-5 mt-5">
             {% for col in body %}
@@ -80,22 +99,7 @@
                     {% endif %}
                 </div>
             {% endif %}
-            {% if instance_ids %}
-                <div class="flex gap-1 ml-auto">
-                    <button data-action="previous"
-                        hx-get="{{ previous_url }}?{{ ids_key }}={{ instance_ids }}{% if extra_query %}&{{ extra_query }}{% endif %}"
-                        hx-on:click="$('#detailViewContainer').toggleClass('animate-pulse');" hx-target="#genericModalBody"
-                        class="p-2 w-8 h-8 justify-center bg-primary-600 text-white rounded-full text-xs flex items-center gap-2 hover:bg-primary-800 transition duration-300">
-                        <i class="fa-solid fa-angle-left"></i>
-                    </button>
-                    <button data-action="next"
-                        hx-get="{{ next_url }}?{{ ids_key }}={{ instance_ids }}{% if extra_query %}&{{ extra_query }}{% endif %}"
-                        hx-target="#genericModalBody" hx-on:click="$('#detailViewContainer').toggleClass('animate-pulse');"
-                        class="p-2 w-8 h-8 justify-center bg-primary-600 text-white rounded-full text-xs flex items-center gap-2 hover:bg-primary-800 transition duration-300">
-                        <i class="fa-solid fa-angle-right"></i>
-                    </button>
-                </div>
-            {% endif %}
+
         </div>
     </div>
 </div>

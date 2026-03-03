@@ -47,28 +47,14 @@
 		></a>
 	{% endif %}
 	{% if perms.recruitment.delete_interviewschedule %}
-		<form
-			hx-post="{% url 'delete-interview' instance.id %}?view=true"
+		<a
+			hx-get="{% url 'delete-interview' instance.id %}?view=true"
 			hx-target="#interviewdelete"
 			hx-confirm="{% trans 'Are you sure you want to delete this interview?' %}"
-			method="post"
-			style="display: contents; width: 100%"
-		>
-			{% csrf_token %}
-			<button
-				onclick="event.stopPropagation()"
-				type="submit"
-				class="oh-btn oh-btn--light-bkg oh-btn--danger-outline w-100"
-				title="{% trans 'Delete' %}"
-			>
-				<ion-icon
-					name="trash-outline"
-					role="img"
-					class="md hydrated"
-					aria-label="trash outline"
-				></ion-icon>
-			</button>
-		</form>
+			class="oh-btn oh-btn--light-bkg oh-btn--danger-outline"
+			title="{% trans 'Delete' %}"
+			><ion-icon name="trash-outline"></ion-icon
+		></a>
 	{% endif %}
 </div>
 
