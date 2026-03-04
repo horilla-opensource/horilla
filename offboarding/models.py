@@ -17,6 +17,7 @@ from horilla.methods import get_horilla_model_class
 from horilla.models import HorillaModel
 from horilla_audit.models import HorillaAuditInfo, HorillaAuditLog
 from notifications.signals import notify
+from offboarding.methods import assign_task_to_stage_employees
 
 # Create your models here.
 
@@ -265,6 +266,12 @@ class OffboardingTask(HorillaModel):
     def __str__(self) -> str:
         return self.title
 
+@receiver(post_save, sender=OffboardingTask)
+def auto_assign_task_to_stage_employees(sender, instance, created, **kwargs):
+    """
+    Hook into OffboardingTask creation to automatically assign tasks to existing employees
+    """
+    assign_task_to_stage_employees(sender, instance, created, **kwargs)
 
 class EmployeeTask(HorillaModel):
     """
