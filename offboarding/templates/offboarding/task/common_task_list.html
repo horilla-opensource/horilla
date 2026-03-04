@@ -1,9 +1,7 @@
 {% load i18n %}
 
-<div id="commonTasksContainer" class="oh-page__body p-2">
-
-    <!-- Page Header -->
-    <div class="oh-page__header d-flex justify-content-between align-items-center m-4">
+<!-- Page Header -->
+<div class="oh-page__header d-flex justify-content-between align-items-center m-4">
         <h2 class="oh-page__title m-0">{% trans "Offboarding Tasks" %}</h2>
 
         <a  hx-get="{% url 'create-common-task' %}"
@@ -94,4 +92,3 @@
 {% include "offboarding/task/pagination.html" %}
     </div>
 
-</div>
