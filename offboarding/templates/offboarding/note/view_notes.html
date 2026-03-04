@@ -21,12 +21,18 @@
 
 <form hx-post="{% url 'add-offboarding-note' %}?employee_id={{ employee.id }}" hx-target="#noteContainerList"
 	hx-select=".oh-activity-sidebar__qa-list"
-	hx-on-htmx-after-request="reloadMessage(this);$('#commentInput').val('');$('#commentButton').hide();"
+	hx-on-htmx-after-request="reloadMessage(this);$('#commentInput').val('');$('#commentButton').hide();$('#charCount').text('0/255');"
 	id="commentForm">
 	{% csrf_token %}
 	<div>
-		<input type="text" name="description" id="commentInput" class="oh-input w-100" placeholder="Add notes"
-			hx-on:keyup="toggleCommentButton(this);">
+		<div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px;">
+			<label for="commentInput" class="oh-label">{% trans "Add Notes" %}</label>
+			<span id="charCount" style="font-size: 12px; color: #666;">0/255</span>
+		</div>
+		<input type="text" name="description" id="commentInput" class="oh-input w-100"
+			placeholder="Add notes (max 255 characters)" maxlength="255"
+			hx-on:keyup="toggleCommentButton(this); updateCharCount(this);">
+		<small style="display: block; color: #999; margin-top: 4px;">{% trans "Maximum 255 characters allowed" %}</small>
 		<button type="submit" id="commentButton" class="oh-btn oh-btn--secondary mt-2 mr-0 oh-btn--w-100-resp"
 			style="display: none;">
 			{% trans "Add" %}
@@ -95,3 +101,22 @@
     	</div>
 	{% endif %}
 </ol>
+
+<script>
+	function updateCharCount(element) {
+		const charCount = element.value.length;
+		const charCountDisplay = document.getElementById('charCount');
+		if (charCountDisplay) {
+			charCountDisplay.textContent = charCount + '/255';
+			// Change color if approaching limit
+			if (charCount > 200) {
+				charCountDisplay.style.color = '#ff6b6b';
+			} else if (charCount > 150) {
+				charCountDisplay.style.color = '#ffa500';
+			} else {
+				charCountDisplay.style.color = '#666';
+			}
+		}
+	}
+</script>
+
