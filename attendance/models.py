@@ -444,6 +444,15 @@ class Attendance(HorillaModel):
             context={"instance": self},
         )
 
+    def request_options(self):
+        """
+        This method for get custom options for request.
+        """
+        return render_template(
+            path="cbv/attendance_request/attendance_request_option.html",
+            context={"instance": self},
+        )
+
     def validate_detail_view(self):
         """
         detail view of validate tab
@@ -1065,6 +1074,17 @@ class AttendanceOverTime(HorillaModel):
 
         return render_template(
             path="cbv/hour_account/hour_actions.html",
+            context={"instance": self},
+        )
+
+    def hour_options(self):
+        """
+        options in hour account
+
+        """
+
+        return render_template(
+            path="cbv/hour_account/hour_options.html",
             context={"instance": self},
         )
 
