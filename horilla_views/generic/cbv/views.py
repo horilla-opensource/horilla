@@ -37,6 +37,7 @@ from base.methods import (
 from horilla.filters import FilterSet
 from horilla.group_by import group_by_queryset
 from horilla.horilla_middlewares import _thread_locals
+from horilla.http.response import HorillaRedirect
 from horilla.signals import post_generic_import, pre_generic_import
 from horilla_views import models
 from horilla_views.cbv_methods import (  # update_initial_cache,
@@ -1518,7 +1519,7 @@ class HorillaDetailedView(DetailView):
             return render(request, self.empty_template, context=self.get_context_data())
         elif not self.instance:
             messages.info(request, "No record found...")
-            return HttpResponse("<script>window.location.reload()</script>")
+            return HorillaRedirect(request)
         return response
 
     def __init__(self, **kwargs: Any) -> None:

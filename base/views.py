@@ -2256,14 +2256,7 @@ def rotating_work_type_assign_add(request):
             )
 
             messages.success(request, _("Rotating work type assigned."))
-            response = render(
-                request,
-                "base/rotating_work_type/htmx/rotating_work_type_assign_form.html",
-                {"form": form},
-            )
-            return HttpResponse(
-                response.content.decode("utf-8") + "<script>location.reload();</script>"
-            )
+            return HorillaRedirect(request)
     return render(
         request,
         "base/rotating_work_type/htmx/rotating_work_type_assign_form.html",
@@ -2384,14 +2377,7 @@ def rotating_work_type_assign_update(request, id):
         if form.is_valid():
             form.save()
             messages.success(request, _("Rotating work type assign updated."))
-            response = render(
-                request,
-                "base/rotating_work_type/htmx/rotating_work_type_assign_update_form.html",
-                {"update_form": form},
-            )
-            return HttpResponse(
-                response.content.decode("utf-8") + "<script>location.reload();</script>"
-            )
+            return HorillaRedirect(request)
     return render(
         request,
         "base/rotating_work_type/htmx/rotating_work_type_assign_update_form.html",
@@ -2952,14 +2938,7 @@ def rotating_shift_assign_add(request):
             )
 
             messages.success(request, _("Rotating shift assigned."))
-            response = render(
-                request,
-                "base/rotating_shift/htmx/rotating_shift_assign_form.html",
-                {"form": form},
-            )
-            return HttpResponse(
-                response.content.decode("utf-8") + "<script>location.reload();</script>"
-            )
+            return HorillaRedirect(request)
     return render(
         request,
         "base/rotating_shift/htmx/rotating_shift_assign_form.html",
@@ -3075,16 +3054,7 @@ def rotating_shift_assign_update(request, id):
         if form.is_valid():
             form.save()
             messages.success(request, _("Rotating shift assign updated."))
-            response = render(
-                request,
-                "base/rotating_shift/htmx/rotating_shift_assign_update_form.html",
-                {
-                    "update_form": form,
-                },
-            )
-            return HttpResponse(
-                response.content.decode("utf-8") + "<script>location.reload();</script>"
-            )
+            return HorillaRedirect(request)
     return render(
         request,
         "base/rotating_shift/htmx/rotating_shift_assign_update_form.html",
@@ -4122,22 +4092,13 @@ def work_type_request_update(request, work_type_request_id):
     form = choosesubordinates(request, form, "base.change_worktyperequest")
     form = include_employee_instance(request, form)
     if request.method == "POST":
-        response = render(
-            request,
-            "work_type_request/request_form.html",
-            {
-                "form": form,
-            },
-        )
         form = WorkTypeRequestForm(request.POST, instance=work_type_request)
         form = choosesubordinates(request, form, "base.change_worktyperequest")
         form = include_employee_instance(request, form)
         if form.is_valid():
             form.save()
             messages.success(request, _("Request Updated Successfully"))
-            return HttpResponse(
-                response.content.decode("utf-8") + "<script>location.reload();</script>"
-            )
+            return HorillaRedirect(request)
 
     return render(request, "work_type_request/request_form.html", {"form": form})
 
@@ -4314,11 +4275,7 @@ def shift_request(request):
         form = ShiftRequestForm(request.POST)
         form = choosesubordinates(request, form, "base.add_shiftrequest")
         form = include_employee_instance(request, form)
-        response = render(
-            request,
-            "shift_request/htmx/shift_request_create_form.html",
-            {"form": form, "f": f},
-        )
+
         if form.is_valid():
             instance = form.save()
             try:
@@ -4342,9 +4299,7 @@ def shift_request(request):
             except Exception as e:
                 pass
             messages.success(request, _("Shift request added"))
-            return HttpResponse(
-                response.content.decode("utf-8") + "<script>location.reload();</script>"
-            )
+            return HorillaRedirect(request)
     return render(
         request,
         "shift_request/htmx/shift_request_create_form.html",
@@ -4391,11 +4346,7 @@ def shift_request_allocation(request):
         form = ShiftAllocationForm(request.POST)
         form = choosesubordinates(request, form, "base.add_shiftrequest")
         form = include_employee_instance(request, form)
-        response = render(
-            request,
-            "shift_request/htmx/shift_allocation_form.html",
-            {"form": form, "f": f},
-        )
+
         if form.is_valid():
             instance = form.save()
             reallocate_emp = form.cleaned_data["reallocate_to"]
@@ -4432,9 +4383,7 @@ def shift_request_allocation(request):
                 pass
 
             messages.success(request, _("Request Added"))
-            return HttpResponse(
-                response.content.decode("utf-8") + "<script>location.reload();</script>"
-            )
+            return HorillaRedirect(request)
     return render(
         request,
         "shift_request/htmx/shift_allocation_form.html",
@@ -4715,26 +4664,17 @@ def shift_request_update(request, shift_request_id):
     form = include_employee_instance(request, form)
     if request.method == "POST":
         if not shift_request.approved:
-            response = render(
-                request,
-                "shift_request/request_update_form.html",
-                {
-                    "form": form,
-                },
-            )
+
             form = ShiftRequestForm(request.POST, instance=shift_request)
             form = choosesubordinates(request, form, "base.change_shiftrequest")
             form = include_employee_instance(request, form)
             if form.is_valid():
                 form.save()
                 messages.success(request, _("Request Updated Successfully"))
-                return HttpResponse(
-                    response.content.decode("utf-8")
-                    + "<script>location.reload();</script>"
-                )
+                return HorillaRedirect(request)
         else:
             messages.info(request, _("Can't edit approved shift request"))
-            return HttpResponse("<script>location.reload();</script>")
+            return HorillaRedirect(request)
 
     return render(request, "shift_request/request_update_form.html", {"form": form})
 

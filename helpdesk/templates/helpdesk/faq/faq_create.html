@@ -24,6 +24,7 @@
 		<form id="add-form" class="oh-profile-section"
 			hx-post="{% if faq %}{% url 'faq-update' faq.id %}{% else %}{% url 'faq-create' cat_id %}{% endif %} "
 			hx-target="#faqCreate" hx-swap="innerHTML" method="post" hx-encoding="multipart/form-data">
+			{% csrf_token %}
 			{{form.as_p}}
 			<div class="d-flex flex-row-reverse">
 				<input type="submit" value='{% trans "Save" %}'

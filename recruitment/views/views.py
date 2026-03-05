@@ -282,7 +282,7 @@ def recruitment(request):
                     icon="people-circle",
                     redirect=reverse("pipeline"),
                 )
-            return HttpResponse("<script>location.reload();</script>")
+            return HorillaRedirect(request)
     return render(
         request, "recruitment/recruitment_form.html", {"form": form, "dynamic": dynamic}
     )
@@ -341,7 +341,7 @@ def recruitment_update(request, rec_id):
         messages.error(
             request, _("The recruitment entry you are trying to edit does not exist.")
         )
-        return HttpResponse("<script>window.location.reload();</script>")
+        return HorillaRedirect(request)
     survey_template_list = []
     survey_templates = RecruitmentSurvey.objects.filter(
         recruitment_ids=rec_id
@@ -786,7 +786,7 @@ def stage_update_pipeline(request, stage_id):
                     redirect=reverse("pipeline"),
                 )
 
-            return HttpResponse("<script>window.location.reload()</script>")
+            return HorillaRedirect(request)
 
     return render(request, "pipeline/form/stage_update.html", {"form": form})
 
@@ -825,12 +825,7 @@ def recruitment_update_pipeline(request, rec_id):
                     redirect=reverse("pipeline"),
                 )
 
-            response = render(
-                request, "pipeline/form/recruitment_update.html", {"form": form}
-            )
-            return HttpResponse(
-                response.content.decode("utf-8") + "<script>location.reload();</script>"
-            )
+            return HorillaRedirect(request)
     return render(request, "pipeline/form/recruitment_update.html", {"form": form})
 
 
@@ -1043,14 +1038,7 @@ def note_update_individual(request, note_id):
         if form.is_valid():
             form.save()
             messages.success(request, _("Note updated successfully..."))
-            response = render(
-                request,
-                "pipeline/pipeline_components/update_note_individual.html",
-                {"form": form},
-            )
-            return HttpResponse(
-                response.content.decode("utf-8") + "<script>location.reload();</script>"
-            )
+            return HorillaRedirect(request)
     return render(
         request,
         "pipeline/pipeline_components/update_note_individual.html",
@@ -1204,7 +1192,7 @@ def stage(request):
                     redirect=reverse("pipeline"),
                 )
 
-            return HttpResponse("<script>location.reload();</script>")
+            return HorillaRedirect(request)
     return render(request, "stage/stage_form.html", {"form": form})
 
 
@@ -1335,7 +1323,7 @@ def add_candidate(request):
         if form.is_valid():
             form.save()
             messages.success(request, "Candidate Added")
-            return HttpResponse("<script>window.location.reload()</script>")
+            return HorillaRedirect(request)
     return render(request, "pipeline/form/candidate_form.html", {"form": form})
 
 
@@ -2076,7 +2064,7 @@ def interview_schedule(request, cand_id):
             )
 
             messages.success(request, "Interview Scheduled successfully.")
-            return HttpResponse("<script>window.location.reload()</script>")
+            return HorillaRedirect(request)
     return render(request, template, {"form": form, "cand_id": cand_id})
 
 
@@ -2135,7 +2123,7 @@ def interview_delete(request, interview_id):
     except:
         messages.error(request, _("Scheduled Interview not found"))
 
-    return HttpResponse("<script>window.location.reload()</script>")
+    return HorillaRedirect(request)
 
 
 @login_required
@@ -2179,7 +2167,7 @@ def interview_edit(request, interview_id):
                 redirect=reverse("interview-view"),
             )
             messages.success(request, "Interview updated successfully.")
-            return HttpResponse("<script>window.location.reload()</script>")
+            return HorillaRedirect(request)
     return render(
         request,
         template,
@@ -2298,7 +2286,7 @@ def send_acknowledgement(request):
         except Exception as e:
             logger.exception(e)
             messages.error(request, "Something went wrong")
-    return HttpResponse("<script>window.location.reload()</script>")
+    return HorillaRedirect(request)
 
 
 @login_required
@@ -2665,7 +2653,7 @@ def skill_zone_candidate_create(request, sz_id):
         if form.is_valid():
             form.save()
             messages.success(request, _("Candidate added successfully."))
-            return HttpResponse("<script>window.location.reload()</script>")
+            return HorillaRedirect(request)
 
     return render(request, template, {"form": form, "sz_id": sz_id})
 
@@ -2692,7 +2680,7 @@ def skill_zone_cand_edit(request, sz_cand_id):
         if form.is_valid():
             form.save()
             messages.success(request, _("Candidate edited successfully."))
-            return HttpResponse("<script>window.location.reload()</script>")
+            return HorillaRedirect(request)
     return render(request, template, {"form": form, "sz_cand_id": sz_cand_id})
 
 
@@ -2814,7 +2802,7 @@ def to_skill_zone(request, cand_id):
         or request.user.has_perm("recruitment.add_skillzonecandidate")
     ):
         messages.info(request, "You dont have permission.")
-        return HttpResponse("<script>window.location.reload()</script>")
+        return HorillaRedirect(request)
 
     candidate = Candidate.objects.get(id=cand_id)
     template = "skill_zone_cand/to_skill_zone_form.html"
@@ -2840,7 +2828,7 @@ def to_skill_zone(request, cand_id):
                     zone_candidate.reason = form.cleaned_data["reason"]
                     zone_candidate.save()
             messages.success(request, "Candidate Added to skill zone successfully")
-            return HttpResponse("<script>window.location.reload()</script>")
+            return HorillaRedirect(request)
     return render(request, template, {"form": form, "cand_id": cand_id})
 
 
@@ -3068,7 +3056,7 @@ def create_reject_reason(request):
         if form.is_valid():
             form.save()
             messages.success(request, "Reject reason saved")
-            return HttpResponse("<script>window.location.reload()</script>")
+            return HorillaRedirect(request)
     return render(request, "settings/reject_reason_form.html", {"form": form})
 
 
@@ -3568,7 +3556,7 @@ def candidate_document_request(request):
         if form.is_valid():
             form.save()
             messages.success(request, _("Document request created successfully"))
-            return HttpResponse("<script>window.location.reload();</script>")
+            return HorillaRedirect(request)
 
     context = {
         "form": form,
@@ -3598,7 +3586,7 @@ def document_create(request, id):
         if form.is_valid():
             form.save()
             messages.success(request, _("Document created successfully."))
-            return HttpResponse("<script>window.location.reload();</script>")
+            return HorillaRedirect(request)
 
     context = {
         "form": form,
@@ -3667,7 +3655,7 @@ def document_delete(request, id):
         clear_messages(request)
         return HttpResponse()
     else:
-        return HttpResponse("<script>window.location.reload();</script>")
+        return HorillaRedirect(request)
 
 
 @candidate_login_required
@@ -3691,7 +3679,7 @@ def file_upload(request, id):
         if form.is_valid():
             form.save()
             messages.success(request, _("Document uploaded successfully"))
-            return HttpResponse("<script>window.location.reload();</script>")
+            return HorillaRedirect(request)
 
     context = {
         "form": form,
@@ -3756,7 +3744,7 @@ def document_approve(request, id):
     else:
         messages.error(request, _("No document uploaded"))
 
-    return HttpResponse("<script>window.location.reload();</script>")
+    return HorillaRedirect(request)
 
 
 @login_required
@@ -3784,10 +3772,10 @@ def document_reject(request, id):
                 document_obj.save()
                 messages.error(request, _("Document request rejected"))
 
-                return HttpResponse("<script>window.location.reload();</script>")
+                return HorillaRedirect(request)
     else:
         messages.error(request, _("No document uploaded"))
-        return HttpResponse("<script>window.location.reload();</script>")
+        return HorillaRedirect(request)
 
     return render(
         request,
@@ -3891,4 +3879,4 @@ def delete_candidate_rejection(request, rej_id):
             messages.error(request, "Candidate rejection not found")
     except Exception as e:
         messages.error(request, "Error occurred while deleting candidate rejection")
-    return HttpResponse("<script>window.location.reload()</script>")
+    return HorillaRedirect(request)

@@ -291,12 +291,7 @@ def update_question_template(request, survey_id):
             instance.recruitment_ids.set(form.recruitment)
             # instance.job_position_ids.set(form.job_positions)
             messages.success(request, _("New survey question updated."))
-            return HttpResponse(
-                render(
-                    request, "survey/template_update_form.html", {"form": form}
-                ).content.decode("utf-8")
-                + "<script>location.reload();</script>"
-            )
+            return HorillaRedirect(request)
     return render(request, "survey/template_update_form.html", {"form": form})
 
 
@@ -317,12 +312,7 @@ def create_question_template(request):
             instance.template_id.set(form.cleaned_data["template_id"])
             # instance.job_position_ids.set(form.job_positions)
             messages.success(request, _("New survey question created."))
-            return HttpResponse(
-                render(
-                    request, "survey/template_form.html", {"form": form}
-                ).content.decode("utf-8")
-                + "<script>location.reload();</script>"
-            )
+            return HorillaRedirect(request)
     return render(request, "survey/template_form.html", {"form": form})
 
 
@@ -455,7 +445,7 @@ def create_template(request):
         or request.user.has_perm("recruitment.change_surveytemplate")
     ):
         messages.info(request, "You dont have permission.")
-        return HttpResponse("<script>window.location.reload()</script>")
+        return HorillaRedirect(request)
 
     title = request.GET.get("title")
     instance = None
@@ -467,7 +457,7 @@ def create_template(request):
         if form.is_valid():
             form.save()
             messages.success(request, "Template saved")
-            return HttpResponse("<script>window.location.reload()</script>")
+            return HorillaRedirect(request)
     return render(request, "survey/main_form.html", {"form": form})
 
 
@@ -505,5 +495,5 @@ def question_add(request):
         if form.is_valid():
             form.save()
             messages.success(request, "Question added")
-            return HttpResponse("<script>window.location.reload()</script>")
+            return HorillaRedirect(request)
     return render(request, "survey/add_form.html", {"form": form})

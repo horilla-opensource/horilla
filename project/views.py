@@ -772,7 +772,7 @@ def quick_create_task(request, stage_id):
             },
         )
     messages.info(request, "You dont have permission.")
-    return HttpResponse("<script>window.location.reload()</script>")
+    return HorillaRedirect(request)
 
 
 @login_required

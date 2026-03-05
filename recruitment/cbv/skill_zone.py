@@ -7,6 +7,7 @@ from django.http import HttpResponse
 from django.utils.decorators import method_decorator
 from django.utils.translation import gettext_lazy as _
 
+from horilla.http.response import HorillaRedirect
 from horilla_views.cbv_methods import login_required
 from horilla_views.generic.cbv.views import HorillaFormView, HorillaListView
 from recruitment.cbv_decorators import manager_can_enter
@@ -41,7 +42,7 @@ class SkillZoneFormView(HorillaFormView):
             form.save()
 
             messages.success(self.request, _(message))
-            return self.HttpResponse("<script>window.location.reload()</script>")
+            return HorillaRedirect(self.request)
         return super().form_valid(form)
 
 
@@ -79,7 +80,7 @@ class SkillZoneCandidateFormView(HorillaFormView):
                 message = _("Candidate added successfully.")
             form.save(commit=True)
             messages.success(self.request, _(message))
-            return self.HttpResponse("<script>window.location.reload()</script>")
+            return HorillaRedirect(self.request)
         return super().form_valid(form)
 
 
