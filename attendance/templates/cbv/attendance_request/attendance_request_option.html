@@ -1,0 +1,12 @@
+{% load i18n %} {% load basefilters %}
+{% is_manager_of request.user instance as can_manage %}
+<div class="oh-btn-group">
+    <a title="Edit" class="oh-btn oh-btn--light-bkg w-100" data-toggle="oh-modal-toggle" data-target="#genericModal" hx-get="{% url 'update-attendance-request' instance.id %}" hx-target="#genericModalBody">
+        <ion-icon name="create-outline" role="img" class="md hydrated"></ion-icon>
+    </a>
+    <a data-toggle="oh-modal-toggle" data-target="#validateAttendanceRequest"
+        hx-get="{% url 'validate-attendance-request' instance.id %}" hx-trigger="click"
+        hx-target="#validateAttendanceRequestModalBody" class="oh-btn oh-btn--light-bkg w-100"
+        title="{% trans 'View' %}"><ion-icon name="eye-outline" role="img"></ion-icon>
+    </a>
+</div>

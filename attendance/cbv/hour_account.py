@@ -52,6 +52,7 @@ class HourAccountList(HorillaListView):
 
         if self.request.user.has_perm("attendance.add_attendanceovertime"):
             self.action_method = "hour_actions"
+            self.option_method = "hour_options"
 
     def get_queryset(self):
         queryset = super().get_queryset()

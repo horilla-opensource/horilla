@@ -163,7 +163,7 @@ class AttendanceRequestListTab(AttendancesRequestListView):
     columns = [
         col for col in AttendancesRequestListView.columns if col[1] != "status_col"
     ]
-
+    option_method = "request_options"
     action_method = "request_actions"
     row_attrs = """
                 id = "requestedattendanceTr{get_instance_id}"
