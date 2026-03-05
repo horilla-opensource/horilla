@@ -22,7 +22,8 @@
     <button
         class="h-8 w-24 px-4 py-2 bg-white rounded-md text-xs flex items-center justify-center gap-2 border border-primary-500 hover:border-primary-600 transition duration-300 opacity-60 pointer-events-none"
         disabled>
-        <ion-icon name="trash-outline"></ion-icon>
+        <img src="{% static 'horilla_theme/assets/img/icons/trash.svg' %}" alt="{% trans 'Delete' %}" width="16"
+            class="mt-[-1px]">
         {% trans "Delete" %}
     </button>
 {% else %}

@@ -41,7 +41,7 @@
                             $('[data-ot-approve-id={{instance.id}}]').click();
                         }
                         });">
-                <img src="{% static 'horilla_theme/assets/img/icons/check.svg' %}" alt="{% trans 'Approve' %}" width="13"/>
+                <img class="mt-[-1px]" src="{% static 'horilla_theme/assets/img/icons/check.svg' %}" alt="{% trans 'Approve' %}" width="13"/>
             </a>
             {% comment %} <button type="submit" data-ot-approve-id="{{instance.id}}" hidden href=""
                 onclick="window.location.href='{% url 'approve-overtime' instance.id %}'"

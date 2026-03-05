@@ -1,0 +1,46 @@
+{% load i18n basefilters static i18n %}
+{% is_manager_of request.user instance as can_manage %}
+{% with dates=instance.month_days can_view=perms.attendance.view_attendance is_owner=request.user.employee_get|equals:instance.employee_id %}
+<div class="oh-btn-group">
+	{% if can_view or can_manage %}
+		<a
+        class="w-24 px-4 py-2 bg-primary-600 text-white rounded-md text-xs flex items-center justify-center gap-2 hover:bg-primary-800 transition duration-300"
+			onclick="validateHours('{% url 'attendance-view' %}?employee_id={{instance.employee_id.id}}&month={{ dates.1.month}}');"
+            title="{% trans 'Validate Hours' %}"
+		>
+			<img src="{% static 'horilla_theme/assets/img/icons/check.svg' %}" alt="{% trans 'Validate Hours' %}" width="13"
+			class="filter brightness-0 invert" />
+		</a>
+
+	{% elif is_owner %}
+		<a
+			class="w-24 px-4 py-2 bg-primary-600 text-white rounded-md text-xs flex items-center justify-center gap-2 hover:bg-primary-800 transition duration-300"
+			href="{% url 'view-my-attendance' %}?month={{ dates.1.month}}"
+            title="{% trans 'Validate Hours' %}"
+		>
+			<img src="{% static 'horilla_theme/assets/img/icons/check.svg' %}" alt="{% trans 'Validate Hours' %}" width="13"
+			class="filter brightness-0 invert" />
+		</a>
+	{% endif %}
+
+	{% if can_view or can_manage %}
+		<a
+			class="w-24 px-4 py-2 bg-white rounded-md text-xs flex items-center justify-center gap-2 border border-primary-500 hover:border-primary-600 transition duration-300"
+			onclick="validateOTHours('{% url 'attendance-view' %}?employee_id={{instance.employee_id.id}}&month={{ dates.1.month}}');"
+            title="{% trans 'Validate OT Hours' %}"
+		>
+			<img src="{% static 'horilla_theme/assets/img/icons/check_1.png' %}" alt="{% trans 'Validate Hours' %}" width="13"
+			class="mt-[-1px]" />
+		</a>
+	{% elif is_owner %}
+		<a
+			class="w-24 px-4 py-2 bg-white rounded-md text-xs flex items-center justify-center gap-2 border border-primary-500 hover:border-primary-600 transition duration-300"
+			href="{% url 'view-my-attendance' %}?month={{ dates.1.month}}"
+            title="{% trans 'Validate OT Hours' %}"
+		>
+			<img src="{% static 'horilla_theme/assets/img/icons/check_1.png' %}" alt="{% trans 'Validate Hours' %}" width="13"
+			class="mt-[-1px]" />
+			</a>
+		{% endif %}
+</div>
+{% endwith %}
