@@ -1,0 +1,36 @@
+{% load i18n static %} {% load basefilters %}
+{% is_manager_of request.user instance as can_manage %}
+{% if perms.leave.change_leaveallocationrequest or can_manage %}
+    {% if instance.status == 'requested' %}
+        <a href="{% url 'leave-allocation-request-approve' instance.id %}" class="w-24 px-4 py-2 bg-primary-600 text-white rounded-md text-xs flex items-center justify-center gap-2 hover:bg-primary-800 transition duration-300"
+            title="{% trans 'Approve' %}">
+            <img src="{% static 'horilla_theme/assets/img/icons/check.svg' %}" alt="{% trans 'Approve' %}" width="13"
+            class="filter brightness-0 invert" />
+            {% trans "Approve" %}
+        </a>
+    {% else %}
+        <a href="" class="w-24 px-4 py-2 bg-primary-600 text-white rounded-md text-xs flex items-center justify-center gap-2 hover:bg-primary-800 transition duration-300 oh-btn--disabled" title="{% trans 'Approved' %}"
+            onclick="event.preventDefault()">
+            <img src="{% static 'horilla_theme/assets/img/icons/check.svg' %}" alt="{% trans 'Approve' %}" width="13"
+            class="filter brightness-0 invert" />
+            {% trans "Approve" %}
+        </a>
+    {% endif %}
+    {% if instance.status == 'requested' or instance.status == 'approved' %}
+        <a hx-get="{% url 'leave-allocation-request-reject' instance.id %}"
+            data-target="{% if dashboard == 'true' %}#bigModal {% else %}#rejectModal {% endif %}"
+            hx-target="{% if dashboard == 'true' %}#bigModalTarget {% else %}#rejectTarget{% endif %}"
+            class="w-24 px-4 py-2 bg-white rounded-md text-xs flex items-center justify-center gap-2 border border-primary-500 hover:border-primary-600 transition duration-300" data-toggle="oh-modal-toggle" title="{% trans 'Reject' %}">
+            <img src="{% static 'horilla_theme/assets/img/icons/close-circle-icon-original.svg' %}" alt="{% trans 'Reject' %}" width="13"
+            class="mt-[-1px]" />
+            {% trans "Reject" %}
+        </a>
+    {% else %}
+        <a href="" class="w-24 px-4 py-2 bg-white rounded-md text-xs flex items-center justify-center gap-2 border border-primary-500 hover:border-primary-600 transition duration-300 oh-btn--disabled" title="{% trans 'Rejected' %}"
+            onclick="event.preventDefault()">
+            <img src="{% static 'horilla_theme/assets/img/icons/close-circle-icon-original.svg' %}" alt="{% trans 'Reject' %}" width="13"
+            class="mt-[-1px]" />
+            {% trans "Reject" %}
+        </a>
+    {% endif %}
+{% endif %}
