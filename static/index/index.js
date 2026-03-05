@@ -371,6 +371,7 @@ function reloadMessage(e) {
 function htmxLoadIndicator(e) {
     var target = $(e).attr("hx-target");
     var table = $(target).find("table");
+    var stickyTable = $(target).find(".oh-sticky-table__table");
     var card = $(target).find(".oh-card__body");
     var kanban = $(target).find(".oh-kanban-card");
 
@@ -378,13 +379,16 @@ function htmxLoadIndicator(e) {
         table.addClass("is-loading");
         table.find("th, td").empty();
     }
+    if (stickyTable.length) {
+        stickyTable.find(".oh-sticky-table__td, .oh-sticky-table__th").empty();
+    }
     if (card.length) {
         card.addClass("is-loading");
     }
     if (kanban.length) {
         kanban.addClass("is-loading");
     }
-    if (!table.length && !card.length && !kanban.length) {
+    if (!table.length && !stickyTable.length && !card.length && !kanban.length) {
         $(target).html(`<div class="animated-background"></div>`);
     }
 }
@@ -717,7 +721,15 @@ $(document).on("htmx:beforeRequest", function (event, data) {
             !avoid_target_ids.includes(target.attr("id")) &&
             !avoid_target_class.some((cls) => target.hasClass(cls))
         ) {
-            target.html(`<div class="animated-background"></div>`);
+            // If the target contains a sticky table (e.g. Helpdesk tickets), avoid replacing
+            // the entire content with animated-background as it causes a broken grey block.
+            var hasStickyTable = target.find(".oh-sticky-table__table").length > 0;
+            var hasTabsContent = target.find(".oh-tabs__contents").length > 0 || target.hasClass("oh-tabs__contents");
+            var isEmpty = target.children().length === 0 && $.trim(target.text()) === "";
+            var isModalTarget = target.closest(".oh-modal").length > 0 || target.closest(".oh-modal__dialog-body").length > 0;
+            if (!hasStickyTable && !hasTabsContent && !isEmpty && !isModalTarget) {
+                target.html(`<div class="animated-background"></div>`);
+            }
         }
     }
 });
