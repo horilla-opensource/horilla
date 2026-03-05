@@ -155,7 +155,10 @@ body.dark .pvtFilterBox h4,
 body.dark .fa-solid.fa-clone,
 body.dark .form-input-items label,
 body.dark .form-input-items .text-xs,
-body.dark .text-dark-400 {
+body.dark .text-dark-400,
+body.dark .interview-date,
+body.dark .interview-time,
+body.dark .interview-interviewer {
   color: white !important;
 }
 
