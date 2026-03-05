@@ -1147,7 +1147,7 @@ input[type="file"] {
 }
 
 .oh-btn--secondary {
-  background-color: hsl(8, 77%, 56%) !important;
+  background-color: hsl(8, 77%, 56%);
   color: hsl(0, 0%, 100%);
 }
 
