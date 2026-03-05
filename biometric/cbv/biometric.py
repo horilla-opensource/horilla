@@ -24,6 +24,7 @@ from biometric.views import (
     zk_biometric_attendance_scheduler,
 )
 from horilla.horilla_settings import BIO_DEVICE_THREADS
+from horilla.http.response import HorillaRedirect
 from horilla_views.cbv_methods import login_required, permission_required
 from horilla_views.generic.cbv.views import (
     HorillaCardView,
@@ -273,7 +274,7 @@ class BiometricSheduleForm(HorillaFormView):
                             seconds=str_time_seconds(device.scheduler_duration),
                         )
                         scheduler.start()
-                        return HttpResponse("<script>window.location.reload()</script>")
+                        return HorillaRedirect(self.request)
                     except Exception as error:
                         logger.error(
                             "An error comes in biometric_device_schedule ", error
@@ -306,7 +307,7 @@ class BiometricSheduleForm(HorillaFormView):
                         seconds=str_time_seconds(device.scheduler_duration),
                     )
                     scheduler.start()
-                    return HttpResponse("<script>window.location.reload()</script>")
+                    return HorillaRedirect(self.request)
                 else:
                     duration = self.request.POST.get("scheduler_duration")
                     device.is_scheduler = True
@@ -324,7 +325,7 @@ class BiometricSheduleForm(HorillaFormView):
                         seconds=str_time_seconds(device.scheduler_duration),
                     )
                     scheduler.start()
-                    return HttpResponse("<script>window.location.reload()</script>")
+                    return HorillaRedirect(self.request)
             # else:
             #     message = _("Biometric device added successfully.")
             form.save()

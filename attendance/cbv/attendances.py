@@ -28,6 +28,7 @@ from employee.cbv.employees import EmployeeCard, EmployeeNav, EmployeesList
 from employee.filters import EmployeeFilter
 from employee.models import Employee
 from horilla.filters import HorillaFilterSet
+from horilla.http.response import HorillaRedirect
 from horilla_views.cbv_methods import login_required, render_template
 from horilla_views.generic.cbv.views import (
     HorillaDetailedView,
@@ -498,7 +499,7 @@ class AttendancesFormView(HorillaFormView):
             message = _("Attendance Added")
             form.save()
             messages.success(self.request, message)
-            return self.HttpResponse("<script>window.location.reload()</script>")
+            return HorillaRedirect(self.request)
         return super().form_valid(form)
 
 
@@ -526,7 +527,7 @@ class AttendanceUpdateFormView(HorillaFormView):
             message = _("Attandance Updated")
             form.save()
             messages.success(self.request, message)
-            return HttpResponse("<script>window.location.reload()</script>")
+            return HorillaRedirect(self.request)
         return super().form_valid(form)
 
 

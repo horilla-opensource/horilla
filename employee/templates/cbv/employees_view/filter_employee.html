@@ -77,6 +77,10 @@
                         <label class="oh-label" for="{{form.employee_work_info__work_type_id.id_for_label}}">{% trans "Work Type" %}</label>
                         {{form.employee_work_info__work_type_id}}
                     </div>
+                    <div class="oh-input-group">
+                        <label class="oh-label" for="{{form.employee_work_info__employee_type_id.id_for_label}}">{% trans "Employee Type" %}</label>
+                        {{form.employee_work_info__employee_type_id}}
+                    </div>
                     {% if "attendance"|app_installed %}
                     <div class="oh-input-group">
                         <label class="oh-label" for="{{form.working_today.id_for_label}}">{% trans "Currently Working" %}</label>

@@ -11,6 +11,7 @@ from django.urls import resolve, reverse, reverse_lazy
 from django.utils.decorators import method_decorator
 from django.utils.translation import gettext_lazy as _
 
+from horilla.http.response import HorillaRedirect
 from horilla_views.cbv_methods import login_required
 from horilla_views.generic.cbv.views import (
     HorillaDetailedView,
@@ -236,16 +237,12 @@ class InterviewForm(HorillaFormView):
                 messages.success(self.request, _("Interview Updated Successfully"))
                 if view_data == "false":
                     form.save()
-                    return self.HttpResponse(
-                        "<script>window.location.reload();</script>"
-                    )
+                    return HorillaRedirect(self.request)
             else:
                 messages.success(self.request, _("Interview Scheduled successfully."))
                 if not view_data:
                     form.save()
-                    return self.HttpResponse(
-                        "<script>window.location.reload();</script>"
-                    )
+                    return HorillaRedirect(self.request)
             form.save()
             return self.HttpResponse()
         return super().form_valid(form)

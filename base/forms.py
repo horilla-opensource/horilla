@@ -11,6 +11,7 @@ import uuid
 from datetime import date, datetime, timedelta
 from typing import Any
 
+import bleach
 from django import forms
 from django.apps import apps
 from django.contrib import messages
@@ -2531,6 +2532,42 @@ class MailTemplateForm(ModelForm):
             ),
             "is_active": forms.HiddenInput(),
         }
+
+    def clean_body(self):
+        body = self.cleaned_data.get("body", "")
+
+        ALLOWED_TAGS = [
+            "p",
+            "b",
+            "i",
+            "u",
+            "strong",
+            "em",
+            "ul",
+            "ol",
+            "li",
+            "br",
+            "hr",
+            "table",
+            "thead",
+            "tbody",
+            "tr",
+            "td",
+            "th",
+            "a",
+            "span",
+        ]
+
+        ALLOWED_ATTRIBUTES = {
+            "a": ["href", "title"],
+            "span": ["style"],
+        }
+
+        cleaned_body = bleach.clean(
+            body, tags=ALLOWED_TAGS, attributes=ALLOWED_ATTRIBUTES, strip=True
+        )
+
+        return cleaned_body
 
     def get_template_language(self):
         mail_data = {

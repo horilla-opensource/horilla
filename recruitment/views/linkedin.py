@@ -10,6 +10,7 @@ from django.utils.translation import gettext_lazy as _
 
 from horilla.config import logger
 from horilla.decorators import login_required, permission_required
+from horilla.http.response import HorillaRedirect
 from recruitment.models import LinkedInAccount
 
 
@@ -49,7 +50,7 @@ def delete_linkedin_account(request, pk, return_redirect=True):
     except Exception as e:
         logger.error(e)
         messages.error(request, "Something went wrong")
-    return HttpResponse("<script>window.location.reload()</script>")
+    return HorillaRedirect(request)
 
 
 @login_required

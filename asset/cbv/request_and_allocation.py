@@ -19,6 +19,7 @@ from asset.models import Asset, AssetAssignment, AssetRequest, ReturnImages
 from base.methods import filtersubordinates
 from employee.models import Employee
 from horilla.horilla_middlewares import _thread_locals
+from horilla.http.response import HorillaRedirect
 from horilla_views.cbv_methods import login_required, permission_required
 from horilla_views.generic.cbv.views import (
     HorillaDetailedView,
@@ -592,5 +593,5 @@ class AssetApproveFormView(HorillaFormView):
                 &asset_request_status={asset_request.asset_request_status}",
                 icon="bag-check",
             )
-            return HttpResponse("<script>window.location.reload()</script>")
+            return HorillaRedirect(self.request)
         return super().form_valid(form)

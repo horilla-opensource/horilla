@@ -10,6 +10,7 @@ from django.utils.translation import gettext_lazy as _
 
 from employee.cbv.employee_profile import EmployeeProfileView
 from employee.models import Employee
+from horilla.http.response import HorillaRedirect
 from horilla_views.cbv_methods import login_required
 from horilla_views.generic.cbv.views import (
     HorillaDetailedView,
@@ -536,7 +537,7 @@ class CreateEmployeeKeyResultFormView(HorillaFormView):
         ):
             return super().get(request, *args, pk=pk, **kwargs)
         messages.info(request, "You dont have permission")
-        return HttpResponse("<script>window.location.reload()</script>")
+        return HorillaRedirect(request)
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
@@ -595,7 +596,7 @@ class CreateEmployeeKeyResultFormView(HorillaFormView):
                     ),
                 )
             messages.success(self.request, _(message))
-            return self.HttpResponse("<script>window.location.reload()</script>")
+            return HorillaRedirect(self.request)
         return super().form_valid(form)
 
 

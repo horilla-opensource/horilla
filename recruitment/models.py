@@ -19,7 +19,7 @@ import requests
 from django import forms
 from django.conf import settings
 from django.contrib.auth.models import User
-from django.core.exceptions import ValidationError
+from django.core.exceptions import ObjectDoesNotExist, ValidationError
 from django.core.files.storage import default_storage
 from django.core.validators import MaxValueValidator, MinValueValidator
 from django.db import models
@@ -1248,6 +1248,15 @@ class Candidate(HorillaModel):
             context={"instance": self},
         )
 
+    def detail_actions(self):
+        """
+        This method for get custom column for details actions.
+        """
+        return render_template(
+            path="cbv/recruitment/candidate_detail_action.html",
+            context={"instance": self},
+        )
+
     @classmethod
     @lru_cache(maxsize=1)
     def get_unique_questions(cls):
@@ -1291,7 +1300,12 @@ class Candidate(HorillaModel):
             except Exception:
                 return None
 
-        raise AttributeError(name)
+        try:
+            return super().__getattribute__(name)
+        except ObjectDoesNotExist:
+            raise
+        except AttributeError:
+            raise
 
     class Meta:
         """
@@ -1501,6 +1515,15 @@ class RecruitmentSurvey(HorillaModel):
         Used to split the choices
         """
         return self.options.split(", ")
+
+    def detail_actions(self):
+        """
+        This method for get custom column for details actions.
+        """
+        return render_template(
+            path="cbv/recruitment_survey/detail_actions.html",
+            context={"instance": self},
+        )
 
     def save(self, *args, **kwargs):
         super().save(*args, **kwargs)

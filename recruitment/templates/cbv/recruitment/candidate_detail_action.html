@@ -1,0 +1,22 @@
+{% load static i18n generic_template_filters %}
+
+<div class="oh-btn-group w-100">
+
+    {% if perms.recruitment.change_candidate %}
+        <a class="oh-btn oh-btn--info w-50" title="{% trans 'Edit' %}" href="{% url 'rec-candidate-update' instance.id %}?onboarding=True"><ion-icon name="create-outline"></ion-icon></a>
+    {% endif %}
+    {% if perms.recruitment.view_candidate %}
+        <a class="oh-btn oh-btn--success w-50" title="{% trans 'View' %}" href="{% url 'candidate-view-individual' instance.id %}"><ion-icon name="eye-outline"></ion-icon></a>
+    {% endif %}
+    {% if perms.recruitment.delete_candidate %}
+        <a       
+            class="oh-btn oh-btn--danger w-50"
+            title="{% trans 'Delete' %}" 
+            hx-get="{% url 'generic-delete' %}?model=recruitment.Candidate&pk={{instance.id}}"
+            hx-target="#deleteConfirmationBody"
+            data-toggle="oh-modal-toggle"
+            data-target="#deleteConfirmation"
+            onclick="event.stopPropagation()"><ion-icon name="trash-outline"></ion-icon>
+        </a>
+    {% endif %}
+</div>

@@ -11,6 +11,7 @@ from django.shortcuts import render
 from django.utils.decorators import method_decorator
 from django.utils.translation import gettext_lazy as _
 
+from horilla.http.response import HorillaRedirect
 from horilla_views.cbv_methods import login_required, permission_required
 from horilla_views.generic.cbv.views import HorillaDetailedView, HorillaFormView
 from recruitment.forms import QuestionForm, TemplateForm
@@ -48,7 +49,7 @@ class QuestionFormView(HorillaFormView):
             instance.recruitment_ids.set(form.recruitment)
             instance.template_id.set(form.cleaned_data["template_id"])
             messages.success(self.request, _(message))
-            return HttpResponse("<script>window.location.reload()</script>")
+            return HorillaRedirect(self.request)
         return super().form_valid(form)
 
 
@@ -90,7 +91,7 @@ class QuestionDuplicateFormView(HorillaFormView):
             instance.recruitment_ids.set(form.recruitment)
             instance.template_id.set(form.cleaned_data["template_id"])
             messages.success(self.request, _(message))
-            return HttpResponse("<script>window.location.reload()</script>")
+            return HorillaRedirect(self.request)
         return super().form_valid(form)
 
 
@@ -129,7 +130,7 @@ class SurveyTemplateFormView(HorillaFormView):
             message = _("Template saved")
             form.save()
             messages.success(self.request, _(message))
-            return HttpResponse("<script>window.location.reload();</script>")
+            return HorillaRedirect(self.request)
         return super().form_valid(form)
 
 
@@ -155,26 +156,26 @@ class RecruitmentSurveyDetailView(HorillaDetailedView):
     header = {"title": "question", "subtitle": "", "avatar": ""}
 
     cols = {"question": 12}
-
-    actions = [
-        {
-            "action": _("Edit"),
-            "icon": "create-outline",
-            "attrs": """
-                     class="oh-btn oh-btn--info w-50"
-                     hx-get="{get_edit_url}"
-                     hx-target ="#genericModalBody"
-                     data-target = "#genericModal"
-                     data-toggle ="oh-modal-toggle"
-                     """,
-        },
-        {
-            "action": _("Delete"),
-            "icon": "trash-outline",
-            "attrs": """
-                    class="oh-btn oh-btn--danger w-50"
-                    href ="{get_delete_url}"
-                    onclick="return confirm(' Are you sure want to delete?')"
-                    """,
-        },
-    ]
+    action_method = "detail_actions"
+    # actions = [
+    #     {
+    #         "action": _("Edit"),
+    #         "icon": "create-outline",
+    #         "attrs": """
+    #                  class="oh-btn oh-btn--info w-50"
+    #                  hx-get="{get_edit_url}"
+    #                  hx-target ="#genericModalBody"
+    #                  data-target = "#genericModal"
+    #                  data-toggle ="oh-modal-toggle"
+    #                  """,
+    #     },
+    #     {
+    #         "action": _("Delete"),
+    #         "icon": "trash-outline",
+    #         "attrs": """
+    #                 class="oh-btn oh-btn--danger w-50"
+    #                 href ="{get_delete_url}"
+    #                 onclick="return confirm(' Are you sure want to delete?')"
+    #                 """,
+    #     },
+    # ]
