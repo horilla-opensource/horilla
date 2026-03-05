@@ -18,7 +18,7 @@ import django
 import requests
 from django import forms
 from django.conf import settings
-from django.core.exceptions import ValidationError
+from django.core.exceptions import ObjectDoesNotExist, ValidationError
 from django.core.files.storage import default_storage
 from django.core.validators import MaxValueValidator, MinValueValidator
 from django.db import models
@@ -1312,7 +1312,12 @@ class Candidate(HorillaModel):
             except Exception:
                 return None
 
-        raise AttributeError(name)
+        try:
+            return super().__getattribute__(name)
+        except ObjectDoesNotExist:
+            raise
+        except AttributeError:
+            raise
 
     class Meta:
         """
