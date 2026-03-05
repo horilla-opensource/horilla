@@ -1,0 +1,56 @@
+{% load i18n static %}
+
+{% if perms.payroll.change_reimbursement %}
+    <div id="requestCard{{ instance.id }}" onclick="event.stopPropagation()">
+        <form action="{% url 'approve-reimbursements' %}">
+            <input type="hidden" name="ids" value="{{ instance.id }}" />
+            <input type="hidden" name="status" />
+            <input type="hidden" name="amount" default="0" min="0" />
+
+            <div class="oh-btn-group" onclick="event.stopPropagation()">
+                {% if instance.status == 'requested' %}
+                    <button
+                        type="button"
+                        title="{% trans 'Approve' %}"
+                        onclick="reimbursementConfirm('Do You really want to approve the request?','#requestCard{{ instance.id }}',true);$('#requestCard{{ instance.id }} [name=status]').val('approved')"
+                        class="w-24 px-4 py-2 bg-primary-600 text-white rounded-md text-xs flex items-center justify-center gap-2 hover:bg-primary-800 transition duration-300"
+                    >
+                        <img src="{% static 'horilla_theme/assets/img/icons/check.svg' %}" alt="{% trans 'Approve' %}" width="13"
+                        class="filter brightness-0 invert" />
+                    </button>
+                {% else %}
+                    <button
+                        title="{% trans 'Approve' %}"
+                        type="button"
+                        class="w-24 px-4 py-2 bg-primary-600 text-white rounded-md text-xs flex items-center justify-center gap-2 hover:bg-primary-800 transition duration-300 oh-btn--disabled"
+                    >
+                        <img src="{% static 'horilla_theme/assets/img/icons/check.svg' %}" alt="{% trans 'Approve' %}" width="13"
+                        class="filter brightness-0 invert" />
+                    </button>
+                {% endif %}
+
+                {% if instance.status == 'rejected' %}
+                    <button
+                        class="w-24 px-4 py-2 bg-white rounded-md text-xs flex items-center justify-center gap-2 border border-primary-500 hover:border-primary-600 transition duration-300"
+                        disabled
+                        onclick="event.preventDefault();"
+                        >
+                        <img src="{% static 'horilla_theme/assets/img/icons/close-circle-icon-original.svg' %}" alt="{% trans 'Reject' %}" width="13"
+                        class="mt-[-1px]" />
+                    </button>
+                {% else %}
+                    <button
+                        type="button"
+                        onclick="$('#requestCard{{ instance.id }} [name=amount]').attr('required',false);reimbursementConfirm('Do You really want to reject the request?','#requestCard{{ instance.id }}');$('#requestCard{{ instance.id }} [name=status]').val('canceled')"
+                        class="w-24 px-4 py-2 bg-white rounded-md text-xs flex items-center justify-center gap-2 border border-primary-500 hover:border-primary-600 transition duration-300"
+                    >
+                        <img src="{% static 'horilla_theme/assets/img/icons/close-circle-icon-original.svg' %}" alt="{% trans 'Reject' %}" width="13"
+                        class="mt-[-1px]" />
+                    </button>
+                {% endif %}
+            </div>
+
+            <input type="submit" hidden id="requestCard{{ instance.id }}Button" />
+        </form>
+    </div>
+{% endif %}
