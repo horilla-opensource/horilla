@@ -10,25 +10,24 @@ from django.template.loader import render_to_string
 from django.utils.translation import gettext_lazy as _
 
 from base.forms import ModelForm
+from horilla_backup.gdrive import authenticate
 
-from .gdrive import authenticate
-from .models import *
+from .models import GoogleDriveBackup, LocalBackup
 
 
 class LocalBackupSetupForm(ModelForm):
-    verbose_name = "Server Backup"
     backup_db = forms.BooleanField(
-        required=False, help_text="Enable to backup database to server."
+        required=False, help_text=_("Enable to backup database to server.")
     )
     backup_media = forms.BooleanField(
-        required=False, help_text="Enable to backup all media files to server."
+        required=False, help_text=_("Enable to backup all media files to server.")
     )
     interval = forms.BooleanField(
         required=False,
-        help_text="Enable to automate the backup in a period of seconds.",
+        help_text=_("Enable to automate the backup in a period of seconds."),
     )
     fixed = forms.BooleanField(
-        required=False, help_text="Enable to automate the backup in a fixed time."
+        required=False, help_text=_("Enable to automate the backup in a fixed time.")
     )
 
     class Meta:
@@ -83,19 +82,19 @@ class GdriveBackupSetupForm(ModelForm):
     backup_db = forms.BooleanField(
         required=False,
         label="Backup DB",
-        help_text="Enable to backup database to Gdrive",
+        help_text=_("Enable to backup database to Gdrive"),
     )
     backup_media = forms.BooleanField(
         required=False,
         label="Backup Media",
-        help_text="Enable to backup all media files to Gdrive",
+        help_text=_("Enable to backup all media files to Gdrive"),
     )
     interval = forms.BooleanField(
         required=False,
-        help_text="Enable to automate the backup in a period of seconds.",
+        help_text=_("Enable to automate the backup in a period of seconds."),
     )
     fixed = forms.BooleanField(
-        required=False, help_text="Enable to automate the backup in a fixed time."
+        required=False, help_text=_("Enable to automate the backup in a fixed time.")
     )
 
     class Meta:
@@ -119,32 +118,64 @@ class GdriveBackupSetupForm(ModelForm):
         seconds = cleaned_data.get("seconds")
         hour = cleaned_data.get("hour")
         minute = cleaned_data.get("minute")
-        service_account_file = cleaned_data.get("service_account_file")
+        oauth_credentials_file = cleaned_data.get("oauth_credentials_file")
 
-        try:
-            # Read file content from InMemoryUploadedFile or whatever you receive
-            file_data = service_account_file.read()
-            file_name = service_account_file.name
+        # Get instance if updating
+        instance = self.instance if hasattr(self, "instance") else None
 
-            # Save using Django's storage (optional, if you need to persist it later)
-            if not GoogleDriveBackup.objects.exists():
-                # Save to storage if no backup exists
-                relative_path = default_storage.save(file_name, ContentFile(file_data))
+        # Only validate file if it's provided (new file upload) or if creating new instance
+        if oauth_credentials_file:
+            try:
+                # Read file content from InMemoryUploadedFile
+                file_data = oauth_credentials_file.read()
+                file_name = oauth_credentials_file.name
 
-            # Always write to temp file for authentication (because .path isn't supported)
-            with tempfile.NamedTemporaryFile(delete=False, suffix=".json") as tmp_file:
-                tmp_file.write(file_data)
-                tmp_file.flush()
-                temp_path = tmp_file.name
+                # Always write to temp file for validation (because .path isn't supported)
+                with tempfile.NamedTemporaryFile(
+                    delete=False, suffix=".json", mode="w+b"
+                ) as tmp_file:
+                    tmp_file.write(file_data)
+                    tmp_file.flush()
+                    temp_path = tmp_file.name
 
-            # Authenticate using temp file path
-            authenticate(temp_path)
+                # Validate OAuth credentials file format
+                import json
 
-            # Clean up temp file
-            os.remove(temp_path)
+                with open(temp_path, "r") as f:
+                    oauth_config = json.load(f)
 
-        except Exception as e:
-            raise forms.ValidationError("Please provide a valid service account file.")
+                # Check if it's a valid OAuth 2.0 web application credentials file
+                if "web" not in oauth_config:
+                    raise ValueError(
+                        "OAuth credentials file must contain 'web' key for web application type."
+                    )
+
+                if "client_id" not in oauth_config.get("web", {}):
+                    raise ValueError(
+                        "OAuth credentials file must contain 'client_id' in 'web' section."
+                    )
+
+                if "client_secret" not in oauth_config.get("web", {}):
+                    raise ValueError(
+                        "OAuth credentials file must contain 'client_secret' in 'web' section."
+                    )
+
+                # Clean up temp file
+                os.remove(temp_path)
+
+            except json.JSONDecodeError:
+                raise forms.ValidationError(
+                    "Please provide a valid OAuth credentials file (must be valid JSON)."
+                )
+            except Exception as e:
+                raise forms.ValidationError(
+                    f"Please provide a valid OAuth credentials file. Error: {str(e)}"
+                )
+        elif not instance or not instance.pk:
+            # If creating new instance and no file provided, raise error
+            raise forms.ValidationError(
+                "Please provide a valid OAuth credentials file."
+            )
         if backup_db == False and backup_media == False:
             raise forms.ValidationError("Please select any backup option.")
         if interval == False and fixed == False:
