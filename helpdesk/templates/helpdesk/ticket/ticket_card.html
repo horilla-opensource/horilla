@@ -192,7 +192,7 @@
                                                 >
                                             </div>
                                             <div title="{{ticket.priority}} priority" style="text-align:right">
-                                                {% if ticket.priority == 'low' %}
+{% if ticket.priority == 'low' %}
                                                     <form hx-swap="none" hx-post='{% url "update-priority" ticket.id %}' method="post">
                                                         {% csrf_token %}
                                                         <div class="d-flex">
@@ -238,7 +238,8 @@
                                                         </div>
                                                     </form>
                                                 {% endif %}
-                                                <div>
+
+<div>
                                                     <span class='float-end' title = 'due {% if ticket.deadline == today %}today {% else %}in {{ticket.deadline|sub:today}}{% endif %}'><ion-icon class="text-{% if ticket.deadline < today %}danger {% elif ticket.deadline == today %}warning {% else %}success{% endif %}" name="time-sharp"></ion-icon></span>
                                                 </div>
                                             </div>
@@ -405,7 +406,7 @@
                                                         class="oh-dropdown__menu oh-dropdown__menu--right"
                                                     >
                                                         <ul class="oh-dropdown__items">
-                                                            {% if perms.helpdesk.change_ticket or request.user.employee_get|is_department_manager:ticket %}
+{% if perms.helpdesk.change_ticket or request.user.employee_get|is_department_manager:ticket %}
                                                                 <li
                                                                     class="oh-dropdown__item"
                                                                 >
@@ -444,7 +445,7 @@
                                                                         <span style="color: red;">{% trans "Can't claim again" %}</span>
                                                                     {% endif %}
                                                                 {% endif %}
-                                                            {% endif %}
+{% endif %}
                                                             {% if perms.helpdesk.change_ticket or request.user.employee_get|is_department_manager:ticket  %}
                                                                 <li
                                                                     class="oh-dropdown__item"
@@ -529,7 +530,7 @@
                                                 >
                                             </div>
                                             <div title="{{ticket.priority}} priority" style="text-align:right">
-                                                    {% if perms.helpdesk.change_ticket or request.user.employee_get|is_department_manager:ticket %}
+{% if perms.helpdesk.change_ticket or request.user.employee_get|is_department_manager:ticket %}
                                                         {% if ticket.priority == 'low' %}
                                                             <form hx-swap="none" hx-post='{% url "update-priority" ticket.id %}' method="post">
                                                                 {% csrf_token %}
@@ -609,7 +610,8 @@
                                                             </div>
                                                         {% endif %}
                                                     {% endif %}
-                                                <div>
+
+<div>
                                                     <span class='float-end' title = 'due {% if ticket.deadline == today %}today {% else %}in {{ticket.deadline|sub:today}}{% endif %}'><ion-icon class="text-{% if ticket.deadline < today %}danger {% elif ticket.deadline == today %}warning {% else %}success{% endif %}" name="time-sharp"></ion-icon></span>
                                                 </div>
                                             </div>
@@ -854,7 +856,7 @@
                                                 >
                                             </div>
                                             <div title="{{ticket.priority}} priority" style="text-align:right">
-                                                {% if ticket.priority == 'low' %}
+{% if ticket.priority == 'low' %}
                                                     <form hx-swap="none" hx-post='{% url "update-priority" ticket.id %}' method="post">
                                                         {% csrf_token %}
                                                         <div class="d-flex">
@@ -900,7 +902,8 @@
                                                         </div>
                                                     </form>
                                                 {% endif %}
-                                                <div>
+
+<div>
                                                     <span class='float-end' title = 'due {% if ticket.deadline == today %}today {% else %}in {{ticket.deadline|sub:today}}{% endif %}'><ion-icon class="text-{% if ticket.deadline < today %}danger {% elif ticket.deadline == today %}warning {% else %}success{% endif %}" name="time-sharp"></ion-icon></span>
                                                 </div>
                                             </div>

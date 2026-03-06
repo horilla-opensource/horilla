@@ -2,6 +2,7 @@ import os
 from datetime import datetime
 
 from django import apps
+from django.contrib.auth.models import User
 from django.db import models
 from django.db.models.signals import post_delete, post_save
 from django.forms import ValidationError
@@ -41,6 +42,19 @@ TICKET_STATUS = [
     ("on_hold", "On Hold"),
     ("resolved", "Resolved"),
     ("canceled", "Canceled"),
+]
+
+PASSWORD_RESET_PLATFORMS = [
+    ("Microsoft", "Microsoft"),
+    ("Passbolt", "Passbolt"),
+    ("Plane", "Plane"),
+    ("Other", "Other"),
+]
+
+ISO_STATUS_CHOICES = [
+    ("PENDING", "Pending"),
+    ("APPROVED", "Approved"),
+    ("REJECTED", "Rejected"),
 ]
 
 
@@ -134,37 +148,98 @@ class Ticket(HorillaModel):
         super().clean(*args, **kwargs)
         deadline = self.deadline
         today = datetime.today().date()
-        if deadline < today:
+        if deadline and deadline < today:
             raise ValidationError(_("Deadline should be greater than today"))
 
     def get_raised_on(self):
         obj_id = self.raised_on
-        if self.assigning_type == "department":
-            raised_on = Department.objects.get(id=obj_id).department
-        elif self.assigning_type == "job_position":
-            raised_on = JobPosition.objects.get(id=obj_id).job_position
-        elif self.assigning_type == "individual":
-            raised_on = Employee.objects.get(id=obj_id).get_full_name()
+        raised_on = ""
+        if obj_id:
+            try:
+                if self.assigning_type == "department":
+                    raised_on = Department.objects.get(id=obj_id).department
+                elif self.assigning_type == "job_position":
+                    raised_on = JobPosition.objects.get(id=obj_id).job_position
+                elif self.assigning_type == "individual":
+                    raised_on = Employee.objects.get(id=obj_id).get_full_name()
+            except (ValueError, Department.DoesNotExist, JobPosition.DoesNotExist, Employee.DoesNotExist):
+                raised_on = _("Unknown/Deleted Entity")
         return raised_on
 
     def get_raised_on_object(self):
         obj_id = self.raised_on
-        if self.assigning_type == "department":
-            raised_on = Department.objects.get(id=obj_id)
-        elif self.assigning_type == "job_position":
-            raised_on = JobPosition.objects.get(id=obj_id)
-        elif self.assigning_type == "individual":
-            raised_on = Employee.objects.get(id=obj_id)
-        return raised_on
+        raised_on_obj = None
+        if obj_id:
+            try:
+                if self.assigning_type == "department":
+                    raised_on_obj = Department.objects.get(id=obj_id)
+                elif self.assigning_type == "job_position":
+                    raised_on_obj = JobPosition.objects.get(id=obj_id)
+                elif self.assigning_type == "individual":
+                    raised_on_obj = Employee.objects.get(id=obj_id)
+            except (ValueError, Department.DoesNotExist, JobPosition.DoesNotExist, Employee.DoesNotExist):
+                raised_on_obj = None
+        return raised_on_obj
 
     def __str__(self):
-        return self.title
+        return self.title or f"Ticket {self.id}"
 
     def tracking(self):
         """
         This method is used to return the tracked history of the instance
         """
         return get_diff(self)
+
+
+class PasswordResetRequest(HorillaModel):
+    """
+    Stores the extra details for a Password Reset ticket.
+    Linked 1-to-1 with a Ticket via the `ticket` field.
+    """
+
+    ticket = models.OneToOneField(
+        Ticket,
+        on_delete=models.CASCADE,
+        related_name="password_reset_request",
+    )
+    platform = models.CharField(
+        max_length=50,
+        choices=PASSWORD_RESET_PLATFORMS,
+        verbose_name=_("Platform"),
+    )
+    user_id = models.EmailField(verbose_name=_("User ID (Email)"))
+    reason = models.TextField(verbose_name=_("Reason for Request"))
+
+    iso_status = models.CharField(
+        max_length=20,
+        choices=ISO_STATUS_CHOICES,
+        default="PENDING",
+        verbose_name=_("ISO Status"),
+    )
+    iso_feedback = models.TextField(blank=True, null=True, verbose_name=_("ISO Feedback"))
+    reviewed_by = models.ForeignKey(
+        User,
+        null=True,
+        blank=True,
+        on_delete=models.SET_NULL,
+        related_name="reviewed_password_resets",
+    )
+    reviewed_at = models.DateTimeField(null=True, blank=True)
+    created_at = models.DateTimeField(auto_now_add=True)
+
+    class Meta:
+        verbose_name = _("Password Reset Request")
+        verbose_name_plural = _("Password Reset Requests")
+
+    def __str__(self):
+        return f"Password Reset – {self.platform} – {self.ticket}"
+
+    def clean(self, *args, **kwargs):
+        super().clean(*args, **kwargs)
+        if self.iso_status == "REJECTED" and not self.iso_feedback:
+            raise ValidationError(
+                {"iso_feedback": _("Feedback is required when rejecting a request.")}
+            )
 
 
 class ClaimRequest(HorillaModel):
@@ -207,7 +282,7 @@ class Comment(HorillaModel):
     xss_exempt_fields = ["comment"]  # 850
 
     def __str__(self):
-        return self.comment
+        return self.comment or ""
 
 
 class Attachment(HorillaModel):
@@ -242,8 +317,7 @@ class Attachment(HorillaModel):
 
     def save(self, *args, **kwargs):
         self.get_file_format()
-
-        super().save(self, *args, **kwargs)
+        super().save(*args, **kwargs)
 
     def __str__(self):
         return os.path.basename(self.file.name)
@@ -267,15 +341,15 @@ class FAQCategory(HorillaModel):
 
     def save(self, *args, **kwargs):
         request = getattr(horilla_middlewares._thread_locals, "request", None)
-        selected_company = request.session.get("selected_company")
-        if (
-            not self.id
-            and not self.company_id
-            and selected_company
-            and selected_company != "all"
-        ):
-            self.company_id = Company.find(selected_company)
-
+        if request:
+            selected_company = request.session.get("selected_company")
+            if (
+                not self.id
+                and not self.company_id
+                and selected_company
+                and selected_company != "all"
+            ):
+                self.company_id = Company.find(selected_company)
         super().save()
 
     class Meta:
@@ -298,15 +372,15 @@ class FAQ(HorillaModel):
 
     def save(self, *args, **kwargs):
         request = getattr(horilla_middlewares._thread_locals, "request", None)
-        selected_company = request.session.get("selected_company")
-        if (
-            not self.id
-            and not self.company_id
-            and selected_company
-            and selected_company != "all"
-        ):
-            self.company_id = Company.find(selected_company)
-
+        if request:
+            selected_company = request.session.get("selected_company")
+            if (
+                not self.id
+                and not self.company_id
+                and selected_company
+                and selected_company != "all"
+            ):
+                self.company_id = Company.find(selected_company)
         super().save()
 
     class Meta:

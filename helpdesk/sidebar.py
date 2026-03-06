@@ -17,4 +17,8 @@ SUBMENUS = [
         "menu": trans("Tickets"),
         "redirect": reverse("ticket-view"),
     },
+    {
+        "menu": trans("ISO Forms"),
+        "redirect": reverse("iso-forms-home"),
+    },
 ]

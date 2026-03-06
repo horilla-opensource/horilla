@@ -3,7 +3,7 @@
 
 {% block content %}
 
-<div id="commonTasksContainer">
+<div id="commonTasksContainer" class="oh-page__body p-2">
     {% include "offboarding/task/common_task_list.html" %}
 </div>
 
@@ -28,6 +28,17 @@ document.addEventListener("click", function(e) {
 
     if (e.target.closest(".oh-modal__close")) {
         e.target.closest(".oh-modal").classList.remove("show");
+    }
+});
+
+// Close modal on successful task creation/update
+document.body.addEventListener("htmx:afterSwap", function(event) {
+    // Only close modal if the swap target was the commonTasksContainer (success)
+    if (event.detail.target.id === "commonTasksContainer") {
+        const taskModal = document.getElementById("taskModal");
+        if (taskModal && taskModal.classList.contains("show")) {
+            taskModal.classList.remove("show");
+        }
     }
 });
 </script>
