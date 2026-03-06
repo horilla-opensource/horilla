@@ -1,4 +1,4 @@
-{% load i18n %}{% load widget_tweaks %} {% load attendancefilters %}
+{% load i18n widget_tweaks attendancefilters %}
 
 <div class="oh-general__tab-target oh-profile-section" id="personal">
   <div class="oh-profile-section__card">
@@ -9,7 +9,7 @@
       <label
       class="oh-label"
       for="id_{{ field.name }}"
-      title="{{ field.help_text|safe }}"
+      title="{{ field.help_text }}"
       >{{ field.label }}</label
       >
       {{field.errors}}
@@ -23,7 +23,7 @@
         <label
           class="oh-label"
           for="id_{{ field.name }}"
-          title="{{ field.help_text|safe }}"
+          title="{{ field.help_text }}"
           >{{ field.label }}</label
           >
           {% if field.field.widget.input_type == "checkbox" %}
