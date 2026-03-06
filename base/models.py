@@ -1355,6 +1355,16 @@ class WorkTypeRequest(HorillaModel):
             context={"instance": self},
         )
 
+    def detail_confirmation(self):
+        """
+        method for rendering options(approve,reject)
+        """
+
+        return render_template(
+            path="cbv/work_type_request/detail_confirmation.html",
+            context={"instance": self},
+        )
+
     def detail_view(self):
         """
         for detail view of page
@@ -1632,6 +1642,13 @@ class ShiftRequest(HorillaModel):
 
         return render_template(
             path="cbv/shift_request/confirmations.html",
+            context={"instance": self},
+        )
+
+    def detail_confirmations(self):
+
+        return render_template(
+            path="cbv/shift_request/detail_confirmations.html",
             context={"instance": self},
         )
 
