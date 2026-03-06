@@ -269,11 +269,11 @@ class WorkTypeDetailView(HorillaDetailedView):
         "description": 12,
     }
 
-    action_method = "confirmation"
+    action_method = "detail_confirmation"
 
     def __init__(self, **kwargs: Any) -> None:
         super().__init__(**kwargs)
-        self.action_method = "confirmation"
+        self.action_method = "detail_confirmation"
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
