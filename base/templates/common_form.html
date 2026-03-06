@@ -24,7 +24,7 @@
                         <label class="oh-label {% if field.field.required %} required-star{% endif %}"
                             for="id_{{ field.name }}">{% trans field.label %} </label>
                         {% if field.help_text != '' %}
-                            <span class="oh-info mr-2" title="{{ field.help_text|safe }}"></span>
+                            <span class="oh-info mr-2" title="{{ field.help_text }}"></span>
                         {% endif %}
                     </div>
 
