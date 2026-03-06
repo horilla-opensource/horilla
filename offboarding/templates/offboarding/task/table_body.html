@@ -69,8 +69,6 @@
             hx-target="#offboardingBody{{offboarding.offboarding.id}}">
             <input type="hidden" name="notice_period_ends"
                 value="{{ employee.notice_period_ends|date:'Y-m-d' }}">
-            <input type="hidden" name="contract_end_date"
-                value="{{ employee.last_working_date|date:'Y-m-d' }}" />
 
             {{ stage_forms|stages:employee.stage_id }}
             <input type="submit" hidden />
