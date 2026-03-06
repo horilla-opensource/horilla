@@ -25,7 +25,7 @@
                         </div>
                     {% if field.field.help_text %}
                         <div class="help"{% if field.field.id_for_label %} id="{{ field.field.id_for_label }}_helptext"{% endif %}>
-                            <div>{{ field.field.help_text|safe }}</div>
+                            <div>{{ field.field.help_text }}</div>
                         </div>
                     {% endif %}
                 </div>
