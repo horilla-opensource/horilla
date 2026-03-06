@@ -11,6 +11,7 @@ import uuid
 from datetime import date, datetime, timedelta
 from typing import Any
 
+import bleach
 from django import forms
 from django.apps import apps
 from django.contrib import messages
@@ -2533,6 +2534,42 @@ class MailTemplateForm(ModelForm):
             "is_active": forms.HiddenInput(),
         }
 
+    def clean_body(self):
+        body = self.cleaned_data.get("body", "")
+
+        ALLOWED_TAGS = [
+            "p",
+            "b",
+            "i",
+            "u",
+            "strong",
+            "em",
+            "ul",
+            "ol",
+            "li",
+            "br",
+            "hr",
+            "table",
+            "thead",
+            "tbody",
+            "tr",
+            "td",
+            "th",
+            "a",
+            "span",
+        ]
+
+        ALLOWED_ATTRIBUTES = {
+            "a": ["href", "title"],
+            "span": ["style"],
+        }
+
+        cleaned_body = bleach.clean(
+            body, tags=ALLOWED_TAGS, attributes=ALLOWED_ATTRIBUTES, strip=True
+        )
+
+        return cleaned_body
+
     def get_template_language(self):
         mail_data = {
             "Receiver|Full name": "instance.get_full_name",
@@ -2934,8 +2971,10 @@ def validate_ip_or_cidr(value):
 class AttendanceAllowedIPForm(forms.ModelForm):
     ip_addresses = forms.CharField(
         widget=forms.Textarea(attrs={"rows": 3, "class": "form-control oh-input"}),
-        label="Allowed IP Addresses or Network Prefixes",
-        help_text="Enter multiple IP addresses or network prefixes, separated by commas.",
+        label=_("Allowed IP Addresses or Network Prefixes"),
+        help_text=_(
+            "Enter multiple IP addresses or network prefixes, separated by commas."
+        ),
     )
 
     class Meta:
