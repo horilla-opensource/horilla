@@ -1,0 +1,39 @@
+{% load static i18n generic_template_filters %}
+
+<div class="oh-btn-group w-100">
+
+    {% if perms.recruitment.change_candidate %}
+        <a class="w-24 px-4 py-2 bg-primary-600 text-white rounded-md text-xs flex items-center justify-center gap-2 hover:bg-primary-800 transition duration-300"
+        title="{% trans 'Edit' %}"
+        href="{% url 'rec-candidate-update' instance.id %}?onboarding=True"
+        >
+        <img src="{% static 'horilla_theme/assets/img/icons/edit.svg' %}" alt="{% trans 'Edit' %}" width="13"
+        class="filter brightness-0 invert" />
+        {% trans 'Edit' %}
+        </a>
+    {% endif %}
+    {% if perms.recruitment.view_candidate %}
+        <a
+        class="w-24 px-4 py-2 bg-white rounded-md text-xs flex items-center justify-center gap-2 border border-primary-500 hover:border-primary-600 transition duration-300"
+        title="{% trans 'View' %}"
+        href="{% url 'candidate-view-individual' instance.id %}">
+        <img src="{% static 'horilla_theme/assets/img/icons/eye.svg' %}" alt="{% trans 'View' %}" width="13"
+        class="mt-[-1px]" />
+        {% trans "View" %}
+        </a>
+    {% endif %}
+    {% if perms.recruitment.delete_candidate %}
+        <a
+            class="w-24 px-4 py-2 bg-white rounded-md text-xs flex items-center justify-center gap-2 border border-primary-500 hover:border-primary-600 transition duration-300"
+            title="{% trans 'Delete' %}"
+            hx-get="{% url 'generic-delete' %}?model=recruitment.Candidate&pk={{instance.id}}"
+            hx-target="#deleteConfirmationBody"
+            data-toggle="oh-modal-toggle"
+            data-target="#deleteConfirmation"
+            onclick="event.stopPropagation()">
+            <img src="{% static 'horilla_theme/assets/img/icons/trash.svg' %}" alt="{% trans 'Delete' %}" width="13"
+            class="mt-[-1px]" />
+            {% trans 'Delete' %}
+        </a>
+    {% endif %}
+</div>

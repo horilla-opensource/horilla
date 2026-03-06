@@ -390,7 +390,7 @@ class ShiftRequestDetailview(HorillaDetailedView):
 
     def __init__(self, **kwargs: Any) -> None:
         super().__init__(**kwargs)
-        self.action_method = "confirmations"
+        self.action_method = "detail_confirmations"
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)

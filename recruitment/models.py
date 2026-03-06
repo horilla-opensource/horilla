@@ -1054,6 +1054,15 @@ class Candidate(HorillaModel):
         url = reverse_lazy("candidate-detail", kwargs={"pk": self.pk})
         return url
 
+    def detail_actions(self):
+        """
+        Candidate actions
+        """
+        return render_template(
+            path="cbv/candidates/actions.html",
+            context={"instance": self},
+        )
+
     def get_send_mail(self):
         """
         Candidate detail
@@ -1496,6 +1505,15 @@ class RecruitmentSurvey(HorillaModel):
                 {"instance": self},
             )
         return ""
+
+    def detail_actions(self):
+        """
+        This method for get custom column for details actions.
+        """
+        return render_template(
+            path="cbv/recruitment_survey/detail_actions.html",
+            context={"instance": self},
+        )
 
     def get_edit_url(self):
 
