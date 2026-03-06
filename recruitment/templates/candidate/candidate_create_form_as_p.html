@@ -1,4 +1,4 @@
-{% load i18n %} {% load basefilters %}{% load widget_tweaks %}
+{% load i18n basefilters widget_tweaks %}
 {{ form.non_field_errors }}
 
 <div class="row">
@@ -7,7 +7,7 @@
             <div class="col-lg-6">
                 <div class="oh-input__group">
                     <label class="oh-label {% if field.field.required %}required-star{% endif %}" for="{{field.id_for_label}}"
-                        title="{{ field.help_text|safe }}">
+                        title="{{ field.help_text }}">
                         {{ field.label }}
                     </label>
 

@@ -1,5 +1,5 @@
-{% load i18n %}{% load widget_tweaks %} {% load horillafilters %}
-{% load basefilters %}
+{% load i18n widget_tweaks horillafilters basefilters %}
+
 <div class="oh-general__tab-target oh-profile-section" id="personal">
   {% if form.verbose_name %}
     <div class="oh-payslip__header">
@@ -16,7 +16,7 @@
           <label
           class="oh-label {% if field.field.required %} required-star{% endif %}"
           for="id_{{ field.name }}"
-          title="{{ field.help_text|safe }}"
+          title="{{ field.help_text }}"
           >{{ field.label }}</label
           >
           {{field.errors}}
@@ -32,7 +32,7 @@
                 <label
                   class="oh-label {% if field.field.required %} required-star{% endif %}"
                   for="id_{{ field.name }}"
-                  title="{{ field.help_text|safe }}"
+                  title="{{ field.help_text }}"
                   >{{ field.label }}</label
                 >
               {% endif %}
@@ -70,7 +70,7 @@
               <label
                 class="oh-label {% if field.field.required %} required-star{% endif %}"
                 for="id_{{ field.name }}"
-                title="{{ field.help_text|safe }}"
+                title="{{ field.help_text }}"
                 >{{ field.label }}</label
                 >
                 {% if field.field.widget.input_type == "checkbox" %}
