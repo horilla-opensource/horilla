@@ -1,13 +1,13 @@
 {% load static i18n generic_template_filters %}
-<div id="{{ view_id|safe }}">
+<div id="{{ view_id }}">
   <div
     class="oh-modal"
-    id="bulkUpdateModal{{view_id|safe}}"
+    id="bulkUpdateModal{{view_id}}"
     role="dialog"
-    aria-labelledby="bulkUpdateModal{{view_id|safe}}"
+    aria-labelledby="bulkUpdateModal{{view_id}}"
     aria-hidden="true"
   >
-    <div class="oh-modal__dialog" id="bulkUpdateModalBody{{view_id|safe}}"></div>
+    <div class="oh-modal__dialog" id="bulkUpdateModalBody{{view_id}}"></div>
   </div>
   {% include "generic/export_fields_modal.html" %}
   <script>
@@ -15,7 +15,7 @@
       $("#reloadMessagesButton").click()
     }
   </script>
-  <button class="reload-record" id="{{view_id|safe}}Reload" hidden hx-get="{{request.path}}?{{saved_filters.urlencode}}" hx-target="#{{view_id|safe}}" hx-swap="outerHTML">
+  <button class="reload-record" id="{{view_id}}Reload" hidden hx-get="{{request.path}}?{{saved_filters.urlencode}}" hx-target="#{{view_id}}" hx-swap="outerHTML">
   </button>
   {% if show_filter_tags %} {% include "generic/filter_tags.html" %} {% endif %}
   {% if queryset|length %}
@@ -61,8 +61,8 @@
                   onchange="
                   $(this).closest('.fixed-table').find('.list-table-row').prop('checked',$(this).is(':checked')).change();
                   $(document).ready(function () {
-                    reloadSelectedCount($('#count_{{view_id|safe}}'),'{{selected_instances_key_id}}');
-                    reloadSelectedCount($('.count_{{view_id|safe}}'),'{{selected_instances_key_id}}');
+                    reloadSelectedCount($('#count_{{view_id}}'),'{{selected_instances_key_id}}');
+                    reloadSelectedCount($('.count_{{view_id}}'),'{{selected_instances_key_id}}');
                   });
                   "
                   title="{% trans 'Select All' %}"
@@ -118,7 +118,7 @@
               <div class="{{row_status_class|format:instance|safe}} centered-div" align="center">
                 <input
                   type="checkbox"
-                  data-view-id="{{view_id|safe}}"
+                  data-view-id="{{view_id}}"
                   class="oh-input oh-input__checkbox list-table-row"
                   onchange="
                   element = $(this)
@@ -127,8 +127,8 @@
                     if (!element.is(':checked')) {
                       removeId(element)
                     }
-                    reloadSelectedCount($('#count_{{view_id|safe}}'),'{{selected_instances_key_id}}');
-                    reloadSelectedCount($('.count_{{view_id|safe}}'),'{{selected_instances_key_id}}');
+                    reloadSelectedCount($('#count_{{view_id}}'),'{{selected_instances_key_id}}');
+                    reloadSelectedCount($('.count_{{view_id}}'),'{{selected_instances_key_id}}');
                   });
                   "
                   title="{% trans "Select Row" %}"
@@ -273,7 +273,7 @@
           name="page"
           hx-get="{{search_url}}?{{saved_filters.urlencode}}&filter_applied=on"
           hx-swap="outerHTML"
-          hx-target="#{{view_id|safe}}"
+          hx-target="#{{view_id}}"
         />
         <span class="oh-pagination__label"
           >{% trans "of" %} {{queryset.paginator.num_pages}}</span
@@ -286,7 +286,7 @@
           <a
             hx-get="{{search_url}}?{{saved_filters.urlencode}}&page=1&filter_applied=on"
             hx-swap="outerHTML"
-            hx-target="#{{view_id|safe}}"
+            hx-target="#{{view_id}}"
             class="oh-pagination__link"
             >{% trans "First" %}</a
           >
@@ -295,7 +295,7 @@
           <a
             hx-get="{{search_url}}?{{saved_filters.urlencode}}&page={{ queryset.previous_page_number }}&filter_applied=on"
             hx-swap="outerHTML"
-            hx-target="#{{view_id|safe}}"
+            hx-target="#{{view_id}}"
             class="oh-pagination__link"
             >{% trans "Previous" %}</a
           >
@@ -305,7 +305,7 @@
           <a
             hx-get="{{search_url}}?{{saved_filters.urlencode}}&page={{ queryset.next_page_number }}&filter_applied=on"
             hx-swap="outerHTML"
-            hx-target="#{{view_id|safe}}"
+            hx-target="#{{view_id}}"
             class="oh-pagination__link"
             >{% trans "Next" %}</a
           >
@@ -314,7 +314,7 @@
           <a
             hx-get="{{search_url}}?{{saved_filters.urlencode}}&page={{ queryset.paginator.num_pages }}&filter_applied=on"
             hx-swap="outerHTML"
-            hx-target="#{{view_id|safe}}"
+            hx-target="#{{view_id}}"
             class="oh-pagination__link"
             >{% trans "Last" %}</a
           >
@@ -324,8 +324,8 @@
     </nav>
   </div>
   <script>
-    reloadSelectedCount($('#count_{{view_id|safe}}'),'{{selected_instances_key_id}}');
-    reloadSelectedCount($('.count_{{view_id|safe}}'),'{{selected_instances_key_id}}');
+    reloadSelectedCount($('#count_{{view_id}}'),'{{selected_instances_key_id}}');
+    reloadSelectedCount($('.count_{{view_id}}'),'{{selected_instances_key_id}}');
     var tabId = $("#{{view_id}}").closest(".oh-tabs__content").attr("id");
     var badge = $(`#badge-${tabId}`);
     var count = "{{queryset.paginator.count}}";
@@ -336,7 +336,7 @@
   </script>
   {% if bulk_select_option %}
   <script>
-    selectSelected("#{{view_id|safe}}",'{{selected_instances_key_id}}')
+    selectSelected("#{{view_id}}",'{{selected_instances_key_id}}')
   </script>
   {% endif %}
   {% endif %}
