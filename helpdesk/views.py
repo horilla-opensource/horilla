@@ -1249,6 +1249,9 @@ def comment_create(request, ticket_id):
                 )
 
             messages.success(request, _("A new comment has been created."))
+        else:
+            error = next(iter(c_form.errors.values()))[0]
+            messages.error(request, error)
 
     return HttpResponse(
         "<script>"
