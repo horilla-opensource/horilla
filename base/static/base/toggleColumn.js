@@ -18,11 +18,11 @@ function toggleColumns(tableId, fieldContainer) {
     var visibleCells = localStorage.getItem(tableTitle)
     if (visibleCells && visibleCells != "[]") {
         table.hide();
-        $("[data-cell-index]").hide();
+        $(`[data-table-name=${tableTitle}] [data-cell-index]`).hide();
     }
     else {
         table.show();
-        $("[data-cell-index]").show();
+        $(`[data-table-name=${tableTitle}] [data-cell-index]`).show();
     }
 
     trsString = ""

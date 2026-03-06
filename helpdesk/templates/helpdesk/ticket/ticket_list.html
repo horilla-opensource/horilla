@@ -87,7 +87,9 @@
 											<div data-cell-index="3" class="oh-sticky-table__td">{{ticket.ticket_type}}</div>
 											<div data-cell-index="4" class="oh-sticky-table__td">{{ticket.get_raised_on}}</div>
 											<div data-cell-index="5" class="oh-sticky-table__td">{{ticket.assigned_to.all|join:" , "}}</div>
-											<div data-cell-index="6" class="oh-sticky-table__td">{{ticket.get_status_display}}</div>
+											<div data-cell-index="6" class="oh-sticky-table__td">
+												{{ticket.get_status_display}}
+											</div>
 											<div data-cell-index="7" class="oh-sticky-table__td" onclick="event.stopPropagation()">
 												{% if ticket.priority == 'low' %}
 													<form hx-swap="none" hx-post='{% url "update-priority" ticket.id %}' method="post">
@@ -134,10 +136,11 @@
 															<span id="rating-radio-error"></span>
 														</div>
 													</form>
-												{% endif %}
-											</div>
+												{% endif %}</div>
 
-											<div data-cell-index="8" class="oh-sticky-table__td">{{ticket.tags.all|join:" , "}}</div>
+											<div data-cell-index="8" class="oh-sticky-table__td">
+												{{ticket.tags.all|join:" , "}}
+											</div>
 											<div class="oh-sticky-table__td oh-sticky-table__right" onclick="event.stopPropagation()">
 												<div class="oh-btn-group">
 													<button
@@ -413,7 +416,9 @@
 											<div data-cell-index="13" class="oh-sticky-table__td">{{ticket.ticket_type}}</div>
 											<div data-cell-index="14" class="oh-sticky-table__td">{{ticket.get_raised_on}}</div>
 											<div data-cell-index="15" class="oh-sticky-table__td">{{ticket.assigned_to.all|join:" , "}}</div>
-											<div data-cell-index="16" class="oh-sticky-table__td">{{ticket.get_status_display}}</div>
+											<div data-cell-index="16" class="oh-sticky-table__td">
+												{{ticket.get_status_display}}
+											</div>
 											<div data-cell-index="17" class="oh-sticky-table__td">
 												{% if perms.helpdesk.change_ticket or request.user.employee_get|is_department_manager:ticket %}
 													{% if ticket.priority == 'low' %}
@@ -494,9 +499,10 @@
 															</div>
 														</div>
 													{% endif %}
-												{% endif %}
+												{% endif %}</div>
+											<div data-cell-index="18" class="oh-sticky-table__td">
+												{{ticket.tags.all|join:" , "}}
 											</div>
-											<div data-cell-index="18" class="oh-sticky-table__td">{{ticket.tags.all|join:" , "}}</div>
 											{% if perms.helpdesk.change_ticket or perms.helpdesk.delete_ticket or request.user.employee_get|is_department_manager:ticket or perms.helpdesk.change_claimrequest %}
 												<div class="oh-sticky-table__td oh-sticky-table__right" onclick="event.stopPropagation()">
 													<div class="oh-btn-group" style="border:none">
@@ -797,7 +803,9 @@
 										<div data-cell-index="23" class="oh-sticky-table__td">{{ticket.ticket_type}}</div>
 										<div data-cell-index="24" class="oh-sticky-table__td">{{ticket.get_raised_on}}</div>
 										<div data-cell-index="25" class="oh-sticky-table__td">{{ticket.assigned_to.all|join:" , "}}</div>
-										<div data-cell-index="26" class="oh-sticky-table__td">{{ticket.get_status_display}}</div>
+										<div data-cell-index="26" class="oh-sticky-table__td">
+												{{ticket.get_status_display}}
+											</div>
 										<div data-cell-index="27" class="oh-sticky-table__td">
 											{% if perms.helpdesk.change_ticket or request.user.employee_get|is_department_manager:ticket %}
 												{% if ticket.priority == 'low' %}
@@ -880,7 +888,9 @@
 												{% endif %}
 											{% endif %}
 										</div>
-										<div data-cell-index="28" class="oh-sticky-table__td">{{ticket.tags.all|join:" , "}}</div>
+										<div data-cell-index="28" class="oh-sticky-table__td">
+												{{ticket.tags.all|join:" , "}}
+											</div>
 										{% if perms.helpdesk.change_ticket or perms.helpdesk.delete_ticket or request.user.employee_get|is_department_manager:ticket or perms.helpdesk.change_claimrequest %}
 											<div class="oh-sticky-table__td oh-sticky-table__right" onclick="event.stopPropagation()">
 												<div class="oh-btn-group">
@@ -1225,7 +1235,9 @@
 	  if (!localStorageAllTicketsCells) {
 		$("#AllTicketsCells").find("[type=checkbox]").prop("checked",true)
 	  }
-	  $("[type=checkbox]").change()
+	  $("#MyTicketsCells [type=checkbox]").change()
+	  $("#SuggestedTicketsCells [type=checkbox]").change()
+	  $("#AllTicketsCells [type=checkbox]").change()
 	  // end of toggle columns //
 </script>
 <script src="{% static 'tickets/action.js' %}"></script>
