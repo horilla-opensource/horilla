@@ -3,6 +3,7 @@ arabic-reshaper
 asgiref
 asn1crypto
 bs4
+bleach
 certifi
 cffi
 chardet
