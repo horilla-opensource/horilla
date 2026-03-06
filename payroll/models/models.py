@@ -1008,7 +1008,7 @@ class Allowance(HorillaModel):
             ),
             # ("monthly_working_days", "For working days on month"),
         ],
-        help_text="The maximum amount for ?",
+        help_text=_("The maximum amount for ?"),
         verbose_name=_("Maximum Unit"),
     )
     if_choice = models.CharField(
@@ -2106,7 +2106,7 @@ class LoanAccount(HorillaModel):
     )
     installments = models.IntegerField(verbose_name=_("Total installments"))
     installment_start_date = models.DateField(
-        help_text="From the start date deduction will apply",
+        help_text=_("From the start date deduction will apply"),
         verbose_name=_("Installment start date"),
     )
     apply_on = models.CharField(default="end_of_month", max_length=20, editable=False)
@@ -2595,7 +2595,7 @@ class PayrollGeneralSetting(models.Model):
     """
 
     notice_period = models.IntegerField(
-        help_text="Notice period in days",
+        help_text=_("Notice period in days"),
         validators=[min_zero],
         default=30,
     )
