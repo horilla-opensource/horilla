@@ -51,7 +51,7 @@
                     <div class="oh-input__group">
                         <div style="display: flex;">
                             <label class="oh-input__label" for="{{ form.allowed_clock_in.id_for_label }}">{{ form.allowed_clock_in.label }}</label>
-                            <span class="oh-info mt-2" title="{{form.allowed_clock_in.help_text|safe }}"></span>
+                            <span class="oh-info mt-2" title="{{form.allowed_clock_in.help_text }}"></span>
                         </div>
                         <div class="oh-switch p-2 pt-0">
                             {{ form.allowed_clock_in|add_class:"oh-switch__checkbox" }}
@@ -63,7 +63,7 @@
                     <div class="oh-input__group">
                         <div style="display: flex;">
                             <label class="oh-input__label" for="{{ form.allowed_clock_out.id_for_label }}">{{ form.allowed_clock_out.label }}</label>
-                            <span class="oh-info mt-2" title="{{form.allowed_clock_out.help_text|safe }}"></span>
+                            <span class="oh-info mt-2" title="{{form.allowed_clock_out.help_text }}"></span>
                         </div>
                         <div class="oh-switch p-2 pt-0">
                             {{ form.allowed_clock_out }}
@@ -77,7 +77,7 @@
                     <div class="oh-input__group">
                         <div style="display: flex;">
                             <label class="oh-input__label" for="{{ form.shifts.id_for_label }}">{% trans 'Shifts' %}</label>
-                            <span class="oh-info mt-2" title="{{ form.shifts.help_text|safe }}"></span>
+                            <span class="oh-info mt-2" title="{{ form.shifts.help_text }}"></span>
                         </div>
                         {{ form.shifts }}
                         {{ form.shifts.errors }}

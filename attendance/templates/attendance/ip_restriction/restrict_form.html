@@ -29,7 +29,7 @@
                     class="oh-label {% if field.field.required %}required-star{% endif %}"
                     for="id_{{ field.name }}"
                     {% if id == None %}
-                    title="{{ field.help_text|safe }}"
+                    title="{{ field.help_text }}"
                     {% endif %}
                 >
                     {% trans field.label %}

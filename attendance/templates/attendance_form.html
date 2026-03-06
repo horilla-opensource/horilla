@@ -13,7 +13,7 @@
       <label
       class="oh-label {% if field.field.required %} required-star{% endif %}"
       for="id_{{ field.name }}"
-      title="{{ field.help_text|safe }}"
+      title="{{ field.help_text }}"
       >{% trans field.label %}</label
       >
       <div style="width: 100%; padding: 12px;" id="id_{{ field.name }}_parent_div">
@@ -26,7 +26,7 @@
         <label
           class="oh-label {% if field.field.required %} required-star{% endif %}"
           for="id_{{ field.name }}"
-          title="{{ field.help_text|safe }}"
+          title="{{ field.help_text }}"
           >{% trans field.label %}</label
           >
           {% if field.field.widget.input_type == "checkbox" %}
