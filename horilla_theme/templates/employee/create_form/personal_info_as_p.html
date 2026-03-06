@@ -8,7 +8,7 @@
                 <label
                     class="oh-label {% if field.field.required %}required-star{% endif %}"
                     for="id_{{ field.name }}"
-                    title="{{ field.help_text|safe }}"
+                    title="{{ field.help_text }}"
                 >
                     {% trans field.label %}
                 </label>
@@ -30,7 +30,7 @@
 			<label
 				class="oh-label {% if field.field.required %}required-star{% endif %}"
 				for="id_{{ field.name }}"
-				title="{{ field.help_text|safe }}"
+				title="{{ field.help_text }}"
 			>
 				{% trans field.label %}
 			</label>
