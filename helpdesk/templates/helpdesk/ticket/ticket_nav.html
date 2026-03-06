@@ -107,19 +107,7 @@
                       {% trans "Ticket" %}
                    </a>
                 </li>
-                <li class="oh-dropdown__item">
-                   <a
-                      href="#"
-                      class="oh-dropdown__link"
-                      hx-get="{% url 'password-reset-request-create' %}"
-                      hx-target="#passwordResetModalTarget"
-                      hx-swap="innerHTML"
-                      @click="open = false"
-                   >
-                      <ion-icon name="key-outline" class="me-1"></ion-icon>
-                      {% trans "Password Reset Request" %}
-                   </a>
-                </li>
+                <!-- Password reset creation is now available under Help Desk → ISO Forms -->
              </ul>
           </div>
        </div>

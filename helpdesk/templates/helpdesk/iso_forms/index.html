@@ -1,0 +1,66 @@
+{% extends 'index.html' %}
+{% load i18n %}
+{% block content %}
+
+<section class="oh-wrapper oh-main__topbar">
+    <div class="oh-main__titlebar oh-main__titlebar--left">
+        <h1 class="oh-main__titlebar-title fw-bold">
+            {% trans "ISO Forms" %}
+        </h1>
+    </div>
+    <div class="oh-main__titlebar oh-main__titlebar--right">
+        <div class="oh-dropdown ml-2" x-data="{open:false}">
+            <button
+                class="oh-btn oh-btn--secondary oh-btn--shadow"
+                @click="open = !open"
+                @click.outside="open = false"
+            >
+                <ion-icon
+                    name="add-outline"
+                    class="me-1 md hydrated"
+                    role="img"
+                    aria-label="add outline"
+                ></ion-icon>
+                {% trans "Create" %}
+                <ion-icon name="chevron-down-outline" class="ms-1"></ion-icon>
+            </button>
+            <div class="oh-dropdown__menu oh-dropdown__menu--right" x-show="open" style="display:none">
+                <ul class="oh-dropdown__items">
+                    <li class="oh-dropdown__item">
+                        <a
+                            href="#"
+                            class="oh-dropdown__link"
+                            hx-get="{% url 'password-reset-request-create' %}"
+                            hx-target="#passwordResetModalTarget"
+                            hx-swap="innerHTML"
+                            data-toggle="oh-modal-toggle"
+                            data-target="#passwordResetModal"
+                            @click="open = false"
+                        >
+                            <ion-icon name="key-outline" class="me-1"></ion-icon>
+                            {% trans "Password Reset Request" %}
+                        </a>
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </div>
+</section>
+
+<div id="ohMessages"></div>
+
+<div class="oh-wrapper" id="isoFormsContainer">
+    <div class="oh-card mb-4">
+        <div class="d-flex align-items-center p-3">
+            <ion-icon name="key-outline" class="me-2" style="font-size:20px;"></ion-icon>
+            <h5 class="mb-0 fw-bold">{% trans "Password Reset Requests" %}</h5>
+        </div>
+        <div id="passwordResetList">
+            {% include 'helpdesk/iso_forms/_password_reset_list.html' %}
+        </div>
+    </div>
+</div>
+
+<div id="passwordResetModalTarget"></div>
+
+{% endblock %}

@@ -154,6 +154,7 @@ urlpatterns = [
         name="delete-ticket-document",
     ),
     path("load-faqs/", views.load_faqs, name="load-faqs"),
+    path("iso-forms/", views.iso_forms_home, name="iso-forms-home"),
 
     # ── Password Reset Request URLs ──────────────────────────────────────────
     path(
@@ -171,4 +172,10 @@ urlpatterns = [
         views.iso_review_password_reset,
         name="iso-review-password-reset",
     ),
+    path(
+        "password-reset-request/delete/<int:pr_id>/",
+        views.password_reset_request_delete,
+        name="password-reset-request-delete",
+    ),
 ]
+

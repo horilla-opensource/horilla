@@ -1367,7 +1367,7 @@ def approve_claim_request(request, req_id):
                     verb_ar=f"تم تعيين {employee} إلى تذكرتك - {ticket}.",
                     verb_de=f"{employee} wurde Ihrem Ticket {ticket} zugewiesen.",
                     verb_es=f"{employee} ha sido asignado a tu ticket - {ticket}.",
-                    verb_fr=f"{employee} a été assigné à votre ticket - {ticket}.",
+                    verb_fr=f"{employee} a été attribué à votre ticket - {ticket}.",
                     icon="infinite",
                     redirect=reverse("ticket-detail", kwargs={"ticket_id": ticket.id}),
                 )
@@ -1822,6 +1822,29 @@ def load_faqs(request):
         },
     )
 
+@login_required
+def iso_forms_home(request):
+    """ISO Forms landing page showing password reset requests."""
+
+    current_employee = getattr(request.user, "employee_get", None)
+    queryset = PasswordResetRequest.objects.select_related(
+        "ticket",
+        "ticket__employee_id",
+    ).order_by("-created_at")
+
+    if not request.user.is_superuser:
+        if current_employee:
+            queryset = queryset.filter(ticket__employee_id=current_employee)
+        else:
+            queryset = queryset.none()
+
+    context = {
+        "password_reset_requests": queryset,
+        "current_employee": current_employee,
+    }
+    return render(request, "helpdesk/iso_forms/index.html", context)
+
+
 # PASSWORD RESET REQUEST VIEWS
 
 def _get_password_reset_ticket_type():
@@ -1892,7 +1915,7 @@ def password_reset_request_create(request):
                 employee_id=employee,
                 ticket_type=ticket_type,
                 description=description,
-                priority="medium",
+                priority="high",
                 assigning_type=assigning_type,
                 raised_on=raised_on,
                 deadline=deadline,
@@ -2045,3 +2068,56 @@ def iso_review_password_reset(request, pr_id):
                 messages.error(request, error)
 
     return HttpResponseRedirect(request.META.get("HTTP_REFERER", "/"))
+
+
+@login_required
+def password_reset_request_delete(request, pr_id):
+    """
+    Superuser-only: delete a Password Reset request and its associated ticket.
+    """
+    if not request.user.is_superuser:
+        messages.info(request, _("You don't have permission."))
+        return HttpResponseRedirect(request.META.get("HTTP_REFERER", "/"))
+
+    if request.method == "POST":
+        try:
+            pr_request = PasswordResetRequest.objects.get(id=pr_id)
+            ticket = pr_request.ticket
+            ticket_title = str(ticket)
+
+            # Send delete notification
+            try:
+                employees = ticket.assigned_to.all()
+                assignees = [employee.employee_user_id for employee in employees]
+                assignees.append(ticket.employee_id.employee_user_id)
+                notify.send(
+                    request.user.employee_get,
+                    recipient=assignees,
+                    verb=f"The password reset request ticket has been deleted.",
+                    verb_ar="تم حذف تذكرة طلب إعادة تعيين كلمة المرور.",
+                    verb_de="Das Passwort-Zurücksetzungsticket wurde gelöscht.",
+                    verb_es="El ticket de restablecimiento de contraseña ha sido eliminado.",
+                    verb_fr="Le ticket de réinitialisation de mot de passe a été supprimé.",
+                    icon="key",
+                    redirect=reverse("iso-forms-home"),
+                )
+            except Exception as exc:
+                logger.error("Password reset delete notify error: %s", exc)
+
+            # Delete the PR (cascade will handle it) then the ticket
+            pr_request.delete()
+            ticket.delete()
+
+            messages.success(
+                request,
+                _('The password reset request "{}" has been deleted successfully.').format(
+                    ticket_title
+                ),
+            )
+        except PasswordResetRequest.DoesNotExist:
+            messages.error(request, _("Password reset request not found."))
+        except Exception:
+            messages.error(request, _("You cannot delete this password reset request."))
+
+    return HttpResponseRedirect(request.META.get("HTTP_REFERER", "/"))
+

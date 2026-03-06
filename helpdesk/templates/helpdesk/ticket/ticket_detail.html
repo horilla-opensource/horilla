@@ -92,7 +92,6 @@
                     <p class="oh-helpdesk__header-title">{{ticket.title}}</p>
 
                     <span class="helpdesk__card-value me-3">
-                        {% if ticket.ticket_type.title != 'Password Reset' %}
                             {% if perms.helpdesk.change_ticket or request.user.employee_get|is_department_manager:ticket or request.user.employee_get in ticket.assigned_to.all or request.user.employee_get == ticket.employee_id %}
                                 <select name="status_update" title='{% trans "Status" %}' class="oh-select"
                                     onchange="updateStatus()"
@@ -115,7 +114,6 @@
                                     {% endfor %}
                                 </select>
                             {% endif %}
-                        {% endif %}
                     </span>
                 </div>
                 </div>
@@ -339,7 +337,6 @@
                                 <span class="helpdesk__card-value">{{ticket.created_date}}</span>
                             </li>
                             <li class="helpdesk__card-item">
-                                {% if ticket.ticket_type.title != 'Password Reset' %}
                                 {% if perms.helpdesk.change_ticket or request.user.employee_get|is_department_manager:ticket or request.user.employee_get in ticket.assigned_to.all or request.user.employee_get == ticket.employee_id %}
                                 <form hx-swap="none" hx-post='{% url "update-priority" ticket.id %}' method="post">
                                     {% csrf_token %}
@@ -371,7 +368,6 @@
                                     </div>
                                 </div>
                                 {% endif %}
-                                {% endif %}
                             </li>
                             <li class="helpdesk__card-item">
                                 <span class="helpdesk__card-label">{% trans "Last activity:" %}</span>
@@ -383,7 +379,6 @@
                             </li>
                         </ul>
                         <div class="helpdesk__card-footer">
-                            {% if ticket.ticket_type.title != 'Password Reset' %}
                             <span class="helpdesk__card-label">{% trans "Tags:" %}</span>
                             {% if perms.helpdesk.change_ticket or request.user.employee_get == ticket.employee_id or request.user.employee_get|is_department_manager:ticket %}
                             <div class="oh-helpdesk-selectbox">
@@ -395,7 +390,6 @@
                                 {{tag}},
                                 {% endfor %}
                             </span>
-                            {% endif %}
                             {% endif %}
                         </div>
                     </div>
@@ -435,14 +429,12 @@
                                 <span class="oh-helpdesk__subcard-title">{% trans "Assigned to" %}</span>
                                 {% if perms.helpdesk.change_ticket or request.user.employee_get|is_department_manager:ticket or perms.helpdesk.change_claimrequest %}
                                 <div class="oh-btn-group">
-                                    {% if ticket.ticket_type.title != 'Password Reset' %}
                                     <button hx-get="{% url 'view-ticket-claim-request' ticket.id %}"
                                         hx-target="#objectDetailsModalTarget" data-toggle="oh-modal-toggle"
                                         data-target="#objectDetailsModal" class="oh-btn oh-btn--info p-3 w-100"
                                         title="{% trans 'Claim Requests' %}">
                                         <ion-icon name="eye-outline"></ion-icon>
                                     </button>
-                                    {% endif %}
                                     <button class="oh-btn oh-btn--light-bkg p-3 w-100"
                                         hx-get="{% url 'ticket-change-assignees' ticket.id %}"
                                         data-target="#addTagModal" hx-target="#addTagTarget"
