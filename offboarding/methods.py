@@ -98,9 +98,19 @@ def assign_task_to_stage_employees(sender, instance, created, **kwargs):
         else:
             employees = OffboardingEmployee.objects.all()
 
-        for employee in employees:
-            EmployeeTask.objects.get_or_create(
+        # Prepare EmployeeTask instances for bulk creation to avoid
+        # issuing one query (and one save/notification) per employee.
+        employee_tasks = [
+            EmployeeTask(
                 employee_id=employee,
                 task_id=instance,
-                defaults={"status": "todo"}
+                status="todo",
+            )
+            for employee in employees
+        ]
+
+        if employee_tasks:
+            EmployeeTask.objects.bulk_create(
+                employee_tasks,
+                ignore_conflicts=True,
             )
