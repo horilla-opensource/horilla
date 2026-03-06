@@ -47,10 +47,12 @@
                     <div class="col-12 col-sm-12 col-md-12 col-lg-6">
                         <label class="oh-label" for="email">{% trans "Email *" %}</label>
                         {{ form.email }}
+                        {{ form.email.errors }}
                     </div>
                     <div class="col-12 col-sm-12 col-md-12 col-lg-6">
                         <label class="oh-label" for="phone">{% trans "Mobile Number *" %}</label>
                         {{ form.phone }}
+                        {{ form.phone.errors }}
                     </div>
                 </div>
                 <div class="row" data-select2-id="select2-data-46-nz80">
