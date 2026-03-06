@@ -84,3 +84,33 @@ def compute_resignation_balance(employee, last_working_date, notice_end_date):
                 logger.error("Error creating deduction task: %s", e)
     return amount_for_fine
 
+
+def assign_task_to_stage_employees(sender, instance, created, **kwargs):
+    """
+    Helper to automatically assign a new OffboardingTask
+    to existing OffboardingEmployees in that task's stage.
+    """
+    if created:
+        from django.db.models import Q
+        # If stage_id is null, it typically applies to all stages
+        if instance.stage_id:
+            employees = OffboardingEmployee.objects.filter(stage_id=instance.stage_id)
+        else:
+            employees = OffboardingEmployee.objects.all()
+
+        # Prepare EmployeeTask instances for bulk creation to avoid
+        # issuing one query (and one save/notification) per employee.
+        employee_tasks = [
+            EmployeeTask(
+                employee_id=employee,
+                task_id=instance,
+                status="todo",
+            )
+            for employee in employees
+        ]
+
+        if employee_tasks:
+            EmployeeTask.objects.bulk_create(
+                employee_tasks,
+                ignore_conflicts=True,
+            )

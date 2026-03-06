@@ -265,6 +265,13 @@ class OffboardingTask(HorillaModel):
     def __str__(self) -> str:
         return self.title
 
+@receiver(post_save, sender=OffboardingTask)
+def auto_assign_task_to_stage_employees(sender, instance, created, **kwargs):
+    """
+    Hook into OffboardingTask creation to automatically assign tasks to existing employees
+    """
+    from offboarding.methods import assign_task_to_stage_employees
+    assign_task_to_stage_employees(sender, instance, created, **kwargs)
 
 class EmployeeTask(HorillaModel):
     """

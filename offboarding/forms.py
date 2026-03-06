@@ -154,6 +154,26 @@ class NoteForm(ModelForm):
         super().__init__(*args, **kwargs)
         self.fields["attachment"] = MultipleFileField(label="Attachements")
         self.fields["attachment"].required = False
+        # Set max_length and add helper text for description field
+        if "description" in self.fields:
+            self.fields["description"].widget.attrs.update({
+                "maxlength": "255",
+                "placeholder": "Add notes (max 255 characters)",
+            })
+            self.fields["description"].help_text = "Maximum 255 characters allowed"
+
+    def clean_description(self):
+        """
+        Validate description field character limit
+        """
+        description = self.cleaned_data.get("description")
+        if description and len(description) > 255:
+            raise forms.ValidationError(
+                _("Comment cannot exceed 255 characters. Current length: %(length)d"),
+                code="max_length",
+                params={"length": len(description)},
+            )
+        return description
 
     def as_p(self):
         """
