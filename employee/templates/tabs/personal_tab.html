@@ -410,6 +410,15 @@
                             class="oh-profile__info-value">{{employee.employee_bank_details.any_other_code2|default:_("None")}}</span>
                       </li>
 
+                      <li class="oh-profile__card-info-item">
+                         <span class="oh-profile__info-label mb-1">
+                            <ion-icon name="barcode-outline"></ion-icon>
+                            <span>{% trans "SWIFT Code" %}</span>
+                         </span>
+                         <span
+                            class="oh-profile__info-value">{{employee.employee_bank_details.swift_code|default:_("None")}}</span>
+                      </li>
+
                    </ul>
                 </div>
                 <div class="col-12 col-sm-12 col-md-12 col-lg-6">
@@ -430,6 +439,15 @@
                          </span>
                          <span
                             class="oh-profile__info-value">{{employee.employee_bank_details.any_other_code1|default:_("None")}}</span>
+                      </li>
+
+                      <li class="oh-profile__card-info-item">
+                         <span class="oh-profile__info-label mb-1">
+                            <ion-icon name="cash-outline"></ion-icon>
+                            <span>{% trans "Currency Type" %}</span>
+                         </span>
+                         <span
+                            class="oh-profile__info-value">{{employee.employee_bank_details.get_currency_type_display|default:_("None")}}</span>
                       </li>
 
                       {# <li class="oh-profile__card-info-item">#}
