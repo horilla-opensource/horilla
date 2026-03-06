@@ -1,4 +1,5 @@
-{% load i18n %}{% load widget_tweaks %} {% load horillafilters %}
+{% load i18n widget_tweaks horillafilters %}
+
 {% for field in form %}
     {% if field.field.widget.is_hidden %}
         {{ field }}
@@ -14,7 +15,7 @@
                         <label class="oh-label {% if field.field.required %} required-star{% endif %}"
                             for="id_{{ field.name }}">{% trans field.label %}</label>
                         {% if field.help_text != '' %}
-                        <span class="oh-info mr-2" title="{{ field.help_text|safe }}"></span>
+                        <span class="oh-info mr-2" title="{{ field.help_text }}"></span>
                         {% endif %}
                     </div>
                     <div style="width: 100%; padding: 12px;" id="id_{{ field.name }}_parent_div">
@@ -27,7 +28,7 @@
                             <label class="oh-label {% if field.field.required %} required-star{% endif %}"
                                 for="id_{{ field.name }}">{% trans field.label %}</label>
                             {% if field.help_text != '' %}
-                                <span class="oh-info mr-2" title="{{ field.help_text|safe }}"></span>
+                                <span class="oh-info mr-2" title="{{ field.help_text }}"></span>
                             {% endif %}
                         </div>
                         {% if field.field.widget.input_type == "checkbox" %}
