@@ -1151,20 +1151,23 @@ def update_group_permission(
     form = UserGroupForm(request.POST, instance=instance)
     if form.is_valid():
         form.save()
-        return JsonResponse({"message": "Updated the permissions", "type": "success"})
+        messages.success(request, _("Updated the permissions"))
+        return JsonResponse({})
     if request.POST.get("name_update"):
         name = request.POST["name"]
         if len(name) > 3:
             instance.name = name
             instance.save()
+            messages.success(request, _("Name updated"))
             return JsonResponse({"message": "Name updated", "type": "success"})
-        return JsonResponse(
-            {"message": "At least 4 characters required", "type": "success"}
-        )
+        messages.info(request, _("At least 4 characters required"))
+        return JsonResponse({})
     perms = form.cleaned_data.get("permissions")
     if not perms:
         instance.permissions.clear()
-        return JsonResponse({"message": "All permission cleared", "type": "info"})
+        messages.info(request, _("All permission cleared"))
+        return JsonResponse({})
+    messages.error(request, _("Something went wrong"))
     return JsonResponse({"message": "Something went wrong", "type": "danger"})
 
 
