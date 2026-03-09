@@ -482,22 +482,22 @@ def attendance_delete(request, obj_id):
                     total_overtime = attendance_overtime_seconds - total_overtime
                 overtime.overtime = format_time(total_overtime)
                 overtime.save()
-            try:
-                attendance.delete()
-                messages.success(request, _("Attendance deleted."))
-            except ProtectedError as e:
-                model_verbose_names_set = set()
-                for obj in e.protected_objects:
-                    model_verbose_names_set.add(__(obj._meta.verbose_name.capitalize()))
-                model_names_str = ", ".join(model_verbose_names_set)
-                messages.error(
-                    request,
-                    _(
-                        ("An attendance entry for {} already exists.").format(
-                            model_names_str
-                        )
-                    ),
-                )
+        try:
+            attendance.delete()
+            messages.success(request, _("Attendance deleted."))
+        except ProtectedError as e:
+            model_verbose_names_set = set()
+            for obj in e.protected_objects:
+                model_verbose_names_set.add(__(obj._meta.verbose_name.capitalize()))
+            model_names_str = ", ".join(model_verbose_names_set)
+            messages.error(
+                request,
+                _(
+                    ("An attendance entry for {} already exists.").format(
+                        model_names_str
+                    )
+                ),
+            )
     except (Attendance.DoesNotExist, OverflowError):
         messages.error(request, _("Attendance Does not exists.."))
     return HorillaRedirect(request)

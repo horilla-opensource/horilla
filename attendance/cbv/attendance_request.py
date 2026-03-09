@@ -81,7 +81,7 @@ class AttendancesRequestListView(HorillaListView):
 
     def __init__(self, **kwargs: Any) -> None:
         super().__init__(**kwargs)
-        self.search_url = reverse("attendance-request-tab")
+        self.search_url = reverse("attendance-list-tab")
 
     filter_class = AttendanceFilters
     model = Attendance

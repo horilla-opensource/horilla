@@ -18,7 +18,7 @@
         {% endif %}
 
 		{% if request.user|is_reportingmanager or perms.attendance.change_attendance %}
-            <a href="{% url 'cancel-validate-attendance-request' instance.id %}" data-toggle="oh-modal-toggle"
+            <a href="{% url 'cancel-validate-attendance-request' instance.id %}"
                 class="w-24 px-4 py-2 bg-white rounded-md text-xs flex items-center justify-center gap-2 border border-primary-500 hover:border-primary-600 transition duration-300"
                 title="{% trans 'Reject' %}"
                 >
