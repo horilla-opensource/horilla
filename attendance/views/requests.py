@@ -586,6 +586,7 @@ def cancel_attendance_request(request, attendance_id):
                 verb_es=f"Tu solicitud de asistencia para el {attendance.attendance_date} ha sido rechazada",
                 verb_fr=f"Votre demande de présence pour le {attendance.attendance_date} est rejetée",
                 icon="close-circle-outline",
+                redirect=reverse("request-attendance-view"),
             )
     except (Attendance.DoesNotExist, OverflowError):
         messages.error(request, _("Attendance request not found"))
