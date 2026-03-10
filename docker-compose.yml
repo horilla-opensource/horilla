@@ -1,8 +1,6 @@
 services:
   web:
     build: .
-    ports:
-      - "8000:8000"
     volumes:
       - .:/app
       - staticfiles:/app/staticfiles
@@ -26,16 +24,12 @@ services:
       POSTGRES_PASSWORD: horilla_pass
     volumes:
       - postgres_data:/var/lib/postgresql/data
-    ports:
-      - "5432:5432"
 
   redis:
     image: redis:7-alpine
     command: redis-server --appendonly yes --requirepass horilla_pass
     volumes:
       - redis_data:/data
-    ports:
-      - "6379:6379"
 
   nginx:
     image: nginx:alpine
