@@ -68,7 +68,7 @@ COPY --chown=appuser:appuser . .
 
 # Copy entrypoint script
 COPY --chown=appuser:appuser docker/entrypoint.sh /entrypoint.sh
-RUN chmod +x /entrypoint.sh
+RUN sed -i 's/\r$//' /entrypoint.sh && chmod +x /entrypoint.sh
 
 # Create necessary directories and set permissions
 RUN mkdir -p staticfiles media \
