@@ -1207,7 +1207,7 @@ def archive_employee_objective(request, emp_obj_id):
         return HttpResponse(
             "<script> $('.reload-record').click(); $('#reloadMessagesButton').click();</script>"
         )
-    return HttpResponseRedirect(request.META.get("HTTP_REFERER", "/"))
+    return HorillaRedirect(request)
 
 
 @login_required
@@ -1233,7 +1233,7 @@ def delete_employee_objective(request, emp_obj_id):
         objective.assignees.remove(employee)
         messages.success(request, _("Objective deleted successfully!."))
     if not single_view:
-        return HttpResponseRedirect(request.META.get("HTTP_REFERER", "/"))
+        return HorillaRedirect(request)
     else:
         return HorillaRedirect(request)
 
@@ -2120,7 +2120,7 @@ def get_feedback_overview(request, obj_id):
         messages.info(request, _("You dont have permission."))
     else:
         messages.info(request, _("Feedback does not exist."))
-    return HttpResponseRedirect(request.META.get("HTTP_REFERER", "/"))
+    return HorillaRedirect(request)
 
 
 @login_required

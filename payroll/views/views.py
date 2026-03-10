@@ -283,7 +283,7 @@ def contract_delete(request, contract_id):
         messages.error(request, _("Contract not found."))
     except ProtectedError:
         messages.error(request, _("You cannot delete this contract."))
-    return HttpResponseRedirect(request.META.get("HTTP_REFERER", "/"))
+    return HorillaRedirect(request)
 
 
 @login_required
@@ -436,7 +436,7 @@ def settings(request):
 
             currency_form.save()
             messages.success(request, _("Payroll settings updated."))
-            return HttpResponseRedirect(request.META.get("HTTP_REFERER", "/"))
+            return HorillaRedirect(request)
     return render(
         request,
         "payroll/settings/payroll_settings.html",
@@ -1858,7 +1858,7 @@ def initial_notice_period(request):
     )
     if request.META.get("HTTP_HX_REQUEST"):
         return HttpResponse()
-    return HttpResponseRedirect(request.META.get("HTTP_REFERER", "/"))
+    return HorillaRedirect(request)
 
 
 # ===========================Auto payslip generate================================
