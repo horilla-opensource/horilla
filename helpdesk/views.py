@@ -65,7 +65,12 @@ from helpdesk.models import (
     Ticket,
     TicketType,
 )
-from helpdesk.threading import AddAssigneeThread, RemoveAssigneeThread, TicketSendThread
+from helpdesk.threading import (
+    AddAssigneeThread,
+    PasswordResetMailThread,
+    RemoveAssigneeThread,
+    TicketSendThread,
+)
 from horilla.decorators import (
     hx_request_required,
     login_required,
@@ -1948,9 +1953,14 @@ def password_reset_request_create(request):
             except Exception as exc:
                 logger.error("Password reset notify error: %s", exc)
 
-            # Email notification
+            # Email notification to ISO officers and confirmation to requester
             try:
-                mail_thread = TicketSendThread(request, ticket, type="create")
+                mail_thread = PasswordResetMailThread(
+                    request,
+                    ticket,
+                    type="new_request",
+                    pr_request=pr_request,
+                )
                 mail_thread.start()
             except Exception as exc:
                 logger.error("Password reset mail error: %s", exc)
@@ -2056,9 +2066,41 @@ def iso_review_password_reset(request, pr_id):
             except Exception as exc:
                 logger.error("ISO review notify error: %s", exc)
 
-            # Email requestor
+            # In-app notification to other ISO officers about the review
             try:
-                mail_thread = TicketSendThread(request, ticket, type="status_change")
+                status_text = "approved" if action == "approve" else "rejected"
+                other_admins = list(
+                    User.objects.filter(is_superuser=True, is_active=True)
+                    .exclude(pk=request.user.pk)
+                )
+                if other_admins:
+                    notify.send(
+                        request.user.employee_get,
+                        recipient=other_admins,
+                        verb=(
+                            f"Password reset request by {requestor.get_full_name()} "
+                            f"for {pr_request.platform} has been {status_text}."
+                        ),
+                        verb_ar="تم مراجعة طلب إعادة تعيين كلمة المرور.",
+                        verb_de="Der Passwort-Zurücksetzungsantrag wurde überprüft.",
+                        verb_es="La solicitud de restablecimiento de contraseña ha sido revisada.",
+                        verb_fr="La demande de réinitialisation de mot de passe a été examinée.",
+                        icon="key",
+                        redirect=reverse("ticket-detail", kwargs={"ticket_id": ticket.id}),
+                    )
+            except Exception as exc:
+                logger.error("ISO review notify to admins error: %s", exc)
+
+            # Email notification to requestor and ISO officers
+            try:
+                mail_thread = PasswordResetMailThread(
+                    request,
+                    ticket,
+                    type="iso_review",
+                    pr_request=pr_request,
+                    action=action,
+                    feedback=feedback,
+                )
                 mail_thread.start()
             except Exception as exc:
                 logger.error("ISO review mail error: %s", exc)

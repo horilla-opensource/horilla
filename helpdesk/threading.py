@@ -11,6 +11,8 @@ from django.contrib import messages
 from django.core.mail import EmailMessage
 from django.template.loader import render_to_string
 
+from django.contrib.auth.models import User
+
 from base.backends import ConfiguredEmailBackend
 from base.models import Department
 from employee.models import EmployeeWorkInformation
@@ -254,3 +256,166 @@ class RemoveAssigneeThread(Thread):
                 messages.error(
                     self.request, f"Mail not sent to {recipient.get_full_name()}"
                 )
+
+
+class PasswordResetMailThread(Thread):
+    """
+    Thread for sending email notifications related to Password Reset requests.
+
+    Supported types:
+      - "new_request": Notifies ISO officers/superusers about a new request.
+      - "iso_review": Notifies the requesting employee about approval/rejection.
+    """
+
+    def __init__(self, request, ticket, type, pr_request=None, action=None, feedback=None):
+        Thread.__init__(self)
+        self.request = request
+        self.ticket = ticket
+        self.type = type
+        self.pr_request = pr_request
+        self.action = action
+        self.feedback = feedback or ""
+        self.host = request.get_host()
+        self.protocol = "https" if request.is_secure() else "http"
+
+    def _send_email(self, subject, content, recipients, ticket_id=None):
+        """Send an email to each recipient Employee."""
+        host = self.host
+        protocol = self.protocol
+        link = "#"
+        email_backend = ConfiguredEmailBackend()
+
+        display_email_name = email_backend.dynamic_from_email_with_display_name
+        if self.request:
+            try:
+                display_email_name = (
+                    f"{self.request.user.employee_get.get_full_name()} "
+                    f"<{self.request.user.employee_get.email}>"
+                )
+            except Exception:
+                logger.error("Could not get display email name from request user")
+
+        if ticket_id:
+            link = f"{protocol}://{host}/helpdesk/ticket-detail/{ticket_id}/"
+
+        for recipient in recipients:
+            html_message = render_to_string(
+                "helpdesk/mail_templates/ticket_mail.html",
+                {
+                    "link": link,
+                    "instance": recipient,
+                    "host": host,
+                    "protocol": protocol,
+                    "subject": subject,
+                    "content": content,
+                },
+                request=self.request,
+            )
+
+            email = EmailMessage(
+                subject=subject,
+                body=html_message,
+                from_email=display_email_name,
+                to=[recipient.email],
+                reply_to=[display_email_name],
+            )
+            email.content_subtype = "html"
+            try:
+                email.send()
+            except Exception:
+                logger.error("Mail not sent to %s", recipient.get_full_name())
+
+    def run(self) -> None:
+        super().run()
+
+        if self.type == "new_request":
+            # Notify all ISO officers / superusers about the new password reset request
+            owner = self.ticket.employee_id
+            platform = self.pr_request.platform if self.pr_request else "N/A"
+
+            # Get all active superusers who have employee records
+            iso_employees = []
+            superusers = User.objects.filter(is_superuser=True, is_active=True)
+            for su in superusers:
+                try:
+                    iso_employees.append(su.employee_get)
+                except Exception:
+                    pass
+
+            if iso_employees:
+                subject = "New Password Reset Request Submitted"
+                content = (
+                    f"A new password reset request has been submitted by "
+                    f"{owner.get_full_name()} for platform: {platform}. "
+                    f"Please review the request and take appropriate action "
+                    f"(approve or reject). You can view the details by clicking "
+                    f"the link below."
+                )
+                self._send_email(subject, content, iso_employees, self.ticket.id)
+
+            # Also send confirmation email to the requesting employee
+            subject_owner = "Password Reset Request Submitted Successfully"
+            content_owner = (
+                f"Your password reset request for {platform} has been "
+                f"successfully submitted and is pending ISO Officer review. "
+                f"You will be notified once the request has been reviewed."
+            )
+            self._send_email(subject_owner, content_owner, [owner], self.ticket.id)
+
+        elif self.type == "iso_review":
+            # Notify the requesting employee about approval/rejection
+            owner = self.ticket.employee_id
+            platform = self.pr_request.platform if self.pr_request else "N/A"
+            reviewer = self.request.user
+
+            try:
+                reviewer_name = reviewer.employee_get.get_full_name()
+            except Exception:
+                reviewer_name = reviewer.get_full_name() or reviewer.username
+
+            if self.action == "approve":
+                subject = "Your Password Reset Request Has Been Approved"
+                content = (
+                    f"Your password reset request for {platform} has been "
+                    f"approved by {reviewer_name}. "
+                    f"The necessary actions will be taken to reset your password. "
+                    f"If you have any questions, please contact the IT/Helpdesk team."
+                )
+            else:
+                subject = "Your Password Reset Request Has Been Rejected"
+                content = (
+                    f"Your password reset request for {platform} has been "
+                    f"rejected by {reviewer_name}."
+                )
+                if self.feedback:
+                    content += f" Reason: {self.feedback}"
+                content += (
+                    " If you believe this was done in error or have additional "
+                    "information, please submit a new request or contact the "
+                    "IT/Helpdesk team."
+                )
+
+            self._send_email(subject, content, [owner], self.ticket.id)
+
+            # Also notify other ISO officers about the review action
+            iso_employees = []
+            superusers = User.objects.filter(is_superuser=True, is_active=True)
+            for su in superusers:
+                try:
+                    emp = su.employee_get
+                    # Don't notify the reviewer themselves
+                    if emp != owner and su != reviewer:
+                        iso_employees.append(emp)
+                except Exception:
+                    pass
+
+            if iso_employees:
+                status_text = "approved" if self.action == "approve" else "rejected"
+                subject_iso = f"Password Reset Request {status_text.capitalize()}"
+                content_iso = (
+                    f"The password reset request submitted by "
+                    f"{owner.get_full_name()} for {platform} has been "
+                    f"{status_text} by {reviewer_name}."
+                )
+                self._send_email(subject_iso, content_iso, iso_employees, self.ticket.id)
+
