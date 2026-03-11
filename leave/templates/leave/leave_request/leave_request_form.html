@@ -4,6 +4,9 @@
         hx-on-htmx-after-request="setTimeout(function () { reloadMessage(this); $('.oh-modal__close').click(); }, 1000);">
     </span>
 {% endif %}
+<script>
+    $("#objectUpdateModalTarget").empty();
+</script>
 <div class="oh-modal__dialog-header">
     <span class="oh-modal__dialog-title" id="objectCreateModalLabel">{{form.verbose_name}}</span>
     <button class="oh-modal__close" aria-label="Close">
