@@ -1,8 +1,4 @@
 {% load i18n %}
-<button hidden id="previewHxButton" hx-post="{% url 'get-mail-preview' %}?{% if cand %}candidate_id={{cand.id}}&{% endif %}" hx-target="#preview"
-    hx-include="#ack-form-{{cand.id}}"
-    hx-on-htmx-before-request="if (!$('#template').val()) { event.preventDefault(); }">
-</button>
 <div id="ack-message-{{cand.id}}"></div>
 
 <div class="oh-modal__dialog-header">
@@ -82,20 +78,19 @@
             <div class="form-group mt-2">
                 <label for="body"><h6>{% trans "Message Body" %}</h6></label>
                 <div class="oh-input__group">
-                    <div class="oh-tabs__view-buttons mt-2">
-                        <span class="tab-btn active" data-tab="write">
-                            <span>{% trans 'Write' %}</span>
-                        </span>
-                        <span class="tab-btn" data-tab="preview" hx-on:click="$('#previewHxButton').click();">
-                            <span>{% trans 'Preview' %}</span>
-                        </span>
+                    <div class="oh-tabs__view-buttons mt-2 d-flex gap-1">
+                        <button type="button" class="oh-btn oh-btn--secondary oh-btn--small px-3 tab-btn" data-tab="write" id="writeTabBtn">
+                            <ion-icon name="create-outline" class="me-1"></ion-icon>
+                            {% trans "Write" %}
+                        </button>
+                        <button type="button" class="oh-btn oh-btn--secondary oh-btn--small px-3 tab-btn" data-tab="preview" id="previewTabBtn">
+                            <ion-icon name="eye-outline" class="me-1"></ion-icon>
+                            {% trans "Preview" %}
+                        </button>
                     </div>
                     <div id="write" class="oh-tabs__view active">
                         <textarea id="writeField" class="oh-input oh-input--textarea" hidden name="body"
                             data-summernote required placeholder="Type something here..."></textarea>
-                    </div>
-                    <div id="preview" class="oh-tabs__view">
-                        <textarea id="previewField" class="oh-input oh-input--textarea" placeholder="preview..."></textarea>
                     </div>
                 </div>
             </div>
@@ -200,25 +195,78 @@
                     // Fallback if summernote not initialized yet
                     $('#writeField').val(response.body);
                 }
-
-                // Trigger preview refresh
-                $('#previewHxButton').click();
             }
             });
         }
     }
 
-    tabButtons = document.querySelectorAll(".tab-btn");
-    contents = document.querySelectorAll(".oh-tabs__view");
+    function getCsrfToken() {
+        var t = $('input[name=csrfmiddlewaretoken]').val();
+        if (t) return t;
+        var m = document.cookie.match(/csrftoken=([^;]+)/);
+        return m ? m[1] : '';
+    }
 
-    tabButtons.forEach((tabButton) => {
-        tabButton.addEventListener("click", () => {
-            tabButtons.forEach((btn) => btn.classList.remove("active"));
-            tabButton.classList.add("active");
+    function setWriteFieldHtml(html) {
+        if ($('#writeField').next('.note-editor').length) {
+            $('#writeField').summernote('code', html);
+        } else {
+            $('#writeField').val(html);
+        }
+    }
 
-            contents.forEach((content) => content.classList.remove("active"));
-            document.getElementById(tabButton.dataset.tab).classList.add("active");
+    function loadTemplateIntoWriteField() {
+        var id = $("#template").val();
+        if (!id || !id.length) return;
+        $.ajax({
+            type: "get",
+            url: "/recruitment/get-template/" + id + "/",
+            data: { "candidate_id": "{{ cand.id|default:'' }}" },
+            dataType: "json",
+            success: function (response) {
+                setWriteFieldHtml(response.body || '');
+            }
         });
+    }
+
+    function loadPreviewIntoWriteField() {
+        var body = '';
+        if ($('#writeField').next('.note-editor').length) {
+            body = $('#writeField').summernote('code') || '';
+        } else {
+            body = $('#writeField').val() || '';
+        }
+        if (!body.trim()) return;
+        var form = document.getElementById('ack-form-{{cand.id}}');
+        var fd = new FormData(form);
+        fd.set('body', body);
+        fetch("{% url 'get-mail-preview' %}{% if cand %}?candidate_id={{cand.id}}{% endif %}", {
+            method: 'POST',
+            headers: { 'X-CSRFToken': getCsrfToken() },
+            body: fd,
+            credentials: 'same-origin'
+        }).then(function (r) {
+            if (!r.ok) return r.text().then(function (t) { throw new Error(t || r.status); });
+            return r.text();
+        }).then(function (html) {
+            setWriteFieldHtml(html);
+        }).catch(function () { /* keep workflow; optional: toast */ });
+    }
+
+    document.getElementById('writeTabBtn').addEventListener('click', function (e) {
+        e.preventDefault();
+        e.stopPropagation();
+        document.querySelectorAll('.tab-btn').forEach(function (btn) { btn.classList.remove('active'); });
+        this.classList.add('active');
+        loadTemplateIntoWriteField();
+    });
+
+    document.getElementById('previewTabBtn').addEventListener('click', function (e) {
+        e.preventDefault();
+        e.stopPropagation();
+        document.querySelectorAll('.tab-btn').forEach(function (btn) { btn.classList.remove('active'); });
+        this.classList.add('active');
+        loadPreviewIntoWriteField();
     });
 
     {% if form.instance.title %}
