@@ -395,6 +395,52 @@
                     </div>
                 </div>
                 <!-- End of Ticket Info. -->
+                {% if password_reset_request %}
+                <!-- ISO Review Status Card -->
+                <div class="oh-helpdesk__card">
+                    <div class="oh-helpdesk__card-header d-flex justify-content-between align-items-center">
+                        <span class="oh-helpdesk__card-title">{% trans "ISO Review" %}</span>
+                        {% if password_reset_request.iso_status == 'PENDING' %}
+                            <span class="oh-badge oh-badge--info">{% trans "Pending" %}</span>
+                        {% elif password_reset_request.iso_status == 'APPROVED' %}
+                            <span class="oh-badge oh-badge--success">{% trans "Approved" %}</span>
+                        {% elif password_reset_request.iso_status == 'REJECTED' %}
+                            <span class="oh-badge oh-badge--danger">{% trans "Rejected" %}</span>
+                        {% endif %}
+                    </div>
+                    <div class="oh-helpdesk__card-body">
+                        <ul class="helpdesk__card-items">
+                            <li class="helpdesk__card-item">
+                                <span class="helpdesk__card-label">{% trans "Platform:" %}</span>
+                                <span class="helpdesk__card-value">{{ password_reset_request.platform }}</span>
+                            </li>
+                            <li class="helpdesk__card-item">
+                                <span class="helpdesk__card-label">{% trans "User ID:" %}</span>
+                                <span class="helpdesk__card-value">{{ password_reset_request.user_id }}</span>
+                            </li>
+                            {% if password_reset_request.reviewed_by %}
+                            <li class="helpdesk__card-item">
+                                <span class="helpdesk__card-label">{% trans "Reviewed by:" %}</span>
+                                <span class="helpdesk__card-value">{{ password_reset_request.reviewed_by.employee_get.get_full_name }}</span>
+                            </li>
+                            {% endif %}
+                            {% if password_reset_request.reviewed_at %}
+                            <li class="helpdesk__card-item">
+                                <span class="helpdesk__card-label">{% trans "Reviewed at:" %}</span>
+                                <span class="helpdesk__card-value">{{ password_reset_request.reviewed_at }}</span>
+                            </li>
+                            {% endif %}
+                            {% if password_reset_request.iso_feedback %}
+                            <li class="helpdesk__card-item">
+                                <span class="helpdesk__card-label">{% trans "Feedback:" %}</span>
+                                <span class="helpdesk__card-value">{{ password_reset_request.iso_feedback }}</span>
+                            </li>
+                            {% endif %}
+                        </ul>
+                    </div>
+                </div>
+                <!-- End of ISO Review Status Card -->
+                {% endif %}
                 <!-- Responsibility Card -->
                 <div class="oh-helpdesk__card">
                     <div class="oh-helpdesk__card-header d-flex justify-content-between">

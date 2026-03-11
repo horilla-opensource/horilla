@@ -2054,6 +2054,34 @@ def iso_review_password_reset(request, pr_id):
             pr_request.save()
             ticket.save()
 
+            # Create a comment on the ticket so it shows up in the activity feed
+            try:
+                reviewer_employee = request.user.employee_get
+                if action == "approve":
+                    comment_text = (
+                        f"<strong>ISO Review – Approved</strong><br>"
+                        f"Your password reset request for <strong>{pr_request.platform}</strong> "
+                        f"has been approved."
+                    )
+                    if feedback:
+                        comment_text += f"<br><strong>Feedback:</strong> {feedback}"
+                else:
+                    comment_text = (
+                        f"<strong>ISO Review – Rejected</strong><br>"
+                        f"Your password reset request for <strong>{pr_request.platform}</strong> "
+                        f"has been rejected."
+                    )
+                    if feedback:
+                        comment_text += f"<br><strong>Reason:</strong> {feedback}"
+
+                Comment.objects.create(
+                    comment=comment_text,
+                    ticket=ticket,
+                    employee_id=reviewer_employee,
+                )
+            except Exception as exc:
+                logger.error("ISO review comment creation error: %s", exc)
+
             # In-app notification to requestor
             try:
                 notify.send(
