@@ -17,6 +17,24 @@
 
         {{form.as_p}}
 
+        {% if temp_attachment_paths %}
+            <input type="hidden" name="temp_attachment_paths" value="{{ temp_attachment_paths }}">
+            <input type="hidden" name="temp_attachment_names" value="{{ temp_attachment_names|join:',' }}">
+            <div class="col-12 col-md-6 mt-2">
+                <div class="oh-label__info">
+                    <label class="oh-label">{% trans "Uploaded Attachments" %}</label>
+                </div>
+                <div class="d-flex flex-wrap gap-2 align-items-center" style="padding: 6px 0;">
+                    {% for name in temp_attachment_names %}
+                        <span style="display:inline-flex; align-items:center; background:#e8f4fd; border:1px solid #b8daff; border-radius:4px; padding:4px 10px; font-size:13px;">
+                            <ion-icon name="document-attach-outline" style="margin-right:5px;"></ion-icon>
+                            {{ name }}
+                        </span>
+                    {% endfor %}
+                </div>
+            </div>
+        {% endif %}
+
    {% if form.instance.pk %}
        {% if form.instance.attachment %}
             <div class="existing-attachments mt-6">
@@ -89,20 +107,5 @@
 <script>
     toggleReimbursmentType($("#objectCreateModalTarget [name=type]").first());
     removeHighlight();
-    var attachemntLabelElement = $(
-        "#objectCreateModalTarget [for=id_attachment]"
-    );
-    var attachemntlElement = $("#objectCreateModalTarget #id_attachment");
-    var attachemntParentlElement = $(
-        "#objectCreateModalTarget [for=id_attachment]"
-    ).parent();
-
-    // Detach both elements from the DOM
-    attachemntLabelElement.detach();
-    attachemntlElement.detach();
-    attachemntParentlElement.html("");
-    // Append them in the desired order
-    attachemntParentlElement.append(attachemntLabelElement);
-    attachemntParentlElement.append(attachemntlElement);
 </script>
 </div>
