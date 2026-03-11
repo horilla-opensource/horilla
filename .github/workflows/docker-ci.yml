@@ -1,0 +1,94 @@
+# Verify Docker build and runtime on the runner.
+# Catches: Dockerfile/build failures, migration errors, collectstatic issues,
+# gunicorn startup failures, and broken health endpoint.
+
+name: Docker CI
+
+on:
+  push:
+    branches: [dev/v2.0]
+  pull_request:
+    branches: [dev/v2.0]
+
+env:
+  COMPOSE_FILE: docker-compose.yml
+
+jobs:
+  docker-smoke:
+    runs-on: ubuntu-latest
+    timeout-minutes: 25
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v3
+
+      - name: Build web image
+        run: |
+          set -e
+          docker compose -f "$COMPOSE_FILE" build web
+
+      - name: Start db and redis
+        run: |
+          docker compose -f "$COMPOSE_FILE" up -d db redis
+          # Wait for Postgres to accept connections
+          for i in $(seq 1 60); do
+            if docker compose -f "$COMPOSE_FILE" exec -T db pg_isready -U horilla_user -d horilla_db 2>/dev/null; then
+              echo "Postgres is ready"
+              break
+            fi
+            sleep 2
+            if [ "$i" -eq 60 ]; then
+              echo "Postgres did not become ready in time"
+              docker compose -f "$COMPOSE_FILE" logs db
+              exit 1
+            fi
+          done
+
+      - name: Run migrations and Django checks (no long-running server)
+        run: |
+          set -e
+          # Bypass entrypoint to avoid makemigrations mutating the workspace on mounted volume.
+          # Still validates migrate + collectstatic + Django system checks against real Postgres.
+          docker compose -f "$COMPOSE_FILE" run --rm --no-deps \
+            --entrypoint "" \
+            web sh -c "
+              set -e
+              python manage.py migrate --noinput
+              python manage.py collectstatic --noinput
+              python manage.py check
+            "
+
+      - name: Start web (gunicorn) and wait for health
+        run: |
+          set -e
+          docker compose -f "$COMPOSE_FILE" up -d web
+
+          echo "Waiting for http://localhost:8000/health/ ..."
+          for i in $(seq 1 90); do
+            if curl -sf --max-time 5 http://localhost:8000/health/ | grep -q '"status"'; then
+              echo "Health check OK"
+              curl -s http://localhost:8000/health/
+              exit 0
+            fi
+            sleep 2
+          done
+
+          echo "Health check failed — web logs:"
+          docker compose -f "$COMPOSE_FILE" logs --tail=80 web
+          exit 1
+
+      - name: Optional — production profile (nginx in front of web)
+        continue-on-error: true
+        run: |
+          docker compose -f "$COMPOSE_FILE" --profile production up -d nginx
+          sleep 5
+          curl -sf --max-time 10 http://localhost:80/health/ || echo "Nginx health check skipped or failed (web :8000 already validated)"
+
+      - name: Tear down
+        if: always()
+        run: |
+          docker compose -f "$COMPOSE_FILE" --profile production down -v --remove-orphans || true
+          docker compose -f "$COMPOSE_FILE" down -v --remove-orphans || true
