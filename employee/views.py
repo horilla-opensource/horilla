@@ -3686,7 +3686,7 @@ def initial_prefix(request):
     else:
         form = EmployeeGeneralSettingPrefixForm(instance=instance)
 
-    return render(request, "settings/settings.html", {"prefix_form": form})
+    return HorillaRedirect(request)
 
 
 @login_required

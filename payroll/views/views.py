@@ -437,15 +437,9 @@ def settings(request):
             currency_form.save()
             messages.success(request, _("Payroll settings updated."))
             return HorillaRedirect(request)
-    return render(
-        request,
-        "payroll/settings/payroll_settings.html",
-        {
-            "currency_form": currency_form,
-            "companies": companies,
-            "selected_company_id": selected_company_id,
-        },
-    )
+        else:
+            messages.error(request, "There was an error updating the currency.")
+    return HorillaRedirect(request)
 
 
 @login_required
