@@ -26,3 +26,16 @@ def is_department_manager(employee, ticket):
     return DepartmentManager.objects.filter(
         manager=employee, department=department
     ).exists()
+
+
+@register.filter(name="has_reviewed_password_reset")
+def has_reviewed_password_reset(ticket):
+    """
+    Returns True if the ticket has an associated PasswordResetRequest
+    whose iso_status is not 'PENDING' (i.e., it has been approved or rejected).
+    """
+    pr_request = getattr(ticket, "password_reset_request", None)
+    if pr_request and pr_request.iso_status != "PENDING":
+        return True
+    return False
+

@@ -525,6 +525,20 @@ def ticket_update(request, ticket_id):
     """
 
     ticket = Ticket.objects.get(id=ticket_id)
+
+    # Block editing if this ticket has a password reset request that has been reviewed
+    pr_request = getattr(ticket, "password_reset_request", None)
+    if pr_request and pr_request.iso_status != "PENDING" and not request.user.is_superuser:
+        messages.info(
+            request,
+            _("This ticket is linked to a password reset request that has already been reviewed and cannot be edited."),
+        )
+        if "HTTP_HX_REQUEST" in request.META:
+            return render(request, "decorator_404.html")
+        return HttpResponse(
+            f'<script>window.location.href = "{request.META.get("HTTP_REFERER", "/")}"</script>'
+        )
+
     if (
         request.user.has_perm("helpdesk.change_ticket")
         or is_department_manager(request, ticket)
@@ -622,6 +636,23 @@ def change_ticket_status(request, ticket_id):
         return Ticket view
     """
     ticket = Ticket.objects.get(id=ticket_id)
+
+    # Block status change if this ticket has a reviewed password reset request
+    pr_request = getattr(ticket, "password_reset_request", None)
+    if pr_request and pr_request.iso_status != "PENDING" and not request.user.is_superuser:
+        return JsonResponse(
+            {
+                "type": "danger",
+                "message": str(
+                    _(
+                        "This ticket is linked to a password reset request that has "
+                        "already been reviewed. Status cannot be changed."
+                    )
+                ),
+                "errors": "noChange",
+            }
+        )
+
     pre_status = ticket.get_status_display()
     status = request.POST.get("status")
     user = request.user.employee_get
@@ -1998,6 +2029,12 @@ def password_reset_request_update(request, pr_id):
 
     form = PasswordResetRequestForm(instance=pr_request, request=request)
     if request.method == "POST":
+        # Re-check status to handle race condition where ISO reviewed between
+        # the employee loading the form and submitting it
+        pr_request.refresh_from_db()
+        if pr_request.iso_status != "PENDING":
+            messages.info(request, _("This request has already been reviewed and cannot be edited."))
+            return HttpResponse("<script>window.location.reload()</script>")
         form = PasswordResetRequestForm(request.POST, instance=pr_request, request=request)
         if form.is_valid():
             form.save()

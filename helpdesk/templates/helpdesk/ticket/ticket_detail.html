@@ -92,7 +92,18 @@
                     <p class="oh-helpdesk__header-title">{{ticket.title}}</p>
 
                     <span class="helpdesk__card-value me-3">
-                            {% if perms.helpdesk.change_ticket or request.user.employee_get|is_department_manager:ticket or request.user.employee_get in ticket.assigned_to.all or request.user.employee_get == ticket.employee_id %}
+                            {% if password_reset_request and password_reset_request.iso_status != 'PENDING' and not request.user.is_superuser %}
+                                <select name="status_update" title='{% trans "Status" %}' class="oh-select" disabled
+                                    style="width:190px; align-items: center; border: 1px solid #aaa; border-radius: 2px; background-color: #fff;">
+                                    {% for status in ticket_status %}
+                                        {% if status.0 == ticket.status %}
+                                        <option value="{{status.0}}" selected>
+                                            <span class="oh-dot oh-dot--small oh-dot--warning">{{status.1}}</span>
+                                        </option>
+                                        {% endif %}
+                                    {% endfor %}
+                                </select>
+                            {% elif perms.helpdesk.change_ticket or request.user.employee_get|is_department_manager:ticket or request.user.employee_get in ticket.assigned_to.all or request.user.employee_get == ticket.employee_id %}
                                 <select name="status_update" title='{% trans "Status" %}' class="oh-select"
                                     onchange="updateStatus()"
                                     style=" width:190px; align-items: center; border: 1px solid #aaa; border-radius: 2px; background-color: #fff; ">
