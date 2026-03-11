@@ -892,6 +892,9 @@ class ReimbursementForm(ModelForm):
             )
             self.fields["attachment"].widget.attrs["accept"] = ".jpg, .jpeg, .png, .pdf"
 
+            if is_edit:
+                self.initial["attachment"] = None
+
         self.exclude_fields_by_type(exclude_fields)
 
         for field in exclude_fields:
