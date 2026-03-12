@@ -1904,9 +1904,9 @@ def password_reset_request_create(request):
             except Exception:
                 user_email = str(selected_employee)
             description = (
-                f"Password Reset Request\n"
-                f"Platform: {platform}\n"
-                f"User: {selected_employee} ({user_email})\n"
+                f"Password Reset Request<br>"
+                f"Platform: {platform}<br>"
+                f"User: {selected_employee} ({user_email})<br>"
                 f"Reason: {reason}"
             )[:255]
 
@@ -1990,7 +1990,25 @@ def password_reset_request_update(request, pr_id):
     if request.method == "POST":
         form = PasswordResetRequestForm(request.POST, instance=pr_request, request=request)
         if form.is_valid():
-            form.save()
+            pr_request = form.save()
+
+            # Update the linked ticket's title and description to reflect edits
+            platform = form.cleaned_data["platform"]
+            selected_employee = form.cleaned_data["employee"]
+            reason = form.cleaned_data["reason"]
+            try:
+                user_email = selected_employee.employee_work_info.company_email or ""
+            except Exception:
+                user_email = str(selected_employee)
+            ticket.title = f"Password Reset – {platform}"
+            ticket.description = (
+                f"Password Reset Request<br>"
+                f"Platform: {platform}<br>"
+                f"User: {selected_employee} ({user_email})<br>"
+                f"Reason: {reason}"
+            )[:255]
+            ticket.save()
+
             messages.success(request, _("Password reset request updated successfully."))
             return HttpResponse("<script>window.location.reload()</script>")
 
