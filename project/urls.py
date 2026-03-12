@@ -246,10 +246,7 @@ urlpatterns = [
     #     views.time_sheet_update,
     #     name="update-time-sheet",
     # ),
-    path("filter-time-sheet/", views.time_sheet_filter, name="filter-time-sheet"),
-    path("time-sheet-initial/", views.time_sheet_initial, name="time-sheet-initial"),
     # path("get-project", views.get_project, name="get-project"),
-    path("create-time-sheet/", views.time_sheet_creation, name="create-time-sheet"),
     path(
         "create-project-time-sheet/",
         views.time_sheet_project_creation,
