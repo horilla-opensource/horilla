@@ -1262,8 +1262,32 @@ def get_raised_on(request):
     """
     This is an ajax method to return list for raised on field.
     """
+    from django.contrib.auth.models import Group
+
     data = request.GET
     assigning_type = data["assigning_type"]
+
+    is_password_reset = False
+    ticket_id = data.get("ticket_id")
+    ticket_type_id = data.get("ticket_type_id")
+
+    if ticket_id:
+        try:
+            ticket = Ticket.objects.select_related("ticket_type").get(id=ticket_id)
+            if hasattr(ticket, "password_reset_request"):
+                is_password_reset = True
+        except Ticket.DoesNotExist:
+            pass
+
+    if not is_password_reset and ticket_type_id:
+        try:
+            tt = TicketType.objects.get(id=ticket_type_id)
+            if tt.title == "Password Reset":
+                is_password_reset = True
+        except (TicketType.DoesNotExist, ValueError):
+            pass
+
+    raised_on = []
 
     if assigning_type == "department":
         # Retrieve data from the Department model and format it as a list of dictionaries
@@ -1277,9 +1301,24 @@ def get_raised_on(request):
             {"id": job["id"], "name": job["job_position"]} for job in jobpositions
         ]
     elif assigning_type == "individual":
-        employees = Employee.objects.values(
-            "id", "employee_first_name", "employee_last_name"
-        )
+        if is_password_reset:
+            # Only show employees who belong to the "ISO Officer" group
+            iso_group = Group.objects.filter(name="ISO Officer").first()
+            if iso_group:
+                employees = Employee.objects.filter(
+                    employee_user_id__groups=iso_group,
+                    is_active=True,
+                ).values("id", "employee_first_name", "employee_last_name")
+            else:
+                # Fallback: if the group doesn't exist, show only superusers
+                employees = Employee.objects.filter(
+                    employee_user_id__is_superuser=True,
+                    is_active=True,
+                ).values("id", "employee_first_name", "employee_last_name")
+        else:
+            employees = Employee.objects.values(
+                "id", "employee_first_name", "employee_last_name"
+            )
         raised_on = [
             {
                 "id": employee["id"],
