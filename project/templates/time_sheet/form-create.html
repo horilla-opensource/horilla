@@ -100,6 +100,9 @@
             }
             $("#id_task_id").append( "<option value='create_new_task'>Create a new task</option>");
           },
+          error: (error) => {
+            reloadMessage()
+          }
         });
       } else {
         $("#id_task_id").html("<option>---------</option>");

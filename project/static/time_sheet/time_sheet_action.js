@@ -66,6 +66,9 @@ $("#deleteTimeSheet").click(function (e) {
                             // console.log("Unexpected HTTP status:", jqXHR.status);
                         }
                     },
+                    error: (error) => {
+                        location.reload();
+                    },
                 });
             }
         });

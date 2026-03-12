@@ -133,6 +133,9 @@ $(document).ready(function () {
                             $("#reloadMessagesButton").click();
                         }
                     },
+                    error: (error) => {
+                        reloadMessage()
+                    }
                 });
             }
         }

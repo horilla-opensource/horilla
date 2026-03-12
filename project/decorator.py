@@ -48,7 +48,9 @@ def project_update_permission(function=None, *args, **kwargs):
         """
         This method is used to check the employee is project member or not
         """
-        project = Project.objects.get(id=project_id)
+        project = Project.objects.filter(id=project_id).first()
+        if not project:
+            return HorillaRedirect(request, message=_("Project not found"))
         employee = request.user.employee_get
         if (
             request.user.has_perm("project.change_project")
@@ -79,7 +81,9 @@ def project_delete_permission(function=None, *args, **kwargs):
         """
         This method is used to check the employee is project manager or not
         """
-        project = Project.objects.get(id=project_id)
+        project = Project.find(project_id)
+        if not project:
+            return HorillaRedirect(request, message=_("Project not found"))
         if (
             request.user.employee_get in project.managers.all()
             or request.user.is_superuser
@@ -101,7 +105,10 @@ def project_stage_update_permission(function=None, *args, **kwargs):
         """
         This method is used to check the employee is project stage member or not
         """
-        project = ProjectStage.objects.get(id=stage_id).project
+        stage = ProjectStage.objects.filter(id=stage_id).first()
+        if not stage:
+            return HorillaRedirect(request, message=_("Project stage not found"))
+        project = stage.project
         if (
             request.user.has_perm("project.change_project")
             or request.user.has_perm("project.change_task")
@@ -126,7 +133,10 @@ def project_stage_delete_permission(function=None, *args, **kwargs):
         """
         This method is used to check the employee is project stage manager or not
         """
-        project = ProjectStage.objects.get(id=stage_id).project
+        stage = ProjectStage.objects.filter(id=stage_id).first()
+        if not stage:
+            return HorillaRedirect(request, message=_("Project stage not found"))
+        project = stage.project
         if (
             request.user.employee_get in project.managers.all()
             or request.user.is_superuser
@@ -143,7 +153,9 @@ def task_update_permission(function=None, *args, **kwargs):
         """
         This method is used to check the employee is task member or not
         """
-        task = Task.objects.get(id=task_id)
+        task = Task.find(task_id)
+        if not task:
+            return HorillaRedirect(request, message=_("Task not found"))
         project = task.project
 
         if (
@@ -167,7 +179,9 @@ def task_delete_permission(function=None, *args, **kwargs):
         """
         This method is used to check the employee is task manager or not
         """
-        task = Task.objects.get(id=task_id)
+        task = Task.find(task_id)
+        if not task:
+            return HorillaRedirect(request, message=_("Task not found"))
         project = task.project
 
         if (

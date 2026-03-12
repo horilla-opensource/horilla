@@ -90,6 +90,9 @@
             $("#id_task_id").append(newOption);
           }
         },
+        error: (error) => {
+          reloadMessage()
+        }
       });
       e.preventDefault();
     });
