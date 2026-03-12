@@ -1951,7 +1951,8 @@ def password_reset_request_create(request):
                 raised_on = str(employee.id)
 
             ticket_type = _get_password_reset_ticket_type()
-            deadline = (timezone.now() + timedelta(days=7)).date()
+            priority = form.cleaned_data.get("priority", "medium")
+            deadline = form.cleaned_data.get("deadline") or (timezone.now() + timedelta(days=7)).date()
 
             platform = form.cleaned_data["platform"]
             selected_employee = form.cleaned_data["employee"]
@@ -1975,7 +1976,7 @@ def password_reset_request_create(request):
                 employee_id=employee,
                 ticket_type=ticket_type,
                 description=description,
-                priority="high",
+                priority=priority,
                 assigning_type=assigning_type,
                 raised_on=raised_on,
                 deadline=deadline,
@@ -2051,6 +2052,14 @@ def password_reset_request_update(request, pr_id):
         form = PasswordResetRequestForm(request.POST, instance=pr_request, request=request)
         if form.is_valid():
             form.save()
+            # Update priority and deadline on the linked ticket
+            new_priority = form.cleaned_data.get("priority")
+            new_deadline = form.cleaned_data.get("deadline")
+            if new_priority:
+                ticket.priority = new_priority
+            if new_deadline:
+                ticket.deadline = new_deadline
+            ticket.save()
             messages.success(request, _("Password reset request updated successfully."))
             return HttpResponse("<script>window.location.reload()</script>")
 

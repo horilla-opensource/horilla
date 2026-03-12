@@ -34,6 +34,7 @@ from employee.forms import MultipleFileField
 from employee.models import Employee
 from helpdesk.models import (
     FAQ,
+    PRIORITY,
     Attachment,
     Comment,
     DepartmentManager,
@@ -175,6 +176,24 @@ class PasswordResetRequestForm(forms.ModelForm):
         widget=forms.Select(attrs={"class": "oh-select oh-select-2 w-100"}),
     )
 
+    priority = forms.ChoiceField(
+        choices=PRIORITY,
+        initial="medium",
+        label=_("Priority"),
+        widget=forms.Select(attrs={"class": "oh-select oh-select-2 w-100"}),
+    )
+
+    deadline = forms.DateField(
+        required=False,
+        label=_("Due Date"),
+        widget=forms.DateInput(
+            attrs={
+                "class": "oh-input w-100",
+                "type": "date",
+            }
+        ),
+    )
+
     class Meta:
         model = PasswordResetRequest
         fields = ["platform", "employee", "reason"]
@@ -221,6 +240,11 @@ class PasswordResetRequestForm(forms.ModelForm):
                 self.fields["employee"].initial = emp
             except Exception:
                 pass
+
+        # If editing, pre-populate priority and deadline from the linked ticket
+        if self.instance and self.instance.pk and hasattr(self.instance, "ticket") and self.instance.ticket:
+            self.fields["priority"].initial = self.instance.ticket.priority
+            self.fields["deadline"].initial = self.instance.ticket.deadline
 
     def save(self, commit=True):
         instance = super().save(commit=False)
