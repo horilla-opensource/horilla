@@ -1208,22 +1208,40 @@ def comment_create(request, ticket_id):
     """
     if request.method == "POST":
         ticket = Ticket.objects.get(id=ticket_id)
-        c_form = CommentForm(request.POST)
-        if c_form.is_valid():
-            comment = c_form.save(commit=False)
-            comment.employee_id = request.user.employee_get
-            comment.ticket = ticket
-            comment.save()
-            if request.FILES:
-                f_form = AttachmentForm(request.FILES)
-                if f_form.is_valid():
+        comment_text = request.POST.get("comment", "").strip()
+        has_files = bool(request.FILES)
+
+        if comment_text:
+            c_form = CommentForm(request.POST)
+            if c_form.is_valid():
+                comment = c_form.save(commit=False)
+                comment.employee_id = request.user.employee_get
+                comment.ticket = ticket
+                comment.save()
+                if has_files:
                     files = request.FILES.getlist("file")
                     for file in files:
                         a_form = AttachmentForm(
                             {"file": file, "comment": comment, "ticket": ticket}
                         )
                         a_form.save()
-            messages.success(request, _("A new comment has been created."))
+                messages.success(request, _("A new comment has been created."))
+        elif has_files:
+            comment = Comment(
+                employee_id=request.user.employee_get,
+                ticket=ticket,
+            )
+            comment.save()
+            files = request.FILES.getlist("file")
+            file_names = ", ".join(f.name for f in files)
+            comment.comment = _("Attached document(s): {}").format(file_names)
+            comment.save()
+            for file in files:
+                a_form = AttachmentForm(
+                    {"file": file, "comment": comment, "ticket": ticket}
+                )
+                a_form.save()
+            messages.success(request, _("Document(s) uploaded successfully."))
     return redirect(ticket_detail, ticket_id=ticket_id)
 
 
