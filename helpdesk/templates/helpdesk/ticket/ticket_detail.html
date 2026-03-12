@@ -466,15 +466,16 @@
                         <span class="oh-helpdesk__card-title">{% trans "Documents" %}</span>
 
                         {% if perms.helpdesk.add_comment or request.user.employee_get == ticket.employee_id or request.user.employee_get in ticket.assigned_to.all %}
-                            <form name="comment-form" action="{% url 'comment-create' ticket.id %}" method="POST"
+                            <form name="document-upload-form" id="documentUploadForm" action="{% url 'comment-create' ticket.id %}" method="POST"
                                 enctype="multipart/form-data" class="oh-chat oh-chat__input-wrapper"
                                 style="display: flex; align-items: center; gap: 10px;">
                                 {% csrf_token %}
 
-                                <input name="file" multiple="True" type="file" id="fileUpload" class="d-none" />
+                                <input name="file" multiple="True" type="file" id="fileUpload2" class="d-none"
+                                    onchange="if(this.files.length > 0){ this.closest('form').submit(); }" />
 
                                 <!-- Attachment Button -->
-                                <label for="fileUpload" aria-label="Attach Files"
+                                <label for="fileUpload2" aria-label="Attach Files"
                                     class="oh-btn oh-btn--chat oh-btn--chat-attachments"
                                     style="position: relative; cursor: pointer;">
                                     <!-- File count badge -->

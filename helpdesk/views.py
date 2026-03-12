@@ -1208,22 +1208,40 @@ def comment_create(request, ticket_id):
     """
     if request.method == "POST":
         ticket = Ticket.objects.get(id=ticket_id)
-        c_form = CommentForm(request.POST)
-        if c_form.is_valid():
-            comment = c_form.save(commit=False)
-            comment.employee_id = request.user.employee_get
-            comment.ticket = ticket
-            comment.save()
-            if request.FILES:
-                f_form = AttachmentForm(request.FILES)
-                if f_form.is_valid():
+        comment_text = request.POST.get("comment", "").strip()
+        has_files = bool(request.FILES)
+
+        if comment_text:
+            c_form = CommentForm(request.POST)
+            if c_form.is_valid():
+                comment = c_form.save(commit=False)
+                comment.employee_id = request.user.employee_get
+                comment.ticket = ticket
+                comment.save()
+                if has_files:
                     files = request.FILES.getlist("file")
                     for file in files:
                         a_form = AttachmentForm(
                             {"file": file, "comment": comment, "ticket": ticket}
                         )
                         a_form.save()
-            messages.success(request, _("A new comment has been created."))
+                messages.success(request, _("A new comment has been created."))
+        elif has_files:
+            comment = Comment(
+                employee_id=request.user.employee_get,
+                ticket=ticket,
+            )
+            comment.save()
+            files = request.FILES.getlist("file")
+            file_names = ", ".join(f.name for f in files)
+            comment.comment = _("Attached document(s): {}").format(file_names)
+            comment.save()
+            for file in files:
+                a_form = AttachmentForm(
+                    {"file": file, "comment": comment, "ticket": ticket}
+                )
+                a_form.save()
+            messages.success(request, _("Document(s) uploaded successfully."))
     return redirect(ticket_detail, ticket_id=ticket_id)
 
 
@@ -1262,8 +1280,32 @@ def get_raised_on(request):
     """
     This is an ajax method to return list for raised on field.
     """
+    from django.contrib.auth.models import Group
+
     data = request.GET
     assigning_type = data["assigning_type"]
+
+    is_password_reset = False
+    ticket_id = data.get("ticket_id")
+    ticket_type_id = data.get("ticket_type_id")
+
+    if ticket_id:
+        try:
+            ticket = Ticket.objects.select_related("ticket_type").get(id=ticket_id)
+            if hasattr(ticket, "password_reset_request"):
+                is_password_reset = True
+        except Ticket.DoesNotExist:
+            pass
+
+    if not is_password_reset and ticket_type_id:
+        try:
+            tt = TicketType.objects.get(id=ticket_type_id)
+            if tt.title == "Password Reset":
+                is_password_reset = True
+        except (TicketType.DoesNotExist, ValueError):
+            pass
+
+    raised_on = []
 
     if assigning_type == "department":
         # Retrieve data from the Department model and format it as a list of dictionaries
@@ -1277,9 +1319,24 @@ def get_raised_on(request):
             {"id": job["id"], "name": job["job_position"]} for job in jobpositions
         ]
     elif assigning_type == "individual":
-        employees = Employee.objects.values(
-            "id", "employee_first_name", "employee_last_name"
-        )
+        if is_password_reset:
+            # Only show employees who belong to the "ISO Officer" group
+            iso_group = Group.objects.filter(name="ISO Officer").first()
+            if iso_group:
+                employees = Employee.objects.filter(
+                    employee_user_id__groups=iso_group,
+                    is_active=True,
+                ).values("id", "employee_first_name", "employee_last_name")
+            else:
+                # Fallback: if the group doesn't exist, show only superusers
+                employees = Employee.objects.filter(
+                    employee_user_id__is_superuser=True,
+                    is_active=True,
+                ).values("id", "employee_first_name", "employee_last_name")
+        else:
+            employees = Employee.objects.values(
+                "id", "employee_first_name", "employee_last_name"
+            )
         raised_on = [
             {
                 "id": employee["id"],
@@ -1902,13 +1959,16 @@ def password_reset_request_create(request):
             try:
                 user_email = selected_employee.employee_work_info.company_email or ""
             except Exception:
-                user_email = str(selected_employee)
+                user_email = ""
+            user_display = str(selected_employee)
+            if user_email and user_email not in user_display:
+                user_display = f"{user_display} ({user_email})"
             description = (
-                f"Password Reset Request\n"
-                f"Platform: {platform}\n"
-                f"User: {selected_employee} ({user_email})\n"
-                f"Reason: {reason}"
-            )[:255]
+                f"<b>Password Reset Request Details:</b><br><br>"
+                f"<b>Platform:</b> {platform}<br>"
+                f"<b>User:</b> {user_display}<br>"
+                f"<b>Reason:</b> {reason}"
+            )
 
             ticket = Ticket(
                 title=f"Password Reset – {platform}",
@@ -2067,6 +2127,53 @@ def iso_review_password_reset(request, pr_id):
             for error in review_form.errors.values():
                 messages.error(request, error)
 
+    return HttpResponseRedirect(request.META.get("HTTP_REFERER", "/"))
+
+
+@login_required
+def password_reset_request_withdraw(request, pr_id):
+    """
+    Allow the ticket owner to withdraw their own PENDING Password Reset request.
+    The request and its associated ticket are deleted from the system.
+    """
+    if request.method != "POST":
+        return HttpResponseRedirect(request.META.get("HTTP_REFERER", "/"))
+
+    try:
+        pr_request = PasswordResetRequest.objects.get(id=pr_id)
+    except PasswordResetRequest.DoesNotExist:
+        messages.error(request, _("Password reset request not found."))
+        return HttpResponseRedirect(request.META.get("HTTP_REFERER", "/"))
+
+    ticket = pr_request.ticket
+
+    # Only the request owner can withdraw
+    current_employee = getattr(request.user, "employee_get", None)
+    if current_employee != ticket.employee_id:
+        messages.info(request, _("You don't have permission to withdraw this request."))
+        return HttpResponseRedirect(request.META.get("HTTP_REFERER", "/"))
+
+    # Only PENDING requests can be withdrawn
+    if pr_request.iso_status != "PENDING":
+        messages.info(
+            request,
+            _("This request has already been reviewed and cannot be withdrawn."),
+        )
+        return HttpResponseRedirect(request.META.get("HTTP_REFERER", "/"))
+
+    platform = pr_request.platform
+    ticket_title = str(ticket)
+
+    # Delete the request and ticket
+    pr_request.delete()
+    ticket.delete()
+
+    messages.success(
+        request,
+        _('Your password reset request "{}" has been withdrawn successfully.').format(
+            ticket_title
+        ),
+    )
     return HttpResponseRedirect(request.META.get("HTTP_REFERER", "/"))
 
 
