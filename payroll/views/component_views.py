@@ -1669,22 +1669,61 @@ def create_reimbursement(request):
     """
     Create or update a reimbursement entry.
     """
+    from django.core.files.storage import default_storage
+
     instance = None
     instance_id = request.GET.get("instance_id")
 
     if instance_id:
         instance = Reimbursement.objects.filter(id=instance_id).first()
 
+    temp_attachment_paths = ""
+    temp_attachment_names = []
+
     if request.method == "POST":
-        form = forms.ReimbursementForm(request.POST, request.FILES, instance=instance)
+
+        uploaded_files = request.FILES.getlist("attachment")
+        post_data = request.POST.copy()
+
+        if uploaded_files:
+            paths = []
+            names = []
+            for f in uploaded_files:
+                f.seek(0)
+                path = default_storage.save(f"temp/reimbursements/{f.name}", f)
+                paths.append(path)
+                names.append(f.name)
+            post_data["temp_attachment_paths"] = ",".join(paths)
+            post_data["temp_attachment_names"] = ",".join(names)
+
+        form = forms.ReimbursementForm(post_data, request.FILES, instance=instance)
         if form.is_valid():
             form.save()
+            for path in post_data.get("temp_attachment_paths", "").split(","):
+                path = path.strip()
+                if path and default_storage.exists(path):
+                    default_storage.delete(path)
             messages.success(request, "Reimbursement saved successfully")
             return HttpResponse(status=204, headers={"HX-Refresh": "true"})
+        else:
+            temp_attachment_paths = post_data.get("temp_attachment_paths", "")
+            temp_names_str = post_data.get("temp_attachment_names", "")
+            if temp_names_str:
+                temp_attachment_names = [
+                    n.strip() for n in temp_names_str.split(",") if n.strip()
+                ]
     else:
         form = forms.ReimbursementForm(instance=instance)
 
-    return render(request, "payroll/reimbursement/form.html", {"form": form})
+    return render(
+        request,
+        "payroll/reimbursement/form.html",
+        {
+            "form": form,
+            "temp_attachment_paths": temp_attachment_paths,
+            "temp_attachment_names": temp_attachment_names,
+        },
+    )
 
 
 @login_required

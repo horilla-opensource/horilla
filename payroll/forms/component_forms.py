@@ -873,19 +873,27 @@ class ReimbursementForm(ModelForm):
         self.setup_leave_fields()
 
         self.fields["type"].widget.attrs["onchange"] = "toggleReimbursmentType($(this))"
-        self.fields["employee_id"].widget.attrs[
-            "onchange"
-        ] = "getAssignedLeave($(this))"
+        self.fields["employee_id"].widget.attrs["onchange"] = "getAssignedLeave($(this))"
 
         self.fields["allowance_on"].widget = forms.DateInput(
             attrs={"type": "date", "class": "oh-input w-100"}
         )
 
-        self.fields["attachment"] = MultipleFileField(
-            label="Attachments",
-            required=not bool(self.instance.pk)
-        )
-        self.fields["attachment"].widget.attrs["accept"] = ".jpg, .jpeg, .png, .pdf"
+        is_edit = bool(self.instance.pk)
+        has_temp_files = bool(self.data.get("temp_attachment_paths", ""))
+        has_new_files = bool(self.files.get("attachment"))
+
+
+        self.fields.pop("attachment", None)
+        if not has_temp_files and not has_new_files:
+            self.fields["attachment"] = MultipleFileField(
+                label="Attachments",
+                required=not is_edit,
+            )
+            self.fields["attachment"].widget.attrs["accept"] = ".jpg, .jpeg, .png, .pdf"
+
+            if is_edit:
+                self.initial["attachment"] = None
 
         self.exclude_fields_by_type(exclude_fields)
 
@@ -917,6 +925,7 @@ class ReimbursementForm(ModelForm):
             else self.instance.type if self.instance else None
         )
         is_edit = self.instance and self.instance.pk
+        has_data = bool(self.data)
 
         if type == "reimbursement" and is_edit:
             exclude_fields += [
@@ -925,9 +934,16 @@ class ReimbursementForm(ModelForm):
                 "ad_to_encash",
                 "bonus_to_encash",
             ]
-        elif type == "leave_encashment" and (is_edit or self.data):
+        elif type == "reimbursement" and has_data:  # NEW: handle POST re-render
+            exclude_fields += [
+                "leave_type_id",
+                "cfd_to_encash",
+                "ad_to_encash",
+                "bonus_to_encash",
+            ]
+        elif type == "leave_encashment" and (is_edit or has_data):
             exclude_fields += ["attachment", "amount", "bonus_to_encash"]
-        elif type == "bonus_encashment" and (is_edit or self.data):
+        elif type == "bonus_encashment" and (is_edit or has_data):
             exclude_fields += [
                 "attachment",
                 "amount",
@@ -1034,12 +1050,16 @@ class ReimbursementForm(ModelForm):
         elif type_ == "reimbursement":
             if amount is None or amount <= 0.00:
                 self.add_error("amount", "Amount must be greater than zero.")
-            if is_new and not attachment:
+            has_temp = bool(self.data.get("temp_attachment_paths", ""))
+            if is_new and not attachment and not has_temp:
                 raise forms.ValidationError("Attachment is required.")
 
         return cleaned_data
 
     def save(self, commit: bool = True) -> Any:
+        from django.core.files.base import File
+        from django.core.files.storage import default_storage
+
         multiple_attachment_ids = []
         is_new = not self.instance.pk
         attachments = self.files.getlist("attachment")
@@ -1047,14 +1067,26 @@ class ReimbursementForm(ModelForm):
         if not self.instance.employee_id_id:
             self.instance.employee_id = self.employee
 
+        if not attachments:
+            temp_paths = self.data.get("temp_attachment_paths", "")
+            if temp_paths:
+                temp_files = []
+                for path in temp_paths.split(","):
+                    path = path.strip()
+                    if path and default_storage.exists(path):
+                        f = default_storage.open(path)
+                        name = path.rsplit("/", 1)[-1]
+                        temp_files.append(File(f, name=name))
+                attachments = temp_files
+
         if attachments:
             self.instance.attachment = attachments[0]
 
         instance = super().save(commit=commit)
 
-        if attachments:
+        if attachments[1:]:
             attachment_objs = [
-                ReimbursementMultipleAttachment(attachment=file) for file in attachments
+                ReimbursementMultipleAttachment(attachment=file) for file in attachments[1:]
             ]
             created_attachments = ReimbursementMultipleAttachment.objects.bulk_create(
                 attachment_objs
