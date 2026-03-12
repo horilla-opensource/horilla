@@ -396,7 +396,6 @@ def ticket_view(request):
     previous_data = request.GET.urlencode()
     my_page_number = request.GET.get("my_page")
     all_page_number = request.GET.get("all_page")
-    allocated_page_number = request.GET.get("allocated_page")
 
     my_tickets = tickets.filter(employee_id=employee) | tickets.filter(
         created_by=request.user
@@ -406,25 +405,6 @@ def ticket_view(request):
         all_tickets = filtersubordinates(request, tickets, "helpdesk.view_ticket")
     if request.user.has_perm("helpdesk.view_ticket"):
         all_tickets = tickets
-    allocated_tickets = []
-    ticket_list = tickets.filter(is_active=True)
-    user = request.user.employee_get
-    if hasattr(user, "employee_work_info"):
-        department = user.employee_work_info.department_id
-        job_position = user.employee_work_info.job_position_id
-        if department:
-            tickets_items = ticket_list.filter(
-                raised_on=department.id, assigning_type="department"
-            )
-            allocated_tickets += tickets_items
-        if job_position:
-            tickets_items = ticket_list.filter(
-                raised_on=job_position.id, assigning_type="job_position"
-            )
-            allocated_tickets += tickets_items
-
-    tickets_items = ticket_list.filter(raised_on=user.id, assigning_type="individual")
-    allocated_tickets += tickets_items
 
     data_dict = parse_qs(previous_data)
     get_key_instances(Ticket, data_dict)
@@ -432,7 +412,6 @@ def ticket_view(request):
     context = {
         "my_tickets": paginator_qry(my_tickets, my_page_number),
         "all_tickets": paginator_qry(all_tickets, all_page_number),
-        "allocated_tickets": paginator_qry(allocated_tickets, allocated_page_number),
         "f": TicketFilter(request.GET),
         "gp_fields": TicketReGroup.fields,
         "ticket_status": TICKET_STATUS,
@@ -729,26 +708,6 @@ def ticket_delete(request, ticket_id):
     return HttpResponseRedirect(request.META.get("HTTP_REFERER", "/"))
 
 
-def get_allocated_tickets(request):
-    user = request.user.employee_get
-    department = user.employee_work_info.department_id
-    job_position = user.employee_work_info.job_position_id
-
-    tickets_items1 = Ticket.objects.filter(
-        is_active=True, raised_on=department.id, assigning_type="department"
-    )
-    # allocated_tickets += tickets_items
-    tickets_items2 = Ticket.objects.filter(
-        is_active=True, raised_on=job_position.id, assigning_type="job_position"
-    )
-    # allocated_tickets += tickets_items
-    tickets_items3 = Ticket.objects.filter(
-        is_active=True, raised_on=user.id, assigning_type="individual"
-    )
-    # allocated_tickets += tickets_items
-    allocated_tickets = tickets_items1 | tickets_items2 | tickets_items3
-    return allocated_tickets
-
 
 @login_required
 @hx_request_required
@@ -767,9 +726,6 @@ def ticket_filter(request):
     tickets = TicketFilter(request.GET).qs
     my_page_number = request.GET.get("my_page")
     all_page_number = request.GET.get("all_page")
-    allocated_page_number = request.GET.get("allocated_page")
-    tickets_items1 = Ticket.objects.none()
-    tickets_items2 = Ticket.objects.none()
 
     my_tickets = tickets.filter(employee_id=request.user.employee_get) | tickets.filter(
         created_by=request.user
@@ -780,38 +736,13 @@ def ticket_filter(request):
     if request.user.has_perm("helpdesk.view_ticket"):
         all_tickets = tickets
 
-    allocated_tickets = Ticket.objects.none()
-    user = request.user.employee_get
-    department = user.employee_work_info.department_id
-    job_position = user.employee_work_info.job_position_id
-    ticket_list = tickets.filter(is_active=True)
-
-    if hasattr(user, "employee_work_info"):
-        department = user.employee_work_info.department_id
-        job_position = user.employee_work_info.job_position_id
-        if department:
-            tickets_items1 = ticket_list.filter(
-                raised_on=department.id, assigning_type="department"
-            )
-        if job_position:
-            tickets_items2 = ticket_list.filter(
-                raised_on=job_position.id, assigning_type="job_position"
-            )
-
-    tickets_items3 = ticket_list.filter(raised_on=user.id, assigning_type="individual")
-
     template = "helpdesk/ticket/ticket_list.html"
 
     if request.GET.get("view") == "card":
         template = "helpdesk/ticket/ticket_card.html"
-    allocated_tickets = (
-        list(tickets_items1) + list(tickets_items2) + list(tickets_items3)
-    )
     if request.GET.get("sortby"):
         all_tickets = sortby(request, all_tickets, "sortby")
         my_tickets = sortby(request, my_tickets, "sortby")
-        allocated_tickets = tickets_items1 | tickets_items2 | tickets_items3
-        allocated_tickets = sortby(request, allocated_tickets, "sortby")
 
     field = request.GET.get("field")
     if field != "" and field is not None:
@@ -821,30 +752,16 @@ def ticket_filter(request):
         all_tickets = group_by_queryset(
             all_tickets, field, request.GET.get("all_page"), "all_page"
         )
-        tickets_items1 = group_by_queryset(
-            tickets_items1, field, request.GET.get("allocated_page"), "allocated_page"
-        )
-        tickets_items2 = group_by_queryset(
-            tickets_items2, field, request.GET.get("allocated_page"), "allocated_page"
-        )
-        tickets_items3 = group_by_queryset(
-            tickets_items3, field, request.GET.get("allocated_page"), "allocated_page"
-        )
         template = "helpdesk/ticket/ticket_group.html"
-        allocated_tickets = (
-            list(tickets_items1) + list(tickets_items2) + list(tickets_items3)
-        )
     else:
         my_tickets = paginator_qry(my_tickets, my_page_number)
         all_tickets = paginator_qry(all_tickets, all_page_number)
-        allocated_tickets = paginator_qry(allocated_tickets, allocated_page_number)
 
     data_dict = parse_qs(previous_data)
     get_key_instances(Ticket, data_dict)
     context = {
         "my_tickets": my_tickets,
         "all_tickets": all_tickets,
-        "allocated_tickets": allocated_tickets,
         "f": TicketFilter(request.GET),
         "pd": previous_data,
         "ticket_status": TICKET_STATUS,
@@ -1478,9 +1395,6 @@ def tickets_select_filter(request):
             tickets_filter = TicketFilter(
                 filters, queryset=Ticket.objects.filter(employee_id=user)
             )
-        else:
-            allocated_tickets = get_allocated_tickets(request)
-            tickets_filter = TicketFilter(filters, queryset=allocated_tickets)
 
         # Get the filtered queryset
         filtered_tickets = tickets_filter.qs

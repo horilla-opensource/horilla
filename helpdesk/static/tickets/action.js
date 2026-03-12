@@ -78,21 +78,6 @@ $(".allTicketsAll").change(function (e) {
   }
 });
 
-// TO toggle class for select all button in Allocated tickets tab
-$(".allocatedTicketsAll").change(function (e) {
-  var is_checked = $(this).is(":checked");
-  if (is_checked) {
-    $(".allocated-tickets-row")
-      .prop("checked", true)
-      .closest(".oh-sticky-table__tr")
-      .addClass("highlight-selected");
-  } else {
-    $(".allocated-tickets-row")
-      .prop("checked", false)
-      .closest(".oh-sticky-table__tr")
-      .removeClass("highlight-selected");
-  }
-});
 
 // TO toggle class for select all button in My tickets tab
 $(".myTicketsAll").change(function (e) {
@@ -164,9 +149,6 @@ function tickTicketsCheckboxes() {
       tableName = "my";
       $(".myTicketsAll").prop("checked", true);
     } else if (tableName === "#tab_2") {
-      tableName = "allocated";
-      $(".allocatedTicketsAll").prop("checked", true);
-    } else {
       tableName = "all";
       $(".allTicketsAll").prop("checked", true);
       $(".myTicketsAll").prop("checked", true);
@@ -203,18 +185,6 @@ function addingTicketsIds() {
   if (tableName === "#tab_1") {
     tableName = "my";
     $(".my-tickets-row").each(function () {
-      if ($(this).is(":checked")) {
-        ids.push(this.id);
-      } else {
-        var index = ids.indexOf(this.id);
-        if (index > -1) {
-          ids.splice(index, 1);
-        }
-      }
-    });
-  } else if (tableName === "#tab_2") {
-    tableName = "allocated";
-    $(".allocated-tickets-row").each(function () {
       if ($(this).is(":checked")) {
         ids.push(this.id);
       } else {
@@ -266,15 +236,10 @@ function selectAllTickets() {
   if (tableName === "#tab_1") {
     tableName = "my";
     $(".myTicketsAll").prop("checked", true);
-  }
-  if (tableName === "#tab_2") {
-    tableName = "allocated";
-    $(".allocatedTicketsAll").prop("checked", true);
   } else {
     tableName = "all";
-    $(".allocatedTicketsAll").prop("checked", true);
+    $(".allTicketsAll").prop("checked", true);
     $(".myTicketsAll").prop("checked", true);
-    $(".allocatedTicketsAll").prop("checked", true);
   }
   if (savedFilters && savedFilters["filterData"] !== null) {
     var filter = savedFilters["filterData"];
@@ -342,14 +307,10 @@ function unselectAllTickets() {
   if (tableName === "#tab_1") {
     tableName = "my";
     $(".myTicketsAll").prop("checked", false);
-  } else if (tableName === "#tab_2") {
-    tableName = "allocated";
-    $(".allocatedTicketsAll").prop("checked", false);
   } else {
     tableName = "all";
     $(".allTicketsAll").prop("checked", false);
     $(".myTicketsAll").prop("checked", false);
-    $(".allocatedTicketsAll").prop("checked", false);
   }
   $.ajax({
     url: "/helpdesk/tickets-select-filter",
