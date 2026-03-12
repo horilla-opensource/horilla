@@ -1959,13 +1959,16 @@ def password_reset_request_create(request):
             try:
                 user_email = selected_employee.employee_work_info.company_email or ""
             except Exception:
-                user_email = str(selected_employee)
+                user_email = ""
+            user_display = str(selected_employee)
+            if user_email and user_email not in user_display:
+                user_display = f"{user_display} ({user_email})"
             description = (
-                f"Password Reset Request\n"
-                f"Platform: {platform}\n"
-                f"User: {selected_employee} ({user_email})\n"
-                f"Reason: {reason}"
-            )[:255]
+                f"<b>Password Reset Request Details:</b><br><br>"
+                f"<b>Platform:</b> {platform}<br>"
+                f"<b>User:</b> {user_display}<br>"
+                f"<b>Reason:</b> {reason}"
+            )
 
             ticket = Ticket(
                 title=f"Password Reset – {platform}",
