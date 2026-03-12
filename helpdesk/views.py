@@ -2110,6 +2110,53 @@ def iso_review_password_reset(request, pr_id):
 
 
 @login_required
+def password_reset_request_withdraw(request, pr_id):
+    """
+    Allow the ticket owner to withdraw their own PENDING Password Reset request.
+    The request and its associated ticket are deleted from the system.
+    """
+    if request.method != "POST":
+        return HttpResponseRedirect(request.META.get("HTTP_REFERER", "/"))
+
+    try:
+        pr_request = PasswordResetRequest.objects.get(id=pr_id)
+    except PasswordResetRequest.DoesNotExist:
+        messages.error(request, _("Password reset request not found."))
+        return HttpResponseRedirect(request.META.get("HTTP_REFERER", "/"))
+
+    ticket = pr_request.ticket
+
+    # Only the request owner can withdraw
+    current_employee = getattr(request.user, "employee_get", None)
+    if current_employee != ticket.employee_id:
+        messages.info(request, _("You don't have permission to withdraw this request."))
+        return HttpResponseRedirect(request.META.get("HTTP_REFERER", "/"))
+
+    # Only PENDING requests can be withdrawn
+    if pr_request.iso_status != "PENDING":
+        messages.info(
+            request,
+            _("This request has already been reviewed and cannot be withdrawn."),
+        )
+        return HttpResponseRedirect(request.META.get("HTTP_REFERER", "/"))
+
+    platform = pr_request.platform
+    ticket_title = str(ticket)
+
+    # Delete the request and ticket
+    pr_request.delete()
+    ticket.delete()
+
+    messages.success(
+        request,
+        _('Your password reset request "{}" has been withdrawn successfully.').format(
+            ticket_title
+        ),
+    )
+    return HttpResponseRedirect(request.META.get("HTTP_REFERER", "/"))
+
+
+@login_required
 def password_reset_request_delete(request, pr_id):
     """
     Superuser-only: delete a Password Reset request and its associated ticket.

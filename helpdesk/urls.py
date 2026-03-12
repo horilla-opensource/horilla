@@ -173,6 +173,11 @@ urlpatterns = [
         name="iso-review-password-reset",
     ),
     path(
+        "password-reset-request/withdraw/<int:pr_id>/",
+        views.password_reset_request_withdraw,
+        name="password-reset-request-withdraw",
+    ),
+    path(
         "password-reset-request/delete/<int:pr_id>/",
         views.password_reset_request_delete,
         name="password-reset-request-delete",
