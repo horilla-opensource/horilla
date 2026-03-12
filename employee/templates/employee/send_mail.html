@@ -1,11 +1,5 @@
 {% load i18n %}
 {% comment %} # 875 {% endcomment %}
-<button hidden id="previewHxButton"
-        hx-post="{% url 'get-employee-mail-preview' %}?{% if employee %}emp_id={{ employee.id }}&{% endif %}"
-        hx-target="#preview"
-        hx-include="#ack-form-{{ employee.id }}"
-        hx-on-htmx-before-request="if (!$('#template').val()) { event.preventDefault(); }">
-</button>
 
 <div id="ack-message-{{ employee.id }}"></div>
 
@@ -63,16 +57,19 @@
         <div class="form-group mt-2">
             <label for="body"><h6>{% trans "Message Body" %}</h6></label>
             <div class="oh-input__group">
-                <div class="oh-tabs__view-buttons mt-2">
-                    <span class="tab-btn active" data-tab="write"><span>{% trans "Write" %}</span></span>
-                    <span class="tab-btn" data-tab="preview" hx-on:click="$('#previewHxButton').click();"><span>{% trans "Preview" %}</span></span>
+                <div class="oh-tabs__view-buttons mt-2 d-flex gap-1">
+                    <button type="button" class="oh-btn oh-btn--secondary oh-btn--small px-3 tab-btn" data-tab="write" id="writeTabBtn">
+                        <ion-icon name="create-outline" class="me-1"></ion-icon>
+                        {% trans "Write" %}
+                    </button>
+                    <button type="button" class="oh-btn oh-btn--secondary oh-btn--small px-3 tab-btn" data-tab="preview" id="previewTabBtn">
+                        <ion-icon name="eye-outline" class="me-1"></ion-icon>
+                        {% trans "Preview" %}
+                    </button>
                 </div>
                 <div id="write" class="oh-tabs__view active">
                     <textarea id="writeField" data-summernote name="body" required
                               class="oh-input oh-input--textarea" placeholder="Type something here..."></textarea>
-                </div>
-                <div id="preview" class="oh-tabs__view">
-                    <div id="previewField" class="oh-input oh-input--textarea" placeholder="preview..."></div>
                 </div>
             </div>
         </div>
@@ -112,6 +109,21 @@
     }
     function clearErrors() { $("#messages").empty(); }
 
+    function getCsrfToken() {
+        var t = $('input[name=csrfmiddlewaretoken]').val();
+        if (t) return t;
+        var m = document.cookie.match(/csrftoken=([^;]+)/);
+        return m ? m[1] : '';
+    }
+
+    function setWriteFieldHtml(html) {
+        if ($('#writeField').next('.note-editor').length) {
+            $('#writeField').summernote('code', html);
+        } else {
+            $('#writeField').val(html);
+        }
+    }
+
     // ---------- VALIDATION ----------
     function validateForm(formId, hasEmployee) {
         clearErrors();
@@ -148,7 +160,7 @@
         return true;
     }
 
-    // ---------- TEMPLATE LOAD ----------
+    // ---------- TEMPLATE LOAD (on select change) ----------
     function loadTemplate(select) {
         const id = $(select).val();
         if (!id) return;
@@ -162,29 +174,91 @@
         });
     }
 
-    // ---------- INIT ----------
-    $(document).ready(function() {
-        // Load preselected employees if any
-        let selectedIds = JSON.parse($("#selectedInstances").attr("data-ids") || "[]");
-        $("#employees").val(selectedIds).change();
-
-        // Initialize Summernote conditionally
-        {% if employee %}
-            initializeSummernote({{ employee.id }}, {{ searchWords|safe }});
-        {% else %}
-            if (selectedIds.length > 0) {
-                initializeSummernote(selectedIds[0], {{ searchWords|safe }});
-            }
-        {% endif %}
-
-        // Tab switching
-        document.querySelectorAll(".tab-btn").forEach((btn) => {
-            btn.addEventListener("click", () => {
-                document.querySelectorAll(".tab-btn").forEach(b => b.classList.remove("active"));
-                btn.classList.add("active");
-                document.querySelectorAll(".oh-tabs__view").forEach(c => c.classList.remove("active"));
-                document.getElementById(btn.dataset.tab).classList.add("active");
-            });
+    function loadTemplateIntoWriteField() {
+        var id = $("#template").val();
+        if (!id) {
+            showError("Select a template first, or type in the editor.");
+            return;
+        }
+        $.ajax({
+            type: "get",
+            url: "/employee/get-template/" + id + "/",
+            dataType: "json",
+            beforeSend: function () { if ($('#writeField').next('.note-editor').length) $('#writeField').summernote('disable'); },
+            success: function (response) { setWriteFieldHtml(response.body || ''); },
+            complete: function () { if ($('#writeField').next('.note-editor').length) $('#writeField').summernote('enable'); }
         });
+    }
+
+    function loadPreviewIntoWriteField() {
+        var body = '';
+        if ($('#writeField').next('.note-editor').length) {
+            try {
+                body = $('#writeField').summernote('code') || '';
+            } catch (err) { body = $('#writeField').val() || ''; }
+        } else {
+            body = $('#writeField').val() || '';
+        }
+        var stripped = body.replace(/<[^>]+>/g, '').replace(/&nbsp;/g, ' ').trim();
+        if (!stripped && (!body || body === '<p><br></p>')) {
+            showError("Add some message body before preview.");
+            return;
+        }
+        var form = document.getElementById('ack-form-{{ employee.id }}');
+        var fd = new FormData(form);
+        fd.set('body', body);
+        fetch("{% url 'get-employee-mail-preview' %}{% if employee %}?emp_id={{ employee.id }}{% endif %}", {
+            method: 'POST',
+            headers: { 'X-CSRFToken': getCsrfToken() },
+            body: fd,
+            credentials: 'same-origin'
+        }).then(function (r) {
+            if (!r.ok) return r.text().then(function (t) { throw new Error(t || r.status); });
+            return r.text();
+        }).then(function (html) {
+            setWriteFieldHtml(html);
+        }).catch(function () { /* keep workflow */ });
+    }
+
+    function initSendMailForm() {
+        var dataIds = $("#selectedInstances").attr("data-ids");
+        let selectedIds = [];
+        try {
+            selectedIds = JSON.parse(dataIds || "[]");
+        } catch (e) { selectedIds = []; }
+        var $employees = $("#employees");
+        if ($employees.length) $employees.val(selectedIds).change();
+
+        {% if employee %}
+        if ($('#writeField').length && typeof initializeSummernote === 'function') {
+            initializeSummernote({{ employee.id }}, {{ searchWords|safe }});
+        }
+        {% else %}
+        if (selectedIds.length > 0 && $('#writeField').length && typeof initializeSummernote === 'function') {
+            initializeSummernote(selectedIds[0], {{ searchWords|safe }});
+        }
+        {% endif %}
+    }
+
+    // Delegated handlers so clicks work when this fragment is loaded via HTMX after DOM ready
+    $(document).off('click.sendMailWrite', '#writeTabBtn').on('click.sendMailWrite', '#writeTabBtn', function (e) {
+        e.preventDefault();
+        e.stopPropagation();
+        loadTemplateIntoWriteField();
+    });
+    $(document).off('click.sendMailPreview', '#previewTabBtn').on('click.sendMailPreview', '#previewTabBtn', function (e) {
+        e.preventDefault();
+        e.stopPropagation();
+        loadPreviewIntoWriteField();
+    });
+
+    $(document).ready(function () {
+        initSendMailForm();
+    });
+
+    document.body.addEventListener('htmx:afterSwap', function (ev) {
+        if (ev.detail.target.querySelector && ev.detail.target.querySelector('#writeTabBtn')) {
+            initSendMailForm();
+        }
     });
 </script>
