@@ -1065,7 +1065,7 @@ def ticket_change_raised_on(request, ticket_id):
             if form.is_valid():
                 form.save()
                 messages.success(request, _("Responsibility updated for the Ticket"))
-                return redirect(ticket_detail, ticket_id=ticket_id)
+                return HttpResponse("<script>window.location.reload()</script>")
         return render(
             request,
             "helpdesk/ticket/forms/change_raised_on.html",
