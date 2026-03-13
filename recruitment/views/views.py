@@ -517,14 +517,15 @@ def filter_pipeline(request):
 
 
 @login_required
+@hx_request_required
 @manager_can_enter("recruitment.view_recruitment")
 def get_stage_badge_count(request):
     """
     Method to update stage badge count
     """
-    stage_id = request.GET["stage_id"]
-    stage = Stage.objects.get(id=stage_id)
-    count = stage.candidate_set.filter(is_active=True).count()
+    stage_id = request.GET.get("stage_id")
+    stage = Stage.find(stage_id)
+    count = stage.candidate_set.filter(is_active=True).count() if stage else 0
     return HttpResponse(count)
 
 
@@ -534,8 +535,17 @@ def stage_component(request, view: str = "list"):
     """
     This method will stage tab contents
     """
-    recruitment_id = request.GET["rec_id"]
-    recruitment = Recruitment.objects.get(id=recruitment_id)
+    recruitment_id = request.GET.get("rec_id")
+    if not recruitment_id or not (recruitment := Recruitment.find(recruitment_id)):
+        return HorillaRedirect(
+            request,
+            message=(
+                _("Recruitment ID missing.")
+                if not recruitment_id
+                else _("No Recruitment found matching the query.")
+            ),
+        )
+
     ordered_stages = CACHE.get(request.session.session_key + "pipeline")[
         "stages"
     ].filter(recruitment_id__id=recruitment_id)
@@ -558,53 +568,57 @@ def stage_component(request, view: str = "list"):
 @login_required
 @manager_can_enter(perm="recruitment.change_candidate")
 def update_candidate_stage_and_sequence(request):
-    """
-    Update candidate sequence method
-    """
+    """Update candidate sequence"""
+
     order_list = request.GET.getlist("order")
-    stage_id = request.GET["stage_id"]
-    stage = (
-        CACHE.get(request.session.session_key + "pipeline")["stages"]
-        .filter(id=stage_id)
-        .first()
-    )
+    stage_id = request.GET.get("stage_id")
+
+    pipeline_cache = CACHE.get(request.session.session_key + "pipeline")
+    if not pipeline_cache:
+        return JsonResponse({"message": _("Pipeline cache expired.")})
+
+    stage = pipeline_cache["stages"].filter(id=stage_id).first()
+    if not stage:
+        return JsonResponse({"message": _("Stage not found.")})
+
     context = {}
+
     for index, cand_id in enumerate(order_list):
-        candidate = CACHE.get(request.session.session_key + "pipeline")[
-            "candidates"
-        ].filter(id=cand_id)
-        candidate.update(sequence=index, stage_id=stage)
-    if stage.stage_type == "hired":
-        if stage.recruitment_id.is_vacancy_filled():
-            context["message"] = _("Vaccancy is filled")
-            context["vacancy"] = stage.recruitment_id.vacancy
+        pipeline_cache["candidates"].filter(id=cand_id).update(
+            sequence=index, stage_id=stage
+        )
+
+    if stage.stage_type == "hired" and stage.recruitment_id.is_vacancy_filled():
+        context["message"] = _("Vacancy is filled")
+        context["vacancy"] = stage.recruitment_id.vacancy
+
     return JsonResponse(context)
 
 
 @login_required
 @manager_can_enter(perm="recruitment.change_candidate")
 def update_candidate_sequence(request):
-    """
-    Update candidate sequence method
-    """
+    """Update candidate sequence"""
+
     order_list = request.GET.getlist("order")
-    stage_id = request.GET["stage_id"]
-    stage = (
-        CACHE.get(request.session.session_key + "pipeline")["stages"]
-        .filter(id=stage_id)
-        .first()
-    )
-    data = {}
+    stage_id = request.GET.get("stage_id")
+
+    pipeline_cache = CACHE.get(request.session.session_key + "pipeline")
+    if not pipeline_cache:
+        return JsonResponse({"message": _("Pipeline cache expired.")})
+
+    stage = pipeline_cache["stages"].filter(id=stage_id).first()
+    if not stage:
+        return JsonResponse({"message": _("Stage not found.")})
 
     for index, cand_id in enumerate(order_list):
-        candidate = CACHE.get(request.session.session_key + "pipeline")[
-            "candidates"
-        ].filter(id=cand_id)
-        candidate.update(
-            sequence=index, stage_id=stage, hired=(stage.stage_type == "hired")
+        pipeline_cache["candidates"].filter(id=cand_id).update(
+            sequence=index,
+            stage_id=stage,
+            hired=(stage.stage_type == "hired"),
         )
 
-    return JsonResponse(data)
+    return JsonResponse({})
 
 
 def limited_paginator_qry(queryset, page):
@@ -699,9 +713,14 @@ def change_candidate_stage(request):
             except Candidate.DoesNotExist:
                 messages.error(request, _("Candidate not found."))
         return JsonResponse(context)
-    candidate_id = request.GET["candidate_id"]
-    stage_id = request.GET["stage_id"]
-    candidate = Candidate.objects.get(id=candidate_id)
+    stage_id = request.GET.get("stage_id")
+    candidate_id = request.GET.get("candidate_id")
+    candidate = Candidate.find(candidate_id)
+    if not candidate:
+        return HorillaRedirect(
+            request, message=_("No Candidate found matching the query.")
+        )
+
     stage = Stage.objects.filter(
         recruitment_id=candidate.recruitment_id, id=stage_id
     ).first()
@@ -849,10 +868,14 @@ def recruitment_reopen_pipeline(request, rec_id):
     """
     This method is used to reopen recruitment from pipeline view
     """
-    recruitment_obj = Recruitment.objects.get(id=rec_id)
+    recruitment_obj = Recruitment.find(rec_id)
+    if not recruitment_obj:
+        return HorillaRedirect(
+            request, message=_("No Recruitment found matching the query.")
+        )
+
     recruitment_obj.closed = False
     recruitment_obj.save()
-
     messages.success(request, "Recruitment reopend successfully")
     return HorillaRedirect(request)
 
@@ -866,8 +889,13 @@ def candidate_stage_update(request, cand_id):
     Args:
         id : candidate_id
     """
-    stage_id = request.POST["stageId"]
-    candidate_obj = Candidate.objects.get(id=cand_id)
+    stage_id = request.POST.get("stageId")
+    candidate_obj = Candidate.find(cand_id)
+    if not candidate_obj:
+        return JsonResponse(
+            {"type": "error", "message": _("No Candidate found matching the query.")}
+        )
+
     history_queryset = candidate_obj.history_set.all().first()
     stage_obj = Stage.objects.get(id=stage_id)
     if candidate_obj.stage_id == stage_obj:
@@ -1006,7 +1034,12 @@ def note_update(request, note_id):
     Args:
         id : stage note instance id
     """
-    note = StageNote.objects.get(id=note_id)
+    note = StageNote.find(note_id)
+    if not note:
+        return HorillaRedirect(
+            request, message=_("No Stage Note found matching the query.")
+        )
+
     form = StageNoteUpdateForm(instance=note)
     if request.POST:
         form = StageNoteUpdateForm(request.POST, request.FILES, instance=note)
@@ -1029,7 +1062,12 @@ def note_update_individual(request, note_id):
     Args:
         id : stage note instance id
     """
-    note = StageNote.objects.get(id=note_id)
+    note = StageNote.find(note_id)
+    if not note:
+        return HorillaRedirect(
+            request, message=_("No Stage Note found matching the query.")
+        )
+
     form = StageNoteForm(instance=note)
     if request.POST:
         form = StageNoteForm(request.POST, request.FILES, instance=note)
@@ -1133,12 +1171,15 @@ def candidate_schedule_date_update(request):
     """
     This is a an ajax method to update schedule date for a candidate
     """
-    candidate_id = request.POST["candidateId"]
-    schedule_date = request.POST["date"]
-    candidate_obj = Candidate.objects.get(id=candidate_id)
-    candidate_obj.schedule_date = schedule_date
-    candidate_obj.save()
-    return JsonResponse({"message": "congratulations"})
+    candidate_id = request.POST.get("candidateId")
+    schedule_date = request.POST.get("date")
+    candidate_obj = Candidate.find(candidate_id)
+    message = "Error"
+    if candidate_obj:
+        candidate_obj.schedule_date = schedule_date
+        candidate_obj.save()
+        message = "Congratulations"
+    return JsonResponse({"message": message})
 
 
 @login_required
@@ -1277,7 +1318,11 @@ def update_stage_order(request, pk):
     """
     This method is used to update the stage sequence of the onboarding
     """
-    recruitment = Recruitment.objects.get(id=pk)
+    recruitment = Recruitment.find(pk)
+    if not recruitment:
+        return HorillaRedirect(
+            request, message=_("No Recruitment found matching the query.")
+        )
 
     if request.method == "POST":
         try:
@@ -1387,15 +1432,21 @@ def candidate(request):
 
 @login_required
 @permission_required(perm="recruitment.add_candidate")
-def recruitment_stage_get(_, rec_id):
+def recruitment_stage_get(request, rec_id):
     """
     This method returns all stages as json
-    Args:
-        id: recruitment_id
     """
-    recruitment_obj = Recruitment.objects.get(id=rec_id)
+    recruitment_obj = Recruitment.find(rec_id)
+
+    if not recruitment_obj:
+        return JsonResponse(
+            {"error": _("No Recruitment found matching the query.")},
+            status=404,
+        )
+
     all_stages = recruitment_obj.stage_set.all()
     all_stage_json = serializers.serialize("json", all_stages)
+
     return JsonResponse({"stages": all_stage_json})
 
 
@@ -3170,17 +3221,6 @@ def extract_info(pdf):
     Args:
         pdf_file: pdf file
     """
-
-    text_info = extract_text_with_font_info(pdf)
-    ranked_text = rank_text(text_info)
-
-    phone_pattern = re.compile(r"\b\+?\d{1,2}\s?\d{9,10}\b")
-    dob_pattern = re.compile(
-        r"\b(?:\d{1,2}|\d{4})[-/.,]\d{1,2}[-/.,](?:\d{1,2}|\d{4})\b"
-    )
-    email_pattern = re.compile(r"\b[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.[A-Z|a-z]{2,}\b")
-    zip_code_pattern = re.compile(r"\b\d{5,6}(?:-\d{4})?\b")
-
     extracted_info = {
         "full_name": "",
         "address": "",
@@ -3191,6 +3231,18 @@ def extract_info(pdf):
         "email_id": "",
         "zip": "",
     }
+    if not pdf:
+        return extracted_info
+
+    text_info = extract_text_with_font_info(pdf)
+    ranked_text = rank_text(text_info)
+
+    phone_pattern = re.compile(r"\b\+?\d{1,2}\s?\d{9,10}\b")
+    dob_pattern = re.compile(
+        r"\b(?:\d{1,2}|\d{4})[-/.,]\d{1,2}[-/.,](?:\d{1,2}|\d{4})\b"
+    )
+    email_pattern = re.compile(r"\b[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.[A-Z|a-z]{2,}\b")
+    zip_code_pattern = re.compile(r"\b\d{5,6}(?:-\d{4})?\b")
 
     name_candidates = [
         item["text"]
@@ -3245,7 +3297,7 @@ def resume_completion(request):
     """
     This function is returns the data for completing the candidate creation form
     """
-    resume_file = request.FILES["resume"]
+    resume_file = request.FILES.get("resume")
     contact_info = extract_info(resume_file)
 
     return JsonResponse(contact_info)
@@ -3790,7 +3842,12 @@ def candidate_add_notes(request, cand_id):
     This method renders template component to add candidate remark
     """
 
-    candidate = Candidate.objects.get(id=cand_id)
+    candidate = Candidate.find(cand_id)
+    if not candidate:
+        return HorillaRedirect(
+            request, message=_("No Candidate found matching the query.")
+        )
+
     updated_by = request.user.employee_get if request.user.is_authenticated else None
     label = (
         request.user.employee_get.get_full_name()
