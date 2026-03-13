@@ -976,9 +976,9 @@ class ReimbursementForm(ModelForm):
         if not type_ :
             return cleaned_data
 
-        if not employee:
-            self.add_error("employee_id", "This field is required")
-            return cleaned_data
+        # if not employee:
+        #     self.add_error("employee_id", "This field is required TEST")
+        #     return cleaned_data
 
         if type_ == "bonus_encashment":
             bonus_to_encash = (
