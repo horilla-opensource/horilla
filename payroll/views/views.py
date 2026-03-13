@@ -451,6 +451,8 @@ def update_payslip_status(request, payslip_id):
     status = request.POST.get("status")
     view = request.POST.get("view")
     payslip = Payslip.objects.filter(id=payslip_id).first()
+    if not payslip:
+        return HorillaRedirect(request, message=_("Payslip not found."))
     if payslip:
         payslip.status = status
         payslip.save()
@@ -488,45 +490,6 @@ def update_payslip_status_no_id(request):
             "message": f"{slips.count()} Payslips status updated.",
         }
     return JsonResponse(message)
-
-
-@login_required
-@permission_required("payroll.change_payslip")
-def bulk_update_payslip_status(request):
-    """
-    This method is used to update payslip status when generating payslip through
-    generate payslip method
-    """
-    json_data = request.GET["json_data"]
-    pay_data = json.loads(json_data)
-    status = request.GET["status"]
-
-    for json_entry in pay_data:
-        data = json.loads(json_entry)
-        emp_id = data["employee"]
-        employee = Employee.objects.get(id=emp_id)
-
-        payslip_kwargs = {
-            "employee_id": employee,
-            "start_date": data["start_date"],
-            "end_date": data["end_date"],
-        }
-        filtered_instance = Payslip.objects.filter(**payslip_kwargs).first()
-        instance = filtered_instance if filtered_instance is not None else Payslip()
-
-        instance.employee_id = employee
-        instance.start_date = data["start_date"]
-        instance.end_date = data["end_date"]
-        instance.status = status
-        instance.basic_pay = data["basic_pay"]
-        instance.contract_wage = data["contract_wage"]
-        instance.gross_pay = data["gross_pay"]
-        instance.deduction = data["total_deductions"]
-        instance.net_pay = data["net_pay"]
-        instance.pay_head_data = data
-        instance.save()
-
-    return JsonResponse({"type": "success", "message": "Payslips status updated"})
 
 
 @login_required
@@ -665,7 +628,12 @@ def contract_info_initial(request):
     This is an ajax method to return json response to auto fill the contract
     form fields
     """
-    employee_id = request.GET["employee_id"]
+    employee_id = request.GET.get("employee_id")
+    if not employee_id:
+        messages.error(request, _("Missing required parameter"))
+        return JsonResponse(
+            {"error": "Missing required parameter: employee_id"}, status=400
+        )
     work_info = EmployeeWorkInformation.objects.filter(employee_id=employee_id).first()
     response_data = {
         "department": (
@@ -1312,7 +1280,11 @@ def payslip_bulk_delete(request):
     """
     This method is used to bulk delete for Payslip
     """
-    ids = request.POST["ids"]
+    ids = request.POST.get("ids")
+    if not ids:
+        messages.error(request, _("Missing required parameters."))
+        return JsonResponse({"message": "Missing required parameters."}, status=400)
+
     ids = json.loads(ids)
     for id in ids:
         try:
@@ -1341,8 +1313,14 @@ def slip_group_name_update(request):
     """
     This method is used to update the group of the payslip
     """
-    new_name = request.POST["newName"]
-    group_name = request.POST["previousName"]
+    new_name = request.POST.get("newName")
+    group_name = request.POST.get("previousName")
+
+    if not new_name or not group_name:
+        return JsonResponse(
+            {"type": "error", "message": "Missing required parameters."}, status=400
+        )
+
     Payslip.objects.filter(group_name=group_name).update(group_name=new_name)
     return JsonResponse(
         {"type": "success", "message": "Batch name updated.", "new_name": new_name}
@@ -1380,7 +1358,10 @@ def contract_bulk_delete(request):
     """
     This method is used to bulk delete Contract
     """
-    ids = request.POST["ids"]
+    ids = request.POST.get("ids")
+    if not ids:
+        messages.error(request, _("No IDs provided for deletion."))
+        return JsonResponse({"message": "error."}, status=400)
     ids = json.loads(ids)
     for id in ids:
         try:
@@ -1842,6 +1823,9 @@ def initial_notice_period(request):
     """
     This method is used to set initial value notice period
     """
+    if not request.GET.get("notice_period"):
+        return HorillaRedirect(request, message=_("required parameter is missing"))
+
     notice_period = eval_validate(request.GET["notice_period"])
     settings = PayrollGeneralSetting.objects.first()
     settings = settings if settings else PayrollGeneralSetting()
@@ -1902,7 +1886,22 @@ def activate_auto_payslip_generate(request):
     """
     isChecked = request.POST.get("isChecked")
     autoId = request.POST.get("autoId")
-    payslip_auto = PayslipAutoGenerate.objects.get(id=autoId)
+    if not autoId or not isChecked:
+        return JsonResponse(
+            {
+                "type": "error",
+                "message": _("Invalid request. Missing required parameters."),
+            }
+        )
+    payslip_auto = PayslipAutoGenerate.objects.filter(id=autoId).first()
+    if not payslip_auto:
+        return JsonResponse(
+            {
+                "type": "error",
+                "message": _("Payslip auto generate setting not found."),
+            }
+        )
+
     if isChecked == "true":
         payslip_auto.auto_generate = True
         response = {

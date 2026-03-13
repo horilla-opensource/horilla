@@ -311,6 +311,9 @@ $("#deletePayslipBulk").click(function (e) {
                             // console.log("Unexpected HTTP status:", jqXHR.status);
                         }
                     },
+                    error: () => {
+                        reloadmessage()
+                    }
                 });
             }
         });
@@ -583,6 +586,9 @@ $("#DeleteContractBulk").click(function (e) {
                             // console.log("Unexpected HTTP status:", jqXHR.status);
                         }
                     },
+                    error: () => {
+                        reloadmessage()
+                    }
                 });
             }
         });
