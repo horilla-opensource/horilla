@@ -1968,7 +1968,7 @@ def password_reset_request_create(request):
                 f"<b>Platform:</b> {platform}<br>"
                 f"<b>User:</b> {user_display}<br>"
                 f"<b>Reason:</b> {reason}"
-            )
+            )[:255]
 
             ticket = Ticket(
                 title=f"Password Reset – {platform}",
@@ -2050,7 +2050,25 @@ def password_reset_request_update(request, pr_id):
     if request.method == "POST":
         form = PasswordResetRequestForm(request.POST, instance=pr_request, request=request)
         if form.is_valid():
-            form.save()
+            pr_request = form.save()
+
+            # Update the linked ticket's title and description to reflect edits
+            platform = form.cleaned_data["platform"]
+            selected_employee = form.cleaned_data["employee"]
+            reason = form.cleaned_data["reason"]
+            try:
+                user_email = selected_employee.employee_work_info.company_email or ""
+            except Exception:
+                user_email = str(selected_employee)
+            ticket.title = f"Password Reset – {platform}"
+            ticket.description = (
+                f"Password Reset Request<br>"
+                f"Platform: {platform}<br>"
+                f"User: {selected_employee} ({user_email})<br>"
+                f"Reason: {reason}"
+            )[:255]
+            ticket.save()
+
             messages.success(request, _("Password reset request updated successfully."))
             return HttpResponse("<script>window.location.reload()</script>")
 
@@ -2227,4 +2245,3 @@ def password_reset_request_delete(request, pr_id):
             messages.error(request, _("You cannot delete this password reset request."))
 
     return HttpResponseRedirect(request.META.get("HTTP_REFERER", "/"))
-
