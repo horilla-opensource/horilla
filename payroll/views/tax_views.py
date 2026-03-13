@@ -87,7 +87,7 @@ def update_filing_status(request, filing_status_id):
     filing_status = FilingStatus.find(filing_status_id)
     if not filing_status:
         messages.error(request, _("Filing status not found"))
-        return HttpResponseRedirect(request.META.get("HTTP_REFERER", "/"))
+        return HorillaRedirect(request)
     filing_status_form = FilingStatusForm(instance=filing_status)
     if request.method == "POST":
         filing_status_form = FilingStatusForm(request.POST, instance=filing_status)
@@ -255,7 +255,7 @@ def update_tax_bracket(request, tax_bracket_id):
         }
         return render(request, "payroll/tax/tax_bracket_edit.html", context)
     messages.error(request, _("Tax bracket not found"))
-    return HttpResponseRedirect(request.META.get("HTTP_REFERER", "/"))
+    return HorillaRedirect(request)
 
 
 @login_required

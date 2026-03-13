@@ -705,7 +705,7 @@ def delete_deduction(request, deduction_id, emp_id=None):
     default_redirect = (
         request.path if http_hx_target else request.META.get("HTTP_REFERER", "/")
     )
-    return HttpResponseRedirect(default_redirect)
+    return HorillaRedirect(request)
 
 
 def get_month_start_end(year):

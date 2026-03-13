@@ -23,6 +23,7 @@ REST_FRAMEWORK_SETTINGS = {
     "PAGE_SIZE": 20,
 }
 
+
 SIMPLE_JWT = {
     "ACCESS_TOKEN_LIFETIME": timedelta(days=30),
 }
