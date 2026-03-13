@@ -63,4 +63,86 @@
 
 <div id="passwordResetModalTarget"></div>
 
+{# ── Reject Reason Modal ── #}
+<div class="oh-modal" id="rejectReasonModal" role="dialog" aria-labelledby="rejectReasonModalTitle" aria-hidden="true">
+    <div class="oh-modal__dialog">
+        <div class="oh-modal__dialog-header">
+            <h2 class="oh-modal__dialog-title" id="rejectReasonModalTitle">
+                {% trans "Reject Request" %}
+            </h2>
+            <button class="oh-modal__close" aria-label="Close" onclick="closeRejectModal();">
+                <ion-icon name="close-outline"></ion-icon>
+            </button>
+        </div>
+        <div class="oh-modal__dialog-body">
+            <p class="text-muted mb-3">
+                {% trans "You are about to reject request" %}
+                <strong id="rejectTicketId"></strong>.
+                {% trans "Please provide a reason for rejection." %}
+            </p>
+            <form id="rejectReasonForm" method="post" action="">
+                {% csrf_token %}
+                <input type="hidden" name="action" value="reject" />
+                <div class="oh-form__group">
+                    <label class="oh-label oh-label--mandatory" for="rejectFeedbackInput">
+                        {% trans "Reason for Rejection" %}
+                    </label>
+                    <textarea
+                        id="rejectFeedbackInput"
+                        name="iso_feedback"
+                        class="oh-input w-100"
+                        rows="3"
+                        placeholder="{% trans 'Provide feedback (required when rejecting)' %}"
+                        required
+                    ></textarea>
+                    <span id="rejectFeedbackError" class="oh-text--danger" style="font-size:12px; display:none;">
+                        {% trans "This field is required." %}
+                    </span>
+                </div>
+                <div class="d-flex justify-content-end mt-3 gap-2">
+                    <button type="button" class="oh-btn oh-btn--light-bkg" onclick="closeRejectModal();">
+                        {% trans "Cancel" %}
+                    </button>
+                    <button type="submit" class="oh-btn oh-btn--danger">
+                        {% trans "Reject" %}
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+<script>
+    function openRejectModal(actionUrl, ticketId) {
+        var modal = document.getElementById('rejectReasonModal');
+        var form = document.getElementById('rejectReasonForm');
+        var ticketLabel = document.getElementById('rejectTicketId');
+        var feedbackInput = document.getElementById('rejectFeedbackInput');
+        var errorSpan = document.getElementById('rejectFeedbackError');
+
+        form.action = actionUrl;
+        ticketLabel.textContent = ticketId;
+        feedbackInput.value = '';
+        errorSpan.style.display = 'none';
+        modal.classList.add('oh-modal--show');
+    }
+
+    function closeRejectModal() {
+        var modal = document.getElementById('rejectReasonModal');
+        modal.classList.remove('oh-modal--show');
+    }
+
+    document.getElementById('rejectReasonForm').addEventListener('submit', function(e) {
+        var feedbackInput = document.getElementById('rejectFeedbackInput');
+        var errorSpan = document.getElementById('rejectFeedbackError');
+        if (!feedbackInput.value.trim()) {
+            e.preventDefault();
+            errorSpan.style.display = 'block';
+            feedbackInput.focus();
+            return false;
+        }
+        errorSpan.style.display = 'none';
+    });
+</script>
+
 {% endblock %}

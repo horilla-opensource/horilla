@@ -278,6 +278,7 @@
                     {% endfor %}
                 </div>
             </div>
+            {% if not password_reset_request %}
             {% if perms.helpdesk.add_comment or request.user.employee_get == ticket.employee_id or request.user.employee_get in ticket.assigned_to.all %}
             <div class="oh-helpdesk__chatbox">
                 <form name="comment-form" action="{% url 'comment-create' ticket.id %}" method="POST"
@@ -311,6 +312,7 @@
                     });
                 </script>
             </div>
+            {% endif %}
             {% endif %}
             <!-- end of comment box. -->
         </div>
@@ -577,18 +579,23 @@
         // No additional code is needed here, HTMX will handle the request automatically
     }
 
-    document.getElementById('fileUpload').addEventListener('change', function () {
-        const fileCount = this.files.length;
-        const countSpan = document.getElementById('fileCount');
-        if (fileCount > 0) {
-            countSpan.textContent = fileCount;
-            countSpan.style.display = 'inline-block'; // Show the badge
-        } else {
-            countSpan.style.display = 'none'; // Hide if no files are selected
-        }
-    });
+    var fileUploadEl = document.getElementById('fileUpload');
+    if (fileUploadEl) {
+        fileUploadEl.addEventListener('change', function () {
+            const fileCount = this.files.length;
+            const countSpan = document.getElementById('fileCount');
+            if (fileCount > 0) {
+                countSpan.textContent = fileCount;
+                countSpan.style.display = 'inline-block'; // Show the badge
+            } else {
+                countSpan.style.display = 'none'; // Hide if no files are selected
+            }
+        });
+    }
 
-    document.getElementById('fileUpload2').addEventListener('change', function () {
+    var fileUpload2El = document.getElementById('fileUpload2');
+    if (fileUpload2El) {
+    fileUpload2El.addEventListener('change', function () {
         const fileCount = this.files.length;
         const countSpandoc = document.getElementById('fileCount1');
         if (fileCount > 0) {
@@ -598,6 +605,7 @@
             countSpandoc.style.display = 'none'; // Hide if no files are selected
         }
     });
+    }
 </script>
 
 <script>
