@@ -34,6 +34,8 @@ from base.methods import (
     get_key_instances,
     get_pagination,
 )
+
+# from horilla.http import HorillaRedirect
 from horilla.filters import FilterSet
 from horilla.group_by import group_by_queryset
 from horilla.horilla_middlewares import _thread_locals
@@ -1921,6 +1923,10 @@ class HorillaFormView(FormView):
         self, request: HttpRequest, *args: str, pk=None, **kwargs: Any
     ) -> HttpResponse:
         _pk = pk
+        form = self.get_form()
+        if pk and not form.instance:
+            messages.error(request, "Matching query does not exists.")
+            return HorillaRedirect(request)
         response = super().get(request, *args, **kwargs)
         return response
 
