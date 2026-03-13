@@ -885,15 +885,14 @@ class ReimbursementForm(ModelForm):
 
 
         self.fields.pop("attachment", None)
-        if not has_temp_files and not has_new_files:
-            self.fields["attachment"] = MultipleFileField(
-                label="Attachments",
-                required=True,
-            )
-            self.fields["attachment"].widget.attrs["accept"] = ".jpg, .jpeg, .png, .pdf"
+        self.fields["attachment"] = MultipleFileField(
+            label="Attachments",
+            required=True,
+        )
+        self.fields["attachment"].widget.attrs["accept"] = ".jpg, .jpeg, .png, .pdf"
 
-            if is_edit:
-                self.initial["attachment"] = None
+        if is_edit:
+            self.initial["attachment"] = None
 
         self.exclude_fields_by_type(exclude_fields)
 
