@@ -23,8 +23,13 @@ def update_isactive_linkedin(request, obj_id):
     - is_active: Boolean value representing the state of LinkedInAccount,
     - obj_id: Id of LinkedInAccount object.
     """
+    linkedin_account = LinkedInAccount.find(obj_id)
+    if not linkedin_account:
+        return HorillaRedirect(
+            request, message=_("No LinkedIn Account found matching the query.")
+        )
+
     is_active = request.POST.get("is_active")
-    linkedin_account = LinkedInAccount.objects.get(id=obj_id)
     if is_active == "on":
         linkedin_account.is_active = True
         messages.success(request, _("LinkedIn Account activated successfully."))
@@ -55,7 +60,12 @@ def delete_linkedin_account(request, pk, return_redirect=True):
 
 @login_required
 def validate_linkedin_token(request, pk):
-    linkedin_account = LinkedInAccount.objects.filter(id=pk).first()
+    linkedin_account = LinkedInAccount.find(pk)
+    if not linkedin_account:
+        return HorillaRedirect(
+            request, message=_("No LinkedIn Account found matching the query.")
+        )
+
     access_token = linkedin_account.api_token
     url = "https://api.linkedin.com/v2/userinfo"
     headers = {"Authorization": f"Bearer {access_token}"}
