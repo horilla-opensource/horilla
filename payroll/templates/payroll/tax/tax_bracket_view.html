@@ -129,6 +129,9 @@
                 initialCode = latestCode;
                 $('#reloadMessagesButton').click();
                 saveDiv.classList.add("d-none");
+            },
+            error: () => {
+                reloadmessage()
             }
         });
     });

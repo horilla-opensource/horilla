@@ -293,8 +293,15 @@ def update_py_code(request, pk):
     """
     Ajax method to update python code of filing status
     """
-    code = request.POST["code"]
-    filing = FilingStatus.objects.get(pk=pk)
+    code = request.POST.get("code")
+    if not code:
+        messages.error(request, _("Missing required parameter"))
+        return JsonResponse({"message": "Missing required parameter: code"}, status=400)
+    filing = FilingStatus.find(pk)
+    if not filing:
+        messages.error(request, _("Filing status not found"))
+        return JsonResponse({"message": "Filing status not found"}, status=404)
+
     if not filing.python_code == code:
         filing.python_code = code
         filing.save()
