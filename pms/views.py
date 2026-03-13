@@ -431,8 +431,9 @@ def archive_key_result(request, pk):
     """
     key_result = KeyResult.find(pk)
     if not key_result:
-        messages.error(request, _("No Key Result found matching the query."))
-        return HorillaRedirect(request)
+        return HorillaRedirect(
+            request, message=_("No Key Result found matching the query.")
+        )
 
     key_result.is_active = not key_result.is_active
     key_result.save()
@@ -779,8 +780,9 @@ def objective_detailed_view(request, obj_id, **kwargs):
     """
     objective = Objective.find(obj_id)
     if not objective:
-        messages.error(request, _("No Objective found matching the query."))
-        return HorillaRedirect(request)
+        return HorillaRedirect(
+            request, message=_("No Objective found matching the query.")
+        )
 
     emp_objectives = EmployeeObjective.objects.filter(
         objective_id=objective, archive=False
@@ -1065,8 +1067,9 @@ def objective_archive(request, id):
     """
     objective = Objective.find(id)
     if not objective:
-        messages.error(request, _("No Objective found matching the query."))
-        return HorillaRedirect(request)
+        return HorillaRedirect(
+            request, message=_("No Objective found matching the query.")
+        )
 
     if objective.archive:
         objective.archive = False
@@ -1155,8 +1158,10 @@ def get_objective_keyresults(request):
     obj_id = request.GET.get("objective_id")
     objective = Objective.find(obj_id)
     if not objective:
-        messages.error(request, _("No Objective found matching the query."))
-        return HorillaRedirect(request)
+
+        return HorillaRedirect(
+            request, message=_("No Objective found matching the query.")
+        )
 
     keyresults = objective.key_result_id.all()
     form = EmployeeObjectiveCreateForm(initial={"key_result_id": keyresults})
@@ -1209,8 +1214,9 @@ def archive_employee_objective(request, emp_obj_id):
     """
     emp_objective = EmployeeObjective.find(emp_obj_id)
     if not emp_objective:
-        messages.error(request, _("No Employee Objective found matching the query."))
-        return HorillaRedirect(request)
+        return HorillaRedirect(
+            request, message=_("No Employee Objective found matching the query.")
+        )
 
     if emp_objective.archive:
         emp_objective.archive = False
@@ -1224,7 +1230,7 @@ def archive_employee_objective(request, emp_obj_id):
         return HttpResponse(
             "<script> $('.reload-record').click(); $('#reloadMessagesButton').click();</script>"
         )
-    return HttpResponseRedirect(request.META.get("HTTP_REFERER", "/"))
+    return HorillaRedirect(request)
 
 
 @login_required
@@ -1239,8 +1245,9 @@ def delete_employee_objective(request, emp_obj_id):
     """
     emp_objective = EmployeeObjective.find(emp_obj_id)
     if not emp_objective:
-        messages.error(request, _("No Employee Objective found matching the query."))
-        return HorillaRedirect(request)
+        return HorillaRedirect(
+            request, message=_("No Employee Objective found matching the query.")
+        )
 
     single_view = request.GET.get("single_view")
     if emp_objective.employee_key_result.exists():
@@ -1253,10 +1260,7 @@ def delete_employee_objective(request, emp_obj_id):
         emp_objective.delete()
         objective.assignees.remove(employee)
         messages.success(request, _("Objective deleted successfully!."))
-    if not single_view:
-        return HttpResponseRedirect(request.META.get("HTTP_REFERER", "/"))
-    else:
-        return HorillaRedirect(request)
+    return HorillaRedirect(request)
 
 
 @login_required
@@ -1624,8 +1628,7 @@ def feedback_update(request, id):
     feedback_started = Answer.objects.filter(feedback_id=feedback)
     context = {"feedback_form": form}
     if feedback_started:
-        messages.error(request, _("Ongoing feedback is not editable!."))
-        return HorillaRedirect(request)
+        return HorillaRedirect(request, message=_("Ongoing feedback is not editable!."))
 
     if request.method == "POST":
         form = FeedbackForm(request.POST, instance=feedback)
@@ -1834,8 +1837,9 @@ def feedback_detailed_view(request, id, **kwargs):
     """
     feedback = Feedback.find(id)
     if not feedback:
-        messages.error(request, _("No Feedback found matching the query."))
-        return HorillaRedirect(request)
+        return HorillaRedirect(
+            request, message=_("No Feedback found matching the query.")
+        )
 
     is_have_perm = check_permission_feedback_detailed_view(
         request, feedback, "pms.view_feedback"
@@ -1877,16 +1881,12 @@ def feedback_detailed_view_answer(request, id, emp_id):
     feedback = Feedback.find(id)
     employee = Employee.objects.filter(id=emp_id).first()
     if not feedback or not employee:
-        messages.error(
+        return HorillaRedirect(
             request,
-            _("No %(class_name)s found matching the query.")
+            message=_("No %(class_name)s found matching the query.")
             % {"class_name": "Feedback" if not feedback else "Employee"},
         )
-        return HorillaRedirect(request)
 
-    if not employee:
-        messages.error(request, _("No Employee found matching the query."))
-        return HorillaRedirect(request)
     is_have_perm = check_permission_feedback_detailed_view(
         request, feedback, "pms.view_feedback"
     )
@@ -1915,8 +1915,9 @@ def feedback_answer_get(request, id, **kwargs):
 
     feedback = Feedback.find(id)
     if not feedback:
-        messages.error(request, _("No Feedback found matching the query."))
-        return HorillaRedirect(request)
+        return HorillaRedirect(
+            request, message=_("No Feedback found matching the query.")
+        )
 
     # check if the feedback start_date is not started yet
     if feedback.start_date > datetime.date.today():
@@ -1978,8 +1979,9 @@ def feedback_answer_post(request, id):
     """
     feedback = Feedback.find(id)
     if not feedback:
-        messages.error(request, _("No Feedback found matching the query."))
-        return HorillaRedirect(request)
+        return HorillaRedirect(
+            request, message=_("No Feedback found matching the query.")
+        )
 
     user = request.user
     employee = Employee.objects.filter(employee_user_id=user).first()
@@ -2027,8 +2029,9 @@ def feedback_answer_view(request, id, **kwargs):
 
     feedback = Feedback.find(id)
     if not feedback:
-        messages.error(request, _("No Feedback found matching the query."))
-        return HorillaRedirect(request)
+        return HorillaRedirect(
+            request, message=_("No Feedback found matching the query.")
+        )
 
     user = request.user
     employee = Employee.objects.filter(employee_user_id=user).first()
@@ -2083,10 +2086,10 @@ def feedback_delete(request, id):
             return redirect(reverse("feedback-view"))
 
     except Feedback.DoesNotExist:
-        messages.error(request, _("No Feedback found matching the query."))
+        error_message = _("No Feedback found matching the query.")
     except ProtectedError:
-        messages.error(request, _("Related entries exists"))
-    return HorillaRedirect(request)
+        error_message = _("Related entries exists")
+    return HorillaRedirect(request, message=error_message)
 
 
 @login_required
@@ -2180,8 +2183,9 @@ def feedback_archive(request, id):
 
     feedback = Feedback.find(id)
     if not feedback:
-        messages.error(request, _("No Feedback found matching the query."))
-        return HorillaRedirect(request)
+        return HorillaRedirect(
+            request, message=_("No Feedback found matching the query.")
+        )
 
     if feedback.archive:
         feedback.archive = False
@@ -2327,8 +2331,9 @@ def question_view(request, id):
     """
     question_template = QuestionTemplate.find(id)
     if not question_template:
-        messages.error(request, _("No Question Template found matching the query."))
-        return HorillaRedirect(request)
+        return HorillaRedirect(
+            request, message=_("No Question Template found matching the query.")
+        )
 
     question_formset = modelformset_factory(Question, form=QuestionForm, extra=0)
 
@@ -2432,17 +2437,15 @@ def question_delete(request, id):
         return HttpResponse("<script>reloadMessage();</script>")
 
     except Question.DoesNotExist:
-        messages.error(request, _("Question not found."))
+        error_msg = _("Question not found.")
     except IntegrityError:
-        messages.error(
-            request, _("Failed to delete question: Question template is in use.")
-        )
+        error_msg = _("Failed to delete question: Question template is in use.")
     except ProtectedError:
-        messages.error(request, _("Related entries exist."))
+        error_msg = _("Related entries exist.")
     except Exception as e:
-        messages.error(request, _(f"Unexpected error: {str(e)}"))
+        error_msg = _(f"Unexpected error: {str(e)}")
 
-    return HorillaRedirect(request)
+    return HorillaRedirect(request, message=error_msg)
 
 
 @login_required
@@ -3181,8 +3184,9 @@ def archive_anonymous_feedback(request, obj_id):
 
     feedback = AnonymousFeedback.objects.filter(id=obj_id).first()
     if not feedback:
-        messages.error(request, _("No Anonymous Feedback found matching the query."))
-        return HorillaRedirect(request)
+        return HorillaRedirect(
+            request, message=_("No Anonymous Feedback found matching the query.")
+        )
 
     # checking feedback owner
     if str(request.user.id) == feedback.anonymous_feedback_id or request.user.has_perm(
@@ -3376,8 +3380,9 @@ def delete_employee_keyresult(request, kr_id):
     """
     emp_kr = EmployeeKeyResult.objects.filter(id=kr_id).first()
     if not emp_kr:
-        messages.error(request, _("No Employee Key Result found matching the query."))
-        return HorillaRedirect(request)
+        return HorillaRedirect(
+            request, message=_("No Employee Key Result found matching the query.")
+        )
 
     # employee = emp_kr.employee_id
     objective = emp_kr.employee_objective_id.objective_id
@@ -3402,8 +3407,10 @@ def employee_keyresult_update_status(request, kr_id):
     """
     emp_kr = EmployeeKeyResult.objects.filter(id=kr_id).first()
     if not emp_kr:
-        messages.error(request, _("No Employee Key Result found matching the query."))
-        return HorillaRedirect(request)
+
+        return HorillaRedirect(
+            request, message=_("No Employee Key Result found matching the query.")
+        )
 
     if (
         request.user.has_perm("pms.change_objective")
@@ -3645,8 +3652,10 @@ def archive_meetings(request, obj_id):
     """
     meeting = Meetings.find(obj_id)
     if not meeting:
-        messages.error(request, _("No Meetings found matching the query."))
-        return HorillaRedirect(request)
+
+        return HorillaRedirect(
+            request, message=_("No Meetings found matching the query.")
+        )
 
     meeting.is_active = not meeting.is_active
     meeting.save()
@@ -3673,8 +3682,10 @@ def meeting_manager_remove(request, meet_id, manager_id):
     """
     meeting = Meetings.find(meet_id)
     if not meeting:
-        messages.error(request, _("No Meetings found matching the query."))
-        return HorillaRedirect(request)
+
+        return HorillaRedirect(
+            request, message=_("No Meetings found matching the query.")
+        )
 
     meeting.manager.remove(manager_id)
     meeting.save()
@@ -3698,8 +3709,10 @@ def meeting_employee_remove(request, meet_id, employee_id):
     """
     meeting = Meetings.find(meet_id)
     if not meeting:
-        messages.error(request, _("No Meetings found matching the query."))
-        return HorillaRedirect(request)
+
+        return HorillaRedirect(
+            request, message=_("No Meetings found matching the query.")
+        )
 
     meeting.employee_id.remove(employee_id)
     meeting.save()
@@ -3822,8 +3835,9 @@ def meeting_answer_post(request, id):
 
     meeting = Meetings.find(id)
     if not meeting:
-        messages.error(request, _("No Meetings found matching the query."))
-        return HorillaRedirect(request)
+        return HorillaRedirect(
+            request, message=_("No Meetings found matching the query.")
+        )
 
     employee = request.user.employee_get
     question_template = meeting.question_template.question.all()
@@ -3861,12 +3875,11 @@ def meeting_answer_view(request, id, emp_id, **kwargs):
     meeting = Meetings.find(id)
     employee = Employee.objects.filter(id=emp_id).first()
     if not meeting or not employee:
-        messages.error(
+        return HorillaRedirect(
             request,
-            _("No %(class_name)s found matching the query.")
+            message=_("No %(class_name)s found matching the query.")
             % {"class_name": "Meetings" if not meeting else "Employee"},
         )
-        return HorillaRedirect(request)
 
     answers = MeetingsAnswer.objects.filter(meeting_id=meeting, employee_id=employee)
 
@@ -3905,8 +3918,9 @@ def meeting_question_template_view(request, meet_id):
 def meeting_single_view(request, id):
     meeting = Meetings.find(id)
     if not meeting:
-        messages.error(request, _("No Meetings found matching the query."))
-        return HorillaRedirect(request)
+        return HorillaRedirect(
+            request, message=_("No Meetings found matching the query.")
+        )
 
     context = {"meeting": meeting}
     requests_ids_json = request.GET.get("requests_ids")
@@ -4047,8 +4061,9 @@ def update_isactive_bonuspoint_setting(request, obj_id):
     """
     bonus_point_setting = BonusPointSetting.objects.filter(id=obj_id).first()
     if not bonus_point_setting:
-        messages.error(request, _("No Bonus Point Setting found matching the query."))
-        return HorillaRedirect(request)
+        return HorillaRedirect(
+            request, message=_("No Bonus Point Setting found matching the query.")
+        )
 
     is_active = request.POST.get("is_active")
     if is_active == "on":
