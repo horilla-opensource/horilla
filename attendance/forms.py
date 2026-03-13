@@ -240,12 +240,21 @@ class AttendanceUpdateForm(BaseModelForm):
         attendance_date = self.cleaned_data.get("attendance_date")
         employee = self.cleaned_data["employee_id"]
 
+        check_joining_date = check_employee_joining_date(employee, attendance_date)
 
-        check_joining_date = check_employee_joining_date(employee,attendance_date)
-        if not check_joining_date:
-            raise ValidationError(
-                _("Attendance cannot be marked before your joining date.")
-            )
+        if check_joining_date != True:
+            if check_joining_date == "no_joining_date":
+                raise ValidationError(
+                    _("Attendance cannot be marked as the employee's joining date has not been set. Please update the employee's work information.")
+                )
+            elif check_joining_date == "no_work_info":
+                raise ValidationError(
+                    _("Attendance cannot be marked as no work information found for this employee.")
+                )
+            elif check_joining_date == "before_joining":
+                raise ValidationError(
+                    _("Attendance cannot be marked before your joining date.")
+                )
 
         is_future_date = block_future_attendance(attendance_date)
         if is_future_date:
@@ -490,11 +499,21 @@ class AttendanceForm(BaseModelForm):
                 'shift_id',
                 _("Work shift is required.")
             )
-        check_joining_date = check_employee_joining_date(self.instance.employee_id,attendance_date)
-        if not check_joining_date:
-            raise ValidationError(
-                _("Attendance cannot be marked before your joining date.")
-            )
+        check_joining_date = check_employee_joining_date(employee, attendance_date)
+
+        if check_joining_date != True:
+            if check_joining_date == "no_joining_date":
+                raise ValidationError(
+                    _("Attendance cannot be marked as the employee's joining date has not been set. Please update the employee's work information.")
+                )
+            elif check_joining_date == "no_work_info":
+                raise ValidationError(
+                    _("Attendance cannot be marked as no work information found for this employee.")
+                )
+            elif check_joining_date == "before_joining":
+                raise ValidationError(
+                    _("Attendance cannot be marked before your joining date.")
+                )
 
         is_future_date = block_future_attendance(attendance_date)
         if is_future_date:
@@ -857,11 +876,21 @@ class AttendanceRequestForm(BaseModelForm):
               _("Work shift is required.")
             )
 
-        check_joining_date = check_employee_joining_date(employee,attendance_date)
-        if not check_joining_date:
-            raise ValidationError(
-                _("Attendance cannot be marked before your joining date.")
-            )
+        check_joining_date = check_employee_joining_date(employee, attendance_date)
+
+        if check_joining_date != True:
+            if check_joining_date == "no_joining_date":
+                raise ValidationError(
+                    _("Attendance cannot be marked as the employee's joining date has not been set. Please update the employee's work information.")
+                )
+            elif check_joining_date == "no_work_info":
+                raise ValidationError(
+                    _("Attendance cannot be marked as no work information found for this employee.")
+                )
+            elif check_joining_date == "before_joining":
+                raise ValidationError(
+                    _("Attendance cannot be marked before your joining date.")
+                )
 
         is_future_date = block_future_attendance(attendance_date)
         if is_future_date:
@@ -1066,12 +1095,21 @@ class NewRequestForm(AttendanceRequestForm):
         if employee and not hasattr(employee, "employee_work_info"):
             raise ValidationError(_("Employee work info not found"))
 
-        check_joining_date = check_employee_joining_date(employee,attendance_date)
-        print("Check Join Date" , check_joining_date)
-        if not check_joining_date:
-            raise ValidationError(
-                _("Attendance cannot be marked before your joining date.")
-            )
+        check_joining_date = check_employee_joining_date(employee, attendance_date)
+
+        if check_joining_date != True:
+            if check_joining_date == "no_joining_date":
+                raise ValidationError(
+                    _("Attendance cannot be marked as the employee's joining date has not been set. Please update the employee's work information.")
+                )
+            elif check_joining_date == "no_work_info":
+                raise ValidationError(
+                    _("Attendance cannot be marked as no work information found for this employee.")
+                )
+            elif check_joining_date == "before_joining":
+                raise ValidationError(
+                    _("Attendance cannot be marked before your joining date.")
+                )
 
 
         if check_in_time and check_out_time:
