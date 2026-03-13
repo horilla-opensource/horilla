@@ -28,7 +28,12 @@ from employee.methods.methods import get_model_class
 from employee.models import Employee, EmployeeBankDetails, EmployeeWorkInformation
 from employee.models import models as django_models
 from horilla.horilla_middlewares import _thread_locals
-from horilla_views.cbv_methods import login_required, render_template
+from horilla.http import HorillaRedirect
+from horilla_views.cbv_methods import (
+    hx_request_required,
+    login_required,
+    render_template,
+)
 from horilla_views.generic.cbv.views import (
     HorillaDetailedView,
     HorillaFormView,
@@ -776,6 +781,7 @@ class GroupsView(TemplateView):
 
 
 @method_decorator(login_required, name="dispatch")
+@method_decorator(hx_request_required, name="dispatch")
 @method_decorator(
     all_manager_can_enter(perm="recruitment.view_recruitment"), name="dispatch"
 )
@@ -788,7 +794,7 @@ class Groups(TemplateView):
 
     def get(self, request, *args, **kwargs):
         context = {}
-        employees = Employee.objects.filter(id=request.GET["instance_id"])
+        employees = Employee.objects.filter(id=request.GET.get("instance_id"))
         emoloyee = employees.first()
         context["employee"] = emoloyee
         permissions = []
@@ -1137,6 +1143,21 @@ class Summary(TemplateView):
     """
 
     template_name = "cbv/allocations/summary.html"
+
+    def get(self, request, *args, **kwargs):
+        instance_id = request.GET.get("instance_id")
+
+        if not instance_id:
+            return HorillaRedirect(request, message=_("Employee ID missing."))
+
+        try:
+            Employee.objects.get(pk=instance_id)
+        except Employee.DoesNotExist:
+            return HorillaRedirect(
+                request, message=_("No Employee found matching the query.")
+            )
+
+        return super().get(request, *args, **kwargs)
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
