@@ -742,8 +742,7 @@ def attendance_account_bulk_delete(request):
     """
     This method is used to bulk delete for Payslip
     """
-    ids = request.POST["ids"]
-    ids = json.loads(ids)
+    ids = json.loads(request.POST.get("ids", "[]"))
     for id in ids:
         try:
             hour_account = AttendanceOverTime.objects.get(id=id)
@@ -769,7 +768,7 @@ def form_shift_dynamic_data(request):
     """
     This method is used to update the shift details to the form
     """
-    shift_id = request.POST["shift_id"]
+    shift_id = request.POST.get("shift_id")
     attendance_date_str = request.POST.get("attendance_date")
     today = datetime.now()
     attendance_date = date(day=today.day, month=today.month, year=today.year)
@@ -1452,7 +1451,12 @@ def revalidate_this_attendance(request, obj_id):
         id  : attendance id
     """
 
-    attendance = Attendance.objects.get(id=obj_id)
+    attendance = Attendance.find(obj_id)
+    if not attendance:
+        return HorillaRedirect(
+            request, message=_("No Attendance found matching the query.")
+        )
+
     if is_reportingmanger(request, attendance) or request.user.has_perm(
         "attendance.change_attendance"
     ):
@@ -1531,8 +1535,7 @@ def approve_bulk_overtime(request):
     """
     This method is used to approve bulk of attendance
     """
-    ids = request.POST["ids"]
-    ids = json.loads(ids)
+    ids = json.loads(request.POST.get("ids", "[]"))
     otapprove_ids = []
     filtered_ids = []
     for attendance_id in ids:
@@ -1791,12 +1794,18 @@ def update_worked_hour_field(request):
 
 @login_required
 def form_date_checking(request):
-    attendance_date_str = request.POST["attendance_date"]
     minimum_hour = "00:00"
+    attendance_date_str = request.POST.get("attendance_date")
+    if not attendance_date_str:
+        return JsonResponse(
+            {
+                "minimum_hour": minimum_hour,
+            }
+        )
     # Converting to date type.
     attendance_date = datetime.strptime(attendance_date_str, "%Y-%m-%d").date()
 
-    if request.POST["shift_id"]:
+    if request.POST.get("shift_id"):
         shift_id = request.POST["shift_id"]
         day = attendance_date.strftime("%A").lower()
         schedule_today = EmployeeShiftSchedule.objects.filter(
@@ -1828,7 +1837,11 @@ def user_request_one_view(request, id):
     Returns:
     GET : return one user attendance request view template
     """
-    attendance_request = Attendance.objects.get(id=id)
+    attendance_request = Attendance.find(id)
+    if not attendance_request:
+        return HorillaRedirect(
+            request, message=_("No Attendance found matching the query.")
+        )
 
     at_work_seconds = attendance_request.at_work_second
     hours_at_work = at_work_seconds // 3600
@@ -2181,7 +2194,13 @@ def update_isactive_gracetime(request):
     """
     isChecked = request.POST.get("isChecked")
     gracetimeId = request.POST.get("gracetimeId")
+    if not gracetimeId:
+        return JsonResponse({"type": "error", "message": "GraceTime ID missing"})
+
     gracetime = GraceTime.objects.get(id=gracetimeId)
+    if not gracetime:
+        return JsonResponse({"type": "error", "message": "GraceTime not found"})
+
     if isChecked == "true":
         gracetime.is_active = True
         response = {
@@ -2207,32 +2226,38 @@ def update_gracetime_clock_in_clock_out(request):
     - isChecked: Boolean value representing the state of grace time,
     - gracetimeId: Id of PayslipAutoGenerate object
     """
-    isChecked = request.POST.get("isChecked")
     gracetimeId = request.POST.get("gracetimeId")
+    if not gracetimeId:
+        return JsonResponse({"type": "error", "message": "GraceTime ID missing"})
+
+    isChecked = request.POST.get("isChecked")
     update = request.POST.get("update")
-    garcetime = GraceTime.objects.get(id=gracetimeId)
+    gracetime = GraceTime.objects.get(id=gracetimeId)
+    if not gracetime:
+        return JsonResponse({"type": "error", "message": "GraceTime not found"})
+
     if update == "clock_in":
         if isChecked == "true":
-            garcetime.allowed_clock_in = True
+            gracetime.allowed_clock_in = True
             response = {
                 "type": "success",
                 "message": _("Gracetime applicable on clock-In successfully."),
             }
         else:
-            garcetime.allowed_clock_in = False
+            gracetime.allowed_clock_in = False
             response = {
                 "type": "success",
                 "message": _("Gracetime unapplicable on clock-In  successfully."),
             }
     elif update == "clock_out":
         if isChecked == "true":
-            garcetime.allowed_clock_out = True
+            gracetime.allowed_clock_out = True
             response = {
                 "type": "success",
                 "message": _("Gracetime applicable on clock-out successfully."),
             }
         else:
-            garcetime.allowed_clock_out = False
+            gracetime.allowed_clock_out = False
             response = {
                 "type": "success",
                 "message": _("Gracetime unapplicable on clock-out successfully."),
@@ -2242,7 +2267,7 @@ def update_gracetime_clock_in_clock_out(request):
             "type": "error",
             "message": _("Something went wrong ."),
         }
-    garcetime.save()
+    gracetime.save()
     return JsonResponse(response)
 
 
@@ -2398,12 +2423,18 @@ def view_attendancerequest_comment(request, attendance_id):
 
 
 @login_required
+@hx_request_required
 def delete_attendancerequest_comment(request, comment_id):
     """
     This method is used to delete Attendance request comments
     """
+    comment = AttendanceRequestComment.find(comment_id)
+    if not comment:
+        return HorillaRedirect(
+            request, message=_("No Comment found matching the query.")
+        )
+
     script = ""
-    comment = AttendanceRequestComment.objects.get(id=comment_id)
     comment.delete()
     messages.success(request, _("Comment deleted successfully!"))
     return HttpResponse(script)
