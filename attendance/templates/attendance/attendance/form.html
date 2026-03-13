@@ -156,8 +156,12 @@
 {#        {% endfor %}#}
 {#      </div>#}
 
-      <!-- HTMX compensation target (kept as-is) -->
-      <div id="compensation-field-container"></div>
+      <!-- HTMX compensation target -->
+      <div id="compensation-field-container">
+          {% if show_compensation %}
+              {% include "attendance/attendance/_compensation_field.html" with show_field=True form=compensation_form %}
+          {% endif %}
+      </div>
     </div>
 
 
