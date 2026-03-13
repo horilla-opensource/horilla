@@ -885,15 +885,14 @@ class ReimbursementForm(ModelForm):
 
 
         self.fields.pop("attachment", None)
-        if not has_temp_files and not has_new_files:
-            self.fields["attachment"] = MultipleFileField(
-                label="Attachments",
-                required=not is_edit,
-            )
-            self.fields["attachment"].widget.attrs["accept"] = ".jpg, .jpeg, .png, .pdf"
+        self.fields["attachment"] = MultipleFileField(
+            label="Attachments",
+            required=True,
+        )
+        self.fields["attachment"].widget.attrs["accept"] = ".jpg, .jpeg, .png, .pdf"
 
-            if is_edit:
-                self.initial["attachment"] = None
+        if is_edit:
+            self.initial["attachment"] = None
 
         self.exclude_fields_by_type(exclude_fields)
 
@@ -977,9 +976,9 @@ class ReimbursementForm(ModelForm):
         if not type_ :
             return cleaned_data
 
-        if not employee:
-            self.add_error("employee_id", "This field is required")
-            return cleaned_data
+        # if not employee:
+        #     self.add_error("employee_id", "This field is required TEST")
+        #     return cleaned_data
 
         if type_ == "bonus_encashment":
             bonus_to_encash = (

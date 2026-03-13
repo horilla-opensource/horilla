@@ -19,11 +19,13 @@ from django.utils.translation import gettext_lazy as _
 
 from attendance.filters import AttendanceFilters, AttendanceRequestReGroup
 from attendance.forms import (
+    AttendanceForm,
     AttendanceRequestForm,
     BatchAttendanceForm,
     BulkAttendanceRequestForm,
     NewRequestForm,
 )
+from base.methods import is_mercantile_or_poya_holiday
 from attendance.methods.utils import (
     get_diff_dict,
     get_employee_last_name,
@@ -208,6 +210,31 @@ def request_new(request):
                     {"form": form},
                 ).content.decode("utf-8")
                 + "<script>location.reload();</script>"
+            )
+        else:
+            # Check if the submitted date is a mercantile holiday so we can
+            # preserve the compensation leave toggle on validation error re-render.
+            show_compensation = False
+            compensation_form = None
+            attendance_date = request.POST.get("attendance_date")
+            if attendance_date:
+                try:
+                    parsed_date = datetime.strptime(attendance_date, "%Y-%m-%d").date()
+                    result = is_mercantile_or_poya_holiday(parsed_date)
+                    show_compensation = result.get("is_mercantile_holiday", False)
+                    if show_compensation:
+                        compensation_form = AttendanceForm()
+                except (ValueError, TypeError):
+                    pass
+            return render(
+                request,
+                "requests/attendance/request_new_form.html",
+                {
+                    "form": form,
+                    "bulk": False,
+                    "show_compensation": show_compensation,
+                    "compensation_form": compensation_form,
+                },
             )
     return render(
         request,

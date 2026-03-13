@@ -267,7 +267,9 @@
                     {% else %}
                     <div class="oh-helpdesk__chat-update">
                         <span>{{item.history.updated_by}} {% trans "changed the ticket " %}{{item.history.changes.0.field|safe}} {% trans " from" %}
-                            <strong>{{item.history.changes.0.old|safe}}</strong> {% trans "to" %}
+                            <strong>{{item.history.changes.0.old|safe}}</strong>
+                            <br><br>
+                            {% trans "to" %}
                             <strong>{{item.history.changes.0.new|safe}}</strong></span>
                         <span>{{ item.history.pair.0.history_date}}</span>
                     </div>
