@@ -1545,13 +1545,18 @@ def employee_view_update(request, obj_id, **kwargs):
     """
     This method is used to render update form for employee.
     """
+    employee = Employee.objects.filter(id=obj_id).first()
+    if not employee:
+        return HorillaRedirect(
+            request, message=_("No Employee found matching the query.")
+        )
+
     selected_company_id = request.session["selected_company"]
     user = Employee.objects.filter(employee_user_id=request.user).first()
     work_info_history = HistoryTrackingFields.objects.filter(
         work_info_track=True
     ).exists()
 
-    employee = Employee.objects.filter(id=obj_id).first()
     emp = Employee.objects.entire().filter(id=obj_id).first()
     if not employee and emp and hasattr(emp, "employee_work_info"):
         if (
@@ -2233,8 +2238,13 @@ def employee_archive(request, obj_id):
 @login_required
 @permission_required("employee.change_employee")
 def replace_employee(request, emp_id):
-    title = request.GET.get("title")
     employee = Employee.objects.filter(id=emp_id).first()
+    if not employee:
+        return HorillaRedirect(
+            request, message=_("No Employee found matching the query.")
+        )
+
+    title = request.GET.get("title")
     related_models = (
         employee.get_archive_condition().get("related_models", "") if employee else None
     )
@@ -2332,6 +2342,11 @@ def get_manager_in(request):
     """
     employee_id = request.GET.get("employee_id")
     employee = Employee.objects.filter(id=employee_id).first()
+    if not employee:
+        return HorillaRedirect(
+            request, message=_("No Employee found matching the query.")
+        )
+
     offboarding = request.GET.get("offboarding")
     if offboarding:
         title = _("Change the Designations")
@@ -2366,6 +2381,7 @@ def get_manager_in(request):
 
 
 @login_required
+@hx_request_required
 @enter_if_accessible(
     feature="employee_view",
     perm="employee.view_employee",
@@ -2375,8 +2391,8 @@ def employee_search(request):
     """
     This method is used to search employee
     """
-    search = request.GET["search"]
-    view = request.GET["view"]
+    search = request.GET.get("search")
+    view = request.GET.get("view")
     previous_data = request.GET.urlencode()
     employees = EmployeeFilter(request.GET).qs
     if search == "":
@@ -2816,8 +2832,7 @@ def work_info_export(request):
     selected_fields = request.GET.getlist("selected_fields")
     if not selected_fields:
         selected_fields = form.fields["selected_fields"].initial
-        ids = request.GET.get("ids")
-        id_list = json.loads(ids)
+        id_list = json.loads(request.GET.get("ids", "[]"))
         employees = Employee.objects.filter(id__in=id_list)
 
     prefetch_fields = list(set(f.split("__")[0] for f in selected_fields if "__" in f))
@@ -3245,7 +3260,11 @@ def employee_note_update(request, note_id):
         id : stage note instance id
     """
 
-    note = EmployeeNote.objects.get(id=note_id)
+    note = EmployeeNote.find(note_id)
+    if not note:
+        return HorillaRedirect(
+            request, message=_("No Employee Note found matching the query.")
+        )
 
     form = EmployeeNoteForm(instance=note)
     if request.POST:
@@ -3277,7 +3296,12 @@ def employee_note_delete(request, note_id):
         id : stage note instance id
     """
 
-    note = EmployeeNote.objects.get(id=note_id)
+    note = EmployeeNote.find(note_id)
+    if not note:
+        return HorillaRedirect(
+            request, message=_("No Employee Note found matching the query.")
+        )
+
     emp_id = note.employee_id.id
     note.delete()
     messages.success(request, _("Note deleted successfully."))
@@ -3415,7 +3439,12 @@ def add_bonus_points(request, emp_id):
     Returns: returns add_points form
     """
 
-    bonus_point = BonusPoint.objects.get(employee_id=emp_id)
+    bonus_point = BonusPoint.find(emp_id)
+    if not bonus_point:
+        return HorillaRedirect(
+            request, message=_("No Bonus Point found matching the query.")
+        )
+
     form = BonusPointAddForm()
     if request.method == "POST":
         form = BonusPointAddForm(
@@ -3457,7 +3486,13 @@ def redeem_points(request, emp_id):
 
     Returns: returns redeem_points_form form
     """
-    employee = Employee.objects.get(id=emp_id)
+    try:
+        employee = Employee.objects.get(id=emp_id)
+    except Employee.DoesNotExist:
+        return HorillaRedirect(
+            request, message=_("No Employee found matching the query.")
+        )
+
     avialable_points = 0
     if BonusPoint.objects.filter(employee_id=employee).exists():
         avialable_points = (

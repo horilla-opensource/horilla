@@ -160,7 +160,12 @@ class GroupAssignView(View):
 
     def get(self, request, *args, **kwargs):
         employee_id = request.GET.get("employee")
-        employee = Employee.objects.get(id=employee_id)
+        try:
+            employee = Employee.objects.get(id=employee_id)
+        except Employee.DoesNotExist:
+            return HorillaRedirect(
+                request, message=_("No Employee found matching the query.")
+            )
         groups = employee.employee_user_id.groups.all
         form = AddToUserGroupForm(
             initial={
