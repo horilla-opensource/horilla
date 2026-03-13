@@ -1969,10 +1969,8 @@ def password_reset_request_update(request, pr_id):
             # Update priority and deadline on the linked ticket
             new_priority = form.cleaned_data.get("priority")
             new_deadline = form.cleaned_data.get("deadline")
-            if new_priority:
-                ticket.priority = new_priority
-            if new_deadline:
-                ticket.deadline = new_deadline
+            ticket.priority = new_priority
+            ticket.deadline = new_deadline
             ticket.save()
             messages.success(request, _("Password reset request updated successfully."))
             return HttpResponse("<script>window.location.reload()</script>")
