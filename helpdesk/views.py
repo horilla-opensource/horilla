@@ -181,11 +181,14 @@ def faq_category_delete(request, id):
         faq.delete()
         messages.success(request, _("The FAQ category has been deleted successfully."))
         return HttpResponse("")
+
     except FAQCategory.DoesNotExist:
-        messages.error(request, _("No FAQ category found matching the query."))
+        message = _("No FAQ category found matching the query.")
+
     except ProtectedError:
-        messages.error(request, _("You cannot delete this FAQ category."))
-    return HorillaRedirect(request)
+        message = _("You cannot delete this FAQ category.")
+
+    return HorillaRedirect(request, message=message)
 
 
 @login_required
@@ -392,11 +395,14 @@ def faq_delete(request, id):
             request, _('The FAQ "{}" has been deleted successfully.').format(faq)
         )
         return HttpResponse("")
+
     except FAQ.DoesNotExist:
-        messages.error(request, _("No FAQ found matching the query."))
+        message = _("No FAQ found matching the query.")
+
     except ProtectedError:
-        messages.error(request, _("You cannot delete this FAQ."))
-    return HorillaRedirect(request)
+        messages = _("You cannot delete this FAQ.")
+
+    return HorillaRedirect(request, message=message)
 
 
 @login_required
@@ -578,8 +584,9 @@ def ticket_archive(request, ticket_id):
 
     ticket = Ticket.find(ticket_id)
     if not ticket:
-        messages.error(request, _("No Ticket found matching the query."))
-        return HorillaRedirect(request)
+        return HorillaRedirect(
+            request, message=_("No Ticket found matching the query.")
+        )
 
     # Check if the user has permission or is the employee or their reporting manager
     if (
@@ -907,8 +914,9 @@ def ticket_filter(request):
 def ticket_detail(request, ticket_id, **kwargs):
     ticket = Ticket.find(ticket_id)
     if not ticket:
-        messages.error(request, _("No Ticket found matching the query."))
-        return HorillaRedirect(request)
+        return HorillaRedirect(
+            request, message=_("No Ticket found matching the query.")
+        )
 
     if (
         request.user.has_perm("helpdesk.view_ticket")
@@ -986,8 +994,9 @@ def ticket_detail(request, ticket_id, **kwargs):
 def ticket_individual_view(request, ticket_id):
     ticket = Ticket.find(ticket_id)
     if not ticket:
-        messages.error(request, _("No Ticket found matching the query."))
-        return HorillaRedirect(request)
+        return HorillaRedirect(
+            request, message=_("No Ticket found matching the query.")
+        )
 
     context = {
         "ticket": ticket,
@@ -1001,8 +1010,9 @@ def ticket_individual_view(request, ticket_id):
 def view_ticket_claim_request(request, ticket_id):
     ticket = Ticket.find(ticket_id)
     if not ticket:
-        messages.error(request, _("No Ticket found matching the query."))
-        return HorillaRedirect(request)
+        return HorillaRedirect(
+            request, message=_("No Ticket found matching the query.")
+        )
 
     if (
         request.user.has_perm("helpdesk.change_claimrequest")
@@ -1027,8 +1037,9 @@ def ticket_update_tag(request):
     data = request.GET
     ticket = Ticket.find(data.get("ticketId"))
     if not ticket:
-        messages.error(request, _("No Ticket found matching the query."))
-        return HorillaRedirect(request)
+        return HorillaRedirect(
+            request, message=_("No Ticket found matching the query.")
+        )
 
     if (
         request.user.has_perm("helpdesk.view_ticket")
@@ -1063,7 +1074,7 @@ def ticket_change_raised_on(request, ticket_id):
             if form.is_valid():
                 form.save()
                 messages.success(request, _("Responsibility updated for the Ticket"))
-                return HttpResponse("<script>window.location.reload()</script>")
+                return redirect(ticket_detail, ticket_id=ticket_id)
         return render(
             request,
             "helpdesk/ticket/forms/change_raised_on.html",
@@ -1242,7 +1253,7 @@ def comment_create(request, ticket_id):
                 else:
                     valid_files.append(file)
 
-            # stop here
+            # NOTHING valid → do NOT create comment
             if not comment_text and not valid_files:
                 if blocked_files:
                     messages.error(
@@ -1254,14 +1265,10 @@ def comment_create(request, ticket_id):
                     messages.error(
                         request, _("Please add a comment or upload at least one file.")
                     )
-                return HttpResponse(
-                    "<script>"
-                    "$('.reload-record').click();"
-                    "$('#reloadMessagesButton').click();"
-                    "</script>"
-                )
 
-            # Now safe to create comment
+                return redirect(ticket_detail, ticket_id=ticket_id)
+
+            # NOW it's safe to create comment
             comment = c_form.save(commit=False)
             comment.employee_id = request.user.employee_get
             comment.ticket = ticket
@@ -1275,21 +1282,13 @@ def comment_create(request, ticket_id):
                 )
 
             messages.success(request, _("A new comment has been created."))
-        else:
-            error = next(iter(c_form.errors.values()))[0]
-            messages.error(request, error)
 
-    return HttpResponse(
-        "<script>"
-        "$('.reload-record').click();"
-        "$('#reloadMessagesButton').click();"
-        "</script>"
-    )
+    return redirect(ticket_detail, ticket_id=ticket_id)
 
 
 @login_required
 def comment_edit(request):
-    comment_id = request.GET.get("comment_id")
+    comment_id = request.POST.get("comment_id")
     new_comment = request.POST.get("new_comment")
     if new_comment and len(new_comment) > 1:
         comment = Comment.objects.get(id=comment_id)
@@ -1302,9 +1301,7 @@ def comment_edit(request):
     response = {
         "errors": "no_error",
     }
-    return HttpResponse(
-        "<script>$('.reload-record').click();$('#reloadMessagesButton').click();</script>"
-    )
+    return JsonResponse(response)
 
 
 @login_required
@@ -1312,8 +1309,10 @@ def comment_edit(request):
 def comment_delete(request, comment_id):
     comment = Comment.find(comment_id)
     if not comment:
-        messages.error(request, _("No Comment found matching the query."))
-        return HorillaRedirect(request)
+        return HorillaRedirect(
+            request, message=_("No Comment found matching the query.")
+        )
+
     employee = comment.employee_id
     comment.delete()
     messages.success(
@@ -1364,8 +1363,9 @@ def claim_ticket(request, id):
     """
     ticket = Ticket.find(id)
     if not ticket:
-        messages.error(request, _("No Ticket found matching the query."))
-        return HorillaRedirect(request)
+        return HorillaRedirect(
+            request, message=_("No Ticket found matching the query.")
+        )
 
     if not ClaimRequest.objects.filter(
         employee_id=request.user.employee_get, ticket_id=ticket
@@ -1585,6 +1585,7 @@ def tickets_bulk_delete(request):
         except ProtectedError:
             messages.error(request, _("You cannot delete this Ticket."))
     previous_url = request.META.get("HTTP_REFERER", "/")
+
     # Prevent XSS / open redirect
     if not url_has_allowed_host_and_scheme(
         previous_url,
@@ -1636,8 +1637,9 @@ def update_department_manager(request, dep_id):
 def delete_department_manager(request, dep_id):
     department_manager = DepartmentManager.find(dep_id)
     if not department_manager:
-        messages.error(request, _("No Department Manager found matching the query."))
-        return HorillaRedirect(request)
+        return HorillaRedirect(
+            request, message=_("No Department Manager found matching the query.")
+        )
 
     count = DepartmentManager.objects.count()
     department_manager.delete()
@@ -1655,8 +1657,12 @@ def update_priority(request, ticket_id):
     """
     ticket = Ticket.find(ticket_id)
     if not ticket:
-        messages.error(request, _("No Ticket found matching the query."))
-        return HorillaRedirect(request)
+        messages.error(
+            request,
+        )
+        return HorillaRedirect(
+            request, message=_("No Ticket found matching the query.")
+        )
 
     if (
         request.user.has_perm("helpdesk.view_ticket")
@@ -1926,7 +1932,12 @@ def ticket_file_upload(request, id):
     """
     This function is used to upload files to the ticket.
     """
-    ticket = Ticket.objects.get(id=id)
+    ticket = Ticket.find(id)
+    if not ticket:
+        return HorillaRedirect(
+            request, message=_("No Ticket found matching the query.")
+        )
+
     if request.method == "POST":
         files = request.FILES.getlist("file")
 
