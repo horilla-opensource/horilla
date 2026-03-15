@@ -20,6 +20,10 @@
 </div>
 
 <script>
+    $(document).on('click', '.oh-modal__close, .oh-modal__cancel', function () {
+        $('#objectDetailsModalTarget').empty();
+    });
+
     // intial select notice period starts and end
     function initialNoticePeriod($element) {
         let employeeId = $element.val()

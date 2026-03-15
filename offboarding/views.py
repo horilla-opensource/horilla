@@ -358,7 +358,8 @@ def add_employee(request):
             from django.db.models import Q
             tasks_for_stage = OffboardingTask.objects.filter(
                 Q(stage_id=stage) | Q(stage_id__isnull=True),
-                is_active=True
+                is_active=True,
+                is_fine=False,
             )
             for task in tasks_for_stage:
                 EmployeeTask.objects.get_or_create(
@@ -468,6 +469,16 @@ def change_stage(request):
         else:
             logger.info("No active contracts found for FNF process.")
 
+        for emp in employees:
+            if (
+                emp.last_working_date
+                and emp.notice_period_ends
+                and emp.last_working_date < emp.notice_period_ends
+            ):
+                compute_resignation_balance(
+                    emp.employee_id, emp.last_working_date, emp.notice_period_ends
+                )
+
     if stage.type == "archived":
         employee_ids = employees.values_list("employee_id__id", flat=True)
         Employee.objects.filter(
@@ -478,7 +489,8 @@ def change_stage(request):
     from django.db.models import Q
     tasks_for_stage = OffboardingTask.objects.filter(
         Q(stage_id=stage) | Q(stage_id__isnull=True),
-        is_active=True
+        is_active=True,
+        is_fine=False,
     )
 
     for employee in employees:
