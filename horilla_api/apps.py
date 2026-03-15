@@ -6,11 +6,8 @@ class HorillaApiConfig(AppConfig):
     name = "horilla_api"
 
     def ready(self):
-        from django.urls import include, path
-
-        from horilla.urls import urlpatterns
-
-        urlpatterns.append(
-            path("api/", include("horilla_api.urls")),
-        )
-        super().ready()
+        """
+        Initialize API documentation when the app is ready
+        """
+        # Import and register API documentation components
+        import horilla_api.schema  # noqa

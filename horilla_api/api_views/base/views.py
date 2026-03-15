@@ -1,3 +1,5 @@
+from typing import Any
+
 from django.http import HttpResponse
 from django.utils.decorators import method_decorator
 from django_filters.rest_framework import DjangoFilterBackend
@@ -163,7 +165,7 @@ class DepartmentView(APIView):
 
         departments = Department.objects.all()
         paginator = PageNumberPagination()
-        page = paginator.paginate_queryset(departments, request)
+        page: list[Any] | None = paginator.paginate_queryset(departments, request)
         serializer = self.serializer_class(page, many=True)
         return paginator.get_paginated_response(serializer.data)
 
@@ -338,7 +340,10 @@ class WorkTypeRequestView(APIView):
     filterset_class = WorkTypeRequestFilter
     permission_classes = [IsAuthenticated]
 
-    def get_queryset(self, request):
+    def get_queryset(self, request=None):
+        # Handle schema generation for DRF-YASG
+        if getattr(self, "swagger_fake_view", False) or request is None:
+            return WorkTypeRequest.objects.none()
         queryset = WorkTypeRequest.objects.all()
         user = request.user
         # checking user level permissions
@@ -878,6 +883,7 @@ class RotatingShiftAssignView(APIView):
         if serializer.is_valid():
             serializer.save()
             return Response(serializer.data, status=200)
+        print(serializer.errors)
         return Response(serializer.errors, status=400)
 
     @manager_permission_required("base.delete_rotatingshiftassign")
@@ -916,8 +922,12 @@ class ShiftRequestView(APIView):
     filter_backends = [DjangoFilterBackend]
     filterset_class = ShiftRequestFilter
     permission_classes = [IsAuthenticated]
+    queryset = ShiftRequest.objects.all()
 
-    def get_queryset(self, request):
+    def get_queryset(self, request=None):
+        # Handle schema generation for DRF-YASG
+        if getattr(self, "swagger_fake_view", False) or request is None:
+            return ShiftRequest.objects.none()
         queryset = ShiftRequest.objects.all()
         user = request.user
         # checking user level permissions

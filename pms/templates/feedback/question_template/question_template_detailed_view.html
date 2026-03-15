@@ -119,6 +119,14 @@ $(document).ready(function () {
     }
     });
 });
+
+function questionTypeChange(element) {
+    if (element.val() === "4") {
+        $(element).parents().siblings('.oh-link__expanded').removeClass('d-none');
+    } else {
+        $(element).parents().siblings('.oh-link__expanded').addClass('d-none');
+    }
+}
 </script>
 
 <style>

@@ -14,7 +14,7 @@ from django.core import serializers
 from django.core.files.storage import default_storage
 from django.core.files.uploadedfile import SimpleUploadedFile
 from django.db.models import ProtectedError
-from django.http import HttpResponse, HttpResponseRedirect, JsonResponse
+from django.http import HttpResponse, JsonResponse
 from django.shortcuts import redirect, render
 from django.utils.translation import gettext_lazy as _
 
@@ -25,6 +25,7 @@ from horilla.decorators import (
     login_required,
     permission_required,
 )
+from horilla.http import HorillaRedirect
 from recruitment.filters import SurveyFilter
 from recruitment.forms import (
     AddQuestionForm,
@@ -348,7 +349,9 @@ def application_form(request):
         return redirect("open-recruitments")
 
     try:
-        recruitment = Recruitment.objects.filter(id=recruitment_id).first()
+        recruitment = Recruitment.objects.filter(
+            id=recruitment_id, is_published=True
+        ).first()  # Only create applications for published recruitments.
         if not recruitment:
             messages.error(request, _("Recruitment not found"))
             return redirect("open-recruitments")
@@ -375,7 +378,7 @@ def application_form(request):
             else:
                 candidate_obj.stage_id = stages.order_by("sequence").first()
             messages.success(request, _("Application saved."))
-
+            candidate_obj.save()  # 945
             request.session["candidate"] = serializers.serialize(
                 "json", [candidate_obj]
             )
@@ -445,7 +448,7 @@ def create_template(request):
         or request.user.has_perm("recruitment.change_surveytemplate")
     ):
         messages.info(request, "You dont have permission.")
-        return HttpResponse("<script>window.location.reload()</script>")
+        return HorillaRedirect(request)
 
     title = request.GET.get("title")
     instance = None
@@ -457,7 +460,7 @@ def create_template(request):
         if form.is_valid():
             form.save()
             messages.success(request, "Template saved")
-            return HttpResponse("<script>window.location.reload()</script>")
+            return HorillaRedirect(request)
     return render(request, "survey/main_form.html", {"form": form})
 
 
@@ -474,7 +477,7 @@ def delete_template(request):
     else:
         messages.success(request, "Template group deleted")
 
-    return HttpResponseRedirect(request.META.get("HTTP_REFERER", "/"))
+    return HorillaRedirect(request)
 
 
 @login_required
@@ -495,5 +498,5 @@ def question_add(request):
         if form.is_valid():
             form.save()
             messages.success(request, "Question added")
-            return HttpResponse("<script>window.location.reload()</script>")
+            return HorillaRedirect(request)
     return render(request, "survey/add_form.html", {"form": form})

@@ -23,6 +23,7 @@ from employee.filters import EmployeeFilter
 from employee.models import Employee
 from horilla import settings
 from horilla.decorators import login_required, manager_can_enter
+from horilla.http.response import HorillaRedirect
 
 
 def paginator_qry(qryset, page_number):
@@ -298,4 +299,4 @@ def send_mail_to_employee(request):
                 messages.info(request, f"Email not set for {employee.get_full_name()}")
         except Exception as e:
             messages.error(request, "Something went wrong")
-    return HttpResponse("<script>window.location.reload()</script>")
+    return HorillaRedirect(request)

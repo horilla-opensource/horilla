@@ -9,7 +9,7 @@
     {% if form.verbose_name %}
         <div class="oh-payslip__header">
             <div class="oh-payslip__header-left">
-                <div class="oh-payroll__component-title">{{ form.verbose_name }}</div>
+                <div class="oh-payroll__component-title">{% trans form.verbose_name %}</div>
             </div>
         </div>
     {% endif %}
@@ -22,7 +22,7 @@
                     <label class="oh-label {% if field.field.required %} required-star{% endif %}"
                         for="id_{{ field.name }}">{% trans field.label %}</label>
                     {% if field.help_text != '' %}
-                    <span class="oh-info mr-2" title="{{ field.help_text|safe }}"></span>
+                    <span class="oh-info mr-2" title="{{ field.help_text }}"></span>
                     {% endif %}
                 </div>
 

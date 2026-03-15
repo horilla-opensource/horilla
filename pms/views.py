@@ -46,6 +46,8 @@ from horilla.decorators import (
     permission_required,
 )
 from horilla.group_by import group_by_queryset
+from horilla.http.response import HorillaRedirect
+from horilla.methods import handle_no_permission
 from horilla_automations.methods.methods import generate_choices
 from horilla_automations.methods.serialize import serialize_form
 from notifications.signals import notify
@@ -183,7 +185,7 @@ def objective_creation(request):
         objective_form = ObjectiveForm(request.POST)
         if objective_form.is_valid():
             obj_form_save(request, objective_form)
-            return HttpResponse("<script>window.location.reload()</script>")
+            return HorillaRedirect(request)
     context = {
         "objective_form": objective_form,
         "p_form": PeriodForm(),
@@ -271,7 +273,7 @@ def objective_update(request, obj_id):
                 request,
                 _("Objective %(objective)s Updated") % {"objective": instance},
             )
-            return HttpResponse("<script>window.location.reload()</script>")
+            return HorillaRedirect(request)
     context = {"objective_form": objective_form, "k_form": KRForm(), "update": True}
 
     return render(request, "okr/objective_creation.html", context)
@@ -400,7 +402,7 @@ def kr_create_or_update(request, kr_id=None):
                     _("Key result %(key_result)s updated successfully")
                     % {"key_result": instance},
                 )
-                return HttpResponse("<script>window.location.reload()</script>")
+                return HorillaRedirect(request)
 
         else:
             form = KRForm(request.POST)
@@ -411,7 +413,7 @@ def kr_create_or_update(request, kr_id=None):
                     _("Key result %(key_result)s created successfully")
                     % {"key_result": instance},
                 )
-                return HttpResponse("<script>window.location.reload()</script>")
+                return HorillaRedirect(request)
 
     return render(request, "okr/key_result/real_kr_form.html", {"form": form})
 
@@ -474,7 +476,7 @@ def add_assignees(request, obj_id):
                 request,
                 _("Objective %(objective)s Updated") % {"objective": objective},
             )
-            return HttpResponse("<script>window.location.reload()</script>")
+            return HorillaRedirect(request)
 
     context = {
         "form": form,
@@ -592,7 +594,7 @@ def objective_filter_pagination(request, objective_own):
 
     employee = request.user.employee_get
     manager = False
-
+    reporting_manager = False
     sub_employees = filtersubordinatesemployeemodel(
         request,
         queryset=Employee.objects.filter(is_active=True),
@@ -609,10 +611,10 @@ def objective_filter_pagination(request, objective_own):
     if request.user.has_perm("pms.view_objective"):
         objectives = Objective.objects.all()
         manager = True
-    elif Objective.objects.filter(managers=employee).exists() or is_reportingmanager(
-        request
-    ):
+    elif Objective.objects.filter(managers=employee).exists():
         manager = True
+    if is_reportingmanager(request):
+        reporting_manager = True
     objectives = ActualObjectiveFilter(
         request.GET or initial_data, queryset=objectives
     ).qs
@@ -637,6 +639,8 @@ def objective_filter_pagination(request, objective_own):
         "filter_dict": data_dict,
         "gp_fields": ObjectiveReGroup.fields,
         "field": field,
+        "reporting_manager": reporting_manager,
+        "subordinates": sub_employees,
     }
     return context
 
@@ -731,33 +735,54 @@ def objective_history(emp_obj_id):
 @login_required
 def objective_detailed_view(request, obj_id, **kwargs):
     """
-    this function is used to update the key result of objectives
-        args:
-            obj_id(int) : pimarykey of EmployeeObjective
-        return:
-            objects to objective_detailed_view
+    View to display and update key results of an objective.
+
+    Args:
+        request: The HTTP request object.
+        obj_id (int): Primary key of the Objective.
+
+    Returns:
+        Rendered template or redirect if no permission.
     """
 
-    objective = Objective.objects.get(id=obj_id)
+    try:
+        objective = Objective.objects.get(id=obj_id)
+    except Objective.DoesNotExist:
+        messages.error(request, _("Objective not found."))
+        return redirect("objective-list-view")
+
     emp_objectives = EmployeeObjective.objects.filter(
         objective_id=objective, archive=False
     )
+
+    user_employee = request.user.employee_get
+
+    # Determine if the user is a reporting manager of any employee in this objective
+    subordinates = filtersubordinatesemployeemodel(
+        request,
+        queryset=Employee.objects.filter(is_active=True),
+    )
+    is_reporting_manager = emp_objectives.filter(employee_id__in=subordinates).exists()
+
+    # Permission check
     if not (
-        request.user.employee_get in objective.managers.all()
+        user_employee in objective.managers.all()
         or request.user.has_perm("pms.view_employeeobjective")
-        or emp_objectives.filter(employee_id=request.user.employee_get).exists()
+        or emp_objectives.filter(employee_id=user_employee).exists()
+        or is_reporting_manager
     ):
-        messages.info(request, _("You dont have permission."))
+        messages.info(request, _("You don't have permission."))
         return redirect("objective-list-view")
 
     previous_data = request.GET.urlencode()
     data_dict = parse_qs(previous_data)
     now = datetime.datetime.now()
+
     context = {
+        "objective": objective,
         "emp_objectives": emp_objectives,
         "pd": previous_data,
         "filter_dict": data_dict,
-        "objective": objective,
         "key_result_form": KeyResultForm,
         "objective_key_result_status": EmployeeKeyResult.STATUS_CHOICES,
         "comment_form": ObjectiveCommentForm,
@@ -818,7 +843,7 @@ def objective_detailed_view_activity(request, id):
         return render(request, "okr/objective_detailed_view_activity.html", context)
     else:
         messages.info(request, _("You dont have permission."))
-        return HttpResponse("<script>window.location.reload();</script>")
+        return HorillaRedirect(request)
 
 
 @login_required
@@ -853,6 +878,23 @@ def emp_objective_search(request, obj_id):
     """
     objective = Objective.objects.get(id=obj_id)
     emp_objectives = objective.employee_objective.all()
+    # Limit objectives if user is a reporting manager but not a manager or assignee
+    user_employee = request.user.employee_get
+    # Determine if the user is a reporting manager of any employee in this objective
+    subordinates = filtersubordinatesemployeemodel(
+        request,
+        queryset=Employee.objects.filter(is_active=True),
+    )
+    is_reporting_manager = emp_objectives.filter(employee_id__in=subordinates).exists()
+    if (
+        not (
+            user_employee in objective.managers.all()
+            or request.user.has_perm("pms.view_employeeobjective")
+            or emp_objectives.filter(employee_id=user_employee).exists()
+        )
+        and is_reporting_manager
+    ):
+        emp_objectives = emp_objectives.filter(employee_id__in=subordinates)
     search_val = request.GET.get("search")
     if search_val is None:
         search_val = ""
@@ -870,6 +912,7 @@ def emp_objective_search(request, obj_id):
         "filter_dict": data_dict,
         "pg": previous_data,
         "objective": objective,
+        "is_reporting_manager": is_reporting_manager,
     }
     template = "okr/emp_objective/emp_objective_list.html"
     if request.GET.get("field") != "" and request.GET.get("field") is not None:
@@ -959,9 +1002,7 @@ def objective_detailed_view_key_result_status(request, obj_id, kr_id):
     messages.info(request, _("Status has been updated"))
     # return redirect(objective_detailed_view_activity, id=obj_id)
     response = redirect(objective_detailed_view_activity, id=obj_id)
-    return HttpResponse(
-        response.content.decode("utf-8") + "<script>location.reload();</script>"
-    )
+    return HorillaRedirect(request, redirect_to=response.url)
 
 
 @login_required
@@ -1000,9 +1041,7 @@ def objective_detailed_view_current_value(request, kr_id):
             )
             # return redirect(objective_detailed_view_activity, objective_id)
             response = redirect(objective_detailed_view_activity, objective_id)
-            return HttpResponse(
-                response.content.decode("utf-8") + "<script>location.reload();</script>"
-            )
+            return HorillaRedirect(request, redirect_to=response.url)
 
         elif int(current_value) > target_value:
             messages.warning(request, _("Current value is greater than target value"))
@@ -1094,7 +1133,7 @@ def create_employee_objective(request):
                         start_date=emp_obj.start_date,
                     )
             messages.success(request, _("Employee objective created successfully"))
-            return HttpResponse("<script>window.location.reload()</script>")
+            return HorillaRedirect(request)
     context = {"form": form, "k_form": KRForm(), "emp_obj": True}
     return render(
         request, "okr/emp_objective/emp_objective_create_form.html", context=context
@@ -1136,12 +1175,12 @@ def update_employee_objective(request, emp_obj_id):
                 emp_obj = form.save(commit=False)
                 emp_obj.save()
                 messages.success(request, _("Employee objective Updated successfully"))
-                return HttpResponse("<script>window.location.reload()</script>")
+                return HorillaRedirect(request)
         context = {"form": form, "k_form": KRForm()}
         return render(request, "okr/emp_objective_form.html", context=context)
     else:
         messages.info(request, _("You don't have permission."))
-        return HttpResponse("<script>window.location.reload()</script>")
+        return HorillaRedirect(request)
 
 
 @login_required
@@ -1165,7 +1204,7 @@ def archive_employee_objective(request, emp_obj_id):
         emp_objective.archive = True
         emp_objective.save()
         messages.success(request, _("Objective archived successfully!."))
-    return HttpResponseRedirect(request.META.get("HTTP_REFERER", "/"))
+    return HorillaRedirect(request)
 
 
 @login_required
@@ -1191,9 +1230,9 @@ def delete_employee_objective(request, emp_obj_id):
         objective.assignees.remove(employee)
         messages.success(request, _("Objective deleted successfully!."))
     if not single_view:
-        return HttpResponseRedirect(request.META.get("HTTP_REFERER", "/"))
+        return HorillaRedirect(request)
     else:
-        return HttpResponse("<script>window.location.reload()</script>")
+        return HorillaRedirect(request)
 
 
 @login_required
@@ -1391,14 +1430,9 @@ def key_result_creation_htmx(request, id):
             form.employee_objective_id = objective
             form.save()
             messages.success(request, _("Key result created"))
-            response = render(
-                request, "okr/key_result/key_result_creation_htmx.html", context
-            )
-            return HttpResponse(
-                response.content.decode("utf-8") + "<script>location.reload();</script>"
-            )
+            return HorillaRedirect(request)
         context["key_result_form"] = form_key_result
-    return render(request, "okr/key_result/key_result_creation_htmx.html", context)
+    return HorillaRedirect(request)
 
 
 @login_required
@@ -1412,7 +1446,6 @@ def key_result_update(request, id):
     Returns:
         success or errors message.
     """
-
     key_result = EmployeeKeyResult.objects.get(id=id)
     key_result_form = KeyResultForm(instance=key_result)
     context = {"key_result_form": key_result_form, "key_result_id": key_result.id}
@@ -1424,13 +1457,10 @@ def key_result_update(request, id):
         if key_result_form.is_valid():
             key_result_form.save()
             messages.info(request, _("Key result updated"))
-            response = render(request, "okr/key_result/key_result_update.html", context)
-            return HttpResponse(
-                response.content.decode("utf-8") + "<script>location.reload();</script>"
-            )
+            return HorillaRedirect(request)
         else:
             context["key_result_form"] = key_result_form
-    return render(request, "okr/key_result/key_result_update.html", context)
+    return HorillaRedirect(request)
 
 
 # feedback section
@@ -1568,10 +1598,7 @@ def feedback_update(request, id):
     context = {"feedback_form": form}
     if feedback_started:
         messages.error(request, _("Ongoing feedback is not editable!."))
-        response = render(request, "feedback/feedback_update.html", context)
-        return HttpResponse(
-            response.content.decode("utf-8") + "<script>location.reload();</script>"
-        )
+        return HorillaRedirect(request)
 
     if request.method == "POST":
         form = FeedbackForm(request.POST, instance=feedback)
@@ -1593,10 +1620,7 @@ def feedback_update(request, id):
             feedback = form.save()
             messages.info(request, _("Feedback updated successfully!."))
             send_feedback_notifications(request, feedback)
-            response = render(request, "feedback/feedback_update.html", context)
-            return HttpResponse(
-                response.content.decode("utf-8") + "<script>location.reload();</script>"
-            )
+            return HorillaRedirect(request)
         else:
             context["feedback_form"] = form
     return render(request, "feedback/feedback_update.html", context)
@@ -1806,14 +1830,7 @@ def feedback_detailed_view(request, id, **kwargs):
             "today": datetime.datetime.today().date(),
         }
         return render(request, "feedback/feedback_detailed_view.html", context)
-    else:
-        messages.info(request, _("You dont have permission."))
-        previous_url = request.META.get("HTTP_REFERER", "/")
-        script = f'<script>window.location.href = "{previous_url}"</script>'
-        key = "HTTP_HX_REQUEST"
-        if key in request.META.keys():
-            return render(request, "decorator_404.html")
-        return HttpResponse(script)
+    return handle_no_permission(request)
 
 
 @login_required
@@ -1841,14 +1858,7 @@ def feedback_detailed_view_answer(request, id, emp_id):
             "kr_feedbacks": kr_feedbacks,
         }
         return render(request, "feedback/feedback_detailed_view_answer.html", context)
-    else:
-        messages.info(request, _("You dont have permission."))
-        previous_url = request.META.get("HTTP_REFERER", "/")
-        script = f'<script>window.location.href = "{previous_url}"</script>'
-        key = "HTTP_HX_REQUEST"
-        if key in request.META.keys():
-            return render(request, "decorator_404.html")
-        return HttpResponse(script)
+    return handle_no_permission(request)
 
 
 @login_required
@@ -2042,7 +2052,7 @@ def feedback_detailed_view_status(request, id):
     answer = Answer.objects.filter(feedback_id=feedback)
     if status == "Not Started" and answer:
         messages.warning(request, _("Feedback is already started"))
-        return HttpResponse("<script>$('#reloadMessagesButton').click();</script>")
+        return HorillaRedirect(request)
 
     feedback.status = status
     feedback.save()
@@ -2224,10 +2234,10 @@ def question_creation(request, id):
 
             if obj_question.question_type == "4":
                 # checking the question type is multichoice
-                option_a = request.POST.get("option_a")
-                option_b = request.POST.get("option_b")
-                option_c = request.POST.get("option_c")
-                option_d = request.POST.get("option_d")
+                option_a = form.cleaned_data["option_a"]
+                option_b = form.cleaned_data["option_b"]
+                option_c = form.cleaned_data["option_c"]
+                option_d = form.cleaned_data["option_d"]
                 QuestionOptions(
                     question_id=obj_question,
                     option_a=option_a,
@@ -2365,7 +2375,7 @@ def question_delete(request, id):
     except Exception as e:
         messages.error(request, _(f"Unexpected error: {str(e)}"))
 
-    return HttpResponse("<script>window.location.reload();</script>")
+    return HorillaRedirect(request)
 
 
 @login_required
@@ -3030,7 +3040,7 @@ def anonymous_feedback_add(request):
                     )
                 except:
                     pass
-            return HttpResponse("<script>window.location.reload();</script>")
+            return HorillaRedirect(request)
     else:
         form = AnonymousFeedbackForm()
 
@@ -3068,12 +3078,12 @@ def edit_anonymous_feedback(request, obj_id):
                 feedback = form.save(commit=False)
                 feedback.anonymous_feedback_id = anonymous_id
                 feedback.save()
-                return HttpResponse("<script>window.location.reload();</script>")
+                return HorillaRedirect(request)
         context = {"form": form, "create": False}
         return render(request, "anonymous/anonymous_feedback_form.html", context)
     else:
         messages.info(request, _("You are don't have permissions."))
-        return HttpResponse("<script>window.location.reload()</script>")
+        return HorillaRedirect(request)
 
 
 @login_required
@@ -3203,7 +3213,7 @@ def employee_keyresult_creation(request, emp_obj_id):
                         kwargs={"obj_id": emp_objective.objective_id.id},
                     ),
                 )
-                return HttpResponse("<script>window.location.reload()</script>")
+                return HorillaRedirect(request)
         context = {
             "form": emp_key_result,
             "emp_objective": emp_objective,
@@ -3211,7 +3221,7 @@ def employee_keyresult_creation(request, emp_obj_id):
         return render(request, "okr/key_result/kr_form.html", context=context)
     else:
         messages.info(request, _("You are don't have permissions."))
-        return HttpResponse("<script>window.location.reload()</script>")
+        return HorillaRedirect(request)
 
 
 @login_required
@@ -3256,7 +3266,7 @@ def employee_keyresult_update(request, kr_id):
                     kwargs={"obj_id": emp_kr.employee_objective_id.objective_id.id},
                 ),
             )
-            return HttpResponse("<script>window.location.reload()</script>")
+            return HorillaRedirect(request)
 
     context = {
         "form": emp_key_result,

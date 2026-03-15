@@ -13,6 +13,15 @@
     </div>
 </div>
 {% endif %}
+{% if needs_auth %}
+<div class="oh-wrapper">
+    <div class="oh-alert-container">
+        <div class="oh-alert oh-alert--animated oh-alert--warning">
+            {% trans "OAuth authorization required. Please click 'Authorize Google Drive' to grant access." %}
+        </div>
+    </div>
+</div>
+{% endif %}
 <form method="post" action="{% url 'gdrive' %}" enctype="multipart/form-data">
     {% csrf_token %}
     {{form.as_p}}
@@ -23,10 +32,14 @@
 
         $('.oh-payslip__header').append(`<div class="d-flex">
             {% if show %}
+            {% if needs_auth %}
+            <a class="oh-btn oh-btn--info mr-2" href="{% url 'gdrive_authorize' %}" title="Authorize">{% trans "Authorize Google Drive" %}</a>
+            {% else %}
             {% if active %}
             <a class="oh-btn oh-btn--danger mr-2" href="{% url 'gdrive_start_stop' %}" title="Stop">Stop</a>
             {% else %}
             <a class="oh-btn oh-btn--success mr-2" href="{% url 'gdrive_start_stop' %}" title="Start">Start</a>
+            {% endif %}
             {% endif %}
             <a class="oh-btn oh-btn--danger-outline" href="{% url 'gdrive_delete' %}" title="Remove">
                 <ion-icon name="trash-outline" role="img" class="md hydrated" aria-label="trash outline"></ion-icon>
@@ -37,12 +50,12 @@
             $('#id_seconds').parent().hide();
         }
         if (!$('#id_fixed').is(':checked')) {
-            $('#id_hour').parent().hide();``
+            $('#id_hour').parent().hide();
             $('#id_minute').parent().hide();
         }
         $('#id_interval').change(function() {
             if ($(this).is(':checked')) {
-                $('#id_fixed4').prop('checked', false);
+                $('#id_fixed').prop('checked', false);
                 $('#id_hour').parent().hide();
                 $('#id_minute').parent().hide();
                 $('#id_seconds').parent().show();

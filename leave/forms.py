@@ -707,7 +707,7 @@ class AssignLeaveForm(HorillaForm):
             attrs={"class": "oh-select oh-select-2 mb-2", "required": True}
         ),
         empty_label=None,
-        label="Leave Type",
+        label=_("Leave Type"),
         required=False,
     )
     employee_id = HorillaMultiSelectField(
@@ -719,7 +719,7 @@ class AssignLeaveForm(HorillaForm):
             filter_template_path="employee_filters.html",
             required=True,
         ),
-        label="Employee",
+        label=_("Employee"),
     )
 
     def clean(self):

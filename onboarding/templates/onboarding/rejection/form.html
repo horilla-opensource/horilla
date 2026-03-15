@@ -1,7 +1,29 @@
-<form hx-post="{% url 'add-to-rejected-candidates' %}?candidate_id={{form.instance.candidate_id.id}}">
-    {{form.as_p}}
+{% load i18n %}
+<form
+    hx-post="{% url 'add-to-rejected-candidates' %}?candidate_id={{ form.instance.candidate_id.id }}"
+    id="rejection_form"
+>
+    {{ form.as_p }}
 </form>
 
 <script>
+{
     $("form[hx-post] .col-md-6").removeClass("col-md-6");
+    const rejId = "{{ form.instance.id|default:'' }}";
+    if (rejId) {
+        // Build dynamic URL for deletion
+        const deleteUrlBase = "{% url 'delete-candidate-rejection' 0 %}";
+        const deleteUrl = deleteUrlBase.replace('0', rejId);
+
+        const button_container = `
+            <button class="oh-btn oh-btn--info mt-2 mr-2 pl-4 pr-5 oh-btn--w-100-resp"
+                hx-post="${deleteUrl}"
+                hx-confirm="Are you sure you want to cancel this rejection?"
+                onclick="event.preventDefault(); event.stopPropagation();">
+                {% trans 'Cancel Rejection' %}
+            </button>
+        `;
+        $('#rejection_form div.flex-row-reverse').append(button_container);
+    }
+}
 </script>

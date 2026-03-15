@@ -72,8 +72,10 @@ class OnboardingStageFilter(FilterSet):
         """
         This method is used to search recruitment
         """
-        queryset = queryset.filter(stage_title__icontains=value) | queryset.filter(
-            candidate__candidate_id__name__icontains=value
+        queryset = (
+            queryset.filter(stage_title__icontains=value)
+            | queryset.filter(candidate__candidate_id__name__icontains=value)
+            | queryset.filter(recruitment_id__title__icontains=value)
         )
         return queryset.distinct()
 
@@ -84,9 +86,27 @@ class OnboardingCandidateFilter(FilterSet):
     """
 
     search_onboarding = filters.CharFilter(
-        field_name="candidate_id__name", lookup_expr="icontains"
+        field_name="candidate_id__name", method="pipeline_search"
     )
 
     class Meta:
         model = CandidateStage
-        fields = "__all__"
+        fields = [
+            "candidate_id",
+            "onboarding_stage_id",
+            "sequence",
+            "onboarding_end_date",
+        ]
+
+    def pipeline_search(self, queryset, _, value):
+        """
+        This method is used to search recruitment
+        """
+        queryset = (
+            queryset.filter(onboarding_stage_id__stage_title__icontains=value)
+            | queryset.filter(candidate_id__name__icontains=value)
+            | queryset.filter(
+                onboarding_stage_id__recruitment_id__title__icontains=value
+            )
+        )
+        return queryset.distinct()

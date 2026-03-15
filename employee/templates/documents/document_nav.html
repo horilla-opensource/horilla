@@ -23,8 +23,11 @@
 	<div class="oh-main__titlebar oh-main__titlebar--right">
 		{% if documents %}
 		<form
-			hx-get="{% url 'document-request-filter-view' %}"
+			hx-get="{% url 'document-request-view' %}"
 			hx-target="#view-container"
+			hx-select="#view-container"
+			hx-swap="outerHTML"
+			hx-disinherit="*"
 			id="filterForm"
 			class="d-flex"
 			onsubmit = "event.preventDefault()"

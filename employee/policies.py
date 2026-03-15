@@ -31,6 +31,7 @@ from employee.models import (
     PolicyMultipleFile,
 )
 from horilla.decorators import hx_request_required, login_required, permission_required
+from horilla.http.response import HorillaRedirect
 from notifications.signals import notify
 
 
@@ -65,7 +66,7 @@ def create_policy(request):
         form = PolicyForm(request.POST, request.FILES, instance=instance)
         if form.is_valid():
             form.save()
-            messages.success(request, "Policy saved")
+            messages.success(request, _("Policy saved"))
             form = PolicyForm()
             # return HttpResponse("<script>window.location.reload()</script>")
     return render(request, "policies/form.html", {"form": form})
@@ -119,7 +120,7 @@ def delete_policies(request):
         if count == 0:
             messages.error(request, _("Policies Not Found"))
         else:
-            messages.success(request, "Policies deleted")
+            messages.success(request, _("Policies deleted"))
     except ValueError:
         messages.error(request, _("Policies Not Found"))
     return redirect(view_policies)
@@ -141,7 +142,7 @@ def add_attachment(request):
         attachments.append(attachment)
     policy = Policy.objects.get(id=policy_id)
     policy.attachments.add(*attachments)
-    messages.success(request, "Attachments added")
+    messages.success(request, _("Attachments added"))
     return render(request, "policies/attachments.html", {"policy": policy})
 
 
@@ -285,7 +286,7 @@ def create_actions(request):
             )
         dis = DisciplinaryAction.objects.all()
         if len(dis) == 1:
-            return HttpResponse("<script>window.location.reload()</script>")
+            return HorillaRedirect(request)
 
     return render(
         request, "disciplinary_actions/form.html", {"form": form, "dynamic": dynamic}
@@ -396,7 +397,7 @@ def delete_actions(request, action_id):
 
     if dis_actions.exists():
         return redirect(disciplinary_filter_view)
-    return HttpResponse("<script>window.location.reload()</script>")
+    return HorillaRedirect(request)
 
 
 @login_required

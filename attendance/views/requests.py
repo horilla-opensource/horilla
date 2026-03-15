@@ -6,12 +6,11 @@ This module is used to register the endpoints to the attendance requests
 
 import copy
 import json
-from datetime import date, datetime, time
 from urllib.parse import parse_qs
 
 from django.contrib import messages
-from django.db.models import ProtectedError
-from django.http import HttpResponse, HttpResponseRedirect, JsonResponse
+from django.db.models import ProtectedError, Q
+from django.http import HttpResponse, JsonResponse
 from django.shortcuts import redirect, render
 from django.template.loader import render_to_string
 from django.urls import reverse
@@ -53,6 +52,7 @@ from horilla.decorators import (
     manager_can_enter,
     permission_required,
 )
+from horilla.http import HorillaRedirect
 from notifications.signals import notify
 
 
@@ -178,16 +178,24 @@ def request_new(request):
     else:
         form = NewRequestForm()
     form = choosesubordinates(request, form, "attendance.change_attendance")
-    form.fields["employee_id"].queryset = form.fields[
-        "employee_id"
-    ].queryset | Employee.objects.filter(employee_user_id=request.user)
+    employees_qs = Employee.objects.filter(
+        Q(id__in=form.fields["employee_id"].queryset.values_list("id", flat=True))
+        | Q(employee_user_id=request.user)
+    )
+
+    form.fields["employee_id"].queryset = employees_qs.distinct()
     form.fields["employee_id"].initial = request.user.employee_get.id
+    if request.GET.get("emp_id"):
+        emp_id = request.GET.get("emp_id")
+        form.fields["employee_id"].queryset = Employee.objects.filter(id=emp_id)
+        form.fields["employee_id"].initial = emp_id
     if request.method == "POST":
         form = NewRequestForm(request.POST)
-        form = choosesubordinates(request, form, "attendance.change_attendance")
-        form.fields["employee_id"].queryset = form.fields[
-            "employee_id"
-        ].queryset | Employee.objects.filter(employee_user_id=request.user)
+        employees_qs = Employee.objects.filter(
+            Q(id__in=form.fields["employee_id"].queryset.values_list("id", flat=True))
+            | Q(employee_user_id=request.user)
+        )
+        form.fields["employee_id"].queryset = employees_qs.distinct()
         if form.is_valid():
             if form.new_instance is not None:
                 form.new_instance.save()
@@ -562,7 +570,7 @@ def approve_validate_attendance_request(request, attendance_id):
             redirect=reverse("request-attendance-view") + f"?id={attendance.id}",
             icon="checkmark-circle-outline",
         )
-    return HttpResponseRedirect(request.META.get("HTTP_REFERER", "/"))
+    return HorillaRedirect(request)
 
 
 @login_required
@@ -602,7 +610,7 @@ def cancel_attendance_request(request, attendance_id):
             )
     except (Attendance.DoesNotExist, OverflowError):
         messages.error(request, _("Attendance request not found"))
-    return HttpResponseRedirect(request.META.get("HTTP_REFERER", "/"))
+    return HorillaRedirect(request)
 
 
 @login_required

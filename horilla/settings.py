@@ -7,6 +7,7 @@ For more information on this file, see
 https://docs.djangoproject.com/en/4.1/topics/settings/
 
 For the full list of settings and their values, see
+
 https://docs.djangoproject.com/en/4.1/ref/settings/
 """
 
@@ -79,6 +80,7 @@ MIDDLEWARE = [
     "whitenoise.middleware.WhiteNoiseMiddleware",
     "django.contrib.sessions.middleware.SessionMiddleware",
     "django.middleware.common.CommonMiddleware",
+    "horilla_api.middleware.RejectBasicAuthMiddleware",
     "corsheaders.middleware.CorsMiddleware",
     "simple_history.middleware.HistoryRequestMiddleware",
     "django.middleware.locale.LocaleMiddleware",
@@ -135,6 +137,18 @@ else:
             "PORT": env("DB_PORT", default=""),
         }
     }
+
+# DATABASES = {
+#     'default': {
+#         'ENGINE': 'django.db.backends.postgresql',
+#         'NAME': 'horilla',       # database name
+#         'USER': 'postgres',          # postgres user
+#         'PASSWORD': 'cool',  # user password
+#         'HOST': 'localhost',       # or IP address
+#         'PORT': '5432',            # default postgres port
+#     }
+# }
+
 
 # Password validation
 # https://docs.djangoproject.com/en/4.1/ref/settings/#auth-password-validators
@@ -211,6 +225,7 @@ LANGUAGES = (
     ("pt-br", "Português (Brasil)"),
     ("zh-hans", "Simplified Chinese"),
     ("zh-hant", "Traditional Chinese"),
+    ("it", "Italian"),
 )
 
 

@@ -12,3 +12,10 @@ class GetEmployeeSerializer(serializers.ModelSerializer):
 
     def get_full_name(self, obj):
         return obj.get_full_name()
+
+
+class LoginRequestSerializer(serializers.Serializer):
+    """Simple request body for the login endpoint."""
+
+    username = serializers.CharField()
+    password = serializers.CharField()

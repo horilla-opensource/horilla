@@ -11,6 +11,7 @@ import uuid
 from datetime import date, datetime, timedelta
 from typing import Any
 
+import bleach
 from django import forms
 from django.apps import apps
 from django.contrib import messages
@@ -485,7 +486,7 @@ class AssignPermission(Form):
         permissions = Permission.objects.filter(codename__in=permissions)
         users = User.objects.filter(id__in=user_ids)
         for user in users:
-            user.user_permissions.set(permissions)
+            user.user_permissions.add(*permissions)
 
         return self
 
@@ -2217,6 +2218,42 @@ class MailTemplateForm(ModelForm):
             ),
         }
 
+    def clean_body(self):
+        body = self.cleaned_data.get("body", "")
+
+        ALLOWED_TAGS = [
+            "p",
+            "b",
+            "i",
+            "u",
+            "strong",
+            "em",
+            "ul",
+            "ol",
+            "li",
+            "br",
+            "hr",
+            "table",
+            "thead",
+            "tbody",
+            "tr",
+            "td",
+            "th",
+            "a",
+            "span",
+        ]
+
+        ALLOWED_ATTRIBUTES = {
+            "a": ["href", "title"],
+            "span": ["style"],
+        }
+
+        cleaned_body = bleach.clean(
+            body, tags=ALLOWED_TAGS, attributes=ALLOWED_ATTRIBUTES, strip=True
+        )
+
+        return cleaned_body
+
     def get_template_language(self):
         mail_data = {
             "Receiver|Full name": "instance.get_full_name",
@@ -2598,8 +2635,10 @@ def validate_ip_or_cidr(value):
 class AttendanceAllowedIPForm(forms.ModelForm):
     ip_addresses = forms.CharField(
         widget=forms.Textarea(attrs={"rows": 3, "class": "form-control w-100"}),
-        label="Allowed IP Addresses or Network Prefixes",
-        help_text="Enter multiple IP addresses or network prefixes, separated by commas.",
+        label=_("Allowed IP Addresses or Network Prefixes"),
+        help_text=_(
+            "Enter multiple IP addresses or network prefixes, separated by commas."
+        ),
     )
 
     class Meta:
@@ -2771,6 +2810,8 @@ class CompanyLeaveForm(ModelForm):
         Custom initialization to configure the 'based_on' field.
         """
         super().__init__(*args, **kwargs)
+        choices = [("", "All")] + list(self.fields["based_on_week"].choices[1:])
+        self.fields["based_on_week"].choices = choices
         self.fields["based_on_week"].widget.option_template_name = (
             "horilla_widgets/select_option.html"
         )

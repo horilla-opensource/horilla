@@ -3,12 +3,22 @@
 	<div class="oh-btn-group mb-4">
 		{% if document.file %}
 		<a
+			href="{{ document.file.url }}"
+			class="oh-btn oh-btn--success w-100 me-2"
+			target="_blank"
+			rel="noopener"
+			title="{% trans 'View' %}"
+		>
+			<ion-icon class="me-1" name="eye-outline"></ion-icon>
+		</a>
+		<a
 			href="data:{{ content_type }};base64,{{ file_content|base64_encode }}"
 			class="oh-btn oh-btn--info w-100"
 			download="{{document.file}}"
 			title="{% trans 'Download' %}"
-			><ion-icon class="me-1" name="download-outline"></ion-icon
-		></a>
+		>
+			<ion-icon class="me-1" name="download-outline"></ion-icon>
+		</a>
 		{% endif %}
 	</div>
 </div>
@@ -20,7 +30,7 @@
 			src="data:{{ content_type }};base64,{{ file_content|base64_encode }}"
 			type="{{ content_type }}"
 			width="100%"
-			height="500px"
+			height="600px"
 		/>
 		{% elif file_extension == 'jpg' or file_extension == 'jpeg' or file_extension == 'png' or file_extension == 'webp' %}
 		<div class="container">
@@ -28,7 +38,7 @@
 				src="data:{{ content_type }};base64,{{ file_content|base64_encode }}"
 				alt="File Preview"
 				class="img-fluid"
-				style="display: block; width: 100%;height: 500px;"
+				style="display: block; width: 100%;height: 600px;"
 			/>
 		</div>
 		{% else %}

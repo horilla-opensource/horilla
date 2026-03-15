@@ -1,5 +1,6 @@
 from django import forms
 from django.template.loader import render_to_string
+from django.utils.translation import gettext_lazy as _
 
 from base.forms import ModelForm
 from base.methods import reload_queryset
@@ -44,7 +45,7 @@ class DocumentRequestForm(ModelForm):
                 required=True,
                 instance=self.instance,
             ),
-            label="Employee",
+            label=_("Employee"),
         )
         reload_queryset(self.fields)
 
@@ -81,7 +82,14 @@ class DocumentUpdateForm(ModelForm):
     class Meta:
         model = Document
         fields = "__all__"
-        exclude = ["is_active"]
+        exclude = [
+            "title",
+            "document_request_id",
+            "status",
+            "created_by",
+            "modified_by",
+            "employee_id",
+        ]
         widgets = {
             "issue_date": forms.DateInput(
                 attrs={"type": "date", "class": "oh-input  w-100"}

@@ -145,6 +145,9 @@
                                         <div class="oh-helpdesk__bubble-header">
                                             <div class="oh-helpdesk__bubble-user">
                                                 <div class="oh-profile oh-profile--md">
+                                                    {{item.type}}
+                                                    {{item.comment.employee_id}}
+                                                    {{ticket.employee_id}}
                                                     <div class="oh-profile__avatar mr-1">
                                                         <img src="{{item.comment.employee_id.get_avatar}}" class="oh-profile__image"
                                                             alt="{{item.comment.employee_id}}" />
@@ -308,8 +311,8 @@
 
                         <textarea name="comment" class="oh-helpdesk__chat-input oh-chat__main-input ps-5"
                             placeholder="Type something..."></textarea>
-                        <button class="oh-btn oh-btn--chat oh-btn--chat-send" type="submit" onclick="validateComment(event)"
-                            aria-label="Send Message"></button>
+                        <button class="oh-btn oh-btn--chat oh-btn--chat-send" type="submit" id="sendMessageButton" onclick="validateComment(event)"
+                            title="Send Message" aria-label="Send Message"></button>
                     </form>
                     <script>
                         $(document).ready(function () {
@@ -478,13 +481,12 @@
                         <span class="oh-helpdesk__card-title">{% trans "Documents" %}</span>
 
                         {% if perms.helpdesk.add_comment or request.user.employee_get == ticket.employee_id or request.user.employee_get in ticket.assigned_to.all %}
+                            <div style="display:flex">
                             <form name="comment-form" action="{% url 'comment-create' ticket.id %}" method="POST"
                                 enctype="multipart/form-data" class="oh-chat oh-chat__input-wrapper"
                                 style="display: flex; align-items: center; gap: 10px;">
                                 {% csrf_token %}
-
                                 <input name="file" multiple="True" type="file" id="fileUpload" class="d-none" />
-
                                 <!-- Attachment Button -->
                                 <label for="fileUpload" aria-label="Attach Files"
                                     class="oh-btn oh-btn--chat oh-btn--chat-attachments"
@@ -493,6 +495,10 @@
                                     <span id="fileCount1" style="position: absolute; top: -6px; right: -6px; background-color: red; color: white; font-size: 12px; border-radius: 50%; padding: 2px 6px; min-width: 16px; text-align: center; display: none; "></span>
                                 </label>
                             </form>
+                            <button class="oh-btn oh-btn--chat oh-btn--chat-send" style="position: relative !important; cursor: pointer;" onclick="$('#sendMessageButton').click()"
+                                    title="File Upload" aria-label="File Upload">
+                            </button>
+                            </div>
                         {% endif %}
                     </div>
                     <div class="oh-helpdesk__card-body oh-scrollable-container">
@@ -571,7 +577,7 @@
 <!-- end of create tag modal. -->
 
 <div class="oh-modal" id="viewFileModal" role="dialog" aria-labelledby="viewFileModal" aria-hidden="true">
-    <div class="oh-modal__dialog custom-dialog">
+    <div class="oh-modal__dialog custom-dialog" style="max-width: 900px; width: 90%;">
         <div class="oh-modal__dialog-header">
             <span class="oh-modal__dialog-title" id="viewFileModalLabel">{% trans "View File" %}</span>
             <button class="oh-modal__close" aria-label="Close">

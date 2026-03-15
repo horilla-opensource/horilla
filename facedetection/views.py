@@ -101,9 +101,24 @@ class EmployeeFaceDetectionGetPostAPIView(APIView):
         except Exception as e:
             raise serializers.ValidationError(e)
 
+    def get_employee_facedetection(self, request):
+        """Get the current user's EmployeeFaceDetection record (their face registration)."""
+        try:
+            employee = request.user.employee_get
+            return EmployeeFaceDetection.objects.get(employee_id=employee)
+        except EmployeeFaceDetection.DoesNotExist:
+            return None
+        except Exception as e:
+            raise serializers.ValidationError(e)
+
     def get(self, request):
-        facedetection = self.get_facedetection(request)
-        serializer = EmployeeFaceDetectionSerializer(facedetection)
+        employee_facedetection = self.get_employee_facedetection(request)
+        if employee_facedetection is None:
+            return Response(
+                {"detail": "No face registration found for this employee."},
+                status=status.HTTP_404_NOT_FOUND,
+            )
+        serializer = EmployeeFaceDetectionSerializer(employee_facedetection)
         return Response(serializer.data, status=status.HTTP_200_OK)
 
     def post(self, request):

@@ -62,8 +62,8 @@ class EmployeeFilter(HorillaFilterSet):
         field_name="is_active",
         label="Is Active",
         choices=[
-            (True, "Yes"),
-            (False, "No"),
+            (True, _("Yes")),
+            (False, _("No")),
         ],
     )
 
@@ -71,16 +71,16 @@ class EmployeeFilter(HorillaFilterSet):
         field_name="is_from_onboarding",
         label="Is From Onboarding",
         choices=[
-            (True, "Yes"),
-            (False, "No"),
+            (True, _("Yes")),
+            (False, _("No")),
         ],
     )
     is_directly_converted = django_filters.ChoiceFilter(
         field_name="is_directly_converted",
         label="Is Directly Converted",
         choices=[
-            (True, "Yes"),
-            (False, "No"),
+            (True, _("Yes")),
+            (False, _("No")),
         ],
     )
     probation_from = django_filters.DateFilter(

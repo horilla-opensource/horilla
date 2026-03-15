@@ -8,21 +8,21 @@
 	>
 		<div class="">
 			<h5 class="oh-card-dashboard__title">
-				Personal Timesheet of {{emp_name|capfirst}}
+				{% trans "Personal Timesheet of" %} {{emp_name|capfirst}}
 			</h5>
 		</div>
 		<div>
 			<span class="oh-card-dashboard__title me-5"
-				><a id="previous">Previous</a></span
+				><a id="previous">{% trans "Previous" %}</a></span
 			>
-			<span class="oh-card-dashboard__title me-5"><a id="next">Next</a></span>
+			<span class="oh-card-dashboard__title me-5"><a id="next">{% trans "Next" %}</a></span>
 			<select
 				class="oh-select oh-select--sm me-5"
 				name=""
 				id="personalTimesheetSelect"
 			>
-				<option value="week" selected>Week</option>
-				<option value="month">Month</option>
+				<option value="week" selected>{% trans "Week" %}</option>
+				<option value="month">{% trans "Month" %}</option>
 			</select>
 		</div>
 	</div>

@@ -151,7 +151,7 @@ def get_ordered_badge_ids():
     """
     This method is used to return ordered badge ids
     """
-    employees = Employee.objects.all()
+    employees = Employee.objects.entire()
     data = (
         employees.exclude(badge_id=None)
         .order_by("badge_id")
@@ -255,7 +255,10 @@ def process_employee_records(data_frame):
     email_regex = re.compile(r"^[a-zA-Z0-9_.+-]+@[a-zA-Z0-9-]+\.[a-zA-Z0-9-.]+$")
     phone_regex = re.compile(r"^\+?\d{10,15}$")
     allowed_genders = frozenset(choice[0] for choice in Employee.choice_gender)
-    existing_badge_ids = frozenset(Employee.objects.values_list("badge_id", flat=True))
+    # Preload entire badge IDs for duplicate validation during import
+    existing_badge_ids = frozenset(
+        Employee.objects.entire().values_list("badge_id", flat=True)
+    )
     existing_usernames = frozenset(User.objects.values_list("username", flat=True))
     existing_name_emails = frozenset(
         (fname, lname, email)
@@ -326,11 +329,17 @@ def process_employee_records(data_frame):
             save = False
 
         # Badge ID validation
-        if badge_id in seen_badge_ids:
+        if not badge_id:
+            errors["Badge ID Error"] = "Badge ID cannot be empty."
+            save = False
+
+        elif badge_id in seen_badge_ids:
             errors["Badge ID Error"] = "An employee with this badge ID already exists."
             save = False
+
         else:
-            # To resolve Badge ID Type Mismatch (Float vs String)
+            # Ensure consistent type (convert to string if needed)
+            badge_id = str(badge_id).strip()
             emp["Badge ID"] = badge_id
             seen_badge_ids.add(badge_id)
 

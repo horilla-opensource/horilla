@@ -239,7 +239,9 @@
                                                     </form>
                                                 {% endif %}
                                                 <div>
+                                                    {% if ticket.status != "resolved" %}
                                                     <span class='float-end' title = 'due {% if ticket.deadline == today %}today {% else %}in {{ticket.deadline|sub:today}}{% endif %}'><ion-icon class="text-{% if ticket.deadline < today %}danger {% elif ticket.deadline == today %}warning {% else %}success{% endif %}" name="time-sharp"></ion-icon></span>
+                                                    {% endif %}
                                                 </div>
                                             </div>
                                         </div>
@@ -610,7 +612,9 @@
                                                         {% endif %}
                                                     {% endif %}
                                                 <div>
+                                                    {% if ticket.status != "resolved" %}
                                                     <span class='float-end' title = 'due {% if ticket.deadline == today %}today {% else %}in {{ticket.deadline|sub:today}}{% endif %}'><ion-icon class="text-{% if ticket.deadline < today %}danger {% elif ticket.deadline == today %}warning {% else %}success{% endif %}" name="time-sharp"></ion-icon></span>
+                                                    {% endif %}
                                                 </div>
                                             </div>
                                         </div>
@@ -901,7 +905,9 @@
                                                     </form>
                                                 {% endif %}
                                                 <div>
+                                                    {% if ticket.status != "resolved" %}
                                                     <span class='float-end' title = 'due {% if ticket.deadline == today %}today {% else %}in {{ticket.deadline|sub:today}}{% endif %}'><ion-icon class="text-{% if ticket.deadline < today %}danger {% elif ticket.deadline == today %}warning {% else %}success{% endif %}" name="time-sharp"></ion-icon></span>
+                                                    {% endif %}
                                                 </div>
                                             </div>
                                         </div>

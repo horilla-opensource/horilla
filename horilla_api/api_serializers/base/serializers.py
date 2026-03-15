@@ -246,8 +246,12 @@ class RotatingShiftAssignSerializer(serializers.ModelSerializer):
         fields = "__all__"
 
     def validate(self, attrs):
-        # Create an instance of the model with the provided data
-        instance = RotatingShiftAssign(**attrs)
+        # Get the instance if updating, otherwise create a new one
+        instance = self.instance if self.instance else RotatingShiftAssign(**attrs)
+
+        # Update instance attributes with validated data
+        for attr, value in attrs.items():
+            setattr(instance, attr, value)
 
         # Call the model's clean method for validation
         try:
@@ -260,6 +264,13 @@ class RotatingShiftAssignSerializer(serializers.ModelSerializer):
 
     def create(self, validated_data):
         return super().create(validated_data)
+
+    def update(self, instance, validated_data):
+        for attr, value in validated_data.items():
+            setattr(instance, attr, value)
+        instance.clean()  # Call clean method before saving the instance
+        instance.save()
+        return instance
 
     def to_representation(self, instance):
         representation = super().to_representation(instance)

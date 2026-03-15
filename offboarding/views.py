@@ -24,6 +24,7 @@ from horilla.decorators import (
     permission_required,
 )
 from horilla.group_by import group_by_queryset as group_by
+from horilla.http.response import HorillaRedirect
 from horilla.methods import get_horilla_model_class
 from notifications.signals import notify
 from offboarding.decorators import (
@@ -248,7 +249,7 @@ def create_offboarding(request):
                 redirect=reverse("offboarding-pipeline"),
             )
 
-            return HttpResponse("<script>window.location.reload()</script>")
+            return HorillaRedirect(request)
 
     return render(
         request,
@@ -308,7 +309,7 @@ def create_stage(request):
                 icon="people-circle",
                 redirect=reverse("offboarding-pipeline"),
             )
-            return HttpResponse("<script>window.location.reload()</script>")
+            return HorillaRedirect(request)
     return render(request, "offboarding/stage/form.html", {"form": form})
 
 
@@ -353,7 +354,7 @@ def add_employee(request):
                     redirect=reverse("offboarding-pipeline"),
                     icon="information",
                 )
-            return HttpResponse("<script>window.location.reload()</script>")
+            return HorillaRedirect(request)
     return render(request, "offboarding/employee/form.html", {"form": form})
 
 
@@ -402,7 +403,7 @@ def delete_stage(request):
             messages.error(request, _("Stage not found"))
     except OverflowError:
         messages.error(request, _("Stage not found"))
-    return HttpResponse("<script>window.location.reload()</script>")
+    return HorillaRedirect(request)
 
 
 @login_required
@@ -866,7 +867,7 @@ def create_resignation_request(request):
         if form.is_valid():
             form.save()
             messages.success(request, _("Resignation letter saved"))
-            return HttpResponse("<script>window.location.reload()</script>")
+            return HorillaRedirect(request)
     return render(request, "offboarding/resignation/form.html", {"form": form})
 
 

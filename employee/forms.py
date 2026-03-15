@@ -680,7 +680,7 @@ class PolicyForm(ModelForm):
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
         self.fields["attachment"] = MultipleFileField(
-            label="Attachements", required=False
+            label=trans("Attachments"), required=False
         )
 
     def save(self, *args, commit=True, **kwargs):

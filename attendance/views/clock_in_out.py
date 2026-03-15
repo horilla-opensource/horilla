@@ -38,6 +38,7 @@ from base.context_processors import (
 from base.models import AttendanceAllowedIP, Company, EmployeeShiftDay
 from horilla.decorators import hx_request_required, login_required
 from horilla.horilla_middlewares import _thread_locals
+from horilla.http import HorillaRedirect
 
 
 def late_come_create(attendance):
@@ -344,7 +345,7 @@ def clock_in(request):
         )
     else:
         messages.error(request, _("Check in/Check out feature is not enabled."))
-        return HttpResponse("<script>location.reload();</script>")
+        return HorillaRedirect(request)
 
 
 def clock_out_attendance_and_activity(employee, date_today, now, out_datetime=None):
@@ -511,6 +512,10 @@ def clock_out(request):
             .last()
         )
         if attendance is not None:
+            if not attendance.attendance_day:
+                day_name = attendance.attendance_date.strftime("%A").lower()
+                attendance.attendance_day = EmployeeShiftDay.objects.get(day=day_name)
+                attendance.save(update_fields=["attendance_day"])
             day = attendance.attendance_day
         now = datetime.now().strftime("%H:%M")
         if request.__dict__.get("time"):
@@ -597,4 +602,4 @@ def clock_out(request):
         )
     else:
         messages.error(request, _("Check in/Check out feature is not enabled."))
-        return HttpResponse("<script>location.reload();</script>")
+        return HorillaRedirect(request)

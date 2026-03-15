@@ -98,6 +98,7 @@ class EmployeeAPIView(APIView):
     filter_backends = [DjangoFilterBackend]
     filterset_class = EmployeeFilter
     permission_classes = [IsAuthenticated]
+    queryset = Employee.objects.all()
 
     def get(self, request, pk):
         user = request.user
@@ -250,8 +251,14 @@ class EmployeeBankDetailsAPIView(APIView):
     permission_classes = [IsAuthenticated]
 
     def get_queryset(self):
+        # Handle schema generation for DRF-YASG
+        if getattr(self, "swagger_fake_view", False):
+            return EmployeeBankDetails.objects.none()
         queryset = EmployeeBankDetails.objects.all()
         user = self.request.user
+        # Handle AnonymousUser during schema generation
+        if not user.is_authenticated:
+            return EmployeeBankDetails.objects.none()
         # checking user level permissions
         perm = "base.view_employeebankdetails"
         queryset = permission_based_queryset(user, perm, queryset)

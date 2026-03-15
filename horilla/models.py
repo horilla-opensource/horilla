@@ -117,6 +117,13 @@ class HorillaModel(models.Model):
     objects = models.Manager()
     is_active = models.BooleanField(default=True, verbose_name=_("Is Active"))
 
+    @property
+    def get_created_at_date(self):
+        """
+        get_created_at_date
+        """
+        return self.created_at.date()
+
     class Meta:
         """
         Meta class for HorillaModel
