@@ -71,7 +71,7 @@
             </div>
         </div>
         </div>
-        <div class="row">
+        <div class="row intern-salary-fields" style="display:none;">
             <div class="col-12 col-sm-12 col-md-12 col-lg-6">
             <div class="oh-input-group">
                 <label class="oh-label">{% trans "Basic Salary" %}</label>
@@ -93,3 +93,17 @@
         </form>
     </div>
     </div>
+<script>
+$(document).ready(function () {
+    function toggleSalaryFields() {
+        var selectedText = $("#id_employee_type_id option:selected").text().trim().toLowerCase();
+        if (selectedText === "intern") {
+            $(".intern-salary-fields").show();
+        } else {
+            $(".intern-salary-fields").hide();
+        }
+    }
+    toggleSalaryFields();
+    $("#id_employee_type_id").on("change", toggleSalaryFields);
+});
+</script>

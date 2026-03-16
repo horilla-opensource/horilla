@@ -54,11 +54,11 @@
                     {{work_form.contract_end_date.errors}}
                     {{work_form.contract_end_date}}
                 </div>
-                <div class="col-md-6 mb-4">
+                <div class="col-md-6 mb-4 intern-salary-fields" style="display:none;">
                     {{work_form.basic_salary.errors}}
                     {{work_form.basic_salary}}
                 </div>
-                <div class="col-md-6 mb-4">
+                <div class="col-md-6 mb-4 intern-salary-fields" style="display:none;">
                     {{work_form.salary_hour.errors}}
                     {{work_form.salary_hour}}
                 </div>
@@ -164,3 +164,17 @@
             </form>
     </div>
 </div>
+<script>
+$(document).ready(function () {
+    function toggleSalaryFields() {
+        var selectedText = $("#id_employee_type_id option:selected").text().trim().toLowerCase();
+        if (selectedText === "intern") {
+            $(".intern-salary-fields").show();
+        } else {
+            $(".intern-salary-fields").hide();
+        }
+    }
+    toggleSalaryFields();
+    $("#id_employee_type_id").on("change", toggleSalaryFields);
+});
+</script>
