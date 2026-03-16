@@ -361,7 +361,7 @@
        ids=ids.filter(value => !isNaN(value))
        $.ajax({
            type: "POST",
-           url: '/onboarding/candidate-task-bulk-update',
+           url: '/onboarding/candidate-task-bulk-update/',
            data: {
                "ids": JSON.stringify(ids),
                "task": Task,

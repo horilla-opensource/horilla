@@ -49,7 +49,7 @@ urlpatterns = [
     #     name="stage-update",
     # ),
     path("stage-delete/<int:stage_id>/", views.stage_delete, name="stage-delete"),
-    # path("task-creation/", views.task_creation, name="task-creation"),
+    path("task-creation/", views.task_creation, name="task-creation"),
     path("task-delete/<int:task_id>/", views.task_delete, name="task-delete"),
     # path(
     #     "task-update/<int:task_id>/",
@@ -86,7 +86,7 @@ urlpatterns = [
     ),
     path("candidate-filter/", views.candidate_filter, name="candidate-filter"),
     path("email-send/", views.email_send, name="email-send"),
-    # path("onboarding-view/", views.onboarding_view, name="onboarding-view"),
+    path("view-onboarding/", views.onboarding_view, name="onboarding-view"),
     path("kanban-view/", views.kanban_view, name="kanban-view"),
     path(
         "candidate-task-update/<int:taskId>/",
@@ -109,12 +109,12 @@ urlpatterns = [
         name="candidate-stage-update",
     ),
     path(
-        "candidate-stage-bulk-update",
+        "candidate-stage-bulk-update/",
         views.candidate_stage_bulk_update,
         name="candidate-stage-bulk-update",
     ),
     path(
-        "candidate-task-bulk-update",
+        "candidate-task-bulk-update/",
         views.candidate_task_bulk_update,
         name="candidate-task-bulk-update",
     ),
@@ -168,7 +168,7 @@ urlpatterns = [
     ),
     # path("task-report-onboarding", views.task_report, name="task-report-onboarding"),
     path(
-        "task-report-onboarding",
+        "task-report-onboarding/",
         dashboard.MyOnboardingTaskList.as_view(),
         name="task-report-onboarding",
     ),
@@ -178,7 +178,7 @@ urlpatterns = [
     #     name="candidate-tasks-status",
     # ),
     path(
-        "candidate-tasks-status",
+        "candidate-tasks-status/",
         dashboard.MyOnboardingCandidatesSingleView.as_view(),
         name="candidate-tasks-status",
     ),
@@ -217,12 +217,12 @@ urlpatterns = [
         name="onboarding-candidates-nav",
     ),
     path(
-        "offer-letter-bulk-status-update",
+        "offer-letter-bulk-status-update/",
         views.offer_letter_bulk_status_update,
         name="offer-letter-bulk-status-update",
     ),
     path(
-        "onboarding-candidate-bulk-delete",
+        "onboarding-candidate-bulk-delete/",
         views.onboarding_candidate_bulk_delete,
         name="onboarding-candidate-bulk-delete",
     ),
