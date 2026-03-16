@@ -1,22 +1,96 @@
 {% load i18n %}
 <div id="compensation-field-container">
     {% if show_field %}
-        <label
-                for="{{ form.is_get_compensation_leave.id_for_label }}"
-                class="form-label fw-semibold mb-1 d-flex align-items-center"
-                title="{{ form.is_get_compensation_leave.help_text }}"
-        >
-            {{ form.is_get_compensation_leave.label }}
-            <i class="bi bi-info-circle ms-1 text-muted" style="font-size: 0.9rem;"></i>
-        </label>
+        <div class="mb-3 mt-1">
+            <div class="d-flex align-items-center mb-2 gap-1">
+                <i class="bi bi-calendar-event" style="font-size: 1rem; color: hsl(8, 77%, 56%);"></i>
+                <span class="fw-semibold" style="font-size: 0.8rem;">{% trans "Mercantile Holiday — Choose Compensation Type" %}</span>
+            </div>
 
-        <div class="oh-input-wrapper mb-2">
-            {{ form.is_get_compensation_leave }}
+            <div style="display:none;">
+                {{ form.is_get_compensation_leave }}
+            </div>
+
+            <div class="d-flex gap-2 flex-wrap" id="compensation-option-cards">
+
+                <div class="compensation-option-card flex-fill"
+                     data-value="false"
+                     onclick="selectCompensationOption(this)"
+                     style="cursor:pointer; border:2px solid hsl(213, 22%, 84%); border-radius:10px; padding:14px 16px; min-width:160px; transition: border-color 0.2s, background-color 0.2s;">
+                    <div class="d-flex align-items-center gap-2 mb-1">
+                        <span class="compensation-option-icon d-flex align-items-center justify-content-center rounded-circle"
+                              style="width:32px; height:32px; background-color:hsl(0, 0%, 93%); transition: background-color 0.2s;">
+                            <i class="bi bi-cash-coin" style="font-size:1rem;"></i>
+                        </span>
+                        <span class="fw-semibold" style="font-size:0.78rem;">{% trans "Compensation Payment" %}</span>
+                    </div>
+                    <p class="mb-0" style="font-size:0.72rem; line-height:1.4; color:hsl(0, 0%, 45%);">
+                        {% trans "Receive a compensation allowance added to your next payroll." %}
+                    </p>
+                </div>
+
+                <div class="compensation-option-card flex-fill"
+                     data-value="true"
+                     onclick="selectCompensationOption(this)"
+                     style="cursor:pointer; border:2px solid hsl(213, 22%, 84%); border-radius:10px; padding:14px 16px; min-width:160px; transition: border-color 0.2s, background-color 0.2s;">
+                    <div class="d-flex align-items-center gap-2 mb-1">
+                        <span class="compensation-option-icon d-flex align-items-center justify-content-center rounded-circle"
+                              style="width:32px; height:32px; background-color:hsl(0, 0%, 93%); transition: background-color 0.2s;">
+                            <i class="bi bi-calendar2-check" style="font-size:1rem;"></i>
+                        </span>
+                        <span class="fw-semibold" style="font-size:0.78rem;">{% trans "Compensation Leave" %}</span>
+                    </div>
+                    <p class="mb-0" style="font-size:0.72rem; line-height:1.4; color:hsl(0, 0%, 45%);">
+                        {% trans "Get a day off as compensation leave instead of payment." %}
+                    </p>
+                </div>
+
+            </div>
         </div>
+
+        <script>
+            (function () {
+                var checkbox = document.getElementById("{{ form.is_get_compensation_leave.id_for_label }}");
+
+                function applySelection(selectedCard) {
+                    document.querySelectorAll("#compensation-option-cards .compensation-option-card").forEach(function (card) {
+                        var isSelected = card === selectedCard;
+                        card.style.borderColor = isSelected ? "hsl(8, 77%, 56%)" : "hsl(213, 22%, 84%)";
+                        card.style.backgroundColor = isSelected ? "hsl(8, 77%, 97%)" : "";
+                        card.querySelector(".compensation-option-icon").style.backgroundColor = isSelected ? "hsl(8, 77%, 56%)" : "hsl(0, 0%, 93%)";
+                        card.querySelector(".compensation-option-icon i").style.color = isSelected ? "#ffffff" : "";
+                    });
+                }
+
+                window.selectCompensationOption = function (card) {
+                    var isLeave = card.getAttribute("data-value") === "true";
+                    if (checkbox) checkbox.checked = isLeave;
+                    applySelection(card);
+                };
+
+                document.addEventListener("DOMContentLoaded", function () {
+                    if (!checkbox) return;
+                    var initialValue = checkbox.checked ? "true" : "false";
+                    var initialCard = document.querySelector(
+                        "#compensation-option-cards .compensation-option-card[data-value='" + initialValue + "']"
+                    );
+                    if (initialCard) applySelection(initialCard);
+                });
+
+                if (document.readyState !== "loading") {
+                    var initialValue = (checkbox && checkbox.checked) ? "true" : "false";
+                    var initialCard = document.querySelector(
+                        "#compensation-option-cards .compensation-option-card[data-value='" + initialValue + "']"
+                    );
+                    if (initialCard) applySelection(initialCard);
+                }
+            })();
+        </script>
     {% endif %}
+
     {% if show_duplicate_warning %}
         <div class="alert alert-warning d-flex justify-content-center align-items-center mb-3 mt-2" role="alert">
-            <span class="text-danger text-center">Existing record detected. Proceeding will update it.</span>
+            <span class="text-danger text-center">{% trans "Existing record detected. Proceeding will update it." %}</span>
         </div>
     {% endif %}
 
