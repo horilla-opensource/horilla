@@ -57,6 +57,9 @@ function countSequence(element) {
           $(".messages").html(alertContainer);
         }
       },
+      error: () => {
+        reloadMessage()
+      },
     });
   }, 0);
 }
@@ -85,6 +88,9 @@ function updateStageSequence(parentElement) {
         alertContainer.append(alertDiv);
         $(".messages").html(alertContainer);
       }
+    },
+    error: () => {
+      reloadMessage()
     },
   });
 }

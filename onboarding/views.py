@@ -203,7 +203,9 @@ def update_stage_order(request, pk):
     """
     This method is used to update the stage sequence of the onboarding
     """
-    recruitment = Recruitment.objects.get(id=pk)
+    recruitment = Recruitment.find(pk)
+    if not recruitment:
+        return HorillaRedirect(request, message=_("Recruitment not found."))
 
     if request.method == "POST":
         try:
@@ -439,7 +441,9 @@ def candidate_update(request, obj_id):
     GET : return candidate update form template
     POST : return candidate view
     """
-    candidate = Candidate.objects.get(id=obj_id)
+    candidate = Candidate.find(obj_id)
+    if not candidate:
+        return HorillaRedirect(request, message=_("Candidate not found."))
     form = OnboardingCandidateForm(instance=candidate)
     if request.method == "POST":
         form = OnboardingCandidateForm(request.POST, request.FILES, instance=candidate)
@@ -1294,7 +1298,10 @@ def employee_bank_details(request, token):
     GET : return bank details creation template
     POST : return employee_bank_details_save function
     """
-    onboarding_portal = OnboardingPortal.objects.get(token=token)
+    onboarding_portal = OnboardingPortal.objects.filter(token=token).first()
+    if not onboarding_portal:
+        return HorillaRedirect(request, message=_("Onboarding portal not found."))
+
     user = HorillaUser.objects.filter(
         username=onboarding_portal.candidate_id.email
     ).first()
@@ -1420,12 +1427,16 @@ def get_status(request, task_id):
     """
     cand_id = request.GET.get("cand_id")
     cand_stage = request.GET.get("cand_stage")
-    cand_stage_obj = CandidateStage.objects.get(id=cand_stage)
-    onboarding_task = OnboardingTask.objects.get(id=task_id)
-    candidate = Candidate.objects.get(id=cand_id)
+    if not cand_id or not cand_stage:
+        return HorillaRedirect(request, message=_("Missing required parameters."))
+    cand_stage_obj = CandidateStage.find(cand_stage)
+    onboarding_task = OnboardingTask.find(task_id)
+    candidate = Candidate.find(cand_id)
     candidate_task = CandidateTask.objects.filter(
         candidate_id=candidate, onboarding_task_id=onboarding_task
     ).first()
+    if not cand_stage_obj or not onboarding_task or not candidate or not candidate_task:
+        return HorillaRedirect(request, message=_("Object not found."))
     status = candidate_task.status
 
     return render(
@@ -1457,10 +1468,20 @@ def assign_task(request, task_id):
     stage_id = request.GET.get("stage_id")
     cand_id = request.GET.get("cand_id")
     cand_stage = request.GET.get("cand_stage")
-    cand_stage_obj = CandidateStage.objects.get(id=cand_stage)
-    onboarding_task = OnboardingTask.objects.get(id=task_id)
-    candidate = Candidate.objects.get(id=cand_id)
-    onboarding_stage = OnboardingStage.objects.get(id=stage_id)
+    if not stage_id or not cand_id or not cand_stage:
+        return HorillaRedirect(request, message=_("Missing required parameters."))
+    cand_stage_obj = CandidateStage.find(cand_stage)
+    onboarding_task = OnboardingTask.find(task_id)
+    candidate = Candidate.find(cand_id)
+    onboarding_stage = OnboardingStage.find(stage_id)
+    if (
+        not cand_stage_obj
+        or not onboarding_task
+        or not candidate
+        or not onboarding_stage
+    ):
+        return HorillaRedirect(request, message=_("Object not found."))
+
     cand_task, created = CandidateTask.objects.get_or_create(
         candidate_id=candidate,
         stage_id=onboarding_stage,
@@ -1733,10 +1754,18 @@ def candidate_sequence_update(request):
     """
     This method is used to update the sequence of candidate
     """
-    sequence_data = json.loads(request.POST["sequenceData"])
+    seq_data = request.POST.get("sequenceData")
+    if not seq_data:
+        messages.error(request, _("Missing required parameter: sequenceData."))
+        return JsonResponse(
+            {"error": "Missing required parameter: sequenceData"}, status=400
+        )
+    sequence_data = json.loads(request.POST.get("sequenceData"))
     updated = False
     for cand_id, seq in sequence_data.items():
-        cand = CandidateStage.objects.get(id=cand_id)
+        cand = CandidateStage.find(cand_id)
+        if not cand:
+            continue
         if cand.sequence != seq:
             cand.sequence = seq
             cand.save()
@@ -1754,11 +1783,19 @@ def stage_sequence_update(request):
     """
     This method is used to update the sequence of the stages
     """
-    sequence_data = json.loads(request.POST["sequenceData"])
+    seq_data = request.POST.get("sequenceData")
+    if not seq_data:
+        messages.error(request, _("Missing required parameter: sequenceData."))
+        return JsonResponse(
+            {"error": "Missing required parameter: sequenceData"}, status=400
+        )
+    sequence_data = json.loads(request.POST.get("sequenceData"))
     updated = False
 
     for stage_id, seq in sequence_data.items():
-        stage = OnboardingStage.objects.get(id=stage_id)
+        stage = OnboardingStage.find(stage_id)
+        if not stage:
+            continue
         if stage.sequence != seq:
             stage.sequence = seq
             stage.save()
@@ -1909,9 +1946,13 @@ def change_task_status(request):
     """
     This method is to update the candidate task
     """
-    task_id = request.GET["task_id"]
-    candidate_task = CandidateTask.objects.get(id=task_id)
-    status = request.GET["status"]
+    task_id = request.GET.get("task_id")
+    status = request.GET.get("status")
+    if not task_id or not status:
+        return HorillaRedirect(request, message=_("Task ID or status is missing"))
+    candidate_task = CandidateTask.find(task_id)
+    if not candidate_task:
+        return HorillaRedirect(request, message=_("Candidate task not found"))
     if status in [
         "todo",
         "scheduled",
@@ -2036,13 +2077,24 @@ def candidate_select_filter(request):
         context = {"employee_ids": employee_ids, "total_count": total_count}
 
         return JsonResponse(context)
+    else:
+        messages.error(request, _("Invalid page number"))
+        return JsonResponse(
+            {"message": _("Invalid page number")}, status=400, safe=False
+        )
 
 
 def offer_letter_bulk_status_update(request):
     """
     This function is used to bulk update the offerletter status
     """
-    ids = json.loads(request.GET.get("ids", []))
+    letter_ids = request.GET.get("ids")
+
+    if not letter_ids:
+        messages.error(request, "No offer letters selected for status update.")
+        return JsonResponse("Missing required parameter: ids", safe=False, status=400)
+
+    ids = json.loads(letter_ids)
     status = request.GET.get("status")
     for id in ids:
         try:
@@ -2064,8 +2116,12 @@ def onboarding_candidate_bulk_delete(request):
     This function is used to bulk delete onboarding candidates
     """
 
-    ids = json.loads(request.GET.get("ids", []))
-    status = request.GET.get("status")
+    cand_ids = request.GET.get("ids")
+    if not cand_ids:
+        messages.error(request, "No candidates selected for deletion.")
+        return JsonResponse("Missing required parameter: ids", safe=False, status=400)
+
+    ids = json.loads(cand_ids)
     for id in ids:
         try:
             candidate = Candidate.objects.filter(id=int(id)).first()
