@@ -176,6 +176,9 @@ class EmployeeForm(ModelForm):
                 "class": "form-control auto-resize",
                 "rows": 3,
             }),
+            "experience": forms.NumberInput(attrs={
+                "step": "0.1",
+            }),
         }
 
     def __init__(self, *args, **kwargs):
