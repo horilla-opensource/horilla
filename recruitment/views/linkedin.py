@@ -60,23 +60,6 @@ def delete_linkedin_account(request, pk, return_redirect=True):
 
 
 @login_required
-def check_linkedin(request):
-    import requests
-
-    url = "https://www.linkedin.com/oauth/v2/userinfo"
-    data = {
-        "grant_type": "authorization_code",
-        "code": "AQXepuwNjedxqn6A7XE75IBHWGdCGeuWqB8ZmhlA9oFbKIHtSBzsKaPwJ5uw4opHURUAwNbi3asSUkJvjmR57BNqgK-Snw_2nUhuRp_S3cTRtFcCrE4JZKIZpy_aTWokL3tr1BFGu0zfgzK1uSU5zYClUeQ4j4bTNkCmvjVAQ8T_4T9JdJ8MZg8m84tMMsuvbniMXOGrdURJXJsmBHckyFnaFD0Mp9Fahl85BGYXqtm0czifPhOJH3TuP2GQQb8fQoNH9rDWcXoNW9D0Jchkv-gs_7_p3cz_U0Dqa_6g_Qdj-5uGdTjPiZlKZNCjPNOsK28lilGOtybHipJ8kVkhoW_tg774Zg",
-        "redirect_uri": "https://www.linkedin.com/developers/tools/oauth/redirect",
-        "client_id": "86bnqwzxrmxdy6",
-        "client_secret": "WPL_AP1.op0BkkK4xDn5ANwP.RuayNw==",
-    }
-
-    response = requests.post(url, data=data)
-    return JsonResponse(response)
-
-
-@login_required
 def validate_linkedin_token(request, pk):
     linkedin_account = LinkedInAccount.objects.filter(id=pk).first()
     access_token = linkedin_account.api_token
