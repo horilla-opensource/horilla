@@ -65,7 +65,12 @@ from helpdesk.models import (
     Ticket,
     TicketType,
 )
-from helpdesk.threading import AddAssigneeThread, RemoveAssigneeThread, TicketSendThread
+from helpdesk.threading import (
+    AddAssigneeThread,
+    PasswordResetMailThread,
+    RemoveAssigneeThread,
+    TicketSendThread,
+)
 from horilla.decorators import (
     hx_request_required,
     login_required,
@@ -499,6 +504,20 @@ def ticket_update(request, ticket_id):
     """
 
     ticket = Ticket.objects.get(id=ticket_id)
+
+    # Block editing if this ticket has a password reset request that has been reviewed
+    pr_request = getattr(ticket, "password_reset_request", None)
+    if pr_request and pr_request.iso_status != "PENDING" and not request.user.is_superuser:
+        messages.info(
+            request,
+            _("This ticket is linked to a password reset request that has already been reviewed and cannot be edited."),
+        )
+        if "HTTP_HX_REQUEST" in request.META:
+            return render(request, "decorator_404.html")
+        return HttpResponse(
+            f'<script>window.location.href = "{request.META.get("HTTP_REFERER", "/")}"</script>'
+        )
+
     if (
         request.user.has_perm("helpdesk.change_ticket")
         or is_department_manager(request, ticket)
@@ -596,6 +615,23 @@ def change_ticket_status(request, ticket_id):
         return Ticket view
     """
     ticket = Ticket.objects.get(id=ticket_id)
+
+    # Block status change if this ticket has a reviewed password reset request
+    pr_request = getattr(ticket, "password_reset_request", None)
+    if pr_request and pr_request.iso_status != "PENDING" and not request.user.is_superuser:
+        return JsonResponse(
+            {
+                "type": "danger",
+                "message": str(
+                    _(
+                        "This ticket is linked to a password reset request that has "
+                        "already been reviewed. Status cannot be changed."
+                    )
+                ),
+                "errors": "noChange",
+            }
+        )
+
     pre_status = ticket.get_status_display()
     status = request.POST.get("status")
     user = request.user.employee_get
@@ -946,7 +982,7 @@ def ticket_change_raised_on(request, ticket_id):
             if form.is_valid():
                 form.save()
                 messages.success(request, _("Responsibility updated for the Ticket"))
-                return redirect(ticket_detail, ticket_id=ticket_id)
+                return HttpResponse("<script>window.location.reload()</script>")
         return render(
             request,
             "helpdesk/ticket/forms/change_raised_on.html",
@@ -1923,9 +1959,14 @@ def password_reset_request_create(request):
             except Exception as exc:
                 logger.error("Password reset notify error: %s", exc)
 
-            # Email notification
+            # Email notification to ISO officers and confirmation to requester
             try:
-                mail_thread = TicketSendThread(request, ticket, type="create")
+                mail_thread = PasswordResetMailThread(
+                    request,
+                    ticket,
+                    type="new_request",
+                    pr_request=pr_request,
+                )
                 mail_thread.start()
             except Exception as exc:
                 logger.error("Password reset mail error: %s", exc)
@@ -1963,6 +2004,12 @@ def password_reset_request_update(request, pr_id):
 
     form = PasswordResetRequestForm(instance=pr_request, request=request)
     if request.method == "POST":
+        # Re-check status to handle race condition where ISO reviewed between
+        # the employee loading the form and submitting it
+        pr_request.refresh_from_db()
+        if pr_request.iso_status != "PENDING":
+            messages.info(request, _("This request has already been reviewed and cannot be edited."))
+            return HttpResponse("<script>window.location.reload()</script>")
         form = PasswordResetRequestForm(request.POST, instance=pr_request, request=request)
         if form.is_valid():
             pr_request = form.save()
@@ -2041,6 +2088,34 @@ def iso_review_password_reset(request, pr_id):
             pr_request.save()
             ticket.save()
 
+            # Create a comment on the ticket so it shows up in the activity feed
+            try:
+                reviewer_employee = request.user.employee_get
+                if action == "approve":
+                    comment_text = (
+                        f"<strong>ISO Review – Approved</strong><br>"
+                        f"Your password reset request for <strong>{pr_request.platform}</strong> "
+                        f"has been approved."
+                    )
+                    if feedback:
+                        comment_text += f"<br><strong>Feedback:</strong> {feedback}"
+                else:
+                    comment_text = (
+                        f"<strong>ISO Review – Rejected</strong><br>"
+                        f"Your password reset request for <strong>{pr_request.platform}</strong> "
+                        f"has been rejected."
+                    )
+                    if feedback:
+                        comment_text += f"<br><strong>Reason:</strong> {feedback}"
+
+                Comment.objects.create(
+                    comment=comment_text,
+                    ticket=ticket,
+                    employee_id=reviewer_employee,
+                )
+            except Exception as exc:
+                logger.error("ISO review comment creation error: %s", exc)
+
             # In-app notification to requestor
             try:
                 notify.send(
@@ -2053,9 +2128,41 @@ def iso_review_password_reset(request, pr_id):
             except Exception as exc:
                 logger.error("ISO review notify error: %s", exc)
 
-            # Email requestor
+            # In-app notification to other ISO officers about the review
             try:
-                mail_thread = TicketSendThread(request, ticket, type="status_change")
+                status_text = "approved" if action == "approve" else "rejected"
+                other_admins = list(
+                    User.objects.filter(is_superuser=True, is_active=True)
+                    .exclude(pk=request.user.pk)
+                )
+                if other_admins:
+                    notify.send(
+                        request.user.employee_get,
+                        recipient=other_admins,
+                        verb=(
+                            f"Password reset request by {requestor.get_full_name()} "
+                            f"for {pr_request.platform} has been {status_text}."
+                        ),
+                        verb_ar="تم مراجعة طلب إعادة تعيين كلمة المرور.",
+                        verb_de="Der Passwort-Zurücksetzungsantrag wurde überprüft.",
+                        verb_es="La solicitud de restablecimiento de contraseña ha sido revisada.",
+                        verb_fr="La demande de réinitialisation de mot de passe a été examinée.",
+                        icon="key",
+                        redirect=reverse("ticket-detail", kwargs={"ticket_id": ticket.id}),
+                    )
+            except Exception as exc:
+                logger.error("ISO review notify to admins error: %s", exc)
+
+            # Email notification to requestor and ISO officers
+            try:
+                mail_thread = PasswordResetMailThread(
+                    request,
+                    ticket,
+                    type="iso_review",
+                    pr_request=pr_request,
+                    action=action,
+                    feedback=feedback,
+                )
                 mail_thread.start()
             except Exception as exc:
                 logger.error("ISO review mail error: %s", exc)

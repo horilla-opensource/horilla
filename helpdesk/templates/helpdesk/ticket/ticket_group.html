@@ -2,6 +2,7 @@
 {% load basefilters %}
 {% load static %}
 {% load mathfilters %}
+{% load helpdeskfilters %}
 {% load i18n %} {% include 'filter_tags.html' %}
 <!-- start of contents -->
 <div class="oh-tabs__contents" id="view-container">
@@ -150,6 +151,7 @@
                                                             >
                                                                 <ion-icon name="eye-outline"></ion-icon>
                                                             </a>
+                                                            {% if not ticket|has_reviewed_password_reset %}
                                                             <button
                                                                 class="oh-btn oh-btn--light-bkg w-50"
                                                                 title="{% trans 'Edit' %}"
@@ -160,6 +162,7 @@
                                                             >
                                                                 <ion-icon name="create-outline"></ion-icon>
                                                             </button>
+                                                            {% endif %}
                                                             <form
                                                                 action="{% url 'ticket-delete' ticket.id %}"
                                                                 class="w-50"
@@ -479,6 +482,7 @@
                                                             >
                                                                 <ion-icon name="eye-outline"></ion-icon>
                                                             </a>
+                                                            {% if not ticket|has_reviewed_password_reset %}
                                                             <button
                                                                 class="oh-btn oh-btn--light-bkg w-50"
                                                                 title="{% trans 'Edit' %}"
@@ -489,6 +493,7 @@
                                                             >
                                                                 <ion-icon name="create-outline"></ion-icon>
                                                             </button>
+                                                            {% endif %}
                                                             <form
                                                                 action="{% url 'ticket-delete' ticket.id %}"
                                                                 class="w-50"

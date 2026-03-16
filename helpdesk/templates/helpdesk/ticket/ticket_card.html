@@ -118,6 +118,7 @@
                                                     class="oh-dropdown__menu oh-dropdown__menu--right"
                                                 >
                                                     <ul class="oh-dropdown__items">
+                                                        {% if not ticket|has_reviewed_password_reset %}
                                                         <li
                                                             class="oh-dropdown__item"
                                                         >
@@ -135,6 +136,7 @@
                                                                 >{% trans "Edit" %}</a
                                                             >
                                                         </li>
+                                                        {% endif %}
                                                         <li
                                                             class="oh-dropdown__item"
                                                         >
@@ -375,7 +377,7 @@
                                             >{{ticket.created_date}}</span
                                         >
                                         </div>
-									    {% if perms.helpdesk.change_ticket or perms.helpdesk.delete_ticket or request.user.employee_get|is_department_manager:ticket %}
+								    {% if perms.helpdesk.change_ticket or perms.helpdesk.delete_ticket or request.user.employee_get|is_department_manager:ticket %}
 
                                             <div
                                                 class="oh-kanban__card-actions oh-kanban__dropdown"
@@ -401,6 +403,7 @@
                                                     >
                                                         <ul class="oh-dropdown__items">
                                                             {% if perms.helpdesk.change_ticket or request.user.employee_get|is_department_manager:ticket  %}
+                                                                {% if not ticket|has_reviewed_password_reset %}
                                                                 <li
                                                                     class="oh-dropdown__item"
                                                                 >
@@ -418,6 +421,7 @@
                                                                         >{% trans "Edit" %}</a
                                                                     >
                                                                 </li>
+                                                                {% endif %}
                                                             {% endif %}
                                                             {% if perms.helpdesk.change_ticket or request.user.employee_get|is_department_manager:ticket %}
                                                                 {% if ticket.is_active %}
