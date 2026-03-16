@@ -56,8 +56,16 @@ def survey_form(request):
     """
     This method is used to render survey wform
     """
-    recruitment_id = request.GET["recId"]
-    recruitment = Recruitment.objects.get(id=recruitment_id)
+    recruitment_id = request.GET.get("recId")
+    recruitment = Recruitment.find(recruitment_id)
+    if not recruitment_id or not recruitment:
+        message = (
+            _("Missing Recruitment ID")
+            if not recruitment_id
+            else _("No Recruitment found matching the query.")
+        )
+        return HorillaRedirect(request, message=message)
+
     form = SurveyForm(recruitment=recruitment).form
     return render(request, "survey/form.html", {"form": form})
 
@@ -69,7 +77,14 @@ def survey_preview(request, pk=None):
     Used to render survey form to the candidate
     """
     title = request.GET.get("title")
-    template = SurveyTemplate.objects.get(title=title)
+    template = SurveyTemplate.objects.filter(title=title).first()
+    if not title or not template:
+        message = (
+            _("Missing Survey Template Title")
+            if not title
+            else _("No Survey Template found matching the query.")
+        )
+        return HorillaRedirect(request, message=message)
 
     form = SurveyPreviewForm(template=template).form
     return render(

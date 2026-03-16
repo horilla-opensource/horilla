@@ -78,6 +78,9 @@
                     $("#id_contract_end_date").val(data.contract_end_date);
                     document.getElementById("id_contract_end_date").dispatchEvent(change)
                 },
+                error: () => {
+                    reloadMessage()
+                }
             });
         }
 

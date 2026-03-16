@@ -113,6 +113,9 @@ function payslipBulkDelete() {
                             // console.log("Unexpected HTTP status:", jqXHR.status);
                         }
                     },
+                    error: () => {
+                        reloadMessage()
+                    }
                 });
             }
         });

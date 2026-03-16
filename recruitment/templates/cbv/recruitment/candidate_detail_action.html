@@ -9,9 +9,9 @@
         <a class="oh-btn oh-btn--success w-50" title="{% trans 'View' %}" href="{% url 'candidate-view-individual' instance.id %}"><ion-icon name="eye-outline"></ion-icon></a>
     {% endif %}
     {% if perms.recruitment.delete_candidate %}
-        <a       
+        <a
             class="oh-btn oh-btn--danger w-50"
-            title="{% trans 'Delete' %}" 
+            title="{% trans 'Delete' %}"
             hx-get="{% url 'generic-delete' %}?model=recruitment.Candidate&pk={{instance.id}}"
             hx-target="#deleteConfirmationBody"
             data-toggle="oh-modal-toggle"

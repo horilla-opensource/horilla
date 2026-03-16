@@ -2,7 +2,7 @@
 <div class="oh-input__group">
     <div style="display: flex;">
         <label class="oh-input__label" for="{{ form.is_enable.id_for_label }}">{% trans 'Tracking Enable' %}</label>
-        <span class="oh-info mt-2" title="{{form.is_enable.help_text|safe }}"></span>
+        <span class="oh-info mt-2" title="{{form.is_enable.help_text }}"></span>
     </div>
     <div class="oh-switch p-2 pt-0">
         {{ form.is_enable|add_class:"oh-switch__checkbox" }}

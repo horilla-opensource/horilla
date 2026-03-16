@@ -126,7 +126,7 @@
 				personalChart(dataSet, labels);
 			},
 			error: function (response) {
-				console.log("error");
+				reloadMessage()
 			},
 		});
 
@@ -162,7 +162,7 @@
 					personalChart_one(dataSet, labels);
 				},
 				error: function (response) {
-					console.log("error");
+					reloadMessage()
 				},
 			});
 		});
@@ -204,7 +204,7 @@
 					personalChart_one(dataSet, labels);
 				},
 				error: function (response) {
-					console.log("error");
+					reloadMessage()
 				},
 			});
 		});
@@ -217,7 +217,6 @@
 					emp_id: {{emp_id}},
 					year: year,
 					week: myWeek,
-					week: myWeek,
 					month: month,
 					selected: $("#personalTimesheetSelect").val(),
 				},
@@ -229,7 +228,7 @@
 					personalChart_one(dataSet, labels);
 				},
 				error: function (response) {
-					console.log("error");
+					reloadMessage()
 				},
 			});
 		});

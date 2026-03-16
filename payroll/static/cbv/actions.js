@@ -54,6 +54,9 @@ function DeleteContractBulk() {
                             // console.log("Unexpected HTTP status:", jqXHR.status);
                         }
                     },
+                    error: () => {
+                        reloadmessage()
+                    }
                 });
             }
         });

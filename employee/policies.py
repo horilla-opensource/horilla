@@ -135,15 +135,19 @@ def add_attachment(request):
     """
     This method is used to add attachment to policy
     """
+    policy = Policy.find(request.GET.get("policy_id"))
+    if not policy:
+        return HorillaRedirect(
+            request, message=_("No Policy found matching the query.")
+        )
+
     files = request.FILES.getlist("files")
-    policy_id = request.GET["policy_id"]
     attachments = []
     for file in files:
         attachment = PolicyMultipleFile()
         attachment.attachment = file
         attachment.save()
         attachments.append(attachment)
-    policy = Policy.objects.get(id=policy_id)
     policy.attachments.add(*attachments)
     messages.success(request, "Attachments added")
     return render(request, "policies/attachments.html", {"policy": policy})
@@ -155,9 +159,13 @@ def remove_attachment(request):
     """
     This method is used to remove the attachments
     """
+    policy = Policy.find(request.GET.get("policy_id"))
+    if not policy:
+        return HorillaRedirect(
+            request, message=_("No Policy found matching the query.")
+        )
+
     ids = request.GET.getlist("ids")
-    policy_id = request.GET["policy_id"]
-    policy = Policy.objects.get(id=policy_id)
     PolicyMultipleFile.objects.filter(id__in=ids).delete()
     return render(request, "policies/attachments.html", {"policy": policy})
 
@@ -167,8 +175,12 @@ def get_attachments(request):
     """
     This method is used to view all the attachments inside the policy
     """
-    policy = request.GET["policy_id"]
-    policy = Policy.objects.get(id=policy)
+    policy = Policy.find(request.GET.get("policy_id"))
+    if not policy:
+        return HorillaRedirect(
+            request, message=_("No Policy found matching the query.")
+        )
+
     return render(request, "policies/attachments.html", {"policy": policy})
 
 
@@ -411,9 +423,8 @@ def action_type_details(request):
     """
     This method is used to get the action type by the selection of title in the form.
     """
-    action_id = request.POST["action_type"]
-    action = Actiontype.objects.get(id=action_id)
-    action_type = action.action_type
+    action = Actiontype.find(request.POST.get("action_type"))
+    action_type = action.action_type if action else ""
     return JsonResponse({"action_type": action_type})
 
 
@@ -422,7 +433,7 @@ def action_type_name(request):
     """
     This method is used to get the action type name by the selection of type in the form.
     """
-    action_type = request.POST["action_type"]
+    action_type = request.POST.get("action_type")
     return JsonResponse({"action_type": action_type})
 
 

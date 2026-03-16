@@ -1279,8 +1279,7 @@ class BulkAttendanceRequestForm(BaseModelForm):
                 instance.is_bulk_request = True
                 if batch:
                     instance.batch_attendance_id = batch
-                if date not in self.to_update_dates:
-                    instance.save()
+                instance.save()
             else:
                 logger(form.errors)
         instance = super().save(commit=False)
