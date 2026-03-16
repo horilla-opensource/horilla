@@ -427,7 +427,14 @@ def get_template(request, obj_id=None):
     """
     body = ""
     if obj_id:
-        body = HorillaMailTemplate.objects.get(id=obj_id).body
+        body = (
+            HorillaMailTemplate.find(obj_id).body
+            if HorillaMailTemplate.find(obj_id)
+            else None
+        )
+        if not body:
+            return JsonResponse({"body": None})
+
         template_bdy = template.Template(body)
     if request.GET.get("word"):
         word = request.GET.get("word")
