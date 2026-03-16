@@ -775,6 +775,12 @@ def check_employee_joining_date(employee, attendance_date):
     ).first()
 
     if not emp_info:
-        return False
+        return "no_work_info"
 
-    return emp_info.date_joining <= attendance_date
+    elif not emp_info.date_joining:
+        return "no_joining_date"
+
+    elif emp_info.date_joining > attendance_date:
+        return "before_joining"
+
+    return True

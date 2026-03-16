@@ -39,7 +39,9 @@
     </tr>
     {% for key, diff in data.items %}
     <tr>
+        {% if key != 'Work Type' and key != 'Minimum hour' and key != 'Batch Attendance' %}
         <td class="pt-2 pb-2">{{key}}</td>
+        {% endif %}
         {% if key == 'Check-Out Date' or key == 'Attendance date' or key == 'Check-In Date'%}
         {% if diff.0 == 'None' %}
         <td class="p-2 ml-2 dateformat_changer">{% if diff.0 %}{{diff.0}}{% endif %}</td>
@@ -75,9 +77,12 @@
         <td class="p-2 ml-2 timeformat_changer">{{diff.1}},</td>
         {% endif %}
         {% else %}
+        {% if key != 'Work Type' and key != 'Minimum hour' and key != 'Batch Attendance' %}
         <td class="p-2 ml-2">{% if diff.0 %}{{diff.0}}{% endif %}</td>
         <td class="p-2 ml-2">{{diff.1}}</td>
         {% endif %}
+        {% endif %}
+
     </tr>
     {% endfor %}
     <tr>

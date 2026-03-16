@@ -401,7 +401,6 @@ def ticket_view(request):
     previous_data = request.GET.urlencode()
     my_page_number = request.GET.get("my_page")
     all_page_number = request.GET.get("all_page")
-    allocated_page_number = request.GET.get("allocated_page")
 
     my_tickets = tickets.filter(employee_id=employee) | tickets.filter(
         created_by=request.user
@@ -411,25 +410,6 @@ def ticket_view(request):
         all_tickets = filtersubordinates(request, tickets, "helpdesk.view_ticket")
     if request.user.has_perm("helpdesk.view_ticket"):
         all_tickets = tickets
-    allocated_tickets = []
-    ticket_list = tickets.filter(is_active=True)
-    user = request.user.employee_get
-    if hasattr(user, "employee_work_info"):
-        department = user.employee_work_info.department_id
-        job_position = user.employee_work_info.job_position_id
-        if department:
-            tickets_items = ticket_list.filter(
-                raised_on=department.id, assigning_type="department"
-            )
-            allocated_tickets += tickets_items
-        if job_position:
-            tickets_items = ticket_list.filter(
-                raised_on=job_position.id, assigning_type="job_position"
-            )
-            allocated_tickets += tickets_items
-
-    tickets_items = ticket_list.filter(raised_on=user.id, assigning_type="individual")
-    allocated_tickets += tickets_items
 
     data_dict = parse_qs(previous_data)
     get_key_instances(Ticket, data_dict)
@@ -437,7 +417,6 @@ def ticket_view(request):
     context = {
         "my_tickets": paginator_qry(my_tickets, my_page_number),
         "all_tickets": paginator_qry(all_tickets, all_page_number),
-        "allocated_tickets": paginator_qry(allocated_tickets, allocated_page_number),
         "f": TicketFilter(request.GET),
         "gp_fields": TicketReGroup.fields,
         "ticket_status": TICKET_STATUS,
@@ -765,26 +744,6 @@ def ticket_delete(request, ticket_id):
     return HttpResponseRedirect(request.META.get("HTTP_REFERER", "/"))
 
 
-def get_allocated_tickets(request):
-    user = request.user.employee_get
-    department = user.employee_work_info.department_id
-    job_position = user.employee_work_info.job_position_id
-
-    tickets_items1 = Ticket.objects.filter(
-        is_active=True, raised_on=department.id, assigning_type="department"
-    )
-    # allocated_tickets += tickets_items
-    tickets_items2 = Ticket.objects.filter(
-        is_active=True, raised_on=job_position.id, assigning_type="job_position"
-    )
-    # allocated_tickets += tickets_items
-    tickets_items3 = Ticket.objects.filter(
-        is_active=True, raised_on=user.id, assigning_type="individual"
-    )
-    # allocated_tickets += tickets_items
-    allocated_tickets = tickets_items1 | tickets_items2 | tickets_items3
-    return allocated_tickets
-
 
 @login_required
 @hx_request_required
@@ -803,9 +762,6 @@ def ticket_filter(request):
     tickets = TicketFilter(request.GET).qs
     my_page_number = request.GET.get("my_page")
     all_page_number = request.GET.get("all_page")
-    allocated_page_number = request.GET.get("allocated_page")
-    tickets_items1 = Ticket.objects.none()
-    tickets_items2 = Ticket.objects.none()
 
     my_tickets = tickets.filter(employee_id=request.user.employee_get) | tickets.filter(
         created_by=request.user
@@ -816,38 +772,13 @@ def ticket_filter(request):
     if request.user.has_perm("helpdesk.view_ticket"):
         all_tickets = tickets
 
-    allocated_tickets = Ticket.objects.none()
-    user = request.user.employee_get
-    department = user.employee_work_info.department_id
-    job_position = user.employee_work_info.job_position_id
-    ticket_list = tickets.filter(is_active=True)
-
-    if hasattr(user, "employee_work_info"):
-        department = user.employee_work_info.department_id
-        job_position = user.employee_work_info.job_position_id
-        if department:
-            tickets_items1 = ticket_list.filter(
-                raised_on=department.id, assigning_type="department"
-            )
-        if job_position:
-            tickets_items2 = ticket_list.filter(
-                raised_on=job_position.id, assigning_type="job_position"
-            )
-
-    tickets_items3 = ticket_list.filter(raised_on=user.id, assigning_type="individual")
-
     template = "helpdesk/ticket/ticket_list.html"
 
     if request.GET.get("view") == "card":
         template = "helpdesk/ticket/ticket_card.html"
-    allocated_tickets = (
-        list(tickets_items1) + list(tickets_items2) + list(tickets_items3)
-    )
     if request.GET.get("sortby"):
         all_tickets = sortby(request, all_tickets, "sortby")
         my_tickets = sortby(request, my_tickets, "sortby")
-        allocated_tickets = tickets_items1 | tickets_items2 | tickets_items3
-        allocated_tickets = sortby(request, allocated_tickets, "sortby")
 
     field = request.GET.get("field")
     if field != "" and field is not None:
@@ -857,30 +788,16 @@ def ticket_filter(request):
         all_tickets = group_by_queryset(
             all_tickets, field, request.GET.get("all_page"), "all_page"
         )
-        tickets_items1 = group_by_queryset(
-            tickets_items1, field, request.GET.get("allocated_page"), "allocated_page"
-        )
-        tickets_items2 = group_by_queryset(
-            tickets_items2, field, request.GET.get("allocated_page"), "allocated_page"
-        )
-        tickets_items3 = group_by_queryset(
-            tickets_items3, field, request.GET.get("allocated_page"), "allocated_page"
-        )
         template = "helpdesk/ticket/ticket_group.html"
-        allocated_tickets = (
-            list(tickets_items1) + list(tickets_items2) + list(tickets_items3)
-        )
     else:
         my_tickets = paginator_qry(my_tickets, my_page_number)
         all_tickets = paginator_qry(all_tickets, all_page_number)
-        allocated_tickets = paginator_qry(allocated_tickets, allocated_page_number)
 
     data_dict = parse_qs(previous_data)
     get_key_instances(Ticket, data_dict)
     context = {
         "my_tickets": my_tickets,
         "all_tickets": all_tickets,
-        "allocated_tickets": allocated_tickets,
         "f": TicketFilter(request.GET),
         "pd": previous_data,
         "ticket_status": TICKET_STATUS,
@@ -1244,22 +1161,40 @@ def comment_create(request, ticket_id):
     """
     if request.method == "POST":
         ticket = Ticket.objects.get(id=ticket_id)
-        c_form = CommentForm(request.POST)
-        if c_form.is_valid():
-            comment = c_form.save(commit=False)
-            comment.employee_id = request.user.employee_get
-            comment.ticket = ticket
-            comment.save()
-            if request.FILES:
-                f_form = AttachmentForm(request.FILES)
-                if f_form.is_valid():
+        comment_text = request.POST.get("comment", "").strip()
+        has_files = bool(request.FILES)
+
+        if comment_text:
+            c_form = CommentForm(request.POST)
+            if c_form.is_valid():
+                comment = c_form.save(commit=False)
+                comment.employee_id = request.user.employee_get
+                comment.ticket = ticket
+                comment.save()
+                if has_files:
                     files = request.FILES.getlist("file")
                     for file in files:
                         a_form = AttachmentForm(
                             {"file": file, "comment": comment, "ticket": ticket}
                         )
                         a_form.save()
-            messages.success(request, _("A new comment has been created."))
+                messages.success(request, _("A new comment has been created."))
+        elif has_files:
+            comment = Comment(
+                employee_id=request.user.employee_get,
+                ticket=ticket,
+            )
+            comment.save()
+            files = request.FILES.getlist("file")
+            file_names = ", ".join(f.name for f in files)
+            comment.comment = _("Attached document(s): {}").format(file_names)
+            comment.save()
+            for file in files:
+                a_form = AttachmentForm(
+                    {"file": file, "comment": comment, "ticket": ticket}
+                )
+                a_form.save()
+            messages.success(request, _("Document(s) uploaded successfully."))
     return redirect(ticket_detail, ticket_id=ticket_id)
 
 
@@ -1298,8 +1233,32 @@ def get_raised_on(request):
     """
     This is an ajax method to return list for raised on field.
     """
+    from django.contrib.auth.models import Group
+
     data = request.GET
     assigning_type = data["assigning_type"]
+
+    is_password_reset = False
+    ticket_id = data.get("ticket_id")
+    ticket_type_id = data.get("ticket_type_id")
+
+    if ticket_id:
+        try:
+            ticket = Ticket.objects.select_related("ticket_type").get(id=ticket_id)
+            if hasattr(ticket, "password_reset_request"):
+                is_password_reset = True
+        except Ticket.DoesNotExist:
+            pass
+
+    if not is_password_reset and ticket_type_id:
+        try:
+            tt = TicketType.objects.get(id=ticket_type_id)
+            if tt.title == "Password Reset":
+                is_password_reset = True
+        except (TicketType.DoesNotExist, ValueError):
+            pass
+
+    raised_on = []
 
     if assigning_type == "department":
         # Retrieve data from the Department model and format it as a list of dictionaries
@@ -1313,9 +1272,24 @@ def get_raised_on(request):
             {"id": job["id"], "name": job["job_position"]} for job in jobpositions
         ]
     elif assigning_type == "individual":
-        employees = Employee.objects.values(
-            "id", "employee_first_name", "employee_last_name"
-        )
+        if is_password_reset:
+            # Only show employees who belong to the "ISO Officer" group
+            iso_group = Group.objects.filter(name="ISO Officer").first()
+            if iso_group:
+                employees = Employee.objects.filter(
+                    employee_user_id__groups=iso_group,
+                    is_active=True,
+                ).values("id", "employee_first_name", "employee_last_name")
+            else:
+                # Fallback: if the group doesn't exist, show only superusers
+                employees = Employee.objects.filter(
+                    employee_user_id__is_superuser=True,
+                    is_active=True,
+                ).values("id", "employee_first_name", "employee_last_name")
+        else:
+            employees = Employee.objects.values(
+                "id", "employee_first_name", "employee_last_name"
+            )
         raised_on = [
             {
                 "id": employee["id"],
@@ -1457,9 +1431,6 @@ def tickets_select_filter(request):
             tickets_filter = TicketFilter(
                 filters, queryset=Ticket.objects.filter(employee_id=user)
             )
-        else:
-            allocated_tickets = get_allocated_tickets(request)
-            tickets_filter = TicketFilter(filters, queryset=allocated_tickets)
 
         # Get the filtered queryset
         filtered_tickets = tickets_filter.qs
@@ -1930,7 +1901,8 @@ def password_reset_request_create(request):
                 raised_on = str(employee.id)
 
             ticket_type = _get_password_reset_ticket_type()
-            deadline = (timezone.now() + timedelta(days=7)).date()
+            priority = form.cleaned_data.get("priority", "medium")
+            deadline = form.cleaned_data.get("deadline") or (timezone.now() + timedelta(days=7)).date()
 
             platform = form.cleaned_data["platform"]
             selected_employee = form.cleaned_data["employee"]
@@ -1938,12 +1910,15 @@ def password_reset_request_create(request):
             try:
                 user_email = selected_employee.employee_work_info.company_email or ""
             except Exception:
-                user_email = str(selected_employee)
+                user_email = ""
+            user_display = str(selected_employee)
+            if user_email and user_email not in user_display:
+                user_display = f"{user_display} ({user_email})"
             description = (
-                f"Password Reset Request\n"
-                f"Platform: {platform}\n"
-                f"User: {selected_employee} ({user_email})\n"
-                f"Reason: {reason}"
+                f"<b>Password Reset Request Details:</b><br><br>"
+                f"<b>Platform:</b> {platform}<br>"
+                f"<b>User:</b> {user_display}<br>"
+                f"<b>Reason:</b> {reason}"
             )[:255]
 
             ticket = Ticket(
@@ -1951,7 +1926,7 @@ def password_reset_request_create(request):
                 employee_id=employee,
                 ticket_type=ticket_type,
                 description=description,
-                priority="high",
+                priority=priority,
                 assigning_type=assigning_type,
                 raised_on=raised_on,
                 deadline=deadline,
@@ -2037,7 +2012,29 @@ def password_reset_request_update(request, pr_id):
             return HttpResponse("<script>window.location.reload()</script>")
         form = PasswordResetRequestForm(request.POST, instance=pr_request, request=request)
         if form.is_valid():
-            form.save()
+            pr_request = form.save()
+
+            # Update priority and deadline on the linked ticket
+            ticket.priority = form.cleaned_data.get("priority")
+            ticket.deadline = form.cleaned_data.get("deadline")
+
+            # Update the linked ticket's title and description to reflect edits
+            platform = form.cleaned_data["platform"]
+            selected_employee = form.cleaned_data["employee"]
+            reason = form.cleaned_data["reason"]
+            try:
+                user_email = selected_employee.employee_work_info.company_email or ""
+            except Exception:
+                user_email = str(selected_employee)
+            ticket.title = f"Password Reset – {platform}"
+            ticket.description = (
+                f"Password Reset Request<br>"
+                f"Platform: {platform}<br>"
+                f"User: {selected_employee} ({user_email})<br>"
+                f"Reason: {reason}"
+            )[:255]
+            ticket.save()
+
             messages.success(request, _("Password reset request updated successfully."))
             return HttpResponse("<script>window.location.reload()</script>")
 
@@ -2178,6 +2175,53 @@ def iso_review_password_reset(request, pr_id):
 
 
 @login_required
+def password_reset_request_withdraw(request, pr_id):
+    """
+    Allow the ticket owner to withdraw their own PENDING Password Reset request.
+    The request and its associated ticket are deleted from the system.
+    """
+    if request.method != "POST":
+        return HttpResponseRedirect(request.META.get("HTTP_REFERER", "/"))
+
+    try:
+        pr_request = PasswordResetRequest.objects.get(id=pr_id)
+    except PasswordResetRequest.DoesNotExist:
+        messages.error(request, _("Password reset request not found."))
+        return HttpResponseRedirect(request.META.get("HTTP_REFERER", "/"))
+
+    ticket = pr_request.ticket
+
+    # Only the request owner can withdraw
+    current_employee = getattr(request.user, "employee_get", None)
+    if current_employee != ticket.employee_id:
+        messages.info(request, _("You don't have permission to withdraw this request."))
+        return HttpResponseRedirect(request.META.get("HTTP_REFERER", "/"))
+
+    # Only PENDING requests can be withdrawn
+    if pr_request.iso_status != "PENDING":
+        messages.info(
+            request,
+            _("This request has already been reviewed and cannot be withdrawn."),
+        )
+        return HttpResponseRedirect(request.META.get("HTTP_REFERER", "/"))
+
+    platform = pr_request.platform
+    ticket_title = str(ticket)
+
+    # Delete the request and ticket
+    pr_request.delete()
+    ticket.delete()
+
+    messages.success(
+        request,
+        _('Your password reset request "{}" has been withdrawn successfully.').format(
+            ticket_title
+        ),
+    )
+    return HttpResponseRedirect(request.META.get("HTTP_REFERER", "/"))
+
+
+@login_required
 def password_reset_request_delete(request, pr_id):
     """
     Superuser-only: delete a Password Reset request and its associated ticket.
@@ -2227,4 +2271,3 @@ def password_reset_request_delete(request, pr_id):
             messages.error(request, _("You cannot delete this password reset request."))
 
     return HttpResponseRedirect(request.META.get("HTTP_REFERER", "/"))
-

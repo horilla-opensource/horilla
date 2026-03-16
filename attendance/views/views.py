@@ -238,6 +238,28 @@ def attendance_create(request):
             return HttpResponse(
                 response.content.decode("utf-8") + "<script>location.reload();</script>"
             )
+        else:
+            show_compensation = False
+            compensation_form = None
+            attendance_date = request.POST.get("attendance_date")
+            if attendance_date:
+                try:
+                    parsed_date = datetime.strptime(attendance_date, "%Y-%m-%d").date()
+                    result = is_mercantile_or_poya_holiday(parsed_date)
+                    show_compensation = result.get("is_mercantile_holiday", False)
+                    if show_compensation:
+                        compensation_form = AttendanceForm()
+                except (ValueError, TypeError):
+                    pass
+            return render(
+                request,
+                "attendance/attendance/form.html",
+                {
+                    "form": form,
+                    "show_compensation": show_compensation,
+                    "compensation_form": compensation_form,
+                },
+            )
     return render(request, "attendance/attendance/form.html", {"form": form})
 
 
@@ -461,6 +483,30 @@ def attendance_update(request, obj_id):
                         window.location.reload();
                     </script>
                 """
+            )
+        else:
+            show_compensation = False
+            compensation_form = None
+            attendance_date = request.POST.get("attendance_date")
+            if attendance_date:
+                try:
+                    parsed_date = datetime.strptime(attendance_date, "%Y-%m-%d").date()
+                    result = is_mercantile_or_poya_holiday(parsed_date)
+                    show_compensation = result.get("is_mercantile_holiday", False)
+                    if show_compensation:
+                        compensation_form = AttendanceForm()
+                except (ValueError, TypeError):
+                    pass
+            return render(
+                request,
+                "attendance/attendance/update_form.html",
+                {
+                    "form": form,
+                    "urlencode": request.GET.urlencode(),
+                    "obj_id": obj_id,
+                    "show_compensation": show_compensation,
+                    "compensation_form": compensation_form,
+                },
             )
     return render(
         request,

@@ -278,7 +278,9 @@
                     {% else %}
                     <div class="oh-helpdesk__chat-update">
                         <span>{{item.history.updated_by}} {% trans "changed the ticket " %}{{item.history.changes.0.field|safe}} {% trans " from" %}
-                            <strong>{{item.history.changes.0.old|safe}}</strong> {% trans "to" %}
+                            <strong>{{item.history.changes.0.old|safe}}</strong>
+                            <br><br>
+                            {% trans "to" %}
                             <strong>{{item.history.changes.0.new|safe}}</strong></span>
                         <span>{{ item.history.pair.0.history_date}}</span>
                     </div>
@@ -287,6 +289,7 @@
                     {% endfor %}
                 </div>
             </div>
+            {% if not password_reset_request %}
             {% if perms.helpdesk.add_comment or request.user.employee_get == ticket.employee_id or request.user.employee_get in ticket.assigned_to.all %}
             <div class="oh-helpdesk__chatbox">
                 <form name="comment-form" action="{% url 'comment-create' ticket.id %}" method="POST"
@@ -320,6 +323,7 @@
                     });
                 </script>
             </div>
+            {% endif %}
             {% endif %}
             <!-- end of comment box. -->
         </div>
@@ -523,15 +527,16 @@
                         <span class="oh-helpdesk__card-title">{% trans "Documents" %}</span>
 
                         {% if perms.helpdesk.add_comment or request.user.employee_get == ticket.employee_id or request.user.employee_get in ticket.assigned_to.all %}
-                            <form name="comment-form" action="{% url 'comment-create' ticket.id %}" method="POST"
+                            <form name="document-upload-form" id="documentUploadForm" action="{% url 'comment-create' ticket.id %}" method="POST"
                                 enctype="multipart/form-data" class="oh-chat oh-chat__input-wrapper"
                                 style="display: flex; align-items: center; gap: 10px;">
                                 {% csrf_token %}
 
-                                <input name="file" multiple="True" type="file" id="fileUpload" class="d-none" />
+                                <input name="file" multiple="True" type="file" id="fileUpload2" class="d-none"
+                                    onchange="if(this.files.length > 0){ this.closest('form').submit(); }" />
 
                                 <!-- Attachment Button -->
-                                <label for="fileUpload" aria-label="Attach Files"
+                                <label for="fileUpload2" aria-label="Attach Files"
                                     class="oh-btn oh-btn--chat oh-btn--chat-attachments"
                                     style="position: relative; cursor: pointer;">
                                     <!-- File count badge -->
@@ -631,18 +636,23 @@
         // No additional code is needed here, HTMX will handle the request automatically
     }
 
-    document.getElementById('fileUpload').addEventListener('change', function () {
-        const fileCount = this.files.length;
-        const countSpan = document.getElementById('fileCount');
-        if (fileCount > 0) {
-            countSpan.textContent = fileCount;
-            countSpan.style.display = 'inline-block'; // Show the badge
-        } else {
-            countSpan.style.display = 'none'; // Hide if no files are selected
-        }
-    });
+    var fileUploadEl = document.getElementById('fileUpload');
+    if (fileUploadEl) {
+        fileUploadEl.addEventListener('change', function () {
+            const fileCount = this.files.length;
+            const countSpan = document.getElementById('fileCount');
+            if (fileCount > 0) {
+                countSpan.textContent = fileCount;
+                countSpan.style.display = 'inline-block'; // Show the badge
+            } else {
+                countSpan.style.display = 'none'; // Hide if no files are selected
+            }
+        });
+    }
 
-    document.getElementById('fileUpload2').addEventListener('change', function () {
+    var fileUpload2El = document.getElementById('fileUpload2');
+    if (fileUpload2El) {
+    fileUpload2El.addEventListener('change', function () {
         const fileCount = this.files.length;
         const countSpandoc = document.getElementById('fileCount1');
         if (fileCount > 0) {
@@ -652,6 +662,7 @@
             countSpandoc.style.display = 'none'; // Hide if no files are selected
         }
     });
+    }
 </script>
 
 <script>

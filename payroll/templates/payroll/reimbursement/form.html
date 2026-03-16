@@ -17,30 +17,51 @@
 
         {{form.as_p}}
 
-   {% if form.instance.pk %}
-       {% if form.instance.attachment %}
-            <div class="existing-attachments mt-6">
-                <p class="mb-3 mt-3 text-sm font-semibold text-gray-700">Attachment</p>
-
-                <div class="flex flex-wrap gap-3">
-                    {# Primary attachment always shown as 1 #}
-
-                        <div class="group relative rounded-xl border border-gray-200 bg-gradient-to-br from-white to-gray-50 p-4 shadow-sm hover:shadow-md transition-all duration-200 hover:border-blue-300">
-                            <div class="flex items-center gap-4">
-
-                                <a href="{{ form.instance.attachment.url }}"
-                                   target="_blank"
-                                   class="flex items-center gap-1.5 px-4 py-2 bg-blue-600 hover:bg-blue-700 text-black text-sm font-medium rounded-lg transition-colors duration-200 shadow-sm hover:shadow">
-                                    View
-                                </a>
-                            </div>
-                        </div>
-
-
+        {% if temp_attachment_paths %}
+            <input type="hidden" name="temp_attachment_paths" value="{{ temp_attachment_paths }}">
+            <input type="hidden" name="temp_attachment_names" value="{{ temp_attachment_names|join:',' }}">
+            <div class="col-12 col-md-6 mt-2">
+                <div class="oh-label__info">
+                    <label class="oh-label">{% trans "Uploaded Attachments" %}</label>
+                </div>
+                <div class="d-flex flex-wrap gap-2 align-items-center" style="padding: 6px 0;">
+                    {% for name in temp_attachment_names %}
+                        <span style="display:inline-flex; align-items:center; background:#e8f4fd; border:1px solid #b8daff; border-radius:4px; padding:4px 10px; font-size:13px;">
+                            <ion-icon name="document-attach-outline" style="margin-right:5px;"></ion-icon>
+                            {{ name }}
+                        </span>
+                    {% endfor %}
                 </div>
             </div>
-                        {% endif %}
         {% endif %}
+
+   {% if form.instance.pk %}
+       {% if form.instance.attachment or form.instance.other_attachments.count %}
+            <div class="col-12 mt-3 mb-2">
+                <div class="oh-label__info">
+                    <label class="oh-label">{% trans "Current Attachments" %}</label>
+                </div>
+                <div class="d-flex flex-wrap gap-2" style="padding: 6px 0;">
+                    {% if form.instance.attachment %}
+                        <a href="{{ form.instance.attachment.url }}" target="_blank"
+                           style="display:inline-flex; align-items:center; gap:6px; background:#f0f7ff; border:1px solid #c4d9f2; border-radius:6px; padding:6px 12px; font-size:13px; color:#1a56db; text-decoration:none; transition: background 0.15s;">
+                            <ion-icon name="document-attach-outline" style="font-size:16px;"></ion-icon>
+                            {{ form.instance.attachment.name|cut:"payroll/reimbursements/" }}
+                            <ion-icon name="open-outline" style="font-size:13px; opacity:0.6;"></ion-icon>
+                        </a>
+                    {% endif %}
+                    {% for att in form.instance.other_attachments.all %}
+                        <a href="{{ att.attachment.url }}" target="_blank"
+                           style="display:inline-flex; align-items:center; gap:6px; background:#f0f7ff; border:1px solid #c4d9f2; border-radius:6px; padding:6px 12px; font-size:13px; color:#1a56db; text-decoration:none; transition: background 0.15s;">
+                            <ion-icon name="document-attach-outline" style="font-size:16px;"></ion-icon>
+                            {{ att.attachment.name|cut:"payroll/reimbursements/" }}
+                            <ion-icon name="open-outline" style="font-size:13px; opacity:0.6;"></ion-icon>
+                        </a>
+                    {% endfor %}
+                </div>
+            </div>
+        {% endif %}
+    {% endif %}
 
 
     </form>
@@ -89,20 +110,5 @@
 <script>
     toggleReimbursmentType($("#objectCreateModalTarget [name=type]").first());
     removeHighlight();
-    var attachemntLabelElement = $(
-        "#objectCreateModalTarget [for=id_attachment]"
-    );
-    var attachemntlElement = $("#objectCreateModalTarget #id_attachment");
-    var attachemntParentlElement = $(
-        "#objectCreateModalTarget [for=id_attachment]"
-    ).parent();
-
-    // Detach both elements from the DOM
-    attachemntLabelElement.detach();
-    attachemntlElement.detach();
-    attachemntParentlElement.html("");
-    // Append them in the desired order
-    attachemntParentlElement.append(attachemntLabelElement);
-    attachemntParentlElement.append(attachemntlElement);
 </script>
 </div>

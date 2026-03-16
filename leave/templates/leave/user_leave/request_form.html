@@ -4,7 +4,9 @@
     <span hx-get="{% url 'user-request-filter' %}?{{ pd }}" hx-target="#userRequest" hx-trigger="load"
           hx-on-htmx-after-request="setTimeout(function () { reloadMessage(this); $('.oh-modal__close').click(); }, 1000);"></span>
 {% endif %}
-
+<script>
+    $("#objectUpdateModalTarget").empty();
+</script>
 <div class="oh-modal__dialog-header">
     <h2 class="oh-modal__dialog-title" id="editDialogDialog">
         {% trans "Create Leave Request" %}

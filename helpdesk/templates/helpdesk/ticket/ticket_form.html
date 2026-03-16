@@ -144,6 +144,7 @@
                 url: "/helpdesk/get-raised-on",
                 data: {
                     'assigning_type': assigning_type,
+                    'ticket_type_id': $('#id_ticket_type').val(),
                 },
                 success: function (response) {
                     var raised_on = response.raised_on;
@@ -177,6 +178,7 @@
                 url: "/helpdesk/get-raised-on",
                 data: {
                     assigning_type: assigning_type,
+                    ticket_type_id: $('#id_ticket_type').val(),
                 },
                 success: function (response) {
                     var raised_on = response.raised_on;

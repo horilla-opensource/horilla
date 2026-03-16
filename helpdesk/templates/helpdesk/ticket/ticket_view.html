@@ -126,14 +126,11 @@
 		<!-- start of contents -->
 		<div class="oh-tabs">
 			<ul class="oh-tabs__tablist">
-				<li class="oh-tabs__tab" data-target="#tab_1">
-					{% trans "My Tickets" %}
-				</li>
-				<li class="oh-tabs__tab" data-target="#tab_2">
-					{% trans "Suggested Tickets" %}
-				</li>
-				{% if request.user|is_reportingmanager or perms.helpdesk.view_ticket %}
-					<li class="oh-tabs__tab" data-target="#tab_3">
+			<li class="oh-tabs__tab" data-target="#tab_1">
+				{% trans "My Tickets" %}
+			</li>
+			{% if request.user|is_reportingmanager or perms.helpdesk.view_ticket %}
+					<li class="oh-tabs__tab" data-target="#tab_2">
 						{% trans "All Tickets" %}
 					</li>
 				{% endif %}

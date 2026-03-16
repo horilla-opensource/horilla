@@ -577,6 +577,7 @@ class Employee(models.Model):
                         username=username,
                         email=username,
                         password=password,
+                        is_new_employee=True,
                     )
 
                 self.employee_user_id = user

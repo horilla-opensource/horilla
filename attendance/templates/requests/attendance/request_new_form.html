@@ -51,7 +51,11 @@
                             {% endif %}
                         {% endfor %}
                     </div>
-                <div id="compensation-field-container" class="mt-3"></div>
+                <div id="compensation-field-container" class="mt-3">
+                    {% if show_compensation %}
+                        {% include "attendance/attendance/_compensation_field.html" with show_field=True form=compensation_form %}
+                    {% endif %}
+                </div>
                     <div class="d-flex flex-row-reverse">
                         <button type="submit" class="oh-btn oh-btn--secondary mt-2 mr-0 pl-4 pr-5 oh-btn--w-100-resp">
                             {% trans "Request" %}
