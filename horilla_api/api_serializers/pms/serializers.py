@@ -3,40 +3,45 @@ horilla_api/api_serializers/pms/serializers.py
 """
 
 from rest_framework import serializers
+
+from base.models import Company, Department, JobPosition
+from employee.models import Employee
 from pms.models import (
-    Period,
-    KeyResult,
-    Objective,
-    EmployeeObjective,
-    EmployeeKeyResult,
-    Comment,
-    QuestionTemplate,
-    Question,
-    QuestionOptions,
-    Feedback,
     AnonymousFeedback,
     Answer,
+    BonusPointSetting,
+    Comment,
+    EmployeeBonusPoint,
+    EmployeeKeyResult,
+    EmployeeObjective,
+    Feedback,
+    KeyResult,
     KeyResultFeedback,
     Meetings,
     MeetingsAnswer,
-    EmployeeBonusPoint,
-    BonusPointSetting,
+    Objective,
+    Period,
+    Question,
+    QuestionOptions,
+    QuestionTemplate,
 )
-from employee.models import Employee
-from base.models import Company, Department, JobPosition
 
 
 class PeriodSerializer(serializers.ModelSerializer):
     company_id = serializers.SerializerMethodField()
     company_id_ids = serializers.PrimaryKeyRelatedField(
-        queryset=Company.objects.all(), many=True, source="company_id", write_only=True, required=False
+        queryset=Company.objects.all(),
+        many=True,
+        source="company_id",
+        write_only=True,
+        required=False,
     )
 
     class Meta:
         model = Period
         fields = "__all__"
         extra_kwargs = {
-            'company_id': {'read_only': True},
+            "company_id": {"read_only": True},
         }
 
     def get_company_id(self, obj):
@@ -54,7 +59,10 @@ class PeriodSerializer(serializers.ModelSerializer):
 class KeyResultSerializer(serializers.ModelSerializer):
     company_id = serializers.SerializerMethodField()
     company_id_write = serializers.PrimaryKeyRelatedField(
-        queryset=Company.objects.all(), source="company_id", write_only=True, required=False
+        queryset=Company.objects.all(),
+        source="company_id",
+        write_only=True,
+        required=False,
     )
 
     class Meta:
@@ -73,28 +81,43 @@ class KeyResultSerializer(serializers.ModelSerializer):
 class ObjectiveSerializer(serializers.ModelSerializer):
     managers = serializers.SerializerMethodField()
     managers_ids = serializers.PrimaryKeyRelatedField(
-        queryset=Employee.objects.all(), many=True, source="managers", write_only=True, required=False
+        queryset=Employee.objects.all(),
+        many=True,
+        source="managers",
+        write_only=True,
+        required=False,
     )
     assignees = serializers.SerializerMethodField()
     assignees_ids = serializers.PrimaryKeyRelatedField(
-        queryset=Employee.objects.all(), many=True, source="assignees", write_only=True, required=False
+        queryset=Employee.objects.all(),
+        many=True,
+        source="assignees",
+        write_only=True,
+        required=False,
     )
     key_result_id = serializers.SerializerMethodField()
     key_result_id_ids = serializers.PrimaryKeyRelatedField(
-        queryset=KeyResult.objects.all(), many=True, source="key_result_id", write_only=True, required=False
+        queryset=KeyResult.objects.all(),
+        many=True,
+        source="key_result_id",
+        write_only=True,
+        required=False,
     )
     company_id = serializers.SerializerMethodField()
     company_id_write = serializers.PrimaryKeyRelatedField(
-        queryset=Company.objects.all(), source="company_id", write_only=True, required=False
+        queryset=Company.objects.all(),
+        source="company_id",
+        write_only=True,
+        required=False,
     )
 
     class Meta:
         model = Objective
         fields = "__all__"
         extra_kwargs = {
-            'managers': {'read_only': True},
-            'assignees': {'read_only': True},
-            'key_result_id': {'read_only': True},
+            "managers": {"read_only": True},
+            "assignees": {"read_only": True},
+            "key_result_id": {"read_only": True},
         }
 
     def get_managers(self, obj):
@@ -146,22 +169,32 @@ class ObjectiveSerializer(serializers.ModelSerializer):
 class EmployeeObjectiveSerializer(serializers.ModelSerializer):
     objective_id = serializers.SerializerMethodField()
     objective_id_write = serializers.PrimaryKeyRelatedField(
-        queryset=Objective.objects.all(), source="objective_id", write_only=True, required=False
+        queryset=Objective.objects.all(),
+        source="objective_id",
+        write_only=True,
+        required=False,
     )
     employee_id = serializers.SerializerMethodField()
     employee_id_write = serializers.PrimaryKeyRelatedField(
-        queryset=Employee.objects.all(), source="employee_id", write_only=True, required=False
+        queryset=Employee.objects.all(),
+        source="employee_id",
+        write_only=True,
+        required=False,
     )
     key_result_id = serializers.SerializerMethodField()
     key_result_id_ids = serializers.PrimaryKeyRelatedField(
-        queryset=KeyResult.objects.all(), many=True, source="key_result_id", write_only=True, required=False
+        queryset=KeyResult.objects.all(),
+        many=True,
+        source="key_result_id",
+        write_only=True,
+        required=False,
     )
 
     class Meta:
         model = EmployeeObjective
         fields = "__all__"
         extra_kwargs = {
-            'key_result_id': {'read_only': True},
+            "key_result_id": {"read_only": True},
         }
 
     def get_objective_id(self, obj):
@@ -197,11 +230,17 @@ class EmployeeObjectiveSerializer(serializers.ModelSerializer):
 class EmployeeKeyResultSerializer(serializers.ModelSerializer):
     employee_objective_id = serializers.SerializerMethodField()
     employee_objective_id_write = serializers.PrimaryKeyRelatedField(
-        queryset=EmployeeObjective.objects.all(), source="employee_objective_id", write_only=True, required=False
+        queryset=EmployeeObjective.objects.all(),
+        source="employee_objective_id",
+        write_only=True,
+        required=False,
     )
     key_result_id = serializers.SerializerMethodField()
     key_result_id_write = serializers.PrimaryKeyRelatedField(
-        queryset=KeyResult.objects.all(), source="key_result_id", write_only=True, required=False
+        queryset=KeyResult.objects.all(),
+        source="key_result_id",
+        write_only=True,
+        required=False,
     )
 
     class Meta:
@@ -228,11 +267,17 @@ class EmployeeKeyResultSerializer(serializers.ModelSerializer):
 class CommentSerializer(serializers.ModelSerializer):
     employee_id = serializers.SerializerMethodField()
     employee_id_write = serializers.PrimaryKeyRelatedField(
-        queryset=Employee.objects.all(), source="employee_id", write_only=True, required=False
+        queryset=Employee.objects.all(),
+        source="employee_id",
+        write_only=True,
+        required=False,
     )
     employee_objective_id = serializers.SerializerMethodField()
     employee_objective_id_write = serializers.PrimaryKeyRelatedField(
-        queryset=EmployeeObjective.objects.all(), source="employee_objective_id", write_only=True, required=False
+        queryset=EmployeeObjective.objects.all(),
+        source="employee_objective_id",
+        write_only=True,
+        required=False,
     )
 
     class Meta:
@@ -261,14 +306,18 @@ class CommentSerializer(serializers.ModelSerializer):
 class QuestionTemplateSerializer(serializers.ModelSerializer):
     company_id = serializers.SerializerMethodField()
     company_id_ids = serializers.PrimaryKeyRelatedField(
-        queryset=Company.objects.all(), many=True, source="company_id", write_only=True, required=False
+        queryset=Company.objects.all(),
+        many=True,
+        source="company_id",
+        write_only=True,
+        required=False,
     )
 
     class Meta:
         model = QuestionTemplate
         fields = "__all__"
         extra_kwargs = {
-            'company_id': {'read_only': True},
+            "company_id": {"read_only": True},
         }
 
     def get_company_id(self, obj):
@@ -286,7 +335,10 @@ class QuestionTemplateSerializer(serializers.ModelSerializer):
 class QuestionSerializer(serializers.ModelSerializer):
     template_id = serializers.SerializerMethodField()
     template_id_write = serializers.PrimaryKeyRelatedField(
-        queryset=QuestionTemplate.objects.all(), source="template_id", write_only=True, required=False
+        queryset=QuestionTemplate.objects.all(),
+        source="template_id",
+        write_only=True,
+        required=False,
     )
 
     class Meta:
@@ -305,7 +357,10 @@ class QuestionSerializer(serializers.ModelSerializer):
 class QuestionOptionsSerializer(serializers.ModelSerializer):
     question_id = serializers.SerializerMethodField()
     question_id_write = serializers.PrimaryKeyRelatedField(
-        queryset=Question.objects.all(), source="question_id", write_only=True, required=False
+        queryset=Question.objects.all(),
+        source="question_id",
+        write_only=True,
+        required=False,
     )
 
     class Meta:
@@ -324,41 +379,66 @@ class QuestionOptionsSerializer(serializers.ModelSerializer):
 class FeedbackSerializer(serializers.ModelSerializer):
     manager_id = serializers.SerializerMethodField()
     manager_id_write = serializers.PrimaryKeyRelatedField(
-        queryset=Employee.objects.all(), source="manager_id", write_only=True, required=False
+        queryset=Employee.objects.all(),
+        source="manager_id",
+        write_only=True,
+        required=False,
     )
     employee_id = serializers.SerializerMethodField()
     employee_id_write = serializers.PrimaryKeyRelatedField(
-        queryset=Employee.objects.all(), source="employee_id", write_only=True, required=False
+        queryset=Employee.objects.all(),
+        source="employee_id",
+        write_only=True,
+        required=False,
     )
     colleague_id = serializers.SerializerMethodField()
     colleague_id_ids = serializers.PrimaryKeyRelatedField(
-        queryset=Employee.objects.all(), many=True, source="colleague_id", write_only=True, required=False
+        queryset=Employee.objects.all(),
+        many=True,
+        source="colleague_id",
+        write_only=True,
+        required=False,
     )
     subordinate_id = serializers.SerializerMethodField()
     subordinate_id_ids = serializers.PrimaryKeyRelatedField(
-        queryset=Employee.objects.all(), many=True, source="subordinate_id", write_only=True, required=False
+        queryset=Employee.objects.all(),
+        many=True,
+        source="subordinate_id",
+        write_only=True,
+        required=False,
     )
     others_id = serializers.SerializerMethodField()
     others_id_ids = serializers.PrimaryKeyRelatedField(
-        queryset=Employee.objects.all(), many=True, source="others_id", write_only=True, required=False
+        queryset=Employee.objects.all(),
+        many=True,
+        source="others_id",
+        write_only=True,
+        required=False,
     )
     question_template_id = serializers.SerializerMethodField()
     question_template_id_write = serializers.PrimaryKeyRelatedField(
-        queryset=QuestionTemplate.objects.all(), source="question_template_id", write_only=True, required=False
+        queryset=QuestionTemplate.objects.all(),
+        source="question_template_id",
+        write_only=True,
+        required=False,
     )
     employee_key_results_id = serializers.SerializerMethodField()
     employee_key_results_id_ids = serializers.PrimaryKeyRelatedField(
-        queryset=EmployeeKeyResult.objects.all(), many=True, source="employee_key_results_id", write_only=True, required=False
+        queryset=EmployeeKeyResult.objects.all(),
+        many=True,
+        source="employee_key_results_id",
+        write_only=True,
+        required=False,
     )
 
     class Meta:
         model = Feedback
         fields = "__all__"
         extra_kwargs = {
-            'colleague_id': {'read_only': True},
-            'subordinate_id': {'read_only': True},
-            'others_id': {'read_only': True},
-            'employee_key_results_id': {'read_only': True},
+            "colleague_id": {"read_only": True},
+            "subordinate_id": {"read_only": True},
+            "others_id": {"read_only": True},
+            "employee_key_results_id": {"read_only": True},
         }
 
     def get_manager_id(self, obj):
@@ -443,15 +523,24 @@ class FeedbackSerializer(serializers.ModelSerializer):
 class AnswerSerializer(serializers.ModelSerializer):
     question_id = serializers.SerializerMethodField()
     question_id_write = serializers.PrimaryKeyRelatedField(
-        queryset=Question.objects.all(), source="question_id", write_only=True, required=False
+        queryset=Question.objects.all(),
+        source="question_id",
+        write_only=True,
+        required=False,
     )
     employee_id = serializers.SerializerMethodField()
     employee_id_write = serializers.PrimaryKeyRelatedField(
-        queryset=Employee.objects.all(), source="employee_id", write_only=True, required=False
+        queryset=Employee.objects.all(),
+        source="employee_id",
+        write_only=True,
+        required=False,
     )
     feedback_id = serializers.SerializerMethodField()
     feedback_id_write = serializers.PrimaryKeyRelatedField(
-        queryset=Feedback.objects.all(), source="feedback_id", write_only=True, required=False
+        queryset=Feedback.objects.all(),
+        source="feedback_id",
+        write_only=True,
+        required=False,
     )
 
     class Meta:
@@ -488,15 +577,24 @@ class AnswerSerializer(serializers.ModelSerializer):
 class KeyResultFeedbackSerializer(serializers.ModelSerializer):
     feedback_id = serializers.SerializerMethodField()
     feedback_id_write = serializers.PrimaryKeyRelatedField(
-        queryset=Feedback.objects.all(), source="feedback_id", write_only=True, required=False
+        queryset=Feedback.objects.all(),
+        source="feedback_id",
+        write_only=True,
+        required=False,
     )
     employee_id = serializers.SerializerMethodField()
     employee_id_write = serializers.PrimaryKeyRelatedField(
-        queryset=Employee.objects.all(), source="employee_id", write_only=True, required=False
+        queryset=Employee.objects.all(),
+        source="employee_id",
+        write_only=True,
+        required=False,
     )
     key_result_id = serializers.SerializerMethodField()
     key_result_id_write = serializers.PrimaryKeyRelatedField(
-        queryset=EmployeeKeyResult.objects.all(), source="key_result_id", write_only=True, required=False
+        queryset=EmployeeKeyResult.objects.all(),
+        source="key_result_id",
+        write_only=True,
+        required=False,
     )
 
     class Meta:
@@ -533,32 +631,50 @@ class KeyResultFeedbackSerializer(serializers.ModelSerializer):
 class MeetingsSerializer(serializers.ModelSerializer):
     employee_id = serializers.SerializerMethodField()
     employee_id_ids = serializers.PrimaryKeyRelatedField(
-        queryset=Employee.objects.all(), many=True, source="employee_id", write_only=True, required=False
+        queryset=Employee.objects.all(),
+        many=True,
+        source="employee_id",
+        write_only=True,
+        required=False,
     )
     manager = serializers.SerializerMethodField()
     manager_ids = serializers.PrimaryKeyRelatedField(
-        queryset=Employee.objects.all(), many=True, source="manager", write_only=True, required=False
+        queryset=Employee.objects.all(),
+        many=True,
+        source="manager",
+        write_only=True,
+        required=False,
     )
     answer_employees = serializers.SerializerMethodField()
     answer_employees_ids = serializers.PrimaryKeyRelatedField(
-        queryset=Employee.objects.all(), many=True, source="answer_employees", write_only=True, required=False
+        queryset=Employee.objects.all(),
+        many=True,
+        source="answer_employees",
+        write_only=True,
+        required=False,
     )
     question_template = serializers.SerializerMethodField()
     question_template_write = serializers.PrimaryKeyRelatedField(
-        queryset=QuestionTemplate.objects.all(), source="question_template", write_only=True, required=False
+        queryset=QuestionTemplate.objects.all(),
+        source="question_template",
+        write_only=True,
+        required=False,
     )
     company_id = serializers.SerializerMethodField()
     company_id_write = serializers.PrimaryKeyRelatedField(
-        queryset=Company.objects.all(), source="company_id", write_only=True, required=False
+        queryset=Company.objects.all(),
+        source="company_id",
+        write_only=True,
+        required=False,
     )
 
     class Meta:
         model = Meetings
         fields = "__all__"
         extra_kwargs = {
-            'employee_id': {'read_only': True},
-            'manager': {'read_only': True},
-            'answer_employees': {'read_only': True},
+            "employee_id": {"read_only": True},
+            "manager": {"read_only": True},
+            "answer_employees": {"read_only": True},
         }
 
     def get_employee_id(self, obj):
@@ -620,15 +736,24 @@ class MeetingsSerializer(serializers.ModelSerializer):
 class MeetingsAnswerSerializer(serializers.ModelSerializer):
     question_id = serializers.SerializerMethodField()
     question_id_write = serializers.PrimaryKeyRelatedField(
-        queryset=Question.objects.all(), source="question_id", write_only=True, required=False
+        queryset=Question.objects.all(),
+        source="question_id",
+        write_only=True,
+        required=False,
     )
     employee_id = serializers.SerializerMethodField()
     employee_id_write = serializers.PrimaryKeyRelatedField(
-        queryset=Employee.objects.all(), source="employee_id", write_only=True, required=False
+        queryset=Employee.objects.all(),
+        source="employee_id",
+        write_only=True,
+        required=False,
     )
     meeting_id = serializers.SerializerMethodField()
     meeting_id_write = serializers.PrimaryKeyRelatedField(
-        queryset=Meetings.objects.all(), source="meeting_id", write_only=True, required=False
+        queryset=Meetings.objects.all(),
+        source="meeting_id",
+        write_only=True,
+        required=False,
     )
 
     class Meta:
@@ -665,11 +790,17 @@ class MeetingsAnswerSerializer(serializers.ModelSerializer):
 class EmployeeBonusPointSerializer(serializers.ModelSerializer):
     employee_id = serializers.SerializerMethodField()
     employee_id_write = serializers.PrimaryKeyRelatedField(
-        queryset=Employee.objects.all(), source="employee_id", write_only=True, required=False
+        queryset=Employee.objects.all(),
+        source="employee_id",
+        write_only=True,
+        required=False,
     )
     bonus_point_id = serializers.SerializerMethodField()
     bonus_point_id_write = serializers.PrimaryKeyRelatedField(
-        queryset=Employee.objects.all(), source="bonus_point_id", write_only=True, required=False
+        queryset=Employee.objects.all(),
+        source="bonus_point_id",
+        write_only=True,
+        required=False,
     )
 
     class Meta:
@@ -704,15 +835,24 @@ class BonusPointSettingSerializer(serializers.ModelSerializer):
 class AnonymousFeedbackSerializer(serializers.ModelSerializer):
     employee_id = serializers.SerializerMethodField()
     employee_id_write = serializers.PrimaryKeyRelatedField(
-        queryset=Employee.objects.all(), source="employee_id", write_only=True, required=False
+        queryset=Employee.objects.all(),
+        source="employee_id",
+        write_only=True,
+        required=False,
     )
     department_id = serializers.SerializerMethodField()
     department_id_write = serializers.PrimaryKeyRelatedField(
-        queryset=Department.objects.all(), source="department_id", write_only=True, required=False
+        queryset=Department.objects.all(),
+        source="department_id",
+        write_only=True,
+        required=False,
     )
     job_position_id = serializers.SerializerMethodField()
     job_position_id_write = serializers.PrimaryKeyRelatedField(
-        queryset=JobPosition.objects.all(), source="job_position_id", write_only=True, required=False
+        queryset=JobPosition.objects.all(),
+        source="job_position_id",
+        write_only=True,
+        required=False,
     )
 
     class Meta:

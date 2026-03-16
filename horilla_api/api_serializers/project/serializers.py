@@ -3,15 +3,19 @@ horilla_api/api_serializers/project/serializers.py
 """
 
 from rest_framework import serializers
-from project.models import Project, ProjectStage, Task, TimeSheet
-from employee.models import Employee
+
 from base.models import Company
+from employee.models import Employee
+from project.models import Project, ProjectStage, Task, TimeSheet
 
 
 class ProjectStageSerializer(serializers.ModelSerializer):
     project = serializers.SerializerMethodField()
     project_id = serializers.PrimaryKeyRelatedField(
-        queryset=Project.objects.all(), source="project", write_only=True, required=False
+        queryset=Project.objects.all(),
+        source="project",
+        write_only=True,
+        required=False,
     )
 
     class Meta:
@@ -30,15 +34,26 @@ class ProjectStageSerializer(serializers.ModelSerializer):
 class ProjectSerializer(serializers.ModelSerializer):
     managers = serializers.SerializerMethodField()
     managers_ids = serializers.PrimaryKeyRelatedField(
-        queryset=Employee.objects.all(), many=True, source="managers", write_only=True, required=False
+        queryset=Employee.objects.all(),
+        many=True,
+        source="managers",
+        write_only=True,
+        required=False,
     )
     members = serializers.SerializerMethodField()
     members_ids = serializers.PrimaryKeyRelatedField(
-        queryset=Employee.objects.all(), many=True, source="members", write_only=True, required=False
+        queryset=Employee.objects.all(),
+        many=True,
+        source="members",
+        write_only=True,
+        required=False,
     )
     company_id = serializers.SerializerMethodField()
     company_id_write = serializers.PrimaryKeyRelatedField(
-        queryset=Company.objects.all(), source="company_id", write_only=True, required=False
+        queryset=Company.objects.all(),
+        source="company_id",
+        write_only=True,
+        required=False,
     )
     project_stages = ProjectStageSerializer(many=True, read_only=True)
 
@@ -46,8 +61,8 @@ class ProjectSerializer(serializers.ModelSerializer):
         model = Project
         fields = "__all__"
         extra_kwargs = {
-            'managers': {'read_only': True},
-            'members': {'read_only': True},
+            "managers": {"read_only": True},
+            "members": {"read_only": True},
         }
 
     def get_managers(self, obj):
@@ -88,27 +103,41 @@ class ProjectSerializer(serializers.ModelSerializer):
 class TaskSerializer(serializers.ModelSerializer):
     project = serializers.SerializerMethodField()
     project_id = serializers.PrimaryKeyRelatedField(
-        queryset=Project.objects.all(), source="project", write_only=True, required=False
+        queryset=Project.objects.all(),
+        source="project",
+        write_only=True,
+        required=False,
     )
     stage = serializers.SerializerMethodField()
     stage_id = serializers.PrimaryKeyRelatedField(
-        queryset=ProjectStage.objects.all(), source="stage", write_only=True, required=False
+        queryset=ProjectStage.objects.all(),
+        source="stage",
+        write_only=True,
+        required=False,
     )
     task_managers = serializers.SerializerMethodField()
     task_managers_ids = serializers.PrimaryKeyRelatedField(
-        queryset=Employee.objects.all(), many=True, source="task_managers", write_only=True, required=False
+        queryset=Employee.objects.all(),
+        many=True,
+        source="task_managers",
+        write_only=True,
+        required=False,
     )
     task_members = serializers.SerializerMethodField()
     task_members_ids = serializers.PrimaryKeyRelatedField(
-        queryset=Employee.objects.all(), many=True, source="task_members", write_only=True, required=False
+        queryset=Employee.objects.all(),
+        many=True,
+        source="task_members",
+        write_only=True,
+        required=False,
     )
 
     class Meta:
         model = Task
         fields = "__all__"
         extra_kwargs = {
-            'task_managers': {'read_only': True},
-            'task_members': {'read_only': True},
+            "task_managers": {"read_only": True},
+            "task_members": {"read_only": True},
         }
 
     def get_project(self, obj):
@@ -157,7 +186,10 @@ class TaskSerializer(serializers.ModelSerializer):
 class TimeSheetSerializer(serializers.ModelSerializer):
     project_id = serializers.SerializerMethodField()
     project_id_write = serializers.PrimaryKeyRelatedField(
-        queryset=Project.objects.all(), source="project_id", write_only=True, required=False
+        queryset=Project.objects.all(),
+        source="project_id",
+        write_only=True,
+        required=False,
     )
     task_id = serializers.SerializerMethodField()
     task_id_write = serializers.PrimaryKeyRelatedField(
@@ -165,7 +197,10 @@ class TimeSheetSerializer(serializers.ModelSerializer):
     )
     employee_id = serializers.SerializerMethodField()
     employee_id_write = serializers.PrimaryKeyRelatedField(
-        queryset=Employee.objects.all(), source="employee_id", write_only=True, required=False
+        queryset=Employee.objects.all(),
+        source="employee_id",
+        write_only=True,
+        required=False,
     )
 
     class Meta:

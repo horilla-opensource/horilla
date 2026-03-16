@@ -121,10 +121,17 @@ class DefaultHorillaMailBackend(EmailBackend):
 
     @property
     def dynamic_mail_sent_from(self):
+        # Must never be None: EmailLog.from_email is NOT NULL, and Django's EmailMessage
+        # can be instantiated without from_email depending on call-sites.
         return (
-            self.configuration.from_email
-            if self.configuration
-            else getattr(settings, "DEFAULT_FROM_EMAIL", None)
+            (
+                getattr(self.configuration, "from_email", None)
+                if self.configuration
+                else None
+            )
+            or getattr(settings, "DEFAULT_FROM_EMAIL", None)
+            or getattr(settings, "EMAIL_HOST_USER", None)
+            or "no-reply@example.com"
         )
 
     @property
@@ -248,6 +255,13 @@ def new_init(
 
     if not from_email:
         from_email = cache.get(f"dynamic_display_name{user_id}")
+    if not from_email:
+        # Final fallback to avoid NULL from_email in EmailLog and broken outbound emails
+        from_email = (
+            getattr(settings, "DEFAULT_FROM_EMAIL", None)
+            or getattr(settings, "EMAIL_HOST_USER", None)
+            or "no-reply@example.com"
+        )
 
     message_init(
         self,

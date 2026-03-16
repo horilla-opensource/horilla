@@ -2,43 +2,44 @@
 horilla_api/api_views/onboarding/views.py
 """
 
-from rest_framework.views import APIView
-from rest_framework.permissions import IsAuthenticated
-from rest_framework.response import Response
-from rest_framework import status
-from rest_framework.pagination import PageNumberPagination
-from django_filters.rest_framework import DjangoFilterBackend
-from django.shortcuts import get_object_or_404
-from django.http import Http404
 from django.contrib.auth.models import AnonymousUser
 from django.db.models import Q
+from django.http import Http404
+from django.shortcuts import get_object_or_404
+from django_filters.rest_framework import DjangoFilterBackend
+from rest_framework import status
+from rest_framework.pagination import PageNumberPagination
+from rest_framework.permissions import IsAuthenticated
+from rest_framework.response import Response
+from rest_framework.views import APIView
 
+from base.methods import filtersubordinates
 from horilla_api.api_serializers.onboarding.serializers import (
-    OnboardingStageSerializer,
-    OnboardingTaskSerializer,
     CandidateStageSerializer,
     CandidateTaskSerializer,
     OnboardingPortalSerializer,
+    OnboardingStageSerializer,
+    OnboardingTaskSerializer,
+)
+from onboarding.filters import (
+    CandidateTaskFilter,
+    OnboardingCandidateFilter,
+    OnboardingStageFilter,
+    OnboardingTaskFilter,
 )
 from onboarding.models import (
-    OnboardingStage,
-    OnboardingTask,
     CandidateStage,
     CandidateTask,
     OnboardingPortal,
+    OnboardingStage,
+    OnboardingTask,
 )
-from onboarding.filters import (
-    OnboardingStageFilter,
-    OnboardingTaskFilter,
-    CandidateTaskFilter,
-    OnboardingCandidateFilter,
-)
-from ...api_methods.base.methods import groupby_queryset, permission_based_queryset
+
 from ...api_decorators.base.decorators import (
     manager_permission_required,
     permission_required,
 )
-from base.methods import filtersubordinates
+from ...api_methods.base.methods import groupby_queryset, permission_based_queryset
 
 
 def object_check(cls, pk):
@@ -58,7 +59,7 @@ class OnboardingStageGetCreateAPIView(APIView):
 
     def get_queryset(self, request=None, recruitment_id=None):
         # Handle schema generation for DRF-YASG
-        if getattr(self, 'swagger_fake_view', False) or request is None:
+        if getattr(self, "swagger_fake_view", False) or request is None:
             return OnboardingStage.objects.none()
         queryset = OnboardingStage.objects.all()
         if recruitment_id:
@@ -76,16 +77,16 @@ class OnboardingStageGetCreateAPIView(APIView):
                 return Response({"error": "OnboardingStage not found"}, status=404)
             serializer = OnboardingStageSerializer(stage)
             return Response(serializer.data, status=200)
-        
+
         stages = self.get_queryset(request, recruitment_id)
         filterset = self.filterset_class(request.GET, queryset=stages)
-        
+
         # groupby section
         field_name = request.GET.get("groupby_field", None)
         if field_name:
             url = request.build_absolute_uri()
             return groupby_queryset(request, url, field_name, filterset.qs)
-        
+
         # pagination section
         paginator = PageNumberPagination()
         page = paginator.paginate_queryset(filterset.qs, request)
@@ -95,8 +96,8 @@ class OnboardingStageGetCreateAPIView(APIView):
     @permission_required("onboarding.add_onboardingstage")
     def post(self, request, recruitment_id=None, **kwargs):
         data = request.data.copy()
-        if recruitment_id and not data.get('recruitment_id_write'):
-            data['recruitment_id_write'] = recruitment_id
+        if recruitment_id and not data.get("recruitment_id_write"):
+            data["recruitment_id_write"] = recruitment_id
         serializer = OnboardingStageSerializer(data=data)
         if serializer.is_valid():
             serializer.save()
@@ -146,7 +147,7 @@ class OnboardingTaskGetCreateAPIView(APIView):
 
     def get_queryset(self, request=None, stage_id=None):
         # Handle schema generation for DRF-YASG
-        if getattr(self, 'swagger_fake_view', False) or request is None:
+        if getattr(self, "swagger_fake_view", False) or request is None:
             return OnboardingTask.objects.none()
         queryset = OnboardingTask.objects.all()
         if stage_id:
@@ -164,16 +165,16 @@ class OnboardingTaskGetCreateAPIView(APIView):
                 return Response({"error": "OnboardingTask not found"}, status=404)
             serializer = OnboardingTaskSerializer(task)
             return Response(serializer.data, status=200)
-        
+
         tasks = self.get_queryset(request, stage_id)
         filterset = self.filterset_class(request.GET, queryset=tasks)
-        
+
         # groupby section
         field_name = request.GET.get("groupby_field", None)
         if field_name:
             url = request.build_absolute_uri()
             return groupby_queryset(request, url, field_name, filterset.qs)
-        
+
         # pagination section
         paginator = PageNumberPagination()
         page = paginator.paginate_queryset(filterset.qs, request)
@@ -183,8 +184,8 @@ class OnboardingTaskGetCreateAPIView(APIView):
     @permission_required("onboarding.add_onboardingtask")
     def post(self, request, stage_id=None, **kwargs):
         data = request.data.copy()
-        if stage_id and not data.get('stage_id_write'):
-            data['stage_id_write'] = stage_id
+        if stage_id and not data.get("stage_id_write"):
+            data["stage_id_write"] = stage_id
         serializer = OnboardingTaskSerializer(data=data)
         if serializer.is_valid():
             serializer.save()
@@ -234,7 +235,7 @@ class CandidateStageGetCreateAPIView(APIView):
 
     def get_queryset(self, request=None, candidate_id=None, stage_id=None):
         # Handle schema generation for DRF-YASG
-        if getattr(self, 'swagger_fake_view', False) or request is None:
+        if getattr(self, "swagger_fake_view", False) or request is None:
             return CandidateStage.objects.none()
         queryset = CandidateStage.objects.all()
         if candidate_id:
@@ -254,16 +255,16 @@ class CandidateStageGetCreateAPIView(APIView):
                 return Response({"error": "CandidateStage not found"}, status=404)
             serializer = CandidateStageSerializer(candidate_stage)
             return Response(serializer.data, status=200)
-        
+
         candidate_stages = self.get_queryset(request, candidate_id, stage_id)
         filterset = self.filterset_class(request.GET, queryset=candidate_stages)
-        
+
         # groupby section
         field_name = request.GET.get("groupby_field", None)
         if field_name:
             url = request.build_absolute_uri()
             return groupby_queryset(request, url, field_name, filterset.qs)
-        
+
         # pagination section
         paginator = PageNumberPagination()
         page = paginator.paginate_queryset(filterset.qs, request)
@@ -273,10 +274,10 @@ class CandidateStageGetCreateAPIView(APIView):
     @permission_required("onboarding.add_candidatestage")
     def post(self, request, candidate_id=None, stage_id=None, **kwargs):
         data = request.data.copy()
-        if candidate_id and not data.get('candidate_id_write'):
-            data['candidate_id_write'] = candidate_id
-        if stage_id and not data.get('onboarding_stage_id_write'):
-            data['onboarding_stage_id_write'] = stage_id
+        if candidate_id and not data.get("candidate_id_write"):
+            data["candidate_id_write"] = candidate_id
+        if stage_id and not data.get("onboarding_stage_id_write"):
+            data["onboarding_stage_id_write"] = stage_id
         serializer = CandidateStageSerializer(data=data)
         if serializer.is_valid():
             serializer.save()
@@ -299,7 +300,9 @@ class CandidateStageGetUpdateDeleteAPIView(APIView):
         candidate_stage = object_check(CandidateStage, pk)
         if candidate_stage is None:
             return Response({"error": "CandidateStage not found"}, status=404)
-        serializer = CandidateStageSerializer(candidate_stage, data=request.data, partial=True)
+        serializer = CandidateStageSerializer(
+            candidate_stage, data=request.data, partial=True
+        )
         if serializer.is_valid():
             serializer.save()
             return Response(serializer.data, status=200)
@@ -324,9 +327,11 @@ class CandidateTaskGetCreateAPIView(APIView):
     filterset_class = CandidateTaskFilter
     queryset = CandidateTask.objects.none()  # For drf-yasg schema generation
 
-    def get_queryset(self, request=None, candidate_id=None, task_id=None, stage_id=None):
+    def get_queryset(
+        self, request=None, candidate_id=None, task_id=None, stage_id=None
+    ):
         # Handle schema generation for DRF-YASG
-        if getattr(self, 'swagger_fake_view', False) or request is None:
+        if getattr(self, "swagger_fake_view", False) or request is None:
             return CandidateTask.objects.none()
         queryset = CandidateTask.objects.all()
         if candidate_id:
@@ -348,16 +353,16 @@ class CandidateTaskGetCreateAPIView(APIView):
                 return Response({"error": "CandidateTask not found"}, status=404)
             serializer = CandidateTaskSerializer(candidate_task)
             return Response(serializer.data, status=200)
-        
+
         candidate_tasks = self.get_queryset(request, candidate_id, task_id, stage_id)
         filterset = self.filterset_class(request.GET, queryset=candidate_tasks)
-        
+
         # groupby section
         field_name = request.GET.get("groupby_field", None)
         if field_name:
             url = request.build_absolute_uri()
             return groupby_queryset(request, url, field_name, filterset.qs)
-        
+
         # pagination section
         paginator = PageNumberPagination()
         page = paginator.paginate_queryset(filterset.qs, request)
@@ -367,12 +372,12 @@ class CandidateTaskGetCreateAPIView(APIView):
     @permission_required("onboarding.add_candidatetask")
     def post(self, request, candidate_id=None, task_id=None, stage_id=None, **kwargs):
         data = request.data.copy()
-        if candidate_id and not data.get('candidate_id_write'):
-            data['candidate_id_write'] = candidate_id
-        if task_id and not data.get('onboarding_task_id_write'):
-            data['onboarding_task_id_write'] = task_id
-        if stage_id and not data.get('stage_id_write'):
-            data['stage_id_write'] = stage_id
+        if candidate_id and not data.get("candidate_id_write"):
+            data["candidate_id_write"] = candidate_id
+        if task_id and not data.get("onboarding_task_id_write"):
+            data["onboarding_task_id_write"] = task_id
+        if stage_id and not data.get("stage_id_write"):
+            data["stage_id_write"] = stage_id
         serializer = CandidateTaskSerializer(data=data)
         if serializer.is_valid():
             serializer.save()
@@ -395,7 +400,9 @@ class CandidateTaskGetUpdateDeleteAPIView(APIView):
         candidate_task = object_check(CandidateTask, pk)
         if candidate_task is None:
             return Response({"error": "CandidateTask not found"}, status=404)
-        serializer = CandidateTaskSerializer(candidate_task, data=request.data, partial=True)
+        serializer = CandidateTaskSerializer(
+            candidate_task, data=request.data, partial=True
+        )
         if serializer.is_valid():
             serializer.save()
             return Response(serializer.data, status=200)
@@ -420,7 +427,7 @@ class OnboardingPortalGetCreateAPIView(APIView):
 
     def get_queryset(self, request=None, candidate_id=None):
         # Handle schema generation for DRF-YASG
-        if getattr(self, 'swagger_fake_view', False) or request is None:
+        if getattr(self, "swagger_fake_view", False) or request is None:
             return OnboardingPortal.objects.none()
         queryset = OnboardingPortal.objects.all()
         if candidate_id:
@@ -438,7 +445,7 @@ class OnboardingPortalGetCreateAPIView(APIView):
                 return Response({"error": "OnboardingPortal not found"}, status=404)
             serializer = OnboardingPortalSerializer(portal)
             return Response(serializer.data, status=200)
-        
+
         portals = self.get_queryset(request, candidate_id)
         paginator = PageNumberPagination()
         page = paginator.paginate_queryset(portals, request)
@@ -448,8 +455,8 @@ class OnboardingPortalGetCreateAPIView(APIView):
     @permission_required("onboarding.add_onboardingportal")
     def post(self, request, candidate_id=None, **kwargs):
         data = request.data.copy()
-        if candidate_id and not data.get('candidate_id_write'):
-            data['candidate_id_write'] = candidate_id
+        if candidate_id and not data.get("candidate_id_write"):
+            data["candidate_id_write"] = candidate_id
         serializer = OnboardingPortalSerializer(data=data)
         if serializer.is_valid():
             serializer.save()
