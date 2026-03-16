@@ -13,12 +13,19 @@ services:
       - ALLOWED_HOSTS=localhost,127.0.0.1,0.0.0.0
       - CSRF_TRUSTED_ORIGINS=http://localhost:8000
       - DATABASE_URL=postgres://horilla_user:horilla_pass@db:5432/horilla_db
+      - DB_INIT_PASSWORD=dev-init-password-change-in-production
       - REDIS_URL=redis://:horilla_pass@redis:6379/0
     depends_on:
       db:
         condition: service_healthy
       redis:
         condition: service_healthy
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8000/health/"]
+      interval: 30s
+      timeout: 30s
+      start_period: 60s
+      retries: 3
 
   db:
     image: postgres:16-alpine
@@ -54,7 +61,8 @@ services:
       - media:/media:ro
       - ./docker/nginx.conf:/etc/nginx/nginx.conf:ro
     depends_on:
-      - web
+      web:
+        condition: service_healthy
     profiles: ["production"]
 
 volumes:
