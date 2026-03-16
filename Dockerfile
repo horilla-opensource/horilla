@@ -1,5 +1,5 @@
 # Build stage - for compiling dependencies
-FROM python:3.12-slim as builder
+FROM python:3.12-slim AS builder
 
 ENV PYTHONDONTWRITEBYTECODE=1 \
     PYTHONUNBUFFERED=1
@@ -32,7 +32,7 @@ RUN pip install --upgrade pip \
     && pip install --no-cache-dir -r requirements.txt gunicorn psycopg2-binary
 
 # Production stage - minimal runtime image
-FROM python:3.12-slim as production
+FROM python:3.12-slim AS production
 
 ENV PYTHONDONTWRITEBYTECODE=1 \
     PYTHONUNBUFFERED=1 \
@@ -78,7 +78,7 @@ USER appuser
 
 EXPOSE 8000
 
-HEALTHCHECK --interval=30s --timeout=30s --start-period=5s --retries=3 \
+HEALTHCHECK --interval=30s --timeout=30s --start-period=60s --retries=3 \
     CMD curl -f http://localhost:8000/health/ || exit 1
 
 ENTRYPOINT ["/entrypoint.sh"]
