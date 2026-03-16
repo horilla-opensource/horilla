@@ -27,7 +27,7 @@ from base.methods import (
     sortby,
 )
 from base.models import Department, JobPosition, Tags
-from employee.models import Employee
+from employee.models import Employee, EmployeeWorkInformation
 from employee.views import get_content_type
 from helpdesk.decorators import ticket_owner_can_enter
 from helpdesk.filter import (
@@ -181,9 +181,14 @@ def faq_category_delete(request, id):
         faq.delete()
         messages.success(request, _("The FAQ category has been deleted successfully."))
         return HttpResponse("")
+
+    except FAQCategory.DoesNotExist:
+        message = _("No FAQ category found matching the query.")
+
     except ProtectedError:
-        messages.error(request, _("You cannot delete this FAQ category."))
-    return HorillaRedirect(request)
+        message = _("You cannot delete this FAQ category.")
+
+    return HorillaRedirect(request, message=message)
 
 
 @login_required
@@ -385,15 +390,19 @@ def faq_suggestion(request):
 def faq_delete(request, id):
     try:
         faq = FAQ.objects.get(id=id)
-        cat_id = faq.category.id
         faq.delete()
         messages.success(
             request, _('The FAQ "{}" has been deleted successfully.').format(faq)
         )
         return HttpResponse("")
+
+    except FAQ.DoesNotExist:
+        message = _("No FAQ found matching the query.")
+
     except ProtectedError:
-        messages.error(request, _("You cannot delete this FAQ."))
-    return HorillaRedirect(request)
+        messages = _("You cannot delete this FAQ.")
+
+    return HorillaRedirect(request, message=message)
 
 
 @login_required
@@ -573,7 +582,11 @@ def ticket_archive(request, ticket_id):
         return Ticket view
     """
 
-    ticket = Ticket.objects.get(id=ticket_id)
+    ticket = Ticket.find(ticket_id)
+    if not ticket:
+        return HorillaRedirect(
+            request, message=_("No Ticket found matching the query.")
+        )
 
     # Check if the user has permission or is the employee or their reporting manager
     if (
@@ -650,7 +663,14 @@ def change_ticket_status(request, ticket_id):
     Returns:
         return Ticket view
     """
-    ticket = Ticket.objects.get(id=ticket_id)
+    ticket = Ticket.find(ticket_id)
+    if not ticket:
+        response = {
+            "type": "danger",
+            "message": _("No Ticket found matching the query."),
+        }
+        return JsonResponse(response)
+
     pre_status = ticket.get_status_display()
     status = request.POST.get("status")
     user = request.user.employee_get
@@ -892,7 +912,12 @@ def ticket_filter(request):
 
 @login_required
 def ticket_detail(request, ticket_id, **kwargs):
-    ticket = Ticket.objects.get(id=ticket_id)
+    ticket = Ticket.find(ticket_id)
+    if not ticket:
+        return HorillaRedirect(
+            request, message=_("No Ticket found matching the query.")
+        )
+
     if (
         request.user.has_perm("helpdesk.view_ticket")
         or ticket.employee_id.get_reporting_manager() == request.user.employee_get
@@ -967,7 +992,12 @@ def ticket_detail(request, ticket_id, **kwargs):
 
 @login_required
 def ticket_individual_view(request, ticket_id):
-    ticket = Ticket.objects.get(id=ticket_id)
+    ticket = Ticket.find(ticket_id)
+    if not ticket:
+        return HorillaRedirect(
+            request, message=_("No Ticket found matching the query.")
+        )
+
     context = {
         "ticket": ticket,
     }
@@ -978,7 +1008,12 @@ def ticket_individual_view(request, ticket_id):
 
 @login_required
 def view_ticket_claim_request(request, ticket_id):
-    ticket = Ticket.objects.filter(id=ticket_id).first()
+    ticket = Ticket.find(ticket_id)
+    if not ticket:
+        return HorillaRedirect(
+            request, message=_("No Ticket found matching the query.")
+        )
+
     if (
         request.user.has_perm("helpdesk.change_claimrequest")
         or request.user.has_perm("helpdesk.view_claimrequest")
@@ -1000,7 +1035,12 @@ def ticket_update_tag(request):
     method to update the tags of ticket
     """
     data = request.GET
-    ticket = Ticket.objects.get(id=data.get("ticketId"))
+    ticket = Ticket.find(data.get("ticketId"))
+    if not ticket:
+        return HorillaRedirect(
+            request, message=_("No Ticket found matching the query.")
+        )
+
     if (
         request.user.has_perm("helpdesk.view_ticket")
         or request.user.employee_get == ticket.employee_id
@@ -1267,7 +1307,12 @@ def comment_edit(request):
 @login_required
 @permission_required("helpdesk.delete_comment")
 def comment_delete(request, comment_id):
-    comment = Comment.objects.filter(id=comment_id).first()
+    comment = Comment.find(comment_id)
+    if not comment:
+        return HorillaRedirect(
+            request, message=_("No Comment found matching the query.")
+        )
+
     employee = comment.employee_id
     comment.delete()
     messages.success(
@@ -1316,7 +1361,12 @@ def claim_ticket(request, id):
     """
     This is a function to create a claim request for requested employee
     """
-    ticket = Ticket.objects.get(id=id)
+    ticket = Ticket.find(id)
+    if not ticket:
+        return HorillaRedirect(
+            request, message=_("No Ticket found matching the query.")
+        )
+
     if not ClaimRequest.objects.filter(
         employee_id=request.user.employee_get, ticket_id=ticket
     ).exists():
@@ -1585,7 +1635,12 @@ def update_department_manager(request, dep_id):
 @login_required
 @permission_required("helpdesk.delete_departmentmanager")
 def delete_department_manager(request, dep_id):
-    department_manager = DepartmentManager.objects.get(id=dep_id)
+    department_manager = DepartmentManager.find(dep_id)
+    if not department_manager:
+        return HorillaRedirect(
+            request, message=_("No Department Manager found matching the query.")
+        )
+
     count = DepartmentManager.objects.count()
     department_manager.delete()
     messages.success(request, _("The department manager has been deleted successfully"))
@@ -1600,7 +1655,15 @@ def update_priority(request, ticket_id):
     This function is used to update the priority
     from the detailed view
     """
-    ticket = Ticket.objects.get(id=ticket_id)
+    ticket = Ticket.find(ticket_id)
+    if not ticket:
+        messages.error(
+            request,
+        )
+        return HorillaRedirect(
+            request, message=_("No Ticket found matching the query.")
+        )
+
     if (
         request.user.has_perm("helpdesk.view_ticket")
         or ticket.employee_id.get_reporting_manager() == request.user.employee_get
@@ -1731,24 +1794,22 @@ def view_department_managers(request):
 @login_required
 @permission_required("helpdesk.change_departmentmanager")
 def get_department_employees(request):
-    """
-    Method to return employees in the department.
-    """
-    department = (
-        Department.objects.filter(id=request.GET.get("dep_id")).first()
-        if request.GET.get("dep_id")
-        else None
+    """Return employees in a department."""
+    dep_id = request.GET.get("dep_id")
+
+    employees = []
+    if dep_id:
+        employees = list(
+            EmployeeWorkInformation.objects.filter(department_id=dep_id)
+            .select_related("employee_id")
+            .values_list("employee_id__id", "employee_id")
+        )
+
+    employee_html = render_to_string(
+        "employee/employees_select.html",
+        {"employees": employees},
     )
-    if department:
-        employees_qs = department.employeeworkinformation_set.all()
-        employees_queryset = [
-            (emp.employee_id.id, emp.employee_id) for emp in employees_qs
-        ]
-    else:
-        employees_queryset = None
-    employees = list(employees_queryset)
-    context = {"employees": employees}
-    employee_html = render_to_string("employee/employees_select.html", context)
+
     return HttpResponse(employee_html)
 
 

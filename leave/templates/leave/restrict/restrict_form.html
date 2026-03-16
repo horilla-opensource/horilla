@@ -57,7 +57,7 @@
             <div class="col-12 col-sm-12 col-md-6 col-lg-6">
                 <div class="oh-input__group">
                     <label class="oh-label d-flex" for="{{ form.include_all.id_for_label }}">{{ form.include_all.label }}
-                        <span class="oh-info ms-2" title="{{ form.include_all.help_text|safe }}"></span>
+                        <span class="oh-info ms-2" title="{{ form.include_all.help_text }}"></span>
                     </label>
                     <div class="oh-switch">
                         {{ form.include_all }}
@@ -70,7 +70,7 @@
             <div class="col-12 col-sm-12 col-md-6 col-lg-6" id="specific-leave-group" style="display: none;">
                 <div class="oh-input__group">
                     <label class="oh-label d-flex" for="{{ form.spesific_leave_types.id_for_label }}">{{ form.spesific_leave_types.label }}
-                        <span class="oh-info ms-2" title="{{ form.spesific_leave_types.help_text|safe }}"></span>
+                        <span class="oh-info ms-2" title="{{ form.spesific_leave_types.help_text }}"></span>
                     </label>
                     {{ form.spesific_leave_types }} {{ form.spesific_leave_types.errors }}
                 </div>
@@ -80,7 +80,7 @@
             <div class="col-12 col-sm-12 col-md-6 col-lg-6" id="exclude-leave-group" style="display: none;">
                 <div class="oh-input__group">
                     <label class="oh-label d-flex" for="{{ form.exclued_leave_types.id_for_label }}">{{ form.exclued_leave_types.label }}
-                        <span class="oh-info ms-2" title="{{ form.exclued_leave_types.help_text|safe }}"></span>
+                        <span class="oh-info ms-2" title="{{ form.exclued_leave_types.help_text }}"></span>
                     </label>
                     {{ form.exclued_leave_types }} {{ form.exclued_leave_types.errors }}
                 </div>

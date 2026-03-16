@@ -19,6 +19,7 @@ class AssetAPIView(APIView):
     permission_classes = [IsAuthenticated]
     filter_backends = [DjangoFilterBackend]
     filterset_class = AssetFilter
+    queryset = Asset.objects.none()  # For drf-yasg schema generation
 
     def get_asset(self, pk):
         try:
@@ -63,6 +64,7 @@ class AssetCategoryAPIView(APIView):
     permission_classes = [IsAuthenticated]
     filter_backends = [DjangoFilterBackend]
     filterset_class = AssetCategoryFilter
+    queryset = AssetCategory.objects.none()  # For drf-yasg schema generation
 
     def get_asset_category(self, pk):
         try:

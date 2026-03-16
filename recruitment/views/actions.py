@@ -18,7 +18,7 @@ from django.views.decorators.http import require_http_methods
 
 from base.models import HorillaMailTemplate
 from employee.models import Employee
-from horilla.decorators import login_required, permission_required
+from horilla.decorators import hx_request_required, login_required, permission_required
 from horilla.group_by import group_by_queryset
 from horilla.http import HorillaRedirect
 from notifications.signals import notify
@@ -148,16 +148,20 @@ def note_delete(request, note_id):
 
 
 @candidate_login_required
+@hx_request_required
 # @manager_can_enter(perm="recruitment.delete_stagenote")
 def note_delete_individual(request, note_id):
     """
     This method is used to delete the stage note
     """
-    script = ""
-    note = StageNote.objects.get(id=note_id)
-    note.delete()
-    messages.success(request, _("Note deleted."))
-    return HttpResponse(script)
+    note = StageNote.find(note_id)
+    note.delete() if note else None
+    (
+        messages.success(request, _("Note deleted."))
+        if note
+        else messages.error(request, _("No Stage Note found matching the query."))
+    )
+    return HttpResponse("")
 
 
 @login_required
@@ -328,8 +332,15 @@ def remove_stage_manager(request, mid, sid):
         mid : manager_id in the stage
         sid : stage_id
     """
-    stage_obj = Stage.objects.get(id=sid)
-    manager = Employee.objects.get(id=mid)
+    stage_obj = Stage.find(sid)
+    manager = Employee.objects.filter(id=mid).first()
+    if not stage_obj or not manager:
+        return HorillaRedirect(
+            request,
+            message=_("No %(model_name)s found matching the query.")
+            % {"model_name": "Stage" if not stage_obj else "Employee"},
+        )
+
     notify.send(
         request.user.employee_get,
         recipient=manager.employee_user_id,
@@ -416,7 +427,14 @@ def get_template(request, obj_id=None):
     """
     body = ""
     if obj_id:
-        body = HorillaMailTemplate.objects.get(id=obj_id).body
+        body = (
+            HorillaMailTemplate.find(obj_id).body
+            if HorillaMailTemplate.find(obj_id)
+            else None
+        )
+        if not body:
+            return JsonResponse({"body": None})
+
         template_bdy = template.Template(body)
     if request.GET.get("word"):
         word = request.GET.get("word")

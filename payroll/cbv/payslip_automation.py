@@ -12,6 +12,7 @@ from django.utils.decorators import method_decorator
 from django.utils.translation import gettext_lazy as _
 from django.views import View
 
+from horilla.http.response import HorillaRedirect
 from horilla_views.cbv_methods import login_required, permission_required
 from horilla_views.generic.cbv.views import (
     HorillaFormView,
@@ -194,4 +195,4 @@ class DeleteAutoPayslipView(View):
             messages.info(
                 request, _("Active 'Payslip auto generate' cannot be deleted.")
             )
-        return HttpResponseRedirect(request.META.get("HTTP_REFERER", "/"))
+        return HorillaRedirect(request)

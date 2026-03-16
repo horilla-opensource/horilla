@@ -1912,6 +1912,10 @@ class HorillaFormView(FormView):
         self, request: HttpRequest, *args: str, pk=None, **kwargs: Any
     ) -> HttpResponse:
         _pk = pk
+        form = self.get_form()
+        if pk and not form.instance:
+            messages.error(request, "Matching query does not exists.")
+            return HorillaRedirect(request)
         response = super().get(request, *args, **kwargs)
         return response
 

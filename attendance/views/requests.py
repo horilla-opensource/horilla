@@ -300,7 +300,12 @@ def attendance_request_changes(request, attendance_id):
     """
     This method is used to store the requested changes to the instance
     """
-    attendance = Attendance.objects.get(id=attendance_id)
+    attendance = Attendance.find(attendance_id)
+    if not attendance:
+        return HorillaRedirect(
+            request, message=_("No Attendance found matching the query.")
+        )
+
     if request.GET.get("previous_url"):
         form = AttendanceRequestForm(initial=request.GET.dict())
     else:
@@ -393,7 +398,12 @@ def validate_attendance_request(request, attendance_id):
     args:
         attendance_id : attendance id
     """
-    attendance = Attendance.objects.get(id=attendance_id)
+    attendance = Attendance.find(attendance_id)
+    if not attendance:
+        return HorillaRedirect(
+            request, message=_("No Attendance found matching the query.")
+        )
+
     first_dict = attendance.serialize()
     empty_data = {
         "employee_id": None,
@@ -437,7 +447,12 @@ def approve_validate_attendance_request(request, attendance_id):
     """
     This method is used to validate the attendance requests
     """
-    attendance = Attendance.objects.get(id=attendance_id)
+    attendance = Attendance.find(attendance_id)
+    if not attendance:
+        return HorillaRedirect(
+            request, message=_("No Attendance found matching the query.")
+        )
+
     prev_attendance_date = attendance.attendance_date
     prev_attendance_clock_in_date = attendance.attendance_clock_in_date
     prev_attendance_clock_in = attendance.attendance_clock_in
@@ -635,8 +650,7 @@ def bulk_approve_attendance_request(request):
     """
     This method is used to validate the attendance requests
     """
-    ids = request.POST["ids"]
-    ids = json.loads(ids)
+    ids = json.loads(request.POST.get("ids", "[]"))
     filtered_ids = []
     for attendance_id in ids:
         attendance = Attendance.objects.get(id=attendance_id)
@@ -769,8 +783,7 @@ def bulk_reject_attendance_request(request):
     """
     This method is used to delete bulk attendance request
     """
-    ids = request.POST["ids"]
-    ids = json.loads(ids)
+    ids = json.loads(request.POST.get("ids", "[]"))
     for attendance_id in ids:
         try:
             attendance = Attendance.objects.get(id=attendance_id)
@@ -814,7 +827,12 @@ def edit_validate_attendance(request, attendance_id):
     """
     This method is used to edit and update the validate request attendance
     """
-    attendance = Attendance.objects.get(id=attendance_id)
+    attendance = Attendance.find(attendance_id)
+    if not attendance:
+        return HorillaRedirect(
+            request, message=_("No Attendance found matching the query.")
+        )
+
     initial = attendance.serialize()
     if request.GET.get("previous_url"):
         initial = request.GET.dict()

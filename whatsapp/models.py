@@ -1,5 +1,6 @@
 from django.db import models
 from django.urls import reverse
+from django.utils.translation import gettext_lazy as _
 
 from base.horilla_company_manager import HorillaCompanyManager
 from base.models import Company
@@ -15,8 +16,8 @@ class WhatsappCredientials(HorillaModel):
     created_templates = models.BooleanField(default=False)
     meta_webhook_token = models.CharField(
         max_length=50,
-        verbose_name="Webhook Token",
-        help_text="This token is used to connect webhook to the server",
+        verbose_name=_("Webhook Token"),
+        help_text=_("This token is used to connect webhook to the server"),
     )
     company_id = models.ManyToManyField(Company, blank=True, verbose_name="Company")
     is_primary = models.BooleanField(default=False)

@@ -255,4 +255,9 @@ urlpatterns = [
     path(
         "check-user-level", views.CheckUserLevel.as_view(), name="api-check-user-level"
     ),
+    path(
+        "announcement-view",
+        views.AnnouncementListAPIView.as_view(),
+        name="announcement-view",
+    ),
 ]

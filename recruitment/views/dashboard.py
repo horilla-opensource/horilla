@@ -293,8 +293,11 @@ def get_open_position(request):
     Returns:
         obj: it returns the list of job positions
     """
-    rec_id = request.GET["recId"]
-    recruitment_obj = Recruitment.objects.get(id=rec_id)
+    rec_id = request.GET.get("recId")
+    recruitment_obj = Recruitment.find(rec_id)
+    if not recruitment_obj:
+        return JsonResponse({"openPositions": [], "recruitmentInfo": None})
+
     queryset = recruitment_obj.open_positions.all()
     job_info = serializers.serialize("json", queryset)
     rec_info = serializers.serialize("json", [recruitment_obj])

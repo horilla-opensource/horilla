@@ -88,7 +88,9 @@ def get_accessibility_data(request):
     """
     Save accessibility filter method
     """
-    feature = request.GET["feature"]
+    feature = request.GET.get("feature")
+    if not feature:
+        return JsonResponse("", safe=False)
     accessibility = DefaultAccessibility.objects.filter(feature=feature).first()
     if not accessibility:
         return JsonResponse("", safe=False)

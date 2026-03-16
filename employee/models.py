@@ -1077,7 +1077,7 @@ class BonusPoint(HorillaModel):
         related_name="bonus_point",
     )
     points = models.IntegerField(
-        default=0, help_text="Use negative numbers to reduce points."
+        default=0, help_text=_("Use negative numbers to reduce points.")
     )
     encashment_condition = models.CharField(
         max_length=100, choices=CONDITIONS, blank=True, null=True

@@ -321,7 +321,9 @@ def update_stage_order(request, pk):
     """
     This method is used to update the stage sequence of the offboarding
     """
-    offboarding = Offboarding.objects.get(id=pk)
+    offboarding = Offboarding.find(pk)
+    if not offboarding:
+        return HorillaRedirect(request, message=_("Offboarding not found"))
 
     if request.method == "POST":
         try:
@@ -581,7 +583,11 @@ def add_note(request):
     This method is used to create note for the offboarding employee
     """
     employee_id = request.GET.get("employee_id")
-    employee = OffboardingEmployee.objects.get(id=employee_id)
+    if not employee_id:
+        return HorillaRedirect(request, message=_("Missing required parameter."))
+    employee = OffboardingEmployee.find(employee_id)
+    if not employee:
+        return HorillaRedirect(request, message=_("Employee not found."))
     form = NoteForm()
     if request.method == "POST":
         form = NoteForm(request.POST, request.FILES)
@@ -682,6 +688,8 @@ def update_task_status(request, *args, **kwargs):
     employee_ids = request.GET.getlist("employee_ids")
     task_id = request.GET.get("task_id")
     status = request.GET.get("task_status")
+    if not task_id or not status or not stage_id or not employee_ids:
+        return HorillaRedirect(request, message=_("Missing required parameters."))
     employee_task = EmployeeTask.objects.filter(
         employee_id__id__in=employee_ids, task_id__id=task_id
     )
@@ -702,7 +710,9 @@ def update_task_status(request, *args, **kwargs):
         redirect=reverse("offboarding-pipeline"),
         icon="information",
     )
-    stage = OffboardingStage.objects.get(id=stage_id)
+    stage = OffboardingStage.find(stage_id)
+    if not stage:
+        return HorillaRedirect(request, message=_("Stage not found"))
     stage_forms = {}
     stage_forms[str(stage.offboarding_id.id)] = StageSelectForm(
         offboarding=stage.offboarding_id
@@ -730,7 +740,9 @@ def task_assign(request):
     employee_ids = request.GET.getlist("employee_ids")
     task_id = request.GET.get("task_id")
     employees = OffboardingEmployee.objects.filter(id__in=employee_ids)
-    task = OffboardingTask.objects.get(id=task_id)
+    task = OffboardingTask.find(task_id)
+    if not task:
+        return HorillaRedirect(request, message=_("Task not found"))
     for employee in employees:
         try:
             assigned_task = EmployeeTask()
@@ -836,7 +848,9 @@ def request_view(request):
 @login_required
 @permission_required("offboarding.view_resignationletter")
 def request_single_view(request, id):
-    letter = ResignationLetter.objects.get(id=id)
+    letter = ResignationLetter.find(id)
+    if not letter:
+        return HorillaRedirect(request, message=_("Resignation letter not found"))
     context = {
         "letter": letter,
     }
