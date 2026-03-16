@@ -19,7 +19,8 @@ A complete, step-by-step guide to running Horilla HR using Docker. Covers develo
 11. [Monitoring & Health Checks](#11-monitoring--health-checks)
 12. [Troubleshooting](#12-troubleshooting)
 13. [Security Checklist](#13-security-checklist)
-14. [File Reference](#14-file-reference)
+14. [Make Commands](#14-make-commands)
+15. [File Reference](#15-file-reference)
 
 ---
 
@@ -38,9 +39,9 @@ A complete, step-by-step guide to running Horilla HR using Docker. Covers develo
 | Environment | CPU | RAM | Disk |
 |-------------|-----|-----|------|
 | Development | 2 cores | 4 GB | 10 GB |
-| Production (small, <50 employees) | 2 cores | 4 GB | 20 GB |
-| Production (medium, 50–500 employees) | 4 cores | 8 GB | 50 GB |
-| Production (large, 500+ employees) | 8 cores | 16 GB | 100 GB+ |
+| Production (small, <50 users) | 2 cores | 4 GB | 20 GB |
+| Production (medium, 50–500 users) | 4 cores | 8 GB | 50 GB |
+| Production (large, 500+ users) | 8 cores | 16 GB | 100 GB+ |
 
 ### Port Requirements
 
@@ -48,8 +49,8 @@ A complete, step-by-step guide to running Horilla HR using Docker. Covers develo
 |---------|------|-------------|
 | Web App | 8000 | Development access |
 | Nginx | 80 | Production HTTP |
-| PostgreSQL | 5432 | Internal only (not exposed to host by default) |
-| Redis | 6379 | Internal only (not exposed to host by default) |
+| PostgreSQL | 5432 | Internal only (not exposed in production) |
+| Redis | 6379 | Internal only (not exposed in production) |
 
 ---
 
@@ -63,17 +64,18 @@ git clone -b dev/v2.0 https://github.com/horilla-opensource/horilla.git
 cd horilla
 
 # 2. Start all services
-docker compose up -d
+make dev
+# or: docker compose up --build
 
 # 3. Wait for services to be healthy (~30–60 seconds on first run)
-docker compose ps
+make status
 
 # 4. Open in your browser
 open http://localhost:8000
 ```
 
 On first launch, Horilla will:
-1. Wait for PostgreSQL to be ready
+1. Wait for PostgreSQL to be ready (30s timeout)
 2. Run database migrations automatically
 3. Collect static files
 4. Start the Gunicorn application server
@@ -84,16 +86,16 @@ You'll see the **Database Initialization** page where you can create your first 
 
 ```bash
 # Stop all services (preserves data)
-docker compose down
+make stop
 
 # Stop and remove ALL data (fresh start)
-docker compose down -v
+make clean
 
 # Restart only the web service (after code changes)
 docker compose restart web
 
 # View logs
-docker compose logs -f web
+make logs
 ```
 
 ---
@@ -101,39 +103,40 @@ docker compose logs -f web
 ## 3. Architecture Overview
 
 ```
-                              ┌─────────────────────────────┐
-                              │         Browser             │
-                              └─────────┬───────────────────┘
-                                        │ :8000 (dev) / :80 (prod)
-                   ┌────────────────────┼────────────────────┐
-                   │  Docker Network    │                    │
-                   │                    ▼                    │
-                   │  ┌──────────────────────────────────┐  │
-                   │  │  Nginx (production profile only)  │  │
-                   │  │  - Static files (/static/)       │  │
-                   │  │  - Media files (/media/)         │  │
-                   │  │  - Proxy pass to web:8000        │  │
-                   │  └──────────────┬───────────────────┘  │
-                   │                 │                       │
-                   │                 ▼                       │
-                   │  ┌──────────────────────────────────┐  │
-                   │  │  Web (Django + Gunicorn)          │  │
-                   │  │  - 2–8 workers (adaptive)        │  │
-                   │  │  - 4 threads per worker           │  │
-                   │  │  - Health check: /health/         │  │
-                   │  └───────┬──────────────┬──────────┘  │
-                   │          │              │              │
-                   │          ▼              ▼              │
-                   │  ┌──────────────┐ ┌──────────────┐    │
-                   │  │  PostgreSQL  │ │    Redis     │    │
-                   │  │  16-alpine   │ │   7-alpine   │    │
-                   │  │  Port: 5432  │ │  Port: 6379  │    │
-                   │  └──────────────┘ └──────────────┘    │
-                   │          │              │              │
-                   │          ▼              ▼              │
-                   │  [postgres_data]  [redis_data]         │
-                   │  [staticfiles]    [media]              │
-                   └────────────────────────────────────────┘
+                          ┌─────────────────────────────┐
+                          │         Browser             │
+                          └─────────┬───────────────────┘
+                                    │ :8000 (dev) / :80 (prod)
+               ┌────────────────────┼────────────────────┐
+               │  Docker Network    │                    │
+               │                    ▼                    │
+               │  ┌──────────────────────────────────┐  │
+               │  │  Nginx (production profile only)  │  │
+               │  │  - Static files (/static/)       │  │
+               │  │  - Media files (/media/)         │  │
+               │  │  - Reverse proxy to web:8000     │  │
+               │  │  - Gzip + security headers       │  │
+               │  └──────────────┬───────────────────┘  │
+               │                 │                       │
+               │                 ▼                       │
+               │  ┌──────────────────────────────────┐  │
+               │  │  Web (Django + Gunicorn)          │  │
+               │  │  - 2–8 workers (adaptive)        │  │
+               │  │  - 4 threads per worker           │  │
+               │  │  - Health check: /health/         │  │
+               │  └───────┬──────────────┬──────────┘  │
+               │          │              │              │
+               │          ▼              ▼              │
+               │  ┌──────────────┐ ┌──────────────┐    │
+               │  │  PostgreSQL  │ │    Redis     │    │
+               │  │  16-alpine   │ │  7-alpine    │    │
+               │  │  Port: 5432  │ │  Port: 6379  │    │
+               │  └──────────────┘ └──────────────┘    │
+               │          │              │              │
+               │          ▼              ▼              │
+               │  [postgres_data]  [redis_data]         │
+               │  [staticfiles]    [media]              │
+               └────────────────────────────────────────┘
 ```
 
 ### Services
@@ -142,7 +145,7 @@ docker compose logs -f web
 |---------|-------|---------|
 | **web** | Custom (Dockerfile) | Django application with Gunicorn WSGI server |
 | **db** | `postgres:16-alpine` | Primary database for all application data |
-| **redis** | `redis:7-alpine` | Caching, session storage, background job queues |
+| **redis** | `redis:7-alpine` | Caching, session storage (password-protected, AOF persistence) |
 | **nginx** | `nginx:alpine` | Reverse proxy, static file serving (production only) |
 
 ### Volumes
@@ -169,7 +172,8 @@ docker compose logs -f web
 | `ALLOWED_HOSTS` | `localhost,127.0.0.1` | Comma-separated hostnames. Add your domain for production |
 | `CSRF_TRUSTED_ORIGINS` | `http://localhost:8000` | Full URLs for CSRF validation. Must include protocol |
 | `DATABASE_URL` | `postgres://...@db:5432/...` | PostgreSQL connection string. `db` is the Docker service name |
-| `REDIS_URL` | `redis://:...@redis:6379/0` | Redis connection string |
+| `DB_INIT_PASSWORD` | `dev-init-password...` | Initial database setup password — **change for production** |
+| `REDIS_URL` | `redis://:...@redis:6379/0` | Redis connection string (includes password) |
 
 #### PostgreSQL Settings
 
@@ -179,12 +183,10 @@ docker compose logs -f web
 | `POSTGRES_USER` | `horilla_user` | Database user |
 | `POSTGRES_PASSWORD` | `horilla_pass` | Database password — **change for production** |
 
-#### Optional Settings
+#### Server Settings
 
 | Variable | Default | Description |
 |----------|---------|-------------|
-| `TIME_ZONE` | `Asia/Kolkata` | Server timezone (set in `.env`) |
-| `LANGUAGE_CODE` | `en-us` | Default language |
 | `GUNICORN_WORKERS` | Auto (2–8) | Override worker count |
 | `GUNICORN_LOG_LEVEL` | `info` | Logging verbosity: debug, info, warning, error |
 | `GUNICORN_RELOAD` | `false` | Set to `true` for auto-reload during development |
@@ -194,17 +196,8 @@ docker compose logs -f web
 For cleaner configuration, create a `.env` file from the template:
 
 ```bash
-cp .env.dist .env
+cp .env.example .env
 # Edit .env with your values
-```
-
-Then reference it in `docker-compose.yml`:
-
-```yaml
-services:
-  web:
-    env_file:
-      - .env
 ```
 
 Docker Compose automatically reads `.env` for variable substitution in the compose file itself (e.g., `${POSTGRES_PASSWORD}`).
@@ -215,7 +208,7 @@ Docker Compose automatically reads `.env` for variable substitution in the compo
 
 ### Live Code Reloading
 
-The development setup mounts your local code into the container (`. :/app`), so code changes are reflected immediately. To enable Gunicorn auto-reload:
+The development setup mounts your local code into the container (`.:/app`), so code changes are reflected immediately. To enable Gunicorn auto-reload:
 
 ```bash
 # Option 1: Set environment variable
@@ -236,7 +229,6 @@ docker compose exec web python manage.py createsuperuser
 docker compose exec web python manage.py makemigrations
 docker compose exec web python manage.py migrate
 docker compose exec web python manage.py shell
-docker compose exec web python manage.py compilemessages
 docker compose exec web python manage.py collectstatic --noinput
 ```
 
@@ -247,10 +239,10 @@ docker compose exec web python manage.py collectstatic --noinput
 echo "new-package==1.0.0" >> requirements.txt
 
 # 2. Rebuild the web image
-docker compose build web
+make build
 
 # 3. Restart
-docker compose up -d
+make dev
 ```
 
 ### Running Tests
@@ -263,7 +255,7 @@ docker compose exec web python manage.py test
 
 ```bash
 # PostgreSQL shell
-docker compose exec db psql -U horilla_user -d horilla_db
+make db-shell
 
 # Redis CLI
 docker compose exec redis redis-cli -a horilla_pass
@@ -273,11 +265,10 @@ docker compose exec redis redis-cli -a horilla_pass
 
 ```bash
 # All services
-docker compose logs -f
+make logs
 
-# Specific service
-docker compose logs -f web
-docker compose logs -f db
+# Web only
+make logs-web
 
 # Last 100 lines
 docker compose logs --tail=100 web
@@ -305,19 +296,20 @@ Generate a secure secret key:
 python3 -c "from django.core.management.utils import get_random_secret_key; print(get_random_secret_key())"
 ```
 
-### Step 2: Update Database Password
+### Step 2: Update Passwords
 
-Change `horilla_pass` in all three places:
-- `web` service `DATABASE_URL`
-- `db` service `POSTGRES_PASSWORD`
-- `redis` service `command` and `REDIS_URL`
+Change `horilla_pass` in all locations:
+- `web` service: `DATABASE_URL`, `REDIS_URL`
+- `db` service: `POSTGRES_PASSWORD`
+- `redis` service: `command` (--requirepass) and healthcheck (-a)
 
 ### Step 3: Enable Nginx
 
 Start with the production profile:
 
 ```bash
-docker compose --profile production up -d
+make prod
+# or: docker compose --profile production up --build -d
 ```
 
 This starts the Nginx service which:
@@ -326,7 +318,7 @@ This starts the Nginx service which:
 - Proxies all other requests to Django
 - Adds security headers (`X-Content-Type-Options`, `X-Frame-Options`, `Referrer-Policy`)
 - Enables gzip compression
-- Hides server version information
+- Hides server version information (`server_tokens off`)
 
 ### Step 4: Set Up SSL/TLS
 
@@ -372,10 +364,11 @@ docker compose exec web python manage.py createsuperuser
 
 ```bash
 # Check all services are healthy
-docker compose ps
+make status
 
 # Test health endpoint
 curl http://localhost:8000/health/
+# Returns: {"status": "ok"}
 
 # Check logs for errors
 docker compose logs --tail=50 web
@@ -406,7 +399,7 @@ docker compose exec web python manage.py migrate
 ### Database Shell
 
 ```bash
-docker compose exec db psql -U horilla_user -d horilla_db
+make db-shell
 ```
 
 ### Loading Demo Data
@@ -434,7 +427,7 @@ User uploads (employee photos, documents, attachments) are stored in the `media`
 # List media files
 docker compose exec web ls -la /app/media/
 
-# Copy media to/from host
+# Copy media to host
 docker cp $(docker compose ps -q web):/app/media ./media-backup
 ```
 
@@ -447,7 +440,6 @@ Horilla supports AWS S3 and Google Cloud Storage. Add to your environment:
 AWS_ACCESS_KEY_ID=your-key
 AWS_SECRET_ACCESS_KEY=your-secret
 AWS_STORAGE_BUCKET_NAME=your-bucket
-AWS_S3_REGION_NAME=us-east-1
 DEFAULT_FILE_STORAGE=horilla.horilla_backends.PrivateMediaStorage
 ```
 
@@ -464,7 +456,7 @@ DEFAULT_FILE_STORAGE=horilla.horilla_backends_gcp.PrivateMediaStorage
 
 ### Gunicorn Tuning
 
-The default configuration auto-scales workers based on CPU count:
+The default configuration (`docker/gunicorn.conf.py`) auto-scales workers based on CPU count:
 
 | Setting | Default | Description |
 |---------|---------|-------------|
@@ -500,9 +492,10 @@ db:
 
 ### Redis Memory Limit
 
+Add a memory limit to prevent Redis from consuming all available RAM:
+
 ```yaml
 redis:
-  image: redis:7-alpine
   command: redis-server --appendonly yes --requirepass horilla_pass --maxmemory 256mb --maxmemory-policy allkeys-lru
 ```
 
@@ -513,7 +506,7 @@ redis:
 ### Database Backup
 
 ```bash
-# Create backup
+# SQL backup
 docker compose exec db pg_dump -U horilla_user horilla_db > backup_$(date +%Y%m%d_%H%M%S).sql
 
 # Compressed backup
@@ -534,18 +527,11 @@ docker compose exec -T db pg_restore -U horilla_user -d horilla_db --clean < bac
 
 ```bash
 # Backup media volume
-docker run --rm -v horilla-hr-ai_media:/data -v $(pwd):/backup alpine tar czf /backup/media_backup.tar.gz -C /data .
+docker run --rm -v horilla_media:/data -v $(pwd):/backup alpine tar czf /backup/media_backup.tar.gz -C /data .
 
 # Restore media volume
-docker run --rm -v horilla-hr-ai_media:/data -v $(pwd):/backup alpine tar xzf /backup/media_backup.tar.gz -C /data
+docker run --rm -v horilla_media:/data -v $(pwd):/backup alpine tar xzf /backup/media_backup.tar.gz -C /data
 ```
-
-### Automated Backups
-
-Horilla includes a built-in backup system accessible from **Settings > Backup**. It supports:
-- Scheduled local backups
-- Google Drive backups with OAuth
-- Database + media file backup
 
 ---
 
@@ -557,7 +543,7 @@ The Dockerfile includes a health check that pings `/health/` every 30 seconds:
 
 ```bash
 # Check container health status
-docker compose ps
+make status
 
 # Manual health check
 curl -f http://localhost:8000/health/
@@ -570,9 +556,9 @@ All services have health checks configured:
 
 | Service | Health Check | Interval |
 |---------|-------------|----------|
-| web | `curl /health/` | 30s |
-| db | `pg_isready` | 5s |
-| redis | `redis-cli ping` | 5s |
+| **web** | `curl /health/` | 30s (60s startup grace) |
+| **db** | `pg_isready` | 5s |
+| **redis** | `redis-cli -a <pass> ping` | 5s |
 
 ### Resource Monitoring
 
@@ -632,9 +618,6 @@ docker compose exec web python manage.py showmigrations
 
 # Run specific app migration
 docker compose exec web python manage.py migrate <app_name>
-
-# Reset a specific app's migrations (DESTRUCTIVE — development only)
-docker compose exec web python manage.py migrate <app_name> zero
 ```
 
 #### Out of disk space
@@ -657,11 +640,11 @@ docker system df -v
 
 ```bash
 # Stop containers and remove ALL data (database, uploads, cache)
-docker compose down -v
+make clean
 
 # Rebuild from scratch
 docker compose build --no-cache
-docker compose up -d
+make dev
 ```
 
 ---
@@ -674,6 +657,7 @@ Before going to production, verify the following:
 - [ ] `SECRET_KEY` is a unique, random 50+ character string
 - [ ] `ALLOWED_HOSTS` lists only your actual domain(s)
 - [ ] `CSRF_TRUSTED_ORIGINS` uses `https://` URLs
+- [ ] `DB_INIT_PASSWORD` is strong and unique
 - [ ] Database password is strong and unique (not `horilla_pass`)
 - [ ] Redis password is strong and unique
 - [ ] SSL/TLS is configured (HTTPS)
@@ -684,12 +668,30 @@ Before going to production, verify the following:
 
 ---
 
-## 14. File Reference
+## 14. Make Commands
+
+| Command | Description |
+|---------|-------------|
+| `make dev` | Start all services (web + db + redis) |
+| `make prod` | Start production with nginx |
+| `make build` | Build Docker images |
+| `make stop` | Stop all services |
+| `make logs` | Follow all service logs |
+| `make logs-web` | Follow web server logs only |
+| `make shell` | Open bash in web container |
+| `make db-shell` | Open PostgreSQL shell |
+| `make status` | Show status of all services |
+| `make restart` | Restart all services |
+| `make clean` | Remove volumes + prune (data loss!) |
+
+---
+
+## 15. File Reference
 
 ```
 docker/
 ├── entrypoint.sh        # Container startup script
-│                          - Waits for PostgreSQL (30s timeout)
+│                          - Waits for PostgreSQL (30 attempts, 1s interval)
 │                          - Runs migrations
 │                          - Collects static files
 │                          - Starts Gunicorn via exec "$@"
@@ -702,23 +704,27 @@ docker/
 │
 ├── nginx.conf           # Nginx reverse proxy configuration
 │                          - Static files with 1-year cache
-│                          - Gzip compression
-│                          - Security headers
+│                          - Gzip compression (9 MIME types)
+│                          - Security headers + server_tokens off
 │                          - Proxy to Django with proper headers
 │
 └── README.md            # This file
 
 Dockerfile               # Multi-stage build
-                           - Builder: compiles C extensions
-                           - Production: minimal runtime image
+                           - Builder: compiles C extensions in venv
+                           - Production: minimal runtime (no build tools)
                            - Non-root user (appuser, UID 1000)
-                           - Health check on /health/
+                           - Health check: curl /health/ every 30s
 
-docker-compose.yml        # Service orchestration
-                           - web: Django + Gunicorn
-                           - db: PostgreSQL 16
-                           - redis: Redis 7
-                           - nginx: Production reverse proxy
+docker-compose.yml       # Service orchestration
+                           - web: Django + Gunicorn (healthchecked)
+                           - db: PostgreSQL 16 (healthchecked)
+                           - redis: Redis 7 with password (healthchecked)
+                           - nginx: Production reverse proxy (profile)
 
-.dockerignore             # Files excluded from Docker build context
+Makefile                 # Developer convenience commands
+                           - make dev/prod/build/stop/logs/shell/etc.
+
+.env.example             # Environment variable template
+.dockerignore            # Files excluded from Docker build context
 ```

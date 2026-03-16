@@ -57,6 +57,7 @@ static_root/
 env/
 venv/
 ENV/
+horillavenv/
 
 # IDEs
 .vscode/
@@ -72,21 +73,10 @@ node_modules/
 # Git
 .git
 .gitignore
-README.md
-Dockerfile
-.dockerignore
+
+# Docker (avoid recursive copy)
 docker-compose.yml
-.vscode
-.idea
-*.pyc
-__pycache__
-.pytest_cache
-.coverage
-*.log
-.env
-horillavenv
-node_modules
-.DS_Store
+docker-compose.override.yml
 
 # Database files
 *.sqlite3
@@ -99,3 +89,6 @@ csv_tmp/
 # Documentation (not needed in image)
 ARCHITECTURE_DIAGRAM.md
 CODEBASE_INDEX.md
+
+# Claude/AI
+.claude/
