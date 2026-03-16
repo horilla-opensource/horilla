@@ -20,7 +20,8 @@ threads = 4
 worker_connections = 1000
 max_requests = 1000
 max_requests_jitter = 50
-preload_app = True
+# preload_app is disabled with gthread workers to avoid ORM connection issues
+preload_app = False
 
 # Timeout settings
 timeout = 120

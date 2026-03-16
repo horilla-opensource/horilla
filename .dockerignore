@@ -87,3 +87,15 @@ __pycache__
 horillavenv
 node_modules
 .DS_Store
+
+# Database files
+*.sqlite3
+TestDB.sqlite3
+
+# Backup artifacts
+csv_tmp/
+*.dump
+
+# Documentation (not needed in image)
+ARCHITECTURE_DIAGRAM.md
+CODEBASE_INDEX.md
