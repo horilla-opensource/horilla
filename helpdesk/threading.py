@@ -8,10 +8,9 @@ import logging
 from threading import Thread
 
 from django.contrib import messages
+from django.contrib.auth.models import Group, User
 from django.core.mail import EmailMessage
 from django.template.loader import render_to_string
-
-from django.contrib.auth.models import User
 
 from base.backends import ConfiguredEmailBackend
 from base.models import Department
@@ -263,7 +262,7 @@ class PasswordResetMailThread(Thread):
     Thread for sending email notifications related to Password Reset requests.
 
     Supported types:
-      - "new_request": Notifies ISO officers/superusers about a new request.
+      - "new_request": Notifies ISO officers about a new request.
       - "iso_review": Notifies the requesting employee about approval/rejection.
     """
 
@@ -277,6 +276,22 @@ class PasswordResetMailThread(Thread):
         self.feedback = feedback or ""
         self.host = request.get_host()
         self.protocol = "https" if request.is_secure() else "http"
+
+    def get_iso_users(self):
+        """
+        Return a list of Employee belonging to the ISO user group.
+        Falls back to an empty list if the group does not exist.
+        """
+        try:
+            iso_group = Group.objects.get(name="ISO")
+            return [
+                user.employee_get
+                for user in iso_group.user_set.select_related("employee_get").all()
+                if hasattr(user, "employee_get") and user.employee_get
+            ]
+        except Group.DoesNotExist:
+            logger.warning("ISO user group not found. No ISO officers will be notified.")
+            return []
 
     def _send_email(self, subject, content, recipients, ticket_id=None):
         """Send an email to each recipient Employee."""
@@ -329,18 +344,11 @@ class PasswordResetMailThread(Thread):
         super().run()
 
         if self.type == "new_request":
-            # Notify all ISO officers / superusers about the new password reset request
+            # Notify all ISO officers about the new password reset request
             owner = self.ticket.employee_id
             platform = self.pr_request.platform if self.pr_request else "N/A"
 
-            # Get all active superusers who have employee records
-            iso_employees = []
-            superusers = User.objects.filter(is_superuser=True, is_active=True)
-            for su in superusers:
-                try:
-                    iso_employees.append(su.employee_get)
-                except Exception:
-                    pass
+            iso_employees = self.get_iso_users()
 
             if iso_employees:
                 subject = "New Password Reset Request Submitted"
@@ -398,16 +406,15 @@ class PasswordResetMailThread(Thread):
             self._send_email(subject, content, [owner], self.ticket.id)
 
             # Also notify other ISO officers about the review action
-            iso_employees = []
-            superusers = User.objects.filter(is_superuser=True, is_active=True)
-            for su in superusers:
-                try:
-                    emp = su.employee_get
-                    # Don't notify the reviewer themselves
-                    if emp != owner and su != reviewer:
-                        iso_employees.append(emp)
-                except Exception:
-                    pass
+            try:
+                reviewer_employee = reviewer.employee_get
+            except Exception:
+                reviewer_employee = None
+
+            iso_employees = [
+                emp for emp in self.get_iso_users()
+                if emp != owner and emp != reviewer_employee
+            ]
 
             if iso_employees:
                 status_text = "approved" if self.action == "approve" else "rejected"
@@ -418,4 +425,3 @@ class PasswordResetMailThread(Thread):
                     f"{status_text} by {reviewer_name}."
                 )
                 self._send_email(subject_iso, content_iso, iso_employees, self.ticket.id)
-
