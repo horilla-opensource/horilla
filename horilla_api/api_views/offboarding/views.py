@@ -2,47 +2,48 @@
 horilla_api/api_views/offboarding/views.py
 """
 
-from rest_framework.views import APIView
-from rest_framework.permissions import IsAuthenticated
-from rest_framework.response import Response
-from rest_framework import status
-from rest_framework.pagination import PageNumberPagination
-from django_filters.rest_framework import DjangoFilterBackend
-from django.shortcuts import get_object_or_404
-from django.http import Http404
 from django.contrib.auth.models import AnonymousUser
 from django.db.models import Q
+from django.http import Http404
+from django.shortcuts import get_object_or_404
+from django_filters.rest_framework import DjangoFilterBackend
+from rest_framework import status
+from rest_framework.pagination import PageNumberPagination
+from rest_framework.permissions import IsAuthenticated
+from rest_framework.response import Response
+from rest_framework.views import APIView
 
+from base.methods import filtersubordinates
 from horilla_api.api_serializers.offboarding.serializers import (
+    EmployeeTaskSerializer,
+    OffboardingEmployeeSerializer,
+    OffboardingNoteSerializer,
     OffboardingSerializer,
     OffboardingStageSerializer,
-    OffboardingEmployeeSerializer,
-    ResignationLetterSerializer,
     OffboardingTaskSerializer,
-    EmployeeTaskSerializer,
-    OffboardingNoteSerializer,
-)
-from offboarding.models import (
-    Offboarding,
-    OffboardingStage,
-    OffboardingEmployee,
-    ResignationLetter,
-    OffboardingTask,
-    EmployeeTask,
-    OffboardingNote,
+    ResignationLetterSerializer,
 )
 from offboarding.filters import (
+    LetterFilter,
+    PipelineEmployeeFilter,
     PipelineFilter,
     PipelineStageFilter,
-    PipelineEmployeeFilter,
-    LetterFilter,
 )
-from ...api_methods.base.methods import groupby_queryset, permission_based_queryset
+from offboarding.models import (
+    EmployeeTask,
+    Offboarding,
+    OffboardingEmployee,
+    OffboardingNote,
+    OffboardingStage,
+    OffboardingTask,
+    ResignationLetter,
+)
+
 from ...api_decorators.base.decorators import (
     manager_permission_required,
     permission_required,
 )
-from base.methods import filtersubordinates
+from ...api_methods.base.methods import groupby_queryset, permission_based_queryset
 
 
 def object_check(cls, pk):
@@ -62,7 +63,7 @@ class OffboardingGetCreateAPIView(APIView):
 
     def get_queryset(self, request=None):
         # Handle schema generation for DRF-YASG
-        if getattr(self, 'swagger_fake_view', False) or request is None:
+        if getattr(self, "swagger_fake_view", False) or request is None:
             return Offboarding.objects.none()
         queryset = Offboarding.objects.all()
         user = request.user
@@ -78,16 +79,16 @@ class OffboardingGetCreateAPIView(APIView):
                 return Response({"error": "Offboarding not found"}, status=404)
             serializer = OffboardingSerializer(offboarding)
             return Response(serializer.data, status=200)
-        
+
         offboardings = self.get_queryset(request)
         filterset = self.filterset_class(request.GET, queryset=offboardings)
-        
+
         # groupby section
         field_name = request.GET.get("groupby_field", None)
         if field_name:
             url = request.build_absolute_uri()
             return groupby_queryset(request, url, field_name, filterset.qs)
-        
+
         # pagination section
         paginator = PageNumberPagination()
         page = paginator.paginate_queryset(filterset.qs, request)
@@ -145,7 +146,7 @@ class OffboardingStageGetCreateAPIView(APIView):
 
     def get_queryset(self, request=None, offboarding_id=None):
         # Handle schema generation for DRF-YASG
-        if getattr(self, 'swagger_fake_view', False) or request is None:
+        if getattr(self, "swagger_fake_view", False) or request is None:
             return OffboardingStage.objects.none()
         queryset = OffboardingStage.objects.all()
         if offboarding_id:
@@ -163,16 +164,16 @@ class OffboardingStageGetCreateAPIView(APIView):
                 return Response({"error": "OffboardingStage not found"}, status=404)
             serializer = OffboardingStageSerializer(stage)
             return Response(serializer.data, status=200)
-        
+
         stages = self.get_queryset(request, offboarding_id)
         filterset = self.filterset_class(request.GET, queryset=stages)
-        
+
         # groupby section
         field_name = request.GET.get("groupby_field", None)
         if field_name:
             url = request.build_absolute_uri()
             return groupby_queryset(request, url, field_name, filterset.qs)
-        
+
         # pagination section
         paginator = PageNumberPagination()
         page = paginator.paginate_queryset(filterset.qs, request)
@@ -182,8 +183,12 @@ class OffboardingStageGetCreateAPIView(APIView):
     @permission_required("offboarding.add_offboardingstage")
     def post(self, request, offboarding_id=None, **kwargs):
         data = request.data.copy()
-        if offboarding_id and not data.get('offboarding_id_write') and not data.get('offboarding_id'):
-            data['offboarding_id_write'] = offboarding_id
+        if (
+            offboarding_id
+            and not data.get("offboarding_id_write")
+            and not data.get("offboarding_id")
+        ):
+            data["offboarding_id_write"] = offboarding_id
         serializer = OffboardingStageSerializer(data=data)
         if serializer.is_valid():
             serializer.save()
@@ -233,7 +238,7 @@ class OffboardingEmployeeGetCreateAPIView(APIView):
 
     def get_queryset(self, request=None, stage_id=None, offboarding_id=None):
         # Handle schema generation for DRF-YASG
-        if getattr(self, 'swagger_fake_view', False) or request is None:
+        if getattr(self, "swagger_fake_view", False) or request is None:
             return OffboardingEmployee.objects.none()
         queryset = OffboardingEmployee.objects.all()
         if stage_id:
@@ -253,16 +258,16 @@ class OffboardingEmployeeGetCreateAPIView(APIView):
                 return Response({"error": "OffboardingEmployee not found"}, status=404)
             serializer = OffboardingEmployeeSerializer(employee)
             return Response(serializer.data, status=200)
-        
+
         employees = self.get_queryset(request, stage_id, offboarding_id)
         filterset = self.filterset_class(request.GET, queryset=employees)
-        
+
         # groupby section
         field_name = request.GET.get("groupby_field", None)
         if field_name:
             url = request.build_absolute_uri()
             return groupby_queryset(request, url, field_name, filterset.qs)
-        
+
         # pagination section
         paginator = PageNumberPagination()
         page = paginator.paginate_queryset(filterset.qs, request)
@@ -272,8 +277,8 @@ class OffboardingEmployeeGetCreateAPIView(APIView):
     @permission_required("offboarding.add_offboardingemployee")
     def post(self, request, stage_id=None, **kwargs):
         data = request.data.copy()
-        if stage_id and not data.get('stage_id_write') and not data.get('stage_id'):
-            data['stage_id_write'] = stage_id
+        if stage_id and not data.get("stage_id_write") and not data.get("stage_id"):
+            data["stage_id_write"] = stage_id
         serializer = OffboardingEmployeeSerializer(data=data)
         if serializer.is_valid():
             serializer.save()
@@ -296,7 +301,9 @@ class OffboardingEmployeeGetUpdateDeleteAPIView(APIView):
         employee = object_check(OffboardingEmployee, pk)
         if employee is None:
             return Response({"error": "OffboardingEmployee not found"}, status=404)
-        serializer = OffboardingEmployeeSerializer(employee, data=request.data, partial=True)
+        serializer = OffboardingEmployeeSerializer(
+            employee, data=request.data, partial=True
+        )
         if serializer.is_valid():
             serializer.save()
             return Response(serializer.data, status=200)
@@ -323,7 +330,7 @@ class ResignationLetterGetCreateAPIView(APIView):
 
     def get_queryset(self, request=None, employee_id=None):
         # Handle schema generation for DRF-YASG
-        if getattr(self, 'swagger_fake_view', False) or request is None:
+        if getattr(self, "swagger_fake_view", False) or request is None:
             return ResignationLetter.objects.none()
         queryset = ResignationLetter.objects.all()
         if employee_id:
@@ -341,16 +348,16 @@ class ResignationLetterGetCreateAPIView(APIView):
                 return Response({"error": "ResignationLetter not found"}, status=404)
             serializer = ResignationLetterSerializer(letter)
             return Response(serializer.data, status=200)
-        
+
         letters = self.get_queryset(request, employee_id)
         filterset = self.filterset_class(request.GET, queryset=letters)
-        
+
         # groupby section
         field_name = request.GET.get("groupby_field", None)
         if field_name:
             url = request.build_absolute_uri()
             return groupby_queryset(request, url, field_name, filterset.qs)
-        
+
         # pagination section
         paginator = PageNumberPagination()
         page = paginator.paginate_queryset(filterset.qs, request)
@@ -360,8 +367,12 @@ class ResignationLetterGetCreateAPIView(APIView):
     @permission_required("offboarding.add_resignationletter")
     def post(self, request, employee_id=None, **kwargs):
         data = request.data.copy()
-        if employee_id and not data.get('employee_id_write') and not data.get('employee_id'):
-            data['employee_id_write'] = employee_id
+        if (
+            employee_id
+            and not data.get("employee_id_write")
+            and not data.get("employee_id")
+        ):
+            data["employee_id_write"] = employee_id
         serializer = ResignationLetterSerializer(data=data)
         if serializer.is_valid():
             serializer.save()
@@ -384,7 +395,9 @@ class ResignationLetterGetUpdateDeleteAPIView(APIView):
         letter = object_check(ResignationLetter, pk)
         if letter is None:
             return Response({"error": "ResignationLetter not found"}, status=404)
-        serializer = ResignationLetterSerializer(letter, data=request.data, partial=True)
+        serializer = ResignationLetterSerializer(
+            letter, data=request.data, partial=True
+        )
         if serializer.is_valid():
             serializer.save()
             return Response(serializer.data, status=200)
@@ -409,7 +422,7 @@ class OffboardingTaskGetCreateAPIView(APIView):
 
     def get_queryset(self, request=None, stage_id=None):
         # Handle schema generation for DRF-YASG
-        if getattr(self, 'swagger_fake_view', False) or request is None:
+        if getattr(self, "swagger_fake_view", False) or request is None:
             return OffboardingTask.objects.none()
         queryset = OffboardingTask.objects.all()
         if stage_id:
@@ -427,7 +440,7 @@ class OffboardingTaskGetCreateAPIView(APIView):
                 return Response({"error": "OffboardingTask not found"}, status=404)
             serializer = OffboardingTaskSerializer(task)
             return Response(serializer.data, status=200)
-        
+
         tasks = self.get_queryset(request, stage_id)
         paginator = PageNumberPagination()
         page = paginator.paginate_queryset(tasks, request)
@@ -437,8 +450,8 @@ class OffboardingTaskGetCreateAPIView(APIView):
     @permission_required("offboarding.add_offboardingtask")
     def post(self, request, stage_id=None, **kwargs):
         data = request.data.copy()
-        if stage_id and not data.get('stage_id_write') and not data.get('stage_id'):
-            data['stage_id_write'] = stage_id
+        if stage_id and not data.get("stage_id_write") and not data.get("stage_id"):
+            data["stage_id_write"] = stage_id
         serializer = OffboardingTaskSerializer(data=data)
         if serializer.is_valid():
             serializer.save()
@@ -486,7 +499,7 @@ class EmployeeTaskGetCreateAPIView(APIView):
 
     def get_queryset(self, request=None, employee_id=None, task_id=None):
         # Handle schema generation for DRF-YASG
-        if getattr(self, 'swagger_fake_view', False) or request is None:
+        if getattr(self, "swagger_fake_view", False) or request is None:
             return EmployeeTask.objects.none()
         queryset = EmployeeTask.objects.all()
         if employee_id:
@@ -506,7 +519,7 @@ class EmployeeTaskGetCreateAPIView(APIView):
                 return Response({"error": "EmployeeTask not found"}, status=404)
             serializer = EmployeeTaskSerializer(employee_task)
             return Response(serializer.data, status=200)
-        
+
         employee_tasks = self.get_queryset(request, employee_id, task_id)
         paginator = PageNumberPagination()
         page = paginator.paginate_queryset(employee_tasks, request)
@@ -516,10 +529,14 @@ class EmployeeTaskGetCreateAPIView(APIView):
     @permission_required("offboarding.add_employeetask")
     def post(self, request, employee_id=None, task_id=None, **kwargs):
         data = request.data.copy()
-        if employee_id and not data.get('employee_id_write') and not data.get('employee_id'):
-            data['employee_id_write'] = employee_id
-        if task_id and not data.get('task_id_write') and not data.get('task_id'):
-            data['task_id_write'] = task_id
+        if (
+            employee_id
+            and not data.get("employee_id_write")
+            and not data.get("employee_id")
+        ):
+            data["employee_id_write"] = employee_id
+        if task_id and not data.get("task_id_write") and not data.get("task_id"):
+            data["task_id_write"] = task_id
         serializer = EmployeeTaskSerializer(data=data)
         if serializer.is_valid():
             serializer.save()
@@ -542,7 +559,9 @@ class EmployeeTaskGetUpdateDeleteAPIView(APIView):
         employee_task = object_check(EmployeeTask, pk)
         if employee_task is None:
             return Response({"error": "EmployeeTask not found"}, status=404)
-        serializer = EmployeeTaskSerializer(employee_task, data=request.data, partial=True)
+        serializer = EmployeeTaskSerializer(
+            employee_task, data=request.data, partial=True
+        )
         if serializer.is_valid():
             serializer.save()
             return Response(serializer.data, status=200)
@@ -567,7 +586,7 @@ class OffboardingNoteGetCreateAPIView(APIView):
 
     def get_queryset(self, request=None, employee_id=None, stage_id=None):
         # Handle schema generation for DRF-YASG
-        if getattr(self, 'swagger_fake_view', False) or request is None:
+        if getattr(self, "swagger_fake_view", False) or request is None:
             return OffboardingNote.objects.none()
         queryset = OffboardingNote.objects.all()
         if employee_id:
@@ -587,7 +606,7 @@ class OffboardingNoteGetCreateAPIView(APIView):
                 return Response({"error": "OffboardingNote not found"}, status=404)
             serializer = OffboardingNoteSerializer(note)
             return Response(serializer.data, status=200)
-        
+
         notes = self.get_queryset(request, employee_id, stage_id)
         paginator = PageNumberPagination()
         page = paginator.paginate_queryset(notes, request)
@@ -597,10 +616,14 @@ class OffboardingNoteGetCreateAPIView(APIView):
     @permission_required("offboarding.add_offboardingnote")
     def post(self, request, employee_id=None, stage_id=None, **kwargs):
         data = request.data.copy()
-        if employee_id and not data.get('employee_id_write') and not data.get('employee_id'):
-            data['employee_id_write'] = employee_id
-        if stage_id and not data.get('stage_id_write') and not data.get('stage_id'):
-            data['stage_id_write'] = stage_id
+        if (
+            employee_id
+            and not data.get("employee_id_write")
+            and not data.get("employee_id")
+        ):
+            data["employee_id_write"] = employee_id
+        if stage_id and not data.get("stage_id_write") and not data.get("stage_id"):
+            data["stage_id_write"] = stage_id
         serializer = OffboardingNoteSerializer(data=data)
         if serializer.is_valid():
             serializer.save()

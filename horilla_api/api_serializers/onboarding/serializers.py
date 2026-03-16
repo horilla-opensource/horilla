@@ -3,25 +3,33 @@ horilla_api/api_serializers/onboarding/serializers.py
 """
 
 from rest_framework import serializers
+
+from employee.models import Employee
 from onboarding.models import (
-    OnboardingStage,
-    OnboardingTask,
     CandidateStage,
     CandidateTask,
     OnboardingPortal,
+    OnboardingStage,
+    OnboardingTask,
 )
-from employee.models import Employee
 from recruitment.models import Candidate, Recruitment
 
 
 class OnboardingStageSerializer(serializers.ModelSerializer):
     recruitment_id = serializers.SerializerMethodField()
     recruitment_id_write = serializers.PrimaryKeyRelatedField(
-        queryset=Recruitment.objects.all(), source="recruitment_id", write_only=True, required=False
+        queryset=Recruitment.objects.all(),
+        source="recruitment_id",
+        write_only=True,
+        required=False,
     )
     employee_id = serializers.SerializerMethodField()
     employee_id_ids = serializers.PrimaryKeyRelatedField(
-        queryset=Employee.objects.all(), many=True, source="employee_id", write_only=True, required=False
+        queryset=Employee.objects.all(),
+        many=True,
+        source="employee_id",
+        write_only=True,
+        required=False,
     )
     onboarding_task = serializers.SerializerMethodField()
 
@@ -29,7 +37,7 @@ class OnboardingStageSerializer(serializers.ModelSerializer):
         model = OnboardingStage
         fields = "__all__"
         extra_kwargs = {
-            'employee_id': {'read_only': True},
+            "employee_id": {"read_only": True},
         }
 
     def get_recruitment_id(self, obj):
@@ -69,23 +77,34 @@ class OnboardingStageSerializer(serializers.ModelSerializer):
 class OnboardingTaskSerializer(serializers.ModelSerializer):
     stage_id = serializers.SerializerMethodField()
     stage_id_write = serializers.PrimaryKeyRelatedField(
-        queryset=OnboardingStage.objects.all(), source="stage_id", write_only=True, required=False
+        queryset=OnboardingStage.objects.all(),
+        source="stage_id",
+        write_only=True,
+        required=False,
     )
     candidates = serializers.SerializerMethodField()
     candidates_ids = serializers.PrimaryKeyRelatedField(
-        queryset=Candidate.objects.all(), many=True, source="candidates", write_only=True, required=False
+        queryset=Candidate.objects.all(),
+        many=True,
+        source="candidates",
+        write_only=True,
+        required=False,
     )
     employee_id = serializers.SerializerMethodField()
     employee_id_ids = serializers.PrimaryKeyRelatedField(
-        queryset=Employee.objects.all(), many=True, source="employee_id", write_only=True, required=False
+        queryset=Employee.objects.all(),
+        many=True,
+        source="employee_id",
+        write_only=True,
+        required=False,
     )
 
     class Meta:
         model = OnboardingTask
         fields = "__all__"
         extra_kwargs = {
-            'candidates': {'read_only': True},
-            'employee_id': {'read_only': True},
+            "candidates": {"read_only": True},
+            "employee_id": {"read_only": True},
         }
 
     def get_stage_id(self, obj):
@@ -125,11 +144,17 @@ class OnboardingTaskSerializer(serializers.ModelSerializer):
 class CandidateStageSerializer(serializers.ModelSerializer):
     candidate_id = serializers.SerializerMethodField()
     candidate_id_write = serializers.PrimaryKeyRelatedField(
-        queryset=Candidate.objects.all(), source="candidate_id", write_only=True, required=False
+        queryset=Candidate.objects.all(),
+        source="candidate_id",
+        write_only=True,
+        required=False,
     )
     onboarding_stage_id = serializers.SerializerMethodField()
     onboarding_stage_id_write = serializers.PrimaryKeyRelatedField(
-        queryset=OnboardingStage.objects.all(), source="onboarding_stage_id", write_only=True, required=False
+        queryset=OnboardingStage.objects.all(),
+        source="onboarding_stage_id",
+        write_only=True,
+        required=False,
     )
 
     class Meta:
@@ -157,15 +182,24 @@ class CandidateStageSerializer(serializers.ModelSerializer):
 class CandidateTaskSerializer(serializers.ModelSerializer):
     candidate_id = serializers.SerializerMethodField()
     candidate_id_write = serializers.PrimaryKeyRelatedField(
-        queryset=Candidate.objects.all(), source="candidate_id", write_only=True, required=False
+        queryset=Candidate.objects.all(),
+        source="candidate_id",
+        write_only=True,
+        required=False,
     )
     stage_id = serializers.SerializerMethodField()
     stage_id_write = serializers.PrimaryKeyRelatedField(
-        queryset=OnboardingStage.objects.all(), source="stage_id", write_only=True, required=False
+        queryset=OnboardingStage.objects.all(),
+        source="stage_id",
+        write_only=True,
+        required=False,
     )
     onboarding_task_id = serializers.SerializerMethodField()
     onboarding_task_id_write = serializers.PrimaryKeyRelatedField(
-        queryset=OnboardingTask.objects.all(), source="onboarding_task_id", write_only=True, required=False
+        queryset=OnboardingTask.objects.all(),
+        source="onboarding_task_id",
+        write_only=True,
+        required=False,
     )
 
     class Meta:
@@ -201,7 +235,10 @@ class CandidateTaskSerializer(serializers.ModelSerializer):
 class OnboardingPortalSerializer(serializers.ModelSerializer):
     candidate_id = serializers.SerializerMethodField()
     candidate_id_write = serializers.PrimaryKeyRelatedField(
-        queryset=Candidate.objects.all(), source="candidate_id", write_only=True, required=False
+        queryset=Candidate.objects.all(),
+        source="candidate_id",
+        write_only=True,
+        required=False,
     )
 
     class Meta:

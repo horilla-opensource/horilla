@@ -2,31 +2,32 @@
 horilla_api/api_views/project/views.py
 """
 
-from rest_framework.views import APIView
-from rest_framework.permissions import IsAuthenticated
-from rest_framework.response import Response
-from rest_framework import status
-from rest_framework.pagination import PageNumberPagination
-from django_filters.rest_framework import DjangoFilterBackend
-from django.shortcuts import get_object_or_404
-from django.http import Http404
 from django.contrib.auth.models import AnonymousUser
 from django.db.models import Q
+from django.http import Http404
+from django.shortcuts import get_object_or_404
+from django_filters.rest_framework import DjangoFilterBackend
+from rest_framework import status
+from rest_framework.pagination import PageNumberPagination
+from rest_framework.permissions import IsAuthenticated
+from rest_framework.response import Response
+from rest_framework.views import APIView
 
+from base.methods import filtersubordinates
 from horilla_api.api_serializers.project.serializers import (
     ProjectSerializer,
     ProjectStageSerializer,
     TaskSerializer,
     TimeSheetSerializer,
 )
+from project.filters import ProjectFilter, TaskAllFilter, TaskFilter, TimeSheetFilter
 from project.models import Project, ProjectStage, Task, TimeSheet
-from project.filters import ProjectFilter, TaskFilter, TaskAllFilter, TimeSheetFilter
-from ...api_methods.base.methods import groupby_queryset, permission_based_queryset
+
 from ...api_decorators.base.decorators import (
     manager_permission_required,
     permission_required,
 )
-from base.methods import filtersubordinates
+from ...api_methods.base.methods import groupby_queryset, permission_based_queryset
 
 
 def object_check(cls, pk):
@@ -46,7 +47,7 @@ class ProjectGetCreateAPIView(APIView):
 
     def get_queryset(self, request=None):
         # Handle schema generation for DRF-YASG
-        if getattr(self, 'swagger_fake_view', False) or request is None:
+        if getattr(self, "swagger_fake_view", False) or request is None:
             return Project.objects.none()
         queryset = Project.objects.all()
         user = request.user
@@ -62,16 +63,16 @@ class ProjectGetCreateAPIView(APIView):
                 return Response({"error": "Project not found"}, status=404)
             serializer = ProjectSerializer(project)
             return Response(serializer.data, status=200)
-        
+
         projects = self.get_queryset(request)
         filterset = self.filterset_class(request.GET, queryset=projects)
-        
+
         # groupby section
         field_name = request.GET.get("groupby_field", None)
         if field_name:
             url = request.build_absolute_uri()
             return groupby_queryset(request, url, field_name, filterset.qs)
-        
+
         # pagination section
         paginator = PageNumberPagination()
         page = paginator.paginate_queryset(filterset.qs, request)
@@ -126,7 +127,7 @@ class ProjectStageGetCreateAPIView(APIView):
 
     def get_queryset(self, project_id=None):
         # Handle schema generation for DRF-YASG
-        if getattr(self, 'swagger_fake_view', False):
+        if getattr(self, "swagger_fake_view", False):
             return ProjectStage.objects.none()
         if project_id:
             return ProjectStage.objects.filter(project_id=project_id)
@@ -145,8 +146,12 @@ class ProjectStageGetCreateAPIView(APIView):
     @permission_required("project.add_projectstage")
     def post(self, request, project_id=None, **kwargs):
         data = request.data.copy()
-        if project_id and not data.get('project_id_write') and not data.get('project_id'):
-            data['project_id_write'] = project_id
+        if (
+            project_id
+            and not data.get("project_id_write")
+            and not data.get("project_id")
+        ):
+            data["project_id_write"] = project_id
         serializer = ProjectStageSerializer(data=data)
         if serializer.is_valid():
             serializer.save()
@@ -196,7 +201,7 @@ class TaskGetCreateAPIView(APIView):
 
     def get_queryset(self, request=None, project_id=None):
         # Handle schema generation for DRF-YASG
-        if getattr(self, 'swagger_fake_view', False) or request is None:
+        if getattr(self, "swagger_fake_view", False) or request is None:
             return Task.objects.none()
         queryset = Task.objects.all()
         if project_id:
@@ -214,16 +219,16 @@ class TaskGetCreateAPIView(APIView):
                 return Response({"error": "Task not found"}, status=404)
             serializer = TaskSerializer(task)
             return Response(serializer.data, status=200)
-        
+
         tasks = self.get_queryset(request, project_id)
         filterset = self.filterset_class(request.GET, queryset=tasks)
-        
+
         # groupby section
         field_name = request.GET.get("groupby_field", None)
         if field_name:
             url = request.build_absolute_uri()
             return groupby_queryset(request, url, field_name, filterset.qs)
-        
+
         # pagination section
         paginator = PageNumberPagination()
         page = paginator.paginate_queryset(filterset.qs, request)
@@ -233,8 +238,12 @@ class TaskGetCreateAPIView(APIView):
     @permission_required("project.add_task")
     def post(self, request, project_id=None, **kwargs):
         data = request.data.copy()
-        if project_id and not data.get('project_id_write') and not data.get('project_id'):
-            data['project_id_write'] = project_id
+        if (
+            project_id
+            and not data.get("project_id_write")
+            and not data.get("project_id")
+        ):
+            data["project_id_write"] = project_id
         serializer = TaskSerializer(data=data)
         if serializer.is_valid():
             serializer.save()
@@ -284,7 +293,7 @@ class TimeSheetGetCreateAPIView(APIView):
 
     def get_queryset(self, request=None, project_id=None, task_id=None):
         # Handle schema generation for DRF-YASG
-        if getattr(self, 'swagger_fake_view', False) or request is None:
+        if getattr(self, "swagger_fake_view", False) or request is None:
             return TimeSheet.objects.none()
         queryset = TimeSheet.objects.all()
         if project_id:
@@ -304,16 +313,16 @@ class TimeSheetGetCreateAPIView(APIView):
                 return Response({"error": "TimeSheet not found"}, status=404)
             serializer = TimeSheetSerializer(timesheet)
             return Response(serializer.data, status=200)
-        
+
         timesheets = self.get_queryset(request, project_id, task_id)
         filterset = self.filterset_class(request.GET, queryset=timesheets)
-        
+
         # groupby section
         field_name = request.GET.get("groupby_field", None)
         if field_name:
             url = request.build_absolute_uri()
             return groupby_queryset(request, url, field_name, filterset.qs)
-        
+
         # pagination section
         paginator = PageNumberPagination()
         page = paginator.paginate_queryset(filterset.qs, request)
@@ -323,10 +332,14 @@ class TimeSheetGetCreateAPIView(APIView):
     @permission_required("project.add_timesheet")
     def post(self, request, project_id=None, task_id=None, **kwargs):
         data = request.data.copy()
-        if project_id and not data.get('project_id_write') and not data.get('project_id'):
-            data['project_id_write'] = project_id
-        if task_id and not data.get('task_id_write') and not data.get('task_id'):
-            data['task_id_write'] = task_id
+        if (
+            project_id
+            and not data.get("project_id_write")
+            and not data.get("project_id")
+        ):
+            data["project_id_write"] = project_id
+        if task_id and not data.get("task_id_write") and not data.get("task_id"):
+            data["task_id_write"] = task_id
         serializer = TimeSheetSerializer(data=data)
         if serializer.is_valid():
             serializer.save()

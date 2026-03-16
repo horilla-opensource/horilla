@@ -2,70 +2,71 @@
 horilla_api/api_views/pms/views.py
 """
 
-from rest_framework.views import APIView
-from rest_framework.permissions import IsAuthenticated
-from rest_framework.response import Response
+from django_filters.rest_framework import DjangoFilterBackend
 from rest_framework import status
 from rest_framework.pagination import PageNumberPagination
-from django_filters.rest_framework import DjangoFilterBackend
+from rest_framework.permissions import IsAuthenticated
+from rest_framework.response import Response
+from rest_framework.views import APIView
 
 from horilla_api.api_serializers.pms.serializers import (
-    PeriodSerializer,
-    KeyResultSerializer,
-    ObjectiveSerializer,
-    EmployeeObjectiveSerializer,
-    EmployeeKeyResultSerializer,
-    CommentSerializer,
-    QuestionTemplateSerializer,
-    QuestionSerializer,
-    QuestionOptionsSerializer,
-    FeedbackSerializer,
     AnonymousFeedbackSerializer,
     AnswerSerializer,
-    KeyResultFeedbackSerializer,
-    MeetingsSerializer,
-    MeetingsAnswerSerializer,
-    EmployeeBonusPointSerializer,
     BonusPointSettingSerializer,
+    CommentSerializer,
+    EmployeeBonusPointSerializer,
+    EmployeeKeyResultSerializer,
+    EmployeeObjectiveSerializer,
+    FeedbackSerializer,
+    KeyResultFeedbackSerializer,
+    KeyResultSerializer,
+    MeetingsAnswerSerializer,
+    MeetingsSerializer,
+    ObjectiveSerializer,
+    PeriodSerializer,
+    QuestionOptionsSerializer,
+    QuestionSerializer,
+    QuestionTemplateSerializer,
+)
+from pms.filters import (
+    ActualKeyResultFilter,
+    ActualObjectiveFilter,
+    AnonymousFilter,
+    BonusPointSettingFilter,
+    EmployeeBonusPointFilter,
+    EmployeeObjectiveFilter,
+    FeedbackFilter,
+    KeyResultFilter,
+    MeetingsFilter,
+    ObjectiveFilter,
+    PeriodFilter,
+    QuestionTemplateFilter,
 )
 from pms.models import (
-    Period,
-    KeyResult,
-    Objective,
-    EmployeeObjective,
-    EmployeeKeyResult,
-    Comment,
-    QuestionTemplate,
-    Question,
-    QuestionOptions,
-    Feedback,
     AnonymousFeedback,
     Answer,
+    BonusPointSetting,
+    Comment,
+    EmployeeBonusPoint,
+    EmployeeKeyResult,
+    EmployeeObjective,
+    Feedback,
+    KeyResult,
     KeyResultFeedback,
     Meetings,
     MeetingsAnswer,
-    EmployeeBonusPoint,
-    BonusPointSetting,
+    Objective,
+    Period,
+    Question,
+    QuestionOptions,
+    QuestionTemplate,
 )
-from pms.filters import (
-    PeriodFilter,
-    ActualKeyResultFilter,
-    ActualObjectiveFilter,
-    ObjectiveFilter,
-    EmployeeObjectiveFilter,
-    KeyResultFilter,
-    QuestionTemplateFilter,
-    FeedbackFilter,
-    AnonymousFilter,
-    MeetingsFilter,
-    BonusPointSettingFilter,
-    EmployeeBonusPointFilter,
-)
-from ...api_methods.base.methods import groupby_queryset, permission_based_queryset
+
 from ...api_decorators.base.decorators import (
     manager_permission_required,
     permission_required,
 )
+from ...api_methods.base.methods import groupby_queryset, permission_based_queryset
 
 
 def object_check(cls, pk):
@@ -84,7 +85,7 @@ class PeriodGetCreateAPIView(APIView):
     queryset = Period.objects.none()  # For drf-yasg schema generation
 
     def get_queryset(self, request=None):
-        if getattr(self, 'swagger_fake_view', False) or request is None:
+        if getattr(self, "swagger_fake_view", False) or request is None:
             return Period.objects.none()
         queryset = Period.objects.all()
         user = request.user
@@ -99,10 +100,10 @@ class PeriodGetCreateAPIView(APIView):
                 return Response({"error": "Period not found"}, status=404)
             serializer = PeriodSerializer(period)
             return Response(serializer.data, status=200)
-        
+
         periods = self.get_queryset(request)
         filterset = self.filterset_class(request.GET, queryset=periods)
-        
+
         paginator = PageNumberPagination()
         page = paginator.paginate_queryset(filterset.qs, request)
         serializer = PeriodSerializer(page, many=True)
@@ -158,7 +159,7 @@ class KeyResultGetCreateAPIView(APIView):
     queryset = KeyResult.objects.none()  # For drf-yasg schema generation
 
     def get_queryset(self, request=None):
-        if getattr(self, 'swagger_fake_view', False) or request is None:
+        if getattr(self, "swagger_fake_view", False) or request is None:
             return KeyResult.objects.none()
         queryset = KeyResult.objects.all()
         user = request.user
@@ -173,10 +174,10 @@ class KeyResultGetCreateAPIView(APIView):
                 return Response({"error": "KeyResult not found"}, status=404)
             serializer = KeyResultSerializer(key_result)
             return Response(serializer.data, status=200)
-        
+
         key_results = self.get_queryset(request)
         filterset = self.filterset_class(request.GET, queryset=key_results)
-        
+
         paginator = PageNumberPagination()
         page = paginator.paginate_queryset(filterset.qs, request)
         serializer = KeyResultSerializer(page, many=True)
@@ -232,7 +233,7 @@ class ObjectiveGetCreateAPIView(APIView):
     queryset = Objective.objects.none()  # For drf-yasg schema generation
 
     def get_queryset(self, request=None):
-        if getattr(self, 'swagger_fake_view', False) or request is None:
+        if getattr(self, "swagger_fake_view", False) or request is None:
             return Objective.objects.none()
         queryset = Objective.objects.all()
         user = request.user
@@ -247,10 +248,10 @@ class ObjectiveGetCreateAPIView(APIView):
                 return Response({"error": "Objective not found"}, status=404)
             serializer = ObjectiveSerializer(objective)
             return Response(serializer.data, status=200)
-        
+
         objectives = self.get_queryset(request)
         filterset = self.filterset_class(request.GET, queryset=objectives)
-        
+
         paginator = PageNumberPagination()
         page = paginator.paginate_queryset(filterset.qs, request)
         serializer = ObjectiveSerializer(page, many=True)
@@ -306,7 +307,7 @@ class EmployeeObjectiveGetCreateAPIView(APIView):
     queryset = EmployeeObjective.objects.none()  # For drf-yasg schema generation
 
     def get_queryset(self, request=None, employee_id=None, objective_id=None):
-        if getattr(self, 'swagger_fake_view', False) or request is None:
+        if getattr(self, "swagger_fake_view", False) or request is None:
             return EmployeeObjective.objects.none()
         queryset = EmployeeObjective.objects.all()
         if employee_id:
@@ -325,15 +326,15 @@ class EmployeeObjectiveGetCreateAPIView(APIView):
                 return Response({"error": "EmployeeObjective not found"}, status=404)
             serializer = EmployeeObjectiveSerializer(employee_objective)
             return Response(serializer.data, status=200)
-        
+
         employee_objectives = self.get_queryset(request, employee_id, objective_id)
         filterset = self.filterset_class(request.GET, queryset=employee_objectives)
-        
+
         field_name = request.GET.get("groupby_field", None)
         if field_name:
             url = request.build_absolute_uri()
             return groupby_queryset(request, url, field_name, filterset.qs)
-        
+
         paginator = PageNumberPagination()
         page = paginator.paginate_queryset(filterset.qs, request)
         serializer = EmployeeObjectiveSerializer(page, many=True)
@@ -342,10 +343,18 @@ class EmployeeObjectiveGetCreateAPIView(APIView):
     @permission_required("pms.add_employeeobjective")
     def post(self, request, employee_id=None, objective_id=None, **kwargs):
         data = request.data.copy()
-        if employee_id and not data.get('employee_id_write') and not data.get('employee_id'):
-            data['employee_id_write'] = employee_id
-        if objective_id and not data.get('objective_id_write') and not data.get('objective_id'):
-            data['objective_id_write'] = objective_id
+        if (
+            employee_id
+            and not data.get("employee_id_write")
+            and not data.get("employee_id")
+        ):
+            data["employee_id_write"] = employee_id
+        if (
+            objective_id
+            and not data.get("objective_id_write")
+            and not data.get("objective_id")
+        ):
+            data["objective_id_write"] = objective_id
         serializer = EmployeeObjectiveSerializer(data=data)
         if serializer.is_valid():
             serializer.save()
@@ -368,7 +377,9 @@ class EmployeeObjectiveGetUpdateDeleteAPIView(APIView):
         employee_objective = object_check(EmployeeObjective, pk)
         if employee_objective is None:
             return Response({"error": "EmployeeObjective not found"}, status=404)
-        serializer = EmployeeObjectiveSerializer(employee_objective, data=request.data, partial=True)
+        serializer = EmployeeObjectiveSerializer(
+            employee_objective, data=request.data, partial=True
+        )
         if serializer.is_valid():
             serializer.save()
             return Response(serializer.data, status=200)
@@ -393,8 +404,10 @@ class EmployeeKeyResultGetCreateAPIView(APIView):
     filterset_class = KeyResultFilter
     queryset = EmployeeKeyResult.objects.none()  # For drf-yasg schema generation
 
-    def get_queryset(self, request=None, employee_objective_id=None, key_result_id=None):
-        if getattr(self, 'swagger_fake_view', False) or request is None:
+    def get_queryset(
+        self, request=None, employee_objective_id=None, key_result_id=None
+    ):
+        if getattr(self, "swagger_fake_view", False) or request is None:
             return EmployeeKeyResult.objects.none()
         queryset = EmployeeKeyResult.objects.all()
         if employee_objective_id:
@@ -413,10 +426,12 @@ class EmployeeKeyResultGetCreateAPIView(APIView):
                 return Response({"error": "EmployeeKeyResult not found"}, status=404)
             serializer = EmployeeKeyResultSerializer(employee_key_result)
             return Response(serializer.data, status=200)
-        
-        employee_key_results = self.get_queryset(request, employee_objective_id, key_result_id)
+
+        employee_key_results = self.get_queryset(
+            request, employee_objective_id, key_result_id
+        )
         filterset = self.filterset_class(request.GET, queryset=employee_key_results)
-        
+
         paginator = PageNumberPagination()
         page = paginator.paginate_queryset(filterset.qs, request)
         serializer = EmployeeKeyResultSerializer(page, many=True)
@@ -425,10 +440,18 @@ class EmployeeKeyResultGetCreateAPIView(APIView):
     @permission_required("pms.add_employeekeyresult")
     def post(self, request, employee_objective_id=None, key_result_id=None, **kwargs):
         data = request.data.copy()
-        if employee_objective_id and not data.get('employee_objective_id_write') and not data.get('employee_objective_id'):
-            data['employee_objective_id_write'] = employee_objective_id
-        if key_result_id and not data.get('key_result_id_write') and not data.get('key_result_id'):
-            data['key_result_id_write'] = key_result_id
+        if (
+            employee_objective_id
+            and not data.get("employee_objective_id_write")
+            and not data.get("employee_objective_id")
+        ):
+            data["employee_objective_id_write"] = employee_objective_id
+        if (
+            key_result_id
+            and not data.get("key_result_id_write")
+            and not data.get("key_result_id")
+        ):
+            data["key_result_id_write"] = key_result_id
         serializer = EmployeeKeyResultSerializer(data=data)
         if serializer.is_valid():
             serializer.save()
@@ -451,7 +474,9 @@ class EmployeeKeyResultGetUpdateDeleteAPIView(APIView):
         employee_key_result = object_check(EmployeeKeyResult, pk)
         if employee_key_result is None:
             return Response({"error": "EmployeeKeyResult not found"}, status=404)
-        serializer = EmployeeKeyResultSerializer(employee_key_result, data=request.data, partial=True)
+        serializer = EmployeeKeyResultSerializer(
+            employee_key_result, data=request.data, partial=True
+        )
         if serializer.is_valid():
             serializer.save()
             return Response(serializer.data, status=200)
@@ -475,7 +500,7 @@ class CommentGetCreateAPIView(APIView):
     queryset = Comment.objects.none()  # For drf-yasg schema generation
 
     def get_queryset(self, request=None, employee_objective_id=None):
-        if getattr(self, 'swagger_fake_view', False) or request is None:
+        if getattr(self, "swagger_fake_view", False) or request is None:
             return Comment.objects.none()
         queryset = Comment.objects.all()
         if employee_objective_id:
@@ -492,7 +517,7 @@ class CommentGetCreateAPIView(APIView):
                 return Response({"error": "Comment not found"}, status=404)
             serializer = CommentSerializer(comment)
             return Response(serializer.data, status=200)
-        
+
         comments = self.get_queryset(request, employee_objective_id)
         paginator = PageNumberPagination()
         page = paginator.paginate_queryset(comments, request)
@@ -502,8 +527,12 @@ class CommentGetCreateAPIView(APIView):
     @permission_required("pms.add_comment")
     def post(self, request, employee_objective_id=None, **kwargs):
         data = request.data.copy()
-        if employee_objective_id and not data.get('employee_objective_id_write') and not data.get('employee_objective_id'):
-            data['employee_objective_id_write'] = employee_objective_id
+        if (
+            employee_objective_id
+            and not data.get("employee_objective_id_write")
+            and not data.get("employee_objective_id")
+        ):
+            data["employee_objective_id_write"] = employee_objective_id
         serializer = CommentSerializer(data=data)
         if serializer.is_valid():
             serializer.save()
@@ -552,7 +581,7 @@ class QuestionTemplateGetCreateAPIView(APIView):
     queryset = QuestionTemplate.objects.none()  # For drf-yasg schema generation
 
     def get_queryset(self, request=None):
-        if getattr(self, 'swagger_fake_view', False) or request is None:
+        if getattr(self, "swagger_fake_view", False) or request is None:
             return QuestionTemplate.objects.none()
         queryset = QuestionTemplate.objects.all()
         user = request.user
@@ -567,10 +596,10 @@ class QuestionTemplateGetCreateAPIView(APIView):
                 return Response({"error": "QuestionTemplate not found"}, status=404)
             serializer = QuestionTemplateSerializer(template)
             return Response(serializer.data, status=200)
-        
+
         templates = self.get_queryset(request)
         filterset = self.filterset_class(request.GET, queryset=templates)
-        
+
         paginator = PageNumberPagination()
         page = paginator.paginate_queryset(filterset.qs, request)
         serializer = QuestionTemplateSerializer(page, many=True)
@@ -600,7 +629,9 @@ class QuestionTemplateGetUpdateDeleteAPIView(APIView):
         template = object_check(QuestionTemplate, pk)
         if template is None:
             return Response({"error": "QuestionTemplate not found"}, status=404)
-        serializer = QuestionTemplateSerializer(template, data=request.data, partial=True)
+        serializer = QuestionTemplateSerializer(
+            template, data=request.data, partial=True
+        )
         if serializer.is_valid():
             serializer.save()
             return Response(serializer.data, status=200)
@@ -624,7 +655,7 @@ class QuestionGetCreateAPIView(APIView):
     queryset = Question.objects.none()  # For drf-yasg schema generation
 
     def get_queryset(self, request=None, template_id=None):
-        if getattr(self, 'swagger_fake_view', False) or request is None:
+        if getattr(self, "swagger_fake_view", False) or request is None:
             return Question.objects.none()
         queryset = Question.objects.all()
         if template_id:
@@ -641,7 +672,7 @@ class QuestionGetCreateAPIView(APIView):
                 return Response({"error": "Question not found"}, status=404)
             serializer = QuestionSerializer(question)
             return Response(serializer.data, status=200)
-        
+
         questions = self.get_queryset(request, template_id)
         paginator = PageNumberPagination()
         page = paginator.paginate_queryset(questions, request)
@@ -651,8 +682,12 @@ class QuestionGetCreateAPIView(APIView):
     @permission_required("pms.add_question")
     def post(self, request, template_id=None, **kwargs):
         data = request.data.copy()
-        if template_id and not data.get('template_id_write') and not data.get('template_id'):
-            data['template_id_write'] = template_id
+        if (
+            template_id
+            and not data.get("template_id_write")
+            and not data.get("template_id")
+        ):
+            data["template_id_write"] = template_id
         serializer = QuestionSerializer(data=data)
         if serializer.is_valid():
             serializer.save()
@@ -699,7 +734,7 @@ class QuestionOptionsGetCreateAPIView(APIView):
     queryset = QuestionOptions.objects.none()  # For drf-yasg schema generation
 
     def get_queryset(self, request=None, question_id=None):
-        if getattr(self, 'swagger_fake_view', False) or request is None:
+        if getattr(self, "swagger_fake_view", False) or request is None:
             return QuestionOptions.objects.none()
         queryset = QuestionOptions.objects.all()
         if question_id:
@@ -716,7 +751,7 @@ class QuestionOptionsGetCreateAPIView(APIView):
                 return Response({"error": "QuestionOptions not found"}, status=404)
             serializer = QuestionOptionsSerializer(options)
             return Response(serializer.data, status=200)
-        
+
         options_list = self.get_queryset(request, question_id)
         paginator = PageNumberPagination()
         page = paginator.paginate_queryset(options_list, request)
@@ -726,8 +761,12 @@ class QuestionOptionsGetCreateAPIView(APIView):
     @permission_required("pms.add_questionoptions")
     def post(self, request, question_id=None, **kwargs):
         data = request.data.copy()
-        if question_id and not data.get('question_id_write') and not data.get('question_id'):
-            data['question_id_write'] = question_id
+        if (
+            question_id
+            and not data.get("question_id_write")
+            and not data.get("question_id")
+        ):
+            data["question_id_write"] = question_id
         serializer = QuestionOptionsSerializer(data=data)
         if serializer.is_valid():
             serializer.save()
@@ -776,7 +815,7 @@ class FeedbackGetCreateAPIView(APIView):
     queryset = Feedback.objects.none()  # For drf-yasg schema generation
 
     def get_queryset(self, request=None, employee_id=None):
-        if getattr(self, 'swagger_fake_view', False) or request is None:
+        if getattr(self, "swagger_fake_view", False) or request is None:
             return Feedback.objects.none()
         queryset = Feedback.objects.all()
         if employee_id:
@@ -793,10 +832,10 @@ class FeedbackGetCreateAPIView(APIView):
                 return Response({"error": "Feedback not found"}, status=404)
             serializer = FeedbackSerializer(feedback)
             return Response(serializer.data, status=200)
-        
+
         feedbacks = self.get_queryset(request, employee_id)
         filterset = self.filterset_class(request.GET, queryset=feedbacks)
-        
+
         paginator = PageNumberPagination()
         page = paginator.paginate_queryset(filterset.qs, request)
         serializer = FeedbackSerializer(page, many=True)
@@ -805,8 +844,12 @@ class FeedbackGetCreateAPIView(APIView):
     @permission_required("pms.add_feedback")
     def post(self, request, employee_id=None, **kwargs):
         data = request.data.copy()
-        if employee_id and not data.get('employee_id_write') and not data.get('employee_id'):
-            data['employee_id_write'] = employee_id
+        if (
+            employee_id
+            and not data.get("employee_id_write")
+            and not data.get("employee_id")
+        ):
+            data["employee_id_write"] = employee_id
         serializer = FeedbackSerializer(data=data)
         if serializer.is_valid():
             serializer.save()
@@ -853,7 +896,7 @@ class AnswerGetCreateAPIView(APIView):
     queryset = Answer.objects.none()  # For drf-yasg schema generation
 
     def get_queryset(self, request=None, feedback_id=None, question_id=None):
-        if getattr(self, 'swagger_fake_view', False) or request is None:
+        if getattr(self, "swagger_fake_view", False) or request is None:
             return Answer.objects.none()
         queryset = Answer.objects.all()
         if feedback_id:
@@ -872,7 +915,7 @@ class AnswerGetCreateAPIView(APIView):
                 return Response({"error": "Answer not found"}, status=404)
             serializer = AnswerSerializer(answer)
             return Response(serializer.data, status=200)
-        
+
         answers = self.get_queryset(request, feedback_id, question_id)
         paginator = PageNumberPagination()
         page = paginator.paginate_queryset(answers, request)
@@ -882,10 +925,18 @@ class AnswerGetCreateAPIView(APIView):
     @permission_required("pms.add_answer")
     def post(self, request, feedback_id=None, question_id=None, **kwargs):
         data = request.data.copy()
-        if feedback_id and not data.get('feedback_id_write') and not data.get('feedback_id'):
-            data['feedback_id_write'] = feedback_id
-        if question_id and not data.get('question_id_write') and not data.get('question_id'):
-            data['question_id_write'] = question_id
+        if (
+            feedback_id
+            and not data.get("feedback_id_write")
+            and not data.get("feedback_id")
+        ):
+            data["feedback_id_write"] = feedback_id
+        if (
+            question_id
+            and not data.get("question_id_write")
+            and not data.get("question_id")
+        ):
+            data["question_id_write"] = question_id
         serializer = AnswerSerializer(data=data)
         if serializer.is_valid():
             serializer.save()
@@ -932,7 +983,7 @@ class KeyResultFeedbackGetCreateAPIView(APIView):
     queryset = KeyResultFeedback.objects.none()  # For drf-yasg schema generation
 
     def get_queryset(self, request=None, feedback_id=None, key_result_id=None):
-        if getattr(self, 'swagger_fake_view', False) or request is None:
+        if getattr(self, "swagger_fake_view", False) or request is None:
             return KeyResultFeedback.objects.none()
         queryset = KeyResultFeedback.objects.all()
         if feedback_id:
@@ -951,7 +1002,7 @@ class KeyResultFeedbackGetCreateAPIView(APIView):
                 return Response({"error": "KeyResultFeedback not found"}, status=404)
             serializer = KeyResultFeedbackSerializer(kr_feedback)
             return Response(serializer.data, status=200)
-        
+
         kr_feedbacks = self.get_queryset(request, feedback_id, key_result_id)
         paginator = PageNumberPagination()
         page = paginator.paginate_queryset(kr_feedbacks, request)
@@ -961,10 +1012,18 @@ class KeyResultFeedbackGetCreateAPIView(APIView):
     @permission_required("pms.add_keyresultfeedback")
     def post(self, request, feedback_id=None, key_result_id=None, **kwargs):
         data = request.data.copy()
-        if feedback_id and not data.get('feedback_id_write') and not data.get('feedback_id'):
-            data['feedback_id_write'] = feedback_id
-        if key_result_id and not data.get('key_result_id_write') and not data.get('key_result_id'):
-            data['key_result_id_write'] = key_result_id
+        if (
+            feedback_id
+            and not data.get("feedback_id_write")
+            and not data.get("feedback_id")
+        ):
+            data["feedback_id_write"] = feedback_id
+        if (
+            key_result_id
+            and not data.get("key_result_id_write")
+            and not data.get("key_result_id")
+        ):
+            data["key_result_id_write"] = key_result_id
         serializer = KeyResultFeedbackSerializer(data=data)
         if serializer.is_valid():
             serializer.save()
@@ -987,7 +1046,9 @@ class KeyResultFeedbackGetUpdateDeleteAPIView(APIView):
         kr_feedback = object_check(KeyResultFeedback, pk)
         if kr_feedback is None:
             return Response({"error": "KeyResultFeedback not found"}, status=404)
-        serializer = KeyResultFeedbackSerializer(kr_feedback, data=request.data, partial=True)
+        serializer = KeyResultFeedbackSerializer(
+            kr_feedback, data=request.data, partial=True
+        )
         if serializer.is_valid():
             serializer.save()
             return Response(serializer.data, status=200)
@@ -1013,7 +1074,7 @@ class MeetingsGetCreateAPIView(APIView):
     queryset = Meetings.objects.none()  # For drf-yasg schema generation
 
     def get_queryset(self, request=None):
-        if getattr(self, 'swagger_fake_view', False) or request is None:
+        if getattr(self, "swagger_fake_view", False) or request is None:
             return Meetings.objects.none()
         queryset = Meetings.objects.all()
         user = request.user
@@ -1028,10 +1089,10 @@ class MeetingsGetCreateAPIView(APIView):
                 return Response({"error": "Meetings not found"}, status=404)
             serializer = MeetingsSerializer(meeting)
             return Response(serializer.data, status=200)
-        
+
         meetings = self.get_queryset(request)
         filterset = self.filterset_class(request.GET, queryset=meetings)
-        
+
         paginator = PageNumberPagination()
         page = paginator.paginate_queryset(filterset.qs, request)
         serializer = MeetingsSerializer(page, many=True)
@@ -1085,7 +1146,7 @@ class MeetingsAnswerGetCreateAPIView(APIView):
     queryset = MeetingsAnswer.objects.none()  # For drf-yasg schema generation
 
     def get_queryset(self, request=None, meeting_id=None, question_id=None):
-        if getattr(self, 'swagger_fake_view', False) or request is None:
+        if getattr(self, "swagger_fake_view", False) or request is None:
             return MeetingsAnswer.objects.none()
         queryset = MeetingsAnswer.objects.all()
         if meeting_id:
@@ -1104,7 +1165,7 @@ class MeetingsAnswerGetCreateAPIView(APIView):
                 return Response({"error": "MeetingsAnswer not found"}, status=404)
             serializer = MeetingsAnswerSerializer(answer)
             return Response(serializer.data, status=200)
-        
+
         answers = self.get_queryset(request, meeting_id, question_id)
         paginator = PageNumberPagination()
         page = paginator.paginate_queryset(answers, request)
@@ -1114,10 +1175,18 @@ class MeetingsAnswerGetCreateAPIView(APIView):
     @permission_required("pms.add_meetingsanswer")
     def post(self, request, meeting_id=None, question_id=None, **kwargs):
         data = request.data.copy()
-        if meeting_id and not data.get('meeting_id_write') and not data.get('meeting_id'):
-            data['meeting_id_write'] = meeting_id
-        if question_id and not data.get('question_id_write') and not data.get('question_id'):
-            data['question_id_write'] = question_id
+        if (
+            meeting_id
+            and not data.get("meeting_id_write")
+            and not data.get("meeting_id")
+        ):
+            data["meeting_id_write"] = meeting_id
+        if (
+            question_id
+            and not data.get("question_id_write")
+            and not data.get("question_id")
+        ):
+            data["question_id_write"] = question_id
         serializer = MeetingsAnswerSerializer(data=data)
         if serializer.is_valid():
             serializer.save()
@@ -1166,7 +1235,7 @@ class EmployeeBonusPointGetCreateAPIView(APIView):
     queryset = EmployeeBonusPoint.objects.none()  # For drf-yasg schema generation
 
     def get_queryset(self, request=None, employee_id=None):
-        if getattr(self, 'swagger_fake_view', False) or request is None:
+        if getattr(self, "swagger_fake_view", False) or request is None:
             return EmployeeBonusPoint.objects.none()
         queryset = EmployeeBonusPoint.objects.all()
         if employee_id:
@@ -1183,10 +1252,10 @@ class EmployeeBonusPointGetCreateAPIView(APIView):
                 return Response({"error": "EmployeeBonusPoint not found"}, status=404)
             serializer = EmployeeBonusPointSerializer(bonus_point)
             return Response(serializer.data, status=200)
-        
+
         bonus_points = self.get_queryset(request, employee_id)
         filterset = self.filterset_class(request.GET, queryset=bonus_points)
-        
+
         paginator = PageNumberPagination()
         page = paginator.paginate_queryset(filterset.qs, request)
         serializer = EmployeeBonusPointSerializer(page, many=True)
@@ -1195,8 +1264,12 @@ class EmployeeBonusPointGetCreateAPIView(APIView):
     @permission_required("pms.add_employeebonuspoint")
     def post(self, request, employee_id=None, **kwargs):
         data = request.data.copy()
-        if employee_id and not data.get('employee_id_write') and not data.get('employee_id'):
-            data['employee_id_write'] = employee_id
+        if (
+            employee_id
+            and not data.get("employee_id_write")
+            and not data.get("employee_id")
+        ):
+            data["employee_id_write"] = employee_id
         serializer = EmployeeBonusPointSerializer(data=data)
         if serializer.is_valid():
             serializer.save()
@@ -1219,7 +1292,9 @@ class EmployeeBonusPointGetUpdateDeleteAPIView(APIView):
         bonus_point = object_check(EmployeeBonusPoint, pk)
         if bonus_point is None:
             return Response({"error": "EmployeeBonusPoint not found"}, status=404)
-        serializer = EmployeeBonusPointSerializer(bonus_point, data=request.data, partial=True)
+        serializer = EmployeeBonusPointSerializer(
+            bonus_point, data=request.data, partial=True
+        )
         if serializer.is_valid():
             serializer.save()
             return Response(serializer.data, status=200)
@@ -1245,7 +1320,7 @@ class BonusPointSettingGetCreateAPIView(APIView):
     queryset = BonusPointSetting.objects.none()  # For drf-yasg schema generation
 
     def get_queryset(self, request=None):
-        if getattr(self, 'swagger_fake_view', False) or request is None:
+        if getattr(self, "swagger_fake_view", False) or request is None:
             return BonusPointSetting.objects.none()
         return BonusPointSetting.objects.all()
 
@@ -1256,10 +1331,10 @@ class BonusPointSettingGetCreateAPIView(APIView):
                 return Response({"error": "BonusPointSetting not found"}, status=404)
             serializer = BonusPointSettingSerializer(setting)
             return Response(serializer.data, status=200)
-        
+
         settings = self.get_queryset(request)
         filterset = self.filterset_class(request.GET, queryset=settings)
-        
+
         paginator = PageNumberPagination()
         page = paginator.paginate_queryset(filterset.qs, request)
         serializer = BonusPointSettingSerializer(page, many=True)
@@ -1289,7 +1364,9 @@ class BonusPointSettingGetUpdateDeleteAPIView(APIView):
         setting = object_check(BonusPointSetting, pk)
         if setting is None:
             return Response({"error": "BonusPointSetting not found"}, status=404)
-        serializer = BonusPointSettingSerializer(setting, data=request.data, partial=True)
+        serializer = BonusPointSettingSerializer(
+            setting, data=request.data, partial=True
+        )
         if serializer.is_valid():
             serializer.save()
             return Response(serializer.data, status=200)
@@ -1315,7 +1392,7 @@ class AnonymousFeedbackGetCreateAPIView(APIView):
     queryset = AnonymousFeedback.objects.none()  # For drf-yasg schema generation
 
     def get_queryset(self, request=None):
-        if getattr(self, 'swagger_fake_view', False) or request is None:
+        if getattr(self, "swagger_fake_view", False) or request is None:
             return AnonymousFeedback.objects.none()
         queryset = AnonymousFeedback.objects.all()
         user = request.user
@@ -1330,10 +1407,10 @@ class AnonymousFeedbackGetCreateAPIView(APIView):
                 return Response({"error": "AnonymousFeedback not found"}, status=404)
             serializer = AnonymousFeedbackSerializer(feedback)
             return Response(serializer.data, status=200)
-        
+
         feedbacks = self.get_queryset(request)
         filterset = self.filterset_class(request.GET, queryset=feedbacks)
-        
+
         paginator = PageNumberPagination()
         page = paginator.paginate_queryset(filterset.qs, request)
         serializer = AnonymousFeedbackSerializer(page, many=True)
@@ -1363,7 +1440,9 @@ class AnonymousFeedbackGetUpdateDeleteAPIView(APIView):
         feedback = object_check(AnonymousFeedback, pk)
         if feedback is None:
             return Response({"error": "AnonymousFeedback not found"}, status=404)
-        serializer = AnonymousFeedbackSerializer(feedback, data=request.data, partial=True)
+        serializer = AnonymousFeedbackSerializer(
+            feedback, data=request.data, partial=True
+        )
         if serializer.is_valid():
             serializer.save()
             return Response(serializer.data, status=200)

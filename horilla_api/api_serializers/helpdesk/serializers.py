@@ -3,18 +3,19 @@ horilla_api/api_serializers/helpdesk/serializers.py
 """
 
 from rest_framework import serializers
+
+from base.models import Tags
+from employee.models import Employee
 from helpdesk.models import (
-    Ticket,
-    TicketType,
     FAQ,
-    FAQCategory,
-    Comment,
     Attachment,
     ClaimRequest,
+    Comment,
     DepartmentManager,
+    FAQCategory,
+    Ticket,
+    TicketType,
 )
-from employee.models import Employee
-from base.models import Tags
 
 
 class TicketTypeSerializer(serializers.ModelSerializer):
@@ -73,7 +74,10 @@ class DepartmentManagerSerializer(serializers.ModelSerializer):
 class CommentSerializer(serializers.ModelSerializer):
     employee_id = serializers.SerializerMethodField()
     employee_id_write = serializers.PrimaryKeyRelatedField(
-        queryset=Employee.objects.all(), source="employee_id", write_only=True, required=False
+        queryset=Employee.objects.all(),
+        source="employee_id",
+        write_only=True,
+        required=False,
     )
     ticket_id = serializers.PrimaryKeyRelatedField(
         queryset=Ticket.objects.all(), source="ticket", write_only=True
@@ -99,7 +103,10 @@ class AttachmentSerializer(serializers.ModelSerializer):
         queryset=Ticket.objects.all(), source="ticket", write_only=True, required=False
     )
     comment_id = serializers.PrimaryKeyRelatedField(
-        queryset=Comment.objects.all(), source="comment", write_only=True, required=False
+        queryset=Comment.objects.all(),
+        source="comment",
+        write_only=True,
+        required=False,
     )
 
     class Meta:
@@ -143,7 +150,10 @@ class ClaimRequestSerializer(serializers.ModelSerializer):
 class TicketSerializer(serializers.ModelSerializer):
     employee_id = serializers.SerializerMethodField()
     employee_id_write = serializers.PrimaryKeyRelatedField(
-        queryset=Employee.objects.all(), source="employee_id", write_only=True, required=False
+        queryset=Employee.objects.all(),
+        source="employee_id",
+        write_only=True,
+        required=False,
     )
     ticket_type = TicketTypeSerializer(read_only=True)
     ticket_type_id = serializers.PrimaryKeyRelatedField(
@@ -151,11 +161,19 @@ class TicketSerializer(serializers.ModelSerializer):
     )
     assigned_to = serializers.SerializerMethodField()
     assigned_to_ids = serializers.PrimaryKeyRelatedField(
-        queryset=Employee.objects.all(), many=True, source="assigned_to", write_only=True, required=False
+        queryset=Employee.objects.all(),
+        many=True,
+        source="assigned_to",
+        write_only=True,
+        required=False,
     )
     tags = serializers.SerializerMethodField()
     tags_ids = serializers.PrimaryKeyRelatedField(
-        queryset=Tags.objects.all(), many=True, source="tags", write_only=True, required=False
+        queryset=Tags.objects.all(),
+        many=True,
+        source="tags",
+        write_only=True,
+        required=False,
     )
     raised_on_display = serializers.SerializerMethodField()
     comments = CommentSerializer(many=True, read_only=True)
@@ -165,8 +183,8 @@ class TicketSerializer(serializers.ModelSerializer):
         model = Ticket
         fields = "__all__"
         extra_kwargs = {
-            'assigned_to': {'read_only': True},
-            'tags': {'read_only': True},
+            "assigned_to": {"read_only": True},
+            "tags": {"read_only": True},
         }
 
     def get_employee_id(self, obj):
@@ -202,4 +220,3 @@ class TicketSerializer(serializers.ModelSerializer):
             return obj.get_raised_on()
         except:
             return obj.raised_on
-

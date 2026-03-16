@@ -3,26 +3,27 @@ horilla_api/api_serializers/recruitment/serializers.py
 """
 
 from rest_framework import serializers
+
+from base.models import Company, JobPosition
+from employee.models import Employee
 from recruitment.models import (
-    Recruitment,
-    Stage,
     Candidate,
+    CandidateDocument,
+    CandidateDocumentRequest,
+    CandidateRating,
     InterviewSchedule,
-    Skill,
-    SurveyTemplate,
+    LinkedInAccount,
+    Recruitment,
     RecruitmentSurvey,
     RecruitmentSurveyAnswer,
+    RejectedCandidate,
+    RejectReason,
+    Skill,
     SkillZone,
     SkillZoneCandidate,
-    CandidateRating,
-    RejectReason,
-    RejectedCandidate,
-    CandidateDocumentRequest,
-    CandidateDocument,
-    LinkedInAccount,
+    Stage,
+    SurveyTemplate,
 )
-from employee.models import Employee
-from base.models import Company, JobPosition
 
 
 class SkillSerializer(serializers.ModelSerializer):
@@ -34,7 +35,10 @@ class SkillSerializer(serializers.ModelSerializer):
 class SurveyTemplateSerializer(serializers.ModelSerializer):
     company_id = serializers.SerializerMethodField()
     company_id_write = serializers.PrimaryKeyRelatedField(
-        queryset=Company.objects.all(), source="company_id", write_only=True, required=False
+        queryset=Company.objects.all(),
+        source="company_id",
+        write_only=True,
+        required=False,
     )
 
     class Meta:
@@ -53,41 +57,66 @@ class SurveyTemplateSerializer(serializers.ModelSerializer):
 class RecruitmentSerializer(serializers.ModelSerializer):
     recruitment_managers = serializers.SerializerMethodField()
     recruitment_managers_ids = serializers.PrimaryKeyRelatedField(
-        queryset=Employee.objects.all(), many=True, source="recruitment_managers", write_only=True, required=False
+        queryset=Employee.objects.all(),
+        many=True,
+        source="recruitment_managers",
+        write_only=True,
+        required=False,
     )
     open_positions = serializers.SerializerMethodField()
     open_positions_ids = serializers.PrimaryKeyRelatedField(
-        queryset=JobPosition.objects.all(), many=True, source="open_positions", write_only=True, required=False
+        queryset=JobPosition.objects.all(),
+        many=True,
+        source="open_positions",
+        write_only=True,
+        required=False,
     )
     company_id = serializers.SerializerMethodField()
     company_id_write = serializers.PrimaryKeyRelatedField(
-        queryset=Company.objects.all(), source="company_id", write_only=True, required=False
+        queryset=Company.objects.all(),
+        source="company_id",
+        write_only=True,
+        required=False,
     )
     job_position_id = serializers.SerializerMethodField()
     job_position_id_write = serializers.PrimaryKeyRelatedField(
-        queryset=JobPosition.objects.all(), source="job_position_id", write_only=True, required=False
+        queryset=JobPosition.objects.all(),
+        source="job_position_id",
+        write_only=True,
+        required=False,
     )
     skills = serializers.SerializerMethodField()
     skills_ids = serializers.PrimaryKeyRelatedField(
-        queryset=Skill.objects.all(), many=True, source="skills", write_only=True, required=False
+        queryset=Skill.objects.all(),
+        many=True,
+        source="skills",
+        write_only=True,
+        required=False,
     )
     survey_templates = serializers.SerializerMethodField()
     survey_templates_ids = serializers.PrimaryKeyRelatedField(
-        queryset=SurveyTemplate.objects.all(), many=True, source="survey_templates", write_only=True, required=False
+        queryset=SurveyTemplate.objects.all(),
+        many=True,
+        source="survey_templates",
+        write_only=True,
+        required=False,
     )
     linkedin_account_id = serializers.SerializerMethodField()
     linkedin_account_id_write = serializers.PrimaryKeyRelatedField(
-        queryset=LinkedInAccount.objects.all(), source="linkedin_account_id", write_only=True, required=False
+        queryset=LinkedInAccount.objects.all(),
+        source="linkedin_account_id",
+        write_only=True,
+        required=False,
     )
 
     class Meta:
         model = Recruitment
         fields = "__all__"
         extra_kwargs = {
-            'recruitment_managers': {'read_only': True},
-            'open_positions': {'read_only': True},
-            'skills': {'read_only': True},
-            'survey_templates': {'read_only': True},
+            "recruitment_managers": {"read_only": True},
+            "open_positions": {"read_only": True},
+            "skills": {"read_only": True},
+            "survey_templates": {"read_only": True},
         }
 
     def get_recruitment_managers(self, obj):
@@ -164,18 +193,25 @@ class RecruitmentSerializer(serializers.ModelSerializer):
 class StageSerializer(serializers.ModelSerializer):
     recruitment_id = serializers.SerializerMethodField()
     recruitment_id_write = serializers.PrimaryKeyRelatedField(
-        queryset=Recruitment.objects.all(), source="recruitment_id", write_only=True, required=False
+        queryset=Recruitment.objects.all(),
+        source="recruitment_id",
+        write_only=True,
+        required=False,
     )
     stage_managers = serializers.SerializerMethodField()
     stage_managers_ids = serializers.PrimaryKeyRelatedField(
-        queryset=Employee.objects.all(), many=True, source="stage_managers", write_only=True, required=False
+        queryset=Employee.objects.all(),
+        many=True,
+        source="stage_managers",
+        write_only=True,
+        required=False,
     )
 
     class Meta:
         model = Stage
         fields = "__all__"
         extra_kwargs = {
-            'stage_managers': {'read_only': True},
+            "stage_managers": {"read_only": True},
         }
 
     def get_recruitment_id(self, obj):
@@ -203,11 +239,17 @@ class StageSerializer(serializers.ModelSerializer):
 class CandidateSerializer(serializers.ModelSerializer):
     recruitment_id = serializers.SerializerMethodField()
     recruitment_id_write = serializers.PrimaryKeyRelatedField(
-        queryset=Recruitment.objects.all(), source="recruitment_id", write_only=True, required=False
+        queryset=Recruitment.objects.all(),
+        source="recruitment_id",
+        write_only=True,
+        required=False,
     )
     job_position_id = serializers.SerializerMethodField()
     job_position_id_write = serializers.PrimaryKeyRelatedField(
-        queryset=JobPosition.objects.all(), source="job_position_id", write_only=True, required=False
+        queryset=JobPosition.objects.all(),
+        source="job_position_id",
+        write_only=True,
+        required=False,
     )
     stage_id = serializers.SerializerMethodField()
     stage_id_write = serializers.PrimaryKeyRelatedField(
@@ -215,7 +257,10 @@ class CandidateSerializer(serializers.ModelSerializer):
     )
     converted_employee_id = serializers.SerializerMethodField()
     converted_employee_id_write = serializers.PrimaryKeyRelatedField(
-        queryset=Employee.objects.all(), source="converted_employee_id", write_only=True, required=False
+        queryset=Employee.objects.all(),
+        source="converted_employee_id",
+        write_only=True,
+        required=False,
     )
 
     class Meta:
@@ -261,18 +306,25 @@ class CandidateSerializer(serializers.ModelSerializer):
 class InterviewScheduleSerializer(serializers.ModelSerializer):
     candidate_id = serializers.SerializerMethodField()
     candidate_id_write = serializers.PrimaryKeyRelatedField(
-        queryset=Candidate.objects.all(), source="candidate_id", write_only=True, required=False
+        queryset=Candidate.objects.all(),
+        source="candidate_id",
+        write_only=True,
+        required=False,
     )
     employee_id = serializers.SerializerMethodField()
     employee_id_ids = serializers.PrimaryKeyRelatedField(
-        queryset=Employee.objects.all(), many=True, source="employee_id", write_only=True, required=False
+        queryset=Employee.objects.all(),
+        many=True,
+        source="employee_id",
+        write_only=True,
+        required=False,
     )
 
     class Meta:
         model = InterviewSchedule
         fields = "__all__"
         extra_kwargs = {
-            'employee_id': {'read_only': True},
+            "employee_id": {"read_only": True},
         }
 
     def get_candidate_id(self, obj):
@@ -307,11 +359,17 @@ class SkillZoneSerializer(serializers.ModelSerializer):
 class SkillZoneCandidateSerializer(serializers.ModelSerializer):
     candidate_id = serializers.SerializerMethodField()
     candidate_id_write = serializers.PrimaryKeyRelatedField(
-        queryset=Candidate.objects.all(), source="candidate_id", write_only=True, required=False
+        queryset=Candidate.objects.all(),
+        source="candidate_id",
+        write_only=True,
+        required=False,
     )
     skill_zone_id = serializers.SerializerMethodField()
     skill_zone_id_write = serializers.PrimaryKeyRelatedField(
-        queryset=SkillZone.objects.all(), source="skill_zone_id", write_only=True, required=False
+        queryset=SkillZone.objects.all(),
+        source="skill_zone_id",
+        write_only=True,
+        required=False,
     )
 
     class Meta:
@@ -339,7 +397,10 @@ class SkillZoneCandidateSerializer(serializers.ModelSerializer):
 class CandidateRatingSerializer(serializers.ModelSerializer):
     candidate_id = serializers.SerializerMethodField()
     candidate_id_write = serializers.PrimaryKeyRelatedField(
-        queryset=Candidate.objects.all(), source="candidate_id", write_only=True, required=False
+        queryset=Candidate.objects.all(),
+        source="candidate_id",
+        write_only=True,
+        required=False,
     )
 
     class Meta:
@@ -365,18 +426,25 @@ class RejectReasonSerializer(serializers.ModelSerializer):
 class RejectedCandidateSerializer(serializers.ModelSerializer):
     candidate_id = serializers.SerializerMethodField()
     candidate_id_write = serializers.PrimaryKeyRelatedField(
-        queryset=Candidate.objects.all(), source="candidate_id", write_only=True, required=False
+        queryset=Candidate.objects.all(),
+        source="candidate_id",
+        write_only=True,
+        required=False,
     )
     reject_reason_id = serializers.SerializerMethodField()
     reject_reason_id_ids = serializers.PrimaryKeyRelatedField(
-        queryset=RejectReason.objects.all(), many=True, source="reject_reason_id", write_only=True, required=False
+        queryset=RejectReason.objects.all(),
+        many=True,
+        source="reject_reason_id",
+        write_only=True,
+        required=False,
     )
 
     class Meta:
         model = RejectedCandidate
         fields = "__all__"
         extra_kwargs = {
-            'reject_reason_id': {'read_only': True},
+            "reject_reason_id": {"read_only": True},
         }
 
     def get_candidate_id(self, obj):
@@ -403,7 +471,10 @@ class RejectedCandidateSerializer(serializers.ModelSerializer):
 class CandidateDocumentRequestSerializer(serializers.ModelSerializer):
     candidate_id = serializers.SerializerMethodField()
     candidate_id_write = serializers.PrimaryKeyRelatedField(
-        queryset=Candidate.objects.all(), source="candidate_id", write_only=True, required=False
+        queryset=Candidate.objects.all(),
+        source="candidate_id",
+        write_only=True,
+        required=False,
     )
 
     class Meta:
@@ -423,11 +494,17 @@ class CandidateDocumentRequestSerializer(serializers.ModelSerializer):
 class CandidateDocumentSerializer(serializers.ModelSerializer):
     candidate_id = serializers.SerializerMethodField()
     candidate_id_write = serializers.PrimaryKeyRelatedField(
-        queryset=Candidate.objects.all(), source="candidate_id", write_only=True, required=False
+        queryset=Candidate.objects.all(),
+        source="candidate_id",
+        write_only=True,
+        required=False,
     )
     document_request_id = serializers.SerializerMethodField()
     document_request_id_write = serializers.PrimaryKeyRelatedField(
-        queryset=CandidateDocumentRequest.objects.all(), source="document_request_id", write_only=True, required=False
+        queryset=CandidateDocumentRequest.objects.all(),
+        source="document_request_id",
+        write_only=True,
+        required=False,
     )
 
     class Meta:
@@ -455,7 +532,10 @@ class CandidateDocumentSerializer(serializers.ModelSerializer):
 class LinkedInAccountSerializer(serializers.ModelSerializer):
     company_id = serializers.SerializerMethodField()
     company_id_write = serializers.PrimaryKeyRelatedField(
-        queryset=Company.objects.all(), source="company_id", write_only=True, required=False
+        queryset=Company.objects.all(),
+        source="company_id",
+        write_only=True,
+        required=False,
     )
 
     class Meta:

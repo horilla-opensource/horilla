@@ -2,67 +2,68 @@
 horilla_api/api_views/recruitment/views.py
 """
 
-from rest_framework.views import APIView
-from rest_framework.permissions import IsAuthenticated
-from rest_framework.response import Response
-from rest_framework import status
-from rest_framework.pagination import PageNumberPagination
-from django_filters.rest_framework import DjangoFilterBackend
-from django.shortcuts import get_object_or_404
-from django.http import Http404
 from django.contrib.auth.models import AnonymousUser
 from django.db.models import Q
+from django.http import Http404
+from django.shortcuts import get_object_or_404
+from django_filters.rest_framework import DjangoFilterBackend
+from rest_framework import status
+from rest_framework.pagination import PageNumberPagination
+from rest_framework.permissions import IsAuthenticated
+from rest_framework.response import Response
+from rest_framework.views import APIView
 
+from base.methods import filtersubordinates
 from horilla_api.api_serializers.recruitment.serializers import (
-    RecruitmentSerializer,
-    StageSerializer,
-    CandidateSerializer,
-    InterviewScheduleSerializer,
-    SkillSerializer,
-    SurveyTemplateSerializer,
-    SkillZoneSerializer,
-    SkillZoneCandidateSerializer,
-    CandidateRatingSerializer,
-    RejectReasonSerializer,
-    RejectedCandidateSerializer,
     CandidateDocumentRequestSerializer,
     CandidateDocumentSerializer,
+    CandidateRatingSerializer,
+    CandidateSerializer,
+    InterviewScheduleSerializer,
     LinkedInAccountSerializer,
-)
-from recruitment.models import (
-    Recruitment,
-    Stage,
-    Candidate,
-    InterviewSchedule,
-    Skill,
-    SurveyTemplate,
-    SkillZone,
-    SkillZoneCandidate,
-    CandidateRating,
-    RejectReason,
-    RejectedCandidate,
-    CandidateDocumentRequest,
-    CandidateDocument,
-    LinkedInAccount,
+    RecruitmentSerializer,
+    RejectedCandidateSerializer,
+    RejectReasonSerializer,
+    SkillSerializer,
+    SkillZoneCandidateSerializer,
+    SkillZoneSerializer,
+    StageSerializer,
+    SurveyTemplateSerializer,
 )
 from recruitment.filters import (
-    RecruitmentFilter,
-    StageFilter,
     CandidateFilter,
     InterviewFilter,
-    SkillsFilter,
-    SurveyTemplateFilter,
-    SkillZoneFilter,
-    SkillZoneCandFilter,
     LinkedInAccountFilter,
+    RecruitmentFilter,
     RejectReasonFilter,
+    SkillsFilter,
+    SkillZoneCandFilter,
+    SkillZoneFilter,
+    StageFilter,
+    SurveyTemplateFilter,
 )
-from ...api_methods.base.methods import groupby_queryset, permission_based_queryset
+from recruitment.models import (
+    Candidate,
+    CandidateDocument,
+    CandidateDocumentRequest,
+    CandidateRating,
+    InterviewSchedule,
+    LinkedInAccount,
+    Recruitment,
+    RejectedCandidate,
+    RejectReason,
+    Skill,
+    SkillZone,
+    SkillZoneCandidate,
+    Stage,
+    SurveyTemplate,
+)
+
 from ...api_decorators.base.decorators import (
     manager_permission_required,
     permission_required,
 )
-from base.methods import filtersubordinates
+from ...api_methods.base.methods import groupby_queryset, permission_based_queryset
 
 
 def object_check(cls, pk):
@@ -82,7 +83,7 @@ class RecruitmentGetCreateAPIView(APIView):
 
     def get_queryset(self, request=None):
         # Handle schema generation for DRF-YASG
-        if getattr(self, 'swagger_fake_view', False) or request is None:
+        if getattr(self, "swagger_fake_view", False) or request is None:
             return Recruitment.objects.none()
         queryset = Recruitment.objects.all()
         user = request.user
@@ -98,16 +99,16 @@ class RecruitmentGetCreateAPIView(APIView):
                 return Response({"error": "Recruitment not found"}, status=404)
             serializer = RecruitmentSerializer(recruitment)
             return Response(serializer.data, status=200)
-        
+
         recruitments = self.get_queryset(request)
         filterset = self.filterset_class(request.GET, queryset=recruitments)
-        
+
         # groupby section
         field_name = request.GET.get("groupby_field", None)
         if field_name:
             url = request.build_absolute_uri()
             return groupby_queryset(request, url, field_name, filterset.qs)
-        
+
         # pagination section
         paginator = PageNumberPagination()
         page = paginator.paginate_queryset(filterset.qs, request)
@@ -165,7 +166,7 @@ class StageGetCreateAPIView(APIView):
 
     def get_queryset(self, request=None, recruitment_id=None):
         # Handle schema generation for DRF-YASG
-        if getattr(self, 'swagger_fake_view', False) or request is None:
+        if getattr(self, "swagger_fake_view", False) or request is None:
             return Stage.objects.none()
         queryset = Stage.objects.all()
         if recruitment_id:
@@ -183,16 +184,16 @@ class StageGetCreateAPIView(APIView):
                 return Response({"error": "Stage not found"}, status=404)
             serializer = StageSerializer(stage)
             return Response(serializer.data, status=200)
-        
+
         stages = self.get_queryset(request, recruitment_id)
         filterset = self.filterset_class(request.GET, queryset=stages)
-        
+
         # groupby section
         field_name = request.GET.get("groupby_field", None)
         if field_name:
             url = request.build_absolute_uri()
             return groupby_queryset(request, url, field_name, filterset.qs)
-        
+
         # pagination section
         paginator = PageNumberPagination()
         page = paginator.paginate_queryset(filterset.qs, request)
@@ -202,8 +203,12 @@ class StageGetCreateAPIView(APIView):
     @permission_required("recruitment.add_stage")
     def post(self, request, recruitment_id=None, **kwargs):
         data = request.data.copy()
-        if recruitment_id and not data.get('recruitment_id_write') and not data.get('recruitment_id'):
-            data['recruitment_id_write'] = recruitment_id
+        if (
+            recruitment_id
+            and not data.get("recruitment_id_write")
+            and not data.get("recruitment_id")
+        ):
+            data["recruitment_id_write"] = recruitment_id
         serializer = StageSerializer(data=data)
         if serializer.is_valid():
             serializer.save()
@@ -253,7 +258,7 @@ class CandidateGetCreateAPIView(APIView):
 
     def get_queryset(self, request=None, recruitment_id=None, stage_id=None):
         # Handle schema generation for DRF-YASG
-        if getattr(self, 'swagger_fake_view', False) or request is None:
+        if getattr(self, "swagger_fake_view", False) or request is None:
             return Candidate.objects.none()
         queryset = Candidate.objects.all()
         if recruitment_id:
@@ -273,16 +278,16 @@ class CandidateGetCreateAPIView(APIView):
                 return Response({"error": "Candidate not found"}, status=404)
             serializer = CandidateSerializer(candidate)
             return Response(serializer.data, status=200)
-        
+
         candidates = self.get_queryset(request, recruitment_id, stage_id)
         filterset = self.filterset_class(request.GET, queryset=candidates)
-        
+
         # groupby section
         field_name = request.GET.get("groupby_field", None)
         if field_name:
             url = request.build_absolute_uri()
             return groupby_queryset(request, url, field_name, filterset.qs)
-        
+
         # pagination section
         paginator = PageNumberPagination()
         page = paginator.paginate_queryset(filterset.qs, request)
@@ -292,10 +297,14 @@ class CandidateGetCreateAPIView(APIView):
     @permission_required("recruitment.add_candidate")
     def post(self, request, recruitment_id=None, stage_id=None, **kwargs):
         data = request.data.copy()
-        if recruitment_id and not data.get('recruitment_id_write') and not data.get('recruitment_id'):
-            data['recruitment_id_write'] = recruitment_id
-        if stage_id and not data.get('stage_id_write') and not data.get('stage_id'):
-            data['stage_id_write'] = stage_id
+        if (
+            recruitment_id
+            and not data.get("recruitment_id_write")
+            and not data.get("recruitment_id")
+        ):
+            data["recruitment_id_write"] = recruitment_id
+        if stage_id and not data.get("stage_id_write") and not data.get("stage_id"):
+            data["stage_id_write"] = stage_id
         serializer = CandidateSerializer(data=data)
         if serializer.is_valid():
             serializer.save()
@@ -345,7 +354,7 @@ class InterviewScheduleGetCreateAPIView(APIView):
 
     def get_queryset(self, request=None, candidate_id=None):
         # Handle schema generation for DRF-YASG
-        if getattr(self, 'swagger_fake_view', False) or request is None:
+        if getattr(self, "swagger_fake_view", False) or request is None:
             return InterviewSchedule.objects.none()
         queryset = InterviewSchedule.objects.all()
         if candidate_id:
@@ -363,16 +372,16 @@ class InterviewScheduleGetCreateAPIView(APIView):
                 return Response({"error": "InterviewSchedule not found"}, status=404)
             serializer = InterviewScheduleSerializer(interview)
             return Response(serializer.data, status=200)
-        
+
         interviews = self.get_queryset(request, candidate_id)
         filterset = self.filterset_class(request.GET, queryset=interviews)
-        
+
         # groupby section
         field_name = request.GET.get("groupby_field", None)
         if field_name:
             url = request.build_absolute_uri()
             return groupby_queryset(request, url, field_name, filterset.qs)
-        
+
         # pagination section
         paginator = PageNumberPagination()
         page = paginator.paginate_queryset(filterset.qs, request)
@@ -382,8 +391,12 @@ class InterviewScheduleGetCreateAPIView(APIView):
     @permission_required("recruitment.add_interviewschedule")
     def post(self, request, candidate_id=None, **kwargs):
         data = request.data.copy()
-        if candidate_id and not data.get('candidate_id_write') and not data.get('candidate_id'):
-            data['candidate_id_write'] = candidate_id
+        if (
+            candidate_id
+            and not data.get("candidate_id_write")
+            and not data.get("candidate_id")
+        ):
+            data["candidate_id_write"] = candidate_id
         serializer = InterviewScheduleSerializer(data=data)
         if serializer.is_valid():
             serializer.save()
@@ -406,7 +419,9 @@ class InterviewScheduleGetUpdateDeleteAPIView(APIView):
         interview = object_check(InterviewSchedule, pk)
         if interview is None:
             return Response({"error": "InterviewSchedule not found"}, status=404)
-        serializer = InterviewScheduleSerializer(interview, data=request.data, partial=True)
+        serializer = InterviewScheduleSerializer(
+            interview, data=request.data, partial=True
+        )
         if serializer.is_valid():
             serializer.save()
             return Response(serializer.data, status=200)
@@ -433,7 +448,7 @@ class SkillGetCreateAPIView(APIView):
 
     def get_queryset(self, request=None):
         # Handle schema generation for DRF-YASG
-        if getattr(self, 'swagger_fake_view', False) or request is None:
+        if getattr(self, "swagger_fake_view", False) or request is None:
             return Skill.objects.none()
         return Skill.objects.all()
 
@@ -444,10 +459,10 @@ class SkillGetCreateAPIView(APIView):
                 return Response({"error": "Skill not found"}, status=404)
             serializer = SkillSerializer(skill)
             return Response(serializer.data, status=200)
-        
+
         skills = self.get_queryset(request)
         filterset = self.filterset_class(request.GET, queryset=skills)
-        
+
         # pagination section
         paginator = PageNumberPagination()
         page = paginator.paginate_queryset(filterset.qs, request)
@@ -505,7 +520,7 @@ class SurveyTemplateGetCreateAPIView(APIView):
 
     def get_queryset(self, request=None):
         # Handle schema generation for DRF-YASG
-        if getattr(self, 'swagger_fake_view', False) or request is None:
+        if getattr(self, "swagger_fake_view", False) or request is None:
             return SurveyTemplate.objects.none()
         queryset = SurveyTemplate.objects.all()
         user = request.user
@@ -521,10 +536,10 @@ class SurveyTemplateGetCreateAPIView(APIView):
                 return Response({"error": "SurveyTemplate not found"}, status=404)
             serializer = SurveyTemplateSerializer(template)
             return Response(serializer.data, status=200)
-        
+
         templates = self.get_queryset(request)
         filterset = self.filterset_class(request.GET, queryset=templates)
-        
+
         # pagination section
         paginator = PageNumberPagination()
         page = paginator.paginate_queryset(filterset.qs, request)
@@ -582,7 +597,7 @@ class SkillZoneGetCreateAPIView(APIView):
 
     def get_queryset(self, request=None):
         # Handle schema generation for DRF-YASG
-        if getattr(self, 'swagger_fake_view', False) or request is None:
+        if getattr(self, "swagger_fake_view", False) or request is None:
             return SkillZone.objects.none()
         queryset = SkillZone.objects.all()
         user = request.user
@@ -598,10 +613,10 @@ class SkillZoneGetCreateAPIView(APIView):
                 return Response({"error": "SkillZone not found"}, status=404)
             serializer = SkillZoneSerializer(skill_zone)
             return Response(serializer.data, status=200)
-        
+
         skill_zones = self.get_queryset(request)
         filterset = self.filterset_class(request.GET, queryset=skill_zones)
-        
+
         # pagination section
         paginator = PageNumberPagination()
         page = paginator.paginate_queryset(filterset.qs, request)
@@ -659,7 +674,7 @@ class SkillZoneCandidateGetCreateAPIView(APIView):
 
     def get_queryset(self, request=None, candidate_id=None, skill_zone_id=None):
         # Handle schema generation for DRF-YASG
-        if getattr(self, 'swagger_fake_view', False) or request is None:
+        if getattr(self, "swagger_fake_view", False) or request is None:
             return SkillZoneCandidate.objects.none()
         queryset = SkillZoneCandidate.objects.all()
         if candidate_id:
@@ -679,16 +694,16 @@ class SkillZoneCandidateGetCreateAPIView(APIView):
                 return Response({"error": "SkillZoneCandidate not found"}, status=404)
             serializer = SkillZoneCandidateSerializer(skill_zone_candidate)
             return Response(serializer.data, status=200)
-        
+
         skill_zone_candidates = self.get_queryset(request, candidate_id, skill_zone_id)
         filterset = self.filterset_class(request.GET, queryset=skill_zone_candidates)
-        
+
         # groupby section
         field_name = request.GET.get("groupby_field", None)
         if field_name:
             url = request.build_absolute_uri()
             return groupby_queryset(request, url, field_name, filterset.qs)
-        
+
         # pagination section
         paginator = PageNumberPagination()
         page = paginator.paginate_queryset(filterset.qs, request)
@@ -698,10 +713,18 @@ class SkillZoneCandidateGetCreateAPIView(APIView):
     @permission_required("recruitment.add_skillzonecandidate")
     def post(self, request, candidate_id=None, skill_zone_id=None, **kwargs):
         data = request.data.copy()
-        if candidate_id and not data.get('candidate_id_write') and not data.get('candidate_id'):
-            data['candidate_id_write'] = candidate_id
-        if skill_zone_id and not data.get('skill_zone_id_write') and not data.get('skill_zone_id'):
-            data['skill_zone_id_write'] = skill_zone_id
+        if (
+            candidate_id
+            and not data.get("candidate_id_write")
+            and not data.get("candidate_id")
+        ):
+            data["candidate_id_write"] = candidate_id
+        if (
+            skill_zone_id
+            and not data.get("skill_zone_id_write")
+            and not data.get("skill_zone_id")
+        ):
+            data["skill_zone_id_write"] = skill_zone_id
         serializer = SkillZoneCandidateSerializer(data=data)
         if serializer.is_valid():
             serializer.save()
@@ -724,7 +747,9 @@ class SkillZoneCandidateGetUpdateDeleteAPIView(APIView):
         skill_zone_candidate = object_check(SkillZoneCandidate, pk)
         if skill_zone_candidate is None:
             return Response({"error": "SkillZoneCandidate not found"}, status=404)
-        serializer = SkillZoneCandidateSerializer(skill_zone_candidate, data=request.data, partial=True)
+        serializer = SkillZoneCandidateSerializer(
+            skill_zone_candidate, data=request.data, partial=True
+        )
         if serializer.is_valid():
             serializer.save()
             return Response(serializer.data, status=200)
@@ -749,7 +774,7 @@ class CandidateRatingGetCreateAPIView(APIView):
 
     def get_queryset(self, request=None, candidate_id=None):
         # Handle schema generation for DRF-YASG
-        if getattr(self, 'swagger_fake_view', False) or request is None:
+        if getattr(self, "swagger_fake_view", False) or request is None:
             return CandidateRating.objects.none()
         queryset = CandidateRating.objects.all()
         if candidate_id:
@@ -767,7 +792,7 @@ class CandidateRatingGetCreateAPIView(APIView):
                 return Response({"error": "CandidateRating not found"}, status=404)
             serializer = CandidateRatingSerializer(rating)
             return Response(serializer.data, status=200)
-        
+
         ratings = self.get_queryset(request, candidate_id)
         paginator = PageNumberPagination()
         page = paginator.paginate_queryset(ratings, request)
@@ -777,8 +802,12 @@ class CandidateRatingGetCreateAPIView(APIView):
     @permission_required("recruitment.add_candidaterating")
     def post(self, request, candidate_id=None, **kwargs):
         data = request.data.copy()
-        if candidate_id and not data.get('candidate_id_write') and not data.get('candidate_id'):
-            data['candidate_id_write'] = candidate_id
+        if (
+            candidate_id
+            and not data.get("candidate_id_write")
+            and not data.get("candidate_id")
+        ):
+            data["candidate_id_write"] = candidate_id
         serializer = CandidateRatingSerializer(data=data)
         if serializer.is_valid():
             serializer.save()
@@ -828,7 +857,7 @@ class RejectReasonGetCreateAPIView(APIView):
 
     def get_queryset(self, request=None):
         # Handle schema generation for DRF-YASG
-        if getattr(self, 'swagger_fake_view', False) or request is None:
+        if getattr(self, "swagger_fake_view", False) or request is None:
             return RejectReason.objects.none()
         queryset = RejectReason.objects.all()
         user = request.user
@@ -844,10 +873,10 @@ class RejectReasonGetCreateAPIView(APIView):
                 return Response({"error": "RejectReason not found"}, status=404)
             serializer = RejectReasonSerializer(reason)
             return Response(serializer.data, status=200)
-        
+
         reasons = self.get_queryset(request)
         filterset = self.filterset_class(request.GET, queryset=reasons)
-        
+
         # pagination section
         paginator = PageNumberPagination()
         page = paginator.paginate_queryset(filterset.qs, request)
@@ -903,7 +932,7 @@ class RejectedCandidateGetCreateAPIView(APIView):
 
     def get_queryset(self, request=None, candidate_id=None):
         # Handle schema generation for DRF-YASG
-        if getattr(self, 'swagger_fake_view', False) or request is None:
+        if getattr(self, "swagger_fake_view", False) or request is None:
             return RejectedCandidate.objects.none()
         queryset = RejectedCandidate.objects.all()
         if candidate_id:
@@ -921,7 +950,7 @@ class RejectedCandidateGetCreateAPIView(APIView):
                 return Response({"error": "RejectedCandidate not found"}, status=404)
             serializer = RejectedCandidateSerializer(rejected)
             return Response(serializer.data, status=200)
-        
+
         rejected_candidates = self.get_queryset(request, candidate_id)
         paginator = PageNumberPagination()
         page = paginator.paginate_queryset(rejected_candidates, request)
@@ -931,8 +960,12 @@ class RejectedCandidateGetCreateAPIView(APIView):
     @permission_required("recruitment.add_rejectedcandidate")
     def post(self, request, candidate_id=None, **kwargs):
         data = request.data.copy()
-        if candidate_id and not data.get('candidate_id_write') and not data.get('candidate_id'):
-            data['candidate_id_write'] = candidate_id
+        if (
+            candidate_id
+            and not data.get("candidate_id_write")
+            and not data.get("candidate_id")
+        ):
+            data["candidate_id_write"] = candidate_id
         serializer = RejectedCandidateSerializer(data=data)
         if serializer.is_valid():
             serializer.save()
@@ -955,7 +988,9 @@ class RejectedCandidateGetUpdateDeleteAPIView(APIView):
         rejected = object_check(RejectedCandidate, pk)
         if rejected is None:
             return Response({"error": "RejectedCandidate not found"}, status=404)
-        serializer = RejectedCandidateSerializer(rejected, data=request.data, partial=True)
+        serializer = RejectedCandidateSerializer(
+            rejected, data=request.data, partial=True
+        )
         if serializer.is_valid():
             serializer.save()
             return Response(serializer.data, status=200)
@@ -980,7 +1015,7 @@ class CandidateDocumentRequestGetCreateAPIView(APIView):
 
     def get_queryset(self, request=None, candidate_id=None):
         # Handle schema generation for DRF-YASG
-        if getattr(self, 'swagger_fake_view', False) or request is None:
+        if getattr(self, "swagger_fake_view", False) or request is None:
             return CandidateDocumentRequest.objects.none()
         queryset = CandidateDocumentRequest.objects.all()
         if candidate_id:
@@ -995,10 +1030,12 @@ class CandidateDocumentRequestGetCreateAPIView(APIView):
         if pk:
             doc_request = object_check(CandidateDocumentRequest, pk)
             if doc_request is None:
-                return Response({"error": "CandidateDocumentRequest not found"}, status=404)
+                return Response(
+                    {"error": "CandidateDocumentRequest not found"}, status=404
+                )
             serializer = CandidateDocumentRequestSerializer(doc_request)
             return Response(serializer.data, status=200)
-        
+
         doc_requests = self.get_queryset(request, candidate_id)
         paginator = PageNumberPagination()
         page = paginator.paginate_queryset(doc_requests, request)
@@ -1008,8 +1045,12 @@ class CandidateDocumentRequestGetCreateAPIView(APIView):
     @permission_required("recruitment.add_candidatedocumentrequest")
     def post(self, request, candidate_id=None, **kwargs):
         data = request.data.copy()
-        if candidate_id and not data.get('candidate_id_write') and not data.get('candidate_id'):
-            data['candidate_id_write'] = candidate_id
+        if (
+            candidate_id
+            and not data.get("candidate_id_write")
+            and not data.get("candidate_id")
+        ):
+            data["candidate_id_write"] = candidate_id
         serializer = CandidateDocumentRequestSerializer(data=data)
         if serializer.is_valid():
             serializer.save()
@@ -1032,7 +1073,9 @@ class CandidateDocumentRequestGetUpdateDeleteAPIView(APIView):
         doc_request = object_check(CandidateDocumentRequest, pk)
         if doc_request is None:
             return Response({"error": "CandidateDocumentRequest not found"}, status=404)
-        serializer = CandidateDocumentRequestSerializer(doc_request, data=request.data, partial=True)
+        serializer = CandidateDocumentRequestSerializer(
+            doc_request, data=request.data, partial=True
+        )
         if serializer.is_valid():
             serializer.save()
             return Response(serializer.data, status=200)
@@ -1057,7 +1100,7 @@ class CandidateDocumentGetCreateAPIView(APIView):
 
     def get_queryset(self, request=None, candidate_id=None, document_request_id=None):
         # Handle schema generation for DRF-YASG
-        if getattr(self, 'swagger_fake_view', False) or request is None:
+        if getattr(self, "swagger_fake_view", False) or request is None:
             return CandidateDocument.objects.none()
         queryset = CandidateDocument.objects.all()
         if candidate_id:
@@ -1077,7 +1120,7 @@ class CandidateDocumentGetCreateAPIView(APIView):
                 return Response({"error": "CandidateDocument not found"}, status=404)
             serializer = CandidateDocumentSerializer(document)
             return Response(serializer.data, status=200)
-        
+
         documents = self.get_queryset(request, candidate_id, document_request_id)
         paginator = PageNumberPagination()
         page = paginator.paginate_queryset(documents, request)
@@ -1087,10 +1130,18 @@ class CandidateDocumentGetCreateAPIView(APIView):
     @permission_required("recruitment.add_candidatedocument")
     def post(self, request, candidate_id=None, document_request_id=None, **kwargs):
         data = request.data.copy()
-        if candidate_id and not data.get('candidate_id_write') and not data.get('candidate_id'):
-            data['candidate_id_write'] = candidate_id
-        if document_request_id and not data.get('document_request_id_write') and not data.get('document_request_id'):
-            data['document_request_id_write'] = document_request_id
+        if (
+            candidate_id
+            and not data.get("candidate_id_write")
+            and not data.get("candidate_id")
+        ):
+            data["candidate_id_write"] = candidate_id
+        if (
+            document_request_id
+            and not data.get("document_request_id_write")
+            and not data.get("document_request_id")
+        ):
+            data["document_request_id_write"] = document_request_id
         serializer = CandidateDocumentSerializer(data=data)
         if serializer.is_valid():
             serializer.save()
@@ -1113,7 +1164,9 @@ class CandidateDocumentGetUpdateDeleteAPIView(APIView):
         document = object_check(CandidateDocument, pk)
         if document is None:
             return Response({"error": "CandidateDocument not found"}, status=404)
-        serializer = CandidateDocumentSerializer(document, data=request.data, partial=True)
+        serializer = CandidateDocumentSerializer(
+            document, data=request.data, partial=True
+        )
         if serializer.is_valid():
             serializer.save()
             return Response(serializer.data, status=200)
@@ -1140,7 +1193,7 @@ class LinkedInAccountGetCreateAPIView(APIView):
 
     def get_queryset(self, request=None):
         # Handle schema generation for DRF-YASG
-        if getattr(self, 'swagger_fake_view', False) or request is None:
+        if getattr(self, "swagger_fake_view", False) or request is None:
             return LinkedInAccount.objects.none()
         queryset = LinkedInAccount.objects.all()
         user = request.user
@@ -1156,10 +1209,10 @@ class LinkedInAccountGetCreateAPIView(APIView):
                 return Response({"error": "LinkedInAccount not found"}, status=404)
             serializer = LinkedInAccountSerializer(account)
             return Response(serializer.data, status=200)
-        
+
         accounts = self.get_queryset(request)
         filterset = self.filterset_class(request.GET, queryset=accounts)
-        
+
         # pagination section
         paginator = PageNumberPagination()
         page = paginator.paginate_queryset(filterset.qs, request)
