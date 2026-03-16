@@ -142,42 +142,6 @@
         </div>
     </div>
 
-    {% for task in stage.grouper.offboardingtask_set.all %}
-        {% if task|have_task:employee %}
-        <div class="oh-sticky-table__td">
-            {% for assinged_tasks in employee|get_assigned_task:task %}
-            <select
-                hx-get="{% url 'update-task-status' %}?stage_id={{stage.grouper.id}}&employee_ids={{employee.id}}&task_id={{assinged_tasks.task_id.id}}"
-                hx-target="#offboardingBody{{offboarding.offboarding.id}}" name="task_status"
-                id="task_status{{assinged_tasks.id}}" class="oh-select-custom w-100"
-                onclick="event.stopPropagation()">
-                {% for assinged_task in assinged_tasks.statuses %}
-                {% if assinged_tasks.status == assinged_task.0 %}
-                <option value="{{ assinged_task.0 }}" selected>
-                    {{ assinged_task.1 }}
-                </option>
-                {% else %}
-                <option value="{{ assinged_task.0 }}">{{ assinged_task.1 }}</option>
-                {% endif %} {% endfor %}
-            </select>
-            {% endfor %}
-        </div>
-        {% else %}
-            {% if perms.offboarding.add_offboardingtask or request.user.employee_get|any_manager %}
-            <div class="oh-sticky-table__td">
-                <button hx-get="{% url 'offboarding-assign-task' %}?employee_ids={{employee.id}}&task_id={{task.id}}"
-                    hx-target="#offboardingBody{{offboarding.offboarding.id}}" class="oh-checkpoint-badge text-info"
-                    data-toggle="oh-modal-toggle" onclick="event.stopPropagation()">
-                    {% trans 'Assign' %}
-                </button>
-            </div>
-            {% endif %}
-        {% endif %}
-    {% endfor %}
-
-    {% if perms.offboarding.add_offboardingtask or request.user.employee_get|is_stage_manager:stage.grouper.title or request.user.employee_get|is_offboarding_manager %}
-    <div class="oh-sticky-table__td"></div>
-    {% endif %}
 </div>
 {% endif %}
 {% endfor %}
