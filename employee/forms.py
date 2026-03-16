@@ -406,7 +406,7 @@ class EmployeeWorkInformationForm(ModelForm):
 
         model = EmployeeWorkInformation
         fields = "__all__"
-        exclude = ("employee_id", "additional_info", "experience" , "contract_end_date")
+        exclude = ("employee_id", "additional_info", "experience" , "contract_end_date", "shift_id", "work_type_id")
 
         widgets = {
             "date_joining": DateInput(attrs={"type": "date"}),
@@ -431,17 +431,13 @@ class EmployeeWorkInformationForm(ModelForm):
             "Department": "department",
             "Job Position": "job_position",
             "Job Role": "job_role",
-            "Work Type": "work_type",
             "Employee Type": "employee_type",
-            "Shift": "employee_shift",
         }
         urls = {
             "Department": "#dynamicDept",
             "Job Position": "#dynamicJobPosition",
             "Job Role": "#dynamicJobRole",
-            "Work Type": "#dynamicWorkType",
             "Employee Type": "#dynamicEmployeeType",
-            "Shift": "#dynamicShift",
         }
 
         for label, field in self.fields.items():
@@ -553,7 +549,7 @@ class EmployeeWorkInformationUpdateForm(ModelForm):
 
         model = EmployeeWorkInformation
         fields = "__all__"
-        exclude = ("employee_id","contract_end_date")
+        exclude = ("employee_id","contract_end_date","shift_id","work_type_id")
 
         widgets = {
             "date_joining": DateInput(attrs={"type": "date"}),
