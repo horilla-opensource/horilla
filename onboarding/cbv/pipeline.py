@@ -5,6 +5,7 @@ onboarding/cbv/pipeline.py
 import re
 
 from django.contrib import messages
+from django.core.exceptions import ObjectDoesNotExist
 from django.http import HttpResponse
 from django.urls import reverse, reverse_lazy
 from django.utils.decorators import method_decorator
@@ -14,6 +15,7 @@ from django.views.generic import TemplateView
 
 from base.methods import eval_validate
 from horilla.horilla_middlewares import _thread_locals
+from horilla.http.response import HorillaRedirect
 from horilla_views.cbv_methods import login_required, render_template
 from horilla_views.generic.cbv.kanban import HorillaKanbanView
 from horilla_views.generic.cbv.pipeline import Pipeline
@@ -535,7 +537,7 @@ class CandidateList(HorillaListView):
 
     def __init__(self, **kwargs):
         super().__init__(**kwargs)
-        self.ordered_ids_key = f"ordered_ids_{recruitment_models.Candidate.__name__.lower()}{self.request.GET['onboarding_stage_id']}"
+        self.ordered_ids_key = f"ordered_ids_{recruitment_models.Candidate.__name__.lower()}{self.request.GET.get('onboarding_stage_id')}"
         self.search_url = self.request.path
 
         self.managing_onboarding_tasks = (
@@ -765,6 +767,15 @@ class AssignTask(View):
     """
     AssignTask
     """
+
+    def dispatch(self, request, *args, **kwargs):
+        try:
+            return super().dispatch(request, *args, **kwargs)
+        except ObjectDoesNotExist:
+            messages.error(request, _("Requested object does not exist"))
+            return HorillaRedirect(
+                request, message=_("Requested object does not exist")
+            )
 
     def get(self, *args, **kwargs):
         """

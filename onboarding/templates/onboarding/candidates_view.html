@@ -438,7 +438,8 @@
                     window.location.reload()
                 },
                 error: function () {
-                console.error("An error occured...");
+                    reloadMessage()
+                    console.error("An error occured...");
                 },
             });
         }
@@ -475,6 +476,7 @@
                             window.location.reload()
                         },
                         error: function () {
+                            reloadMessage()
                             console.error("An error occured...");
                         },
                     });
