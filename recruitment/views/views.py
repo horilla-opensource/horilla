@@ -1125,17 +1125,20 @@ def add_more_individual_files(request, id):
 
 
 @login_required
+@hx_request_required
 def delete_stage_note_file(request, id):
     """
     This method is used to delete the stage note file
     Args:
         id : stage file instance id
     """
-    script = ""
-    file = StageFiles.objects.get(id=id)
-    file.delete()
-    messages.success(request, _("File deleted successfully"))
-    return HttpResponse(script)
+    if stage_file := StageFiles.find(id):
+        stage_file.delete()
+        messages.success(request, _("File deleted successfully"))
+    else:
+        messages.error(request, _("No Stage Files found matching the query."))
+
+    return HttpResponse("")
 
 
 @login_required
@@ -1566,6 +1569,7 @@ def interview_view(request):
 
 
 @login_required
+@hx_request_required
 @manager_can_enter(perm="recruitment.change_interviewschedule")
 def interview_employee_remove(request, interview_id, employee_id):
     """
@@ -1574,7 +1578,12 @@ def interview_employee_remove(request, interview_id, employee_id):
         interview_id(int) : primarykey of the interview.
         employee_id(int) : primarykey of the employee
     """
-    interview = InterviewSchedule.objects.filter(id=interview_id).first()
+    interview = InterviewSchedule.find(interview_id)
+    if not interview:
+        return HorillaRedirect(
+            request, message=_("No Meeting found matching the query")
+        )
+
     interview.employee_id.remove(employee_id)
     messages.success(request, "Interviewer removed succesfully.")
     interview.save()
@@ -2015,7 +2024,12 @@ def delete_profile_image(request, obj_id):
     Args:
         obj_id : candidate instance id
     """
-    candidate_obj = Candidate.objects.get(id=obj_id)
+    candidate_obj = Candidate.find(obj_id)
+    if not candidate_obj:
+        return HorillaRedirect(
+            request, message=_("No Candidate found matching the query.")
+        )
+
     try:
         if candidate_obj.profile:
             file_path = candidate_obj.profile.path
@@ -2037,7 +2051,12 @@ def candidate_history(request, cand_id):
     Args:
         id : candidate_id
     """
-    candidate_obj = Candidate.objects.get(id=cand_id)
+    candidate_obj = Candidate.find(cand_id)
+    if not candidate_obj:
+        return HorillaRedirect(
+            request, message=_("No Candidate found matching the query.")
+        )
+
     candidate_history_queryset = candidate_obj.history.all()
     return render(
         request,
@@ -2233,9 +2252,15 @@ def interview_edit(request, interview_id):
 @login_required
 def get_interview_managers(request):
     cand_id = request.GET.get("candidate_id")
-    form = ScheduleInterviewForm()
-    candidate_obj = Candidate.objects.get(id=cand_id)
+    if not cand_id or not (candidate_obj := Candidate.find(cand_id)):
+        message = (
+            _("Missing Candidate ID")
+            if not cand_id
+            else _("No Candidate found matching the query.")
+        )
+        return HorillaRedirect(request, message=message)
 
+    form = ScheduleInterviewForm()
     managers = candidate_obj.recruitment_id.recruitment_managers.all()
 
     form.fields["employee_id"].queryset = managers
@@ -2253,7 +2278,10 @@ def get_interview_managers(request):
 @login_required
 def get_managers(request):
     cand_id = request.GET.get("cand_id")
-    candidate_obj = Candidate.objects.get(id=cand_id)
+    candidate_obj = Candidate.find(cand_id)
+    if not candidate_obj:
+        return JsonResponse({"employees": {}})
+
     stage_obj = Stage.objects.filter(recruitment_id=candidate_obj.recruitment_id.id)
 
     # Combine the querysets into a single iterable
@@ -2346,7 +2374,7 @@ def candidate_sequence_update(request):
     """
     This method is used to update the sequence of candidate
     """
-    sequence_data = json.loads(request.POST["sequenceData"])
+    sequence_data = json.loads(request.POST.get("sequenceData", "{}"))
     for cand_id, seq in sequence_data.items():
         cand = Candidate.objects.get(id=cand_id)
         cand.sequence = seq
@@ -2361,7 +2389,10 @@ def stage_sequence_update(request):
     """
     This method is used to update the sequence of the stages
     """
-    sequence_data = json.loads(request.POST["sequence"])
+    sequence_data = json.loads(request.POST.get("sequence", "{}"))
+    if not sequence_data:
+        return JsonResponse({"type": "error", "message": _("Missing Sequence")})
+
     for stage_id, seq in sequence_data.items():
         stage = Stage.objects.get(id=stage_id)
         stage.sequence = seq
@@ -2420,13 +2451,16 @@ def create_candidate_rating(request, cand_id):
     Args:
         cand_id : candidate instance id
     """
-    cand_id = cand_id
-    candidate = Candidate.objects.get(id=cand_id)
-    employee_id = request.user.employee_get
-    rating = request.POST.get("rating")
-    CandidateRating.objects.create(
-        candidate_id=candidate, rating=rating, employee_id=employee_id
-    )
+    candidate = Candidate.find(cand_id)
+    if candidate:
+        employee_id = request.user.employee_get
+        rating = request.POST.get("rating")
+        CandidateRating.objects.create(
+            candidate_id=candidate, rating=rating, employee_id=employee_id
+        )
+    else:
+        messages.error(request, _("No Candidate found matching the query"))
+
     return redirect(recruitment_pipeline)
 
 
@@ -2812,8 +2846,8 @@ def skill_zone_cand_archive(request, sz_cand_id):
             messages.success(request, _("Candidate unarchived successfully.."))
 
         skill_zone_cand.save()
-    except SkillZone.DoesNotExist:
-        messages.error(request, _("Candidate not found."))
+    except SkillZoneCandidate.DoesNotExist:
+        messages.error(request, _("No Candidate found matching the query."))
     return redirect(skill_zone_view)
 
 
@@ -2890,13 +2924,18 @@ def update_candidate_rating(request, cand_id):
     Args:
         id : candidate rating instance id
     """
-    cand_id = cand_id
-    candidate = Candidate.objects.get(id=cand_id)
-    employee_id = request.user.employee_get
-    rating = request.POST.get("rating")
-    rate = CandidateRating.objects.get(candidate_id=candidate, employee_id=employee_id)
-    rate.rating = int(rating)
-    rate.save()
+    candidate = Candidate.find(cand_id)
+    if candidate:
+        employee_id = request.user.employee_get
+        rating = request.POST.get("rating")
+        rate = CandidateRating.objects.get(
+            candidate_id=candidate, employee_id=employee_id
+        )
+        rate.rating = int(rating)
+        rate.save()
+    else:
+        messages.error(request, _("No Candidate found matching the query"))
+
     return redirect(recruitment_pipeline)
 
 
@@ -3121,19 +3160,26 @@ def self_tracking_feature(request):
 
 
 @login_required
+@hx_request_required
 @permission_required("recruitment.delete_rejectreason")
 def delete_reject_reason(request):
     """
     This method is used to delete the reject reasons
     """
     id = request.GET.get("id")
-    reason = RejectReason.objects.get(id=id)
-    count = RejectReason.objects.count()
-    reason.delete()
-    messages.success(request, f"{reason.title} is deleted.")
-    if count == 1:
+    if not (reason := RejectReason.find(id)):
+        messages.error(request, _("No Reject Reason found matching the query."))
         return HttpResponse("<script>$('.reload-record').click();</script>")
-    return HttpResponse("<script>$('#reloadMessagesButton').click();</script>")
+
+    is_last = RejectReason.objects.count() == 1
+    reason.delete()
+    messages.success(request, _(f"{reason.title} is deleted."))
+    script = (
+        "$('.reload-record').click();"
+        if is_last
+        else "$('#reloadMessagesButton').click();"
+    )
+    return HttpResponse(f"<script>{script}</script>")
 
 
 def extract_text_with_font_info(pdf):
