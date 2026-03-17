@@ -1380,7 +1380,7 @@ def key_result_creation(request, obj_id, obj_type):
         key_result_form = KeyResultForm(
             employee=employee, initial={"start_date": start_date, "end_date": end_date}
         )
-    else:
+    elif obj_type == "multiple":
         objective_ids = json.loads(obj_id)
         for objective_id in objective_ids:
             objective = EmployeeObjective.objects.filter(id=objective_id).first()
@@ -1389,6 +1389,8 @@ def key_result_creation(request, obj_id, obj_type):
         key_result_form = KeyResultForm(
             employee=employee, initial={"start_date": start_date, "end_date": end_date}
         )
+    else:
+        return HorillaRedirect(request, message=_("Invalid parameters"))
     context = {
         "key_result_form": key_result_form,
         "objective_id": obj_id,
