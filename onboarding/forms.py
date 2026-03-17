@@ -21,6 +21,7 @@ class YourForm(forms.Form):
         pass
 """
 
+import re
 import uuid
 from datetime import date
 from typing import Any
@@ -402,3 +403,26 @@ class BankDetailsCreationForm(ModelForm):
         model = EmployeeBankDetails
         fields = "__all__"
         exclude = ["employee_id", "additional_info", "is_active"]
+
+    def clean_swift_code(self):
+        swift_code = self.cleaned_data.get("swift_code")
+        if swift_code:
+            swift_code = swift_code.upper()
+            pattern = re.compile(r"^[A-Z]{4}[A-Z]{2}[A-Z0-9]{2}([A-Z0-9]{3})?$")
+            if not pattern.match(swift_code):
+                raise ValidationError(
+                    _("Invalid SWIFT Code format. It must be 8 or 11 characters (4 letters bank code, 2 letters country code, 2 alphanumeric location code, and optional 3 alphanumeric branch code)."))
+        return swift_code
+
+    def clean(self):
+        cleaned_data = super().clean()
+        currency_type = cleaned_data.get("currency_type")
+        swift_code = cleaned_data.get("swift_code")
+
+        if currency_type == "LKR" and swift_code:
+            self.add_error(
+                "swift_code",
+                _("SWIFT code is not applicable for LKR transactions. Please select a different currency or remove the SWIFT code.")
+            )
+        return cleaned_data
+

@@ -283,12 +283,14 @@ def self_info_update(request):
             else:
                 messages.error(request, _("Bank update failed. Please fix the errors below."))
 
+    active_tab = "#bank" if bank_form.errors else "#personal"
     return render(
         request,
         "employee/profile/profile.html",
         {
             "form": form,
             "bank_form": bank_form,
+            "active_tab": active_tab,
         },
     )
 
@@ -990,6 +992,10 @@ def employee_profile_bank_details(request):
         bank_info.employee_id = employee
         bank_info.save()
         messages.success(request, _("Bank details updated"))
+    else:
+        for field, errors in form.errors.items():
+            for error in errors:
+                messages.error(request, error)
     return HttpResponseRedirect(request.META.get("HTTP_REFERER"))
 
 
