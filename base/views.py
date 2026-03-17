@@ -2541,7 +2541,11 @@ def rotating_work_type_assign_bulk_archive(request):
     """
     This method is used to archive/un-archive bulk rotating work type assigns.
     """
-    ids = request.POST["ids"]
+    ids = request.POST.get("ids")
+    if not ids:
+        return HorillaRedirect(
+            request, message=_("No rotatingworktype found matching the query.")
+        )
     ids = json.loads(ids)
     is_active = True
     message = _("un-archived")
@@ -2587,7 +2591,11 @@ def rotating_work_type_assign_bulk_delete(request):
     """
     This method is used to archive/un-archive bulk rotating work type assigns
     """
-    ids = request.POST["ids"]
+    ids = request.POST.get("ids")
+    if not ids:
+        return HorillaRedirect(
+            request, message=_("No rotatingworktype found matching the query.")
+        )
     ids = json.loads(ids)
     for id in ids:
         try:
@@ -3396,7 +3404,11 @@ def rotating_shift_assign_bulk_archive(request):
     """
     This method is used to archive/un-archive bulk rotating shift assigns
     """
-    ids = request.POST["ids"]
+    ids = request.POST.get("ids")
+    if not ids:
+        return HorillaRedirect(
+            request, message=_("No rotatingshift found matching the query.")
+        )
     ids = json.loads(ids)
     is_active = True
     message = _("un-archived")
@@ -3441,7 +3453,11 @@ def rotating_shift_assign_bulk_delete(request):
     """
     This method is used to bulk delete for rotating shift assign
     """
-    ids = request.POST["ids"]
+    ids = request.POST.get("ids")
+    if not ids:
+        return HorillaRedirect(
+            request, message=_("No rotatingshift found matching the query.")
+        )
     ids = json.loads(ids)
     for id in ids:
         try:
@@ -3997,7 +4013,11 @@ def work_type_request_bulk_cancel(request):
     """
     This method is used to cancel a bunch work type request
     """
-    ids = request.POST["ids"]
+    ids = request.POST.get("ids")
+    if not ids:
+        return HorillaRedirect(
+            request, message=_("No worktype request found matching the query.")
+        )
     ids = json.loads(ids)
     result = False
     for id in ids:
@@ -4082,7 +4102,11 @@ def work_type_request_bulk_approve(request):
     """
     This method is used to approve bulk of requested work type
     """
-    ids = request.POST["ids"]
+    ids = request.POST.get("ids")
+    if not ids:
+        return HorillaRedirect(
+            request, message=_("No worktype request found matching the query.")
+        )
     ids = json.loads(ids)
     result = False
     for id in ids:
@@ -4353,6 +4377,8 @@ def shift_request(request):
 def update_employee_allocation(request):
 
     shift = request.GET.get("shift_id")
+    if not shift:
+        return HorillaRedirect(request, message=_("No shift found matching the query."))
     form = ShiftAllocationForm()
     shift = EmployeeShift.objects.filter(id=shift).first()
     employee_ids = shift.employeeworkinformation_set.values_list(
@@ -4871,6 +4897,10 @@ def shift_allocation_request_cancel(request, id):
     """
 
     shift_request = ShiftRequest.find(id)
+    if not shift_request:
+        return HorillaRedirect(
+            request, message=_("No shift request found matching the query.")
+        )
 
     shift_request.reallocate_canceled = True
     shift_request.reallocate_approved = False
@@ -5038,6 +5068,10 @@ def shift_allocation_request_approve(request, id):
     """
 
     shift_request = ShiftRequest.find(id)
+    if not shift_request:
+        return HorillaRedirect(
+            request, message=_("No shift request found matching the query.")
+        )
 
     if not shift_request.is_any_request_exists():
         shift_request.reallocate_approved = True
@@ -5287,6 +5321,11 @@ def delete_notification(request, id):
 @login_required
 def mark_as_read_notification(request, notification_id):
     script = ""
+    notification_id = request.GET.get("notification_id")
+    if not notification_id:
+        return HorillaRedirect(
+            request, message=_("No notification found matching the query.")
+        )
     notification = Notification.objects.get(id=notification_id)
     notification.mark_as_read()
     if not request.user.notifications.unread():
@@ -7643,7 +7682,11 @@ def view_penalties(request):
 @login_required
 @permission_required("base.delete_penaltyaccounts")
 def delete_penalities(request, penalty_id):
-    penalty = PenaltyAccounts.objects.get(id=penalty_id)
+    penalty = PenaltyAccounts.objects.filter(id=penalty_id).first()
+    if not penalty:
+        return HorillaRedirect(
+            request, message=_("No penalty account found matching the query.")
+        )
     penalty.delete()
     messages.success(request, _("Penalty deleted suucessfully"))
     return HttpResponse(
