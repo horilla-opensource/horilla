@@ -857,6 +857,15 @@ class EmployeeBankDetails(HorillaModel):
                         )
                     }
                 )
+        if self.swift_code and self.currency_type == "LKR":
+            raise ValidationError(
+                {
+                    "swift_code": _(
+                        "SWIFT code is not applicable for LKR transactions. "
+                        "Please select a different currency or remove the SWIFT code."
+                    )
+                }
+            )
 
 
 class NoteFiles(HorillaModel):
