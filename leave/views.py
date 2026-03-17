@@ -989,7 +989,11 @@ def leave_request_approve(request, id, emp_id=None):
     GET : If `emp_id` is provided, it returns to the "/employee/employee-view/{employee_id}/" template after approval.
           Otherwise, it returns to the default leave request view template.
     """
-    leave_request = LeaveRequest.objects.get(id=id)
+    leave_request = LeaveRequest.find(id)
+    if not leave_request:
+        return HorillaRedirect(
+            request, message=_("No leave rquest found matching the query.")
+        )
     employee_id = leave_request.employee_id
     if not request.user.is_superuser:
         if employee_id == request.user.employee_get:
@@ -3277,10 +3281,9 @@ def leave_request_create(request):
 @login_required
 def employee_leave_details(request):
     balance_count = ""
-    if request.POST["employee_id"]:
-        employee = request.POST["employee_id"]
-    else:
-        employee = ""
+    employee = request.POST.get("employee_id")
+    if not employee:
+        return HorillaRedirect(request, message=_("No leave found matching the query."))
     date = request.POST.get("date", "")
     if request.POST["leave_type"] and request.POST["employee_id"]:
         leave_type_id = request.POST["leave_type"]
@@ -4456,9 +4459,13 @@ def delete_allocation_comment_file(request):
     """
     script = ""
     ids = request.GET.getlist("ids")
-    leave_id = request.GET["leave_id"]
-    comment_id = request.GET["comment_id"]
+    leave_id = request.GET.get("leave_id")
+    comment_id = request.GET.get("comment_id")
     comment = LeaveallocationrequestComment.find(comment_id)
+    if not comment:
+        return HorillaRedirect(
+            request, message=_("No comment found matching the query.")
+        )
     if (
         request.user.employee_get == comment.employee_id
         or request.user.has_perm("leave.delete_leaverequestfile")
@@ -4601,7 +4608,9 @@ def delete_leave_comment_file(request):
     """
     script = ""
     ids = request.GET.getlist("ids")
-    leave_id = request.GET["leave_id"]
+    leave_id = request.GET.get("leave_id")
+    if not leave_id:
+        return HorillaRedirect(request, message=_("No leave found matching the query."))
     comment_id = request.GET["comment_id"]
     comment = LeaverequestComment.find(comment_id)
     if (
@@ -4633,7 +4642,7 @@ if apps.is_installed("attendance"):
         Returns:
         GET : return attendance dates
         """
-        if request.GET["employee_id"]:
+        if request.GET.get("employee_id"):
             employee = Employee.objects.get(id=request.GET.get("employee_id"))
             holiday_attendance = get_leave_day_attendance(employee)
             # Get a list of tuples containing (id, attendance_date)
@@ -4649,6 +4658,9 @@ if apps.is_installed("attendance"):
                 },
             )
             return HttpResponse(f"{attendance_id}")
+        return HorillaRedirect(
+            request, message=_("No attendance found matching the query.")
+        )
 
     @login_required
     def delete_comment_compensatory_file(request):
@@ -4657,7 +4669,11 @@ if apps.is_installed("attendance"):
         """
         ids = request.GET.getlist("ids")
         LeaverequestFile.objects.filter(id__in=ids).delete()
-        leave_id = request.GET["leave_id"]
+        leave_id = request.GET.get("leave_id")
+        if not leave_id:
+            return HorillaRedirect(
+                request, message=_("No leave comment found matching the query.")
+            )
         comments = CompensatoryLeaverequestComment.objects.all()
         if not request.user.has_perm("leave.delete_compensatoryleaverequestcomment"):
             comments = comments.filter(employee_id__employee_user_id=request.user)
@@ -5193,8 +5209,8 @@ if apps.is_installed("recruitment"):
 
     @login_required
     def check_interview_conflicts(request):
-        start_date = request.GET["start_date"]
-        end_date = request.GET["end_date"]
+        start_date = request.GET.get("start_date")
+        end_date = request.GET.get("end_date")
         employee_id = request.GET.get("employee_id")
 
         try:
@@ -5220,7 +5236,9 @@ if apps.is_installed("recruitment"):
             return JsonResponse(response)
         except Exception as e:
             logger.error(e)
-            return JsonResponse(e)
+            return HorillaRedirect(
+                request, message=_("No interview found matching the query.")
+            )
 
 
 @login_required
@@ -5295,7 +5313,11 @@ def employee_view_individual_leave_tab(request, pk, **kwargs):
     """
     This method is used to view profile of an employee.
     """
-    employee = Employee.objects.get(id=pk)
+    employee = Employee.objects.filter(id=pk).first()
+    if not employee:
+        return HorillaRedirect(
+            request, message=_("No leave request found matching the query.")
+        )
     instances = (
         LeaveRequest.objects.filter(employee_id=employee)
         if apps.is_installed("leave")
