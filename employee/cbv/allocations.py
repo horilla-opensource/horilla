@@ -841,7 +841,9 @@ class GroupAssignView(TemplateView):
         Get
         """
         employee_id = request.GET.get("employee")
-        employee = Employee.objects.get(id=employee_id)
+        employee = Employee.objects.filter(id=employee_id).first()
+        if not employee:
+            return HorillaRedirect(request, message=_("Employee not found"))
         groups = employee.employee_user_id.groups.all()
         form = AddToUserGroupForm(
             initial={
