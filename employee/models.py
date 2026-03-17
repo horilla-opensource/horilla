@@ -6,6 +6,7 @@ This module is used to register models for employee app
 """
 
 from datetime import date, datetime, timedelta
+import re
 
 from django.apps import apps
 from django.conf import settings
@@ -840,6 +841,19 @@ class EmployeeBankDetails(HorillaModel):
                     {
                         "account_number": _(
                             "Bank details for an employee with this account number already exist"
+                        )
+                    }
+                )
+        if self.swift_code:
+            swift_code = self.swift_code.upper()
+            pattern = re.compile(r"^[A-Z]{4}[A-Z]{2}[A-Z0-9]{2}([A-Z0-9]{3})?$")
+            if not pattern.match(swift_code):
+                raise ValidationError(
+                    {
+                        "swift_code": _(
+                            "Invalid SWIFT Code format. It must be 8 or 11 characters "
+                            "(4 letters bank code, 2 letters country code, 2 alphanumeric "
+                            "location code, and optional 3 alphanumeric branch code)."
                         )
                     }
                 )
