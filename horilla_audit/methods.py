@@ -7,8 +7,10 @@ This module is used to write methods related to the history
 from django.core.paginator import Paginator
 from django.db import models
 from django.shortcuts import render
+from django.utils.translation import gettext as _
 
 from horilla.decorators import apply_decorators
+from horilla.http.response import HorillaRedirect
 from horilla_auth.models import HorillaUser
 
 
@@ -158,7 +160,9 @@ def history_tracking(request, obj_id, **kwargs):
 
     @apply_decorators(decorator_strings)
     def _history_tracking(request, obj_id, model):
-        instance = model.objects.get(pk=obj_id)
+        instance = model.objects.filter(pk=obj_id).first()
+        if not instance:
+            return HorillaRedirect(request, message=_("Object not found"))
         histories = instance.horilla_history.all()
         page_number = request.GET.get("page", 1)
         paginator = Paginator(histories, 4)
