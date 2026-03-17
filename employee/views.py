@@ -1209,6 +1209,7 @@ def employee_view(request):
 
 
 @login_required
+@require_http_methods(["POST"])
 @permission_required("employee.change_employee")
 def view_employee_bulk_update(request):
     if request.method == "POST":
@@ -3166,6 +3167,8 @@ def employee_select_filter(request):
         context = {"employee_ids": employee_ids, "total_count": total_count}
 
         return JsonResponse(context)
+    else:
+        return JsonResponse({"error": _("Invalid page number")}, status=400)
 
 
 @login_required
