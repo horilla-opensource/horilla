@@ -102,7 +102,7 @@
                             <ion-icon name="book-outline"></ion-icon>
                             <span>{% trans "Qualification" %}</span>
                         </span>
-                        <span class="oh-profile__info-value">{{employee.qualification|default:_("None")}}</span>
+                        <span class="oh-profile__info-value">{{employee.qualification|default_if_none:""|linebreaksbr|default:_("None")}}</span>
                     </li>
 
                     <li class="oh-profile__card-info-item">
@@ -221,6 +221,7 @@
                                             <span class="oh-profile__info-value">{{employee.employee_work_info.reporting_manager_id|default:_("None")}}</span>
                                         </li>
 
+                                        {% if employee.employee_work_info.employee_type_id.employee_type == "Intern" %}
                                         <li class="oh-profile__card-info-item">
                                             <span class="oh-profile__info-label mb-1">
                                                 <ion-icon name="cash-outline"></ion-icon>
@@ -239,6 +240,7 @@
                                             <span class="oh-profile__info-value">{% trans "None" %}</span>
                                             {% endif %}
                                         </li>
+                                        {% endif %}
 
                                         <li class="oh-profile__card-info-item">
                                             <span class="oh-profile__info-label mb-1">
@@ -283,6 +285,7 @@
                                             <span class="oh-profile__info-value">{{employee.employee_work_info.work_type_id|default:_("None")}}</span>
                                         </li>
 
+                                        {% if employee.employee_work_info.employee_type_id.employee_type == "Intern" %}
                                         <li class="oh-profile__card-info-item">
                                             <span class="oh-profile__info-label mb-1">
                                                 <ion-icon name="cash-outline"></ion-icon>
@@ -301,6 +304,7 @@
                                             <span class="oh-profile__info-value">{% trans "None" %}</span>
                                             {% endif %}
                                         </li>
+                                        {% endif %}
 
                                         <li class="oh-profile__card-info-item">
                                             <span class="oh-profile__info-label mb-1">

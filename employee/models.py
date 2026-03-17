@@ -118,7 +118,7 @@ class Employee(models.Model):
         null=True
     )
     qualification = models.TextField(blank=True, null=True)
-    experience = models.IntegerField(null=True, blank=True)
+    experience = models.DecimalField(max_digits=5, decimal_places=1, null=True, blank=True)
     marital_status = models.CharField(
         max_length=50, blank=True, null=True, choices=choice_marital, default="single"
     )
