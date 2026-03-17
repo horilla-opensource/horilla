@@ -172,6 +172,53 @@ document.addEventListener("DOMContentLoaded", function () {
         }
     }
 
+    // SWIFT Code + LKR currency validation
+    const swiftCodeInput = document.querySelector('[name="swift_code"]');
+    const currencyTypeSelect = document.querySelector('[name="currency_type"]');
+    const swiftValidationMsg = document.createElement('div');
+    swiftValidationMsg.style.color = '#dc3545';
+    swiftValidationMsg.style.fontSize = '0.875rem';
+    swiftValidationMsg.style.marginTop = '4px';
+    swiftValidationMsg.style.display = 'none';
+    swiftValidationMsg.textContent = "{% trans 'SWIFT code is not applicable for LKR transactions. Please select a different currency or remove the SWIFT code.' %}";
+
+    if (swiftCodeInput) {
+        swiftCodeInput.parentNode.appendChild(swiftValidationMsg);
+    }
+
+    function validateSwiftCurrency() {
+        if (!swiftCodeInput || !currencyTypeSelect) return true;
+        const hasSwift = swiftCodeInput.value.trim() !== '';
+        const isLKR = currencyTypeSelect.value === 'LKR';
+
+        if (hasSwift && isLKR) {
+            swiftValidationMsg.style.display = 'block';
+            swiftCodeInput.style.borderColor = '#dc3545';
+            return false;
+        } else {
+            swiftValidationMsg.style.display = 'none';
+            swiftCodeInput.style.borderColor = '#cdd5df';
+            return true;
+        }
+    }
+
+    if (swiftCodeInput) {
+        swiftCodeInput.addEventListener('input', validateSwiftCurrency);
+    }
+    if (currencyTypeSelect) {
+        currencyTypeSelect.addEventListener('change', validateSwiftCurrency);
+    }
+
+    // Prevent form submission if validation fails
+    const bankForm = document.querySelector('#bank form');
+    if (bankForm) {
+        bankForm.addEventListener('submit', function(e) {
+            if (!validateSwiftCurrency()) {
+                e.preventDefault();
+            }
+        });
+    }
+
 });
 </script>
 {% endblock %}

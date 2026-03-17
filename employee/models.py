@@ -6,6 +6,7 @@ This module is used to register models for employee app
 """
 
 from datetime import date, datetime, timedelta
+import re
 
 from django.apps import apps
 from django.conf import settings
@@ -118,7 +119,7 @@ class Employee(models.Model):
         null=True
     )
     qualification = models.TextField(blank=True, null=True)
-    experience = models.IntegerField(null=True, blank=True)
+    experience = models.DecimalField(max_digits=5, decimal_places=1, null=True, blank=True)
     marital_status = models.CharField(
         max_length=50, blank=True, null=True, choices=choice_marital, default="single"
     )
@@ -843,6 +844,28 @@ class EmployeeBankDetails(HorillaModel):
                         )
                     }
                 )
+        if self.swift_code:
+            swift_code = self.swift_code.upper()
+            pattern = re.compile(r"^[A-Z]{4}[A-Z]{2}[A-Z0-9]{2}([A-Z0-9]{3})?$")
+            if not pattern.match(swift_code):
+                raise ValidationError(
+                    {
+                        "swift_code": _(
+                            "Invalid SWIFT Code format. It must be 8 or 11 characters "
+                            "(4 letters bank code, 2 letters country code, 2 alphanumeric "
+                            "location code, and optional 3 alphanumeric branch code)."
+                        )
+                    }
+                )
+        if self.swift_code and self.currency_type == "LKR":
+            raise ValidationError(
+                {
+                    "swift_code": _(
+                        "SWIFT code is not applicable for LKR transactions. "
+                        "Please select a different currency or remove the SWIFT code."
+                    )
+                }
+            )
 
 
 class NoteFiles(HorillaModel):

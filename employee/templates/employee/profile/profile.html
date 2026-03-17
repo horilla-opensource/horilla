@@ -44,10 +44,15 @@
 
 		  // Active tab script
 		function activeEmpprofileTab() {
-		  var activeTab = localStorage.getItem("activeEmpprofileTab")
+		  var serverActiveTab = "{{ active_tab|default:'' }}";
+		  var activeTab = serverActiveTab || localStorage.getItem("activeEmpprofileTab");
 
 		  if (!["#personal", "#bank"].includes(activeTab)) {
 			activeTab = "#personal";
+		  }
+
+		  if (serverActiveTab) {
+			localStorage.setItem("activeEmpprofileTab", serverActiveTab);
 		  }
 
 		  if (!$(activeTab).length && $(`[data-target="#personal"]`).length) {

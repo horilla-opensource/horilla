@@ -46,29 +46,11 @@
     ></span>
     <span
       name=""
-      id="dynamicWorkType"
-      style="display: none"
-      data-toggle="oh-modal-toggle"
-      data-target="#dynamicCreateModal"
-      hx-get="{% url 'work-type-create' %}?dynamic=true"
-      hx-target="#dynamicCreateModalBody"
-    ></span>
-    <span
-      name=""
       id="dynamicEmployeeType"
       style="display: none"
       data-toggle="oh-modal-toggle"
       data-target="#dynamicCreateModal"
       hx-get="{% url 'employee-type-create' %}?dynamic=true"
-      hx-target="#dynamicCreateModalBody"
-    ></span>
-    <span
-      name=""
-      id="dynamicShift"
-      style="display: none"
-      data-toggle="oh-modal-toggle"
-      data-target="#dynamicCreateModal"
-      hx-get="{% url 'employee-shift-create' %}?dynamic=true"
       hx-target="#dynamicCreateModalBody"
     ></span>
     <div
@@ -153,6 +135,28 @@
       }
     }
   }
+</script>
+
+<script>
+$(document).ready(function () {
+    function toggleSalaryFieldsAsP() {
+        var selectedText = $("#id_employee_type_id option:selected").text().trim().toLowerCase();
+        var salaryFields = ["#id_basic_salary", "#id_salary_hour", "#id_salary_currency"];
+        salaryFields.forEach(function (fieldId) {
+            var $field = $(fieldId);
+            if ($field.length) {
+                var $wrapper = $field.closest("p");
+                if (selectedText === "intern") {
+                    $wrapper.show();
+                } else {
+                    $wrapper.hide();
+                }
+            }
+        });
+    }
+    toggleSalaryFieldsAsP();
+    $("#id_employee_type_id").on("change", toggleSalaryFieldsAsP);
+});
 </script>
 
 <script>

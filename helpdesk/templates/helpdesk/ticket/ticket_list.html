@@ -143,6 +143,7 @@
 											</div>
 											<div class="oh-sticky-table__td oh-sticky-table__right" onclick="event.stopPropagation()">
 												<div class="oh-btn-group">
+													{% if not ticket|has_reviewed_password_reset %}
 													<button
 														class="oh-btn oh-btn--light-bkg p-3 w-50"
 														title="{% trans 'Edit' %}"
@@ -153,6 +154,7 @@
 													>
 														<ion-icon name="create-outline"></ion-icon>
 													</button>
+													{% endif %}
 
 													{% if ticket.is_active %}
 														<form
@@ -510,6 +512,7 @@
 														</button>
 													{% endif %}
 													{% if perms.helpdesk.change_ticket or request.user.employee_get|is_department_manager:ticket %}
+														{% if not ticket|has_reviewed_password_reset %}
 														<button
 															class="oh-btn oh-btn--light-bkg p-3 w-50"
 															title="{% trans 'Edit' %}"
@@ -520,6 +523,7 @@
 														>
 															<ion-icon name="create-outline"></ion-icon>
 														</button>
+														{% endif %}
 													{% endif %}
 													{% if perms.helpdesk.change_ticket or request.user.employee_get|is_department_manager:ticket %}
 														{% if ticket.is_active %}
