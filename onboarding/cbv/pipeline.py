@@ -462,7 +462,7 @@ class CandidateList(HorillaListView):
 
     def get(self, request, *args, **kwargs):
         self.selected_instances_key_id = (
-            f"selectedCandidateRecords{self.request.GET['onboarding_stage_id']}"
+            f"selectedCandidateRecords{self.request.GET.get('onboarding_stage_id')}"
         )
         return super().get(request, *args, **kwargs)
 
