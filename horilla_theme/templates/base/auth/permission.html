@@ -22,43 +22,46 @@
 
 <script>
   // Inner accordion logic — rebind after page load or HTMX swap
-  function bindInnerAccordions() {
-    document.querySelectorAll('.inner-accordion-toggle').forEach((toggle) => {
-      const content = toggle.nextElementSibling;
 
-      toggle.removeEventListener('click', toggle._boundClick);
-      toggle._boundClick = () => {
-        const isOpen = content.style.maxHeight && content.style.maxHeight !== "0px";
+  $(document).on("click", ".inner-accordion-toggle", function (e) {
+      const $toggle = $(this);
 
-        if (isOpen) {
-          content.style.maxHeight = "0";
-          content.style.opacity = "0";
-        } else {
-          content.style.maxHeight = "500px";
-          content.style.opacity = "1";
-        }
+      // Find the correct content (scoped)
+      const $content = $toggle
+          .parent()
+          .find(".inner-accordion-content")
+          .first();
 
-        // Auto-resize parent
-        const outerPanel = toggle.closest('.accordion-panel-gp');
-        if (outerPanel) {
-          setTimeout(() => {
-            outerPanel.style.maxHeight = outerPanel.scrollHeight + "px";
+      if (!$content.length) return;
+
+      const isOpen =
+          $content.css("max-height") !== "0px" &&
+          $content.css("max-height") !== "none";
+
+      if (isOpen) {
+          $content.css({
+              "max-height": "0",
+              "opacity": "0",
+          });
+      } else {
+          $content.css({
+              "max-height": $content[0].scrollHeight + "px",
+              "opacity": "1",
+          });
+      }
+
+      // Resize outer accordion
+      const $outerPanel = $toggle.closest(".accordion-panel-gp");
+      if ($outerPanel.length) {
+          setTimeout(function () {
+              $outerPanel.css(
+                  "max-height",
+                  $outerPanel[0].scrollHeight + "px"
+              );
           }, 250);
-        }
-      };
-      toggle.addEventListener("click", toggle._boundClick);
-    });
-  }
+      }
+  });
 
-  // Run on page load
-  document.addEventListener("DOMContentLoaded", bindInnerAccordions);
-
-  // Run after HTMX replaces any HTML
-  $("#permissionContainer").on("htmx:afterSwap", bindInnerAccordions);
-</script>
-
-
-<script>
   function updateBadge() {
     $(".accordion-wrapper").each(function () {
       const wrapper = $(this);
