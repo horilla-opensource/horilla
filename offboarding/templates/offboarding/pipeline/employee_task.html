@@ -3,6 +3,7 @@
 {% if task.task_id|have_task:employee %}
 		{% for assinged_tasks in employee|get_assigned_task:task.task_id %}
 
+        {% if perms.offboarding.change_employeetask %}
         <select
 			hx-get="{% url "update-task-status" %}?stage_id={{employee.stage_id.id}}&employee_ids={{employee.id}}&task_id={{assinged_tasks.task_id.id}}"
             hx-target="#offboardingBody{{employee.stage_id.offboarding_id.id}}"
@@ -20,6 +21,9 @@
             <option value="{{ assinged_task.0 }}">{{ assinged_task.1 }}</option>
             {% endif %} {% endfor %}
         </select>
+        {% else %}
+            <span>{{ assinged_tasks.get_status_display }}</span>
+        {% endif %}
         {% endfor %}
     {% else %}
         <button

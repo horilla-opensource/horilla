@@ -723,9 +723,7 @@ def add_task(request):
 
 
 @login_required
-@any_manager_can_enter(
-    "offboarding.change_employeetask", offboarding_employee_can_enter=True
-)
+@any_manager_can_enter("offboarding.change_employeetask")
 def update_task_status(request, *args, **kwargs):
     """
     This method is used to update the assigned tasks status

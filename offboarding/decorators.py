@@ -11,6 +11,7 @@ from django.shortcuts import render
 from horilla.decorators import decorator_with_arguments
 from offboarding.models import (
     Offboarding,
+    OffboardingEmployee,
     OffboardingGeneralSetting,
     OffboardingStage,
     OffboardingTask,
@@ -26,9 +27,13 @@ def any_manager_can_enter(function, perm, offboarding_employee_can_enter=False):
         if not isinstance(permissions, (list, tuple, set)):
             permissions = [permissions]
         has_permission = any(request.user.has_perm(perm) for perm in permissions)
+        is_offboarding_employee = (
+            offboarding_employee_can_enter
+            and OffboardingEmployee.objects.filter(employee_id=employee).exists()
+        )
         if (
             has_permission
-            or offboarding_employee_can_enter
+            or is_offboarding_employee
             or (
                 Offboarding.objects.filter(managers=employee).exists()
                 | OffboardingStage.objects.filter(managers=employee).exists()
