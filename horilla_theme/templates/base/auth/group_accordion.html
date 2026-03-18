@@ -264,7 +264,8 @@
 <!-- ACCORDION -->
 <script>
     // Outer accordion logic (no change needed)
-    document.querySelectorAll(".accordion-btn-gp").forEach((btn) => {
+
+    {% comment %} document.querySelectorAll(".accordion-btn-gp").forEach((btn) => {
         btn.addEventListener("click", () => {
             const panel = btn.nextElementSibling;
             const icon = btn.querySelector(".icon");
@@ -287,6 +288,8 @@
                 }
             });
 
+            console.log(panel)
+            console.log(isOpen)
             if (!isOpen) {
                 panel.style.maxHeight = panel.scrollHeight + "px";
                 icon.textContent = "-";
@@ -298,6 +301,50 @@
                 btn.classList.add("bg-primary-100", "text-primary-600");
             }
         });
+    }); {% endcomment %}
+
+    $(document).on("click", ".accordion-btn-gp", function () {
+        const $btn = $(this);
+        const $panel = $btn.next(".accordion-panel-gp");
+
+        if (!$panel.length) return;
+
+        const $icon = $btn.find(".icon");
+
+        const isOpen =
+            $panel.css("max-height") !== "0px" &&
+            $panel.css("max-height") !== "none";
+
+        // Close all other panels
+        $(".accordion-panel-gp").not($panel).each(function () {
+            const $p = $(this);
+            const $header = $p.prev(".accordion-btn-gp");
+            const $i = $header.find(".icon");
+
+            $p.css("max-height", "");
+
+            if ($i.length) $i.text("+");
+
+            $header
+                .removeClass("bg-primary-600 text-white")
+                .addClass("bg-primary-100 text-primary-600");
+        });
+
+        // Toggle current panel
+        if (!isOpen) {
+            $panel.css("max-height", $panel[0].scrollHeight + "px");
+
+            if ($icon.length) $icon.text("-");
+
+        } else {
+            $panel.css("max-height", "");
+
+            if ($icon.length) $icon.text("+");
+
+            $btn
+                .removeClass("bg-primary-600 text-white")
+                .addClass("bg-primary-100 text-primary-600");
+        }
     });
 
     // Inner accordion logic (supports multiple)
