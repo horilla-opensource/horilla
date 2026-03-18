@@ -1146,8 +1146,11 @@ def update_group_permission(
     """
     This method is used to remove user permission.
     """
-    group_id = request.POST["id"]
-    instance = Group.objects.get(id=group_id)
+    group_id = request.POST.get("id")
+    instance = Group.objects.filter(id=group_id).first()
+    if not instance:
+        messages.error(request, _("Group not found"))
+        return JsonResponse({"message": "Group not found", "type": "danger"})
     form = UserGroupForm(request.POST, instance=instance)
     if form.is_valid():
         form.save()
@@ -1252,6 +1255,8 @@ def group_assign(request):
     This method is used to assign user group to the users.
     """
     group_id = request.GET.get("group")
+    if not group_id:
+        return HorillaRedirect(request, message=_("Required parameters are missing"))
     form = AssignUserGroup(
         initial={
             "group": group_id,
@@ -1261,7 +1266,11 @@ def group_assign(request):
         }
     )
     if request.POST:
-        group_id = request.POST["group"]
+        group_id = request.POST.get("group")
+        if not group_id:
+            return HorillaRedirect(
+                request, message=_("Required parameters are missing")
+            )
         form = AssignUserGroup(
             {"group": group_id, "employee": request.POST.getlist("employee")}
         )
@@ -1664,34 +1673,42 @@ def mail_server_delete(request):
     """
     This method is used to delete mail server
     """
-    ids = request.GET.getlist("ids")
-    # primary_mail_check
-    delete = True
-    for id in ids:
-        emailconfig = DynamicEmailConfiguration.objects.filter(id=id).first()
-        if emailconfig.is_primary:
-            delete = False
-    if delete:
-        DynamicEmailConfiguration.objects.filter(id__in=ids).delete()
-        messages.success(request, "Mail server configuration deleted")
+    id = request.GET.get("ids")
+
+    if not id:
+        return HorillaRedirect(request, message=_("Missing required parameter"))
+
+    emailconfig = DynamicEmailConfiguration.objects.filter(id=id).first()
+    if not emailconfig:
+        return HorillaRedirect(
+            request, message=_("Mail server configuration not found")
+        )
+
+    # Prevent deleting last remaining config
+    total_count = DynamicEmailConfiguration.objects.count()
+    if total_count <= 1:
+        messages.warning(
+            request,
+            _("You have only 1 Mail server configuration that can't be deleted"),
+        )
         return HorillaRedirect(request)
-    else:
-        if DynamicEmailConfiguration.objects.all().count() == 1:
-            messages.warning(
-                request,
-                "You have only 1 Mail server configuration that can't be deleted",
-            )
-            return HorillaRedirect(request)
-        else:
-            mails = DynamicEmailConfiguration.objects.all().exclude(is_primary=True)
-            return render(
-                request,
-                "base/mail_server/replace_mail.html",
-                {
-                    "mails": mails,
-                    "title": _("Can't Delete"),
-                },
-            )
+
+    # Prevent deleting primary
+    if emailconfig.is_primary:
+        mails = DynamicEmailConfiguration.objects.all().exclude(is_primary=True)
+        return render(
+            request,
+            "base/mail_server/replace_mail.html",
+            {
+                "mails": mails,
+                "title": _("Can't Delete"),
+            },
+        )
+
+    emailconfig.delete()
+    messages.success(request, _("Mail server configuration deleted"))
+
+    return HorillaRedirect(request)
 
 
 @login_required
