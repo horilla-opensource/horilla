@@ -3,6 +3,7 @@ from datetime import datetime, timedelta
 from urllib.parse import parse_qs
 
 from django.apps import apps
+from django.db import models
 from django.contrib import messages
 from django.contrib.auth.models import User
 from django.core.mail import send_mail
@@ -304,9 +305,31 @@ def create_stage(request):
     form.instance.offboarding_id = offboarding
     if request.method == "POST":
         form = OffboardingStageForm(request.POST, instance=instance)
+        form.instance.offboarding_id = offboarding
         if form.is_valid():
             instance = form.save(commit=False)
             instance.offboarding_id = offboarding
+            # Normalize existing stage sequences (1, 2, 3...) before inserting
+            existing_stages = OffboardingStage.objects.filter(
+                offboarding_id=offboarding
+            ).exclude(pk=instance.pk).order_by("sequence", "id")
+            for idx, stage in enumerate(existing_stages, start=1):
+                if stage.sequence != idx:
+                    stage.sequence = idx
+                    stage.save(update_fields=["sequence"])
+
+            # Cap sequence between 1 and max valid position
+            max_sequence = existing_stages.count() + 1
+            new_sequence = max(1, min(instance.sequence, max_sequence))
+            instance.sequence = new_sequence
+
+            # Shift stages at or after the new sequence up by 1
+            OffboardingStage.objects.filter(
+                offboarding_id=offboarding, sequence__gte=new_sequence
+            ).exclude(pk=instance.pk).order_by("-sequence").update(
+                sequence=models.F("sequence") + 1
+            )
+
             instance.save()
             instance.managers.set(form.data.getlist("managers"))
             messages.success(request, _("Stage saved"))
