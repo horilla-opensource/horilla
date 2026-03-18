@@ -434,7 +434,13 @@ class AssignUserGroup(Form):
     employee = forms.ModelMultipleChoiceField(
         queryset=Employee.objects.all(), required=False
     )
-    group = forms.ModelChoiceField(queryset=Group.objects.all())
+
+    group = forms.ModelChoiceField(
+        queryset=Group.objects.all(),
+        error_messages={
+            "invalid_choice": _("Invalid group ID."),
+        },
+    )
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
