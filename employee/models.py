@@ -13,6 +13,7 @@ from django.conf import settings
 from django.contrib.auth.models import Permission
 from django.core.exceptions import ValidationError
 from django.core.files.storage import default_storage
+from django.core.validators import RegexValidator
 from django.db import models
 from django.db.models.query import QuerySet
 from django.db.models.signals import post_save
@@ -54,6 +55,12 @@ def reporting_manager_validator(value):
     return value
 
 
+phone_validator = RegexValidator(
+    regex=r"^\+?\d{7,15}$",
+    message="Enter a valid phone number (7-15 digits, optional +).",
+)
+
+
 class Employee(models.Model):
     """
     Employee model
@@ -88,9 +95,7 @@ class Employee(models.Model):
         upload_to=upload_path, null=True, blank=True, verbose_name=_("Profile Image")
     )
     email = models.EmailField(max_length=254, unique=True)
-    phone = models.CharField(
-        max_length=25,
-    )
+    phone = models.CharField(max_length=25, validators=[phone_validator])
     address = models.TextField(max_length=200, blank=True, null=True)
     country = models.CharField(max_length=100, blank=True, null=True)
     state = models.CharField(max_length=100, null=True, blank=True)
@@ -832,7 +837,11 @@ class EmployeeWorkInformation(models.Model):
         max_length=254, blank=True, null=True, verbose_name=_("Work Email")
     )
     mobile = models.CharField(
-        max_length=254, blank=True, null=True, verbose_name=_("Work Phone")
+        max_length=254,
+        blank=True,
+        null=True,
+        verbose_name=_("Work Phone"),
+        validators=[phone_validator],
     )
 
     date_joining = models.DateField(
