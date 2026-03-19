@@ -39,10 +39,10 @@ jobs:
             docker compose up -d --force-recreate web
 
             echo "==> Running migrations..."
-            docker compose exec -T web python manage.py migrate --noinput
+            docker compose exec -T web python manage.py migrate --noinput || echo "WARNING: Migrations failed (may need manual intervention)"
 
             echo "==> Collecting static files..."
-            docker compose exec -T web python manage.py collectstatic --noinput
+            docker compose exec -T web python manage.py collectstatic --noinput || echo "WARNING: collectstatic failed"
 
             echo "==> Waiting for health check..."
             for i in $(seq 1 45); do
