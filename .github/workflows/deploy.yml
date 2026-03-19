@@ -22,10 +22,17 @@ jobs:
             set -e
             cd /srv/Horilla-HR-Index
 
+            echo "==> Configuring git credentials..."
+            echo "https://x-access-token:${GH_PAT}@github.com" > ~/.git-credentials-deploy
+            git config credential.helper "store --file=$HOME/.git-credentials-deploy"
+
             echo "==> Pulling latest code..."
-            git -c url."https://x-access-token:${GH_PAT}@github.com/".insteadOf="https://github.com/" fetch origin main
-            git -c url."https://x-access-token:${GH_PAT}@github.com/".insteadOf="https://horilla-opensource@github.com/" fetch origin main
+            git fetch origin main
             git reset --hard origin/main
+
+            echo "==> Cleaning up credentials..."
+            rm -f ~/.git-credentials-deploy
+            git config --unset credential.helper || true
 
             echo "==> Rebuilding and restarting containers..."
             docker compose build web
