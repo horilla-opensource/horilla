@@ -439,25 +439,25 @@ class EmployeeWorkInformationUpdateForm(ModelForm):
         """
 
         model = EmployeeWorkInformation
-        # fields = "__all__"
-        fields = [
-            "department_id",
-            "job_position_id",
-            "job_role_id",
-            "work_type_id",
-            "employee_type_id",
-            "reporting_manager_id",
-            "company_id",
-            "tags",
-            "location",
-            "email",
-            "mobile",
-            "shift_id",
-            "date_joining",
-            "contract_end_date",
-            "basic_salary",
-            "salary_hour",
-        ]
+        fields = "__all__"
+        # fields = [
+        #     "department_id",
+        #     "job_position_id",
+        #     "job_role_id",
+        #     "work_type_id",
+        #     "employee_type_id",
+        #     "reporting_manager_id",
+        #     "company_id",
+        #     "tags",
+        #     "location",
+        #     "email",
+        #     "mobile",
+        #     "shift_id",
+        #     "date_joining",
+        #     "contract_end_date",
+        #     "basic_salary",
+        #     "salary_hour",
+        # ]
         exclude = ("employee_id", "experience", "additional_info")
 
         widgets = {
