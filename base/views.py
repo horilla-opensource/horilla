@@ -5505,6 +5505,11 @@ def save_date_format(request):
         # Taking the selected Date Format
         selected_format = request.POST.get("selected_format")
 
+        if selected_format not in settings.HORILLA_DATE_FORMATS:
+            messages.error(request, _("Invalid date format."))
+            return JsonResponse(
+                {"success": False, "error": "Invalid date format."}, status=400
+            )
         if not len(selected_format):
             messages.error(request, _("Please select a valid date format."))
         else:
