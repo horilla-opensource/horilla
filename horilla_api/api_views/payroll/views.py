@@ -349,7 +349,7 @@ class TaxBracketView(APIView):
 
     def get(self, request, pk=None):
         if pk:
-            tax_bracket = TaxBracket.objects.get(id=pk)
+            tax_bracket = TaxBracket.find(pk)
             serializer = TaxBracketSerializer(tax_bracket)
             return Response(serializer.data, status=200)
         tax_brackets = TaxBracket.objects.all()
