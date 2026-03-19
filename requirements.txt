@@ -11,7 +11,7 @@ charset-normalizer
 click
 cryptography
 cssselect2
-Django==4.2.23
+Django==4.2.24
 django-auditlog
 django-apscheduler
 django-cors-headers
@@ -67,7 +67,7 @@ pytz
 PyYAML
 pyzk==0.9
 qrcode
-reportlab==4.0.9
+reportlab==4.1.0
 requests
 responses
 setuptools
