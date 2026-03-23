@@ -2089,6 +2089,7 @@ def biometric_device_live(request):
                       timer: 1500,
                       timerProgressBar: true, // Show a progress bar as the timer counts down
                       didClose: () => {
+                        location.reload();
                         },
                     });
                     </script>
