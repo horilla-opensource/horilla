@@ -1,0 +1,29 @@
+{% load i18n %}
+<table>
+    <tr>
+        {% if device.machine_type == "zk" or device.machine_type == "cosec" %}
+            <td>
+                <span class="oh-kanban-card__subtitle d-block">{% trans "Activate live capture mode" %}</span>
+            </td>
+            <td>
+                <div class="oh-switch">
+                    <input
+                        type="checkbox"
+                        class="style-widget oh-switch__checkbox is-live-activate"
+                        {% if device.is_live %}
+                            checked
+                            title="{% trans 'Deactivate' %}"
+                        {% else %}
+                            title="{% trans 'Activate' %}"
+                        {% endif %}
+                        name="is_live"
+                        hx-trigger="change"
+                        hx-target="#BiometricDeviceTestFormTarget"
+                        hx-get="{% url 'biometric-device-live-capture' %}?deviceId={{ device.id }}"
+                        hx-on:change="document.getElementById('BiometricDeviceTestModal').classList.add('oh-modal--show')"
+                    >
+                </div>
+            </td>
+        {% endif %}
+    </tr>
+</table>
