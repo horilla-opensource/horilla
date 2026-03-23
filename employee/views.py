@@ -1206,6 +1206,7 @@ def employee_view(request):
 
 
 @login_required
+@require_http_methods(["POST"])
 @permission_required("employee.change_employee")
 def view_employee_bulk_update(request):
     if request.method == "POST":
@@ -1629,11 +1630,11 @@ def employee_view_update(request, obj_id, **kwargs):
                         icon="briefcase",
                     )
                     messages.success(request, _("Employee work information updated."))
-                work_form = EmployeeWorkInformationForm(
-                    instance=EmployeeWorkInformation.objects.filter(
-                        employee_id=employee
-                    ).first()
-                )
+                # work_form = EmployeeWorkInformationForm(
+                #     instance=EmployeeWorkInformation.objects.filter(
+                #         employee_id=employee
+                #     ).first()
+                # )
             elif request.POST.get("form") == "bank":
                 instance = EmployeeBankDetails.objects.filter(
                     employee_id=employee
@@ -3150,6 +3151,8 @@ def employee_select_filter(request):
         context = {"employee_ids": employee_ids, "total_count": total_count}
 
         return JsonResponse(context)
+    else:
+        return JsonResponse({"error": _("Invalid page number")}, status=400)
 
 
 @login_required

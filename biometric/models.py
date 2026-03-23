@@ -141,33 +141,13 @@ class BiometricDevices(HorillaModel):
         """
         live capture button
         """
-        checked_attribute = "checked" if self.is_live else ""
-        activate_label = _("Activate live capture mode")
-        activate_title = _("Activate") if not self.is_live else _("Deactivate")
-
-        if self.machine_type in ["zk", "cosec"]:
-            html = f"""
-            <td>
-                  <span class="oh-kanban-card__subtitle d-block">{activate_label}</span>
-                </td>
-                <td>
-                <div class="oh-switch">
-                    <input type="checkbox"
-                        class="style-widget oh-switch__checkbox is-live-activate"
-                        title="{activate_title}"
-                        data-toggle="oh-modal-toggle"
-                        data-target="#BiometricDeviceTestModal"
-                        name="is_live"
-                        {checked_attribute}
-                        hx-trigger="change"
-                        hx-get="/biometric/biometric-device-live-capture?deviceId=d9ab2bc7-01d5-4005-897f-01f35198d743&amp;search=&amp;machine_type=&amp;is_scheduler=unknown&amp;is_active=unknown&amp;is_live=unknown&amp;page=1&amp;view=card"
-                        hx-target="#BiometricDeviceTestFormTarget" />
-                </div>
-                </td>
-                """
-            return html
-        else:
-            return ""
+        html = render_template(
+            "biometric/live_capture.html",
+            {
+                "device": self,
+            },
+        )
+        return html
 
     def render_actions_html(self):
         """
