@@ -1299,6 +1299,7 @@ class EmployeeTabPermissionCheck(APIView):
 
 
 class CheckUserLevel(APIView):
+    permission_classes = [IsAuthenticated]
 
     def get(self, request):
         perm = request.GET.get("perm")

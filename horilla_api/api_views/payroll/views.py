@@ -118,7 +118,14 @@ class ContractView(APIView):
 
     def get(self, request, id=None):
         if id:
-            contract = Contract.objects.filter(id=id).first()
+            if request.user.has_perm("payroll.view_contract"):
+                contract = Contract.objects.filter(id=id).first()
+            else:
+                contract = Contract.objects.filter(
+                    id=id, employee_id=request.user.employee_get
+                ).first()
+            if not contract:
+                return Response(status=404)
             serializer = ContractSerializer(contract)
             return Response(serializer.data, status=200)
         if request.user.has_perm("payroll.view_contract"):
@@ -346,6 +353,7 @@ class ReimbusementApproveRejectView(APIView):
 
 
 class TaxBracketView(APIView):
+    permission_classes = [IsAuthenticated]
 
     def get(self, request, pk=None):
         if pk:

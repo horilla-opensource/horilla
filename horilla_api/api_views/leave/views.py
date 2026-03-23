@@ -667,6 +667,7 @@ class HolidayGetCreateAPIView(APIView):
 
 
 class HolidayGetUpdateDeleteAPIView(APIView):
+    permission_classes = [IsAuthenticated]
 
     def get_holiday(self, pk):
         try:
