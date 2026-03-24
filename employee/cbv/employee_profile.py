@@ -39,46 +39,47 @@ class EmployeeProfileView(HorillaProfileView):
     push_url = "employee-view-individual"
     key_name = "obj_id"
 
-    def __init__(self, **kwargs):
-        super().__init__(**kwargs)
-        employee = self.request.user.employee_get
-        if self.request.user.has_perm("employee.change_employee"):
+    def dispatch(self, request, *args, **kwargs):
 
+        if not request.user.is_authenticated:
+            return redirect("login")
+
+        obj_id = kwargs.get("pk")
+        if not Employee.objects.filter(id=obj_id).exists():
+            return HorillaRedirect(
+                request, message=_("No employee found matching the query.")
+            )
+
+        employee = request.user.employee_get
+
+        if request.user.has_perm("employee.change_employee"):
             self.actions = [
                 {
                     "title": _("Edit"),
                     "src": f"/{settings.STATIC_URL}images/ui/editing.png",
                     "accessibility": "employee.cbv.accessibility.edit_accessibility",
-                    "attrs": """
-                    onclick="window.location.href='{get_update_url}'"
-                    """,
+                    "attrs": """onclick="window.location.href='{get_update_url}'" """,
                 },
                 {
                     "title": _("Block Account"),
                     "src": f"/{settings.STATIC_URL}images/ui/block-user.png",
                     "accessibility": "employee.cbv.accessibility.block_account_accessibility",
-                    "attrs": """
-                    id="block-account"
-                    """,
+                    "attrs": """id="block-account" """,
                 },
                 {
                     "title": _("Un-Block Account"),
                     "src": f"/{settings.STATIC_URL}images/ui/unlock.png",
                     "accessibility": "employee.cbv.accessibility.un_block_account_accessibility",
-                    "attrs": """
-                    id="block-account"
-                    """,
+                    "attrs": """id="block-account" """,
                 },
                 {
                     "title": _("Send password reset link"),
                     "src": f"/{settings.STATIC_URL}images/ui/key.png",
                     "accessibility": "employee.cbv.accessibility.password_reset_accessibility",
-                    "attrs": """
-                    onclick="$('#reset-button').click();"
-                    """,
+                    "attrs": """onclick="$('#reset-button').click();" """,
                 },
             ]
-        elif employee.pk == kwargs["pk"] and enable_profile_edit(self.request).get(
+        elif employee.pk == kwargs.get("pk") and enable_profile_edit(request).get(
             "profile_edit_enabled"
         ):
             self.actions = [
@@ -86,19 +87,17 @@ class EmployeeProfileView(HorillaProfileView):
                     "title": _("Edit Profile"),
                     "src": f"/{settings.STATIC_URL}images/ui/editing.png",
                     "accessibility": "employee.cbv.accessibility.edit_accessibility",
-                    "attrs": """
-                    onclick="window.location.href='{cbv_employee_profile_edi_url}'"
-                    """,
+                    "attrs": """onclick="window.location.href='{cbv_employee_profile_edi_url}'" """,
                 },
                 {
                     "title": _("Send password reset link"),
                     "src": f"/{settings.STATIC_URL}images/ui/key.png",
                     "accessibility": "employee.cbv.accessibility.password_reset_accessibility",
-                    "attrs": """
-                    onclick="$('#reset-button').click();"
-                    """,
+                    "attrs": """onclick="$('#reset-button').click();" """,
                 },
             ]
+
+        return super().dispatch(request, *args, **kwargs)
 
 
 class UserProfileView(EmployeeProfileView):
