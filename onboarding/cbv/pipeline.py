@@ -559,6 +559,15 @@ class CandidateList(HorillaListView):
         ).values_list("pk", flat=True)
         self.request.managing_recruitments = self.managing_recruitments
 
+    def dispatch(self, request, *args, **kwargs):
+        stage_id = request.GET.get("onboarding_stage_id")
+
+        if not stage_id:
+            return HorillaRedirect(
+                request, message=_("No stage found matching the query.")
+            )
+        return super().dispatch(request, *args, **kwargs)
+
     def get_context_data(self, **kwargs):
         stage_id = self.request.GET["onboarding_stage_id"]
         tasks = onboarding_models.OnboardingTask.objects.filter(stage_id=stage_id)
