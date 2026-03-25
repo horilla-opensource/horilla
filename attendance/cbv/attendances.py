@@ -346,6 +346,7 @@ class OTAttendancesList(AttendancesListView):
         super().__init__(**kwargs)
         self.search_url = reverse("ot-attendance-tab")
         self.action_method = "ot_approve"
+        self.ordered_ids_key = "overtime_instance_ids"
 
     def get_queryset(self):
         if not self.queryset:
@@ -460,6 +461,10 @@ class OtDetailView(GenericAttendancesDetailView):
     """
 
     action_method = "ot_detail_actions"
+
+    def __init__(self, **kwargs):
+        super().__init__(**kwargs)
+        self.ordered_ids_key = "overtime_instance_ids"
 
 
 @method_decorator(login_required, name="dispatch")

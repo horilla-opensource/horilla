@@ -36,7 +36,7 @@
 	}
 </style>
 
-<div hx-get="{% url 'hour-account-nav' %}" hx-trigger="load"></div>
+<div hx-get="{% url 'hour-account-nav' %}?{{request.GET.urlencode}}" hx-trigger="load"></div>
 
 {% include "generic/components.html" %}
 
