@@ -142,6 +142,7 @@ class EmployeeWorkInformationList(HorillaListView):
     filter_class = EmployeeWorkInformationFilter
     bulk_select_option = False
     show_toggle_form = False
+    show_filter_tags = False
 
     def __init__(self, **kwargs: Any) -> None:
         super().__init__(**kwargs)
