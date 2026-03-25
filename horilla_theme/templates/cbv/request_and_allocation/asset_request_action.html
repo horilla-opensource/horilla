@@ -1,0 +1,58 @@
+{% load static i18n %}
+
+{% if perms.asset.add_assetassignment %}
+    {% if instance.asset_request_status == 'Requested' %}
+        <div>
+            <div class="oh-btn-group">
+                <a
+                    class="w-24 px-4 py-2 bg-primary-600 text-white rounded-md text-xs flex items-center justify-center gap-2 hover:bg-primary-800 transition duration-300"
+                    role="button"
+                    onclick="event.stopPropagation()"
+                    data-toggle="oh-modal-toggle"
+                    data-target="#genericModal"
+                    hx-get="{% url 'asset-request-approve-form' req_id=instance.id %}"
+                    hx-target="#genericModalBody"
+                    title="{% trans 'Approve' %}"
+                >
+                    <img src="{% static 'horilla_theme/assets/img/icons/check.svg' %}" alt="{% trans 'Approve' %}" width="13"
+                        class="filter brightness-0 invert"
+                    />
+                </a>
+                <a
+                    class="w-24 px-4 py-2 bg-white rounded-md text-xs flex items-center justify-center gap-2 border border-primary-500 hover:border-primary-600 transition duration-300"
+                    role="button"
+                    href="{% url 'asset-request-reject' instance.id %}"
+                    onclick="return confirm(`{% trans 'Do you want to reject this request?' %}`)"
+                    title="{% trans 'Reject' %}"
+                >
+                    <img class="mt-[-1px]" src="{% static 'horilla_theme/assets/img/icons/close.svg' %}" alt="{% trans 'Reject' %}" width="13" />
+                </a>
+            </div>
+        </div>
+    {% else %}
+        <div>
+            <div class="oh-btn-group">
+                <a
+                    href="#"
+                    class="w-24 px-4 py-2 bg-primary-600 text-white rounded-md text-xs flex items-center justify-center gap-2 hover:bg-primary-800 transition duration-300 oh-btn--disabled"
+                    role="button"
+                    onclick="event.stopPropagation()"
+                    title="{% trans 'Approve' %}"
+                >
+                    <img src="{% static 'horilla_theme/assets/img/icons/check.svg' %}" alt="{% trans 'Approve' %}" width="13"
+                        class="filter brightness-0 invert"
+                    />
+                </a>
+                <a
+                    href="#"
+                    class="w-24 px-4 py-2 bg-white rounded-md text-xs flex items-center justify-center gap-2 border border-primary-500 hover:border-primary-600 transition duration-300 oh-btn--disabled"
+                    role="button"
+                    onclick="event.stopPropagation()"
+                    title="{% trans 'Reject' %}"
+                >
+                    <img class="mt-[-1px]" src="{% static 'horilla_theme/assets/img/icons/close.svg' %}" alt="{% trans 'Reject' %}" width="13" />
+                </a>
+            </div>
+        </div>
+    {% endif %}
+{% endif %}
