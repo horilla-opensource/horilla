@@ -2,6 +2,7 @@ from typing import Any
 
 from django.urls import reverse
 from django.utils.decorators import method_decorator
+from django.utils.translation import gettext_lazy as _
 
 from asset.cbv.request_and_allocation import AssetAllocationList, AssetRequestList
 from base.methods import filtersubordinates
@@ -16,7 +17,13 @@ class AssetRequestToApprove(AssetRequestList):
     """
 
     columns = [
-        column for column in AssetRequestList.columns if column[1] != "status_col"
+        (
+            _("Request User"),
+            "requested_employee_id",
+            "requested_employee_id__get_avatar",
+        ),
+        (_("Asset Category"), "asset_category_id"),
+        (_("Requested Date"), "asset_request_date"),
     ]
 
     bulk_select_option = False
@@ -25,6 +32,7 @@ class AssetRequestToApprove(AssetRequestList):
     def __init__(self, **kwargs: Any) -> None:
         super().__init__(**kwargs)
         self.search_url = reverse("dashboard-asset-request-approve")
+        self.option_method = None
 
     def get_queryset(self):
         queryset = HorillaListView.get_queryset(self)
@@ -48,9 +56,13 @@ class AllocatedAssetsList(AssetAllocationList):
     """
 
     columns = [
-        column
-        for column in AssetAllocationList.columns
-        if column[1] != "return_status_col"
+        (
+            _("Allocated User"),
+            "assigned_to_employee_id",
+            "assigned_to_employee_id__get_avatar",
+        ),
+        (_("Asset"), "asset_id"),
+        (_("Assigned Date"), "assigned_date"),
     ]
 
     bulk_select_option = False
