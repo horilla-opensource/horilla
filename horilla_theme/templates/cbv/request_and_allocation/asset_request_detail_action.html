@@ -1,18 +1,43 @@
-{% load i18n %}
+{% load static i18n %}
+
 <div class="oh-modal__button-container text-center w-100">
-    {% if perms.asset.add_assetassignment %}
+	{% if perms.asset.add_assetassignment %}
         {% if instance.asset_request_status == 'Requested' %}
-            <div class="oh-btn-group">
-                <a class="oh-btn oh-btn--success w-50 h-8" role="button123" data-toggle="oh-modal-toggle"
-                    data-target="#objectCreateModal" hx-get="{% url 'asset-request-approve-form' req_id=instance.id %}"
-                    hx-target="#objectCreateModalTarget">
-                    <ion-icon name="checkmark-outline"></ion-icon>{% trans 'Approve' %}
-                </a>
-                <a class="oh-btn oh-btn--danger w-50 h-8" role="button" href="{% url 'asset-request-reject' instance.id %}"
-                    onclick="return confirm(`{% trans 'Do you want to reject this request?' %}`)" title="{% trans 'Reject' %}">
-                    <ion-icon name="close-outline"></ion-icon> {% trans 'Reject' %}
-                </a>
-            </div>
+        <div class="oh-btn-group">
+            <a
+                class="w-24 px-4 py-2 bg-primary-600 text-white rounded-md text-xs flex items-center justify-center gap-2 hover:bg-primary-800 transition duration-300"
+                role="button"
+                data-toggle="oh-modal-toggle"
+                data-target="#objectCreateModal"
+                hx-get="{% url 'asset-request-approve-form' req_id=instance.id %}"
+                hx-target="#objectCreateModalTarget"
+            >
+                <img
+                    src="{% static 'horilla_theme/assets/img/icons/check.svg' %}"
+                    width="13"
+                    class="filter brightness-0 invert"
+                />{% trans 'Approve' %}
+            </a>
+            <a
+                class="w-24 px-4 py-2 bg-white rounded-md text-xs flex items-center justify-center gap-2 border border-primary-500 hover:border-primary-600 transition duration-300"
+                role="button"
+                href="{% url 'asset-request-reject' instance.id %}"
+                onclick="
+                    return confirm(
+                        `{% trans 'Do you want to reject this request?' %}`,
+                    );
+                "
+                title="{% trans 'Reject' %}"
+            >
+                <img
+                    class="mt-[-1px]"
+                    src="{% static 'horilla_theme/assets/img/icons/close.svg' %}"
+                    alt="{% trans 'Reject' %}"
+                    width="13"
+                />
+                {% trans 'Reject' %}
+            </a>
+        </div>
         {% endif %}
     {% endif %}
 </div>
