@@ -113,7 +113,7 @@
                 {% trans "By" %} <span class="text-primary-600">{{ comment.employee_id }}</span>
             </p>
             <p class="text-xs text-[#565E6C] mt-2">
-                {% trans "on" %} <span class="dateformat_changer font-semibold"> {{ comment.created_at.date }} </span> {% trans "at" %} <span class="timeformat_changer font-semibold"> {{ comment.created_at.time }} </span>
+                {% trans "on" %} <span class="dateformat_changer font-semibold"> {{ comment.created_at.date }} </span> {% trans "at" %} <span class="timeformat_changer font-semibold"> {{ comment.created_at|time:"g:i A" }} </span>
             </p>
         </div>
     {% endfor %}
