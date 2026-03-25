@@ -366,18 +366,19 @@ class HorillaListView(ListView):
 
         if self.show_filter_tags:
             data_dict = parse_qs(self._saved_filters.urlencode())
+            data_dict = {
+                key: list(dict.fromkeys(values)) for key, values in data_dict.items()
+            }
             data_dict = get_key_instances(self.model, data_dict)
-            keys_to_remove = [
-                key
-                for key, value in data_dict.items()
-                if key in ["filter_applied", "nav_url"] + self.filter_keys_to_remove
-            ]
+            remove_keys = set(
+                ["filter_applied", "nav_url", "referrer"] + self.filter_keys_to_remove
+            )
 
-            for key in (
-                keys_to_remove + ["referrer", "nav_url"] + self.filter_keys_to_remove
-            ):
-                if key in data_dict.keys():
-                    data_dict.pop(key)
+            keys_to_remove = [key for key in data_dict if key in remove_keys]
+
+            for key in remove_keys:
+                data_dict.pop(key, None)
+
             context["filter_dict"] = data_dict
             context["keys_to_remove"] = keys_to_remove
 
@@ -1761,20 +1762,21 @@ class HorillaCardView(ListView):
 
         if self.show_filter_tags:
             data_dict = parse_qs(self._saved_filters.urlencode())
+            data_dict = {
+                key: list(dict.fromkeys(values)) for key, values in data_dict.items()
+            }
             data_dict = get_key_instances(self.model, data_dict)
-            keys_to_remove = [
-                key
-                for key, value in data_dict.items()
-                if value[0] in ["unknown", "on"] + self.filter_keys_to_remove
-            ]
+            remove_keys = set(
+                ["filter_applied", "nav_url", "referrer"] + self.filter_keys_to_remove
+            )
 
-            for key in (
-                keys_to_remove + ["referrer", "nav_url"] + self.filter_keys_to_remove
-            ):
-                if key in data_dict.keys():
-                    data_dict.pop(key)
+            keys_to_remove = [key for key in data_dict if key in remove_keys]
+
+            for key in remove_keys:
+                data_dict.pop(key, None)
 
             context["filter_dict"] = data_dict
+            context["keys_to_remove"] = keys_to_remove
 
         ordered_ids = list(queryset.values_list("id", flat=True))
         ordered_ids = []
