@@ -47,6 +47,7 @@ class PolicyFormView(HorillaFormView):
         return super().form_valid(form)
 
 
+@method_decorator(login_required, name="dispatch")
 class PoliciesNav(HorillaNavView):
     """
     Policies Nav
