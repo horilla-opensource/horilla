@@ -537,29 +537,41 @@ class CandidateList(HorillaListView):
 
     def __init__(self, **kwargs):
         super().__init__(**kwargs)
-        self.ordered_ids_key = f"ordered_ids_{recruitment_models.Candidate.__name__.lower()}{self.request.GET.get('onboarding_stage_id')}"
-        self.search_url = self.request.path
+        self.managing_onboarding_tasks = []
+        self.managing_onboarding_stages = []
+        self.managing_recruitments = []
+
+    def dispatch(self, request, *args, **kwargs):
+
+        if not request.user.is_authenticated:
+            messages.error(request, _("You are not logged in."))
+            return HorillaRedirect(request)
+
+        self.ordered_ids_key = (
+            f"ordered_ids_{recruitment_models.Candidate.__name__.lower()}"
+            f"{request.GET.get('onboarding_stage_id')}"
+        )
+        self.search_url = request.path
 
         self.managing_onboarding_tasks = (
             onboarding_models.OnboardingTask.objects.filter(
-                employee_id__employee_user_id=self.request.user
+                employee_id__employee_user_id=request.user
             ).values_list("pk", flat=True)
         )
-        self.request.managing_onboarding_tasks = self.managing_onboarding_tasks
+        request.managing_onboarding_tasks = self.managing_onboarding_tasks
 
         self.managing_onboarding_stages = (
             onboarding_models.OnboardingStage.objects.filter(
-                employee_id__employee_user_id=self.request.user
+                employee_id__employee_user_id=request.user
             ).values_list("pk", flat=True)
         )
-        self.request.managing_onboarding_stages = self.managing_onboarding_stages
+        request.managing_onboarding_stages = self.managing_onboarding_stages
 
         self.managing_recruitments = recruitment_models.Recruitment.objects.filter(
-            recruitment_managers__employee_user_id=self.request.user
+            recruitment_managers__employee_user_id=request.user
         ).values_list("pk", flat=True)
-        self.request.managing_recruitments = self.managing_recruitments
+        request.managing_recruitments = self.managing_recruitments
 
-    def dispatch(self, request, *args, **kwargs):
         stage_id = request.GET.get("onboarding_stage_id")
 
         if not stage_id:
@@ -638,6 +650,7 @@ class CandidateList(HorillaListView):
         return context
 
 
+@method_decorator(login_required, name="dispatch")
 class CandidateKanbanView(HorillaKanbanView):
     """
     CandidateKanbanView
