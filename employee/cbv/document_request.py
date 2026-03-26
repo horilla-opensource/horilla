@@ -226,6 +226,7 @@ class DocumentUploadForm(HorillaFormView):
         return super().form_valid(form)
 
 
+@method_decorator(login_required, name="dispatch")
 class DocumentRequestNav(HorillaNavView):
     """
     For nav bar
@@ -327,6 +328,7 @@ class DocumentRequestPipelineView(Pipeline):
     ]
 
 
+@method_decorator(login_required, name="dispatch")
 class DocumentListView(HorillaListView):
     """
     List view for document request

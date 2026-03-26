@@ -919,6 +919,7 @@ if app_installed("payroll"):
 
         template_name = "cbv/allocations/payroll/allowance/allowance_view.html"
 
+    @method_decorator(login_required, name="dispatch")
     class AllowanceList(AllowanceListView):
         """
         AllowanceList
