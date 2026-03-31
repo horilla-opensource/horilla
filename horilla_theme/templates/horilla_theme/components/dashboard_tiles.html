@@ -433,12 +433,10 @@
                     <option value="monthly">{% trans "Monthly" %}</option>
                     <option value="date_range">{% trans "Date range" %}</option>
                 </select>
-                <input
-                    type="date"
-                    id="attendance_month"
-                    onchange="changeMonth()"
-                    class="oh-input w-40"
-                />
+                <span id="day_input">
+                    <input type="date" class="oh-input w-40"
+                        id="attendance_month" onchange="changeMonth()" />
+                </span>
             </div>
             <div class="w-full">
                 <div class="relative h-[350px]">
