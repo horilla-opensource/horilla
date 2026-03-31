@@ -22,6 +22,7 @@ class HorillaKanbanView(HorillaCardView):
     show_kanban_confirmation: bool = True
     folded_groups: list = []
     action_method: str = """"""
+    group_label_key: str = ""
 
     def get_related_groups(self, *args, **kwargs):
         related_groups = self.group_filter_class(self.request.GET).qs
@@ -48,42 +49,55 @@ class HorillaKanbanView(HorillaCardView):
                 field, (models.ForeignKey, models.OneToOneField, models.OneToOneRel)
             ):
                 queryset = queryset.prefetch_related(self.group_key)
-                related_groups = self.get_related_groups()
+
+                related_groups = []
+                for obj in self.get_related_groups():
+                    label = getattr(obj, self.group_label_key, str(obj))
+                    related_groups.append(
+                        {
+                            "pk": obj.pk,
+                            "label": str(label),
+                        }
+                    )
 
             elif hasattr(field, "choices") and field.choices:
                 related_groups = [
-                    type(
-                        "Choice",
-                        (),
-                        {"pk": choice[0], "__str__": (lambda self, val=choice[1]: val)},
-                    )()
-                    for choice in field.choices
+                    {"pk": value, "label": str(label)} for value, label in field.choices
                 ]
                 context["is_choice_group"] = True
 
             else:
                 related_groups = []
 
+            # -------------------------
             # Group items
-            for related_item in related_groups:
-                grouped_items[related_item.pk] = {
-                    "label": related_item,
-                    "items": queryset.filter(**{f"{self.group_key}": related_item.pk}),
+            # -------------------------
+            for rg in related_groups:
+                pk = rg["pk"]
+
+                grouped_items[pk] = {
+                    "label": rg["label"],
+                    "items": queryset.filter(**{self.group_key: pk}),
                 }
 
-            # Sort groups to match original order
+            # -------------------------
+            # Sort groups (preserve order)
+            # -------------------------
             sorted_items = {
-                ri.pk: grouped_items[ri.pk]
-                for ri in related_groups
-                if ri.pk in grouped_items
+                rg["pk"]: grouped_items[rg["pk"]]
+                for rg in related_groups
+                if rg["pk"] in grouped_items
             }
 
+            # -------------------------
             # Paginate each group
+            # -------------------------
             for key, group in sorted_items.items():
                 try:
                     ordered_items = group["items"].order_by(self.instance_order_by)
-                except:
+                except Exception:
                     ordered_items = group["items"].order_by("pk")
+
                 paginator = Paginator(ordered_items, self.records_per_page)
                 page = self.request.GET.get(f"page_{key}", 1)
 
@@ -98,7 +112,6 @@ class HorillaKanbanView(HorillaCardView):
                     "label": group["label"],
                     "page_obj": page_obj,
                 }
-
             context.update(
                 {
                     "grouped_items": paginated_groups,
@@ -111,5 +124,6 @@ class HorillaKanbanView(HorillaCardView):
 
         except Exception as e:
             print(f"Error in KanbanViewItems: {e}")
+            raise e
 
         return context
