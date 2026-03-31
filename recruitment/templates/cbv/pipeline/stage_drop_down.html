@@ -8,7 +8,7 @@
           style="width: 90%;color: hsl(0,0%,11%); background-color: transparent; height: 100%; border: 1px solid transparent;"
           >
     {% for stage in stages %}
-    <option value="{{stage.pk}}"{% if stage.pk == instance.stage_id.pk %}selected{% endif %}>{{stage}}</option>
+    <option value="{{stage.pk}}"{% if stage.pk == instance.stage_id.pk %}selected{% endif %}>{{stage.stage}}</option>
     {% endfor %}
   </select>
 </div>

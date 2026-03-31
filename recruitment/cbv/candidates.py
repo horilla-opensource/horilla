@@ -876,7 +876,7 @@ class CandidateDetail(HorillaDetailedView):
         (_("Stage"), "stage_drop_down"),
         (_("Rating"), "rating_bar"),
         (_("Recruitment"), "recruitment_id"),
-        (_("Job Position"), "job_position_id"),
+        (_("Job Position"), "job_position_id__job_position"),
         (_("Interview Table"), "candidate_interview_view", True),
     ]
 
