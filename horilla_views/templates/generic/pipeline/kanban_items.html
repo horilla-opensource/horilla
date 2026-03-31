@@ -15,9 +15,9 @@
                 title="{% trans 'Actions' %}"
                 onclick="event.stopPropagation()"
             >
-                <a class="cursor-pointer dropdown-toggle" @click="open = !open">
+                <button class="cursor-pointer dropdown-toggle w-[10px]" @click="open = !open">
                     <i class="fa-solid fa-ellipsis-vertical text-black"></i>
-                </a>
+                </button>
 
                 <div
                     x-show="open"
