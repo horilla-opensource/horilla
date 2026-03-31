@@ -56,8 +56,8 @@ def reporting_manager_validator(value):
 
 
 phone_validator = RegexValidator(
-    regex=r"^\+?\d{7,15}$",
-    message="Enter a valid phone number (7-15 digits, optional +).",
+    regex=r"^\+?[\d\s\-\(\)]{7,20}$",
+    message=_("Enter a valid phone number (7-20 characters, optional +)."),
 )
 
 
