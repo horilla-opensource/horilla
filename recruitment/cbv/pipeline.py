@@ -263,7 +263,7 @@ class CandidateList(HorillaListView):
         (_("Rating"), "rating_bar"),
         (_("Hired Date"), "hired_date"),
         (_("Scheduled Interview"), "get_interview_count"),
-        (_("Job Position"), "job_position_id"),
+        (_("Job Position"), "job_position_id__job_position"),
         (_("Contact"), "mobile"),
     ]
 
@@ -434,6 +434,7 @@ class CandidateCard(HorillaKanbanView):
     group_key = "stage_id"
     records_per_page = 10
     filter_keys_to_remove = ["rec_id"]
+    group_label_key = "stage"
 
     kanban_attrs = """
         hx-get='{get_details_candidate}'
@@ -446,7 +447,7 @@ class CandidateCard(HorillaKanbanView):
         "image_src": "{get_avatar}",
         "title": "{get_full_name}",
         "email": "{email}",
-        "position": "{job_position_id}",
+        "position": "{job_position_id__job_position}",
     }
 
     group_actions = [
