@@ -179,7 +179,6 @@ def send_test_message(request):
     if request.method == "POST":
         number = request.POST.get("number")
         response = send_text_message(number, _(message))
-        print(response)
         if response:
             messages.success(request, _("Message sent successfully"))
         else:
