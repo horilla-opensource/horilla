@@ -30,12 +30,11 @@
 
         {% for field, values in filter_dict.items %}
             {% if values and field != "path" %}
-                {% with translation_field=field|filter_field %}
                 <span class="oh-titlebar__tag filter-field" data-field="{{ field }}">
-                    {% trans translation_field %} :
+                    {{ field|filter_field }}: &nbsp
                     {% for value in values %}
-                        <span class="filter-value" data-value="{% trans value %}">
-                        {% trans value %}
+                        <span class="filter-value" data-value="{{value|filter_field}}">
+                        {{value|filter_field}}
                         </span>
                     {% endfor %}
                     <button class="oh-titlebar__tag-close"
@@ -44,7 +43,6 @@
                         <ion-icon name="close-outline" class="close-icon"></ion-icon>
                     </button>
                 </span>
-                {% endwith %}
             {% endif %}
         {% endfor %}
 
