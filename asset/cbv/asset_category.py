@@ -12,15 +12,11 @@ from django.utils.decorators import method_decorator
 from django.utils.translation import gettext_lazy as _
 
 from asset.cbv.asset_batch_no import DynamicCreateBatchNo
-from asset.filters import AssetCategoryFilter, AssetFilter, CustomAssetFilter
+from asset.filters import AssetFilter
 from asset.forms import AssetCategoryForm, AssetForm, AssetReportForm
 from asset.models import Asset, AssetCategory, AssetDocuments, AssetReport
 from horilla_views.cbv_methods import login_required, permission_required
-from horilla_views.generic.cbv.views import (
-    HorillaDetailedView,
-    HorillaFormView,
-    HorillaNavView,
-)
+from horilla_views.generic.cbv.views import HorillaFormView, HorillaNavView
 from horilla_views.views import HorillaDeleteConfirmationView
 
 
@@ -106,7 +102,7 @@ class AssetCategoryDuplicateFormView(HorillaFormView):
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
-        original_object = AssetCategory.objects.get(id=self.kwargs["obj_id"])
+        original_object = AssetCategory.find(self.kwargs["obj_id"])
         form = self.form_class(instance=original_object)
         for field_name, field in form.fields.items():
             if isinstance(field, forms.CharField):
@@ -144,7 +140,7 @@ class AssetDuplicateFormView(HorillaFormView):
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
-        original_object = Asset.objects.get(id=self.kwargs["obj_id"])
+        original_object = Asset.find(self.kwargs["obj_id"])
         form = self.form_class(instance=original_object)
         form.fields["asset_category_id"].widget = forms.HiddenInput()
         for field_name, field in form.fields.items():

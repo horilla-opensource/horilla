@@ -140,14 +140,20 @@ def add_asset_report(request, asset_id=None):
     """
     asset_report_form = AssetReportForm()
     if asset_id:
-        asset = Asset.objects.get(id=asset_id)
+        asset = Asset.find(asset_id)
+        if not asset:
+            return HorillaRedirect(request, message=_("Asset not found"))
         asset_report_form = AssetReportForm(initial={"asset_id": asset})
         if not request.GET.get("asset_list"):
-            if request.user.employee_get == AssetAssignment.objects.get(
+            asset_assignment = AssetAssignment.objects.filter(
                 asset_id=asset_id, return_date__isnull=True
-            ).assigned_to_employee_id or request.user.has_perm("asset.change_asset"):
-                pass
-            else:
+            ).first()
+            if not (
+                asset_assignment
+                and request.user.employee_get
+                == asset_assignment.assigned_to_employee_id
+                or request.user.has_perm("asset.change_asset")
+            ):
                 return redirect(asset_request_allocation_view)
 
     if request.method == "POST":
@@ -199,7 +205,9 @@ def asset_update(request, asset_id):
     if not asset_under:
         # if asset there is no asset_under data that means the request is form the category list
         asset_under = "asset_category"
-    instance = Asset.objects.get(id=asset_id)
+    instance = Asset.find(asset_id)
+    if not instance:
+        return HorillaRedirect(request, message=_("Asset not found"))
     asset_form = AssetForm(instance=instance)
     previous_data = request.GET.urlencode()
 
@@ -228,6 +236,7 @@ def asset_update(request, asset_id):
 
 @login_required
 @hx_request_required
+@permission_required("asset.view_asset")
 def asset_information(request, asset_id):
     """
     Display information about a specific Asset object.
@@ -238,7 +247,9 @@ def asset_information(request, asset_id):
         A rendered HTML template displaying the information about the requested Asset object.
     """
 
-    asset = Asset.objects.get(id=asset_id)
+    asset = Asset.find(asset_id)
+    if not asset:
+        return HorillaRedirect(request, message=_("Asset not found"))
     context = {"asset": asset}
     requests_ids_json = request.GET.get("requests_ids")
     if requests_ids_json:
@@ -1072,7 +1083,9 @@ def own_asset_individual_view(request, asset_id):
         request : HTTP request object
         id (int): Id of the asset assignment
     """
-    asset_assignment = AssetAssignment.objects.get(id=asset_id)
+    asset_assignment = AssetAssignment.find(asset_id)
+    if not asset_assignment:
+        return HorillaRedirect(request, message=_("Asset assignment not found"))
     asset = asset_assignment.asset_id
     context = {
         "asset": asset,
