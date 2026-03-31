@@ -419,6 +419,11 @@ class EmployeeWorkDetails(HorillaDetailedView):
         """
         return super().get_queryset().filter(id=self.kwargs.get("pk"))
 
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context["instance_ids"] = None
+        return context
+
 
 @method_decorator(login_required, name="dispatch")
 class WorkTab(HorillaTabView):
