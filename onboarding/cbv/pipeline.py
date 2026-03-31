@@ -348,7 +348,7 @@ class CandidateOnboardingDetail(CandidateDetail):
         (_("Stage"), "stage_drop_down"),
         (_("Rating"), "rating_bar"),
         (_("Recruitment"), "recruitment_id"),
-        (_("Job Position"), "job_position_id"),
+        (_("Job Position"), "job_position_id__job_position"),
         (_("Tasks"), "task_fetch", True),
     ]
 
@@ -392,7 +392,7 @@ class CandidateList(HorillaListView):
         (_("Contact"), "candidate_id__mobile"),
         (_("Stage"), "stage_drop_down"),
         (_("Rating"), "candidate_id__rating_bar"),
-        (_("Job Position"), "candidate_id__job_position_id"),
+        (_("Job Position"), "candidate_id__job_position_id__job_position"),
     ]
 
     default_columns = [
@@ -664,6 +664,7 @@ class CandidateKanbanView(HorillaKanbanView):
     filter_class = onboarding_filters.KanbanCandidateFilter
     group_filter_class = onboarding_filters.OnboardingStageFilter
     instance_order_by = "onboarding_stage__sequence"
+    group_label_key = "stage_title"
 
     details = {
         "image_src": "{get_avatar}",
