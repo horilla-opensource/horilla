@@ -7,8 +7,10 @@ from django.contrib import messages
 from django.http import JsonResponse
 from django.shortcuts import redirect
 from django.urls import reverse
+from django.utils.translation import gettext as _
 
 from horilla.decorators import login_required, permission_required
+from horilla.http.response import HorillaRedirect
 from horilla_automations.methods.methods import generate_choices
 from horilla_automations.methods.serialize import serialize_form
 from horilla_automations.models import MailAutomation
@@ -21,7 +23,14 @@ def get_to_field(request):
     """
     This method is to render `mail to` fields
     """
-    model_path = request.GET["model"]
+    model_path = request.GET.get("model")
+
+    if not model_path:
+        return HorillaRedirect(
+            request,
+            message=_("No matching query found."),
+        )
+
     to_fields, mail_details_choice, model_class = generate_choices(model_path)
 
     class InstantModelForm(forms.ModelForm):
