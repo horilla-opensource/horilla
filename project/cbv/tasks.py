@@ -277,12 +277,26 @@ class TaskCreateForm(HorillaFormView):
         project_id = self.kwargs.get("project_id")
         stage_id = self.kwargs.get("stage_id")
         task_id = self.kwargs.get("pk")
+        if not task_id and not Project.objects.exists():
+            messages.error(request, _("Please create a project first."))
+            return HorillaRedirect(request)
+
         if project_id:
             project = Project.objects.filter(id=project_id).first()
+            if not project:
+                messages.error(request, _("Project not found."))
+                return HorillaRedirect(request)
         elif stage_id:
-            project = ProjectStage.objects.filter(id=stage_id).first().project
+            stage = ProjectStage.objects.filter(id=stage_id).first()
+            if not stage:
+                messages.error(request, _("Stage not found."))
+                return HorillaRedirect(request)
+            project = stage.project
         elif task_id:
             task = Task.objects.filter(id=task_id).first()
+            if not task:
+                messages.error(request, _("Task not found."))
+                return HorillaRedirect(request)
             project = task.project
         elif not task_id:
             return super().get(request, *args, pk=pk, **kwargs)
