@@ -1172,6 +1172,7 @@ def leave_bulk_reject(request):
 
 
 @login_required
+@hx_request_required
 @manager_can_enter("leave.change_leaverequest")
 def leave_request_cancel(request, id, emp_id=None):
     """
@@ -1808,6 +1809,7 @@ def assign_leave_type_excel(_request):
 
 
 @login_required
+@hx_request_required
 @manager_can_enter("leave.add_availableleave")
 def assign_leave_type_import(request):
     """
@@ -2869,6 +2871,7 @@ def employee_dashboard(request):
 
 
 @login_required
+@hx_request_required
 def dashboard_leave_request(request):
     """
     function used to view leave request table.
@@ -4561,6 +4564,7 @@ def compensatory_leave_settings_view(request):
 
 
 @login_required
+@hx_request_required
 @permission_required("leave.add_leavegeneralsetting")
 def enable_compensatory_leave(request):
     """
