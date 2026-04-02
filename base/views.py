@@ -1211,6 +1211,7 @@ def user_group(request):
 
 
 @login_required
+@hx_request_required
 @permission_required("auth.view_group")
 def user_group_search(request):
     """
@@ -1286,6 +1287,7 @@ def group_assign(request):
 
 
 @login_required
+@hx_request_required
 @permission_required("auth.view_group")
 def group_assign_view(request):
     """
@@ -1572,6 +1574,7 @@ def mail_server_conf(request):
 
 
 @login_required
+@hx_request_required
 @permission_required("base.view_dynamicemailconfiguration")
 def mail_server_test_email(request):
     instance_id = request.GET.get("instance_id")
@@ -3584,6 +3587,7 @@ def employee_permission_assign(request, pk=None):
 
 
 @login_required
+@hx_request_required
 @permission_required("view_permissions")
 def employee_permission_search(request, codename=None, uid=None):
     """
@@ -4262,6 +4266,7 @@ def work_type_request_delete(request, obj_id):
 
 
 @login_required
+@hx_request_required
 def work_type_request_single_view(request, obj_id):
     """
     This method is used to view details of an work type request
@@ -4572,6 +4577,7 @@ def shift_request_export(request):
 
 
 @login_required
+@hx_request_required
 def shift_request_search(request):
     """
     This method is used search shift request by employee and also used to filter shift request.
@@ -6937,6 +6943,7 @@ def driver_viewed_status(request):
 
 
 @login_required
+@hx_request_required
 def dashboard_components_toggle(request):
     """
     This function is used to create personalized dashboard charts for employees
@@ -6954,6 +6961,7 @@ def dashboard_components_toggle(request):
 
 
 @login_required
+@hx_request_required
 def employee_chart_show(request):
     """
     This function is used to choose which chart to show in the dashboard
@@ -6985,6 +6993,7 @@ def employee_chart_show(request):
 
 
 @login_required
+@hx_request_required
 def reorder_dashboard_charts(request):
     """
     This function is used to reorder the dashboard charts
@@ -7311,6 +7320,7 @@ def excel_holiday_import(file):
 
 
 @login_required
+@hx_request_required
 @permission_required("base.add_holiday")
 def holidays_info_import(request):
     result = None

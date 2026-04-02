@@ -20,7 +20,7 @@ from base.forms import RotatingShiftAssignExportForm, RotatingShiftAssignForm
 from base.methods import choosesubordinates, filtersubordinates, is_reportingmanager
 from base.models import RotatingShiftAssign
 from employee.models import Employee
-from horilla_views.cbv_methods import login_required
+from horilla_views.cbv_methods import hx_request_required, login_required
 from horilla_views.generic.cbv.views import (
     HorillaDetailedView,
     HorillaFormView,
@@ -271,6 +271,7 @@ class RotatingShiftDetailview(HorillaDetailedView):
 
 
 @method_decorator(login_required, name="dispatch")
+@method_decorator(hx_request_required, name="dispatch")
 @method_decorator(manager_can_enter("base.view_rotatingshiftassign"), name="dispatch")
 class RotatingExportView(TemplateView):
     """

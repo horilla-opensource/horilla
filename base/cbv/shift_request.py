@@ -26,7 +26,11 @@ from base.models import EmployeeShift, ShiftRequest
 from base.views import include_employee_instance
 from employee.models import Employee
 from horilla.http.response import HorillaRedirect
-from horilla_views.cbv_methods import login_required, permission_required
+from horilla_views.cbv_methods import (
+    hx_request_required,
+    login_required,
+    permission_required,
+)
 from horilla_views.generic.cbv.views import (
     HorillaDetailedView,
     HorillaFormView,
@@ -342,6 +346,7 @@ class ShiftRequestTab(HorillaTabView):
 
 
 @method_decorator(login_required, name="dispatch")
+@method_decorator(hx_request_required, name="dispatch")
 class ExportView(TemplateView):
     """
     For candidate export
