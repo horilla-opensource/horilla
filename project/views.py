@@ -312,6 +312,7 @@ def project_delete(request, project_id):
 
 
 @login_required
+@hx_request_required
 def project_filter(request):
     """
     For filtering projects
@@ -611,6 +612,7 @@ def project_bulk_export(request):
 
 
 @login_required
+@hx_request_required
 def project_bulk_archive(request):
     try:
         ids = request.POST.getlist("ids")
@@ -647,6 +649,7 @@ def project_bulk_archive(request):
 
 
 @login_required
+@hx_request_required
 # @permission_required("project.delete_project")
 def project_bulk_delete(request):
     """
@@ -1184,6 +1187,7 @@ def update_task_all(request, task_id):
 
 
 @login_required
+@hx_request_required
 def task_all_filter(request):
     """
     For filtering tasks in task all view
@@ -1373,6 +1377,7 @@ def delete_project_stage(request, stage_id):
 
 
 @login_required
+@hx_request_required
 def get_stages(request):
     """
     This is an ajax method to return json response to take only stages related
@@ -1516,6 +1521,7 @@ def time_sheet_view(request):
 
 
 @login_required
+@hx_request_required
 def get_members(request):
     project_id = request.GET.get("project_id")
     task_id = request.GET.get("task_id")
@@ -1635,6 +1641,7 @@ def time_sheet_creation(request):
 
 
 @login_required
+@hx_request_required
 def time_sheet_project_creation(request):
     """
     View function to handle the creation of a new project from time sheet form.
@@ -1775,6 +1782,7 @@ def time_sheet_delete(request, time_sheet_id):
 
 
 @login_required
+@hx_request_required
 def time_sheet_filter(request):
     """
     Filter Time sheet based on the provided query parameters.
