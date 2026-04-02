@@ -303,6 +303,7 @@ def attendance_import(request):
 
 
 @login_required
+@hx_request_required
 def attendance_export(request):
     resolver_match = request.resolver_match
     if (
@@ -1138,6 +1139,7 @@ def attendance_activity_export(request):
 
 
 @login_required
+@hx_request_required
 def on_time_view(request):
     """
     This method render template to view all on come early out entries
@@ -1578,6 +1580,7 @@ def approve_bulk_overtime(request):
 
 
 @login_required
+@hx_request_required
 # @manager_can_enter("attendance.change_attendance")
 def attendance_add_to_batch(request):
     """
@@ -2272,6 +2275,7 @@ def update_gracetime_clock_in_clock_out(request):
 
 
 @login_required
+@hx_request_required
 def create_attendancerequest_comment(request, attendance_id):
     """
     This method renders form and template to create Attendance request comments
@@ -2392,6 +2396,7 @@ def create_attendancerequest_comment(request, attendance_id):
 
 
 @login_required
+@hx_request_required
 def view_attendancerequest_comment(request, attendance_id):
     """
     This method is used to show Attendance request comments
@@ -2441,6 +2446,7 @@ def delete_attendancerequest_comment(request, comment_id):
 
 
 @login_required
+@hx_request_required
 def delete_comment_file(request):
     """
     Used to delete attachment
@@ -2882,6 +2888,7 @@ def validation_condition_view(request):
 
 
 @login_required
+@hx_request_required
 @permission_required("attendance.add_attendancevalidationcondition")
 def validation_condition_create(request):
     """
@@ -2975,6 +2982,7 @@ def validate_ip_address(self, value):
 
 
 @login_required
+@hx_request_required
 @permission_required("attendance.add_attendance")
 def create_allowed_ips(request):
     """

@@ -29,7 +29,11 @@ from employee.filters import EmployeeFilter
 from employee.models import Employee
 from horilla.filters import HorillaFilterSet
 from horilla.http.response import HorillaRedirect
-from horilla_views.cbv_methods import login_required, render_template
+from horilla_views.cbv_methods import (
+    hx_request_required,
+    login_required,
+    render_template,
+)
 from horilla_views.generic.cbv.views import (
     HorillaDetailedView,
     HorillaFormView,
@@ -273,6 +277,7 @@ class AttendancesNavView(HorillaNavView):
 
 
 @method_decorator(login_required, name="dispatch")
+@method_decorator(hx_request_required, name="dispatch")
 @method_decorator(manager_can_enter("attendance.view_attendance"), name="dispatch")
 class AttendancesExportNav(TemplateView):
     """

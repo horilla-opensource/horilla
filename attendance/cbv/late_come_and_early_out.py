@@ -14,7 +14,7 @@ from attendance.models import AttendanceLateComeEarlyOut
 from base.filters import PenaltyFilter
 from base.methods import filtersubordinates, is_reportingmanager
 from base.models import PenaltyAccounts
-from horilla_views.cbv_methods import login_required
+from horilla_views.cbv_methods import hx_request_required, login_required
 from horilla_views.generic.cbv.views import (
     HorillaDetailedView,
     HorillaListView,
@@ -192,6 +192,7 @@ class LateComeAndEarlyOutListNav(HorillaNavView):
 
 
 @method_decorator(login_required, name="dispatch")
+@method_decorator(hx_request_required, name="dispatch")
 class LateEarlyExportView(TemplateView):
     """
     For  export records
