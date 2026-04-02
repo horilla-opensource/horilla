@@ -15,7 +15,11 @@ from asset.cbv.asset_batch_no import DynamicCreateBatchNo
 from asset.filters import AssetFilter
 from asset.forms import AssetCategoryForm, AssetForm, AssetReportForm
 from asset.models import Asset, AssetCategory, AssetDocuments, AssetReport
-from horilla_views.cbv_methods import login_required, permission_required
+from horilla_views.cbv_methods import (
+    hx_request_required,
+    login_required,
+    permission_required,
+)
 from horilla_views.generic.cbv.views import HorillaFormView, HorillaNavView
 from horilla_views.views import HorillaDeleteConfirmationView
 
@@ -258,6 +262,7 @@ class AssetCategoryNav(HorillaNavView):
             )
 
 
+@method_decorator(hx_request_required, name="dispatch")
 class AssetDeleteConfirmationView(HorillaDeleteConfirmationView):
 
     def post(self, *args, **kwargs):

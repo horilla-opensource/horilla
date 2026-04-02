@@ -134,6 +134,7 @@ def asset_creation(request, asset_category_id):
 
 
 @login_required
+@hx_request_required
 def add_asset_report(request, asset_id=None):
     """
     Function for adding asset report to the asset
@@ -560,6 +561,7 @@ def asset_category_view(request):
 
 
 @login_required
+@hx_request_required
 @permission_required(perm="asset.view_assetcategory")
 def asset_category_view_search_filter(request):
     """
@@ -851,6 +853,7 @@ def asset_allocate_return_request(request, asset_id):
 
 
 @login_required
+@hx_request_required
 @permission_required(perm="asset.change_assetassignment")
 def asset_allocate_return(request, asset_id):
     """
@@ -1052,6 +1055,7 @@ def asset_request_allocation_view(request):
 
 
 @login_required
+@hx_request_required
 def asset_request_alloaction_view_search_filter(request):
     """
     This view handles the search and filter functionality for the asset request allocation list.
@@ -1326,6 +1330,7 @@ def asset_excel(_request):
 
 
 @login_required
+@hx_request_required
 @permission_required("asset.view_assetcategory")
 def asset_export_excel(request):
     """asset export view"""
@@ -1595,6 +1600,7 @@ def asset_batch_number_search(request):
 
 
 @login_required
+@hx_request_required
 def asset_count_update(request):
     """
     View function to return update asset count at asset category.
@@ -1633,6 +1639,7 @@ def asset_dashboard(request):
 
 
 @login_required
+@hx_request_required
 @permission_required(perm="asset.view_assetrequest")
 def asset_dashboard_requests(request):
     """
@@ -1656,6 +1663,7 @@ def asset_dashboard_requests(request):
 
 
 @login_required
+@hx_request_required
 @permission_required(perm="asset.view_assetassignment")
 def asset_dashboard_allocates(request):
     asset_allocations = AssetAssignment.objects.filter(
@@ -1792,6 +1800,7 @@ def asset_history_single_view(request, asset_id):
 
 
 @login_required
+@hx_request_required
 @permission_required(perm="asset.view_assetassignment")
 def asset_history_search(request):
     """
