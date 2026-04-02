@@ -13,7 +13,7 @@ from accessibility.accessibility import ACCESSBILITY_FEATURE
 from accessibility.filters import AccessibilityFilter
 from accessibility.models import DefaultAccessibility
 from employee.models import Employee
-from horilla.decorators import login_required, permission_required
+from horilla.decorators import hx_request_required, login_required, permission_required
 
 
 @login_required
@@ -52,6 +52,7 @@ def user_accessibility(request):
 
 
 @login_required
+@hx_request_required
 @permission_required("auth.change_permission")
 def load_accessibility_form(request):
     feature = request.GET.get("feature")
