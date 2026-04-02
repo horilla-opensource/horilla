@@ -23,7 +23,7 @@ from base.models import HorillaMailTemplate
 from employee.filters import EmployeeFilter
 from employee.models import Employee
 from horilla import settings
-from horilla.decorators import login_required, manager_can_enter
+from horilla.decorators import hx_request_required, login_required, manager_can_enter
 from horilla.http.response import HorillaRedirect
 
 
@@ -77,6 +77,7 @@ def not_out_yet(request):
 
 
 @login_required
+@hx_request_required
 @manager_can_enter("employee.change_employee")
 def send_mail(request, emp_id=None):
     """

@@ -434,6 +434,7 @@ class BankFormView(HorillaFormView):
 
 
 @method_decorator(login_required, name="dispatch")
+@method_decorator(hx_request_required, name="dispatch")
 @method_decorator(
     all_manager_can_enter(perm="recruitment.view_recruitment"), name="dispatch"
 )
@@ -459,6 +460,7 @@ if app_installed("leave"):
     )
 
     @method_decorator(login_required, name="dispatch")
+    @method_decorator(hx_request_required, name="dispatch")
     @method_decorator(
         all_manager_can_enter(perm="recruitment.view_recruitment"), name="dispatch"
     )
@@ -744,6 +746,7 @@ if app_installed("asset"):
     """
             )
 
+    @hx_request_required
     def return_allocation(request, *args, **kwargs):
         """
         Return allocation method
@@ -769,6 +772,7 @@ if app_installed("asset"):
 
 
 @method_decorator(login_required, name="dispatch")
+@method_decorator(hx_request_required, name="dispatch")
 @method_decorator(
     all_manager_can_enter(perm="recruitment.view_recruitment"), name="dispatch"
 )
@@ -909,6 +913,7 @@ if app_installed("payroll"):
     Allowance.allowance_allocation_metod = allowance_allocation_metod
 
     @method_decorator(login_required, name="dispatch")
+    @method_decorator(hx_request_required, name="dispatch")
     @method_decorator(
         all_manager_can_enter(perm="recruitment.view_recruitment"), name="dispatch"
     )
@@ -1017,6 +1022,7 @@ if app_installed("payroll"):
     Deduction.deduction_allocation_metod = deduction_allocation_metod
 
     @method_decorator(login_required, name="dispatch")
+    @method_decorator(hx_request_required, name="dispatch")
     @method_decorator(
         all_manager_can_enter(perm="recruitment.view_recruitment"), name="dispatch"
     )

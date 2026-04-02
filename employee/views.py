@@ -753,6 +753,7 @@ def document_create(request, emp_id):
     return render(request, "tabs/htmx/document_create_form.html", context=context)
 
 
+@hx_request_required
 def get_notify_field(request):
     expiry_date = request.GET.get("expiry_date")
     form = DocumentForm()
@@ -1074,6 +1075,7 @@ def document_bulk_approve(request):
 
 
 @login_required
+@hx_request_required
 @manager_can_enter("horilla_documents.add_document")
 def document_bulk_reject(request):
     """
@@ -2917,6 +2919,7 @@ def birthday():
 
 
 @login_required
+@hx_request_required
 @enter_if_accessible(feature="birthday_view", perm="employee.view_employee")
 def get_employees_birthday(request):
     """
@@ -2988,12 +2991,14 @@ def dashboard(request):
 
 
 @login_required
+@hx_request_required
 def total_employees_count(request):
     employees = Employee.objects.all().count()
     return HttpResponse(employees)
 
 
 @login_required
+@hx_request_required
 def joining_today_count(request):
     newbies_today = 0
     if apps.is_installed("recruitment"):
@@ -3006,6 +3011,7 @@ def joining_today_count(request):
 
 
 @login_required
+@hx_request_required
 def joining_week_count(request):
     newbies_week = 0
     if apps.is_installed("recruitment"):
@@ -3022,6 +3028,7 @@ def joining_week_count(request):
 
 
 @login_required
+@hx_request_required
 def leave_today_count(request):
     leave_today = 0
     if apps.is_installed("leave"):
@@ -3728,6 +3735,7 @@ def initial_prefix(request):
 
 
 @login_required
+@hx_request_required
 @manager_can_enter("employee.view_employee")
 def first_last_badge(request):
     """
@@ -3788,6 +3796,7 @@ def get_job_positions(request):
 
 
 @login_required
+@hx_request_required
 def get_job_positions_hx(request):
     department_id = request.GET.get("department_id")
     job_position_id = request.GET.get("job_position_id")
@@ -3880,6 +3889,7 @@ def get_position_department(request):
 
 
 @login_required
+@hx_request_required
 def get_job_roles_hx(request):
     """
     Retrieve job roles associated with a specific job position.
