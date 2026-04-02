@@ -1644,6 +1644,7 @@ def payslip_select_filter(request):
 
 
 @login_required
+@hx_request_required
 def create_payrollrequest_comment(request, payroll_id):
     """
     This method renders form and template to create Reimbursement request comments
