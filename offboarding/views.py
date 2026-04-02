@@ -20,6 +20,7 @@ from horilla.decorators import (
     hx_request_required,
     login_required,
     manager_can_enter,
+    owner_can_enter,
     permission_required,
 )
 from horilla.group_by import group_by_queryset as group_by
@@ -546,6 +547,7 @@ def change_offboarding_stage(request):
 
 @login_required
 @hx_request_required
+@owner_can_enter("view_offboardingnote", OffboardingNote)
 @any_manager_can_enter(
     "offboarding.view_offboardingnote", offboarding_employee_can_enter=True
 )
@@ -577,6 +579,7 @@ def view_notes(request, employee_id=None):
 
 
 @login_required
+@owner_can_enter("add_offboardingnote", OffboardingNote)
 # @any_manager_can_enter("offboarding.add_offboardingnote")
 def add_note(request):
     """
@@ -788,6 +791,7 @@ def delete_task(request):
 
 @login_required
 @hx_request_required
+@owner_can_enter("view_employeetask", EmployeeTask)
 def offboarding_individual_view(request, emp_id):
     """
     This method is used to get the individual view of the offboarding employees
@@ -847,6 +851,7 @@ def request_view(request):
 
 
 @login_required
+@owner_can_enter("view_resignationletter", ResignationLetter)
 @permission_required("offboarding.view_resignationletter")
 def request_single_view(request, id):
     letter = ResignationLetter.find(id)
