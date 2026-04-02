@@ -20,7 +20,11 @@ from base.methods import filtersubordinates
 from employee.models import Employee
 from horilla.horilla_middlewares import _thread_locals
 from horilla.http.response import HorillaRedirect
-from horilla_views.cbv_methods import login_required, permission_required
+from horilla_views.cbv_methods import (
+    login_required,
+    owner_can_enter,
+    permission_required,
+)
 from horilla_views.generic.cbv.views import (
     HorillaDetailedView,
     HorillaFormView,
@@ -347,6 +351,14 @@ class RequestAndAllocationNav(HorillaNavView):
 
 
 @method_decorator(login_required, name="dispatch")
+@method_decorator(
+    owner_can_enter(
+        "asset.view_assetassignment",
+        AssetAssignment,
+        employee_field="assigned_to_employee_id",
+    ),
+    name="dispatch",
+)
 class AssetDetailView(HorillaDetailedView):
     """
     detail view of asset tab
@@ -379,6 +391,12 @@ class AssetDetailView(HorillaDetailedView):
 
 
 @method_decorator(login_required, name="dispatch")
+@method_decorator(
+    owner_can_enter(
+        "asset.view_assetrequest", AssetRequest, employee_field="requested_employee_id"
+    ),
+    name="dispatch",
+)
 class AssetRequestDetailView(HorillaDetailedView):
     """
     detail view of asset request tab
@@ -408,6 +426,14 @@ class AssetRequestDetailView(HorillaDetailedView):
 
 
 @method_decorator(login_required, name="dispatch")
+@method_decorator(
+    owner_can_enter(
+        "asset.view_assetassignment",
+        AssetAssignment,
+        employee_field="assigned_to_employee_id",
+    ),
+    name="dispatch",
+)
 class AssetAllocationDetailView(HorillaDetailedView):
     """
     detail view of asset allocation tab
@@ -520,6 +546,9 @@ class AssetAllocationFormView(HorillaFormView):
 
 
 @method_decorator(login_required, name="dispatch")
+@method_decorator(
+    permission_required(perm="asset.add_assetassignment"), name="dispatch"
+)
 class AssetApproveFormView(HorillaFormView):
     """
     Create Asset Allocation

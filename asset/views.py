@@ -811,6 +811,9 @@ def asset_allocate_creation(request):
 
 
 @login_required
+@owner_can_enter(
+    "change_assetassignment", AssetAssignment, employee_field="assigned_to_employee_id"
+)
 def asset_allocate_return_request(request, asset_id):
     """
     Handle the initiation of a return request for an allocated asset.

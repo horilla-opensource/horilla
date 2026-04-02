@@ -40,20 +40,11 @@ class AssetListView(HorillaListView):
 
 
 @method_decorator(login_required, name="dispatch")
+@method_decorator(permission_required("asset.view_asset"), name="dispatch")
 class AssetInformationView(HorillaDetailedView):
     """
     Detail view of the page
     """
-
-    def get_context_data(self, **kwargs: Any):
-        """
-        Return context data with the title set to the contract's name.
-        """
-
-        context = super().get_context_data(**kwargs)
-        asset_name = context["asset"].asset_name
-        context["title"] = asset_name
-        return context
 
     model = Asset
     header = False
@@ -66,3 +57,13 @@ class AssetInformationView(HorillaDetailedView):
         "asset_lot_number_id",
         "asset_category_id",
     ]
+
+    def get_context_data(self, **kwargs: Any):
+        """
+        Return context data with the title set to the contract's name.
+        """
+
+        context = super().get_context_data(**kwargs)
+        asset_name = context["asset"].asset_name
+        context["title"] = asset_name
+        return context
