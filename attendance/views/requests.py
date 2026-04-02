@@ -205,6 +205,7 @@ def request_new(request):
 
 
 @login_required
+@hx_request_required
 def create_batch_attendance(request):
     form = BatchAttendanceForm()
     previous_form_data = request.GET.urlencode()
@@ -243,6 +244,7 @@ def create_batch_attendance(request):
 
 
 @login_required
+@hx_request_required
 def get_batches(request):
     batches = BatchAttendance.objects.all()
     return render(
