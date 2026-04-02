@@ -13,7 +13,11 @@ from django.utils.translation import gettext_lazy as _
 from base.filters import HolidayFilter
 from base.forms import HolidayForm, HolidaysColumnExportForm
 from base.models import Holidays
-from horilla_views.cbv_methods import login_required, permission_required
+from horilla_views.cbv_methods import (
+    hx_request_required,
+    login_required,
+    permission_required,
+)
 from horilla_views.generic.cbv.views import (
     HorillaDetailedView,
     HorillaFormView,
@@ -152,6 +156,7 @@ class HolidayDetailView(HorillaDetailedView):
 
 
 @method_decorator(login_required, name="dispatch")
+@method_decorator(hx_request_required, name="dispatch")
 class HolidayExport(TemplateView):
     """
     for bulk export
