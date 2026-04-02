@@ -28,7 +28,12 @@ from xhtml2pdf import pisa
 from employee.forms import BulkUpdateFieldForm
 from horilla.horilla_middlewares import _thread_locals
 from horilla.http.response import HorillaRedirect
-from horilla_views.cbv_methods import export_xlsx, login_required, permission_required
+from horilla_views.cbv_methods import (
+    export_xlsx,
+    hx_request_required,
+    login_required,
+    permission_required,
+)
 from horilla_views.forms import DynamicBulkUpdateForm
 from horilla_views.generic.cbv.views import (
     HorillaCardView,
@@ -792,6 +797,7 @@ class CandidateNav(HorillaNavView):
 
 
 @method_decorator(login_required, name="dispatch")
+@method_decorator(hx_request_required, name="dispatch")
 @method_decorator(manager_can_enter(perm="recruitment.view_candidate"), name="dispatch")
 class ExportView(TemplateView):
     """

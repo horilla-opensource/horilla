@@ -1270,6 +1270,7 @@ def stage_view(request):
 
 
 @login_required
+@hx_request_required
 def stage_data(request, rec_id):
     stages = StageFilter(request.GET).qs.filter(recruitment_id__id=rec_id)
     previous_data = request.GET.urlencode()
@@ -2794,6 +2795,7 @@ def skill_zone_cand_delete(request, sz_cand_id):
 
 
 @login_required
+@hx_request_required
 @manager_can_enter(perm="recruitment.view_skillzonecandidate")
 def skill_zone_cand_filter(request):
     """
@@ -3372,6 +3374,7 @@ def skills_view(request):
 
 
 @login_required
+@hx_request_required
 def create_skills(request):
     """
     This method is used to create the skills
@@ -3419,6 +3422,7 @@ def create_skills(request):
 
 
 @login_required
+@hx_request_required
 @permission_required("recruitment.delete_rejectreason")
 def delete_skills(request, id=None):
     """
@@ -3637,6 +3641,7 @@ def hired_candidate_chart(request):
 
 
 @login_required
+@hx_request_required
 def candidate_document_request(request):
     """
     This function is used to create document requests of an employee in employee requests view.
