@@ -212,6 +212,63 @@ def permission_required(function, perm):
 
 
 @decorator_with_arguments
+def owner_can_enter(
+    function,
+    perm: str,
+    model: object,
+    manager_access=False,
+    employee_field: str = "employee_id",
+):
+    """
+    CBV version of owner_can_enter.
+    Only the users with permission, or the owner, or employees manager can enter.
+    If manager_access:True then all the managers can enter.
+    """
+    from employee.models import Employee, EmployeeWorkInformation
+    from horilla.decorators import check_manager
+    from horilla.http import HorillaRedirect
+
+    def _function(self, *args, **kwargs):
+        request = getattr(_thread_locals, "request")
+        if not getattr(self, "request", None):
+            self.request = request
+
+        instance_id = None
+        if kwargs:
+            instance_id = kwargs[list(kwargs.keys())[0]]
+        elif hasattr(self, "kwargs") and self.kwargs:
+            instance_id = self.kwargs[list(self.kwargs.keys())[0]]
+
+        if model == Employee:
+            employee = Employee.objects.filter(id=instance_id).first()
+        else:
+            try:
+                obj = model.objects.filter(id=instance_id).first()
+                employee = getattr(obj, employee_field, None) if obj else None
+            except Exception as e:
+                messages.error(request, _("Sorry, something went wrong!"))
+                return HorillaRedirect(request)
+
+        can_enter = (
+            request.user.employee_get == employee
+            or request.user.has_perm(perm)
+            or check_manager(request.user.employee_get, employee)
+            or (
+                EmployeeWorkInformation.objects.filter(
+                    reporting_manager_id__employee_user_id=request.user
+                ).exists()
+                if manager_access
+                else False
+            )
+        )
+        if can_enter or not employee:
+            return function(self, *args, **kwargs)
+        return HorillaRedirect(request, message=_("You don't have permission."))
+
+    return _function
+
+
+@decorator_with_arguments
 def check_feature_enabled(function, feature_name, model_class: models.Model):
     """
     Decorator for check feature enabled in singlton model
