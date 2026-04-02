@@ -9,7 +9,7 @@ from django.shortcuts import redirect
 from django.urls import reverse
 from django.utils.translation import gettext as _
 
-from horilla.decorators import login_required, permission_required
+from horilla.decorators import hx_request_required, login_required, permission_required
 from horilla.http.response import HorillaRedirect
 from horilla_automations.methods.methods import generate_choices
 from horilla_automations.methods.serialize import serialize_form
@@ -69,6 +69,7 @@ def delete_automation(request, pk):
 
 
 @login_required
+@hx_request_required
 @permission_required("horilla_automations.add_mailautomation")
 def refresh_automations(request):
     """

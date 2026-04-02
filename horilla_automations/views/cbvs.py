@@ -17,7 +17,7 @@ from django.utils.translation import gettext_lazy as _
 from django.views import View
 
 from base.models import HorillaMailTemplate
-from horilla.decorators import login_required, permission_required
+from horilla.decorators import hx_request_required, login_required, permission_required
 from horilla_automations import models
 from horilla_automations.filters import AutomationFilter
 from horilla_automations.forms import AutomationForm
@@ -210,6 +210,7 @@ class AutomationDetailedView(views.HorillaDetailedView):
 
 
 @method_decorator(login_required, name="dispatch")
+@method_decorator(hx_request_required, name="dispatch")
 @method_decorator(
     permission_required("horilla_automations.add_mailautomation"), name="dispatch"
 )

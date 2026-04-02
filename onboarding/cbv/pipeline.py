@@ -16,7 +16,11 @@ from django.views.generic import TemplateView
 from base.methods import eval_validate
 from horilla.horilla_middlewares import _thread_locals
 from horilla.http.response import HorillaRedirect
-from horilla_views.cbv_methods import login_required, render_template
+from horilla_views.cbv_methods import (
+    hx_request_required,
+    login_required,
+    render_template,
+)
 from horilla_views.generic.cbv.kanban import HorillaKanbanView
 from horilla_views.generic.cbv.pipeline import Pipeline
 from horilla_views.generic.cbv.views import (
@@ -223,6 +227,7 @@ onboarding_models.OnboardingStage.bulk_send_mail_path = bulk_send_mail_path
 
 
 @method_decorator(login_required, name="dispatch")
+@method_decorator(hx_request_required, name="dispatch")
 @method_decorator(
     all_manager_can_enter(perm="recruitment.view_recruitment"), name="dispatch"
 )

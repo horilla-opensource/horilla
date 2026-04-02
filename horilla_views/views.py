@@ -38,6 +38,7 @@ from horilla_views import models
 from horilla_views.cbv_methods import (
     get_nested_field,
     get_short_uuid,
+    hx_request_required,
     login_required,
     merge_dicts,
     set_nested_attr,
@@ -255,6 +256,7 @@ class SavedFilter(HorillaFormView):
 
 
 @method_decorator(login_required, name="dispatch")
+@method_decorator(hx_request_required, name="dispatch")
 class DeleteSavedFilter(View):
     """
     Delete saved filter
@@ -293,6 +295,7 @@ class ActiveView(View):
 
 
 @method_decorator(login_required, name="dispatch")
+@method_decorator(hx_request_required, name="dispatch")
 @method_decorator(csrf_protect, name="dispatch")
 class SearchInIds(View):
     """
@@ -311,6 +314,7 @@ class SearchInIds(View):
 
 
 @method_decorator(login_required, name="dispatch")
+@method_decorator(hx_request_required, name="dispatch")
 class LastAppliedFilter(View):
     """
     Class view to handle last applied filter

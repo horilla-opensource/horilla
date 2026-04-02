@@ -611,6 +611,7 @@ def ticket_archive(request, ticket_id):
 
 
 @login_required
+@hx_request_required
 def ticket_status_change(request, ticket_id):
     if request.method != "POST":
         messages.error(request, _("Invalid request method."))
@@ -1797,6 +1798,7 @@ def view_department_managers(request):
 
 
 @login_required
+@hx_request_required
 @permission_required("helpdesk.change_departmentmanager")
 def get_department_employees(request):
     """Return employees in a department."""
@@ -1819,6 +1821,7 @@ def get_department_employees(request):
 
 
 @login_required
+@hx_request_required
 def load_faqs(request):
     base_dir = settings.BASE_DIR
     faq_file = os.path.join(base_dir, "load_data", "faq.json")
