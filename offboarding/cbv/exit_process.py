@@ -17,7 +17,11 @@ from base.context_processors import intial_notice_period
 from base.methods import eval_validate
 from horilla.http.response import HorillaRedirect
 from horilla.methods import get_horilla_model_class
-from horilla_views.cbv_methods import login_required, permission_required
+from horilla_views.cbv_methods import (
+    hx_request_required,
+    login_required,
+    permission_required,
+)
 from horilla_views.generic.cbv.kanban import HorillaKanbanView
 from horilla_views.generic.cbv.pipeline import Pipeline
 from horilla_views.generic.cbv.views import (
@@ -409,6 +413,7 @@ class PipeLineTabView(HorillaTabView):
 
 
 @method_decorator(login_required, name="dispatch")
+@method_decorator(hx_request_required, name="dispatch")
 class OffboardingPipelineStage(Pipeline):
     """
     Offboarding Pipeline Stage
