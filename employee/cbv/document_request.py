@@ -22,7 +22,7 @@ from horilla_documents.forms import DocumentForm
 from horilla_documents.forms import DocumentRejectCbvForm as RejectForm
 from horilla_documents.forms import DocumentRequestForm, DocumentUpdateForm
 from horilla_documents.models import Document, DocumentRequest
-from horilla_views.cbv_methods import login_required
+from horilla_views.cbv_methods import hx_request_required, login_required
 from horilla_views.generic.cbv.pipeline import Pipeline
 from horilla_views.generic.cbv.views import (
     HorillaFormView,
@@ -284,6 +284,7 @@ class DocumentRequestNav(HorillaNavView):
     search_swap_target = "#view-container"
 
 
+@method_decorator(hx_request_required, name="dispatch")
 class DocumentRequestPipelineView(Pipeline):
     """
     Pipeline view for document request

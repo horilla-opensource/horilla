@@ -465,6 +465,7 @@ def disciplinary_filter_view(request):
 
 
 @login_required
+@hx_request_required
 def search_disciplinary(request):
     """
     This method is used to search in Disciplinary Actions
