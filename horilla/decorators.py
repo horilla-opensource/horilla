@@ -278,7 +278,13 @@ def hx_request_required(view_func):
 
 
 @decorator_with_arguments
-def owner_can_enter(function, perm: str, model: object, manager_access=False):
+def owner_can_enter(
+    function,
+    perm: str,
+    model: object,
+    manager_access=False,
+    employee_field="employee_id",
+):
     from employee.models import Employee, EmployeeWorkInformation
 
     """
@@ -292,11 +298,8 @@ def owner_can_enter(function, perm: str, model: object, manager_access=False):
             employee = Employee.objects.filter(id=instance_id).first()
         else:
             try:
-                employee = (
-                    model.objects.filter(id=instance_id).first().employee_id
-                    if model.objects.filter(id=instance_id).first()
-                    else None
-                )
+                obj = model.objects.filter(id=instance_id).first()
+                employee = getattr(obj, employee_field, None) if obj else None
             except:
                 messages.error(request, ("Sorry, something went wrong!"))
                 return HorillaRedirect(request)
