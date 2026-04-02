@@ -625,6 +625,7 @@ def offboarding_note_delete(request, note_id):
 
 
 @login_required
+@hx_request_required
 @permission_required("offboarding.delete_offboardingnote")
 def delete_attachment(request):
     """
@@ -1185,6 +1186,7 @@ def offboarding_dashboard(request):
 
 
 @login_required
+@hx_request_required
 @any_manager_can_enter(
     ["offboarding.view_offboarding", "offboarding.view_offboardingtask"]
 )
@@ -1232,6 +1234,7 @@ if apps.is_installed("asset"):
 if apps.is_installed("pms"):
 
     @login_required
+    @hx_request_required
     @any_manager_can_enter("offboarding.view_offboarding")
     def dashboard_feedback_table(request):
         """
