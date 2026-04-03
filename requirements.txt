@@ -77,3 +77,4 @@ gunicorn
 psycopg2-binary
 whitenoise
 django-storages
+factory-boy
