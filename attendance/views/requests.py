@@ -611,6 +611,7 @@ def cancel_attendance_request(request, attendance_id):
 
 
 @login_required
+@hx_request_required
 def select_all_filter_attendance_request(request):
     page_number = request.GET.get("page")
     filtered = request.GET.get("filter")
@@ -648,6 +649,7 @@ def select_all_filter_attendance_request(request):
 
 
 @login_required
+@hx_request_required
 @manager_can_enter("attendance.change_attendance")
 def bulk_approve_attendance_request(request):
     """
@@ -781,6 +783,7 @@ def bulk_approve_attendance_request(request):
 
 
 @login_required
+@hx_request_required
 @manager_can_enter("attendance.delete_attendance")
 def bulk_reject_attendance_request(request):
     """
