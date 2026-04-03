@@ -6,6 +6,7 @@ This module is used to map url path with view methods.
 
 from django.urls import path
 
+from onboarding import dashboard_modern as on_dashboard_modern
 from onboarding import views
 from onboarding.cbv import dashboard, onboarding_candidates, onboarding_view, pipeline
 from recruitment.cbv import candidates
@@ -274,4 +275,55 @@ urlpatterns = [
         name="candidate-card-cbv-onboarding",
     ),
     # path("cbv-change-stage/<int:pk>/",pipeline.ChangeStage.as_view(),name="cbv-change-stage")
+    # ── Onboarding Modern Dashboard ──────────────────────────────────────────
+    path(
+        "dashboard/",
+        on_dashboard_modern.modern_onboarding_dashboard,
+        name="onboarding-modern-dashboard",
+    ),
+    path(
+        "dashboard/api/kpi/",
+        on_dashboard_modern.onboarding_kpi_data,
+        name="onboarding-modern-kpi",
+    ),
+    path(
+        "dashboard/api/stages/",
+        on_dashboard_modern.onboarding_stage_distribution,
+        name="onboarding-modern-stages",
+    ),
+    path(
+        "dashboard/api/tasks/",
+        on_dashboard_modern.onboarding_task_status,
+        name="onboarding-modern-tasks",
+    ),
+    path(
+        "dashboard/api/recruitment/",
+        on_dashboard_modern.onboarding_by_recruitment,
+        name="onboarding-modern-recruitment",
+    ),
+    path(
+        "dashboard/api/position/",
+        on_dashboard_modern.onboarding_by_job_position,
+        name="onboarding-modern-position",
+    ),
+    path(
+        "dashboard/api/candidates/",
+        on_dashboard_modern.onboarding_candidates_list,
+        name="onboarding-modern-candidates",
+    ),
+    path(
+        "dashboard/api/my-tasks/",
+        on_dashboard_modern.onboarding_task_managers,
+        name="onboarding-modern-my-tasks",
+    ),
+    path(
+        "dashboard/api/completion-trend/",
+        on_dashboard_modern.onboarding_completion_trend,
+        name="onboarding-modern-completion-trend",
+    ),
+    path(
+        "dashboard/api/portal-status/",
+        on_dashboard_modern.onboarding_portal_status,
+        name="onboarding-modern-portal-status",
+    ),
 ]

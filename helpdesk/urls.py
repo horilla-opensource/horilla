@@ -7,6 +7,7 @@ This module is used to map url path with view methods.
 from django.urls import path
 
 from base.views import object_delete
+from helpdesk import dashboard_modern as hd_dashboard_modern
 from helpdesk import views
 from helpdesk.cbv import department_managers, faq, pipeline, tags, ticket_type
 from helpdesk.models import FAQ, FAQCategory, Ticket
@@ -255,5 +256,61 @@ urlpatterns = [
         "ticket-file-upload/<int:id>/",
         views.ticket_file_upload,
         name="ticket-file-upload",
+    ),
+    # ── Helpdesk Modern Dashboard ────────────────────────────────────────────
+    path(
+        "dashboard/",
+        hd_dashboard_modern.modern_helpdesk_dashboard,
+        name="helpdesk-modern-dashboard",
+    ),
+    path(
+        "dashboard/api/kpi/",
+        hd_dashboard_modern.helpdesk_kpi_data,
+        name="helpdesk-modern-kpi",
+    ),
+    path(
+        "dashboard/api/status/",
+        hd_dashboard_modern.helpdesk_status_distribution,
+        name="helpdesk-modern-status",
+    ),
+    path(
+        "dashboard/api/priority/",
+        hd_dashboard_modern.helpdesk_priority_distribution,
+        name="helpdesk-modern-priority",
+    ),
+    path(
+        "dashboard/api/type/",
+        hd_dashboard_modern.helpdesk_type_distribution,
+        name="helpdesk-modern-type",
+    ),
+    path(
+        "dashboard/api/trend/",
+        hd_dashboard_modern.helpdesk_monthly_trend,
+        name="helpdesk-modern-trend",
+    ),
+    path(
+        "dashboard/api/department/",
+        hd_dashboard_modern.helpdesk_department_breakdown,
+        name="helpdesk-modern-dept",
+    ),
+    path(
+        "dashboard/api/overdue/",
+        hd_dashboard_modern.helpdesk_overdue_tickets,
+        name="helpdesk-modern-overdue",
+    ),
+    path(
+        "dashboard/api/recent/",
+        hd_dashboard_modern.helpdesk_recent_tickets,
+        name="helpdesk-modern-recent",
+    ),
+    path(
+        "dashboard/api/sla/",
+        hd_dashboard_modern.helpdesk_sla_compliance,
+        name="helpdesk-modern-sla",
+    ),
+    path(
+        "dashboard/api/workload/",
+        hd_dashboard_modern.helpdesk_assignee_workload,
+        name="helpdesk-modern-workload",
     ),
 ]

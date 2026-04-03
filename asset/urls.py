@@ -5,6 +5,7 @@ URL configuration for asset-related views.
 from django import views
 from django.urls import path
 
+from asset import dashboard_modern as asset_dashboard_modern
 from asset.cbv import (
     asset,
     asset_batch_no,
@@ -432,5 +433,56 @@ urlpatterns = [
         "dashboard-allocated-asset/",
         dashboard.AllocatedAssetsList.as_view(),
         name="dashboard-allocated-asset",
+    ),
+    # ── Asset Modern Dashboard ───────────────────────────────────────────────
+    path(
+        "dashboard/",
+        asset_dashboard_modern.modern_asset_dashboard,
+        name="asset-modern-dashboard",
+    ),
+    path(
+        "dashboard/api/kpi/",
+        asset_dashboard_modern.asset_kpi_data,
+        name="asset-modern-kpi",
+    ),
+    path(
+        "dashboard/api/status/",
+        asset_dashboard_modern.asset_status_distribution,
+        name="asset-modern-status",
+    ),
+    path(
+        "dashboard/api/category/",
+        asset_dashboard_modern.asset_by_category,
+        name="asset-modern-category",
+    ),
+    path(
+        "dashboard/api/requests/",
+        asset_dashboard_modern.asset_request_status,
+        name="asset-modern-requests",
+    ),
+    path(
+        "dashboard/api/value/",
+        asset_dashboard_modern.asset_value_by_category,
+        name="asset-modern-value",
+    ),
+    path(
+        "dashboard/api/expiring/",
+        asset_dashboard_modern.asset_expiring_soon,
+        name="asset-modern-expiring",
+    ),
+    path(
+        "dashboard/api/allocations/",
+        asset_dashboard_modern.asset_recent_allocations,
+        name="asset-modern-allocations",
+    ),
+    path(
+        "dashboard/api/department/",
+        asset_dashboard_modern.asset_department_distribution,
+        name="asset-modern-dept",
+    ),
+    path(
+        "dashboard/api/age/",
+        asset_dashboard_modern.asset_age_distribution,
+        name="asset-modern-age",
     ),
 ]

@@ -8,6 +8,7 @@ from django.urls import path
 
 from base.views import add_remove_dynamic_fields, object_duplicate
 from recruitment import cbvs
+from recruitment import dashboard_modern as rec_dashboard_modern
 from recruitment.cbv import (
     candidate_mail_log,
     candidate_profile,
@@ -1014,5 +1015,71 @@ urlpatterns = [
     ),
     path(
         "val-linkedin/<int:pk>/", linkedin.validate_linkedin_token, name="val-linkedin"
+    ),
+    # ── Recruitment Modern Dashboard ─────────────────────────────────────────
+    path(
+        "dashboard/",
+        rec_dashboard_modern.modern_recruitment_dashboard,
+        name="recruitment-modern-dashboard",
+    ),
+    path(
+        "dashboard/api/kpi/",
+        rec_dashboard_modern.recruitment_kpi_data,
+        name="recruitment-modern-kpi",
+    ),
+    path(
+        "dashboard/api/offer-status/",
+        rec_dashboard_modern.recruitment_offer_status,
+        name="recruitment-modern-offer-status",
+    ),
+    path(
+        "dashboard/api/stage-summary/",
+        rec_dashboard_modern.recruitment_stage_summary,
+        name="recruitment-modern-stage-summary",
+    ),
+    path(
+        "dashboard/api/pipeline/",
+        rec_dashboard_modern.recruitment_pipeline_data,
+        name="recruitment-modern-pipeline",
+    ),
+    path(
+        "dashboard/api/source-quality/",
+        rec_dashboard_modern.recruitment_source_quality,
+        name="recruitment-modern-source-quality",
+    ),
+    path(
+        "dashboard/api/time-to-hire/",
+        rec_dashboard_modern.recruitment_time_to_hire,
+        name="recruitment-modern-time-to-hire",
+    ),
+    path(
+        "dashboard/api/managers/",
+        rec_dashboard_modern.recruitment_managers_data,
+        name="recruitment-modern-managers",
+    ),
+    path(
+        "dashboard/api/source-of-hire/",
+        rec_dashboard_modern.recruitment_source_of_hire,
+        name="recruitment-modern-source",
+    ),
+    path(
+        "dashboard/api/upcoming-interviews/",
+        rec_dashboard_modern.recruitment_upcoming_interviews,
+        name="recruitment-modern-interviews",
+    ),
+    path(
+        "dashboard/api/open-by-dept/",
+        rec_dashboard_modern.recruitment_open_by_department,
+        name="recruitment-modern-open-dept",
+    ),
+    path(
+        "dashboard/api/stage-conversion/",
+        rec_dashboard_modern.recruitment_stage_conversion,
+        name="recruitment-modern-conversion",
+    ),
+    path(
+        "dashboard/api/source-conversion/",
+        rec_dashboard_modern.recruitment_source_conversion,
+        name="recruitment-modern-source-conv",
     ),
 ]

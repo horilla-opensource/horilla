@@ -14,7 +14,7 @@ IMG_SRC = "images/ui/pms.svg"
 SUBMENUS = [
     {
         "menu": _("Dashboard"),
-        "redirect": reverse_lazy("dashboard-view"),
+        "redirect": reverse_lazy("pms-modern-dashboard"),
     },
     {
         "menu": _("Objectives"),

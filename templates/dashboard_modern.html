@@ -1,0 +1,1959 @@
+{% extends "index.html" %}
+{% load static i18n %}
+
+{% block styles %}
+<script src="https://cdn.jsdelivr.net/npm/apexcharts"></script>
+<style>
+    :root {
+        --md-indigo: #6366f1;
+        --md-green: #22c55e;
+        --md-amber: #f59e0b;
+        --md-red: #ef4444;
+        --md-blue: #3b82f6;
+        --md-purple: #a855f7;
+        --md-cyan: #06b6d4;
+        --md-pink: #ec4899;
+        --md-sidebar-w: 320px;
+    }
+
+    .md-dashboard {
+        font-family: inherit;
+        background: #ffffff;
+        margin: -24px;
+        padding: 24px;
+        min-height: calc(100vh - 80px);
+    }
+
+    .dark .md-dashboard {
+        background: #0f172a;
+    }
+
+    .md-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 20px;
+    }
+
+    .md-header h1 {
+        font-size: 22px;
+        font-weight: 700;
+    }
+
+    .md-header__date {
+        font-size: 13px;
+        opacity: 0.6;
+        margin-top: 2px;
+    }
+
+    .md-header__actions {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+    }
+
+    .md-btn-back {
+        padding: 6px 14px;
+        border-radius: 8px;
+        border: 1px solid rgba(128,128,128,0.2);
+        font-size: 13px;
+        cursor: pointer;
+        text-decoration: none;
+        color: inherit;
+        transition: all 0.15s;
+        background: none;
+    }
+
+    .md-btn-back:hover {
+        border-color: var(--md-indigo);
+        color: var(--md-indigo);
+        text-decoration: none;
+    }
+
+    .md-btn-customize {
+        padding: 6px 12px;
+        border-radius: 8px;
+        border: 1px solid rgba(128,128,128,0.2);
+        font-size: 13px;
+        cursor: pointer;
+        color: inherit;
+        transition: all 0.15s;
+        background: none;
+        display: flex;
+        align-items: center;
+        gap: 5px;
+    }
+
+    .md-btn-customize:hover {
+        border-color: var(--md-indigo);
+        color: var(--md-indigo);
+    }
+
+    /* Main layout: content + sidebar */
+    .md-layout {
+        display: grid;
+        grid-template-columns: 1fr var(--md-sidebar-w);
+        gap: 20px;
+        align-items: start;
+    }
+
+    .md-main { min-width: 0; }
+
+    .md-sidebar {
+        display: flex;
+        flex-direction: column;
+        gap: 16px;
+        position: sticky;
+        top: 90px;
+    }
+
+    /* KPI Grid */
+    .md-kpi-grid {
+        display: grid;
+        grid-template-columns: repeat(4, 1fr);
+        gap: 14px;
+        margin-bottom: 20px;
+    }
+
+    .md-kpi-card {
+        border-radius: 12px;
+        padding: 18px;
+        background: #ffffff;
+        border: 1px solid rgba(128,128,128,0.12);
+        transition: all 0.2s;
+        cursor: pointer;
+        text-decoration: none;
+        color: inherit;
+        display: block;
+    }
+
+    .md-kpi-card:active { transform: scale(0.98); }
+
+    .dark .md-kpi-card {
+        background: rgba(255,255,255,0.04);
+        border-color: rgba(255,255,255,0.08);
+    }
+
+    .md-kpi-card:hover {
+        box-shadow: 0 4px 12px rgba(0,0,0,0.08);
+        transform: translateY(-1px);
+    }
+
+    .md-kpi-card__icon {
+        width: 38px;
+        height: 38px;
+        border-radius: 10px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 18px;
+        margin-bottom: 10px;
+    }
+
+    .md-kpi-card__icon--indigo { background: #eef2ff; color: var(--md-indigo); }
+    .md-kpi-card__icon--green { background: #dcfce7; color: var(--md-green); }
+    .md-kpi-card__icon--amber { background: #fef3c7; color: var(--md-amber); }
+    .md-kpi-card__icon--purple { background: #f3e8ff; color: var(--md-purple); }
+
+    .dark .md-kpi-card__icon--indigo { background: #312e81; }
+    .dark .md-kpi-card__icon--green { background: #14532d; }
+    .dark .md-kpi-card__icon--amber { background: #78350f; }
+    .dark .md-kpi-card__icon--purple { background: #3b0764; }
+
+    .md-kpi-card__label {
+        font-size: 11px;
+        font-weight: 600;
+        text-transform: uppercase;
+        letter-spacing: 0.05em;
+        opacity: 0.5;
+        margin-bottom: 6px;
+    }
+
+    .md-kpi-card__value {
+        font-size: 30px;
+        font-weight: 800;
+        line-height: 1;
+        margin-bottom: 6px;
+    }
+
+    .md-kpi-card__sub { font-size: 12px; opacity: 0.6; }
+
+    .md-badge {
+        display: inline-flex;
+        align-items: center;
+        gap: 3px;
+        font-size: 11px;
+        font-weight: 600;
+        padding: 2px 8px;
+        border-radius: 999px;
+    }
+
+    .md-badge--green { background: #dcfce7; color: #166534; }
+    .md-badge--amber { background: #fef3c7; color: #92400e; }
+    .dark .md-badge--green { background: #166534; color: #bbf7d0; }
+    .dark .md-badge--amber { background: #92400e; color: #fde68a; }
+
+    /* Chart Grid — flat sortable container */
+    .md-chart-grid {
+        display: grid;
+        grid-template-columns: repeat(2, 1fr);
+        gap: 16px;
+        margin-bottom: 20px;
+    }
+
+    .md-chart-card {
+        border-radius: 12px;
+        background: #ffffff;
+        border: 1px solid rgba(128,128,128,0.12);
+        overflow: visible;
+    }
+
+    .dark .md-chart-card {
+        background: rgba(255,255,255,0.04);
+        border-color: rgba(255,255,255,0.08);
+    }
+
+    .md-chart-card--wide { grid-column: span 2; }
+    .md-chart-card--hidden { display: none !important; }
+
+    .md-chart-card__header {
+        padding: 14px 18px 0;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+    }
+
+    .md-chart-card__title {
+        font-size: 14px;
+        font-weight: 600;
+    }
+
+    .md-chart-card__subtitle {
+        font-size: 11px;
+        opacity: 0.5;
+        margin-top: 2px;
+    }
+
+    .md-chart-card__body { padding: 6px 10px 10px; }
+
+    /* Section labels inside the grid */
+    .md-section-divider {
+        grid-column: span 2;
+        font-size: 15px;
+        font-weight: 700;
+        padding: 8px 2px 0;
+        opacity: 0.7;
+    }
+
+    /* Skeleton */
+    .md-skeleton {
+        background: linear-gradient(90deg, rgba(128,128,128,0.1) 25%, transparent 50%, rgba(128,128,128,0.1) 75%);
+        background-size: 200% 100%;
+        animation: md-shimmer 1.5s infinite;
+        border-radius: 12px;
+    }
+
+    @keyframes md-shimmer {
+        0% { background-position: 200% 0; }
+        100% { background-position: -200% 0; }
+    }
+
+    .md-skeleton--kpi { height: 110px; }
+
+    .md-empty {
+        text-align: center;
+        padding: 40px 0;
+        opacity: 0.6;
+        font-size: 13px;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        gap: 8px;
+    }
+    .md-empty img {
+        width: 100px;
+        opacity: 0.7;
+    }
+
+    /* Sidebar panels */
+    .md-info-panel {
+        border-radius: 12px;
+        background: #ffffff;
+        border: 1px solid rgba(128,128,128,0.12);
+        overflow: hidden;
+        display: flex;
+        flex-direction: column;
+    }
+
+    .dark .md-info-panel {
+        background: rgba(255,255,255,0.04);
+        border-color: rgba(255,255,255,0.08);
+    }
+
+    .md-info-panel__header {
+        padding: 14px 16px 10px;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        flex-shrink: 0;
+        border-bottom: 1px solid rgba(128,128,128,0.08);
+    }
+
+    .md-info-panel__title { font-size: 13px; font-weight: 700; }
+
+    .md-info-panel__body {
+        padding: 0 16px 12px;
+        overflow-y: auto;
+        flex: 1;
+        max-height: calc(50vh - 80px);
+    }
+
+    .md-info-panel__body::-webkit-scrollbar { width: 3px; }
+    .md-info-panel__body::-webkit-scrollbar-thumb { background: rgba(128,128,128,0.2); border-radius: 3px; }
+
+    .md-ann-item { padding: 10px 0; border-bottom: 1px solid rgba(128,128,128,0.06); }
+    .md-ann-item:last-child { border-bottom: none; }
+    .md-ann-item__title { font-size: 12px; font-weight: 600; margin-bottom: 2px; line-height: 1.3; }
+    .md-ann-item__desc { font-size: 11px; opacity: 0.55; line-height: 1.4; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; }
+    .md-ann-item__meta { font-size: 10px; opacity: 0.4; margin-top: 3px; }
+    .md-ann-item__expire { font-size: 9px; font-weight: 600; padding: 1px 5px; border-radius: 4px; background: #fef3c7; color: #92400e; margin-left: 4px; }
+    .dark .md-ann-item__expire { background: #78350f; color: #fde68a; }
+
+    .md-leave-item { display: flex; align-items: center; gap: 8px; padding: 7px 0; border-bottom: 1px solid rgba(128,128,128,0.06); }
+    .md-leave-item:last-child { border-bottom: none; }
+    .md-leave-item__avatar { width: 28px; height: 28px; border-radius: 50%; background: #e2e8f0; display: flex; align-items: center; justify-content: center; font-size: 10px; font-weight: 700; color: #64748b; flex-shrink: 0; overflow: hidden; }
+    .dark .md-leave-item__avatar { background: #334155; color: #94a3b8; }
+    .md-leave-item__avatar img { width: 100%; height: 100%; object-fit: cover; }
+    .md-leave-item__info { flex: 1; min-width: 0; }
+    .md-leave-item__name { font-size: 12px; font-weight: 600; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+    .md-leave-item__type { font-size: 10px; opacity: 0.5; }
+    .md-leave-item__dates { font-size: 10px; text-align: right; opacity: 0.6; flex-shrink: 0; }
+    .md-leave-item__days { font-size: 9px; font-weight: 600; padding: 1px 5px; border-radius: 4px; background: #dcfce7; color: #166534; }
+    .dark .md-leave-item__days { background: #14532d; color: #bbf7d0; }
+    .md-info-panel__empty { text-align: center; padding: 40px 0; opacity: 0.4; font-size: 12px; }
+    .md-link-subtle { font-size: 10px; color: var(--md-indigo); text-decoration: none; font-weight: 600; }
+    .md-link-subtle:hover { text-decoration: underline; }
+
+    .md-btn-add {
+        width: 24px; height: 24px; border-radius: 6px; border: 1px solid rgba(128,128,128,0.2);
+        background: none; cursor: pointer; font-size: 16px; line-height: 1;
+        display: inline-flex; align-items: center; justify-content: center; color: var(--md-indigo);
+        transition: all 0.15s; margin-right: 6px;
+    }
+    .md-btn-add:hover { background: var(--md-indigo); color: #fff; border-color: var(--md-indigo); }
+
+    .md-ann-item { cursor: pointer; transition: background 0.15s; border-radius: 6px; margin: 0 -6px; padding: 10px 6px !important; }
+    .md-ann-item:hover { background: rgba(99,102,241,0.04); }
+    .dark .md-ann-item:hover { background: rgba(99,102,241,0.08); }
+
+    /* Announcement modal */
+    .md-modal-overlay {
+        position: fixed; inset: 0; background: rgba(0,0,0,0.4); z-index: 1060;
+        display: flex; align-items: center; justify-content: center;
+        opacity: 0; pointer-events: none; transition: opacity 0.2s;
+    }
+    .md-modal-overlay--open { opacity: 1; pointer-events: auto; }
+
+    .md-modal {
+        background: #fff; border-radius: 14px; width: 580px; max-width: 92vw;
+        max-height: 85vh; display: flex; flex-direction: column;
+        box-shadow: 0 20px 60px rgba(0,0,0,0.2); transform: translateY(12px); transition: transform 0.2s;
+    }
+    .md-modal-overlay--open .md-modal { transform: translateY(0); }
+    .dark .md-modal { background: #1e293b; }
+
+    .md-modal__header {
+        padding: 18px 22px; border-bottom: 1px solid rgba(128,128,128,0.12);
+        display: flex; justify-content: space-between; align-items: center; flex-shrink: 0;
+    }
+    .md-modal__header h3 { font-size: 16px; font-weight: 700; margin: 0; }
+
+    .md-modal__close {
+        width: 32px; height: 32px; border-radius: 8px; border: none;
+        background: rgba(128,128,128,0.08); cursor: pointer; font-size: 18px;
+        display: flex; align-items: center; justify-content: center; color: inherit;
+    }
+    .md-modal__close:hover { background: rgba(128,128,128,0.16); }
+
+    .md-modal__body { padding: 20px 22px; overflow-y: auto; flex: 1; }
+    .md-modal__body::-webkit-scrollbar { width: 4px; }
+    .md-modal__body::-webkit-scrollbar-thumb { background: rgba(128,128,128,0.2); border-radius: 4px; }
+
+    .md-detail__meta { font-size: 12px; opacity: 0.5; margin-bottom: 14px; }
+    .md-detail__desc { font-size: 13px; line-height: 1.65; }
+    .md-detail__desc img { max-width: 100%; border-radius: 8px; }
+    .md-detail__tags { display: flex; flex-wrap: wrap; gap: 5px; margin-top: 12px; }
+    .md-detail__tag {
+        font-size: 10px; font-weight: 600; padding: 2px 8px; border-radius: 4px;
+        background: #eef2ff; color: #4338ca;
+    }
+    .dark .md-detail__tag { background: #312e81; color: #a5b4fc; }
+    .md-detail__attachments { margin-top: 14px; display: flex; flex-direction: column; gap: 8px; }
+    .md-detail__att-img { max-width: 100%; border-radius: 8px; cursor: pointer; }
+    .md-detail__att-link {
+        display: inline-flex; align-items: center; gap: 6px; font-size: 12px; font-weight: 600;
+        color: var(--md-indigo); text-decoration: none; padding: 6px 10px; border-radius: 6px;
+        border: 1px solid rgba(99,102,241,0.2); transition: all 0.15s;
+    }
+    .md-detail__att-link:hover { background: rgba(99,102,241,0.06); }
+    .md-detail__views { font-size: 11px; opacity: 0.45; margin-top: 12px; }
+
+    /* Create announcement modal - wraps HTMX-loaded form */
+    .md-create-modal .md-modal { width: 640px; }
+    .md-create-modal .md-modal__body .oh-profile-section { margin: 0; }
+    .md-create-modal .md-modal__body .oh-modal__dialog-header { display: none; }
+    .md-create-modal .md-modal__body label { font-size: 12px; font-weight: 600; margin-bottom: 4px; }
+    .md-create-modal .md-modal__body input,
+    .md-create-modal .md-modal__body select,
+    .md-create-modal .md-modal__body textarea { font-size: 13px; }
+
+    /* ── Customize Panel (slide-out) ── */
+    .md-customize-overlay {
+        position: fixed;
+        inset: 0;
+        background: rgba(0,0,0,0.3);
+        z-index: 1050;
+        opacity: 0;
+        pointer-events: none;
+        transition: opacity 0.2s;
+    }
+    .md-customize-overlay--open {
+        opacity: 1;
+        pointer-events: auto;
+    }
+
+    .md-customize-panel {
+        position: fixed;
+        top: 0;
+        right: -420px;
+        width: 400px;
+        height: 100vh;
+        background: #ffffff;
+        box-shadow: -4px 0 24px rgba(0,0,0,0.12);
+        z-index: 1051;
+        display: flex;
+        flex-direction: column;
+        transition: right 0.25s ease;
+    }
+    .dark .md-customize-panel { background: #1e293b; }
+    .md-customize-panel--open { right: 0; }
+
+    .md-customize-panel__header {
+        padding: 18px 20px;
+        border-bottom: 1px solid rgba(128,128,128,0.12);
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        flex-shrink: 0;
+    }
+    .md-customize-panel__header h3 { font-size: 16px; font-weight: 700; margin: 0; }
+
+    .md-customize-panel__close {
+        width: 32px; height: 32px; border-radius: 8px; border: none;
+        background: rgba(128,128,128,0.08); cursor: pointer; font-size: 18px;
+        display: flex; align-items: center; justify-content: center; color: inherit;
+    }
+    .md-customize-panel__close:hover { background: rgba(128,128,128,0.16); }
+
+    .md-customize-panel__body {
+        flex: 1;
+        overflow-y: auto;
+        padding: 12px 20px;
+    }
+    .md-customize-panel__body::-webkit-scrollbar { width: 4px; }
+    .md-customize-panel__body::-webkit-scrollbar-thumb { background: rgba(128,128,128,0.2); border-radius: 4px; }
+
+    .md-customize-panel__footer {
+        padding: 14px 20px;
+        border-top: 1px solid rgba(128,128,128,0.12);
+        display: flex;
+        justify-content: space-between;
+        flex-shrink: 0;
+    }
+
+    .md-cust-btn {
+        padding: 7px 16px;
+        border-radius: 8px;
+        font-size: 13px;
+        font-weight: 600;
+        cursor: pointer;
+        border: none;
+        transition: all 0.15s;
+    }
+    .md-cust-btn--primary {
+        background: var(--md-indigo);
+        color: #fff;
+    }
+    .md-cust-btn--primary:hover { background: #4f46e5; }
+    .md-cust-btn--ghost {
+        background: none;
+        color: inherit;
+        opacity: 0.6;
+    }
+    .md-cust-btn--ghost:hover { opacity: 1; }
+
+    /* Draggable chart list items */
+    .md-cust-item {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        padding: 10px 12px;
+        margin-bottom: 6px;
+        border-radius: 8px;
+        border: 1px solid rgba(128,128,128,0.1);
+        background: rgba(128,128,128,0.02);
+        cursor: grab;
+        transition: box-shadow 0.15s, border-color 0.15s;
+        user-select: none;
+    }
+    .md-cust-item:active { cursor: grabbing; }
+    .md-cust-item.md-dragging {
+        opacity: 0.85;
+        box-shadow: 0 4px 16px rgba(0,0,0,0.12);
+        border-color: var(--md-indigo);
+        z-index: 10;
+    }
+    .md-cust-item.md-drag-over {
+        border-top: 2px solid var(--md-indigo);
+    }
+
+    .md-cust-item__handle {
+        font-size: 16px;
+        opacity: 0.3;
+        cursor: grab;
+        flex-shrink: 0;
+    }
+    .md-cust-item__label {
+        flex: 1;
+        font-size: 13px;
+        font-weight: 500;
+    }
+    .md-cust-item__section {
+        font-size: 10px;
+        opacity: 0.4;
+        margin-top: 1px;
+    }
+    .md-cust-item__toggle {
+        width: 36px; height: 20px;
+        border-radius: 12px;
+        background: #e2e8f0;
+        position: relative;
+        cursor: pointer;
+        transition: background 0.2s;
+        flex-shrink: 0;
+        border: none;
+    }
+    .dark .md-cust-item__toggle { background: #334155; }
+    .md-cust-item__toggle::after {
+        content: '';
+        position: absolute;
+        width: 16px; height: 16px;
+        border-radius: 50%;
+        top: 2px; left: 2px;
+        background: #fff;
+        box-shadow: 0 1px 3px rgba(0,0,0,0.2);
+        transition: transform 0.2s;
+    }
+    .md-cust-item__toggle--on { background: var(--md-indigo); }
+    .dark .md-cust-item__toggle--on { background: var(--md-indigo); }
+    .md-cust-item__toggle--on::after { transform: translateX(16px); }
+
+    .md-cust-section-title {
+        font-size: 11px;
+        font-weight: 700;
+        text-transform: uppercase;
+        letter-spacing: 0.05em;
+        opacity: 0.4;
+        padding: 12px 0 4px;
+    }
+    .md-cust-section-title:first-child { padding-top: 0; }
+
+    /* Birthday / Anniversary items */
+    .md-bday-item {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        padding: 8px 0;
+        border-bottom: 1px solid rgba(128,128,128,0.06);
+    }
+    .md-bday-item:last-child { border-bottom: none; }
+    .md-bday-item__avatar {
+        width: 32px; height: 32px; border-radius: 50%;
+        background: #eef2ff; color: var(--md-indigo);
+        display: flex; align-items: center; justify-content: center;
+        font-size: 11px; font-weight: 700; flex-shrink: 0; overflow: hidden;
+    }
+    .dark .md-bday-item__avatar { background: #312e81; }
+    .md-bday-item__avatar img { width: 100%; height: 100%; object-fit: cover; }
+    .md-bday-item__info { flex: 1; min-width: 0; }
+    .md-bday-item__name { font-size: 12px; font-weight: 600; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+    .md-bday-item__detail { font-size: 11px; opacity: 0.5; }
+    .md-bday-item__badge {
+        font-size: 10px; font-weight: 600; padding: 2px 8px;
+        border-radius: 999px; white-space: nowrap; flex-shrink: 0;
+    }
+    .md-bday-item__badge--today { background: #dcfce7; color: #166534; }
+    .md-bday-item__badge--soon { background: #fef3c7; color: #92400e; }
+    .dark .md-bday-item__badge--today { background: #166534; color: #bbf7d0; }
+    .dark .md-bday-item__badge--soon { background: #92400e; color: #fde68a; }
+
+    /* Pending approvals panel */
+    .md-pending-grid {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 8px;
+        padding-top: 8px;
+    }
+    .md-pending-card {
+        border-radius: 8px;
+        padding: 12px;
+        text-align: center;
+        border: 1px solid rgba(128,128,128,0.08);
+        cursor: pointer;
+        text-decoration: none;
+        color: inherit;
+        display: block;
+        transition: all 0.2s;
+    }
+    .md-pending-card:hover {
+        box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+        transform: translateY(-1px);
+        text-decoration: none;
+        color: inherit;
+    }
+    .md-pending-card__count {
+        font-size: 22px;
+        font-weight: 800;
+        line-height: 1;
+        margin-bottom: 4px;
+    }
+    .md-pending-card__label {
+        font-size: 10px;
+        font-weight: 600;
+        text-transform: uppercase;
+        letter-spacing: 0.03em;
+        opacity: 0.5;
+    }
+    .md-pending-card--amber { background: #fffbeb; }
+    .md-pending-card--blue { background: #eff6ff; }
+    .md-pending-card--green { background: #f0fdf4; }
+    .md-pending-card--purple { background: #faf5ff; }
+    .dark .md-pending-card--amber { background: rgba(245,158,11,0.1); }
+    .dark .md-pending-card--blue { background: rgba(59,130,246,0.1); }
+    .dark .md-pending-card--green { background: rgba(34,197,94,0.1); }
+    .dark .md-pending-card--purple { background: rgba(168,85,247,0.1); }
+
+    /* Payroll summary card */
+    .md-payroll-summary {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 12px;
+        padding: 10px 0 0;
+    }
+    .md-payroll-stat {
+        text-align: center;
+    }
+    .md-payroll-stat__value {
+        font-size: 18px;
+        font-weight: 800;
+        line-height: 1.2;
+    }
+    .md-payroll-stat__label {
+        font-size: 10px;
+        text-transform: uppercase;
+        opacity: 0.5;
+        font-weight: 600;
+    }
+
+    /* Period Picker */
+    .md-period-picker {
+        display: none; /* DATE FILTER DISABLED */
+        align-items: center;
+        gap: 6px;
+        font-size: 12px;
+    }
+    .md-period-picker input[type="date"] {
+        padding: 5px 8px;
+        border-radius: 6px;
+        border: 1px solid rgba(128,128,128,0.2);
+        font-size: 12px;
+        background: transparent;
+        color: inherit;
+        outline: none;
+        transition: border-color 0.15s;
+    }
+    .md-period-picker input[type="date"]:focus {
+        border-color: var(--md-indigo);
+    }
+    .md-period-picker__sep { opacity: 0.4; font-size: 11px; }
+    .md-period-preset {
+        padding: 4px 10px;
+        border-radius: 6px;
+        border: 1px solid rgba(128,128,128,0.15);
+        font-size: 11px;
+        cursor: pointer;
+        background: none;
+        color: inherit;
+        transition: all 0.15s;
+    }
+    .md-period-preset:hover { border-color: var(--md-indigo); color: var(--md-indigo); }
+    .md-period-preset--active { background: var(--md-indigo); color: #fff; border-color: var(--md-indigo); }
+    .dark .md-period-picker input[type="date"] { color-scheme: dark; }
+
+    /* Auto-refresh */
+    .md-refresh { display: flex; align-items: center; gap: 6px; font-size: 11px; opacity: 0.5; }
+    .md-refresh__dot { width: 6px; height: 6px; border-radius: 50%; background: var(--md-green); flex-shrink: 0; }
+    .md-refresh__dot--pulse { animation: md-pulse 2s infinite; }
+    @keyframes md-pulse { 0%, 100% { opacity: 1; } 50% { opacity: 0.3; } }
+    .md-refresh__toggle { cursor: pointer; opacity: 0.6; font-size: 13px; border: none; background: none; color: inherit; padding: 2px; }
+    .md-refresh__toggle:hover { opacity: 1; }
+
+    /* Responsive */
+    @media (max-width: 1280px) {
+        .md-layout { grid-template-columns: 1fr; }
+        .md-sidebar { position: static; display: grid; grid-template-columns: 1fr 1fr; }
+        .md-info-panel__body { max-height: 300px; }
+    }
+    @media (max-width: 1024px) {
+        .md-kpi-grid { grid-template-columns: repeat(2, 1fr); }
+        .md-chart-grid { grid-template-columns: 1fr; }
+        .md-chart-card--wide { grid-column: span 1; }
+        .md-section-divider { grid-column: span 1; }
+        .md-sidebar { grid-template-columns: 1fr; }
+        .md-customize-panel { width: 320px; right: -340px; }
+    }
+    @media (max-width: 640px) {
+        .md-kpi-grid { grid-template-columns: 1fr; }
+        .md-customize-panel { width: 100%; right: -100%; }
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="md-dashboard">
+
+    <!-- Header -->
+    <div class="md-header">
+        <div>
+            <h1>{% trans "Dashboard" %}</h1>
+            <div class="md-header__date" id="md-date"></div>
+            <div class="md-refresh"><span class="md-refresh__dot" id="md-refresh-dot"></span><span id="md-refresh-text">{% trans "Just now" %}</span><button class="md-refresh__toggle" id="md-refresh-toggle" title="{% trans 'Toggle auto-refresh' %}">⟳</button></div>
+        </div>
+        <div class="md-header__actions">
+            <div class="md-period-picker">
+                <button class="md-period-preset" data-preset="this_month">{% trans "This Month" %}</button>
+                <button class="md-period-preset" data-preset="last_month">{% trans "Last Month" %}</button>
+                <button class="md-period-preset" data-preset="this_quarter">{% trans "Quarter" %}</button>
+                <input type="date" id="md-from-date" title="{% trans 'From' %}">
+                <span class="md-period-picker__sep">→</span>
+                <input type="date" id="md-to-date" title="{% trans 'To' %}">
+            </div>
+            <button class="md-btn-customize" id="md-open-customize" title="{% trans 'Customize dashboard' %}">
+                <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83-2.83l.06-.06A1.65 1.65 0 0 0 4.68 15a1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 2.83-2.83l.06.06A1.65 1.65 0 0 0 9 4.68a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 2.83l-.06.06A1.65 1.65 0 0 0 19.4 9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg>
+                {% trans "Customize" %}
+            </button>
+        </div>
+    </div>
+
+    <!-- KPI Cards -->
+    <div class="md-kpi-grid" id="md-kpi-grid">
+        <div class="md-skeleton md-skeleton--kpi"></div>
+        <div class="md-skeleton md-skeleton--kpi"></div>
+        <div class="md-skeleton md-skeleton--kpi"></div>
+        <div class="md-skeleton md-skeleton--kpi"></div>
+    </div>
+
+    <!-- Main layout -->
+    <div class="md-layout">
+
+        <!-- Left: Charts (single flat grid for reordering) -->
+        <div class="md-main">
+            <div class="md-chart-grid" id="md-charts-container">
+
+                <!-- Attendance Trend -->
+                <div class="md-chart-card md-chart-card--wide" data-chart-id="attendance_trend" data-chart-section="overview" data-chart-label="{% trans 'Attendance Trend' %}" data-chart-wide="1">
+                    <div class="md-chart-card__header"><div><div class="md-chart-card__title">{% trans "Attendance Trend" %}</div><div class="md-chart-card__subtitle">{% trans "Weekly rate — last 12 weeks" %}</div></div></div>
+                    <div class="md-chart-card__body"><div id="chart-attendance-trend"></div></div>
+                </div>
+
+                <!-- Department Headcount -->
+                <div class="md-chart-card" data-chart-id="department_headcount" data-chart-section="overview" data-chart-label="{% trans 'Department Headcount' %}">
+                    <div class="md-chart-card__header"><div><div class="md-chart-card__title">{% trans "Department Headcount" %}</div><div class="md-chart-card__subtitle">{% trans "Top 10 departments" %}</div></div></div>
+                    <div class="md-chart-card__body"><div id="chart-departments"></div></div>
+                </div>
+
+                <!-- Gender Distribution -->
+                <div class="md-chart-card" data-chart-id="gender_distribution" data-chart-section="overview" data-chart-label="{% trans 'Gender Distribution' %}">
+                    <div class="md-chart-card__header"><div><div class="md-chart-card__title">{% trans "Gender Distribution" %}</div><div class="md-chart-card__subtitle">{% trans "Active employees" %}</div></div></div>
+                    <div class="md-chart-card__body"><div id="chart-gender"></div></div>
+                </div>
+
+                <!-- Leave Breakdown -->
+                <div class="md-chart-card" data-chart-id="leave_breakdown" data-chart-section="overview" data-chart-label="{% trans 'Leave Breakdown' %}">
+                    <div class="md-chart-card__header"><div><div class="md-chart-card__title">{% trans "Leave Breakdown" %}</div><div class="md-chart-card__subtitle" id="leave-month">{% trans "This month" %}</div></div></div>
+                    <div class="md-chart-card__body"><div id="chart-leave"></div></div>
+                </div>
+
+                <!-- Employee Status -->
+                <div class="md-chart-card" data-chart-id="employee_status" data-chart-section="overview" data-chart-label="{% trans 'Employee Status' %}">
+                    <div class="md-chart-card__header"><div><div class="md-chart-card__title">{% trans "Employee Status" %}</div><div class="md-chart-card__subtitle">{% trans "Active vs Inactive" %}</div></div></div>
+                    <div class="md-chart-card__body"><div id="chart-employee-status"></div></div>
+                </div>
+
+                <!-- Attendance Overview -->
+                <div class="md-chart-card md-chart-card--wide" data-chart-id="attendance_overview" data-chart-section="attendance" data-chart-label="{% trans 'Attendance Overview' %}" data-chart-wide="1">
+                    <div class="md-chart-card__header"><div><div class="md-chart-card__title">{% trans "Attendance Overview" %}</div><div class="md-chart-card__subtitle">{% trans "On-time, late arrivals & early departures by department" %}</div></div></div>
+                    <div class="md-chart-card__body"><div id="chart-attendance-overview"></div></div>
+                </div>
+
+                <!-- Department Overtime -->
+                <div class="md-chart-card" data-chart-id="department_overtime" data-chart-section="attendance" data-chart-label="{% trans 'Department Overtime' %}">
+                    <div class="md-chart-card__header"><div><div class="md-chart-card__title">{% trans "Department Overtime" %}</div><div class="md-chart-card__subtitle">{% trans "Overtime hours distribution" %}</div></div></div>
+                    <div class="md-chart-card__body"><div id="chart-overtime"></div></div>
+                </div>
+
+                <!-- Leave Trends -->
+                <div class="md-chart-card" data-chart-id="leave_trends" data-chart-section="attendance" data-chart-label="{% trans 'Leave Trends' %}">
+                    <div class="md-chart-card__header"><div><div class="md-chart-card__title">{% trans "Leave Trends" %}</div><div class="md-chart-card__subtitle">{% trans "Daily leaves — current week" %}</div></div></div>
+                    <div class="md-chart-card__body"><div id="chart-leave-trend"></div></div>
+                </div>
+
+                <!-- Recruitment Pipeline -->
+                <div class="md-chart-card md-chart-card--wide" data-chart-id="recruitment_pipeline" data-chart-section="recruitment" data-chart-label="{% trans 'Recruitment Pipeline' %}" data-chart-wide="1">
+                    <div class="md-chart-card__header"><div><div class="md-chart-card__title">{% trans "Recruitment Pipeline" %}</div><div class="md-chart-card__subtitle">{% trans "Candidates by stage per recruitment" %}</div></div></div>
+                    <div class="md-chart-card__body"><div id="chart-pipeline"></div></div>
+                </div>
+
+                <!-- Hiring Timeline -->
+                <div class="md-chart-card md-chart-card--wide" data-chart-id="hiring_timeline" data-chart-section="recruitment" data-chart-label="{% trans 'Hiring Timeline' %}" data-chart-wide="1">
+                    <div class="md-chart-card__header"><div><div class="md-chart-card__title">{% trans "Hiring Timeline" %}</div><div class="md-chart-card__subtitle">{% trans "Employees joined by month" %}</div></div></div>
+                    <div class="md-chart-card__body"><div id="chart-hiring"></div></div>
+                </div>
+
+                <!-- Leave by Department -->
+                <div class="md-chart-card" data-chart-id="leave_by_department" data-chart-section="leave" data-chart-label="{% trans 'Leave by Department' %}">
+                    <div class="md-chart-card__header"><div><div class="md-chart-card__title">{% trans "Leave by Department" %}</div><div class="md-chart-card__subtitle">{% trans "Department-wise leave requests" %}</div></div></div>
+                    <div class="md-chart-card__body"><div id="chart-leave-dept"></div></div>
+                </div>
+
+                <!-- Department Leave Days -->
+                <div class="md-chart-card" data-chart-id="department_leave_days" data-chart-section="leave" data-chart-label="{% trans 'Department Leave Days' %}">
+                    <div class="md-chart-card__header"><div><div class="md-chart-card__title">{% trans "Department Leave Days" %}</div><div class="md-chart-card__subtitle">{% trans "Total leave days by department" %}</div></div></div>
+                    <div class="md-chart-card__body"><div id="chart-leave-days"></div></div>
+                </div>
+
+                <!-- Recruitment Funnel (NEW) -->
+                <div class="md-chart-card md-chart-card--wide" data-chart-id="recruitment_funnel" data-chart-section="recruitment" data-chart-label="{% trans 'Recruitment Funnel' %}" data-chart-wide="1">
+                    <div class="md-chart-card__header"><div><div class="md-chart-card__title">{% trans "Recruitment Funnel" %}</div><div class="md-chart-card__subtitle">{% trans "Candidates by stage — active recruitments" %}</div></div></div>
+                    <div class="md-chart-card__body"><div id="chart-recruitment-funnel"></div></div>
+                </div>
+
+                <!-- Employee Turnover (NEW) -->
+                <div class="md-chart-card md-chart-card--wide" data-chart-id="employee_turnover" data-chart-section="overview" data-chart-label="{% trans 'Employee Turnover' %}" data-chart-wide="1">
+                    <div class="md-chart-card__header"><div><div class="md-chart-card__title">{% trans "Employee Turnover" %}</div><div class="md-chart-card__subtitle" id="turnover-rate">{% trans "New hires vs exits — last 6 months" %}</div></div></div>
+                    <div class="md-chart-card__body"><div id="chart-turnover"></div></div>
+                </div>
+
+                <!-- Payroll Summary (NEW) -->
+                <div class="md-chart-card" data-chart-id="payroll_summary" data-chart-section="overview" data-chart-label="{% trans 'Payroll Summary' %}">
+                    <div class="md-chart-card__header"><div><div class="md-chart-card__title">{% trans "Payroll Summary" %}</div><div class="md-chart-card__subtitle" id="payroll-month">{% trans "Current vs previous month" %}</div></div></div>
+                    <div class="md-chart-card__body"><div id="chart-payroll"></div></div>
+                </div>
+
+            </div>
+        </div>
+
+        <!-- Right sidebar -->
+        <div class="md-sidebar">
+            <div class="md-info-panel">
+                <div class="md-info-panel__header">
+                    <div class="md-info-panel__title">{% trans "Announcements" %}</div>
+                    <div style="display:flex;align-items:center;gap:4px;">
+                        {% if perms.base.add_announcement %}
+                        <button class="md-btn-add" id="md-add-announcement" title="{% trans 'New Announcement' %}">+</button>
+                        {% endif %}
+                        <a href="{% url 'home-page' %}" class="md-link-subtle">{% trans "View all" %}</a>
+                    </div>
+                </div>
+                <div class="md-info-panel__body" id="md-announcements">
+                    <div class="md-info-panel__empty">{% trans "Loading..." %}</div>
+                </div>
+            </div>
+            <div class="md-info-panel">
+                <div class="md-info-panel__header">
+                    <div class="md-info-panel__title">{% trans "On Leave Today" %}</div>
+                    <a href="{% url 'request-view' %}" class="md-link-subtle">{% trans "View all" %}</a>
+                </div>
+                <div class="md-info-panel__body" id="md-todays-leave">
+                    <div class="md-info-panel__empty">{% trans "Loading..." %}</div>
+                </div>
+            </div>
+            <div class="md-info-panel">
+                <div class="md-info-panel__header">
+                    <div class="md-info-panel__title">{% trans "Upcoming Celebrations" %}</div>
+                    <span class="md-link-subtle">{% trans "Next 7 days" %}</span>
+                </div>
+                <div class="md-info-panel__body" id="md-birthdays">
+                    <div class="md-info-panel__empty">{% trans "Loading..." %}</div>
+                </div>
+            </div>
+            <div class="md-info-panel">
+                <div class="md-info-panel__header">
+                    <div class="md-info-panel__title">{% trans "Pending Approvals" %}</div>
+                </div>
+                <div class="md-info-panel__body" id="md-pending-approvals">
+                    <div class="md-info-panel__empty">{% trans "Loading..." %}</div>
+                </div>
+            </div>
+        </div>
+
+    </div>
+</div>
+
+<!-- Customize Panel (slide-out) -->
+<div class="md-customize-overlay" id="md-customize-overlay"></div>
+<div class="md-customize-panel" id="md-customize-panel">
+    <div class="md-customize-panel__header">
+        <h3>{% trans "Customize Dashboard" %}</h3>
+        <button class="md-customize-panel__close" id="md-close-customize">&times;</button>
+    </div>
+    <div class="md-customize-panel__body" id="md-customize-list"></div>
+    <div class="md-customize-panel__footer">
+        <button class="md-cust-btn md-cust-btn--ghost" id="md-reset-customize">{% trans "Reset to default" %}</button>
+        <button class="md-cust-btn md-cust-btn--primary" id="md-save-customize">{% trans "Save" %}</button>
+    </div>
+</div>
+
+<!-- Announcement Detail Modal -->
+<div class="md-modal-overlay" id="md-ann-detail-overlay">
+    <div class="md-modal">
+        <div class="md-modal__header">
+            <h3 id="md-ann-detail-title">{% trans "Announcement" %}</h3>
+            <button class="md-modal__close" id="md-ann-detail-close">&times;</button>
+        </div>
+        <div class="md-modal__body" id="md-ann-detail-body">
+            <div style="text-align:center;padding:40px;opacity:0.4;">{% trans "Loading..." %}</div>
+        </div>
+    </div>
+</div>
+
+<!-- Create Announcement Modal -->
+<div class="md-modal-overlay md-create-modal" id="md-ann-create-overlay">
+    <div class="md-modal">
+        <div class="md-modal__header">
+            <h3>{% trans "New Announcement" %}</h3>
+            <button class="md-modal__close" id="md-ann-create-close">&times;</button>
+        </div>
+        <div class="md-modal__body" id="md-ann-create-body">
+            <div style="text-align:center;padding:40px;opacity:0.4;">{% trans "Loading..." %}</div>
+        </div>
+    </div>
+</div>
+
+<script>
+(function() {
+    const isDark = document.documentElement.classList.contains('dark') || document.body.classList.contains('dark');
+    const textColor = isDark ? '#e2e8f0' : '#334155';
+    const gridColor = isDark ? 'rgba(255,255,255,0.06)' : 'rgba(0,0,0,0.06)';
+    const cardBg = isDark ? '#1e293b' : '#ffffff';
+    const COLORS = ['#6366f1','#22c55e','#f59e0b','#ef4444','#3b82f6','#a855f7','#06b6d4','#ec4899','#14b8a6','#f97316'];
+    const STORAGE_KEY = 'md_dashboard_prefs';
+
+    const SECTION_LABELS = {
+        overview: "{% trans 'Overview' %}",
+        attendance: "{% trans 'Attendance & Overtime' %}",
+        recruitment: "{% trans 'Recruitment' %}",
+        leave: "{% trans 'Leave Analytics' %}",
+        payroll: "{% trans 'Payroll' %}"
+    };
+
+    const emptyHtml = (msg) => `<div class="md-empty"><img src="/static/images/ui/no_records.svg" alt="">${msg}</div>`;
+
+    document.getElementById('md-date').textContent = new Date().toLocaleDateString('en-US', {
+        weekday: 'long', year: 'numeric', month: 'long', day: 'numeric'
+    });
+
+    // ═══════════════════════════════════════════
+    //  PERIOD PICKER
+    // ═══════════════════════════════════════════
+    const PERIOD_KEY = 'md_period_v2';
+    const fromInput = document.getElementById('md-from-date');
+    const toInput = document.getElementById('md-to-date');
+
+    function getToday() { return new Date().toISOString().split('T')[0]; }
+    function getFirstOfMonth(d) { const dt = new Date(d || getToday()); dt.setDate(1); return dt.toISOString().split('T')[0]; }
+    function getLastOfMonth(d) { const dt = new Date(d || getToday()); return new Date(dt.getFullYear(), dt.getMonth()+1, 0).toISOString().split('T')[0]; }
+
+    function initPeriod() {
+        const saved = sessionStorage.getItem(PERIOD_KEY);
+        if (saved) {
+            try {
+                const p = JSON.parse(saved);
+                fromInput.value = p.from;
+                toInput.value = p.to;
+                return;
+            } catch {}
+        }
+        fromInput.value = getFirstOfMonth();
+        toInput.value = getLastOfMonth();
+    }
+
+    function savePeriod() {
+        sessionStorage.setItem(PERIOD_KEY, JSON.stringify({ from: fromInput.value, to: toInput.value }));
+    }
+
+    function periodParams() {
+        return ""; /* DATE FILTER DISABLED */
+    }
+
+    function urlWithPeriod(baseUrl) {
+        const sep = baseUrl.includes('?') ? '&' : '?';
+        return baseUrl + sep + periodParams();
+    }
+
+    function setPreset(preset) {
+        const today = new Date();
+        let from, to;
+        if (preset === 'this_month') {
+            from = new Date(today.getFullYear(), today.getMonth(), 1);
+            to = new Date(today.getFullYear(), today.getMonth()+1, 0);
+        } else if (preset === 'last_month') {
+            from = new Date(today.getFullYear(), today.getMonth() - 1, 1);
+            to = new Date(today.getFullYear(), today.getMonth(), 0);
+        } else if (preset === 'this_quarter') {
+            const qMonth = Math.floor(today.getMonth() / 3) * 3;
+            from = new Date(today.getFullYear(), qMonth, 1);
+            to = new Date(today.getFullYear(), qMonth + 3, 0);
+        }
+        fromInput.value = from.toISOString().split('T')[0];
+        toInput.value = to.toISOString().split('T')[0];
+        savePeriod();
+        highlightPreset(preset);
+        loadAllData();
+    }
+
+    function highlightPreset(active) {
+        document.querySelectorAll('.md-period-preset').forEach(btn => {
+            btn.classList.toggle('md-period-preset--active', btn.dataset.preset === active);
+        });
+    }
+
+    // Preset buttons
+    document.querySelectorAll('.md-period-preset').forEach(btn => {
+        btn.addEventListener('click', () => setPreset(btn.dataset.preset));
+    });
+
+    // Date input change
+    [fromInput, toInput].forEach(input => {
+        input.addEventListener('change', () => {
+            savePeriod();
+            highlightPreset('');
+            loadAllData();
+        });
+    });
+
+    initPeriod();
+    highlightPreset('this_month');
+
+    // ═══════════════════════════════════════════
+    //  CHART REORDER + VISIBILITY SYSTEM
+    // ═══════════════════════════════════════════
+
+    function getDefaultOrder() {
+        const cards = document.querySelectorAll('#md-charts-container [data-chart-id]');
+        return Array.from(cards).map(c => ({ id: c.dataset.chartId, visible: true }));
+    }
+
+    function loadPrefs() {
+        try {
+            const raw = localStorage.getItem(STORAGE_KEY);
+            if (!raw) return null;
+            return JSON.parse(raw);
+        } catch { return null; }
+    }
+
+    function savePrefs(prefs) {
+        localStorage.setItem(STORAGE_KEY, JSON.stringify(prefs));
+    }
+
+    function applyPrefs(prefs) {
+        if (!prefs) return;
+        const container = document.getElementById('md-charts-container');
+        const cards = {};
+        container.querySelectorAll('[data-chart-id]').forEach(c => { cards[c.dataset.chartId] = c; });
+
+        // Reorder
+        prefs.forEach(p => {
+            const card = cards[p.id];
+            if (card) {
+                container.appendChild(card);
+                if (p.visible === false) {
+                    card.classList.add('md-chart-card--hidden');
+                } else {
+                    card.classList.remove('md-chart-card--hidden');
+                }
+            }
+        });
+
+        // Append any new charts not in prefs
+        Object.keys(cards).forEach(id => {
+            if (!prefs.find(p => p.id === id)) {
+                container.appendChild(cards[id]);
+                cards[id].classList.remove('md-chart-card--hidden');
+            }
+        });
+    }
+
+    // Apply saved preferences on load
+    applyPrefs(loadPrefs());
+
+    // ── Customize panel ──
+    const overlay = document.getElementById('md-customize-overlay');
+    const panel = document.getElementById('md-customize-panel');
+    const listEl = document.getElementById('md-customize-list');
+
+    function openCustomize() {
+        const prefs = loadPrefs() || getDefaultOrder();
+        renderCustomizeList(prefs);
+        overlay.classList.add('md-customize-overlay--open');
+        panel.classList.add('md-customize-panel--open');
+    }
+
+    function closeCustomize() {
+        overlay.classList.remove('md-customize-overlay--open');
+        panel.classList.remove('md-customize-panel--open');
+    }
+
+    function renderCustomizeList(prefs) {
+        // Build from current DOM + prefs
+        const allCards = {};
+        document.querySelectorAll('#md-charts-container [data-chart-id]').forEach(c => {
+            allCards[c.dataset.chartId] = {
+                id: c.dataset.chartId,
+                label: c.dataset.chartLabel,
+                section: c.dataset.chartSection,
+            };
+        });
+
+        // Merge: ordered prefs first, then any missing
+        const ordered = [];
+        prefs.forEach(p => {
+            if (allCards[p.id]) {
+                ordered.push({ ...allCards[p.id], visible: p.visible !== false });
+            }
+        });
+        Object.keys(allCards).forEach(id => {
+            if (!ordered.find(o => o.id === id)) {
+                ordered.push({ ...allCards[id], visible: true });
+            }
+        });
+
+        let html = '';
+        let lastSection = '';
+        ordered.forEach((item, idx) => {
+            if (item.section !== lastSection) {
+                html += `<div class="md-cust-section-title">${SECTION_LABELS[item.section] || item.section}</div>`;
+                lastSection = item.section;
+            }
+            html += `
+                <div class="md-cust-item" draggable="true" data-cust-id="${item.id}" data-cust-idx="${idx}">
+                    <span class="md-cust-item__handle">&#x2630;</span>
+                    <div class="md-cust-item__label">${item.label}</div>
+                    <button class="md-cust-item__toggle ${item.visible ? 'md-cust-item__toggle--on' : ''}" data-cust-toggle="${item.id}" title="Toggle visibility"></button>
+                </div>`;
+        });
+
+        listEl.innerHTML = html;
+        initDragAndDrop();
+    }
+
+    function initDragAndDrop() {
+        let dragEl = null;
+
+        listEl.querySelectorAll('.md-cust-item').forEach(item => {
+            item.addEventListener('dragstart', e => {
+                dragEl = item;
+                item.classList.add('md-dragging');
+                e.dataTransfer.effectAllowed = 'move';
+                e.dataTransfer.setData('text/plain', '');
+            });
+
+            item.addEventListener('dragend', () => {
+                if (dragEl) dragEl.classList.remove('md-dragging');
+                listEl.querySelectorAll('.md-cust-item').forEach(i => i.classList.remove('md-drag-over'));
+                dragEl = null;
+            });
+
+            item.addEventListener('dragover', e => {
+                e.preventDefault();
+                e.dataTransfer.dropEffect = 'move';
+                if (item !== dragEl) {
+                    item.classList.add('md-drag-over');
+                }
+            });
+
+            item.addEventListener('dragleave', () => {
+                item.classList.remove('md-drag-over');
+            });
+
+            item.addEventListener('drop', e => {
+                e.preventDefault();
+                item.classList.remove('md-drag-over');
+                if (dragEl && item !== dragEl) {
+                    // Find all items (exclude section titles)
+                    const items = Array.from(listEl.querySelectorAll('.md-cust-item'));
+                    const fromIdx = items.indexOf(dragEl);
+                    const toIdx = items.indexOf(item);
+
+                    if (fromIdx < toIdx) {
+                        item.parentNode.insertBefore(dragEl, item.nextSibling);
+                    } else {
+                        item.parentNode.insertBefore(dragEl, item);
+                    }
+                }
+            });
+        });
+
+        // Toggle visibility
+        listEl.querySelectorAll('.md-cust-item__toggle').forEach(btn => {
+            btn.addEventListener('click', e => {
+                e.stopPropagation();
+                btn.classList.toggle('md-cust-item__toggle--on');
+            });
+        });
+    }
+
+    function getCustomizeState() {
+        const items = listEl.querySelectorAll('.md-cust-item');
+        return Array.from(items).map(item => ({
+            id: item.dataset.custId,
+            visible: item.querySelector('.md-cust-item__toggle').classList.contains('md-cust-item__toggle--on')
+        }));
+    }
+
+    document.getElementById('md-open-customize').addEventListener('click', openCustomize);
+    document.getElementById('md-close-customize').addEventListener('click', closeCustomize);
+    overlay.addEventListener('click', closeCustomize);
+
+    document.getElementById('md-save-customize').addEventListener('click', () => {
+        const prefs = getCustomizeState();
+        savePrefs(prefs);
+        applyPrefs(prefs);
+        closeCustomize();
+    });
+
+    document.getElementById('md-reset-customize').addEventListener('click', () => {
+        localStorage.removeItem(STORAGE_KEY);
+        location.reload();
+    });
+
+    // ═══════════════════════════════════════════
+    //  DATA FETCHES
+    // ═══════════════════════════════════════════
+
+    // ═══════════════════════════════════════════
+    //  PERIOD-AWARE RELOAD
+    // ═══════════════════════════════════════════
+    function loadAllData() {
+        // Reload the page with period params preserved in sessionStorage
+        // All fetches below already use urlWithPeriod() for period-sensitive endpoints
+        location.reload();
+    }
+
+    // Helper: fetch with period params for period-sensitive endpoints
+    function fetchP(url) { return fetch(urlWithPeriod(url)); }
+
+    // ── Auto-refresh ──
+    const REFRESH_INTERVAL = 300000; // 5 minutes
+    const REFRESH_KEY = 'md_auto_refresh';
+    let refreshTimer = null;
+    let lastRefresh = Date.now();
+    const refreshDot = document.getElementById('md-refresh-dot');
+    const refreshText = document.getElementById('md-refresh-text');
+    const refreshToggle = document.getElementById('md-refresh-toggle');
+    let autoRefreshOn = localStorage.getItem(REFRESH_KEY) !== 'off';
+
+    function updateRefreshText() {
+        const mins = Math.floor((Date.now() - lastRefresh) / 60000);
+        refreshText.textContent = mins < 1 ? 'Just now' : mins + 'm ago';
+    }
+    setInterval(updateRefreshText, 30000);
+
+    function startAutoRefresh() {
+        autoRefreshOn = true;
+        localStorage.setItem(REFRESH_KEY, 'on');
+        refreshDot.classList.add('md-refresh__dot--pulse');
+        refreshToggle.textContent = '⟳';
+        refreshToggle.title = 'Auto-refresh ON (5 min)';
+        refreshTimer = setInterval(() => location.reload(), REFRESH_INTERVAL);
+    }
+    function stopAutoRefresh() {
+        autoRefreshOn = false;
+        localStorage.setItem(REFRESH_KEY, 'off');
+        refreshDot.classList.remove('md-refresh__dot--pulse');
+        refreshToggle.textContent = '⏸';
+        refreshToggle.title = 'Auto-refresh OFF';
+        if (refreshTimer) { clearInterval(refreshTimer); refreshTimer = null; }
+    }
+    refreshToggle.addEventListener('click', () => { if (autoRefreshOn) stopAutoRefresh(); else startAutoRefresh(); });
+    if (autoRefreshOn) startAutoRefresh(); else stopAutoRefresh();
+
+    // ─── KPI CARDS ───
+    fetchP("{% url 'dashboard-kpi-data' %}")
+        .then(r => r.json())
+        .then(data => {
+            document.getElementById('md-kpi-grid').innerHTML = `
+                <a href="{% url 'employee-view' %}" class="md-kpi-card">
+                    <div class="md-kpi-card__icon md-kpi-card__icon--indigo">👥</div>
+                    <div class="md-kpi-card__label">{% trans "Total Employees" %}</div>
+                    <div class="md-kpi-card__value">${data.total_employees}</div>
+                    <div class="md-kpi-card__sub">${data.new_joiners > 0
+                        ? '<span class="md-badge md-badge--green">+' + data.new_joiners + ' {% trans "this month" %}</span>'
+                        : '<span style="opacity:0.5">{% trans "No new joiners" %}</span>'}</div>
+                </a>
+                <a href="{% url 'attendance-view' %}" class="md-kpi-card">
+                    <div class="md-kpi-card__icon md-kpi-card__icon--green">✓</div>
+                    <div class="md-kpi-card__label">{% trans "Present Today" %}</div>
+                    <div class="md-kpi-card__value">${data.present_today}</div>
+                    <div class="md-kpi-card__sub"><span class="md-badge ${data.attendance_rate >= 80 ? 'md-badge--green' : 'md-badge--amber'}">${data.attendance_rate}% {% trans "rate" %}</span></div>
+                </a>
+                <a href="{% url 'request-view' %}" class="md-kpi-card">
+                    <div class="md-kpi-card__icon md-kpi-card__icon--amber">🏖</div>
+                    <div class="md-kpi-card__label">{% trans "On Leave" %}</div>
+                    <div class="md-kpi-card__value">${data.on_leave}</div>
+                    <div class="md-kpi-card__sub">${data.pending_leaves > 0
+                        ? '<span class="md-badge md-badge--amber">' + data.pending_leaves + ' {% trans "pending" %}</span>'
+                        : '<span style="opacity:0.5">{% trans "No pending" %}</span>'}</div>
+                </a>
+                <a href="{% url 'recruitment-view' %}" class="md-kpi-card">
+                    <div class="md-kpi-card__icon md-kpi-card__icon--purple">📋</div>
+                    <div class="md-kpi-card__label">{% trans "Open Recruitments" %}</div>
+                    <div class="md-kpi-card__value">${data.open_recruitments}</div>
+                    <div class="md-kpi-card__sub"><span style="opacity:0.5">{% trans "Active hiring" %}</span></div>
+                </a>`;
+        });
+
+    // ─── ANNOUNCEMENTS ───
+    function loadAnnouncements() {
+        fetch("{% url 'dashboard-announcements' %}")
+            .then(r => r.json())
+            .then(data => {
+                const el = document.getElementById('md-announcements');
+                if (!data.announcements.length) { el.innerHTML = '<div class="md-info-panel__empty">{% trans "No announcements" %}</div>'; return; }
+                el.innerHTML = data.announcements.map(a => `
+                    <div class="md-ann-item" data-ann-id="${a.id}">
+                        <div class="md-ann-item__title">${a.title}</div>
+                        ${a.description ? '<div class="md-ann-item__desc">' + a.description + '</div>' : ''}
+                        <div class="md-ann-item__meta">${a.date}${a.expire_date ? '<span class="md-ann-item__expire">{% trans "Expires" %} ' + a.expire_date + '</span>' : ''}</div>
+                    </div>`).join('');
+
+                // Make items clickable
+                el.querySelectorAll('.md-ann-item[data-ann-id]').forEach(item => {
+                    item.addEventListener('click', () => openAnnouncementDetail(item.dataset.annId));
+                });
+            }).catch(() => { document.getElementById('md-announcements').innerHTML = '<div class="md-info-panel__empty">{% trans "No announcements" %}</div>'; });
+    }
+    loadAnnouncements();
+
+    // ─── TODAY'S LEAVE ───
+    fetch("{% url 'dashboard-todays-leave' %}")
+        .then(r => r.json())
+        .then(data => {
+            const el = document.getElementById('md-todays-leave');
+            if (!data.leaves.length) { el.innerHTML = '<div class="md-info-panel__empty">{% trans "No one on leave today" %}</div>'; return; }
+            el.innerHTML = data.leaves.map(l => {
+                const initials = l.employee.split(' ').map(w => w[0]).join('').slice(0, 2).toUpperCase();
+                const avatarInner = l.avatar ? `<img src="${l.avatar}" alt="">` : initials;
+                return `
+                <a href="/employee/employee-view-individual/${l.employee_id || ''}/" class="md-leave-item" style="text-decoration:none;color:inherit;">
+                    <div class="md-leave-item__avatar">${avatarInner}</div>
+                    <div class="md-leave-item__info">
+                        <div class="md-leave-item__name">${l.employee}</div>
+                        <div class="md-leave-item__type">${l.leave_type}</div>
+                    </div>
+                    <div class="md-leave-item__dates">
+                        <div>${l.start}${l.start !== l.end ? ' – ' + l.end : ''}</div>
+                        <span class="md-leave-item__days">${l.days}d</span>
+                    </div>
+                </a>`;
+            }).join('');
+        }).catch(() => { document.getElementById('md-todays-leave').innerHTML = '<div class="md-info-panel__empty">{% trans "No one on leave today" %}</div>'; });
+
+    // ─── ATTENDANCE TREND ───
+    fetch("{% url 'dashboard-attendance-trend' %}")
+        .then(r => r.json())
+        .then(data => {
+            new ApexCharts(document.querySelector("#chart-attendance-trend"), {
+                series: [{ name: 'Attendance Rate', data: data.weeks.map(w => w.rate) }],
+                chart: { type: 'area', height: 260, toolbar: { show: false }, background: 'transparent', fontFamily: 'inherit' },
+                colors: ['#6366f1'],
+                fill: { type: 'gradient', gradient: { shadeIntensity: 1, opacityFrom: 0.4, opacityTo: 0.05, stops: [0, 95, 100] } },
+                stroke: { curve: 'smooth', width: 3 },
+                dataLabels: { enabled: false },
+                xaxis: { categories: data.weeks.map(w => w.week), labels: { style: { colors: textColor, fontSize: '11px' } }, axisBorder: { show: false }, axisTicks: { show: false } },
+                yaxis: { min: 0, max: 100, labels: { style: { colors: textColor }, formatter: v => v + '%' } },
+                grid: { borderColor: gridColor, strokeDashArray: 4 },
+                tooltip: { theme: isDark ? 'dark' : 'light', y: { formatter: v => v + '% attendance' } },
+            }).render();
+        });
+
+    // ─── DEPARTMENT HEADCOUNT ───
+    fetch("{% url 'dashboard-department-headcount' %}")
+        .then(r => r.json())
+        .then(data => {
+            if (!data.departments.length) { document.querySelector("#chart-departments").innerHTML = emptyHtml('No department data'); return; }
+            new ApexCharts(document.querySelector("#chart-departments"), {
+                series: data.departments.map(d => d.count),
+                chart: { type: 'donut', height: 300, background: 'transparent', fontFamily: 'inherit',
+                    events: { dataPointSelection: (e, ctx, config) => {
+                        const dept = data.departments[config.dataPointIndex].department;
+                        window.location.href = "{% url 'employee-view' %}?department=" + encodeURIComponent(dept);
+                    }}
+                },
+                labels: data.departments.map(d => d.department),
+                colors: COLORS.slice(0, data.departments.length),
+                plotOptions: { pie: { donut: { size: '65%', labels: { show: true, total: { show: true, label: 'Total', color: textColor, fontSize: '13px', fontWeight: 600, formatter: w => w.globals.seriesTotals.reduce((a,b)=>a+b,0) } } } } },
+                stroke: { width: 2, colors: [cardBg] },
+                dataLabels: { enabled: false },
+                legend: { position: 'bottom', labels: { colors: textColor }, fontSize: '11px', markers: { width: 8, height: 8, radius: 2 } },
+                tooltip: { theme: isDark ? 'dark' : 'light' },
+            }).render();
+        });
+
+    // ─── GENDER ───
+    fetch("{% url 'dashboard-gender-split' %}")
+        .then(r => r.json())
+        .then(data => {
+            if (!data.genders.length) { document.querySelector("#chart-gender").innerHTML = emptyHtml('No data'); return; }
+            const gc = { 'Male': '#3b82f6', 'Female': '#ec4899', 'Other': '#a855f7', 'Not Specified': '#94a3b8' };
+            const genderKeys = { 'Male': 'male', 'Female': 'female', 'Other': 'other', 'Not Specified': '' };
+            new ApexCharts(document.querySelector("#chart-gender"), {
+                series: data.genders.map(g => g.count),
+                chart: { type: 'donut', height: 300, background: 'transparent', fontFamily: 'inherit',
+                    events: { dataPointSelection: (e, ctx, config) => {
+                        const gender = data.genders[config.dataPointIndex].gender;
+                        window.location.href = "{% url 'employee-view' %}?gender=" + (genderKeys[gender] || gender.toLowerCase());
+                    }}
+                },
+                labels: data.genders.map(g => g.gender),
+                colors: data.genders.map(g => gc[g.gender] || '#94a3b8'),
+                plotOptions: { pie: { donut: { size: '70%', labels: { show: true, total: { show: true, label: 'Employees', color: textColor, fontSize: '12px', fontWeight: 600, formatter: w => w.globals.seriesTotals.reduce((a,b)=>a+b,0) } } } } },
+                stroke: { width: 2, colors: [cardBg] },
+                dataLabels: { enabled: false },
+                legend: { position: 'bottom', labels: { colors: textColor }, fontSize: '11px', markers: { width: 8, height: 8, radius: 2 } },
+                tooltip: { theme: isDark ? 'dark' : 'light' },
+            }).render();
+        });
+
+    // ─── LEAVE BREAKDOWN ───
+    fetchP("{% url 'dashboard-leave-breakdown' %}")
+        .then(r => r.json())
+        .then(data => {
+            document.getElementById('leave-month').textContent = data.month;
+            if (!data.breakdown.length) { document.querySelector("#chart-leave").innerHTML = emptyHtml('No leave data this month'); return; }
+            new ApexCharts(document.querySelector("#chart-leave"), {
+                series: [{ name: 'Requests', data: data.breakdown.map(b => b.count) }],
+                chart: { type: 'bar', height: 300, toolbar: { show: false }, background: 'transparent', fontFamily: 'inherit',
+                    events: { dataPointSelection: (e, ctx, config) => {
+                        const leaveType = data.breakdown[config.dataPointIndex]?.type || '';
+                        window.location.href = "{% url 'request-view' %}?leave_type_id__name=" + encodeURIComponent(leaveType);
+                    }}
+                },
+                colors: COLORS,
+                plotOptions: { bar: { borderRadius: 6, horizontal: true, barHeight: '55%', distributed: true } },
+                xaxis: { categories: data.breakdown.map(b => b.type), labels: { style: { colors: textColor } } },
+                yaxis: { labels: { style: { colors: textColor, fontSize: '11px' } } },
+                grid: { borderColor: gridColor },
+                dataLabels: { enabled: true, formatter: (v, { dataPointIndex: i }) => v + ' (' + data.breakdown[i].days + 'd)', style: { fontSize: '11px' } },
+                legend: { show: false },
+                tooltip: { theme: isDark ? 'dark' : 'light', y: { formatter: v => v + ' requests' } },
+            }).render();
+        });
+
+    // ─── EMPLOYEE STATUS ───
+    fetch("/employee/dashboard-employee")
+        .then(r => r.json())
+        .then(data => {
+            if (!data.dataSet || !data.dataSet.length) { document.querySelector("#chart-employee-status").innerHTML = emptyHtml('No data'); return; }
+            const sc = { 'Active': '#22c55e', 'Inactive': '#ef4444' };
+            new ApexCharts(document.querySelector("#chart-employee-status"), {
+                series: data.dataSet[0].data,
+                chart: { type: 'radialBar', height: 300, background: 'transparent', fontFamily: 'inherit',
+                    events: { click: (e, ctx, config) => {
+                        if (config.seriesIndex >= 0) {
+                            const label = data.labels[config.seriesIndex];
+                            const active = label.toLowerCase() === 'active' ? 'True' : 'False';
+                            window.location.href = "{% url 'employee-view' %}?is_active=" + active;
+                        }
+                    }}
+                },
+                labels: data.labels,
+                colors: data.labels.map(l => sc[l] || '#6366f1'),
+                plotOptions: { radialBar: { hollow: { size: '45%' }, track: { background: isDark ? '#334155' : '#f1f5f9' }, dataLabels: { name: { fontSize: '12px', color: textColor }, value: { fontSize: '22px', fontWeight: 700, color: textColor }, total: { show: true, label: 'Total', color: textColor, formatter: w => w.globals.seriesTotals.reduce((a,b)=>a+b,0) } } } },
+                stroke: { lineCap: 'round' },
+                legend: { show: true, position: 'bottom', labels: { colors: textColor }, fontSize: '11px' },
+            }).render();
+        });
+
+    // ─── ATTENDANCE OVERVIEW ───
+    fetch("{% url 'dashboard-attendance' %}")
+        .then(r => r.json())
+        .then(data => {
+            if (!data.dataSet || !data.dataSet.length) { document.querySelector("#chart-attendance-overview").innerHTML = emptyHtml('No attendance records available'); return; }
+            new ApexCharts(document.querySelector("#chart-attendance-overview"), {
+                series: data.dataSet.map(d => ({ name: d.label, data: d.data })),
+                chart: { type: 'bar', height: 320, toolbar: { show: false }, background: 'transparent', fontFamily: 'inherit', stacked: false,
+                    events: { dataPointSelection: (e, ctx, config) => {
+                        const dept = data.labels[config.dataPointIndex];
+                        const seriesLabel = data.dataSet[config.seriesIndex]?.label || '';
+                        if (seriesLabel.toLowerCase().includes('late') || seriesLabel.toLowerCase().includes('early')) {
+                            window.location.href = "/attendance/late-come-early-out-view?department=" + encodeURIComponent(dept);
+                        } else {
+                            window.location.href = "{% url 'attendance-view' %}?department=" + encodeURIComponent(dept);
+                        }
+                    }}
+                },
+                colors: ['#22c55e', '#f59e0b', '#ef4444'],
+                plotOptions: { bar: { borderRadius: 4, columnWidth: '60%' } },
+                xaxis: { categories: data.labels, labels: { style: { colors: textColor, fontSize: '11px' } }, axisBorder: { show: false }, axisTicks: { show: false } },
+                yaxis: { labels: { style: { colors: textColor } } },
+                grid: { borderColor: gridColor, strokeDashArray: 4 },
+                dataLabels: { enabled: false },
+                legend: { position: 'top', horizontalAlign: 'right', labels: { colors: textColor }, fontSize: '11px', markers: { width: 8, height: 8, radius: 2 } },
+                tooltip: { theme: isDark ? 'dark' : 'light' },
+            }).render();
+        }).catch(() => { document.querySelector("#chart-attendance-overview").innerHTML = emptyHtml('Unable to load attendance data'); });
+
+    // ─── DEPARTMENT OVERTIME ───
+    fetch("{% url 'department-overtime-chart' %}")
+        .then(r => r.json())
+        .then(data => {
+            if (!data.labels || !data.labels.length || !data.dataset || !data.dataset.length) { document.querySelector("#chart-overtime").innerHTML = emptyHtml('No overtime data'); return; }
+            new ApexCharts(document.querySelector("#chart-overtime"), {
+                series: data.dataset[0].data,
+                chart: { type: 'donut', height: 300, background: 'transparent', fontFamily: 'inherit',
+                    events: { dataPointSelection: (e, ctx, config) => {
+                        const dept = data.labels[config.dataPointIndex];
+                        window.location.href = "/attendance/attendance-overtime-view?department=" + encodeURIComponent(dept);
+                    }}
+                },
+                labels: data.labels,
+                colors: COLORS.slice(0, data.labels.length),
+                plotOptions: { pie: { donut: { size: '65%', labels: { show: true, total: { show: true, label: 'Total Hrs', color: textColor, fontSize: '12px', fontWeight: 600, formatter: w => w.globals.seriesTotals.reduce((a,b)=>a+b,0).toFixed(1) } } } } },
+                stroke: { width: 2, colors: [cardBg] },
+                dataLabels: { enabled: false },
+                legend: { position: 'bottom', labels: { colors: textColor }, fontSize: '11px', markers: { width: 8, height: 8, radius: 2 } },
+                tooltip: { theme: isDark ? 'dark' : 'light', y: { formatter: v => v.toFixed(1) + ' hrs' } },
+            }).render();
+        }).catch(() => { document.querySelector("#chart-overtime").innerHTML = emptyHtml('No overtime data'); });
+
+    // ─── LEAVE OVER PERIOD ───
+    fetch("{% url 'leave-over-period' %}")
+        .then(r => r.json())
+        .then(data => {
+            if (!data.labels || !data.labels.length) { document.querySelector("#chart-leave-trend").innerHTML = emptyHtml('No data for this week'); return; }
+            const seriesArr = Array.isArray(data.dataset) ? data.dataset : [data.dataset];
+            new ApexCharts(document.querySelector("#chart-leave-trend"), {
+                series: seriesArr.map(s => ({ name: s.label || 'Leaves', data: s.data })),
+                chart: { type: 'area', height: 300, toolbar: { show: false }, background: 'transparent', fontFamily: 'inherit' },
+                colors: ['#a855f7'],
+                fill: { type: 'gradient', gradient: { shadeIntensity: 1, opacityFrom: 0.4, opacityTo: 0.05, stops: [0, 95, 100] } },
+                stroke: { curve: 'smooth', width: 3 },
+                dataLabels: { enabled: true, style: { fontSize: '11px' } },
+                xaxis: { categories: data.labels, labels: { style: { colors: textColor, fontSize: '11px' } }, axisBorder: { show: false }, axisTicks: { show: false } },
+                yaxis: { labels: { style: { colors: textColor } }, min: 0 },
+                grid: { borderColor: gridColor, strokeDashArray: 4 },
+                tooltip: { theme: isDark ? 'dark' : 'light', y: { formatter: v => v + ' leave(s)' } },
+            }).render();
+        }).catch(() => { document.querySelector("#chart-leave-trend").innerHTML = emptyHtml('No data for this week'); });
+
+    // ─── RECRUITMENT PIPELINE ───
+    fetch("{% url 'recruitment-pipeline' %}")
+        .then(r => r.json())
+        .then(data => {
+            if (!data.dataSet || !data.dataSet.length) { document.querySelector("#chart-pipeline").innerHTML = emptyHtml('No active recruitments'); return; }
+            new ApexCharts(document.querySelector("#chart-pipeline"), {
+                series: data.dataSet.map(r => ({ name: r.label, data: r.data })),
+                chart: { type: 'bar', height: 320, toolbar: { show: false }, background: 'transparent', fontFamily: 'inherit',
+                    events: { dataPointSelection: (e, ctx, config) => {
+                        const recruitment = data.dataSet[config.seriesIndex]?.label || '';
+                        const stage = data.labels[config.dataPointIndex] || '';
+                        window.location.href = "/recruitment/candidate-view?recruitment=" + encodeURIComponent(recruitment) + "&stage_id__stage_type=" + encodeURIComponent(stage.toLowerCase());
+                    }}
+                },
+                colors: ['#6366f1', '#3b82f6', '#06b6d4', '#22c55e', '#ef4444'],
+                plotOptions: { bar: { borderRadius: 4, columnWidth: '65%' } },
+                xaxis: { categories: data.labels, labels: { style: { colors: textColor, fontSize: '11px' } }, axisBorder: { show: false }, axisTicks: { show: false } },
+                yaxis: { labels: { style: { colors: textColor } } },
+                grid: { borderColor: gridColor, strokeDashArray: 4 },
+                dataLabels: { enabled: false },
+                legend: { position: 'top', horizontalAlign: 'right', labels: { colors: textColor }, fontSize: '11px', markers: { width: 8, height: 8, radius: 2 } },
+                tooltip: { theme: isDark ? 'dark' : 'light' },
+            }).render();
+        }).catch(() => { document.querySelector("#chart-pipeline").innerHTML = emptyHtml('No recruitment data'); });
+
+    // ─── HIRING TIMELINE ───
+    fetch("{% url 'dashboard-hiring' %}")
+        .then(r => r.json())
+        .then(data => {
+            if (!data.dataSet || !data.dataSet.length) { document.querySelector("#chart-hiring").innerHTML = emptyHtml('No hiring data'); return; }
+            new ApexCharts(document.querySelector("#chart-hiring"), {
+                series: [{ name: data.dataSet[0].label || 'Joined', data: data.dataSet[0].data }],
+                chart: { type: 'bar', height: 260, toolbar: { show: false }, background: 'transparent', fontFamily: 'inherit',
+                    events: { dataPointSelection: (e, ctx, config) => {
+                        const label = data.labels[config.dataPointIndex] || '';
+                        window.location.href = "/recruitment/candidate-view?recruitment=" + encodeURIComponent(label) + "&hired=true";
+                    }}
+                },
+                colors: ['#f59e0b'],
+                plotOptions: { bar: { borderRadius: 6, columnWidth: '50%' } },
+                xaxis: { categories: data.labels, labels: { style: { colors: textColor, fontSize: '11px' } }, axisBorder: { show: false }, axisTicks: { show: false } },
+                yaxis: { labels: { style: { colors: textColor } } },
+                grid: { borderColor: gridColor, strokeDashArray: 4 },
+                dataLabels: { enabled: true, style: { fontSize: '11px', colors: ['#fff'] } },
+                tooltip: { theme: isDark ? 'dark' : 'light', y: { formatter: v => v + ' employee(s)' } },
+            }).render();
+        }).catch(() => { document.querySelector("#chart-hiring").innerHTML = emptyHtml('No hiring data'); });
+
+    // ─── LEAVE BY DEPARTMENT ───
+    fetch("{% url 'overall-leave' %}")
+        .then(r => r.json())
+        .then(data => {
+            if (!data.labels || !data.labels.length || !data.data || !data.data.length) { document.querySelector("#chart-leave-dept").innerHTML = emptyHtml('No leave data'); return; }
+            new ApexCharts(document.querySelector("#chart-leave-dept"), {
+                series: data.data,
+                chart: { type: 'donut', height: 300, background: 'transparent', fontFamily: 'inherit',
+                    events: { dataPointSelection: (e, ctx, config) => {
+                        const dept = data.labels[config.dataPointIndex];
+                        window.location.href = "{% url 'request-view' %}?department=" + encodeURIComponent(dept);
+                    }}
+                },
+                labels: data.labels,
+                colors: COLORS.slice(0, data.labels.length),
+                plotOptions: { pie: { donut: { size: '65%', labels: { show: true, total: { show: true, label: 'Total', color: textColor, fontSize: '12px', fontWeight: 600, formatter: w => w.globals.seriesTotals.reduce((a,b)=>a+b,0) } } } } },
+                stroke: { width: 2, colors: [cardBg] },
+                dataLabels: { enabled: false },
+                legend: { position: 'bottom', labels: { colors: textColor }, fontSize: '11px', markers: { width: 8, height: 8, radius: 2 } },
+                tooltip: { theme: isDark ? 'dark' : 'light' },
+            }).render();
+        }).catch(() => { document.querySelector("#chart-leave-dept").innerHTML = emptyHtml('No leave data'); });
+
+    // ─── DEPARTMENT LEAVE DAYS ───
+    fetch("{% url 'department-leave-chart' %}")
+        .then(r => r.json())
+        .then(data => {
+            if (!data.labels || !data.labels.length || !data.dataset || !data.dataset.length) { document.querySelector("#chart-leave-days").innerHTML = emptyHtml('No leave data this month'); return; }
+            new ApexCharts(document.querySelector("#chart-leave-days"), {
+                series: [{ name: 'Leave Days', data: data.dataset[0].data }],
+                chart: { type: 'bar', height: 300, toolbar: { show: false }, background: 'transparent', fontFamily: 'inherit' },
+                colors: COLORS,
+                plotOptions: { bar: { borderRadius: 6, horizontal: true, barHeight: '55%', distributed: true } },
+                xaxis: { categories: data.labels, labels: { style: { colors: textColor } } },
+                yaxis: { labels: { style: { colors: textColor, fontSize: '11px' } } },
+                grid: { borderColor: gridColor },
+                dataLabels: { enabled: true, formatter: v => v + ' days', style: { fontSize: '11px' } },
+                legend: { show: false },
+                tooltip: { theme: isDark ? 'dark' : 'light', y: { formatter: v => v + ' day(s)' } },
+            }).render();
+        }).catch(() => { document.querySelector("#chart-leave-days").innerHTML = emptyHtml('No leave data this month'); });
+
+    // ─── BIRTHDAYS & ANNIVERSARIES ───
+    fetch("{% url 'dashboard-birthdays-anniversaries' %}")
+        .then(r => r.json())
+        .then(data => {
+            const el = document.getElementById('md-birthdays');
+            const items = [];
+
+            data.birthdays.forEach(b => {
+                const initials = b.name.split(' ').map(w => w[0]).join('').slice(0, 2).toUpperCase();
+                const avatarInner = b.avatar ? `<img src="${b.avatar}" alt="">` : initials;
+                const badge = b.days_away === 0
+                    ? '<span class="md-bday-item__badge md-bday-item__badge--today">{% trans "Today" %} 🎂</span>'
+                    : `<span class="md-bday-item__badge md-bday-item__badge--soon">${b.date}</span>`;
+                items.push(`
+                    <a href="/employee/employee-view-individual/${b.id}/" class="md-bday-item" style="text-decoration:none;color:inherit;">
+                        <div class="md-bday-item__avatar">${avatarInner}</div>
+                        <div class="md-bday-item__info">
+                            <div class="md-bday-item__name">${b.name}</div>
+                            <div class="md-bday-item__detail">🎂 {% trans "Birthday" %}</div>
+                        </div>
+                        ${badge}
+                    </a>`);
+            });
+
+            data.anniversaries.forEach(a => {
+                const initials = a.name.split(' ').map(w => w[0]).join('').slice(0, 2).toUpperCase();
+                const avatarInner = a.avatar ? `<img src="${a.avatar}" alt="">` : initials;
+                const badge = a.days_away === 0
+                    ? `<span class="md-bday-item__badge md-bday-item__badge--today">${a.years} {% trans "yr" %}(s) 🎉</span>`
+                    : `<span class="md-bday-item__badge md-bday-item__badge--soon">${a.date} · ${a.years}yr</span>`;
+                items.push(`
+                    <a href="/employee/employee-view-individual/${a.id}/" class="md-bday-item" style="text-decoration:none;color:inherit;">
+                        <div class="md-bday-item__avatar">${avatarInner}</div>
+                        <div class="md-bday-item__info">
+                            <div class="md-bday-item__name">${a.name}</div>
+                            <div class="md-bday-item__detail">🎉 {% trans "Work Anniversary" %}</div>
+                        </div>
+                        ${badge}
+                    </a>`);
+            });
+
+            el.innerHTML = items.length ? items.join('') : '<div class="md-info-panel__empty">{% trans "No celebrations this week" %}</div>';
+        }).catch(() => { document.getElementById('md-birthdays').innerHTML = '<div class="md-info-panel__empty">{% trans "No celebrations this week" %}</div>'; });
+
+    // ─── PENDING APPROVALS ───
+    fetchP("{% url 'dashboard-pending-approvals' %}")
+        .then(r => r.json())
+        .then(data => {
+            const p = data.pending;
+            document.getElementById('md-pending-approvals').innerHTML = `
+                <div class="md-pending-grid">
+                    <a href="{% url 'request-view' %}" class="md-pending-card md-pending-card--amber">
+                        <div class="md-pending-card__count">${p.leave_requests}</div>
+                        <div class="md-pending-card__label">{% trans "Leave" %}</div>
+                    </a>
+                    <a href="{% url 'attendance-view' %}" class="md-pending-card md-pending-card--blue">
+                        <div class="md-pending-card__count">${p.attendance_requests}</div>
+                        <div class="md-pending-card__label">{% trans "Attendance" %}</div>
+                    </a>
+                    <a href="{% url 'asset-request-allocation-view' %}" class="md-pending-card md-pending-card--green">
+                        <div class="md-pending-card__count">${p.asset_requests}</div>
+                        <div class="md-pending-card__label">{% trans "Assets" %}</div>
+                    </a>
+                    <a href="{% url 'payroll-modern-dashboard' %}" class="md-pending-card md-pending-card--purple">
+                        <div class="md-pending-card__count">${p.payslips_review}</div>
+                        <div class="md-pending-card__label">{% trans "Payslips" %}</div>
+                    </a>
+                </div>`;
+        }).catch(() => { document.getElementById('md-pending-approvals').innerHTML = '<div class="md-info-panel__empty">{% trans "Unable to load" %}</div>'; });
+
+    // ─── RECRUITMENT FUNNEL ───
+    fetch("{% url 'dashboard-recruitment-pipeline' %}")
+        .then(r => r.json())
+        .then(data => {
+            if (!data.stages.length) { document.querySelector("#chart-recruitment-funnel").innerHTML = emptyHtml('{% trans "No active recruitments" %}'); return; }
+            new ApexCharts(document.querySelector("#chart-recruitment-funnel"), {
+                series: [{ name: '{% trans "Candidates" %}', data: data.stages.map(s => s.count) }],
+                chart: { type: 'bar', height: 300, toolbar: { show: false }, background: 'transparent', fontFamily: 'inherit' },
+                colors: ['#6366f1'],
+                plotOptions: {
+                    bar: {
+                        borderRadius: 6, horizontal: true, barHeight: '60%',
+                        distributed: true,
+                        dataLabels: { position: 'bottom' }
+                    }
+                },
+                xaxis: { categories: data.stages.map(s => s.stage), labels: { style: { colors: textColor } } },
+                yaxis: { labels: { style: { colors: textColor, fontSize: '12px' } } },
+                grid: { borderColor: gridColor },
+                dataLabels: { enabled: true, formatter: v => v + ' {% trans "candidates" %}', style: { fontSize: '11px' } },
+                legend: { show: false },
+                colors: data.stages.map((s, i) => {
+                    const stageColors = { initial: '#94a3b8', test: '#3b82f6', interview: '#f59e0b', hired: '#22c55e', cancelled: '#ef4444' };
+                    return stageColors[s.type] || COLORS[i % COLORS.length];
+                }),
+                subtitle: {
+                    text: `${data.active_recruitments} {% trans "active" %} · ${data.total_candidates} {% trans "total" %} · ${data.hired} {% trans "hired" %}`,
+                    align: 'right', style: { fontSize: '11px', color: textColor }
+                },
+                tooltip: { theme: isDark ? 'dark' : 'light', y: { formatter: v => v + ' candidate(s)' } },
+            }).render();
+        }).catch(() => { document.querySelector("#chart-recruitment-funnel").innerHTML = emptyHtml('{% trans "No recruitment data" %}'); });
+
+    // ─── EMPLOYEE TURNOVER ───
+    fetchP("{% url 'dashboard-turnover' %}")
+        .then(r => r.json())
+        .then(data => {
+            if (!data.months.length) { document.querySelector("#chart-turnover").innerHTML = emptyHtml('{% trans "No data" %}'); return; }
+            document.getElementById('turnover-rate').textContent = `{% trans "6-month turnover rate" %}: ${data.turnover_rate_6m}%`;
+            new ApexCharts(document.querySelector("#chart-turnover"), {
+                series: [
+                    { name: '{% trans "New Hires" %}', data: data.months.map(m => m.hires) },
+                    { name: '{% trans "Exits" %}', data: data.months.map(m => m.exits) },
+                ],
+                chart: { type: 'bar', height: 280, toolbar: { show: false }, background: 'transparent', fontFamily: 'inherit' },
+                colors: ['#22c55e', '#ef4444'],
+                plotOptions: { bar: { borderRadius: 5, columnWidth: '55%' } },
+                xaxis: { categories: data.months.map(m => m.month), labels: { style: { colors: textColor, fontSize: '11px' } }, axisBorder: { show: false }, axisTicks: { show: false } },
+                yaxis: { labels: { style: { colors: textColor } } },
+                grid: { borderColor: gridColor, strokeDashArray: 4 },
+                dataLabels: { enabled: true, style: { fontSize: '11px', colors: ['#fff'] } },
+                legend: { position: 'top', horizontalAlign: 'right', labels: { colors: textColor }, fontSize: '11px', markers: { width: 8, height: 8, radius: 2 } },
+                tooltip: { theme: isDark ? 'dark' : 'light' },
+            }).render();
+        }).catch(() => { document.querySelector("#chart-turnover").innerHTML = emptyHtml('{% trans "No turnover data" %}'); });
+
+    // ─── PAYROLL SUMMARY ───
+    fetchP("{% url 'dashboard-payroll-summary' %}")
+        .then(r => r.json())
+        .then(data => {
+            const el = document.querySelector("#chart-payroll");
+            document.getElementById('payroll-month').textContent = data.current_month;
+            if (data.current.count === 0 && data.previous.count === 0) {
+                el.innerHTML = emptyHtml('{% trans "No payroll data" %}');
+                return;
+            }
+            const fmt = v => v.toLocaleString(undefined, { minimumFractionDigits: 0, maximumFractionDigits: 0 });
+            const changeIcon = data.change_percent > 0 ? '↑' : data.change_percent < 0 ? '↓' : '→';
+            const changeClass = data.change_percent > 0 ? 'md-badge--amber' : data.change_percent < 0 ? 'md-badge--green' : '';
+
+            el.innerHTML = `
+                <div style="padding: 8px 8px 0;">
+                    <div style="display:flex;justify-content:space-between;align-items:baseline;margin-bottom:12px;">
+                        <div>
+                            <div style="font-size:11px;opacity:0.5;text-transform:uppercase;font-weight:600;">{% trans "Net Pay" %}</div>
+                            <div style="font-size:26px;font-weight:800;">${fmt(data.current.net)}</div>
+                        </div>
+                        <span class="md-badge ${changeClass}">${changeIcon} ${Math.abs(data.change_percent)}%</span>
+                    </div>
+                    <div class="md-payroll-summary">
+                        <div class="md-payroll-stat">
+                            <div class="md-payroll-stat__value" style="color:var(--md-green)">${fmt(data.current.gross)}</div>
+                            <div class="md-payroll-stat__label">{% trans "Gross" %}</div>
+                        </div>
+                        <div class="md-payroll-stat">
+                            <div class="md-payroll-stat__value" style="color:var(--md-red)">${fmt(data.current.deductions)}</div>
+                            <div class="md-payroll-stat__label">{% trans "Deductions" %}</div>
+                        </div>
+                        <div class="md-payroll-stat">
+                            <div class="md-payroll-stat__value">${data.current.count}</div>
+                            <div class="md-payroll-stat__label">{% trans "Payslips" %}</div>
+                        </div>
+                        <div class="md-payroll-stat">
+                            <div class="md-payroll-stat__value" style="opacity:0.5">${fmt(data.previous.net)}</div>
+                            <div class="md-payroll-stat__label">{% trans "Prev Month" %}</div>
+                        </div>
+                    </div>
+                </div>`;
+        }).catch(() => { document.querySelector("#chart-payroll").innerHTML = emptyHtml('{% trans "No payroll data" %}'); });
+
+    // ═══════════════════════════════════════════
+    //  ANNOUNCEMENT MODALS
+    // ═══════════════════════════════════════════
+
+    const detailOverlay = document.getElementById('md-ann-detail-overlay');
+    const detailBody = document.getElementById('md-ann-detail-body');
+    const detailTitle = document.getElementById('md-ann-detail-title');
+    const createOverlay = document.getElementById('md-ann-create-overlay');
+    const createBody = document.getElementById('md-ann-create-body');
+
+    function openModal(overlay) { overlay.classList.add('md-modal-overlay--open'); }
+    function closeModal(overlay) { overlay.classList.remove('md-modal-overlay--open'); }
+
+    // Close on overlay click or close button
+    [detailOverlay, createOverlay].forEach(ov => {
+        ov.addEventListener('click', e => { if (e.target === ov) closeModal(ov); });
+    });
+    document.getElementById('md-ann-detail-close').addEventListener('click', () => closeModal(detailOverlay));
+    document.getElementById('md-ann-create-close').addEventListener('click', () => closeModal(createOverlay));
+
+    // Escape key closes modals
+    document.addEventListener('keydown', e => {
+        if (e.key === 'Escape') {
+            closeModal(detailOverlay);
+            closeModal(createOverlay);
+        }
+    });
+
+    // ── View Announcement Detail ──
+    function openAnnouncementDetail(annId) {
+        detailBody.innerHTML = '<div style="text-align:center;padding:40px;opacity:0.4;">{% trans "Loading..." %}</div>';
+        detailTitle.textContent = '{% trans "Announcement" %}';
+        openModal(detailOverlay);
+
+        fetch(`/dashboard/api/announcements/${annId}/`)
+            .then(r => r.json())
+            .then(data => {
+                if (data.error) { detailBody.innerHTML = '<div style="text-align:center;padding:40px;opacity:0.4;">' + data.error + '</div>'; return; }
+
+                detailTitle.textContent = data.title;
+
+                let html = `<div class="md-detail__meta">{% trans "Posted on" %} ${data.date}`;
+                if (data.expire_date) html += ` &middot; <span style="color:var(--md-amber);">{% trans "Expires" %} ${data.expire_date}</span>`;
+                html += `</div>`;
+
+                if (data.description) {
+                    html += `<div class="md-detail__desc">${data.description}</div>`;
+                }
+
+                // Tags
+                const tags = [];
+                data.departments.forEach(d => tags.push(d));
+                data.job_positions.forEach(j => tags.push(j));
+                if (tags.length) {
+                    html += '<div class="md-detail__tags">' + tags.map(t => `<span class="md-detail__tag">#${t}</span>`).join('') + '</div>';
+                }
+
+                // Attachments
+                if (data.attachments.length) {
+                    html += '<div class="md-detail__attachments">';
+                    data.attachments.forEach(att => {
+                        if (att.is_image) {
+                            html += `<a href="${att.url}" target="_blank"><img src="${att.url}" class="md-detail__att-img" alt="${att.name}"></a>`;
+                        } else {
+                            html += `<a href="${att.url}" target="_blank" class="md-detail__att-link">📎 ${att.name}</a>`;
+                        }
+                    });
+                    html += '</div>';
+                }
+
+                // Views count
+                html += `<div class="md-detail__views">${data.views_count} {% trans "view(s)" %}</div>`;
+
+                detailBody.innerHTML = html;
+            })
+            .catch(() => {
+                detailBody.innerHTML = '<div style="text-align:center;padding:40px;opacity:0.4;">{% trans "Failed to load announcement" %}</div>';
+            });
+    }
+
+    // ── Create Announcement ──
+    const addBtn = document.getElementById('md-add-announcement');
+    if (addBtn) {
+        addBtn.addEventListener('click', () => {
+            createBody.innerHTML = '<div style="text-align:center;padding:40px;opacity:0.4;">{% trans "Loading..." %}</div>';
+            openModal(createOverlay);
+
+            fetch("{% url 'create-announcement' %}", { headers: { 'HX-Request': 'true' } })
+                .then(r => r.text())
+                .then(html => {
+                    createBody.innerHTML = html;
+
+                    // Override form submission to use fetch
+                    const form = createBody.querySelector('form');
+                    if (form) {
+                        form.addEventListener('submit', e => {
+                            e.preventDefault();
+                            const formData = new FormData(form);
+
+                            fetch("{% url 'create-announcement' %}", {
+                                method: 'POST',
+                                body: formData,
+                                headers: { 'X-CSRFToken': formData.get('csrfmiddlewaretoken') }
+                            })
+                            .then(r => r.text())
+                            .then(resp => {
+                                // Check if response contains errors
+                                if (resp.includes('oh-alert--danger') || resp.includes('errorlist')) {
+                                    createBody.innerHTML = resp;
+                                    // Re-attach submit handler
+                                    const newForm = createBody.querySelector('form');
+                                    if (newForm) newForm.addEventListener('submit', arguments.callee);
+                                } else {
+                                    closeModal(createOverlay);
+                                    loadAnnouncements();
+                                }
+                            });
+                        });
+                    }
+                })
+                .catch(() => {
+                    createBody.innerHTML = '<div style="text-align:center;padding:40px;opacity:0.4;">{% trans "Failed to load form" %}</div>';
+                });
+        });
+    }
+
+})();
+</script>
+{% endblock %}

@@ -4,6 +4,7 @@ from django.urls import path
 
 from base.cbv import company_leaves, holidays
 from employee.models import Employee
+from leave import dashboard_modern as leave_dashboard_modern
 
 if apps.is_installed("attendance"):
     from leave.cbv import compensatory_leave_request
@@ -648,6 +649,67 @@ urlpatterns = [
             "form": RestrictLeaveForm,
             "template": "leave/restrict/restrict_form.html",
         },
+    ),
+    # ── Leave Modern Dashboard ───────────────────────────────────────────────
+    path(
+        "dashboard/",
+        leave_dashboard_modern.modern_leave_dashboard,
+        name="leave-modern-dashboard",
+    ),
+    path(
+        "dashboard/api/kpi/",
+        leave_dashboard_modern.leave_kpi_data,
+        name="leave-modern-kpi",
+    ),
+    path(
+        "dashboard/api/monthly-trend/",
+        leave_dashboard_modern.leave_monthly_trend,
+        name="leave-modern-monthly-trend",
+    ),
+    path(
+        "dashboard/api/type-distribution/",
+        leave_dashboard_modern.leave_type_distribution,
+        name="leave-modern-type-dist",
+    ),
+    path(
+        "dashboard/api/department/",
+        leave_dashboard_modern.leave_department_breakdown,
+        name="leave-modern-dept",
+    ),
+    path(
+        "dashboard/api/utilization/",
+        leave_dashboard_modern.leave_utilization_rate,
+        name="leave-modern-utilization",
+    ),
+    path(
+        "dashboard/api/paid-unpaid/",
+        leave_dashboard_modern.leave_paid_unpaid_split,
+        name="leave-modern-paid-unpaid",
+    ),
+    path(
+        "dashboard/api/top-takers/",
+        leave_dashboard_modern.leave_top_takers,
+        name="leave-modern-top-takers",
+    ),
+    path(
+        "dashboard/api/on-leave/",
+        leave_dashboard_modern.leave_on_leave_today,
+        name="leave-modern-on-leave",
+    ),
+    path(
+        "dashboard/api/holidays/",
+        leave_dashboard_modern.leave_upcoming_holidays,
+        name="leave-modern-holidays",
+    ),
+    path(
+        "dashboard/api/weekly-pattern/",
+        leave_dashboard_modern.leave_weekly_pattern,
+        name="leave-modern-weekly-pattern",
+    ),
+    path(
+        "dashboard/api/upcoming/",
+        leave_dashboard_modern.leave_upcoming,
+        name="leave-modern-upcoming",
     ),
 ]
 

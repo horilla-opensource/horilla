@@ -1,0 +1,652 @@
+{% extends "index.html" %}
+{% load static i18n %}
+
+{% block styles %}
+<script src="https://cdn.jsdelivr.net/npm/apexcharts"></script>
+<style>
+    :root { --pm-indigo: #6366f1; --pm-green: #22c55e; --pm-amber: #f59e0b; --pm-red: #ef4444; --pm-blue: #3b82f6; --pm-purple: #a855f7; --pm-cyan: #06b6d4; }
+    .pm-dashboard { font-family: inherit; background: #ffffff; margin: -24px; padding: 24px; min-height: calc(100vh - 80px); }
+    .dark .pm-dashboard { background: #0f172a; }
+    .pm-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; }
+    .pm-header h1 { font-size: 22px; font-weight: 700; }
+    .pm-header__date { font-size: 13px; opacity: 0.6; margin-top: 2px; }
+    .pm-btn-back { padding: 6px 14px; border-radius: 8px; border: 1px solid rgba(128,128,128,0.2); font-size: 13px; cursor: pointer; text-decoration: none; color: inherit; transition: all 0.15s; background: none; }
+    .pm-btn-back:hover { border-color: var(--pm-indigo); color: var(--pm-indigo); text-decoration: none; }
+
+    .pm-kpi-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 14px; margin-bottom: 20px; }
+    .pm-kpi-card { border-radius: 12px; padding: 18px; background: #ffffff; border: 1px solid rgba(128,128,128,0.12); transition: all 0.2s; text-decoration: none; color: inherit; display: block; }
+    .pm-kpi-card:hover { box-shadow: 0 4px 12px rgba(0,0,0,0.08); transform: translateY(-1px); text-decoration: none; color: inherit; }
+    .dark .pm-kpi-card { background: rgba(255,255,255,0.04); border-color: rgba(255,255,255,0.08); }
+    .pm-kpi-card__icon { width: 38px; height: 38px; border-radius: 10px; display: flex; align-items: center; justify-content: center; font-size: 18px; margin-bottom: 10px; }
+    .pm-kpi-card__icon--indigo { background: #eef2ff; color: var(--pm-indigo); } .pm-kpi-card__icon--green { background: #dcfce7; color: var(--pm-green); }
+    .pm-kpi-card__icon--amber { background: #fef3c7; color: var(--pm-amber); } .pm-kpi-card__icon--red { background: #fee2e2; color: var(--pm-red); }
+    .dark .pm-kpi-card__icon--indigo { background: #312e81; } .dark .pm-kpi-card__icon--green { background: #14532d; }
+    .dark .pm-kpi-card__icon--amber { background: #78350f; } .dark .pm-kpi-card__icon--red { background: #7f1d1d; }
+    .pm-kpi-card__label { font-size: 11px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.05em; opacity: 0.5; margin-bottom: 6px; }
+    .pm-kpi-card__value { font-size: 28px; font-weight: 800; line-height: 1; margin-bottom: 4px; }
+    .pm-kpi-card__sub { font-size: 12px; opacity: 0.6; }
+    .pm-badge { display: inline-flex; align-items: center; gap: 3px; font-size: 11px; font-weight: 600; padding: 2px 8px; border-radius: 999px; }
+    .pm-badge--green { background: #dcfce7; color: #166534; } .pm-badge--amber { background: #fef3c7; color: #92400e; } .pm-badge--red { background: #fee2e2; color: #991b1b; }
+    .dark .pm-badge--green { background: #166534; color: #bbf7d0; } .dark .pm-badge--amber { background: #92400e; color: #fde68a; } .dark .pm-badge--red { background: #7f1d1d; color: #fca5a5; }
+
+    .pm-layout { display: grid; grid-template-columns: 1fr 300px; gap: 20px; align-items: start; }
+    .pm-main { min-width: 0; }
+    .pm-sidebar { display: flex; flex-direction: column; gap: 16px; position: sticky; top: 90px; }
+
+    .pm-chart-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 16px; margin-bottom: 20px; }
+    .pm-chart-card { border-radius: 12px; background: #ffffff; border: 1px solid rgba(128,128,128,0.12); overflow: visible; }
+    .dark .pm-chart-card { background: rgba(255,255,255,0.04); border-color: rgba(255,255,255,0.08); }
+    .pm-chart-card--wide { grid-column: span 2; }
+    .pm-chart-card__header { padding: 14px 18px 0; display: flex; justify-content: space-between; align-items: center; }
+    .pm-chart-card__title { font-size: 14px; font-weight: 600; }
+    .pm-chart-card__subtitle { font-size: 11px; opacity: 0.5; margin-top: 2px; }
+    .pm-chart-card__body { padding: 6px 10px 10px; }
+
+    .pm-empty { text-align: center; padding: 30px 0; opacity: 0.6; font-size: 13px; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 8px; }
+    .pm-empty img { width: 100px; opacity: 0.7; }
+    .pm-skeleton { background: linear-gradient(90deg, rgba(128,128,128,0.1) 25%, transparent 50%, rgba(128,128,128,0.1) 75%); background-size: 200% 100%; animation: pm-shimmer 1.5s infinite; border-radius: 12px; }
+    @keyframes pm-shimmer { 0% { background-position: 200% 0; } 100% { background-position: -200% 0; } }
+    .pm-skeleton--kpi { height: 110px; }
+
+    .pm-info-panel { border-radius: 12px; background: #ffffff; border: 1px solid rgba(128,128,128,0.12); overflow: hidden; display: flex; flex-direction: column; }
+    .dark .pm-info-panel { background: rgba(255,255,255,0.04); border-color: rgba(255,255,255,0.08); }
+    .pm-info-panel__header { padding: 14px 16px 10px; display: flex; justify-content: space-between; align-items: center; flex-shrink: 0; border-bottom: 1px solid rgba(128,128,128,0.08); }
+    .pm-info-panel__title { font-size: 13px; font-weight: 700; }
+    .pm-info-panel__body { padding: 8px 16px 12px; overflow-y: auto; flex: 1; max-height: 350px; }
+    .pm-info-panel__empty { text-align: center; padding: 30px 0; opacity: 0.4; font-size: 12px; }
+
+    .pm-risk-item { display: flex; align-items: center; gap: 10px; padding: 8px 0; border-bottom: 1px solid rgba(128,128,128,0.06); text-decoration: none; color: inherit; }
+    .pm-risk-item:last-child { border-bottom: none; }
+    .pm-risk-item:hover { opacity: 0.8; }
+    .pm-risk-item__avatar { width: 32px; height: 32px; border-radius: 50%; background: #fee2e2; color: var(--pm-red); display: flex; align-items: center; justify-content: center; font-size: 11px; font-weight: 700; flex-shrink: 0; overflow: hidden; }
+    .dark .pm-risk-item__avatar { background: #7f1d1d; }
+    .pm-risk-item__avatar img { width: 100%; height: 100%; object-fit: cover; }
+    .pm-risk-item__info { flex: 1; min-width: 0; }
+    .pm-risk-item__name { font-size: 12px; font-weight: 600; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+    .pm-risk-item__detail { font-size: 11px; opacity: 0.5; }
+    .pm-risk-item__progress { display: flex; align-items: center; gap: 6px; flex-shrink: 0; }
+    .pm-risk-item__bar { width: 50px; height: 6px; border-radius: 3px; background: rgba(128,128,128,0.1); overflow: hidden; }
+    .pm-risk-item__fill { height: 100%; border-radius: 3px; }
+    .pm-risk-item__pct { font-size: 11px; font-weight: 700; min-width: 30px; text-align: right; }
+
+    .pm-performer-item { display: flex; align-items: center; gap: 10px; padding: 8px 0; border-bottom: 1px solid rgba(128,128,128,0.06); text-decoration: none; color: inherit; }
+    .pm-performer-item:last-child { border-bottom: none; }
+    .pm-performer-item:hover { opacity: 0.8; }
+    .pm-performer-item__avatar { width: 32px; height: 32px; border-radius: 50%; background: #dcfce7; color: var(--pm-green); display: flex; align-items: center; justify-content: center; font-size: 11px; font-weight: 700; flex-shrink: 0; overflow: hidden; }
+    .dark .pm-performer-item__avatar { background: #14532d; }
+    .pm-performer-item__avatar img { width: 100%; height: 100%; object-fit: cover; }
+    .pm-performer-item__info { flex: 1; min-width: 0; }
+    .pm-performer-item__name { font-size: 12px; font-weight: 600; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+    .pm-performer-item__detail { font-size: 11px; opacity: 0.5; }
+    .pm-performer-item__score { font-size: 13px; font-weight: 800; color: var(--pm-green); flex-shrink: 0; }
+
+    .pm-meeting-item { display: flex; align-items: center; gap: 10px; padding: 8px 0; border-bottom: 1px solid rgba(128,128,128,0.06); }
+    .pm-meeting-item:last-child { border-bottom: none; }
+    .pm-meeting-item__date { min-width: 46px; text-align: center; padding: 6px 8px; border-radius: 8px; background: #eef2ff; font-size: 11px; font-weight: 700; color: var(--pm-indigo); flex-shrink: 0; }
+    .dark .pm-meeting-item__date { background: #312e81; }
+    .pm-meeting-item__info { flex: 1; }
+    .pm-meeting-item__title { font-size: 12px; font-weight: 600; }
+    .pm-meeting-item__meta { font-size: 11px; opacity: 0.5; }
+
+    /* Customize Panel */
+    .pm-btn-customize { padding: 6px 12px; border-radius: 8px; border: 1px solid rgba(128,128,128,0.2); font-size: 13px; cursor: pointer; color: inherit; transition: all 0.15s; background: none; display: flex; align-items: center; gap: 5px; }
+    .pm-btn-customize:hover { border-color: var(--pm-indigo); color: var(--pm-indigo); }
+    .pm-customize-overlay { position: fixed; inset: 0; background: rgba(0,0,0,0.3); z-index: 1050; opacity: 0; pointer-events: none; transition: opacity 0.2s; }
+    .pm-customize-overlay--open { opacity: 1; pointer-events: auto; }
+    .pm-customize-panel { position: fixed; top: 0; right: -420px; width: 400px; height: 100vh; background: #ffffff; box-shadow: -4px 0 24px rgba(0,0,0,0.12); z-index: 1051; display: flex; flex-direction: column; transition: right 0.25s ease; }
+    .dark .pm-customize-panel { background: #1e293b; }
+    .pm-customize-panel--open { right: 0; }
+    .pm-customize-panel__header { padding: 18px 20px; border-bottom: 1px solid rgba(128,128,128,0.12); display: flex; justify-content: space-between; align-items: center; flex-shrink: 0; }
+    .pm-customize-panel__header h3 { font-size: 16px; font-weight: 700; margin: 0; }
+    .pm-customize-panel__close { width: 32px; height: 32px; border-radius: 8px; border: none; background: rgba(128,128,128,0.08); cursor: pointer; font-size: 18px; display: flex; align-items: center; justify-content: center; color: inherit; }
+    .pm-customize-panel__close:hover { background: rgba(128,128,128,0.16); }
+    .pm-customize-panel__body { flex: 1; overflow-y: auto; padding: 12px 20px; }
+    .pm-customize-panel__footer { padding: 14px 20px; border-top: 1px solid rgba(128,128,128,0.12); display: flex; justify-content: space-between; flex-shrink: 0; }
+    .pm-cust-btn { padding: 7px 16px; border-radius: 8px; font-size: 13px; font-weight: 600; cursor: pointer; border: none; transition: all 0.15s; }
+    .pm-cust-btn--primary { background: var(--pm-indigo); color: #fff; }
+    .pm-cust-btn--primary:hover { opacity: 0.9; }
+    .pm-cust-btn--ghost { background: none; color: inherit; opacity: 0.6; }
+    .pm-cust-btn--ghost:hover { opacity: 1; }
+    .pm-cust-item { display: flex; align-items: center; gap: 10px; padding: 10px 12px; margin-bottom: 6px; border-radius: 8px; border: 1px solid rgba(128,128,128,0.1); background: rgba(128,128,128,0.02); cursor: grab; user-select: none; }
+    .pm-cust-item:active { cursor: grabbing; }
+    .pm-cust-item.pm-dragging { opacity: 0.85; box-shadow: 0 4px 16px rgba(0,0,0,0.12); border-color: var(--pm-indigo); }
+    .pm-cust-item.pm-drag-over { border-top: 2px solid var(--pm-indigo); }
+    .pm-cust-item__handle { font-size: 16px; opacity: 0.3; cursor: grab; flex-shrink: 0; }
+    .pm-cust-item__label { flex: 1; font-size: 13px; font-weight: 500; }
+    .pm-cust-item__toggle { width: 36px; height: 20px; border-radius: 12px; background: #e2e8f0; position: relative; cursor: pointer; transition: background 0.2s; flex-shrink: 0; border: none; }
+    .dark .pm-cust-item__toggle { background: #334155; }
+    .pm-cust-item__toggle::after { content: ''; position: absolute; width: 16px; height: 16px; border-radius: 50%; top: 2px; left: 2px; background: #fff; box-shadow: 0 1px 3px rgba(0,0,0,0.2); transition: transform 0.2s; }
+    .pm-cust-item__toggle--on { background: var(--pm-indigo); }
+    .dark .pm-cust-item__toggle--on { background: var(--pm-indigo); }
+    .pm-cust-item__toggle--on::after { transform: translateX(16px); }
+    @media (max-width: 1024px) { .pm-customize-panel { width: 320px; right: -340px; } }
+    @media (max-width: 640px) { .pm-customize-panel { width: 100%; right: -100%; } }
+
+    /* Period Picker */
+    .pm-period-picker { display: none; /* DATE FILTER DISABLED */ align-items: center; gap: 6px; font-size: 12px; }
+    .pm-period-picker input[type="date"] { padding: 5px 8px; border-radius: 6px; border: 1px solid rgba(128,128,128,0.2); font-size: 12px; background: transparent; color: inherit; outline: none; transition: border-color 0.15s; }
+    .pm-period-picker input[type="date"]:focus { border-color: var(--pm-indigo); }
+    .pm-period-picker__sep { opacity: 0.4; font-size: 11px; }
+    .pm-period-preset { padding: 4px 10px; border-radius: 6px; border: 1px solid rgba(128,128,128,0.15); font-size: 11px; cursor: pointer; background: none; color: inherit; transition: all 0.15s; }
+    .pm-period-preset:hover { border-color: var(--pm-indigo); color: var(--pm-indigo); }
+    .pm-period-preset--active { background: var(--pm-indigo); color: #fff; border-color: var(--pm-indigo); }
+    .dark .pm-period-picker input[type="date"] { color-scheme: dark; }
+
+    /* Auto-refresh */
+    .pm-refresh { display: flex; align-items: center; gap: 6px; font-size: 11px; opacity: 0.5; }
+    .pm-refresh__dot { width: 6px; height: 6px; border-radius: 50%; background: var(--pm-green); flex-shrink: 0; }
+    .pm-refresh__dot--pulse { animation: pm-pulse 2s infinite; }
+    @keyframes pm-pulse { 0%, 100% { opacity: 1; } 50% { opacity: 0.3; } }
+    .pm-refresh__toggle { cursor: pointer; opacity: 0.6; font-size: 13px; border: none; background: none; color: inherit; padding: 2px; }
+    .pm-refresh__toggle:hover { opacity: 1; }
+
+
+    /* Responsive */
+    @media (max-width: 1280px) { .pm-layout { grid-template-columns: 1fr; } .pm-sidebar { position: static; display: grid; grid-template-columns: 1fr 1fr 1fr; } }
+    @media (max-width: 1024px) { .pm-kpi-grid { grid-template-columns: repeat(2, 1fr); } .pm-chart-grid { grid-template-columns: 1fr; } .pm-chart-card--wide { grid-column: span 1; } .pm-sidebar { grid-template-columns: 1fr; } }
+    @media (max-width: 640px) { .pm-kpi-grid { grid-template-columns: 1fr; } }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="pm-dashboard">
+
+    <div class="pm-header">
+        <div>
+            <h1>{% trans "Performance Dashboard" %}</h1>
+            <div class="pm-header__date" id="pm-date"></div>
+            <div class="pm-refresh"><span class="pm-refresh__dot" id="pm-refresh-dot"></span><span id="pm-refresh-text">{% trans "Just now" %}</span><button class="pm-refresh__toggle" id="pm-refresh-toggle" title="{% trans 'Toggle auto-refresh' %}">⟳</button></div>
+        </div>
+        <div style="display:flex;gap:8px;">
+            <div class="pm-period-picker">
+                <button class="pm-period-preset" data-preset="this_month">{% trans "This Month" %}</button>
+                <button class="pm-period-preset" data-preset="last_month">{% trans "Last Month" %}</button>
+                <button class="pm-period-preset" data-preset="this_quarter">{% trans "Quarter" %}</button>
+                <input type="date" id="pm-from-date" title="{% trans 'From' %}">
+                <span class="pm-period-picker__sep">&rarr;</span>
+                <input type="date" id="pm-to-date" title="{% trans 'To' %}">
+            </div>
+            <button class="pm-btn-customize" id="pm-open-customize" title="{% trans 'Customize' %}">⚙ {% trans "Customize" %}</button>
+        </div>
+    </div>
+
+    <div class="pm-kpi-grid" id="pm-kpi-grid">
+        <div class="pm-skeleton pm-skeleton--kpi"></div>
+        <div class="pm-skeleton pm-skeleton--kpi"></div>
+        <div class="pm-skeleton pm-skeleton--kpi"></div>
+        <div class="pm-skeleton pm-skeleton--kpi"></div>
+    </div>
+
+    <div class="pm-layout">
+        <div class="pm-main">
+            <div class="pm-chart-grid">
+
+                <div class="pm-chart-card" data-chart-id="obj_status" data-chart-label="{% trans 'Objective Status' %}">
+                    <div class="pm-chart-card__header"><div><div class="pm-chart-card__title">{% trans "Objective Status" %}</div><div class="pm-chart-card__subtitle">{% trans "All active objectives" %}</div></div></div>
+                    <div class="pm-chart-card__body"><div id="chart-obj-status"></div></div>
+                </div>
+
+                <div class="pm-chart-card" data-chart-id="kr_status" data-chart-label="{% trans 'Key Result Status' %}">
+                    <div class="pm-chart-card__header"><div><div class="pm-chart-card__title">{% trans "Key Result Status" %}</div><div class="pm-chart-card__subtitle">{% trans "All key results" %}</div></div></div>
+                    <div class="pm-chart-card__body"><div id="chart-kr-status"></div></div>
+                </div>
+
+                <div class="pm-chart-card" data-chart-id="fb_status" data-chart-label="{% trans 'Feedback Status' %}">
+                    <div class="pm-chart-card__header"><div><div class="pm-chart-card__title">{% trans "Feedback Status" %}</div><div class="pm-chart-card__subtitle">{% trans "360° feedback cycles" %}</div></div></div>
+                    <div class="pm-chart-card__body"><div id="chart-fb-status"></div></div>
+                </div>
+
+                <div class="pm-chart-card" data-chart-id="dept_performance" data-chart-label="{% trans 'Department Performance' %}">
+                    <div class="pm-chart-card__header"><div><div class="pm-chart-card__title">{% trans "Department Performance" %}</div><div class="pm-chart-card__subtitle">{% trans "Avg objective progress by department" %}</div></div></div>
+                    <div class="pm-chart-card__body"><div id="chart-dept-perf"></div></div>
+                </div>
+
+                <div class="pm-chart-card pm-chart-card--wide" data-chart-id="okr_overview" data-chart-label="{% trans 'OKR Progress Overview' %}">
+                    <div class="pm-chart-card__header"><div><div class="pm-chart-card__title">{% trans "OKR Progress Overview" %}</div><div class="pm-chart-card__subtitle">{% trans "Top objectives with key result breakdown" %}</div></div></div>
+                    <div class="pm-chart-card__body"><div id="pm-okr-overview"></div></div>
+                </div>
+
+                <div class="pm-chart-card pm-chart-card--wide" data-chart-id="progress_trend" data-chart-label="{% trans 'Progress Trend' %}">
+                    <div class="pm-chart-card__header"><div><div class="pm-chart-card__title">{% trans "Progress Trend" %}</div><div class="pm-chart-card__subtitle">{% trans "Average objective progress — last 6 months" %}</div></div></div>
+                    <div class="pm-chart-card__body"><div id="chart-progress-trend"></div></div>
+                </div>
+                <div class="pm-chart-card pm-chart-card--wide" data-chart-id="fb_completion" data-chart-label="{% trans 'Feedback Completion' %}">
+                    <div class="pm-chart-card__header"><div><div class="pm-chart-card__title">{% trans "Feedback Completion" %}</div><div class="pm-chart-card__subtitle">{% trans "Answer completion rate per feedback cycle" %}</div></div></div>
+                    <div class="pm-chart-card__body"><div id="chart-fb-completion"></div></div>
+                </div>
+
+            </div>
+        </div>
+
+        <div class="pm-sidebar">
+            <div class="pm-info-panel">
+                <div class="pm-info-panel__header">
+                    <div class="pm-info-panel__title">{% trans "At Risk Objectives" %}</div>
+                </div>
+                <div class="pm-info-panel__body" id="pm-at-risk">
+                    <div class="pm-info-panel__empty">{% trans "Loading..." %}</div>
+                </div>
+            </div>
+            <div class="pm-info-panel">
+                <div class="pm-info-panel__header">
+                    <div class="pm-info-panel__title">{% trans "Top Performers" %}</div>
+                </div>
+                <div class="pm-info-panel__body" id="pm-performers">
+                    <div class="pm-info-panel__empty">{% trans "Loading..." %}</div>
+                </div>
+            </div>
+            <div class="pm-info-panel">
+                <div class="pm-info-panel__header">
+                    <div class="pm-info-panel__title">{% trans "Upcoming Meetings" %}</div>
+                    <span style="font-size:11px;opacity:0.5;">{% trans "Next 14 days" %}</span>
+                </div>
+                <div class="pm-info-panel__body" id="pm-meetings">
+                    <div class="pm-info-panel__empty">{% trans "Loading..." %}</div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Customize Panel -->
+<div class="pm-customize-overlay" id="pm-customize-overlay"></div>
+<div class="pm-customize-panel" id="pm-customize-panel">
+    <div class="pm-customize-panel__header">
+        <h3>{% trans "Customize Dashboard" %}</h3>
+        <button class="pm-customize-panel__close" id="pm-close-customize">&times;</button>
+    </div>
+    <div class="pm-customize-panel__body" id="pm-customize-list"></div>
+    <div class="pm-customize-panel__footer">
+        <button class="pm-cust-btn pm-cust-btn--ghost" id="pm-reset-customize">{% trans "Reset" %}</button>
+        <button class="pm-cust-btn pm-cust-btn--primary" id="pm-save-customize">{% trans "Save" %}</button>
+    </div>
+</div>
+
+<script>
+(function() {
+    const isDark = document.documentElement.classList.contains('dark') || document.body.classList.contains('dark');
+    const textColor = isDark ? '#e2e8f0' : '#334155';
+    const gridColor = isDark ? 'rgba(255,255,255,0.06)' : 'rgba(0,0,0,0.06)';
+    const cardBg = isDark ? '#1e293b' : '#ffffff';
+    const COLORS = ['#6366f1','#22c55e','#f59e0b','#ef4444','#3b82f6','#a855f7','#06b6d4','#ec4899','#14b8a6','#f97316'];
+    const statusColors = { 'Not Started': '#94a3b8', 'On Track': '#22c55e', 'Behind': '#f59e0b', 'At Risk': '#ef4444', 'Closed': '#6366f1' };
+    const emptyHtml = (msg) => `<div class="pm-empty"><img src="/static/images/ui/no_records.svg" alt="">${msg}</div>`;
+
+    document.getElementById('pm-date').textContent = new Date().toLocaleDateString('en-US', {
+        weekday: 'long', year: 'numeric', month: 'long', day: 'numeric'
+    });
+
+    // ── Period Picker ──
+    const PERIOD_KEY = 'pm_period_v2';
+    const fromInput = document.getElementById('pm-from-date');
+    const toInput = document.getElementById('pm-to-date');
+    function getToday() { return new Date().toISOString().split('T')[0]; }
+    function getFirstOfMonth(d) { const dt = new Date(d || getToday()); dt.setDate(1); return dt.toISOString().split('T')[0]; }
+    function getLastOfMonth(d) { const dt = new Date(d || getToday()); return new Date(dt.getFullYear(), dt.getMonth()+1, 0).toISOString().split('T')[0]; }
+    function initPeriod() {
+        const saved = sessionStorage.getItem(PERIOD_KEY);
+        if (saved) { try { const p = JSON.parse(saved); fromInput.value = p.from; toInput.value = p.to; return; } catch {} }
+        fromInput.value = getFirstOfMonth(); toInput.value = getLastOfMonth();
+    }
+    function savePeriod() { sessionStorage.setItem(PERIOD_KEY, JSON.stringify({ from: fromInput.value, to: toInput.value })); }
+    function periodParams() { return ""; /* DATE FILTER DISABLED */ }
+    function urlWithPeriod(u) { return u + (u.includes('?') ? '&' : '?') + periodParams(); }
+    function fetchP(url) { return fetch(urlWithPeriod(url)); }
+    function setPreset(p) {
+        const t = new Date(); let f, to;
+        if (p === 'this_month') { f = new Date(t.getFullYear(), t.getMonth(), 1); to = new Date(t.getFullYear(), t.getMonth()+1, 0); }
+        else if (p === 'last_month') { f = new Date(t.getFullYear(), t.getMonth()-1, 1); to = new Date(t.getFullYear(), t.getMonth(), 0); }
+        else if (p === 'this_quarter') { f = new Date(t.getFullYear(), Math.floor(t.getMonth()/3)*3, 1); to = new Date(t.getFullYear(), Math.floor(t.getMonth()/3)*3+3, 0); }
+        fromInput.value = f.toISOString().split('T')[0]; toInput.value = to.toISOString().split('T')[0];
+        savePeriod(); document.querySelectorAll('.pm-period-preset').forEach(b => b.classList.toggle('pm-period-preset--active', b.dataset.preset === p));
+        location.reload();
+    }
+    document.querySelectorAll('.pm-period-preset').forEach(b => b.addEventListener('click', () => setPreset(b.dataset.preset)));
+    [fromInput, toInput].forEach(i => i.addEventListener('change', () => { savePeriod(); location.reload(); }));
+    initPeriod();
+
+    // ── Chart Customize ──
+    const CUST_KEY = 'pm_chart_prefs';
+    function getDefaultOrder() { return Array.from(document.querySelectorAll('[data-chart-id]')).map(c => ({ id: c.dataset.chartId, visible: true })); }
+    function loadCustPrefs() { try { const r = localStorage.getItem(CUST_KEY); return r ? JSON.parse(r) : null; } catch { return null; } }
+    function saveCustPrefs(p) { localStorage.setItem(CUST_KEY, JSON.stringify(p)); }
+    function applyCustPrefs(p) {
+        if (!p) return;
+        const container = document.querySelector('.pm-chart-grid');
+        const cards = {}; container.querySelectorAll('[data-chart-id]').forEach(c => { cards[c.dataset.chartId] = c; });
+        p.forEach(pr => { const card = cards[pr.id]; if (card) { container.appendChild(card); if (pr.visible === false) card.style.display = 'none'; else card.style.display = ''; } });
+        Object.keys(cards).forEach(id => { if (!p.find(pr => pr.id === id)) { container.appendChild(cards[id]); cards[id].style.display = ''; } });
+    }
+    applyCustPrefs(loadCustPrefs());
+
+    const custOverlay = document.getElementById('pm-customize-overlay');
+    const custPanel = document.getElementById('pm-customize-panel');
+    const custList = document.getElementById('pm-customize-list');
+
+    function openCust() {
+        const prefs = loadCustPrefs() || getDefaultOrder();
+        const allCards = {}; document.querySelectorAll('[data-chart-id]').forEach(c => { allCards[c.dataset.chartId] = { id: c.dataset.chartId, label: c.dataset.chartLabel }; });
+        const ordered = []; prefs.forEach(p => { if (allCards[p.id]) ordered.push({ ...allCards[p.id], visible: p.visible !== false }); });
+        Object.keys(allCards).forEach(id => { if (!ordered.find(o => o.id === id)) ordered.push({ ...allCards[id], visible: true }); });
+        let html = ''; ordered.forEach((item, idx) => {
+            html += `<div class="pm-cust-item" draggable="true" data-cust-id="${item.id}"><span class="pm-cust-item__handle">&#x2630;</span><div class="pm-cust-item__label">${item.label}</div><button class="pm-cust-item__toggle ${item.visible ? 'pm-cust-item__toggle--on' : ''}" data-cust-toggle="${item.id}"></button></div>`;
+        });
+        custList.innerHTML = html;
+        initCustDrag();
+        custOverlay.classList.add('pm-customize-overlay--open'); custPanel.classList.add('pm-customize-panel--open');
+    }
+    function closeCust() { custOverlay.classList.remove('pm-customize-overlay--open'); custPanel.classList.remove('pm-customize-panel--open'); }
+
+    function initCustDrag() {
+        let dragEl = null;
+        custList.querySelectorAll('.pm-cust-item').forEach(item => {
+            item.addEventListener('dragstart', e => { dragEl = item; item.classList.add('pm-dragging'); e.dataTransfer.effectAllowed = 'move'; e.dataTransfer.setData('text/plain', ''); });
+            item.addEventListener('dragend', () => { if (dragEl) dragEl.classList.remove('pm-dragging'); custList.querySelectorAll('.pm-cust-item').forEach(i => i.classList.remove('pm-drag-over')); dragEl = null; });
+            item.addEventListener('dragover', e => { e.preventDefault(); e.dataTransfer.dropEffect = 'move'; if (item !== dragEl) item.classList.add('pm-drag-over'); });
+            item.addEventListener('dragleave', () => item.classList.remove('pm-drag-over'));
+            item.addEventListener('drop', e => { e.preventDefault(); item.classList.remove('pm-drag-over'); if (dragEl && item !== dragEl) { const items = Array.from(custList.querySelectorAll('.pm-cust-item')); if (items.indexOf(dragEl) < items.indexOf(item)) item.parentNode.insertBefore(dragEl, item.nextSibling); else item.parentNode.insertBefore(dragEl, item); } });
+        });
+        custList.querySelectorAll('.pm-cust-item__toggle').forEach(btn => btn.addEventListener('click', e => { e.stopPropagation(); btn.classList.toggle('pm-cust-item__toggle--on'); }));
+    }
+
+    function getCustState() { return Array.from(custList.querySelectorAll('.pm-cust-item')).map(item => ({ id: item.dataset.custId, visible: item.querySelector('.pm-cust-item__toggle').classList.contains('pm-cust-item__toggle--on') })); }
+
+    document.getElementById('pm-open-customize').addEventListener('click', openCust);
+    document.getElementById('pm-close-customize').addEventListener('click', closeCust);
+    custOverlay.addEventListener('click', closeCust);
+    document.getElementById('pm-save-customize').addEventListener('click', () => { const p = getCustState(); saveCustPrefs(p); applyCustPrefs(p); closeCust(); });
+    document.getElementById('pm-reset-customize').addEventListener('click', () => { localStorage.removeItem(CUST_KEY); location.reload(); });
+
+    // ── Auto-refresh ──
+    const REFRESH_INTERVAL = 300000; // 5 minutes
+    const REFRESH_KEY = 'pm_auto_refresh';
+    let refreshTimer = null;
+    let lastRefresh = Date.now();
+    const refreshDot = document.getElementById('pm-refresh-dot');
+    const refreshText = document.getElementById('pm-refresh-text');
+    const refreshToggle = document.getElementById('pm-refresh-toggle');
+    let autoRefreshOn = localStorage.getItem(REFRESH_KEY) !== 'off';
+
+    function updateRefreshText() {
+        const mins = Math.floor((Date.now() - lastRefresh) / 60000);
+        refreshText.textContent = mins < 1 ? 'Just now' : mins + 'm ago';
+    }
+    setInterval(updateRefreshText, 30000);
+
+    function startAutoRefresh() {
+        autoRefreshOn = true;
+        localStorage.setItem(REFRESH_KEY, 'on');
+        refreshDot.classList.add('pm-refresh__dot--pulse');
+        refreshToggle.textContent = '⟳';
+        refreshToggle.title = 'Auto-refresh ON (5 min)';
+        refreshTimer = setInterval(() => location.reload(), REFRESH_INTERVAL);
+    }
+    function stopAutoRefresh() {
+        autoRefreshOn = false;
+        localStorage.setItem(REFRESH_KEY, 'off');
+        refreshDot.classList.remove('pm-refresh__dot--pulse');
+        refreshToggle.textContent = '⏸';
+        refreshToggle.title = 'Auto-refresh OFF';
+        if (refreshTimer) { clearInterval(refreshTimer); refreshTimer = null; }
+    }
+    refreshToggle.addEventListener('click', () => { if (autoRefreshOn) stopAutoRefresh(); else startAutoRefresh(); });
+    if (autoRefreshOn) startAutoRefresh(); else stopAutoRefresh();
+
+    // ─── KPI CARDS ───
+    fetchP("{% url 'pms-modern-kpi' %}")
+        .then(r => r.json())
+        .then(data => {
+            document.getElementById('pm-kpi-grid').innerHTML = `
+                <a href="{% url 'objective-list-view' %}" class="pm-kpi-card">
+                    <div class="pm-kpi-card__icon pm-kpi-card__icon--indigo">🎯</div>
+                    <div class="pm-kpi-card__label">{% trans "Objectives" %}</div>
+                    <div class="pm-kpi-card__value">${data.total_objectives}</div>
+                    <div class="pm-kpi-card__sub"><span class="pm-badge pm-badge--green">${data.completion_rate}% {% trans "completed" %}</span></div>
+                </a>
+                <a href="{% url 'view-key-result' %}" class="pm-kpi-card">
+                    <div class="pm-kpi-card__icon pm-kpi-card__icon--green">📊</div>
+                    <div class="pm-kpi-card__label">{% trans "Avg Progress" %}</div>
+                    <div class="pm-kpi-card__value">${data.avg_progress}%</div>
+                    <div class="pm-kpi-card__sub">${data.total_key_results} {% trans "key results" %}</div>
+                </a>
+                <a href="{% url 'objective-list-view' %}?status=At+Risk" class="pm-kpi-card">
+                    <div class="pm-kpi-card__icon pm-kpi-card__icon--red">⚠</div>
+                    <div class="pm-kpi-card__label">{% trans "At Risk" %}</div>
+                    <div class="pm-kpi-card__value">${data.at_risk}</div>
+                    <div class="pm-kpi-card__sub">{% trans "Objectives need attention" %}</div>
+                </a>
+                <a href="{% url 'feedback-view' %}" class="pm-kpi-card">
+                    <div class="pm-kpi-card__icon pm-kpi-card__icon--amber">💬</div>
+                    <div class="pm-kpi-card__label">{% trans "Feedback" %}</div>
+                    <div class="pm-kpi-card__value">${data.total_feedbacks}</div>
+                    <div class="pm-kpi-card__sub">${data.pending_feedback > 0 ? '<span class="pm-badge pm-badge--amber">' + data.pending_feedback + ' {% trans "pending" %}</span>' : '{% trans "All reviewed" %}'}</div>
+                </a>`;
+        });
+
+    // ─── OBJECTIVE STATUS ───
+    fetchP("{% url 'pms-modern-obj-status' %}")
+        .then(r => r.json())
+        .then(data => {
+            const total = data.statuses.reduce((a, s) => a + s.count, 0);
+            if (!total) { document.querySelector("#chart-obj-status").innerHTML = emptyHtml('{% trans "No objectives" %}'); return; }
+            new ApexCharts(document.querySelector("#chart-obj-status"), {
+                series: data.statuses.map(s => s.count),
+                chart: { type: 'donut', height: 300, background: 'transparent', fontFamily: 'inherit',
+                    events: { dataPointSelection: (e, ctx, config) => {
+                        const status = data.statuses[config.dataPointIndex].status;
+                        window.location.href = "{% url 'objective-list-view' %}?status=" + encodeURIComponent(status);
+                    }}
+                },
+                labels: data.statuses.map(s => s.label),
+                colors: data.statuses.map(s => statusColors[s.status] || '#94a3b8'),
+                plotOptions: { pie: { donut: { size: '65%', labels: { show: true, total: { show: true, label: '{% trans "Total" %}', color: textColor, fontSize: '13px', fontWeight: 600, formatter: w => w.globals.seriesTotals.reduce((a,b)=>a+b,0) } } } } },
+                stroke: { width: 2, colors: [cardBg] },
+                dataLabels: { enabled: false },
+                legend: { position: 'bottom', labels: { colors: textColor }, fontSize: '11px', markers: { width: 8, height: 8, radius: 2 } },
+                tooltip: { theme: isDark ? 'dark' : 'light' },
+            }).render();
+        });
+
+    // ─── KEY RESULT STATUS ───
+    fetchP("{% url 'pms-modern-kr-status' %}")
+        .then(r => r.json())
+        .then(data => {
+            const total = data.statuses.reduce((a, s) => a + s.count, 0);
+            if (!total) { document.querySelector("#chart-kr-status").innerHTML = emptyHtml('{% trans "No key results" %}'); return; }
+            new ApexCharts(document.querySelector("#chart-kr-status"), {
+                series: data.statuses.map(s => s.count),
+                chart: { type: 'donut', height: 300, background: 'transparent', fontFamily: 'inherit',
+                    events: { dataPointSelection: (e, ctx, config) => {
+                        const status = data.statuses[config.dataPointIndex].status;
+                        window.location.href = "{% url 'view-key-result' %}?status=" + encodeURIComponent(status);
+                    }}
+                },
+                labels: data.statuses.map(s => s.label),
+                colors: data.statuses.map(s => statusColors[s.status] || '#94a3b8'),
+                plotOptions: { pie: { donut: { size: '65%', labels: { show: true, total: { show: true, label: '{% trans "Total" %}', color: textColor, fontSize: '13px', fontWeight: 600, formatter: w => w.globals.seriesTotals.reduce((a,b)=>a+b,0) } } } } },
+                stroke: { width: 2, colors: [cardBg] },
+                dataLabels: { enabled: false },
+                legend: { position: 'bottom', labels: { colors: textColor }, fontSize: '11px', markers: { width: 8, height: 8, radius: 2 } },
+                tooltip: { theme: isDark ? 'dark' : 'light' },
+            }).render();
+        });
+
+    // ─── FEEDBACK STATUS ───
+    fetchP("{% url 'pms-modern-fb-status' %}")
+        .then(r => r.json())
+        .then(data => {
+            const total = data.statuses.reduce((a, s) => a + s.count, 0);
+            if (!total) { document.querySelector("#chart-fb-status").innerHTML = emptyHtml('{% trans "No feedback" %}'); return; }
+            new ApexCharts(document.querySelector("#chart-fb-status"), {
+                series: data.statuses.map(s => s.count),
+                chart: { type: 'donut', height: 300, background: 'transparent', fontFamily: 'inherit',
+                    events: { dataPointSelection: (e, ctx, config) => {
+                        const status = data.statuses[config.dataPointIndex].status;
+                        window.location.href = "{% url 'feedback-view' %}?status=" + encodeURIComponent(status);
+                    }}
+                },
+                labels: data.statuses.map(s => s.label),
+                colors: data.statuses.map(s => statusColors[s.status] || '#94a3b8'),
+                plotOptions: { pie: { donut: { size: '65%', labels: { show: true, total: { show: true, label: '{% trans "Total" %}', color: textColor, fontSize: '13px', fontWeight: 600, formatter: w => w.globals.seriesTotals.reduce((a,b)=>a+b,0) } } } } },
+                stroke: { width: 2, colors: [cardBg] },
+                dataLabels: { enabled: false },
+                legend: { position: 'bottom', labels: { colors: textColor }, fontSize: '11px', markers: { width: 8, height: 8, radius: 2 } },
+                tooltip: { theme: isDark ? 'dark' : 'light' },
+            }).render();
+        });
+
+    // ─── DEPARTMENT PERFORMANCE ───
+    fetchP("{% url 'pms-modern-dept' %}")
+        .then(r => r.json())
+        .then(data => {
+            if (!data.departments.length) { document.querySelector("#chart-dept-perf").innerHTML = emptyHtml('{% trans "No data" %}'); return; }
+            new ApexCharts(document.querySelector("#chart-dept-perf"), {
+                series: [{ name: '{% trans "Avg Progress" %}', data: data.departments.map(d => d.avg_progress) }],
+                chart: { type: 'bar', height: 300, toolbar: { show: false }, background: 'transparent', fontFamily: 'inherit' },
+                colors: data.departments.map(d => d.avg_progress >= 70 ? '#22c55e' : d.avg_progress >= 40 ? '#f59e0b' : '#ef4444'),
+                plotOptions: { bar: { borderRadius: 6, horizontal: true, barHeight: '55%', distributed: true } },
+                xaxis: { categories: data.departments.map(d => d.department), labels: { style: { colors: textColor } }, max: 100 },
+                yaxis: { labels: { style: { colors: textColor, fontSize: '11px' } } },
+                grid: { borderColor: gridColor },
+                dataLabels: { enabled: true, formatter: (v, { dataPointIndex: i }) => `${v}% (${data.departments[i].closed}/${data.departments[i].total})`, style: { fontSize: '11px' } },
+                legend: { show: false },
+                tooltip: { theme: isDark ? 'dark' : 'light', y: { formatter: (v, { dataPointIndex: i }) => `${v}% avg · ${data.departments[i].at_risk} at risk` } },
+            }).render();
+        });
+
+    // ─── OKR PROGRESS OVERVIEW ───
+    fetchP("{% url 'pms-modern-okr-overview' %}")
+        .then(r => r.json())
+        .then(data => {
+            const el = document.getElementById('pm-okr-overview');
+            if (!data.overview.length) { el.innerHTML = emptyHtml('{% trans "No objectives" %}'); return; }
+            let html = '<div style="padding:8px 8px 0;">';
+            data.overview.forEach(o => {
+                const color = statusColors[o.status] || '#94a3b8';
+                html += `<div style="margin-bottom:16px;">
+                    <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:6px;">
+                        <div style="font-size:13px;font-weight:600;">${o.objective}</div>
+                        <div style="display:flex;align-items:center;gap:6px;">
+                            <span style="font-size:11px;opacity:0.5;">${o.employee}</span>
+                            <span class="pm-badge" style="background:${color}20;color:${color};">${o.status}</span>
+                        </div>
+                    </div>
+                    <div style="width:100%;height:8px;border-radius:4px;background:rgba(128,128,128,0.1);margin-bottom:8px;">
+                        <div style="width:${Math.min(o.progress, 100)}%;height:100%;border-radius:4px;background:${color};transition:width 0.5s;"></div>
+                    </div>`;
+                if (o.key_results.length) {
+                    html += '<div style="padding-left:16px;">';
+                    o.key_results.forEach(kr => {
+                        const krColor = statusColors[kr.status] || '#94a3b8';
+                        html += `<div style="display:flex;align-items:center;gap:8px;margin-bottom:4px;">
+                            <div style="width:6px;height:6px;border-radius:50%;background:${krColor};flex-shrink:0;"></div>
+                            <div style="font-size:11px;flex:1;opacity:0.7;">${kr.title}</div>
+                            <div style="font-size:11px;font-weight:600;">${kr.current}/${kr.target}</div>
+                            <div style="font-size:10px;font-weight:700;color:${krColor};">${kr.progress}%</div>
+                        </div>`;
+                    });
+                    html += '</div>';
+                }
+                html += '</div>';
+            });
+            html += '</div>';
+            el.innerHTML = html;
+        });
+
+    // ─── PROGRESS TREND ───
+    fetchP("{% url 'pms-modern-progress-trend' %}")
+        .then(r => r.json())
+        .then(data => {
+            if (!data.months.length) { document.querySelector("#chart-progress-trend").innerHTML = emptyHtml('{% trans "No data" %}'); return; }
+            new ApexCharts(document.querySelector("#chart-progress-trend"), {
+                series: [{ name: '{% trans "Avg Progress" %}', data: data.months.map(m => m.avg_progress) }],
+                chart: { type: 'area', height: 260, toolbar: { show: false }, background: 'transparent', fontFamily: 'inherit' },
+                colors: ['#6366f1'],
+                fill: { type: 'gradient', gradient: { shadeIntensity: 1, opacityFrom: 0.4, opacityTo: 0.05, stops: [0, 95, 100] } },
+                stroke: { curve: 'smooth', width: 3 },
+                dataLabels: { enabled: true, formatter: v => v + '%', style: { fontSize: '11px', colors: ['#6366f1'] }, background: { enabled: false } },
+                xaxis: { categories: data.months.map(m => m.month), labels: { style: { colors: textColor, fontSize: '11px' } }, axisBorder: { show: false }, axisTicks: { show: false } },
+                yaxis: { min: 0, max: 100, labels: { style: { colors: textColor }, formatter: v => v + '%' } },
+                grid: { borderColor: gridColor, strokeDashArray: 4 },
+                tooltip: { theme: isDark ? 'dark' : 'light', y: { formatter: v => v + '%' } },
+            }).render();
+        });
+
+    // ─── FEEDBACK COMPLETION ───
+    fetch("{% url 'pms-modern-fb-completion' %}")
+        .then(r => r.json())
+        .then(data => {
+            const el = document.querySelector("#chart-fb-completion");
+            if (!data.completions.length) { el.innerHTML = emptyHtml('{% trans "No active feedback cycles" %}'); return; }
+            let html = '<div style="padding:8px 8px 0;">';
+            data.completions.forEach(c => {
+                const color = c.rate >= 80 ? '#22c55e' : c.rate >= 50 ? '#f59e0b' : '#ef4444';
+                html += `<div style="margin-bottom:12px;"><div style="display:flex;justify-content:space-between;margin-bottom:4px;"><span style="font-size:13px;font-weight:600;">${c.cycle}</span><span style="font-size:11px;opacity:0.5;">${c.employee}</span></div><div style="display:flex;align-items:center;gap:8px;"><div style="flex:1;height:8px;border-radius:4px;background:rgba(128,128,128,0.1);overflow:hidden;"><div style="width:${Math.min(c.rate,100)}%;height:100%;border-radius:4px;background:${color};transition:width 0.5s;"></div></div><span style="font-size:11px;font-weight:700;color:${color};min-width:45px;text-align:right;">${c.rate}%</span></div><div style="font-size:10px;opacity:0.4;margin-top:2px;">${c.actual}/${c.expected} answers</div></div>`;
+            });
+            html += '</div>';
+            el.innerHTML = html;
+        });
+
+    // ─── AT RISK OBJECTIVES ───
+    fetch("{% url 'pms-modern-at-risk' %}")
+        .then(r => r.json())
+        .then(data => {
+            const el = document.getElementById('pm-at-risk');
+            if (!data.objectives.length) { el.innerHTML = '<div class="pm-info-panel__empty">{% trans "No at-risk objectives" %}</div>'; return; }
+            el.innerHTML = data.objectives.map(o => {
+                const initials = o.employee.split(' ').map(w => w[0]).join('').slice(0, 2).toUpperCase();
+                const avatarInner = o.avatar ? `<img src="${o.avatar}" alt="">` : initials;
+                const color = o.status === 'At Risk' ? '#ef4444' : '#f59e0b';
+                return `<a href="/employee/employee-view-individual/${o.employee_id}/" class="pm-risk-item">
+                    <div class="pm-risk-item__avatar">${avatarInner}</div>
+                    <div class="pm-risk-item__info">
+                        <div class="pm-risk-item__name">${o.objective}</div>
+                        <div class="pm-risk-item__detail">${o.employee}${o.days_left !== null ? ' · ' + o.days_left + 'd left' : ''}</div>
+                    </div>
+                    <div class="pm-risk-item__progress">
+                        <div class="pm-risk-item__bar"><div class="pm-risk-item__fill" style="width:${o.progress}%;background:${color};"></div></div>
+                        <div class="pm-risk-item__pct" style="color:${color};">${o.progress}%</div>
+                    </div>
+                </a>`;
+            }).join('');
+        }).catch(() => { document.getElementById('pm-at-risk').innerHTML = '<div class="pm-info-panel__empty">{% trans "No data" %}</div>'; });
+
+    // ─── TOP PERFORMERS ───
+    fetch("{% url 'pms-modern-performers' %}")
+        .then(r => r.json())
+        .then(data => {
+            const el = document.getElementById('pm-performers');
+            if (!data.performers.length) { el.innerHTML = '<div class="pm-info-panel__empty">{% trans "No data" %}</div>'; return; }
+            el.innerHTML = data.performers.map(p => {
+                const initials = p.name.split(' ').map(w => w[0]).join('').slice(0, 2).toUpperCase();
+                const avatarInner = p.avatar ? `<img src="${p.avatar}" alt="">` : initials;
+                return `<a href="/employee/employee-view-individual/${p.id}/" class="pm-performer-item">
+                    <div class="pm-performer-item__avatar">${avatarInner}</div>
+                    <div class="pm-performer-item__info">
+                        <div class="pm-performer-item__name">${p.name}</div>
+                        <div class="pm-performer-item__detail">${p.completed}/${p.objectives} {% trans "completed" %}${p.bonus_points > 0 ? ' · ' + p.bonus_points + ' pts' : ''}</div>
+                    </div>
+                    <div class="pm-performer-item__score">${p.avg_progress}%</div>
+                </a>`;
+            }).join('');
+        }).catch(() => { document.getElementById('pm-performers').innerHTML = '<div class="pm-info-panel__empty">{% trans "No data" %}</div>'; });
+
+    // ─── UPCOMING MEETINGS ───
+    fetch("{% url 'pms-modern-meetings' %}")
+        .then(r => r.json())
+        .then(data => {
+            const el = document.getElementById('pm-meetings');
+            if (!data.meetings.length) { el.innerHTML = '<div class="pm-info-panel__empty">{% trans "No upcoming meetings" %}</div>'; return; }
+            el.innerHTML = data.meetings.map(m => `
+                <div class="pm-meeting-item">
+                    <div class="pm-meeting-item__date">${m.date}</div>
+                    <div class="pm-meeting-item__info">
+                        <div class="pm-meeting-item__title">${m.title}</div>
+                        <div class="pm-meeting-item__meta">${m.time} · ${m.attendees} {% trans "attendees" %}</div>
+                    </div>
+                </div>`).join('');
+        }).catch(() => { document.getElementById('pm-meetings').innerHTML = '<div class="pm-info-panel__empty">{% trans "No upcoming meetings" %}</div>'; });
+
+})();
+</script>
+{% endblock %}

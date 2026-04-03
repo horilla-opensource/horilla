@@ -1,0 +1,772 @@
+{% extends "index.html" %}
+{% load static i18n %}
+
+{% block styles %}
+<script src="https://cdn.jsdelivr.net/npm/apexcharts"></script>
+<style>
+  :root {
+    --ess-indigo: #6366f1;
+    --ess-green:  #22c55e;
+    --ess-amber:  #f59e0b;
+    --ess-red:    #ef4444;
+    --ess-blue:   #3b82f6;
+    --ess-purple: #a855f7;
+    --ess-teal:   #14b8a6;
+    --ess-pink:   #ec4899;
+  }
+
+  .ess-dashboard {
+    font-family: inherit;
+    background: #f8fafc;
+    margin: -24px;
+    padding: 24px;
+    min-height: calc(100vh - 80px);
+  }
+  .dark .ess-dashboard { background: #0f172a; }
+
+  /* ── Header ── */
+  .ess-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    margin-bottom: 20px;
+    flex-wrap: wrap;
+    gap: 12px;
+  }
+  .ess-header h1 { font-size: 22px; font-weight: 700; margin: 0; }
+  .ess-header__subtitle { font-size: 13px; opacity: 0.55; margin-top: 3px; }
+  .ess-header__actions { display: flex; align-items: center; gap: 10px; flex-wrap: wrap; }
+
+  /* Month picker */
+  .ess-month-picker {
+    display: flex; align-items: center; gap: 6px;
+    background: rgba(128,128,128,0.07);
+    border-radius: 8px; padding: 4px 10px;
+    font-size: 13px;
+  }
+  .ess-month-picker button {
+    background: none; border: none; cursor: pointer; color: inherit;
+    opacity: 0.6; font-size: 15px; padding: 0 2px; line-height: 1;
+  }
+  .ess-month-picker button:hover { opacity: 1; }
+  #essMonthLabel { min-width: 110px; text-align: center; font-weight: 500; }
+
+  .ess-btn-back {
+    padding: 6px 14px; border-radius: 8px; font-size: 13px; text-decoration: none;
+    border: 1px solid rgba(128,128,128,0.2); color: inherit;
+    transition: background 0.15s;
+  }
+  .ess-btn-back:hover { background: rgba(128,128,128,0.08); }
+
+  /* ── KPI Grid ── */
+  .ess-kpi-grid {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 14px;
+    margin-bottom: 20px;
+  }
+  @media (max-width: 1024px) { .ess-kpi-grid { grid-template-columns: repeat(2, 1fr); } }
+  @media (max-width: 480px)  { .ess-kpi-grid { grid-template-columns: 1fr; } }
+
+  .ess-kpi-card {
+    background: #fff;
+    border-radius: 12px;
+    padding: 16px 18px;
+    box-shadow: 0 1px 4px rgba(0,0,0,0.06);
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+    transition: transform 0.15s, box-shadow 0.15s;
+    cursor: default;
+  }
+  .ess-kpi-card:hover { transform: translateY(-2px); box-shadow: 0 4px 14px rgba(0,0,0,0.10); }
+  .dark .ess-kpi-card { background: #1e293b; box-shadow: none; }
+  .ess-kpi-card__icon { font-size: 22px; margin-bottom: 4px; }
+  .ess-kpi-card__label { font-size: 11px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.05em; opacity: 0.55; }
+  .ess-kpi-card__value { font-size: 28px; font-weight: 700; line-height: 1.1; }
+  .ess-kpi-card__sub { font-size: 11px; opacity: 0.5; }
+
+  /* ── Two-column layout ── */
+  .ess-layout {
+    display: grid;
+    grid-template-columns: 1fr 300px;
+    gap: 20px;
+    align-items: start;
+  }
+  @media (max-width: 1280px) { .ess-layout { grid-template-columns: 1fr; } }
+
+  /* ── Chart cards ── */
+  .ess-chart-grid {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 16px;
+    margin-bottom: 16px;
+  }
+  @media (max-width: 768px) { .ess-chart-grid { grid-template-columns: 1fr; } }
+
+  .ess-chart-card {
+    background: #fff;
+    border-radius: 12px;
+    box-shadow: 0 1px 4px rgba(0,0,0,0.06);
+    overflow: hidden;
+  }
+  .dark .ess-chart-card { background: #1e293b; box-shadow: none; }
+  .ess-chart-card--wide { margin-bottom: 16px; }
+
+  .ess-chart-card__header {
+    padding: 14px 16px 0;
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+  }
+  .ess-chart-card__title { font-size: 13px; font-weight: 600; }
+  .ess-chart-card__subtitle { font-size: 11px; opacity: 0.5; margin-top: 2px; }
+  .ess-chart-card__body { padding: 8px 4px 4px; }
+
+  /* ── Attendance Calendar ── */
+  .ess-calendar-legend {
+    display: flex; gap: 10px; flex-wrap: wrap; padding: 4px 16px 0;
+    font-size: 10px; opacity: 0.75;
+  }
+  .ess-cal-dot {
+    width: 8px; height: 8px; border-radius: 50%; display: inline-block; margin-right: 3px; vertical-align: middle;
+  }
+  .ess-calendar-grid {
+    display: grid;
+    grid-template-columns: repeat(7, 1fr);
+    gap: 4px;
+    padding: 10px 14px 6px;
+  }
+  .ess-cal-header { font-size: 10px; font-weight: 600; text-align: center; opacity: 0.45; padding: 2px 0; }
+  .ess-cal-day {
+    aspect-ratio: 1;
+    border-radius: 6px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    font-size: 11px;
+    font-weight: 500;
+    position: relative;
+    cursor: default;
+    min-height: 32px;
+  }
+  .ess-cal-day--present   { background: rgba(34,197,94,0.15);  color: #16a34a; }
+  .ess-cal-day--absent    { background: rgba(239,68,68,0.12);  color: #dc2626; }
+  .ess-cal-day--late      { background: rgba(245,158,11,0.15); color: #d97706; }
+  .ess-cal-day--leave     { background: rgba(99,102,241,0.13); color: #4f46e5; }
+  .ess-cal-day--holiday   { background: rgba(168,85,247,0.13); color: #7c3aed; }
+  .ess-cal-day--weekend   { opacity: 0.35; }
+  .ess-cal-day--future    { opacity: 0.25; }
+  .ess-cal-day--empty     { visibility: hidden; }
+  .dark .ess-cal-day--present  { background: rgba(34,197,94,0.18);  color: #4ade80; }
+  .dark .ess-cal-day--absent   { background: rgba(239,68,68,0.18);  color: #f87171; }
+  .dark .ess-cal-day--late     { background: rgba(245,158,11,0.18); color: #fbbf24; }
+  .dark .ess-cal-day--leave    { background: rgba(99,102,241,0.18); color: #818cf8; }
+  .dark .ess-cal-day--holiday  { background: rgba(168,85,247,0.18); color: #c084fc; }
+
+  .ess-cal-summary {
+    display: flex; gap: 16px; padding: 6px 16px 12px; flex-wrap: wrap; font-size: 12px;
+  }
+  .ess-cal-summary__item { display: flex; align-items: center; gap: 5px; }
+
+  /* ── Goals ── */
+  .ess-goal-row { padding: 10px 0; border-bottom: 1px solid rgba(128,128,128,0.1); }
+  .ess-goal-row:last-child { border-bottom: none; }
+  .ess-goal-row__header { display: flex; justify-content: space-between; align-items: flex-start; gap: 8px; margin-bottom: 6px; }
+  .ess-goal-row__title { font-size: 12px; font-weight: 500; flex: 1; }
+  .ess-goal-row__meta { font-size: 10px; opacity: 0.5; margin-top: 3px; }
+  #essGoalsContainer { padding: 6px 16px 10px; max-height: 220px; overflow-y: auto; }
+
+  .ess-progress { height: 5px; background: rgba(128,128,128,0.12); border-radius: 3px; overflow: hidden; }
+  .ess-progress__bar { height: 100%; background: var(--ess-indigo); border-radius: 3px; transition: width 0.4s; }
+
+  /* ── Status badges ── */
+  .ess-badge {
+    font-size: 9px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.04em;
+    padding: 2px 6px; border-radius: 4px; white-space: nowrap; flex-shrink: 0;
+  }
+  .ess-badge--requested, .ess-badge--Not\ Started, .ess-badge--On\ Track { background: rgba(99,102,241,0.1); color: var(--ess-indigo); }
+  .ess-badge--approved,  .ess-badge--Closed  { background: rgba(34,197,94,0.1);  color: #16a34a; }
+  .ess-badge--rejected,  .ess-badge--At\ Risk { background: rgba(239,68,68,0.1);  color: #dc2626; }
+  .ess-badge--cancelled, .ess-badge--Behind  { background: rgba(245,158,11,0.1); color: #d97706; }
+
+  /* ── Sidebar panels ── */
+  .ess-sidebar { display: flex; flex-direction: column; gap: 16px; }
+
+  .ess-info-panel {
+    background: #fff;
+    border-radius: 12px;
+    box-shadow: 0 1px 4px rgba(0,0,0,0.06);
+    overflow: hidden;
+  }
+  .dark .ess-info-panel { background: #1e293b; box-shadow: none; }
+
+  .ess-info-panel__header {
+    padding: 12px 14px 10px;
+    font-size: 12px; font-weight: 600; text-transform: uppercase;
+    letter-spacing: 0.05em; opacity: 0.55;
+    border-bottom: 1px solid rgba(128,128,128,0.1);
+  }
+  .ess-info-panel__body { max-height: 240px; overflow-y: auto; }
+  .ess-info-panel__footer {
+    padding: 8px 14px;
+    border-top: 1px solid rgba(128,128,128,0.08);
+    font-size: 11px; text-align: right;
+  }
+  .ess-info-panel__footer a { color: var(--ess-indigo); text-decoration: none; }
+  .ess-info-panel__footer a:hover { text-decoration: underline; }
+
+  /* Quick actions */
+  .ess-quick-actions { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; padding: 12px; }
+  .ess-action-btn {
+    display: flex; align-items: center; gap: 6px;
+    padding: 9px 10px; border-radius: 8px; font-size: 12px; font-weight: 500;
+    text-decoration: none; color: inherit; transition: opacity 0.15s, transform 0.15s;
+  }
+  .ess-action-btn:hover { opacity: 0.85; transform: translateY(-1px); }
+  .ess-action-btn--green  { background: rgba(34,197,94,0.1);  color: #16a34a; }
+  .ess-action-btn--blue   { background: rgba(59,130,246,0.1);  color: #2563eb; }
+  .ess-action-btn--indigo { background: rgba(99,102,241,0.1); color: #4f46e5; }
+  .ess-action-btn--purple { background: rgba(168,85,247,0.1); color: #7c3aed; }
+  .dark .ess-action-btn--green  { color: #4ade80; }
+  .dark .ess-action-btn--blue   { color: #60a5fa; }
+  .dark .ess-action-btn--indigo { color: #818cf8; }
+  .dark .ess-action-btn--purple { color: #c084fc; }
+
+  /* List rows */
+  .ess-list-row {
+    padding: 10px 14px;
+    border-bottom: 1px solid rgba(128,128,128,0.07);
+    font-size: 12px;
+  }
+  .ess-list-row:last-child { border-bottom: none; }
+  .ess-list-row__main { display: flex; justify-content: space-between; align-items: center; gap: 6px; margin-bottom: 2px; }
+  .ess-list-row__title { font-weight: 500; }
+  .ess-list-row__sub { font-size: 11px; opacity: 0.5; }
+
+  /* Upcoming rows */
+  .ess-upcoming-row {
+    padding: 9px 14px; font-size: 12px;
+    border-bottom: 1px solid rgba(128,128,128,0.07);
+  }
+  .ess-upcoming-row:last-child { border-bottom: none; }
+  .ess-upcoming-row--birthday   { color: var(--ess-pink); }
+  .ess-upcoming-row--anniversary { color: var(--ess-amber); }
+  .ess-upcoming-row--holiday    { color: var(--ess-purple); }
+
+  /* Empty states */
+  .ess-empty    { padding: 24px 16px; text-align: center; font-size: 12px; opacity: 0.4; }
+  .ess-empty-sm { padding: 14px; text-align: center; font-size: 11px; opacity: 0.4; }
+
+  /* Skeleton loader */
+  .ess-skeleton {
+    background: linear-gradient(90deg, rgba(128,128,128,0.08) 25%, rgba(128,128,128,0.14) 50%, rgba(128,128,128,0.08) 75%);
+    background-size: 200% 100%;
+    animation: ess-shimmer 1.4s infinite;
+    border-radius: 12px;
+  }
+  .ess-skeleton--kpi { height: 104px; }
+  @keyframes ess-shimmer { 0% { background-position: 200% 0; } 100% { background-position: -200% 0; } }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="ess-dashboard">
+
+  <!-- Header -->
+  <div class="ess-header">
+    <div>
+      <h1>{% trans "My Dashboard" %}</h1>
+      <div class="ess-header__subtitle" id="essHeaderDate"></div>
+    </div>
+    <div class="ess-header__actions">
+      <div class="ess-month-picker">
+        <button id="essPrevMonth" title="{% trans 'Previous month' %}">&#8249;</button>
+        <span id="essMonthLabel"></span>
+        <button id="essNextMonth" title="{% trans 'Next month' %}">&#8250;</button>
+      </div>
+      <a href="{% url 'modern-dashboard' %}" class="ess-btn-back">{% trans "Back" %}</a>
+    </div>
+  </div>
+
+  <!-- KPI Row -->
+  <div class="ess-kpi-grid" id="essKpiGrid">
+    <div class="ess-skeleton ess-skeleton--kpi"></div>
+    <div class="ess-skeleton ess-skeleton--kpi"></div>
+    <div class="ess-skeleton ess-skeleton--kpi"></div>
+    <div class="ess-skeleton ess-skeleton--kpi"></div>
+  </div>
+
+  <!-- Main layout -->
+  <div class="ess-layout">
+
+    <!-- Left: charts -->
+    <div class="ess-main">
+
+      <!-- Row 1: Leave balance + Work hours -->
+      <div class="ess-chart-grid">
+        <div class="ess-chart-card">
+          <div class="ess-chart-card__header">
+            <div>
+              <div class="ess-chart-card__title">{% trans "Leave Balance" %}</div>
+              <div class="ess-chart-card__subtitle">{% trans "Available days by type" %}</div>
+            </div>
+          </div>
+          <div class="ess-chart-card__body">
+            <div id="essLeaveBalanceChart"></div>
+          </div>
+        </div>
+
+        <div class="ess-chart-card">
+          <div class="ess-chart-card__header">
+            <div>
+              <div class="ess-chart-card__title">{% trans "Work Hours This Week" %}</div>
+              <div class="ess-chart-card__subtitle" id="essWeekLabel"></div>
+            </div>
+          </div>
+          <div class="ess-chart-card__body">
+            <div id="essWorkHoursChart"></div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Row 2: Attendance calendar -->
+      <div class="ess-chart-card ess-chart-card--wide">
+        <div class="ess-chart-card__header">
+          <div>
+            <div class="ess-chart-card__title">{% trans "My Attendance" %}</div>
+            <div class="ess-chart-card__subtitle" id="essCalMonthLabel"></div>
+          </div>
+        </div>
+        <div style="padding: 6px 14px 4px;">
+          <div class="ess-calendar-legend">
+            <span><span class="ess-cal-dot" style="background:var(--ess-green)"></span>{% trans "Present" %}</span>
+            <span><span class="ess-cal-dot" style="background:var(--ess-amber)"></span>{% trans "Late" %}</span>
+            <span><span class="ess-cal-dot" style="background:var(--ess-red)"></span>{% trans "Absent" %}</span>
+            <span><span class="ess-cal-dot" style="background:var(--ess-indigo)"></span>{% trans "Leave" %}</span>
+            <span><span class="ess-cal-dot" style="background:var(--ess-purple)"></span>{% trans "Holiday" %}</span>
+          </div>
+        </div>
+        <div id="essAttendanceCalendar" class="ess-calendar-grid"></div>
+        <div id="essCalSummary" class="ess-cal-summary"></div>
+      </div>
+
+      <!-- Row 3: Payslips + Goals -->
+      <div class="ess-chart-grid">
+        <div class="ess-chart-card">
+          <div class="ess-chart-card__header">
+            <div>
+              <div class="ess-chart-card__title">{% trans "Recent Payslips" %}</div>
+              <div class="ess-chart-card__subtitle">{% trans "Net pay vs gross pay" %}</div>
+            </div>
+          </div>
+          <div class="ess-chart-card__body">
+            <div id="essPayslipChart"></div>
+          </div>
+        </div>
+
+        <div class="ess-chart-card">
+          <div class="ess-chart-card__header">
+            <div>
+              <div class="ess-chart-card__title">{% trans "My Goals" %}</div>
+              <div class="ess-chart-card__subtitle">{% trans "Active objectives and progress" %}</div>
+            </div>
+          </div>
+          <div id="essGoalsContainer" class="ess-empty">{% trans "Loading..." %}</div>
+        </div>
+      </div>
+
+    </div><!-- /ess-main -->
+
+    <!-- Right sidebar -->
+    <div class="ess-sidebar">
+
+      <!-- Quick Actions -->
+      <div class="ess-info-panel">
+        <div class="ess-info-panel__header">{% trans "Quick Actions" %}</div>
+        <div class="ess-quick-actions">
+          <a href="{% url 'user-request-view' %}" class="ess-action-btn ess-action-btn--green">
+            <ion-icon name="calendar-outline"></ion-icon> {% trans "Apply Leave" %}
+          </a>
+          <a href="{% url 'view-my-attendance' %}" class="ess-action-btn ess-action-btn--blue">
+            <ion-icon name="time-outline"></ion-icon> {% trans "Attendance" %}
+          </a>
+          <a href="{% url 'view-payslip' %}" class="ess-action-btn ess-action-btn--indigo">
+            <ion-icon name="card-outline"></ion-icon> {% trans "Payslips" %}
+          </a>
+          <a href="{% url 'employee-profile' %}" class="ess-action-btn ess-action-btn--purple">
+            <ion-icon name="person-outline"></ion-icon> {% trans "My Profile" %}
+          </a>
+        </div>
+      </div>
+
+      <!-- Recent Leave Requests -->
+      <div class="ess-info-panel">
+        <div class="ess-info-panel__header">{% trans "Recent Leave Requests" %}</div>
+        <div id="essLeaveRequestsList" class="ess-info-panel__body">
+          <div class="ess-empty-sm">{% trans "Loading..." %}</div>
+        </div>
+        <div class="ess-info-panel__footer">
+          <a href="{% url 'user-request-view' %}">{% trans "View all" %} &rarr;</a>
+        </div>
+      </div>
+
+      <!-- Announcements -->
+      <div class="ess-info-panel">
+        <div class="ess-info-panel__header">{% trans "Announcements" %}</div>
+        <div id="essAnnouncementsList" class="ess-info-panel__body">
+          <div class="ess-empty-sm">{% trans "Loading..." %}</div>
+        </div>
+      </div>
+
+      <!-- Upcoming -->
+      <div class="ess-info-panel">
+        <div class="ess-info-panel__header">{% trans "Upcoming" %}</div>
+        <div id="essUpcomingList" class="ess-info-panel__body">
+          <div class="ess-empty-sm">{% trans "Loading..." %}</div>
+        </div>
+      </div>
+
+    </div><!-- /ess-sidebar -->
+  </div><!-- /ess-layout -->
+
+</div><!-- /ess-dashboard -->
+
+<script>
+(function () {
+  'use strict';
+
+  var today = new Date();
+  var currentYear  = today.getFullYear();
+  var currentMonth = today.getMonth() + 1;
+
+  var leaveBalanceChart = null;
+  var workHoursChart    = null;
+  var payslipChart      = null;
+
+  function isDark() {
+    return document.documentElement.classList.contains('dark');
+  }
+
+  function axisColor() { return isDark() ? '#94a3b8' : '#64748b'; }
+
+  function monthLabel(y, m) {
+    return new Date(y, m - 1, 1).toLocaleDateString(undefined, { month: 'long', year: 'numeric' });
+  }
+
+  function syncMonthLabels() {
+    var lbl = monthLabel(currentYear, currentMonth);
+    document.getElementById('essMonthLabel').textContent   = lbl;
+    document.getElementById('essCalMonthLabel').textContent = lbl;
+  }
+
+  // Header date
+  document.getElementById('essHeaderDate').textContent =
+    today.toLocaleDateString(undefined, { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' });
+
+  syncMonthLabels();
+
+  document.getElementById('essPrevMonth').addEventListener('click', function () {
+    currentMonth -= 1;
+    if (currentMonth < 1) { currentMonth = 12; currentYear -= 1; }
+    syncMonthLabels();
+    loadAttendanceCalendar();
+    loadLeaveRequests();
+  });
+  document.getElementById('essNextMonth').addEventListener('click', function () {
+    currentMonth += 1;
+    if (currentMonth > 12) { currentMonth = 1; currentYear += 1; }
+    syncMonthLabels();
+    loadAttendanceCalendar();
+    loadLeaveRequests();
+  });
+
+  // ── KPI Cards ────────────────────────────────────────────────────────────────
+  function loadKpi() {
+    fetch('/ess/api/kpi/')
+      .then(function (r) { return r.json(); })
+      .then(function (d) {
+        document.getElementById('essKpiGrid').innerHTML =
+          kpiCard('🌴', 'Leave Available', d.total_available_leave, 'days remaining') +
+          kpiCard('📋', 'Present This Month', d.present_this_month, d.late_this_month + ' late') +
+          kpiCard('🎯', 'Open Goals', d.open_objectives, 'active objectives') +
+          kpiCard('💰', 'Last Net Pay', d.latest_net_pay !== null ? d.latest_net_pay : '—', d.latest_payslip_period || '');
+      })
+      .catch(function () {});
+  }
+
+  function kpiCard(icon, label, value, sub) {
+    return '<div class="ess-kpi-card">' +
+      '<div class="ess-kpi-card__icon">' + icon + '</div>' +
+      '<div class="ess-kpi-card__label">' + label + '</div>' +
+      '<div class="ess-kpi-card__value">' + value + '</div>' +
+      '<div class="ess-kpi-card__sub">' + sub + '</div>' +
+      '</div>';
+  }
+
+  // ── Leave Balance Chart ───────────────────────────────────────────────────────
+  function loadLeaveBalance() {
+    fetch('/ess/api/leave-balance/')
+      .then(function (r) { return r.json(); })
+      .then(function (d) {
+        if (leaveBalanceChart) { leaveBalanceChart.destroy(); }
+        if (!d.balances || !d.balances.length) return;
+        var categories   = d.balances.map(function (b) { return b.type; });
+        var availableData = d.balances.map(function (b) { return b.available; });
+        var carryData    = d.balances.map(function (b) { return b.carryforward; });
+        leaveBalanceChart = new ApexCharts(document.getElementById('essLeaveBalanceChart'), {
+          chart: { type: 'bar', height: Math.max(160, categories.length * 44 + 40),
+                   stacked: true, toolbar: { show: false }, background: 'transparent' },
+          plotOptions: { bar: { horizontal: true, barHeight: '55%' } },
+          series: [
+            { name: 'Available',     data: availableData },
+            { name: 'Carry Forward', data: carryData },
+          ],
+          xaxis: { categories: categories, labels: { style: { colors: axisColor(), fontSize: '11px' } } },
+          yaxis: { labels: { style: { colors: axisColor(), fontSize: '11px' } } },
+          colors: ['#6366f1', '#22c55e'],
+          dataLabels: { enabled: false },
+          legend: { position: 'top', fontSize: '11px' },
+          theme: { mode: isDark() ? 'dark' : 'light' },
+          tooltip: { y: { formatter: function (v) { return v + ' days'; } } },
+          grid: { borderColor: isDark() ? 'rgba(255,255,255,0.06)' : 'rgba(0,0,0,0.06)' },
+        });
+        leaveBalanceChart.render();
+      })
+      .catch(function () {});
+  }
+
+  // ── Work Hours Chart ──────────────────────────────────────────────────────────
+  function loadWorkHours() {
+    fetch('/ess/api/work-hours-week/')
+      .then(function (r) { return r.json(); })
+      .then(function (d) {
+        if (workHoursChart) { workHoursChart.destroy(); }
+        document.getElementById('essWeekLabel').textContent = d.week_label;
+        workHoursChart = new ApexCharts(document.getElementById('essWorkHoursChart'), {
+          chart: { type: 'bar', height: 200, toolbar: { show: false }, background: 'transparent' },
+          series: [{ name: 'Hours', data: d.days.map(function (x) { return x.hours; }) }],
+          xaxis: { categories: d.days.map(function (x) { return x.day; }),
+                   labels: { style: { colors: axisColor(), fontSize: '11px' } } },
+          yaxis: { max: 12, labels: { formatter: function (v) { return v + 'h'; },
+                   style: { colors: axisColor(), fontSize: '11px' } } },
+          colors: ['#6366f1'],
+          plotOptions: { bar: { borderRadius: 4, columnWidth: '55%' } },
+          dataLabels: { enabled: false },
+          annotations: { yaxis: [{ y: 8, borderColor: '#f59e0b', strokeDashArray: 4,
+            label: { text: 'Target', style: { color: '#f59e0b', fontSize: '10px' } } }] },
+          theme: { mode: isDark() ? 'dark' : 'light' },
+          tooltip: { y: { formatter: function (v) { return v.toFixed(1) + ' hrs'; } } },
+          grid: { borderColor: isDark() ? 'rgba(255,255,255,0.06)' : 'rgba(0,0,0,0.06)' },
+        });
+        workHoursChart.render();
+      })
+      .catch(function () {});
+  }
+
+  // ── Attendance Calendar ───────────────────────────────────────────────────────
+  function loadAttendanceCalendar() {
+    fetch('/ess/api/attendance-calendar/?year=' + currentYear + '&month=' + currentMonth)
+      .then(function (r) { return r.json(); })
+      .then(function (d) {
+        var container = document.getElementById('essAttendanceCalendar');
+        var DAY_HEADERS = ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'];
+        var html = DAY_HEADERS.map(function (h) {
+          return '<div class="ess-cal-header">' + h + '</div>';
+        }).join('');
+
+        // Padding for first week
+        var firstDate = new Date(d.year, d.month - 1, 1);
+        var startDow = (firstDate.getDay() + 6) % 7; // Mon=0
+        for (var p = 0; p < startDow; p++) {
+          html += '<div class="ess-cal-day ess-cal-day--empty"></div>';
+        }
+
+        d.days.forEach(function (day) {
+          var title = '';
+          if (day.status === 'present' || day.status === 'late') {
+            title = day.hours.toFixed(1) + ' hrs';
+          }
+          html += '<div class="ess-cal-day ess-cal-day--' + day.status + '"' +
+                  (title ? ' title="' + title + '"' : '') + '>' +
+                  day.day + '</div>';
+        });
+        container.innerHTML = html;
+
+        // Summary
+        var s = d.summary;
+        var summaryEl = document.getElementById('essCalSummary');
+        summaryEl.innerHTML =
+          calSummItem(s.present,  '#22c55e', 'Present') +
+          calSummItem(s.absent,   '#ef4444', 'Absent') +
+          calSummItem(s.leave,    '#6366f1', 'Leave') +
+          calSummItem(s.late,     '#f59e0b', 'Late') +
+          calSummItem(s.holiday,  '#a855f7', 'Holiday');
+      })
+      .catch(function () {});
+  }
+
+  function calSummItem(count, color, label) {
+    return '<div class="ess-cal-summary__item">' +
+      '<span class="ess-cal-dot" style="background:' + color + '"></span>' +
+      '<strong>' + count + '</strong>&nbsp;' + label + '</div>';
+  }
+
+  // ── Payslip Chart ─────────────────────────────────────────────────────────────
+  function loadPayslips() {
+    fetch('/ess/api/payslips/')
+      .then(function (r) { return r.json(); })
+      .then(function (d) {
+        if (payslipChart) { payslipChart.destroy(); }
+        if (!d.payslips || !d.payslips.length) {
+          document.getElementById('essPayslipChart').innerHTML =
+            '<div class="ess-empty">No payslips available</div>';
+          return;
+        }
+        var reversed = d.payslips.slice().reverse();
+        payslipChart = new ApexCharts(document.getElementById('essPayslipChart'), {
+          chart: { type: 'bar', height: 200, toolbar: { show: false }, background: 'transparent' },
+          series: [
+            { name: 'Gross Pay', data: reversed.map(function (p) { return p.gross_pay; }) },
+            { name: 'Net Pay',   data: reversed.map(function (p) { return p.net_pay; }) },
+          ],
+          xaxis: { categories: reversed.map(function (p) { return p.period; }),
+                   labels: { style: { colors: axisColor(), fontSize: '11px' } } },
+          yaxis: { labels: { formatter: function (v) { return v.toLocaleString(); },
+                   style: { colors: axisColor(), fontSize: '10px' } } },
+          colors: ['#6366f1', '#22c55e'],
+          plotOptions: { bar: { borderRadius: 4, columnWidth: '60%' } },
+          dataLabels: { enabled: false },
+          legend: { position: 'top', fontSize: '11px' },
+          theme: { mode: isDark() ? 'dark' : 'light' },
+          grid: { borderColor: isDark() ? 'rgba(255,255,255,0.06)' : 'rgba(0,0,0,0.06)' },
+        });
+        payslipChart.render();
+      })
+      .catch(function () {});
+  }
+
+  // ── Goals ─────────────────────────────────────────────────────────────────────
+  function loadObjectives() {
+    fetch('/ess/api/objectives/')
+      .then(function (r) { return r.json(); })
+      .then(function (d) {
+        var container = document.getElementById('essGoalsContainer');
+        if (!d.objectives || !d.objectives.length) {
+          container.innerHTML = '<div class="ess-empty">No active goals</div>';
+          return;
+        }
+        container.className = '';
+        container.style.cssText = 'padding:6px 16px 10px;max-height:220px;overflow-y:auto;';
+        container.innerHTML = d.objectives.map(function (obj) {
+          return '<div class="ess-goal-row">' +
+            '<div class="ess-goal-row__header">' +
+              '<span class="ess-goal-row__title">' + esc(obj.title) + '</span>' +
+              '<span class="ess-badge ess-badge--' + esc(obj.status) + '">' + esc(obj.status) + '</span>' +
+            '</div>' +
+            '<div class="ess-progress"><div class="ess-progress__bar" style="width:' + obj.progress + '%"></div></div>' +
+            '<div class="ess-goal-row__meta">' + obj.progress + '% &middot; ' + obj.key_results_count + ' KRs</div>' +
+            '</div>';
+        }).join('');
+      })
+      .catch(function () {});
+  }
+
+  // ── Leave Requests List ───────────────────────────────────────────────────────
+  function loadLeaveRequests() {
+    fetch('/ess/api/leave-requests/?year=' + currentYear + '&month=' + currentMonth)
+      .then(function (r) { return r.json(); })
+      .then(function (d) {
+        var container = document.getElementById('essLeaveRequestsList');
+        if (!d.requests || !d.requests.length) {
+          container.innerHTML = '<div class="ess-empty-sm">No recent requests</div>';
+          return;
+        }
+        container.innerHTML = d.requests.map(function (lr) {
+          return '<div class="ess-list-row">' +
+            '<div class="ess-list-row__main">' +
+              '<span class="ess-list-row__title">' + esc(lr.leave_type) + '</span>' +
+              '<span class="ess-badge ess-badge--' + esc(lr.status) + '">' + esc(lr.status_label) + '</span>' +
+            '</div>' +
+            '<div class="ess-list-row__sub">' + esc(lr.start) + ' – ' + esc(lr.end) + ' &middot; ' + lr.days + ' days</div>' +
+            '</div>';
+        }).join('');
+      })
+      .catch(function () {});
+  }
+
+  // ── Announcements ─────────────────────────────────────────────────────────────
+  function loadAnnouncements() {
+    fetch('/ess/api/announcements/')
+      .then(function (r) { return r.json(); })
+      .then(function (d) {
+        var container = document.getElementById('essAnnouncementsList');
+        if (!d.announcements || !d.announcements.length) {
+          container.innerHTML = '<div class="ess-empty-sm">No announcements</div>';
+          return;
+        }
+        container.innerHTML = d.announcements.map(function (a) {
+          return '<div class="ess-list-row">' +
+            '<div class="ess-list-row__title">' + esc(a.title) + '</div>' +
+            '<div class="ess-list-row__sub">' + esc(a.date) +
+              (a.expire_date ? ' &middot; expires ' + esc(a.expire_date) : '') +
+            '</div>' +
+            '</div>';
+        }).join('');
+      })
+      .catch(function () {});
+  }
+
+  // ── Upcoming ──────────────────────────────────────────────────────────────────
+  function loadUpcoming() {
+    fetch('/ess/api/upcoming/')
+      .then(function (r) { return r.json(); })
+      .then(function (d) {
+        var container = document.getElementById('essUpcomingList');
+        var html = '';
+        if (d.birthday) {
+          var bdLabel = d.birthday.days_away === 0 ? 'Today!' : d.birthday.days_away + ' days';
+          html += '<div class="ess-upcoming-row ess-upcoming-row--birthday">🎂 Your Birthday &mdash; ' +
+                  esc(d.birthday.date) + ' (' + bdLabel + ')</div>';
+        }
+        if (d.anniversary) {
+          html += '<div class="ess-upcoming-row ess-upcoming-row--anniversary">🎉 ' +
+                  d.anniversary.years + ' Year Anniversary &mdash; ' +
+                  esc(d.anniversary.date) + ' (' + d.anniversary.days_away + ' days)</div>';
+        }
+        d.holidays.forEach(function (h) {
+          html += '<div class="ess-upcoming-row ess-upcoming-row--holiday">🏖️ ' +
+                  esc(h.name) + ' &mdash; ' + esc(h.start) +
+                  (h.end !== h.start ? ' to ' + esc(h.end) : '') +
+                  ' (' + h.days_away + ' days)</div>';
+        });
+        if (!html) html = '<div class="ess-empty-sm">Nothing upcoming this month</div>';
+        container.innerHTML = html;
+      })
+      .catch(function () {});
+  }
+
+  // ── Utilities ─────────────────────────────────────────────────────────────────
+  function esc(str) {
+    return String(str)
+      .replace(/&/g, '&amp;')
+      .replace(/</g, '&lt;')
+      .replace(/>/g, '&gt;')
+      .replace(/"/g, '&quot;');
+  }
+
+  // ── Initial load ──────────────────────────────────────────────────────────────
+  loadKpi();
+  loadLeaveBalance();
+  loadWorkHours();
+  loadAttendanceCalendar();
+  loadPayslips();
+  loadObjectives();
+  loadLeaveRequests();
+  loadAnnouncements();
+  loadUpcoming();
+
+}());
+</script>
+{% endblock %}

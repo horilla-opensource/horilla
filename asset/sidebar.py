@@ -11,7 +11,7 @@ IMG_SRC = "images/ui/assets.svg"
 SUBMENUS = [
     {
         "menu": _("Dashboard"),
-        "redirect": reverse("asset-dashboard"),
+        "redirect": reverse("asset-modern-dashboard"),
         "accessibility": "asset.sidebar.dashboard_accessibility",
     },
     {

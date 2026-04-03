@@ -1,0 +1,784 @@
+{% extends "index.html" %}
+{% load static i18n %}
+
+{% block styles %}
+<script src="https://cdn.jsdelivr.net/npm/apexcharts"></script>
+<style>
+    :root {
+        --ad-indigo: #6366f1;
+        --ad-green: #22c55e;
+        --ad-amber: #f59e0b;
+        --ad-red: #ef4444;
+        --ad-blue: #3b82f6;
+        --ad-purple: #a855f7;
+        --ad-cyan: #06b6d4;
+    }
+
+    .ad-dashboard {
+        font-family: inherit; background: #ffffff;
+        margin: -24px; padding: 24px; min-height: calc(100vh - 80px);
+    }
+    .dark .ad-dashboard { background: #0f172a; }
+
+    .ad-header {
+        display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;
+    }
+    .ad-header h1 { font-size: 22px; font-weight: 700; }
+    .ad-header__date { font-size: 13px; opacity: 0.6; margin-top: 2px; }
+    .ad-btn-back {
+        padding: 6px 14px; border-radius: 8px;
+        border: 1px solid rgba(128,128,128,0.2);
+        font-size: 13px; cursor: pointer; text-decoration: none;
+        color: inherit; transition: all 0.15s; background: none;
+    }
+    .ad-btn-back:hover { border-color: var(--ad-indigo); color: var(--ad-indigo); text-decoration: none; }
+
+    /* KPI Grid */
+    .ad-kpi-grid {
+        display: grid; grid-template-columns: repeat(4, 1fr); gap: 14px; margin-bottom: 20px;
+    }
+    .ad-kpi-card {
+        border-radius: 12px; padding: 18px; background: #ffffff;
+        border: 1px solid rgba(128,128,128,0.12); transition: all 0.2s;
+        text-decoration: none; color: inherit; display: block;
+    }
+    .ad-kpi-card:hover { box-shadow: 0 4px 12px rgba(0,0,0,0.08); transform: translateY(-1px); text-decoration: none; color: inherit; }
+    .dark .ad-kpi-card { background: rgba(255,255,255,0.04); border-color: rgba(255,255,255,0.08); }
+
+    .ad-kpi-card__icon {
+        width: 38px; height: 38px; border-radius: 10px;
+        display: flex; align-items: center; justify-content: center;
+        font-size: 18px; margin-bottom: 10px;
+    }
+    .ad-kpi-card__icon--green { background: #dcfce7; color: var(--ad-green); }
+    .ad-kpi-card__icon--blue { background: #dbeafe; color: var(--ad-blue); }
+    .ad-kpi-card__icon--amber { background: #fef3c7; color: var(--ad-amber); }
+    .ad-kpi-card__icon--red { background: #fee2e2; color: var(--ad-red); }
+    .dark .ad-kpi-card__icon--green { background: #14532d; }
+    .dark .ad-kpi-card__icon--blue { background: #1e3a5f; }
+    .dark .ad-kpi-card__icon--amber { background: #78350f; }
+    .dark .ad-kpi-card__icon--red { background: #7f1d1d; }
+
+    .ad-kpi-card__label { font-size: 11px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.05em; opacity: 0.5; margin-bottom: 6px; }
+    .ad-kpi-card__value { font-size: 28px; font-weight: 800; line-height: 1; margin-bottom: 4px; }
+    .ad-kpi-card__sub { font-size: 12px; opacity: 0.6; }
+
+    .ad-badge { display: inline-flex; align-items: center; gap: 3px; font-size: 11px; font-weight: 600; padding: 2px 8px; border-radius: 999px; }
+    .ad-badge--green { background: #dcfce7; color: #166534; }
+    .ad-badge--amber { background: #fef3c7; color: #92400e; }
+    .ad-badge--red { background: #fee2e2; color: #991b1b; }
+    .dark .ad-badge--green { background: #166534; color: #bbf7d0; }
+    .dark .ad-badge--amber { background: #92400e; color: #fde68a; }
+    .dark .ad-badge--red { background: #7f1d1d; color: #fca5a5; }
+
+    /* Chart Grid */
+    .ad-chart-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 16px; margin-bottom: 20px; }
+    .ad-chart-card { border-radius: 12px; background: #ffffff; border: 1px solid rgba(128,128,128,0.12); overflow: visible; }
+    .dark .ad-chart-card { background: rgba(255,255,255,0.04); border-color: rgba(255,255,255,0.08); }
+    .ad-chart-card--wide { grid-column: span 2; }
+    .ad-chart-card__header { padding: 14px 18px 0; display: flex; justify-content: space-between; align-items: center; }
+    .ad-chart-card__title { font-size: 14px; font-weight: 600; }
+    .ad-chart-card__subtitle { font-size: 11px; opacity: 0.5; margin-top: 2px; }
+    .ad-chart-card__body { padding: 6px 10px 10px; }
+
+    .ad-empty { text-align: center; padding: 30px 0; opacity: 0.6; font-size: 13px; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 8px; }
+    .ad-empty img { width: 100px; opacity: 0.7; }
+    .ad-skeleton { background: linear-gradient(90deg, rgba(128,128,128,0.1) 25%, transparent 50%, rgba(128,128,128,0.1) 75%); background-size: 200% 100%; animation: ad-shimmer 1.5s infinite; border-radius: 12px; }
+    @keyframes ad-shimmer { 0% { background-position: 200% 0; } 100% { background-position: -200% 0; } }
+    .ad-skeleton--kpi { height: 110px; }
+
+    /* Sidebar layout */
+    .ad-layout { display: grid; grid-template-columns: 1fr 300px; gap: 20px; align-items: start; }
+    .ad-main { min-width: 0; }
+    .ad-sidebar { display: flex; flex-direction: column; gap: 16px; position: sticky; top: 90px; }
+
+    .ad-info-panel {
+        border-radius: 12px; background: #ffffff; border: 1px solid rgba(128,128,128,0.12);
+        overflow: hidden; display: flex; flex-direction: column;
+    }
+    .dark .ad-info-panel { background: rgba(255,255,255,0.04); border-color: rgba(255,255,255,0.08); }
+    .ad-info-panel__header {
+        padding: 14px 16px 10px; display: flex; justify-content: space-between; align-items: center;
+        flex-shrink: 0; border-bottom: 1px solid rgba(128,128,128,0.08);
+    }
+    .ad-info-panel__title { font-size: 13px; font-weight: 700; }
+    .ad-info-panel__body { padding: 8px 16px 12px; overflow-y: auto; flex: 1; max-height: 400px; }
+    .ad-info-panel__empty { text-align: center; padding: 30px 0; opacity: 0.4; font-size: 12px; }
+
+    .ad-absentee-item {
+        display: flex; align-items: center; gap: 10px; padding: 8px 0;
+        border-bottom: 1px solid rgba(128,128,128,0.06);
+        text-decoration: none; color: inherit;
+    }
+    .ad-absentee-item:last-child { border-bottom: none; }
+    .ad-absentee-item:hover { opacity: 0.8; }
+    .ad-absentee-item__avatar {
+        width: 32px; height: 32px; border-radius: 50%;
+        background: #fee2e2; color: var(--ad-red);
+        display: flex; align-items: center; justify-content: center;
+        font-size: 11px; font-weight: 700; flex-shrink: 0; overflow: hidden;
+    }
+    .dark .ad-absentee-item__avatar { background: #7f1d1d; }
+    .ad-absentee-item__avatar img { width: 100%; height: 100%; object-fit: cover; }
+    .ad-absentee-item__info { flex: 1; min-width: 0; }
+    .ad-absentee-item__name { font-size: 12px; font-weight: 600; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+    .ad-absentee-item__detail { font-size: 11px; opacity: 0.5; }
+    .ad-absentee-item__days {
+        font-size: 12px; font-weight: 700; color: var(--ad-red);
+        min-width: 30px; text-align: right; flex-shrink: 0;
+    }
+
+    /* Customize Panel */
+    .ad-btn-customize { padding: 6px 12px; border-radius: 8px; border: 1px solid rgba(128,128,128,0.2); font-size: 13px; cursor: pointer; color: inherit; transition: all 0.15s; background: none; display: flex; align-items: center; gap: 5px; }
+    .ad-btn-customize:hover { border-color: var(--ad-indigo); color: var(--ad-indigo); }
+    .ad-customize-overlay { position: fixed; inset: 0; background: rgba(0,0,0,0.3); z-index: 1050; opacity: 0; pointer-events: none; transition: opacity 0.2s; }
+    .ad-customize-overlay--open { opacity: 1; pointer-events: auto; }
+    .ad-customize-panel { position: fixed; top: 0; right: -420px; width: 400px; height: 100vh; background: #ffffff; box-shadow: -4px 0 24px rgba(0,0,0,0.12); z-index: 1051; display: flex; flex-direction: column; transition: right 0.25s ease; }
+    .dark .ad-customize-panel { background: #1e293b; }
+    .ad-customize-panel--open { right: 0; }
+    .ad-customize-panel__header { padding: 18px 20px; border-bottom: 1px solid rgba(128,128,128,0.12); display: flex; justify-content: space-between; align-items: center; flex-shrink: 0; }
+    .ad-customize-panel__header h3 { font-size: 16px; font-weight: 700; margin: 0; }
+    .ad-customize-panel__close { width: 32px; height: 32px; border-radius: 8px; border: none; background: rgba(128,128,128,0.08); cursor: pointer; font-size: 18px; display: flex; align-items: center; justify-content: center; color: inherit; }
+    .ad-customize-panel__close:hover { background: rgba(128,128,128,0.16); }
+    .ad-customize-panel__body { flex: 1; overflow-y: auto; padding: 12px 20px; }
+    .ad-customize-panel__footer { padding: 14px 20px; border-top: 1px solid rgba(128,128,128,0.12); display: flex; justify-content: space-between; flex-shrink: 0; }
+    .ad-cust-btn { padding: 7px 16px; border-radius: 8px; font-size: 13px; font-weight: 600; cursor: pointer; border: none; transition: all 0.15s; }
+    .ad-cust-btn--primary { background: var(--ad-indigo); color: #fff; }
+    .ad-cust-btn--primary:hover { opacity: 0.9; }
+    .ad-cust-btn--ghost { background: none; color: inherit; opacity: 0.6; }
+    .ad-cust-btn--ghost:hover { opacity: 1; }
+    .ad-cust-item { display: flex; align-items: center; gap: 10px; padding: 10px 12px; margin-bottom: 6px; border-radius: 8px; border: 1px solid rgba(128,128,128,0.1); background: rgba(128,128,128,0.02); cursor: grab; user-select: none; }
+    .ad-cust-item:active { cursor: grabbing; }
+    .ad-cust-item.ad-dragging { opacity: 0.85; box-shadow: 0 4px 16px rgba(0,0,0,0.12); border-color: var(--ad-indigo); }
+    .ad-cust-item.ad-drag-over { border-top: 2px solid var(--ad-indigo); }
+    .ad-cust-item__handle { font-size: 16px; opacity: 0.3; cursor: grab; flex-shrink: 0; }
+    .ad-cust-item__label { flex: 1; font-size: 13px; font-weight: 500; }
+    .ad-cust-item__toggle { width: 36px; height: 20px; border-radius: 12px; background: #e2e8f0; position: relative; cursor: pointer; transition: background 0.2s; flex-shrink: 0; border: none; }
+    .dark .ad-cust-item__toggle { background: #334155; }
+    .ad-cust-item__toggle::after { content: ''; position: absolute; width: 16px; height: 16px; border-radius: 50%; top: 2px; left: 2px; background: #fff; box-shadow: 0 1px 3px rgba(0,0,0,0.2); transition: transform 0.2s; }
+    .ad-cust-item__toggle--on { background: var(--ad-indigo); }
+    .dark .ad-cust-item__toggle--on { background: var(--ad-indigo); }
+    .ad-cust-item__toggle--on::after { transform: translateX(16px); }
+    @media (max-width: 1024px) { .ad-customize-panel { width: 320px; right: -340px; } }
+    @media (max-width: 640px) { .ad-customize-panel { width: 100%; right: -100%; } }
+
+    /* Period Picker */
+    .ad-period-picker { display: none; /* DATE FILTER DISABLED */ align-items: center; gap: 6px; font-size: 12px; }
+    .ad-period-picker input[type="date"] { padding: 5px 8px; border-radius: 6px; border: 1px solid rgba(128,128,128,0.2); font-size: 12px; background: transparent; color: inherit; outline: none; transition: border-color 0.15s; }
+    .ad-period-picker input[type="date"]:focus { border-color: var(--ad-indigo); }
+    .ad-period-picker__sep { opacity: 0.4; font-size: 11px; }
+    .ad-period-preset { padding: 4px 10px; border-radius: 6px; border: 1px solid rgba(128,128,128,0.15); font-size: 11px; cursor: pointer; background: none; color: inherit; transition: all 0.15s; }
+    .ad-period-preset:hover { border-color: var(--ad-indigo); color: var(--ad-indigo); }
+    .ad-period-preset--active { background: var(--ad-indigo); color: #fff; border-color: var(--ad-indigo); }
+    .dark .ad-period-picker input[type="date"] { color-scheme: dark; }
+
+    /* Auto-refresh */
+    .ad-refresh { display: flex; align-items: center; gap: 6px; font-size: 11px; opacity: 0.5; }
+    .ad-refresh__dot { width: 6px; height: 6px; border-radius: 50%; background: var(--ad-green); flex-shrink: 0; }
+    .ad-refresh__dot--pulse { animation: ad-pulse 2s infinite; }
+    @keyframes ad-pulse { 0%, 100% { opacity: 1; } 50% { opacity: 0.3; } }
+    .ad-refresh__toggle { cursor: pointer; opacity: 0.6; font-size: 13px; border: none; background: none; color: inherit; padding: 2px; }
+    .ad-refresh__toggle:hover { opacity: 1; }
+
+
+    /* Responsive */
+    @media (max-width: 1280px) {
+        .ad-layout { grid-template-columns: 1fr; }
+        .ad-sidebar { position: static; display: grid; grid-template-columns: 1fr 1fr; }
+    }
+    @media (max-width: 1024px) {
+        .ad-kpi-grid { grid-template-columns: repeat(2, 1fr); }
+        .ad-chart-grid { grid-template-columns: 1fr; }
+        .ad-chart-card--wide { grid-column: span 1; }
+        .ad-sidebar { grid-template-columns: 1fr; }
+    }
+    @media (max-width: 640px) { .ad-kpi-grid { grid-template-columns: 1fr; } }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="ad-dashboard">
+
+    <!-- Header -->
+    <div class="ad-header">
+        <div>
+            <h1>{% trans "Attendance Dashboard" %}</h1>
+            <div class="ad-header__date" id="ad-date"></div>
+            <div class="ad-refresh"><span class="ad-refresh__dot" id="ad-refresh-dot"></span><span id="ad-refresh-text">{% trans "Just now" %}</span><button class="ad-refresh__toggle" id="ad-refresh-toggle" title="{% trans 'Toggle auto-refresh' %}">⟳</button></div>
+        </div>
+        <div style="display:flex;gap:8px;">
+            <div class="ad-period-picker">
+                <button class="ad-period-preset" data-preset="this_month">{% trans "This Month" %}</button>
+                <button class="ad-period-preset" data-preset="last_month">{% trans "Last Month" %}</button>
+                <button class="ad-period-preset" data-preset="this_quarter">{% trans "Quarter" %}</button>
+                <input type="date" id="ad-from-date" title="{% trans 'From' %}">
+                <span class="ad-period-picker__sep">&rarr;</span>
+                <input type="date" id="ad-to-date" title="{% trans 'To' %}">
+            </div>
+            <button class="ad-btn-customize" id="ad-open-customize" title="{% trans 'Customize' %}">⚙ {% trans "Customize" %}</button>
+        </div>
+    </div>
+
+    <!-- KPI Cards -->
+    <div class="ad-kpi-grid" id="ad-kpi-grid">
+        <div class="ad-skeleton ad-skeleton--kpi"></div>
+        <div class="ad-skeleton ad-skeleton--kpi"></div>
+        <div class="ad-skeleton ad-skeleton--kpi"></div>
+        <div class="ad-skeleton ad-skeleton--kpi"></div>
+    </div>
+
+    <!-- Main layout with sidebar -->
+    <div class="ad-layout">
+
+        <!-- Left: Charts -->
+        <div class="ad-main">
+            <div class="ad-chart-grid">
+
+                <!-- Clock-in Distribution -->
+                <div class="ad-chart-card" data-chart-id="clockin_distribution" data-chart-label="{% trans 'Clock-in Distribution' %}">
+                    <div class="ad-chart-card__header"><div><div class="ad-chart-card__title">{% trans "Clock-in Distribution" %}</div><div class="ad-chart-card__subtitle">{% trans "When employees clock in today" %}</div></div></div>
+                    <div class="ad-chart-card__body"><div id="chart-clockin-dist"></div></div>
+                </div>
+
+                <!-- Calendar Heatmap -->
+                <div class="ad-chart-card ad-chart-card--wide" data-chart-id="calendar_heatmap" data-chart-label="{% trans 'Attendance Calendar' %}">
+                    <div class="ad-chart-card__header"><div><div class="ad-chart-card__title">{% trans "Attendance Calendar" %}</div><div class="ad-chart-card__subtitle" id="calendar-month">{% trans "Daily attendance rate" %}</div></div></div>
+                    <div class="ad-chart-card__body"><div id="chart-calendar"></div></div>
+                </div>
+
+                <!-- Weekly Trend -->
+                <div class="ad-chart-card ad-chart-card--wide" data-chart-id="weekly_trend" data-chart-label="{% trans 'This Week&#39;s Attendance' %}">
+                    <div class="ad-chart-card__header"><div><div class="ad-chart-card__title">{% trans "This Week's Attendance" %}</div><div class="ad-chart-card__subtitle">{% trans "Daily headcount — current week" %}</div></div></div>
+                    <div class="ad-chart-card__body"><div id="chart-weekly-trend"></div></div>
+                </div>
+
+                <!-- Absenteeism Rate Trend -->
+                <div class="ad-chart-card ad-chart-card--wide" data-chart-id="absenteeism_trend" data-chart-label="{% trans 'Absenteeism Rate' %}">
+                    <div class="ad-chart-card__header"><div><div class="ad-chart-card__title">{% trans "Absenteeism Rate" %}</div><div class="ad-chart-card__subtitle">{% trans "Monthly trend — last 6 months" %}</div></div></div>
+                    <div class="ad-chart-card__body"><div id="chart-absenteeism"></div></div>
+                </div>
+
+                <!-- Department Attendance -->
+                <div class="ad-chart-card" data-chart-id="dept_attendance" data-chart-label="{% trans 'Department Attendance' %}">
+                    <div class="ad-chart-card__header"><div><div class="ad-chart-card__title">{% trans "Department Attendance" %}</div><div class="ad-chart-card__subtitle">{% trans "Today's attendance rate by department" %}</div></div></div>
+                    <div class="ad-chart-card__body"><div id="chart-dept-attendance"></div></div>
+                </div>
+
+                <!-- Late Come / Early Out -->
+                <div class="ad-chart-card" data-chart-id="late_early" data-chart-label="{% trans 'Late Come & Early Out' %}">
+                    <div class="ad-chart-card__header"><div><div class="ad-chart-card__title">{% trans "Late Come & Early Out" %}</div><div class="ad-chart-card__subtitle">{% trans "Today — by department" %}</div></div></div>
+                    <div class="ad-chart-card__body"><div id="chart-late-early"></div></div>
+                </div>
+
+                <!-- Avg Working Hours -->
+                <div class="ad-chart-card" data-chart-id="avg_hours" data-chart-label="{% trans 'Avg Working Hours' %}">
+                    <div class="ad-chart-card__header"><div><div class="ad-chart-card__title">{% trans "Avg Working Hours" %}</div><div class="ad-chart-card__subtitle" id="avg-hours-month">{% trans "Per day by department — this month" %}</div></div></div>
+                    <div class="ad-chart-card__body"><div id="chart-avg-hours"></div></div>
+                </div>
+
+                <!-- Work Type Distribution -->
+                <div class="ad-chart-card" data-chart-id="work_types" data-chart-label="{% trans 'Work Type Distribution' %}">
+                    <div class="ad-chart-card__header"><div><div class="ad-chart-card__title">{% trans "Work Type Distribution" %}</div><div class="ad-chart-card__subtitle">{% trans "Remote, on-site, hybrid, etc." %}</div></div></div>
+                    <div class="ad-chart-card__body"><div id="chart-work-types"></div></div>
+                </div>
+
+                <!-- Overtime by Department -->
+                <div class="ad-chart-card" data-chart-id="overtime_dept" data-chart-label="{% trans 'Overtime by Department' %}">
+                    <div class="ad-chart-card__header"><div><div class="ad-chart-card__title">{% trans "Overtime by Department" %}</div><div class="ad-chart-card__subtitle" id="ot-month">{% trans "This month" %}</div></div></div>
+                    <div class="ad-chart-card__body"><div id="chart-overtime"></div></div>
+                </div>
+
+                <!-- Hours Distribution -->
+                <div class="ad-chart-card" data-chart-id="hours_distribution" data-chart-label="{% trans 'Hours Distribution' %}">
+                    <div class="ad-chart-card__header"><div><div class="ad-chart-card__title">{% trans "Hours Distribution" %}</div><div class="ad-chart-card__subtitle">{% trans "Worked vs pending hours by department" %}</div></div></div>
+                    <div class="ad-chart-card__body"><div id="chart-hours"></div></div>
+                </div>
+
+                <!-- Shift Distribution -->
+                <div class="ad-chart-card" data-chart-id="shift_distribution" data-chart-label="{% trans 'Shift Distribution' %}">
+                    <div class="ad-chart-card__header"><div><div class="ad-chart-card__title">{% trans "Shift Distribution" %}</div><div class="ad-chart-card__subtitle">{% trans "Active employees by shift" %}</div></div></div>
+                    <div class="ad-chart-card__body"><div id="chart-shifts"></div></div>
+                </div>
+
+                <!-- Attendance Overview (reuse existing endpoint) -->
+                <div class="ad-chart-card ad-chart-card--wide" data-chart-id="attendance_overview" data-chart-label="{% trans 'Attendance Overview' %}">
+                    <div class="ad-chart-card__header"><div><div class="ad-chart-card__title">{% trans "Attendance Overview" %}</div><div class="ad-chart-card__subtitle">{% trans "On-time, late arrivals & early departures by department" %}</div></div></div>
+                    <div class="ad-chart-card__body"><div id="chart-att-overview"></div></div>
+                </div>
+
+            </div>
+        </div>
+
+        <!-- Right sidebar -->
+        <div class="ad-sidebar">
+            <div class="ad-info-panel">
+                <div class="ad-info-panel__header">
+                    <div class="ad-info-panel__title">{% trans "Top Absentees" %}</div>
+                    <span style="font-size:11px;opacity:0.5;" id="absentees-month">{% trans "This month" %}</span>
+                </div>
+                <div class="ad-info-panel__body" id="ad-absentees">
+                    <div class="ad-info-panel__empty">{% trans "Loading..." %}</div>
+                </div>
+            </div>
+        </div>
+
+    </div>
+</div>
+
+<!-- Customize Panel -->
+<div class="ad-customize-overlay" id="ad-customize-overlay"></div>
+<div class="ad-customize-panel" id="ad-customize-panel">
+    <div class="ad-customize-panel__header">
+        <h3>{% trans "Customize Dashboard" %}</h3>
+        <button class="ad-customize-panel__close" id="ad-close-customize">&times;</button>
+    </div>
+    <div class="ad-customize-panel__body" id="ad-customize-list"></div>
+    <div class="ad-customize-panel__footer">
+        <button class="ad-cust-btn ad-cust-btn--ghost" id="ad-reset-customize">{% trans "Reset" %}</button>
+        <button class="ad-cust-btn ad-cust-btn--primary" id="ad-save-customize">{% trans "Save" %}</button>
+    </div>
+</div>
+
+<script>
+(function() {
+    const isDark = document.documentElement.classList.contains('dark') || document.body.classList.contains('dark');
+    const textColor = isDark ? '#e2e8f0' : '#334155';
+    const gridColor = isDark ? 'rgba(255,255,255,0.06)' : 'rgba(0,0,0,0.06)';
+    const cardBg = isDark ? '#1e293b' : '#ffffff';
+    const COLORS = ['#6366f1','#22c55e','#f59e0b','#ef4444','#3b82f6','#a855f7','#06b6d4','#ec4899','#14b8a6','#f97316'];
+
+    const emptyHtml = (msg) => `<div class="ad-empty"><img src="/static/images/ui/no_records.svg" alt="">${msg}</div>`;
+
+    document.getElementById('ad-date').textContent = new Date().toLocaleDateString('en-US', {
+        weekday: 'long', year: 'numeric', month: 'long', day: 'numeric'
+    });
+
+    // ── Period Picker ──
+    const PERIOD_KEY = 'ad_period';
+    const fromInput = document.getElementById('ad-from-date');
+    const toInput = document.getElementById('ad-to-date');
+    function getToday() { return new Date().toISOString().split('T')[0]; }
+    function getFirstOfMonth(d) { const dt = new Date(d || getToday()); dt.setDate(1); return dt.toISOString().split('T')[0]; }
+    function initPeriod() {
+        const saved = sessionStorage.getItem(PERIOD_KEY);
+        if (saved) { try { const p = JSON.parse(saved); fromInput.value = p.from; toInput.value = p.to; return; } catch {} }
+        fromInput.value = getFirstOfMonth(); toInput.value = getToday();
+    }
+    function savePeriod() { sessionStorage.setItem(PERIOD_KEY, JSON.stringify({ from: fromInput.value, to: toInput.value })); }
+    function periodParams() { return ""; /* DATE FILTER DISABLED */ }
+    function urlWithPeriod(u) { return u + (u.includes('?') ? '&' : '?') + periodParams(); }
+    function fetchP(url) { return fetch(urlWithPeriod(url)); }
+    function setPreset(p) {
+        const t = new Date(); let f, to;
+        if (p === 'this_month') { f = new Date(t.getFullYear(), t.getMonth(), 1); to = t; }
+        else if (p === 'last_month') { f = new Date(t.getFullYear(), t.getMonth()-1, 1); to = new Date(t.getFullYear(), t.getMonth(), 0); }
+        else if (p === 'this_quarter') { f = new Date(t.getFullYear(), Math.floor(t.getMonth()/3)*3, 1); to = t; }
+        fromInput.value = f.toISOString().split('T')[0]; toInput.value = to.toISOString().split('T')[0];
+        savePeriod(); document.querySelectorAll('.ad-period-preset').forEach(b => b.classList.toggle('ad-period-preset--active', b.dataset.preset === p));
+        location.reload();
+    }
+    document.querySelectorAll('.ad-period-preset').forEach(b => b.addEventListener('click', () => setPreset(b.dataset.preset)));
+    [fromInput, toInput].forEach(i => i.addEventListener('change', () => { savePeriod(); location.reload(); }));
+    initPeriod();
+
+    // ── Chart Customize ──
+    const CUST_KEY = 'ad_chart_prefs';
+    function getDefaultOrder() { return Array.from(document.querySelectorAll('[data-chart-id]')).map(c => ({ id: c.dataset.chartId, visible: true })); }
+    function loadCustPrefs() { try { const r = localStorage.getItem(CUST_KEY); return r ? JSON.parse(r) : null; } catch { return null; } }
+    function saveCustPrefs(p) { localStorage.setItem(CUST_KEY, JSON.stringify(p)); }
+    function applyCustPrefs(p) {
+        if (!p) return;
+        const container = document.querySelector('.ad-chart-grid');
+        const cards = {}; container.querySelectorAll('[data-chart-id]').forEach(c => { cards[c.dataset.chartId] = c; });
+        p.forEach(pr => { const card = cards[pr.id]; if (card) { container.appendChild(card); if (pr.visible === false) card.style.display = 'none'; else card.style.display = ''; } });
+        Object.keys(cards).forEach(id => { if (!p.find(pr => pr.id === id)) { container.appendChild(cards[id]); cards[id].style.display = ''; } });
+    }
+    applyCustPrefs(loadCustPrefs());
+
+    const custOverlay = document.getElementById('ad-customize-overlay');
+    const custPanel = document.getElementById('ad-customize-panel');
+    const custList = document.getElementById('ad-customize-list');
+
+    function openCust() {
+        const prefs = loadCustPrefs() || getDefaultOrder();
+        const allCards = {}; document.querySelectorAll('[data-chart-id]').forEach(c => { allCards[c.dataset.chartId] = { id: c.dataset.chartId, label: c.dataset.chartLabel }; });
+        const ordered = []; prefs.forEach(p => { if (allCards[p.id]) ordered.push({ ...allCards[p.id], visible: p.visible !== false }); });
+        Object.keys(allCards).forEach(id => { if (!ordered.find(o => o.id === id)) ordered.push({ ...allCards[id], visible: true }); });
+        let html = ''; ordered.forEach((item, idx) => {
+            html += `<div class="ad-cust-item" draggable="true" data-cust-id="${item.id}"><span class="ad-cust-item__handle">&#x2630;</span><div class="ad-cust-item__label">${item.label}</div><button class="ad-cust-item__toggle ${item.visible ? 'ad-cust-item__toggle--on' : ''}" data-cust-toggle="${item.id}"></button></div>`;
+        });
+        custList.innerHTML = html;
+        initCustDrag();
+        custOverlay.classList.add('ad-customize-overlay--open'); custPanel.classList.add('ad-customize-panel--open');
+    }
+    function closeCust() { custOverlay.classList.remove('ad-customize-overlay--open'); custPanel.classList.remove('ad-customize-panel--open'); }
+
+    function initCustDrag() {
+        let dragEl = null;
+        custList.querySelectorAll('.ad-cust-item').forEach(item => {
+            item.addEventListener('dragstart', e => { dragEl = item; item.classList.add('ad-dragging'); e.dataTransfer.effectAllowed = 'move'; e.dataTransfer.setData('text/plain', ''); });
+            item.addEventListener('dragend', () => { if (dragEl) dragEl.classList.remove('ad-dragging'); custList.querySelectorAll('.ad-cust-item').forEach(i => i.classList.remove('ad-drag-over')); dragEl = null; });
+            item.addEventListener('dragover', e => { e.preventDefault(); e.dataTransfer.dropEffect = 'move'; if (item !== dragEl) item.classList.add('ad-drag-over'); });
+            item.addEventListener('dragleave', () => item.classList.remove('ad-drag-over'));
+            item.addEventListener('drop', e => { e.preventDefault(); item.classList.remove('ad-drag-over'); if (dragEl && item !== dragEl) { const items = Array.from(custList.querySelectorAll('.ad-cust-item')); if (items.indexOf(dragEl) < items.indexOf(item)) item.parentNode.insertBefore(dragEl, item.nextSibling); else item.parentNode.insertBefore(dragEl, item); } });
+        });
+        custList.querySelectorAll('.ad-cust-item__toggle').forEach(btn => btn.addEventListener('click', e => { e.stopPropagation(); btn.classList.toggle('ad-cust-item__toggle--on'); }));
+    }
+
+    function getCustState() { return Array.from(custList.querySelectorAll('.ad-cust-item')).map(item => ({ id: item.dataset.custId, visible: item.querySelector('.ad-cust-item__toggle').classList.contains('ad-cust-item__toggle--on') })); }
+
+    document.getElementById('ad-open-customize').addEventListener('click', openCust);
+    document.getElementById('ad-close-customize').addEventListener('click', closeCust);
+    custOverlay.addEventListener('click', closeCust);
+    document.getElementById('ad-save-customize').addEventListener('click', () => { const p = getCustState(); saveCustPrefs(p); applyCustPrefs(p); closeCust(); });
+    document.getElementById('ad-reset-customize').addEventListener('click', () => { localStorage.removeItem(CUST_KEY); location.reload(); });
+
+    // ── Auto-refresh ──
+    const REFRESH_INTERVAL = 300000; // 5 minutes
+    const REFRESH_KEY = 'ad_auto_refresh';
+    let refreshTimer = null;
+    let lastRefresh = Date.now();
+    const refreshDot = document.getElementById('ad-refresh-dot');
+    const refreshText = document.getElementById('ad-refresh-text');
+    const refreshToggle = document.getElementById('ad-refresh-toggle');
+    let autoRefreshOn = localStorage.getItem(REFRESH_KEY) !== 'off';
+
+    function updateRefreshText() {
+        const mins = Math.floor((Date.now() - lastRefresh) / 60000);
+        refreshText.textContent = mins < 1 ? 'Just now' : mins + 'm ago';
+    }
+    setInterval(updateRefreshText, 30000);
+
+    function startAutoRefresh() {
+        autoRefreshOn = true;
+        localStorage.setItem(REFRESH_KEY, 'on');
+        refreshDot.classList.add('ad-refresh__dot--pulse');
+        refreshToggle.textContent = '⟳';
+        refreshToggle.title = 'Auto-refresh ON (5 min)';
+        refreshTimer = setInterval(() => location.reload(), REFRESH_INTERVAL);
+    }
+    function stopAutoRefresh() {
+        autoRefreshOn = false;
+        localStorage.setItem(REFRESH_KEY, 'off');
+        refreshDot.classList.remove('ad-refresh__dot--pulse');
+        refreshToggle.textContent = '⏸';
+        refreshToggle.title = 'Auto-refresh OFF';
+        if (refreshTimer) { clearInterval(refreshTimer); refreshTimer = null; }
+    }
+    refreshToggle.addEventListener('click', () => { if (autoRefreshOn) stopAutoRefresh(); else startAutoRefresh(); });
+    if (autoRefreshOn) startAutoRefresh(); else stopAutoRefresh();
+
+    // ─── KPI CARDS ───
+    fetchP("{% url 'attendance-modern-kpi' %}")
+        .then(r => r.json())
+        .then(data => {
+            document.getElementById('ad-kpi-grid').innerHTML = `
+                <a href="{% url 'attendance-view' %}" class="ad-kpi-card">
+                    <div class="ad-kpi-card__icon ad-kpi-card__icon--green">✓</div>
+                    <div class="ad-kpi-card__label">{% trans "Present Today" %}</div>
+                    <div class="ad-kpi-card__value">${data.present_today}</div>
+                    <div class="ad-kpi-card__sub"><span class="ad-badge ${data.attendance_rate >= 80 ? 'ad-badge--green' : 'ad-badge--amber'}">${data.attendance_rate}% {% trans "rate" %}</span></div>
+                </a>
+                <a href="{% url 'attendance-view' %}" class="ad-kpi-card">
+                    <div class="ad-kpi-card__icon ad-kpi-card__icon--blue">⏱</div>
+                    <div class="ad-kpi-card__label">{% trans "On Time" %}</div>
+                    <div class="ad-kpi-card__value">${data.on_time}</div>
+                    <div class="ad-kpi-card__sub">{% trans "of" %} ${data.total_employees} {% trans "employees" %}</div>
+                </a>
+                <a href="{% url 'late-come-early-out-view' %}" class="ad-kpi-card">
+                    <div class="ad-kpi-card__icon ad-kpi-card__icon--amber">⚠</div>
+                    <div class="ad-kpi-card__label">{% trans "Late Come" %}</div>
+                    <div class="ad-kpi-card__value">${data.late_come}</div>
+                    <div class="ad-kpi-card__sub">${data.early_out > 0 ? '<span class="ad-badge ad-badge--red">' + data.early_out + ' {% trans "early out" %}</span>' : '<span style="opacity:0.5">{% trans "No early outs" %}</span>'}</div>
+                </a>
+                <a href="{% url 'attendance-view' %}" class="ad-kpi-card">
+                    <div class="ad-kpi-card__icon ad-kpi-card__icon--red">📋</div>
+                    <div class="ad-kpi-card__label">{% trans "Pending" %}</div>
+                    <div class="ad-kpi-card__value">${data.pending_validation}</div>
+                    <div class="ad-kpi-card__sub">${data.pending_overtime > 0 ? '<span class="ad-badge ad-badge--amber">' + data.pending_overtime + ' {% trans "OT pending" %}</span>' : '{% trans "To validate" %}'}</div>
+                </a>`;
+        });
+
+    // ─── WEEKLY TREND ───
+    fetchP("{% url 'attendance-modern-weekly' %}")
+        .then(r => r.json())
+        .then(data => {
+            new ApexCharts(document.querySelector("#chart-weekly-trend"), {
+                series: [{ name: '{% trans "Present" %}', data: data.days.map(d => d.count) }],
+                chart: { type: 'area', height: 260, toolbar: { show: false }, background: 'transparent', fontFamily: 'inherit' },
+                colors: ['#6366f1'],
+                fill: { type: 'gradient', gradient: { shadeIntensity: 1, opacityFrom: 0.4, opacityTo: 0.05, stops: [0, 95, 100] } },
+                stroke: { curve: 'smooth', width: 3 },
+                dataLabels: { enabled: true, style: { fontSize: '12px', colors: ['#6366f1'] }, background: { enabled: false } },
+                xaxis: { categories: data.days.map(d => d.day), labels: { style: { colors: textColor, fontSize: '12px' } }, axisBorder: { show: false }, axisTicks: { show: false } },
+                yaxis: { min: 0, labels: { style: { colors: textColor } } },
+                grid: { borderColor: gridColor, strokeDashArray: 4 },
+                tooltip: { theme: isDark ? 'dark' : 'light', y: { formatter: v => v + ' employees' } },
+                annotations: { xaxis: data.days.filter(d => d.is_today).map(d => ({ x: d.day, borderColor: '#22c55e', label: { text: '{% trans "Today" %}', style: { color: '#fff', background: '#22c55e', fontSize: '10px' } } })) },
+            }).render();
+        });
+
+    // ─── DEPARTMENT ATTENDANCE ───
+    fetchP("{% url 'attendance-modern-dept' %}")
+        .then(r => r.json())
+        .then(data => {
+            if (!data.departments.length) { document.querySelector("#chart-dept-attendance").innerHTML = emptyHtml('{% trans "No data" %}'); return; }
+            new ApexCharts(document.querySelector("#chart-dept-attendance"), {
+                series: [{ name: '{% trans "Rate" %}', data: data.departments.map(d => d.rate) }],
+                chart: { type: 'bar', height: 300, toolbar: { show: false }, background: 'transparent', fontFamily: 'inherit',
+                    events: { dataPointSelection: (e, ctx, config) => {
+                        const dept = data.departments[config.dataPointIndex].department;
+                        window.location.href = "{% url 'attendance-view' %}?department=" + encodeURIComponent(dept);
+                    }}
+                },
+                colors: data.departments.map(d => d.rate >= 80 ? '#22c55e' : d.rate >= 50 ? '#f59e0b' : '#ef4444'),
+                plotOptions: { bar: { borderRadius: 6, horizontal: true, barHeight: '55%', distributed: true } },
+                xaxis: { categories: data.departments.map(d => d.department), labels: { style: { colors: textColor } }, max: 100 },
+                yaxis: { labels: { style: { colors: textColor, fontSize: '11px' } } },
+                grid: { borderColor: gridColor },
+                dataLabels: { enabled: true, formatter: (v, { dataPointIndex: i }) => `${v}% (${data.departments[i].present}/${data.departments[i].total})`, style: { fontSize: '11px' } },
+                legend: { show: false },
+                tooltip: { theme: isDark ? 'dark' : 'light', y: { formatter: v => v + '%' } },
+            }).render();
+        });
+
+    // ─── LATE COME & EARLY OUT ───
+    fetchP("{% url 'attendance-modern-late-early' %}")
+        .then(r => r.json())
+        .then(data => {
+            const allDepts = [...new Set([...data.late_come.map(d => d.department), ...data.early_out.map(d => d.department)])];
+            if (!allDepts.length) { document.querySelector("#chart-late-early").innerHTML = emptyHtml('{% trans "No late/early records today" %}'); return; }
+            const lateMap = {}; data.late_come.forEach(d => { lateMap[d.department] = d.count; });
+            const earlyMap = {}; data.early_out.forEach(d => { earlyMap[d.department] = d.count; });
+            new ApexCharts(document.querySelector("#chart-late-early"), {
+                series: [
+                    { name: '{% trans "Late Come" %}', data: allDepts.map(d => lateMap[d] || 0) },
+                    { name: '{% trans "Early Out" %}', data: allDepts.map(d => earlyMap[d] || 0) },
+                ],
+                chart: { type: 'bar', height: 300, toolbar: { show: false }, background: 'transparent', fontFamily: 'inherit', stacked: true,
+                    events: { dataPointSelection: (e, ctx, config) => {
+                        const dept = allDepts[config.dataPointIndex];
+                        window.location.href = "/attendance/late-come-early-out-view?department=" + encodeURIComponent(dept);
+                    }}
+                },
+                colors: ['#f59e0b', '#ef4444'],
+                plotOptions: { bar: { borderRadius: 4, columnWidth: '55%' } },
+                xaxis: { categories: allDepts, labels: { style: { colors: textColor, fontSize: '11px' } }, axisBorder: { show: false }, axisTicks: { show: false } },
+                yaxis: { labels: { style: { colors: textColor } } },
+                grid: { borderColor: gridColor, strokeDashArray: 4 },
+                dataLabels: { enabled: true, style: { fontSize: '11px', colors: ['#fff'] } },
+                legend: { position: 'top', horizontalAlign: 'right', labels: { colors: textColor }, fontSize: '11px', markers: { width: 8, height: 8, radius: 2 } },
+                tooltip: { theme: isDark ? 'dark' : 'light' },
+            }).render();
+        });
+
+    // ─── OVERTIME BY DEPARTMENT ───
+    fetchP("{% url 'attendance-modern-overtime' %}")
+        .then(r => r.json())
+        .then(data => {
+            document.getElementById('ot-month').textContent = data.month;
+            if (!data.departments.length) { document.querySelector("#chart-overtime").innerHTML = emptyHtml('{% trans "No overtime data" %}'); return; }
+            new ApexCharts(document.querySelector("#chart-overtime"), {
+                series: data.departments.map(d => d.total_hours),
+                chart: { type: 'donut', height: 300, background: 'transparent', fontFamily: 'inherit',
+                    events: { dataPointSelection: (e, ctx, config) => {
+                        const dept = data.departments[config.dataPointIndex].department;
+                        window.location.href = "/attendance/attendance-overtime-view?department=" + encodeURIComponent(dept);
+                    }}
+                },
+                labels: data.departments.map(d => d.department),
+                colors: COLORS.slice(0, data.departments.length),
+                plotOptions: { pie: { donut: { size: '65%', labels: { show: true, total: { show: true, label: '{% trans "Total Hrs" %}', color: textColor, fontSize: '12px', fontWeight: 600, formatter: w => w.globals.seriesTotals.reduce((a,b)=>a+b,0).toFixed(1) } } } } },
+                stroke: { width: 2, colors: [cardBg] },
+                dataLabels: { enabled: false },
+                legend: { position: 'bottom', labels: { colors: textColor }, fontSize: '11px', markers: { width: 8, height: 8, radius: 2 } },
+                tooltip: { theme: isDark ? 'dark' : 'light', y: { formatter: (v, { seriesIndex: i }) => `${v} hrs (${data.departments[i].employees} emp)` } },
+            }).render();
+        });
+
+    // ─── HOURS DISTRIBUTION ───
+    fetchP("{% url 'attendance-modern-hours' %}")
+        .then(r => r.json())
+        .then(data => {
+            if (!data.departments.length) { document.querySelector("#chart-hours").innerHTML = emptyHtml('{% trans "No data" %}'); return; }
+            new ApexCharts(document.querySelector("#chart-hours"), {
+                series: [
+                    { name: '{% trans "Worked" %}', data: data.departments.map(d => d.worked_hours) },
+                    { name: '{% trans "Pending" %}', data: data.departments.map(d => d.pending_hours) },
+                ],
+                chart: { type: 'bar', height: 300, toolbar: { show: false }, background: 'transparent', fontFamily: 'inherit', stacked: true },
+                colors: ['#22c55e', '#f59e0b'],
+                plotOptions: { bar: { borderRadius: 4, columnWidth: '55%' } },
+                xaxis: { categories: data.departments.map(d => d.department), labels: { style: { colors: textColor, fontSize: '11px' }, rotate: -45 }, axisBorder: { show: false }, axisTicks: { show: false } },
+                yaxis: { labels: { style: { colors: textColor }, formatter: v => v + 'h' } },
+                grid: { borderColor: gridColor, strokeDashArray: 4 },
+                dataLabels: { enabled: false },
+                legend: { position: 'top', horizontalAlign: 'right', labels: { colors: textColor }, fontSize: '11px', markers: { width: 8, height: 8, radius: 2 } },
+                tooltip: { theme: isDark ? 'dark' : 'light', y: { formatter: v => v + ' hrs' } },
+            }).render();
+        });
+
+    // ─── SHIFT DISTRIBUTION ───
+    fetchP("{% url 'attendance-modern-shifts' %}")
+        .then(r => r.json())
+        .then(data => {
+            if (!data.shifts.length) { document.querySelector("#chart-shifts").innerHTML = emptyHtml('{% trans "No shift data" %}'); return; }
+            new ApexCharts(document.querySelector("#chart-shifts"), {
+                series: data.shifts.map(s => s.count),
+                chart: { type: 'donut', height: 300, background: 'transparent', fontFamily: 'inherit' },
+                labels: data.shifts.map(s => s.shift),
+                colors: COLORS.slice(0, data.shifts.length),
+                plotOptions: { pie: { donut: { size: '65%', labels: { show: true, total: { show: true, label: '{% trans "Total" %}', color: textColor, fontSize: '13px', fontWeight: 600, formatter: w => w.globals.seriesTotals.reduce((a,b)=>a+b,0) } } } } },
+                stroke: { width: 2, colors: [cardBg] },
+                dataLabels: { enabled: false },
+                legend: { position: 'bottom', labels: { colors: textColor }, fontSize: '11px', markers: { width: 8, height: 8, radius: 2 } },
+                tooltip: { theme: isDark ? 'dark' : 'light' },
+            }).render();
+        });
+
+    // ─── CLOCK-IN DISTRIBUTION ───
+    fetchP("{% url 'attendance-modern-clockin' %}")
+        .then(r => r.json())
+        .then(data => {
+            if (!data.hours.length) { document.querySelector("#chart-clockin-dist").innerHTML = emptyHtml('{% trans "No clock-in data" %}'); return; }
+            new ApexCharts(document.querySelector("#chart-clockin-dist"), {
+                series: [{ name: '{% trans "Employees" %}', data: data.counts }],
+                chart: { type: 'bar', height: 280, toolbar: { show: false }, background: 'transparent', fontFamily: 'inherit' },
+                colors: ['#6366f1'],
+                plotOptions: { bar: { borderRadius: 6, columnWidth: '55%' } },
+                xaxis: { categories: data.hours, labels: { style: { colors: textColor, fontSize: '11px' } }, axisBorder: { show: false }, axisTicks: { show: false } },
+                yaxis: { labels: { style: { colors: textColor } } },
+                grid: { borderColor: gridColor, strokeDashArray: 4 },
+                dataLabels: { enabled: true, style: { fontSize: '11px', colors: ['#fff'] } },
+                tooltip: { theme: isDark ? 'dark' : 'light', y: { formatter: v => v + ' employee(s)' } },
+            }).render();
+        });
+
+    // ─── CALENDAR HEATMAP ───
+    fetchP("{% url 'attendance-modern-calendar' %}")
+        .then(r => r.json())
+        .then(data => {
+            document.getElementById('calendar-month').textContent = data.month;
+            if (!data.days.length) { document.querySelector("#chart-calendar").innerHTML = emptyHtml('{% trans "No data" %}'); return; }
+            new ApexCharts(document.querySelector("#chart-calendar"), {
+                series: [{ name: '{% trans "Attendance Rate" %}', data: data.days.map(d => d.rate) }],
+                chart: { type: 'bar', height: 200, toolbar: { show: false }, background: 'transparent', fontFamily: 'inherit' },
+                colors: data.days.map(d => d.rate >= 80 ? '#22c55e' : d.rate >= 50 ? '#f59e0b' : '#ef4444'),
+                plotOptions: { bar: { borderRadius: 3, columnWidth: '85%', distributed: true } },
+                xaxis: { categories: data.days.map(d => d.dom), labels: { style: { colors: textColor, fontSize: '10px' } }, axisBorder: { show: false }, axisTicks: { show: false } },
+                yaxis: { max: 100, labels: { style: { colors: textColor }, formatter: v => v + '%' } },
+                grid: { borderColor: gridColor, strokeDashArray: 4 },
+                dataLabels: { enabled: false },
+                legend: { show: false },
+                tooltip: { theme: isDark ? 'dark' : 'light', y: { formatter: (v, { dataPointIndex: i }) => `${v}% (${data.days[i].count} present)` } },
+            }).render();
+        });
+
+    // ─── ABSENTEEISM RATE TREND ───
+    fetchP("{% url 'attendance-modern-absenteeism' %}")
+        .then(r => r.json())
+        .then(data => {
+            if (!data.months.length) { document.querySelector("#chart-absenteeism").innerHTML = emptyHtml('{% trans "No data" %}'); return; }
+            new ApexCharts(document.querySelector("#chart-absenteeism"), {
+                series: [{ name: '{% trans "Absenteeism Rate" %}', data: data.months.map(m => m.rate) }],
+                chart: { type: 'area', height: 260, toolbar: { show: false }, background: 'transparent', fontFamily: 'inherit' },
+                colors: ['#ef4444'],
+                fill: { type: 'gradient', gradient: { shadeIntensity: 1, opacityFrom: 0.3, opacityTo: 0.05, stops: [0, 95, 100] } },
+                stroke: { curve: 'smooth', width: 3 },
+                dataLabels: { enabled: true, formatter: v => v + '%', style: { fontSize: '11px', colors: ['#ef4444'] }, background: { enabled: false } },
+                xaxis: { categories: data.months.map(m => m.month), labels: { style: { colors: textColor, fontSize: '11px' } }, axisBorder: { show: false }, axisTicks: { show: false } },
+                yaxis: { min: 0, labels: { style: { colors: textColor }, formatter: v => v + '%' } },
+                grid: { borderColor: gridColor, strokeDashArray: 4 },
+                tooltip: { theme: isDark ? 'dark' : 'light', y: { formatter: v => v + '% absenteeism' } },
+            }).render();
+        });
+
+    // ─── AVG WORKING HOURS ───
+    fetchP("{% url 'attendance-modern-avg-hours' %}")
+        .then(r => r.json())
+        .then(data => {
+            document.getElementById('avg-hours-month').textContent = data.month;
+            if (!data.departments.length) { document.querySelector("#chart-avg-hours").innerHTML = emptyHtml('{% trans "No data" %}'); return; }
+            new ApexCharts(document.querySelector("#chart-avg-hours"), {
+                series: [{ name: '{% trans "Avg Hrs/Day" %}', data: data.departments.map(d => d.avg_hours_per_day) }],
+                chart: { type: 'bar', height: 300, toolbar: { show: false }, background: 'transparent', fontFamily: 'inherit' },
+                colors: data.departments.map(d => d.avg_hours_per_day >= 8 ? '#22c55e' : d.avg_hours_per_day >= 6 ? '#f59e0b' : '#ef4444'),
+                plotOptions: { bar: { borderRadius: 6, columnWidth: '55%', distributed: true } },
+                xaxis: { categories: data.departments.map(d => d.department), labels: { style: { colors: textColor, fontSize: '11px' }, rotate: -45 }, axisBorder: { show: false }, axisTicks: { show: false } },
+                yaxis: { labels: { style: { colors: textColor }, formatter: v => v + 'h' } },
+                grid: { borderColor: gridColor, strokeDashArray: 4 },
+                dataLabels: { enabled: true, formatter: v => v + 'h', style: { fontSize: '11px', colors: ['#fff'] } },
+                legend: { show: false },
+                tooltip: { theme: isDark ? 'dark' : 'light', y: { formatter: (v, { dataPointIndex: i }) => `${v} hrs/day (${data.departments[i].employees} employees)` } },
+                annotations: { yaxis: [{ y: 8, borderColor: '#22c55e', strokeDashArray: 4, label: { text: '8h target', style: { color: '#22c55e', background: 'transparent', fontSize: '10px' } } }] },
+            }).render();
+        });
+
+    // ─── WORK TYPE DISTRIBUTION ───
+    fetchP("{% url 'attendance-modern-work-types' %}")
+        .then(r => r.json())
+        .then(data => {
+            if (!data.work_types.length) { document.querySelector("#chart-work-types").innerHTML = emptyHtml('{% trans "No work type data" %}'); return; }
+            const wtColors = { 'Regular': '#3b82f6', 'Remote': '#22c55e', 'Hybrid': '#a855f7', 'Not Assigned': '#94a3b8' };
+            new ApexCharts(document.querySelector("#chart-work-types"), {
+                series: data.work_types.map(w => w.count),
+                chart: { type: 'donut', height: 300, background: 'transparent', fontFamily: 'inherit' },
+                labels: data.work_types.map(w => w.work_type),
+                colors: data.work_types.map((w, i) => wtColors[w.work_type] || COLORS[i % COLORS.length]),
+                plotOptions: { pie: { donut: { size: '65%', labels: { show: true, total: { show: true, label: '{% trans "Total" %}', color: textColor, fontSize: '13px', fontWeight: 600, formatter: w => w.globals.seriesTotals.reduce((a,b)=>a+b,0) } } } } },
+                stroke: { width: 2, colors: [cardBg] },
+                dataLabels: { enabled: false },
+                legend: { position: 'bottom', labels: { colors: textColor }, fontSize: '11px', markers: { width: 8, height: 8, radius: 2 } },
+                tooltip: { theme: isDark ? 'dark' : 'light' },
+            }).render();
+        });
+
+    // ─── TOP ABSENTEES ───
+    fetchP("{% url 'attendance-modern-absentees' %}")
+        .then(r => r.json())
+        .then(data => {
+            const el = document.getElementById('ad-absentees');
+            document.getElementById('absentees-month').textContent = data.month;
+            if (!data.absentees.length) { el.innerHTML = '<div class="ad-info-panel__empty">{% trans "No absences this month" %}</div>'; return; }
+            el.innerHTML = data.absentees.map(a => {
+                const initials = a.name.split(' ').map(w => w[0]).join('').slice(0, 2).toUpperCase();
+                const avatarInner = a.avatar ? `<img src="${a.avatar}" alt="">` : initials;
+                return `
+                <a href="/employee/employee-view-individual/${a.id}/" class="ad-absentee-item">
+                    <div class="ad-absentee-item__avatar">${avatarInner}</div>
+                    <div class="ad-absentee-item__info">
+                        <div class="ad-absentee-item__name">${a.name}</div>
+                        <div class="ad-absentee-item__detail">${a.present_days}/${a.total_days} {% trans "days present" %}</div>
+                    </div>
+                    <div class="ad-absentee-item__days">${a.absent_days}d</div>
+                </a>`;
+            }).join('');
+        }).catch(() => { document.getElementById('ad-absentees').innerHTML = '<div class="ad-info-panel__empty">{% trans "No absences this month" %}</div>'; });
+
+    // ─── ATTENDANCE OVERVIEW (existing endpoint) ───
+    fetch("{% url 'dashboard-attendance' %}")
+        .then(r => r.json())
+        .then(data => {
+            if (!data.dataSet || !data.dataSet.length) { document.querySelector("#chart-att-overview").innerHTML = emptyHtml('{% trans "No records" %}'); return; }
+            new ApexCharts(document.querySelector("#chart-att-overview"), {
+                series: data.dataSet.map(d => ({ name: d.label, data: d.data })),
+                chart: { type: 'bar', height: 320, toolbar: { show: false }, background: 'transparent', fontFamily: 'inherit',
+                    events: { dataPointSelection: (e, ctx, config) => {
+                        const dept = data.labels[config.dataPointIndex];
+                        window.location.href = "{% url 'attendance-view' %}?department=" + encodeURIComponent(dept);
+                    }}
+                },
+                colors: ['#22c55e', '#f59e0b', '#ef4444'],
+                plotOptions: { bar: { borderRadius: 4, columnWidth: '60%' } },
+                xaxis: { categories: data.labels, labels: { style: { colors: textColor, fontSize: '11px' } }, axisBorder: { show: false }, axisTicks: { show: false } },
+                yaxis: { labels: { style: { colors: textColor } } },
+                grid: { borderColor: gridColor, strokeDashArray: 4 },
+                dataLabels: { enabled: false },
+                legend: { position: 'top', horizontalAlign: 'right', labels: { colors: textColor }, fontSize: '11px', markers: { width: 8, height: 8, radius: 2 } },
+                tooltip: { theme: isDark ? 'dark' : 'light' },
+            }).render();
+        }).catch(() => { document.querySelector("#chart-att-overview").innerHTML = emptyHtml('{% trans "Unable to load" %}'); });
+
+})();
+</script>
+{% endblock %}

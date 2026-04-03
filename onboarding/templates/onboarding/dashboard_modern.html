@@ -1,0 +1,541 @@
+{% extends "index.html" %}
+{% load static i18n %}
+
+{% block styles %}
+<script src="https://cdn.jsdelivr.net/npm/apexcharts"></script>
+<style>
+    :root { --on-indigo: #6366f1; --on-green: #22c55e; --on-amber: #f59e0b; --on-red: #ef4444; --on-blue: #3b82f6; --on-purple: #a855f7; }
+    .on-dashboard { font-family: inherit; background: #ffffff; margin: -24px; padding: 24px; min-height: calc(100vh - 80px); }
+    .dark .on-dashboard { background: #0f172a; }
+    .on-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; }
+    .on-header h1 { font-size: 22px; font-weight: 700; }
+    .on-header__date { font-size: 13px; opacity: 0.6; margin-top: 2px; }
+    .on-btn-back { padding: 6px 14px; border-radius: 8px; border: 1px solid rgba(128,128,128,0.2); font-size: 13px; cursor: pointer; text-decoration: none; color: inherit; transition: all 0.15s; background: none; }
+    .on-btn-back:hover { border-color: var(--on-indigo); color: var(--on-indigo); text-decoration: none; }
+
+    .on-kpi-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 14px; margin-bottom: 20px; }
+    .on-kpi-card { border-radius: 12px; padding: 18px; background: #ffffff; border: 1px solid rgba(128,128,128,0.12); transition: all 0.2s; text-decoration: none; color: inherit; display: block; }
+    .on-kpi-card:hover { box-shadow: 0 4px 12px rgba(0,0,0,0.08); transform: translateY(-1px); text-decoration: none; color: inherit; }
+    .dark .on-kpi-card { background: rgba(255,255,255,0.04); border-color: rgba(255,255,255,0.08); }
+    .on-kpi-card__icon { width: 38px; height: 38px; border-radius: 10px; display: flex; align-items: center; justify-content: center; font-size: 18px; margin-bottom: 10px; }
+    .on-kpi-card__icon--blue { background: #dbeafe; color: var(--on-blue); } .on-kpi-card__icon--green { background: #dcfce7; color: var(--on-green); }
+    .on-kpi-card__icon--amber { background: #fef3c7; color: var(--on-amber); } .on-kpi-card__icon--purple { background: #f3e8ff; color: var(--on-purple); }
+    .dark .on-kpi-card__icon--blue { background: #1e3a5f; } .dark .on-kpi-card__icon--green { background: #14532d; }
+    .dark .on-kpi-card__icon--amber { background: #78350f; } .dark .on-kpi-card__icon--purple { background: #3b0764; }
+    .on-kpi-card__label { font-size: 11px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.05em; opacity: 0.5; margin-bottom: 6px; }
+    .on-kpi-card__value { font-size: 28px; font-weight: 800; line-height: 1; margin-bottom: 4px; }
+    .on-kpi-card__sub { font-size: 12px; opacity: 0.6; }
+    .on-badge { display: inline-flex; align-items: center; gap: 3px; font-size: 11px; font-weight: 600; padding: 2px 8px; border-radius: 999px; }
+    .on-badge--green { background: #dcfce7; color: #166534; } .on-badge--amber { background: #fef3c7; color: #92400e; } .on-badge--red { background: #fee2e2; color: #991b1b; }
+    .dark .on-badge--green { background: #166534; color: #bbf7d0; } .dark .on-badge--amber { background: #92400e; color: #fde68a; } .dark .on-badge--red { background: #7f1d1d; color: #fca5a5; }
+
+    .on-layout { display: grid; grid-template-columns: 1fr 300px; gap: 20px; align-items: start; }
+    .on-main { min-width: 0; } .on-sidebar { display: flex; flex-direction: column; gap: 16px; position: sticky; top: 90px; }
+    .on-chart-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 16px; margin-bottom: 20px; }
+    .on-chart-card { border-radius: 12px; background: #ffffff; border: 1px solid rgba(128,128,128,0.12); overflow: visible; }
+    .dark .on-chart-card { background: rgba(255,255,255,0.04); border-color: rgba(255,255,255,0.08); }
+    .on-chart-card--wide { grid-column: span 2; }
+    .on-chart-card__header { padding: 14px 18px 0; display: flex; justify-content: space-between; align-items: center; }
+    .on-chart-card__title { font-size: 14px; font-weight: 600; }
+    .on-chart-card__subtitle { font-size: 11px; opacity: 0.5; margin-top: 2px; }
+    .on-chart-card__body { padding: 6px 10px 10px; }
+    .on-empty { text-align: center; padding: 30px 0; opacity: 0.6; font-size: 13px; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 8px; }
+    .on-empty img { width: 100px; opacity: 0.7; }
+    .on-skeleton { background: linear-gradient(90deg, rgba(128,128,128,0.1) 25%, transparent 50%, rgba(128,128,128,0.1) 75%); background-size: 200% 100%; animation: on-shimmer 1.5s infinite; border-radius: 12px; }
+    @keyframes on-shimmer { 0% { background-position: 200% 0; } 100% { background-position: -200% 0; } }
+    .on-skeleton--kpi { height: 110px; }
+    .on-info-panel { border-radius: 12px; background: #ffffff; border: 1px solid rgba(128,128,128,0.12); overflow: hidden; display: flex; flex-direction: column; }
+    .dark .on-info-panel { background: rgba(255,255,255,0.04); border-color: rgba(255,255,255,0.08); }
+    .on-info-panel__header { padding: 14px 16px 10px; display: flex; justify-content: space-between; align-items: center; flex-shrink: 0; border-bottom: 1px solid rgba(128,128,128,0.08); }
+    .on-info-panel__title { font-size: 13px; font-weight: 700; }
+    .on-info-panel__body { padding: 8px 16px 12px; overflow-y: auto; flex: 1; max-height: 400px; }
+    .on-info-panel__empty { text-align: center; padding: 30px 0; opacity: 0.4; font-size: 12px; }
+    .on-cand-item { display: flex; align-items: center; gap: 10px; padding: 8px 0; border-bottom: 1px solid rgba(128,128,128,0.06); }
+    .on-cand-item:last-child { border-bottom: none; }
+    .on-cand-item__avatar { width: 32px; height: 32px; border-radius: 50%; background: #dbeafe; color: var(--on-blue); display: flex; align-items: center; justify-content: center; font-size: 11px; font-weight: 700; flex-shrink: 0; overflow: hidden; }
+    .dark .on-cand-item__avatar { background: #1e3a5f; }
+    .on-cand-item__avatar img { width: 100%; height: 100%; object-fit: cover; }
+    .on-cand-item__info { flex: 1; min-width: 0; }
+    .on-cand-item__name { font-size: 12px; font-weight: 600; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+    .on-cand-item__detail { font-size: 11px; opacity: 0.5; }
+    .on-cand-item__progress { display: flex; align-items: center; gap: 6px; flex-shrink: 0; }
+    .on-cand-item__bar { width: 50px; height: 6px; border-radius: 3px; background: rgba(128,128,128,0.1); overflow: hidden; }
+    .on-cand-item__fill { height: 100%; border-radius: 3px; }
+    .on-cand-item__pct { font-size: 11px; font-weight: 700; min-width: 30px; text-align: right; }
+    /* Customize Panel */
+    .on-btn-customize { padding: 6px 12px; border-radius: 8px; border: 1px solid rgba(128,128,128,0.2); font-size: 13px; cursor: pointer; color: inherit; transition: all 0.15s; background: none; display: flex; align-items: center; gap: 5px; }
+    .on-btn-customize:hover { border-color: var(--on-indigo); color: var(--on-indigo); }
+    .on-customize-overlay { position: fixed; inset: 0; background: rgba(0,0,0,0.3); z-index: 1050; opacity: 0; pointer-events: none; transition: opacity 0.2s; }
+    .on-customize-overlay--open { opacity: 1; pointer-events: auto; }
+    .on-customize-panel { position: fixed; top: 0; right: -420px; width: 400px; height: 100vh; background: #ffffff; box-shadow: -4px 0 24px rgba(0,0,0,0.12); z-index: 1051; display: flex; flex-direction: column; transition: right 0.25s ease; }
+    .dark .on-customize-panel { background: #1e293b; }
+    .on-customize-panel--open { right: 0; }
+    .on-customize-panel__header { padding: 18px 20px; border-bottom: 1px solid rgba(128,128,128,0.12); display: flex; justify-content: space-between; align-items: center; flex-shrink: 0; }
+    .on-customize-panel__header h3 { font-size: 16px; font-weight: 700; margin: 0; }
+    .on-customize-panel__close { width: 32px; height: 32px; border-radius: 8px; border: none; background: rgba(128,128,128,0.08); cursor: pointer; font-size: 18px; display: flex; align-items: center; justify-content: center; color: inherit; }
+    .on-customize-panel__close:hover { background: rgba(128,128,128,0.16); }
+    .on-customize-panel__body { flex: 1; overflow-y: auto; padding: 12px 20px; }
+    .on-customize-panel__footer { padding: 14px 20px; border-top: 1px solid rgba(128,128,128,0.12); display: flex; justify-content: space-between; flex-shrink: 0; }
+    .on-cust-btn { padding: 7px 16px; border-radius: 8px; font-size: 13px; font-weight: 600; cursor: pointer; border: none; transition: all 0.15s; }
+    .on-cust-btn--primary { background: var(--on-indigo); color: #fff; }
+    .on-cust-btn--primary:hover { opacity: 0.9; }
+    .on-cust-btn--ghost { background: none; color: inherit; opacity: 0.6; }
+    .on-cust-btn--ghost:hover { opacity: 1; }
+    .on-cust-item { display: flex; align-items: center; gap: 10px; padding: 10px 12px; margin-bottom: 6px; border-radius: 8px; border: 1px solid rgba(128,128,128,0.1); background: rgba(128,128,128,0.02); cursor: grab; user-select: none; }
+    .on-cust-item:active { cursor: grabbing; }
+    .on-cust-item.on-dragging { opacity: 0.85; box-shadow: 0 4px 16px rgba(0,0,0,0.12); border-color: var(--on-indigo); }
+    .on-cust-item.on-drag-over { border-top: 2px solid var(--on-indigo); }
+    .on-cust-item__handle { font-size: 16px; opacity: 0.3; cursor: grab; flex-shrink: 0; }
+    .on-cust-item__label { flex: 1; font-size: 13px; font-weight: 500; }
+    .on-cust-item__toggle { width: 36px; height: 20px; border-radius: 12px; background: #e2e8f0; position: relative; cursor: pointer; transition: background 0.2s; flex-shrink: 0; border: none; }
+    .dark .on-cust-item__toggle { background: #334155; }
+    .on-cust-item__toggle::after { content: ''; position: absolute; width: 16px; height: 16px; border-radius: 50%; top: 2px; left: 2px; background: #fff; box-shadow: 0 1px 3px rgba(0,0,0,0.2); transition: transform 0.2s; }
+    .on-cust-item__toggle--on { background: var(--on-indigo); }
+    .dark .on-cust-item__toggle--on { background: var(--on-indigo); }
+    .on-cust-item__toggle--on::after { transform: translateX(16px); }
+    @media (max-width: 1024px) { .on-customize-panel { width: 320px; right: -340px; } }
+    @media (max-width: 640px) { .on-customize-panel { width: 100%; right: -100%; } }
+
+    /* Period Picker */
+    .on-period-picker { display: none; /* DATE FILTER DISABLED */ align-items: center; gap: 6px; font-size: 12px; }
+    .on-period-picker input[type="date"] { padding: 5px 8px; border-radius: 6px; border: 1px solid rgba(128,128,128,0.2); font-size: 12px; background: transparent; color: inherit; outline: none; transition: border-color 0.15s; }
+    .on-period-picker input[type="date"]:focus { border-color: var(--on-indigo); }
+    .on-period-picker__sep { opacity: 0.4; font-size: 11px; }
+    .on-period-preset { padding: 4px 10px; border-radius: 6px; border: 1px solid rgba(128,128,128,0.15); font-size: 11px; cursor: pointer; background: none; color: inherit; transition: all 0.15s; }
+    .on-period-preset:hover { border-color: var(--on-indigo); color: var(--on-indigo); }
+    .on-period-preset--active { background: var(--on-indigo); color: #fff; border-color: var(--on-indigo); }
+    .dark .on-period-picker input[type="date"] { color-scheme: dark; }
+
+    /* Auto-refresh */
+    .on-refresh { display: flex; align-items: center; gap: 6px; font-size: 11px; opacity: 0.5; }
+    .on-refresh__dot { width: 6px; height: 6px; border-radius: 50%; background: var(--on-green); flex-shrink: 0; }
+    .on-refresh__dot--pulse { animation: on-pulse 2s infinite; }
+    @keyframes on-pulse { 0%, 100% { opacity: 1; } 50% { opacity: 0.3; } }
+    .on-refresh__toggle { cursor: pointer; opacity: 0.6; font-size: 13px; border: none; background: none; color: inherit; padding: 2px; }
+    .on-refresh__toggle:hover { opacity: 1; }
+
+
+    /* Responsive */
+    @media (max-width: 1280px) { .on-layout { grid-template-columns: 1fr; } .on-sidebar { position: static; display: grid; grid-template-columns: 1fr 1fr; } }
+    @media (max-width: 1024px) { .on-kpi-grid { grid-template-columns: repeat(2, 1fr); } .on-chart-grid { grid-template-columns: 1fr; } .on-chart-card--wide { grid-column: span 1; } .on-sidebar { grid-template-columns: 1fr; } }
+    @media (max-width: 640px) { .on-kpi-grid { grid-template-columns: 1fr; } }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="on-dashboard">
+    <div class="on-header">
+        <div>
+            <h1>{% trans "Onboarding Dashboard" %}</h1>
+            <div class="on-header__date" id="on-date"></div>
+            <div class="on-refresh"><span class="on-refresh__dot" id="on-refresh-dot"></span><span id="on-refresh-text">{% trans "Just now" %}</span><button class="on-refresh__toggle" id="on-refresh-toggle" title="{% trans 'Toggle auto-refresh' %}">⟳</button></div>
+        </div>
+        <div style="display:flex;gap:8px;">
+            <div class="on-period-picker">
+                <button class="on-period-preset" data-preset="this_month">{% trans "This Month" %}</button>
+                <button class="on-period-preset" data-preset="last_month">{% trans "Last Month" %}</button>
+                <button class="on-period-preset" data-preset="this_quarter">{% trans "Quarter" %}</button>
+                <input type="date" id="on-from-date" title="{% trans 'From' %}">
+                <span class="on-period-picker__sep">&rarr;</span>
+                <input type="date" id="on-to-date" title="{% trans 'To' %}">
+            </div>
+            <button class="on-btn-customize" id="on-open-customize" title="{% trans 'Customize' %}">⚙ {% trans "Customize" %}</button>
+        </div>
+    </div>
+
+    <div class="on-kpi-grid" id="on-kpi-grid">
+        <div class="on-skeleton on-skeleton--kpi"></div>
+        <div class="on-skeleton on-skeleton--kpi"></div>
+        <div class="on-skeleton on-skeleton--kpi"></div>
+        <div class="on-skeleton on-skeleton--kpi"></div>
+    </div>
+
+    <div class="on-layout">
+        <div class="on-main">
+            <div class="on-chart-grid">
+                <div class="on-chart-card on-chart-card--wide" data-chart-id="stage_pipeline" data-chart-label="{% trans 'Onboarding Stage Pipeline' %}">
+                    <div class="on-chart-card__header"><div><div class="on-chart-card__title">{% trans "Onboarding Stage Pipeline" %}</div><div class="on-chart-card__subtitle">{% trans "Candidates per stage" %}</div></div></div>
+                    <div class="on-chart-card__body"><div id="chart-on-stages"></div></div>
+                </div>
+                <div class="on-chart-card" data-chart-id="task_status" data-chart-label="{% trans 'Task Status' %}">
+                    <div class="on-chart-card__header"><div><div class="on-chart-card__title">{% trans "Task Status" %}</div><div class="on-chart-card__subtitle">{% trans "All onboarding tasks" %}</div></div></div>
+                    <div class="on-chart-card__body"><div id="chart-on-tasks"></div></div>
+                </div>
+                <div class="on-chart-card" data-chart-id="by_recruitment" data-chart-label="{% trans 'By Recruitment' %}">
+                    <div class="on-chart-card__header"><div><div class="on-chart-card__title">{% trans "By Recruitment" %}</div><div class="on-chart-card__subtitle">{% trans "Candidates per recruitment" %}</div></div></div>
+                    <div class="on-chart-card__body"><div id="chart-on-recruitment"></div></div>
+                </div>
+                <div class="on-chart-card on-chart-card--wide" data-chart-id="by_position" data-chart-label="{% trans 'By Job Position' %}">
+                    <div class="on-chart-card__header"><div><div class="on-chart-card__title">{% trans "By Job Position" %}</div><div class="on-chart-card__subtitle">{% trans "Candidates per position" %}</div></div></div>
+                    <div class="on-chart-card__body"><div id="chart-on-position"></div></div>
+                </div>
+                <div class="on-chart-card on-chart-card--wide" data-chart-id="completion_trend" data-chart-label="{% trans 'Completion Trend' %}">
+                    <div class="on-chart-card__header"><div><div class="on-chart-card__title">{% trans "Completion Trend" %}</div><div class="on-chart-card__subtitle">{% trans "Onboarding completions — last 6 months" %}</div></div></div>
+                    <div class="on-chart-card__body"><div id="chart-completion-trend"></div></div>
+                </div>
+            </div>
+        </div>
+
+        <div class="on-sidebar">
+            <div class="on-info-panel">
+                <div class="on-info-panel__header">
+                    <div class="on-info-panel__title">{% trans "Onboarding Candidates" %}</div>
+                    <a href="{% url 'candidate-view' %}?start_onboard=true" style="font-size:11px;color:var(--on-indigo);text-decoration:none;">{% trans "View all" %}</a>
+                </div>
+                <div class="on-info-panel__body" id="on-candidates">
+                    <div class="on-info-panel__empty">{% trans "Loading..." %}</div>
+                </div>
+            </div>
+            <div class="on-info-panel">
+                <div class="on-info-panel__header">
+                    <div class="on-info-panel__title">{% trans "My Tasks" %}</div>
+                </div>
+                <div class="on-info-panel__body" id="on-my-tasks">
+                    <div class="on-info-panel__empty">{% trans "Loading..." %}</div>
+                </div>
+            </div>
+            <div class="on-info-panel">
+                <div class="on-info-panel__header">
+                    <div class="on-info-panel__title">{% trans "Portal Access" %}</div>
+                </div>
+                <div class="on-info-panel__body" id="on-portal-status">
+                    <div class="on-info-panel__empty">{% trans "Loading..." %}</div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Customize Panel -->
+<div class="on-customize-overlay" id="on-customize-overlay"></div>
+<div class="on-customize-panel" id="on-customize-panel">
+    <div class="on-customize-panel__header">
+        <h3>{% trans "Customize Dashboard" %}</h3>
+        <button class="on-customize-panel__close" id="on-close-customize">&times;</button>
+    </div>
+    <div class="on-customize-panel__body" id="on-customize-list"></div>
+    <div class="on-customize-panel__footer">
+        <button class="on-cust-btn on-cust-btn--ghost" id="on-reset-customize">{% trans "Reset" %}</button>
+        <button class="on-cust-btn on-cust-btn--primary" id="on-save-customize">{% trans "Save" %}</button>
+    </div>
+</div>
+
+<script>
+(function() {
+    const isDark = document.documentElement.classList.contains('dark') || document.body.classList.contains('dark');
+    const textColor = isDark ? '#e2e8f0' : '#334155';
+    const gridColor = isDark ? 'rgba(255,255,255,0.06)' : 'rgba(0,0,0,0.06)';
+    const cardBg = isDark ? '#1e293b' : '#ffffff';
+    const COLORS = ['#6366f1','#22c55e','#f59e0b','#ef4444','#3b82f6','#a855f7','#06b6d4','#ec4899','#14b8a6','#f97316'];
+    const taskColors = { todo: '#94a3b8', scheduled: '#3b82f6', ongoing: '#f59e0b', stuck: '#ef4444', done: '#22c55e' };
+    const emptyHtml = (msg) => `<div class="on-empty"><img src="/static/images/ui/no_records.svg" alt="">${msg}</div>`;
+
+    document.getElementById('on-date').textContent = new Date().toLocaleDateString('en-US', {
+        weekday: 'long', year: 'numeric', month: 'long', day: 'numeric'
+    });
+
+    // ── Period Picker ──
+    const PERIOD_KEY = 'on_period_v2';
+    const fromInput = document.getElementById('on-from-date');
+    const toInput = document.getElementById('on-to-date');
+    function getToday() { return new Date().toISOString().split('T')[0]; }
+    function getFirstOfMonth(d) { const dt = new Date(d || getToday()); dt.setDate(1); return dt.toISOString().split('T')[0]; }
+    function getLastOfMonth(d) { const dt = new Date(d || getToday()); return new Date(dt.getFullYear(), dt.getMonth()+1, 0).toISOString().split('T')[0]; }
+    function initPeriod() {
+        const saved = sessionStorage.getItem(PERIOD_KEY);
+        if (saved) { try { const p = JSON.parse(saved); fromInput.value = p.from; toInput.value = p.to; return; } catch {} }
+        fromInput.value = getFirstOfMonth(); toInput.value = getLastOfMonth();
+    }
+    function savePeriod() { sessionStorage.setItem(PERIOD_KEY, JSON.stringify({ from: fromInput.value, to: toInput.value })); }
+    function periodParams() { return ""; /* DATE FILTER DISABLED */ }
+    function urlWithPeriod(u) { return u + (u.includes('?') ? '&' : '?') + periodParams(); }
+    function fetchP(url) { return fetch(urlWithPeriod(url)); }
+    function setPreset(p) {
+        const t = new Date(); let f, to;
+        if (p === 'this_month') { f = new Date(t.getFullYear(), t.getMonth(), 1); to = new Date(t.getFullYear(), t.getMonth()+1, 0); }
+        else if (p === 'last_month') { f = new Date(t.getFullYear(), t.getMonth()-1, 1); to = new Date(t.getFullYear(), t.getMonth(), 0); }
+        else if (p === 'this_quarter') { f = new Date(t.getFullYear(), Math.floor(t.getMonth()/3)*3, 1); to = new Date(t.getFullYear(), Math.floor(t.getMonth()/3)*3+3, 0); }
+        fromInput.value = f.toISOString().split('T')[0]; toInput.value = to.toISOString().split('T')[0];
+        savePeriod(); document.querySelectorAll('.on-period-preset').forEach(b => b.classList.toggle('on-period-preset--active', b.dataset.preset === p));
+        location.reload();
+    }
+    document.querySelectorAll('.on-period-preset').forEach(b => b.addEventListener('click', () => setPreset(b.dataset.preset)));
+    [fromInput, toInput].forEach(i => i.addEventListener('change', () => { savePeriod(); location.reload(); }));
+    initPeriod();
+
+    // ── Chart Customize ──
+    const CUST_KEY = 'on_chart_prefs';
+    function getDefaultOrder() { return Array.from(document.querySelectorAll('[data-chart-id]')).map(c => ({ id: c.dataset.chartId, visible: true })); }
+    function loadCustPrefs() { try { const r = localStorage.getItem(CUST_KEY); return r ? JSON.parse(r) : null; } catch { return null; } }
+    function saveCustPrefs(p) { localStorage.setItem(CUST_KEY, JSON.stringify(p)); }
+    function applyCustPrefs(p) {
+        if (!p) return;
+        const container = document.querySelector('.on-chart-grid');
+        const cards = {}; container.querySelectorAll('[data-chart-id]').forEach(c => { cards[c.dataset.chartId] = c; });
+        p.forEach(pr => { const card = cards[pr.id]; if (card) { container.appendChild(card); if (pr.visible === false) card.style.display = 'none'; else card.style.display = ''; } });
+        Object.keys(cards).forEach(id => { if (!p.find(pr => pr.id === id)) { container.appendChild(cards[id]); cards[id].style.display = ''; } });
+    }
+    applyCustPrefs(loadCustPrefs());
+
+    const custOverlay = document.getElementById('on-customize-overlay');
+    const custPanel = document.getElementById('on-customize-panel');
+    const custList = document.getElementById('on-customize-list');
+
+    function openCust() {
+        const prefs = loadCustPrefs() || getDefaultOrder();
+        const allCards = {}; document.querySelectorAll('[data-chart-id]').forEach(c => { allCards[c.dataset.chartId] = { id: c.dataset.chartId, label: c.dataset.chartLabel }; });
+        const ordered = []; prefs.forEach(p => { if (allCards[p.id]) ordered.push({ ...allCards[p.id], visible: p.visible !== false }); });
+        Object.keys(allCards).forEach(id => { if (!ordered.find(o => o.id === id)) ordered.push({ ...allCards[id], visible: true }); });
+        let html = ''; ordered.forEach((item, idx) => {
+            html += `<div class="on-cust-item" draggable="true" data-cust-id="${item.id}"><span class="on-cust-item__handle">&#x2630;</span><div class="on-cust-item__label">${item.label}</div><button class="on-cust-item__toggle ${item.visible ? 'on-cust-item__toggle--on' : ''}" data-cust-toggle="${item.id}"></button></div>`;
+        });
+        custList.innerHTML = html;
+        initCustDrag();
+        custOverlay.classList.add('on-customize-overlay--open'); custPanel.classList.add('on-customize-panel--open');
+    }
+    function closeCust() { custOverlay.classList.remove('on-customize-overlay--open'); custPanel.classList.remove('on-customize-panel--open'); }
+
+    function initCustDrag() {
+        let dragEl = null;
+        custList.querySelectorAll('.on-cust-item').forEach(item => {
+            item.addEventListener('dragstart', e => { dragEl = item; item.classList.add('on-dragging'); e.dataTransfer.effectAllowed = 'move'; e.dataTransfer.setData('text/plain', ''); });
+            item.addEventListener('dragend', () => { if (dragEl) dragEl.classList.remove('on-dragging'); custList.querySelectorAll('.on-cust-item').forEach(i => i.classList.remove('on-drag-over')); dragEl = null; });
+            item.addEventListener('dragover', e => { e.preventDefault(); e.dataTransfer.dropEffect = 'move'; if (item !== dragEl) item.classList.add('on-drag-over'); });
+            item.addEventListener('dragleave', () => item.classList.remove('on-drag-over'));
+            item.addEventListener('drop', e => { e.preventDefault(); item.classList.remove('on-drag-over'); if (dragEl && item !== dragEl) { const items = Array.from(custList.querySelectorAll('.on-cust-item')); if (items.indexOf(dragEl) < items.indexOf(item)) item.parentNode.insertBefore(dragEl, item.nextSibling); else item.parentNode.insertBefore(dragEl, item); } });
+        });
+        custList.querySelectorAll('.on-cust-item__toggle').forEach(btn => btn.addEventListener('click', e => { e.stopPropagation(); btn.classList.toggle('on-cust-item__toggle--on'); }));
+    }
+
+    function getCustState() { return Array.from(custList.querySelectorAll('.on-cust-item')).map(item => ({ id: item.dataset.custId, visible: item.querySelector('.on-cust-item__toggle').classList.contains('on-cust-item__toggle--on') })); }
+
+    document.getElementById('on-open-customize').addEventListener('click', openCust);
+    document.getElementById('on-close-customize').addEventListener('click', closeCust);
+    custOverlay.addEventListener('click', closeCust);
+    document.getElementById('on-save-customize').addEventListener('click', () => { const p = getCustState(); saveCustPrefs(p); applyCustPrefs(p); closeCust(); });
+    document.getElementById('on-reset-customize').addEventListener('click', () => { localStorage.removeItem(CUST_KEY); location.reload(); });
+
+    // ── Auto-refresh ──
+    const REFRESH_INTERVAL = 300000; // 5 minutes
+    const REFRESH_KEY = 'on_auto_refresh';
+    let refreshTimer = null;
+    let lastRefresh = Date.now();
+    const refreshDot = document.getElementById('on-refresh-dot');
+    const refreshText = document.getElementById('on-refresh-text');
+    const refreshToggle = document.getElementById('on-refresh-toggle');
+    let autoRefreshOn = localStorage.getItem(REFRESH_KEY) !== 'off';
+
+    function updateRefreshText() {
+        const mins = Math.floor((Date.now() - lastRefresh) / 60000);
+        refreshText.textContent = mins < 1 ? 'Just now' : mins + 'm ago';
+    }
+    setInterval(updateRefreshText, 30000);
+
+    function startAutoRefresh() {
+        autoRefreshOn = true;
+        localStorage.setItem(REFRESH_KEY, 'on');
+        refreshDot.classList.add('on-refresh__dot--pulse');
+        refreshToggle.textContent = '⟳';
+        refreshToggle.title = 'Auto-refresh ON (5 min)';
+        refreshTimer = setInterval(() => location.reload(), REFRESH_INTERVAL);
+    }
+    function stopAutoRefresh() {
+        autoRefreshOn = false;
+        localStorage.setItem(REFRESH_KEY, 'off');
+        refreshDot.classList.remove('on-refresh__dot--pulse');
+        refreshToggle.textContent = '⏸';
+        refreshToggle.title = 'Auto-refresh OFF';
+        if (refreshTimer) { clearInterval(refreshTimer); refreshTimer = null; }
+    }
+    refreshToggle.addEventListener('click', () => { if (autoRefreshOn) stopAutoRefresh(); else startAutoRefresh(); });
+    if (autoRefreshOn) startAutoRefresh(); else stopAutoRefresh();
+
+    // ─── KPI CARDS ───
+    fetchP("{% url 'onboarding-modern-kpi' %}")
+        .then(r => r.json())
+        .then(data => {
+            document.getElementById('on-kpi-grid').innerHTML = `
+                <a href="{% url 'candidate-view' %}?start_onboard=true" class="on-kpi-card">
+                    <div class="on-kpi-card__icon on-kpi-card__icon--blue">👤</div>
+                    <div class="on-kpi-card__label">{% trans "Onboarding" %}</div>
+                    <div class="on-kpi-card__value">${data.total_candidates}</div>
+                    <div class="on-kpi-card__sub">${data.in_progress} {% trans "in progress" %}</div>
+                </a>
+                <a href="{% url 'cbv-pipeline-onboarding' %}" class="on-kpi-card">
+                    <div class="on-kpi-card__icon on-kpi-card__icon--green">✓</div>
+                    <div class="on-kpi-card__label">{% trans "Completed" %}</div>
+                    <div class="on-kpi-card__value">${data.completed_onboarding}</div>
+                    <div class="on-kpi-card__sub">{% trans "Finished onboarding" %}</div>
+                </a>
+                <a href="{% url 'cbv-pipeline-onboarding' %}" class="on-kpi-card">
+                    <div class="on-kpi-card__icon on-kpi-card__icon--amber">📋</div>
+                    <div class="on-kpi-card__label">{% trans "Task Completion" %}</div>
+                    <div class="on-kpi-card__value">${data.task_completion}%</div>
+                    <div class="on-kpi-card__sub">${data.completed_tasks}/${data.total_tasks} {% trans "done" %}${data.stuck_tasks > 0 ? ' · <span class="on-badge on-badge--red">' + data.stuck_tasks + ' stuck</span>' : ''}</div>
+                </a>
+                <a href="{% url 'recruitment-view' %}" class="on-kpi-card">
+                    <div class="on-kpi-card__icon on-kpi-card__icon--purple">🔄</div>
+                    <div class="on-kpi-card__label">{% trans "Recruitments" %}</div>
+                    <div class="on-kpi-card__value">${data.active_recruitments}</div>
+                    <div class="on-kpi-card__sub">{% trans "Active hiring" %}</div>
+                </a>`;
+        });
+
+    // ─── STAGE PIPELINE ───
+    fetchP("{% url 'onboarding-modern-stages' %}")
+        .then(r => r.json())
+        .then(data => {
+            if (!data.stages.length) { document.querySelector("#chart-on-stages").innerHTML = emptyHtml('{% trans "No onboarding stages" %}'); return; }
+            new ApexCharts(document.querySelector("#chart-on-stages"), {
+                series: [{ name: '{% trans "Candidates" %}', data: data.stages.map(s => s.count) }],
+                chart: { type: 'bar', height: 280, toolbar: { show: false }, background: 'transparent', fontFamily: 'inherit' },
+                colors: data.stages.map((s, i) => s.is_final ? '#22c55e' : COLORS[i % COLORS.length]),
+                plotOptions: { bar: { borderRadius: 6, columnWidth: '55%', distributed: true } },
+                xaxis: { categories: data.stages.map(s => s.stage), labels: { style: { colors: textColor, fontSize: '11px' } }, axisBorder: { show: false }, axisTicks: { show: false } },
+                yaxis: { labels: { style: { colors: textColor } } },
+                grid: { borderColor: gridColor, strokeDashArray: 4 },
+                dataLabels: { enabled: true, style: { fontSize: '12px', colors: ['#fff'] } },
+                legend: { show: false },
+                tooltip: { theme: isDark ? 'dark' : 'light', y: { formatter: (v, { dataPointIndex: i }) => `${v} candidates (${data.stages[i].recruitment})` } },
+            }).render();
+        });
+
+    // ─── TASK STATUS ───
+    fetchP("{% url 'onboarding-modern-tasks' %}")
+        .then(r => r.json())
+        .then(data => {
+            const total = data.statuses.reduce((a, s) => a + s.count, 0);
+            if (!total) { document.querySelector("#chart-on-tasks").innerHTML = emptyHtml('{% trans "No tasks" %}'); return; }
+            new ApexCharts(document.querySelector("#chart-on-tasks"), {
+                series: data.statuses.map(s => s.count),
+                chart: { type: 'donut', height: 300, background: 'transparent', fontFamily: 'inherit' },
+                labels: data.statuses.map(s => s.label),
+                colors: data.statuses.map(s => taskColors[s.status] || '#94a3b8'),
+                plotOptions: { pie: { donut: { size: '65%', labels: { show: true, total: { show: true, label: '{% trans "Total" %}', color: textColor, fontSize: '13px', fontWeight: 600, formatter: w => w.globals.seriesTotals.reduce((a,b)=>a+b,0) } } } } },
+                stroke: { width: 2, colors: [cardBg] }, dataLabels: { enabled: false },
+                legend: { position: 'bottom', labels: { colors: textColor }, fontSize: '11px', markers: { width: 8, height: 8, radius: 2 } },
+                tooltip: { theme: isDark ? 'dark' : 'light' },
+            }).render();
+        });
+
+    // ─── BY RECRUITMENT ───
+    fetchP("{% url 'onboarding-modern-recruitment' %}")
+        .then(r => r.json())
+        .then(data => {
+            if (!data.recruitments.length) { document.querySelector("#chart-on-recruitment").innerHTML = emptyHtml('{% trans "No data" %}'); return; }
+            new ApexCharts(document.querySelector("#chart-on-recruitment"), {
+                series: data.recruitments.map(r => r.count),
+                chart: { type: 'donut', height: 300, background: 'transparent', fontFamily: 'inherit',
+                    events: { dataPointSelection: (e, ctx, config) => {
+                        const rec = data.recruitments[config.dataPointIndex].recruitment;
+                        window.location.href = "{% url 'candidate-view' %}?recruitment=" + encodeURIComponent(rec) + "&start_onboard=true";
+                    }}
+                },
+                labels: data.recruitments.map(r => r.recruitment),
+                colors: COLORS.slice(0, data.recruitments.length),
+                plotOptions: { pie: { donut: { size: '65%', labels: { show: true, total: { show: true, label: '{% trans "Total" %}', color: textColor, fontSize: '13px', fontWeight: 600, formatter: w => w.globals.seriesTotals.reduce((a,b)=>a+b,0) } } } } },
+                stroke: { width: 2, colors: [cardBg] }, dataLabels: { enabled: false },
+                legend: { position: 'bottom', labels: { colors: textColor }, fontSize: '11px', markers: { width: 8, height: 8, radius: 2 } },
+                tooltip: { theme: isDark ? 'dark' : 'light' },
+            }).render();
+        });
+
+    // ─── BY JOB POSITION ───
+    fetchP("{% url 'onboarding-modern-position' %}")
+        .then(r => r.json())
+        .then(data => {
+            if (!data.positions.length) { document.querySelector("#chart-on-position").innerHTML = emptyHtml('{% trans "No data" %}'); return; }
+            new ApexCharts(document.querySelector("#chart-on-position"), {
+                series: [{ name: '{% trans "Candidates" %}', data: data.positions.map(p => p.count) }],
+                chart: { type: 'bar', height: 260, toolbar: { show: false }, background: 'transparent', fontFamily: 'inherit' },
+                colors: COLORS,
+                plotOptions: { bar: { borderRadius: 6, horizontal: true, barHeight: '55%', distributed: true } },
+                xaxis: { categories: data.positions.map(p => p.position), labels: { style: { colors: textColor } } },
+                yaxis: { labels: { style: { colors: textColor, fontSize: '11px' } } },
+                grid: { borderColor: gridColor },
+                dataLabels: { enabled: true, style: { fontSize: '11px' } },
+                legend: { show: false },
+                tooltip: { theme: isDark ? 'dark' : 'light' },
+            }).render();
+        });
+
+    // ─── COMPLETION TREND ───
+    fetchP("{% url 'onboarding-modern-completion-trend' %}")
+        .then(r => r.json())
+        .then(data => {
+            if (!data.months.length || !data.months.some(m => m.count > 0)) { document.querySelector("#chart-completion-trend").innerHTML = emptyHtml('{% trans "No completions" %}'); return; }
+            new ApexCharts(document.querySelector("#chart-completion-trend"), {
+                series: [{ name: '{% trans "Completed" %}', data: data.months.map(m => m.count) }],
+                chart: { type: 'bar', height: 260, toolbar: { show: false }, background: 'transparent', fontFamily: 'inherit' },
+                colors: ['#22c55e'],
+                plotOptions: { bar: { borderRadius: 6, columnWidth: '50%' } },
+                xaxis: { categories: data.months.map(m => m.month), labels: { style: { colors: textColor, fontSize: '11px' } }, axisBorder: { show: false }, axisTicks: { show: false } },
+                yaxis: { labels: { style: { colors: textColor } } },
+                grid: { borderColor: gridColor, strokeDashArray: 4 },
+                dataLabels: { enabled: true, style: { fontSize: '12px', colors: ['#fff'] } },
+                tooltip: { theme: isDark ? 'dark' : 'light', y: { formatter: v => v + ' completed' } },
+            }).render();
+        });
+
+    // ─── CANDIDATES LIST ───
+    fetch("{% url 'onboarding-modern-candidates' %}")
+        .then(r => r.json())
+        .then(data => {
+            const el = document.getElementById('on-candidates');
+            if (!data.candidates.length) { el.innerHTML = '<div class="on-info-panel__empty">{% trans "No onboarding candidates" %}</div>'; return; }
+            el.innerHTML = data.candidates.map(c => {
+                const initials = c.name.split(' ').map(w => w[0]).join('').slice(0, 2).toUpperCase();
+                const avatarInner = c.profile ? `<img src="${c.profile}" alt="">` : initials;
+                const color = c.progress >= 80 ? '#22c55e' : c.progress >= 40 ? '#f59e0b' : '#3b82f6';
+                return `<div class="on-cand-item">
+                    <div class="on-cand-item__avatar">${avatarInner}</div>
+                    <div class="on-cand-item__info">
+                        <div class="on-cand-item__name">${c.name}</div>
+                        <div class="on-cand-item__detail">${c.position} · ${c.stage}</div>
+                    </div>
+                    <div class="on-cand-item__progress">
+                        <div class="on-cand-item__bar"><div class="on-cand-item__fill" style="width:${c.progress}%;background:${color};"></div></div>
+                        <div class="on-cand-item__pct" style="color:${color};">${c.progress}%</div>
+                    </div>
+                </div>`;
+            }).join('');
+        }).catch(() => { document.getElementById('on-candidates').innerHTML = '<div class="on-info-panel__empty">{% trans "No data" %}</div>'; });
+
+    // ─── MY TASKS ───
+    fetch("{% url 'onboarding-modern-my-tasks' %}")
+        .then(r => r.json())
+        .then(data => {
+            const el = document.getElementById('on-my-tasks');
+            if (!data.tasks.length) { el.innerHTML = '<div class="on-info-panel__empty">{% trans "No tasks assigned to you" %}</div>'; return; }
+            el.innerHTML = data.tasks.map(t => {
+                const color = t.progress >= 80 ? '#22c55e' : t.progress >= 40 ? '#f59e0b' : '#3b82f6';
+                return `<div class="on-cand-item">
+                    <div class="on-cand-item__info">
+                        <div class="on-cand-item__name">${t.title}</div>
+                        <div class="on-cand-item__detail">${t.stage} · ${t.done}/${t.total} {% trans "done" %}${t.stuck > 0 ? ' · <span style="color:#ef4444;">' + t.stuck + ' stuck</span>' : ''}</div>
+                    </div>
+                    <div class="on-cand-item__progress">
+                        <div class="on-cand-item__bar"><div class="on-cand-item__fill" style="width:${t.progress}%;background:${color};"></div></div>
+                        <div class="on-cand-item__pct" style="color:${color};">${t.progress}%</div>
+                    </div>
+                </div>`;
+            }).join('');
+        }).catch(() => { document.getElementById('on-my-tasks').innerHTML = '<div class="on-info-panel__empty">{% trans "No data" %}</div>'; });
+
+    // ─── PORTAL ACCESS ───
+    fetch("{% url 'onboarding-modern-portal-status' %}")
+        .then(r => r.json())
+        .then(data => {
+            const el = document.getElementById('on-portal-status');
+            if (!data.portals.length) { el.innerHTML = '<div class="on-info-panel__empty">{% trans "No portal data" %}</div>'; return; }
+            el.innerHTML = data.portals.map(p => {
+                const badge = p.used
+                    ? `<span class="on-badge on-badge--green">${p.visits} {% trans "visits" %}</span>`
+                    : '<span class="on-badge on-badge--amber">{% trans "Not accessed" %}</span>';
+                return `<div class="on-cand-item"><div class="on-cand-item__info"><div class="on-cand-item__name">${p.name}</div></div>${badge}</div>`;
+            }).join('');
+        }).catch(() => { document.getElementById('on-portal-status').innerHTML = '<div class="on-info-panel__empty">{% trans "No data" %}</div>'; });
+
+})();
+</script>
+{% endblock %}

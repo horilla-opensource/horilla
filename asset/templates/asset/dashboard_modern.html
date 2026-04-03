@@ -1,0 +1,536 @@
+{% extends "index.html" %}
+{% load static i18n %}
+
+{% block styles %}
+<script src="https://cdn.jsdelivr.net/npm/apexcharts"></script>
+<style>
+    :root { --as-indigo: #6366f1; --as-green: #22c55e; --as-amber: #f59e0b; --as-red: #ef4444; --as-blue: #3b82f6; --as-purple: #a855f7; }
+    .as-dashboard { font-family: inherit; background: #ffffff; margin: -24px; padding: 24px; min-height: calc(100vh - 80px); }
+    .dark .as-dashboard { background: #0f172a; }
+    .as-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; }
+    .as-header h1 { font-size: 22px; font-weight: 700; }
+    .as-header__date { font-size: 13px; opacity: 0.6; margin-top: 2px; }
+    .as-btn-back { padding: 6px 14px; border-radius: 8px; border: 1px solid rgba(128,128,128,0.2); font-size: 13px; cursor: pointer; text-decoration: none; color: inherit; transition: all 0.15s; background: none; }
+    .as-btn-back:hover { border-color: var(--as-indigo); color: var(--as-indigo); text-decoration: none; }
+
+    .as-kpi-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 14px; margin-bottom: 20px; }
+    .as-kpi-card { border-radius: 12px; padding: 18px; background: #ffffff; border: 1px solid rgba(128,128,128,0.12); transition: all 0.2s; text-decoration: none; color: inherit; display: block; }
+    .as-kpi-card:hover { box-shadow: 0 4px 12px rgba(0,0,0,0.08); transform: translateY(-1px); text-decoration: none; color: inherit; }
+    .dark .as-kpi-card { background: rgba(255,255,255,0.04); border-color: rgba(255,255,255,0.08); }
+    .as-kpi-card__icon { width: 38px; height: 38px; border-radius: 10px; display: flex; align-items: center; justify-content: center; font-size: 18px; margin-bottom: 10px; }
+    .as-kpi-card__icon--blue { background: #dbeafe; color: var(--as-blue); } .as-kpi-card__icon--green { background: #dcfce7; color: var(--as-green); }
+    .as-kpi-card__icon--amber { background: #fef3c7; color: var(--as-amber); } .as-kpi-card__icon--red { background: #fee2e2; color: var(--as-red); }
+    .dark .as-kpi-card__icon--blue { background: #1e3a5f; } .dark .as-kpi-card__icon--green { background: #14532d; }
+    .dark .as-kpi-card__icon--amber { background: #78350f; } .dark .as-kpi-card__icon--red { background: #7f1d1d; }
+    .as-kpi-card__label { font-size: 11px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.05em; opacity: 0.5; margin-bottom: 6px; }
+    .as-kpi-card__value { font-size: 28px; font-weight: 800; line-height: 1; margin-bottom: 4px; }
+    .as-kpi-card__sub { font-size: 12px; opacity: 0.6; }
+    .as-badge { display: inline-flex; align-items: center; gap: 3px; font-size: 11px; font-weight: 600; padding: 2px 8px; border-radius: 999px; }
+    .as-badge--green { background: #dcfce7; color: #166534; } .as-badge--amber { background: #fef3c7; color: #92400e; } .as-badge--red { background: #fee2e2; color: #991b1b; }
+    .dark .as-badge--green { background: #166534; color: #bbf7d0; } .dark .as-badge--amber { background: #92400e; color: #fde68a; } .dark .as-badge--red { background: #7f1d1d; color: #fca5a5; }
+
+    .as-layout { display: grid; grid-template-columns: 1fr 300px; gap: 20px; align-items: start; }
+    .as-main { min-width: 0; } .as-sidebar { display: flex; flex-direction: column; gap: 16px; position: sticky; top: 90px; }
+    .as-chart-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 16px; margin-bottom: 20px; }
+    .as-chart-card { border-radius: 12px; background: #ffffff; border: 1px solid rgba(128,128,128,0.12); overflow: visible; }
+    .dark .as-chart-card { background: rgba(255,255,255,0.04); border-color: rgba(255,255,255,0.08); }
+    .as-chart-card--wide { grid-column: span 2; }
+    .as-chart-card__header { padding: 14px 18px 0; display: flex; justify-content: space-between; align-items: center; }
+    .as-chart-card__title { font-size: 14px; font-weight: 600; }
+    .as-chart-card__subtitle { font-size: 11px; opacity: 0.5; margin-top: 2px; }
+    .as-chart-card__body { padding: 6px 10px 10px; }
+    .as-empty { text-align: center; padding: 30px 0; opacity: 0.6; font-size: 13px; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 8px; }
+    .as-empty img { width: 100px; opacity: 0.7; }
+    .as-skeleton { background: linear-gradient(90deg, rgba(128,128,128,0.1) 25%, transparent 50%, rgba(128,128,128,0.1) 75%); background-size: 200% 100%; animation: as-shimmer 1.5s infinite; border-radius: 12px; }
+    @keyframes as-shimmer { 0% { background-position: 200% 0; } 100% { background-position: -200% 0; } }
+    .as-skeleton--kpi { height: 110px; }
+    .as-info-panel { border-radius: 12px; background: #ffffff; border: 1px solid rgba(128,128,128,0.12); overflow: hidden; display: flex; flex-direction: column; }
+    .dark .as-info-panel { background: rgba(255,255,255,0.04); border-color: rgba(255,255,255,0.08); }
+    .as-info-panel__header { padding: 14px 16px 10px; display: flex; justify-content: space-between; align-items: center; flex-shrink: 0; border-bottom: 1px solid rgba(128,128,128,0.08); }
+    .as-info-panel__title { font-size: 13px; font-weight: 700; }
+    .as-info-panel__body { padding: 8px 16px 12px; overflow-y: auto; flex: 1; max-height: 350px; }
+    .as-info-panel__empty { text-align: center; padding: 30px 0; opacity: 0.4; font-size: 12px; }
+    .as-list-item { display: flex; align-items: center; gap: 10px; padding: 8px 0; border-bottom: 1px solid rgba(128,128,128,0.06); text-decoration: none; color: inherit; }
+    .as-list-item:last-child { border-bottom: none; } .as-list-item:hover { opacity: 0.8; }
+    .as-list-item__avatar { width: 32px; height: 32px; border-radius: 50%; background: #dbeafe; color: var(--as-blue); display: flex; align-items: center; justify-content: center; font-size: 11px; font-weight: 700; flex-shrink: 0; overflow: hidden; }
+    .dark .as-list-item__avatar { background: #1e3a5f; }
+    .as-list-item__avatar img { width: 100%; height: 100%; object-fit: cover; }
+    .as-list-item__info { flex: 1; min-width: 0; }
+    .as-list-item__name { font-size: 12px; font-weight: 600; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+    .as-list-item__detail { font-size: 11px; opacity: 0.5; }
+    .as-list-item__badge { flex-shrink: 0; }
+    /* Customize Panel */
+    .as-btn-customize { padding: 6px 12px; border-radius: 8px; border: 1px solid rgba(128,128,128,0.2); font-size: 13px; cursor: pointer; color: inherit; transition: all 0.15s; background: none; display: flex; align-items: center; gap: 5px; }
+    .as-btn-customize:hover { border-color: var(--as-indigo); color: var(--as-indigo); }
+    .as-customize-overlay { position: fixed; inset: 0; background: rgba(0,0,0,0.3); z-index: 1050; opacity: 0; pointer-events: none; transition: opacity 0.2s; }
+    .as-customize-overlay--open { opacity: 1; pointer-events: auto; }
+    .as-customize-panel { position: fixed; top: 0; right: -420px; width: 400px; height: 100vh; background: #ffffff; box-shadow: -4px 0 24px rgba(0,0,0,0.12); z-index: 1051; display: flex; flex-direction: column; transition: right 0.25s ease; }
+    .dark .as-customize-panel { background: #1e293b; }
+    .as-customize-panel--open { right: 0; }
+    .as-customize-panel__header { padding: 18px 20px; border-bottom: 1px solid rgba(128,128,128,0.12); display: flex; justify-content: space-between; align-items: center; flex-shrink: 0; }
+    .as-customize-panel__header h3 { font-size: 16px; font-weight: 700; margin: 0; }
+    .as-customize-panel__close { width: 32px; height: 32px; border-radius: 8px; border: none; background: rgba(128,128,128,0.08); cursor: pointer; font-size: 18px; display: flex; align-items: center; justify-content: center; color: inherit; }
+    .as-customize-panel__close:hover { background: rgba(128,128,128,0.16); }
+    .as-customize-panel__body { flex: 1; overflow-y: auto; padding: 12px 20px; }
+    .as-customize-panel__footer { padding: 14px 20px; border-top: 1px solid rgba(128,128,128,0.12); display: flex; justify-content: space-between; flex-shrink: 0; }
+    .as-cust-btn { padding: 7px 16px; border-radius: 8px; font-size: 13px; font-weight: 600; cursor: pointer; border: none; transition: all 0.15s; }
+    .as-cust-btn--primary { background: var(--as-indigo); color: #fff; }
+    .as-cust-btn--primary:hover { opacity: 0.9; }
+    .as-cust-btn--ghost { background: none; color: inherit; opacity: 0.6; }
+    .as-cust-btn--ghost:hover { opacity: 1; }
+    .as-cust-item { display: flex; align-items: center; gap: 10px; padding: 10px 12px; margin-bottom: 6px; border-radius: 8px; border: 1px solid rgba(128,128,128,0.1); background: rgba(128,128,128,0.02); cursor: grab; user-select: none; }
+    .as-cust-item:active { cursor: grabbing; }
+    .as-cust-item.as-dragging { opacity: 0.85; box-shadow: 0 4px 16px rgba(0,0,0,0.12); border-color: var(--as-indigo); }
+    .as-cust-item.as-drag-over { border-top: 2px solid var(--as-indigo); }
+    .as-cust-item__handle { font-size: 16px; opacity: 0.3; cursor: grab; flex-shrink: 0; }
+    .as-cust-item__label { flex: 1; font-size: 13px; font-weight: 500; }
+    .as-cust-item__toggle { width: 36px; height: 20px; border-radius: 12px; background: #e2e8f0; position: relative; cursor: pointer; transition: background 0.2s; flex-shrink: 0; border: none; }
+    .dark .as-cust-item__toggle { background: #334155; }
+    .as-cust-item__toggle::after { content: ''; position: absolute; width: 16px; height: 16px; border-radius: 50%; top: 2px; left: 2px; background: #fff; box-shadow: 0 1px 3px rgba(0,0,0,0.2); transition: transform 0.2s; }
+    .as-cust-item__toggle--on { background: var(--as-indigo); }
+    .dark .as-cust-item__toggle--on { background: var(--as-indigo); }
+    .as-cust-item__toggle--on::after { transform: translateX(16px); }
+    @media (max-width: 1024px) { .as-customize-panel { width: 320px; right: -340px; } }
+    @media (max-width: 640px) { .as-customize-panel { width: 100%; right: -100%; } }
+
+    /* Period Picker */
+    .as-period-picker { display: none; /* DATE FILTER DISABLED */ align-items: center; gap: 6px; font-size: 12px; }
+    .as-period-picker input[type="date"] { padding: 5px 8px; border-radius: 6px; border: 1px solid rgba(128,128,128,0.2); font-size: 12px; background: transparent; color: inherit; outline: none; transition: border-color 0.15s; }
+    .as-period-picker input[type="date"]:focus { border-color: var(--as-indigo); }
+    .as-period-picker__sep { opacity: 0.4; font-size: 11px; }
+    .as-period-preset { padding: 4px 10px; border-radius: 6px; border: 1px solid rgba(128,128,128,0.15); font-size: 11px; cursor: pointer; background: none; color: inherit; transition: all 0.15s; }
+    .as-period-preset:hover { border-color: var(--as-indigo); color: var(--as-indigo); }
+    .as-period-preset--active { background: var(--as-indigo); color: #fff; border-color: var(--as-indigo); }
+    .dark .as-period-picker input[type="date"] { color-scheme: dark; }
+
+    /* Auto-refresh */
+    .as-refresh { display: flex; align-items: center; gap: 6px; font-size: 11px; opacity: 0.5; }
+    .as-refresh__dot { width: 6px; height: 6px; border-radius: 50%; background: var(--as-green); flex-shrink: 0; }
+    .as-refresh__dot--pulse { animation: as-pulse 2s infinite; }
+    @keyframes as-pulse { 0%, 100% { opacity: 1; } 50% { opacity: 0.3; } }
+    .as-refresh__toggle { cursor: pointer; opacity: 0.6; font-size: 13px; border: none; background: none; color: inherit; padding: 2px; }
+    .as-refresh__toggle:hover { opacity: 1; }
+
+
+    /* Responsive */
+    @media (max-width: 1280px) { .as-layout { grid-template-columns: 1fr; } .as-sidebar { position: static; display: grid; grid-template-columns: 1fr 1fr; } }
+    @media (max-width: 1024px) { .as-kpi-grid { grid-template-columns: repeat(2, 1fr); } .as-chart-grid { grid-template-columns: 1fr; } .as-chart-card--wide { grid-column: span 1; } .as-sidebar { grid-template-columns: 1fr; } }
+    @media (max-width: 640px) { .as-kpi-grid { grid-template-columns: 1fr; } }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="as-dashboard">
+    <div class="as-header">
+        <div>
+            <h1>{% trans "Asset Dashboard" %}</h1>
+            <div class="as-header__date" id="as-date"></div>
+            <div class="as-refresh"><span class="as-refresh__dot" id="as-refresh-dot"></span><span id="as-refresh-text">{% trans "Just now" %}</span><button class="as-refresh__toggle" id="as-refresh-toggle" title="{% trans 'Toggle auto-refresh' %}">⟳</button></div>
+        </div>
+        <div style="display:flex;gap:8px;">
+            <div class="as-period-picker">
+                <button class="as-period-preset" data-preset="this_month">{% trans "This Month" %}</button>
+                <button class="as-period-preset" data-preset="last_month">{% trans "Last Month" %}</button>
+                <button class="as-period-preset" data-preset="this_quarter">{% trans "Quarter" %}</button>
+                <input type="date" id="as-from-date" title="{% trans 'From' %}">
+                <span class="as-period-picker__sep">&rarr;</span>
+                <input type="date" id="as-to-date" title="{% trans 'To' %}">
+            </div>
+            <button class="as-btn-customize" id="as-open-customize" title="{% trans 'Customize' %}">⚙ {% trans "Customize" %}</button>
+        </div>
+    </div>
+
+    <div class="as-kpi-grid" id="as-kpi-grid">
+        <div class="as-skeleton as-skeleton--kpi"></div>
+        <div class="as-skeleton as-skeleton--kpi"></div>
+        <div class="as-skeleton as-skeleton--kpi"></div>
+        <div class="as-skeleton as-skeleton--kpi"></div>
+    </div>
+
+    <div class="as-layout">
+        <div class="as-main">
+            <div class="as-chart-grid">
+                <div class="as-chart-card" data-chart-id="asset_status" data-chart-label="{% trans 'Asset Status' %}">
+                    <div class="as-chart-card__header"><div><div class="as-chart-card__title">{% trans "Asset Status" %}</div><div class="as-chart-card__subtitle">{% trans "In use, available, unavailable" %}</div></div></div>
+                    <div class="as-chart-card__body"><div id="chart-asset-status"></div></div>
+                </div>
+                <div class="as-chart-card" data-chart-id="request_status" data-chart-label="{% trans 'Request Status' %}">
+                    <div class="as-chart-card__header"><div><div class="as-chart-card__title">{% trans "Request Status" %}</div><div class="as-chart-card__subtitle">{% trans "Asset requests" %}</div></div></div>
+                    <div class="as-chart-card__body"><div id="chart-request-status"></div></div>
+                </div>
+                <div class="as-chart-card" data-chart-id="by_category" data-chart-label="{% trans 'Assets by Category' %}">
+                    <div class="as-chart-card__header"><div><div class="as-chart-card__title">{% trans "Assets by Category" %}</div><div class="as-chart-card__subtitle">{% trans "In use vs available per category" %}</div></div></div>
+                    <div class="as-chart-card__body"><div id="chart-by-category"></div></div>
+                </div>
+                <div class="as-chart-card" data-chart-id="value_category" data-chart-label="{% trans 'Value by Category' %}">
+                    <div class="as-chart-card__header"><div><div class="as-chart-card__title">{% trans "Value by Category" %}</div><div class="as-chart-card__subtitle">{% trans "Total purchase cost" %}</div></div></div>
+                    <div class="as-chart-card__body"><div id="chart-value-category"></div></div>
+                </div>
+                <div class="as-chart-card" data-chart-id="dept_assets" data-chart-label="{% trans 'Assets by Department' %}">
+                    <div class="as-chart-card__header"><div><div class="as-chart-card__title">{% trans "Assets by Department" %}</div><div class="as-chart-card__subtitle">{% trans "Allocated assets per department" %}</div></div></div>
+                    <div class="as-chart-card__body"><div id="chart-dept-assets"></div></div>
+                </div>
+                <div class="as-chart-card" data-chart-id="age_distribution" data-chart-label="{% trans 'Asset Age' %}">
+                    <div class="as-chart-card__header"><div><div class="as-chart-card__title">{% trans "Asset Age" %}</div><div class="as-chart-card__subtitle">{% trans "Fleet age distribution" %}</div></div></div>
+                    <div class="as-chart-card__body"><div id="chart-age-dist"></div></div>
+                </div>
+            </div>
+        </div>
+
+        <div class="as-sidebar">
+            <div class="as-info-panel">
+                <div class="as-info-panel__header">
+                    <div class="as-info-panel__title">{% trans "Expiring Soon" %}</div>
+                    <span style="font-size:11px;opacity:0.5;">{% trans "Next 60 days" %}</span>
+                </div>
+                <div class="as-info-panel__body" id="as-expiring">
+                    <div class="as-info-panel__empty">{% trans "Loading..." %}</div>
+                </div>
+            </div>
+            <div class="as-info-panel">
+                <div class="as-info-panel__header">
+                    <div class="as-info-panel__title">{% trans "Recent Allocations" %}</div>
+                </div>
+                <div class="as-info-panel__body" id="as-allocations">
+                    <div class="as-info-panel__empty">{% trans "Loading..." %}</div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Customize Panel -->
+<div class="as-customize-overlay" id="as-customize-overlay"></div>
+<div class="as-customize-panel" id="as-customize-panel">
+    <div class="as-customize-panel__header">
+        <h3>{% trans "Customize Dashboard" %}</h3>
+        <button class="as-customize-panel__close" id="as-close-customize">&times;</button>
+    </div>
+    <div class="as-customize-panel__body" id="as-customize-list"></div>
+    <div class="as-customize-panel__footer">
+        <button class="as-cust-btn as-cust-btn--ghost" id="as-reset-customize">{% trans "Reset" %}</button>
+        <button class="as-cust-btn as-cust-btn--primary" id="as-save-customize">{% trans "Save" %}</button>
+    </div>
+</div>
+
+<script>
+(function() {
+    const isDark = document.documentElement.classList.contains('dark') || document.body.classList.contains('dark');
+    const textColor = isDark ? '#e2e8f0' : '#334155';
+    const gridColor = isDark ? 'rgba(255,255,255,0.06)' : 'rgba(0,0,0,0.06)';
+    const cardBg = isDark ? '#1e293b' : '#ffffff';
+    const COLORS = ['#6366f1','#22c55e','#f59e0b','#ef4444','#3b82f6','#a855f7','#06b6d4','#ec4899','#14b8a6','#f97316'];
+    const emptyHtml = (msg) => `<div class="as-empty"><img src="/static/images/ui/no_records.svg" alt="">${msg}</div>`;
+    const fmt = v => Number(v).toLocaleString(undefined, { minimumFractionDigits: 0, maximumFractionDigits: 0 });
+
+    document.getElementById('as-date').textContent = new Date().toLocaleDateString('en-US', {
+        weekday: 'long', year: 'numeric', month: 'long', day: 'numeric'
+    });
+
+    // ── Period Picker ──
+    const PERIOD_KEY = 'as_period_v2';
+    const fromInput = document.getElementById('as-from-date');
+    const toInput = document.getElementById('as-to-date');
+    function getToday() { return new Date().toISOString().split('T')[0]; }
+    function getFirstOfMonth(d) { const dt = new Date(d || getToday()); dt.setDate(1); return dt.toISOString().split('T')[0]; }
+    function getLastOfMonth(d) { const dt = new Date(d || getToday()); return new Date(dt.getFullYear(), dt.getMonth()+1, 0).toISOString().split('T')[0]; }
+    function initPeriod() {
+        const saved = sessionStorage.getItem(PERIOD_KEY);
+        if (saved) { try { const p = JSON.parse(saved); fromInput.value = p.from; toInput.value = p.to; return; } catch {} }
+        fromInput.value = getFirstOfMonth(); toInput.value = getLastOfMonth();
+    }
+    function savePeriod() { sessionStorage.setItem(PERIOD_KEY, JSON.stringify({ from: fromInput.value, to: toInput.value })); }
+    function periodParams() { return ""; /* DATE FILTER DISABLED */ }
+    function urlWithPeriod(u) { return u + (u.includes('?') ? '&' : '?') + periodParams(); }
+    function fetchP(url) { return fetch(urlWithPeriod(url)); }
+    function setPreset(p) {
+        const t = new Date(); let f, to;
+        if (p === 'this_month') { f = new Date(t.getFullYear(), t.getMonth(), 1); to = new Date(t.getFullYear(), t.getMonth()+1, 0); }
+        else if (p === 'last_month') { f = new Date(t.getFullYear(), t.getMonth()-1, 1); to = new Date(t.getFullYear(), t.getMonth(), 0); }
+        else if (p === 'this_quarter') { f = new Date(t.getFullYear(), Math.floor(t.getMonth()/3)*3, 1); to = new Date(t.getFullYear(), Math.floor(t.getMonth()/3)*3+3, 0); }
+        fromInput.value = f.toISOString().split('T')[0]; toInput.value = to.toISOString().split('T')[0];
+        savePeriod(); document.querySelectorAll('.as-period-preset').forEach(b => b.classList.toggle('as-period-preset--active', b.dataset.preset === p));
+        location.reload();
+    }
+    document.querySelectorAll('.as-period-preset').forEach(b => b.addEventListener('click', () => setPreset(b.dataset.preset)));
+    [fromInput, toInput].forEach(i => i.addEventListener('change', () => { savePeriod(); location.reload(); }));
+    initPeriod();
+
+    // ── Chart Customize ──
+    const CUST_KEY = 'as_chart_prefs';
+    function getDefaultOrder() { return Array.from(document.querySelectorAll('[data-chart-id]')).map(c => ({ id: c.dataset.chartId, visible: true })); }
+    function loadCustPrefs() { try { const r = localStorage.getItem(CUST_KEY); return r ? JSON.parse(r) : null; } catch { return null; } }
+    function saveCustPrefs(p) { localStorage.setItem(CUST_KEY, JSON.stringify(p)); }
+    function applyCustPrefs(p) {
+        if (!p) return;
+        const container = document.querySelector('.as-chart-grid');
+        const cards = {}; container.querySelectorAll('[data-chart-id]').forEach(c => { cards[c.dataset.chartId] = c; });
+        p.forEach(pr => { const card = cards[pr.id]; if (card) { container.appendChild(card); if (pr.visible === false) card.style.display = 'none'; else card.style.display = ''; } });
+        Object.keys(cards).forEach(id => { if (!p.find(pr => pr.id === id)) { container.appendChild(cards[id]); cards[id].style.display = ''; } });
+    }
+    applyCustPrefs(loadCustPrefs());
+
+    const custOverlay = document.getElementById('as-customize-overlay');
+    const custPanel = document.getElementById('as-customize-panel');
+    const custList = document.getElementById('as-customize-list');
+
+    function openCust() {
+        const prefs = loadCustPrefs() || getDefaultOrder();
+        const allCards = {}; document.querySelectorAll('[data-chart-id]').forEach(c => { allCards[c.dataset.chartId] = { id: c.dataset.chartId, label: c.dataset.chartLabel }; });
+        const ordered = []; prefs.forEach(p => { if (allCards[p.id]) ordered.push({ ...allCards[p.id], visible: p.visible !== false }); });
+        Object.keys(allCards).forEach(id => { if (!ordered.find(o => o.id === id)) ordered.push({ ...allCards[id], visible: true }); });
+        let html = ''; ordered.forEach((item, idx) => {
+            html += `<div class="as-cust-item" draggable="true" data-cust-id="${item.id}"><span class="as-cust-item__handle">&#x2630;</span><div class="as-cust-item__label">${item.label}</div><button class="as-cust-item__toggle ${item.visible ? 'as-cust-item__toggle--on' : ''}" data-cust-toggle="${item.id}"></button></div>`;
+        });
+        custList.innerHTML = html;
+        initCustDrag();
+        custOverlay.classList.add('as-customize-overlay--open'); custPanel.classList.add('as-customize-panel--open');
+    }
+    function closeCust() { custOverlay.classList.remove('as-customize-overlay--open'); custPanel.classList.remove('as-customize-panel--open'); }
+
+    function initCustDrag() {
+        let dragEl = null;
+        custList.querySelectorAll('.as-cust-item').forEach(item => {
+            item.addEventListener('dragstart', e => { dragEl = item; item.classList.add('as-dragging'); e.dataTransfer.effectAllowed = 'move'; e.dataTransfer.setData('text/plain', ''); });
+            item.addEventListener('dragend', () => { if (dragEl) dragEl.classList.remove('as-dragging'); custList.querySelectorAll('.as-cust-item').forEach(i => i.classList.remove('as-drag-over')); dragEl = null; });
+            item.addEventListener('dragover', e => { e.preventDefault(); e.dataTransfer.dropEffect = 'move'; if (item !== dragEl) item.classList.add('as-drag-over'); });
+            item.addEventListener('dragleave', () => item.classList.remove('as-drag-over'));
+            item.addEventListener('drop', e => { e.preventDefault(); item.classList.remove('as-drag-over'); if (dragEl && item !== dragEl) { const items = Array.from(custList.querySelectorAll('.as-cust-item')); if (items.indexOf(dragEl) < items.indexOf(item)) item.parentNode.insertBefore(dragEl, item.nextSibling); else item.parentNode.insertBefore(dragEl, item); } });
+        });
+        custList.querySelectorAll('.as-cust-item__toggle').forEach(btn => btn.addEventListener('click', e => { e.stopPropagation(); btn.classList.toggle('as-cust-item__toggle--on'); }));
+    }
+
+    function getCustState() { return Array.from(custList.querySelectorAll('.as-cust-item')).map(item => ({ id: item.dataset.custId, visible: item.querySelector('.as-cust-item__toggle').classList.contains('as-cust-item__toggle--on') })); }
+
+    document.getElementById('as-open-customize').addEventListener('click', openCust);
+    document.getElementById('as-close-customize').addEventListener('click', closeCust);
+    custOverlay.addEventListener('click', closeCust);
+    document.getElementById('as-save-customize').addEventListener('click', () => { const p = getCustState(); saveCustPrefs(p); applyCustPrefs(p); closeCust(); });
+    document.getElementById('as-reset-customize').addEventListener('click', () => { localStorage.removeItem(CUST_KEY); location.reload(); });
+
+    // ── Auto-refresh ──
+    const REFRESH_INTERVAL = 300000; // 5 minutes
+    const REFRESH_KEY = 'as_auto_refresh';
+    let refreshTimer = null;
+    let lastRefresh = Date.now();
+    const refreshDot = document.getElementById('as-refresh-dot');
+    const refreshText = document.getElementById('as-refresh-text');
+    const refreshToggle = document.getElementById('as-refresh-toggle');
+    let autoRefreshOn = localStorage.getItem(REFRESH_KEY) !== 'off';
+
+    function updateRefreshText() {
+        const mins = Math.floor((Date.now() - lastRefresh) / 60000);
+        refreshText.textContent = mins < 1 ? 'Just now' : mins + 'm ago';
+    }
+    setInterval(updateRefreshText, 30000);
+
+    function startAutoRefresh() {
+        autoRefreshOn = true;
+        localStorage.setItem(REFRESH_KEY, 'on');
+        refreshDot.classList.add('as-refresh__dot--pulse');
+        refreshToggle.textContent = '⟳';
+        refreshToggle.title = 'Auto-refresh ON (5 min)';
+        refreshTimer = setInterval(() => location.reload(), REFRESH_INTERVAL);
+    }
+    function stopAutoRefresh() {
+        autoRefreshOn = false;
+        localStorage.setItem(REFRESH_KEY, 'off');
+        refreshDot.classList.remove('as-refresh__dot--pulse');
+        refreshToggle.textContent = '⏸';
+        refreshToggle.title = 'Auto-refresh OFF';
+        if (refreshTimer) { clearInterval(refreshTimer); refreshTimer = null; }
+    }
+    refreshToggle.addEventListener('click', () => { if (autoRefreshOn) stopAutoRefresh(); else startAutoRefresh(); });
+    if (autoRefreshOn) startAutoRefresh(); else stopAutoRefresh();
+
+    // ─── KPI CARDS ───
+    fetchP("{% url 'asset-modern-kpi' %}")
+        .then(r => r.json())
+        .then(data => {
+            document.getElementById('as-kpi-grid').innerHTML = `
+                <a href="{% url 'asset-category-view' %}" class="as-kpi-card">
+                    <div class="as-kpi-card__icon as-kpi-card__icon--blue">📦</div>
+                    <div class="as-kpi-card__label">{% trans "Total Assets" %}</div>
+                    <div class="as-kpi-card__value">${data.total_assets}</div>
+                    <div class="as-kpi-card__sub"><span class="as-badge as-badge--green">${data.in_use} {% trans "in use" %}</span> <span class="as-badge as-badge--amber">${data.available} {% trans "available" %}</span></div>
+                </a>
+                <a href="{% url 'asset-request-allocation-view' %}" class="as-kpi-card">
+                    <div class="as-kpi-card__icon as-kpi-card__icon--amber">📋</div>
+                    <div class="as-kpi-card__label">{% trans "Pending Requests" %}</div>
+                    <div class="as-kpi-card__value">${data.pending_requests}</div>
+                    <div class="as-kpi-card__sub">${data.return_requests > 0 ? '<span class="as-badge as-badge--red">' + data.return_requests + ' {% trans "return req" %}</span>' : '{% trans "Awaiting approval" %}'}</div>
+                </a>
+                <a href="{% url 'asset-category-view' %}" class="as-kpi-card">
+                    <div class="as-kpi-card__icon as-kpi-card__icon--green">💰</div>
+                    <div class="as-kpi-card__label">{% trans "Total Value" %}</div>
+                    <div class="as-kpi-card__value">${fmt(data.total_value)}</div>
+                    <div class="as-kpi-card__sub">{% trans "Purchase cost" %}</div>
+                </a>
+                <a href="{% url 'asset-category-view' %}" class="as-kpi-card">
+                    <div class="as-kpi-card__icon as-kpi-card__icon--red">⏰</div>
+                    <div class="as-kpi-card__label">{% trans "Expiring Soon" %}</div>
+                    <div class="as-kpi-card__value">${data.expiring_soon}</div>
+                    <div class="as-kpi-card__sub">{% trans "Next 30 days" %}</div>
+                </a>`;
+        });
+
+    // ─── ASSET STATUS ───
+    fetchP("{% url 'asset-modern-status' %}")
+        .then(r => r.json())
+        .then(data => {
+            const total = data.statuses.reduce((a, s) => a + s.count, 0);
+            if (!total) { document.querySelector("#chart-asset-status").innerHTML = emptyHtml('{% trans "No assets" %}'); return; }
+            new ApexCharts(document.querySelector("#chart-asset-status"), {
+                series: data.statuses.map(s => s.count),
+                chart: { type: 'donut', height: 300, background: 'transparent', fontFamily: 'inherit' },
+                labels: data.statuses.map(s => s.label),
+                colors: ['#3b82f6', '#22c55e', '#94a3b8'],
+                plotOptions: { pie: { donut: { size: '65%', labels: { show: true, total: { show: true, label: '{% trans "Total" %}', color: textColor, fontSize: '13px', fontWeight: 600, formatter: w => w.globals.seriesTotals.reduce((a,b)=>a+b,0) } } } } },
+                stroke: { width: 2, colors: [cardBg] }, dataLabels: { enabled: false },
+                legend: { position: 'bottom', labels: { colors: textColor }, fontSize: '11px', markers: { width: 8, height: 8, radius: 2 } },
+                tooltip: { theme: isDark ? 'dark' : 'light' },
+            }).render();
+        });
+
+    // ─── REQUEST STATUS ───
+    fetchP("{% url 'asset-modern-requests' %}")
+        .then(r => r.json())
+        .then(data => {
+            const total = data.statuses.reduce((a, s) => a + s.count, 0);
+            if (!total) { document.querySelector("#chart-request-status").innerHTML = emptyHtml('{% trans "No requests" %}'); return; }
+            new ApexCharts(document.querySelector("#chart-request-status"), {
+                series: data.statuses.map(s => s.count),
+                chart: { type: 'donut', height: 300, background: 'transparent', fontFamily: 'inherit',
+                    events: { dataPointSelection: (e, ctx, config) => {
+                        const status = data.statuses[config.dataPointIndex].status;
+                        window.location.href = "{% url 'asset-request-allocation-view' %}?asset_request_status=" + status;
+                    }}
+                },
+                labels: data.statuses.map(s => s.label),
+                colors: ['#f59e0b', '#22c55e', '#ef4444'],
+                plotOptions: { pie: { donut: { size: '65%', labels: { show: true, total: { show: true, label: '{% trans "Total" %}', color: textColor, fontSize: '13px', fontWeight: 600, formatter: w => w.globals.seriesTotals.reduce((a,b)=>a+b,0) } } } } },
+                stroke: { width: 2, colors: [cardBg] }, dataLabels: { enabled: false },
+                legend: { position: 'bottom', labels: { colors: textColor }, fontSize: '11px', markers: { width: 8, height: 8, radius: 2 } },
+                tooltip: { theme: isDark ? 'dark' : 'light' },
+            }).render();
+        });
+
+    // ─── ASSETS BY CATEGORY ───
+    fetchP("{% url 'asset-modern-category' %}")
+        .then(r => r.json())
+        .then(data => {
+            if (!data.categories.length) { document.querySelector("#chart-by-category").innerHTML = emptyHtml('{% trans "No data" %}'); return; }
+            new ApexCharts(document.querySelector("#chart-by-category"), {
+                series: [
+                    { name: '{% trans "In Use" %}', data: data.categories.map(c => c.in_use) },
+                    { name: '{% trans "Available" %}', data: data.categories.map(c => c.available) },
+                ],
+                chart: { type: 'bar', height: 300, toolbar: { show: false }, background: 'transparent', fontFamily: 'inherit', stacked: true },
+                colors: ['#3b82f6', '#22c55e'],
+                plotOptions: { bar: { borderRadius: 4, horizontal: true, barHeight: '55%' } },
+                xaxis: { categories: data.categories.map(c => c.category), labels: { style: { colors: textColor } } },
+                yaxis: { labels: { style: { colors: textColor, fontSize: '11px' } } },
+                grid: { borderColor: gridColor },
+                dataLabels: { enabled: true, style: { fontSize: '11px' } },
+                legend: { position: 'top', horizontalAlign: 'right', labels: { colors: textColor }, fontSize: '11px', markers: { width: 8, height: 8, radius: 2 } },
+                tooltip: { theme: isDark ? 'dark' : 'light' },
+            }).render();
+        });
+
+    // ─── VALUE BY CATEGORY ───
+    fetchP("{% url 'asset-modern-value' %}")
+        .then(r => r.json())
+        .then(data => {
+            if (!data.categories.length) { document.querySelector("#chart-value-category").innerHTML = emptyHtml('{% trans "No data" %}'); return; }
+            new ApexCharts(document.querySelector("#chart-value-category"), {
+                series: data.categories.map(c => c.value),
+                chart: { type: 'donut', height: 300, background: 'transparent', fontFamily: 'inherit' },
+                labels: data.categories.map(c => c.category),
+                colors: COLORS.slice(0, data.categories.length),
+                plotOptions: { pie: { donut: { size: '65%', labels: { show: true, total: { show: true, label: '{% trans "Total" %}', color: textColor, fontSize: '12px', fontWeight: 600, formatter: w => fmt(w.globals.seriesTotals.reduce((a,b)=>a+b,0)) } } } } },
+                stroke: { width: 2, colors: [cardBg] }, dataLabels: { enabled: false },
+                legend: { position: 'bottom', labels: { colors: textColor }, fontSize: '11px', markers: { width: 8, height: 8, radius: 2 } },
+                tooltip: { theme: isDark ? 'dark' : 'light', y: { formatter: (v, { seriesIndex: i }) => `${fmt(v)} (${data.categories[i].count} assets)` } },
+            }).render();
+        });
+
+    // ─── ASSETS BY DEPARTMENT ───
+    fetchP("{% url 'asset-modern-dept' %}")
+        .then(r => r.json())
+        .then(data => {
+            if (!data.departments.length) { document.querySelector("#chart-dept-assets").innerHTML = emptyHtml('{% trans "No allocated assets" %}'); return; }
+            new ApexCharts(document.querySelector("#chart-dept-assets"), {
+                series: data.departments.map(d => d.count),
+                chart: { type: 'donut', height: 300, background: 'transparent', fontFamily: 'inherit' },
+                labels: data.departments.map(d => d.department),
+                colors: COLORS.slice(0, data.departments.length),
+                plotOptions: { pie: { donut: { size: '65%', labels: { show: true, total: { show: true, label: '{% trans "Total" %}', color: textColor, fontSize: '13px', fontWeight: 600, formatter: w => w.globals.seriesTotals.reduce((a,b)=>a+b,0) } } } } },
+                stroke: { width: 2, colors: [cardBg] }, dataLabels: { enabled: false },
+                legend: { position: 'bottom', labels: { colors: textColor }, fontSize: '11px', markers: { width: 8, height: 8, radius: 2 } },
+                tooltip: { theme: isDark ? 'dark' : 'light' },
+            }).render();
+        });
+
+    // ─── ASSET AGE ───
+    fetch("{% url 'asset-modern-age' %}")
+        .then(r => r.json())
+        .then(data => {
+            if (!data.brackets.length) { document.querySelector("#chart-age-dist").innerHTML = emptyHtml('{% trans "No purchase date data" %}'); return; }
+            const ageColors = ['#22c55e', '#3b82f6', '#f59e0b', '#ef4444', '#94a3b8'];
+            new ApexCharts(document.querySelector("#chart-age-dist"), {
+                series: [{ name: '{% trans "Assets" %}', data: data.brackets.map(b => b.count) }],
+                chart: { type: 'bar', height: 280, toolbar: { show: false }, background: 'transparent', fontFamily: 'inherit' },
+                colors: ageColors.slice(0, data.brackets.length),
+                plotOptions: { bar: { borderRadius: 6, columnWidth: '55%', distributed: true } },
+                xaxis: { categories: data.brackets.map(b => b.bracket), labels: { style: { colors: textColor, fontSize: '11px' } }, axisBorder: { show: false }, axisTicks: { show: false } },
+                yaxis: { labels: { style: { colors: textColor } } },
+                grid: { borderColor: gridColor, strokeDashArray: 4 },
+                dataLabels: { enabled: true, style: { fontSize: '12px', colors: ['#fff'] } },
+                legend: { show: false },
+                tooltip: { theme: isDark ? 'dark' : 'light' },
+            }).render();
+        });
+
+    // ─── EXPIRING SOON ───
+    fetch("{% url 'asset-modern-expiring' %}")
+        .then(r => r.json())
+        .then(data => {
+            const el = document.getElementById('as-expiring');
+            if (!data.assets.length) { el.innerHTML = '<div class="as-info-panel__empty">{% trans "No assets expiring soon" %}</div>'; return; }
+            el.innerHTML = data.assets.map(a => {
+                let badge = '';
+                if (a.days_left <= 7) badge = `<span class="as-badge as-badge--red">${a.days_left}d</span>`;
+                else if (a.days_left <= 30) badge = `<span class="as-badge as-badge--amber">${a.days_left}d</span>`;
+                else badge = `<span class="as-badge as-badge--green">${a.days_left}d</span>`;
+                return `<div class="as-list-item">
+                    <div class="as-list-item__info">
+                        <div class="as-list-item__name">${a.name}</div>
+                        <div class="as-list-item__detail">${a.category} · ${a.tracking_id}</div>
+                    </div>
+                    <div class="as-list-item__badge">${badge}</div>
+                </div>`;
+            }).join('');
+        }).catch(() => { document.getElementById('as-expiring').innerHTML = '<div class="as-info-panel__empty">{% trans "No data" %}</div>'; });
+
+    // ─── RECENT ALLOCATIONS ───
+    fetch("{% url 'asset-modern-allocations' %}")
+        .then(r => r.json())
+        .then(data => {
+            const el = document.getElementById('as-allocations');
+            if (!data.allocations.length) { el.innerHTML = '<div class="as-info-panel__empty">{% trans "No recent allocations" %}</div>'; return; }
+            el.innerHTML = data.allocations.map(a => {
+                const initials = a.employee.split(' ').map(w => w[0]).join('').slice(0, 2).toUpperCase();
+                const avatarInner = a.avatar ? `<img src="${a.avatar}" alt="">` : initials;
+                return `<a href="/employee/employee-view-individual/${a.id}/" class="as-list-item">
+                    <div class="as-list-item__avatar">${avatarInner}</div>
+                    <div class="as-list-item__info">
+                        <div class="as-list-item__name">${a.employee}</div>
+                        <div class="as-list-item__detail">${a.asset} · ${a.date}</div>
+                    </div>
+                </a>`;
+            }).join('');
+        }).catch(() => { document.getElementById('as-allocations').innerHTML = '<div class="as-info-panel__empty">{% trans "No data" %}</div>'; });
+
+})();
+</script>
+{% endblock %}

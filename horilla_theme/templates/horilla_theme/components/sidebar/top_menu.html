@@ -1,5 +1,5 @@
 {% load i18n static %}
-<a href="/" title="{% trans 'Dashboard' %}"
+<a href="{% url 'modern-dashboard' %}" title="{% trans 'Dashboard' %}"
    class="sideboxmain group flex items-center gap-3 p-3 rounded-full transition duration-300"
    data-menu="Dashboard">
   <img src="{% static 'images/ui/dashboard.svg' %}" alt=""

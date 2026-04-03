@@ -17,7 +17,7 @@ IMG_SRC = "images/ui/attendances.svg"
 SUBMENUS = [
     {
         "menu": _("Dashboard"),
-        "redirect": reverse_lazy("attendance-dashboard"),
+        "redirect": reverse_lazy("attendance-modern-dashboard"),
         "accessibility": "attendance.sidebar.dashboard_accessibility",
     },
     {

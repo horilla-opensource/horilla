@@ -7,6 +7,7 @@ This page is used to map request or url path with function
 
 from django.urls import path
 
+from attendance import dashboard_modern as att_dashboard_modern
 from attendance.cbv import (
     attendance_activity,
     attendance_request,
@@ -918,5 +919,76 @@ urlpatterns = [
     ),
     path(
         "settings/geo-face-config/", geofaceconfig.geofaceconfig, name="geo-face-config"
+    ),
+    # ── Attendance Modern Dashboard ──────────────────────────────────────────
+    path(
+        "dashboard/",
+        att_dashboard_modern.modern_attendance_dashboard,
+        name="attendance-modern-dashboard",
+    ),
+    path(
+        "dashboard/api/kpi/",
+        att_dashboard_modern.attendance_kpi_data,
+        name="attendance-modern-kpi",
+    ),
+    path(
+        "dashboard/api/weekly/",
+        att_dashboard_modern.attendance_weekly_trend,
+        name="attendance-modern-weekly",
+    ),
+    path(
+        "dashboard/api/departments/",
+        att_dashboard_modern.attendance_department_breakdown,
+        name="attendance-modern-dept",
+    ),
+    path(
+        "dashboard/api/late-early/",
+        att_dashboard_modern.attendance_late_early_data,
+        name="attendance-modern-late-early",
+    ),
+    path(
+        "dashboard/api/overtime/",
+        att_dashboard_modern.attendance_overtime_summary,
+        name="attendance-modern-overtime",
+    ),
+    path(
+        "dashboard/api/hours/",
+        att_dashboard_modern.attendance_hours_distribution,
+        name="attendance-modern-hours",
+    ),
+    path(
+        "dashboard/api/shifts/",
+        att_dashboard_modern.attendance_shift_distribution,
+        name="attendance-modern-shifts",
+    ),
+    path(
+        "dashboard/api/absenteeism/",
+        att_dashboard_modern.attendance_absenteeism_trend,
+        name="attendance-modern-absenteeism",
+    ),
+    path(
+        "dashboard/api/work-types/",
+        att_dashboard_modern.attendance_work_type_distribution,
+        name="attendance-modern-work-types",
+    ),
+    path(
+        "dashboard/api/avg-hours/",
+        att_dashboard_modern.attendance_avg_working_hours,
+        name="attendance-modern-avg-hours",
+    ),
+    path(
+        "dashboard/api/top-absentees/",
+        att_dashboard_modern.attendance_top_absentees,
+        name="attendance-modern-absentees",
+    ),
+    path(
+        "dashboard/api/clockin-dist/",
+        att_dashboard_modern.attendance_clockin_distribution,
+        name="attendance-modern-clockin",
+    ),
+    path(
+        "dashboard/api/calendar/",
+        att_dashboard_modern.attendance_calendar_heatmap,
+        name="attendance-modern-calendar",
     ),
 ]

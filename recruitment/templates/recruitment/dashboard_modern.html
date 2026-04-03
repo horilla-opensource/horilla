@@ -1,0 +1,862 @@
+{% extends "index.html" %}
+{% load static i18n %}
+
+{% block styles %}
+<script src="https://cdn.jsdelivr.net/npm/apexcharts"></script>
+<style>
+    :root {
+        --rd-indigo: #6366f1;
+        --rd-green: #22c55e;
+        --rd-amber: #f59e0b;
+        --rd-red: #ef4444;
+        --rd-blue: #3b82f6;
+        --rd-purple: #a855f7;
+        --rd-cyan: #06b6d4;
+    }
+
+    .rd-dashboard {
+        font-family: inherit;
+        background: #ffffff;
+        margin: -24px;
+        padding: 24px;
+        min-height: calc(100vh - 80px);
+    }
+    .dark .rd-dashboard { background: #0f172a; }
+
+    .rd-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 20px;
+    }
+    .rd-header h1 { font-size: 22px; font-weight: 700; }
+    .rd-header__date { font-size: 13px; opacity: 0.6; margin-top: 2px; }
+    .rd-btn-back {
+        padding: 6px 14px; border-radius: 8px;
+        border: 1px solid rgba(128,128,128,0.2);
+        font-size: 13px; cursor: pointer;
+        text-decoration: none; color: inherit;
+        transition: all 0.15s; background: none;
+    }
+    .rd-btn-back:hover { border-color: var(--rd-indigo); color: var(--rd-indigo); text-decoration: none; }
+
+    /* KPI Grid */
+    .rd-kpi-grid {
+        display: grid;
+        grid-template-columns: repeat(5, 1fr);
+        gap: 14px;
+        margin-bottom: 20px;
+    }
+    .rd-kpi-card {
+        border-radius: 12px; padding: 18px;
+        background: #ffffff;
+        border: 1px solid rgba(128,128,128,0.12);
+        transition: all 0.2s;
+        text-decoration: none; color: inherit; display: block;
+    }
+    .rd-kpi-card:hover { box-shadow: 0 4px 12px rgba(0,0,0,0.08); transform: translateY(-1px); text-decoration: none; color: inherit; }
+    .dark .rd-kpi-card { background: rgba(255,255,255,0.04); border-color: rgba(255,255,255,0.08); }
+
+    .rd-kpi-card__icon {
+        width: 38px; height: 38px; border-radius: 10px;
+        display: flex; align-items: center; justify-content: center;
+        font-size: 18px; margin-bottom: 10px;
+    }
+    .rd-kpi-card__icon--amber { background: #fef3c7; color: var(--rd-amber); }
+    .rd-kpi-card__icon--red { background: #fee2e2; color: var(--rd-red); }
+    .rd-kpi-card__icon--green { background: #dcfce7; color: var(--rd-green); }
+    .rd-kpi-card__icon--blue { background: #dbeafe; color: var(--rd-blue); }
+    .rd-kpi-card__icon--purple { background: #f3e8ff; color: var(--rd-purple); }
+    .dark .rd-kpi-card__icon--amber { background: #78350f; }
+    .dark .rd-kpi-card__icon--red { background: #7f1d1d; }
+    .dark .rd-kpi-card__icon--green { background: #14532d; }
+    .dark .rd-kpi-card__icon--blue { background: #1e3a5f; }
+    .dark .rd-kpi-card__icon--purple { background: #3b0764; }
+
+    .rd-kpi-card__label {
+        font-size: 11px; font-weight: 600;
+        text-transform: uppercase; letter-spacing: 0.05em; opacity: 0.5;
+        margin-bottom: 6px;
+    }
+    .rd-kpi-card__value { font-size: 28px; font-weight: 800; line-height: 1; margin-bottom: 4px; }
+    .rd-kpi-card__sub { font-size: 12px; opacity: 0.6; }
+
+    .rd-badge {
+        display: inline-flex; align-items: center; gap: 3px;
+        font-size: 11px; font-weight: 600; padding: 2px 8px; border-radius: 999px;
+    }
+    .rd-badge--green { background: #dcfce7; color: #166534; }
+    .rd-badge--amber { background: #fef3c7; color: #92400e; }
+    .dark .rd-badge--green { background: #166534; color: #bbf7d0; }
+    .dark .rd-badge--amber { background: #92400e; color: #fde68a; }
+
+    /* Chart Grid */
+    .rd-chart-grid {
+        display: grid;
+        grid-template-columns: repeat(2, 1fr);
+        gap: 16px;
+        margin-bottom: 20px;
+    }
+    .rd-chart-card {
+        border-radius: 12px; background: #ffffff;
+        border: 1px solid rgba(128,128,128,0.12); overflow: visible;
+    }
+    .dark .rd-chart-card { background: rgba(255,255,255,0.04); border-color: rgba(255,255,255,0.08); }
+    .rd-chart-card--wide { grid-column: span 2; }
+
+    .rd-chart-card__header {
+        padding: 14px 18px 0;
+        display: flex; justify-content: space-between; align-items: center;
+    }
+    .rd-chart-card__title { font-size: 14px; font-weight: 600; }
+    .rd-chart-card__subtitle { font-size: 11px; opacity: 0.5; margin-top: 2px; }
+    .rd-chart-card__body { padding: 6px 10px 10px; }
+
+    .rd-empty { text-align: center; padding: 30px 0; opacity: 0.6; font-size: 13px; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 8px; }
+    .rd-empty img { width: 100px; opacity: 0.7; }
+
+    /* Skeleton */
+    .rd-skeleton {
+        background: linear-gradient(90deg, rgba(128,128,128,0.1) 25%, transparent 50%, rgba(128,128,128,0.1) 75%);
+        background-size: 200% 100%; animation: rd-shimmer 1.5s infinite; border-radius: 12px;
+    }
+    @keyframes rd-shimmer { 0% { background-position: 200% 0; } 100% { background-position: -200% 0; } }
+    .rd-skeleton--kpi { height: 110px; }
+
+    /* Pipeline Table */
+    .rd-pipeline-table { width: 100%; border-collapse: separate; border-spacing: 0; font-size: 13px; }
+    .rd-pipeline-table th {
+        text-align: left; padding: 8px 12px; font-size: 11px; font-weight: 600;
+        text-transform: uppercase; opacity: 0.5; border-bottom: 1px solid rgba(128,128,128,0.12);
+    }
+    .rd-pipeline-table td { padding: 10px 12px; border-bottom: 1px solid rgba(128,128,128,0.06); }
+    .rd-pipeline-table tr:last-child td { border-bottom: none; }
+    .rd-pipeline-table tr:hover td { background: rgba(99,102,241,0.04); }
+    .rd-pipeline-cell {
+        display: inline-flex; align-items: center; justify-content: center;
+        min-width: 28px; height: 24px; border-radius: 6px;
+        font-size: 12px; font-weight: 600;
+    }
+    .rd-pipeline-cell--initial { background: #f1f5f9; color: #64748b; }
+    .rd-pipeline-cell--test { background: #dbeafe; color: #2563eb; }
+    .rd-pipeline-cell--interview { background: #fef3c7; color: #d97706; }
+    .rd-pipeline-cell--hired { background: #dcfce7; color: #16a34a; }
+    .rd-pipeline-cell--cancelled { background: #fee2e2; color: #dc2626; }
+    .dark .rd-pipeline-cell--initial { background: #334155; color: #94a3b8; }
+    .dark .rd-pipeline-cell--test { background: #1e3a5f; color: #60a5fa; }
+    .dark .rd-pipeline-cell--interview { background: #78350f; color: #fbbf24; }
+    .dark .rd-pipeline-cell--hired { background: #14532d; color: #4ade80; }
+    .dark .rd-pipeline-cell--cancelled { background: #7f1d1d; color: #f87171; }
+
+    /* Manager chips */
+    .rd-chip {
+        display: inline-block; padding: 2px 8px; border-radius: 999px;
+        font-size: 11px; font-weight: 500; margin: 2px 2px;
+        background: #f1f5f9; color: #475569;
+    }
+    .dark .rd-chip { background: #334155; color: #cbd5e1; }
+
+    /* Interview list */
+    .rd-interview-item {
+        display: flex; align-items: center; gap: 10px; padding: 8px 0;
+        border-bottom: 1px solid rgba(128,128,128,0.06);
+    }
+    .rd-interview-item:last-child { border-bottom: none; }
+    .rd-interview-item__date {
+        min-width: 50px; text-align: center; padding: 6px 8px; border-radius: 8px;
+        background: #eef2ff; font-size: 11px; font-weight: 700; color: var(--rd-indigo); flex-shrink: 0;
+    }
+    .dark .rd-interview-item__date { background: #312e81; }
+    .rd-interview-item__info { flex: 1; min-width: 0; }
+    .rd-interview-item__name { font-size: 12px; font-weight: 600; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+    .rd-interview-item__stage { font-size: 11px; opacity: 0.5; }
+    .rd-interview-item__time { font-size: 11px; font-weight: 500; opacity: 0.6; flex-shrink: 0; }
+
+    /* Conversion funnel */
+    .rd-funnel { display: flex; flex-direction: column; gap: 6px; padding: 10px 0; }
+    .rd-funnel-step { display: flex; align-items: center; gap: 10px; }
+    .rd-funnel-step__bar {
+        height: 28px; border-radius: 6px; display: flex; align-items: center;
+        padding: 0 10px; font-size: 11px; font-weight: 600; color: #fff;
+        transition: width 0.5s ease;
+    }
+    .rd-funnel-step__label { font-size: 11px; font-weight: 500; min-width: 70px; text-align: right; }
+    .rd-funnel-step__rate { font-size: 11px; font-weight: 700; min-width: 45px; }
+
+    /* Sidebar layout */
+    .rd-layout { display: grid; grid-template-columns: 1fr 300px; gap: 20px; align-items: start; }
+    .rd-main { min-width: 0; }
+    .rd-sidebar { display: flex; flex-direction: column; gap: 16px; position: sticky; top: 90px; }
+
+    .rd-info-panel {
+        border-radius: 12px; background: #ffffff; border: 1px solid rgba(128,128,128,0.12);
+        overflow: hidden; display: flex; flex-direction: column;
+    }
+    .dark .rd-info-panel { background: rgba(255,255,255,0.04); border-color: rgba(255,255,255,0.08); }
+    .rd-info-panel__header {
+        padding: 14px 16px 10px; display: flex; justify-content: space-between; align-items: center;
+        flex-shrink: 0; border-bottom: 1px solid rgba(128,128,128,0.08);
+    }
+    .rd-info-panel__title { font-size: 13px; font-weight: 700; }
+    .rd-info-panel__body { padding: 8px 16px 12px; overflow-y: auto; flex: 1; max-height: 350px; }
+    .rd-info-panel__empty { text-align: center; padding: 30px 0; opacity: 0.4; font-size: 12px; }
+
+    /* Customize Panel */
+    .rd-btn-customize { padding: 6px 12px; border-radius: 8px; border: 1px solid rgba(128,128,128,0.2); font-size: 13px; cursor: pointer; color: inherit; transition: all 0.15s; background: none; display: flex; align-items: center; gap: 5px; }
+    .rd-btn-customize:hover { border-color: var(--rd-indigo); color: var(--rd-indigo); }
+    .rd-customize-overlay { position: fixed; inset: 0; background: rgba(0,0,0,0.3); z-index: 1050; opacity: 0; pointer-events: none; transition: opacity 0.2s; }
+    .rd-customize-overlay--open { opacity: 1; pointer-events: auto; }
+    .rd-customize-panel { position: fixed; top: 0; right: -420px; width: 400px; height: 100vh; background: #ffffff; box-shadow: -4px 0 24px rgba(0,0,0,0.12); z-index: 1051; display: flex; flex-direction: column; transition: right 0.25s ease; }
+    .dark .rd-customize-panel { background: #1e293b; }
+    .rd-customize-panel--open { right: 0; }
+    .rd-customize-panel__header { padding: 18px 20px; border-bottom: 1px solid rgba(128,128,128,0.12); display: flex; justify-content: space-between; align-items: center; flex-shrink: 0; }
+    .rd-customize-panel__header h3 { font-size: 16px; font-weight: 700; margin: 0; }
+    .rd-customize-panel__close { width: 32px; height: 32px; border-radius: 8px; border: none; background: rgba(128,128,128,0.08); cursor: pointer; font-size: 18px; display: flex; align-items: center; justify-content: center; color: inherit; }
+    .rd-customize-panel__close:hover { background: rgba(128,128,128,0.16); }
+    .rd-customize-panel__body { flex: 1; overflow-y: auto; padding: 12px 20px; }
+    .rd-customize-panel__footer { padding: 14px 20px; border-top: 1px solid rgba(128,128,128,0.12); display: flex; justify-content: space-between; flex-shrink: 0; }
+    .rd-cust-btn { padding: 7px 16px; border-radius: 8px; font-size: 13px; font-weight: 600; cursor: pointer; border: none; transition: all 0.15s; }
+    .rd-cust-btn--primary { background: var(--rd-indigo); color: #fff; }
+    .rd-cust-btn--primary:hover { opacity: 0.9; }
+    .rd-cust-btn--ghost { background: none; color: inherit; opacity: 0.6; }
+    .rd-cust-btn--ghost:hover { opacity: 1; }
+    .rd-cust-item { display: flex; align-items: center; gap: 10px; padding: 10px 12px; margin-bottom: 6px; border-radius: 8px; border: 1px solid rgba(128,128,128,0.1); background: rgba(128,128,128,0.02); cursor: grab; user-select: none; }
+    .rd-cust-item:active { cursor: grabbing; }
+    .rd-cust-item.rd-dragging { opacity: 0.85; box-shadow: 0 4px 16px rgba(0,0,0,0.12); border-color: var(--rd-indigo); }
+    .rd-cust-item.rd-drag-over { border-top: 2px solid var(--rd-indigo); }
+    .rd-cust-item__handle { font-size: 16px; opacity: 0.3; cursor: grab; flex-shrink: 0; }
+    .rd-cust-item__label { flex: 1; font-size: 13px; font-weight: 500; }
+    .rd-cust-item__toggle { width: 36px; height: 20px; border-radius: 12px; background: #e2e8f0; position: relative; cursor: pointer; transition: background 0.2s; flex-shrink: 0; border: none; }
+    .dark .rd-cust-item__toggle { background: #334155; }
+    .rd-cust-item__toggle::after { content: ''; position: absolute; width: 16px; height: 16px; border-radius: 50%; top: 2px; left: 2px; background: #fff; box-shadow: 0 1px 3px rgba(0,0,0,0.2); transition: transform 0.2s; }
+    .rd-cust-item__toggle--on { background: var(--rd-indigo); }
+    .dark .rd-cust-item__toggle--on { background: var(--rd-indigo); }
+    .rd-cust-item__toggle--on::after { transform: translateX(16px); }
+    @media (max-width: 1024px) { .rd-customize-panel { width: 320px; right: -340px; } }
+    @media (max-width: 640px) { .rd-customize-panel { width: 100%; right: -100%; } }
+
+    /* Period Picker */
+    .rd-period-picker { display: none; /* DATE FILTER DISABLED */ align-items: center; gap: 6px; font-size: 12px; }
+    .rd-period-picker input[type="date"] { padding: 5px 8px; border-radius: 6px; border: 1px solid rgba(128,128,128,0.2); font-size: 12px; background: transparent; color: inherit; outline: none; transition: border-color 0.15s; }
+    .rd-period-picker input[type="date"]:focus { border-color: var(--rd-indigo); }
+    .rd-period-picker__sep { opacity: 0.4; font-size: 11px; }
+    .rd-period-preset { padding: 4px 10px; border-radius: 6px; border: 1px solid rgba(128,128,128,0.15); font-size: 11px; cursor: pointer; background: none; color: inherit; transition: all 0.15s; }
+    .rd-period-preset:hover { border-color: var(--rd-indigo); color: var(--rd-indigo); }
+    .rd-period-preset--active { background: var(--rd-indigo); color: #fff; border-color: var(--rd-indigo); }
+    .dark .rd-period-picker input[type="date"] { color-scheme: dark; }
+
+    /* Auto-refresh */
+    .rd-refresh { display: flex; align-items: center; gap: 6px; font-size: 11px; opacity: 0.5; }
+    .rd-refresh__dot { width: 6px; height: 6px; border-radius: 50%; background: var(--rd-green); flex-shrink: 0; }
+    .rd-refresh__dot--pulse { animation: rd-pulse 2s infinite; }
+    @keyframes rd-pulse { 0%, 100% { opacity: 1; } 50% { opacity: 0.3; } }
+    .rd-refresh__toggle { cursor: pointer; opacity: 0.6; font-size: 13px; border: none; background: none; color: inherit; padding: 2px; }
+    .rd-refresh__toggle:hover { opacity: 1; }
+
+
+    /* Responsive */
+    @media (max-width: 1280px) {
+        .rd-layout { grid-template-columns: 1fr; }
+        .rd-sidebar { position: static; display: grid; grid-template-columns: 1fr 1fr; }
+    }
+    @media (max-width: 1280px) { .rd-kpi-grid { grid-template-columns: repeat(3, 1fr); } }
+    @media (max-width: 1024px) {
+        .rd-kpi-grid { grid-template-columns: repeat(2, 1fr); }
+        .rd-chart-grid { grid-template-columns: 1fr; }
+        .rd-chart-card--wide { grid-column: span 1; }
+    }
+    @media (max-width: 640px) { .rd-kpi-grid { grid-template-columns: 1fr; } }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="rd-dashboard">
+
+    <!-- Header -->
+    <div class="rd-header">
+        <div>
+            <h1>{% trans "Recruitment Dashboard" %}</h1>
+            <div class="rd-header__date" id="rd-date"></div>
+            <div class="rd-refresh"><span class="rd-refresh__dot" id="rd-refresh-dot"></span><span id="rd-refresh-text">{% trans "Just now" %}</span><button class="rd-refresh__toggle" id="rd-refresh-toggle" title="{% trans 'Toggle auto-refresh' %}">⟳</button></div>
+        </div>
+        <div style="display:flex;gap:8px;">
+            <div class="rd-period-picker">
+                <button class="rd-period-preset" data-preset="this_month">{% trans "This Month" %}</button>
+                <button class="rd-period-preset" data-preset="last_month">{% trans "Last Month" %}</button>
+                <button class="rd-period-preset" data-preset="this_quarter">{% trans "Quarter" %}</button>
+                <input type="date" id="rd-from-date" title="{% trans 'From' %}">
+                <span class="rd-period-picker__sep">&rarr;</span>
+                <input type="date" id="rd-to-date" title="{% trans 'To' %}">
+            </div>
+            <button class="rd-btn-customize" id="rd-open-customize" title="{% trans 'Customize' %}">⚙ {% trans "Customize" %}</button>
+        </div>
+    </div>
+
+    <!-- KPI Cards -->
+    <div class="rd-kpi-grid" id="rd-kpi-grid">
+        <div class="rd-skeleton rd-skeleton--kpi"></div>
+        <div class="rd-skeleton rd-skeleton--kpi"></div>
+        <div class="rd-skeleton rd-skeleton--kpi"></div>
+        <div class="rd-skeleton rd-skeleton--kpi"></div>
+        <div class="rd-skeleton rd-skeleton--kpi"></div>
+    </div>
+
+    <!-- Main layout with sidebar -->
+    <div class="rd-layout">
+
+        <!-- Left: Charts -->
+        <div class="rd-main">
+            <div class="rd-chart-grid">
+
+                <!-- Stage Conversion Funnel -->
+                <div class="rd-chart-card rd-chart-card--wide" data-chart-id="stage_conversion" data-chart-label="{% trans 'Stage Conversion Funnel' %}">
+                    <div class="rd-chart-card__header"><div><div class="rd-chart-card__title">{% trans "Stage Conversion Funnel" %}</div><div class="rd-chart-card__subtitle">{% trans "Drop-off rate between stages" %}</div></div></div>
+                    <div class="rd-chart-card__body"><div id="chart-conversion-funnel"></div></div>
+                </div>
+
+                <!-- Candidates Per Stage -->
+                <div class="rd-chart-card" data-chart-id="stage_summary" data-chart-label="{% trans 'Candidates by Stage' %}">
+                    <div class="rd-chart-card__header"><div><div class="rd-chart-card__title">{% trans "Candidates by Stage" %}</div><div class="rd-chart-card__subtitle">{% trans "All active recruitments" %}</div></div></div>
+                    <div class="rd-chart-card__body"><div id="chart-stage-summary"></div></div>
+                </div>
+
+                <!-- Offer Letter Status -->
+                <div class="rd-chart-card" data-chart-id="offer_status" data-chart-label="{% trans 'Offer Letter Status' %}">
+                    <div class="rd-chart-card__header"><div><div class="rd-chart-card__title">{% trans "Offer Letter Status" %}</div><div class="rd-chart-card__subtitle">{% trans "All candidates" %}</div></div></div>
+                    <div class="rd-chart-card__body"><div id="chart-offer-status"></div></div>
+                </div>
+
+                <!-- Source of Hire -->
+                <div class="rd-chart-card" data-chart-id="source_hire" data-chart-label="{% trans 'Source of Hire' %}">
+                    <div class="rd-chart-card__header"><div><div class="rd-chart-card__title">{% trans "Source of Hire" %}</div><div class="rd-chart-card__subtitle">{% trans "Where candidates come from" %}</div></div></div>
+                    <div class="rd-chart-card__body"><div id="chart-source-hire"></div></div>
+                </div>
+
+                <!-- Open Positions by Department -->
+                <div class="rd-chart-card" data-chart-id="open_by_dept" data-chart-label="{% trans 'Open Positions by Department' %}">
+                    <div class="rd-chart-card__header"><div><div class="rd-chart-card__title">{% trans "Open Positions by Department" %}</div><div class="rd-chart-card__subtitle">{% trans "Filled vs open vacancies" %}</div></div></div>
+                    <div class="rd-chart-card__body"><div id="chart-open-dept"></div></div>
+                </div>
+
+                <!-- Hiring Pipeline Table -->
+                <div class="rd-chart-card rd-chart-card--wide" data-chart-id="hiring_pipeline" data-chart-label="{% trans 'Hiring Pipeline' %}">
+                    <div class="rd-chart-card__header"><div><div class="rd-chart-card__title">{% trans "Hiring Pipeline" %}</div><div class="rd-chart-card__subtitle">{% trans "Candidates per stage per recruitment" %}</div></div></div>
+                    <div class="rd-chart-card__body"><div id="rd-pipeline-table">
+                        <div class="rd-empty">{% trans "Loading..." %}</div>
+                    </div></div>
+                </div>
+
+                <!-- Hire Rate by Recruitment -->
+                <div class="rd-chart-card" data-chart-id="hire_rate" data-chart-label="{% trans 'Hire Rate by Recruitment' %}">
+                    <div class="rd-chart-card__header"><div><div class="rd-chart-card__title">{% trans "Hire Rate by Recruitment" %}</div><div class="rd-chart-card__subtitle">{% trans "Conversion efficiency" %}</div></div></div>
+                    <div class="rd-chart-card__body"><div id="chart-hire-rate"></div></div>
+                </div>
+
+                <!-- Time to Hire -->
+                <div class="rd-chart-card" data-chart-id="time_to_hire" data-chart-label="{% trans 'Time to Hire' %}">
+                    <div class="rd-chart-card__header"><div><div class="rd-chart-card__title">{% trans "Time to Hire" %}</div><div class="rd-chart-card__subtitle">{% trans "Average days from application to hire" %}</div></div></div>
+                    <div class="rd-chart-card__body"><div id="chart-time-to-hire"></div></div>
+                </div>
+
+                <!-- Joinings Per Month -->
+                <div class="rd-chart-card rd-chart-card--wide" data-chart-id="joinings_monthly" data-chart-label="{% trans 'Joinings Per Month' %}">
+                    <div class="rd-chart-card__header">
+                        <div><div class="rd-chart-card__title">{% trans "Joinings Per Month" %}</div><div class="rd-chart-card__subtitle" id="rd-joining-year"></div></div>
+                        <select id="rd-year-select" style="padding:4px 8px;border-radius:6px;border:1px solid rgba(128,128,128,0.2);font-size:12px;background:transparent;color:inherit;"></select>
+                    </div>
+                    <div class="rd-chart-card__body"><div id="chart-joinings"></div></div>
+                </div>
+
+                <!-- Ongoing Recruitments & Managers -->
+                <div class="rd-chart-card rd-chart-card--wide" data-chart-id="managers_table" data-chart-label="{% trans 'Ongoing Recruitments & Managers' %}">
+                    <div class="rd-chart-card__header"><div><div class="rd-chart-card__title">{% trans "Ongoing Recruitments & Managers" %}</div><div class="rd-chart-card__subtitle">{% trans "Active hiring with assigned managers" %}</div></div></div>
+                    <div class="rd-chart-card__body"><div id="rd-managers-table">
+                        <div class="rd-empty">{% trans "Loading..." %}</div>
+                    </div></div>
+                </div>
+
+                <div class="rd-chart-card rd-chart-card--wide" data-chart-id="source_conversion" data-chart-label="{% trans 'Source Conversion Rate' %}">
+                    <div class="rd-chart-card__header"><div><div class="rd-chart-card__title">{% trans "Source Conversion Rate" %}</div><div class="rd-chart-card__subtitle">{% trans "Hire rate per candidate source" %}</div></div></div>
+                    <div class="rd-chart-card__body"><div id="chart-source-conv"></div></div>
+                </div>
+
+            </div>
+        </div>
+
+        <!-- Right sidebar -->
+        <div class="rd-sidebar">
+            <div class="rd-info-panel">
+                <div class="rd-info-panel__header">
+                    <div class="rd-info-panel__title">{% trans "Upcoming Interviews" %}</div>
+                    <span style="font-size:11px;opacity:0.5;">{% trans "Next 7 days" %}</span>
+                </div>
+                <div class="rd-info-panel__body" id="rd-interviews">
+                    <div class="rd-info-panel__empty">{% trans "Loading..." %}</div>
+                </div>
+            </div>
+        </div>
+
+    </div>
+</div>
+
+<!-- Customize Panel -->
+<div class="rd-customize-overlay" id="rd-customize-overlay"></div>
+<div class="rd-customize-panel" id="rd-customize-panel">
+    <div class="rd-customize-panel__header">
+        <h3>{% trans "Customize Dashboard" %}</h3>
+        <button class="rd-customize-panel__close" id="rd-close-customize">&times;</button>
+    </div>
+    <div class="rd-customize-panel__body" id="rd-customize-list"></div>
+    <div class="rd-customize-panel__footer">
+        <button class="rd-cust-btn rd-cust-btn--ghost" id="rd-reset-customize">{% trans "Reset" %}</button>
+        <button class="rd-cust-btn rd-cust-btn--primary" id="rd-save-customize">{% trans "Save" %}</button>
+    </div>
+</div>
+
+<script>
+(function() {
+    const isDark = document.documentElement.classList.contains('dark') || document.body.classList.contains('dark');
+    const textColor = isDark ? '#e2e8f0' : '#334155';
+    const gridColor = isDark ? 'rgba(255,255,255,0.06)' : 'rgba(0,0,0,0.06)';
+    const COLORS = ['#6366f1','#22c55e','#f59e0b','#ef4444','#3b82f6','#a855f7','#06b6d4','#ec4899','#14b8a6','#f97316'];
+
+    const emptyHtml = (msg) => `<div class="rd-empty"><img src="/static/images/ui/no_records.svg" alt="">${msg}</div>`;
+
+    document.getElementById('rd-date').textContent = new Date().toLocaleDateString('en-US', {
+        weekday: 'long', year: 'numeric', month: 'long', day: 'numeric'
+    });
+
+    // ── Period Picker ──
+    const PERIOD_KEY = 'rd_period_v2';
+    const fromInput = document.getElementById('rd-from-date');
+    const toInput = document.getElementById('rd-to-date');
+    function getToday() { return new Date().toISOString().split('T')[0]; }
+    function getFirstOfMonth(d) { const dt = new Date(d || getToday()); dt.setDate(1); return dt.toISOString().split('T')[0]; }
+    function getLastOfMonth(d) { const dt = new Date(d || getToday()); return new Date(dt.getFullYear(), dt.getMonth()+1, 0).toISOString().split('T')[0]; }
+    function initPeriod() {
+        const saved = sessionStorage.getItem(PERIOD_KEY);
+        if (saved) { try { const p = JSON.parse(saved); fromInput.value = p.from; toInput.value = p.to; return; } catch {} }
+        fromInput.value = getFirstOfMonth(); toInput.value = getLastOfMonth();
+    }
+    function savePeriod() { sessionStorage.setItem(PERIOD_KEY, JSON.stringify({ from: fromInput.value, to: toInput.value })); }
+    function periodParams() { return ""; /* DATE FILTER DISABLED */ }
+    function urlWithPeriod(u) { return u + (u.includes('?') ? '&' : '?') + periodParams(); }
+    function fetchP(url) { return fetch(urlWithPeriod(url)); }
+    function setPreset(p) {
+        const t = new Date(); let f, to;
+        if (p === 'this_month') { f = new Date(t.getFullYear(), t.getMonth(), 1); to = new Date(t.getFullYear(), t.getMonth()+1, 0); }
+        else if (p === 'last_month') { f = new Date(t.getFullYear(), t.getMonth()-1, 1); to = new Date(t.getFullYear(), t.getMonth(), 0); }
+        else if (p === 'this_quarter') { f = new Date(t.getFullYear(), Math.floor(t.getMonth()/3)*3, 1); to = new Date(t.getFullYear(), Math.floor(t.getMonth()/3)*3+3, 0); }
+        fromInput.value = f.toISOString().split('T')[0]; toInput.value = to.toISOString().split('T')[0];
+        savePeriod(); document.querySelectorAll('.rd-period-preset').forEach(b => b.classList.toggle('rd-period-preset--active', b.dataset.preset === p));
+        location.reload();
+    }
+    document.querySelectorAll('.rd-period-preset').forEach(b => b.addEventListener('click', () => setPreset(b.dataset.preset)));
+    [fromInput, toInput].forEach(i => i.addEventListener('change', () => { savePeriod(); location.reload(); }));
+    initPeriod();
+
+    // ── Chart Customize ──
+    const CUST_KEY = 'rd_chart_prefs';
+    function getDefaultOrder() { return Array.from(document.querySelectorAll('[data-chart-id]')).map(c => ({ id: c.dataset.chartId, visible: true })); }
+    function loadCustPrefs() { try { const r = localStorage.getItem(CUST_KEY); return r ? JSON.parse(r) : null; } catch { return null; } }
+    function saveCustPrefs(p) { localStorage.setItem(CUST_KEY, JSON.stringify(p)); }
+    function applyCustPrefs(p) {
+        if (!p) return;
+        const container = document.querySelector('.rd-chart-grid');
+        const cards = {}; container.querySelectorAll('[data-chart-id]').forEach(c => { cards[c.dataset.chartId] = c; });
+        p.forEach(pr => { const card = cards[pr.id]; if (card) { container.appendChild(card); if (pr.visible === false) card.style.display = 'none'; else card.style.display = ''; } });
+        Object.keys(cards).forEach(id => { if (!p.find(pr => pr.id === id)) { container.appendChild(cards[id]); cards[id].style.display = ''; } });
+    }
+    applyCustPrefs(loadCustPrefs());
+
+    const custOverlay = document.getElementById('rd-customize-overlay');
+    const custPanel = document.getElementById('rd-customize-panel');
+    const custList = document.getElementById('rd-customize-list');
+
+    function openCust() {
+        const prefs = loadCustPrefs() || getDefaultOrder();
+        const allCards = {}; document.querySelectorAll('[data-chart-id]').forEach(c => { allCards[c.dataset.chartId] = { id: c.dataset.chartId, label: c.dataset.chartLabel }; });
+        const ordered = []; prefs.forEach(p => { if (allCards[p.id]) ordered.push({ ...allCards[p.id], visible: p.visible !== false }); });
+        Object.keys(allCards).forEach(id => { if (!ordered.find(o => o.id === id)) ordered.push({ ...allCards[id], visible: true }); });
+        let html = ''; ordered.forEach((item, idx) => {
+            html += `<div class="rd-cust-item" draggable="true" data-cust-id="${item.id}"><span class="rd-cust-item__handle">&#x2630;</span><div class="rd-cust-item__label">${item.label}</div><button class="rd-cust-item__toggle ${item.visible ? 'rd-cust-item__toggle--on' : ''}" data-cust-toggle="${item.id}"></button></div>`;
+        });
+        custList.innerHTML = html;
+        initCustDrag();
+        custOverlay.classList.add('rd-customize-overlay--open'); custPanel.classList.add('rd-customize-panel--open');
+    }
+    function closeCust() { custOverlay.classList.remove('rd-customize-overlay--open'); custPanel.classList.remove('rd-customize-panel--open'); }
+
+    function initCustDrag() {
+        let dragEl = null;
+        custList.querySelectorAll('.rd-cust-item').forEach(item => {
+            item.addEventListener('dragstart', e => { dragEl = item; item.classList.add('rd-dragging'); e.dataTransfer.effectAllowed = 'move'; e.dataTransfer.setData('text/plain', ''); });
+            item.addEventListener('dragend', () => { if (dragEl) dragEl.classList.remove('rd-dragging'); custList.querySelectorAll('.rd-cust-item').forEach(i => i.classList.remove('rd-drag-over')); dragEl = null; });
+            item.addEventListener('dragover', e => { e.preventDefault(); e.dataTransfer.dropEffect = 'move'; if (item !== dragEl) item.classList.add('rd-drag-over'); });
+            item.addEventListener('dragleave', () => item.classList.remove('rd-drag-over'));
+            item.addEventListener('drop', e => { e.preventDefault(); item.classList.remove('rd-drag-over'); if (dragEl && item !== dragEl) { const items = Array.from(custList.querySelectorAll('.rd-cust-item')); if (items.indexOf(dragEl) < items.indexOf(item)) item.parentNode.insertBefore(dragEl, item.nextSibling); else item.parentNode.insertBefore(dragEl, item); } });
+        });
+        custList.querySelectorAll('.rd-cust-item__toggle').forEach(btn => btn.addEventListener('click', e => { e.stopPropagation(); btn.classList.toggle('rd-cust-item__toggle--on'); }));
+    }
+
+    function getCustState() { return Array.from(custList.querySelectorAll('.rd-cust-item')).map(item => ({ id: item.dataset.custId, visible: item.querySelector('.rd-cust-item__toggle').classList.contains('rd-cust-item__toggle--on') })); }
+
+    document.getElementById('rd-open-customize').addEventListener('click', openCust);
+    document.getElementById('rd-close-customize').addEventListener('click', closeCust);
+    custOverlay.addEventListener('click', closeCust);
+    document.getElementById('rd-save-customize').addEventListener('click', () => { const p = getCustState(); saveCustPrefs(p); applyCustPrefs(p); closeCust(); });
+    document.getElementById('rd-reset-customize').addEventListener('click', () => { localStorage.removeItem(CUST_KEY); location.reload(); });
+
+    // ── Auto-refresh ──
+    const REFRESH_INTERVAL = 300000; // 5 minutes
+    const REFRESH_KEY = 'rd_auto_refresh';
+    let refreshTimer = null;
+    let lastRefresh = Date.now();
+    const refreshDot = document.getElementById('rd-refresh-dot');
+    const refreshText = document.getElementById('rd-refresh-text');
+    const refreshToggle = document.getElementById('rd-refresh-toggle');
+    let autoRefreshOn = localStorage.getItem(REFRESH_KEY) !== 'off';
+
+    function updateRefreshText() {
+        const mins = Math.floor((Date.now() - lastRefresh) / 60000);
+        refreshText.textContent = mins < 1 ? 'Just now' : mins + 'm ago';
+    }
+    setInterval(updateRefreshText, 30000);
+
+    function startAutoRefresh() {
+        autoRefreshOn = true;
+        localStorage.setItem(REFRESH_KEY, 'on');
+        refreshDot.classList.add('rd-refresh__dot--pulse');
+        refreshToggle.textContent = '⟳';
+        refreshToggle.title = 'Auto-refresh ON (5 min)';
+        refreshTimer = setInterval(() => location.reload(), REFRESH_INTERVAL);
+    }
+    function stopAutoRefresh() {
+        autoRefreshOn = false;
+        localStorage.setItem(REFRESH_KEY, 'off');
+        refreshDot.classList.remove('rd-refresh__dot--pulse');
+        refreshToggle.textContent = '⏸';
+        refreshToggle.title = 'Auto-refresh OFF';
+        if (refreshTimer) { clearInterval(refreshTimer); refreshTimer = null; }
+    }
+    refreshToggle.addEventListener('click', () => { if (autoRefreshOn) stopAutoRefresh(); else startAutoRefresh(); });
+    if (autoRefreshOn) startAutoRefresh(); else stopAutoRefresh();
+
+    // ─── KPI CARDS ───
+    fetchP("{% url 'recruitment-modern-kpi' %}")
+        .then(r => r.json())
+        .then(data => {
+            document.getElementById('rd-kpi-grid').innerHTML = `
+                <a href="{% url 'recruitment-view' %}" class="rd-kpi-card">
+                    <div class="rd-kpi-card__icon rd-kpi-card__icon--amber">📋</div>
+                    <div class="rd-kpi-card__label">{% trans "Total Vacancies" %}</div>
+                    <div class="rd-kpi-card__value">${data.total_vacancy}</div>
+                    <div class="rd-kpi-card__sub">{% trans "Open positions" %}</div>
+                </a>
+                <a href="{% url 'recruitment-view' %}" class="rd-kpi-card">
+                    <div class="rd-kpi-card__icon rd-kpi-card__icon--red">🔄</div>
+                    <div class="rd-kpi-card__label">{% trans "Ongoing" %}</div>
+                    <div class="rd-kpi-card__value">${data.ongoing_recruitments}</div>
+                    <div class="rd-kpi-card__sub">{% trans "Active recruitments" %}</div>
+                </a>
+                <a href="{% url 'candidate-view' %}?hired=true" class="rd-kpi-card">
+                    <div class="rd-kpi-card__icon rd-kpi-card__icon--green">✓</div>
+                    <div class="rd-kpi-card__label">{% trans "Hired" %}</div>
+                    <div class="rd-kpi-card__value">${data.total_hired}</div>
+                    <div class="rd-kpi-card__sub">{% trans "of" %} ${data.total_candidates} {% trans "candidates" %}</div>
+                </a>
+                <a href="{% url 'candidate-view' %}" class="rd-kpi-card">
+                    <div class="rd-kpi-card__icon rd-kpi-card__icon--blue">📊</div>
+                    <div class="rd-kpi-card__label">{% trans "Conversion Rate" %}</div>
+                    <div class="rd-kpi-card__value">${data.conversion_rate}%</div>
+                    <div class="rd-kpi-card__sub">{% trans "Hired / Total" %}</div>
+                </a>
+                <a href="{% url 'candidate-view' %}?offer_letter_status=accepted" class="rd-kpi-card">
+                    <div class="rd-kpi-card__icon rd-kpi-card__icon--purple">🤝</div>
+                    <div class="rd-kpi-card__label">{% trans "Acceptance Rate" %}</div>
+                    <div class="rd-kpi-card__value">${data.acceptance_rate}%</div>
+                    <div class="rd-kpi-card__sub">{% trans "Offer accepted" %}</div>
+                </a>`;
+        });
+
+    // ─── STAGE CONVERSION FUNNEL ───
+    fetchP("{% url 'recruitment-modern-conversion' %}")
+        .then(r => r.json())
+        .then(data => {
+            const el = document.querySelector("#chart-conversion-funnel");
+            if (!data.conversions.length) { el.innerHTML = emptyHtml('{% trans "No data" %}'); return; }
+            const maxCount = Math.max(...data.conversions.map(c => c.count), 1);
+            const funnelColors = { initial: '#94a3b8', test: '#3b82f6', interview: '#f59e0b', hired: '#22c55e', cancelled: '#ef4444' };
+            let html = '<div class="rd-funnel">';
+            data.conversions.forEach(c => {
+                const pct = Math.max(20, (c.count / maxCount) * 100);
+                const color = funnelColors[c.type] || '#6366f1';
+                html += `<div class="rd-funnel-step">
+                    <div class="rd-funnel-step__label">${c.stage}</div>
+                    <div class="rd-funnel-step__bar" style="width:${pct}%;background:${color};">${c.count}</div>
+                    <div class="rd-funnel-step__rate">${c.conversion_rate}%</div>
+                </div>`;
+            });
+            html += '</div>';
+            el.innerHTML = html;
+        });
+
+    // ─── SOURCE OF HIRE ───
+    fetchP("{% url 'recruitment-modern-source' %}")
+        .then(r => r.json())
+        .then(data => {
+            if (!data.sources.length) { document.querySelector("#chart-source-hire").innerHTML = emptyHtml('{% trans "No source data" %}'); return; }
+            const sourceColors = { 'Application Form': '#3b82f6', 'Inside Software': '#6366f1', 'Referral': '#22c55e', 'Other': '#94a3b8' };
+            new ApexCharts(document.querySelector("#chart-source-hire"), {
+                series: data.sources.map(s => s.count),
+                chart: { type: 'donut', height: 300, background: 'transparent', fontFamily: 'inherit',
+                    events: { dataPointSelection: (e, ctx, config) => {
+                        const src = data.sources[config.dataPointIndex];
+                        if (src.key !== 'referral') {
+                            window.location.href = "{% url 'candidate-view' %}?source=" + src.key;
+                        }
+                    }}
+                },
+                labels: data.sources.map(s => s.source),
+                colors: data.sources.map(s => sourceColors[s.source] || COLORS[data.sources.indexOf(s) % COLORS.length]),
+                plotOptions: { pie: { donut: { size: '65%', labels: { show: true, total: { show: true, label: '{% trans "Total" %}', color: textColor, fontSize: '13px', fontWeight: 600, formatter: w => w.globals.seriesTotals.reduce((a,b)=>a+b,0) } } } } },
+                stroke: { width: 2, colors: [isDark ? '#0f172a' : '#ffffff'] },
+                dataLabels: { enabled: false },
+                legend: { position: 'bottom', labels: { colors: textColor }, fontSize: '11px', markers: { width: 8, height: 8, radius: 2 } },
+                tooltip: { theme: isDark ? 'dark' : 'light' },
+            }).render();
+        });
+
+    // ─── OPEN POSITIONS BY DEPARTMENT ───
+    fetchP("{% url 'recruitment-modern-open-dept' %}")
+        .then(r => r.json())
+        .then(data => {
+            if (!data.departments.length) { document.querySelector("#chart-open-dept").innerHTML = emptyHtml('{% trans "No open positions" %}'); return; }
+            new ApexCharts(document.querySelector("#chart-open-dept"), {
+                series: [
+                    { name: '{% trans "Filled" %}', data: data.departments.map(d => d.filled) },
+                    { name: '{% trans "Open" %}', data: data.departments.map(d => d.open) },
+                ],
+                chart: { type: 'bar', height: 300, toolbar: { show: false }, background: 'transparent', fontFamily: 'inherit', stacked: true },
+                colors: ['#22c55e', '#f59e0b'],
+                plotOptions: { bar: { borderRadius: 4, horizontal: true, barHeight: '55%' } },
+                xaxis: { categories: data.departments.map(d => d.department), labels: { style: { colors: textColor } } },
+                yaxis: { labels: { style: { colors: textColor, fontSize: '11px' } } },
+                grid: { borderColor: gridColor },
+                dataLabels: { enabled: true, style: { fontSize: '11px' } },
+                legend: { position: 'top', horizontalAlign: 'right', labels: { colors: textColor }, fontSize: '11px', markers: { width: 8, height: 8, radius: 2 } },
+                tooltip: { theme: isDark ? 'dark' : 'light' },
+            }).render();
+        });
+
+    // ─── SOURCE CONVERSION ───
+    fetch("{% url 'recruitment-modern-source-conv' %}")
+        .then(r => r.json())
+        .then(data => {
+            if (!data.sources.length) { document.querySelector("#chart-source-conv").innerHTML = emptyHtml('{% trans "No source data" %}'); return; }
+            new ApexCharts(document.querySelector("#chart-source-conv"), {
+                series: [
+                    { name: '{% trans "Hired" %}', data: data.sources.map(s => s.hired) },
+                    { name: '{% trans "Total" %}', data: data.sources.map(s => s.total - s.hired) },
+                ],
+                chart: { type: 'bar', height: 280, toolbar: { show: false }, background: 'transparent', fontFamily: 'inherit', stacked: true },
+                colors: ['#22c55e', '#e2e8f0'],
+                plotOptions: { bar: { borderRadius: 4, columnWidth: '50%' } },
+                xaxis: { categories: data.sources.map(s => s.source), labels: { style: { colors: textColor, fontSize: '12px' } }, axisBorder: { show: false }, axisTicks: { show: false } },
+                yaxis: { labels: { style: { colors: textColor } } },
+                grid: { borderColor: gridColor, strokeDashArray: 4 },
+                dataLabels: { enabled: false },
+                legend: { position: 'top', horizontalAlign: 'right', labels: { colors: textColor }, fontSize: '11px', markers: { width: 8, height: 8, radius: 2 } },
+                tooltip: { theme: isDark ? 'dark' : 'light', y: { formatter: (v, { seriesIndex: si, dataPointIndex: di }) => si === 0 ? `${v} hired (${data.sources[di].rate}%)` : `${v} not hired` } },
+            }).render();
+        });
+
+    // ─── UPCOMING INTERVIEWS ───
+    fetch("{% url 'recruitment-modern-interviews' %}")
+        .then(r => r.json())
+        .then(data => {
+            const el = document.getElementById('rd-interviews');
+            if (!data.interviews.length) { el.innerHTML = '<div class="rd-info-panel__empty">{% trans "No interviews scheduled" %}</div>'; return; }
+            el.innerHTML = data.interviews.map(iv => `
+                <div class="rd-interview-item">
+                    <div class="rd-interview-item__date">${iv.date}</div>
+                    <div class="rd-interview-item__info">
+                        <div class="rd-interview-item__name">${iv.candidate}</div>
+                        <div class="rd-interview-item__stage">${iv.stage}</div>
+                    </div>
+                    <div class="rd-interview-item__time">${iv.time}</div>
+                </div>`).join('');
+        }).catch(() => { document.getElementById('rd-interviews').innerHTML = '<div class="rd-info-panel__empty">{% trans "No interviews scheduled" %}</div>'; });
+
+    // ─── CANDIDATES BY STAGE ───
+    fetchP("{% url 'recruitment-modern-stage-summary' %}")
+        .then(r => r.json())
+        .then(data => {
+            if (!data.stages.length) { document.querySelector("#chart-stage-summary").innerHTML = emptyHtml('{% trans "No data" %}'); return; }
+            const stageColors = { initial: '#94a3b8', test: '#3b82f6', interview: '#f59e0b', hired: '#22c55e', cancelled: '#ef4444' };
+            new ApexCharts(document.querySelector("#chart-stage-summary"), {
+                series: [{ name: '{% trans "Candidates" %}', data: data.stages.map(s => s.count) }],
+                chart: { type: 'bar', height: 300, toolbar: { show: false }, background: 'transparent', fontFamily: 'inherit',
+                    events: { dataPointSelection: (e, ctx, config) => {
+                        const stage = data.stages[config.dataPointIndex];
+                        window.location.href = "{% url 'candidate-view' %}?stage_id__stage_type=" + stage.type;
+                    }}
+                },
+                colors: data.stages.map(s => stageColors[s.type] || '#6366f1'),
+                plotOptions: { bar: { borderRadius: 8, columnWidth: '55%', distributed: true } },
+                xaxis: { categories: data.stages.map(s => s.label), labels: { style: { colors: textColor, fontSize: '12px' } }, axisBorder: { show: false }, axisTicks: { show: false } },
+                yaxis: { labels: { style: { colors: textColor } } },
+                grid: { borderColor: gridColor, strokeDashArray: 4 },
+                dataLabels: { enabled: true, style: { fontSize: '12px', colors: ['#fff'] } },
+                legend: { show: false },
+                tooltip: { theme: isDark ? 'dark' : 'light', y: { formatter: v => v + ' candidate(s)' } },
+            }).render();
+        });
+
+    // ─── OFFER LETTER STATUS ───
+    fetchP("{% url 'recruitment-modern-offer-status' %}")
+        .then(r => r.json())
+        .then(data => {
+            const total = data.data.reduce((a, b) => a + b, 0);
+            if (!total) { document.querySelector("#chart-offer-status").innerHTML = emptyHtml('{% trans "No candidates" %}'); return; }
+            const offerColors = ['#94a3b8', '#f59e0b', '#22c55e', '#ef4444', '#6366f1'];
+            new ApexCharts(document.querySelector("#chart-offer-status"), {
+                series: data.data,
+                chart: { type: 'donut', height: 300, background: 'transparent', fontFamily: 'inherit',
+                    events: { dataPointSelection: (e, ctx, config) => {
+                        const status = data.statuses[config.dataPointIndex];
+                        window.location.href = "{% url 'candidate-view' %}?offer_letter_status=" + status;
+                    }}
+                },
+                labels: data.labels,
+                colors: offerColors,
+                plotOptions: { pie: { donut: { size: '65%', labels: { show: true, total: { show: true, label: '{% trans "Total" %}', color: textColor, fontSize: '13px', fontWeight: 600, formatter: w => w.globals.seriesTotals.reduce((a,b)=>a+b,0) } } } } },
+                stroke: { width: 2, colors: [isDark ? '#0f172a' : '#ffffff'] },
+                dataLabels: { enabled: false },
+                legend: { position: 'bottom', labels: { colors: textColor }, fontSize: '11px', markers: { width: 8, height: 8, radius: 2 } },
+                tooltip: { theme: isDark ? 'dark' : 'light' },
+            }).render();
+        });
+
+    // ─── HIRING PIPELINE TABLE ───
+    fetchP("{% url 'recruitment-modern-pipeline' %}")
+        .then(r => r.json())
+        .then(data => {
+            const el = document.getElementById('rd-pipeline-table');
+            if (!data.pipeline.length) { el.innerHTML = emptyHtml('{% trans "No active recruitments" %}'); return; }
+            const types = Object.entries(data.stage_types);
+            let html = '<table class="rd-pipeline-table"><thead><tr><th>{% trans "Recruitment" %}</th>';
+            types.forEach(([k, v]) => { html += `<th style="text-align:center">${v}</th>`; });
+            html += '<th style="text-align:center">{% trans "Total" %}</th></tr></thead><tbody>';
+            data.pipeline.forEach(p => {
+                html += `<tr><td><a href="{% url 'candidate-view' %}?recruitment=${encodeURIComponent(p.recruitment)}" style="color:var(--rd-indigo);text-decoration:none;font-weight:500;">${p.recruitment}</a></td>`;
+                types.forEach(([k]) => {
+                    const count = p.stages[k] || 0;
+                    html += `<td style="text-align:center"><span class="rd-pipeline-cell rd-pipeline-cell--${k}">${count}</span></td>`;
+                });
+                html += `<td style="text-align:center;font-weight:700;">${p.total}</td></tr>`;
+            });
+            html += '</tbody></table>';
+            el.innerHTML = html;
+        });
+
+    // ─── HIRE RATE ───
+    fetchP("{% url 'recruitment-modern-source-quality' %}")
+        .then(r => r.json())
+        .then(data => {
+            if (!data.sources.length) { document.querySelector("#chart-hire-rate").innerHTML = emptyHtml('{% trans "No data" %}'); return; }
+            new ApexCharts(document.querySelector("#chart-hire-rate"), {
+                series: [{ name: '{% trans "Hire Rate" %}', data: data.sources.map(s => s.rate) }],
+                chart: { type: 'bar', height: 300, toolbar: { show: false }, background: 'transparent', fontFamily: 'inherit',
+                    events: { dataPointSelection: (e, ctx, config) => {
+                        const rec = data.sources[config.dataPointIndex]?.recruitment || '';
+                        window.location.href = "{% url 'candidate-view' %}?recruitment=" + encodeURIComponent(rec);
+                    }}
+                },
+                colors: ['#22c55e'],
+                plotOptions: { bar: { borderRadius: 6, horizontal: true, barHeight: '55%' } },
+                xaxis: { categories: data.sources.map(s => s.recruitment), labels: { style: { colors: textColor } } },
+                yaxis: { labels: { style: { colors: textColor, fontSize: '11px' } }, max: 100 },
+                grid: { borderColor: gridColor },
+                dataLabels: { enabled: true, formatter: v => v + '%', style: { fontSize: '11px' } },
+                tooltip: { theme: isDark ? 'dark' : 'light', y: { formatter: (v, { dataPointIndex: i }) => `${v}% (${data.sources[i].hired}/${data.sources[i].total})` } },
+            }).render();
+        });
+
+    // ─── TIME TO HIRE ───
+    fetchP("{% url 'recruitment-modern-time-to-hire' %}")
+        .then(r => r.json())
+        .then(data => {
+            if (!data.data.length) { document.querySelector("#chart-time-to-hire").innerHTML = emptyHtml('{% trans "No hire date data available" %}'); return; }
+            new ApexCharts(document.querySelector("#chart-time-to-hire"), {
+                series: [{ name: '{% trans "Avg Days" %}', data: data.data.map(d => d.avg_days) }],
+                chart: { type: 'bar', height: 300, toolbar: { show: false }, background: 'transparent', fontFamily: 'inherit' },
+                colors: ['#6366f1'],
+                plotOptions: { bar: { borderRadius: 6, columnWidth: '50%' } },
+                xaxis: { categories: data.data.map(d => d.recruitment), labels: { style: { colors: textColor, fontSize: '11px' }, rotate: -45 }, axisBorder: { show: false }, axisTicks: { show: false } },
+                yaxis: { labels: { style: { colors: textColor }, formatter: v => v + 'd' } },
+                grid: { borderColor: gridColor, strokeDashArray: 4 },
+                dataLabels: { enabled: true, formatter: v => v + ' {% trans "days" %}', style: { fontSize: '11px', colors: ['#fff'] } },
+                tooltip: { theme: isDark ? 'dark' : 'light', y: { formatter: (v, { dataPointIndex: i }) => `${v} days (${data.data[i].hired_count} hired)` } },
+            }).render();
+        });
+
+    // ─── JOININGS PER MONTH ───
+    const yearSelect = document.getElementById('rd-year-select');
+    const currentYear = new Date().getFullYear();
+    for (let y = currentYear; y >= 2020; y--) {
+        const opt = document.createElement('option');
+        opt.value = y; opt.textContent = y;
+        yearSelect.appendChild(opt);
+    }
+    let joiningsChart = null;
+
+    function loadJoinings(year) {
+        document.getElementById('rd-joining-year').textContent = year;
+        fetch("{% url 'dashboard-hiring' %}?id=" + year)
+            .then(r => r.json())
+            .then(data => {
+                if (!data.dataSet || !data.dataSet.length) { document.querySelector("#chart-joinings").innerHTML = emptyHtml('{% trans "No data" %}'); return; }
+                const opts = {
+                    series: [{ name: data.dataSet[0].label || 'Joined', data: data.dataSet[0].data }],
+                    chart: { type: 'bar', height: 280, toolbar: { show: false }, background: 'transparent', fontFamily: 'inherit' },
+                    colors: ['#f59e0b'],
+                    plotOptions: { bar: { borderRadius: 6, columnWidth: '50%' } },
+                    xaxis: { categories: data.labels, labels: { style: { colors: textColor, fontSize: '11px' } }, axisBorder: { show: false }, axisTicks: { show: false } },
+                    yaxis: { labels: { style: { colors: textColor } } },
+                    grid: { borderColor: gridColor, strokeDashArray: 4 },
+                    dataLabels: { enabled: true, style: { fontSize: '11px', colors: ['#fff'] } },
+                    tooltip: { theme: isDark ? 'dark' : 'light', y: { formatter: v => v + ' employee(s)' } },
+                };
+                if (joiningsChart) { joiningsChart.destroy(); }
+                joiningsChart = new ApexCharts(document.querySelector("#chart-joinings"), opts);
+                joiningsChart.render();
+            });
+    }
+
+    yearSelect.addEventListener('change', () => loadJoinings(yearSelect.value));
+    loadJoinings(currentYear);
+
+    // ─── ONGOING RECRUITMENTS & MANAGERS ───
+    fetchP("{% url 'recruitment-modern-managers' %}")
+        .then(r => r.json())
+        .then(data => {
+            const el = document.getElementById('rd-managers-table');
+            if (!data.recruitments.length) { el.innerHTML = emptyHtml('{% trans "No ongoing recruitments" %}'); return; }
+            let html = '<table class="rd-pipeline-table"><thead><tr><th>{% trans "Recruitment" %}</th><th style="text-align:center">{% trans "Vacancy" %}</th><th style="text-align:center">{% trans "Candidates" %}</th><th>{% trans "Managers" %}</th></tr></thead><tbody>';
+            data.recruitments.forEach(r => {
+                const chips = r.managers.map(m => `<span class="rd-chip">${m}</span>`).join('');
+                html += `<tr>
+                    <td><a href="{% url 'candidate-view' %}?recruitment=${encodeURIComponent(r.recruitment)}" style="color:var(--rd-indigo);text-decoration:none;font-weight:500;">${r.recruitment}</a></td>
+                    <td style="text-align:center;font-weight:600;">${r.vacancy}</td>
+                    <td style="text-align:center;font-weight:600;">${r.candidates}</td>
+                    <td>${chips || '<span style="opacity:0.4">—</span>'}</td>
+                </tr>`;
+            });
+            html += '</tbody></table>';
+            el.innerHTML = html;
+        });
+
+})();
+</script>
+{% endblock %}

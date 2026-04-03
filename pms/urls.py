@@ -3,6 +3,7 @@ from django.urls import path
 from base.views import object_delete
 from horilla_audit.methods import history_tracking
 from pms import cbvs
+from pms import dashboard_modern as pms_dashboard_modern
 from pms.cbv import (
     dashboard,
     feedback,
@@ -799,5 +800,64 @@ urlpatterns = [
         history_tracking,
         name="history-tracking",
         kwargs={"model": models.Meetings, "decorators": ["login_required"]},
+    ),
+    # ── PMS Modern Dashboard ─────────────────────────────────────────────────
+    path(
+        "dashboard/",
+        pms_dashboard_modern.modern_pms_dashboard,
+        name="pms-modern-dashboard",
+    ),
+    path(
+        "dashboard/api/kpi/", pms_dashboard_modern.pms_kpi_data, name="pms-modern-kpi"
+    ),
+    path(
+        "dashboard/api/objective-status/",
+        pms_dashboard_modern.pms_objective_status,
+        name="pms-modern-obj-status",
+    ),
+    path(
+        "dashboard/api/kr-status/",
+        pms_dashboard_modern.pms_key_result_status,
+        name="pms-modern-kr-status",
+    ),
+    path(
+        "dashboard/api/feedback-status/",
+        pms_dashboard_modern.pms_feedback_status,
+        name="pms-modern-fb-status",
+    ),
+    path(
+        "dashboard/api/department/",
+        pms_dashboard_modern.pms_department_performance,
+        name="pms-modern-dept",
+    ),
+    path(
+        "dashboard/api/at-risk/",
+        pms_dashboard_modern.pms_at_risk_objectives,
+        name="pms-modern-at-risk",
+    ),
+    path(
+        "dashboard/api/performers/",
+        pms_dashboard_modern.pms_top_performers,
+        name="pms-modern-performers",
+    ),
+    path(
+        "dashboard/api/okr-overview/",
+        pms_dashboard_modern.pms_kr_progress_overview,
+        name="pms-modern-okr-overview",
+    ),
+    path(
+        "dashboard/api/meetings/",
+        pms_dashboard_modern.pms_upcoming_meetings,
+        name="pms-modern-meetings",
+    ),
+    path(
+        "dashboard/api/progress-trend/",
+        pms_dashboard_modern.pms_progress_trend,
+        name="pms-modern-progress-trend",
+    ),
+    path(
+        "dashboard/api/feedback-completion/",
+        pms_dashboard_modern.pms_feedback_completion,
+        name="pms-modern-fb-completion",
     ),
 ]

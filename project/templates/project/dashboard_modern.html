@@ -1,0 +1,428 @@
+{% extends "index.html" %}
+{% load static i18n %}
+
+{% block styles %}
+<script src="https://cdn.jsdelivr.net/npm/apexcharts"></script>
+<style>
+    :root {
+        --pr-indigo: #6366f1;
+        --pr-green: #22c55e;
+        --pr-amber: #f59e0b;
+        --pr-red: #ef4444;
+        --pr-blue: #3b82f6;
+        --pr-purple: #a855f7;
+        --pr-cyan: #06b6d4;
+        --pr-orange: #f97316;
+    }
+
+    .pr-dashboard {
+        font-family: inherit;
+        background: #ffffff;
+        margin: -24px;
+        padding: 24px;
+        min-height: calc(100vh - 80px);
+    }
+    .dark .pr-dashboard { background: #0f172a; }
+
+    .pr-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 20px;
+        flex-wrap: wrap;
+        gap: 12px;
+    }
+    .pr-header h1 {
+        font-size: 22px;
+        font-weight: 700;
+        margin: 0;
+    }
+    .pr-header__meta {
+        font-size: 13px;
+        opacity: 0.5;
+        margin-top: 2px;
+    }
+    .pr-header__controls {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        flex-wrap: wrap;
+    }
+    .pr-period-picker {
+        display: none; /* DATE FILTER DISABLED */
+        align-items: center;
+        gap: 6px;
+        background: rgba(128,128,128,0.07);
+        border-radius: 8px;
+        padding: 6px 10px;
+        font-size: 12px;
+    }
+    .pr-period-picker input[type="date"] {
+        border: none;
+        font-size: 12px;
+        background: transparent;
+        color: inherit;
+        outline: none;
+    }
+    .pr-period-picker__sep { opacity: 0.4; font-size: 11px; }
+    .pr-period-preset {
+        padding: 4px 10px;
+        border-radius: 6px;
+        border: 1px solid rgba(128,128,128,0.15);
+        font-size: 11px;
+        cursor: pointer;
+        background: none;
+        color: inherit;
+        transition: all 0.15s;
+    }
+    .pr-period-preset:hover { border-color: var(--pr-indigo); color: var(--pr-indigo); }
+    .pr-period-preset--active { background: var(--pr-indigo); color: #fff; border-color: var(--pr-indigo); }
+
+    /* KPI grid */
+    .pr-kpi-grid {
+        display: grid;
+        grid-template-columns: repeat(4, 1fr);
+        gap: 16px;
+        margin-bottom: 24px;
+    }
+    .pr-kpi-card {
+        background: #f8fafc;
+        border-radius: 12px;
+        padding: 18px 20px;
+        border: 1px solid rgba(0,0,0,0.06);
+        transition: transform 0.15s, box-shadow 0.15s;
+        position: relative;
+        overflow: hidden;
+    }
+    .dark .pr-kpi-card { background: #1e293b; border-color: rgba(255,255,255,0.07); }
+    .pr-kpi-card:hover { transform: translateY(-2px); box-shadow: 0 8px 25px rgba(0,0,0,0.08); }
+    .pr-kpi-card__icon {
+        width: 38px; height: 38px;
+        border-radius: 10px;
+        display: flex; align-items: center; justify-content: center;
+        font-size: 17px;
+        margin-bottom: 10px;
+    }
+    .pr-kpi-card__label { font-size: 11px; font-weight: 600; letter-spacing: 0.06em; text-transform: uppercase; opacity: 0.5; margin-bottom: 4px; }
+    .pr-kpi-card__value { font-size: 30px; font-weight: 800; line-height: 1; margin-bottom: 4px; }
+    .pr-kpi-card__sub { font-size: 12px; opacity: 0.55; }
+    .pr-kpi-card--blue .pr-kpi-card__icon { background: #dbeafe; color: var(--pr-blue); }
+    .pr-kpi-card--green .pr-kpi-card__icon { background: #dcfce7; color: var(--pr-green); }
+    .pr-kpi-card--amber .pr-kpi-card__icon { background: #fef3c7; color: var(--pr-amber); }
+    .pr-kpi-card--red .pr-kpi-card__icon { background: #fee2e2; color: var(--pr-red); }
+    .pr-kpi-card--purple .pr-kpi-card__icon { background: #f3e8ff; color: var(--pr-purple); }
+    .pr-kpi-card--cyan .pr-kpi-card__icon { background: #cffafe; color: var(--pr-cyan); }
+    .pr-kpi-card--indigo .pr-kpi-card__icon { background: #e0e7ff; color: var(--pr-indigo); }
+    .pr-kpi-card--orange .pr-kpi-card__icon { background: #ffedd5; color: var(--pr-orange); }
+
+    /* Chart grid */
+    .pr-chart-grid {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 20px;
+        margin-bottom: 24px;
+    }
+    .pr-chart-card {
+        background: #f8fafc;
+        border-radius: 12px;
+        padding: 20px;
+        border: 1px solid rgba(0,0,0,0.06);
+    }
+    .dark .pr-chart-card { background: #1e293b; border-color: rgba(255,255,255,0.07); }
+    .pr-chart-card--wide { grid-column: span 2; }
+    .pr-chart-card__title { font-size: 13px; font-weight: 700; margin-bottom: 4px; }
+    .pr-chart-card__sub { font-size: 11px; opacity: 0.45; margin-bottom: 14px; }
+
+    /* Deadlines table */
+    .pr-table { width: 100%; border-collapse: collapse; font-size: 13px; }
+    .pr-table th { font-size: 11px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.05em; opacity: 0.45; padding: 8px 10px; text-align: left; }
+    .pr-table td { padding: 9px 10px; border-top: 1px solid rgba(0,0,0,0.05); }
+    .dark .pr-table td { border-color: rgba(255,255,255,0.06); }
+    .pr-badge {
+        display: inline-block;
+        padding: 2px 8px;
+        border-radius: 20px;
+        font-size: 11px;
+        font-weight: 600;
+    }
+    .pr-badge--green { background: #dcfce7; color: #15803d; }
+    .pr-badge--blue { background: #dbeafe; color: #1d4ed8; }
+    .pr-badge--amber { background: #fef3c7; color: #b45309; }
+    .pr-badge--red { background: #fee2e2; color: #b91c1c; }
+
+    /* Skeleton */
+    .pr-skeleton { background: linear-gradient(90deg, rgba(0,0,0,0.06) 25%, rgba(0,0,0,0.03) 50%, rgba(0,0,0,0.06) 75%); background-size: 200% 100%; animation: pr-shimmer 1.5s infinite; border-radius: 6px; }
+    .dark .pr-skeleton { background: linear-gradient(90deg, rgba(255,255,255,0.06) 25%, rgba(255,255,255,0.03) 50%, rgba(255,255,255,0.06) 75%); background-size: 200% 100%; }
+    @keyframes pr-shimmer { 0% { background-position: 200% 0; } 100% { background-position: -200% 0; } }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="pr-dashboard">
+
+    <!-- Header -->
+    <div class="pr-header">
+        <div>
+            <h1>{% trans "Project Dashboard" %}</h1>
+            <div class="pr-header__meta" id="pr-last-updated">{% trans "Loading..." %}</div>
+        </div>
+        <div class="pr-header__controls">
+            <button class="pr-period-preset pr-period-preset--active" onclick="prSetPreset('month',this)">{% trans "This Month" %}</button>
+            <button class="pr-period-preset" onclick="prSetPreset('quarter',this)">{% trans "Quarter" %}</button>
+            <div class="pr-period-picker">
+                <input type="date" id="pr-from-date" title="{% trans 'From' %}">
+                <span class="pr-period-picker__sep">&rarr;</span>
+                <input type="date" id="pr-to-date" title="{% trans 'To' %}">
+            </div>
+        </div>
+    </div>
+
+    <!-- KPI Row -->
+    <div class="pr-kpi-grid" id="pr-kpi-grid">
+        <div class="pr-kpi-card pr-skeleton" style="height:110px;"></div>
+        <div class="pr-kpi-card pr-skeleton" style="height:110px;"></div>
+        <div class="pr-kpi-card pr-skeleton" style="height:110px;"></div>
+        <div class="pr-kpi-card pr-skeleton" style="height:110px;"></div>
+    </div>
+
+    <!-- Charts row 1 -->
+    <div class="pr-chart-grid">
+        <div class="pr-chart-card">
+            <div class="pr-chart-card__title">{% trans "Project Status" %}</div>
+            <div class="pr-chart-card__sub">{% trans "Distribution by status" %}</div>
+            <div id="pr-status-chart"></div>
+        </div>
+        <div class="pr-chart-card">
+            <div class="pr-chart-card__title">{% trans "Task Status" %}</div>
+            <div class="pr-chart-card__sub">{% trans "All tasks breakdown" %}</div>
+            <div id="pr-task-chart"></div>
+        </div>
+    </div>
+
+    <!-- Charts row 2 -->
+    <div class="pr-chart-grid">
+        <div class="pr-chart-card pr-chart-card--wide">
+            <div class="pr-chart-card__title">{% trans "Project Activity Trend" %}</div>
+            <div class="pr-chart-card__sub">{% trans "Projects started vs completed over last 6 months" %}</div>
+            <div id="pr-trend-chart"></div>
+        </div>
+    </div>
+
+    <!-- Bottom row -->
+    <div class="pr-chart-grid">
+        <div class="pr-chart-card">
+            <div class="pr-chart-card__title">{% trans "Upcoming Deadlines" %}</div>
+            <div class="pr-chart-card__sub">{% trans "Projects due in next 30 days" %}</div>
+            <div id="pr-deadlines-table"><div class="pr-skeleton" style="height:180px;"></div></div>
+        </div>
+        <div class="pr-chart-card">
+            <div class="pr-chart-card__title">{% trans "Top Active Projects" %}</div>
+            <div class="pr-chart-card__sub">{% trans "By task count" %}</div>
+            <div id="pr-top-chart"></div>
+        </div>
+    </div>
+
+</div>
+
+<script>
+const PR_URLS = {
+    kpi:       "{% url 'project-modern-kpi' %}",
+    status:    "{% url 'project-modern-status' %}",
+    tasks:     "{% url 'project-modern-tasks' %}",
+    trend:     "{% url 'project-modern-trend' %}",
+    deadlines: "{% url 'project-modern-deadlines' %}",
+    top:       "{% url 'project-modern-top' %}",
+};
+
+let prFromDate = "", prToDate = "";
+
+function prSetPreset(preset, btn) {
+    document.querySelectorAll(".pr-period-preset").forEach(b => b.classList.remove("pr-period-preset--active"));
+    btn.classList.add("pr-period-preset--active");
+    const today = new Date();
+    const pad = n => String(n).padStart(2, "0");
+    const fmt = d => `${d.getFullYear()}-${pad(d.getMonth()+1)}-${pad(d.getDate())}`;
+    if (preset === "month") {
+        prFromDate = fmt(new Date(today.getFullYear(), today.getMonth(), 1));
+        prToDate = fmt(new Date(today.getFullYear(), today.getMonth()+1, 0));
+    } else if (preset === "quarter") {
+        const qStart = new Date(today.getFullYear(), Math.floor(today.getMonth()/3)*3, 1);
+        prFromDate = fmt(qStart);
+        prToDate = fmt(new Date(today.getFullYear(), Math.floor(today.getMonth()/3)*3+3, 0));
+    }
+    document.getElementById("pr-from-date").value = prFromDate;
+    document.getElementById("pr-to-date").value = prToDate;
+    prLoadAll();
+}
+
+function prParams() {
+    return ""; /* DATE FILTER DISABLED */
+}
+
+function prFetch(url) { return fetch(url + prParams()).then(r => r.json()); }
+
+function prLoadKpi() {
+    prFetch(PR_URLS.kpi).then(d => {
+        const grid = document.getElementById("pr-kpi-grid");
+        grid.innerHTML = `
+            <div class="pr-kpi-card pr-kpi-card--blue">
+                <div class="pr-kpi-card__icon">📋</div>
+                <div class="pr-kpi-card__label">{% trans "Total Projects" %}</div>
+                <div class="pr-kpi-card__value">${d.total_projects}</div>
+            </div>
+            <div class="pr-kpi-card pr-kpi-card--green">
+                <div class="pr-kpi-card__icon">✅</div>
+                <div class="pr-kpi-card__label">{% trans "Active" %}</div>
+                <div class="pr-kpi-card__value">${d.active_projects}</div>
+                <div class="pr-kpi-card__sub">{% trans "In Progress" %}</div>
+            </div>
+            <div class="pr-kpi-card pr-kpi-card--purple">
+                <div class="pr-kpi-card__icon">🏁</div>
+                <div class="pr-kpi-card__label">{% trans "Completed" %}</div>
+                <div class="pr-kpi-card__value">${d.completed_projects}</div>
+            </div>
+            <div class="pr-kpi-card pr-kpi-card--red">
+                <div class="pr-kpi-card__icon">⚠️</div>
+                <div class="pr-kpi-card__label">{% trans "Overdue" %}</div>
+                <div class="pr-kpi-card__value">${d.overdue_projects}</div>
+                <div class="pr-kpi-card__sub">{% trans "Past end date" %}</div>
+            </div>
+        `;
+        document.getElementById("pr-last-updated").textContent =
+            `{% trans "Last updated" %}: ${new Date().toLocaleTimeString()}`;
+    });
+}
+
+function prLoadStatus() {
+    prFetch(PR_URLS.status).then(d => {
+        new ApexCharts(document.getElementById("pr-status-chart"), {
+            series: d.counts,
+            labels: d.labels,
+            chart: { type: "donut", height: 260, toolbar: { show: false } },
+            colors: ["#6366f1","#22c55e","#a855f7","#f59e0b","#ef4444","#94a3b8"],
+            legend: { position: "bottom", fontSize: "12px" },
+            dataLabels: { enabled: true },
+            plotOptions: { pie: { donut: { size: "60%" } } },
+        }).render();
+    });
+}
+
+function prLoadTasks() {
+    prFetch(PR_URLS.tasks).then(d => {
+        new ApexCharts(document.getElementById("pr-task-chart"), {
+            series: d.counts,
+            labels: d.labels,
+            chart: { type: "pie", height: 260, toolbar: { show: false } },
+            colors: ["#94a3b8","#3b82f6","#22c55e","#ef4444"],
+            legend: { position: "bottom", fontSize: "12px" },
+            dataLabels: { enabled: true },
+        }).render();
+    });
+}
+
+function prLoadTrend() {
+    prFetch(PR_URLS.trend).then(d => {
+        new ApexCharts(document.getElementById("pr-trend-chart"), {
+            series: [
+                { name: "{% trans 'Started' %}", data: d.started },
+                { name: "{% trans 'Completed' %}", data: d.completed },
+            ],
+            chart: { type: "area", height: 220, toolbar: { show: false }, sparkline: { enabled: false } },
+            colors: ["#6366f1", "#22c55e"],
+            xaxis: { categories: d.months, labels: { style: { fontSize: "11px" } } },
+            yaxis: { labels: { style: { fontSize: "11px" } } },
+            stroke: { curve: "smooth", width: 2 },
+            fill: { type: "gradient", gradient: { opacityFrom: 0.3, opacityTo: 0.05 } },
+            legend: { position: "top", fontSize: "12px" },
+            grid: { borderColor: "rgba(0,0,0,0.05)" },
+            dataLabels: { enabled: false },
+        }).render();
+    });
+}
+
+function prLoadDeadlines() {
+    prFetch(PR_URLS.deadlines).then(d => {
+        if (!d.projects.length) {
+            document.getElementById("pr-deadlines-table").innerHTML =
+                '<p style="font-size:13px;opacity:0.5;text-align:center;padding:40px 0">{% trans "No upcoming deadlines" %}</p>';
+            return;
+        }
+        const statusColor = s => {
+            if (s === "In Progress") return "pr-badge--blue";
+            if (s === "On Hold") return "pr-badge--amber";
+            return "pr-badge--green";
+        };
+        const urgency = days => days <= 7 ? "pr-badge--red" : days <= 14 ? "pr-badge--amber" : "pr-badge--green";
+        const rows = d.projects.map(p => `
+            <tr>
+                <td>${p.title}</td>
+                <td>${p.end_date}</td>
+                <td><span class="pr-badge ${statusColor(p.status)}">${p.status}</span></td>
+                <td><span class="pr-badge ${urgency(p.days_left)}">${p.days_left}d</span></td>
+            </tr>`).join("");
+        document.getElementById("pr-deadlines-table").innerHTML = `
+            <table class="pr-table">
+                <thead><tr>
+                    <th>{% trans "Project" %}</th>
+                    <th>{% trans "Due" %}</th>
+                    <th>{% trans "Status" %}</th>
+                    <th>{% trans "Days Left" %}</th>
+                </tr></thead>
+                <tbody>${rows}</tbody>
+            </table>`;
+    });
+}
+
+function prLoadTop() {
+    prFetch(PR_URLS.top).then(d => {
+        if (!d.projects.length) {
+            document.getElementById("pr-top-chart").innerHTML =
+                '<p style="font-size:13px;opacity:0.5;text-align:center;padding:40px 0">{% trans "No active projects" %}</p>';
+            return;
+        }
+        new ApexCharts(document.getElementById("pr-top-chart"), {
+            series: [{ name: "{% trans 'Tasks' %}", data: d.projects.map(p => p.task_count) }],
+            chart: { type: "bar", height: 260, toolbar: { show: false } },
+            colors: ["#6366f1"],
+            xaxis: { categories: d.projects.map(p => p.title.length > 18 ? p.title.slice(0,18)+"…" : p.title), labels: { style: { fontSize: "11px" } } },
+            yaxis: { labels: { style: { fontSize: "11px" } } },
+            plotOptions: { bar: { borderRadius: 4, horizontal: true } },
+            dataLabels: { enabled: false },
+            grid: { borderColor: "rgba(0,0,0,0.05)" },
+        }).render();
+    });
+}
+
+function prLoadAll() {
+    prLoadKpi();
+    prLoadStatus();
+    prLoadTasks();
+    prLoadTrend();
+    prLoadDeadlines();
+    prLoadTop();
+}
+
+document.getElementById("pr-from-date").addEventListener("change", function() {
+    prFromDate = this.value;
+    document.querySelectorAll(".pr-period-preset").forEach(b => b.classList.remove("pr-period-preset--active"));
+    prLoadAll();
+});
+document.getElementById("pr-to-date").addEventListener("change", function() {
+    prToDate = this.value;
+    document.querySelectorAll(".pr-period-preset").forEach(b => b.classList.remove("pr-period-preset--active"));
+    prLoadAll();
+});
+
+// Init with current month (end-of-month so future deadlines/tasks are visible)
+(function() {
+    const today = new Date();
+    const pad = n => String(n).padStart(2, "0");
+    const fmt = d => `${d.getFullYear()}-${pad(d.getMonth()+1)}-${pad(d.getDate())}`;
+    prFromDate = fmt(new Date(today.getFullYear(), today.getMonth(), 1));
+    prToDate = fmt(new Date(today.getFullYear(), today.getMonth()+1, 0));
+    document.getElementById("pr-from-date").value = prFromDate;
+    document.getElementById("pr-to-date").value = prToDate;
+    prLoadAll();
+})();
+</script>
+{% endblock %}
