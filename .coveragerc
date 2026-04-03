@@ -1,0 +1,32 @@
+[run]
+source =
+    base,
+    employee,
+    leave,
+    payroll,
+    recruitment,
+    attendance,
+    pms,
+    asset,
+    onboarding,
+    offboarding,
+    helpdesk,
+    accessibility,
+    horilla_automations,
+    horilla
+
+omit =
+    */migrations/*
+    */tests/*
+    */test_utils/*
+    horilla/settings/*
+    manage.py
+
+[report]
+show_missing = True
+fail_under = 20
+skip_covered = False
+skip_empty = True
+
+[html]
+directory = coverage_html
