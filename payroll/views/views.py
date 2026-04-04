@@ -183,6 +183,7 @@ def contract_status_update(request, contract_id):
 
 
 @login_required
+@hx_request_required
 @permission_required("payroll.change_contract")
 def bulk_contract_status_update(request):
     status = request.POST.get("status")
@@ -474,6 +475,7 @@ def update_payslip_status(request, payslip_id):
 
 
 @login_required
+@hx_request_required
 def update_payslip_status_no_id(request):
     """
     This method is used to update the payslip confirmation status
@@ -684,6 +686,7 @@ def view_payroll_dashboard(request):
 
 
 @login_required
+@hx_request_required
 def dashboard_employee_chart(request):
     """
     payroll dashboard employee chart data
@@ -768,6 +771,7 @@ def dashboard_employee_chart(request):
 
 
 @login_required
+@hx_request_required
 def payslip_details(request):
     """
     payroll dashboard payslip details data
@@ -791,6 +795,7 @@ def payslip_details(request):
 
 
 @login_required
+@hx_request_required
 def dashboard_department_chart(request):
     """
     payroll dashboard department chart data
@@ -1566,6 +1571,7 @@ def payslip_pdf(request, id):
 
 
 @login_required
+@hx_request_required
 @permission_required("payroll.view_contract")
 def contract_select(request):
     page_number = request.GET.get("page")
@@ -1583,6 +1589,7 @@ def contract_select(request):
 
 
 @login_required
+@hx_request_required
 def contract_select_filter(request):
     page_number = request.GET.get("page")
     filtered = request.GET.get("filter")
@@ -1604,6 +1611,7 @@ def contract_select_filter(request):
 
 
 @login_required
+@hx_request_required
 def payslip_select(request):
     page_number = request.GET.get("page")
     payslip = Payslip.objects.none()
@@ -1623,6 +1631,7 @@ def payslip_select(request):
 
 
 @login_required
+@hx_request_required
 def payslip_select_filter(request):
     page_number = request.GET.get("page")
     filtered = request.GET.get("filter")
@@ -1792,6 +1801,7 @@ def view_payrollrequest_comment(request, payroll_id):
 
 
 @login_required
+@hx_request_required
 def delete_payrollrequest_comment(request, comment_id):
     """
     This method is used to delete Reimbursement request comments
@@ -1804,6 +1814,7 @@ def delete_payrollrequest_comment(request, comment_id):
 
 
 @login_required
+@hx_request_required
 def delete_reimbursement_comment_file(request):
     """
     Used to delete attachment
@@ -1877,6 +1888,7 @@ def create_or_update_auto_payslip(request, auto_id=None):
 
 
 @login_required
+@hx_request_required
 @permission_required("payroll.change_payslipautogenerate")
 def activate_auto_payslip_generate(request):
     """
