@@ -380,25 +380,6 @@
     .md-modal__body::-webkit-scrollbar { width: 4px; }
     .md-modal__body::-webkit-scrollbar-thumb { background: rgba(128,128,128,0.2); border-radius: 4px; }
 
-    .md-detail__meta { font-size: 12px; opacity: 0.5; margin-bottom: 14px; }
-    .md-detail__desc { font-size: 13px; line-height: 1.65; }
-    .md-detail__desc img { max-width: 100%; border-radius: 8px; }
-    .md-detail__tags { display: flex; flex-wrap: wrap; gap: 5px; margin-top: 12px; }
-    .md-detail__tag {
-        font-size: 10px; font-weight: 600; padding: 2px 8px; border-radius: 4px;
-        background: #eef2ff; color: #4338ca;
-    }
-    .dark .md-detail__tag { background: #312e81; color: #a5b4fc; }
-    .md-detail__attachments { margin-top: 14px; display: flex; flex-direction: column; gap: 8px; }
-    .md-detail__att-img { max-width: 100%; border-radius: 8px; cursor: pointer; }
-    .md-detail__att-link {
-        display: inline-flex; align-items: center; gap: 6px; font-size: 12px; font-weight: 600;
-        color: var(--md-indigo); text-decoration: none; padding: 6px 10px; border-radius: 6px;
-        border: 1px solid rgba(99,102,241,0.2); transition: all 0.15s;
-    }
-    .md-detail__att-link:hover { background: rgba(99,102,241,0.06); }
-    .md-detail__views { font-size: 11px; opacity: 0.45; margin-top: 12px; }
-
     /* Create announcement modal - wraps HTMX-loaded form */
     .md-create-modal .md-modal { width: 640px; }
     .md-create-modal .md-modal__body .oh-profile-section { margin: 0; }
@@ -736,6 +717,11 @@
     <!-- Header -->
     <div class="md-header">
         <div>
+            <nav class="oh-breadcrumb" style="margin-bottom:4px;">
+                <a href="{% url 'modern-dashboard' %}" class="oh-breadcrumb__item" style="font-size:12px;opacity:0.6;text-decoration:none;color:inherit;">{% trans "Home" %}</a>
+                <span class="oh-breadcrumb__divider" style="font-size:12px;opacity:0.4;margin:0 4px;">/</span>
+                <span class="oh-breadcrumb__item" style="font-size:12px;opacity:0.6;">{% trans "Dashboard" %}</span>
+            </nav>
             <h1>{% trans "Dashboard" %}</h1>
             <div class="md-header__date" id="md-date"></div>
             <div class="md-refresh"><span class="md-refresh__dot" id="md-refresh-dot"></span><span id="md-refresh-text">{% trans "Just now" %}</span><button class="md-refresh__toggle" id="md-refresh-toggle" title="{% trans 'Toggle auto-refresh' %}">⟳</button></div>
@@ -749,7 +735,7 @@
                 <span class="md-period-picker__sep">→</span>
                 <input type="date" id="md-to-date" title="{% trans 'To' %}">
             </div>
-            <button class="md-btn-customize" id="md-open-customize" title="{% trans 'Customize dashboard' %}">
+            <button class="oh-btn oh-btn--secondary" id="md-open-customize" title="{% trans 'Customize dashboard' %}" style="display:flex;align-items:center;gap:5px;font-size:13px;">
                 <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83-2.83l.06-.06A1.65 1.65 0 0 0 4.68 15a1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 2.83-2.83l.06.06A1.65 1.65 0 0 0 9 4.68a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 2.83l-.06.06A1.65 1.65 0 0 0 19.4 9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg>
                 {% trans "Customize" %}
             </button>
@@ -869,12 +855,9 @@
             <div class="md-info-panel">
                 <div class="md-info-panel__header">
                     <div class="md-info-panel__title">{% trans "Announcements" %}</div>
-                    <div style="display:flex;align-items:center;gap:4px;">
-                        {% if perms.base.add_announcement %}
-                        <button class="md-btn-add" id="md-add-announcement" title="{% trans 'New Announcement' %}">+</button>
-                        {% endif %}
-                        <a href="{% url 'home-page' %}" class="md-link-subtle">{% trans "View all" %}</a>
-                    </div>
+                    {% if perms.base.add_announcement %}
+                    <button class="md-btn-add" id="md-add-announcement" title="{% trans 'New Announcement' %}">+</button>
+                    {% endif %}
                 </div>
                 <div class="md-info-panel__body" id="md-announcements">
                     <div class="md-info-panel__empty">{% trans "Loading..." %}</div>
@@ -883,7 +866,7 @@
             <div class="md-info-panel">
                 <div class="md-info-panel__header">
                     <div class="md-info-panel__title">{% trans "On Leave Today" %}</div>
-                    <a href="{% url 'request-view' %}" class="md-link-subtle">{% trans "View all" %}</a>
+                    <a id="md-leave-viewall" href="{% url 'request-view' %}" class="md-link-subtle">{% trans "View all" %}</a>
                 </div>
                 <div class="md-info-panel__body" id="md-todays-leave">
                     <div class="md-info-panel__empty">{% trans "Loading..." %}</div>
@@ -891,8 +874,8 @@
             </div>
             <div class="md-info-panel">
                 <div class="md-info-panel__header">
-                    <div class="md-info-panel__title">{% trans "Upcoming Celebrations" %}</div>
-                    <span class="md-link-subtle">{% trans "Next 7 days" %}</span>
+                    <div class="md-info-panel__title">{% trans "Upcoming Holidays" %}</div>
+                    <a id="md-holidays-viewall" href="{% url 'holiday-view' %}" class="md-link-subtle">{% trans "Next 7 days" %}</a>
                 </div>
                 <div class="md-info-panel__body" id="md-birthdays">
                     <div class="md-info-panel__empty">{% trans "Loading..." %}</div>
@@ -920,23 +903,12 @@
     </div>
     <div class="md-customize-panel__body" id="md-customize-list"></div>
     <div class="md-customize-panel__footer">
-        <button class="md-cust-btn md-cust-btn--ghost" id="md-reset-customize">{% trans "Reset to default" %}</button>
-        <button class="md-cust-btn md-cust-btn--primary" id="md-save-customize">{% trans "Save" %}</button>
+        <button class="oh-btn oh-btn--light-bkg" id="md-reset-customize">{% trans "Reset to default" %}</button>
+        <button class="oh-btn oh-btn--secondary" id="md-save-customize">{% trans "Save" %}</button>
     </div>
 </div>
 
-<!-- Announcement Detail Modal -->
-<div class="md-modal-overlay" id="md-ann-detail-overlay">
-    <div class="md-modal">
-        <div class="md-modal__header">
-            <h3 id="md-ann-detail-title">{% trans "Announcement" %}</h3>
-            <button class="md-modal__close" id="md-ann-detail-close">&times;</button>
-        </div>
-        <div class="md-modal__body" id="md-ann-detail-body">
-            <div style="text-align:center;padding:40px;opacity:0.4;">{% trans "Loading..." %}</div>
-        </div>
-    </div>
-</div>
+
 
 <!-- Create Announcement Modal -->
 <div class="md-modal-overlay md-create-modal" id="md-ann-create-overlay">
@@ -1241,6 +1213,15 @@
         savePrefs(prefs);
         applyPrefs(prefs);
         closeCustomize();
+        // Persist to DB
+        fetch("{% url 'dashboard-save-prefs' %}", {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'X-CSRFToken': document.cookie.match(/csrftoken=([^;]+)/)?.[1] || '',
+            },
+            body: JSON.stringify({ prefs: prefs }),
+        });
     });
 
     document.getElementById('md-reset-customize').addEventListener('click', () => {
@@ -1342,15 +1323,25 @@
                 const el = document.getElementById('md-announcements');
                 if (!data.announcements.length) { el.innerHTML = '<div class="md-info-panel__empty">{% trans "No announcements" %}</div>'; return; }
                 el.innerHTML = data.announcements.map(a => `
-                    <div class="md-ann-item" data-ann-id="${a.id}">
+                    <div class="md-ann-item" data-ann-id="${a.id}" style="cursor:pointer;">
                         <div class="md-ann-item__title">${a.title}</div>
-                        ${a.description ? '<div class="md-ann-item__desc">' + a.description + '</div>' : ''}
                         <div class="md-ann-item__meta">${a.date}${a.expire_date ? '<span class="md-ann-item__expire">{% trans "Expires" %} ' + a.expire_date + '</span>' : ''}</div>
                     </div>`).join('');
 
-                // Make items clickable
+                // Clicking opens the announcement in the standard Horilla detail modal
+                const annIds = data.announcements.map(a => a.id);
                 el.querySelectorAll('.md-ann-item[data-ann-id]').forEach(item => {
-                    item.addEventListener('click', () => openAnnouncementDetail(item.dataset.annId));
+                    item.addEventListener('click', () => {
+                        const id = item.dataset.annId;
+                        const instanceIds = JSON.stringify(annIds);
+                        htmx.ajax('GET',
+                            `/announcement-single-view/${id}/?instance_ids=${encodeURIComponent(instanceIds)}`,
+                            { target: '#objectDetailsModalTarget', swap: 'innerHTML' }
+                        ).then(() => {
+                            document.getElementById('objectDetailsModal').classList.add('oh-modal--show');
+                            htmx.process(document.getElementById('objectDetailsModalTarget'));
+                        });
+                    });
                 });
             }).catch(() => { document.getElementById('md-announcements').innerHTML = '<div class="md-info-panel__empty">{% trans "No announcements" %}</div>'; });
     }
@@ -1361,12 +1352,19 @@
         .then(r => r.json())
         .then(data => {
             const el = document.getElementById('md-todays-leave');
+            // Update "View all" to filter for today's approved leave
+            const todayStr = new Date().toISOString().split('T')[0];
+            const viewAllLink = document.getElementById('md-leave-viewall');
+            if (viewAllLink) viewAllLink.href = `{% url 'request-view' %}?status=approved&start_date=${todayStr}&end_date=${todayStr}`;
+
             if (!data.leaves.length) { el.innerHTML = '<div class="md-info-panel__empty">{% trans "No one on leave today" %}</div>'; return; }
             el.innerHTML = data.leaves.map(l => {
-                const initials = l.employee.split(' ').map(w => w[0]).join('').slice(0, 2).toUpperCase();
-                const avatarInner = l.avatar ? `<img src="${l.avatar}" alt="">` : initials;
+                const initials = (l.employee || '').split(' ').map(w => w[0]).join('').slice(0, 2).toUpperCase() || '?';
+                const avatarInner = l.avatar ? `<img src="${l.avatar}" alt="" onerror="this.parentElement.textContent='${initials}'">` : initials;
                 return `
-                <a href="/employee/employee-view-individual/${l.employee_id || ''}/" class="md-leave-item" style="text-decoration:none;color:inherit;">
+                <div class="md-leave-item" style="cursor:pointer;"
+                     hx-get="/leave/leave-requests-detail-view/${l.id}/?instance_ids=&dashboard=True"
+                     hx-target="#htmx-modal-target" hx-swap="innerHTML">
                     <div class="md-leave-item__avatar">${avatarInner}</div>
                     <div class="md-leave-item__info">
                         <div class="md-leave-item__name">${l.employee}</div>
@@ -1376,8 +1374,9 @@
                         <div>${l.start}${l.start !== l.end ? ' – ' + l.end : ''}</div>
                         <span class="md-leave-item__days">${l.days}d</span>
                     </div>
-                </a>`;
+                </div>`;
             }).join('');
+            htmx.process(el);
         }).catch(() => { document.getElementById('md-todays-leave').innerHTML = '<div class="md-info-panel__empty">{% trans "No one on leave today" %}</div>'; });
 
     // ─── ATTENDANCE TREND ───
@@ -1483,7 +1482,7 @@
                     events: { click: (e, ctx, config) => {
                         if (config.seriesIndex >= 0) {
                             const label = data.labels[config.seriesIndex];
-                            const active = label.toLowerCase() === 'active' ? 'True' : 'False';
+                            const active = label.toLowerCase() === 'active' ? 'true' : 'false';
                             window.location.href = "{% url 'employee-view' %}?is_active=" + active;
                         }
                     }}
@@ -1589,7 +1588,15 @@
                 grid: { borderColor: gridColor, strokeDashArray: 4 },
                 dataLabels: { enabled: false },
                 legend: { position: 'top', horizontalAlign: 'right', labels: { colors: textColor }, fontSize: '11px', markers: { width: 8, height: 8, radius: 2 } },
-                tooltip: { theme: isDark ? 'dark' : 'light' },
+                tooltip: {
+                    theme: isDark ? 'dark' : 'light',
+                    custom: ({ seriesIndex, dataPointIndex, w }) => {
+                        const stage = w.globals.labels[dataPointIndex] || '';
+                        const recruitment = w.globals.seriesNames[seriesIndex] || '';
+                        const value = w.globals.series[seriesIndex][dataPointIndex] || 0;
+                        return `<div style="padding:8px 12px;font-size:12px;"><b>${recruitment}</b><br>${stage}: ${value} candidates</div>`;
+                    }
+                },
             }).render();
         }).catch(() => { document.querySelector("#chart-pipeline").innerHTML = emptyHtml('No recruitment data'); });
 
@@ -1658,49 +1665,34 @@
             }).render();
         }).catch(() => { document.querySelector("#chart-leave-days").innerHTML = emptyHtml('No leave data this month'); });
 
-    // ─── BIRTHDAYS & ANNIVERSARIES ───
-    fetch("{% url 'dashboard-birthdays-anniversaries' %}")
+    // ─── UPCOMING HOLIDAYS ───
+    fetch("{% url 'dashboard-upcoming-holidays' %}")
         .then(r => r.json())
         .then(data => {
             const el = document.getElementById('md-birthdays');
-            const items = [];
+            // Update "Next 7 days" link to filter holidays
+            const todayStr = new Date().toISOString().split('T')[0];
+            const nextWeekStr = new Date(Date.now() + 7*24*60*60*1000).toISOString().split('T')[0];
+            const viewAllLink = document.getElementById('md-holidays-viewall');
+            if (viewAllLink) viewAllLink.href = `{% url 'holiday-view' %}?start_date=${todayStr}&end_date=${nextWeekStr}`;
 
-            data.birthdays.forEach(b => {
-                const initials = b.name.split(' ').map(w => w[0]).join('').slice(0, 2).toUpperCase();
-                const avatarInner = b.avatar ? `<img src="${b.avatar}" alt="">` : initials;
-                const badge = b.days_away === 0
-                    ? '<span class="md-bday-item__badge md-bday-item__badge--today">{% trans "Today" %} 🎂</span>'
-                    : `<span class="md-bday-item__badge md-bday-item__badge--soon">${b.date}</span>`;
-                items.push(`
-                    <a href="/employee/employee-view-individual/${b.id}/" class="md-bday-item" style="text-decoration:none;color:inherit;">
-                        <div class="md-bday-item__avatar">${avatarInner}</div>
+            if (!data.holidays.length) { el.innerHTML = '<div class="md-info-panel__empty">{% trans "No holidays in the next 7 days" %}</div>'; return; }
+            el.innerHTML = data.holidays.map(h => {
+                const badge = h.days_away === 0
+                    ? '<span class="md-bday-item__badge md-bday-item__badge--today">{% trans "Today" %}</span>'
+                    : `<span class="md-bday-item__badge md-bday-item__badge--soon">${h.start_date}</span>`;
+                const dateRange = h.end_date && h.end_date !== h.start_date ? `${h.start_date} – ${h.end_date}` : h.start_date;
+                return `
+                    <div class="md-bday-item">
+                        <div class="md-bday-item__avatar" style="background:#fef3c7;color:#92400e;">🏖</div>
                         <div class="md-bday-item__info">
-                            <div class="md-bday-item__name">${b.name}</div>
-                            <div class="md-bday-item__detail">🎂 {% trans "Birthday" %}</div>
+                            <div class="md-bday-item__name">${h.name}</div>
+                            <div class="md-bday-item__detail">${dateRange}</div>
                         </div>
                         ${badge}
-                    </a>`);
-            });
-
-            data.anniversaries.forEach(a => {
-                const initials = a.name.split(' ').map(w => w[0]).join('').slice(0, 2).toUpperCase();
-                const avatarInner = a.avatar ? `<img src="${a.avatar}" alt="">` : initials;
-                const badge = a.days_away === 0
-                    ? `<span class="md-bday-item__badge md-bday-item__badge--today">${a.years} {% trans "yr" %}(s) 🎉</span>`
-                    : `<span class="md-bday-item__badge md-bday-item__badge--soon">${a.date} · ${a.years}yr</span>`;
-                items.push(`
-                    <a href="/employee/employee-view-individual/${a.id}/" class="md-bday-item" style="text-decoration:none;color:inherit;">
-                        <div class="md-bday-item__avatar">${avatarInner}</div>
-                        <div class="md-bday-item__info">
-                            <div class="md-bday-item__name">${a.name}</div>
-                            <div class="md-bday-item__detail">🎉 {% trans "Work Anniversary" %}</div>
-                        </div>
-                        ${badge}
-                    </a>`);
-            });
-
-            el.innerHTML = items.length ? items.join('') : '<div class="md-info-panel__empty">{% trans "No celebrations this week" %}</div>';
-        }).catch(() => { document.getElementById('md-birthdays').innerHTML = '<div class="md-info-panel__empty">{% trans "No celebrations this week" %}</div>'; });
+                    </div>`;
+            }).join('');
+        }).catch(() => { document.getElementById('md-birthdays').innerHTML = '<div class="md-info-panel__empty">{% trans "No holidays this week" %}</div>'; });
 
     // ─── PENDING APPROVALS ───
     fetchP("{% url 'dashboard-pending-approvals' %}")
@@ -1709,11 +1701,11 @@
             const p = data.pending;
             document.getElementById('md-pending-approvals').innerHTML = `
                 <div class="md-pending-grid">
-                    <a href="{% url 'request-view' %}" class="md-pending-card md-pending-card--amber">
+                    <a href="{% url 'request-view' %}?status=requested" class="md-pending-card md-pending-card--amber">
                         <div class="md-pending-card__count">${p.leave_requests}</div>
                         <div class="md-pending-card__label">{% trans "Leave" %}</div>
                     </a>
-                    <a href="{% url 'attendance-view' %}" class="md-pending-card md-pending-card--blue">
+                    <a href="{% url 'request-attendance-view' %}" class="md-pending-card md-pending-card--blue">
                         <div class="md-pending-card__count">${p.attendance_requests}</div>
                         <div class="md-pending-card__label">{% trans "Attendance" %}</div>
                     </a>
@@ -1721,9 +1713,17 @@
                         <div class="md-pending-card__count">${p.asset_requests}</div>
                         <div class="md-pending-card__label">{% trans "Assets" %}</div>
                     </a>
-                    <a href="{% url 'payroll-modern-dashboard' %}" class="md-pending-card md-pending-card--purple">
-                        <div class="md-pending-card__count">${p.payslips_review}</div>
-                        <div class="md-pending-card__label">{% trans "Payslips" %}</div>
+                    <a href="{% url 'shift-request-view' %}" class="md-pending-card" style="background:#f0fdfa;">
+                        <div class="md-pending-card__count" style="color:#0d9488;">${p.shift_requests}</div>
+                        <div class="md-pending-card__label">{% trans "Shift" %}</div>
+                    </a>
+                    <a href="{% url 'work-type-request-view' %}" class="md-pending-card" style="background:#eef2ff;">
+                        <div class="md-pending-card__count" style="color:#4f46e5;">${p.work_type_requests}</div>
+                        <div class="md-pending-card__label">{% trans "Work Type" %}</div>
+                    </a>
+                    <a href="{% url 'view-reimbursement' %}" class="md-pending-card md-pending-card--purple">
+                        <div class="md-pending-card__count">${p.reimbursements}</div>
+                        <div class="md-pending-card__label">{% trans "Reimbursements" %}</div>
                     </a>
                 </div>`;
         }).catch(() => { document.getElementById('md-pending-approvals').innerHTML = '<div class="md-info-panel__empty">{% trans "Unable to load" %}</div>'; });
@@ -1832,81 +1832,20 @@
     //  ANNOUNCEMENT MODALS
     // ═══════════════════════════════════════════
 
-    const detailOverlay = document.getElementById('md-ann-detail-overlay');
-    const detailBody = document.getElementById('md-ann-detail-body');
-    const detailTitle = document.getElementById('md-ann-detail-title');
     const createOverlay = document.getElementById('md-ann-create-overlay');
     const createBody = document.getElementById('md-ann-create-body');
 
     function openModal(overlay) { overlay.classList.add('md-modal-overlay--open'); }
     function closeModal(overlay) { overlay.classList.remove('md-modal-overlay--open'); }
 
-    // Close on overlay click or close button
-    [detailOverlay, createOverlay].forEach(ov => {
-        ov.addEventListener('click', e => { if (e.target === ov) closeModal(ov); });
-    });
-    document.getElementById('md-ann-detail-close').addEventListener('click', () => closeModal(detailOverlay));
+    // Close create overlay on backdrop click or close button
+    createOverlay.addEventListener('click', e => { if (e.target === createOverlay) closeModal(createOverlay); });
     document.getElementById('md-ann-create-close').addEventListener('click', () => closeModal(createOverlay));
 
-    // Escape key closes modals
+    // Escape key closes create modal
     document.addEventListener('keydown', e => {
-        if (e.key === 'Escape') {
-            closeModal(detailOverlay);
-            closeModal(createOverlay);
-        }
+        if (e.key === 'Escape') closeModal(createOverlay);
     });
-
-    // ── View Announcement Detail ──
-    function openAnnouncementDetail(annId) {
-        detailBody.innerHTML = '<div style="text-align:center;padding:40px;opacity:0.4;">{% trans "Loading..." %}</div>';
-        detailTitle.textContent = '{% trans "Announcement" %}';
-        openModal(detailOverlay);
-
-        fetch(`/dashboard/api/announcements/${annId}/`)
-            .then(r => r.json())
-            .then(data => {
-                if (data.error) { detailBody.innerHTML = '<div style="text-align:center;padding:40px;opacity:0.4;">' + data.error + '</div>'; return; }
-
-                detailTitle.textContent = data.title;
-
-                let html = `<div class="md-detail__meta">{% trans "Posted on" %} ${data.date}`;
-                if (data.expire_date) html += ` &middot; <span style="color:var(--md-amber);">{% trans "Expires" %} ${data.expire_date}</span>`;
-                html += `</div>`;
-
-                if (data.description) {
-                    html += `<div class="md-detail__desc">${data.description}</div>`;
-                }
-
-                // Tags
-                const tags = [];
-                data.departments.forEach(d => tags.push(d));
-                data.job_positions.forEach(j => tags.push(j));
-                if (tags.length) {
-                    html += '<div class="md-detail__tags">' + tags.map(t => `<span class="md-detail__tag">#${t}</span>`).join('') + '</div>';
-                }
-
-                // Attachments
-                if (data.attachments.length) {
-                    html += '<div class="md-detail__attachments">';
-                    data.attachments.forEach(att => {
-                        if (att.is_image) {
-                            html += `<a href="${att.url}" target="_blank"><img src="${att.url}" class="md-detail__att-img" alt="${att.name}"></a>`;
-                        } else {
-                            html += `<a href="${att.url}" target="_blank" class="md-detail__att-link">📎 ${att.name}</a>`;
-                        }
-                    });
-                    html += '</div>';
-                }
-
-                // Views count
-                html += `<div class="md-detail__views">${data.views_count} {% trans "view(s)" %}</div>`;
-
-                detailBody.innerHTML = html;
-            })
-            .catch(() => {
-                detailBody.innerHTML = '<div style="text-align:center;padding:40px;opacity:0.4;">{% trans "Failed to load announcement" %}</div>';
-            });
-    }
 
     // ── Create Announcement ──
     const addBtn = document.getElementById('md-add-announcement');
@@ -1919,33 +1858,50 @@
                 .then(r => r.text())
                 .then(html => {
                     createBody.innerHTML = html;
+                    // Initialize HTMX for Horilla multi-select widgets
+                    if (window.htmx) htmx.process(createBody);
+
+                    // disable_comments toggles public_comments visibility
+                    const disableCheck = createBody.querySelector('[name="disable_comments"]');
+                    const publicRow = createBody.querySelector('[name="public_comments"]');
+                    if (disableCheck && publicRow) {
+                        const publicGroup = publicRow.closest('.oh-input-group') || publicRow.closest('.oh-wrapper') || publicRow.parentElement;
+                        function togglePublicComments() {
+                            publicGroup.style.display = disableCheck.checked ? 'none' : '';
+                            if (disableCheck.checked) publicRow.checked = false;
+                        }
+                        disableCheck.addEventListener('change', togglePublicComments);
+                        togglePublicComments();
+                    }
 
                     // Override form submission to use fetch
                     const form = createBody.querySelector('form');
                     if (form) {
-                        form.addEventListener('submit', e => {
+                        function submitAnnouncement(e) {
                             e.preventDefault();
                             const formData = new FormData(form);
-
                             fetch("{% url 'create-announcement' %}", {
                                 method: 'POST',
                                 body: formData,
-                                headers: { 'X-CSRFToken': formData.get('csrfmiddlewaretoken') }
+                                headers: {
+                                    'X-CSRFToken': formData.get('csrfmiddlewaretoken') || (document.cookie.match(/csrftoken=([^;]+)/)?.[1] || ''),
+                                    'HX-Request': 'true',
+                                }
                             })
                             .then(r => r.text())
                             .then(resp => {
-                                // Check if response contains errors
                                 if (resp.includes('oh-alert--danger') || resp.includes('errorlist')) {
                                     createBody.innerHTML = resp;
-                                    // Re-attach submit handler
+                                    if (window.htmx) htmx.process(createBody);
                                     const newForm = createBody.querySelector('form');
-                                    if (newForm) newForm.addEventListener('submit', arguments.callee);
+                                    if (newForm) newForm.addEventListener('submit', submitAnnouncement);
                                 } else {
                                     closeModal(createOverlay);
                                     loadAnnouncements();
                                 }
                             });
-                        });
+                        }
+                        form.addEventListener('submit', submitAnnouncement);
                     }
                 })
                 .catch(() => {
