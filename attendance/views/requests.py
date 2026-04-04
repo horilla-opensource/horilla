@@ -649,7 +649,6 @@ def select_all_filter_attendance_request(request):
 
 
 @login_required
-@hx_request_required
 @manager_can_enter("attendance.change_attendance")
 def bulk_approve_attendance_request(request):
     """
@@ -783,7 +782,6 @@ def bulk_approve_attendance_request(request):
 
 
 @login_required
-@hx_request_required
 @manager_can_enter("attendance.delete_attendance")
 def bulk_reject_attendance_request(request):
     """
@@ -821,6 +819,8 @@ def bulk_reject_attendance_request(request):
                     verb_es=f"Tu solicitud de asistencia para el {attendance.attendance_date} ha sido rechazada",
                     verb_fr=f"Votre demande de présence pour le {attendance.attendance_date} est rejetée",
                     icon="close-circle-outline",
+                    redirect=reverse("request-attendance-view")
+                    + f"?id={attendance.id}",
                 )
         except (Attendance.DoesNotExist, OverflowError):
             messages.error(request, _("Attendance request not found"))
