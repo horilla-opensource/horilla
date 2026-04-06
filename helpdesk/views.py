@@ -1104,6 +1104,26 @@ def remove_tag(request):
     return JsonResponse({"message": message, "type": type})
 
 
+def can_access_ticket(request, ticket):
+    """
+    Check if the current user is authorized to access the given ticket.
+    """
+    if ticket is None:
+        return False
+    employee = request.user.employee_get
+    return (
+        request.user.has_perm("helpdesk.view_ticket")
+        or employee == ticket.employee_id
+        or employee in ticket.assigned_to.all()
+        or ticket.employee_id.get_reporting_manager() == employee
+        or is_department_manager(request, ticket)
+        or (
+            ticket.assigning_type == "individual"
+            and employee == ticket.get_raised_on_object()
+        )
+    )
+
+
 @login_required
 @hx_request_required
 def view_ticket_document(request, doc_id):
@@ -1117,7 +1137,20 @@ def view_ticket_document(request, doc_id):
     Returns: return view_file template
     """
 
-    document_obj = Attachment.objects.filter(id=doc_id).first()
+    document_obj = Attachment.find(doc_id)
+    if document_obj is None:
+        return HorillaRedirect(
+            request, message=_("No Attachment found matching the query.")
+        )
+
+    ticket = document_obj.ticket or (
+        document_obj.comment.ticket if document_obj.comment else None
+    )
+    if not can_access_ticket(request, ticket):
+        return HorillaRedirect(
+            request, message=_("You do not have permission to view the documents.")
+        )
+
     context = {
         "document": document_obj,
     }
@@ -1150,7 +1183,21 @@ def delete_ticket_document(request, doc_id):
     id (int): The id of the document.
 
     """
-    Attachment.objects.get(id=doc_id).delete()
+    document_obj = Attachment.find(doc_id)
+    if document_obj is None:
+        return HorillaRedirect(
+            request, message=_("No Attachment found matching the query.")
+        )
+
+    ticket = document_obj.ticket or (
+        document_obj.comment.ticket if document_obj.comment else None
+    )
+    if not can_access_ticket(request, ticket):
+        return HorillaRedirect(
+            request, message=_("You do not have permission to delete the documents.")
+        )
+
+    document_obj.delete()
     messages.success(request, _("Document has been deleted."))
     return HorillaRedirect(request)
 
