@@ -223,7 +223,7 @@ def delete_announcement(request, anoun_id):
         instance_ids_list.remove(anoun_id)
 
     if next_instance_id and next_instance_id != anoun_id:
-        url = reverse("announcement-single-view", kwargs={"anoun_id": next_instance_id})
+        url = reverse("announcement-single-view", kwargs={"pk": next_instance_id})
         return redirect(f"{url}?instance_ids={json.dumps(instance_ids_list)}")
     return redirect(announcement_single_view)
 

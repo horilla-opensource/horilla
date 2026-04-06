@@ -536,8 +536,8 @@
         box-shadow: 0 1px 3px rgba(0,0,0,0.2);
         transition: transform 0.2s;
     }
-    .md-cust-item__toggle--on { background: var(--md-indigo); }
-    .dark .md-cust-item__toggle--on { background: var(--md-indigo); }
+    .md-cust-item__toggle--on { background: var(--oh-primary, var(--md-indigo)); }
+    .dark .md-cust-item__toggle--on { background: var(--oh-primary, var(--md-indigo)); }
     .md-cust-item__toggle--on::after { transform: translateX(16px); }
 
     .md-cust-section-title {
@@ -1077,8 +1077,26 @@
         });
     }
 
-    // Apply saved preferences on load
-    applyPrefs(loadPrefs());
+    // Apply saved preferences on load (localStorage first, DB fallback)
+    const _localPrefs = loadPrefs();
+    if (_localPrefs) {
+        applyPrefs(_localPrefs);
+    } else {
+        fetch("{% url 'dashboard-load-prefs' %}")
+            .then(r => r.json())
+            .then(data => {
+                if (data.excluded && data.excluded.length) {
+                    const defaultOrder = getDefaultOrder();
+                    const dbPrefs = defaultOrder.map(p => ({
+                        ...p,
+                        visible: !data.excluded.includes(p.id)
+                    }));
+                    applyPrefs(dbPrefs);
+                    savePrefs(dbPrefs);
+                }
+            })
+            .catch(() => {});
+    }
 
     // ── Customize panel ──
     const overlay = document.getElementById('md-customize-overlay');
@@ -1355,7 +1373,7 @@
             // Update "View all" to filter for today's approved leave
             const todayStr = new Date().toISOString().split('T')[0];
             const viewAllLink = document.getElementById('md-leave-viewall');
-            if (viewAllLink) viewAllLink.href = `{% url 'request-view' %}?status=approved&start_date=${todayStr}&end_date=${todayStr}`;
+            if (viewAllLink) viewAllLink.href = `{% url 'request-view' %}?status=approved`;
 
             if (!data.leaves.length) { el.innerHTML = '<div class="md-info-panel__empty">{% trans "No one on leave today" %}</div>'; return; }
             el.innerHTML = data.leaves.map(l => {
@@ -1364,7 +1382,8 @@
                 return `
                 <div class="md-leave-item" style="cursor:pointer;"
                      hx-get="/leave/leave-requests-detail-view/${l.id}/?instance_ids=&dashboard=True"
-                     hx-target="#htmx-modal-target" hx-swap="innerHTML">
+                     hx-target="#objectDetailsModalTarget" hx-swap="innerHTML"
+                     data-toggle="oh-modal-toggle" data-target="#objectDetailsModal">
                     <div class="md-leave-item__avatar">${avatarInner}</div>
                     <div class="md-leave-item__info">
                         <div class="md-leave-item__name">${l.employee}</div>
@@ -1479,12 +1498,10 @@
             new ApexCharts(document.querySelector("#chart-employee-status"), {
                 series: data.dataSet[0].data,
                 chart: { type: 'radialBar', height: 300, background: 'transparent', fontFamily: 'inherit',
-                    events: { click: (e, ctx, config) => {
-                        if (config.seriesIndex >= 0) {
-                            const label = data.labels[config.seriesIndex];
-                            const active = label.toLowerCase() === 'active' ? 'true' : 'false';
-                            window.location.href = "{% url 'employee-view' %}?is_active=" + active;
-                        }
+                    events: { legendClick: (ctx, seriesIndex) => {
+                        const label = data.labels[seriesIndex];
+                        const active = label.toLowerCase().includes('active') && !label.toLowerCase().includes('in') ? 'true' : 'false';
+                        window.location.href = "{% url 'employee-view' %}?is_active=" + active;
                     }}
                 },
                 labels: data.labels,
@@ -1705,19 +1722,19 @@
                         <div class="md-pending-card__count">${p.leave_requests}</div>
                         <div class="md-pending-card__label">{% trans "Leave" %}</div>
                     </a>
-                    <a href="{% url 'request-attendance-view' %}" class="md-pending-card md-pending-card--blue">
+                    <a href="{% url 'request-attendance-view' %}?approved=false" class="md-pending-card md-pending-card--blue">
                         <div class="md-pending-card__count">${p.attendance_requests}</div>
                         <div class="md-pending-card__label">{% trans "Attendance" %}</div>
                     </a>
-                    <a href="{% url 'asset-request-allocation-view' %}" class="md-pending-card md-pending-card--green">
+                    <a href="{% url 'asset-request-allocation-view' %}?approval_status=pending" class="md-pending-card md-pending-card--green">
                         <div class="md-pending-card__count">${p.asset_requests}</div>
                         <div class="md-pending-card__label">{% trans "Assets" %}</div>
                     </a>
-                    <a href="{% url 'shift-request-view' %}" class="md-pending-card" style="background:#f0fdfa;">
+                    <a href="{% url 'shift-request-view' %}?approved=false&canceled=false" class="md-pending-card" style="background:#f0fdfa;">
                         <div class="md-pending-card__count" style="color:#0d9488;">${p.shift_requests}</div>
                         <div class="md-pending-card__label">{% trans "Shift" %}</div>
                     </a>
-                    <a href="{% url 'work-type-request-view' %}" class="md-pending-card" style="background:#eef2ff;">
+                    <a href="{% url 'work-type-request-view' %}?approved=false&canceled=false" class="md-pending-card" style="background:#eef2ff;">
                         <div class="md-pending-card__count" style="color:#4f46e5;">${p.work_type_requests}</div>
                         <div class="md-pending-card__label">{% trans "Work Type" %}</div>
                     </a>

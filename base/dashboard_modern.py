@@ -282,7 +282,7 @@ def dashboard_announcements(request):
 
         qs = Announcement.objects.filter(
             Q(expire_date__gte=today) | Q(expire_date__isnull=True),
-        ).order_by("-created_at")[:6]
+        ).order_by("-created_at")[:20]
 
         for ann in qs:
             announcements.append(
