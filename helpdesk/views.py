@@ -66,6 +66,7 @@ from horilla.decorators import (
     hx_request_required,
     login_required,
     manager_can_enter,
+    owner_can_enter,
     permission_required,
 )
 from horilla.group_by import group_by_queryset
@@ -376,6 +377,7 @@ def faq_filter(request, id):
 
 
 @login_required
+@hx_request_required
 def faq_suggestion(request):
     faqs = FAQFilter(request.GET).qs
     data_list = list(faqs.values())
@@ -612,6 +614,7 @@ def ticket_archive(request, ticket_id):
 
 @login_required
 @hx_request_required
+@ticket_owner_can_enter(perm="helpdesk.change_ticket", model=Ticket)
 def ticket_status_change(request, ticket_id):
     if request.method != "POST":
         messages.error(request, _("Invalid request method."))
@@ -652,6 +655,7 @@ def ticket_status_change(request, ticket_id):
 
 
 @login_required
+@hx_request_required
 # @ticket_owner_can_enter(perm="helpdesk.change_ticket", model=Ticket)
 def change_ticket_status(request, ticket_id):
     """
@@ -675,12 +679,12 @@ def change_ticket_status(request, ticket_id):
     pre_status = ticket.get_status_display()
     status = request.POST.get("status")
     user = request.user.employee_get
-    if ticket.status != status:
-        if (
-            user == ticket.employee_id
-            or user in ticket.assigned_to.all()
-            or request.user.has_perm("helpdesk.change_ticket")
-        ):
+    if (
+        user == ticket.employee_id
+        or user in ticket.assigned_to.all()
+        or request.user.has_perm("helpdesk.change_ticket")
+    ):
+        if ticket.status != status:
             ticket.status = status
             ticket.save()
             time = datetime.now()
@@ -719,14 +723,15 @@ def change_ticket_status(request, ticket_id):
                 type="status_change",
             )
             mail_thread.start()
-        else:
-            response = {
-                "type": "danger",
-                "message": _("You Don't have the permission."),
-            }
 
-    if ticket.status == "resolved":
-        ticket.resolved_date = datetime.today()
+        if ticket.status == "resolved":
+            ticket.resolved_date = datetime.today()
+    else:
+        response = {
+            "type": "danger",
+            "message": _("You Don't have the permission."),
+        }
+
     return JsonResponse(response)
 
 
@@ -1158,6 +1163,7 @@ def create_tag(request):
 
 
 @login_required
+@hx_request_required
 def remove_tag(request):
     """
     This is an ajax method to  remove tag from a ticket.
@@ -1180,8 +1186,29 @@ def remove_tag(request):
     return JsonResponse({"message": message, "type": type})
 
 
+def can_access_ticket(request, ticket):
+    """
+    Check if the current user is authorized to access the given ticket.
+    """
+    if ticket is None:
+        return False
+    employee = request.user.employee_get
+    return (
+        request.user.has_perm("helpdesk.view_ticket")
+        or employee == ticket.employee_id
+        or employee in ticket.assigned_to.all()
+        or ticket.employee_id.get_reporting_manager() == employee
+        or is_department_manager(request, ticket)
+        or (
+            ticket.assigning_type == "individual"
+            and employee == ticket.get_raised_on_object()
+        )
+    )
+
+
 @login_required
 @hx_request_required
+@ticket_owner_can_enter(perm="helpdesk.view_ticket", model=Ticket)
 def view_ticket_document(request, doc_id):
     """
     This function used to view the uploaded document in the modal.
@@ -1193,7 +1220,20 @@ def view_ticket_document(request, doc_id):
     Returns: return view_file template
     """
 
-    document_obj = Attachment.objects.filter(id=doc_id).first()
+    document_obj = Attachment.find(doc_id)
+    if document_obj is None:
+        return HorillaRedirect(
+            request, message=_("No Attachment found matching the query.")
+        )
+
+    ticket = document_obj.ticket or (
+        document_obj.comment.ticket if document_obj.comment else None
+    )
+    if not can_access_ticket(request, ticket):
+        return HorillaRedirect(
+            request, message=_("You do not have permission to view the documents.")
+        )
+
     context = {
         "document": document_obj,
     }
@@ -1217,6 +1257,7 @@ def view_ticket_document(request, doc_id):
 
 @login_required
 @hx_request_required
+@ticket_owner_can_enter(perm="helpdesk.view_ticket", model=Ticket)
 def delete_ticket_document(request, doc_id):
     """
     This function used to delete the uploaded document in the modal.
@@ -1226,12 +1267,28 @@ def delete_ticket_document(request, doc_id):
     id (int): The id of the document.
 
     """
-    Attachment.objects.get(id=doc_id).delete()
+    document_obj = Attachment.find(doc_id)
+    if document_obj is None:
+        return HorillaRedirect(
+            request, message=_("No Attachment found matching the query.")
+        )
+
+    ticket = document_obj.ticket or (
+        document_obj.comment.ticket if document_obj.comment else None
+    )
+    if not can_access_ticket(request, ticket):
+        return HorillaRedirect(
+            request, message=_("You do not have permission to delete the documents.")
+        )
+
+    document_obj.delete()
     messages.success(request, _("Document has been deleted."))
     return HorillaRedirect(request)
 
 
 @login_required
+@hx_request_required
+@ticket_owner_can_enter(perm="helpdesk.add_comment", model=Ticket)
 def comment_create(request, ticket_id):
     """
     This method is used to create comment to a ticket
@@ -1290,11 +1347,24 @@ def comment_create(request, ticket_id):
 
 
 @login_required
+@hx_request_required
 def comment_edit(request):
     comment_id = request.GET.get("comment_id")
     new_comment = request.POST.get("new_comment")
+
     if new_comment and len(new_comment) > 1:
         comment = Comment.objects.get(id=comment_id)
+
+        if not (
+            request.user.has_perm("helpdesk.change_claimrequest")
+            or request.user.has_perm("helpdesk.change_ticket")
+            or comment.ticket.employee_id == request.user.employee_get
+            or is_department_manager(request, comment.ticket)
+        ):
+            return HttpResponse(
+                "<script>$('.reload-record').click();$('#reloadMessagesButton').click();</script>"
+            )
+
         comment.comment = new_comment
         comment.save()
         messages.success(request, _("The comment updated successfully."))
@@ -1328,6 +1398,7 @@ def comment_delete(request, comment_id):
 
 
 @login_required
+@hx_request_required
 def get_raised_on(request):
     """
     This is an ajax method to return list for raised on field.
@@ -1381,6 +1452,7 @@ def claim_ticket(request, id):
 
 
 @login_required
+@ticket_owner_can_enter(perm="helpdesk.change_ticket", model=Ticket)
 def approve_claim_request(request, req_id):
     """
     Function for approve claim request and send notifications to the responsibles.
@@ -1388,6 +1460,13 @@ def approve_claim_request(request, req_id):
     claim_request = ClaimRequest.objects.filter(id=req_id).first()
     if not claim_request:
         return HttpResponse("Invalid claim request", status=404)
+
+    if not (
+        request.user.has_perm("helpdesk.change_claimrequest")
+        or request.user.has_perm("helpdesk.change_ticket")
+        or is_department_manager(request, ticket)
+    ):
+        handle_no_permission(request)
 
     approve = strtobool(
         request.GET.get("approve", "False")
@@ -1480,6 +1559,7 @@ def approve_claim_request(request, req_id):
 
 
 @login_required
+@hx_request_required
 def tickets_select_filter(request):
     """
     This method is used to return all the ids of the filtered tickets
@@ -1605,6 +1685,7 @@ def tickets_bulk_delete(request):
 
 @login_required
 @hx_request_required
+@permission_required("helpdesk.add_departmentmanager")
 def create_department_manager(request):
     form = DepartmentManagerCreateForm()
     if request.method == "POST":
@@ -1622,6 +1703,7 @@ def create_department_manager(request):
 
 @login_required
 @hx_request_required
+@permission_required("helpdesk.change_departmentmanager")
 def update_department_manager(request, dep_id):
     department_manager = DepartmentManager.objects.get(id=dep_id)
     form = DepartmentManagerCreateForm(instance=department_manager)
@@ -1656,6 +1738,7 @@ def delete_department_manager(request, dep_id):
 
 
 @login_required
+@ticket_owner_can_enter(perm="helpdesk.change_ticket", model=Ticket)
 def update_priority(request, ticket_id):
     """
     This function is used to update the priority
@@ -1704,8 +1787,8 @@ def ticket_type_view(request):
 
 
 @login_required
-# @hx_request_required
-@permission_required("helpdesk.create_tickettype")
+@hx_request_required
+@permission_required("helpdesk.add_tickettype")
 def ticket_type_create(request):
     """
     This method renders form and template to create Ticket type
@@ -1741,7 +1824,7 @@ def ticket_type_create(request):
 
 @login_required
 @hx_request_required
-@permission_required("helpdesk.update_tickettype")
+@permission_required("helpdesk.change_tickettype")
 def ticket_type_update(request, t_type_id):
     """
     This method renders form and template to create Ticket type
@@ -1936,6 +2019,7 @@ def load_faqs(request):
 
 @login_required
 @hx_request_required
+@ticket_owner_can_enter(perm="helpdesk.change_ticket", model=Ticket)
 def ticket_file_upload(request, id):
     """
     This function is used to upload files to the ticket.

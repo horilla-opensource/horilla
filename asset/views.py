@@ -1082,6 +1082,11 @@ def asset_request_alloaction_view_search_filter(request):
 
 @login_required
 @hx_request_required
+@owner_can_enter(
+    "asset.view_assetassignment",
+    AssetAssignment,
+    employee_field="assigned_to_employee_id",
+)
 def own_asset_individual_view(request, asset_id):
     """
     This function is responsible for view the individual own asset
@@ -1110,6 +1115,9 @@ def own_asset_individual_view(request, asset_id):
 
 @login_required
 @hx_request_required
+@owner_can_enter(
+    "asset.view_assetrequest", AssetRequest, employee_field="requested_employee_id"
+)
 def asset_request_individual_view(request, asset_request_id):
     """
     Display the details of an individual asset request.
@@ -1146,6 +1154,11 @@ def asset_request_individual_view(request, asset_request_id):
 
 @login_required
 @hx_request_required
+@owner_can_enter(
+    "asset.view_assetassignment",
+    AssetAssignment,
+    employee_field="assigned_to_employee_id",
+)
 def asset_allocation_individual_view(request, asset_allocation_id):
     """
     Display the details of an individual asset allocation.
@@ -1889,6 +1902,7 @@ def asset_tab(request, pk):
 
 @login_required
 @hx_request_required
+@owner_can_enter("asset.view_assetassignment", Employee)
 def profile_asset_tab(request, emp_id):
     """
     This function is used to view asset tab of an employee in employee profile view.
@@ -1912,6 +1926,7 @@ def profile_asset_tab(request, emp_id):
 
 @login_required
 @hx_request_required
+@owner_can_enter("asset.view_assetrequest", Employee)
 def asset_request_tab(request, emp_id):
     """
     This function is used to view asset request tab of an employee in employee individual view.
