@@ -1,6 +1,13 @@
 {% load i18n %}
 {% load static %}
 {% load basefilters %}
+{% if not_found %}
+    <div class="text-center p-5" style="opacity:0.6;">
+        <ion-icon name="alert-circle-outline" style="font-size:48px;"></ion-icon>
+        <p class="mt-2">{% trans "Announcement not found or has been deleted." %}</p>
+    </div>
+    <script>$('.oh-modal--show').removeClass('oh-modal--show');</script>
+{% else %}
 {% if messages %}
     <script>reloadMessage();</script>
     <span hx-get="{% url 'announcement-list' %}" hx-trigger="load" hx-target="#announcementListCard"></span>
@@ -34,7 +41,7 @@
         </div>
     {% endif %}
     {% if announcement %}
-        <div class="card mx-auto p-4 mb-4" style="max-width: 800px; border:1px solid lightgrey; border-radius:10px; box-shadow: 2px 2px 2px grey;">
+        <div class="card mx-auto p-4 mb-4" style="max-width: 800px; border:1px solid var(--border-dark-50, #e5e7eb); border-radius:10px; box-shadow: 0 1px 3px rgba(0,0,0,0.1);">
             {% if perms.base.change_announcement or perms.base.delete_announcement %}
                 <div class="oh-dropdown float-end" x-data="{open: false}">
                     <button class="oh-btn oh-stop-prop oh-btn--transparent oh-accordion-meta__btn" @click="open = !open"
@@ -166,3 +173,4 @@
     </div>
 </div>
 </div>
+{% endif %}

@@ -157,18 +157,26 @@ class AnnouncementDetailView(HorillaDetailedView):
     def get_context_data(self, **kwargs):
         import ast
 
+        from horilla.horilla_middlewares import _thread_locals
+
         context = super().get_context_data(**kwargs)
+
+        # Guard: if object was deleted or not found, close the modal gracefully
+        if not self.instance:
+            context["not_found"] = True
+            context["extra_query"] = ""
+            return context
+
         instance_ids = ast.literal_eval(self.request.GET.get("instance_ids", "[]"))
         url_info = resolve(self.request.path)
         url_name = url_info.url_name
         key = next(iter(url_info.kwargs), "pk")
 
-        if self.instance:
-            announcement_view_obj, _ = AnnouncementView.objects.get_or_create(
-                user=self.request.user, announcement=self.instance
-            )
-            announcement_view_obj.viewed = True
-            announcement_view_obj.save()
+        announcement_view_obj, _ = AnnouncementView.objects.get_or_create(
+            user=self.request.user, announcement=self.instance
+        )
+        announcement_view_obj.viewed = True
+        announcement_view_obj.save()
 
         if instance_ids:
             prev_id, next_id = closest_numbers(instance_ids, self.instance.pk)

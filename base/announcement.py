@@ -206,26 +206,37 @@ def delete_announcement(request, anoun_id):
     """
     This method is used to delete announcements.
     """
+    from horilla.horilla_middlewares import _thread_locals
+
     announcement = Announcement.find(anoun_id)
     if announcement:
         announcement.delete()
         messages.success(request, _("Announcement deleted successfully."))
 
-    instance_ids = request.GET.get("instance_ids")
-    instance_ids_list = json.loads(instance_ids)
-    __, next_instance_id = (
-        closest_numbers(instance_ids_list, anoun_id)
-        if instance_ids_list
-        else (None, None)
-    )
+    instance_ids = request.GET.get("instance_ids", "[]")
+    try:
+        instance_ids_list = json.loads(instance_ids) if instance_ids else []
+    except (json.JSONDecodeError, TypeError):
+        instance_ids_list = []
 
     if anoun_id in instance_ids_list:
         instance_ids_list.remove(anoun_id)
 
+    if not instance_ids_list:
+        # Last announcement deleted — close modal and redirect
+        return HttpResponse(
+            "<script>$('.oh-modal--show').removeClass('oh-modal--show');</script>"
+        )
+
+    __, next_instance_id = closest_numbers(instance_ids_list, anoun_id)
+
     if next_instance_id and next_instance_id != anoun_id:
         url = reverse("announcement-single-view", kwargs={"pk": next_instance_id})
         return redirect(f"{url}?instance_ids={json.dumps(instance_ids_list)}")
-    return redirect(announcement_single_view)
+
+    return HttpResponse(
+        "<script>$('.oh-modal--show').removeClass('oh-modal--show');</script>"
+    )
 
 
 @login_required
