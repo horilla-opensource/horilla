@@ -171,6 +171,7 @@ def profile_attendance_tab(request):
 
 
 @login_required
+@hx_request_required
 @manager_can_enter("employee.view_employee")
 def attendance_tab(request, pk):
     """
@@ -738,6 +739,7 @@ def attendance_overtime_delete(request, obj_id):
 
 
 @login_required
+@hx_request_required
 @permission_required("attendance.delete_attendanceovertime")
 def attendance_account_bulk_delete(request):
     """
@@ -765,6 +767,7 @@ def attendance_account_bulk_delete(request):
 
 
 @login_required
+@hx_request_required
 def form_shift_dynamic_data(request):
     """
     This method is used to update the shift details to the form
@@ -1531,6 +1534,7 @@ def approve_overtime(request, obj_id):
 
 
 @login_required
+@hx_request_required
 @manager_can_enter("attendance.change_attendance")
 def approve_bulk_overtime(request):
     """
@@ -1794,6 +1798,7 @@ def update_worked_hour_field(request):
 
 
 @login_required
+@hx_request_required
 def form_date_checking(request):
     minimum_hour = "00:00"
     attendance_date_str = request.POST.get("attendance_date")
@@ -1883,6 +1888,7 @@ def get_attendance_activities(request, obj_id):
 
 
 @login_required
+@hx_request_required
 def hour_attendance_select(request):
     page_number = request.GET.get("page")
     context = {}
@@ -1906,6 +1912,7 @@ def hour_attendance_select(request):
 
 
 @login_required
+@hx_request_required
 def hour_attendance_select_filter(request):
     page_number = request.GET.get("page")
     filtered = request.GET.get("filter")
@@ -1940,6 +1947,7 @@ def hour_attendance_select_filter(request):
 
 
 @login_required
+@hx_request_required
 def activity_attendance_select(request):
     page_number = request.GET.get("page")
     activity = AttendanceActivity.objects.all()
@@ -1963,6 +1971,7 @@ def activity_attendance_select(request):
 
 
 @login_required
+@hx_request_required
 def activity_attendance_select_filter(request):
     page_number = request.GET.get("page")
     filtered = request.GET.get("filter")
@@ -1997,6 +2006,7 @@ def activity_attendance_select_filter(request):
 
 
 @login_required
+@hx_request_required
 def latecome_attendance_select(request):
     page_number = request.GET.get("page")
     late_objs = AttendanceLateComeEarlyOut.objects.none()
@@ -2020,6 +2030,7 @@ def latecome_attendance_select(request):
 
 
 @login_required
+@hx_request_required
 def latecome_attendance_select_filter(request):
     page_number = request.GET.get("page")
     filtered = request.GET.get("filter")
@@ -2185,6 +2196,7 @@ def delete_grace_time(request, grace_id):
 
 
 @login_required
+@hx_request_required
 @permission_required("attendance.update_gracetime")
 def update_isactive_gracetime(request):
     """
@@ -2219,6 +2231,7 @@ def update_isactive_gracetime(request):
 
 
 @login_required
+@hx_request_required
 @permission_required("attendance.update_gracetime")
 def update_gracetime_clock_in_clock_out(request):
     """

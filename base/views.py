@@ -6296,6 +6296,12 @@ def multiple_level_approval_delete(request, condition_id):
     request_copy.pop("instances_ids", None)
     previous_data = request_copy.urlencode()
 
+    if not MultipleApprovalCondition.objects.filter(id=condition_id).exists():
+        return HorillaRedirect(
+            request,
+            message=_("No MultipleApprovalCondition matching query does not exist"),
+        )
+
     condition = MultipleApprovalCondition.objects.get(id=condition_id)
     condition.delete()
     messages.success(request, _("Multiple approval condition deleted successfully"))

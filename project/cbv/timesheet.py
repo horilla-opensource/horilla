@@ -237,24 +237,26 @@ class TaskTimeSheet(TimeSheetList):
     def get_context_data(self, **kwargs: Any):
         context = super().get_context_data(**kwargs)
         task_id = self.kwargs.get("task_id")
-        task = Task.objects.get(id=task_id)
+        task = Task.find(task_id)
+        if not task:
+            return context
         project = task.project
         context["task_id"] = task_id
         context["project"] = project
         context["task"] = task
+        self.template_name = "cbv/timesheet/task_timesheet.html"
         return context
-
-    template_name = "cbv/timesheet/task_timesheet.html"
 
     def get_queryset(self):
         queryset = HorillaListView.get_queryset(self)
         task_id = self.kwargs.get("task_id")
         task = Task.objects.filter(id=task_id).first()
         queryset = TimeSheet.objects.filter(task_id=task_id)
-        queryset = queryset.filter(task_id=task_id)
         employee_id = self.request.GET.get("employee_id")
         if employee_id:
             employee = Employee.objects.filter(id=employee_id).first()
+            if not task:
+                return queryset.none()
             if (
                 employee
                 and not employee in task.task_managers.all()
@@ -262,6 +264,8 @@ class TaskTimeSheet(TimeSheetList):
                 and not employee.employee_user_id.is_superuser
             ):
                 queryset = queryset.filter(employee_id=employee_id)
+        else:
+            return queryset.none()
 
         return queryset
 
@@ -298,7 +302,9 @@ class TimeSheetFormView(HorillaFormView):
         initial = super().get_initial()
         task_id = self.kwargs.get("task_id")
         if task_id:
-            task = Task.objects.get(id=task_id)
+            task = Task.find(task_id)
+            if not task:
+                return initial
             project_id = task.project
             initial["project_id"] = project_id.id
             initial["task_id"] = task.id

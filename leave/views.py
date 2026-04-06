@@ -1759,6 +1759,7 @@ def leave_assign_delete(request, obj_id):
     # return redirect(f"/leave/assign-filter?{pd}")
 
 
+@login_required
 @require_http_methods(["POST"])
 @permission_required("leave.delete_availableleave")
 def leave_assign_bulk_delete(request):
@@ -3900,8 +3901,8 @@ def leave_request_select_filter(request):
     return JsonResponse(context)
 
 
-@require_http_methods(["POST"])
 @login_required
+@require_http_methods(["POST"])
 def user_request_bulk_delete(request):
     """
     This method is used to delete bulk of leaves requests

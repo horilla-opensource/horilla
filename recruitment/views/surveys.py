@@ -130,6 +130,10 @@ def candidate_survey(request):
     Used to render survey form to the candidate
     """
     MAX_FILE_SIZE = 5 * 1024 * 1024  # 5 MB in bytes
+    if not request.session.get("candidate"):
+        return HorillaRedirect(
+            request, message=_("No candidate found matching the query.")
+        )
     candidate_json = request.session["candidate"]
     candidate_dict = json.loads(candidate_json)
     rec_id = candidate_dict[0]["fields"]["recruitment_id"]

@@ -277,14 +277,34 @@ class TaskCreateForm(HorillaFormView):
         project_id = self.kwargs.get("project_id")
         stage_id = self.kwargs.get("stage_id")
         task_id = self.kwargs.get("pk")
+        task = None
+
         if project_id:
             project = Project.objects.filter(id=project_id).first()
+            if not project:
+                messages.error(request, _("Project not found"))
+                return HorillaRedirect(request)
         elif stage_id:
-            project = ProjectStage.objects.filter(id=stage_id).first().project
+            stage = ProjectStage.objects.filter(id=stage_id).first()
+            if not stage:
+                messages.error(request, _("Project stage not found"))
+                return HorillaRedirect(request)
+            project = stage.project
         elif task_id:
             task = Task.objects.filter(id=task_id).first()
+            if not task:
+                messages.error(request, _("Task not found"))
+                return HorillaRedirect(request)
             project = task.project
-        elif not task_id:
+        else:
+            employee = request.user.employee_get
+            if request.user.is_superuser or request.user.has_perm("project.add_task"):
+                has_project = Project.objects.exists()
+            else:
+                has_project = Project.objects.filter(managers=employee).exists()
+            if not has_project:
+                messages.error(request, _("No project found"))
+                return HorillaRedirect(request)
             return super().get(request, *args, pk=pk, **kwargs)
         if (
             request.user.employee_get in project.managers.all()
@@ -296,9 +316,8 @@ class TaskCreateForm(HorillaFormView):
                 ("stage", StageDynamicCreateForm),
             ]
             return super().get(request, *args, pk=pk, **kwargs)
-        elif task_id:
-            if request.user.employee_get in task.task_managers.all():
-                return super().get(request, *args, pk=pk, **kwargs)
+        elif task and request.user.employee_get in task.task_managers.all():
+            return super().get(request, *args, pk=pk, **kwargs)
 
         else:
             return handle_no_permission(request)
@@ -308,6 +327,7 @@ class TaskCreateForm(HorillaFormView):
         project_id = self.kwargs.get("project_id")
         stage_id = self.kwargs.get("stage_id")
         task_id = self.kwargs.get("pk")
+        project = None
 
         dynamic_project_id = self.request.GET.get("dynamic_project")
 
@@ -330,16 +350,19 @@ class TaskCreateForm(HorillaFormView):
                 + [("dynamic_create", _("Dynamic Create"))]
             )
 
-        if stage_id:
+        if stage_id and ProjectStage.objects.filter(id=stage_id).exists():
             stage = ProjectStage.objects.filter(id=stage_id).first()
             project = stage.project
             self.form.fields["stage"].initial = stage
+            self.form.initial["stage"] = stage.id
             self.form.fields["stage"].choices = [(stage.id, stage.title)]
             self.form.fields["project"].initial = project
+            self.form.initial["project"] = project.id
             self.form.fields["project"].choices = [(project.id, project.title)]
-        elif project_id:
+        elif project_id and Project.objects.filter(id=project_id).exists():
             project = Project.objects.get(id=project_id)
             self.form.fields["project"].initial = project
+            self.form.initial["project"] = project.id
             self.form.fields["project"].choices = [(project.id, project.title)]
             stages = ProjectStage.objects.filter(project=project)
             self.form.fields["stage"].choices = [
@@ -347,6 +370,10 @@ class TaskCreateForm(HorillaFormView):
             ]
         elif self.form.instance.pk:
             self.form_class.verbose_name = _("Update Task")
+            if self.form.instance.project_id:
+                self.form.initial["project"] = self.form.instance.project_id
+            if self.form.instance.stage_id:
+                self.form.initial["stage"] = self.form.instance.stage_id
             if self.request.GET.get("project_task"):
                 self.form.fields["project"].widget = forms.HiddenInput()
                 self.form.fields["stage"].widget = forms.HiddenInput()
@@ -357,7 +384,7 @@ class TaskCreateForm(HorillaFormView):
                     ("stage", StageDynamicCreateForm, ["project"]),
                 ]
 
-        if project_id or stage_id:
+        if (project_id or stage_id) and project:
             if (
                 self.request.user.employee_get in project.managers.all()
                 or self.request.user.is_superuser
@@ -370,6 +397,10 @@ class TaskCreateForm(HorillaFormView):
                     ("dynamic_create", "Dynamic create")
                 )
 
+        if (project_id or stage_id) and not project:
+            # Keep context methods pure: never return an HttpResponse here.
+            # If ID params are invalid, render form without dynamic-create extras.
+            messages.error(self.request, _("Project not found"))
         return context
 
     def form_valid(self, form: TaskAllForm) -> HttpResponse:

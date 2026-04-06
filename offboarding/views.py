@@ -618,9 +618,7 @@ def offboarding_note_delete(request, note_id):
         note.delete()
         messages.success(request, _("The note has been successfully deleted."))
     except OffboardingNote.DoesNotExist:
-        messages.error(request, _("Note not found."))
-        script = "<script>window.location.reload()</script>"
-
+        return HorillaRedirect(request, message=_("Note not found."))
     return HttpResponse(script)
 
 

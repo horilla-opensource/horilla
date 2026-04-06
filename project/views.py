@@ -1147,7 +1147,9 @@ def task_all_create(request):
 @login_required
 def update_project_task_status(request, task_id):
     status = request.GET.get("status")
-    task = get_object_or_404(Task, id=task_id)
+    task = Task.find(task_id)
+    if not task:
+        return HorillaRedirect(request, message=_("Task not found"))
 
     if task.end_date and task.end_date < date.today():
         messages.warning(request, _("Cannot update status. Task has already expired."))
