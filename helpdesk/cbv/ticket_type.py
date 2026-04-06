@@ -99,8 +99,8 @@ class TicketsListView(HorillaListView):
     ]
 
     row_attrs = """
-                id="ticketTypeTr{get_delete_instance}"
-                """
+        id="ticketTypeTr{get_delete_instance}"
+    """
 
 
 @method_decorator(login_required, name="dispatch")
@@ -114,12 +114,12 @@ class TicketsNavView(HorillaNavView):
         super().__init__(**kwargs)
         self.search_url = reverse("ticket-list")
         self.create_attrs = f"""
-                            onclick = "event.stopPropagation();"
-                            data-toggle="oh-modal-toggle"
-                            data-target="#genericModal"
-                            hx-target="#genericModalBody"
-                            hx-get="{reverse('ticket-create-form')}"
-                            """
+            onclick = "event.stopPropagation();"
+            data-toggle="oh-modal-toggle"
+            data-target="#genericModal"
+            hx-target="#genericModalBody"
+            hx-get="{reverse('ticket-create-form')}"
+        """
 
     nav_title = _("Ticket Type")
     search_swap_target = "#listContainer"
@@ -209,6 +209,19 @@ class TicketsCreateFormView(HorillaFormView):
             self.form_class.verbose_name = _("Update Ticket")
         context["form"] = self.form
         return context
+
+    def dispatch(self, request, *args, **kwargs):
+        pk = kwargs.get("pk")
+        if pk:
+            ticket = Ticket.objects.filter(id=pk).first()
+            if ticket:
+                employee = ticket.employee_id
+                is_owner = request.user.employee_get == employee
+                has_perm = request.user.has_perm("helpdesk.change_ticket")
+                if not (is_owner or has_perm):
+                    messages.error(request, _("You don't have permission."))
+                    return HorillaRedirect(request)
+        return super().dispatch(request, *args, **kwargs)
 
     def form_valid(self, form: TicketForm) -> HttpResponse:
         if form.is_valid():

@@ -152,7 +152,7 @@ class AssetAllocationList(AllocationList):
     ]
 
     row_attrs = """
-        hx-get='{detail_view_asset_allocation}?instance_ids={ordered_ids}'
+        hx-get='{detail_view_asset_allocation}'
         hx-target="#genericModalBody"
         data-target="#genericModal"
         data-toggle="oh-modal-toggle"
@@ -475,6 +475,19 @@ class AssetRequestCreateForm(HorillaFormView):
     form_class = AssetRequestForm
     template_name = "cbv/request_and_allocation/forms/req_form.html"
     new_display_title = _("Asset Request")
+
+    def dispatch(self, request, *args, **kwargs):
+        pk = kwargs.get("pk")
+        if pk:
+            asset_request = AssetRequest.objects.filter(id=pk).first()
+            if asset_request:
+                employee = asset_request.requested_employee_id
+                is_owner = request.user.employee_get == employee
+                has_perm = request.user.has_perm("asset.change_assetrequest")
+                if not (is_owner or has_perm):
+                    messages.error(request, _("You don't have permission."))
+                    return HorillaRedirect(request)
+        return super().dispatch(request, *args, **kwargs)
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)

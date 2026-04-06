@@ -86,7 +86,7 @@
                                         {% if not req.is_rejected %}
                                             <button
                                                 class="oh-btn oh-btn--danger w-100"
-                                                titile = "{% trans 'Reject' %}"
+                                                title = "{% trans 'Reject' %}"
                                                 data-toggle="oh-modal-toggle"
                                                 data-target="#objectDetailsModal"
                                                 hx-get="{% url 'approve-claim-request' req.id %}?approve=False"
@@ -97,7 +97,7 @@
                                         {% else %}
                                             <button
                                                 class="oh-btn oh-btn--danger w-100"
-                                                titile = "{% trans 'Reject' %}"
+                                                title = "{% trans 'Reject' %}"
                                                 disabled
                                                 >
                                                 <ion-icon name="close-outline"></ion-icon>

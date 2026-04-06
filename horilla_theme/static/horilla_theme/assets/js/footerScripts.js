@@ -676,27 +676,32 @@ $(document).on("click", ".oh-accordion-header", function (event) {
     $(this).closest(".oh-accordion").toggleClass("oh-accordion--show");
 });
 
+var avatarPreviewTimer = null;
+
 $(document).on("mouseenter", ".avatar-thumb", function (e) {
-    var src = $(this).data("src");
+    var $thumb = $(this);
+    var src = $thumb.data("src");
 
-    var thumbWidth = this.offsetWidth;
-    var thumbHeight = this.offsetHeight;
+    avatarPreviewTimer = setTimeout(function () {
+        var thumbWidth = $thumb[0].offsetWidth;
+        var thumbHeight = $thumb[0].offsetHeight;
 
-    $("#previewImg")
-        .attr("src", src)
-        .css({
-            width: thumbWidth * 5 + "px",
-            height: thumbHeight * 5 + "px",
-            boxShadow: "0 10px 20px rgba(0,0,0,0.3)",
-            background: "white"
-        });
+        $("#previewImg")
+            .attr("src", src)
+            .css({
+                width: thumbWidth * 5 + "px",
+                height: thumbHeight * 5 + "px",
+                boxShadow: "0 10px 20px rgba(0,0,0,0.3)",
+                background: "white"
+            });
 
-    $("#imagePreview")
-        .css({
-            top: e.pageY + 15 + "px",
-            left: e.pageX + 15 + "px"
-        })
-        .show();
+        $("#imagePreview")
+            .css({
+                top: e.pageY + 15 + "px",
+                left: e.pageX + 15 + "px"
+            })
+            .show();
+    }, 300);
 });
 
 // Mouse move
@@ -709,5 +714,6 @@ $(document).on("mousemove", ".avatar-thumb", function (e) {
 
 // Mouse leave
 $(document).on("mouseleave", ".avatar-thumb", function () {
+    clearTimeout(avatarPreviewTimer);
     $("#imagePreview").hide();
 });
