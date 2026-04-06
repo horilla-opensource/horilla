@@ -416,12 +416,14 @@ def dashboard_upcoming_holidays(request):
     holidays_data = []
 
     try:
+        from django.db.models import Q
+
         from base.models import Holiday
 
         company_id = request.session.get("selected_company")
         qs = Holiday.objects.filter(
-            start_date__gte=today,
-            start_date__lte=next_week,
+            Q(start_date__gte=today, start_date__lte=next_week)
+            | Q(start_date__lte=today, end_date__gte=today),
         )
         if company_id:
             qs = qs.filter(company_id=company_id)

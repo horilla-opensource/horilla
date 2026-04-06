@@ -380,7 +380,7 @@
     .md-modal__body::-webkit-scrollbar { width: 4px; }
     .md-modal__body::-webkit-scrollbar-thumb { background: rgba(128,128,128,0.2); border-radius: 4px; }
 
-    /* Create announcement modal - wraps HTMX-loaded form */
+    /* Announcement create now uses standard #objectCreateModal */
     .md-create-modal .md-modal { width: 640px; }
     .md-create-modal .md-modal__body .oh-profile-section { margin: 0; }
     .md-create-modal .md-modal__body .oh-modal__dialog-header { display: none; }
@@ -856,7 +856,12 @@
                 <div class="md-info-panel__header">
                     <div class="md-info-panel__title">{% trans "Announcements" %}</div>
                     {% if perms.base.add_announcement %}
-                    <button class="md-btn-add" id="md-add-announcement" title="{% trans 'New Announcement' %}">+</button>
+                    <button class="md-btn-add" id="md-add-announcement" title="{% trans 'New Announcement' %}"
+                            hx-get="{% url 'create-announcement' %}"
+                            hx-target="#objectCreateModalTarget"
+                            hx-swap="innerHTML"
+                            data-toggle="oh-modal-toggle"
+                            data-target="#objectCreateModal">+</button>
                     {% endif %}
                 </div>
                 <div class="md-info-panel__body" id="md-announcements">
@@ -911,17 +916,7 @@
 
 
 <!-- Create Announcement Modal -->
-<div class="md-modal-overlay md-create-modal" id="md-ann-create-overlay">
-    <div class="md-modal">
-        <div class="md-modal__header">
-            <h3>{% trans "New Announcement" %}</h3>
-            <button class="md-modal__close" id="md-ann-create-close">&times;</button>
-        </div>
-        <div class="md-modal__body" id="md-ann-create-body">
-            <div style="text-align:center;padding:40px;opacity:0.4;">{% trans "Loading..." %}</div>
-        </div>
-    </div>
-</div>
+<!-- Announcement create uses standard #objectCreateModal via HTMX on the + button -->
 
 <script>
 (function() {
@@ -1589,7 +1584,7 @@
         .then(r => r.json())
         .then(data => {
             if (!data.dataSet || !data.dataSet.length) { document.querySelector("#chart-pipeline").innerHTML = emptyHtml('No active recruitments'); return; }
-            new ApexCharts(document.querySelector("#chart-pipeline"), {
+            requestAnimationFrame(() => { new ApexCharts(document.querySelector("#chart-pipeline"), {
                 series: data.dataSet.map(r => ({ name: r.label, data: r.data })),
                 chart: { type: 'bar', height: 320, toolbar: { show: false }, background: 'transparent', fontFamily: 'inherit',
                     events: { dataPointSelection: (e, ctx, config) => {
@@ -1614,7 +1609,7 @@
                         return `<div style="padding:8px 12px;font-size:12px;"><b>${recruitment}</b><br>${stage}: ${value} candidates</div>`;
                     }
                 },
-            }).render();
+            }).render(); });
         }).catch(() => { document.querySelector("#chart-pipeline").innerHTML = emptyHtml('No recruitment data'); });
 
     // ─── HIRING TIMELINE ───
@@ -1750,7 +1745,7 @@
         .then(r => r.json())
         .then(data => {
             if (!data.stages.length) { document.querySelector("#chart-recruitment-funnel").innerHTML = emptyHtml('{% trans "No active recruitments" %}'); return; }
-            new ApexCharts(document.querySelector("#chart-recruitment-funnel"), {
+            requestAnimationFrame(() => { new ApexCharts(document.querySelector("#chart-recruitment-funnel"), {
                 series: [{ name: '{% trans "Candidates" %}', data: data.stages.map(s => s.count) }],
                 chart: { type: 'bar', height: 300, toolbar: { show: false }, background: 'transparent', fontFamily: 'inherit' },
                 colors: ['#6366f1'],
@@ -1775,7 +1770,7 @@
                     align: 'right', style: { fontSize: '11px', color: textColor }
                 },
                 tooltip: { theme: isDark ? 'dark' : 'light', y: { formatter: v => v + ' candidate(s)' } },
-            }).render();
+            }).render(); });
         }).catch(() => { document.querySelector("#chart-recruitment-funnel").innerHTML = emptyHtml('{% trans "No recruitment data" %}'); });
 
     // ─── EMPLOYEE TURNOVER ───
@@ -1849,82 +1844,18 @@
     //  ANNOUNCEMENT MODALS
     // ═══════════════════════════════════════════
 
-    const createOverlay = document.getElementById('md-ann-create-overlay');
-    const createBody = document.getElementById('md-ann-create-body');
+    // Custom announcement modal removed — now uses standard #objectCreateModal via HTMX
 
-    function openModal(overlay) { overlay.classList.add('md-modal-overlay--open'); }
-    function closeModal(overlay) { overlay.classList.remove('md-modal-overlay--open'); }
-
-    // Close create overlay on backdrop click or close button
-    createOverlay.addEventListener('click', e => { if (e.target === createOverlay) closeModal(createOverlay); });
-    document.getElementById('md-ann-create-close').addEventListener('click', () => closeModal(createOverlay));
-
-    // Escape key closes create modal
-    document.addEventListener('keydown', e => {
-        if (e.key === 'Escape') closeModal(createOverlay);
-    });
-
-    // ── Create Announcement ──
-    const addBtn = document.getElementById('md-add-announcement');
-    if (addBtn) {
-        addBtn.addEventListener('click', () => {
-            createBody.innerHTML = '<div style="text-align:center;padding:40px;opacity:0.4;">{% trans "Loading..." %}</div>';
-            openModal(createOverlay);
-
-            fetch("{% url 'create-announcement' %}", { headers: { 'HX-Request': 'true' } })
-                .then(r => r.text())
-                .then(html => {
-                    createBody.innerHTML = html;
-                    // Initialize HTMX for Horilla multi-select widgets
-                    if (window.htmx) htmx.process(createBody);
-
-                    // disable_comments toggles public_comments visibility
-                    const disableCheck = createBody.querySelector('[name="disable_comments"]');
-                    const publicRow = createBody.querySelector('[name="public_comments"]');
-                    if (disableCheck && publicRow) {
-                        const publicGroup = publicRow.closest('.oh-input-group') || publicRow.closest('.oh-wrapper') || publicRow.parentElement;
-                        function togglePublicComments() {
-                            publicGroup.style.display = disableCheck.checked ? 'none' : '';
-                            if (disableCheck.checked) publicRow.checked = false;
-                        }
-                        disableCheck.addEventListener('change', togglePublicComments);
-                        togglePublicComments();
-                    }
-
-                    // Override form submission to use fetch
-                    const form = createBody.querySelector('form');
-                    if (form) {
-                        function submitAnnouncement(e) {
-                            e.preventDefault();
-                            const formData = new FormData(form);
-                            fetch("{% url 'create-announcement' %}", {
-                                method: 'POST',
-                                body: formData,
-                                headers: {
-                                    'X-CSRFToken': formData.get('csrfmiddlewaretoken') || (document.cookie.match(/csrftoken=([^;]+)/)?.[1] || ''),
-                                    'HX-Request': 'true',
-                                }
-                            })
-                            .then(r => r.text())
-                            .then(resp => {
-                                if (resp.includes('oh-alert--danger') || resp.includes('errorlist')) {
-                                    createBody.innerHTML = resp;
-                                    if (window.htmx) htmx.process(createBody);
-                                    const newForm = createBody.querySelector('form');
-                                    if (newForm) newForm.addEventListener('submit', submitAnnouncement);
-                                } else {
-                                    closeModal(createOverlay);
-                                    loadAnnouncements();
-                                }
-                            });
-                        }
-                        form.addEventListener('submit', submitAnnouncement);
-                    }
-                })
-                .catch(() => {
-                    createBody.innerHTML = '<div style="text-align:center;padding:40px;opacity:0.4;">{% trans "Failed to load form" %}</div>';
-                });
+    // ── Create Announcement — uses standard #objectCreateModal via HTMX ──
+    // Reload announcements when the create modal is closed (after successful save)
+    const createModal = document.getElementById('objectCreateModal');
+    if (createModal) {
+        const observer = new MutationObserver(() => {
+            if (!createModal.classList.contains('oh-modal--show')) {
+                loadAnnouncements();
+            }
         });
+        observer.observe(createModal, { attributes: true, attributeFilter: ['class'] });
     }
 
 })();
