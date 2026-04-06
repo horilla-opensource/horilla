@@ -21,6 +21,7 @@ from django.http import HttpResponse, HttpResponseForbidden, JsonResponse
 from django.shortcuts import render
 from django.template.loader import render_to_string
 from django.utils.decorators import method_decorator
+from django.utils.translation import gettext as _
 from django.views import View
 from django.views.decorators.csrf import csrf_protect
 from openpyxl import Workbook
@@ -31,6 +32,7 @@ from xhtml2pdf.files import pisaFileObject
 
 from base.methods import eval_validate
 from horilla.decorators import login_required as func_login_required
+from horilla.http.response import HorillaRedirect
 from horilla.signals import post_generic_delete, pre_generic_delete
 from horilla_views import models
 from horilla_views.cbv_methods import get_short_uuid, login_required, merge_dicts
@@ -60,7 +62,13 @@ class ToggleColumn(View):
         """
 
         query_dict = self.request.GET
-        path = query_dict["path"]
+        path = query_dict.get("path")
+
+        if not path:
+            return HorillaRedirect(
+                self.request,
+                message=_("No matching query found."),
+            )
         query_dict = dict(query_dict)
         del query_dict["path"]
 
@@ -89,8 +97,14 @@ class ReloadField(View):
         """
         Http method to reload dynamic create fields
         """
-        class_path = request.GET["form_class_path"]
-        reload_field = request.GET["dynamic_field"]
+        class_path = request.GET.get("form_class_path")
+        reload_field = request.GET.get("dynamic_field")
+
+        if not class_path:
+            return HorillaRedirect(
+                request,
+                message=_("No matching query found."),
+            )
 
         module_name, class_name = class_path.rsplit(".", 1)
         module = importlib.import_module(module_name)
@@ -253,8 +267,14 @@ class ActiveView(View):
     """
 
     def get(self, *args, **kwargs):
-        path = self.request.GET["path"]
-        view_type = self.request.GET["view"]
+        path = self.request.GET.get("path")
+        view_type = self.request.GET.get("view")
+
+        if not path:
+            return HorillaRedirect(
+                self.request,
+                message=_("No matching query found."),
+            )
         active_view = models.ActiveView.objects.filter(
             path=path, created_by=self.request.user
         ).first()

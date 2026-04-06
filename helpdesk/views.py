@@ -376,6 +376,7 @@ def faq_filter(request, id):
 
 
 @login_required
+@hx_request_required
 def faq_suggestion(request):
     faqs = FAQFilter(request.GET).qs
     data_list = list(faqs.values())
@@ -651,6 +652,7 @@ def ticket_status_change(request, ticket_id):
 
 
 @login_required
+@hx_request_required
 # @ticket_owner_can_enter(perm="helpdesk.change_ticket", model=Ticket)
 def change_ticket_status(request, ticket_id):
     """
@@ -1157,6 +1159,7 @@ def create_tag(request):
 
 
 @login_required
+@hx_request_required
 def remove_tag(request):
     """
     This is an ajax method to  remove tag from a ticket.
@@ -1179,6 +1182,26 @@ def remove_tag(request):
     return JsonResponse({"message": message, "type": type})
 
 
+def can_access_ticket(request, ticket):
+    """
+    Check if the current user is authorized to access the given ticket.
+    """
+    if ticket is None:
+        return False
+    employee = request.user.employee_get
+    return (
+        request.user.has_perm("helpdesk.view_ticket")
+        or employee == ticket.employee_id
+        or employee in ticket.assigned_to.all()
+        or ticket.employee_id.get_reporting_manager() == employee
+        or is_department_manager(request, ticket)
+        or (
+            ticket.assigning_type == "individual"
+            and employee == ticket.get_raised_on_object()
+        )
+    )
+
+
 @login_required
 @hx_request_required
 def view_ticket_document(request, doc_id):
@@ -1192,7 +1215,20 @@ def view_ticket_document(request, doc_id):
     Returns: return view_file template
     """
 
-    document_obj = Attachment.objects.filter(id=doc_id).first()
+    document_obj = Attachment.find(doc_id)
+    if document_obj is None:
+        return HorillaRedirect(
+            request, message=_("No Attachment found matching the query.")
+        )
+
+    ticket = document_obj.ticket or (
+        document_obj.comment.ticket if document_obj.comment else None
+    )
+    if not can_access_ticket(request, ticket):
+        return HorillaRedirect(
+            request, message=_("You do not have permission to view the documents.")
+        )
+
     context = {
         "document": document_obj,
     }
@@ -1225,12 +1261,27 @@ def delete_ticket_document(request, doc_id):
     id (int): The id of the document.
 
     """
-    Attachment.objects.get(id=doc_id).delete()
+    document_obj = Attachment.find(doc_id)
+    if document_obj is None:
+        return HorillaRedirect(
+            request, message=_("No Attachment found matching the query.")
+        )
+
+    ticket = document_obj.ticket or (
+        document_obj.comment.ticket if document_obj.comment else None
+    )
+    if not can_access_ticket(request, ticket):
+        return HorillaRedirect(
+            request, message=_("You do not have permission to delete the documents.")
+        )
+
+    document_obj.delete()
     messages.success(request, _("Document has been deleted."))
     return HorillaRedirect(request)
 
 
 @login_required
+@hx_request_required
 def comment_create(request, ticket_id):
     """
     This method is used to create comment to a ticket
@@ -1287,6 +1338,7 @@ def comment_create(request, ticket_id):
 
 
 @login_required
+@hx_request_required
 def comment_edit(request):
     comment_id = request.POST.get("comment_id")
     new_comment = request.POST.get("new_comment")
@@ -1322,6 +1374,7 @@ def comment_delete(request, comment_id):
 
 
 @login_required
+@hx_request_required
 def get_raised_on(request):
     """
     This is an ajax method to return list for raised on field.
@@ -1474,6 +1527,7 @@ def approve_claim_request(request, req_id):
 
 
 @login_required
+@hx_request_required
 def tickets_select_filter(request):
     """
     This method is used to return all the ids of the filtered tickets

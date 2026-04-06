@@ -324,6 +324,7 @@ def generate_data_set(request, start_date, type, end_date, dept):
 
 
 @login_required
+@hx_request_required
 def dashboard_attendance(request):
     """
     This method is used to render json response of dashboard data
@@ -360,6 +361,7 @@ def dashboard_attendance(request):
 
 
 @login_required
+@hx_request_required
 def pending_hours(request):
     """
     pending hours chart dashboard view
@@ -378,6 +380,7 @@ def pending_hours(request):
 
 
 @login_required
+@hx_request_required
 def department_overtime_chart(request):
     start_date = request.GET.get("date") if request.GET.get("date") else date.today()
     chart_type = request.GET.get("type") if request.GET.get("type") else "day"

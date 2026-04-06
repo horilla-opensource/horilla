@@ -437,6 +437,19 @@ class AddAssigneesFormView(HorillaFormView):
             self.form_class.verbose_name = _("Add assignees")
         return context
 
+    def dispatch(self, request, *args, **kwargs):
+        obj_id = kwargs.get("pk")
+
+        if not obj_id:
+            return HorillaRedirect(request, message=_("Objective ID is missing"))
+
+        self.object = Objective.objects.filter(pk=obj_id).first()
+
+        if not self.object:
+            return HorillaRedirect(request, message=_("Invalid Objective"))
+
+        return super().dispatch(request, *args, **kwargs)
+
     def form_valid(self, form: AddAssigneesForm) -> HttpResponse:
         if form.is_valid():
             if form.instance.pk:

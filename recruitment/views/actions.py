@@ -137,8 +137,7 @@ def note_delete(request, note_id):
         messages.success(request, _("Note deleted"))
         script = ""
     except StageNote.DoesNotExist:
-        messages.error(request, _("Note not found."))
-        script = "<script>window.location.reload()</script>"
+        return HorillaRedirect(request, message=_("Note not found."))
     except ProtectedError:
         messages.error(request, _("You cannot delete this note."))
         script = f"""

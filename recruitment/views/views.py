@@ -2955,6 +2955,7 @@ def open_recruitments(request):
     return response
 
 
+@login_required
 @hx_request_required
 def recruitment_details(request, id):
     """

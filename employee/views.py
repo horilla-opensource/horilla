@@ -857,6 +857,18 @@ def document_delete(request, id):
     return HorillaRedirect(request)
 
 
+def can_access_document(request, document, perm):
+    """
+    Check if the current user is authorized to access the given document.
+    """
+    employee = request.user.employee_get
+    return (
+        document.employee_id == employee
+        or document.employee_id.get_reporting_manager() == employee
+        or request.user.has_perm(perm)
+    )
+
+
 @login_required
 @hx_request_required
 def file_upload(request, id):
@@ -870,7 +882,19 @@ def file_upload(request, id):
     Returns: return document_form template
     """
 
-    document_item = Document.objects.get(id=id)
+    document_item = Document.find(id)
+    if document_item is None:
+        return HorillaRedirect(
+            request, message=_("No Document found matching the query.")
+        )
+
+    if not can_access_document(
+        request, document_item, "horilla_documents.change_document"
+    ):
+        return HorillaRedirect(
+            request, message=_("You do not have permission to update this document.")
+        )
+
     form = DocumentUpdateForm(instance=document_item)
     if request.method == "POST":
         form = DocumentUpdateForm(request.POST, request.FILES, instance=document_item)
@@ -914,6 +938,18 @@ def view_file(request, id):
     """
 
     document_obj = Document.objects.filter(id=id).first()
+    if document_obj is None:
+        return HorillaRedirect(
+            request, message=_("No Document found matching the query.")
+        )
+
+    if not can_access_document(
+        request, document_obj, "horilla_documents.view_document"
+    ):
+        return HorillaRedirect(
+            request, message=_("You do not have permission to view this document.")
+        )
+
     context = {
         "document": document_obj,
     }
