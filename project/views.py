@@ -1405,6 +1405,7 @@ def get_stages(request):
 
 
 @login_required
+@hx_request_required
 def create_stage_taskall(request):
     """
     This is an ajax method to return json response to create stage related
@@ -1432,6 +1433,7 @@ def create_stage_taskall(request):
 
 
 @login_required
+@hx_request_required
 def drag_and_drop_stage(request):
     """
     For drag and drop project stage into new sequence
@@ -1560,6 +1562,7 @@ def get_members(request):
 
 
 @login_required
+@hx_request_required
 def get_tasks_in_timesheet(request):
     project_id = request.GET.get("project_id")
     form = TimeSheetForm()
@@ -1826,6 +1829,7 @@ def time_sheet_filter(request):
 
 
 @login_required
+@hx_request_required
 def time_sheet_initial(request):
     """
     This is an ajax method to return json response to take only tasks related
