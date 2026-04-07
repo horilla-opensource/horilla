@@ -1095,6 +1095,7 @@ def enable_resignation_request(request):
 
 
 @login_required
+@hx_request_required
 @permission_required("offboarding.add_offboardingemployee")
 def get_notice_period(request):
     """
@@ -1130,6 +1131,7 @@ def get_notice_period(request):
 
 
 @login_required
+@hx_request_required
 def get_notice_period_end_date(request):
     """
     Calculates and returns the end date of the notice period based on the provided start date.
@@ -1211,6 +1213,7 @@ def dashboard_task_table(request):
 if apps.is_installed("asset"):
 
     @login_required
+    @hx_request_required
     @any_manager_can_enter(["offboarding.view_offboarding"])
     def dashboard_asset_table(request):
         """

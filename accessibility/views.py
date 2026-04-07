@@ -84,6 +84,7 @@ def load_accessibility_form(request):
 
 
 @login_required
+@hx_request_required
 @permission_required("auth.change_permission")
 def get_accessibility_data(request):
     """
