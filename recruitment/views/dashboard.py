@@ -179,7 +179,11 @@ def dashboard_pipeline(request):
     """
     This method is used generate recruitment dataset for the dashboard
     """
-    recruitment_obj = Recruitment.objects.filter(closed=False)
+    import datetime as _dt
+
+    today = _dt.date.today()
+    # Exclude future recruitments (start_date > today) — they have no candidates yet
+    recruitment_obj = Recruitment.objects.filter(closed=False, start_date__lte=today)
     data_set = []
     labels = [type[1] for type in Stage.stage_types]
     for rec in recruitment_obj:

@@ -32,7 +32,37 @@ def _parse_period(request):
 @login_required
 def modern_dashboard(request):
     """Render the modern dashboard page."""
-    return render(request, "dashboard_modern.html")
+    from django.apps import apps
+
+    from horilla.methods import get_horilla_model_class
+
+    enabled_timerunner = True
+    get_forecasted_at_work = None
+
+    if apps.is_installed("attendance"):
+        try:
+            AttendanceGeneralSetting = get_horilla_model_class(
+                app_label="attendance", model="attendancegeneralsetting"
+            )
+            first = AttendanceGeneralSetting.objects.first()
+            if first:
+                enabled_timerunner = first.time_runner
+        except Exception:
+            pass
+
+        try:
+            get_forecasted_at_work = request.user.employee_get.get_forecasted_at_work()
+        except Exception:
+            pass
+
+    return render(
+        request,
+        "dashboard_modern.html",
+        {
+            "enabled_timerunner": enabled_timerunner,
+            "get_forecasted_at_work": get_forecasted_at_work,
+        },
+    )
 
 
 @login_required
