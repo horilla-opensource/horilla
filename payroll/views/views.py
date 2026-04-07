@@ -1801,32 +1801,32 @@ def view_payrollrequest_comment(request, payroll_id):
 
 
 @login_required
-@hx_request_required
 def delete_payrollrequest_comment(request, comment_id):
     """
     This method is used to delete Reimbursement request comments
     """
-    script = ""
+
     comment = ReimbursementrequestComment.objects.filter(id=comment_id)
+    if not comment.exists():
+        messages.error(request, _("Comment not found."))
+        return HorillaRedirect(request)
     comment.delete()
-    messages.success(request, _("Comment deleted successfully!"))
-    return HttpResponse(script)
+    return HorillaRedirect(request, message=_("Comment deleted successfully!"))
 
 
 @login_required
-@hx_request_required
 def delete_reimbursement_comment_file(request):
     """
     Used to delete attachment
     """
-    script = ""
     ids = request.GET.getlist("ids")
+    if not ids:
+        return HorillaRedirect(request, message=_("No file IDs provided for deletion."))
     records = ReimbursementFile.objects.filter(id__in=ids)
     if not request.user.has_perm("payroll.delete_reimbursmentfile"):
         records = records.filter(employee_id__employee_user_id=request.user)
     records.delete()
-    messages.success(request, _("File deleted successfully"))
-    return HttpResponse(script)
+    return HorillaRedirect(request, message=_("File deleted successfully"))
 
 
 @login_required
