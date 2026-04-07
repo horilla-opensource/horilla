@@ -13,6 +13,7 @@ from horilla.decorators import (
     login_required,
     permission_required,
 )
+from horilla.http.response import HorillaRedirect
 from horilla_meet.methods import get_google_credentials
 from horilla_meet.models import *
 
@@ -99,13 +100,13 @@ def delete_google_credentials(request, obj_id):
     try:
         GoogleCloudCredential.objects.get(id=obj_id).delete()
         messages.success(request, "Google Cloud Credential deleted successfully.")
-        return HttpResponse("")
+        return HorillaRedirect(request)
     except GoogleCloudCredential.DoesNotExist:
         messages.error(request, "Google Cloud Credential not found.")
-        return HttpResponse("")
+        return HorillaRedirect(request)
     except Exception as e:
         messages.error(request, f"Error deleting Google Cloud Credential: {e}")
-        return HttpResponse("")
+        return HorillaRedirect(request)
 
 
 @login_required
