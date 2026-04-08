@@ -613,7 +613,6 @@ def ticket_archive(request, ticket_id):
 
 
 @login_required
-@hx_request_required
 @ticket_owner_can_enter(perm="helpdesk.change_ticket", model=Ticket)
 def ticket_status_change(request, ticket_id):
     if request.method != "POST":

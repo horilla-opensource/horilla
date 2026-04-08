@@ -738,7 +738,6 @@ def attendance_overtime_delete(request, obj_id):
 
 
 @login_required
-@hx_request_required
 @permission_required("attendance.delete_attendanceovertime")
 def attendance_account_bulk_delete(request):
     """
@@ -1534,7 +1533,6 @@ def approve_overtime(request, obj_id):
 
 
 @login_required
-@hx_request_required
 @manager_can_enter("attendance.change_attendance")
 def approve_bulk_overtime(request):
     """
@@ -2776,7 +2774,6 @@ def work_record_export(request):
 
 
 @login_required
-@hx_request_required
 @permission_required("attendance.add_attendancegeneralsetting")
 def enable_timerunner(request):
     """
