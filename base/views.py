@@ -6086,15 +6086,15 @@ def get_condition_value_fields(request):
 @hx_request_required
 @permission_required("base.add_multipleapprovalcondition")
 def add_more_approval_managers(request):
-    currnet_hx_target = request.META.get("HTTP_HX_TARGET")
-    hx_target_split = currnet_hx_target.split("_")
+    current_hx_target = request.META.get("HTTP_HX_TARGET")
+    hx_target_split = current_hx_target.split("_")
     next_hx_target = "_".join([hx_target_split[0], str(int(hx_target_split[-1]) + 1)])
 
     form = MultipleApproveConditionForm()
     managers_count = request.GET.get("managers_count")
     context = {
         "next_hx_target": next_hx_target,
-        "currnet_hx_target": currnet_hx_target,
+        "current_hx_target": current_hx_target,
     }
     if managers_count:
         managers_count = int(managers_count) + 1

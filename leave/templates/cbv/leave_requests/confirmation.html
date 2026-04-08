@@ -1,7 +1,7 @@
 {% load i18n %}
 {% load basefilters %}
 {% is_manager_of request.user instance as can_manage %}
-{% if perms.leave.change_leaverequest or can_manage %}
+{% if perms.leave.change_leaverequest or can_manage or request.user|is_leave_approval_manager %}
 <div class="oh-btn-group" onclick="event.stopPropagation();">
         {% if instance.status == 'cancelled' %}
             {% if instance.end_date >= current_date %}
