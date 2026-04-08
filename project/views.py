@@ -1067,6 +1067,11 @@ def drag_and_drop_task(request):
     if not task:
         messages.error(request, _("Task not found"))
         return JsonResponse({"error": "Task not found"}, status=404)
+
+    if task.end_date and task.end_date < date.today():
+        messages.warning(request, _("Cannot update status. Task has already expired."))
+        return JsonResponse({"change": True})
+
     project = task.project
     if (
         request.user.has_perm("project.change_task")
@@ -1433,7 +1438,6 @@ def create_stage_taskall(request):
 
 
 @login_required
-@hx_request_required
 def drag_and_drop_stage(request):
     """
     For drag and drop project stage into new sequence
