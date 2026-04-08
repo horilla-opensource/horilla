@@ -1089,6 +1089,7 @@ def kanban_view(request):
 portal_user = {}
 
 
+@hx_request_required
 def user_creation(request, token):
     """
     function used to create user account in onboarding portal.
@@ -1618,6 +1619,7 @@ def candidate_task_bulk_update(request):
 
 
 @login_required
+@hx_request_required
 def onboard_candidate_chart(request):
     """
     function used to show onboard started candidates in recruitments.
@@ -1713,6 +1715,7 @@ def view_dashboard(request):
 
 
 @login_required
+@hx_request_required
 @permission_required(perm="recruitment.view_candidate")
 def dashboard_stage_chart(request):
     recruitment = request.GET.get("recruitment")
@@ -2026,6 +2029,7 @@ def add_to_rejected_candidates(request):
 
 
 @login_required
+@hx_request_required
 def candidate_select(request):
     """
     This method is used for select all in candidate

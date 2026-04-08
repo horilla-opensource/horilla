@@ -161,7 +161,7 @@ $(document).ready(function () {
             if (JSON.stringify(old_stage_seq) !== JSON.stringify(new_stage_seq)) {
                 $.ajax({
                     type: 'post',
-                    url: '/project/drag-and-drop-stage',
+                    url: '/project/drag-and-drop-stage/',
                     data: {
                         csrfmiddlewaretoken: getCookie("csrftoken"),
                         sequence: JSON.stringify(new_stage_seq),

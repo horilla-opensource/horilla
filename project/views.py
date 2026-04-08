@@ -1064,6 +1064,11 @@ def drag_and_drop_task(request):
     if not task:
         messages.error(request, _("Task not found"))
         return JsonResponse({"error": "Task not found"}, status=404)
+
+    if task.end_date and task.end_date < date.today():
+        messages.warning(request, _("Cannot update status. Task has already expired."))
+        return JsonResponse({"change": True})
+
     project = task.project
     if (
         request.user.has_perm("project.change_task")
@@ -1400,6 +1405,7 @@ def get_stages(request):
 
 
 @login_required
+@hx_request_required
 def create_stage_taskall(request):
     """
     This is an ajax method to return json response to create stage related
@@ -1554,6 +1560,7 @@ def get_members(request):
 
 
 @login_required
+@hx_request_required
 def get_tasks_in_timesheet(request):
     project_id = request.GET.get("project_id")
     form = TimeSheetForm()
@@ -1818,6 +1825,7 @@ def time_sheet_filter(request):
 
 
 @login_required
+@hx_request_required
 def time_sheet_initial(request):
     """
     This is an ajax method to return json response to take only tasks related
