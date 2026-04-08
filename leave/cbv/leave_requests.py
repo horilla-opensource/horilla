@@ -86,8 +86,9 @@ class LeaveRequestsListView(HorillaListView):
         queryset = super().get_queryset()
         data = queryset
         queryset = filter_conditional_leave_request(self.request)
-        data = filtersubordinates(self.request, data, "leave.view_leaverequest")
-        return data
+        qs = data.filter(id__in=queryset.values_list("id", flat=True))
+        data = filtersubordinates(self.request, data, "leave.view_leaverequest") | qs
+        return data.distinct()
 
     filter_class = LeaveRequestFilter
     model = LeaveRequest
@@ -337,6 +338,7 @@ class LeaveRequestsDetailView(HorillaDetailedView):
                 insert_index,
                 (_("Multiple Approvals"), "multiple_approval_action", True),
             )
+            self.cols["multiple_approval_action"] = 12
 
         if self.instance.reject_reason:
             insert_index = 8
