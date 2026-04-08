@@ -183,7 +183,6 @@ def contract_status_update(request, contract_id):
 
 
 @login_required
-@hx_request_required
 @permission_required("payroll.change_contract")
 def bulk_contract_status_update(request):
     status = request.POST.get("status")
