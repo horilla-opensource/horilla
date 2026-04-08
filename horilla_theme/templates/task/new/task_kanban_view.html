@@ -439,7 +439,7 @@
         });
 
         // Send AJAX request
-        fetch("/project/drag-and-drop-task", {
+        fetch("/project/drag-and-drop-task/", {
             method: "POST",
             headers: {
                 "X-CSRFToken": getCookie("csrftoken"),
@@ -561,7 +561,7 @@
 
             // Send AJAX only if there are at least 2 stages
             if (Object.keys(new_stage_seq).length > 1) {
-                fetch("/project/drag-and-drop-stage", {
+                fetch("/project/drag-and-drop-stage/", {
                     method: "POST",
                     headers: {
                         "Content-Type": "application/x-www-form-urlencoded",

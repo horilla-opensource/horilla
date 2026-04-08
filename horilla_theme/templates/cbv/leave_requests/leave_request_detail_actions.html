@@ -1,6 +1,6 @@
-{% load i18n static %}
+{% load i18n static basefilters %}
 
-{% if instance.is_approved and instance.status == 'requested' %}
+{% if instance.is_approved and instance.status == 'requested' and perms.leave.change_leaverequest or can_manage or request.user|is_leave_approval_manager %}
 	<a
 		href="{% url 'request-approve' instance.id %}"
 		title="{% trans 'Approve' %}"
@@ -44,7 +44,7 @@
 	></ion-icon> {% trans 'Penalty' %}
 </button>
 
-{% if instance.status != 'rejected' and instance.end_date >= current_date %}
+{% if instance.status != 'rejected' and instance.end_date >= current_date and perms.leave.change_leaverequest or can_manage or request.user|is_leave_approval_manager %}
 	<a
 		type="submit"
 		data-toggle="oh-modal-toggle"
