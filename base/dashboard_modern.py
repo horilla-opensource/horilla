@@ -55,12 +55,25 @@ def modern_dashboard(request):
         except Exception:
             pass
 
+    # Load saved chart preferences from DB for the current employee
+    employee_chart_prefs = "[]"
+    try:
+        from base.models import DashboardEmployeeCharts
+
+        emp = request.user.employee_get
+        obj = DashboardEmployeeCharts.objects.filter(employee=emp).first()
+        if obj and obj.charts:
+            employee_chart_prefs = json.dumps(obj.charts)
+    except Exception:
+        pass
+
     return render(
         request,
         "dashboard_modern.html",
         {
             "enabled_timerunner": enabled_timerunner,
             "get_forecasted_at_work": get_forecasted_at_work,
+            "employee_chart_prefs": employee_chart_prefs,
         },
     )
 
@@ -448,10 +461,10 @@ def dashboard_upcoming_holidays(request):
     try:
         from django.db.models import Q
 
-        from base.models import Holiday
+        from base.models import Holidays
 
         company_id = request.session.get("selected_company")
-        qs = Holiday.objects.filter(
+        qs = Holidays.objects.filter(
             Q(start_date__gte=today, start_date__lte=next_week)
             | Q(start_date__lte=today, end_date__gte=today),
         )
@@ -564,7 +577,6 @@ def dashboard_recruitment_pipeline(request):
         data = (
             Candidate.objects.filter(
                 recruitment_id__in=active_recruitments,
-                canceled=False,
             )
             .values("stage_id__stage", "stage_id__stage_type", "stage_id__sequence")
             .annotate(count=Count("id"))
@@ -756,12 +768,14 @@ def save_dashboard_prefs(request):
         from base.models import DashboardEmployeeCharts
 
         data = json.loads(request.body)
-        excluded = [
-            p["id"] for p in data.get("prefs", []) if not p.get("visible", True)
+        prefs = data.get("prefs", [])
+        # Store full prefs (order + visibility) so DB can fully restore state
+        clean_prefs = [
+            {"id": p["id"], "visible": p.get("visible", True)} for p in prefs
         ]
         emp = request.user.employee_get
         DashboardEmployeeCharts.objects.update_or_create(
-            employee=emp, defaults={"charts": excluded}
+            employee=emp, defaults={"charts": clean_prefs}
         )
     except Exception:
         pass
@@ -776,10 +790,10 @@ def load_dashboard_prefs(request):
 
         emp = request.user.employee_get
         obj = DashboardEmployeeCharts.objects.filter(employee=emp).first()
-        excluded = obj.charts if obj and obj.charts else []
-        return JsonResponse({"excluded": excluded})
+        prefs = obj.charts if obj and obj.charts else []
+        return JsonResponse({"prefs": prefs})
     except Exception:
-        return JsonResponse({"excluded": []})
+        return JsonResponse({"prefs": []})
 
 
 @login_required

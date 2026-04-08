@@ -220,14 +220,13 @@ def delete_announcement(request, anoun_id):
     except (json.JSONDecodeError, TypeError):
         instance_ids_list = []
 
+    __, next_instance_id = closest_numbers(instance_ids_list, anoun_id)
     if anoun_id in instance_ids_list:
         instance_ids_list.remove(anoun_id)
 
     if not instance_ids_list:
         # Last announcement deleted — refresh the page to show empty state
         return HorillaRedirect(request)
-
-    __, next_instance_id = closest_numbers(instance_ids_list, anoun_id)
 
     if next_instance_id and next_instance_id != anoun_id:
         url = reverse("announcement-single-view", kwargs={"pk": next_instance_id})

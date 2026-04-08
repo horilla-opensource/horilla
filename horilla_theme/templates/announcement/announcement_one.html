@@ -2,6 +2,7 @@
 {% load generic_template_filters %}
 
 <script>
+    reloadMessage();
     function enlargeDoc(src, $element) {
         var enlargeDocContainer = $('#detailViewContainer').find("#enlargeattachmentContainer");
         enlargeDocContainer.empty();
@@ -47,9 +48,8 @@
             </button>
         </div>
 
-        <div class="bg-white border border-gray-300 rounded-xl shadow-sm max-w-4xl mx-auto relative mt-2">
-
-            <div class="px-6 pt-5 pb-4 border-b border-gray-300">
+        <div class="bg-white border border-dark-50 rounded-xl shadow-sm max-w-4xl mx-auto relative mt-2">
+            <div class="px-6 pt-5 pb-4 border-b border-dark-50">
                 <div class="flex justify-between items-start mb-3 flex-wrap md:flex-nowrap">
                     <h5 class="text-xl font-extrabold text-gray-900 flex-1 md:mr-4 mb-2 md:mb-0">{{instance.title}} </h5>
                     {% if perms.base.change_announcement or perms.base.delete_announcement %}

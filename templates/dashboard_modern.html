@@ -536,7 +536,7 @@
         box-shadow: 0 1px 3px rgba(0,0,0,0.2);
         transition: transform 0.2s;
     }
-    .md-cust-item__toggle--on { background: var(--oh-primary, var(--md-indigo)); }
+    .md-cust-item__toggle--on { background-color: {{ theme_obj.primary_600|default:"#E54F38" }}; }
     .dark .md-cust-item__toggle--on { background: var(--oh-primary, var(--md-indigo)); }
     .md-cust-item__toggle--on::after { transform: translateX(16px); }
 
@@ -880,7 +880,7 @@
             <div class="md-info-panel">
                 <div class="md-info-panel__header">
                     <div class="md-info-panel__title">{% trans "Upcoming Holidays" %}</div>
-                    <a id="md-holidays-viewall" href="{% url 'holiday-view' %}" class="md-link-subtle">{% trans "Next 7 days" %}</a>
+                    <a id="md-holidays-viewall" href="{% url 'holiday-view' %}" class="md-link-subtle">{% trans "View all" %}</a>
                 </div>
                 <div class="md-info-panel__body" id="md-birthdays">
                     <div class="md-info-panel__empty">{% trans "Loading..." %}</div>
@@ -1073,24 +1073,15 @@
     }
 
     // Apply saved preferences on load (localStorage first, DB fallback)
+    // DB prefs are embedded in the page context by the server
+    const _dbPrefsRaw = {{ employee_chart_prefs|safe }};
     const _localPrefs = loadPrefs();
     if (_localPrefs) {
         applyPrefs(_localPrefs);
-    } else {
-        fetch("{% url 'dashboard-load-prefs' %}")
-            .then(r => r.json())
-            .then(data => {
-                if (data.excluded && data.excluded.length) {
-                    const defaultOrder = getDefaultOrder();
-                    const dbPrefs = defaultOrder.map(p => ({
-                        ...p,
-                        visible: !data.excluded.includes(p.id)
-                    }));
-                    applyPrefs(dbPrefs);
-                    savePrefs(dbPrefs);
-                }
-            })
-            .catch(() => {});
+    } else if (_dbPrefsRaw && _dbPrefsRaw.length) {
+        // DB prefs exist — apply them and cache to localStorage
+        applyPrefs(_dbPrefsRaw);
+        savePrefs(_dbPrefsRaw);
     }
 
     // ── Customize panel ──
@@ -1368,7 +1359,7 @@
             // Update "View all" to filter for today's approved leave
             const todayStr = new Date().toISOString().split('T')[0];
             const viewAllLink = document.getElementById('md-leave-viewall');
-            if (viewAllLink) viewAllLink.href = `{% url 'request-view' %}?status=approved`;
+            if (viewAllLink) viewAllLink.href = `{% url 'request-view' %}?status=approved&today_leave=true`;
 
             if (!data.leaves.length) { el.innerHTML = '<div class="md-info-panel__empty">{% trans "No one on leave today" %}</div>'; return; }
             el.innerHTML = data.leaves.map(l => {
@@ -1377,8 +1368,8 @@
                 return `
                 <div class="md-leave-item" style="cursor:pointer;"
                      hx-get="/leave/leave-requests-detail-view/${l.id}/?instance_ids=&dashboard=True"
-                     hx-target="#objectDetailsModalTarget" hx-swap="innerHTML"
-                     data-toggle="oh-modal-toggle" data-target="#objectDetailsModal">
+                     hx-target="#genericModalBody" hx-swap="innerHTML"
+                     data-toggle="oh-modal-toggle" data-target="#genericModal">
                     <div class="md-leave-item__avatar">${avatarInner}</div>
                     <div class="md-leave-item__info">
                         <div class="md-leave-item__name">${l.employee}</div>
@@ -1686,7 +1677,7 @@
             const todayStr = new Date().toISOString().split('T')[0];
             const nextWeekStr = new Date(Date.now() + 7*24*60*60*1000).toISOString().split('T')[0];
             const viewAllLink = document.getElementById('md-holidays-viewall');
-            if (viewAllLink) viewAllLink.href = `{% url 'holiday-view' %}?start_date=${todayStr}&end_date=${nextWeekStr}`;
+            if (viewAllLink) viewAllLink.href = `{% url 'holiday-view' %}`;
 
             if (!data.holidays.length) { el.innerHTML = '<div class="md-info-panel__empty">{% trans "No holidays in the next 7 days" %}</div>'; return; }
             el.innerHTML = data.holidays.map(h => {
