@@ -1,14 +1,14 @@
 {% load i18n %} {% if field_html %}
 <div
   class="oh-input__group pt-2"
-  id="{{ currnet_hx_target }}"
+  id="{{ current_hx_target }}"
   style="display: flex; padding-right:0px;"
 >
   {{field_html}}
   <a
     hx-get="{% url 'remove-approval-manager' %}"
     class="oh-btn oh-btn--danger-outline oh-btn--light-bkg"
-    hx-target="#{{ currnet_hx_target }}"
+    hx-target="#{{ current_hx_target }}"
     hx-swap="outerHTML"
     id="delete-link"
   >
@@ -28,14 +28,14 @@
 {% else %}
 <div
   class="oh-input__group pt-3"
-  id="{{ currnet_hx_target }}"
+  id="{{ current_hx_target }}"
   style="display: flex"
 >
   {{ form.multi_approval_manager }} {{ form.multi_approval_manager.errors }}
   <a
     hx-get="{% url 'remove-approval-manager' %}"
     class="oh-btn oh-btn--danger-outline oh-btn--light-bkg"
-    hx-target="#{{ currnet_hx_target }}"
+    hx-target="#{{ current_hx_target }}"
     hx-swap="outerHTML"
     id="delete-link"
   >
