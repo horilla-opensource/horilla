@@ -69,7 +69,6 @@ INSTALLED_APPS = [
     "payroll",
     "widget_tweaks",
     "django_apscheduler",
-    "storages",
 ]
 
 AWS_ACCESS_KEY_ID = env("AWS_ACCESS_KEY_ID", default="")  
