@@ -230,6 +230,11 @@ urlpatterns = [
         "bonus-points-tab/<int:emp_id>", views.bonus_points_tab, name="bonus-points-tab"
     ),
     path(
+        "reimbursement-tab/<int:emp_id>",
+        views.reimbursement_tab,
+        name="reimbursement-tab",
+    ),
+    path(
         "add-bonus-points/<int:emp_id>", views.add_bonus_points, name="add-bonus-points"
     ),
     path("redeem-points/<int:emp_id>", views.redeem_points, name="redeem-points"),

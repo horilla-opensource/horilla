@@ -3310,6 +3310,84 @@ def bonus_points_tab(request, emp_id):
 
 
 @login_required
+@hx_request_required
+@owner_can_enter("payroll.view_reimbursement", Employee)
+def reimbursement_tab(request, emp_id):
+    """
+    This function is used to view reimbursement tab of an employee in employee
+    individual & profile view.
+
+    Parameters:
+    request (HttpRequest): The HTTP request object.
+    emp_id (int): The id of the employee.
+
+    Returns: return reimbursement tab template
+    """
+    employee = Employee.objects.get(id=emp_id)
+    reimbursements = QuerySet().none()
+    cafeteria_reimbursements = QuerySet().none()
+    learning_reimbursements = QuerySet().none()
+    foreign_language_reimbursements = QuerySet().none()
+    cafeteria_quarter_total = 0
+    learning_year_total = 0
+    foreign_language_year_total = 0
+
+    if apps.is_installed("payroll"):
+        Reimbursement = get_horilla_model_class(
+            app_label="payroll", model="reimbursement"
+        )
+        reimbursements = Reimbursement.objects.filter(
+            employee_id=emp_id, type="reimbursement"
+        ).order_by("-id")
+
+        cafeteria_reimbursements = reimbursements.filter(sub_type="cafeteria_benefits")
+        learning_reimbursements = reimbursements.filter(sub_type="learning")
+        foreign_language_reimbursements = reimbursements.filter(
+            sub_type="foreign_language"
+        )
+
+        today = timezone.localdate()
+        quarter_start_month = ((today.month - 1) // 3) * 3 + 1
+        quarter_end_month = quarter_start_month + 2
+
+        cafeteria_quarter_total = (
+            cafeteria_reimbursements.filter(
+                allowance_on__year=today.year,
+                allowance_on__month__gte=quarter_start_month,
+                allowance_on__month__lte=quarter_end_month,
+            ).aggregate(total=models.Sum("amount"))["total"]
+            or 0
+        )
+        learning_year_total = (
+            learning_reimbursements.filter(allowance_on__year=today.year).aggregate(
+                total=models.Sum("amount")
+            )["total"]
+            or 0
+        )
+        foreign_language_year_total = (
+            foreign_language_reimbursements.filter(
+                allowance_on__year=today.year
+            ).aggregate(total=models.Sum("amount"))["total"]
+            or 0
+        )
+
+    return render(
+        request,
+        "tabs/reimbursement-tab.html",
+        {
+            "employee": employee,
+            "reimbursements": reimbursements,
+            "cafeteria_reimbursements": cafeteria_reimbursements,
+            "learning_reimbursements": learning_reimbursements,
+            "foreign_language_reimbursements": foreign_language_reimbursements,
+            "cafeteria_quarter_total": cafeteria_quarter_total,
+            "learning_year_total": learning_year_total,
+            "foreign_language_year_total": foreign_language_year_total,
+        },
+    )
+
+
+@login_required
 @manager_can_enter(perm="employee.add_bonuspoint")
 def add_bonus_points(request, emp_id):
     """

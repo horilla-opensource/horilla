@@ -913,9 +913,15 @@ class ReimbursementForm(ModelForm):
 
         type_ = cleaned_data.get("type")
         employee = cleaned_data.get("employee_id")
+        sub_type = cleaned_data.get("sub_type")
 
         if not type_ or not employee:
             return cleaned_data
+
+        if type_ == "reimbursement" and not sub_type:
+            self.add_error("sub_type", _("This field is required"))
+        elif type_ != "reimbursement":
+            cleaned_data["sub_type"] = None
 
         if type_ == "bonus_encashment":
             bonus_to_encash = (
@@ -990,6 +996,10 @@ class ReimbursementForm(ModelForm):
         multiple_attachment_ids = []
         is_new = not self.instance.pk
         attachments = self.files.getlist("attachment")
+        type_ = self.cleaned_data.get("type")
+
+        if type_ != "reimbursement":
+            self.instance.sub_type = None
 
         if attachments:
             self.instance.attachment = attachments[0]

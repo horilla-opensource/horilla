@@ -218,6 +218,7 @@ X_FRAME_OPTIONS = "SAMEORIGIN"
 
 LANGUAGES = (
     ("en", "English (US)"),
+    ("ua", "Українська"),
     ("de", "Deutsche"),
     ("es", "Español"),
     ("fr", "Français"),

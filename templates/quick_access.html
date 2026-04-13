@@ -1,29 +1,27 @@
-{% load static %}
-{% load i18n %}
+{% load static %} {% load i18n %}
 
 <!-- ******************** Leave modal ******************** -->
 <div
-	class="oh-modal"
-	id="tableTimeOff"
-	role="dialog"
-	aria-labelledby="tableTimeOffModal"
-	aria-hidden="true"
+  class="oh-modal"
+  id="tableTimeOff"
+  role="dialog"
+  aria-labelledby="tableTimeOffModal"
+  aria-hidden="true"
 >
-	<div
-		class="oh-modal__dialog oh-modal__dialog--timeoff oh-modal__dialog-relative oh-timeoff-modal"
-	>
-		<div class="oh-modal__dialog-header">
-			<button class="oh-modal__close" aria-label="Close">
-				<ion-icon name="close-outline"></ion-icon>
-			</button>
-		</div>
+  <div
+    class="oh-modal__dialog oh-modal__dialog--timeoff oh-modal__dialog-relative oh-timeoff-modal"
+  >
+    <div class="oh-modal__dialog-header">
+      <button class="oh-modal__close" aria-label="Close">
+        <ion-icon name="close-outline"></ion-icon>
+      </button>
+    </div>
 
-		<div id="userRequestView"></div>
-	</div>
+    <div id="userRequestView"></div>
+  </div>
 </div>
 
 <!-- ******************** Shift modal ******************** -->
-
 
 <div
   class="oh-modal"
@@ -50,124 +48,140 @@
 <!-- ******************** Reimbursement modal ******************** -->
 
 <div class="oh-modal" id="reimbursementModal" role="dialog" aria-hidden="true">
-    <div class="oh-modal__dialog" style="max-width: 550px">
-        <div class="oh-modal__dialog-header">
-        <button type="button" class="oh-modal__close" aria-label="Close"><ion-icon name="close-outline"></ion-icon></button>
-        </div>
-
-        <div class="oh-modal__dialog-body" id="reimbursementModalBody"></div>
+  <div class="oh-modal__dialog" style="max-width: 550px">
+    <div class="oh-modal__dialog-header">
+      <button type="button" class="oh-modal__close" aria-label="Close">
+        <ion-icon name="close-outline"></ion-icon>
+      </button>
     </div>
+
+    <div class="oh-modal__dialog-body" id="reimbursementModalBody"></div>
+  </div>
 </div>
 
 <!-- ******************** Ticket modal ******************** -->
 
 <div
-	class="oh-modal"
-	id="createModal1"
-	role="dialog"
-	aria-labelledby="createDialogModal"
-	aria-hidden="true"
+  class="oh-modal"
+  id="createModal1"
+  role="dialog"
+  aria-labelledby="createDialogModal"
+  aria-hidden="true"
 >
-	<div class="oh-modal__dialog">
-		<div class="oh-modal__dialog-header">
-			<h2 class="oh-modal__dialog-title" id="createTitle">
-				{% trans "Create Ticket" %}
-			</h2>
-			<button class="oh-modal__close" aria-label="Close">
-				<ion-icon name="close-outline"></ion-icon>
-			</button>
-		</div>
-		<div class="oh-modal__dialog-body" id="createTarget"></div>
-	</div>
+  <div class="oh-modal__dialog">
+    <div class="oh-modal__dialog-header">
+      <h2 class="oh-modal__dialog-title" id="createTitle">
+        {% trans "Create Ticket" %}
+      </h2>
+      <button class="oh-modal__close" aria-label="Close">
+        <ion-icon name="close-outline"></ion-icon>
+      </button>
+    </div>
+    <div class="oh-modal__dialog-body" id="createTarget"></div>
+  </div>
 </div>
 
-
 <script>
-    // ==================== Leave request ====================
+     // ==================== Leave request ====================
 
-	$(document).on('htmx:load','#userLeaves', function () {
-        // Create a new script element
-        var scriptElement = document.createElement("script");
-        // Set the source URL of the script file to be loaded
-        scriptElement.src = "{% static 'build/js/web.frontend.min.js' %}";
-        // Append the script element to the head of the HTML document
-        document.head.appendChild(scriptElement);
-    });
+  $(document).on('htmx:load','#userLeaves', function () {
+         // Create a new script element
+         var scriptElement = document.createElement("script");
+         // Set the source URL of the script file to be loaded
+         scriptElement.src = "{% static 'build/js/web.frontend.min.js' %}";
+         // Append the script element to the head of the HTML document
+         document.head.appendChild(scriptElement);
+     });
 
-    $(document).on('htmx:load', '#requestForm', function () {
-		{% include 'select2.js' %}
-        $('#leaveType #id_leave_type_id').select2();
-        $('#employee #id_employee_id').select2();
-        $('#startDate #id_start_date_breakdown').select2();
-        $('#endDate #id_end_date_breakdown').select2();
-    });
-
-
-    // ==================== Attendance request ====================
-
-    function dateChange(selectElement) {
-        var selectedDate =selectElement.val()
-        let parentForm = selectElement.parents().closest("form")
-        var shiftId = parentForm.find("[name=shift_id]").val()
-
-        $.ajax({
-        type: "post",
-        url: "{% url 'update-date-details' %}",
-        data: {
-            csrfmiddlewaretoken: getCookie("csrftoken"),
-            "attendance_date":selectedDate,
-            "shift_id":shiftId
-        },
-        success: function (response) {
-            parentForm.find("[name=minimum_hour]").val(response.minimum_hour)
-
-        }
-        });
-    }
+     $(document).on('htmx:load', '#requestForm', function () {
+  	{% include 'select2.js' %}
+         $('#leaveType #id_leave_type_id').select2();
+         $('#employee #id_employee_id').select2();
+         $('#startDate #id_start_date_breakdown').select2();
+         $('#endDate #id_end_date_breakdown').select2();
+     });
 
 
-    // ==================== Reimbursement request ====================
+     // ==================== Attendance request ====================
 
-    function toggleReimbursmentType(element) {
-        if (element.val() == 'reimbursement') {
-          $('#reimbursementModalBody [name=attachment]').parent().show()
-          $('#reimbursementModalBody [name=attachment]').attr("required",true)
+     function dateChange(selectElement) {
+         var selectedDate =selectElement.val()
+         let parentForm = selectElement.parents().closest("form")
+         var shiftId = parentForm.find("[name=shift_id]").val()
 
-            $('#reimbursementModalBody [name=leave_type_id]').parent().hide().attr("required",false)
-            $('#reimbursementModalBody [name=cfd_to_encash]').parent().hide().attr("required",false)
-            $('#reimbursementModalBody [name=ad_to_encash]').parent().hide().attr("required",false)
-            $('#reimbursementModalBody [name=amount]').parent().show().attr("required",true)
-            $('#reimbursementModalBody #availableTable').hide().attr("required",false)
+         $.ajax({
+         type: "post",
+         url: "{% url 'update-date-details' %}",
+         data: {
+             csrfmiddlewaretoken: getCookie("csrftoken"),
+             "attendance_date":selectedDate,
+             "shift_id":shiftId
+         },
+         success: function (response) {
+             parentForm.find("[name=minimum_hour]").val(response.minimum_hour)
 
-        } else if(element.val() == 'leave_encashment') {
-          $('#reimbursementModalBody [name=attachment]').parent().hide()
-          $('#reimbursementModalBody [name=attachment]').attr("required",false)
-            $('#reimbursementModalBody [name=leave_type_id]').parent().show().attr("required",true)
-            $('#reimbursementModalBody [name=cfd_to_encash]').parent().show().attr("required",true)
-            $('#reimbursementModalBody [name=ad_to_encash]').parent().show().attr("required",true)
-            $('#reimbursementModalBody [name=amount]').parent().hide().attr("required",false)
-            $('#reimbursementModalBody #availableTable').show().attr("required",true)
+         }
+         });
+     }
 
 
-        }
-    }
-    function getAssignedLeave(employeeId) {
-        $.ajax({
-            type: "get",
-            url: "{% url "get-assigned-leaves" %}",
-            data: { "employeeId": employeeId },
-            dataType: "json",
-            success: function (response) {
-                let rows = ""
-                for (let index = 0; index < response.length; index++) {
-                    const element = response[index];
-                    rows = rows + `<tr class="toggle-highlight"><td>${element.leave_type_id__name
-                        }</td><td>${element.available_days}</td><td>${element.carryforward_days}</td></tr>`
-                }
-                $("#availableTableBody").html($(rows))
-                removeHighlight()
-            }
-        });
-    }
+     // ==================== Reimbursement request ====================
 
+     function toggleReimbursmentType(element) {
+         if (element.val() == 'reimbursement') {
+           $('#reimbursementModalBody [name=attachment]').parent().show()
+           $('#reimbursementModalBody [name=attachment]').attr("required",true)
+           $('#reimbursementModalBody [name=sub_type]').parent().show()
+           $('#reimbursementModalBody [name=sub_type]').attr("required",true)
+
+             $('#reimbursementModalBody [name=leave_type_id]').parent().hide().attr("required",false)
+             $('#reimbursementModalBody [name=cfd_to_encash]').parent().hide().attr("required",false)
+             $('#reimbursementModalBody [name=ad_to_encash]').parent().hide().attr("required",false)
+             $('#reimbursementModalBody [name=amount]').parent().show().attr("required",true)
+             $('#reimbursementModalBody #availableTable').hide().attr("required",false)
+
+         } else if(element.val() == 'leave_encashment') {
+           $('#reimbursementModalBody [name=attachment]').parent().hide()
+           $('#reimbursementModalBody [name=attachment]').attr("required",false)
+           $('#reimbursementModalBody [name=sub_type]').parent().hide()
+           $('#reimbursementModalBody [name=sub_type]').attr("required",false)
+             $('#reimbursementModalBody [name=leave_type_id]').parent().show().attr("required",true)
+             $('#reimbursementModalBody [name=cfd_to_encash]').parent().show().attr("required",true)
+             $('#reimbursementModalBody [name=ad_to_encash]').parent().show().attr("required",true)
+             $('#reimbursementModalBody [name=amount]').parent().hide().attr("required",false)
+             $('#reimbursementModalBody #availableTable').show().attr("required",true)
+
+
+         } else if(element.val() == 'bonus_encashment') {
+           $('#reimbursementModalBody [name=attachment]').parent().hide()
+           $('#reimbursementModalBody [name=attachment]').attr("required",false)
+           $('#reimbursementModalBody [name=sub_type]').parent().hide()
+           $('#reimbursementModalBody [name=sub_type]').attr("required",false)
+           $('#reimbursementModalBody [name=leave_type_id]').parent().hide().attr("required",false)
+           $('#reimbursementModalBody [name=cfd_to_encash]').parent().hide().attr("required",false)
+           $('#reimbursementModalBody [name=ad_to_encash]').parent().hide().attr("required",false)
+           $('#reimbursementModalBody [name=amount]').parent().hide().attr("required",false)
+           $('#reimbursementModalBody #availableTable').hide().attr("required",false)
+
+
+         }
+     }
+     function getAssignedLeave(employeeId) {
+         $.ajax({
+             type: "get",
+             url: "{% url "get-assigned-leaves" %}",
+             data: { "employeeId": employeeId },
+             dataType: "json",
+             success: function (response) {
+                 let rows = ""
+                 for (let index = 0; index < response.length; index++) {
+                     const element = response[index];
+                     rows = rows + `<tr class="toggle-highlight"><td>${element.leave_type_id__name
+                         }</td><td>${element.available_days}</td><td>${element.carryforward_days}</td></tr>`
+                 }
+                 $("#availableTableBody").html($(rows))
+                 removeHighlight()
+             }
+         });
+     }
 </script>

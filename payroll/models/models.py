@@ -1592,9 +1592,21 @@ class Reimbursement(HorillaModel):
         ("approved", _("Approved")),
         ("rejected", _("Rejected")),
     ]
+    reimbursement_sub_types = [
+        ("cafeteria_benefits", _("Cafeteria Benefits")),
+        ("learning", _("Learning")),
+        ("foreign_language", _("Foreign Language")),
+    ]
     title = models.CharField(max_length=50)
     type = models.CharField(
         choices=reimbursement_types, max_length=16, default="reimbursement"
+    )
+    sub_type = models.CharField(
+        max_length=32,
+        choices=reimbursement_sub_types,
+        blank=True,
+        null=True,
+        verbose_name=_("Reimbursement sub type"),
     )
     employee_id = models.ForeignKey(
         Employee, on_delete=models.PROTECT, verbose_name="Employee"
@@ -1666,6 +1678,10 @@ class Reimbursement(HorillaModel):
         has_perm = request.user.has_perm("payroll.change_reimbursement")
         if not has_perm:
             self.employee_id = request.user.employee_get
+        if self.type != "reimbursement":
+            self.sub_type = None
+        if self.type == "reimbursement" and not self.sub_type:
+            raise ValidationError({"sub_type": _("This field is required")})
         if self.type == "reimbursement" and self.attachment is None:
             raise ValidationError({"attachment": "This field is required"})
         if self.type == "leave_encashment" and self.leave_type_id is None:

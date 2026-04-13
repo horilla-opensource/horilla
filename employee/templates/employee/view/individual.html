@@ -451,6 +451,14 @@
 											class="oh-general__tab-link" role="button">{% trans "Bonus Points" %}</a>
 									</li>
 								{% endif %}
+
+								{% if perms.payroll.view_reimbursement or request.user|check_manager:employee or request.user == employee.employee_user_id %}
+									<li data-cell-index="24" data-cell-title="{% trans 'Reimbursement' %}" class="oh-general__tab">
+										<a hx-get="{% url 'reimbursement-tab' employee.id %}" hx-target="#reimbursement_target"
+											data-action="general-tab" data-target="#reimbursement_target"
+											class="oh-general__tab-link" role="button">{% trans "Reimbursement" %}</a>
+									</li>
+								{% endif %}
 							{% endif %}
 						</ul>
 						<button
@@ -464,6 +472,8 @@
 						<div class="oh-general__tab-target oh-profile__info-tab mb-4 d-none" id="bonus_points_target">
 							{% include "tabs/bonus_points.html" %}
 						</div>
+
+						<div class="oh-general__tab-target oh-profile__info-tab mb-4 d-none" id="reimbursement_target"></div>
 
 						<div class="oh-general__tab-target oh-profile__info-tab mb-4 d-none" id="note_target">
 							{% include "tabs/note_tab.html" %}
@@ -532,6 +542,22 @@
 			$("#view-container").find(".oh-general__tab-link")[0].click()
 		}
 	});
+
+	const employeeTableKey = "employee_tab";
+	const reimbursementEmployeeTabIndex = "24";
+	const storedEmployeeTabs = localStorage.getItem(employeeTableKey);
+
+	if (storedEmployeeTabs) {
+		try {
+			const visibleTabs = JSON.parse(storedEmployeeTabs) || [];
+			if (!visibleTabs.includes(reimbursementEmployeeTabIndex)) {
+				visibleTabs.push(reimbursementEmployeeTabIndex);
+				localStorage.setItem(employeeTableKey, JSON.stringify(visibleTabs));
+			}
+		} catch (error) {
+			localStorage.removeItem(employeeTableKey);
+		}
+	}
 
 	toggleColumns("employee-tab", "fieldContainerTable")
 	if (!localStorage.getItem("employee_tab")) {

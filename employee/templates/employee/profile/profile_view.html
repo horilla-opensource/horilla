@@ -261,6 +261,20 @@
 							</li>
 							{% endif %}
 
+							{% if "payroll"|app_installed %}
+							<li data-cell-index="8" data-cell-title="{% trans 'Reimbursement' %}" class="oh-general__tab">
+								<a
+								hx-get="{% url 'reimbursement-tab' employee.id %}"
+								hx-target="#reimbursement_target"
+								data-action="general-tab"
+								data-target="#reimbursement_target"
+								class="oh-general__tab-link"
+								role="button"
+								>{% trans "Reimbursement" %}</a
+								>
+							</li>
+							{% endif %}
+
 							{% if "recruitment"|app_installed %}
 								<li data-cell-index="20" data-cell-title="{% trans "Interview" %}" class="oh-general__tab">
 									<a
@@ -316,6 +330,10 @@
 						</div>
 						{% endif %}
 
+						{% if "payroll"|app_installed %}
+							<div class="oh-general__tab-target oh-profile__info-tab mb-4 d-none" id="reimbursement_target"></div>
+						{% endif %}
+
 						<div class="oh-general__tab-target oh-profile__info-tab mt-3 mb-4 d-none" id="resignation_target">
 							{% include "tabs/resignation.html" %}
 							<div id="resignation_hx_target" class="mt-2"></div>
@@ -364,6 +382,22 @@
 <script src="{% static 'employee/search.js' %}"></script>
 <script src="{% static 'basedOn.js' %}"></script>
 <script>
+	const profileTableKey = "employee_tab_profile";
+	const reimbursementTabIndex = "8";
+	const storedProfileTabs = localStorage.getItem(profileTableKey);
+
+	if (storedProfileTabs) {
+		try {
+			const visibleTabs = JSON.parse(storedProfileTabs) || [];
+			if (!visibleTabs.includes(reimbursementTabIndex)) {
+				visibleTabs.push(reimbursementTabIndex);
+				localStorage.setItem(profileTableKey, JSON.stringify(visibleTabs));
+			}
+		} catch (error) {
+			localStorage.removeItem(profileTableKey);
+		}
+	}
+
 	toggleColumns("employee-tab-profile","fieldContainerTable")
 	if (!localStorage.getItem("employee_tab_profile")) {
 		  $("#fieldContainerTable").find("[type=checkbox]").prop("checked",true).change()

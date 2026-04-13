@@ -1,0 +1,232 @@
+{% load i18n %} {% if reimbursements %}
+<ul class="oh-general__tabs oh-profile-section__tab mt-3 mb-3">
+  <li class="oh-general__tab">
+    <a
+      href="#"
+      class="oh-general__tab-link oh-general__tab-link--active reimbursement-sub-tab-link"
+      data-target="#cafeteria-reimbursement-target"
+    >
+      {% trans "Cafeteria Benefits" %}
+    </a>
+  </li>
+  <li class="oh-general__tab">
+    <a
+      href="#"
+      class="oh-general__tab-link reimbursement-sub-tab-link"
+      data-target="#learning-reimbursement-target"
+    >
+      {% trans "Learning" %}
+    </a>
+  </li>
+  <li class="oh-general__tab">
+    <a
+      href="#"
+      class="oh-general__tab-link reimbursement-sub-tab-link"
+      data-target="#foreign-language-reimbursement-target"
+    >
+      {% trans "Foreign Language" %}
+    </a>
+  </li>
+</ul>
+
+<div class="reimbursement-sub-tab-target" id="cafeteria-reimbursement-target">
+  <div class="oh-faq-card mb-3" style="max-width: 400px">
+    <h6 class="oh-faq-card__title mb-1">{% trans "Current quarter total" %}</h6>
+    <h4 class="m-0">{{ cafeteria_quarter_total|floatformat:2 }}</h4>
+  </div>
+  {% if cafeteria_reimbursements %}
+  <div class="oh-sticky-table mt-3">
+    <div class="oh-sticky-table__table">
+      <div class="oh-sticky-table__thead">
+        <div class="oh-sticky-table__tr">
+          <div class="oh-sticky-table__th">{% trans "Title" %}</div>
+          <div class="oh-sticky-table__th">{% trans "Allowance On" %}</div>
+          <div class="oh-sticky-table__th">{% trans "Amount" %}</div>
+          <div class="oh-sticky-table__th">{% trans "Status" %}</div>
+        </div>
+      </div>
+      <div class="oh-sticky-table__tbody">
+        {% for reimbursement in cafeteria_reimbursements %}
+        <div class="oh-sticky-table__tr">
+          <div class="oh-sticky-table__td">{{ reimbursement.title }}</div>
+          <div class="oh-sticky-table__td dateformat_changer">
+            {{ reimbursement.allowance_on }}
+          </div>
+          <div class="oh-sticky-table__td">{{ reimbursement.amount }}</div>
+          <div class="oh-sticky-table__td">
+            {% if reimbursement.status == "approved" %}
+            <span class="link-success"
+              >{{ reimbursement.get_status_display }}</span
+            >
+            {% elif reimbursement.status == "rejected" %}
+            <span class="link-danger"
+              >{{ reimbursement.get_status_display }}</span
+            >
+            {% else %}
+            <span class="link-warning"
+              >{{ reimbursement.get_status_display }}</span
+            >
+            {% endif %}
+          </div>
+        </div>
+        {% endfor %}
+      </div>
+    </div>
+  </div>
+  {% else %}
+  <div
+    class="d-flex justify-content-center align-items-center"
+    style="height: 30vh"
+  >
+    <h5 class="oh-404__subtitle">
+      {% trans "No cafeteria benefit reimbursements found." %}
+    </h5>
+  </div>
+  {% endif %}
+</div>
+
+<div
+  class="reimbursement-sub-tab-target d-none"
+  id="learning-reimbursement-target"
+>
+  <div class="oh-faq-card mb-3" style="max-width: 400px">
+    <h6 class="oh-faq-card__title mb-1">{% trans "Current year total" %}</h6>
+    <h4 class="m-0">{{ learning_year_total|floatformat:2 }}</h4>
+  </div>
+  {% if learning_reimbursements %}
+  <div class="oh-sticky-table mt-3">
+    <div class="oh-sticky-table__table">
+      <div class="oh-sticky-table__thead">
+        <div class="oh-sticky-table__tr">
+          <div class="oh-sticky-table__th">{% trans "Title" %}</div>
+          <div class="oh-sticky-table__th">{% trans "Allowance On" %}</div>
+          <div class="oh-sticky-table__th">{% trans "Amount" %}</div>
+          <div class="oh-sticky-table__th">{% trans "Status" %}</div>
+        </div>
+      </div>
+      <div class="oh-sticky-table__tbody">
+        {% for reimbursement in learning_reimbursements %}
+        <div class="oh-sticky-table__tr">
+          <div class="oh-sticky-table__td">{{ reimbursement.title }}</div>
+          <div class="oh-sticky-table__td dateformat_changer">
+            {{ reimbursement.allowance_on }}
+          </div>
+          <div class="oh-sticky-table__td">{{ reimbursement.amount }}</div>
+          <div class="oh-sticky-table__td">
+            {% if reimbursement.status == "approved" %}
+            <span class="link-success"
+              >{{ reimbursement.get_status_display }}</span
+            >
+            {% elif reimbursement.status == "rejected" %}
+            <span class="link-danger"
+              >{{ reimbursement.get_status_display }}</span
+            >
+            {% else %}
+            <span class="link-warning"
+              >{{ reimbursement.get_status_display }}</span
+            >
+            {% endif %}
+          </div>
+        </div>
+        {% endfor %}
+      </div>
+    </div>
+  </div>
+  {% else %}
+  <div
+    class="d-flex justify-content-center align-items-center"
+    style="height: 30vh"
+  >
+    <h5 class="oh-404__subtitle">
+      {% trans "No learning reimbursements found." %}
+    </h5>
+  </div>
+  {% endif %}
+</div>
+
+<div
+  class="reimbursement-sub-tab-target d-none"
+  id="foreign-language-reimbursement-target"
+>
+  <div class="oh-faq-card mb-3" style="max-width: 400px">
+    <h6 class="oh-faq-card__title mb-1">{% trans "Current year total" %}</h6>
+    <h4 class="m-0">{{ foreign_language_year_total|floatformat:2 }}</h4>
+  </div>
+  {% if foreign_language_reimbursements %}
+  <div class="oh-sticky-table mt-3">
+    <div class="oh-sticky-table__table">
+      <div class="oh-sticky-table__thead">
+        <div class="oh-sticky-table__tr">
+          <div class="oh-sticky-table__th">{% trans "Title" %}</div>
+          <div class="oh-sticky-table__th">{% trans "Allowance On" %}</div>
+          <div class="oh-sticky-table__th">{% trans "Amount" %}</div>
+          <div class="oh-sticky-table__th">{% trans "Status" %}</div>
+        </div>
+      </div>
+      <div class="oh-sticky-table__tbody">
+        {% for reimbursement in foreign_language_reimbursements %}
+        <div class="oh-sticky-table__tr">
+          <div class="oh-sticky-table__td">{{ reimbursement.title }}</div>
+          <div class="oh-sticky-table__td dateformat_changer">
+            {{ reimbursement.allowance_on }}
+          </div>
+          <div class="oh-sticky-table__td">{{ reimbursement.amount }}</div>
+          <div class="oh-sticky-table__td">
+            {% if reimbursement.status == "approved" %}
+            <span class="link-success"
+              >{{ reimbursement.get_status_display }}</span
+            >
+            {% elif reimbursement.status == "rejected" %}
+            <span class="link-danger"
+              >{{ reimbursement.get_status_display }}</span
+            >
+            {% else %}
+            <span class="link-warning"
+              >{{ reimbursement.get_status_display }}</span
+            >
+            {% endif %}
+          </div>
+        </div>
+        {% endfor %}
+      </div>
+    </div>
+  </div>
+  {% else %}
+  <div
+    class="d-flex justify-content-center align-items-center"
+    style="height: 30vh"
+  >
+    <h5 class="oh-404__subtitle">
+      {% trans "No foreign language reimbursements found." %}
+    </h5>
+  </div>
+  {% endif %}
+</div>
+
+<script>
+  $(document)
+    .off("click.reimbursementSubTabs")
+    .on(
+      "click.reimbursementSubTabs",
+      ".reimbursement-sub-tab-link",
+      function (event) {
+        event.preventDefault();
+        $(".reimbursement-sub-tab-link").removeClass(
+          "oh-general__tab-link--active",
+        );
+        $(this).addClass("oh-general__tab-link--active");
+        $(".reimbursement-sub-tab-target").addClass("d-none");
+        $($(this).data("target")).removeClass("d-none");
+      },
+    );
+</script>
+{% else %}
+<div
+  class="d-flex justify-content-center align-items-center"
+  style="height: 40vh"
+>
+  <h5 class="oh-404__subtitle">
+    {% trans "No reimbursement requests found." %}
+  </h5>
+</div>
+{% endif %}
