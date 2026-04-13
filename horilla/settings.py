@@ -69,7 +69,23 @@ INSTALLED_APPS = [
     "payroll",
     "widget_tweaks",
     "django_apscheduler",
+    "storage",
 ]
+
+AWS_ACCESS_KEY_ID = env("AWS_ACCESS_KEY_ID")  
+AWS_SECRET_ACCESS_KEY = env("AWS_SECRET_ACCESS_KEY")  
+AWS_STORAGE_BUCKET_NAME = env("AWS_STORAGE_BUCKET_NAME")  
+AWS_S3_REGION_NAME = env("AWS_S3_REGION_NAME")  
+DEFAULT_FILE_STORAGE = 'horilla.storage_backends.PrivateMediaStorage'  
+AWS_S3_ADDRESSING_STYLE = "virtual"
+
+MEDIA_URL = (  
+    f"https://{AWS_STORAGE_BUCKET_NAME}.s3.{AWS_S3_REGION_NAME}.amazonaws.com/media/"  
+)  
+MEDIA_ROOT = (  
+    f"https://{AWS_STORAGE_BUCKET_NAME}.s3.{AWS_S3_REGION_NAME}.amazonaws.com/media/"  
+)
+
 APSCHEDULER_DATETIME_FORMAT = "N j, Y, f:s a"
 
 APSCHEDULER_RUN_NOW_TIMEOUT = 25  # Seconds
@@ -181,8 +197,8 @@ STATICFILES_DIRS = [
 
 STATICFILES_STORAGE = "whitenoise.storage.CompressedStaticFilesStorage"
 
-MEDIA_URL = "/media/"
-MEDIA_ROOT = os.path.join(BASE_DIR, "media/")
+# MEDIA_URL = "/media/"
+# MEDIA_ROOT = os.path.join(BASE_DIR, "media/")
 # Default primary key field type
 # https://docs.djangoproject.com/en/4.1/ref/settings/#default-auto-field
 
