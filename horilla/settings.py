@@ -57,6 +57,7 @@ INSTALLED_APPS = [
     "mathfilters",
     "corsheaders",
     "simple_history",
+    "storages",
     "django_filters",
     "base",
     "employee",
