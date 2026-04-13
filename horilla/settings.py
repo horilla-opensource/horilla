@@ -69,13 +69,13 @@ INSTALLED_APPS = [
     "payroll",
     "widget_tweaks",
     "django_apscheduler",
-    "storage",
+    "storages",
 ]
 
-AWS_ACCESS_KEY_ID = env("AWS_ACCESS_KEY_ID")  
-AWS_SECRET_ACCESS_KEY = env("AWS_SECRET_ACCESS_KEY")  
-AWS_STORAGE_BUCKET_NAME = env("AWS_STORAGE_BUCKET_NAME")  
-AWS_S3_REGION_NAME = env("AWS_S3_REGION_NAME")  
+AWS_ACCESS_KEY_ID = env("AWS_ACCESS_KEY_ID", default="")  
+AWS_SECRET_ACCESS_KEY = env("AWS_SECRET_ACCESS_KEY", default="")  
+AWS_STORAGE_BUCKET_NAME = env("AWS_STORAGE_BUCKET_NAME", default="")  
+AWS_S3_REGION_NAME = env("AWS_S3_REGION_NAME", default="")  
 DEFAULT_FILE_STORAGE = 'horilla.storage_backends.PrivateMediaStorage'  
 AWS_S3_ADDRESSING_STYLE = "virtual"
 
