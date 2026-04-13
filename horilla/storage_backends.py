@@ -1,4 +1,4 @@
-from django.db import models
+# from django.db import models
 from storages.backends.s3boto3 import S3Boto3Storage
 
 from horilla import settings
@@ -16,5 +16,5 @@ class PrivateMediaStorage(S3Boto3Storage):
 
 
 # To set the private storage globally
-models.FileField.storage = PrivateMediaStorage()
-models.ImageField.storage = PrivateMediaStorage()
+# models.FileField.storage = PrivateMediaStorage()
+# models.ImageField.storage = PrivateMediaStorage()
