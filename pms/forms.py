@@ -442,13 +442,15 @@ class EmployeeKeyResultForm(BaseForm):
                 type(self.initial.get("employee_objective_id")) == int
                 or type(self.initial.get("employee_objective_id")) == str
             ):
-                self.verbose_name = EmployeeObjective.objects.get(
-                    id=int(self.initial.get("employee_objective_id"))
-                ).employee_id
+                self.verbose_name = str(
+                    EmployeeObjective.objects.get(
+                        id=int(self.initial.get("employee_objective_id"))
+                    ).employee_id
+                )
             else:
-                self.verbose_name = self.initial.get(
-                    "employee_objective_id"
-                ).employee_id
+                self.verbose_name = str(
+                    self.initial.get("employee_objective_id").employee_id
+                )
         if request.user.has_perm("pms.add_keyresult") or is_reportingmanager(request):
             self.fields["key_result_id"].choices = list(
                 self.fields["key_result_id"].choices
