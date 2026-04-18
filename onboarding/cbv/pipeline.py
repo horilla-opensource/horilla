@@ -386,10 +386,8 @@ class CandidateList(HorillaListView):
     filter_keys_to_remove = ["onboarding_stage_id", "rec_id", "recruitment_id"]
     custom_empty_template = "cbv/pipeline/empty.html"
     header_attrs = {
-        "action": "style='width:313px;'",
-        "mobile": "style='width:100px;'",
-        "Stage": "style='width:100px;'",
-        "get_interview_count": "style='width:200px;'",
+        "action": "style='width:300px;'",
+        "stage_drop_down": "style='width:100px;'",
     }
     columns = [
         (_("Name"), "candidate_id__candidate_name", "candidate_id__get_avatar"),
@@ -451,17 +449,17 @@ class CandidateList(HorillaListView):
                     onclick="$('#activitySidebar').addClass('oh-activity-sidebar--show')"
                 """,
         },
-        {
-            "action": _("Document Request"),
-            "icon": "document-attach-outline",
-            "attrs": """
-                     hx-get="{candidate_id__get_document_request}"
-                    data-target="#genericModal"
-                    hx-target="#genericModalBody"
-                    class="oh-btn oh-btn--danger-outline oh-btn--light-bkg w-100"
-                    data-toggle="oh-modal-toggle"
-                """,
-        },
+        # {
+        #     "action": _("Document Request"),
+        #     "icon": "document-attach-outline",
+        #     "attrs": """
+        #             hx-get="{candidate_id__get_document_request}"
+        #             data-target="#genericModal"
+        #             hx-target="#genericModalBody"
+        #             class="oh-btn oh-btn--danger-outline oh-btn--light-bkg w-100"
+        #             data-toggle="oh-modal-toggle"
+        #         """,
+        # },
     ]
     records_count_in_tab = False
 

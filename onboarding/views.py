@@ -896,7 +896,7 @@ def email_send(request):
         except Exception as e:
             logger.error(e)
             messages.error(request, f"Mail not sent to {candidate.name}")
-            continue
+            # continue
 
         # Mark onboarding started
         candidate.start_onboard = True
