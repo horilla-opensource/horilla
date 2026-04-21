@@ -84,16 +84,18 @@
                 {% include "base/navbar_components/language_settings.html" %}
             </div>
 
-            <div class="relative dropdown-wrapper">
-                <button
-                    class="hidden md:block p-2 group text-primary-600 w-12 h-12 bg-primary-100 hover:bg-primary-600 rounded-full transition duration-300"
-                >
-                    <i
-                        class="fa-solid fa-building transition duration-300 group-hover:text-white"
-                    ></i>
-                </button>
-                {% include "base/navbar_components/company_selection.html" %}
-            </div>
+            {% if perms.base.change_company %}
+                <div class="relative dropdown-wrapper">
+                    <button
+                        class="hidden md:block p-2 group text-primary-600 w-12 h-12 bg-primary-100 hover:bg-primary-600 rounded-full transition duration-300"
+                    >
+                        <i
+                            class="fa-solid fa-building transition duration-300 group-hover:text-white"
+                        ></i>
+                    </button>
+                    {% include "base/navbar_components/company_selection.html" %}
+                </div>
+            {% endif %}
         </div>
 
         <div class="relative dropdown-wrapper">

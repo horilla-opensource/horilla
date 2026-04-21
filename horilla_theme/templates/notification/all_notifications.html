@@ -2,11 +2,10 @@
 {% if notifications %}
     {% for notification in notifications %}
         <div class="border border-dark-50 p-3 rounded-md mb-2 relative">
-            <button class="closebtn closeSidemenu absolute top-2 right-2 text-xs"
+            <button class="absolute top-2 right-2 text-xs"
                 hx-post="{% url 'delete-notifications' notification.id %}"
-                hx-swap="delete"
-                hx-target="closest div"
-                hx-on:click="setTimeout(() => {reloadMessage(this);},100);"
+                hx-target="closest div.border"
+                hx-swap="outerHTML"
             >
                 <i class="fa-solid fa-xmark"></i>
             </button>

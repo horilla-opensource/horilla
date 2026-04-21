@@ -1628,7 +1628,6 @@ def candidate_task_bulk_update(request):
 
 
 @login_required
-@hx_request_required
 def onboard_candidate_chart(request):
     """
     function used to show onboard started candidates in recruitments.

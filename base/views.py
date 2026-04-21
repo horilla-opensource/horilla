@@ -4695,6 +4695,9 @@ def shift_request_details(request, id):
         id : shift request instance id
     """
     shift_request = ShiftRequest.find(id)
+    if not shift_request:
+        messages.error(request, _("Shift request not found."))
+        return HorillaRedirect(request)
     requests_ids_json = request.GET.get("instances_ids")
     context = {
         "shift_request": shift_request,
@@ -4722,6 +4725,9 @@ def shift_allocation_request_details(request, id):
         id : shift request instance id
     """
     shift_request = ShiftRequest.find(id)
+    if not shift_request:
+        messages.error(request, _("Shift request not found."))
+        return HorillaRedirect(request)
     requests_ids_json = request.GET.get("instances_ids")
     context = {
         "shift_request": shift_request,
@@ -5330,15 +5336,22 @@ def delete_notification(request, id):
     """
     This method is used to delete notification
     """
-    script = ""
     try:
         request.user.notifications.get(id=id).delete()
         messages.success(request, _("Notification deleted."))
+    except request.user.notifications.model.DoesNotExist:
+        messages.error(request, _("Notification not found."))
+        return HorillaRedirect(request)
     except Exception as e:
         messages.error(request, e)
-    if not request.user.notifications.all():
-        script = """<span hx-get='/all-notifications' hx-target='#allNotificationBody' hx-trigger='load'></span>"""
-    return HttpResponse(script)
+    return HttpResponse(
+        "<script>"
+        "setTimeout(function(){"
+        "$('#reloadMessagesButton').click();"
+        "htmx.ajax('GET','/all-notifications/',{target:'#sidebarModalBody',swap:'innerHTML'});"
+        "},100);"
+        "</script>"
+    )
 
 
 @login_required

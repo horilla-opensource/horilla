@@ -1692,7 +1692,6 @@ def asset_dashboard_allocates(request):
 
 
 @login_required
-@hx_request_required
 @permission_required(perm="asset.view_assetcategory")
 def asset_available_chart(_request):
     """
@@ -1720,7 +1719,6 @@ def asset_available_chart(_request):
 
 
 @login_required
-@hx_request_required
 @permission_required(perm="asset.view_assetcategory")
 def asset_category_chart(_request):
     """
