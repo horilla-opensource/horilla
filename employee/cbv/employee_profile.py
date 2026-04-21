@@ -40,13 +40,16 @@ class EmployeeProfileView(HorillaProfileView):
     push_url = "employee-view-individual"
     key_name = "obj_id"
 
+    def get_queryset(self):
+        return Employee.objects.entire()
+
     def dispatch(self, request, *args, **kwargs):
 
         if not request.user.is_authenticated:
             return redirect("login")
 
         obj_id = kwargs.get("pk")
-        if not Employee.objects.filter(id=obj_id).exists():
+        if not Employee.objects.entire().filter(id=obj_id).exists():
             return HorillaRedirect(
                 request, message=_("No employee found matching the query.")
             )

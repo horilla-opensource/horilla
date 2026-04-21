@@ -80,7 +80,7 @@ class ClockInAPIView(APIView):
             except:
                 pass
             employee, work_info = employee_exists(request)
-            datetime_now = datetime.now()
+            datetime_now = timezone.localtime()
             if request.__dict__.get("datetime"):
                 datetime_now = request.datetime
             if employee and work_info is not None:
@@ -161,8 +161,8 @@ class ClockOutAPIView(APIView):
             pass
         if request.user.employee_get.check_online():
             current_date = date.today()
-            current_time = datetime.now().time()
-            current_datetime = datetime.now()
+            current_datetime = timezone.localtime()
+            current_time = current_datetime.time()
 
             try:
                 clock_out(
@@ -202,15 +202,14 @@ class AttendanceView(APIView):
         if getattr(self, "swagger_fake_view", False) or request is None:
             return Attendance.objects.none()
         if type == "ot":
-
             condition = AttendanceValidationCondition.objects.first()
             minot = strtime_seconds("00:30")
             if condition is not None:
                 minot = strtime_seconds(condition.minimum_overtime_to_approve)
-                queryset = Attendance.objects.filter(
-                    overtime_second__gte=minot,
-                    attendance_validated=True,
-                )
+            queryset = Attendance.objects.filter(
+                overtime_second__gte=minot,
+                attendance_validated=True,
+            )
 
         elif type == "validated":
             queryset = Attendance.objects.filter(attendance_validated=True)

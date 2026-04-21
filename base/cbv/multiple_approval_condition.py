@@ -164,7 +164,7 @@ class MultipleApprovalConditionFormView(HorillaFormView):
             instance = form.save()
             sequence = 0
             if form.instance.pk:
-                MultipleApprovalManagers.objects.filter(
+                MultipleApprovalManagers._base_manager.filter(
                     condition_id=self.form.instance
                 ).delete()
                 message = _("Multiple approval conditon Created Successfully")
@@ -239,7 +239,7 @@ class EditApprovalConditionFormView(MultipleApprovalConditionFormView):
             instance = form.save()
             sequence = 0
             if self.form.instance.pk:
-                MultipleApprovalManagers.objects.filter(
+                MultipleApprovalManagers._base_manager.filter(
                     condition_id=self.form.instance
                 ).delete()
                 message = _("Multiple approval conditon updated Successfully")
