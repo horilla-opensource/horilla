@@ -1290,6 +1290,13 @@ def validate_bulk_attendance(request):
                 continue
 
             attendance.attendance_validated = True
+            # Recalculate worked hours from attendance activities before validation
+            # to ensure Hours Account reflects actual worked time.
+            # Fixes: https://github.com/horilla/horilla-hr/issues/1055
+            if not attendance.attendance_worked_hour or attendance.attendance_worked_hour == "00:00":
+                at_work_seconds = attendance.get_at_work_from_activities()
+                if at_work_seconds > 0:
+                    attendance.attendance_worked_hour = format_time(at_work_seconds)
             attendance.save()
             validate_req_count += 1
 
@@ -1336,6 +1343,13 @@ def validate_this_attendance(request, obj_id):
     try:
         attendance = Attendance.objects.get(id=obj_id)
         attendance.attendance_validated = True
+        # Recalculate worked hours from attendance activities before validation
+        # to ensure Hours Account reflects actual worked time.
+        # Fixes: https://github.com/horilla/horilla-hr/issues/1055
+        if not attendance.attendance_worked_hour or attendance.attendance_worked_hour == "00:00":
+            at_work_seconds = attendance.get_at_work_from_activities()
+            if at_work_seconds > 0:
+                attendance.attendance_worked_hour = format_time(at_work_seconds)
         attendance.save()
         urlencode = request.GET.urlencode()
         modified_url = f"/attendance/attendance-view/?{urlencode}"
