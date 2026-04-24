@@ -20,40 +20,88 @@
 
     <div class="sidebox absolute shadow-card mb-3 bg-white min-w-56 left-[75px]">
       <h5 class="border-b border-b-dark-50 py-3 px-3 font-semibold text-left text-[15px]">Configuration</h5>
+      {% comment %}
+        All configuration entries use the same htmx boost params as the
+        regular sidebar submenu links (see components/sidebar.html).
+        Without these, each click here would trigger a full page reload
+        instead of swapping just the main content region.
+      {% endcomment %}
       <ul class="p-3">
         {% if 'leave'|app_installed and perms.base.view_multipleapprovalcondition %}
           <li>
-            <a href="{% url 'multiple-approval-condition' %}" class="oh-sidebar__submenu-link">{% trans 'Multiple Approvals' %}</a>
+            <a href="{% url 'multiple-approval-condition' %}"
+               class="oh-sidebar__submenu-link"
+               hx-get="{% url 'multiple-approval-condition' %}"
+               hx-target="#ohMainContent"
+               hx-select="#ohMainContent > *"
+               hx-swap="innerHTML show:window:top"
+               hx-push-url="true">{% trans 'Multiple Approvals' %}</a>
           </li>
         {% endif %}
         {% if perms.base.view_horillamailtemplate %}
           <li>
-            <a class="oh-sidebar__submenu-link" href="{% url 'view-mail-templates' %}" class="oh-sidebar__submenu-link">{% trans 'Mail Templates' %}</a>
+            <a href="{% url 'view-mail-templates' %}"
+               class="oh-sidebar__submenu-link"
+               hx-get="{% url 'view-mail-templates' %}"
+               hx-target="#ohMainContent"
+               hx-select="#ohMainContent > *"
+               hx-swap="innerHTML show:window:top"
+               hx-push-url="true">{% trans 'Mail Templates' %}</a>
           </li>
         {% endif %}
         {% if 'horilla_automations'|app_installed and perms.horilla_automations.view_mailautomation %}
           <li>
-            <a class="oh-sidebar__submenu-link" href="{% url 'mail-automations' %}" class="oh-sidebar__submenu-link">{% trans 'Mail Automations' %}</a>
+            <a href="{% url 'mail-automations' %}"
+               class="oh-sidebar__submenu-link"
+               hx-get="{% url 'mail-automations' %}"
+               hx-target="#ohMainContent"
+               hx-select="#ohMainContent > *"
+               hx-swap="innerHTML show:window:top"
+               hx-push-url="true">{% trans 'Mail Automations' %}</a>
           </li>
         {% endif %}
         {% if perms.base.add_holidays %}
           <li>
-            <a href="{% url 'holiday-view' %}" class="oh-sidebar__submenu-link">{% trans 'Holidays' %}</a>
+            <a href="{% url 'holiday-view' %}"
+               class="oh-sidebar__submenu-link"
+               hx-get="{% url 'holiday-view' %}"
+               hx-target="#ohMainContent"
+               hx-select="#ohMainContent > *"
+               hx-swap="innerHTML show:window:top"
+               hx-push-url="true">{% trans 'Holidays' %}</a>
           </li>
         {% endif %}
         {% if perms.base.view_companyleaves %}
           <li>
-            <a href="{% url 'company-leave-view' %}" class="oh-sidebar__submenu-link">{% trans 'Company Leaves' %}</a>
+            <a href="{% url 'company-leave-view' %}"
+               class="oh-sidebar__submenu-link"
+               hx-get="{% url 'company-leave-view' %}"
+               hx-target="#ohMainContent"
+               hx-select="#ohMainContent > *"
+               hx-swap="innerHTML show:window:top"
+               hx-push-url="true">{% trans 'Company Leaves' %}</a>
           </li>
         {% endif %}
         {% if 'leave'|app_installed %}
           <li>
-            <a href="{% url 'restrict-view' %}" class="oh-sidebar__submenu-link">{% trans 'Restrict Leaves' %}</a>
+            <a href="{% url 'restrict-view' %}"
+               class="oh-sidebar__submenu-link"
+               hx-get="{% url 'restrict-view' %}"
+               hx-target="#ohMainContent"
+               hx-select="#ohMainContent > *"
+               hx-swap="innerHTML show:window:top"
+               hx-push-url="true">{% trans 'Restrict Leaves' %}</a>
           </li>
         {% endif %}
         {% if "horilla_meet"|app_installed and "horilla_meet"|integration_installed %}
           <li>
-            <a href="{% url 'gmeet-view' %}" class="oh-sidebar__submenu-link">{% trans 'Google Meet' %}</a>
+            <a href="{% url 'gmeet-view' %}"
+               class="oh-sidebar__submenu-link"
+               hx-get="{% url 'gmeet-view' %}"
+               hx-target="#ohMainContent"
+               hx-select="#ohMainContent > *"
+               hx-swap="innerHTML show:window:top"
+               hx-push-url="true">{% trans 'Google Meet' %}</a>
           </li>
         {% endif %}
       </ul>

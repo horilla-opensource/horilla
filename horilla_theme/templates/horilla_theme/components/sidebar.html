@@ -1,5 +1,26 @@
-{% load static %}
-<div class="fixed inset-y-0 left-0 w-auto bg-white border-r border-r-dark-50 z-50">
+{% load static i18n %}
+<style>
+  .oh-sidebar-delay-tooltip {
+    position: fixed;
+    z-index: 10060;
+    background: rgba(15, 23, 42, 0.96);
+    color: #fff;
+    font-size: 12px;
+    line-height: 1;
+    padding: 8px 10px;
+    border-radius: 8px;
+    white-space: nowrap;
+    pointer-events: none;
+    opacity: 0;
+    transform: translateY(-2px);
+    transition: opacity 0.12s ease, transform 0.12s ease;
+  }
+  .oh-sidebar-delay-tooltip.is-visible {
+    opacity: 1;
+    transform: translateY(0);
+  }
+</style>
+<div id="sidebar" class="fixed inset-y-0 left-0 w-auto bg-white border-r border-r-dark-50 z-50">
   <div class="p-4">
     <div class="flex items-center justify-center gap-2 mb-6">
       {% if request.session.selected_company_instance %}
@@ -13,20 +34,31 @@
       {% endif %}
     </div>
 
-    <nav class="space-y-2 overflow-hidden overflow-y-auto h-[calc(100vh_-_95px)] sidebar-scroll">
+    <nav class="space-y-2 overflow-hidden overflow-y-auto h-[calc(100vh_-_95px)] sidebar-scroll" role="navigation" aria-label="{% trans 'Main navigation' %}">
       {% include "horilla_theme/components/sidebar/top_menu.html" %}
       {% for menues in sidebar %}
         <button class="sideboxmain group flex items-center gap-3 p-3 rounded-full transition duration-300"
           data-menu="{{ menues.menu }}"
-          title="{{ menues.menu }}">
+          title="{{ menues.menu }}"
+          aria-label="{{ menues.menu }}"
+          aria-expanded="false"
+          aria-haspopup="true">
 
           <img src="{% static menues.img_src %}" alt="" class="w-4.5 h-4.5 transition duration-300 group-hover:filter group-hover:brightness-0 group-hover:invert" />
-          <div class="sidebox absolute shadow-card mb-3 bg-white min-w-64 left-[75px]">
+          <div class="sidebox absolute shadow-card mb-3 bg-white min-w-64 left-[75px]"
+               role="menu"
+               aria-label="{{ menues.menu }} {% trans 'submenu' %}">
             <h5 class="border-b border-b-dark-50 py-3 px-3 font-semibold text-left text-[15px]">{{ menues.menu }}</h5>
             <ul class="p-3">
               {% for submenu in menues.submenu %}
                 <li>
-                  <a href="{{ submenu.redirect }}">{{ submenu.menu }}</a>
+                  <a href="{{ submenu.redirect }}"
+                     role="menuitem"
+                     hx-get="{{ submenu.redirect }}"
+                     hx-target="#ohMainContent"
+                     hx-select="#ohMainContent > *"
+                     hx-swap="innerHTML show:window:top"
+                     hx-push-url="true">{{ submenu.menu }}</a>
                 </li>
               {% endfor %}
             </ul>
@@ -39,18 +71,6 @@
   </div>
 </div>
 <script>
-    // script to activate the active menu
-  $(".sidebox ul li").hover(function () {
-      // over
-      $(this).addClass("hovered-menu");
-
-
-    }, function () {
-      $(this).removeClass("hovered-menu");
-      // out
-    }
-  );
-
 function highlightRow(checkbox) {
     checkbox.closest(".oh-sticky-table__tr").removeClass("highlight-selected");
     checkbox.closest("tr").removeClass("highlight-selected");
@@ -116,46 +136,506 @@ function removeId(element, storeKey = "selectedInstances") {
 </script>
 <script>
   document.addEventListener("DOMContentLoaded", function () {
-    const allMenus = document.querySelectorAll(".sideboxmain");
+    /*
+     * Delayed sidebar icon tooltip
+     * - replaces instant native title tooltip
+     * - shows after a short delay
+     * - hides immediately on mouseleave/blur/scroll/mousedown
+     */
+    (function initDelayedSidebarTooltip() {
+      var sidebar = document.getElementById("sidebar");
+      if (!sidebar) return;
 
-    // Apply active class from localStorage
+      var DELAY_MS = 550;
+      var showTimer = null;
+      var activeAnchor = null;
+
+      var tip = document.createElement("div");
+      tip.className = "oh-sidebar-delay-tooltip";
+      tip.setAttribute("aria-hidden", "true");
+      document.body.appendChild(tip);
+
+      function getLabel(el) {
+        if (!el) return "";
+        return (
+          el.getAttribute("data-tooltip") ||
+          el.getAttribute("aria-label") ||
+          el.getAttribute("title") ||
+          ""
+        ).trim();
+      }
+
+      /* Disable native instant title popups and keep the text in
+         data-tooltip for our delayed tooltip renderer. */
+      sidebar.querySelectorAll(".sideboxmain[title]").forEach(function (el) {
+        var title = (el.getAttribute("title") || "").trim();
+        if (title && !el.getAttribute("data-tooltip")) {
+          el.setAttribute("data-tooltip", title);
+        }
+        el.removeAttribute("title");
+      });
+
+      function positionTip(anchor) {
+        if (!anchor) return;
+        var rect = anchor.getBoundingClientRect();
+        var margin = 10;
+        /* Place tooltip to the right of icon column. */
+        tip.style.left = Math.round(rect.right + margin) + "px";
+        tip.style.top = Math.round(rect.top + rect.height / 2) + "px";
+        tip.style.transform = "translateY(-50%)";
+      }
+
+      function hideTip() {
+        clearTimeout(showTimer);
+        showTimer = null;
+        activeAnchor = null;
+        tip.classList.remove("is-visible");
+      }
+
+      function showTip(anchor) {
+        var label = getLabel(anchor);
+        if (!label) return;
+        tip.textContent = label;
+        positionTip(anchor);
+        tip.classList.add("is-visible");
+      }
+
+      function scheduleShow(anchor) {
+        clearTimeout(showTimer);
+        activeAnchor = anchor;
+        showTimer = setTimeout(function () {
+          if (activeAnchor === anchor && anchor.matches(":hover")) {
+            showTip(anchor);
+          }
+        }, DELAY_MS);
+      }
+
+      sidebar.addEventListener("mouseenter", function (e) {
+        var anchor = e.target.closest(".sideboxmain");
+        if (!anchor) return;
+        scheduleShow(anchor);
+      }, true);
+
+      sidebar.addEventListener("mouseleave", function (e) {
+        if (e.target.closest(".sideboxmain")) hideTip();
+      }, true);
+
+      sidebar.addEventListener("focusin", function (e) {
+        var anchor = e.target.closest(".sideboxmain");
+        if (!anchor) return;
+        scheduleShow(anchor);
+      });
+
+      sidebar.addEventListener("focusout", function (e) {
+        if (e.target.closest(".sideboxmain")) hideTip();
+      });
+
+      sidebar.addEventListener("mousedown", hideTip, true);
+      sidebar.addEventListener("click", hideTip, true);
+      window.addEventListener("scroll", hideTip, true);
+      window.addEventListener("resize", hideTip);
+    })();
+
+    // Restore highlighted (active) state from localStorage
     const activeMenu = localStorage.getItem("activeSidebarMenu");
     if (activeMenu) {
-      allMenus.forEach(btn => {
-        if (btn.dataset.menu === activeMenu) {
-          btn.classList.add("active");
-        }
+      document.querySelectorAll(".sideboxmain").forEach(btn => {
+        if (btn.dataset.menu === activeMenu) btn.classList.add("active");
       });
     }
 
-    // Set new active menu on click
-    allMenus.forEach(btn => {
-      btn.addEventListener("click", function (e) {
+    var ignoreCloseUntil = 0;
+
+    function closeAll(opts) {
+      /* Unified guard: during the brief window after a sidebar-initiated
+         htmx request, suppress *any* attempt to close the panel. Even
+         explicit callers (outside-click handler, stray events from the
+         swap, etc.) will bail. Pass { force: true } to bypass the guard
+         — only the navContainer toggle handler and Escape key do so. */
+      if (!(opts && opts.force) && Date.now() < ignoreCloseUntil) return;
+      document.querySelectorAll(".sideboxmain.sidebox-active").forEach(btn => {
+        btn.classList.remove("sidebox-active");
+        btn.setAttribute("aria-expanded", "false");
+      });
+    }
+
+    function getHeaderBottom() {
+      /* Return the y-coordinate just below the fixed navbar so the
+         submenu panel never opens over it. Measured dynamically because
+         the header height varies with screen size / content (breadcrumbs,
+         alerts, etc.). Falls back to the CSS default (75px) if no header
+         can be found. */
+      var headerWrap = document.getElementById("header");
+      var headerBar = headerWrap ? headerWrap.querySelector(".fixed") || headerWrap.firstElementChild : null;
+      var el = headerBar || headerWrap;
+      if (el) {
+        var rect = el.getBoundingClientRect();
+        if (rect && rect.height > 0) {
+          return Math.ceil(rect.bottom) + 8; /* 8px breathing room */
+        }
+      }
+      return 75;
+    }
+
+    function positionSidebox(btn) {
+      const sidebox = btn.querySelector(".sidebox");
+      if (!sidebox) return;
+      const btnRect = btn.getBoundingClientRect();
+      const viewportH = window.innerHeight;
+      const headerBottom = getHeaderBottom();
+
+      // Measure natural panel height while hidden
+      sidebox.style.display = "block";
+      const panelH = sidebox.scrollHeight;
+      sidebox.style.display = "";
+
+      // Align panel top with button top, but never above the navbar.
+      // Then clamp to viewport (still respecting the navbar floor).
+      let topPos = Math.max(btnRect.top, headerBottom);
+      const maxTop = viewportH - panelH - 8;
+      if (topPos > maxTop) topPos = Math.max(headerBottom, maxTop);
+      sidebox.style.top = topPos + "px";
+
+      // Cap panel height so it never spills below the viewport. The
+      // inner <ul> already scrolls via the sidebar-scroll styling, so
+      // long menus remain fully reachable.
+      sidebox.style.maxHeight = (viewportH - topPos - 8) + "px";
+      sidebox.style.overflowY = "auto";
+    }
+
+    // Single delegated listener on the nav scroll container
+    const navContainer = document.querySelector("#sidebar nav");
+    if (navContainer) {
+      /*
+       * Hard intercept for submenu anchors (capture phase).
+       *
+       * Why this exists: in some browsers/layout states, anchors nested
+       * inside the absolute `.sidebox` can occasionally navigate before
+       * the bubble-phase delegated handler runs, which looks like a full
+       * page reload (observed on Payroll Dashboard clicks).
+       *
+       * Capture-phase interception guarantees we prevent default first,
+       * then drive navigation ourselves (htmx swap or full fallback).
+       */
+      navContainer.addEventListener("click", function (e) {
+        var link = e.target.closest(".sidebox a[href], .sidebox a[hx-get]");
+        if (!link) return;
+        var isLeftClick = !e.button || e.button === 0;
+        var isModified = e.metaKey || e.ctrlKey || e.shiftKey || e.altKey;
+        if (!isLeftClick || isModified) return;
+
+        e.preventDefault();
         e.stopPropagation();
-        const isAlreadyOpen = btn.classList.contains("sidebox-active");
-
-        // Close all open sideboxes first
-        allMenus.forEach(el => el.classList.remove("sidebox-active"));
-
-        // If it wasn't open, open it; if it was open, leave it closed (toggle)
-        if (!isAlreadyOpen) {
-          btn.classList.add("sidebox-active");
+        if (typeof e.stopImmediatePropagation === "function") {
+          e.stopImmediatePropagation();
         }
 
-        // Persist the active (highlighted) menu
+        var href = link.getAttribute("href") || link.getAttribute("hx-get") || "/";
+        if (isStandaloneUrl(href)) {
+          window.location.href = href;
+          return;
+        }
+
+        var target = document.getElementById("ohMainContent");
+        if (!target || !window.htmx) {
+          window.location.href = href;
+          return;
+        }
+
+        bumpGrace(1500);
+        htmx.ajax("GET", href, {
+          source: link,
+          target: "#ohMainContent",
+          select: "#ohMainContent > *",
+          swap: "innerHTML show:window:top",
+          pushUrl: true,
+        });
+      }, true);
+
+      navContainer.addEventListener("click", function (e) {
+        var link = e.target.closest("a");
+        var isLeftClick = !e.button || e.button === 0;
+        var isModified = e.metaKey || e.ctrlKey || e.shiftKey || e.altKey;
+
+        /*
+         * Deterministic sidebar navigation:
+         * - Prevent default browser navigation for normal left-clicks.
+         * - Route through htmx.ajax for layout-extending pages so we
+         *   always swap only #ohMainContent (no full reload race).
+         * - Fall back to full page navigation for standalone pages.
+         */
+        if (link && !isModified && isLeftClick) {
+          var href = link.getAttribute("href") || link.getAttribute("hx-get");
+          var isTopDashboard = link.matches("a.sideboxmain");
+          var isSubmenuLink = !!link.closest(".sidebox");
+
+          if (isTopDashboard || isSubmenuLink) {
+            e.preventDefault();
+            e.stopPropagation();
+
+            if (isTopDashboard) {
+              closeAll({ force: true });
+              document.querySelectorAll(".sideboxmain").forEach(el => el.classList.remove("active"));
+              link.classList.add("active");
+              if (link.dataset.menu) {
+                try { localStorage.setItem("activeSidebarMenu", link.dataset.menu); }
+                catch (_) { /* noop */ }
+              }
+            }
+
+            if (isStandaloneUrl(href)) {
+              window.location.href = href || "/";
+              return;
+            }
+
+            var target = document.getElementById("ohMainContent");
+            if (!target || !window.htmx) {
+              window.location.href = href || "/";
+              return;
+            }
+
+            bumpGrace(1500);
+            htmx.ajax("GET", href, {
+              source: link,
+              target: "#ohMainContent",
+              select: "#ohMainContent > *",
+              swap: "innerHTML show:window:top",
+              pushUrl: true,
+            });
+            return;
+          }
+        }
+
+        /*
+         * The `.sidebox` panel is rendered INSIDE the `.sideboxmain`
+         * <button>, so any click within a panel (links, headers,
+         * padding, gaps) bubbles up here with a `.sideboxmain`
+         * ancestor. Bail out first so nothing we do below accidentally
+         * closes the panel the user is trying to use.
+         */
+        if (e.target.closest(".sidebox")) return;
+
+        /*
+         * Top-level sidebar LINKS that have no submenu of their own —
+         * currently just the Dashboard icon (top_menu.html). These are
+         * <a class="sideboxmain"> elements sitting directly in the
+         * sidebar column. Clicking one should:
+         *   • close any submenu panel that was left open from another
+         *     module,
+         *   • update the active highlight,
+         *   • let the normal navigation (htmx or classic) proceed.
+         */
+        var topLink = e.target.closest("a.sideboxmain");
+        if (topLink) {
+          closeAll({ force: true });
+          document.querySelectorAll(".sideboxmain").forEach(el => el.classList.remove("active"));
+          topLink.classList.add("active");
+          if (topLink.dataset.menu) {
+            try { localStorage.setItem("activeSidebarMenu", topLink.dataset.menu); }
+            catch (_) { /* noop */ }
+          }
+          return;
+        }
+
+        /* Other links inside the nav (rare) – let them navigate untouched. */
+        if (e.target.closest("a")) return;
+
+        /* Finally, the standard sideboxmain BUTTON toggle. */
+        const btn = e.target.closest(".sideboxmain");
+        if (!btn) return;
+
+        e.stopPropagation();
+        const isAlreadyOpen = btn.classList.contains("sidebox-active");
+        closeAll({ force: true });
+
+        if (!isAlreadyOpen) {
+          positionSidebox(btn);
+          btn.classList.add("sidebox-active");
+          btn.setAttribute("aria-expanded", "true");
+        }
+
         localStorage.setItem("activeSidebarMenu", btn.dataset.menu);
-        allMenus.forEach(el => el.classList.remove("active"));
+        document.querySelectorAll(".sideboxmain").forEach(el => el.classList.remove("active"));
         btn.classList.add("active");
       });
+    }
+
+    /*
+     * Whenever a sidebar link fires an htmx request, extend the close
+     * grace-window until the swap has settled. This covers every htmx
+     * phase: beforeRequest sets the floor, afterSettle bumps it a bit
+     * more so any focus/scroll/resize events triggered by the new
+     * content don't synthesise a stray "outside click".
+     */
+    var sidebarEl = document.getElementById("sidebar");
+
+    function bumpGrace(ms) {
+      var until = Date.now() + ms;
+      if (until > ignoreCloseUntil) ignoreCloseUntil = until;
+    }
+
+    /*
+     * URL patterns whose responses are standalone pages (don't extend
+     * the main index layout). When the user clicks a sidebar link whose
+     * target matches one of these, we bail out of the htmx swap entirely
+     * and do a classic full-page navigation — avoiding the wasted
+     * network request and the brief flash of empty content that would
+     * happen if we let htmx try to swap and then fall back post-response.
+     *
+     * Add new patterns here whenever a view renders a standalone HTML
+     * document that does not extend the main index layout.
+     */
+    var STANDALONE_URL_PATTERNS = [
+      /^\/recruitment\/open-recruitments\/?/i,
+    ];
+    function isStandaloneUrl(url) {
+      if (!url) return false;
+      try {
+        var pathname = new URL(url, window.location.origin).pathname;
+        return STANDALONE_URL_PATTERNS.some(function (rx) { return rx.test(pathname); });
+      } catch (_) {
+        return STANDALONE_URL_PATTERNS.some(function (rx) { return rx.test(url); });
+      }
+    }
+
+    document.addEventListener("htmx:beforeRequest", function (evt) {
+      try {
+        var trigger = evt && evt.detail && evt.detail.elt;
+        if (!(sidebarEl && trigger && sidebarEl.contains(trigger))) return;
+
+        var requestPath =
+          (evt.detail.pathInfo && evt.detail.pathInfo.requestPath) ||
+          trigger.getAttribute("href") ||
+          trigger.getAttribute("hx-get");
+        if (isStandaloneUrl(requestPath)) {
+          /* Cancel the htmx request before it goes out and hand over
+             to the browser's own navigation. */
+          if (evt.detail) evt.detail.shouldSwap = false;
+          evt.preventDefault();
+          if (evt.detail && evt.detail.xhr && typeof evt.detail.xhr.abort === "function") {
+            try { evt.detail.xhr.abort(); } catch (_) { /* ignore */ }
+          }
+          window.location.href = requestPath;
+          return;
+        }
+
+        bumpGrace(1500);
+      } catch (_) { /* no-op */ }
+    });
+    document.addEventListener("htmx:afterSettle", function () {
+      /* tiny extension so the final post-swap click burst (if any) is
+         still absorbed — harmless otherwise since the next user click
+         will have moved past this window. */
+      bumpGrace(200);
     });
 
-    // Close sidebox when clicking outside (but not when clicking a sideboxmain button)
+    /*
+     * Fallback to full navigation when a sidebar-initiated response
+     * doesn't contain `#ohMainContent`. This happens when a view renders
+     * a standalone template (e.g., recruitment/open_recruitments.html)
+     * that does not extend the main index layout — in which case the
+     * hx-select would produce an empty swap and the content region
+     * would blank out. We detect that up-front and hand over to a
+     * classic full page load so the user actually sees the page.
+     */
+    function shouldFallbackToFullNav(text) {
+      /* A response is "standalone" (not an index.html extension) when
+         it ships its own <!doctype> or <html> element but does NOT
+         include our content container. In that case swapping would
+         produce empty or garbage content, so we reload. */
+      if (!text) return false;
+      var hasOurContainer =
+        text.indexOf('id="ohMainContent"') !== -1 ||
+        text.indexOf("id='ohMainContent'") !== -1;
+      if (hasOurContainer) return false;
+      /* Any response that carries its own <html>/<body> indicates a
+         full page. Even if it doesn't, the absence of ohMainContent
+         means hx-select would produce nothing — safer to reload. */
+      return true;
+    }
+
+    function fullNavigateFromEvent(evt) {
+      var trigger = evt && evt.detail && evt.detail.elt;
+      var dest =
+        (evt.detail && evt.detail.pathInfo && evt.detail.pathInfo.requestPath) ||
+        (trigger && trigger.getAttribute && trigger.getAttribute("href")) ||
+        "/";
+      window.location.href = dest;
+    }
+
+    document.addEventListener("htmx:beforeSwap", function (evt) {
+      try {
+        var trigger = evt && evt.detail && evt.detail.elt;
+        if (!(sidebarEl && trigger && sidebarEl.contains(trigger))) return;
+        var xhr = evt.detail.xhr;
+        if (!xhr || xhr.status < 200 || xhr.status >= 400) return;
+        if (!shouldFallbackToFullNav(xhr.responseText)) return;
+        /* Belt-and-suspenders: htmx 1.x honours shouldSwap, 2.x uses
+           preventDefault. Do both so the in-flight swap is cancelled
+           regardless of the version shipped with the page. */
+        if (evt.detail) evt.detail.shouldSwap = false;
+        evt.preventDefault();
+        fullNavigateFromEvent(evt);
+      } catch (_) { /* fall through to htmx's default swap */ }
+    });
+
+    /*
+     * Network / server errors on boosted sidebar clicks: fall back to
+     * a full navigation so the user isn't stranded on a silent failure.
+     */
+    function sidebarNavError(evt) {
+      try {
+        var trigger = evt && evt.detail && evt.detail.elt;
+        if (!(sidebarEl && trigger && sidebarEl.contains(trigger))) return;
+        fullNavigateFromEvent(evt);
+      } catch (_) { /* ignore */ }
+    }
+    document.addEventListener("htmx:responseError", sidebarNavError);
+    document.addEventListener("htmx:sendError", sidebarNavError);
+    document.addEventListener("htmx:timeout", sidebarNavError);
+    /* If the swap target is missing on the current page (e.g. the user
+       is currently on a standalone page like Open Jobs, then clicks
+       Payroll Dashboard), htmx aborts silently. Without a fallback,
+       the browser would then honor the link's href and do a full
+       page reload. Redirect explicitly instead so the user lands on
+       the intended destination with the proper layout. */
+    document.addEventListener("htmx:targetError", sidebarNavError);
+
+    /*
+     * Outside-click close handler (capture phase so it runs before any
+     * other listener can detach elements from the DOM). We rely on the
+     * stable `#sidebar` wrapper rather than class-based `closest()`
+     * lookups, which can return null if ancestors get re-parented during
+     * a swap.
+     *
+     * Defense-in-depth — the panel stays open if ANY of these is true:
+     *   1. The synthetic-event filter (e.isTrusted).
+     *   2. The mousedown that started the click landed inside #sidebar.
+     *      This is the most reliable signal because mousedown always
+     *      reflects what the user physically pressed on, before any
+     *      re-rendering.
+     *   3. The click target itself is inside #sidebar.
+     *   4. The ignoreCloseUntil grace window is active (inside closeAll).
+     *
+     * Only when ALL the "inside" signals are false and the grace window
+     * has elapsed do we actually close the panel.
+     */
+    var lastMousedownInSidebar = false;
+    document.addEventListener("mousedown", function (e) {
+      var s = document.getElementById("sidebar");
+      lastMousedownInSidebar = !!(s && s.contains(e.target));
+    }, true);
+
     document.addEventListener("click", function (e) {
-      const clickedInsideMenu = e.target.closest(".sideboxmain");
-      const clickedInsideSidebox = e.target.closest(".sidebox");
-      if (!clickedInsideMenu && !clickedInsideSidebox) {
-        allMenus.forEach(el => el.classList.remove("sidebox-active"));
-      }
+      if (!e.isTrusted) return;
+      if (lastMousedownInSidebar) return;
+      var s = document.getElementById("sidebar") || sidebarEl;
+      if (s && s.contains(e.target)) return;
+      closeAll();
+    }, true);
+
+    document.addEventListener("keydown", function (e) {
+      if (e.key === "Escape") closeAll({ force: true });
     });
   });
 
