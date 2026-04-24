@@ -686,7 +686,6 @@ def view_payroll_dashboard(request):
 
 
 @login_required
-@hx_request_required
 def dashboard_employee_chart(request):
     """
     payroll dashboard employee chart data
@@ -771,7 +770,6 @@ def dashboard_employee_chart(request):
 
 
 @login_required
-@hx_request_required
 def payslip_details(request):
     """
     payroll dashboard payslip details data
@@ -795,7 +793,6 @@ def payslip_details(request):
 
 
 @login_required
-@hx_request_required
 def dashboard_department_chart(request):
     """
     payroll dashboard department chart data

@@ -602,7 +602,11 @@ class MyLeaveRequestSingleForm(HorillaFormView):
                             redirect=reverse("request-view")
                             + f"?id={leave_request.id}",
                         )
-                        return HorillaRedirect(self.request)
+                        # return HorillaRedirect(self.request)
+                    mail_thread = LeaveMailSendThread(
+                        self.request, leave_request, type="request"
+                    )
+                    mail_thread.start()
                     if len(
                         LeaveRequest.objects.filter(employee_id=employee)
                     ) == 1 or self.request.META.get("HTTP_REFERER").endswith(

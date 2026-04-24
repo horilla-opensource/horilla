@@ -1031,7 +1031,7 @@ class UserAttendanceView(APIView):
 
         attendance_queryset = Attendance.objects.filter(
             employee_id=employee_id
-        ).order_by("-id")
+        ).order_by("-attendance_date")
 
         paginator = PageNumberPagination()
         paginator.page_size = 20
