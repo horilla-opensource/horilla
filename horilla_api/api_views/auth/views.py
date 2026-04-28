@@ -1,5 +1,6 @@
 from django.contrib.auth import authenticate
 from drf_yasg import openapi
+from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
 from rest_framework.views import APIView
 from rest_framework_simplejwt.tokens import RefreshToken
@@ -9,6 +10,7 @@ from horilla_api.docs import document_api
 from ...api_serializers.auth.serializers import (
     GetEmployeeSerializer,
     LoginRequestSerializer,
+    PasswordResetSerializer,
 )
 
 
@@ -90,3 +92,32 @@ class LoginAPIView(APIView):
                 return Response({"error": "Invalid credentials"}, status=401)
         else:
             return Response({"error": "Please provide Username and Password"})
+
+
+class PasswordResetAPIView(APIView):
+    """
+    Allows an authenticated employee to change their own password.
+
+    GET  — returns the fields required for the reset form.
+    POST — verifies the old password and saves the new one.
+    """
+
+    permission_classes = [IsAuthenticated]
+
+    def get(self, _request):
+        return Response(
+            {"fields": ["old_password", "new_password", "confirm_password"]},
+            status=200,
+        )
+
+    def post(self, request):
+        serializer = PasswordResetSerializer(
+            data=request.data, context={"request": request}
+        )
+        if not serializer.is_valid():
+            return Response(serializer.errors, status=400)
+
+        user = request.user
+        user.set_password(serializer.validated_data["new_password"])
+        user.save()
+        return Response({"message": "Password updated successfully."}, status=200)
