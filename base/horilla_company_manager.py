@@ -3,12 +3,14 @@ horilla_company_manager.py
 """
 
 import logging
-from typing import Coroutine, Sequence
 
+from django.apps import apps
+from django.core.exceptions import FieldDoesNotExist
 from django.db import models
+from django.db.models import Q
 from django.db.models.query import QuerySet
 
-from horilla.horilla_middlewares import _thread_locals
+from horilla.horilla_middlewares import _thread_locals, get_selected_company
 from horilla.signals import (
     post_bulk_update,
     post_model_clean,
@@ -54,81 +56,157 @@ setattr(QuerySet, "update", update)
 
 
 class HorillaCompanyManager(models.Manager):
-    """
-    HorillaCompanyManager
-    """
-
     def __init__(self, related_company_field=None, *args, **kwargs):
         super().__init__(*args, **kwargs)
-        self.related_company_field = related_company_field
-        self.check_fields = [
-            "employee_id",
-            "requested_employee_id",
-        ]
+        self.company_filter_path = related_company_field
+
+    def _resolve_related_field(self, model, part):
+        # Forward field
+        try:
+            return model._meta.get_field(part)
+        except FieldDoesNotExist:
+            pass
+
+        # Reverse relation
+        for rel in model._meta.related_objects:
+            if rel.get_accessor_name() == part:
+                return rel
+
+        raise FieldDoesNotExist(part)
+
+    def _field_exists(self, path):
+        model = self.model
+
+        parts = path.split("__")
+        for i, part in enumerate(parts):
+            try:
+                field = self._resolve_related_field(model, part)
+            except FieldDoesNotExist:
+                logger.exception(
+                    f"Invalid company filter path '{path}' for model {self.model.__name__}. "
+                    f"Failed at field '{part}'."
+                )
+                return False
+
+            # Only traverse if relational AND not last field
+            if (
+                getattr(field, "is_relation", False)
+                and field.related_model
+                and i < len(parts) - 1
+            ):
+                model = field.related_model
+            elif i < len(parts) - 1:
+                # Non-relational field in middle of path = invalid
+                logger.exception(
+                    f"Invalid company filter path '{path}' for model {self.model.__name__}. "
+                    f"Field '{part}' is not relational."
+                )
+                return False
+
+        return True
+
+    def _has_company_id_fk_or_m2m(self):
+        try:
+            field = self.model._meta.get_field("company_id")
+            return isinstance(field, (models.ForeignKey, models.ManyToManyField))
+        except FieldDoesNotExist:
+            return False
+
+    def get_company_filter_path(self):
+        if self.company_filter_path and self._field_exists(self.company_filter_path):
+            return self.company_filter_path
+
+        if self._has_company_id_fk_or_m2m():
+            return "company_id"
+
+        return None
 
     def get_queryset(self):
-        """
-        get_queryset method
-        """
+        qs = super().get_queryset()
+        company = get_selected_company()
+        filter_path = self.get_company_filter_path()
 
-        queryset = super().get_queryset()
-        request = getattr(_thread_locals, "request", None)
-        selected_company = None
-        if request is not None:
-            selected_company = request.session.get("selected_company")
+        if not filter_path or not company or company == "all":
+            return qs
+
         try:
-            queryset = (
-                queryset.filter(self.model.company_filter)
-                if selected_company != "all" and selected_company
-                else queryset
-            )
+            return qs.filter(
+                Q(**{filter_path: company}) | Q(**{f"{filter_path}__isnull": True})
+            ).distinct()
         except Exception as e:
-            logger.error(e)
-        return queryset.distinct()
+            logger.exception(
+                f"Company filter failed for model {self.model.__name__} "
+                f"with path '{filter_path}': {e}"
+            )
+            return qs.none()
+
+    def _get_is_active_filter(self):
+        """
+        Return True unless the request explicitly passes is_active=False/false.
+        """
+        request = getattr(_thread_locals, "request", None)
+        raw = request.GET.get("is_active", True) if request else True
+        return raw not in ["False", "false", False]
 
     def all(self):
         """
-        Override the all() method
+        Override all() to exclude inactive records by default.
+        Only applies is_active filtering when a request context is active (not during startup/scheduler).
+        - For `employee` model: respect request.GET `is_active` param; default to active only.
+        - For `offboardingemployee` model: return unfiltered.
+        - For other models:
+            1. If the model itself has `is_active`, filter by it (respects GET param, default True).
+            2. If the model has `employee_id` FK to Employee, hide records of inactive employees.
+               Else, find the first FK to Employee and use that.
         """
-        queryset = []
+        queryset = self.get_queryset()
+        request = getattr(_thread_locals, "request", None)
+        if not request:
+            return queryset
+
         try:
-            queryset = self.get_queryset()
             model_name = queryset.model._meta.model_name
+
             if model_name == "employee":
-                request = getattr(_thread_locals, "request", None)
-                if request:
-                    active = (
-                        True
-                        if request.GET.get("is_active", True)
-                        in ["unknown", "True", "true", True]
-                        else False
-                    )
-                    queryset = queryset.filter(is_active=active)
+                queryset = queryset.filter(is_active=self._get_is_active_filter())
 
             elif model_name == "offboardingemployee":
                 return queryset
+
             else:
-                for field in queryset.model._meta.fields:
-                    if isinstance(field, models.ForeignKey):
-                        if field.name in self.check_fields:
-                            related_model_is_active_filter = {
-                                f"{field.name}__is_active": True
-                            }
-                            queryset = queryset.filter(**related_model_is_active_filter)
+                model_fields = queryset.model._meta.fields
+                model_field_names = {f.name for f in model_fields}
+
+                if "is_active" in model_field_names:
+                    queryset = queryset.filter(is_active=self._get_is_active_filter())
+
+                try:
+                    employee_model = apps.get_model("employee", "Employee")
+                    if "employee_id" in model_field_names:
+                        queryset = queryset.filter(employee_id__is_active=True)
+                    else:
+                        for field in model_fields:
+                            if (
+                                isinstance(field, models.ForeignKey)
+                                and field.related_model is employee_model
+                            ):
+                                if field.null:
+                                    queryset = queryset.filter(
+                                        Q(**{f"{field.name}__isnull": True})
+                                        | Q(**{f"{field.name}__is_active": True})
+                                    )
+                                else:
+                                    queryset = queryset.filter(
+                                        **{f"{field.name}__is_active": True}
+                                    )
+                                break
+                except LookupError:
+                    pass
 
         except Exception as e:
             logger.error(e)
 
         return queryset
 
-    def filter(self, *args, **kwargs):
-        queryset = super().filter(*args, **kwargs)
-        setattr(_thread_locals, "queryset_filter", queryset)
-        return queryset
-
     def entire(self):
-        """
-        Fetch all datas from a model without applying any company filter.
-        """
-        queryset = super().get_queryset()
-        return queryset  # No filtering applied
+        return super().get_queryset()

@@ -81,15 +81,27 @@ class ToggleColumn(View):
 
         hidden_fields = [key for key, value in query_dict.items() if value[0]]
 
+        field_order = [key for key, v in query_dict.items()]
+
         existing_instance = models.ToggleColumn.objects.filter(
             user_id=self.request.user, path=path
+        ).first()
+
+        existing_field_order = models.ColumnOrder.objects.filter(
+            employee=self.request.user.employee_get, path=path
         ).first()
 
         instance = models.ToggleColumn() if not existing_instance else existing_instance
         instance.path = path
         instance.excluded_columns = hidden_fields
-
         instance.save()
+
+        column_order = (
+            models.ColumnOrder() if not existing_field_order else existing_field_order
+        )
+        column_order.path = path
+        column_order.column_order = field_order
+        column_order.save()
 
         return HttpResponse("success")
 

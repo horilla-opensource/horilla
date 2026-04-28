@@ -295,6 +295,21 @@ class HorillaListView(ListView):
         if not self.records_per_page:
             self.records_per_page = get_pagination()
 
+        # Updating the column_order
+        if self.request:
+            col_order = models.ColumnOrder.objects.filter(
+                employee=self.request.user.employee_get, path=self.request.path_info
+            ).first()
+            if col_order:
+                order = col_order.column_order
+                order_set = set(order)
+
+                col_dict = {col[1]: col for col in self.columns}
+
+                self.columns = [
+                    col_dict[name] for name in order if name in col_dict
+                ] + [col for col in self.columns if col[1] not in order_set]
+
         # Add verbose names to fields if possible
         updated_column = []
         get_field = self.model()._meta.get_field

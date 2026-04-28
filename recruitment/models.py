@@ -1920,7 +1920,7 @@ class CandidateDocumentRequest(HorillaModel):
     )
     description = models.TextField(blank=True, null=True, verbose_name=_("Description"))
     objects = HorillaCompanyManager(
-        related_company_field="employee_id__employee_work_info__company_id"
+        related_company_field="candidate_id__recruitment_id__company_id"
     )
 
     def __str__(self):

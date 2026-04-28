@@ -47,7 +47,7 @@ class AssetTabListView(AllocationList):
 
         queryset = super().get_queryset()
         pk = self.kwargs.get("pk")
-        queryset = queryset.filter(assigned_to_employee_id=pk).exclude(
+        queryset = self.model.objects.filter(assigned_to_employee_id=pk).exclude(
             return_status__isnull=False
         )
         return queryset
@@ -77,7 +77,7 @@ class AssetRequestTab(AssetRequestList):
 
         queryset = super().get_queryset()
         pk = self.kwargs.get("pk")
-        queryset = queryset.filter(requested_employee_id=pk)
+        queryset = self.model.objects.filter(requested_employee_id=pk)
         return queryset
 
 

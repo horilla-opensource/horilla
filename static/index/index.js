@@ -282,7 +282,6 @@ function toggleReimbursmentType(element) {
 }
 
 function highlightRow(checkbox) {
-    console.log("Index.js ________________________________________", checkbox)
     checkbox.closest(".oh-sticky-table__tr").removeClass("highlight-selected");
     checkbox.closest("tr").removeClass("highlight-selected");
     if (checkbox.is(":checked")) {

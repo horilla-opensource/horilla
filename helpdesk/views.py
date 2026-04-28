@@ -1397,7 +1397,6 @@ def comment_delete(request, comment_id):
 
 
 @login_required
-@hx_request_required
 def get_raised_on(request):
     """
     This is an ajax method to return list for raised on field.
