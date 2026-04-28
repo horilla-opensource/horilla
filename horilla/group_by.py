@@ -87,7 +87,7 @@ def group_by_queryset(
             field_obj = model_copy._meta.get_field(field)
             model_copy = field_obj.related_model
         if model_copy:
-            groupers = model_copy.objects.all()
+            groupers = model_copy.objects.filter()
             groups = generate_groups(
                 request,
                 groupers,

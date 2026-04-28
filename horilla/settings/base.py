@@ -141,7 +141,6 @@ MIDDLEWARE = [
     "base.middleware.TwoFactorAuthMiddleware",
     "accessibility.middlewares.AccessibilityMiddleware",
     "horilla.horilla_middlewares.MethodNotAllowedMiddleware",
-    "horilla.horilla_middlewares.ThreadLocalMiddleware",
     "horilla.horilla_middlewares.SVGSecurityMiddleware",
     "horilla.horilla_middlewares.MissingParameterMiddleware",
     "auditlog.middleware.AuditlogMiddleware",
