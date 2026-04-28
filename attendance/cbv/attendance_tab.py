@@ -87,11 +87,10 @@ class RequestedAttendanceIndividualView(AttendanceRequestListTab):
         self.view_id = "attendance-requests-container"
 
     def get_queryset(self):
-        queryset = HorillaListView.get_queryset(self)
+        queryset = super().get_queryset()
         pk = self.request.resolver_match.kwargs.get("pk")
-        queryset = queryset.filter(
-            employee_id__employee_user_id=pk,
-            is_validate_request=True,
+        queryset = self.model.objects.filter(
+            employee_id=pk,
         )
         return queryset
 
@@ -115,7 +114,7 @@ class HourAccountIndividualTabView(HourAccountList):
     def get_queryset(self):
         queryset = super().get_queryset()
         pk = self.kwargs.get("pk")
-        queryset = queryset.filter(employee_id=pk)
+        queryset = self.model.objects.filter(employee_id=pk)
         return queryset
 
 
@@ -133,5 +132,5 @@ class AllAttendancesList(MyAttendancesListView):
     def get_queryset(self):
         queryset = super().get_queryset()
         pk = self.kwargs.get("pk")
-        queryset = queryset.filter(employee_id=pk)
+        queryset = self.model.objects.filter(employee_id=pk)
         return queryset

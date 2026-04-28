@@ -627,10 +627,9 @@ class ValidateAttendancesIndividualTabView(AttendancesListView):
     def get_queryset(self):
         queryset = super().get_queryset()
         pk = self.kwargs.get("pk")
-        queryset = queryset.filter(
+        queryset = self.model.objects.filter(
             employee_id=pk,
             attendance_validated=False,
-            employee_id__is_active=True,
         )
         queryset = (
             filtersubordinates(self.request, queryset, "attendance.view_attendance")
