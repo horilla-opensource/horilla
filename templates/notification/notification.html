@@ -4,7 +4,7 @@
 <div
     class="oh-navbar__notifications"
     id="notificationIcon"
-    x-data="{open: false}"
+    x-data="{open: false, activeTab: 'system'}"
     hx-get="{% url 'notifications' %}"
     hx-target="#notificationContainer"
 >
@@ -18,7 +18,7 @@
             name="notifications-outline"
             class="oh-navbar__icon"
         ></ion-icon>
-        <span class="oh-navbar__notification-beacon">
+        <span class="oh-navbar__notification-beacon" id="combinedNotifyBadge">
             {% live_notify_badge %}
         </span>
     </a>
@@ -28,26 +28,61 @@
         class="oh-navbar__notification-tray"
         x-data="{markRead: false, visible: true}"
         x-show="open"
-        style="display: none"
+        style="display: none; min-width: 360px;"
         @click.outside="open = false"
     >
-        <div id="notificationContainer">
-            {% include 'notification/notification_items.html' %}
+        {# ── Tab switcher ─────────────────────────────────────────── #}
+        <div style="display:flex; border-bottom:1px solid rgba(255,255,255,.12); margin-bottom:4px;">
+            <button
+                type="button"
+                @click="activeTab='system'"
+                :style="activeTab==='system' ? 'border-bottom:2px solid #0aa4db;color:#0aa4db;' : 'color:inherit;'"
+                style="flex:1;background:none;border:none;border-bottom:2px solid transparent;padding:8px 4px;font-size:.82em;font-weight:600;cursor:pointer;transition:color .15s,border-color .15s;"
+            >
+                <ion-icon name="notifications-outline" style="vertical-align:-2px;"></ion-icon>
+                {% trans "System" %}
+            </button>
+            <button
+                type="button"
+                @click="activeTab='inbox'; loadCandidateInbox();"
+                :style="activeTab==='inbox' ? 'border-bottom:2px solid #0aa4db;color:#0aa4db;' : 'color:inherit;'"
+                style="flex:1;background:none;border:none;border-bottom:2px solid transparent;padding:8px 4px;font-size:.82em;font-weight:600;cursor:pointer;transition:color .15s,border-color .15s;position:relative;"
+            >
+                <ion-icon name="mail-outline" style="vertical-align:-2px;"></ion-icon>
+                {% trans "Candidate Inbox" %}
+                <span id="inboxUnreadBadge" style="display:none;position:absolute;top:4px;right:6px;background:#ef4444;color:#fff;font-size:9px;font-weight:700;padding:1px 5px;border-radius:9px;min-width:16px;text-align:center;"></span>
+            </button>
         </div>
-        <div class="oh-navbar__notification-empty" x-show="!visible">
-            <img
-                src="{% static 'images/ui/happy.svg' %}"
-                alt="All caught up"
-                width="50"
-                height="50"
-                loading="lazy"
-            />
-            <span class="oh-navbar__notification-empty-title"
-                >{% trans "All caught up!" %}</span
-            >
-            <span class="oh-navbar__notification-empty-desc"
-                >{% trans "You have no new notifications at the moment." %}</span
-            >
+
+        {# ── System notifications panel ───────────────────────────── #}
+        <div x-show="activeTab==='system'">
+            <div id="notificationContainer">
+                {% include 'notification/notification_items.html' %}
+            </div>
+            <div class="oh-navbar__notification-empty" x-show="!visible">
+                <img
+                    src="{% static 'images/ui/happy.svg' %}"
+                    alt="All caught up"
+                    width="50"
+                    height="50"
+                    loading="lazy"
+                />
+                <span class="oh-navbar__notification-empty-title"
+                    >{% trans "All caught up!" %}</span
+                >
+                <span class="oh-navbar__notification-empty-desc"
+                    >{% trans "You have no new notifications at the moment." %}</span
+                >
+            </div>
+        </div>
+
+        {# ── Candidate Inbox panel ───────────────────────────────── #}
+        <div x-show="activeTab==='inbox'" id="candidateInboxPanel">
+            <div id="candidateInboxContainer" style="max-height:400px;overflow-y:auto;">
+                <div class="oh-navbar__notification-empty" style="padding:24px 0;">
+                    <span class="oh-navbar__notification-empty-desc">{% trans "Click the tab to load messages." %}</span>
+                </div>
+            </div>
         </div>
     </div>
 </div>
@@ -77,6 +112,44 @@
         }
         localStorage.setItem('previousUnreadCount', data.unread_count);
     }
+
+    // ── Candidate Inbox tab logic ─────────────────────────────────────
+    var _inboxLoaded = false;
+
+    function loadCandidateInbox() {
+        // Always refresh on tab click so it stays current
+        fetch('/api/candidate-inbox/notifications/')
+            .then(function(r) { return r.ok ? r.text() : Promise.reject(r.status); })
+            .then(function(html) {
+                document.getElementById('candidateInboxContainer').innerHTML = html;
+                _inboxLoaded = true;
+            })
+            .catch(function(err) {
+                document.getElementById('candidateInboxContainer').innerHTML =
+                    '<p style="padding:16px;opacity:.6;">Could not load candidate messages.</p>';
+            });
+    }
+
+    // Poll candidate-inbox unread count every 60s and update badge
+    function refreshInboxBadge() {
+        fetch('/api/candidate-inbox/unread-count/')
+            .then(function(r) { return r.ok ? r.json() : null; })
+            .then(function(data) {
+                if (!data) return;
+                var badge = document.getElementById('inboxUnreadBadge');
+                if (!badge) return;
+                var n = Number(data.count || 0);
+                if (n > 0) {
+                    badge.textContent = n > 99 ? '99+' : String(n);
+                    badge.style.display = 'inline-block';
+                } else {
+                    badge.style.display = 'none';
+                }
+            })
+            .catch(function() {});
+    }
+    refreshInboxBadge();
+    setInterval(refreshInboxBadge, 60000);
 
 </script>
 <script

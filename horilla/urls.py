@@ -22,6 +22,14 @@ from django.urls import include, path, re_path
 import notifications.urls
 
 from . import settings
+from .external_views import (
+    contracts_view,
+    payroll_app_view,
+    hiring_view,
+    all_messages_view,
+    candidate_inbox_notifications,
+    candidate_inbox_unread_count,
+)
 
 
 def health_check(request):
@@ -29,6 +37,12 @@ def health_check(request):
 
 
 urlpatterns = [
+    path("contracts/", contracts_view, name="contracts-embed"),
+    path("payroll-app/", payroll_app_view, name="payroll-app-embed"),
+    path("hiring-portal/", hiring_view, name="hiring-portal-embed"),
+    path("all-messages/", all_messages_view, name="all-messages-embed"),
+    path("api/candidate-inbox/notifications/", candidate_inbox_notifications, name="candidate-inbox-notifications"),
+    path("api/candidate-inbox/unread-count/", candidate_inbox_unread_count, name="candidate-inbox-unread-count"),
     path("admin/", admin.site.urls),
     path("accounts/", include("django.contrib.auth.urls")),
     path("accounts/", include("django.contrib.auth.urls")),

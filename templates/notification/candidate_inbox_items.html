@@ -1,0 +1,63 @@
+{% load i18n %}
+{% load tz %}
+{# Candidate Inbox notification partial — queried from candidate_communications table #}
+{# Included via HTMX into the notification tray (#candidateInboxContainer)           #}
+
+{% if inbox_messages %}
+<ul class="oh-navbar__nofication-list" id="candidateInboxList">
+    {% for msg in inbox_messages %}
+    <a class="oh-navbar__notification-item"
+       href="{{ msg.profile_url }}"
+       id="candidateInboxItem{{ msg.candidate_id }}"
+       title="{% trans 'View candidate profile' %}">
+        <div>
+            {% if msg.unread_count > 0 %}
+                <span class="oh-navbar__notification-dot oh-navbar__notification-dot--green oh-navbar__notification-dot--unread"></span>
+            {% else %}
+                <span class="oh-navbar__notification-dot oh-navbar__notification-dot--green"></span>
+            {% endif %}
+        </div>
+        <div style="flex:1; min-width:0;">
+            <p class="oh-navbar__notification-text{% if msg.unread_count > 0 %} oh-navbar__notification-text--unread{% endif %}"
+               style="white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">
+                <strong style="font-size:0.8em;opacity:0.75;text-transform:uppercase;letter-spacing:.04em;">
+                    {% if msg.channel == 'email' %}
+                        <ion-icon name="mail-outline" style="vertical-align:-2px;"></ion-icon>
+                    {% elif msg.channel == 'whatsapp' %}
+                        <ion-icon name="logo-whatsapp" style="vertical-align:-2px;"></ion-icon>
+                    {% elif msg.channel == 'sms' %}
+                        <ion-icon name="chatbubble-outline" style="vertical-align:-2px;"></ion-icon>
+                    {% endif %}
+                    {{ msg.channel }}
+                </strong>
+                &mdash; {{ msg.candidate_name }}
+            </p>
+            <p class="oh-navbar__notification-text" style="font-size:0.82em;opacity:0.8;margin-top:2px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">
+                {% if msg.subject %}{{ msg.subject }}{% else %}{{ msg.preview }}{% endif %}
+            </p>
+            <span class="oh-navbar__notification-date">
+                {{ msg.created_at|timesince }} {% trans "ago" %}
+                {% if msg.unread_count > 0 %}
+                    &bull; <strong style="color:#ef4444;">{{ msg.unread_count }} {% trans "unread" %}</strong>
+                {% endif %}
+            </span>
+        </div>
+        <div>
+            <div class="oh-navbar__notification-image" style="margin-left:5px;"
+                 title="{% trans 'Go to candidate profile' %}">
+                <ion-icon name="person-outline"></ion-icon>
+            </div>
+        </div>
+    </a>
+    {% endfor %}
+</ul>
+<div class="oh-navbar__notification-footer">
+    <a href="/all-messages/" class="oh-navbar__notification-tray-link">{% trans "Open full inbox" %} &rarr;</a>
+</div>
+{% else %}
+<div class="oh-navbar__notification-empty">
+    <img src="/static/images/ui/happy.svg" alt="{% trans 'All caught up' %}" width="50" height="50" loading="lazy" />
+    <span class="oh-navbar__notification-empty-title">{% trans "All caught up!" %}</span>
+    <span class="oh-navbar__notification-empty-desc">{% trans "No inbound candidate messages yet." %}</span>
+</div>
+{% endif %}

@@ -9,42 +9,71 @@
     {% endfor %}
 </div>
 {% endif %}
-<ol class="oh-activity-sidebar__qa-list" role="list">
-    {% for notification in notifications %}
-    <li class="oh-activity-sidebar__qa-item" id="notificationBodyItem{{notification.id}}">
-        <div class="d-flex justify-content-between">
-            <span class="oh-activity-sidebar__q">
-                {{forloop.counter}}.
-                {% if notification.unread %}
-                    <span style="width: 10px;height: 10px;border-radius: 100%; background-color: hsl(8deg,77%,56%);display: inline-block;right: 5px;"></span>
-                {% endif %}
-                {% if LANGUAGE_CODE == 'ar' %}
-                    <p class="oh-navbar__notification-text" class="oh-navbar__notification-text--unread">{{ notification.data.verb_ar }}</p>
-                {% elif LANGUAGE_CODE == 'de' %}
-                    <p class="oh-navbar__notification-text" class="oh-navbar__notification-text--unread">{{ notification.data.verb_de }}</p>
-                {% elif LANGUAGE_CODE == 'fr' %}
-                    <p class="oh-navbar__notification-text" class="oh-navbar__notification-text--unread">{{ notification.data.verb_fr }}</p>
-                {% elif LANGUAGE_CODE == 'es' %}
-                    <p class="oh-navbar__notification-text" class="oh-navbar__notification-text--unread">{{ notification.data.verb_es }}</p>
-                {% else %}
-                    <p class="oh-navbar__notification-text" class="oh-navbar__notification-text--unread">{{ notification.verb }}</p>
-                {% endif %}
-            </span>
-            <div hx-on:click="setTimeout(() => {reloadMessage(this);},100);"
-                hx-target="#notificationBodyItem{{notification.id}}"
-                hx-post="{% url 'delete-notifications' notification.id %}" hx-swap="outerHTML">
-                <ion-icon name="close-outline" role="img" aria-label="close outline"></ion-icon>
 
+{# ── Tab switcher for the "All Notifications" sidebar ────────────────── #}
+<div style="display:flex; border-bottom:1px solid rgba(0,0,0,.1); margin-bottom:8px;" id="allNotifTabBar">
+    <button type="button" id="allNotifTabSystem"
+        onclick="showAllNotifTab('system')"
+        style="flex:1;background:none;border:none;border-bottom:2px solid #0aa4db;color:#0aa4db;padding:8px 4px;font-size:.82em;font-weight:600;cursor:pointer;">
+        <ion-icon name="notifications-outline" style="vertical-align:-2px;"></ion-icon>
+        {% trans "System" %}
+    </button>
+    <button type="button" id="allNotifTabInbox"
+        onclick="showAllNotifTab('inbox')"
+        style="flex:1;background:none;border:none;border-bottom:2px solid transparent;color:inherit;padding:8px 4px;font-size:.82em;font-weight:600;cursor:pointer;position:relative;">
+        <ion-icon name="mail-outline" style="vertical-align:-2px;"></ion-icon>
+        {% trans "Candidate Inbox" %}
+        <span id="allNotifInboxBadge" style="display:none;position:absolute;top:4px;right:6px;background:#ef4444;color:#fff;font-size:9px;font-weight:700;padding:1px 5px;border-radius:9px;min-width:16px;text-align:center;"></span>
+    </button>
+</div>
+
+{# ── System notifications list ─────────────────────────────────────── #}
+<div id="allNotifSystemPanel">
+    <ol class="oh-activity-sidebar__qa-list" role="list">
+        {% for notification in notifications %}
+        <li class="oh-activity-sidebar__qa-item" id="notificationBodyItem{{notification.id}}">
+            <div class="d-flex justify-content-between">
+                <span class="oh-activity-sidebar__q">
+                    {{forloop.counter}}.
+                    {% if notification.unread %}
+                        <span style="width: 10px;height: 10px;border-radius: 100%; background-color: hsl(8deg,77%,56%);display: inline-block;right: 5px;"></span>
+                    {% endif %}
+                    {% if LANGUAGE_CODE == 'ar' %}
+                        <p class="oh-navbar__notification-text" class="oh-navbar__notification-text--unread">{{ notification.data.verb_ar }}</p>
+                    {% elif LANGUAGE_CODE == 'de' %}
+                        <p class="oh-navbar__notification-text" class="oh-navbar__notification-text--unread">{{ notification.data.verb_de }}</p>
+                    {% elif LANGUAGE_CODE == 'fr' %}
+                        <p class="oh-navbar__notification-text" class="oh-navbar__notification-text--unread">{{ notification.data.verb_fr }}</p>
+                    {% elif LANGUAGE_CODE == 'es' %}
+                        <p class="oh-navbar__notification-text" class="oh-navbar__notification-text--unread">{{ notification.data.verb_es }}</p>
+                    {% else %}
+                        <p class="oh-navbar__notification-text" class="oh-navbar__notification-text--unread">{{ notification.verb }}</p>
+                    {% endif %}
+                </span>
+                <div hx-on:click="setTimeout(() => {reloadMessage(this);},100);"
+                    hx-target="#notificationBodyItem{{notification.id}}"
+                    hx-post="{% url 'delete-notifications' notification.id %}" hx-swap="outerHTML">
+                    <ion-icon name="close-outline" role="img" aria-label="close outline"></ion-icon>
+                </div>
             </div>
-        </div>
-        <span class="oh-activity-sidebar__a">
-            {{ notification.timesince }} {% trans "ago by" %}<img
-                src="https://ui-avatars.com/api/?name={{notification.actor}}&amp;background=random"
-                style="width: 1.5em; border-radius: 100%;" alt="User"> {{notification.actor}}
-        </span>
-    </li>
-    {% endfor %}
-</ol>
+            <span class="oh-activity-sidebar__a">
+                {{ notification.timesince }} {% trans "ago by" %}<img
+                    src="https://ui-avatars.com/api/?name={{notification.actor}}&amp;background=random"
+                    style="width: 1.5em; border-radius: 100%;" alt="User"> {{notification.actor}}
+            </span>
+        </li>
+        {% empty %}
+        <li style="padding:24px;text-align:center;opacity:.6;">{% trans "No system notifications." %}</li>
+        {% endfor %}
+    </ol>
+</div>
+
+{# ── Candidate Inbox list (loaded on tab click) ────────────────────── #}
+<div id="allNotifInboxPanel" style="display:none;">
+    <div id="allNotifInboxBody" style="padding:12px 0;">
+        <p style="padding:8px 16px;opacity:.6;font-size:.85em;">{% trans "Loading..." %}</p>
+    </div>
+</div>
 
 <script>
     $(document).ready(function () {
@@ -54,4 +83,57 @@
         $('#allNotifications').removeClass('oh-activity-sidebar--show');
     });
 
+    function showAllNotifTab(tab) {
+        var systemBtn  = document.getElementById('allNotifTabSystem');
+        var inboxBtn   = document.getElementById('allNotifTabInbox');
+        var systemPanel = document.getElementById('allNotifSystemPanel');
+        var inboxPanel  = document.getElementById('allNotifInboxPanel');
+
+        var activeStyle = 'border-bottom:2px solid #0aa4db;color:#0aa4db;';
+        var inactiveStyle = 'border-bottom:2px solid transparent;color:inherit;';
+
+        if (tab === 'system') {
+            systemBtn.style.cssText  += activeStyle;
+            inboxBtn.style.cssText   += inactiveStyle;
+            systemPanel.style.display = '';
+            inboxPanel.style.display  = 'none';
+        } else {
+            inboxBtn.style.cssText   += activeStyle;
+            systemBtn.style.cssText  += inactiveStyle;
+            systemPanel.style.display = 'none';
+            inboxPanel.style.display  = '';
+            loadAllNotifInbox();
+        }
+    }
+
+    function loadAllNotifInbox() {
+        fetch('/api/candidate-inbox/notifications/')
+            .then(function(r) { return r.ok ? r.text() : Promise.reject(r.status); })
+            .then(function(html) {
+                document.getElementById('allNotifInboxBody').innerHTML = html;
+            })
+            .catch(function() {
+                document.getElementById('allNotifInboxBody').innerHTML =
+                    '<p style="padding:16px;opacity:.6;">Could not load candidate messages.</p>';
+            });
+    }
+
+    // Refresh the inbox badge on this sidebar too
+    (function refreshAllNotifInboxBadge() {
+        fetch('/api/candidate-inbox/unread-count/')
+            .then(function(r) { return r.ok ? r.json() : null; })
+            .then(function(data) {
+                if (!data) return;
+                var badge = document.getElementById('allNotifInboxBadge');
+                if (!badge) return;
+                var n = Number(data.count || 0);
+                if (n > 0) {
+                    badge.textContent = n > 99 ? '99+' : String(n);
+                    badge.style.display = 'inline-block';
+                } else {
+                    badge.style.display = 'none';
+                }
+            })
+            .catch(function() {});
+    })();
 </script>
