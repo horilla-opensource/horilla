@@ -68,12 +68,18 @@
                 <ion-icon name="create-outline" role="img" class="md hydrated" aria-label="create outline">
                 </ion-icon>{% trans "Edit" %}
             </a>
-            <a href="{% url 'recruitment-survey-question-template-delete' question.id %}"
-                onclick="return confirm('{% trans " Are you sure want to delete?" %}')" class="oh-btn oh-btn--danger"
-                style="width: 50%;">
-                <ion-icon name="trash-outline" role="img" class="md hydrated" aria-label="create outline"></ion-icon>
-                {% trans "Delete" %}
-            </a>
+            <form
+                hx-post="{% url 'recruitment-survey-question-template-delete' question.id %}"
+                hx-swap="none"
+                hx-confirm="{% trans 'Are you sure want to delete?' %}"
+                style="width: 50%;"
+            >
+                {% csrf_token %}
+                <button type="submit" class="oh-btn oh-btn--danger" style="width: 100%;">
+                    <ion-icon name="trash-outline" role="img" class="md hydrated" aria-label="create outline"></ion-icon>
+                    {% trans "Delete" %}
+                </button>
+            </form>
         </div>
 
         {% else %}
@@ -87,12 +93,18 @@
             </a>
             {% endif %}
             {% if perms.recruitment.delete_recruitmentsurvey %}
-            <a href="{% url 'recruitment-survey-question-template-delete' question.id %}"
-                onclick="return confirm('{% trans " Are you sure want to delete?" %}')" class="oh-btn oh-btn--danger"
-                style="width: 100%;">
-                <ion-icon name="trash-outline" role="img" class="md hydrated" aria-label="create outline"></ion-icon>
-                {% trans "Delete" %}
-            </a>
+            <form
+                hx-post="{% url 'recruitment-survey-question-template-delete' question.id %}"
+                hx-swap="none"
+                hx-confirm="{% trans 'Are you sure want to delete?' %}"
+                style="width: 100%;"
+            >
+                {% csrf_token %}
+                <button type="submit" class="oh-btn oh-btn--danger" style="width: 100%;">
+                    <ion-icon name="trash-outline" role="img" class="md hydrated" aria-label="create outline"></ion-icon>
+                    {% trans "Delete" %}
+                </button>
+            </form>
             {% endif %}
         </div>
         {% endif %}

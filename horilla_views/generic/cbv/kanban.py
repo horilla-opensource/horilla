@@ -57,12 +57,14 @@ class HorillaKanbanView(HorillaCardView):
                         {
                             "pk": obj.pk,
                             "label": str(label),
+                            "instance": obj,
                         }
                     )
 
             elif hasattr(field, "choices") and field.choices:
                 related_groups = [
-                    {"pk": value, "label": str(label)} for value, label in field.choices
+                    {"pk": value, "label": str(label), "instance": value}
+                    for value, label in field.choices
                 ]
                 context["is_choice_group"] = True
 
@@ -77,6 +79,7 @@ class HorillaKanbanView(HorillaCardView):
 
                 grouped_items[pk] = {
                     "label": rg["label"],
+                    "instance": rg.get("instance"),
                     "items": queryset.filter(**{self.group_key: pk}),
                 }
 
@@ -110,6 +113,7 @@ class HorillaKanbanView(HorillaCardView):
 
                 paginated_groups[key] = {
                     "label": group["label"],
+                    "instance": group.get("instance"),
                     "page_obj": page_obj,
                 }
             context.update(

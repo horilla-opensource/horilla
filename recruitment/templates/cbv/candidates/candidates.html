@@ -44,14 +44,16 @@
 </style>
 
 
-<div hx-get="{% url 'nav-candidate' %}?{{request.GET.urlencode}}" hx-trigger="load"></div>
+<div id="candidateMainContainer">
+    <div hx-get="{% url 'nav-candidate' %}?{{request.GET.urlencode}}" hx-trigger="load"></div>
 
-{% include "generic/components.html" %}
+    {% include "generic/components.html" %}
 
-<div class="oh-checkpoint-badge mb-2" id="selectedInstances" data-ids="[]" data-clicked="" style="display: none"></div>
+    <div class="oh-checkpoint-badge mb-2" id="selectedInstances" data-ids="[]" data-clicked="" style="display: none"></div>
 
-<div class="oh-wrapper" id="listContainer">
-    <div class="animated-background">
+    <div class="oh-wrapper" id="listContainer">
+        <div class="animated-background">
+        </div>
     </div>
 </div>
 
@@ -70,6 +72,31 @@
 </div>
 
 <script>
+    document.body.addEventListener("htmx:historyRestore", function () {
+        window.location.reload();
+    });
+
+    if (window._candidateContainerReloadHandler) {
+        document.body.removeEventListener(
+            "candidateContainerReload",
+            window._candidateContainerReloadHandler
+        );
+    }
+    window._candidateContainerReloadHandler = function () {
+        var $filter = $("#applyFilter");
+        if ($filter.length) {
+            $filter.click();
+        }
+        var $msg = $("#reloadMessagesButton");
+        if ($msg.length) {
+            $msg.click();
+        }
+    };
+    document.body.addEventListener(
+        "candidateContainerReload",
+        window._candidateContainerReloadHandler
+    );
+
     function archiveCandidate(url, msg) {
         Swal.fire({
             text: msg,
@@ -81,7 +108,17 @@
             cancelButtonText: i18nMessages.cancel,
         }).then((result) => {
             if (result.isConfirmed) {
-                window.location.href = url;
+                $.ajax({
+                    type: "POST",
+                    url: url,
+                    data: {
+                        csrfmiddlewaretoken: getCookie("csrftoken"),
+                    },
+                    success: function () {
+                        $("#applyFilter").click();
+                        $("#reloadMessagesButton").click();
+                    },
+                });
             }
         });
     }
@@ -101,18 +138,17 @@
             cancelButtonText: i18nMessages.cancel,
         }).then((result) => {
             if (result.isConfirmed) {
-                const form = document.createElement('form');
-                form.setAttribute('action', url);
-                form.setAttribute('method', 'post');
-
-                const csrfTokenInput = document.createElement('input');
-                csrfTokenInput.setAttribute('type', 'hidden');
-                csrfTokenInput.setAttribute('name', 'csrfmiddlewaretoken');
-                csrfTokenInput.value = getCSRFToken();
-                form.appendChild(csrfTokenInput);
-
-                document.body.appendChild(form);
-                form.submit();
+                $.ajax({
+                    type: "POST",
+                    url: url,
+                    data: {
+                        csrfmiddlewaretoken: getCSRFToken(),
+                    },
+                    success: function () {
+                        $("#applyFilter").click();
+                        $("#reloadMessagesButton").click();
+                    },
+                });
             }
         });
     }
@@ -129,9 +165,14 @@
             cancelButtonText: i18nMessages.cancel,
         }).then((result) => {
             if (result.isConfirmed) {
-                window.location.href = url;
-            } else {
-                pass
+                $.ajax({
+                    type: "GET",
+                    url: url,
+                    success: function () {
+                        $("#applyFilter").click();
+                        $("#reloadMessagesButton").click();
+                    },
+                });
             }
         });
     }
@@ -161,14 +202,15 @@
                     e.preventDefault();
                     $.ajax({
                         type: "POST",
-                        url: "/recruitment/candidate-bulk-archive?is_active=False",
+                        url: "/recruitment/candidate-bulk-archive/?is_active=False",
                         data: {
                             csrfmiddlewaretoken: getCookie("csrftoken"),
                             ids: JSON.stringify(ids),
                         },
                         success: function (response, textStatus, jqXHR) {
                             if (jqXHR.status === 200) {
-                                location.reload(); // Reload the current page
+                                $("#applyFilter").click();
+                                $("#reloadMessagesButton").click();
                             } else {
                                 // console.log("Unexpected HTTP status:", jqXHR.status);
                             }
@@ -204,14 +246,15 @@
                     e.preventDefault();
                     $.ajax({
                         type: "POST",
-                        url: "/recruitment/candidate-bulk-archive?is_active=True",
+                        url: "/recruitment/candidate-bulk-archive/?is_active=True",
                         data: {
                             csrfmiddlewaretoken: getCookie("csrftoken"),
                             ids: JSON.stringify(ids),
                         },
                         success: function (response, textStatus, jqXHR) {
                             if (jqXHR.status === 200) {
-                                location.reload(); // Reload the current page
+                                $("#applyFilter").click();
+                                $("#reloadMessagesButton").click();
                             } else {
                                 // console.log("Unexpected HTTP status:", jqXHR.status);
                             }
@@ -252,14 +295,15 @@
 
                     $.ajax({
                         type: "POST",
-                        url: "/recruitment/candidate-bulk-delete",
+                        url: "/recruitment/candidate-bulk-delete/",
                         data: {
                             csrfmiddlewaretoken: getCookie("csrftoken"),
                             ids: JSON.stringify(ids),
                         },
                         success: function (response, textStatus, jqXHR) {
                             if (jqXHR.status === 200) {
-                                location.reload(); // Reload the current page
+                                $("#applyFilter").click();
+                                $("#reloadMessagesButton").click();
                             } else {
                                 // console.log("Unexpected HTTP status:", jqXHR.status);
                             }

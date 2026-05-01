@@ -831,14 +831,12 @@ class QuestionForm(ModelForm):
 
     def clean(self):
         cleaned_data = super().clean()
-        recruitment = self.cleaned_data["recruitment"]
-        question_type = self.cleaned_data["type"]
+        recruitment = self.cleaned_data.get("recruitment")
+        question_type = self.cleaned_data.get("type")
         options = self.cleaned_data.get("options")
-        if not recruitment.exists():  # or jobs.exists()):
-            raise ValidationError(
-                {"recruitment": _("Choose any recruitment to apply this question")}
-            )
-        self.recruitment = recruitment
+        self.recruitment = (
+            recruitment if recruitment is not None else Recruitment.objects.none()
+        )
         if question_type in ["options", "multiple"] and (
             options is None or options == ""
         ):
@@ -1297,10 +1295,10 @@ class ScheduleInterviewForm(BaseModelForm):
     def clean(self):
 
         instance = self.instance
-        cleaned_data = super().clean()
+        cleaned_data = super().clean() or {}
         interview_date = cleaned_data.get("interview_date")
         interview_time = cleaned_data.get("interview_time")
-        managers = cleaned_data["employee_id"]
+        managers = cleaned_data.get("employee_id") or []
         if not instance.pk and interview_date and interview_date < date.today():
             self.add_error("interview_date", _("Interview date cannot be in the past."))
 
@@ -1315,7 +1313,7 @@ class ScheduleInterviewForm(BaseModelForm):
                     "interview_time", _("Interview time cannot be in the past.")
                 )
 
-        if apps.is_installed("leave"):
+        if managers and apps.is_installed("leave"):
             from leave.models import LeaveRequest
 
             leave_employees = LeaveRequest.objects.filter(
@@ -1327,7 +1325,7 @@ class ScheduleInterviewForm(BaseModelForm):
         employees = [
             leave.employee_id.get_full_name()
             for leave in leave_employees
-            if interview_date in leave.requested_dates()
+            if interview_date and interview_date in leave.requested_dates()
         ]
 
         if employees:

@@ -46,9 +46,9 @@
                             <li class="oh-dropdown__item">
                                 <a class="oh-dropdown__link"
                                 hx-get="{% url 'add-candidate-to-stage' %}?stage_id={{stage.id}}"
-                                hx-target="#createTarget"
+                                hx-target="#objectCreateModalTarget"
                                 data-toggle="oh-modal-toggle"
-                                data-target="#createModal"  data-key=".oh-kanban__section">{% trans "Add Candidate" %}</a>
+                                data-target="#objectCreateModal"  data-key=".oh-kanban__section">{% trans "Add Candidate" %}</a>
                             </li>
                             {% endif %}
                             {% if perms.recruitment.change_stage or request.user.employee_get in rec.recruitment_managers.all or request.user.employee_get in stage.stage_managers.all %}

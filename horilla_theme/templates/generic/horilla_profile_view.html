@@ -54,6 +54,30 @@
 								class="flex justify-end items-start mb-2 lg:mb-0"
 							>
 								<div class="flex items-center gap-4">
+									{% if request.resolver_match.url_name == "candidate-view" or request.resolver_match.url_name == "candidate-view-individual" %}
+									<button
+										type="button"
+										title="{% trans 'Back' %}"
+										class="px-3 py-1 text-xs bg-primary-600 text-white rounded-full hover:bg-primary-800 transition duration-300 flex items-center gap-2"
+										onclick="
+											if (window.history && history.pushState) {
+												history.pushState({}, '', '{% url 'candidate-view' %}');
+											}
+											var listHtml = '<div hx-get=&quot;/recruitment/nav-candidate/?&quot; hx-trigger=&quot;load&quot;></div>'
+												+ '<div class=&quot;oh-checkpoint-badge mb-2&quot; id=&quot;selectedInstances&quot; data-ids=&quot;[]&quot; data-clicked=&quot;&quot; style=&quot;display: none&quot;></div>'
+												+ '<div class=&quot;oh-wrapper&quot; id=&quot;listContainer&quot;><div class=&quot;animated-background&quot;></div></div>';
+											var container = document.getElementById('candidateMainContainer');
+											if (container) {
+												container.innerHTML = listHtml;
+												if (window.htmx) { htmx.process(container); }
+												setTimeout(function () { $('#applyFilter').click(); }, 100);
+											}
+										"
+									>
+										<i class="fa-solid fa-arrow-left"></i>
+										{% trans "Back" %}
+									</button>
+									{% endif %}
 									<!-- Settings Button -->
 									{% if actions %}
 									<div

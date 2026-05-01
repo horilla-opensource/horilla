@@ -1,8 +1,18 @@
+{% load i18n %}
+<div class="d-flex mb-2">
+    <button
+        type="button"
+        class="oh-btn oh-btn--light-bkg"
+        onclick="if (window.history.length > 1) { window.history.back(); } else { window.location.href='{% url 'recruitment-view' %}'; }"
+    >
+        {% trans "Back" %}
+    </button>
+</div>
 {% include "generic/horilla_form.html" %}
 <script>
     $(document).ready(function () {
-        if (!$("#id_publish_in_linkedin").is(":checked")) {
-            toggleLinkedIn()
-            }
+        if (typeof toggleLinkedIn === "function") {
+            toggleLinkedIn();
+        }
     });
 </script>

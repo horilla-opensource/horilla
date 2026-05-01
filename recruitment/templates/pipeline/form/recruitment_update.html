@@ -15,8 +15,33 @@
     </button>
 </div>
 <div class="oh-modal__dialog-body" id="">
-    <form hx-post="{% url 'recruitment-update-pipeline' form.instance.id %}" hx-target="#objectUpdateModalTarget"
-        class="oh-general__tab-target oh-profile-section">
+    {% if form.errors %}
+        <div class="oh-alert-container mb-2">
+            {% for field in form %}
+                {% for error in field.errors %}
+                    <div class="oh-alert oh-alert--animated oh-alert--danger">
+                        {{ field.label }}: {{ error }}
+                    </div>
+                {% endfor %}
+            {% endfor %}
+            {% for error in form.non_field_errors %}
+                <div class="oh-alert oh-alert--animated oh-alert--danger">
+                    {{ error }}
+                </div>
+            {% endfor %}
+        </div>
+    {% endif %}
+    <form
+        id="pipelineRecruitmentUpdateForm"
+        hx-post="{% url 'recruitment-update-pipeline' form.instance.id %}"
+        {% if request.META.HTTP_HX_TARGET %}
+            hx-target="#{{request.META.HTTP_HX_TARGET}}"
+        {% else %}
+            hx-target="#genericModalBody"
+        {% endif %}
+        class="oh-general__tab-target oh-profile-section"
+        novalidate
+    >
         {% csrf_token %}
         <div>
             {% csrf_token %}
@@ -119,6 +144,23 @@
         </div>
     </form>
     <script>
-        $("[hx-target='#recruitmentUpdate'] [name=description]").hide();
+        (function () {
+            var form = document.getElementById("pipelineRecruitmentUpdateForm");
+            if (!form) return;
+
+            form.addEventListener("submit", function () {
+                // Ensure summernote html is synced into the backing textarea before htmx serializes.
+                var $description = $(form).find("[name='description']");
+                if ($description.length && $description.data("summernote")) {
+                    $description.val($description.summernote("code"));
+                }
+            });
+
+            // Bring the first validation error into view after failed submit swaps.
+            var firstError = form.querySelector(".errorlist, .oh-alert--danger");
+            if (firstError) {
+                firstError.scrollIntoView({ behavior: "smooth", block: "center" });
+            }
+        })();
     </script>
 </div>

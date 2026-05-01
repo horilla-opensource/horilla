@@ -90,6 +90,11 @@
       </div>
 
       <div class="d-flex align-items-center gap-3">
+        {% if request.resolver_match.url_name == "candidate-view" or request.resolver_match.url_name == "candidate-view-individual" %}
+        <a href="{% url 'candidate-view' %}" class="oh-btn oh-btn--light-bkg">
+          {% trans "Back" %}
+        </a>
+        {% endif %}
         {% if instances %}
         <div class="container-right-left-arrows float-right">
           <a

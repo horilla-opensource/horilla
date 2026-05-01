@@ -202,6 +202,7 @@ class StageFormView(HorillaFormView):
         Handles valid form submission, updating or saving a stage.
         """
         if form.is_valid():
+            targets_to_reload = []
             if form.instance.pk:
                 stage = form.save()
                 stage.save()
@@ -248,8 +249,10 @@ class StageFormView(HorillaFormView):
                         icon="people-circle",
                         redirect=reverse("pipeline"),
                     )
+                # Refresh pipeline tab content immediately after creating a stage.
+                targets_to_reload.append("#applyFilter")
             messages.success(self.request, message)
-            return self.HttpResponse()
+            return self.HttpResponse(targets_to_reload=targets_to_reload)
         return super().form_valid(form)
 
 

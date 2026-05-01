@@ -92,6 +92,13 @@ def recruitment_delete(request, rec_id):
         recruitment_obj = Recruitment.objects.all()
     except (Recruitment.DoesNotExist, OverflowError):
         messages.error(request, _("Recruitment Does not exists.."))
+    if request.META.get("HTTP_HX_REQUEST") == "true":
+        return HttpResponse(
+            "<script>"
+            "$('#applyFilter').click();"
+            "$('#reloadMessagesButton').click();"
+            "</script>"
+        )
     return HorillaRedirect(request)
 
 
@@ -213,8 +220,17 @@ def stage_delete(request, stage_id):
         messages.error(request, _("Stage Does not exists.."))
     hx_request = request.META.get("HTTP_HX_REQUEST")
     hx_current_url = request.META.get("HTTP_HX_CURRENT_URL")
-    if hx_request and hx_request == "true" and "stage-view" in hx_current_url:
-        return redirect(f"/recruitment/stage-data/{recruitment_id}/")
+    if hx_request and hx_request == "true":
+        if hx_current_url and "stage-view" in hx_current_url:
+            return HttpResponse(
+                "<script>"
+                "$('#applyFilter').click();"
+                "$('#reloadMessagesButton').click();"
+                "</script>"
+            )
+        return HttpResponse(
+            "<script>" "$('#reloadMessagesButton').click();" "</script>"
+        )
     return HorillaRedirect(request)
 
 
@@ -248,6 +264,10 @@ def candidate_delete(request, cand_id):
             )
     except (Candidate.DoesNotExist, OverflowError):
         messages.error(request, _("Candidate Does not exists."))
+    if request.META.get("HTTP_HX_REQUEST") == "true":
+        response = HttpResponse(status=204)
+        response["HX-Trigger"] = "candidateContainerReload"
+        return response
     return HorillaRedirect(request)
 
 
@@ -285,12 +305,20 @@ def candidate_archive(request, cand_id):
     """
     try:
         candidate_obj = Candidate.objects.get(id=cand_id)
-        candidate_obj.is_active = not candidate_obj.is_active
-        candidate_obj.save()
-        message = _("archived") if not candidate_obj.is_active else _("un-archived")
+        new_state = not candidate_obj.is_active
+        # Use queryset .update() to bypass Candidate.save() validation
+        # (job_position_id checks against recruitment.open_positions), since
+        # archiving should only toggle is_active and not re-validate the
+        # candidate's recruitment data.
+        Candidate.objects.filter(id=cand_id).update(is_active=new_state)
+        message = _("archived") if not new_state else _("un-archived")
         messages.success(request, _("Candidate is %(message)s") % {"message": message})
     except (Candidate.DoesNotExist, OverflowError):
         messages.error(request, _("Candidate Does not exists."))
+    if request.META.get("HTTP_HX_REQUEST") == "true":
+        response = HttpResponse(status=204)
+        response["HX-Trigger"] = "candidateContainerReload"
+        return response
     return HorillaRedirect(request)
 
 
@@ -309,9 +337,12 @@ def candidate_bulk_archive(request):
         is_active = False
         message = _("archived")
     for cand_id in ids:
-        candidate_obj = Candidate.objects.get(id=cand_id)
-        candidate_obj.is_active = is_active
-        candidate_obj.save()
+        candidate_obj = Candidate.objects.filter(id=cand_id).first()
+        if not candidate_obj:
+            messages.error(request, _("Candidate not found."))
+            continue
+        # Archive actions only need status flip; bypass model-level full save validation.
+        Candidate.objects.filter(id=cand_id).update(is_active=is_active)
         messages.success(
             request,
             _("{candidate} is {message}").format(

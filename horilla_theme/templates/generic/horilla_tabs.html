@@ -57,13 +57,13 @@
 							id="badge-{{view_id}}{{forloop.counter}}"
 							{% if tab.badge_label %}
 								data-badge-label="{{tab.badge_label}}"
-								title="0 {{tab.badge_label|default:"Items"}}"
+								title="{{tab.badge|default:0}} {{tab.badge_label|default:"Items"}}"
 							{% else %}
-								title="0 {% trans 'Items' %}"
+								title="{{tab.badge|default:0}} {% trans 'Items' %}"
 							{% endif %}
 							onclick="event.stopPropagation()"
 						>
-							0
+							{{ tab.badge|default:0 }}
 						</span>
 
 						{{ tab.title }} {% if tab.actions %}

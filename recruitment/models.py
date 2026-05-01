@@ -1013,11 +1013,18 @@ class Candidate(HorillaModel):
 
         return f"'{url}','{message}'"
 
+    def get_archive_action_url(self):
+        """
+        This method returns just the archive/un-archive endpoint URL
+        (without JS-formatted arguments), suitable for direct HTMX use.
+        """
+        return reverse_lazy("rec-candidate-archive", kwargs={"cand_id": self.pk})
+
     def get_delete_url(self):
         """
         This method to get delete url
         """
-        url = reverse_lazy("generic-delete")
+        url = reverse_lazy("rec-candidate-delete", kwargs={"cand_id": self.pk})
         return url
 
     def get_self_tracking_url(self):

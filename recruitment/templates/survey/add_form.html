@@ -1,6 +1,24 @@
-<form method="post" hx-post="{% url 'survey-template-question-add' %}" hx-target="#templateModalBody">
-    {{form.as_p}}
+{% load i18n widget_tweaks %}
+<form method="post" hx-post="{% url 'survey-template-question-add' %}" hx-target="#genericModalBody">
+    {% csrf_token %}
+    <div class="row">
+        <div class="col-12">{{ form.non_field_errors }}</div>
+        {% for field in form.visible_fields %}
+            <div class="col-12 col-md-6 mb-2" id="id_{{field.name}}_parent_div">
+                <label class="oh-label {% if field.field.required %} required-star{% endif %}" for="id_{{ field.name }}">
+                    {% trans field.label %}
+                </label>
+                {{ field|add_class:'form-control' }}
+                {{ field.errors }}
+            </div>
+        {% endfor %}
+    </div>
+    {% for field in form.hidden_fields %}
+        {{ field }}
+    {% endfor %}
+    <div class="d-flex flex-row-reverse">
+        <button type="submit" class="oh-btn oh-btn--secondary mt-2 mr-0 pl-4 pr-5 oh-btn--w-100-resp">
+            {% trans "Save" %}
+        </button>
+    </div>
 </form>
-<script>
-    $('[hx-target="#templateModalBody"]').find(".col-md-6").removeClass("col-md-6");
-</script>

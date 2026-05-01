@@ -1,4 +1,5 @@
 {% load static %} {% load i18n %}
+{% if not embedded %}
 <div class="oh-modal__dialog-header">
     <h2 class="oh-modal__dialog-title" id="candidateExportLavel">
         {% trans "Export Candidates" %}
@@ -12,6 +13,7 @@
         onsubmit="event.stopPropagation();$(this).parents().find('.oh-modal--show').last().toggleClass('oh-modal--show');"
         id="candidateExportForm">
         {% csrf_token %}
+{% endif %}
         <div class="oh-dropdown__filter-body" id="">
             <div class="oh-accordion">
                 <div class="oh-accordion-header">{% trans "Excel columns" %}</div>
@@ -242,17 +244,12 @@
                 </div>
             </div>
         </div>
-
+{% if not embedded %}
         <div class="oh-modal__dialog-footer p-0 mt-3">
             <button type="submit" class="oh-btn oh-btn--secondary oh-btn--shadow">
                 {% trans "Export" %}
             </button>
         </div>
-<<<<<<< HEAD
-      </div>
-
-
-=======
     </form>
 </div>
->>>>>>> 99553272eb5ec68396db80a610cdcd0901a4dfca
+{% endif %}

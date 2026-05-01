@@ -22,8 +22,18 @@
 
 <script>
 	function toggleLinkedIn(){
+		const isEnabled = $("#id_publish_in_linkedin").is(":checked");
 		const linkedInInput = $("[name='linkedin_account_id']");
-		linkedInInput.closest('div').toggleClass('d-none');
+		const inputContainer = linkedInInput.closest('div');
+		const labelContainer = linkedInInput
+			.closest(".col-12, .col-sm-12, .col-md-12, .col-lg-6, .col-lg-4")
+			.find("label")
+			.first()
+			parent();
+		inputContainer.toggleClass("d-none", !isEnabled);
+		if (labelContainer.length) {
+			labelContainer.toggleClass("d-none", !isEnabled);
+		}
 	};
 </script>
 {% endblock %}

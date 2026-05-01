@@ -176,7 +176,14 @@
                 </div>
             </div>
         </div>
-        <div class="d-flex flex-row-reverse">
+        <div class="d-flex justify-content-between align-items-center">
+            <button
+                type="button"
+                class="mt-4 oh-btn oh-btn--light-bkg"
+                onclick="$(this).closest('.oh-modal--show').removeClass('oh-modal--show')"
+            >
+                {% trans "Back" %}
+            </button>
             <button
                 type="submit"
                 class="mt-4 pl-5 pr-5 oh-btn oh-btn--secondary"
@@ -189,9 +196,8 @@
 
 <script>
     $(document).ready(function () {
-        if (!$("#id_publish_in_linkedin").is(":checked")) {
-            const linkedInInput = $("[name='linkedin_account_id']");
-		    linkedInInput.closest('div').toggleClass('d-none');
-          }
+        if (typeof toggleLinkedIn === "function") {
+            toggleLinkedIn();
+        }
     });
 </script>

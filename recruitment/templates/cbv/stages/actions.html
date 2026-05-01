@@ -26,9 +26,13 @@
         </a>
       {% endif %}
       {% if perms.recruitment.delete_stage %}
-      <form action="{% url 'rec-stage-delete' instance.id %}"
-        onsubmit="return confirm('{% trans "Are you sure you want to delete this stage?" %}');" method='post' class="w-50"
-        >
+      <form
+        class="w-50"
+        hx-post="{% url 'rec-stage-delete' instance.id %}"
+        hx-swap="none"
+        hx-confirm="{% trans 'Are you sure you want to delete this stage?' %}"
+        hx-on::after-request="if(event.detail.successful){$('#applyFilter').click();$('#reloadMessagesButton').click();}"
+      >
         {% csrf_token %}
         <button
           type="submit"
