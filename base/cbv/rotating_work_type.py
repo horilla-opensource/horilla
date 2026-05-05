@@ -19,7 +19,7 @@ from base.methods import choosesubordinates, filtersubordinates, is_reportingman
 from base.models import RotatingWorkTypeAssign
 from employee.models import Employee
 from horilla.http.response import HorillaRedirect
-from horilla_views.cbv_methods import login_required
+from horilla_views.cbv_methods import hx_request_required, login_required
 from horilla_views.generic.cbv.views import (
     HorillaDetailedView,
     HorillaFormView,
@@ -264,6 +264,7 @@ class RotatingWorkDetailView(HorillaDetailedView):
 
 
 @method_decorator(login_required, name="dispatch")
+@method_decorator(hx_request_required, name="dispatch")
 @method_decorator(
     manager_can_enter("base.view_rotatingworktypeassign"), name="dispatch"
 )

@@ -108,7 +108,10 @@ class EmployeeFaceDetectionGetPostAPIView(APIView):
             if isinstance(data, QueryDict):
                 data = data.dict()
             data["employee_id"] = employee_id
-            serializer = EmployeeFaceDetectionSerializer(data=data)
+            instance = EmployeeFaceDetection.objects.filter(
+                employee_id=employee_id
+            ).first()
+            serializer = EmployeeFaceDetectionSerializer(data=data, instance=instance)
             if serializer.is_valid():
                 serializer.save()
                 return Response(serializer.data, status=status.HTTP_201_CREATED)

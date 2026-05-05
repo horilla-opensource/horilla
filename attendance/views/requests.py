@@ -205,6 +205,7 @@ def request_new(request):
 
 
 @login_required
+@hx_request_required
 def create_batch_attendance(request):
     form = BatchAttendanceForm()
     previous_form_data = request.GET.urlencode()
@@ -243,6 +244,7 @@ def create_batch_attendance(request):
 
 
 @login_required
+@hx_request_required
 def get_batches(request):
     batches = BatchAttendance.objects.all()
     return render(
@@ -609,6 +611,7 @@ def cancel_attendance_request(request, attendance_id):
 
 
 @login_required
+@hx_request_required
 def select_all_filter_attendance_request(request):
     page_number = request.GET.get("page")
     filtered = request.GET.get("filter")
@@ -816,6 +819,8 @@ def bulk_reject_attendance_request(request):
                     verb_es=f"Tu solicitud de asistencia para el {attendance.attendance_date} ha sido rechazada",
                     verb_fr=f"Votre demande de présence pour le {attendance.attendance_date} est rejetée",
                     icon="close-circle-outline",
+                    redirect=reverse("request-attendance-view")
+                    + f"?id={attendance.id}",
                 )
         except (Attendance.DoesNotExist, OverflowError):
             messages.error(request, _("Attendance request not found"))

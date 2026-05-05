@@ -54,7 +54,9 @@ class RecruitmentTabView(HorillaTabView):
 
     def __init__(self, **kwargs):
         super().__init__(**kwargs)
-        recruitments = self.filter_class(self.request.GET).qs.filter(is_active=True)
+        recruitments = self.filter_class(self.request.GET).qs.filter(
+            is_active=True, closed=False
+        )
         view_type = self.request.GET.get("view", "card")
         CACHE.set(
             self.request.session.session_key + "pipeline",
@@ -89,6 +91,7 @@ class RecruitmentTabView(HorillaTabView):
 
             self.query_params["view"] = view_type
             tab["badge_label"] = _("Stages")
+            tab["badge"] = rec.stage_set.filter(is_active=True).count()
             tab["actions"] = []
             if rec_manager_perm or change_perm:
                 if add_stage_perm or rec_manager_perm or change_perm:
@@ -263,7 +266,7 @@ class CandidateList(HorillaListView):
         (_("Rating"), "rating_bar"),
         (_("Hired Date"), "hired_date"),
         (_("Scheduled Interview"), "get_interview_count"),
-        (_("Job Position"), "job_position_id"),
+        (_("Job Position"), "job_position_id__job_position"),
         (_("Contact"), "mobile"),
     ]
 
@@ -434,6 +437,7 @@ class CandidateCard(HorillaKanbanView):
     group_key = "stage_id"
     records_per_page = 10
     filter_keys_to_remove = ["rec_id"]
+    group_label_key = "stage"
 
     kanban_attrs = """
         hx-get='{get_details_candidate}'
@@ -446,7 +450,7 @@ class CandidateCard(HorillaKanbanView):
         "image_src": "{get_avatar}",
         "title": "{get_full_name}",
         "email": "{email}",
-        "position": "{job_position_id}",
+        "position": "{job_position_id__job_position}",
     }
 
     group_actions = [
@@ -454,10 +458,10 @@ class CandidateCard(HorillaKanbanView):
             "action": _("Add Candidate"),
             "accessibility": "recruitment.accessibility.add_candidate_accessibility",
             "attrs": """
-                hx-target="#genericModalBody"
+                hx-target="#objectCreateModalTarget"
                 hx-get="{get_add_candidate_url}"
                 data-toggle="oh-modal-toggle"
-                data-target="#genericModal"
+                data-target="#objectCreateModal"
             """,
         },
         {

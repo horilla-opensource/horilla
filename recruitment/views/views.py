@@ -761,11 +761,20 @@ def recruitment_archive(request, rec_id):
         recruitment = Recruitment.objects.get(id=rec_id)
         if recruitment.is_active:
             recruitment.is_active = False
+            messages.success(request, _("Recruitment archived successfully."))
         else:
             recruitment.is_active = True
+            messages.success(request, _("Recruitment un-archived successfully."))
         recruitment.save()
     except (Recruitment.DoesNotExist, OverflowError):
         messages.error(request, _("Recruitment Does not exists.."))
+    if request.META.get("HTTP_HX_REQUEST") == "true":
+        return HttpResponse(
+            "<script>"
+            "$('#applyFilter').click();"
+            "$('#reloadMessagesButton').click();"
+            "</script>"
+        )
     return HorillaRedirect(request)
 
 
@@ -1270,6 +1279,7 @@ def stage_view(request):
 
 
 @login_required
+@hx_request_required
 def stage_data(request, rec_id):
     stages = StageFilter(request.GET).qs.filter(recruitment_id__id=rec_id)
     previous_data = request.GET.urlencode()
@@ -1400,6 +1410,9 @@ def candidate(request):
     form = CandidateCreationForm()
     open_recruitment = Recruitment.objects.filter(closed=False, is_active=True)
     path = "/recruitment/candidate-view"
+    template_name = "candidate/candidate_create_form.html"
+    if request.META.get("HTTP_HX_REQUEST") == "true":
+        template_name = "candidate/candidate_create_modal_form.html"
     if request.method == "POST":
         form = CandidateCreationForm(request.POST, request.FILES)
         if form.is_valid():
@@ -1421,14 +1434,37 @@ def candidate(request):
                 messages.error(request, "Job position field is required")
                 return render(
                     request,
-                    "candidate/candidate_create_form.html",
+                    template_name,
                     {"form": form, "open_recruitment": open_recruitment},
+                )
+            if request.META.get("HTTP_HX_REQUEST") == "true":
+                close_modal_script = ""
+                if request.GET.get("container") != "true":
+                    close_modal_script = (
+                        "$('#objectCreateModal').removeClass('oh-modal--show');"
+                    )
+                container_reload_script = (
+                    "$('#candidateMainContainer').html("
+                    '\'<div hx-get="/recruitment/nav-candidate/?" hx-trigger="load"></div>\' + '
+                    '\'<div class="oh-checkpoint-badge mb-2" id="selectedInstances" data-ids="[]" data-clicked="" style="display: none"></div>\' + '
+                    '\'<div class="oh-wrapper" id="listContainer"><div class="animated-background"></div></div>\''
+                    ");"
+                    "htmx.process($('#candidateMainContainer')[0]);"
+                )
+                if request.GET.get("container") != "true":
+                    container_reload_script = "$('#applyFilter').click();"
+                return HttpResponse(
+                    "<script>"
+                    + close_modal_script
+                    + container_reload_script
+                    + "$('#reloadMessagesButton').click();"
+                    + "</script>"
                 )
             return redirect(path)
 
     return render(
         request,
-        "candidate/candidate_create_form.html",
+        template_name,
         {"form": form, "open_recruitment": open_recruitment},
     )
 
@@ -1914,6 +1950,9 @@ def candidate_update(request, cand_id, **kwargs):
         candidate_obj = Candidate.objects.get(id=cand_id)
         form = CandidateCreationForm(instance=candidate_obj)
         path = "/recruitment/candidate-view"
+        template_name = "candidate/candidate_create_form.html"
+        if request.META.get("HTTP_HX_REQUEST") == "true":
+            template_name = "candidate/candidate_create_modal_form.html"
         if request.method == "POST":
             form = CandidateCreationForm(
                 request.POST, request.FILES, instance=candidate_obj
@@ -1940,8 +1979,31 @@ def candidate_update(request, cand_id, **kwargs):
                     path = "/onboarding/candidates-view"
                 candidate_obj.save()
                 messages.success(request, _("Candidate Updated Successfully."))
+                if request.META.get("HTTP_HX_REQUEST") == "true":
+                    close_modal_script = ""
+                    if request.GET.get("container") != "true":
+                        close_modal_script = (
+                            "$('#objectCreateModal').removeClass('oh-modal--show');"
+                        )
+                    container_reload_script = (
+                        "$('#candidateMainContainer').html("
+                        '\'<div hx-get="/recruitment/nav-candidate/?" hx-trigger="load"></div>\' + '
+                        '\'<div class="oh-checkpoint-badge mb-2" id="selectedInstances" data-ids="[]" data-clicked="" style="display: none"></div>\' + '
+                        '\'<div class="oh-wrapper" id="listContainer"><div class="animated-background"></div></div>\''
+                        ");"
+                        "htmx.process($('#candidateMainContainer')[0]);"
+                    )
+                    if request.GET.get("container") != "true":
+                        container_reload_script = "$('#applyFilter').click();"
+                    return HttpResponse(
+                        "<script>"
+                        + close_modal_script
+                        + container_reload_script
+                        + "$('#reloadMessagesButton').click();"
+                        + "</script>"
+                    )
                 return redirect(path)
-        return render(request, "candidate/candidate_create_form.html", {"form": form})
+        return render(request, template_name, {"form": form})
     except (Candidate.DoesNotExist, OverflowError):
         messages.error(request, _("Candidate Does not exists.."))
     return HorillaRedirect(request)
@@ -1951,14 +2013,19 @@ def candidate_update(request, cand_id, **kwargs):
 @login_required
 @manager_can_enter(perm="recruitment.change_candidate")
 def candidate_conversion(request, cand_id, **kwargs):
+    container_request = request.GET.get("container") == "true"
     candidate_obj = Candidate.find(cand_id)
 
     if not candidate_obj:
         messages.error(request, ("Candidate not found"))
+        if container_request:
+            return JsonResponse({"message": "Candidate not found"}, status=404)
         return HorillaRedirect(request)
 
     if candidate_obj.converted_employee_id:
         messages.info(request, "This candidate is already converted to an employee.")
+        if container_request:
+            return JsonResponse({"message": "Already converted"}, status=200)
         return HorillaRedirect(request)
 
     user_exists = HorillaUser.objects.filter(username=candidate_obj.email).exists()
@@ -2009,6 +2076,9 @@ def candidate_conversion(request, cand_id, **kwargs):
 
     else:
         messages.info(request, "An employee with this email already exists")
+
+    if container_request:
+        return JsonResponse({"message": "Success"}, status=200)
 
     if "HTTP_HX_REQUEST" in request.META:
         return HttpResponse(status=204, headers={"HX-Refresh": "true"})
@@ -2185,14 +2255,18 @@ def interview_delete(request, interview_id):
     Args:
         interview_id: InterviewSchedule instance ID
     """
-    view = request.GET.get("view", "false")
-
     try:
         InterviewSchedule.objects.get(id=interview_id).delete()
         messages.success(request, _("Interview deleted successfully."))
     except:
         messages.error(request, _("Scheduled Interview not found"))
-
+    if request.META.get("HTTP_HX_REQUEST") == "true":
+        return HttpResponse(
+            "<script>"
+            "$('#applyFilter').click();"
+            "$('#reloadMessagesButton').click();"
+            "</script>"
+        )
     return HorillaRedirect(request)
 
 
@@ -2252,22 +2326,20 @@ def interview_edit(request, interview_id):
 @login_required
 def get_interview_managers(request):
     cand_id = request.GET.get("candidate_id")
-    if not cand_id or not (candidate_obj := Candidate.find(cand_id)):
-        message = (
-            _("Missing Candidate ID")
-            if not cand_id
-            else _("No Candidate found matching the query.")
-        )
-        return HorillaRedirect(request, message=message)
-
     form = ScheduleInterviewForm()
-    managers = candidate_obj.recruitment_id.recruitment_managers.all()
-
-    form.fields["employee_id"].queryset = managers
+    candidate_obj = Candidate.find(cand_id) if cand_id else None
+    if candidate_obj:
+        managers = candidate_obj.recruitment_id.recruitment_managers.all()
+        form.fields["employee_id"].queryset = managers
+    else:
+        form.fields["employee_id"].queryset = form.fields["employee_id"].queryset.none()
     pk = request.GET.get("pk")
     if pk:
-        interviewer = InterviewSchedule.objects.get(id=pk)
-        form.fields["employee_id"].initial = interviewer.employee_id.all()
+        try:
+            interviewer = InterviewSchedule.objects.get(id=pk)
+            form.fields["employee_id"].initial = interviewer.employee_id.all()
+        except InterviewSchedule.DoesNotExist:
+            pass
     return render(
         request,
         "candidate/interview_form.html",
@@ -2586,6 +2658,10 @@ def skill_zone_delete(request, sz_id):
             messages.error(request, _("Skill zone not found."))
     except ProtectedError:
         messages.error(request, _("Related entries exists"))
+    if request.META.get("HTTP_HX_REQUEST") == "true":
+        response = HttpResponse(status=204)
+        response["HX-Trigger"] = "skillZoneContainerReload"
+        return response
     return HttpResponse(
         "<script>$('.filterButton')[0].click();reloadMessage();</script>"
     )
@@ -2628,6 +2704,10 @@ def skill_zone_archive(request, sz_id):
         skill_zone.save()
     else:
         messages.error(request, _("Skill zone not found."))
+    if request.META.get("HTTP_HX_REQUEST") == "true":
+        response = HttpResponse(status=204)
+        response["HX-Trigger"] = "skillZoneContainerReload"
+        return response
     return redirect(skill_zone_view)
 
 
@@ -2790,10 +2870,15 @@ def skill_zone_cand_delete(request, sz_cand_id):
         messages.error(request, _("Skill zone not found."))
     except ProtectedError:
         messages.error(request, _("Related entries exists"))
+    if request.META.get("HTTP_HX_REQUEST") == "true":
+        response = HttpResponse(status=204)
+        response["HX-Trigger"] = "skillZoneContainerReload"
+        return response
     return redirect(skill_zone_view)
 
 
 @login_required
+@hx_request_required
 @manager_can_enter(perm="recruitment.view_skillzonecandidate")
 def skill_zone_cand_filter(request):
     """
@@ -2871,6 +2956,10 @@ def skill_zone_cand_delete(request, sz_cand_id):
         messages.error(request, _("Candidate not found."))
     except ProtectedError:
         messages.error(request, _("Related entries exists"))
+    if request.META.get("HTTP_HX_REQUEST") == "true":
+        response = HttpResponse(status=204)
+        response["HX-Trigger"] = "skillZoneContainerReload"
+        return response
     return redirect(skill_zone_view)
 
 
@@ -2955,6 +3044,7 @@ def open_recruitments(request):
     return response
 
 
+@login_required
 @hx_request_required
 def recruitment_details(request, id):
     """
@@ -3371,6 +3461,7 @@ def skills_view(request):
 
 
 @login_required
+@hx_request_required
 def create_skills(request):
     """
     This method is used to create the skills
@@ -3418,6 +3509,7 @@ def create_skills(request):
 
 
 @login_required
+@hx_request_required
 @permission_required("recruitment.delete_rejectreason")
 def delete_skills(request, id=None):
     """
@@ -3636,6 +3728,7 @@ def hired_candidate_chart(request):
 
 
 @login_required
+@hx_request_required
 def candidate_document_request(request):
     """
     This function is used to create document requests of an employee in employee requests view.
@@ -3654,7 +3747,13 @@ def candidate_document_request(request):
         if form.is_valid():
             form.save()
             messages.success(request, _("Document request created successfully"))
-            return HorillaRedirect(request)
+            return HttpResponse(
+                "<script>"
+                "$('.oh-modal--show').removeClass('oh-modal--show');"
+                "$('#applyFilter').click();"
+                "$('#reloadMessagesButton').click();"
+                "</script>"
+            )
 
     context = {
         "form": form,

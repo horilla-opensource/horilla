@@ -28,7 +28,12 @@ from xhtml2pdf import pisa
 from employee.forms import BulkUpdateFieldForm
 from horilla.horilla_middlewares import _thread_locals
 from horilla.http.response import HorillaRedirect
-from horilla_views.cbv_methods import export_xlsx, login_required, permission_required
+from horilla_views.cbv_methods import (
+    export_xlsx,
+    hx_request_required,
+    login_required,
+    permission_required,
+)
 from horilla_views.forms import DynamicBulkUpdateForm
 from horilla_views.generic.cbv.views import (
     HorillaCardView,
@@ -207,8 +212,10 @@ class ListCandidates(HorillaListView):
             "action": _("Edit"),
             "icon": "create-outline",
             "attrs": """class="oh-btn oh-btn--light-bkg w-100"
-            onclick="event.stopPropagation()
-            window.location.href='{get_update_url}' "
+            hx-get="{get_update_url}?container=true"
+            hx-target="#candidateMainContainer"
+            hx-swap="innerHTML"
+            hx-push-url="false"
              """,
         },
         {
@@ -217,8 +224,10 @@ class ListCandidates(HorillaListView):
             "icon": "archive",
             "attrs": """
                 class="oh-btn oh-btn--danger-outline oh-btn--light-bkg w-100"
-                onclick="event.stopPropagation()
-                archiveCandidate({get_archive_url});  "
+                hx-post="{get_archive_action_url}"
+                hx-swap="none"
+                hx-confirm="Do you want to archive this candidate?"
+                onclick="event.stopPropagation();"
             """,
         },
         {
@@ -227,8 +236,10 @@ class ListCandidates(HorillaListView):
             "icon": "archive",
             "attrs": """
                 class="oh-btn oh-btn--danger-outline oh-btn--light-bkg w-100"
-                onclick="event.stopPropagation()
-                archiveCandidate({get_archive_url});  "
+                hx-post="{get_archive_action_url}"
+                hx-swap="none"
+                hx-confirm="Do you want to un-archive this candidate?"
+                onclick="event.stopPropagation();"
             """,
         },
         {
@@ -236,10 +247,10 @@ class ListCandidates(HorillaListView):
             "icon": "trash-outline",
             "attrs": """
                     class="oh-btn oh-btn--danger-outline oh-btn--light-bkg w-100"
-                    hx-get="{get_delete_url}?model=recruitment.candidate&pk={pk}"
-                    data-toggle="oh-modal-toggle"
-                    data-target="#deleteConfirmation"
-                    hx-target="#deleteConfirmationBody"
+                    hx-post="{get_delete_url}"
+                    hx-swap="none"
+                    hx-confirm="Are you sure you want to delete this candidate?"
+                    onclick="event.stopPropagation();"
                 """,
         },
     ]
@@ -292,7 +303,10 @@ class ListCandidates(HorillaListView):
     #             """
     row_attrs = """
                 {is_employee_converted}
-                onclick="window.location.href='{get_individual_url}?instance_ids={ordered_ids}'"
+                hx-get="{get_profile_url}?instance_ids={ordered_ids}"
+                hx-target="#candidateMainContainer"
+                hx-swap="innerHTML"
+                hx-push-url="true"
                 """
 
     def export_data(self, *args, **kwargs):
@@ -624,8 +638,9 @@ class CardCandidates(HorillaCardView):
         {
             "action": _("Edit Profile"),
             "attrs": """
-                onclick="event.stopPropagation()
-                window.location.href='{get_update_url}' "
+                hx-get="{get_update_url}?container=true"
+                hx-target="#candidateMainContainer"
+                hx-swap="innerHTML"
                 class="oh-dropdown__link"
 
             """,
@@ -634,18 +649,20 @@ class CardCandidates(HorillaCardView):
             "action": "archive_status",
             "attrs": """
                 class="oh-dropdown__link"
-                onclick="archiveCandidate({get_archive_url});"
-
-
+                hx-post="{get_archive_action_url}"
+                hx-swap="none"
+                hx-confirm="Do you want to change the archive status of this candidate?"
+                onclick="event.stopPropagation();"
             """,
         },
         {
             "action": _("Delete"),
             "attrs": """
                 class="oh-dropdown__link oh-dropdown__link--danger"
-                onclick="event.stopPropagation();
-                deleteCandidate('{get_delete_url}'); "
-
+                hx-post="{get_delete_url}"
+                hx-swap="none"
+                hx-confirm="Are you sure you want to delete this candidate?"
+                onclick="event.stopPropagation();"
             """,
         },
     ]
@@ -682,7 +699,10 @@ class CardCandidates(HorillaCardView):
     ]
     card_status_class = "hired-{hired} canceled-{canceled}"
     card_attrs = """
-                onclick="window.location.href='{get_individual_url}?instance_ids={ordered_ids}'"
+                hx-get="{get_profile_url}?instance_ids={ordered_ids}"
+                hx-target="#candidateMainContainer"
+                hx-swap="innerHTML"
+                hx-push-url="true"
                 """
 
     records_per_page = 30
@@ -699,7 +719,9 @@ class CandidateNav(HorillaNavView):
         super().__init__(**kwargs)
         self.search_url = reverse("list-candidate")
         self.create_attrs = f"""
-                            href='{reverse_lazy('candidate-create')}'"
+                            hx-get="{reverse_lazy('candidate-create')}?container=true"
+                            hx-target="#candidateMainContainer"
+                            hx-swap="innerHTML"
                             """
         self.actions = [
             {
@@ -792,6 +814,7 @@ class CandidateNav(HorillaNavView):
 
 
 @method_decorator(login_required, name="dispatch")
+@method_decorator(hx_request_required, name="dispatch")
 @method_decorator(manager_can_enter(perm="recruitment.view_candidate"), name="dispatch")
 class ExportView(TemplateView):
     """
@@ -876,7 +899,7 @@ class CandidateDetail(HorillaDetailedView):
         (_("Stage"), "stage_drop_down"),
         (_("Rating"), "rating_bar"),
         (_("Recruitment"), "recruitment_id"),
-        (_("Job Position"), "job_position_id"),
+        (_("Job Position"), "job_position_id__job_position"),
         (_("Interview Table"), "candidate_interview_view", True),
     ]
 

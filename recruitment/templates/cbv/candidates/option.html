@@ -2,10 +2,10 @@
 {% load i18n %}
 {% load recruitmentfilters %}
 {% if perms.recruitment.change_candidate %}
-              <div class="oh-btn-group">
+              <div class="oh-btn-group" hx-disinherit="hx-push-url" onclick="event.stopPropagation();">
                 {% if not instance.email in emp_list and not instance.start_onboard %}
-                  <a href="{% url 'candidate-conversion' instance.id %}"
-                    onclick="return confirm('{% trans "Are you sure you want to convert this candidate into an employee?" %}')"
+                  <a href="#"
+                    onclick="event.preventDefault(); event.stopPropagation(); toEmployee('{% url 'candidate-conversion' instance.id %}?container=true');"
                     class="oh-btn oh-btn--light-bkg w-100"
                     title='{% trans "To employee " %}'
                     style="padding:0.8rem 1rem"
@@ -46,15 +46,16 @@
                 {% if perms.recruitment.add_rejectedcandidate or request.user|is_stagemanager %}
                 <button
                   type="button"
-                  class="oh-btn oh-btn--light-bkg w-100"
+                  class="oh-btn oh-btn--light-bkg w-100 d-flex justify-content-center align-items-center"
                   hx-get="{% url 'add-to-rejected-candidates' %}?candidate_id={{instance.id}}"
                   hx-target="#genericModalBody"
                   data-toggle="oh-modal-toggle"
                   data-target="#genericModal"
                   {% if instance.is_offer_rejected %}
-                  style="background: #ff4500a3 !important; color: white;"
+                  style="background: #ff4500a3 !important; color: white; padding: 0.8rem 1rem;"
                   title="{% trans "Added In Rejected Candidates" %}"
                   {% else %}
+                  style="padding: 0.8rem 1rem;"
                   title="{% trans "Add To Rejected Candidates" %}"
                   {% endif %}>
                 <ion-icon name="thumbs-down-outline"></ion-icon>

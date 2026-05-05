@@ -118,7 +118,7 @@ class WorkTypeIndividualTabList(WorkRequestListView):
     def get_queryset(self):
         queryset = super().get_queryset()
         pk = self.kwargs.get("pk")
-        queryset = WorkTypeRequest.objects.filter(employee_id=pk)
+        queryset = self.model.objects.filter(employee_id=pk)
         return queryset
 
     columns = [
@@ -147,7 +147,7 @@ class ShiftRequestIndividualTabView(ShiftRequestList):
     def get_queryset(self):
         queryset = super().get_queryset()
         pk = self.kwargs.get("pk")
-        queryset = queryset.filter(employee_id=pk)
+        queryset = self.model.objects.filter(employee_id=pk)
         return queryset
 
 
@@ -178,7 +178,7 @@ class RotatingShiftAssignIndividualView(RotatingShiftListParent):
     def get_queryset(self):
         queryset = super().get_queryset()
         pk = self.kwargs.get("pk")
-        queryset = queryset.filter(employee_id=pk)
+        queryset = self.model.objects.filter(employee_id=pk)
         return queryset
 
 
@@ -200,7 +200,7 @@ class RotatingWorkIndividualTab(GeneralParent):
     def get_queryset(self):
         queryset = super().get_queryset()
         pk = self.kwargs.get("pk")
-        queryset = queryset.filter(employee_id=pk)
+        queryset = self.model.objects.filter(employee_id=pk)
         return queryset
 
     row_attrs = """

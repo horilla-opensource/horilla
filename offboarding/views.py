@@ -20,6 +20,7 @@ from horilla.decorators import (
     hx_request_required,
     login_required,
     manager_can_enter,
+    owner_can_enter,
     permission_required,
 )
 from horilla.group_by import group_by_queryset as group_by
@@ -546,6 +547,7 @@ def change_offboarding_stage(request):
 
 @login_required
 @hx_request_required
+@owner_can_enter("view_offboardingnote", OffboardingNote)
 @any_manager_can_enter(
     "offboarding.view_offboardingnote", offboarding_employee_can_enter=True
 )
@@ -577,6 +579,7 @@ def view_notes(request, employee_id=None):
 
 
 @login_required
+@owner_can_enter("add_offboardingnote", OffboardingNote)
 # @any_manager_can_enter("offboarding.add_offboardingnote")
 def add_note(request):
     """
@@ -618,13 +621,12 @@ def offboarding_note_delete(request, note_id):
         note.delete()
         messages.success(request, _("The note has been successfully deleted."))
     except OffboardingNote.DoesNotExist:
-        messages.error(request, _("Note not found."))
-        script = "<script>window.location.reload()</script>"
-
+        return HorillaRedirect(request, message=_("Note not found."))
     return HttpResponse(script)
 
 
 @login_required
+@hx_request_required
 @permission_required("offboarding.delete_offboardingnote")
 def delete_attachment(request):
     """
@@ -787,6 +789,7 @@ def delete_task(request):
 
 @login_required
 @hx_request_required
+@owner_can_enter("view_employeetask", EmployeeTask)
 def offboarding_individual_view(request, emp_id):
     """
     This method is used to get the individual view of the offboarding employees
@@ -846,6 +849,7 @@ def request_view(request):
 
 
 @login_required
+@owner_can_enter("view_resignationletter", ResignationLetter)
 @permission_required("offboarding.view_resignationletter")
 def request_single_view(request, id):
     letter = ResignationLetter.find(id)
@@ -1091,6 +1095,7 @@ def enable_resignation_request(request):
 
 
 @login_required
+@hx_request_required
 @permission_required("offboarding.add_offboardingemployee")
 def get_notice_period(request):
     """
@@ -1126,6 +1131,7 @@ def get_notice_period(request):
 
 
 @login_required
+@hx_request_required
 def get_notice_period_end_date(request):
     """
     Calculates and returns the end date of the notice period based on the provided start date.
@@ -1185,6 +1191,7 @@ def offboarding_dashboard(request):
 
 
 @login_required
+@hx_request_required
 @any_manager_can_enter(
     ["offboarding.view_offboarding", "offboarding.view_offboardingtask"]
 )
@@ -1206,6 +1213,7 @@ def dashboard_task_table(request):
 if apps.is_installed("asset"):
 
     @login_required
+    @hx_request_required
     @any_manager_can_enter(["offboarding.view_offboarding"])
     def dashboard_asset_table(request):
         """
@@ -1232,6 +1240,7 @@ if apps.is_installed("asset"):
 if apps.is_installed("pms"):
 
     @login_required
+    @hx_request_required
     @any_manager_can_enter("offboarding.view_offboarding")
     def dashboard_feedback_table(request):
         """

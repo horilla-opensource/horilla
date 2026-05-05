@@ -77,10 +77,11 @@
       }
 
       function toggleLinkedIn() {
+        const isEnabled = $("#id_publish_in_linkedin").is(":checked");
         const linkedInInput = $("[name='linkedin_account_id']");
-        const inputContainer = linkedInInput.closest('div');
-        inputContainer.toggleClass('d-none')
-        inputContainer.parent().find('label').parent().toggleClass('d-none');
+        const inputContainer = linkedInInput.closest("div");
+        inputContainer.toggleClass("d-none", !isEnabled);
+        inputContainer.parent().find("label").parent().toggleClass("d-none", !isEnabled);
       }
 </script>
 

@@ -312,6 +312,7 @@ def project_delete(request, project_id):
 
 
 @login_required
+@hx_request_required
 def project_filter(request):
     """
     For filtering projects
@@ -611,6 +612,7 @@ def project_bulk_export(request):
 
 
 @login_required
+@hx_request_required
 def project_bulk_archive(request):
     try:
         ids = request.POST.getlist("ids")
@@ -647,6 +649,7 @@ def project_bulk_archive(request):
 
 
 @login_required
+@hx_request_required
 # @permission_required("project.delete_project")
 def project_bulk_delete(request):
     """
@@ -1064,6 +1067,11 @@ def drag_and_drop_task(request):
     if not task:
         messages.error(request, _("Task not found"))
         return JsonResponse({"error": "Task not found"}, status=404)
+
+    if task.end_date and task.end_date < date.today():
+        messages.warning(request, _("Cannot update status. Task has already expired."))
+        return JsonResponse({"change": True})
+
     project = task.project
     if (
         request.user.has_perm("project.change_task")
@@ -1147,7 +1155,9 @@ def task_all_create(request):
 @login_required
 def update_project_task_status(request, task_id):
     status = request.GET.get("status")
-    task = get_object_or_404(Task, id=task_id)
+    task = Task.find(task_id)
+    if not task:
+        return HorillaRedirect(request, message=_("Task not found"))
 
     if task.end_date and task.end_date < date.today():
         messages.warning(request, _("Cannot update status. Task has already expired."))
@@ -1182,6 +1192,7 @@ def update_task_all(request, task_id):
 
 
 @login_required
+@hx_request_required
 def task_all_filter(request):
     """
     For filtering tasks in task all view
@@ -1371,6 +1382,7 @@ def delete_project_stage(request, stage_id):
 
 
 @login_required
+@hx_request_required
 def get_stages(request):
     """
     This is an ajax method to return json response to take only stages related
@@ -1398,6 +1410,7 @@ def get_stages(request):
 
 
 @login_required
+@hx_request_required
 def create_stage_taskall(request):
     """
     This is an ajax method to return json response to create stage related
@@ -1514,6 +1527,7 @@ def time_sheet_view(request):
 
 
 @login_required
+@hx_request_required
 def get_members(request):
     project_id = request.GET.get("project_id")
     task_id = request.GET.get("task_id")
@@ -1552,6 +1566,7 @@ def get_members(request):
 
 
 @login_required
+@hx_request_required
 def get_tasks_in_timesheet(request):
     project_id = request.GET.get("project_id")
     form = TimeSheetForm()
@@ -1633,6 +1648,7 @@ def time_sheet_creation(request):
 
 
 @login_required
+@hx_request_required
 def time_sheet_project_creation(request):
     """
     View function to handle the creation of a new project from time sheet form.
@@ -1773,6 +1789,7 @@ def time_sheet_delete(request, time_sheet_id):
 
 
 @login_required
+@hx_request_required
 def time_sheet_filter(request):
     """
     Filter Time sheet based on the provided query parameters.
@@ -1816,6 +1833,7 @@ def time_sheet_filter(request):
 
 
 @login_required
+@hx_request_required
 def time_sheet_initial(request):
     """
     This is an ajax method to return json response to take only tasks related

@@ -1,0 +1,29 @@
+{% load i18n %}
+
+{% if instance.multiple_approvals %}
+<div class="rounded-md p-3 ps-0 w-full mt-3">
+    <h5 class="mb-2 font-medium text-sm">{% trans "Multiple Approvals" %}</h5>
+    <div class="flex flex-col gap-2 max-h-[120px] overflow-y-auto">
+        {% for approval in instance.multiple_approvals.approvals %}
+        <div class="flex items-center gap-2">
+            <span class="text-xs font-medium text-[#565E6C]">
+                {{ forloop.counter }}. {{ approval.manager_id }} :
+            </span>
+            {% if approval.is_approved %}
+            <span class="text-xs font-semibold">
+                {% trans "Approved" %}
+            </span>
+            {% elif approval.is_rejected %}
+            <span class="text-xs font-semibold">
+                {% trans "Rejected" %}
+            </span>
+            {% else %}
+            <span class="text-xs font-semibold">
+                {% trans "Not Marked" %}
+            </span>
+            {% endif %}
+        </div>
+        {% endfor %}
+    </div>
+</div>
+{% endif %}

@@ -31,13 +31,13 @@
               id="badge-{{view_id}}{{forloop.counter}}"
               {% if tab.badge_label %}
               data-badge-label="{{tab.badge_label}}"
-              title="0 {{tab.badge_label}}"
+              title="{{tab.badge|default:0}} {{tab.badge_label}}"
               {% else %}
-              title="0 {% trans "Records" %}"
+              title="{{tab.badge|default:0}} {% trans "Records" %}"
               {% endif %}
               onclick="event.stopPropagation()"
             >
-              0
+              {{ tab.badge|default:0 }}
             </span>
           </div>
           {% if tab.actions %}

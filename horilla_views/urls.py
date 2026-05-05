@@ -76,14 +76,4 @@ urlpatterns = [
         name="dynamic-path",
     ),
     path("export-list-view/<slug:short_id>/", views.export_data, name="export-list"),
-    path(
-        "get-import-sheet/<uuid:view_id>/<str:session_key>/",
-        HorillaListView.serve_import_sheet,
-        name="get-import",
-    ),
-    path(
-        "post-import-sheet/<uuid:view_id>/<str:session_key>/",
-        HorillaListView.import_records,
-        name="post-import",
-    ),
 ]

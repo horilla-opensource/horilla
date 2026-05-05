@@ -2382,12 +2382,18 @@ ul.errorlist ul.errorlist li {
   font-size: 0.85rem;
 }
 
+/* Hover-open disabled: the submenu panel now opens only on click via
+   the `.sidebox-active` class (see sidebar.html's delegated click
+   handler and global.css). This prevents the panel from popping open
+   whenever the cursor grazes a sidebar icon. */
+/*
 .sideboxmain:hover .sidebox {
   opacity: 1;
   visibility: visible;
   background: rgb(255 255 255 / 95%);
   backdrop-filter: blur(3px);
 }
+*/
 
 .sideboxmain {
   display: flex;

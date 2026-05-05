@@ -51,7 +51,7 @@ class InterviewNavView(HorillaNavView):
         super().__init__(**kwargs)
         self.search_url = reverse("interview-list-view")
 
-        if self.request.user.has_perm("view_interviewschedule"):
+        if self.request.user.has_perm("recruitment.add_interviewschedule"):
             self.create_attrs = f"""
                 hx-get="{reverse_lazy("create-interview-schedule")}"
                 hx-target="#genericModalBody"
@@ -92,7 +92,7 @@ class InterviewLIstView(HorillaListView):
             queryset: Filtered queryset based on user permissions and employee ID.
         """
         queryset = super().get_queryset()
-        if self.request.user.has_perm("view_interviewschedule"):
+        if self.request.user.has_perm("recruitment.view_interviewschedule"):
             queryset = queryset.all().order_by("-interview_date")
         else:
             queryset = queryset.filter(
@@ -198,10 +198,9 @@ class InterviewForm(HorillaFormView):
         if self.form.instance.pk:
             self.form_class.verbose_name = _("Schedule Interview")
         if not form.is_valid():
-            errors = form.errors.as_data()
-            return render(
-                self.request, self.template_name, {"form": form, "errors": errors}
-            )
+            context = self.get_context_data(form=form)
+            context["errors"] = form.errors.as_data()
+            return render(self.request, self.template_name, context)
         return super().form_invalid(form)
 
     def form_valid(self, form: ScheduleInterviewForm) -> HttpResponse:
@@ -215,7 +214,6 @@ class InterviewForm(HorillaFormView):
             HttpResponse: Redirect response or HTTP response.
         """
         if form.is_valid():
-            view_data = self.request.GET.get("view")
             emp_ids = self.form.cleaned_data["employee_id"]
             cand_id = self.form.cleaned_data["candidate_id"]
             interview_date = self.form.cleaned_data["interview_date"]
@@ -234,18 +232,14 @@ class InterviewForm(HorillaFormView):
             )
             if form.instance.pk:
                 messages.success(self.request, _("Interview Updated Successfully"))
-                if view_data == "false":
-                    form.save()
-                    return self.HttpResponse(
-                        "<script>window.location.reload();</script>"
-                    )
             else:
                 messages.success(self.request, _("Interview Scheduled successfully."))
-                if not view_data:
-                    form.save()
-                    return self.HttpResponse(
-                        "<script>window.location.reload();</script>"
-                    )
             form.save()
-            return self.HttpResponse()
+            return HttpResponse(
+                "<script>"
+                "$('#genericModal').removeClass('oh-modal--show');"
+                "$('#applyFilter').click();"
+                "$('#reloadMessagesButton').click();"
+                "</script>"
+            )
         return super().form_valid(form)

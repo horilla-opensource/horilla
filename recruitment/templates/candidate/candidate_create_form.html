@@ -11,6 +11,11 @@
     action= "{{request.path}}?{{request.GET.urlencode}}"
     method="post"
     enctype="multipart/form-data"
+    {% if request.META.HTTP_HX_REQUEST %}
+    hx-post="{{request.path}}?{{request.GET.urlencode}}"
+    hx-target="#objectCreateModalTarget"
+    hx-swap="innerHTML"
+    {% endif %}
   >
     <div
       class="oh-general__tab-target oh-profile-section mb-4"

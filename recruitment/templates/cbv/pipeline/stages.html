@@ -15,7 +15,7 @@
               <ul class="oh-dropdown__items">
                 {% if perms.recruitment.add_candidate or request.user.employee_get in stage.stage_managers.all or request.user.employee_get in rec.recruitment_managers.all %}
                 <li class="oh-dropdown__item" style="cursor: pointer;">
-                  <a hx-target="#genericModalBody" hx-get="{% url 'add-candidate-to-stage'%}?stage_id={{ stage.id }}" data-toggle="oh-modal-toggle" data-target="#genericModal" class="oh-dropdown__link">Add Candidate</a>
+                  <a hx-target="#objectCreateModalTarget" hx-get="{% url 'add-candidate-to-stage'%}?stage_id={{ stage.id }}" data-toggle="oh-modal-toggle" data-target="#objectCreateModal" class="oh-dropdown__link">Add Candidate</a>
                 </li>
                 {% endif %}
                 {% if perms.recruitment.change_stage or request.user|recruitment_manages:rec or request.user.employee_get in stage.stage_managers.all %}

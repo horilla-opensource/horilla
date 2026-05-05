@@ -4,6 +4,7 @@ This page is handling the cbv methods of mail log tab in employee individual pag
 
 from typing import Any
 
+from django.contrib import messages
 from django.db.models import Q
 from django.urls import reverse
 from django.utils.decorators import method_decorator
@@ -13,6 +14,7 @@ from accessibility.cbv_decorators import enter_if_accessible
 from base.filters import MailLogFilter
 from base.models import EmailLog
 from employee.models import Employee
+from horilla.http.response import HorillaRedirect
 from horilla_views.cbv_methods import login_required
 from horilla_views.generic.cbv.views import HorillaDetailedView, HorillaListView
 
@@ -51,6 +53,13 @@ class MailLogTabList(HorillaListView):
     #     pk = self.kwargs.get('pk')
     #     context["search_url"] = f"{reverse('individual-email-log-list',kwargs={'pk': pk})}"
     #     return context
+
+    def dispatch(self, request, *args, **kwargs):
+        pk = kwargs.get("pk")
+        if not Employee.objects.filter(id=pk).exists():
+            messages.error(request, _("Employee not found."))
+            return HorillaRedirect(request)
+        return super().dispatch(request, *args, **kwargs)
 
     def get_queryset(self):
         queryset = super().get_queryset()

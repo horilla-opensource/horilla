@@ -20,7 +20,11 @@ from base.methods import filtersubordinates
 from employee.models import Employee
 from horilla.horilla_middlewares import _thread_locals
 from horilla.http.response import HorillaRedirect
-from horilla_views.cbv_methods import login_required, permission_required
+from horilla_views.cbv_methods import (
+    login_required,
+    owner_can_enter,
+    permission_required,
+)
 from horilla_views.generic.cbv.views import (
     HorillaDetailedView,
     HorillaFormView,
@@ -148,7 +152,7 @@ class AssetAllocationList(AllocationList):
     ]
 
     row_attrs = """
-        hx-get='{detail_view_asset_allocation}?instance_ids={ordered_ids}'
+        hx-get='{detail_view_asset_allocation}'
         hx-target="#genericModalBody"
         data-target="#genericModal"
         data-toggle="oh-modal-toggle"
@@ -347,6 +351,14 @@ class RequestAndAllocationNav(HorillaNavView):
 
 
 @method_decorator(login_required, name="dispatch")
+@method_decorator(
+    owner_can_enter(
+        "asset.view_assetassignment",
+        AssetAssignment,
+        employee_field="assigned_to_employee_id",
+    ),
+    name="dispatch",
+)
 class AssetDetailView(HorillaDetailedView):
     """
     detail view of asset tab
@@ -379,6 +391,12 @@ class AssetDetailView(HorillaDetailedView):
 
 
 @method_decorator(login_required, name="dispatch")
+@method_decorator(
+    owner_can_enter(
+        "asset.view_assetrequest", AssetRequest, employee_field="requested_employee_id"
+    ),
+    name="dispatch",
+)
 class AssetRequestDetailView(HorillaDetailedView):
     """
     detail view of asset request tab
@@ -408,6 +426,14 @@ class AssetRequestDetailView(HorillaDetailedView):
 
 
 @method_decorator(login_required, name="dispatch")
+@method_decorator(
+    owner_can_enter(
+        "asset.view_assetassignment",
+        AssetAssignment,
+        employee_field="assigned_to_employee_id",
+    ),
+    name="dispatch",
+)
 class AssetAllocationDetailView(HorillaDetailedView):
     """
     detail view of asset allocation tab
@@ -449,6 +475,19 @@ class AssetRequestCreateForm(HorillaFormView):
     form_class = AssetRequestForm
     template_name = "cbv/request_and_allocation/forms/req_form.html"
     new_display_title = _("Asset Request")
+
+    def dispatch(self, request, *args, **kwargs):
+        pk = kwargs.get("pk")
+        if pk:
+            asset_request = AssetRequest.objects.filter(id=pk).first()
+            if asset_request:
+                employee = asset_request.requested_employee_id
+                is_owner = request.user.employee_get == employee
+                has_perm = request.user.has_perm("asset.change_assetrequest")
+                if not (is_owner or has_perm):
+                    messages.error(request, _("You don't have permission."))
+                    return HorillaRedirect(request)
+        return super().dispatch(request, *args, **kwargs)
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
@@ -520,6 +559,9 @@ class AssetAllocationFormView(HorillaFormView):
 
 
 @method_decorator(login_required, name="dispatch")
+@method_decorator(
+    permission_required(perm="asset.add_assetassignment"), name="dispatch"
+)
 class AssetApproveFormView(HorillaFormView):
     """
     Create Asset Allocation

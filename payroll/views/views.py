@@ -474,6 +474,7 @@ def update_payslip_status(request, payslip_id):
 
 
 @login_required
+@hx_request_required
 def update_payslip_status_no_id(request):
     """
     This method is used to update the payslip confirmation status
@@ -1566,6 +1567,7 @@ def payslip_pdf(request, id):
 
 
 @login_required
+@hx_request_required
 @permission_required("payroll.view_contract")
 def contract_select(request):
     page_number = request.GET.get("page")
@@ -1583,6 +1585,7 @@ def contract_select(request):
 
 
 @login_required
+@hx_request_required
 def contract_select_filter(request):
     page_number = request.GET.get("page")
     filtered = request.GET.get("filter")
@@ -1604,6 +1607,7 @@ def contract_select_filter(request):
 
 
 @login_required
+@hx_request_required
 def payslip_select(request):
     page_number = request.GET.get("page")
     payslip = Payslip.objects.none()
@@ -1623,6 +1627,7 @@ def payslip_select(request):
 
 
 @login_required
+@hx_request_required
 def payslip_select_filter(request):
     page_number = request.GET.get("page")
     filtered = request.GET.get("filter")
@@ -1644,6 +1649,7 @@ def payslip_select_filter(request):
 
 
 @login_required
+@hx_request_required
 def create_payrollrequest_comment(request, payroll_id):
     """
     This method renders form and template to create Reimbursement request comments
@@ -1795,11 +1801,13 @@ def delete_payrollrequest_comment(request, comment_id):
     """
     This method is used to delete Reimbursement request comments
     """
-    script = ""
+
     comment = ReimbursementrequestComment.objects.filter(id=comment_id)
+    if not comment.exists():
+        messages.error(request, _("Comment not found."))
+        return HorillaRedirect(request)
     comment.delete()
-    messages.success(request, _("Comment deleted successfully!"))
-    return HttpResponse(script)
+    return HorillaRedirect(request, message=_("Comment deleted successfully!"))
 
 
 @login_required
@@ -1807,14 +1815,14 @@ def delete_reimbursement_comment_file(request):
     """
     Used to delete attachment
     """
-    script = ""
     ids = request.GET.getlist("ids")
+    if not ids:
+        return HorillaRedirect(request, message=_("No file IDs provided for deletion."))
     records = ReimbursementFile.objects.filter(id__in=ids)
     if not request.user.has_perm("payroll.delete_reimbursmentfile"):
         records = records.filter(employee_id__employee_user_id=request.user)
     records.delete()
-    messages.success(request, _("File deleted successfully"))
-    return HttpResponse(script)
+    return HorillaRedirect(request, message=_("File deleted successfully"))
 
 
 @login_required
@@ -1876,6 +1884,7 @@ def create_or_update_auto_payslip(request, auto_id=None):
 
 
 @login_required
+@hx_request_required
 @permission_required("payroll.change_payslipautogenerate")
 def activate_auto_payslip_generate(request):
     """

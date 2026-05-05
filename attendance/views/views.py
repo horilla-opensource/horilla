@@ -170,6 +170,7 @@ def profile_attendance_tab(request):
 
 
 @login_required
+@hx_request_required
 @manager_can_enter("employee.view_employee")
 def attendance_tab(request, pk):
     """
@@ -764,6 +765,7 @@ def attendance_account_bulk_delete(request):
 
 
 @login_required
+@hx_request_required
 def form_shift_dynamic_data(request):
     """
     This method is used to update the shift details to the form
@@ -1138,6 +1140,7 @@ def attendance_activity_export(request):
 
 
 @login_required
+@hx_request_required
 def on_time_view(request):
     """
     This method render template to view all on come early out entries
@@ -1365,6 +1368,16 @@ def validate_bulk_attendance(request):
                 continue
 
             attendance.attendance_validated = True
+            # Recalculate worked hours from attendance activities before validation
+            # to ensure Hours Account reflects actual worked time.
+            # Fixes: https://github.com/horilla/horilla-hr/issues/1055
+            if (
+                not attendance.attendance_worked_hour
+                or attendance.attendance_worked_hour == "00:00"
+            ):
+                at_work_seconds = attendance.get_at_work_from_activities()
+                if at_work_seconds > 0:
+                    attendance.attendance_worked_hour = format_time(at_work_seconds)
             attendance.save()
             validate_req_count += 1
 
@@ -1415,6 +1428,16 @@ def validate_this_attendance(request, obj_id):
                 messages.error(request, _("You cannot validate your own attendance."))
                 return HorillaRedirect(request)
         attendance.attendance_validated = True
+        # Recalculate worked hours from attendance activities before validation
+        # to ensure Hours Account reflects actual worked time.
+        # Fixes: https://github.com/horilla/horilla-hr/issues/1055
+        if (
+            not attendance.attendance_worked_hour
+            or attendance.attendance_worked_hour == "00:00"
+        ):
+            at_work_seconds = attendance.get_at_work_from_activities()
+            if at_work_seconds > 0:
+                attendance.attendance_worked_hour = format_time(at_work_seconds)
         attendance.save()
         urlencode = request.GET.urlencode()
         modified_url = f"/attendance/attendance-view/?{urlencode}"
@@ -1578,6 +1601,7 @@ def approve_bulk_overtime(request):
 
 
 @login_required
+@hx_request_required
 # @manager_can_enter("attendance.change_attendance")
 def attendance_add_to_batch(request):
     """
@@ -1793,6 +1817,7 @@ def update_worked_hour_field(request):
 
 
 @login_required
+@hx_request_required
 def form_date_checking(request):
     minimum_hour = "00:00"
     attendance_date_str = request.POST.get("attendance_date")
@@ -1882,6 +1907,7 @@ def get_attendance_activities(request, obj_id):
 
 
 @login_required
+@hx_request_required
 def hour_attendance_select(request):
     page_number = request.GET.get("page")
     context = {}
@@ -1905,6 +1931,7 @@ def hour_attendance_select(request):
 
 
 @login_required
+@hx_request_required
 def hour_attendance_select_filter(request):
     page_number = request.GET.get("page")
     filtered = request.GET.get("filter")
@@ -1939,6 +1966,7 @@ def hour_attendance_select_filter(request):
 
 
 @login_required
+@hx_request_required
 def activity_attendance_select(request):
     page_number = request.GET.get("page")
     activity = AttendanceActivity.objects.all()
@@ -1962,6 +1990,7 @@ def activity_attendance_select(request):
 
 
 @login_required
+@hx_request_required
 def activity_attendance_select_filter(request):
     page_number = request.GET.get("page")
     filtered = request.GET.get("filter")
@@ -1996,6 +2025,7 @@ def activity_attendance_select_filter(request):
 
 
 @login_required
+@hx_request_required
 def latecome_attendance_select(request):
     page_number = request.GET.get("page")
     late_objs = AttendanceLateComeEarlyOut.objects.none()
@@ -2019,6 +2049,7 @@ def latecome_attendance_select(request):
 
 
 @login_required
+@hx_request_required
 def latecome_attendance_select_filter(request):
     page_number = request.GET.get("page")
     filtered = request.GET.get("filter")
@@ -2184,6 +2215,7 @@ def delete_grace_time(request, grace_id):
 
 
 @login_required
+@hx_request_required
 @permission_required("attendance.update_gracetime")
 def update_isactive_gracetime(request):
     """
@@ -2218,6 +2250,7 @@ def update_isactive_gracetime(request):
 
 
 @login_required
+@hx_request_required
 @permission_required("attendance.update_gracetime")
 def update_gracetime_clock_in_clock_out(request):
     """
@@ -2272,6 +2305,7 @@ def update_gracetime_clock_in_clock_out(request):
 
 
 @login_required
+@hx_request_required
 def create_attendancerequest_comment(request, attendance_id):
     """
     This method renders form and template to create Attendance request comments
@@ -2392,6 +2426,7 @@ def create_attendancerequest_comment(request, attendance_id):
 
 
 @login_required
+@hx_request_required
 def view_attendancerequest_comment(request, attendance_id):
     """
     This method is used to show Attendance request comments
@@ -2441,6 +2476,7 @@ def delete_attendancerequest_comment(request, comment_id):
 
 
 @login_required
+@hx_request_required
 def delete_comment_file(request):
     """
     Used to delete attachment
@@ -2758,7 +2794,6 @@ def work_record_export(request):
 
 
 @login_required
-@hx_request_required
 @permission_required("attendance.add_attendancegeneralsetting")
 def enable_timerunner(request):
     """
@@ -2882,6 +2917,7 @@ def validation_condition_view(request):
 
 
 @login_required
+@hx_request_required
 @permission_required("attendance.add_attendancevalidationcondition")
 def validation_condition_create(request):
     """
@@ -2975,6 +3011,7 @@ def validate_ip_address(self, value):
 
 
 @login_required
+@hx_request_required
 @permission_required("attendance.add_attendance")
 def create_allowed_ips(request):
     """

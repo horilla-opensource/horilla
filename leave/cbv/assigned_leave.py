@@ -12,7 +12,7 @@ from django.utils.translation import gettext_lazy as _
 
 from base.decorators import manager_can_enter
 from base.methods import filtersubordinates
-from horilla_views.cbv_methods import login_required
+from horilla_views.cbv_methods import hx_request_required, login_required
 from horilla_views.generic.cbv.views import (
     HorillaDetailedView,
     HorillaFormView,
@@ -157,6 +157,7 @@ class AssignedLeaveNavView(HorillaNavView):
 
 
 @method_decorator(login_required, name="dispatch")
+@method_decorator(hx_request_required, name="dispatch")
 @method_decorator(manager_can_enter("leave.view_availableleave"), name="dispatch")
 class AssignedLeaveExport(TemplateView):
     """

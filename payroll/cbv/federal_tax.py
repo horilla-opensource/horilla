@@ -14,7 +14,11 @@ from django.utils.decorators import method_decorator
 from django.utils.translation import gettext_lazy as _
 
 from base.models import Holidays
-from horilla_views.cbv_methods import login_required, permission_required
+from horilla_views.cbv_methods import (
+    hx_request_required,
+    login_required,
+    permission_required,
+)
 from horilla_views.generic.cbv.pipeline import Pipeline
 from horilla_views.generic.cbv.views import (
     HorillaFormView,
@@ -133,6 +137,7 @@ class TaxBracketNavView(HorillaNavView):
 
 
 @method_decorator(login_required, name="dispatch")
+@method_decorator(hx_request_required, name="dispatch")
 @method_decorator(permission_required("payroll.view_taxbracket"), name="dispatch")
 class FilingStatusPipeline(Pipeline):
     """

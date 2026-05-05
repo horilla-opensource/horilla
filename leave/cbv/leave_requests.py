@@ -20,7 +20,7 @@ from base.decorators import manager_can_enter
 from base.filters import PenaltyFilter
 from base.methods import choosesubordinates, filtersubordinates, is_reportingmanager
 from base.models import PenaltyAccounts
-from horilla_views.cbv_methods import login_required
+from horilla_views.cbv_methods import hx_request_required, login_required
 from horilla_views.generic.cbv.views import (
     HorillaDetailedView,
     HorillaFormView,
@@ -86,8 +86,9 @@ class LeaveRequestsListView(HorillaListView):
         queryset = super().get_queryset()
         data = queryset
         queryset = filter_conditional_leave_request(self.request)
-        data = filtersubordinates(self.request, data, "leave.view_leaverequest")
-        return data
+        qs = data.filter(id__in=queryset.values_list("id", flat=True))
+        data = filtersubordinates(self.request, data, "leave.view_leaverequest") | qs
+        return data.distinct()
 
     filter_class = LeaveRequestFilter
     model = LeaveRequest
@@ -271,6 +272,7 @@ class LeaveRequestsNavView(HorillaNavView):
 
 
 @method_decorator(login_required, name="dispatch")
+@method_decorator(hx_request_required, name="dispatch")
 @method_decorator(manager_can_enter("leave.view_leaverequest"), name="dispatch")
 class LeaveRequestsExportNav(TemplateView):
     """
@@ -336,6 +338,7 @@ class LeaveRequestsDetailView(HorillaDetailedView):
                 insert_index,
                 (_("Multiple Approvals"), "multiple_approval_action", True),
             )
+            self.cols["multiple_approval_action"] = 12
 
         if self.instance.reject_reason:
             insert_index = 8

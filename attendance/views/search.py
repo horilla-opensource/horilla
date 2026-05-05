@@ -481,6 +481,7 @@ def search_attendance_requests(request):
 
 
 @login_required
+@hx_request_required
 def widget_filter(request):
     """
     This method is used to return all the ids of the employees

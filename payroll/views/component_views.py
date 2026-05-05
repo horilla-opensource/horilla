@@ -920,6 +920,7 @@ def check_contract_start_date(request):
 
 
 @login_required
+@hx_request_required
 @permission_required("payroll.add_payslip")
 def create_payslip(request, new_post_data=None):
     """
@@ -1018,6 +1019,7 @@ def create_payslip(request, new_post_data=None):
 
 
 @login_required
+@hx_request_required
 @permission_required("payroll.add_payslip")
 def validate_start_date(request):
     """
@@ -1268,6 +1270,7 @@ def payslip_export(request):
 
 
 @login_required
+@hx_request_required
 @permission_required("payroll.add_allowance")
 def hx_create_allowance(request):
     """
@@ -1991,6 +1994,7 @@ def delete_attachments(request, _reimbursement_id):
 
 
 @login_required
+@hx_request_required
 @permission_required("payroll.view_payslip")
 def get_contribution_report(request):
     """

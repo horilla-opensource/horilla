@@ -5,6 +5,7 @@ This module is used to register horilla's middlewares without affecting the hori
 """
 
 import threading
+from contextvars import ContextVar
 
 from django.conf import settings
 from django.contrib import messages
@@ -14,7 +15,24 @@ from django.utils.datastructures import MultiValueDictKeyError
 
 from horilla.config import logger
 
-_thread_locals = threading.local()
+_request_var = ContextVar("request", default=None)
+current_company_id = ContextVar("current_company_id", default=None)
+
+
+class _ThreadLocalProxy:
+    def __getattr__(self, name):
+        if name == "request":
+            return _request_var.get()
+        raise AttributeError(name)
+
+    def __setattr__(self, name, value):
+        if name == "request":
+            _request_var.set(value)
+        else:
+            raise AttributeError(name)
+
+
+_thread_locals = _ThreadLocalProxy()
 
 
 class ThreadLocalMiddleware:
@@ -78,3 +96,11 @@ class MissingParameterMiddleware:
                 return render(request, "went_wrong.html", status=400)
 
         return None
+
+
+def set_selected_company(company_id):
+    current_company_id.set(company_id)
+
+
+def get_selected_company():
+    return current_company_id.get()

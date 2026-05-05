@@ -49,7 +49,7 @@ class QuestionFormView(HorillaFormView):
             instance.recruitment_ids.set(form.recruitment)
             instance.template_id.set(form.cleaned_data["template_id"])
             messages.success(self.request, _(message))
-            return HorillaRedirect(self.request)
+            return self.HttpResponse(targets_to_reload=["#filterSubmit"])
         return super().form_valid(form)
 
 
@@ -91,7 +91,7 @@ class QuestionDuplicateFormView(HorillaFormView):
             instance.recruitment_ids.set(form.recruitment)
             instance.template_id.set(form.cleaned_data["template_id"])
             messages.success(self.request, _(message))
-            return HorillaRedirect(self.request)
+            return self.HttpResponse(targets_to_reload=["#filterSubmit"])
         return super().form_valid(form)
 
 
@@ -130,7 +130,7 @@ class SurveyTemplateFormView(HorillaFormView):
             message = _("Template saved")
             form.save()
             messages.success(self.request, _(message))
-            return HorillaRedirect(self.request)
+            return self.HttpResponse(targets_to_reload=["#filterSubmit"])
         return super().form_valid(form)
 
 

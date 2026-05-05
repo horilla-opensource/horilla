@@ -1211,6 +1211,7 @@ def user_group(request):
 
 
 @login_required
+@hx_request_required
 @permission_required("auth.view_group")
 def user_group_search(request):
     """
@@ -1286,6 +1287,7 @@ def group_assign(request):
 
 
 @login_required
+@hx_request_required
 @permission_required("auth.view_group")
 def group_assign_view(request):
     """
@@ -1572,6 +1574,7 @@ def mail_server_conf(request):
 
 
 @login_required
+@hx_request_required
 @permission_required("base.view_dynamicemailconfiguration")
 def mail_server_test_email(request):
     instance_id = request.GET.get("instance_id")
@@ -3584,6 +3587,7 @@ def employee_permission_assign(request, pk=None):
 
 
 @login_required
+@hx_request_required
 @permission_required("view_permissions")
 def employee_permission_search(request, codename=None, uid=None):
     """
@@ -4262,6 +4266,7 @@ def work_type_request_delete(request, obj_id):
 
 
 @login_required
+@hx_request_required
 def work_type_request_single_view(request, obj_id):
     """
     This method is used to view details of an work type request
@@ -4572,6 +4577,7 @@ def shift_request_export(request):
 
 
 @login_required
+@hx_request_required
 def shift_request_search(request):
     """
     This method is used search shift request by employee and also used to filter shift request.
@@ -4689,6 +4695,9 @@ def shift_request_details(request, id):
         id : shift request instance id
     """
     shift_request = ShiftRequest.find(id)
+    if not shift_request:
+        messages.error(request, _("Shift request not found."))
+        return HorillaRedirect(request)
     requests_ids_json = request.GET.get("instances_ids")
     context = {
         "shift_request": shift_request,
@@ -4716,6 +4725,9 @@ def shift_allocation_request_details(request, id):
         id : shift request instance id
     """
     shift_request = ShiftRequest.find(id)
+    if not shift_request:
+        messages.error(request, _("Shift request not found."))
+        return HorillaRedirect(request)
     requests_ids_json = request.GET.get("instances_ids")
     context = {
         "shift_request": shift_request,
@@ -5324,15 +5336,22 @@ def delete_notification(request, id):
     """
     This method is used to delete notification
     """
-    script = ""
     try:
         request.user.notifications.get(id=id).delete()
         messages.success(request, _("Notification deleted."))
+    except request.user.notifications.model.DoesNotExist:
+        messages.error(request, _("Notification not found."))
+        return HorillaRedirect(request)
     except Exception as e:
         messages.error(request, e)
-    if not request.user.notifications.all():
-        script = """<span hx-get='/all-notifications' hx-target='#allNotificationBody' hx-trigger='load'></span>"""
-    return HttpResponse(script)
+    return HttpResponse(
+        "<script>"
+        "setTimeout(function(){"
+        "$('#reloadMessagesButton').click();"
+        "htmx.ajax('GET','/all-notifications/',{target:'#sidebarModalBody',swap:'innerHTML'});"
+        "},100);"
+        "</script>"
+    )
 
 
 @login_required
@@ -5505,6 +5524,11 @@ def save_date_format(request):
         # Taking the selected Date Format
         selected_format = request.POST.get("selected_format")
 
+        if selected_format not in settings.HORILLA_DATE_FORMATS:
+            messages.error(request, _("Invalid date format."))
+            return JsonResponse(
+                {"success": False, "error": "Invalid date format."}, status=400
+            )
         if not len(selected_format):
             messages.error(request, _("Please select a valid date format."))
         else:
@@ -6134,15 +6158,15 @@ def get_condition_value_fields(request):
 @hx_request_required
 @permission_required("base.add_multipleapprovalcondition")
 def add_more_approval_managers(request):
-    currnet_hx_target = request.META.get("HTTP_HX_TARGET")
-    hx_target_split = currnet_hx_target.split("_")
+    current_hx_target = request.META.get("HTTP_HX_TARGET")
+    hx_target_split = current_hx_target.split("_")
     next_hx_target = "_".join([hx_target_split[0], str(int(hx_target_split[-1]) + 1)])
 
     form = MultipleApproveConditionForm()
     managers_count = request.GET.get("managers_count")
     context = {
         "next_hx_target": next_hx_target,
-        "currnet_hx_target": currnet_hx_target,
+        "current_hx_target": current_hx_target,
     }
     if managers_count:
         managers_count = int(managers_count) + 1
@@ -6343,6 +6367,12 @@ def multiple_level_approval_delete(request, condition_id):
     request_copy = request.GET.copy()
     request_copy.pop("instances_ids", None)
     previous_data = request_copy.urlencode()
+
+    if not MultipleApprovalCondition.objects.filter(id=condition_id).exists():
+        return HorillaRedirect(
+            request,
+            message=_("No MultipleApprovalCondition matching query does not exist."),
+        )
 
     condition = MultipleApprovalCondition.objects.get(id=condition_id)
     condition.delete()
@@ -6926,6 +6956,7 @@ def driver_viewed_status(request):
 
 
 @login_required
+@hx_request_required
 def dashboard_components_toggle(request):
     """
     This function is used to create personalized dashboard charts for employees
@@ -6943,6 +6974,7 @@ def dashboard_components_toggle(request):
 
 
 @login_required
+@hx_request_required
 def employee_chart_show(request):
     """
     This function is used to choose which chart to show in the dashboard
@@ -6974,6 +7006,7 @@ def employee_chart_show(request):
 
 
 @login_required
+@hx_request_required
 def reorder_dashboard_charts(request):
     """
     This function is used to reorder the dashboard charts
@@ -7300,6 +7333,7 @@ def excel_holiday_import(file):
 
 
 @login_required
+@hx_request_required
 @permission_required("base.add_holiday")
 def holidays_info_import(request):
     result = None

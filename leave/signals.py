@@ -8,7 +8,7 @@ from django.dispatch import receiver
 from django.utils.translation import gettext_lazy as _
 
 from horilla.methods import get_horilla_model_class
-from leave.models import LeaveRequest
+from leave.models import LeaveRequest, LeaveRequestConditionApproval
 
 if apps.is_installed("attendance"):
 
@@ -132,3 +132,14 @@ def add_missing_leave_to_workrecords(sender, **kwargs):
 
     except Exception as e:
         print(f"Error in leave/work records sync: {e}")
+
+
+@receiver(post_save, sender=LeaveRequestConditionApproval)
+def auto_approve_self_approval_stage(sender, instance, created, **kwargs):
+    """
+    When an approver in the multiple-approval chain is the same employee who
+    submitted the leave request, automatically approve their stage so the
+    request is not stuck and can progress to the next approver.
+    """
+    if created and instance.manager_id == instance.leave_request_id.employee_id:
+        sender.objects.filter(pk=instance.pk).update(is_approved=True)

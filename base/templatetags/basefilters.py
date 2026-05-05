@@ -48,7 +48,9 @@ def is_leave_approval_manager(user):
     """
     employee = Employee.objects.filter(employee_user_id=user).first()
     manager = (
-        MultipleApprovalManagers.objects.filter(employee_id=employee.id).exists()
+        MultipleApprovalManagers.objects.entire()
+        .filter(employee_id=employee.id)
+        .exists()
         if employee
         else False
     )

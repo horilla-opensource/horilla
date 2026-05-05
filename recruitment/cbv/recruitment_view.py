@@ -12,7 +12,6 @@ from django.utils.decorators import method_decorator
 from django.utils.translation import gettext_lazy as _
 
 from base.models import IntegrationApps
-from horilla.http.response import HorillaRedirect
 from horilla_views.cbv_methods import login_required, permission_required
 from horilla_views.generic.cbv.views import (
     HorillaDetailedView,
@@ -269,33 +268,41 @@ class RecruitmentForm(HorillaFormView):
         """
         Process form submission to save or update a Recruitment object and display success message.
         """
-        if form.is_valid():
-            if form.instance.pk:
-                recruitment = form.save()
-                recruitment_managers = self.request.POST.getlist("recruitment_managers")
-                if recruitment_managers:
-                    recruitment.recruitment_managers.set(recruitment_managers)
-                if recruitment.publish_in_linkedin and recruitment.linkedin_account_id:
-                    delete_post(recruitment)
-                    post_recruitment_in_linkedin(
-                        self.request, recruitment, recruitment.linkedin_account_id
-                    )
-                message = _("Recruitment Updated Successfully")
-            else:
-                recruitment = form.save()
-                recruitment_managers = self.request.POST.getlist("recruitment_managers")
-                if recruitment_managers:
-                    recruitment.recruitment_managers.set(recruitment_managers)
-                if recruitment.publish_in_linkedin and recruitment.linkedin_account_id:
-                    post_recruitment_in_linkedin(
-                        self.request, recruitment, recruitment.linkedin_account_id
-                    )
-                message = _("Recruitment Created Successfully")
-            messages.success(self.request, message)
-            if self.request.GET.get("pipeline") == "true":
-                return HorillaRedirect(self.request)
-            return self.HttpResponse()
-        return super().form_valid(form)
+        targets_to_reload = []
+
+        if form.instance.pk:
+            recruitment = form.save()
+            recruitment_managers = self.request.POST.getlist("recruitment_managers")
+            if recruitment_managers:
+                recruitment.recruitment_managers.set(recruitment_managers)
+            if recruitment.publish_in_linkedin and recruitment.linkedin_account_id:
+                delete_post(recruitment)
+                post_recruitment_in_linkedin(
+                    self.request, recruitment, recruitment.linkedin_account_id
+                )
+            message = _("Recruitment Updated Successfully")
+        else:
+            recruitment = form.save()
+            recruitment_managers = self.request.POST.getlist("recruitment_managers")
+            if recruitment_managers:
+                recruitment.recruitment_managers.set(recruitment_managers)
+            if recruitment.publish_in_linkedin and recruitment.linkedin_account_id:
+                post_recruitment_in_linkedin(
+                    self.request, recruitment, recruitment.linkedin_account_id
+                )
+            message = _("Recruitment Created Successfully")
+        messages.success(self.request, message)
+        if self.request.GET.get("pipeline") == "true" or (
+            self.request.resolver_match
+            and self.request.resolver_match.url_name == "recruitment-update-pipeline"
+        ):
+            # Refresh pipeline container only, instead of reloading the whole page.
+            targets_to_reload.append("#applyFilter")
+
+        return self.HttpResponse(targets_to_reload=targets_to_reload)
+
+    def form_invalid(self, form):
+        return self.render_to_response(self.get_context_data(form=form))
 
 
 @method_decorator(login_required, name="dispatch")
@@ -372,7 +379,7 @@ class RecruitmentFormDuplicate(HorillaFormView):
             if job_positions:
                 recruitment.open_positions.set(job_positions)
             messages.success(self.request, message)
-            return self.HttpResponse()
+            return self.HttpResponse(targets_to_reload=["#applyFilter"])
 
         return super().form_valid(form)
 

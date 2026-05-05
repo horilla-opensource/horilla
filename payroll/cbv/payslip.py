@@ -14,7 +14,11 @@ from django.utils.translation import gettext_lazy as _
 
 from employee import views as employee_view
 from employee.cbv.employee_profile import EmployeeProfileView
-from horilla_views.cbv_methods import login_required, permission_required
+from horilla_views.cbv_methods import (
+    hx_request_required,
+    login_required,
+    permission_required,
+)
 from horilla_views.generic.cbv.views import (
     HorillaFormView,
     HorillaListView,
@@ -260,6 +264,7 @@ class PayslipNav(HorillaNavView):
 
 
 @method_decorator(login_required, name="dispatch")
+@method_decorator(hx_request_required, name="dispatch")
 class PayslipBulkExport(TemplateView):
     """
     bulk export
@@ -380,7 +385,7 @@ class PayrollTab(PayslipList):
     def get_queryset(self):
         queryset = super().get_queryset()
         pk = self.kwargs.get("pk")
-        queryset = queryset.filter(employee_id=pk)
+        queryset = self.model.objects.filter(employee_id=pk)
         return queryset
 
     def __init__(self, **kwargs: Any) -> None:

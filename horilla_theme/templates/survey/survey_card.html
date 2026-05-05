@@ -24,11 +24,16 @@
                             <span class="absolute -left-3 -top-3 bg-green-500 w-2 h-2 rounded-full"></span>
                             {% if perms.recruitment.delete_recruitmentsurvey or perms.recruitment.change_recruitmentsurvey or perms.recruitment.add_recruitmentsurvey %}
                                 <div class="absolute inline-block dropdown-wrapper right-0 -top-1" onclick="event.stopPropagation()" >
-                                    <a class="cursor-pointer dropdown-toggle">
+                                    <a
+                                        class="cursor-pointer dropdown-toggle"
+                                        role="button"
+                                        onclick="event.stopPropagation(); $(this).siblings('.dropdown-menu').toggleClass('hidden');"
+                                    >
                                         <i class="fa-solid fa-ellipsis-vertical text-black"></i>
                                     </a>
                                     <div
                                         class="dropdown-menu absolute right-0 min-w-[100px] bg-white rounded-lg shadow-card py-2 hidden z-50 transition-all duration-200"
+                                        onclick="event.stopPropagation();"
                                     >
                                         <ul class="text-xs">
                                             {% if perms.recruitment.change_recruitmentsurvey %}
@@ -59,16 +64,22 @@
                                             {% endif %}
                                             {% if perms.recruitment.delete_recruitmentsurvey %}
                                                 <li>
-                                                    <a href="{% url 'recruitment-survey-question-template-delete' question.id %}"
-                                                        onclick="
-                                                            event.preventDefault();
-                                                            event.stopPropagation();
-                                                            confirm('{% trans "Are you sure want to delete?" %}')
-                                                        "
-                                                        class="text-danger w-full text-left px-3 py-2"
+                                                    <form
+                                                        hx-post="{% url 'recruitment-survey-question-template-delete' question.id %}"
+                                                        hx-target="#view-container"
+                                                        hx-swap="innerHTML"
+                                                        hx-confirm="{% trans 'Are you sure want to delete?' %}"
+                                                        hx-on-htmx-after-request="$('#reloadMessagesButton').click();"
+                                                        onsubmit="event.stopPropagation();"
                                                     >
-                                                        {% trans "Delete" %}
-                                                    </a>
+                                                        {% csrf_token %}
+                                                        <button
+                                                            type="submit"
+                                                            class="text-danger w-full text-left px-3 py-2"
+                                                        >
+                                                            {% trans "Delete" %}
+                                                        </button>
+                                                    </form>
                                                 </li>
                                             {% endif %}
                                         </ul>
@@ -142,6 +153,9 @@
 
     <script>
         $(document).ready(function () {
+            $(document).off("click.surveyCardDropdown").on("click.surveyCardDropdown", function () {
+                $(".dropdown-menu").addClass("hidden");
+            });
             $(".oh-tabs__content").hide();
             var activeTab = localStorage.getItem("activeSurveyTab")
             $(".bg-primary-300").removeClass("bg-primary-300");

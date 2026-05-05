@@ -33,13 +33,21 @@ $(document).ready(function () {
     }
 
     var today = new Date();
-    month = ("0" + (today.getMonth() + 1)).slice(-2);
-    year = today.getFullYear();
+    var month = ("0" + (today.getMonth() + 1)).slice(-2);
+    var year = today.getFullYear();
     var day = ("0" + today.getDate()).slice(-2);
-    var formattedDate = year + "-" + month + "-" + day;
+
+    function getFormattedDate() {
+        var dt = new Date();
+        var y = dt.getFullYear();
+        var m = ("0" + (dt.getMonth() + 1)).slice(-2);
+        var d = ("0" + dt.getDate()).slice(-2);
+        return y + "-" + m + "-" + d;
+    }
+
     var currentWeek = getWeekNumber(today);
 
-    $("#attendance_month").val(formattedDate);
+    $("#attendance_month").val(getFormattedDate());
 
     $.ajax({
         url: "/attendance/dashboard-attendance",
@@ -95,8 +103,8 @@ $(document).ready(function () {
             $("#department_day_input").after(
                 '<input type="date" class="mb-2 float-end pointer oh-select ml-2" id="department_month2" style="width: 100px;color:#5e5c5c;"/>',
             );
-            $("#department_month").val(formattedDate);
-            $("#department_month2").val(formattedDate);
+            $("#department_month").val(getFormattedDate());
+            $("#department_month2").val(getFormattedDate());
             changeDepartmentMonth();
         } else {
             $("#department_month2").remove();
@@ -110,7 +118,7 @@ $(document).ready(function () {
                 changeDepartmentMonth();
             } else if (dataType === "day") {
                 $("#department_month").prop("type", "date");
-                $("#department_month").val(formattedDate);
+                $("#department_month").val(getFormattedDate());
                 changeDepartmentMonth();
             } else {
                 $("#department_month").prop("type", "month");
@@ -123,7 +131,7 @@ $(document).ready(function () {
     // Function for empty message for department overtime chart.
 
     function emptyOvertimeChart(departmentAttendanceChart, args, options) {
-        flag = false;
+        var flag = false;
         for (let i = 0; i < departmentAttendanceChart.data.datasets.length; i++) {
             flag =
                 flag + departmentAttendanceChart.data.datasets[i].data.some(Boolean);
@@ -144,7 +152,7 @@ $(document).ready(function () {
                 ? departmentAttendanceChart.data.emptyImageSrc
                 : staticUrl + "images/ui/no_records.svg";
 
-            message = departmentAttendanceChart.data.message
+            var message = departmentAttendanceChart.data.message
                 ? departmentAttendanceChart.data.message
                 : i18nMessages.emptyMessages;
 
@@ -215,10 +223,18 @@ function getWeekNumber(date) {
 }
 
 var today = new Date();
-month = ("0" + (today.getMonth() + 1)).slice(-2);
-year = today.getFullYear();
+var month = ("0" + (today.getMonth() + 1)).slice(-2);
+var year = today.getFullYear();
 var day = ("0" + today.getDate()).slice(-2);
-var formattedDate = year + "-" + month + "-" + day;
+
+function getGlobalFormattedDate() {
+    var dt = new Date();
+    var y = dt.getFullYear();
+    var m = ("0" + (dt.getMonth() + 1)).slice(-2);
+    var d = ("0" + dt.getDate()).slice(-2);
+    return y + "-" + m + "-" + d;
+}
+
 var currentWeek = getWeekNumber(today);
 
 function createAttendanceChart(dataSet, labels) {
@@ -347,10 +363,10 @@ function changeView(element) {
     if (dataType === "date_range") {
         $("#attendance_month").prop("type", "date");
         $("#day_input").after(
-            '<input type="date" class="mb-2 float-end pointer oh-select ml-2" id="attendance_month2" style="width: 100px;color:#5e5c5c;" onchange="changeMonth(this)"/>',
+            '<input type="date" class="oh-input w-40" id="attendance_month2" onchange="changeMonth(this)"/>',
         );
-        $("#attendance_month").val(formattedDate);
-        $("#attendance_month2").val(formattedDate);
+        $("#attendance_month").val(getGlobalFormattedDate());
+        $("#attendance_month2").val(getGlobalFormattedDate());
         changeMonth();
     } else {
         $("#attendance_month2").remove();
@@ -364,7 +380,7 @@ function changeView(element) {
             changeMonth();
         } else if (dataType === "day") {
             $("#attendance_month").prop("type", "date");
-            $("#attendance_month").val(formattedDate);
+            $("#attendance_month").val(getGlobalFormattedDate());
             changeMonth();
         } else {
             $("#attendance_month").prop("type", "month");

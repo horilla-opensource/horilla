@@ -12,7 +12,7 @@ from attendance.filters import AttendanceActivityFilter
 from attendance.forms import AttendanceActivityExportForm
 from attendance.models import AttendanceActivity
 from base.methods import filtersubordinates, is_reportingmanager
-from horilla_views.cbv_methods import login_required
+from horilla_views.cbv_methods import hx_request_required, login_required
 from horilla_views.generic.cbv.views import (
     HorillaDetailedView,
     HorillaListView,
@@ -199,6 +199,7 @@ class AttendanceDetailView(HorillaDetailedView):
 
 
 @method_decorator(login_required, name="dispatch")
+@method_decorator(hx_request_required, name="dispatch")
 class AttendanceBulkExport(TemplateView):
     """
     for bulk export

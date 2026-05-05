@@ -19,6 +19,7 @@
     id="filterForm"
     onsubmit="event.preventDefault()"
     hx-get="{{search_url}}"
+    hx-trigger="load, submit"
     hx-replace-url="false"
     hx-target="{{search_swap_target}}"
     hx-on:submit="htmxLoadIndicator(this);"

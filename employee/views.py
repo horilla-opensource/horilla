@@ -753,6 +753,7 @@ def document_create(request, emp_id):
     return render(request, "tabs/htmx/document_create_form.html", context=context)
 
 
+@hx_request_required
 def get_notify_field(request):
     expiry_date = request.GET.get("expiry_date")
     form = DocumentForm()
@@ -856,6 +857,18 @@ def document_delete(request, id):
     return HorillaRedirect(request)
 
 
+def can_access_document(request, document, perm):
+    """
+    Check if the current user is authorized to access the given document.
+    """
+    employee = request.user.employee_get
+    return (
+        document.employee_id == employee
+        or document.employee_id.get_reporting_manager() == employee
+        or request.user.has_perm(perm)
+    )
+
+
 @login_required
 @hx_request_required
 def file_upload(request, id):
@@ -869,7 +882,19 @@ def file_upload(request, id):
     Returns: return document_form template
     """
 
-    document_item = Document.objects.get(id=id)
+    document_item = Document.find(id)
+    if document_item is None:
+        return HorillaRedirect(
+            request, message=_("No Document found matching the query.")
+        )
+
+    if not can_access_document(
+        request, document_item, "horilla_documents.change_document"
+    ):
+        return HorillaRedirect(
+            request, message=_("You do not have permission to update this document.")
+        )
+
     form = DocumentUpdateForm(instance=document_item)
     if request.method == "POST":
         form = DocumentUpdateForm(request.POST, request.FILES, instance=document_item)
@@ -935,6 +960,18 @@ def view_file(request, id):
     """
 
     document_obj = Document.objects.filter(id=id).first()
+    if document_obj is None:
+        return HorillaRedirect(
+            request, message=_("No Document found matching the query.")
+        )
+
+    if not can_access_document(
+        request, document_obj, "horilla_documents.view_document"
+    ):
+        return HorillaRedirect(
+            request, message=_("You do not have permission to view this document.")
+        )
+
     context = {
         "document": document_obj,
     }
@@ -1074,6 +1111,7 @@ def document_bulk_approve(request):
 
 
 @login_required
+@hx_request_required
 @manager_can_enter("horilla_documents.add_document")
 def document_bulk_reject(request):
     """
@@ -1547,7 +1585,9 @@ def employee_view_update(request, obj_id, **kwargs):
     This method is used to render update form for employee.
     """
     employee = Employee.objects.filter(id=obj_id).first()
-    if not employee:
+    emp = Employee.objects.entire().filter(id=obj_id).first()
+
+    if not employee and not emp:
         return HorillaRedirect(
             request, message=_("No Employee found matching the query.")
         )
@@ -1558,7 +1598,6 @@ def employee_view_update(request, obj_id, **kwargs):
         work_info_track=True
     ).exists()
 
-    emp = Employee.objects.entire().filter(id=obj_id).first()
     if not employee and emp and hasattr(emp, "employee_work_info"):
         if (
             emp.employee_work_info
@@ -1633,11 +1672,11 @@ def employee_view_update(request, obj_id, **kwargs):
                         icon="briefcase",
                     )
                     messages.success(request, _("Employee work information updated."))
-                work_form = EmployeeWorkInformationForm(
-                    instance=EmployeeWorkInformation.objects.filter(
-                        employee_id=employee
-                    ).first()
-                )
+                # work_form = EmployeeWorkInformationForm(
+                #     instance=EmployeeWorkInformation.objects.filter(
+                #         employee_id=employee
+                #     ).first()
+                # )
             elif request.POST.get("form") == "bank":
                 instance = EmployeeBankDetails.objects.filter(
                     employee_id=employee
@@ -1792,12 +1831,12 @@ def employee_create_update_personal_info(request, obj_id=None):
             form = EmployeeForm(request.POST, instance=form.instance)
             work_form = EmployeeWorkInformationForm(
                 instance=EmployeeWorkInformation.objects.filter(
-                    employee_id=employee
+                    employee_id=form.instance
                 ).first()
             )
             bank_form = EmployeeBankDetailsForm(
                 instance=EmployeeBankDetails.objects.filter(
-                    employee_id=employee
+                    employee_id=form.instance
                 ).first()
             )
             return redirect(
@@ -2917,6 +2956,7 @@ def birthday():
 
 
 @login_required
+@hx_request_required
 @enter_if_accessible(feature="birthday_view", perm="employee.view_employee")
 def get_employees_birthday(request):
     """
@@ -2988,12 +3028,14 @@ def dashboard(request):
 
 
 @login_required
+@hx_request_required
 def total_employees_count(request):
     employees = Employee.objects.all().count()
     return HttpResponse(employees)
 
 
 @login_required
+@hx_request_required
 def joining_today_count(request):
     newbies_today = 0
     if apps.is_installed("recruitment"):
@@ -3006,6 +3048,7 @@ def joining_today_count(request):
 
 
 @login_required
+@hx_request_required
 def joining_week_count(request):
     newbies_week = 0
     if apps.is_installed("recruitment"):
@@ -3022,6 +3065,7 @@ def joining_week_count(request):
 
 
 @login_required
+@hx_request_required
 def leave_today_count(request):
     leave_today = 0
     if apps.is_installed("leave"):
@@ -3728,6 +3772,7 @@ def initial_prefix(request):
 
 
 @login_required
+@hx_request_required
 @manager_can_enter("employee.view_employee")
 def first_last_badge(request):
     """
@@ -3788,6 +3833,7 @@ def get_job_positions(request):
 
 
 @login_required
+@hx_request_required
 def get_job_positions_hx(request):
     department_id = request.GET.get("department_id")
     job_position_id = request.GET.get("job_position_id")
@@ -3880,6 +3926,7 @@ def get_position_department(request):
 
 
 @login_required
+@hx_request_required
 def get_job_roles_hx(request):
     """
     Retrieve job roles associated with a specific job position.

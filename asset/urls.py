@@ -393,11 +393,6 @@ urlpatterns = [
         name="assets-tab-list-view",
     ),
     path(
-        "assets-tab-list-view/<int:pk>/",
-        asset_tab.AssetTabListView.as_view(),
-        name="assets-tab-list-view",
-    ),
-    path(
         "asset-allocation-detail-view/<int:pk>/",
         request_and_allocation.AssetAllocationDetailView.as_view(),
         name="asset-allocation-detail-view",

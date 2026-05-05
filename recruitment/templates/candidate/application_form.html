@@ -16,6 +16,22 @@
                                 {% endfor %}
                             </div>
                             {% endif %} {% csrf_token %}
+                            {% if form.errors %}
+                            <div class="oh-alert-container">
+                                {% for field in form %}
+                                    {% for error in field.errors %}
+                                    <div class="oh-alert oh-alert--animated oh-alert--danger">
+                                        {{ field.label }}: {{ error }}
+                                    </div>
+                                    {% endfor %}
+                                {% endfor %}
+                                {% for error in form.non_field_errors %}
+                                <div class="oh-alert oh-alert--animated oh-alert--danger">
+                                    {{ error }}
+                                </div>
+                                {% endfor %}
+                            </div>
+                            {% endif %}
                             <div class="row">
                                 <div class="oh-modal" id="uploadPhotoModal" role="dialog"
                                     aria-labelledby="uploadPhotoModal" aria-hidden="true">
@@ -65,7 +81,7 @@
                                         <label class="oh-label required-star" for="name">{% trans "Name" %}</label>
                                         <input type="text" id="name" name="name" required class="oh-input w-100"
                                             placeholder="e.g. Jane Doe" value="{{ form.name.value|default:'' }}"/>
-                                        {{ form.name.errrors }}
+                                        {{ form.name.errors }}
                                     </div>
                                 </div>
 
@@ -142,7 +158,7 @@
                                 <div class="col-sm-12 col-md-6 col-lg-6">
                                     <div class="oh-input-group">
                                         <label class="oh-label required-star" for="gender">{% trans "Gender" %}</label>
-                                        {{ form.gender }} {{ form.gender.errros }}
+                                        {{ form.gender }} {{ form.gender.errors }}
                                     </div>
                                 </div>
                                 <div class="col-sm-12 col-md-6 col-lg-12">

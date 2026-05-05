@@ -1,0 +1,144 @@
+{% load static i18n %}
+{{form.load}}
+<form
+  action="{{request.path}}?{{request.GET.urlencode}}"
+  method="post"
+  enctype="multipart/form-data"
+  hx-post="{{request.path}}?{{request.GET.urlencode}}"
+  hx-target="{% if request.GET.container == 'true' %}#candidateMainContainer{% else %}#objectCreateModalTarget{% endif %}"
+  hx-swap="innerHTML"
+>
+  <div class="oh-general__tab-target oh-profile-section mb-4" id="personal">
+    <div class="oh-profile-section__card">
+      <div class="w-100 d-flex justify-content-end mb-3">
+        {% if request.GET.container == 'true' %}
+        <button
+          type="button"
+          title="{% trans 'Back' %}"
+          class="px-3 py-1 text-xs bg-primary-600 text-white rounded-full hover:bg-primary-800 transition duration-300 flex items-center gap-2"
+          onclick="
+            if (window.history && history.pushState) {
+              history.pushState({}, '', '{% url 'candidate-view' %}');
+            }
+            var listHtml = '<div hx-get=&quot;/recruitment/nav-candidate/?&quot; hx-trigger=&quot;load&quot;></div>'
+              + '<div class=&quot;oh-checkpoint-badge mb-2&quot; id=&quot;selectedInstances&quot; data-ids=&quot;[]&quot; data-clicked=&quot;&quot; style=&quot;display: none&quot;></div>'
+              + '<div class=&quot;oh-wrapper&quot; id=&quot;listContainer&quot;><div class=&quot;animated-background&quot;></div></div>';
+            var container = document.getElementById('candidateMainContainer');
+            if (container) {
+              container.innerHTML = listHtml;
+              if (window.htmx) { htmx.process(container); }
+              setTimeout(function () { $('#applyFilter').click(); }, 100);
+            }
+          "
+        >
+          <i class="fa-solid fa-arrow-left"></i>
+          {% trans "Back" %}
+        </button>
+        {% else %}
+        <button
+          type="button"
+          title="{% trans 'Back' %}"
+          class="px-3 py-1 text-xs bg-primary-600 text-white rounded-full hover:bg-primary-800 transition duration-300 flex items-center gap-2"
+          onclick="$(this).closest('.oh-modal--show').removeClass('oh-modal--show')"
+        >
+          <i class="fa-solid fa-arrow-left"></i>
+          {% trans "Back" %}
+        </button>
+        {% endif %}
+      </div>
+      <div id="personalMessage">
+        {% if messages %}
+        <div class="oh-alert-container">
+          {% for message in messages %}
+          <div class="oh-alert oh-alert--animated {{message.tags}}">
+            {{ message }}
+          </div>
+          {% endfor %}
+        </div>
+        {% endif %}
+      </div>
+      {% csrf_token %}
+      <div class="row">
+        <div class="col-12 col-lg-6 d-flex align-items-center">
+          <div
+            class="oh-profile-section__edit-photo me-4 mb-3"
+            data-toggle="oh-modal-toggle"
+            data-target="#uploadPhotoModal"
+          >
+            <img
+              src="{{form.instance.get_avatar}}"
+              class="oh-profile-section__modal-image preview"
+              alt="Username"
+            />
+          </div>
+        </div>
+      </div>
+      <input type="file" hidden name="profile" id="hidden_profile" />
+      {{form.profile.errors}}
+
+      {{ form.as_p }}
+
+      <div class="w-100 d-flex align-items-center justify-content-end">
+        <button type="submit" class="oh-btn oh-btn--secondary oh-btn--w-100-resp">
+          {% trans "Save" %}
+        </button>
+      </div>
+    </div>
+  </div>
+</form>
+
+<div
+  class="oh-modal"
+  id="uploadPhotoModal"
+  role="dialog"
+  aria-labelledby="uploadPhotoModal"
+  aria-hidden="true"
+>
+  <div class="oh-modal__dialog">
+    <div class="oh-modal__dialog-header">
+      <span class="oh-modal__dialog-title" id="uploadPhotoModalLabel">{% trans "Upload Photo" %}</span>
+      <a href="#" class="oh-modal__close" aria-label="Close">
+        <ion-icon name="close-outline"></ion-icon>
+      </a>
+    </div>
+    <div class="oh-modal__dialog-body">
+      <div class="oh-profile-section__image-container">
+        <div class="oh-profile-section__modal-avatar">
+          <img
+            src="{{form.instance.get_avatar}}"
+            class="oh-profile-section__modal-image preview"
+            alt="Username"
+          />
+        </div>
+        <input
+          type="file"
+          accept="image/*"
+          class="oh-input oh-input--file oh-input--file-sm mt-4"
+          placeholder="Profile"
+          id="choose_profile"
+        />
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+  $(document).ready(function () {
+    $("#choose_profile").change(function () {
+      var modal_profile = $(this)[0];
+      var hidden_profile = $("#hidden_profile")[0];
+      hidden_profile.files = modal_profile.files;
+
+      const file = this.files[0];
+      const reader = new FileReader();
+      reader.addEventListener("load", function () {
+        $(".preview").attr("src", reader.result);
+        setTimeout(function () {
+          $("#uploadPhotoModal").removeClass("oh-modal--show");
+        }, 500);
+      });
+      reader.readAsDataURL(file);
+    });
+  });
+</script>
+<script src="{% static '/recruitment/stageScript.js' %}"></script>

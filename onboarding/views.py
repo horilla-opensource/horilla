@@ -22,6 +22,7 @@ from urllib.parse import parse_qs
 from django import template
 from django.contrib import messages
 from django.contrib.auth import login
+from django.contrib.staticfiles import finders
 from django.core.files.base import ContentFile
 from django.core.mail import EmailMessage, send_mail
 from django.core.paginator import Paginator
@@ -593,6 +594,7 @@ def candidates_view(request):
 
 
 @login_required
+@hx_request_required
 @permission_required(perm="recruitment.view_candidate")
 def hired_candidate_view(request):
     previous_data = request.GET.urlencode()
@@ -869,14 +871,19 @@ def email_send(request):
         # ✅ Attach company logo INLINE
         try:
             company = candidate.recruitment_id.company_id
-            if company and company.icon:
-                with open(company.icon.path, "rb") as f:
+            if company and company.icon and os.path.exists(company.icon.path):
+                image_path = company.icon.path
+            else:
+                image_path = finders.find("images/ui/horilla-sticker-round.png")
+
+            if image_path:
+                with open(image_path, "rb") as f:
                     logo = MIMEImage(f.read())
                     logo.add_header("Content-ID", "<company_logo>")
                     logo.add_header(
                         "Content-Disposition",
                         "inline",
-                        filename=os.path.basename(company.icon.path),
+                        filename=os.path.basename(image_path),
                     )
                     email.attach(logo)
         except Exception as e:
@@ -889,7 +896,7 @@ def email_send(request):
         except Exception as e:
             logger.error(e)
             messages.error(request, f"Mail not sent to {candidate.name}")
-            continue
+            # continue
 
         # Mark onboarding started
         candidate.start_onboard = True
@@ -1089,6 +1096,7 @@ def kanban_view(request):
 portal_user = {}
 
 
+@hx_request_required
 def user_creation(request, token):
     """
     function used to create user account in onboarding portal.
@@ -1715,6 +1723,7 @@ def view_dashboard(request):
 
 
 @login_required
+@hx_request_required
 @permission_required(perm="recruitment.view_candidate")
 def dashboard_stage_chart(request):
     recruitment = request.GET.get("recruitment")
@@ -2028,6 +2037,7 @@ def add_to_rejected_candidates(request):
 
 
 @login_required
+@hx_request_required
 def candidate_select(request):
     """
     This method is used for select all in candidate
