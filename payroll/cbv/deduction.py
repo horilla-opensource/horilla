@@ -34,7 +34,10 @@ class DeductionNav(HorillaNavView):
         self.search_url = reverse("deduction-view-list")
         if self.request.user.has_perm("payroll.add_deduction"):
             self.create_attrs = f"""
-                            href={reverse('create-deduction')}
+                            href="#"
+                            hx-get="{reverse('create-deduction')}"
+                            hx-target="#listContainer"
+                            hx-swap="innerHTML"
                             """
         self.view_types = [
             {
@@ -254,7 +257,9 @@ class DeductionCardView(HorillaCardView):
             "action": _("Edit"),
             "attrs": """
             class="oh-dropdown__link"
-            onclick="window.location.href='{get_update_url}' "
+            hx-get="{get_update_url}"
+            hx-target="#listContainer"
+            hx-swap="innerHTML"
             """,
         },
         {

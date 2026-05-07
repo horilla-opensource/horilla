@@ -59,6 +59,38 @@
   .sideboxmain.sidebox-active .sidebox ul li:nth-child(6) { animation-delay: 0.22s; }
   .sideboxmain.sidebox-active .sidebox ul li:nth-child(n + 7) { animation-delay: 0.24s; }
 
+  /* During icon-to-icon submenu switch keep card stable:
+     disable fade/slide so only list content appears changed. */
+  #sidebar.sidebox-switching .sidebox,
+  #sidebar.sidebox-switching .sideboxmain.sidebox-active .sidebox {
+    transition: none !important;
+    transform: none !important;
+    opacity: 1 !important;
+    visibility: visible !important;
+  }
+  #sidebar.sidebox-switching .sidebox ul li,
+  #sidebar.sidebox-switching .sideboxmain.sidebox-active .sidebox ul li {
+    animation: none !important;
+  }
+
+  /* Per-icon sideboxes are template sources only.
+     Hide any sidebox that is directly inside an icon button. */
+  .sideboxmain > .sidebox {
+    display: none !important;
+  }
+
+  #sidebarSharedPanel {
+    display: none;
+    z-index: 10055;
+  }
+  #sidebarSharedPanel.sidebox-visible {
+    display: block;
+    opacity: 1;
+    visibility: visible;
+    transform: none;
+    transition: none;
+  }
+
   @keyframes ohSideboxItemIn {
     0%   { opacity: 0; transform: translateX(-6px); }
     100% { opacity: 1; transform: translateX(0); }
@@ -112,7 +144,7 @@
           aria-haspopup="true">
 
           <img src="{% static menues.img_src %}" alt="" class="w-4.5 h-4.5 transition duration-300 group-hover:filter group-hover:brightness-0 group-hover:invert" />
-          <div class="sidebox absolute shadow-card mb-3 bg-white min-w-64 left-[75px]"
+          <div class="sidebox sidebox-template absolute shadow-card mb-3 bg-white min-w-64 left-[75px]"
                role="menu"
                aria-label="{{ menues.menu }} {% trans 'submenu' %}">
             <h5 class="border-b border-b-dark-50 py-3 px-3 font-semibold text-left text-[15px]">{{ menues.menu }}</h5>
@@ -132,6 +164,15 @@
           </div>
         </button>
       {% endfor %}
+      <div
+        id="sidebarSharedPanel"
+        class="sidebox absolute shadow-card mb-3 bg-white min-w-64 left-[75px]"
+        role="menu"
+        aria-live="polite"
+      >
+        <h5 class="border-b border-b-dark-50 py-3 px-3 font-semibold text-left text-[15px]"></h5>
+        <ul class="p-3"></ul>
+      </div>
       {% comment %} {{ request.active_company }} {% endcomment %}
       {% include "horilla_theme/components/sidebar/bottom_menu.html" %}
     </nav>
@@ -324,6 +365,8 @@ function removeId(element, storeKey = "selectedInstances") {
         btn.classList.remove("sidebox-active");
         btn.setAttribute("aria-expanded", "false");
       });
+      var shared = document.getElementById("sidebarSharedPanel");
+      if (shared) shared.classList.remove("sidebox-visible");
     }
 
     function getHeaderBottom() {
@@ -344,9 +387,37 @@ function removeId(element, storeKey = "selectedInstances") {
       return 75;
     }
 
+    function getSharedPanel() {
+      return document.getElementById("sidebarSharedPanel");
+    }
+
+    function renderSharedPanelFromButton(btn) {
+      var shared = getSharedPanel();
+      if (!shared || !btn) return false;
+      var menuKey = btn.getAttribute("data-menu") || "";
+      if (
+        shared.classList.contains("sidebox-visible") &&
+        shared.getAttribute("data-current-menu") === menuKey
+      ) {
+        return true;
+      }
+      var template = btn.querySelector(".sidebox-template, :scope > .sidebox");
+      if (!template) return false;
+      var sourceTitle = template.querySelector("h5");
+      var sourceList = template.querySelector("ul");
+      var targetTitle = shared.querySelector("h5");
+      var targetList = shared.querySelector("ul");
+      if (!sourceTitle || !sourceList || !targetTitle || !targetList) return false;
+      targetTitle.innerHTML = sourceTitle.innerHTML;
+      targetList.innerHTML = sourceList.innerHTML;
+      shared.setAttribute("data-current-menu", menuKey);
+      shared.classList.add("sidebox-visible");
+      return true;
+    }
+
     function positionSidebox(btn) {
-      const sidebox = btn.querySelector(".sidebox");
-      if (!sidebox) return;
+      const sidebox = getSharedPanel();
+      if (!sidebox || !btn) return;
       const btnRect = btn.getBoundingClientRect();
       const viewportH = window.innerHeight;
       const headerBottom = getHeaderBottom();
@@ -368,6 +439,53 @@ function removeId(element, storeKey = "selectedInstances") {
       // long menus remain fully reachable.
       sidebox.style.maxHeight = (viewportH - topPos - 8) + "px";
       sidebox.style.overflowY = "auto";
+    }
+
+    function setActiveSidebarMenu(btn) {
+      if (!btn) return;
+      try {
+        if (btn.dataset.menu) localStorage.setItem("activeSidebarMenu", btn.dataset.menu);
+      } catch (_) { /* noop */ }
+      document.querySelectorAll(".sideboxmain").forEach(el => el.classList.remove("active"));
+      btn.classList.add("active");
+    }
+
+    function openSidebarMenuButton(btn, opts) {
+      if (!btn) return;
+      var options = opts || {};
+      var keepCardOpen = !!options.keepCardOpen;
+      var currentlyOpen = document.querySelector(".sideboxmain.sidebox-active");
+      var sameButton = currentlyOpen === btn;
+
+      if (sameButton) {
+        /* No-op for same button to avoid repaint flicker */
+        setActiveSidebarMenu(btn);
+        return;
+      }
+
+      if (keepCardOpen && currentlyOpen) {
+        var sidebar = document.getElementById("sidebar");
+        if (sidebar) sidebar.classList.add("sidebox-switching");
+        renderSharedPanelFromButton(btn);
+        positionSidebox(btn);
+        btn.classList.add("sidebox-active");
+        btn.setAttribute("aria-expanded", "true");
+        currentlyOpen.classList.remove("sidebox-active");
+        currentlyOpen.setAttribute("aria-expanded", "false");
+        if (sidebar) {
+          requestAnimationFrame(function () {
+            sidebar.classList.remove("sidebox-switching");
+          });
+        }
+      } else {
+        closeAll({ force: true });
+        renderSharedPanelFromButton(btn);
+        positionSidebox(btn);
+        btn.classList.add("sidebox-active");
+        btn.setAttribute("aria-expanded", "true");
+      }
+
+      setActiveSidebarMenu(btn);
     }
 
     // Single delegated listener on the nav scroll container
@@ -442,12 +560,7 @@ function removeId(element, storeKey = "selectedInstances") {
 
             if (isTopDashboard) {
               closeAll({ force: true });
-              document.querySelectorAll(".sideboxmain").forEach(el => el.classList.remove("active"));
-              link.classList.add("active");
-              if (link.dataset.menu) {
-                try { localStorage.setItem("activeSidebarMenu", link.dataset.menu); }
-                catch (_) { /* noop */ }
-              }
+              setActiveSidebarMenu(link);
             }
 
             if (isStandaloneUrl(href)) {
@@ -513,17 +626,12 @@ function removeId(element, storeKey = "selectedInstances") {
 
         e.stopPropagation();
         const isAlreadyOpen = btn.classList.contains("sidebox-active");
-        closeAll({ force: true });
-
-        if (!isAlreadyOpen) {
-          positionSidebox(btn);
-          btn.classList.add("sidebox-active");
-          btn.setAttribute("aria-expanded", "true");
+        if (isAlreadyOpen) {
+          closeAll({ force: true });
+          setActiveSidebarMenu(btn);
+          return;
         }
-
-        localStorage.setItem("activeSidebarMenu", btn.dataset.menu);
-        document.querySelectorAll(".sideboxmain").forEach(el => el.classList.remove("active"));
-        btn.classList.add("active");
+        openSidebarMenuButton(btn, { keepCardOpen: true });
       });
     }
 
@@ -706,66 +814,29 @@ function removeId(element, storeKey = "selectedInstances") {
     });
 
     /*
-     * Hover-driven open/close.
-     *
-     * - Mouse enters the sidebar column → auto-open the previously active
-     *   submenu (if any). Lets the user pick up where they left off
-     *   without an extra click.
-     * - Mouse leaves the sidebar OR its currently open .sidebox panel →
-     *   schedule a close. The schedule is cancelled if the cursor
-     *   re-enters either area before the timer fires, which avoids
-     *   flicker when crossing the small visual gap between the icon
-     *   column and the panel.
-     *
-     * We deliberately use mouseenter/mouseleave on stable elements
-     * (#sidebar and the live .sidebox under it) rather than a document
-     * mouseover listener — the latter fires on every target change and
-     * can interact badly with the submenu's open animation, producing
-     * an open/close loop.
+     * Stable behavior: keep panel open once user opens it, and only switch
+     * panel content while hovering other icons. Avoid hover-driven
+     * auto-close/auto-open because that can create close/open flicker.
      */
     var sidebarRoot = document.getElementById("sidebar");
     var hoverCloseTimer = null;
-    var HOVER_CLOSE_DELAY = 220;
+    var HOVER_CLOSE_DELAY = 180;
 
-    function cancelHoverClose() {
-      if (hoverCloseTimer) {
-        clearTimeout(hoverCloseTimer);
-        hoverCloseTimer = null;
-      }
+    function clearHoverCloseTimer() {
+      if (!hoverCloseTimer) return;
+      clearTimeout(hoverCloseTimer);
+      hoverCloseTimer = null;
     }
 
-    function scheduleHoverClose() {
-      /*
-       * Intentionally bypass the `ignoreCloseUntil` grace window here.
-       * That grace window exists to suppress synthetic outside-clicks
-       * triggered by HTMX swaps, NOT real user pointer leaves. When the
-       * user moves the mouse out of the sidebar (even mid-load), we
-       * should honor that and close. Use `force: true` for the same
-       * reason — closeAll() guards against the same grace window, so
-       * bypass it to actually close.
-       */
+    function scheduleCloseIfPointerLeavesSidebar(e) {
       if (!document.querySelector(".sideboxmain.sidebox-active")) return;
-      cancelHoverClose();
+      var related = e && e.relatedTarget;
+      if (related && sidebarRoot && sidebarRoot.contains(related)) return;
+      clearHoverCloseTimer();
       hoverCloseTimer = setTimeout(function () {
         hoverCloseTimer = null;
         closeAll({ force: true });
       }, HOVER_CLOSE_DELAY);
-    }
-
-    function isCursorInsideHoverZone(evt) {
-      /* True when the related target (the element the cursor is moving
-         to) is still inside the sidebar or any open .sidebox panel.
-         Treat browser-window leaves (relatedTarget === null) as
-         "outside" so the panel still closes when the user pulls the
-         pointer all the way out. */
-      var related = evt && evt.relatedTarget;
-      if (!related) return false;
-      if (sidebarRoot && sidebarRoot.contains(related)) return true;
-      var openPanels = document.querySelectorAll(".sideboxmain.sidebox-active .sidebox");
-      for (var i = 0; i < openPanels.length; i++) {
-        if (openPanels[i].contains(related)) return true;
-      }
-      return false;
     }
 
     function openLastActiveSubmenu() {
@@ -789,38 +860,26 @@ function removeId(element, storeKey = "selectedInstances") {
     }
 
     if (sidebarRoot) {
-      sidebarRoot.addEventListener("mouseenter", function () {
-        cancelHoverClose();
-        openLastActiveSubmenu();
-      });
-      sidebarRoot.addEventListener("mouseleave", function (e) {
-        if (isCursorInsideHoverZone(e)) return;
-        scheduleHoverClose();
-      });
+      /*
+       * If a submenu card is already open, hovering another icon should
+       * replace only the menu list while keeping the card visible.
+       */
+      sidebarRoot.addEventListener("mouseenter", function (e) {
+        var btn = e.target && e.target.closest && e.target.closest(".sideboxmain");
+        if (!btn || !btn.querySelector(".sidebox")) return;
+        var openBtn = document.querySelector(".sideboxmain.sidebox-active");
+        if (!openBtn) {
+          clearHoverCloseTimer();
+          openSidebarMenuButton(btn, { keepCardOpen: false });
+          return;
+        }
+        if (openBtn === btn) return;
+        clearHoverCloseTimer();
+        openSidebarMenuButton(btn, { keepCardOpen: true });
+      }, true);
 
-      /* Bind on the live panel as well so moving the cursor between
-         the icon column and the floating panel doesn't trip the close
-         timer. Delegated via event capture to handle panels created
-         after page load. */
-      document.addEventListener(
-        "mouseleave",
-        function (e) {
-          var panel = e.target && e.target.closest && e.target.closest(".sidebox");
-          if (!panel) return;
-          if (isCursorInsideHoverZone(e)) return;
-          scheduleHoverClose();
-        },
-        true
-      );
-      document.addEventListener(
-        "mouseenter",
-        function (e) {
-          var panel = e.target && e.target.closest && e.target.closest(".sidebox");
-          if (!panel) return;
-          cancelHoverClose();
-        },
-        true
-      );
+      sidebarRoot.addEventListener("mousemove", clearHoverCloseTimer, true);
+      sidebarRoot.addEventListener("mouseleave", scheduleCloseIfPointerLeavesSidebar, true);
     }
   });
 

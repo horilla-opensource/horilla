@@ -41,11 +41,17 @@
     .employee {
         background-color: yellowgreen;
     }
+
+    body.recruitment-candidate-detail #candidateListNavBar {
+        display: none !important;
+    }
 </style>
 
 
 <div id="candidateMainContainer">
+    <div id="candidateListNavBar">
     <div hx-get="{% url 'nav-candidate' %}?{{request.GET.urlencode}}" hx-trigger="load"></div>
+    </div>
 
     {% include "generic/components.html" %}
 
@@ -72,6 +78,82 @@
 </div>
 
 <script>
+    (function () {
+        function isCandidateDetailPath() {
+            var path = window.location.pathname.replace(/\/$/, "");
+            return /\/recruitment\/candidate-view\/\d+$/.test(path);
+        }
+        function isCandidateProfilePath() {
+            var path = window.location.pathname.replace(/\/$/, "");
+            return path.indexOf("/recruitment/profile/recruitment/candidate-view/") !== -1;
+        }
+        function getHtmxSwapTarget(e) {
+            if (!e || !e.detail) {
+                return null;
+            }
+            return e.detail.target || e.detail.elt || null;
+        }
+        function clearCandidateFilterTagRows() {
+            var main = document.getElementById("candidateMainContainer");
+            if (!main) {
+                return;
+            }
+            main.querySelectorAll("#filterTagContainerSectionNav").forEach(function (el) {
+                el.innerHTML = "";
+            });
+        }
+        function syncCandidateListNavBar() {
+            var nav = document.getElementById("candidateListNavBar");
+            var list = document.getElementById("listContainer");
+            if (!nav || !list) {
+                return;
+            }
+            var hasProfile = !!list.querySelector(".reload-profile-view");
+            var hide =
+                hasProfile ||
+                isCandidateDetailPath() ||
+                isCandidateProfilePath();
+            if (hide) {
+                document.body.classList.add("recruitment-candidate-detail");
+                nav.style.display = "none";
+                clearCandidateFilterTagRows();
+            } else {
+                document.body.classList.remove("recruitment-candidate-detail");
+                nav.style.display = "";
+            }
+        }
+        function onListContainerHtmxEvent(e) {
+            var t = getHtmxSwapTarget(e);
+            if (t && t.id === "listContainer") {
+                syncCandidateListNavBar();
+                setTimeout(syncCandidateListNavBar, 0);
+                setTimeout(syncCandidateListNavBar, 50);
+            }
+        }
+        document.addEventListener("DOMContentLoaded", syncCandidateListNavBar);
+        document.body.addEventListener("htmx:afterSwap", onListContainerHtmxEvent);
+        document.body.addEventListener("htmx:afterSettle", onListContainerHtmxEvent);
+        document.body.addEventListener("htmx:afterRequest", function (e) {
+            if (!e.detail || !e.detail.successful) {
+                return;
+            }
+            var url = (e.detail.xhr && e.detail.xhr.responseURL) || "";
+            var t = getHtmxSwapTarget(e);
+            if (url.indexOf("/recruitment/profile/recruitment/candidate-view/") !== -1) {
+                setTimeout(syncCandidateListNavBar, 0);
+                setTimeout(syncCandidateListNavBar, 50);
+                return;
+            }
+            if (t && t.id === "listContainer") {
+                setTimeout(syncCandidateListNavBar, 0);
+                setTimeout(syncCandidateListNavBar, 50);
+            }
+        });
+        window.addEventListener("popstate", function () {
+            setTimeout(syncCandidateListNavBar, 0);
+        });
+    })();
+
     document.body.addEventListener("htmx:historyRestore", function () {
         window.location.reload();
     });

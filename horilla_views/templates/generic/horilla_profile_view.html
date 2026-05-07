@@ -94,6 +94,32 @@
         <a href="{% url 'candidate-view' %}" class="oh-btn oh-btn--light-bkg">
           {% trans "Back" %}
         </a>
+        {% elif request.resolver_match.url_name == "profile-new" or request.resolver_match.url_name == "employee-view-individual" %}
+        <button
+          type="button"
+          class="oh-btn oh-btn--light-bkg"
+          onclick="
+            var navBar = document.getElementById('employeeListNavBar');
+            var list = document.getElementById('listContainer');
+            if (navBar && list) {
+              if (window.history && history.pushState) {
+                history.pushState({}, '', '{% url 'employee-view' %}');
+              }
+              navBar.style.display = '';
+              var tagRow = navBar.querySelector('#filterTagContainerSectionNav');
+              if (tagRow) { tagRow.innerHTML = ''; }
+              list.innerHTML = '<div class=&quot;animated-background&quot;></div>';
+              setTimeout(function () {
+                var btn = document.getElementById('applyFilter');
+                if (btn) { btn.click(); }
+              }, 100);
+            } else {
+              window.location.href = '{% url 'employee-view' %}';
+            }
+          "
+        >
+          {% trans "Back" %}
+        </button>
         {% endif %}
         {% if instances %}
         <div class="container-right-left-arrows float-right">

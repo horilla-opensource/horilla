@@ -2,11 +2,22 @@
 <div class="oh-wrapper" data-select2-id="select2-data-40-yu7x">
     <div class="oh-general__tab-target oh-profile-section mb-4 p-5" id="personal" data-select2-id="select2-data-personal" style="border:none;">
         <div class="oh-profile-section__card p-10" data-select2-id="select2-data-48-0df8" style="border:1px solid #cdd5df; border-radius:10px;">
-
-            <form action="" method="post" enctype="multipart/form-data">
+            {% include 'employee/update_form/edit_form_back_button.html' %}
+            <form
+                method="post"
+                enctype="multipart/form-data"
+                hx-post="{% url 'employee-view-update' obj_id %}"
+                hx-target="#employee-update-form-root"
+                hx-swap="outerHTML"
+                hx-push-url="true"
+                hx-encoding="multipart/form-data"
+                hx-on::after-request="if(event.detail.successful){var b=document.getElementById('reloadMessagesButton');if(b)b.click();}"
+                action="{% url 'employee-view-update' obj_id %}"
+            >
                 <div id="personalMessage"></div>
                 <input type="hidden" name="form" value="personal">
                 {% csrf_token %}
+                {% if container_mode %}<input type="hidden" name="container" value="true">{% endif %}
                 <div class="row">
                     <div class="col-12 col-sm-12 col-md-12 col-lg-6 d-flex align-items-center">
                         <div class="oh-profile-section__edit-photo me-4 mb-3" data-toggle="oh-modal-toggle"

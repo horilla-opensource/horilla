@@ -190,6 +190,26 @@ def stage_update(request, stage_id, recruitment_id):
                 icon="people-circle",
                 redirect=reverse("onboarding-view"),
             )
+            if request.META.get("HTTP_HX_REQUEST") == "true":
+                return HttpResponse(
+                    """
+                    <script>
+                      (function () {
+                        const activeTab = document.querySelector(".oh-tabs__tab--active");
+                        const target = activeTab ? activeTab.getAttribute("data-target") : null;
+                        if (target && window.htmx) {
+                          htmx.ajax("GET", window.location.href, {
+                            target: target,
+                            swap: "outerHTML",
+                            select: target
+                          });
+                        }
+                        $("#reloadMessagesButton").click();
+                        $("#genericModal").removeClass("oh-modal--show");
+                      })();
+                    </script>
+                    """
+                )
             return HorillaRedirect(request)
     return render(
         request,
@@ -486,6 +506,8 @@ def candidate_delete(request, obj_id):
                 )
             ),
         )
+    if request.META.get("HTTP_HX_REQUEST"):
+        return HttpResponse(status=204)
     return redirect(reverse("candidates-view"))
 
 
@@ -898,9 +920,11 @@ def email_send(request):
             messages.error(request, f"Mail not sent to {candidate.name}")
             # continue
 
-        # Mark onboarding started
+        # Mark onboarding started without triggering Candidate.save() validation
+        # (which can fail with "Choose valid choice" on job_position_id when the
+        # candidate's job position has been removed from recruitment.open_positions).
+        Candidate.objects.filter(pk=candidate.pk).update(start_onboard=True)
         candidate.start_onboard = True
-        candidate.save()
 
         # ✅ SAFE onboarding stage insert
         try:
@@ -2034,6 +2058,35 @@ def add_to_rejected_candidates(request):
             messages.success(request, "Candidate reject reason saved")
             return HorillaRedirect(request)
     return render(request, "onboarding/rejection/form.html", {"form": form})
+
+
+@login_required
+@permission_required("recruitment.change_candidate")
+@require_http_methods(["POST"])
+def undo_rejected_candidate(request, candidate_id):
+    """
+    Remove candidate from rejected list.
+    """
+    deleted_count, __ = RejectedCandidate.objects.filter(
+        candidate_id=candidate_id
+    ).delete()
+    if deleted_count:
+        messages.success(request, _("Candidate removed from rejected list"))
+    else:
+        messages.info(request, _("Candidate is not in rejected list"))
+
+    if request.META.get("HTTP_HX_REQUEST") == "true":
+        response = HttpResponse(
+            "<script>"
+            "$('#applyFilter').click();"
+            "$('#reloadMessagesButton').click();"
+            "</script>"
+        )
+        # Also trigger via HX-Trigger header so listeners (#applyFilter / #reloadMessagesButton)
+        # fire even when the button uses hx-swap="none" (which discards the response body).
+        response["HX-Trigger"] = "reloadCandidatesList"
+        return response
+    return HorillaRedirect(request)
 
 
 @login_required

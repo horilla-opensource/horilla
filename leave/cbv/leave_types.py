@@ -118,7 +118,10 @@ class LeaveTypeNavView(HorillaNavView):
         self.search_url = reverse("leave-type-list")
         if self.request.user.has_perm("leave.add_leavetype"):
             self.create_attrs = f"""
-                                    href="{reverse_lazy('type-creation')}"
+                                    href="#"
+                                    hx-get="{reverse_lazy('type-creation')}"
+                                    hx-target="#listContainer"
+                                    hx-swap="innerHTML"
                                 """
             self.view_types = [
                 {

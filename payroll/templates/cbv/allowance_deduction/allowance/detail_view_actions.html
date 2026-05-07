@@ -3,7 +3,11 @@
     <div class="oh-modal__button-container w-100">
        <div class="oh-btn-group">
             {% if perms.payroll.change_allowance %}
-                <a href="{% url 'update-allowance' instance.id %}" class="oh-btn oh-btn--info" style="width: 100%;">
+                <a href="#"
+                    hx-get="{% url 'update-allowance' instance.id %}"
+                    hx-target="#listContainer"
+                    hx-swap="innerHTML"
+                    class="oh-btn oh-btn--info" style="width: 100%;">
                     <ion-icon
                     name="create-outline"
                     role="img"

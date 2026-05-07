@@ -1936,6 +1936,19 @@ def candidate_view_individual(request, cand_id, **kwargs):
     )
 
 
+def _query_param_truthy(get_dict, key):
+    val = get_dict.get(key)
+    if val is None:
+        return False
+    return str(val).lower() in ("true", "1", "yes")
+
+
+def _onboarding_container_request(request):
+    return request.GET.get("container") == "true" and _query_param_truthy(
+        request.GET, "onboarding"
+    )
+
+
 @login_required
 @manager_can_enter(
     perms=["recruitment.change_candidate", "onboarding.change_onboardingcandidate"]
@@ -1974,7 +1987,7 @@ def candidate_update(request, cand_id, **kwargs):
                                 stage_type="initial"
                             ).first()
                         )
-                if request.GET.get("onboarding") == "True":
+                if _query_param_truthy(request.GET, "onboarding"):
                     candidate_obj.hired = True
                     path = "/onboarding/candidates-view"
                 candidate_obj.save()
@@ -1985,15 +1998,34 @@ def candidate_update(request, cand_id, **kwargs):
                         close_modal_script = (
                             "$('#objectCreateModal').removeClass('oh-modal--show');"
                         )
-                    container_reload_script = (
-                        "$('#candidateMainContainer').html("
-                        '\'<div hx-get="/recruitment/nav-candidate/?" hx-trigger="load"></div>\' + '
-                        '\'<div class="oh-checkpoint-badge mb-2" id="selectedInstances" data-ids="[]" data-clicked="" style="display: none"></div>\' + '
-                        '\'<div class="oh-wrapper" id="listContainer"><div class="animated-background"></div></div>\''
-                        ");"
-                        "htmx.process($('#candidateMainContainer')[0]);"
-                    )
-                    if request.GET.get("container") != "true":
+                    if request.GET.get("container") == "true":
+                        if _query_param_truthy(request.GET, "onboarding"):
+                            _onboarding_candidates_url = reverse("candidates-view")
+                            container_reload_script = (
+                                "if (window.history && history.pushState) { "
+                                f"history.pushState({{}}, '', '{_onboarding_candidates_url}'); "
+                                "}"
+                                "document.body.classList.remove('onboarding-list-hide-toolbar');"
+                                "var nav = document.getElementById('onboardingCandidatesNavBar');"
+                                "if (nav) { nav.style.display = ''; }"
+                                "var tagRow = nav && nav.querySelector('#filterTagContainerSectionNav');"
+                                "if (tagRow) { tagRow.innerHTML = ''; }"
+                                "var list = document.getElementById('listContainer');"
+                                "if (list) { list.innerHTML = '<div class=\"animated-background\"></div>'; }"
+                                "setTimeout(function () { "
+                                "var b = document.getElementById('applyFilter'); "
+                                "if (b) { b.click(); } }, 100);"
+                            )
+                        else:
+                            container_reload_script = (
+                                "$('#candidateMainContainer').html("
+                                '\'<div hx-get="/recruitment/nav-candidate/?" hx-trigger="load"></div>\' + '
+                                '\'<div class="oh-checkpoint-badge mb-2" id="selectedInstances" data-ids="[]" data-clicked="" style="display: none"></div>\' + '
+                                '\'<div class="oh-wrapper" id="listContainer"><div class="animated-background"></div></div>\''
+                                ");"
+                                "htmx.process($('#candidateMainContainer')[0]);"
+                            )
+                    else:
                         container_reload_script = "$('#applyFilter').click();"
                     return HttpResponse(
                         "<script>"
@@ -2003,7 +2035,15 @@ def candidate_update(request, cand_id, **kwargs):
                         + "</script>"
                     )
                 return redirect(path)
-        return render(request, template_name, {"form": form})
+        onboarding_container_mode = _onboarding_container_request(request)
+        return render(
+            request,
+            template_name,
+            {
+                "form": form,
+                "onboarding_container_mode": onboarding_container_mode,
+            },
+        )
     except (Candidate.DoesNotExist, OverflowError):
         messages.error(request, _("Candidate Does not exists.."))
     return HorillaRedirect(request)

@@ -42,6 +42,15 @@ class ObjectivesView(TemplateView):
 
 
 @method_decorator(login_required, name="dispatch")
+class ObjectiveTemplateView(TemplateView):
+    """
+    List-only template objective page
+    """
+
+    template_name = "cbv/objectives/objective_templates.html"
+
+
+@method_decorator(login_required, name="dispatch")
 class ObjectivesList(HorillaListView):
     """
     List view of the page
@@ -50,11 +59,15 @@ class ObjectivesList(HorillaListView):
     def __init__(self, **kwargs: Any) -> None:
         super().__init__(**kwargs)
         self.search_url = reverse("tab-objectives-view")
+        self.template_only = False
 
     def get_queryset(self, queryset=None, filtered=False, *args, **kwargs):
         archive_param = self.request.GET.get("archive")
 
         qs = super().get_queryset(queryset, filtered, *args, **kwargs)
+
+        if self.template_only:
+            qs = qs.filter(is_template=True)
 
         if archive_param in ["true", "True", "1"]:
             # only archived
@@ -87,8 +100,11 @@ class ObjectivesList(HorillaListView):
     }
     row_attrs = """
                 id="tr{get_instance_id}"
-                class="oh-permission-table--collapsed"
-                onclick="window.location.href='{get_individual_url}'"
+                class="oh-permission-table--collapsed cursor-pointer"
+                hx-get="{get_individual_url}"
+                hx-target="#listContainer"
+                hx-swap="innerHTML"
+                hx-push-url="{get_individual_url}"
                 """
 
 
@@ -161,6 +177,19 @@ class AllObjectives(ObjectivesList):
 
 
 @method_decorator(login_required, name="dispatch")
+class ObjectiveTemplateList(AllObjectives):
+    """
+    List view dedicated for objective templates
+    """
+
+    def __init__(self, **kwargs: Any) -> None:
+        super().__init__(**kwargs)
+        self.view_id = "objectiveTemplateContainer"
+        self.search_url = reverse("list-objective-templates-view")
+        self.template_only = True
+
+
+@method_decorator(login_required, name="dispatch")
 class ObjectivesTab(HorillaTabView):
     """
     Tab View
@@ -172,42 +201,80 @@ class ObjectivesTab(HorillaTabView):
         super().__init__(**kwargs)
         self.view_id = "objContainer"
 
+    def _assigned_objectives_count(self, employee):
+        return (
+            Objective.objects.filter(employee_objective__employee_id=employee)
+            .distinct()
+            .count()
+        )
+
+    def _all_objectives_count(self, employee):
+        queryset = Objective.objects.all()
+        manager = Objective.objects.filter(managers=employee).exists()
+        if self.request.user.has_perm("pms.view_employeeobjective"):
+            return queryset.distinct().count()
+        if manager:
+            return (
+                (
+                    queryset.filter(Q(managers=employee))
+                    | queryset.filter(employee_objective__employee_id=employee)
+                )
+                .distinct()
+                .count()
+            )
+        return 0
+
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
         employee = self.request.user.employee_get
         context["instance"] = employee
+        template_mode = self.request.GET.get("objective_template") in (
+            "true",
+            "1",
+            "True",
+        )
+        assigned_objectives_count = self._assigned_objectives_count(employee)
+        all_objectives_count = self._all_objectives_count(employee)
 
         self.view_id = "objContainer"
         manager = False
         if Objective.objects.filter(managers=employee).exists():
             manager = True
-        self.tabs = [
-            {
-                "title": _("Assigned Objectives"),
-                "url": f"{reverse('my-objectives-view-tab')}",
-            },
-        ]
-        if self.request.user.has_perm("pms.view_employeeobjective") or manager:
-            self.tabs.append(
+        can_view_all = (
+            self.request.user.has_perm("pms.view_employeeobjective") or manager
+        )
+        all_objectives_tab = {
+            "title": _("All Objectives"),
+            "url": f"{reverse('all-objectives-view-tab')}",
+            "badge": all_objectives_count,
+            "actions": [
                 {
-                    "title": _("All Objectives"),
-                    "url": f"{reverse('all-objectives-view-tab')}",
-                    "actions": [
-                        {
-                            "action": "Create Objectives",
-                            "accessibility": "pms.cbv.accessibility.create_objective_accessibility",
-                            "attrs": f"""
-                                data-toggle="oh-modal-toggle"
-                                hx-get='{reverse_lazy('objective-creation')}'"
-                                data-toggle="oh-modal-toggle"
-                                data-target="#genericModal"
-                                hx-target="#genericModalBody"
-                                style="cursor: pointer;"
-                                """,
-                        }
-                    ],
+                    "action": "Create Objectives",
+                    "accessibility": "pms.cbv.accessibility.create_objective_accessibility",
+                    "attrs": f"""
+                        data-toggle="oh-modal-toggle"
+                        hx-get='{reverse_lazy('objective-creation')}'"
+                        data-toggle="oh-modal-toggle"
+                        data-target="#genericModal"
+                        hx-target="#genericModalBody"
+                        style="cursor: pointer;"
+                        """,
+                }
+            ],
+        }
+
+        if template_mode:
+            self.tabs = [all_objectives_tab] if can_view_all else []
+        else:
+            self.tabs = [
+                {
+                    "title": _("Assigned Objectives"),
+                    "url": f"{reverse('my-objectives-view-tab')}",
+                    "badge": assigned_objectives_count,
                 },
-            )
+            ]
+            if can_view_all:
+                self.tabs.append(all_objectives_tab)
 
         context["tabs"] = self.tabs
         return context
@@ -234,6 +301,25 @@ class ObjectivesNav(HorillaNavView):
     filter_form_context_name = "form"
     filter_body_template = "cbv/objectives/filter.html"
     search_swap_target = "#listContainer"
+
+
+@method_decorator(login_required, name="dispatch")
+class ObjectiveTemplateNav(ObjectivesNav):
+    """
+    Nav bar for objective template list page
+    """
+
+    nav_title = _("Objective Templates")
+
+    def __init__(self, **kwargs: Any) -> None:
+        super().__init__(**kwargs)
+        self.search_url = reverse("list-objective-templates-view")
+        self.create_attrs = f"""
+                        hx-get='{reverse_lazy('objective-template-creation')}'"
+                        data-toggle="oh-modal-toggle"
+                        data-target="#genericModal"
+                        hx-target="#genericModalBody"
+                        """
 
 
 @method_decorator(login_required, name="dispatch")
@@ -307,6 +393,7 @@ class CreateObjectiveFormView(HorillaFormView):
     new_display_title = _("Create  Objective")
     dynamic_create_fields = [("key_result_id", DynamicKeyResultCreateForm)]
     template_name = "cbv/objectives/form.html"
+    force_template = False
 
     def __init__(self, **kwargs: Any) -> None:
         super().__init__(**kwargs)
@@ -321,6 +408,8 @@ class CreateObjectiveFormView(HorillaFormView):
 
     def form_valid(self, form: ObjectiveForm) -> HttpResponse:
         if form.is_valid():
+            if self.force_template:
+                form.instance.is_template = True
             objective = form.save()
             assignees = self.form.cleaned_data["assignees"]
             start_date = self.form.cleaned_data["start_date"]
@@ -419,6 +508,16 @@ class CreateObjectiveFormView(HorillaFormView):
             messages.success(self.request, _(message))
             return self.HttpResponse()
         return super().form_valid(form)
+
+
+@method_decorator(login_required, name="dispatch")
+class CreateTemplateObjectiveFormView(CreateObjectiveFormView):
+    """
+    Objective template create/update form view
+    """
+
+    force_template = True
+    new_display_title = _("Create Objective Template")
 
 
 @method_decorator(login_required, name="dispatch")

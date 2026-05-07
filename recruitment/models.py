@@ -1185,12 +1185,26 @@ class Candidate(HorillaModel):
         if self.stage_id is not None:
             self.hired = self.stage_id.stage_type == "hired"
 
+        should_validate_job_position = not self.pk
+        if self.pk:
+            previous = (
+                Candidate.objects.filter(pk=self.pk)
+                .values("recruitment_id", "job_position_id")
+                .first()
+            )
+            if previous:
+                should_validate_job_position = (
+                    previous["recruitment_id"] != self.recruitment_id_id
+                    or previous["job_position_id"] != self.job_position_id_id
+                )
+
         if not self.recruitment_id.is_event_based and self.job_position_id is None:
             self.job_position_id = self.recruitment_id.job_position_id
-        if self.job_position_id not in self.recruitment_id.open_positions.all():
-            raise ValidationError({"job_position_id": _("Choose valid choice")})
-        if self.recruitment_id.is_event_based and self.job_position_id is None:
-            raise ValidationError({"job_position_id": _("This field is required.")})
+        if should_validate_job_position:
+            if self.job_position_id not in self.recruitment_id.open_positions.all():
+                raise ValidationError({"job_position_id": _("Choose valid choice")})
+            if self.recruitment_id.is_event_based and self.job_position_id is None:
+                raise ValidationError({"job_position_id": _("This field is required.")})
         if self.stage_id and self.stage_id.stage_type == "cancelled":
             self.canceled = True
         if self.canceled:

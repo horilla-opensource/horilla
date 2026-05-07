@@ -75,13 +75,23 @@
       class="oh-profile-section__card"
       data-select2-id="select2-data-29-vht3"
     >
+      {% include 'employee/update_form/edit_form_back_button.html' %}
       <div id="workMessage"></div>
-      <form method="post" action="">
+      <form
+        method="post"
+        hx-post="{% url 'employee-view-update' obj_id %}"
+        hx-target="#employee-update-form-root"
+        hx-swap="outerHTML"
+        hx-push-url="true"
+        hx-on::after-request="if(event.detail.successful){var b=document.getElementById('reloadMessagesButton');if(b)b.click();}"
+        action="{% url 'employee-view-update' obj_id %}"
+      >
         <input type="hidden" name="form" value="work">
         {% if work_info_history %}
           {{history_form.as_history_modal}}
         {% endif %}
         {% csrf_token %}
+        {% if container_mode %}<input type="hidden" name="container" value="true">{% endif %}
         {{work_form.as_p}}
         <hr class="mt-5 mb-3" />
         <div class="w-100 d-flex align-items-center justify-content-end">

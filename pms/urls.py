@@ -64,6 +64,11 @@ urlpatterns = [
         name="objective-creation",
     ),
     path(
+        "objective-template-creation/",
+        objectives.CreateTemplateObjectiveFormView.as_view(),
+        name="objective-template-creation",
+    ),
+    path(
         "objective-update/<int:pk>/",
         objectives.CreateObjectiveFormView.as_view(),
         name="objective-update",
@@ -644,6 +649,11 @@ urlpatterns = [
         name="objective-list-view",
     ),
     path(
+        "objective-template-list-view/",
+        objectives.ObjectiveTemplateView.as_view(),
+        name="objective-template-list-view",
+    ),
+    path(
         "list-objectives-view/",
         objectives.ObjectivesList.as_view(),
         name="list-objectives-view",
@@ -659,6 +669,11 @@ urlpatterns = [
         name="nav-objectives-view",
     ),
     path(
+        "nav-objective-templates-view/",
+        objectives.ObjectiveTemplateNav.as_view(),
+        name="nav-objective-templates-view",
+    ),
+    path(
         "my-objectives-view-tab/",
         objectives.MyObjectives.as_view(),
         name="my-objectives-view-tab",
@@ -667,6 +682,11 @@ urlpatterns = [
         "all-objectives-view-tab/",
         objectives.AllObjectives.as_view(),
         name="all-objectives-view-tab",
+    ),
+    path(
+        "list-objective-templates-view/",
+        objectives.ObjectiveTemplateList.as_view(),
+        name="list-objective-templates-view",
     ),
     path("view-meetings/", meetings.MeetingsView.as_view(), name="view-meetings"),
     path("meetings-list/", meetings.MeetingsList.as_view(), name="meetings-list"),

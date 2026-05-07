@@ -82,13 +82,31 @@ def contract_create(request):
     from payroll.forms.forms import ContractForm
 
     form = ContractForm()
+    is_htmx = request.headers.get("HX-Request") is not None
     if request.method == "POST":
         form = ContractForm(request.POST, request.FILES)
         if form.is_valid():
             form.save()
             messages.success(request, _("Contract Created"))
+            if is_htmx:
+                response = HttpResponse("", status=200)
+                response["HX-Trigger"] = json.dumps(
+                    {"reloadPayrollContracts": {"target": "body"}}
+                )
+                return response
             return redirect("view-contract")
-    return render(request, "payroll/common/form.html", {"form": form})
+    template_name = (
+        "payroll/common/form_fragment.html" if is_htmx else "payroll/common/form.html"
+    )
+    return render(
+        request,
+        template_name,
+        {
+            "form": form,
+            "post_url": request.get_full_path(),
+            "back_url": reverse("contract-filter"),
+        },
+    )
 
 
 @login_required
@@ -109,6 +127,7 @@ def contract_update(request, contract_id, **kwargs):
     from payroll.forms.forms import ContractForm
 
     contract = Contract.objects.filter(id=contract_id).first()
+    is_htmx = request.headers.get("HX-Request") is not None
     if not contract:
         messages.info(request, _("The contract could not be found."))
         return redirect("view-contract")
@@ -118,12 +137,23 @@ def contract_update(request, contract_id, **kwargs):
         if contract_form.is_valid():
             contract_form.save()
             messages.success(request, _("Contract updated"))
+            if is_htmx:
+                response = HttpResponse("", status=200)
+                response["HX-Trigger"] = json.dumps(
+                    {"reloadPayrollContracts": {"target": "body"}}
+                )
+                return response
             return redirect(reverse("view-contract"))
+    template_name = (
+        "payroll/common/form_fragment.html" if is_htmx else "payroll/common/form.html"
+    )
     return render(
         request,
-        "payroll/common/form.html",
+        template_name,
         {
             "form": contract_form,
+            "post_url": request.get_full_path(),
+            "back_url": reverse("contract-filter"),
         },
     )
 
@@ -617,6 +647,12 @@ def delete_payslip(request, payslip_id):
         messages.error(request, _("Payslip not found."))
     except ProtectedError:
         messages.error(request, _("Something went wrong"))
+    if request.headers.get("HX-Request"):
+        response = HttpResponse("", status=200)
+        response["HX-Trigger"] = json.dumps(
+            {"reloadPayrollPayslips": {"target": "body"}}
+        )
+        return response
     if not Payslip.objects.filter():
         return HorillaRedirect(request)
     return redirect(reverse("payslip-list"))

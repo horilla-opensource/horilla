@@ -277,6 +277,15 @@
 
 {% include 'leave/user_leave/user_leave.html' %}
 
+<button
+	type="button"
+	id="userRequestReload"
+	hidden
+	hx-get="{% url 'user-request-filter' %}?{{ request.GET.urlencode }}"
+	hx-target="#userRequest"
+	hx-swap="innerHTML"
+></button>
+
 <div class="oh-wrapper" id="userRequest">
 	{% if leave_requests %}
         {% include 'leave/user_leave/user_requests.html' %}

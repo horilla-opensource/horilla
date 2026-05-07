@@ -2,8 +2,9 @@
 {% load i18n %}
 {% block content %}
 <div id="view-container" class="oh-wrapper">
+<div id="employee-update-form-root" class="oh-wrapper">
     <section class="oh-wrapper oh-main__topbar oh-profile-section__topbar" x-data="{searchShow: false}">
-        <div class="oh-main__titlebar oh-main__titlebar--left">
+        <div class="oh-main__titlebar oh-main__titlebar--left mb-3">
             <h1 class="oh-main__titlebar-title fw-bold mb-0">{% trans "Edit" %} {{form.instance.employee_first_name}}</h1>
         </div>
         <div class="oh-main__titlebar oh-main__titlebar--left d-flex align-items-center">
@@ -15,16 +16,14 @@
                     <a href="#" class="oh-general__tab-link" data-action="general-tab" data-target="#work">{% trans "Work Info" %}</a>
                 </li>
                 <li class="oh-general__tab">
-        <a href="#" class="oh-general__tab-link" data-action="general-tab" data-target="#bank">{% trans "Bank Info" %}</a>
-    </li>
-</ul>
-</div>
-</section>
+                    <a href="#" class="oh-general__tab-link" data-action="general-tab" data-target="#bank">{% trans "Bank Info" %}</a>
+                </li>
+            </ul>
+        </div>
+    </section>
 {% include 'employee/update_form/personal_info.html' %}
 {% include 'employee/update_form/work_details.html' %}
 {% include 'employee/update_form/bank_details.html' %}
-
-</div>
 <script>
     $(document).ready(function() {
       $('#id_profile').change(function (e) {
@@ -40,32 +39,33 @@
         reader.readAsDataURL(file);
       });
 
-      // Active tab script
+      function applyEmployeeEditTab(targetId) {
+        if (!["#personal", "#work", "#bank"].includes(targetId)) {
+          targetId = "#personal";
+        }
+        $(".oh-general__tab-link--active").removeClass("oh-general__tab-link--active");
+        $("[data-action=general-tab][data-target='" + targetId + "']").addClass("oh-general__tab-link--active");
+        $(".oh-general__tab-target").addClass("d-none");
+        $(targetId).removeClass("d-none");
+      }
       function activeEmpTab() {
-        var activeTab = localStorage.getItem("activeEmpTab")
-
+        var activeTab = localStorage.getItem("activeEmpTab");
         if (!["#personal", "#work", "#bank"].includes(activeTab)) {
           activeTab = "#personal";
         }
-
-        if(activeTab != null){
-          $(".oh-general__tab-link--active").removeClass("oh-general__tab-link--active");
-          $(`[data-target='${activeTab}']`).addClass("oh-general__tab-link--active");
-          $(".oh-general__tab-target").addClass("d-none");
-          $(activeTab).removeClass("d-none");
-          if($(`[data-target="${activeTab}"]`).length>0){
-            $(`[data-target="${activeTab}"]`)[0].click();
-          }
-        }
+        applyEmployeeEditTab(activeTab);
       }
-      activeEmpTab()
-      $("[data-action=general-tab]").on("click",function (e) {
+      activeEmpTab();
+      $("[data-action=general-tab]").off("click.empEditTab").on("click.empEditTab", function (e) {
         e.preventDefault();
-        const targetId = $(this).attr('data-target');
-        localStorage.setItem("activeEmpTab",targetId)
+        var targetId = $(this).attr("data-target");
+        localStorage.setItem("activeEmpTab", targetId);
+        applyEmployeeEditTab(targetId);
       });
 
     });
   </script>
+</div>
+</div>
 
 {% endblock content %}

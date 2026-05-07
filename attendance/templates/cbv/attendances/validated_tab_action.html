@@ -18,7 +18,7 @@
     {% endif %}
 
     {% if can_delete or can_manage %}
-    <form action="{% url 'attendance-delete' instance.id  %}" onsubmit="return confirm('{% trans "Are you sure want to delete this attendance?" %}')" hx-target="#tab_contents" method='post' style="width: 50%;"
+    <form hx-post="{% url 'attendance-delete' instance.id  %}" hx-swap="none" onsubmit="return confirm('{% trans "Are you sure want to delete this attendance?" %}')" method='post' style="width: 50%;"
         class="oh-btn oh-btn-group oh-btn--danger">
         {% csrf_token %}
         <button type="submit"

@@ -1,14 +1,20 @@
-tickCheckboxes();
+if (typeof tickCheckboxes === "function") {
+    tickCheckboxes();
+}
 function makeListUnique(list) {
     return Array.from(new Set(list));
 }
 
-tickactivityCheckboxes();
+if (typeof tickactivityCheckboxes === "function") {
+    tickactivityCheckboxes();
+}
 function makeactivityListUnique(list) {
     return Array.from(new Set(list));
 }
 
-ticklatecomeCheckboxes();
+if (typeof ticklatecomeCheckboxes === "function") {
+    ticklatecomeCheckboxes();
+}
 function makelatecomeListUnique(list) {
     return Array.from(new Set(list));
 }
@@ -60,10 +66,8 @@ function deleteAttendanceNav() {
                         csrfmiddlewaretoken: getCookie("csrftoken"),
                         ids: JSON.stringify(ids),
                     },
-                    success: function (response, textStatus, jqXHR) {
-                        if (jqXHR.status === 200) {
-                            location.reload();
-                        }
+                    complete: function () {
+                        refreshAttendanceListContainer();
                     },
                 });
             }
@@ -200,10 +204,8 @@ function bulkDeleteAttendanceNav() {
                     csrfmiddlewaretoken: getCookie("csrftoken"),
                     ids: ids,
                 },
-                success: function (response, textStatus, jqXHR) {
-                    if (jqXHR.status === 200) {
-                        location.reload();
-                    }
+                complete: function () {
+                    refreshAttendanceListContainer();
                 },
             });
         }
@@ -260,11 +262,8 @@ function bulkValidateTabAttendance(dataReqValue) {
                         csrfmiddlewaretoken: getCookie("csrftoken"),
                         ids: JSON.stringify(ids),
                     },
-                    success: function (response, textStatus, jqXHR) {
-                        if (jqXHR.status === 200) {
-                            location.reload();
-                        } else {
-                        }
+                    complete: function () {
+                        refreshAttendanceListContainer();
                     },
                 });
             }
@@ -304,14 +303,104 @@ function otBulkValidateTabAttendance(dataReqValue) {
                         csrfmiddlewaretoken: getCookie("csrftoken"),
                         ids: JSON.stringify(ids),
                     },
-                    success: function (response, textStatus, jqXHR) {
-                        if (jqXHR.status === 200) {
-                            location.reload();
-                        } else {
-                        }
+                    complete: function () {
+                        refreshAttendanceListContainer();
                     },
                 });
             }
         });
     }
 }
+
+function attendanceTabReloadUrl() {
+    var url = "/attendance/attendances-tab-view/";
+    var form = document.getElementById("filterForm");
+    if (form && typeof jQuery !== "undefined") {
+        var params = jQuery(form).serialize();
+        if (params) {
+            url = "/attendance/attendances-tab-view/?" + params;
+        }
+    }
+    return url;
+}
+
+function openAttendanceTabAfterInject(container) {
+    var scope = container.querySelector("#attendances-tab") || container;
+    setTimeout(function () {
+        var btn =
+            scope.querySelector(".oh-tabs__tab--active") ||
+            scope.querySelector(".oh-tabs__tab") ||
+            scope.querySelector("button[data-target]");
+        if (btn) {
+            btn.click();
+        }
+    }, 120);
+}
+
+var _refreshAttendanceContainerTimer = null;
+
+function refreshAttendanceListContainerImmediately() {
+    var doneMessages = function () {
+        if (typeof jQuery !== "undefined" && $("#reloadMessagesButton").length) {
+            $("#reloadMessagesButton").click();
+        }
+    };
+    var listUrl = attendanceTabReloadUrl();
+    if (typeof htmx !== "undefined" && typeof htmx.ajax === "function") {
+        htmx
+            .ajax("GET", listUrl, {
+                target: "#listContainer",
+                swap: "innerHTML",
+                headers: {
+                    "HX-Current-URL": window.location.href,
+                },
+            })
+            .then(doneMessages)
+            .catch(doneMessages);
+        return;
+    }
+    $.ajax({
+        type: "GET",
+        url: listUrl,
+        headers: {
+            "HX-Request": "true",
+            "HX-Current-URL": window.location.href,
+        },
+        success: function (html) {
+            var c = document.getElementById("listContainer");
+            if (c) {
+                c.innerHTML = html;
+                if (typeof htmx !== "undefined") {
+                    htmx.process(c);
+                }
+                openAttendanceTabAfterInject(c);
+            }
+            doneMessages();
+        },
+    });
+}
+
+function refreshAttendanceListContainer() {
+    if (_refreshAttendanceContainerTimer) {
+        clearTimeout(_refreshAttendanceContainerTimer);
+    }
+    _refreshAttendanceContainerTimer = setTimeout(function () {
+        _refreshAttendanceContainerTimer = null;
+        refreshAttendanceListContainerImmediately();
+    }, 50);
+}
+
+document.addEventListener("reloadAttendanceView", function () {
+    refreshAttendanceListContainer();
+});
+
+document.body.addEventListener("htmx:afterRequest", function (evt) {
+    var d = evt.detail;
+    if (!d || !d.successful || !d.xhr || !d.xhr.responseURL) {
+        return;
+    }
+    if (d.xhr.responseURL.indexOf("/attendance/approve-overtime/") === -1) {
+        return;
+    }
+    refreshAttendanceListContainer();
+});

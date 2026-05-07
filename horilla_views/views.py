@@ -659,8 +659,12 @@ class HorillaDeleteConfirmationView(View):
             delete_callback(obj, protected=True)
         # deleting related objects
         collector.nested(delete_callback)
+        reload_target = self.request.GET.get("reload_target")
+        script = ""
+        if reload_target:
+            script = f"$('{reload_target}').first().click();"
 
-        return HorillaFormView.HttpResponse()
+        return HorillaFormView.HttpResponse(script=script)
 
     def get_context_data(self, **kwargs) -> dict:
         context = {}

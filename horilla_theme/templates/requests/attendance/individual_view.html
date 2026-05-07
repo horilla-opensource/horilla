@@ -82,7 +82,11 @@
                     </a>
                 {% endif %}
                 {% if request.user|is_reportingmanager or perms.attendance.change_attendance %}
-                    <a href="{% url 'approve-validate-attendance-request' attendance.id %}"
+                    <a href="#"
+                        hx-get="{% url 'approve-validate-attendance-request' attendance.id %}"
+                        hx-target="#validateAttendanceRequestModalBody"
+                        hx-swap="innerHTML"
+                        onclick="event.preventDefault(); event.stopPropagation();"
                     class="w-24 px-4 py-2 bg-white rounded-md text-xs flex items-center justify-center gap-2 border border-primary-500 hover:border-primary-600 transition duration-300">
                         <img class="mt-[-1px]" src="{% static 'horilla_theme/assets/img/icons/check.svg' %}" alt="{% trans 'Approve' %}" width="13"
                        />
@@ -90,7 +94,11 @@
                     </a>
                 {% endif %}
                 {% if request.user|is_reportingmanager or perms.attendance.change_attendance %}
-                    <a href="{% url 'cancel-validate-attendance-request' attendance.id %}"
+                    <a href="#"
+                        hx-get="{% url 'cancel-validate-attendance-request' attendance.id %}"
+                        hx-target="#validateAttendanceRequestModalBody"
+                        hx-swap="innerHTML"
+                        onclick="event.preventDefault(); event.stopPropagation();"
                         class="w-24 px-4 py-2 bg-white rounded-md text-xs flex items-center justify-center gap-2 border border-primary-500 hover:border-primary-600 transition duration-300">
                         <img class="mt-[-1px]" src="{% static 'horilla_theme/assets/img/icons/close.svg' %}" alt="{% trans 'Reject' %}" width="13"
                     />

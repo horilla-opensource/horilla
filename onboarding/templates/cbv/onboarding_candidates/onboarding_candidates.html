@@ -31,9 +31,15 @@
 
 
 
+body.onboarding-list-hide-toolbar #onboardingCandidatesNavBar {
+  display: none !important;
+}
 </style>
 
+<div id="candidateMainContainer">
+ <div id="onboardingCandidatesNavBar">
  <div hx-get="{% url "onboarding-candidates-nav" %}" hx-trigger="load">
+</div>
 </div>
 
 
@@ -59,6 +65,7 @@
   id="listContainer">
   <div class="animated-background">
   </div>
+</div>
 </div>
 
 
@@ -191,6 +198,82 @@
           }
         });
       }
+
+      (function () {
+        function queryParamTruthy(search, key) {
+          var re = new RegExp("[?&]" + key + "=([^&]*)", "i");
+          var m = search.match(re);
+          if (!m || !m[1]) {
+            return false;
+          }
+          var v = decodeURIComponent(m[1]).toLowerCase();
+          return v === "true" || v === "1" || v === "yes";
+        }
+        function isOnboardingCandidateEditPath() {
+          var path = window.location.pathname.replace(/\/$/, "");
+          if (!/\/recruitment\/candidate-update\/\d+$/.test(path)) {
+            return false;
+          }
+          var q = window.location.search;
+          return queryParamTruthy(q, "onboarding") && queryParamTruthy(q, "container");
+        }
+        function getHtmxSwapTarget(e) {
+          if (!e || !e.detail) {
+            return null;
+          }
+          return e.detail.target || e.detail.elt || null;
+        }
+        function syncOnboardingCandidatesNavBar() {
+          var nav = document.getElementById("onboardingCandidatesNavBar");
+          var list = document.getElementById("listContainer");
+          if (!nav || !list) {
+            return;
+          }
+          var hasProfile = !!list.querySelector(".reload-profile-view");
+          var hasEdit =
+            !!list.querySelector("#onboarding-candidate-update-form-root")
+            || isOnboardingCandidateEditPath();
+          if (hasProfile || hasEdit) {
+            nav.style.display = "none";
+            var tagRow = nav.querySelector("#filterTagContainerSectionNav");
+            if (tagRow) {
+              tagRow.innerHTML = "";
+            }
+          } else {
+            nav.style.display = "";
+          }
+        }
+        function onListContainerHtmxEvent(e) {
+          var t = getHtmxSwapTarget(e);
+          if (t && t.id === "listContainer") {
+            syncOnboardingCandidatesNavBar();
+            setTimeout(syncOnboardingCandidatesNavBar, 0);
+            setTimeout(syncOnboardingCandidatesNavBar, 50);
+          }
+        }
+        document.addEventListener("DOMContentLoaded", syncOnboardingCandidatesNavBar);
+        document.body.addEventListener("htmx:afterSwap", onListContainerHtmxEvent);
+        document.body.addEventListener("htmx:afterSettle", onListContainerHtmxEvent);
+        document.body.addEventListener("htmx:afterRequest", function (e) {
+          var url = (e.detail && e.detail.xhr && e.detail.xhr.responseURL) || "";
+          if (url.indexOf("/recruitment/profile/recruitment/candidate-view/") !== -1) {
+            setTimeout(syncOnboardingCandidatesNavBar, 0);
+            setTimeout(syncOnboardingCandidatesNavBar, 50);
+            return;
+          }
+          if (
+            e.detail &&
+            e.detail.successful &&
+            url.indexOf("/recruitment/candidate-update/") !== -1 &&
+            url.toLowerCase().indexOf("onboarding=") !== -1
+          ) {
+            setTimeout(syncOnboardingCandidatesNavBar, 0);
+          }
+        });
+        window.addEventListener("popstate", function () {
+          setTimeout(syncOnboardingCandidatesNavBar, 0);
+        });
+      })();
 
 
 

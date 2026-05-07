@@ -13,9 +13,10 @@
 				<span class="txt">{% trans 'Approve' %}</span>
 			</a>
 		{% else %}
-			<a href="{% url 'work-type-request-approve' instance.id %}" title="{% trans 'Approve' %}"
-				onclick="return confirm(`{% trans 'Do you want to approve this request?' %}`)"
-				class="oh-btn oh-btn--success w-50">
+			<a href="#" title="{% trans 'Approve' %}"
+				onclick="event.preventDefault(); event.stopPropagation(); workTypeRequestRowApprove('{% url 'work-type-request-approve' instance.id %}', '{% trans 'Do you want to approve this request?' %}');"
+				class="oh-btn oh-btn--success w-50"
+				style="cursor:pointer;">
 				<ion-icon class="me-1" name="checkmark-outline"></ion-icon>
 				<span class="txt">{% trans 'Approve' %}</span>
 			</a>
@@ -27,9 +28,10 @@
 				<span class="txt">{% trans 'Reject' %}</span>
 			</a>
 		{% else %}
-			<a href="{% url 'work-type-request-cancel' instance.id %}" title="{% trans 'Reject' %}"
-				onclick="return confirm(`{% trans 'Do you want to reject this request?' %}`)"
-				class="oh-btn oh-btn--danger w-50">
+			<a href="#" title="{% trans 'Reject' %}"
+				onclick="event.preventDefault(); event.stopPropagation(); workTypeRequestRowApprove('{% url 'work-type-request-cancel' instance.id %}', '{% trans 'Do you want to reject this request?' %}');"
+				class="oh-btn oh-btn--danger w-50"
+				style="cursor:pointer;">
 				<ion-icon class="me-1" name="close-circle-outline"></ion-icon>
 				<span class="txt">{% trans 'Reject' %}</span>
 			</a>

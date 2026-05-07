@@ -308,7 +308,11 @@ class EmployeesList(HorillaListView):
 
     row_attrs = """
                 {diff_cell}
-                onclick="window.location.href='{get_individual_url}?instance_ids={ordered_ids}'"
+                hx-get="{get_profile_url}"
+                hx-target="#listContainer"
+                hx-swap="innerHTML"
+                hx-push-url="{get_individual_url}"
+                class="cursor-pointer"
                 """
     sortby_mapping = [
         (_("Employee"), "get_full_name", "get_avatar"),
@@ -692,10 +696,12 @@ class EmployeeCard(HorillaCardView):
                     "action": _("Edit"),
                     "accessibility": "employee.cbv.accessibility.edit_accessibility",
                     "attrs": """
-                    onclick="event.stopPropagation()
-                    window.location.href='{get_update_url}' "
+                    onclick="event.stopPropagation()"
+                    hx-get="{get_update_url}?container=true"
+                    hx-target="#listContainer"
+                    hx-swap="innerHTML"
+                    hx-push-url="{get_update_url}?container=true"
                     class="oh-dropdown__link"
-
                 """,
                 },
                 {
@@ -745,7 +751,10 @@ class EmployeeCard(HorillaCardView):
 
     card_attrs = """
                 {diff_cell}
-                onclick="window.location.href='{get_individual_url}?instance_ids={ordered_ids}'"
+                hx-get="{get_profile_url}"
+                hx-target="#listContainer"
+                hx-swap="innerHTML"
+                hx-push-url="{get_individual_url}"
                 """
 
 

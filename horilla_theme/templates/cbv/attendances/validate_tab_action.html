@@ -10,17 +10,28 @@
             {% trans 'Edit' %}
         </a>
 
-        <a href="{% url 'validate-this-attendance' instance.id %}" hx-target="#updateAttendanceBody"
+        {% if instance.is_validate_request %}
+        <a href="#"
             data-req="/attendance/request-attendance-view/?id={{instance.id}}"
-            onclick="event.stopPropagation(); {% if instance.is_validate_request %}  event.preventDefault(); showApproveAlert($(this).data('req')); {% endif %}"
+            onclick="event.preventDefault(); event.stopPropagation(); showApproveAlert($(this).data('req'));"
             class="w-24 h-8 px-4 py-2 bg-white rounded-md text-xs flex items-center justify-center gap-2 border border-primary-500 hover:border-primary-600 transition duration-300">
             <ion-icon name="checkmark-done-outline"></ion-icon>
             {% trans 'Validate' %}
         </a>
+        {% else %}
+        <a href="#"
+            hx-get="{% url 'validate-this-attendance' instance.id %}"
+            hx-swap="none"
+            onclick="event.preventDefault(); event.stopPropagation();"
+            class="w-24 h-8 px-4 py-2 bg-white rounded-md text-xs flex items-center justify-center gap-2 border border-primary-500 hover:border-primary-600 transition duration-300">
+            <ion-icon name="checkmark-done-outline"></ion-icon>
+            {% trans 'Validate' %}
+        </a>
+        {% endif %}
 
-        <form action="{% url 'attendance-delete' instance.id %}" onclick="event.stopPropagation()"
+        <form hx-post="{% url 'attendance-delete' instance.id %}" hx-swap="none" onclick="event.stopPropagation()"
             onsubmit="return confirm(`{% trans 'Are you sure want to delete this attendance?' %}`)"
-            hx-target="#tab_contents" method="post">
+            method="post">
             {% csrf_token %}
             <button type="submit"
                 class="w-24 h-8 px-4 py-2 bg-white rounded-md text-xs flex items-center justify-center gap-2 border border-primary-500 hover:border-primary-600 transition duration-300">

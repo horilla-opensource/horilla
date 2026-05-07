@@ -3,6 +3,14 @@
 {% load i18n %}
 {% load static %}
 {% include 'policies/nav.html' %}
+<button
+	type="button"
+	id="policyContainerReload"
+	hidden
+	hx-get="{% url 'search-policies' %}"
+	hx-target="#policyContainer"
+	hx-swap="innerHTML"
+></button>
 <div class="oh-wrapper" id="policyContainer">
 	{% if policies %}
 		{% include 'policies/records.html' %}

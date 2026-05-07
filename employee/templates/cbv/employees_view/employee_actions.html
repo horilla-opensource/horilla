@@ -30,12 +30,17 @@
 	</button>
 
 	{% if perms.employee.change_employee or request.user|check_manager:instance %}
-	<a
-		href="{% url 'employee-view-update' instance.id %}"
+	<button
+		type="button"
 		class="oh-btn oh-btn--light-bkg w-100"
 		title="{% trans 'Edit' %}"
-		><ion-icon name="create-outline"></ion-icon
-	></a>
+		hx-get="{% url 'employee-view-update' instance.id %}?container=true"
+		hx-target="#listContainer"
+		hx-swap="innerHTML"
+		hx-push-url="{% url 'employee-view-update' instance.id %}?container=true"
+	>
+		<ion-icon name="create-outline"></ion-icon>
+	</button>
 	{% endif %}
 
 	{% if perms.employee.delete_employee %}

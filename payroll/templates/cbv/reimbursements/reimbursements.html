@@ -79,11 +79,6 @@
                     $(`${target} [name=amount]`).attr("required", true);
                 }
                 $(target + "Button").click();
-                if (event.target.tagName.toLowerCase() === "form") {
-                    event.target.submit();
-                } else if (event.target.tagName.toLowerCase() === "a") {
-                    window.location.href = event.target.href;
-                }
             } else {
             }
         });
@@ -155,6 +150,22 @@
       hideEnlargeattachment()
     }
   })
+
+  document.body.addEventListener("reloadPayrollReimbursements", function () {
+    var applyFilterButton = document.getElementById("applyFilter");
+    if (applyFilterButton) {
+      applyFilterButton.click();
+    } else if (window.htmx) {
+      htmx.ajax("GET", "{% url 'list-reimbursement' %}" + (window.location.search || ""), {
+        target: "#listContainer",
+        swap: "innerHTML",
+      });
+    }
+    var msgButton = document.getElementById("reloadMessagesButton");
+    if (msgButton) {
+      msgButton.click();
+    }
+  });
 </script>
 
 

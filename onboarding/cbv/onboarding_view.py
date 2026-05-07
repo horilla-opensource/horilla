@@ -78,7 +78,7 @@ class StageCreateForm(HorillaFormView):
                     redirect=reverse("onboarding-view"),
                 )
 
-            return HorillaRedirect(self.request)
+            return self.HttpResponse(targets_to_reload=["#applyFilter"])
         return super().form_valid(form)
 
 

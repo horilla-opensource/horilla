@@ -60,17 +60,83 @@
 										title="{% trans 'Back' %}"
 										class="px-3 py-1 text-xs bg-primary-600 text-white rounded-full hover:bg-primary-800 transition duration-300 flex items-center gap-2"
 										onclick="
-											if (window.history && history.pushState) {
-												history.pushState({}, '', '{% url 'candidate-view' %}');
-											}
-											var listHtml = '<div hx-get=&quot;/recruitment/nav-candidate/?&quot; hx-trigger=&quot;load&quot;></div>'
-												+ '<div class=&quot;oh-checkpoint-badge mb-2&quot; id=&quot;selectedInstances&quot; data-ids=&quot;[]&quot; data-clicked=&quot;&quot; style=&quot;display: none&quot;></div>'
-												+ '<div class=&quot;oh-wrapper&quot; id=&quot;listContainer&quot;><div class=&quot;animated-background&quot;></div></div>';
+											var fromOnboarding = false;
+											try {
+												var params = new URLSearchParams(window.location.search);
+												if (params.get('from') === 'onboarding') {
+													fromOnboarding = true;
+												}
+											} catch (e) {}
+											try {
+												var ref = document.referrer || '';
+												if (ref.indexOf('/onboarding/candidates-view') !== -1) {
+													fromOnboarding = true;
+												}
+											} catch (e) {}
+											try {
+												if (sessionStorage.getItem('candidateProfileFrom') === 'onboarding') {
+													fromOnboarding = true;
+													sessionStorage.removeItem('candidateProfileFrom');
+												}
+											} catch (e) {}
+
 											var container = document.getElementById('candidateMainContainer');
+											var targetUrl = fromOnboarding
+												? '{% url 'candidates-view' %}'
+												: '{% url 'candidate-view' %}';
+											var navUrl = fromOnboarding
+												? '{% url 'onboarding-candidates-nav' %}'
+												: '/recruitment/nav-candidate/';
+											var listUrl = fromOnboarding
+												? '{% url 'onboarding-candidates-list' %}'
+												: '';
+
 											if (container) {
+												if (window.history && history.pushState) {
+													history.pushState({}, '', targetUrl);
+												}
+												var listAttr = listUrl
+													? ' hx-get=&quot;' + listUrl + '&quot; hx-trigger=&quot;load&quot;'
+													: '';
+												var listHtml = '<div hx-get=&quot;' + navUrl + '?&quot; hx-trigger=&quot;load&quot;></div>'
+													+ '<div class=&quot;oh-checkpoint-badge mb-2&quot; id=&quot;selectedInstances&quot; data-ids=&quot;[]&quot; data-clicked=&quot;&quot; style=&quot;display: none&quot;></div>'
+													+ '<div class=&quot;oh-wrapper&quot;' + listAttr + ' id=&quot;listContainer&quot;><div class=&quot;animated-background&quot;></div></div>';
 												container.innerHTML = listHtml;
 												if (window.htmx) { htmx.process(container); }
-												setTimeout(function () { $('#applyFilter').click(); }, 100);
+												setTimeout(function () {
+													var $f = $('#applyFilter');
+													if ($f.length) { $f.click(); }
+												}, 100);
+											} else {
+												window.location.href = targetUrl;
+											}
+										"
+									>
+										<i class="fa-solid fa-arrow-left"></i>
+										{% trans "Back" %}
+									</button>
+									{% elif request.resolver_match.url_name == "profile-new" or request.resolver_match.url_name == "employee-view-individual" %}
+									<button
+										type="button"
+										title="{% trans 'Back' %}"
+										class="px-3 py-1 text-xs bg-primary-600 text-white rounded-full hover:bg-primary-800 transition duration-300 flex items-center gap-2"
+										onclick="
+											var navBar = document.getElementById('employeeListNavBar');
+											var list = document.getElementById('listContainer');
+											if (navBar && list) {
+												if (window.history && history.pushState) {
+													history.pushState({}, '', '{% url 'employee-view' %}');
+												}
+												navBar.style.display = '';
+												var tagRow = navBar.querySelector('#filterTagContainerSectionNav');
+												if (tagRow) { tagRow.innerHTML = ''; }
+												list.innerHTML = '<div class=&quot;animated-background&quot;></div>';
+												setTimeout(function () {
+													var btn = document.getElementById('applyFilter');
+													if (btn) { btn.click(); }
+												}, 100);
+											} else {
+												window.location.href = '{% url 'employee-view' %}';
 											}
 										"
 									>

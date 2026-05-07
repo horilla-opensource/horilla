@@ -90,7 +90,11 @@
 <div class="oh-modal__button-container text-center">
     <div class="oh-btn-group d-flex flex-row-reverse">
         {% if request.user.is_superuser or perms.attendance.change_attendance %}
-            <a href="{% url 'cancel-validate-attendance-request' attendance.id %}" data-toggle="oh-modal-toggle"
+            <a href="#"
+                hx-get="{% url 'cancel-validate-attendance-request' attendance.id %}"
+                hx-target="#validateAttendanceRequestModalBody"
+                hx-swap="innerHTML"
+                onclick="event.preventDefault(); event.stopPropagation();"
                 class="oh-btn oh-btn--secondary w-100">
                 <ion-icon name="close-circle-outline"></ion-icon>
                 {% trans "Reject" %}
@@ -107,7 +111,12 @@
                     {% trans "Approve" %}
                 </a>
             {% else %}
-                <a href="{% url 'approve-validate-attendance-request' attendance.id %}" class="oh-btn oh-btn--success w-100">
+                <a href="#"
+                    hx-get="{% url 'approve-validate-attendance-request' attendance.id %}"
+                    hx-target="#validateAttendanceRequestModalBody"
+                    hx-swap="innerHTML"
+                    onclick="event.preventDefault(); event.stopPropagation();"
+                    class="oh-btn oh-btn--success w-100">
                     <ion-icon name="checkmark-outline"></ion-icon>
                     {% trans "Approve" %}
                 </a>

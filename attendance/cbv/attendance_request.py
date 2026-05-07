@@ -62,6 +62,14 @@ class AttendancesRequestTabView(HorillaTabView):
             },
         ]
 
+    def get_context_data(self, **kwargs: Any):
+        """Tab badges: counts match each tab list before HTMX loads the pane."""
+        context = super().get_context_data(**kwargs)
+        counts = attendance_request_tabs_badge_counts(self.request)
+        for idx, tab in enumerate(self.tabs):
+            tab["badge"] = counts[idx] if idx < len(counts) else 0
+        return context
+
 
 def request_approved_by(self):
     """
@@ -252,6 +260,26 @@ class AttendanceListTab(AttendancesRequestListView):
                 data-target="#genericModal"
                 data-toggle="oh-modal-toggle"
                 """
+
+
+def _request_tab_badge_count(request, view_cls):
+    """Same queryset rules as the tab's HorillaListView (filters, subordinates)."""
+    view = view_cls()
+    view.request = request
+    view.args = ()
+    view.kwargs = {}
+    view.queryset = None
+    return view.get_queryset().count()
+
+
+def attendance_request_tabs_badge_counts(request):
+    """
+    Order matches AttendancesRequestTabView.tabs: requested, all attendances.
+    """
+    return [
+        _request_tab_badge_count(request, AttendanceRequestListTab),
+        _request_tab_badge_count(request, AttendanceListTab),
+    ]
 
 
 @method_decorator(login_required, name="dispatch")

@@ -34,7 +34,9 @@
 		}
 	</style>
 
-	<div hx-get="{% url 'nav-objectives-view' %}" hx-trigger="load"></div>
+	<div id="objectivesListNavBar">
+		<div hx-get="{% url 'nav-objectives-view' %}" hx-trigger="load"></div>
+	</div>
 
 	{% include "generic/components.html" %}
 
@@ -73,5 +75,41 @@
 					row.toggleClass("oh-permission-table--collapsed");
 				});
 		});
+	</script>
+	<script>
+		(function () {
+			function getHtmxSwapTarget(e) {
+				if (!e || !e.detail) {
+					return null;
+				}
+				return e.detail.target || e.detail.elt || null;
+			}
+
+			function syncObjectivesNavVisibility() {
+				const nav = document.getElementById("objectivesListNavBar");
+				const listContainer = document.getElementById("listContainer");
+				if (!nav || !listContainer) {
+					return;
+				}
+				const isDetailOpen = !!listContainer.querySelector("#ObjectiveDetailedViewContainer");
+				nav.style.display = isDetailOpen ? "none" : "";
+			}
+
+			function onListContainerSwap(e) {
+				const target = getHtmxSwapTarget(e);
+				if (target && target.id === "listContainer") {
+					syncObjectivesNavVisibility();
+					setTimeout(syncObjectivesNavVisibility, 0);
+					setTimeout(syncObjectivesNavVisibility, 50);
+				}
+			}
+
+			document.addEventListener("DOMContentLoaded", syncObjectivesNavVisibility);
+			document.body.addEventListener("htmx:afterSwap", onListContainerSwap);
+			document.body.addEventListener("htmx:afterSettle", onListContainerSwap);
+			window.addEventListener("popstate", function () {
+				setTimeout(syncObjectivesNavVisibility, 0);
+			});
+		})();
 	</script>
 {% endblock content %}

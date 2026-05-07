@@ -304,9 +304,10 @@ class ListCandidates(HorillaListView):
     row_attrs = """
                 {is_employee_converted}
                 hx-get="{get_profile_url}?instance_ids={ordered_ids}"
-                hx-target="#candidateMainContainer"
+                hx-target="#listContainer"
                 hx-swap="innerHTML"
-                hx-push-url="true"
+                hx-push-url="{get_individual_url}"
+                class="cursor-pointer"
                 """
 
     def export_data(self, *args, **kwargs):
@@ -700,9 +701,9 @@ class CardCandidates(HorillaCardView):
     card_status_class = "hired-{hired} canceled-{canceled}"
     card_attrs = """
                 hx-get="{get_profile_url}?instance_ids={ordered_ids}"
-                hx-target="#candidateMainContainer"
+                hx-target="#listContainer"
                 hx-swap="innerHTML"
-                hx-push-url="true"
+                hx-push-url="{get_individual_url}"
                 """
 
     records_per_page = 30

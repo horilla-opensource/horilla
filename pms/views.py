@@ -808,7 +808,11 @@ def objective_detailed_view(request, obj_id, **kwargs):
         "comment_form": ObjectiveCommentForm,
         "current_date": now,
         "emp_obj_form": EmployeeObjectiveFilter(),
+        "back_url": reverse("tab-objectives-view"),
+        "objective_list_url": reverse("objective-list-view"),
     }
+    if request.headers.get("HX-Request"):
+        return render(request, "okr/okr_detailed_view_fragment.html", context)
     return render(request, "okr/okr_detailed_view.html", context)
 
 

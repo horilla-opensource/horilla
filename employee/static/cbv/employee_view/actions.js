@@ -15,6 +15,25 @@ function getCookie(name) {
     return cookieValue;
 }
 
+function reloadEmployeeListContainer() {
+    var applyBtn = document.getElementById("applyFilter");
+    if (applyBtn && window.htmx) {
+        applyBtn.click();
+        if (typeof jQuery !== "undefined" && $("#reloadMessagesButton").length) {
+            $("#reloadMessagesButton").click();
+        }
+        return;
+    }
+    var form = document.getElementById("filterForm");
+    if (form && window.htmx) {
+        htmx.trigger(form, "submit");
+        if (typeof jQuery !== "undefined" && $("#reloadMessagesButton").length) {
+            $("#reloadMessagesButton").click();
+        }
+        return;
+    }
+    window.location.reload();
+}
 
 
 var form = document.getElementById("workInfoImportForm");
@@ -288,7 +307,7 @@ $(document).on("click", "#archiveEmployees", function (e) {
                     },
                     success: function (response, textStatus, jqXHR) {
                         if (jqXHR.status === 200) {
-                            location.reload(); // Reload the current page
+                            reloadEmployeeListContainer();
                         } else {
                             // console.log("Unexpected HTTP status:", jqXHR.status);
                         }
@@ -339,7 +358,7 @@ $(document).on("click", "#unArchiveEmployees", function (e) {
                     },
                     success: function (response, textStatus, jqXHR) {
                         if (jqXHR.status === 200) {
-                            location.reload(); // Reload the current page
+                            reloadEmployeeListContainer();
                         } else {
                             // console.log("Unexpected HTTP status:", jqXHR.status);
                         }
@@ -405,7 +424,7 @@ $(document).on("click", "#deleteEmployees", function (e) {
                     },
                     success: function (response, textStatus, jqXHR) {
                         if (jqXHR.status === 200) {
-                            location.reload(); // Reload the current page
+                            reloadEmployeeListContainer();
                         } else {
                             // console.log("Unexpected HTTP status:", jqXHR.status);
                         }
