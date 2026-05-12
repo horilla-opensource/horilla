@@ -1580,7 +1580,9 @@ def employee_view_update(request, obj_id, **kwargs):
     This method is used to render update form for employee.
     """
     employee = Employee.objects.filter(id=obj_id).first()
-    if not employee:
+    emp = Employee.objects.entire().filter(id=obj_id).first()
+
+    if not employee and not emp:
         return HorillaRedirect(
             request, message=_("No Employee found matching the query.")
         )
@@ -1591,7 +1593,7 @@ def employee_view_update(request, obj_id, **kwargs):
         work_info_track=True
     ).exists()
 
-    emp = Employee.objects.entire().filter(id=obj_id).first()
+    # emp = Employee.objects.entire().filter(id=obj_id).first()
     if not employee and emp and hasattr(emp, "employee_work_info"):
         if (
             emp.employee_work_info
@@ -1825,16 +1827,16 @@ def employee_create_update_personal_info(request, obj_id=None):
             form = EmployeeForm(request.POST, instance=form.instance)
             work_form = EmployeeWorkInformationForm(
                 instance=EmployeeWorkInformation.objects.filter(
-                    employee_id=employee
+                    employee_id=form.instance
                 ).first()
             )
             bank_form = EmployeeBankDetailsForm(
                 instance=EmployeeBankDetails.objects.filter(
-                    employee_id=employee
+                    employee_id=form.instance
                 ).first()
             )
             return redirect(
-                f"employee-view-update/{form.instance.id}/",
+                f"/employee/employee-view-update/{form.instance.id}/",
                 data={"form": form, "work_form": work_form, "bank_form": bank_form},
             )
         return HttpResponse(
