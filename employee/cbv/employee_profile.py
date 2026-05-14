@@ -67,6 +67,7 @@ class EmployeeProfileView(HorillaProfileView):
                         hx-target="#listContainer"
                         hx-swap="innerHTML"
                         hx-push-url="{get_update_url}?container=true"
+                        onclick="if (!document.getElementById('listContainer')) {{ event.preventDefault(); event.stopPropagation(); window.location.href = this.getAttribute('hx-get'); return false; }}"
                     """,
                 },
                 {
