@@ -1,6 +1,6 @@
 {% load static %} {% load i18n %}
 <div class="oh-wrapper" data-select2-id="select2-data-40-yu7x">
-    <div class="oh-general__tab-target oh-profile-section mb-4" id="personal" data-select2-id="select2-data-personal">
+    <div class="oh-general__tab-target oh-profile-section mb-4{% if active_tab and active_tab != 'personal' %} d-none{% endif %}" id="personal" data-select2-id="select2-data-personal">
         <div class="oh-profile-section__card" data-select2-id="select2-data-48-0df8">
             {% include 'employee/update_form/edit_form_back_button.html' %}
             <form

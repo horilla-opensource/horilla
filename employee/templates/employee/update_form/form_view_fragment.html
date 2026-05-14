@@ -1,5 +1,5 @@
 {% load i18n %}
-<div id="employee-update-form-root" class="oh-wrapper">
+<div id="employee-update-form-root" class="oh-wrapper"{% if active_tab %} data-active-tab="{{ active_tab }}"{% endif %}>
     <section class="oh-wrapper oh-main__topbar oh-profile-section__topbar" x-data="{searchShow: false}">
         <div class="oh-main__titlebar oh-main__titlebar--left mb-3">
             <h1 class="oh-main__titlebar-title fw-bold mb-0">{% trans "Edit" %} {{form.instance.employee_first_name}}</h1>
@@ -7,35 +7,22 @@
         <div class="oh-main__titlebar oh-main__titlebar--left d-flex align-items-center">
             <ul class="oh-general__tabs oh-profile-section__tab">
                 <li class="oh-general__tab">
-                    <a href="#" class="oh-general__tab-link oh-general__tab-link--active" data-action="general-tab" data-target="#personal">{% trans "Personal Info" %}</a>
+                    <a href="#" class="oh-general__tab-link{% if not active_tab or active_tab == 'personal' %} oh-general__tab-link--active{% endif %}" data-action="general-tab" data-target="#personal">{% trans "Personal Info" %}</a>
                 </li>
                 <li class="oh-general__tab">
-                    <a href="#" class="oh-general__tab-link" data-action="general-tab" data-target="#work">{% trans "Work Info" %}</a>
+                    <a href="#" class="oh-general__tab-link{% if active_tab == 'work' %} oh-general__tab-link--active{% endif %}" data-action="general-tab" data-target="#work">{% trans "Work Info" %}</a>
                 </li>
                 <li class="oh-general__tab">
-                    <a href="#" class="oh-general__tab-link" data-action="general-tab" data-target="#bank">{% trans "Bank Info" %}</a>
+                    <a href="#" class="oh-general__tab-link{% if active_tab == 'bank' %} oh-general__tab-link--active{% endif %}" data-action="general-tab" data-target="#bank">{% trans "Bank Info" %}</a>
                 </li>
             </ul>
         </div>
     </section>
-    {% include 'employee/update_form/personal_info.html' %}
-    {% include 'employee/update_form/work_details.html' %}
-    {% include 'employee/update_form/bank_details.html' %}
+    {% include 'employee/update_form/personal_info.html' with active_tab=active_tab %}
+    {% include 'employee/update_form/work_details.html' with active_tab=active_tab %}
+    {% include 'employee/update_form/bank_details.html' with active_tab=active_tab %}
 <script>
-    $(document).ready(function() {
-      $('#id_profile').change(function (e) {
-
-        const file = this.files[0];
-        const reader = new FileReader();
-
-        reader.addEventListener("load", function() {
-          const imageUrl = reader.result;
-          $(".preview").attr("src", imageUrl);
-        });
-
-        reader.readAsDataURL(file);
-      });
-
+    (function () {
       function applyEmployeeEditTab(targetId) {
         if (!["#personal", "#work", "#bank"].includes(targetId)) {
           targetId = "#personal";
@@ -45,14 +32,21 @@
         $(".oh-general__tab-target").addClass("d-none");
         $(targetId).removeClass("d-none");
       }
-      function activeEmpTab() {
-        var activeTab = localStorage.getItem("activeEmpTab");
-        if (!["#personal", "#work", "#bank"].includes(activeTab)) {
-          activeTab = "#personal";
+
+      var root = document.getElementById("employee-update-form-root");
+      var serverTab = root && root.getAttribute("data-active-tab");
+      if (serverTab) {
+        // Server already rendered the correct tab — just sync localStorage so
+        // the next GET load (or reload) stays on the same tab.
+        localStorage.setItem("activeEmpTab", "#" + serverTab);
+      } else {
+        // Initial GET load: restore from localStorage.
+        var stored = localStorage.getItem("activeEmpTab");
+        if (["#personal", "#work", "#bank"].includes(stored)) {
+          applyEmployeeEditTab(stored);
         }
-        applyEmployeeEditTab(activeTab);
       }
-      activeEmpTab();
+
       $("[data-action=general-tab]").off("click.empEditTab").on("click.empEditTab", function (e) {
         e.preventDefault();
         var targetId = $(this).attr("data-target");
@@ -60,6 +54,14 @@
         applyEmployeeEditTab(targetId);
       });
 
-    });
+      $('#id_profile').change(function (e) {
+        const file = this.files[0];
+        const reader = new FileReader();
+        reader.addEventListener("load", function () {
+          $(".preview").attr("src", reader.result);
+        });
+        reader.readAsDataURL(file);
+      });
+    })();
   </script>
 </div>

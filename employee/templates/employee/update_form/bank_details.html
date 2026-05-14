@@ -1,6 +1,6 @@
 {% load i18n %}
 <div class="oh-wrapper">
-    <div class="oh-general__tab-target oh-profile-section mb-4 d-none" id="bank">
+    <div class="oh-general__tab-target oh-profile-section mb-4{% if not active_tab or active_tab != 'bank' %} d-none{% endif %}" id="bank">
         <div class="oh-profile-section__card">
             {% include 'employee/update_form/edit_form_back_button.html' %}
             <form

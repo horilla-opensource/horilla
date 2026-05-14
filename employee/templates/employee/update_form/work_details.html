@@ -1,7 +1,7 @@
 {% load i18n %}
 <div class="oh-wrapper">
   <div
-    class="oh-general__tab-target oh-profile-section mb-4 d-none"
+    class="oh-general__tab-target oh-profile-section mb-4{% if not active_tab or active_tab != 'work' %} d-none{% endif %}"
     id="work"
     data-select2-id="select2-data-work"
   >
