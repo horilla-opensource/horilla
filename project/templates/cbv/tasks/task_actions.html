@@ -9,20 +9,28 @@
                 <ion-icon name="create-outline"></ion-icon>
             </a>
             {% if instance.is_active %}
-                <a href="{% url 'task-all-archive' instance.id %}"
-                    onclick="return confirm('{% trans 'Do you want to archive this task?' %}')"
+                <a hx-get="{% url 'task-all-archive' instance.id %}"
+                    hx-target="#listContainer"
+                    hx-swap="innerHTML"
+                    hx-confirm="{% trans 'Do you want to archive this task?' %}"
+                    onclick="event.stopPropagation()"
                     class="oh-btn oh-btn--danger-outline oh-btn--light-bkg small-button" title="{% trans 'Archive' %}">
                     <ion-icon name="archive"></ion-icon>
                 </a>
             {% else %}
-                <a href="{% url 'task-all-archive' instance.id %}"
-                    onclick="return confirm('{% trans 'Do you want to un archive this task?' %}')"
+                <a hx-get="{% url 'task-all-archive' instance.id %}"
+                    hx-target="#listContainer"
+                    hx-swap="innerHTML"
+                    hx-confirm="{% trans 'Do you want to un archive this task?' %}"
+                    onclick="event.stopPropagation()"
                     class="oh-btn oh-btn--danger-outline oh-btn--light-bkg small-button" title="{% trans 'Un-Archive' %}">
                     <ion-icon name="archive"></ion-icon>
                 </a>
             {% endif %}
-            <form action="{% url 'delete-task' instance.id %}?task_all=true" method="post"
-                onsubmit="return confirm('{% trans "Do you want Delete this Task ?" %}')" style="display: contents">
+            <form hx-post="{% url 'delete-task' instance.id %}?task_all=true" method="post"
+                hx-target="#listContainer"
+                hx-swap="innerHTML"
+                hx-confirm="{% trans "Do you want Delete this Task ?" %}" style="display: contents">
                 {% csrf_token %}
                 <button class="oh-btn oh-btn--danger-outline oh-btn--light-bkg  w-100" title="{% trans 'Delete' %}">
                     <ion-icon name="trash-outline" role="img" class="md hydrated" aria-label="trash outline"></ion-icon>
