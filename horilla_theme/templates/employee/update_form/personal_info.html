@@ -9,9 +9,8 @@
                 hx-post="{% url 'employee-view-update' obj_id %}"
                 hx-target="#employee-update-form-root"
                 hx-swap="outerHTML"
-                hx-push-url="true"
+                {% if not container_mode %}hx-push-url="{% url 'employee-view-update' obj_id %}"{% endif %}
                 hx-encoding="multipart/form-data"
-                hx-on::after-request="if(event.detail.successful){var b=document.getElementById('reloadMessagesButton');if(b)b.click();}"
                 action="{% url 'employee-view-update' obj_id %}"
             >
                 <div id="personalMessage"></div>

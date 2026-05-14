@@ -36,9 +36,8 @@
       var root = document.getElementById("employee-update-form-root");
       var serverTab = root && root.getAttribute("data-active-tab");
       if (serverTab) {
-        // Server already rendered the correct tab — just sync localStorage so
-        // the next GET load (or reload) stays on the same tab.
         localStorage.setItem("activeEmpTab", "#" + serverTab);
+        applyEmployeeEditTab("#" + serverTab);
       } else {
         // Initial GET load: restore from localStorage.
         var stored = localStorage.getItem("activeEmpTab");
@@ -65,3 +64,12 @@
     })();
   </script>
 </div>
+{% if messages %}
+<div id="reloadMessages" hx-swap-oob="innerHTML">
+    <div class="oh-alert-container">
+        {% for message in messages %}
+            <div class="oh-alert oh-alert--animated {{message.tags}}">{{ message }}</div>
+        {% endfor %}
+    </div>
+</div>
+{% endif %}

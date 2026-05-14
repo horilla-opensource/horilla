@@ -1721,7 +1721,7 @@ def employee_view_update(request, obj_id, **kwargs):
         active_tab = (
             submitted_form if submitted_form in ("personal", "work", "bank") else ""
         )
-        return render(
+        response = render(
             request,
             template_name,
             {
@@ -1734,6 +1734,7 @@ def employee_view_update(request, obj_id, **kwargs):
                 "active_tab": active_tab,
             },
         )
+        return response
     return HorillaRedirect(request, fallback_url="/employee/employee-view")
 
 
