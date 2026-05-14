@@ -545,6 +545,7 @@ function removeId(element, storeKey = "selectedInstances") {
           target: "#ohMainContent",
           select: "#ohMainContent > *",
           swap: "innerHTML show:window:top",
+          headers: {"HX-Sidebar-Nav": "true"},
         });
       }, true);
 
@@ -592,6 +593,7 @@ function removeId(element, storeKey = "selectedInstances") {
               target: "#ohMainContent",
               select: "#ohMainContent > *",
               swap: "innerHTML show:window:top",
+              headers: {"HX-Sidebar-Nav": "true"},
             });
             return;
           }
@@ -708,11 +710,32 @@ function removeId(element, storeKey = "selectedInstances") {
         bumpGrace(1500);
       } catch (_) { /* no-op */ }
     });
-    document.addEventListener("htmx:afterSettle", function () {
+    document.addEventListener("htmx:afterSettle", function (evt) {
       /* tiny extension so the final post-swap click burst (if any) is
          still absorbed — harmless otherwise since the next user click
          will have moved past this window. */
       bumpGrace(200);
+
+      /* Update breadcrumbs in the header from the sidebar navigation response.
+         evt.detail.elt is the settled DOM node (not the sidebar link), so we
+         identify sidebar navigations via the custom header in etc.headers.
+         _crumbsUpdated prevents re-running when multiple elements settle. */
+      var info = evt && evt.detail;
+      if (!info || info._crumbsUpdated) return;
+      var etc = info.etc;
+      if (!etc || !etc.headers || etc.headers["HX-Sidebar-Nav"] !== "true") return;
+      info._crumbsUpdated = true;
+      var xhr = info.xhr;
+      if (!xhr || !xhr.responseText) return;
+      try {
+        var parser = new DOMParser();
+        var doc = parser.parseFromString(xhr.responseText, "text/html");
+        var newCrumbs = doc.getElementById("breadcrumbs-container");
+        var currentCrumbs = document.getElementById("breadcrumbs-container");
+        if (newCrumbs && currentCrumbs) {
+          currentCrumbs.innerHTML = newCrumbs.innerHTML;
+        }
+      } catch (_) { /* noop */ }
     });
 
     /*
@@ -788,13 +811,13 @@ function removeId(element, storeKey = "selectedInstances") {
     document.addEventListener("htmx:targetError", sidebarNavError);
 
     /*
-     * Browser back/forward: pushUrl:true records history entries but HTMX's
-     * own popstate handler tries to restore from sessionStorage cache, which
-     * is stale or missing for programmatic htmx.ajax() calls and leaves the
-     * content stuck. Disable HTMX's history restoration and do a plain
-     * reload at the already-correct URL instead — simple and always correct.
+     * Browser back/forward: keep historyEnabled=true so hx-push-url can
+     * update the browser URL, but remove HTMX's own window.onpopstate
+     * handler so it never tries to restore from its sessionStorage cache
+     * (which is stale/missing for programmatic htmx.ajax() calls).
+     * Our plain reload below is always correct instead.
      */
-    if (window.htmx) htmx.config.historyEnabled = false;
+    window.onpopstate = null;
     window.addEventListener("popstate", function () {
       window.location.reload();
     });
