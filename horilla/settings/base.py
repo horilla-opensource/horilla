@@ -15,6 +15,8 @@ from django.core.files.storage import FileSystemStorage
 # BASE PATH & ENVIRONMENT CONFIGURATION
 # ========================================
 BASE_DIR = Path(__file__).resolve().parent.parent.parent
+# settings.py
+import os
 
 env = environ.Env(
     DEBUG=(bool, True),

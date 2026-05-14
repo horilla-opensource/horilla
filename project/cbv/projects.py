@@ -374,8 +374,11 @@ class ProjectCardView(HorillaCardView):
                     "action": "archive_status",
                     "accessibility": "project.cbv.accessibility.project_manager_accessibility",
                     "attrs": """
-                        href="{get_archive_url}"
-                        onclick="return confirm('Do you want to {archive_status} this project?')"
+                        hx-get="{get_archive_url}"
+                        hx-target="#listContainer"
+                        hx-swap="innerHTML"
+                        hx-confirm="Do you want to {archive_status} this project?"
+                        onclick="event.stopPropagation()"
                         class="oh-dropdown__link"
                     """,
                 },
@@ -383,10 +386,11 @@ class ProjectCardView(HorillaCardView):
                     "action": _("Delete"),
                     "accessibility": "project.cbv.accessibility.project_manager_accessibility",
                     "attrs": """
-                        onclick="
-                            event.stopPropagation()
-                            deleteItem({get_delete_url});
-                        "
+                        hx-get="{get_delete_url}?view=card"
+                        hx-target="#listContainer"
+                        hx-swap="innerHTML"
+                        hx-confirm="Do you want to delete this project?"
+                        onclick="event.stopPropagation()"
                         class="oh-dropdown__link oh-dropdown__link--danger"
                     """,
                 },

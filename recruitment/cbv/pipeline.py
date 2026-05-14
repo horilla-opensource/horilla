@@ -293,11 +293,8 @@ class CandidateList(HorillaListView):
     ]
 
     row_attrs = """
-        hx-get="{get_profile_url}?instance_ids={ordered_ids}"
-        hx-target="#pipelineContainer"
-        hx-swap="innerHTML"
-        hx-push-url="{get_individual_url}"
         class="cursor-pointer"
+        onclick="window.location.href = '{get_profile_url}?next=' + encodeURIComponent(window.location.pathname + window.location.search)"
     """
 
     actions = [
@@ -441,10 +438,7 @@ class CandidateCard(HorillaKanbanView):
     group_label_key = "stage"
 
     kanban_attrs = """
-        hx-get="{get_profile_url}?instance_ids={ordered_ids}"
-        hx-target="#pipelineContainer"
-        hx-swap="innerHTML"
-        hx-push-url="{get_individual_url}"
+        onclick="window.location.href = '{get_profile_url}?next=' + encodeURIComponent(window.location.pathname + window.location.search)"
     """
 
     details = {

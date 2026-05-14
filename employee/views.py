@@ -1711,13 +1711,15 @@ def employee_view_update(request, obj_id, **kwargs):
                     instance.employee_id = employee
                     instance.save()
                     messages.success(request, _("Employee bank details updated."))
-        use_edit_fragment = container_mode or (
-            request.META.get("HTTP_HX_REQUEST") == "true"
-        )
+        use_edit_fragment = request.META.get("HTTP_HX_REQUEST") == "true"
         template_name = (
             "employee/update_form/form_view_fragment.html"
             if use_edit_fragment
             else "employee/update_form/form_view.html"
+        )
+        submitted_form = request.POST.get("form", "") if request.POST else ""
+        active_tab = (
+            submitted_form if submitted_form in ("personal", "work", "bank") else ""
         )
         return render(
             request,
@@ -1729,6 +1731,7 @@ def employee_view_update(request, obj_id, **kwargs):
                 "bank_form": bank_form,
                 "work_info_history": work_info_history,
                 "container_mode": container_mode,
+                "active_tab": active_tab,
             },
         )
     return HorillaRedirect(request, fallback_url="/employee/employee-view")
@@ -3764,6 +3767,8 @@ def encashment_condition_create(request):
             if encashment_form.is_valid():
                 encashment_form.save()
                 messages.success(request, _("Settings updated."))
+                if request.headers.get("HX-Request"):
+                    return HttpResponse("")
                 return HorillaRedirect(request)
         else:
             encashment_form = EncashmentGeneralSettingsForm(instance=instance)
@@ -3775,6 +3780,8 @@ def encashment_condition_create(request):
         )
 
     messages.warning(request, _("Payroll app not installed"))
+    if request.headers.get("HX-Request"):
+        return HttpResponse("", status=400)
     return HorillaRedirect(request)
 
 
@@ -3793,12 +3800,16 @@ def initial_prefix(request):
         if form.is_valid():
             form.save()
             messages.success(request, "Initial prefix updated successfully.")
+            if request.headers.get("HX-Request"):
+                return HttpResponse("")
             return HorillaRedirect(request)
         else:
             messages.error(request, "There was an error updating the prefix.")
     else:
         form = EmployeeGeneralSettingPrefixForm(instance=instance)
 
+    if request.headers.get("HX-Request"):
+        return HttpResponse("", status=400)
     return HorillaRedirect(request)
 
 

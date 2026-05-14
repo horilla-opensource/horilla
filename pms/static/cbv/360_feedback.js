@@ -41,6 +41,26 @@ function getCookie(name) {
     return cookieValue;
 }
 
+function refreshFeedbackContainer() {
+    var $filter = $("#applyFilter");
+    if ($filter.length) {
+        $filter.click();
+    } else if ($("#listContainer").length) {
+        htmx.ajax("GET", "/pms/feedback-generic-tab/", {
+            target: "#listContainer",
+            swap: "innerHTML",
+        });
+    }
+    var $msg = $("#reloadMessagesButton");
+    if ($msg.length) {
+        $msg.click();
+    }
+}
+
+document.body.addEventListener("reloadFeedbackContainer", function () {
+    refreshFeedbackContainer();
+});
+
 
 
 
@@ -81,7 +101,7 @@ $(document).on('click', '#archiveFeedback', function (e) {
                     },
                     success: function (response, textStatus, jqXHR) {
                         if (jqXHR.status === 200) {
-                            window.location.reload();
+                            refreshFeedbackContainer();
                         } else {
                         }
                     },
@@ -129,7 +149,7 @@ $(document).on('click', '#UnarchiveFeedback', function (e) {
                     },
                     success: function (response, textStatus, jqXHR) {
                         if (jqXHR.status === 200) {
-                            window.location.reload();
+                            refreshFeedbackContainer();
                         } else {
                         }
                     },
@@ -172,7 +192,7 @@ $(document).on('click', '#deleteFeedback', function (e) {
                     },
                     success: function (response, textStatus, jqXHR) {
                         if (jqXHR.status === 200) {
-                            window.location.reload();
+                            refreshFeedbackContainer();
                         } else {
                         }
                     },

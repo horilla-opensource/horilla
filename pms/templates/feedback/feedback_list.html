@@ -107,7 +107,11 @@
           {% for feedback in self_feedback.object_list %}
           <div class="oh-sticky-table__tr" draggable="true"
             {% if perms.pms.view_feedback or feedback|is_feedback_manager_or_owner:request.user %}
-              onclick="window.location.href='{% url 'feedback-detailed-view' feedback.id %}'"
+              hx-get="{% url 'feedback-detailed-view' feedback.id %}"
+              hx-target="#listContainer"
+              hx-select="#feedbackDetailContainer"
+              hx-swap="innerHTML"
+              hx-push-url="true"
             {% endif %}
           >
             <div class="oh-sticky-table__sd {% if feedback.status == 'Closed' %}row-status--blue
@@ -407,7 +411,11 @@
 
           {% for feedback in all_feedbacks.object_list %}
           <div class="oh-sticky-table__tr" draggable="true"
-            onclick="window.location.href='{% url 'feedback-detailed-view' feedback.id %}'"
+            hx-get="{% url 'feedback-detailed-view' feedback.id %}"
+            hx-target="#listContainer"
+            hx-select="#feedbackDetailContainer"
+            hx-swap="innerHTML"
+            hx-push-url="true"
           >
             <div class="oh-sticky-table__sd {% if feedback.status == 'Closed' %}row-status--blue
                 {% elif feedback.status == 'On Track' %}row-status--yellow {% elif feedback.status == 'Not Started' %}row-status--gray

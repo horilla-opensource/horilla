@@ -143,10 +143,19 @@
 </div>
 <script>
     $(document).ready(function () {
-        var activeTab = localStorage.getItem("activeSurveyTab")
+        const params = new URLSearchParams(window.location.search);
+        const shouldOpenDefault = params.get("closed") === "false";
+        let activeTab = localStorage.getItem("activeSurveyTab");
+        const tabSelector = `.oh-tabs__tab[data-target='${activeTab}']`;
+        if (shouldOpenDefault || !activeTab || $(tabSelector).length === 0) {
+            activeTab = "#templateTab";
+            localStorage.setItem("activeSurveyTab", activeTab);
+        }
         $(".oh-tabs__tab--active").removeClass("oh-tabs__tab--active");
         $(`[data-target='${activeTab}']`).addClass("oh-tabs__tab--active");
-        $(`[data-target='${activeTab}']`).click();
+        if ($(`[data-target='${activeTab}']`).length) {
+            $(`[data-target='${activeTab}']`).click();
+        }
         $(".oh-tabs__tab").on("click", function (e) {
             var dataTarget = $(this).data('target');
             localStorage.setItem("activeSurveyTab", dataTarget)

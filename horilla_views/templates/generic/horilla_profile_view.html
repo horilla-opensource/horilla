@@ -20,6 +20,7 @@
     <div
       class="col-lg-12 d-flex justify-content-between align-items-center mb-4"
     >
+      {% if request.resolver_match.url_name != "candidate-view" and request.resolver_match.url_name != "candidate-view-individual" %}
       <div class="members-container d-flex float-left">
         <ul class="m-0 p-0 d-flex align-items-center">
           {% for object in instances|slice:"6" %}
@@ -88,12 +89,70 @@
 
         </ul>
       </div>
+      {% endif %}
 
       <div class="d-flex align-items-center gap-3">
         {% if request.resolver_match.url_name == "candidate-view" or request.resolver_match.url_name == "candidate-view-individual" %}
-        <a href="{% url 'candidate-view' %}" class="oh-btn oh-btn--light-bkg">
+        <a
+          id="candidateBackButton"
+          href="{% url 'candidate-view' %}"
+          class="oh-btn oh-btn--light-bkg"
+          onclick="candidateProfileGoBack(); return false;"
+          style="display: none;"
+        >
           {% trans "Back" %}
         </a>
+        <script>
+          (function () {
+            function normalizeSameOriginPath(rawUrl) {
+              if (!rawUrl) return "";
+              try {
+                var u = new URL(rawUrl, window.location.origin);
+                if (u.origin !== window.location.origin) return "";
+                return u.pathname + u.search;
+              } catch (e) {
+                if (String(rawUrl).startsWith("/")) return String(rawUrl);
+                return "";
+              }
+            }
+
+            function resolveCandidateBackUrl() {
+              var params = new URLSearchParams(window.location.search);
+              var fromQuery = normalizeSameOriginPath(params.get("next"));
+              if (fromQuery) return fromQuery;
+
+              var saved = normalizeSameOriginPath(
+                sessionStorage.getItem("candidateProfileBackUrl")
+              );
+              if (saved) return saved;
+
+              var ref = normalizeSameOriginPath(document.referrer || "");
+              if (
+                ref &&
+                (ref.indexOf("/recruitment/cbv-pipeline/") !== -1 ||
+                  ref.indexOf("/onboarding/candidates-view") !== -1)
+              ) {
+                return ref;
+              }
+              return "";
+            }
+
+            window.candidateProfileGoBack = function () {
+              var backUrl = resolveCandidateBackUrl();
+              if (backUrl) {
+                try {
+                  sessionStorage.removeItem("candidateProfileBackUrl");
+                } catch (e) {}
+                window.location.href = backUrl;
+              }
+            };
+
+            var backBtn = document.getElementById("candidateBackButton");
+            if (backBtn && resolveCandidateBackUrl()) {
+              backBtn.style.display = "";
+            }
+          })();
+        </script>
         {% elif request.resolver_match.url_name == "profile-new" or request.resolver_match.url_name == "employee-view-individual" %}
         <button
           type="button"
@@ -250,6 +309,7 @@
   </div>
   <div class="row">
     <div class="col-sm-12 col-md-12 col lg-12 oh-table_sticky--wrapper">
+      {% if request.resolver_match.url_name != "candidate-view" and request.resolver_match.url_name != "candidate-view-individual" %}
       <div class="oh-sticky-dropdown--header" style="border: none">
         <div class="oh-dropdown" x-data="{open: false}">
           <button class="oh-sticky-dropdown_btn" @click="open = !open">
@@ -272,6 +332,7 @@
           </div>
         </div>
       </div>
+      {% endif %}
       <ul
         class="oh-general__tabs oh-general__tabs--border oh-general__tabs--profile oh-general__tabs--no-grow oh-profile-section__tab mt-5"
       >
@@ -334,12 +395,16 @@
   </script>
 
   <script>
-    document
-      .getElementById("dropdownLink")
-      .addEventListener("click", function (event) {
+    var dropdownLink = document.getElementById("dropdownLink");
+    if (dropdownLink) {
+      dropdownLink.addEventListener("click", function (event) {
         event.preventDefault();
-        document.getElementById("dropdownContent").classList.toggle("show");
+        var dropdownContent = document.getElementById("dropdownContent");
+        if (dropdownContent) {
+          dropdownContent.classList.toggle("show");
+        }
       });
+    }
 
     window.onclick = function (event) {
       if (

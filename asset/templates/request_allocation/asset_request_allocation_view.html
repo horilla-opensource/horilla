@@ -225,9 +225,17 @@
 	<div class="oh-wrapper">
 		<div class="oh-tabs">
 			<ul class="oh-tabs__tablist">
-				<li class="oh-tabs__tab" data-target="#tab_3">{% trans "Asset" %}</li>
+				<li class="oh-tabs__tab" data-target="#tab_3">
+					{% trans "Asset" %}
+					<span class="oh-badge oh-badge--secondary oh-badge--small oh-badge--round ms-1">
+						{{ assets_count }}
+					</span>
+				</li>
 				<li class="oh-tabs__tab" data-target="#tab_1">
 					{% trans "Asset Request" %}
+					<span class="oh-badge oh-badge--secondary oh-badge--small oh-badge--round ms-1">
+						{{ asset_requests_count }}
+					</span>
 					<a class="link-danger oh-btn oh-btn--secondary-outline" role="button"
 						onclick="event.stopPropagation()" data-toggle="oh-modal-toggle" data-target="#objectCreateModal"
 						hx-get="{% url 'asset-request-creation' %}" hx-target="#objectCreateModalTarget"
@@ -238,6 +246,9 @@
 				{% if perms.asset.view_assetassignment %}
 				<li class="oh-tabs__tab" data-target="#tab_2">
 					{% trans "Asset Allocation" %}
+					<span class="oh-badge oh-badge--secondary oh-badge--small oh-badge--round ms-1">
+						{{ asset_allocations_count }}
+					</span>
 					{% if perms.asset.add_assetassignment %}
 						<a class="oh-btn oh-btn--secondary-outline" role="button" data-toggle="oh-modal-toggle"
 							onclick="event.stopPropagation()" data-target="#objectCreateModal"

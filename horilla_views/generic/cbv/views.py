@@ -1888,12 +1888,37 @@ class HorillaFormView(FormView):
             targets_to_reload = list(set(targets_to_reload))
             targets_to_reload.append("#reloadMessagesButton")
             script_id = get_short_uuid(4)
+            request = getattr(_thread_locals, "request", None)
+            save_and_add_another = (
+                request
+                and request.method == "POST"
+                and request.POST.get("save_and_add_another") == "true"
+            )
+            if save_and_add_another:
+                query_string = request.META.get("QUERY_STRING", "")
+                reopen_url = request.path
+                if query_string:
+                    reopen_url = f"{reopen_url}?{query_string}"
+                reopen_url = json.dumps(reopen_url)
+                target_id = request.META.get("HTTP_HX_TARGET", "genericModalBody")
+                target_selector = json.dumps(f"#{target_id}")
+                script += (
+                    f"setTimeout(function(){{"
+                    f"var targetSelector = {target_selector};"
+                    f"if (window.htmx) {{"
+                    f"htmx.ajax('GET', {reopen_url}, {{target: targetSelector, swap: 'innerHTML'}});"
+                    f"}}"
+                    f"}}, 50);"
+                )
+            close_modal_script = ""
+            if not save_and_add_another:
+                close_modal_script = f"$('#scriptTarget{script_id}').closest('.oh-modal--show').first().removeClass('oh-modal--show');"
             script = (
                 f"<script id='scriptTarget{script_id}'>"
                 + "{}".format(
                     "".join([f"$(`{target}`).click();" for target in targets_to_reload])
                 )
-                + f"$('#scriptTarget{script_id}').closest('.oh-modal--show').first().removeClass('oh-modal--show');"
+                + close_modal_script
                 + "$('.reload-record').click();"
                 + "$('.reload-field').click();"
                 + script
@@ -1978,8 +2003,11 @@ class HorillaFormView(FormView):
         context["hx_confirm"] = self.hx_confirm
         context["hx_target"] = self.request.META.get("HTTP_HX_TARGET", "this")
         pk = None
-        if self.form.instance:
-            pk = self.form.instance.pk
+        # Some custom form views may temporarily set `self.form` to a form class.
+        # Guard against that so context-building never crashes on `.instance`.
+        form_instance = getattr(self.form, "instance", None)
+        if form_instance:
+            pk = form_instance.pk
         # next/previous option in the forms
         if pk and self.request.GET.get(self.ids_key):
             instance_ids = self.request.session.get(self.ordered_ids_key, [])
@@ -2009,7 +2037,10 @@ class HorillaFormView(FormView):
     def get_form(self, form_class=None):
 
         pk = self.kwargs.get("pk")
-        if not hasattr(self, "form"):
+        # Some URL patterns pass `form` as a class in kwargs; that should not
+        # be treated as an initialized form instance.
+        existing_form = getattr(self, "form", None)
+        if not isinstance(existing_form, forms.BaseForm):
             instance = self.get_queryset()
             data = None
             files = None

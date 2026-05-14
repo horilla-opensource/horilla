@@ -373,6 +373,8 @@ class HorillaDeleteConfirmationView(View):
     """
 
     confirmation_target = "deleteConfirmationBody"
+    # URL name used by delete_confirmation.html for hx-get / hx-post on this flow
+    generic_delete_url_name = "generic-delete"
 
     def get(self, *args, **kwargs):
         """
@@ -609,6 +611,10 @@ class HorillaDeleteConfirmationView(View):
         for key, value in self.get_context_data().items():
             context[key] = value
 
+        context["generic_delete_url_name"] = getattr(
+            self, "generic_delete_url_name", "generic-delete"
+        )
+
         return render(self.request, "generic/delete_confirmation.html", context)
 
     def post(self, *args, **kwargs):
@@ -755,15 +761,18 @@ def update_kanban_item_group(request):
     - order: ordered list of IDs to update sequence
     """
 
-    model_path = request.GET["model"]
+    model_path = request.GET.get("model")
     group_key = request.GET.get("groupKey")
     group_id = request.GET.get("groupId")
     object_id = request.GET.get("objectId")
-    order = request.GET.get("order")
+    order = request.GET.get("order", "[]")
     order_by = request.GET.get("orderBy")
-    order_list = json.loads(order)
+    try:
+        order_list = json.loads(order)
+    except json.JSONDecodeError:
+        order_list = []
 
-    if not all([model_path, group_key, group_id, object_id, order_list]):
+    if not all([model_path, group_key, group_id, object_id, order_list, order_by]):
         return JsonResponse({"error": "Missing required parameters"}, status=400)
 
     try:
@@ -771,9 +780,20 @@ def update_kanban_item_group(request):
 
         # Get the group object from group_key
         group_field = get_nested_field(model, group_key)
+        if not group_field:
+            return JsonResponse(
+                {"error": f"Invalid group key: {group_key}"}, status=400
+            )
+
         if hasattr(group_field, "related_model") and group_field.related_model:
             group_model = group_field.related_model
-            group_instance = group_model.objects.get(id=group_id)
+            try:
+                group_instance = group_model.objects.get(id=group_id)
+            except group_model.DoesNotExist:
+                return JsonResponse(
+                    {"error": f"{group_model.__name__} with ID {group_id} not found."},
+                    status=404,
+                )
         else:
             # Not a ForeignKey → probably a CharField (choices) or something similar
             group_instance = group_id
@@ -802,7 +822,7 @@ def update_kanban_item_group(request):
         if "__" not in group_key:
             fields.add(group_key)
 
-        if fields:
+        if fields and updated:
             model.objects.bulk_update(updated, list(fields))
 
         return JsonResponse({"status": "success", "updated": len(updated)})

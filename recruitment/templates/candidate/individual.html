@@ -1,6 +1,11 @@
 {% extends "index.html" %}
 {% block content %}
 {% include "generic/components.html" %}
+<style>
+    body.recruitment-candidate-detail #candidateListNavBar {
+        display: none !important;
+    }
+</style>
 <script>
     function submitForm(elem) {
         $(elem).siblings(".add_more_submit").click();
@@ -37,6 +42,19 @@
             hideEnlargeImage();
         }
     });
+
+    function hideCandidateListNav() {
+        var path = window.location.pathname.replace(/\/$/, "");
+        if (/\/recruitment\/candidate-view\/\d+$/.test(path)) {
+            document.body.classList.add("recruitment-candidate-detail");
+            $("#candidateListNavBar").hide();
+        }
+    }
+
+    $(document).ready(function () {
+        hideCandidateListNav();
+    });
+    document.body.addEventListener("htmx:afterSwap", hideCandidateListNav);
 </script>
 <style>
     .enlarge-image-container {

@@ -8,7 +8,7 @@ from .base import *
 # # --- 1️⃣ Basic overrides ---
 # DEBUG = False
 # ALLOWED_HOSTS = ["client.example.com"]
-# WHITE_LABELLING = True
+WHITE_LABELLING = True
 # TWO_FACTORS_AUTHENTICATION = True
 
 

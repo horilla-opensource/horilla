@@ -47,7 +47,8 @@
         border-radius: 4px 0 0 4px;
       }
     </style>
-<div hx-get="{% url "feedback-nav-view" %}?{{request.GET.urlencode}}" hx-trigger="load">
+<div id="feedbackNavBar">
+  <div hx-get="{% url "feedback-nav-view" %}?{{request.GET.urlencode}}" hx-trigger="load"></div>
 </div>
 
 
@@ -99,5 +100,95 @@ aria-hidden="true">
       hiddenInput.value = value;
       $("#applyFilter").click();
   }
+</script>
+<script>
+  (function () {
+    var detailPathPattern = /^\/pms\/feedback-detailed-view\/\d+\/?$/;
+    var createPathPattern = /^\/pms\/feedback-creation\/?$/;
+
+    function getHtmxSwapTarget(e) {
+      if (!e || !e.detail) {
+        return null;
+      }
+      return e.detail.target || e.detail.elt || null;
+    }
+
+    function isDetailRoute() {
+      return detailPathPattern.test(window.location.pathname);
+    }
+
+    function isCreateRoute() {
+      return createPathPattern.test(window.location.pathname);
+    }
+
+    function loadCreationIntoContainerIfNeeded() {
+      var listContainer = document.getElementById("listContainer");
+      if (!listContainer || !isCreateRoute()) {
+        return;
+      }
+      htmx.ajax("GET", window.location.pathname + window.location.search, {
+        target: "#listContainer",
+        swap: "innerHTML",
+      });
+    }
+
+    function loadDetailIntoContainerIfNeeded() {
+      var listContainer = document.getElementById("listContainer");
+      if (!listContainer || !isDetailRoute()) {
+        return;
+      }
+      fetch(window.location.pathname + window.location.search, {
+        method: "GET",
+        credentials: "same-origin",
+      })
+        .then(function (response) {
+          return response.text();
+        })
+        .then(function (html) {
+          var doc = new DOMParser().parseFromString(html, "text/html");
+          var detail = doc.querySelector("#feedbackDetailContainer");
+          listContainer.innerHTML = detail ? detail.innerHTML : html;
+          syncFeedbackNavVisibility();
+        });
+    }
+
+    function syncFeedbackNavVisibility() {
+      var nav = document.getElementById("feedbackNavBar");
+      var listContainer = document.getElementById("listContainer");
+      if (!nav || !listContainer) {
+        return;
+      }
+      var isCreateView = !!listContainer.querySelector("#feedbackCreationForm");
+      var isDetailView = !!listContainer.querySelector("#feedbackDetailContainer");
+      nav.style.display = isCreateView || isDetailView ? "none" : "";
+
+      // Keep URL aligned with what is currently rendered in the container.
+      if (!isCreateView && !isDetailView && isCreateRoute()) {
+        window.history.replaceState(null, "", "/pms/feedback-view/");
+      }
+    }
+
+    function onListContainerSwap(e) {
+      var target = getHtmxSwapTarget(e);
+      if (target && target.id === "listContainer") {
+        syncFeedbackNavVisibility();
+        setTimeout(syncFeedbackNavVisibility, 0);
+        setTimeout(syncFeedbackNavVisibility, 50);
+      }
+    }
+
+    document.addEventListener("DOMContentLoaded", function () {
+      loadCreationIntoContainerIfNeeded();
+      loadDetailIntoContainerIfNeeded();
+      syncFeedbackNavVisibility();
+    });
+    document.body.addEventListener("htmx:afterSwap", onListContainerSwap);
+    document.body.addEventListener("htmx:afterSettle", onListContainerSwap);
+    window.addEventListener("popstate", function () {
+      loadCreationIntoContainerIfNeeded();
+      loadDetailIntoContainerIfNeeded();
+      setTimeout(syncFeedbackNavVisibility, 0);
+    });
+  })();
 </script>
 {% endblock content %}

@@ -2,7 +2,11 @@
 {% load i18n %}
 
 <div class="col-span-12 lg:col-span-6">
-    <form  action="{% url 'history-field-settings' %}" method ="post">
+    <form  action="{% url 'history-field-settings' %}" method ="post"
+        hx-post="{% url 'history-field-settings' %}"
+        hx-target="#settingsContainer"
+        hx-select="#settingsContainer"
+        hx-swap="outerHTML show:none">
         {% csrf_token %}
     <div class="flex space-x-2 pb-2">
     <label>{% trans "Tracking Fields" %}</label>
@@ -18,7 +22,11 @@
 </form>
 </div>
 <div class="col-span-12 lg:col-span-6">
-    <form action="{% url 'history-field-settings' %}" method="post">
+    <form action="{% url 'history-field-settings' %}" method="post"
+        hx-post="{% url 'history-field-settings' %}"
+        hx-target="#settingsContainer"
+        hx-select="#settingsContainer"
+        hx-swap="outerHTML show:none">
         {% csrf_token %}
     <div class="flex items-center justify-between mb-4 mt-[30px]">
         <div class="flex space-x-2">

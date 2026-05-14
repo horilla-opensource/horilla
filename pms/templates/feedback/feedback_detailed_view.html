@@ -5,6 +5,7 @@
 {% load basefilters %}
 {% load mathfilters %}
 
+<div id="feedbackDetailContainer">
 <style>
   .oh-profile__avatar-limit-height {
     height: 30px !important;
@@ -94,6 +95,16 @@
               >{{feedback.employee_id}}</span>
           </div>
             <div class="oh-main__titlebar oh-main__titlebar--right justify-content-end">
+              <button
+                type="button"
+                class="oh-btn oh-btn--secondary-outline"
+                hx-get="{% url 'feedback-generic-tab' %}"
+                hx-target="#listContainer"
+                hx-swap="innerHTML"
+                hx-push-url="{% url 'feedback-view' %}"
+              >
+                {% trans "Back" %}
+              </button>
               {% if  perms.pms.change_feedback or request.user|is_reportingmanager %}
                 <select id="status" class="oh-select oh-select--sm ms-3" name="feedback_status" title="{% trans 'Status' %}"
                     hx-post="{%url 'feedback-detailed-view-status'  id=feedback.id %}"
@@ -626,4 +637,5 @@
   }
 </script>
 
+ </div>
 {% endblock %}

@@ -17,19 +17,25 @@ from horilla.config import logger
 
 _request_var = ContextVar("request", default=None)
 current_company_id = ContextVar("current_company_id", default=None)
+_thread_local_state = ContextVar("thread_local_state", default={})
 
 
 class _ThreadLocalProxy:
     def __getattr__(self, name):
         if name == "request":
             return _request_var.get()
+        state = _thread_local_state.get()
+        if name in state:
+            return state[name]
         raise AttributeError(name)
 
     def __setattr__(self, name, value):
         if name == "request":
             _request_var.set(value)
         else:
-            raise AttributeError(name)
+            state = dict(_thread_local_state.get())
+            state[name] = value
+            _thread_local_state.set(state)
 
 
 _thread_locals = _ThreadLocalProxy()

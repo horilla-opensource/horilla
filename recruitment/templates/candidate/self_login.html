@@ -13,10 +13,17 @@
       <div align="center">
         <div class="oh-kanban-card oh-joblist_card w-50 mt-5">
           <h5 class="oh-job__post">Enter Credentials</h5>
-          <label for="username" class="mt-2">Username</label>
-          <input type="text" name="email" class="oh-input w-100" placeholder="Username" />
-          <label for="username" class="mt-2">Phone</label>
-          <input type="text" name="phone" class="oh-input w-100" placeholder="Phone" />
+          {% if error %}
+          <div class="oh-alert-container">
+            <div class="oh-alert oh-alert--animated oh-alert--danger">
+              {{ error }}
+            </div>
+          </div>
+          {% endif %}
+          <label for="email" class="mt-2">Email</label>
+          <input type="text" id="email" name="email" class="oh-input w-100" placeholder="Email" />
+          <label for="phone" class="mt-2">Phone</label>
+          <input type="text" id="phone" name="phone" class="oh-input w-100" placeholder="Phone" />
           <div class="oh-job__apply-btn">
             <button type="submit" href="#" class="oh-btn oh-btn--secondary" role="button" data-toggle="oh-modal-toggle" data-target="#jobDetailModal">Show Result</button>
           </div>

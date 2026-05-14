@@ -48,16 +48,24 @@
   }
 
   /* Subtle stagger on submenu items when opening */
-  .sideboxmain.sidebox-active .sidebox ul li {
+  .sideboxmain.sidebox-active .sidebox ul li,
+  #sidebarSharedPanel.sidebox-visible ul li {
     animation: ohSideboxItemIn 0.32s cubic-bezier(0.22, 1, 0.36, 1) both;
   }
-  .sideboxmain.sidebox-active .sidebox ul li:nth-child(1) { animation-delay: 0.04s; }
-  .sideboxmain.sidebox-active .sidebox ul li:nth-child(2) { animation-delay: 0.08s; }
-  .sideboxmain.sidebox-active .sidebox ul li:nth-child(3) { animation-delay: 0.12s; }
-  .sideboxmain.sidebox-active .sidebox ul li:nth-child(4) { animation-delay: 0.16s; }
-  .sideboxmain.sidebox-active .sidebox ul li:nth-child(5) { animation-delay: 0.20s; }
-  .sideboxmain.sidebox-active .sidebox ul li:nth-child(6) { animation-delay: 0.22s; }
-  .sideboxmain.sidebox-active .sidebox ul li:nth-child(n + 7) { animation-delay: 0.24s; }
+  .sideboxmain.sidebox-active .sidebox ul li:nth-child(1),
+  #sidebarSharedPanel.sidebox-visible ul li:nth-child(1) { animation-delay: 0.04s; }
+  .sideboxmain.sidebox-active .sidebox ul li:nth-child(2),
+  #sidebarSharedPanel.sidebox-visible ul li:nth-child(2) { animation-delay: 0.08s; }
+  .sideboxmain.sidebox-active .sidebox ul li:nth-child(3),
+  #sidebarSharedPanel.sidebox-visible ul li:nth-child(3) { animation-delay: 0.12s; }
+  .sideboxmain.sidebox-active .sidebox ul li:nth-child(4),
+  #sidebarSharedPanel.sidebox-visible ul li:nth-child(4) { animation-delay: 0.16s; }
+  .sideboxmain.sidebox-active .sidebox ul li:nth-child(5),
+  #sidebarSharedPanel.sidebox-visible ul li:nth-child(5) { animation-delay: 0.20s; }
+  .sideboxmain.sidebox-active .sidebox ul li:nth-child(6),
+  #sidebarSharedPanel.sidebox-visible ul li:nth-child(6) { animation-delay: 0.22s; }
+  .sideboxmain.sidebox-active .sidebox ul li:nth-child(n + 7),
+  #sidebarSharedPanel.sidebox-visible ul li:nth-child(n + 7) { animation-delay: 0.24s; }
 
   /* During icon-to-icon submenu switch keep card stable:
      disable fade/slide so only list content appears changed. */
@@ -80,15 +88,18 @@
   }
 
   #sidebarSharedPanel {
-    display: none;
     z-index: 10055;
+    pointer-events: none;
   }
   #sidebarSharedPanel.sidebox-visible {
-    display: block;
     opacity: 1;
     visibility: visible;
-    transform: none;
-    transition: none;
+    transform: translateX(0) scale(1);
+    pointer-events: auto;
+    transition:
+      opacity 0.22s cubic-bezier(0.22, 1, 0.36, 1),
+      transform 0.28s cubic-bezier(0.22, 1, 0.36, 1),
+      visibility 0s linear 0s;
   }
 
   @keyframes ohSideboxItemIn {
@@ -528,12 +539,12 @@ function removeId(element, storeKey = "selectedInstances") {
         }
 
         bumpGrace(1500);
+        window.history.pushState({}, "", href);
         htmx.ajax("GET", href, {
           source: link,
           target: "#ohMainContent",
           select: "#ohMainContent > *",
           swap: "innerHTML show:window:top",
-          pushUrl: true,
         });
       }, true);
 
@@ -575,12 +586,12 @@ function removeId(element, storeKey = "selectedInstances") {
             }
 
             bumpGrace(1500);
+            window.history.pushState({}, "", href);
             htmx.ajax("GET", href, {
               source: link,
               target: "#ohMainContent",
               select: "#ohMainContent > *",
               swap: "innerHTML show:window:top",
-              pushUrl: true,
             });
             return;
           }
@@ -775,6 +786,18 @@ function removeId(element, storeKey = "selectedInstances") {
        page reload. Redirect explicitly instead so the user lands on
        the intended destination with the proper layout. */
     document.addEventListener("htmx:targetError", sidebarNavError);
+
+    /*
+     * Browser back/forward: pushUrl:true records history entries but HTMX's
+     * own popstate handler tries to restore from sessionStorage cache, which
+     * is stale or missing for programmatic htmx.ajax() calls and leaves the
+     * content stuck. Disable HTMX's history restoration and do a plain
+     * reload at the already-correct URL instead — simple and always correct.
+     */
+    if (window.htmx) htmx.config.historyEnabled = false;
+    window.addEventListener("popstate", function () {
+      window.location.reload();
+    });
 
     /*
      * Outside-click close handler (capture phase so it runs before any

@@ -1275,9 +1275,23 @@ class ScheduleInterviewForm(BaseModelForm):
         self.fields["interview_date"].widget = forms.DateInput(
             attrs={"type": "date", "class": "oh-input w-100"}
         )
-        self.fields["interview_time"].widget = forms.TimeInput(
-            attrs={"type": "time", "class": "oh-input w-100"}
-        )
+        if self.instance.pk:
+            # Update mode: keep this permissive and normalize manually in clean()
+            # so unchanged browser values do not fail with "Enter a valid time".
+            self.fields["interview_time"] = forms.CharField(
+                required=False,
+                widget=forms.TimeInput(
+                    attrs={"type": "time", "class": "oh-input w-100"}
+                ),
+            )
+        else:
+            self.fields["interview_time"] = forms.TimeField(
+                required=True,
+                input_formats=["%H:%M", "%I:%M %p", "%H:%M:%S", "%I:%M:%S %p"],
+                widget=forms.TimeInput(
+                    attrs={"type": "time", "class": "oh-input w-100"}
+                ),
+            )
         candidate_attr = {
             "hx-include": "#InterviewCreateForm",
             "hx-target": "#id_employee_id_parent_div",
@@ -1298,7 +1312,28 @@ class ScheduleInterviewForm(BaseModelForm):
         cleaned_data = super().clean() or {}
         interview_date = cleaned_data.get("interview_date")
         interview_time = cleaned_data.get("interview_time")
+        raw_interview_time = (self.data.get("interview_time") or "").strip()
         managers = cleaned_data.get("employee_id") or []
+
+        if instance.pk:
+            parsed_time = None
+            if raw_interview_time:
+                for fmt in (
+                    "%H:%M",
+                    "%I:%M %p",
+                    "%H:%M:%S",
+                    "%I:%M:%S %p",
+                    "%I:%M%p",
+                    "%H:%M:%S.%f",
+                ):
+                    try:
+                        parsed_time = datetime.strptime(raw_interview_time, fmt).time()
+                        break
+                    except ValueError:
+                        continue
+            cleaned_data["interview_time"] = parsed_time or instance.interview_time
+            interview_time = cleaned_data.get("interview_time")
+
         if not instance.pk and interview_date and interview_date < date.today():
             self.add_error("interview_date", _("Interview date cannot be in the past."))
 

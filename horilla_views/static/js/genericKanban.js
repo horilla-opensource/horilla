@@ -50,13 +50,22 @@ function groupSequenceGet(groupHead) {
 }
 
 function handleValidDrop(groupId, objectId, row) {
+	if (!groupId || !objectId) {
+		return;
+	}
 	if (groupId != window.candidateCurrentStage) {
 		var container = row.closest(".pipeline_item");
 		var array = container.find(".task-card");
+		if (!array.length) {
+			array = container.find("[data-instance-id]");
+		}
 
 		var values = [];
 		for (let i = 0; i < array.length; i++) {
 			values.push($(array[i]).attr("data-instance-id"));
+		}
+		if (!values.length) {
+			return;
 		}
 
 		$.ajax({
@@ -102,12 +111,18 @@ function handleValidDrop(groupId, objectId, row) {
 
 function handleSortableUpdate(event, ui, container) {
 	var array = container.find(".task-card");
-	var groupId = $(ui.item).data("group");
+	if (!array.length) {
+		array = container.find("[data-instance-id]");
+	}
+	var groupId = $(ui.item).closest(".pipeline_item").attr("data-group-id") || $(ui.item).data("group");
 
 	var values = [];
 	for (let i = 0; i < array.length; i++) {
 		values.push($(array[i]).attr("data-instance-id"));
 	};
+	if (!groupId || !values.length) {
+		return;
+	}
 
 	$.ajax({
 		type: "get",
@@ -270,7 +285,7 @@ function initializeKanbanSortable(sectionSelector, stageSelector) {
 			var nodeId = row.closest(stageSelector).attr("data-group-id");
 			var targetStageId = parseInt(nodeId);
 
-			if (isNaN(currentStage)) {
+			if (isNaN(targetStageId)) {
 				targetStageId = nodeId
 			}
 

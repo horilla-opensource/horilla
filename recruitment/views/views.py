@@ -2194,6 +2194,37 @@ def form_send_mail(request, cand_id=None):
     else:
         stage_id = None
 
+    HorillaMailTemplate.objects.get_or_create(
+        title="Candidate Portal Login",
+        defaults={
+            "body": (
+                "<div style=\"font-family: 'Segoe UI', Arial, sans-serif; background-color: #f4f6f9; padding: 24px;\">"
+                '<div style="max-width: 640px; margin: auto; background: #ffffff; border-radius: 12px; padding: 28px; '
+                'box-shadow: 0 4px 14px rgba(0,0,0,0.08); border: 1px solid #eceff3;">'
+                '<h2 style="margin: 0 0 18px 0; color: #1f2937; font-size: 22px;">Candidate Portal Login Details</h2>'
+                '<p style="font-size: 14px; color: #374151; line-height: 1.7; margin: 0 0 14px 0;">'
+                "Hi {{instance.get_full_name}},</p>"
+                '<p style="font-size: 14px; color: #374151; line-height: 1.7; margin: 0 0 16px 0;">'
+                "You can track your application status from the candidate portal using the credentials below.</p>"
+                '<div style="margin: 18px 0; padding: 16px; background: #f9fafb; border-left: 4px solid hsl(8, 77%, 56%); border-radius: 8px;">'
+                '<p style="margin: 0 0 8px 0; font-size: 14px; color: #111827;">'
+                "<strong>Portal Link:</strong> "
+                '<a href="{{ request.scheme }}://{{ request.get_host }}/recruitment/candidate-login/" target="_blank" '
+                'style="color: hsl(8, 77%, 56%); text-decoration: none;">'
+                "{{ request.scheme }}://{{ request.get_host }}/recruitment/candidate-login/"
+                "</a></p>"
+                '<p style="margin: 0 0 8px 0; font-size: 14px; color: #111827;"><strong>Username (Email):</strong> {{instance.email}}</p>'
+                '<p style="margin: 0; font-size: 14px; color: #111827;"><strong>Password (Mobile Number):</strong> {{instance.mobile}}</p>'
+                "</div>"
+                '<p style="font-size: 13px; color: #6b7280; margin: 0 0 18px 0;">'
+                "For security, please keep these credentials private.</p>"
+                '<hr style="border: none; border-top: 1px solid #e5e7eb; margin: 20px 0;">'
+                '<p style="font-size: 13px; color: #6b7280; margin: 0;">Regards,</p>'
+                '<p style="font-size: 13px; color: #111827; margin: 6px 0 0 0;"><strong>{{self.get_full_name}} | {{self.get_department}} | {{self.get_company}}</strong></p>'
+                "</div></div>"
+            )
+        },
+    )
     templates = HorillaMailTemplate.objects.all()
     return render(
         request,
@@ -2446,7 +2477,11 @@ def send_acknowledgement(request):
             # due to not having solid template we first need to pass the context
             template_bdy = template.Template(html)
             context = template.Context(
-                {"instance": candidate, "self": request.user.employee_get}
+                {
+                    "instance": candidate,
+                    "self": request.user.employee_get,
+                    "request": request,
+                }
             )
             render_bdy = template_bdy.render(context)
             attachments.append(
@@ -2459,7 +2494,11 @@ def send_acknowledgement(request):
 
         template_bdy = template.Template(bdy)
         context = template.Context(
-            {"instance": candidate, "self": request.user.employee_get}
+            {
+                "instance": candidate,
+                "self": request.user.employee_get,
+                "request": request,
+            }
         )
         render_bdy = template_bdy.render(context)
         to = candidate.email
@@ -3161,8 +3200,8 @@ def candidate_self_tracking_rating_option(request):
 
 def candidate_login(request):
     if request.method == "POST":
-        email = request.POST["email"]
-        mobile = request.POST["phone"]
+        email = request.POST.get("email", "").strip()
+        mobile = request.POST.get("phone", "").strip()
 
         backend = CandidateAuthenticationBackend()
         candidate = backend.authenticate(request, username=email, password=mobile)

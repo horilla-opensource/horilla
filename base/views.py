@@ -5764,6 +5764,8 @@ def history_field_settings(request):
             messages.success(request, _("Settings updated."))
             history_object.save()
 
+    if request.headers.get("HX-Request"):
+        return HttpResponse("")
     return redirect(general_settings)
 
 
