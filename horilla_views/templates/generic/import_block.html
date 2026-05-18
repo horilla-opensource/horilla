@@ -34,15 +34,11 @@
                 </label>
                 <input  id="resumeUpload{{ view_id }}" type="file" name="file" required="" />
                 <div class="d-inline float-end">
-                  <a href="{% static 'employee/work_info_import.xlsx' %}"
-                      class="oh-dropdown__link"
-                      id="workInfoImportButton"
-                      style="text-decoration:none; display:inline-block;"
-                      onclick="return confirm('Do you want to download the template?')"
-                      download>
-                      <ion-icon name="cloud-download-outline"
-                              style="font-size:20px; vertical-align: middle;"></ion-icon>
-                      <span>{% trans "Download Template" %}</span>
+                  <a onclick="
+                    $('#submitGetImportSheet{{ view_id }}').click();"
+                    style="text-decoration:none; display: inline-block;" class="oh-dropdown__link" hx-on:click="template_download(event)">
+                    <ion-icon name="cloud-download-outline" style="font-size:20px; vertical-align: middle;" role="img" class="md hydrated"></ion-icon>
+                    <span>Download Template</span>
                   </a>
                 </div>
               </div>
