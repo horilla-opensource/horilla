@@ -2400,7 +2400,13 @@ def get_interview_managers(request):
     form = ScheduleInterviewForm()
     candidate_obj = Candidate.find(cand_id) if cand_id else None
     if candidate_obj:
-        managers = candidate_obj.recruitment_id.recruitment_managers.all()
+        recruitment_managers = candidate_obj.recruitment_id.recruitment_managers.all()
+        stage_managers = (
+            candidate_obj.stage_id.stage_managers.all()
+            if candidate_obj.stage_id
+            else recruitment_managers.none()
+        )
+        managers = (recruitment_managers | stage_managers).distinct()
         form.fields["employee_id"].queryset = managers
     else:
         form.fields["employee_id"].queryset = form.fields["employee_id"].queryset.none()

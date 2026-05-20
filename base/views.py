@@ -7832,18 +7832,15 @@ def is_jwt_token_valid(auth_header):
 
 
 def protected_media(request, path):
-    public_pages = [
-        "/login",
-        "/forgot-password",
-        "/change-username",
-        "/change-password",
-        "/employee-reset-password",
-        "/recruitment/candidate-survey",
-        "/recruitment/open-recruitments",
-        "/recruitment/candidate-self-status-tracking",
-    ]
-
-    exempted_folders = ["base/icon/"]
+    # Media-path prefixes that are safe to serve without authentication.
+    # These are assets rendered on genuinely-public pages (login screen,
+    # open recruitments, candidate self-tracking) and contain no sensitive
+    # employee data. Do NOT add prefixes here without security review.
+    public_media_prefixes = (
+        "base/icon/",
+        "base/company/icon/",
+        "recruitment/candidate/profile/",
+    )
 
     # Prevent path traversal
     try:
@@ -7855,15 +7852,10 @@ def protected_media(request, path):
     if not os.path.exists(media_path) or not os.path.isfile(media_path):
         raise Http404("File not found")
 
-    referer_path = urlparse(request.META.get("HTTP_REFERER", "")).path
+    is_public_asset = any(path.startswith(prefix) for prefix in public_media_prefixes)
 
-    # Try Bearer token auth
-    jwt_user = is_jwt_token_valid(request.META.get("HTTP_AUTHORIZATION", ""))
-
-    # Access control logic
-    if referer_path not in public_pages and not any(
-        path.startswith(folder) for folder in exempted_folders
-    ):
+    if not is_public_asset:
+        jwt_user = is_jwt_token_valid(request.META.get("HTTP_AUTHORIZATION", ""))
         if not request.user.is_authenticated and not jwt_user:
             messages.error(
                 request,
