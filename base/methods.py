@@ -3,6 +3,7 @@ import calendar
 import json
 import os
 import random
+import re
 from datetime import date, datetime, time, timedelta
 
 import pandas as pd
@@ -124,6 +125,50 @@ CHART_CONFIG = {
     "gender_chart": {"app": "employee"},
     "department_chart": {"app": "base"},
 }
+
+# Tokens that must never resolve in a user-supplied mail-template body —
+# they would leak password hashes, session metadata, or full request state.
+_FORBIDDEN_TEMPLATE_ATTRS = ("password", "username", "META", "session", "_state")
+_FORBIDDEN_TEMPLATE_TAGS = ("debug", "load")
+
+
+def sanitize_mail_template_body(body):
+    """
+    Strip dangerous Django-template constructs from a user-supplied mail body.
+
+    Mail-preview endpoints render arbitrary user-supplied bodies through the
+    Django template engine, which exposes attribute traversal on any object
+    in the context (User.password, request.META, etc.). This function removes
+    variable expressions that reference forbidden attributes and removes
+    forbidden template tags. It does not aim to be a full Django-template
+    parser; it normalizes whitespace inside `{{ ... }}` / `{% ... %}` so
+    obvious bypasses like `{{ request . user . password }}` are also caught.
+    """
+    if not body:
+        return body
+
+    def _strip_variable(match):
+        # Normalize: remove all whitespace inside {{ ... }} so
+        # `{{ a . password }}` and `{{a.password|upper}}` both collapse to
+        # a single token we can inspect.
+        inner = re.sub(r"\s+", "", match.group(1))
+        # Split filters off: `a.password|upper` -> `a.password`
+        var_path = inner.split("|", 1)[0]
+        parts = var_path.split(".")
+        if any(part in _FORBIDDEN_TEMPLATE_ATTRS for part in parts):
+            return ""
+        return match.group(0)
+
+    def _strip_tag(match):
+        inner = match.group(1).strip()
+        tag_name = inner.split(None, 1)[0] if inner else ""
+        if tag_name in _FORBIDDEN_TEMPLATE_TAGS:
+            return ""
+        return match.group(0)
+
+    body = re.sub(r"\{\{(.*?)\}\}", _strip_variable, body, flags=re.DOTALL)
+    body = re.sub(r"\{%(.*?)%\}", _strip_tag, body, flags=re.DOTALL)
+    return body
 
 
 def users_count(self):

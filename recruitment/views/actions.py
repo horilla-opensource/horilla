@@ -16,6 +16,7 @@ from django.utils.translation import gettext as __
 from django.utils.translation import gettext_lazy as _
 from django.views.decorators.http import require_http_methods
 
+from base.methods import sanitize_mail_template_body
 from base.models import HorillaMailTemplate
 from employee.models import Employee
 from horilla.decorators import hx_request_required, login_required, permission_required
@@ -510,6 +511,10 @@ def get_mail_preview(request):
     if not body:
         return HttpResponse("No body provided", status=400)
 
+    # Strip template constructs that could leak password hashes or request
+    # metadata via attribute traversal in the Django template engine.
+    body = sanitize_mail_template_body(body)
+
     candidate_id = request.GET.get("candidate_id")
     candidate_ids = request.POST.getlist("candidates")  # 875
 
@@ -521,7 +526,8 @@ def get_mail_preview(request):
         if not candidate_obj:
             return HttpResponse("Candidate not found", status=404)
 
-    # Build context
+    # Build context — `request` is intentionally omitted to prevent
+    # attribute traversal to request.user.password / request.META.
     context = {
         "instance": candidate_obj,
         "model_instance": candidate_obj,
