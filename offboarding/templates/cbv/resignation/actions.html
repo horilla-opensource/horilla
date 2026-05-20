@@ -6,7 +6,11 @@
 </style>
 
 <div style="width: 100%" onclick="event.stopPropagation()">
-    <form action="{% url 'update-letter-status' %}">
+    <form
+        hx-get="{% url 'update-letter-status' %}"
+        hx-target="#listContainer"
+        hx-swap="innerHTML"
+    >
         {% if perms.offboarding.change_resignationletter %}
             <div class="oh-btn-group">
                 {% if instance.status != "approved" %}

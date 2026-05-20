@@ -5,9 +5,11 @@
 <div
     class="flex justify-between items-center bg-white py-3 px-5 border-b border-b-dark-50 fixed w-[calc(100%-76px)] z-40"
 >
-    {% if breadcrumbs %}
-        {% include "base/navbar_components/breadcrumbs_view.html" %}
-    {% endif %}
+    <div id="breadcrumbs-container">
+        {% if breadcrumbs %}
+            {% include "base/navbar_components/breadcrumbs_view.html" %}
+        {% endif %}
+    </div>
 
     <div id="reloadMessages">
         {% include "generic/messages.html" %}

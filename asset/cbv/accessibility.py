@@ -25,4 +25,7 @@ def create_asset_request_accessibility(
 ) -> bool:
     if request.user.has_perm("asset.add_assetrequest"):
         return True
+    # Allow employees to raise requests from their own profile asset tab.
+    if instance and getattr(instance, "employee_user_id", None) == request.user:
+        return True
     return False

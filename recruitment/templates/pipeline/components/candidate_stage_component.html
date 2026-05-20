@@ -99,7 +99,12 @@
             data-container="candidate" data-container-list="candidate" data-stage-id="{{stage.id}}"
             data-recruitment-id="{{rec.id}}" id="candidateContainer{{stage.id}}">
             {% for cand in candidates %}
-            <div onclick="window.location.href = '{% url 'candidate-view-individual' cand.id %}'"
+            <div onclick="
+                try {
+                    sessionStorage.setItem('candidateProfileBackUrl', window.location.pathname + window.location.search);
+                } catch (e) {}
+                window.location.href = `{% url 'candidate-view-individual' cand.id %}?next=${encodeURIComponent(window.location.pathname + window.location.search)}`;
+            "
                 class="oh-sticky-table__tr oh-table-config__tr candidate ui-droppable ui-sortable-handle cand change-cand "
                 data-candidate-id="{{cand.id}}"
                 data-drop="candidate"

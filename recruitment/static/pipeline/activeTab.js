@@ -1,20 +1,29 @@
 $(document).ready(function () {
-    var activeTab = localStorage.getItem('activeTabRecruitment')
-    if (activeTab != null) {
-      var tab  = $(`[data-target="${activeTab}"]`)
-      var tabContent = $(activeTab)
-      $(tab).attr('class', 'oh-tabs__tab oh-tabs__tab--active');
-      $(tabContent).attr('class', 'oh-tabs__content oh-tabs__content--active');
+    var activeTab = localStorage.getItem("activeTabRecruitment");
+    var tab = activeTab ? $(`[data-target="${activeTab}"]`).first() : $();
+    var tabContent = activeTab ? $(activeTab).first() : $();
+
+    // Fallback to first available recruitment tab when saved target is stale/missing.
+    if (!tab.length || !tabContent.length) {
+        tab = $(".oh-tabs__tab").first();
+        var firstTarget = tab.attr("data-target");
+        tabContent = firstTarget ? $(firstTarget).first() : $();
     }
-    else{
-      $('[data-target="#tab_1"]').attr('class', 'oh-tabs__tab oh-tabs__tab--active');
-      $('#tab_rec_1').attr('class', 'oh-tabs__content oh-tabs__content--active');
+
+    if (tab.length && tabContent.length) {
+        $(".oh-tabs__tab").removeClass("oh-tabs__tab--active");
+        $(".oh-tabs__content").removeClass("oh-tabs__content--active");
+        tab.addClass("oh-tabs__tab--active");
+        tabContent.addClass("oh-tabs__content--active");
     }
-    $('.oh-tabs__tab').click(function (e) {
-      var activeTab = $(this).attr('data-target');
-      localStorage.setItem('activeTabRecruitment',activeTab)
+
+    $(".oh-tabs__tab").click(function () {
+        var currentTarget = $(this).attr("data-target");
+        if (currentTarget) {
+            localStorage.setItem("activeTabRecruitment", currentTarget);
+        }
     });
-  });
+});
 
   $(document).ready(function () {
     $('.oh-tabs__tab').click(function (e) {

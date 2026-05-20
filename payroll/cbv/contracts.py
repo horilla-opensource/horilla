@@ -154,7 +154,10 @@ class ContractsNav(HorillaNavView):
         self.search_url = reverse("contract-filter")
         if self.request.user.has_perm("payroll.add_contract"):
             self.create_attrs = f"""
-                            href={reverse('contract-create')}
+                            href="#"
+                            hx-get="{reverse('contract-create')}"
+                            hx-target="#listContainer"
+                            hx-swap="innerHTML"
                             """
         self.actions = [
             {

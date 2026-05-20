@@ -5,7 +5,11 @@
 	}
 </style>
 <div class="col-span-12">
-	<form action="{% url 'payroll-settings' %}" method="post">
+	<form action="{% url 'payroll-settings' %}" method="post"
+		hx-post="{% url 'payroll-settings' %}"
+		hx-target="#settingsContainer"
+		hx-select="#settingsContainer"
+		hx-swap="outerHTML show:none">
 		{% csrf_token %}
 
 		<div class="flex align-center gap-2">

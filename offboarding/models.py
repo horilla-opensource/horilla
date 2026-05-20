@@ -2,12 +2,13 @@ import json
 from ast import literal_eval
 from collections.abc import Iterable
 from datetime import date, timedelta
+from urllib.parse import urlencode
 
 from django.apps import apps
 from django.db import models
 from django.db.models.signals import post_save
 from django.dispatch import receiver
-from django.urls import reverse_lazy
+from django.urls import reverse, reverse_lazy
 from django.utils.timesince import timesince
 from django.utils.translation import gettext_lazy as _
 
@@ -100,7 +101,14 @@ class OffboardingStage(HorillaModel):
         """
         This method is used to get delete url
         """
-        return f"{reverse_lazy('generic-delete')}?model=offboarding.OffboardingStage&pk={self.pk}"
+        query = urlencode(
+            {
+                "model": "offboarding.OffboardingStage",
+                "pk": str(self.pk),
+                "reload_target": "#applyFilter",
+            }
+        )
+        return f"{reverse('generic-delete')}?{query}"
 
     def get_update_url(self):
         """

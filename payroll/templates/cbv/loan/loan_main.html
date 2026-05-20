@@ -56,7 +56,21 @@
         });
     });
 
-
+    document.body.addEventListener("reloadPayrollLoanTabs", function () {
+        var applyFilterButton = document.getElementById("applyFilter");
+        if (applyFilterButton) {
+            applyFilterButton.click();
+        } else if (window.htmx) {
+            htmx.ajax("GET", "{% url 'loan-tab-list-view' %}" + (window.location.search || ""), {
+                target: "#listContainer",
+                swap: "innerHTML",
+            });
+        }
+        var msgButton = document.getElementById("reloadMessagesButton");
+        if (msgButton) {
+            msgButton.click();
+        }
+    });
 </script>
 <script src="{% static 'cbv/deleteFunc.js' %}"></script>
 

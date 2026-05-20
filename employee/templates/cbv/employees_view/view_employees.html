@@ -42,9 +42,9 @@
 
 </style>
 
-
-
+<div id="employeeListNavBar">
 <div hx-get="{% url "employees-nav" %}?{{request.GET.urlencode}}" hx-trigger="load">
+</div>
 </div>
 {% comment %} my_app/templates/my_app/generic/index.html {% endcomment %}
 
@@ -229,6 +229,70 @@
 
 <script src="{% static 'employee/importExport.js' %}"></script>
 <script src="{% static '/cbv/employee_view/actions.js' %}"></script>
+<script>
+  (function () {
+    function isEmployeeDetailPath() {
+      var path = window.location.pathname.replace(/\/$/, "");
+      return /\/employee\/employee-view\/\d+$/.test(path);
+    }
+    function isEmployeeEditPath() {
+      var path = window.location.pathname.replace(/\/$/, "");
+      return /\/employee\/employee-view-update\/\d+$/.test(path);
+    }
+    function getHtmxSwapTarget(e) {
+      if (!e || !e.detail) {
+        return null;
+      }
+      return e.detail.target || e.detail.elt || null;
+    }
+    function syncEmployeeListNavBar() {
+      var nav = document.getElementById("employeeListNavBar");
+      var list = document.getElementById("listContainer");
+      if (!nav || !list) {
+        return;
+      }
+      var hasProfile = !!list.querySelector(".reload-profile-view");
+      var hasEditForm = !!list.querySelector("#employee-update-form-root");
+      var hide =
+        hasProfile ||
+        hasEditForm ||
+        isEmployeeDetailPath() ||
+        isEmployeeEditPath();
+      if (hide) {
+        nav.style.display = "none";
+        var tagRow = nav.querySelector("#filterTagContainerSectionNav");
+        if (tagRow) {
+          tagRow.innerHTML = "";
+        }
+      } else {
+        nav.style.display = "";
+      }
+    }
+    function onListContainerHtmxEvent(e) {
+      var t = getHtmxSwapTarget(e);
+      if (t && t.id === "listContainer") {
+        syncEmployeeListNavBar();
+      }
+    }
+    document.addEventListener("DOMContentLoaded", syncEmployeeListNavBar);
+    document.body.addEventListener("htmx:afterSwap", onListContainerHtmxEvent);
+    document.body.addEventListener("htmx:afterSettle", onListContainerHtmxEvent);
+    document.body.addEventListener("htmx:afterRequest", function (e) {
+      var url = (e.detail && e.detail.xhr && e.detail.xhr.responseURL) || "";
+      if (
+        e.detail &&
+        e.detail.successful &&
+        (url.indexOf("/employee/profile/employee/employee-view/") !== -1 ||
+          url.indexOf("/employee/employee-view-update/") !== -1)
+      ) {
+        setTimeout(syncEmployeeListNavBar, 0);
+      }
+    });
+    window.addEventListener("popstate", function () {
+      setTimeout(syncEmployeeListNavBar, 0);
+    });
+  })();
+</script>
 <script>
   function getCSRFToken() {
     return document.querySelector('meta[name="csrf-token"]').getAttribute('content');

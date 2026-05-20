@@ -3,7 +3,8 @@ This page handles the cbv methods for document request page
 """
 
 import os
-from typing import Any
+from typing import Any, Optional
+from urllib.parse import urlparse
 
 from django import forms
 from django.contrib import messages
@@ -11,6 +12,7 @@ from django.http import HttpResponse
 from django.shortcuts import get_object_or_404
 from django.urls import reverse, reverse_lazy
 from django.utils.decorators import method_decorator
+from django.utils.html import format_html
 from django.utils.translation import gettext_lazy as _
 
 from base.methods import choosesubordinates, is_reportingmanager
@@ -42,6 +44,36 @@ BLOCKED_EXTENSIONS = {
     ".sh",
     ".exe",
 }
+
+
+def htmx_refresh_document_request_container(request) -> Optional[HttpResponse]:
+    """
+    For HTMX requests originating from the document request list page, return a
+    fragment that refetches the list into #view-container and refreshes toasts,
+    avoiding HX-Redirect full page reloads.
+    """
+    if request.headers.get("HX-Request") != "true":
+        return None
+    referer = request.META.get("HTTP_REFERER", "")
+    if "/employee/document-request-view" not in referer:
+        return None
+    qs = urlparse(referer).query
+    base = reverse("document-request-filter-view")
+    url = f"{base}?{qs}" if qs else base
+    inner = format_html(
+        '<span hx-get="{}" hx-target="#view-container" hx-swap="innerHTML" '
+        'hx-trigger="load"></span>',
+        url,
+    )
+    script = (
+        "<script>"
+        "document.querySelectorAll('.oh-modal--show').forEach(function (m) {"
+        "m.classList.remove('oh-modal--show');"
+        "});"
+        "document.getElementById('reloadMessagesButton')?.click();"
+        "</script>"
+    )
+    return HttpResponse(str(inner) + script)
 
 
 @method_decorator(login_required, name="dispatch")
@@ -98,6 +130,9 @@ class DocumentRequestCreateForm(HorillaFormView):
                     icon="chatbox-ellipses",
                 )
                 form.save()
+            refreshed = htmx_refresh_document_request_container(self.request)
+            if refreshed is not None:
+                return refreshed
             return HorillaRedirect(self.request)
 
         return super().form_valid(form)
@@ -128,10 +163,16 @@ class DocumentCreateForm(HorillaFormView):
                 messages.error(
                     self.request, _("File type %(ext)s is not allowed.") % {"ext": ext}
                 )
+                refreshed = htmx_refresh_document_request_container(self.request)
+                if refreshed is not None:
+                    return refreshed
                 return HorillaRedirect(self.request)
 
         form.save()
         messages.success(self.request, _("Document Uploaded Successfully"))
+        refreshed = htmx_refresh_document_request_container(self.request)
+        if refreshed is not None:
+            return refreshed
         return HorillaRedirect(self.request)
 
 
@@ -160,6 +201,9 @@ class DocumentRejectCbvForm(HorillaFormView):
                 messages.success(self.request, _("Document request rejected"))
             else:
                 messages.error(self.request, _("No document uploaded"))
+            refreshed = htmx_refresh_document_request_container(self.request)
+            if refreshed is not None:
+                return refreshed
             return HorillaRedirect(self.request)
 
         return super().form_valid(form)
@@ -197,6 +241,9 @@ class DocumentUploadForm(HorillaFormView):
                 messages.error(
                     self.request, _("File type %(ext)s is not allowed.") % {"ext": ext}
                 )
+                refreshed = htmx_refresh_document_request_container(self.request)
+                if refreshed is not None:
+                    return refreshed
                 return HorillaRedirect(self.request)
 
         if form.is_valid():
@@ -221,6 +268,9 @@ class DocumentUploadForm(HorillaFormView):
                     pass
             form.instance.status = "requested"
             form.save()
+            refreshed = htmx_refresh_document_request_container(self.request)
+            if refreshed is not None:
+                return refreshed
             return HorillaRedirect(self.request)
 
         return super().form_valid(form)
@@ -321,7 +371,8 @@ class DocumentRequestPipelineView(Pipeline):
                         class="oh-dropdown__link oh-dropdown__link"
                         hx-confirm="Are you sure you want to delete this document request?"
                         hx-post="{get_delete_url}"
-                        hx-target="body"
+                        hx-target="#view-container"
+                        hx-swap="innerHTML"
                     """,
                 },
             ],

@@ -126,23 +126,36 @@
       cancelButtonText: "Close"
     }).then((result) => {
       if (result.isConfirmed) {
-        // Access the selected value from the select box
         if (approve) {
-          var selectedOffboarding = document.getElementById('offboardingSelect').value;
-          target.siblings("input[name=offboarding_id]").val(selectedOffboarding)
+          var offboardingSelectEl = document.getElementById("offboardingSelect");
+          if (offboardingSelectEl) {
+            target.siblings("input[name=offboarding_id]").val(offboardingSelectEl.value);
+          }
         }
-        target.click();
-
-        if (event.target.tagName.toLowerCase() === 'form') {
-          event.target.submit();
-        } else if (event.target.tagName.toLowerCase() === 'a') {
-          window.location.href = event.target.href;
+        var formEl = target.closest("form").get(0);
+        if (formEl && typeof htmx !== "undefined") {
+          htmx.trigger(formEl, "submit");
+        } else if (formEl && formEl.requestSubmit) {
+          formEl.requestSubmit();
+        } else if (formEl) {
+          formEl.submit();
         }
-      } else {
-        // Handle cancel
       }
     });
   }
+
+  /* Delete / approve / reject swap #listContainer from the server; refresh flash messages after. */
+  document.body.addEventListener("htmx:afterSwap", function (ev) {
+    var lc = document.getElementById("listContainer");
+    var t = ev.detail && ev.detail.target;
+    if (!lc || !t) return;
+    if (t !== lc && !lc.contains(t)) return;
+    document.querySelectorAll(".oh-modal--show").forEach(function (el) {
+      el.classList.remove("oh-modal--show");
+    });
+    var mbtn = document.getElementById("reloadMessagesButton");
+    if (mbtn) mbtn.click();
+  });
   </script>
 
 {% endblock %}

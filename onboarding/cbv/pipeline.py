@@ -130,6 +130,7 @@ class RecruitmentTabView(HorillaTabView):
             tab["url"] = url
 
             tab["badge_label"] = _("Stages")
+            tab["badge"] = rec.onboarding_stage.filter(is_active=True).count()
             tab["actions"] = []
             if self.request.user.has_perm(
                 "onboarding.add_onboardingstage"
@@ -180,7 +181,7 @@ class RecruitmentTabView(HorillaTabView):
                         "attrs": f"""
                                         data-toggle="oh-modal-toggle"
                                         data-target="#deleteConfirmation"
-                                        hx-get="{reverse('generic-delete')}?model=recruitment.Recruitment&pk={rec.pk}"
+                                        hx-get="{reverse('generic-delete')}?model=recruitment.Recruitment&pk={rec.pk}&reload_target=%23applyFilter"
                                         hx-target="#deleteConfirmationBody"
                                         style="cursor: pointer;"
                                         """,
@@ -202,7 +203,7 @@ def generic_delete_path(self):
     """
     Generic delete
     """
-    return f"{reverse('generic-delete')}?model=recruitment.Stage&pk={self.pk}"
+    return f"{reverse('generic-delete')}?model=onboarding.OnboardingStage&pk={self.pk}"
 
 
 def bulk_send_mail_path(self):

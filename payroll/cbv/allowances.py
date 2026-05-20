@@ -176,7 +176,10 @@ class AllowanceNavView(HorillaNavView):
 
         if self.request.user.has_perm("payroll.add_allowance"):
             self.create_attrs = f"""
-                                href="{reverse_lazy('create-allowance')}"
+                                href="#"
+                                hx-get="{reverse_lazy('create-allowance')}"
+                                hx-target="#listContainer"
+                                hx-swap="innerHTML"
                                 """
 
         self.view_types = [
@@ -302,7 +305,9 @@ class AllowancesCardView(HorillaCardView):
             "action": _("Edit"),
             "attrs": """
             class="oh-dropdown__link"
-            onclick="window.location.href='{get_update_url}' "
+            hx-get="{get_update_url}"
+            hx-target="#listContainer"
+            hx-swap="innerHTML"
             """,
         },
         {

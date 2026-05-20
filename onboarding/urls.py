@@ -194,6 +194,11 @@ urlpatterns = [
     #     name="add-to-rejected-candidates",
     # ),
     path(
+        "undo-rejected-candidate/<int:candidate_id>/",
+        views.undo_rejected_candidate,
+        name="undo-rejected-candidate",
+    ),
+    path(
         "candidate-select-filter-onboarding/",
         views.candidate_select_filter,
         name="candidate-select-filter-onboarding",

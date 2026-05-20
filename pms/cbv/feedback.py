@@ -102,9 +102,12 @@ class FeedbackListView(HorillaListView):
     ]
 
     row_attrs = """
-                onclick="
-                event.stopPropagation();
-                window.location.href='{get_individual_feedback}'"
+                hx-get="{get_individual_feedback}"
+                hx-target="#listContainer"
+                hx-select="#feedbackDetailContainer"
+                hx-swap="innerHTML"
+                hx-push-url="true"
+                style="cursor:pointer;"
                 """
 
     row_status_indications = [
@@ -402,7 +405,11 @@ class FeedbacknavView(HorillaNavView):
             self.request
         ):
             self.create_attrs = """
-                 href="/pms/feedback-creation"
+                 href="#"
+                 hx-get="/pms/feedback-creation/"
+                 hx-target="#listContainer"
+                 hx-swap="innerHTML"
+                 hx-push-url="/pms/feedback-creation/"
              """
             self.actions.append(
                 {

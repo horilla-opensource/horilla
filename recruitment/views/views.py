@@ -1936,6 +1936,19 @@ def candidate_view_individual(request, cand_id, **kwargs):
     )
 
 
+def _query_param_truthy(get_dict, key):
+    val = get_dict.get(key)
+    if val is None:
+        return False
+    return str(val).lower() in ("true", "1", "yes")
+
+
+def _onboarding_container_request(request):
+    return request.GET.get("container") == "true" and _query_param_truthy(
+        request.GET, "onboarding"
+    )
+
+
 @login_required
 @manager_can_enter(
     perms=["recruitment.change_candidate", "onboarding.change_onboardingcandidate"]
@@ -1974,7 +1987,7 @@ def candidate_update(request, cand_id, **kwargs):
                                 stage_type="initial"
                             ).first()
                         )
-                if request.GET.get("onboarding") == "True":
+                if _query_param_truthy(request.GET, "onboarding"):
                     candidate_obj.hired = True
                     path = "/onboarding/candidates-view"
                 candidate_obj.save()
@@ -1985,15 +1998,34 @@ def candidate_update(request, cand_id, **kwargs):
                         close_modal_script = (
                             "$('#objectCreateModal').removeClass('oh-modal--show');"
                         )
-                    container_reload_script = (
-                        "$('#candidateMainContainer').html("
-                        '\'<div hx-get="/recruitment/nav-candidate/?" hx-trigger="load"></div>\' + '
-                        '\'<div class="oh-checkpoint-badge mb-2" id="selectedInstances" data-ids="[]" data-clicked="" style="display: none"></div>\' + '
-                        '\'<div class="oh-wrapper" id="listContainer"><div class="animated-background"></div></div>\''
-                        ");"
-                        "htmx.process($('#candidateMainContainer')[0]);"
-                    )
-                    if request.GET.get("container") != "true":
+                    if request.GET.get("container") == "true":
+                        if _query_param_truthy(request.GET, "onboarding"):
+                            _onboarding_candidates_url = reverse("candidates-view")
+                            container_reload_script = (
+                                "if (window.history && history.pushState) { "
+                                f"history.pushState({{}}, '', '{_onboarding_candidates_url}'); "
+                                "}"
+                                "document.body.classList.remove('onboarding-list-hide-toolbar');"
+                                "var nav = document.getElementById('onboardingCandidatesNavBar');"
+                                "if (nav) { nav.style.display = ''; }"
+                                "var tagRow = nav && nav.querySelector('#filterTagContainerSectionNav');"
+                                "if (tagRow) { tagRow.innerHTML = ''; }"
+                                "var list = document.getElementById('listContainer');"
+                                "if (list) { list.innerHTML = '<div class=\"animated-background\"></div>'; }"
+                                "setTimeout(function () { "
+                                "var b = document.getElementById('applyFilter'); "
+                                "if (b) { b.click(); } }, 100);"
+                            )
+                        else:
+                            container_reload_script = (
+                                "$('#candidateMainContainer').html("
+                                '\'<div hx-get="/recruitment/nav-candidate/?" hx-trigger="load"></div>\' + '
+                                '\'<div class="oh-checkpoint-badge mb-2" id="selectedInstances" data-ids="[]" data-clicked="" style="display: none"></div>\' + '
+                                '\'<div class="oh-wrapper" id="listContainer"><div class="animated-background"></div></div>\''
+                                ");"
+                                "htmx.process($('#candidateMainContainer')[0]);"
+                            )
+                    else:
                         container_reload_script = "$('#applyFilter').click();"
                     return HttpResponse(
                         "<script>"
@@ -2003,7 +2035,15 @@ def candidate_update(request, cand_id, **kwargs):
                         + "</script>"
                     )
                 return redirect(path)
-        return render(request, template_name, {"form": form})
+        onboarding_container_mode = _onboarding_container_request(request)
+        return render(
+            request,
+            template_name,
+            {
+                "form": form,
+                "onboarding_container_mode": onboarding_container_mode,
+            },
+        )
     except (Candidate.DoesNotExist, OverflowError):
         messages.error(request, _("Candidate Does not exists.."))
     return HorillaRedirect(request)
@@ -2154,6 +2194,37 @@ def form_send_mail(request, cand_id=None):
     else:
         stage_id = None
 
+    HorillaMailTemplate.objects.get_or_create(
+        title="Candidate Portal Login",
+        defaults={
+            "body": (
+                "<div style=\"font-family: 'Segoe UI', Arial, sans-serif; background-color: #f4f6f9; padding: 24px;\">"
+                '<div style="max-width: 640px; margin: auto; background: #ffffff; border-radius: 12px; padding: 28px; '
+                'box-shadow: 0 4px 14px rgba(0,0,0,0.08); border: 1px solid #eceff3;">'
+                '<h2 style="margin: 0 0 18px 0; color: #1f2937; font-size: 22px;">Candidate Portal Login Details</h2>'
+                '<p style="font-size: 14px; color: #374151; line-height: 1.7; margin: 0 0 14px 0;">'
+                "Hi {{instance.get_full_name}},</p>"
+                '<p style="font-size: 14px; color: #374151; line-height: 1.7; margin: 0 0 16px 0;">'
+                "You can track your application status from the candidate portal using the credentials below.</p>"
+                '<div style="margin: 18px 0; padding: 16px; background: #f9fafb; border-left: 4px solid hsl(8, 77%, 56%); border-radius: 8px;">'
+                '<p style="margin: 0 0 8px 0; font-size: 14px; color: #111827;">'
+                "<strong>Portal Link:</strong> "
+                '<a href="{{ request.scheme }}://{{ request.get_host }}/recruitment/candidate-login/" target="_blank" '
+                'style="color: hsl(8, 77%, 56%); text-decoration: none;">'
+                "{{ request.scheme }}://{{ request.get_host }}/recruitment/candidate-login/"
+                "</a></p>"
+                '<p style="margin: 0 0 8px 0; font-size: 14px; color: #111827;"><strong>Username (Email):</strong> {{instance.email}}</p>'
+                '<p style="margin: 0; font-size: 14px; color: #111827;"><strong>Password (Mobile Number):</strong> {{instance.mobile}}</p>'
+                "</div>"
+                '<p style="font-size: 13px; color: #6b7280; margin: 0 0 18px 0;">'
+                "For security, please keep these credentials private.</p>"
+                '<hr style="border: none; border-top: 1px solid #e5e7eb; margin: 20px 0;">'
+                '<p style="font-size: 13px; color: #6b7280; margin: 0;">Regards,</p>'
+                '<p style="font-size: 13px; color: #111827; margin: 6px 0 0 0;"><strong>{{self.get_full_name}} | {{self.get_department}} | {{self.get_company}}</strong></p>'
+                "</div></div>"
+            )
+        },
+    )
     templates = HorillaMailTemplate.objects.all()
     return render(
         request,
@@ -2329,7 +2400,13 @@ def get_interview_managers(request):
     form = ScheduleInterviewForm()
     candidate_obj = Candidate.find(cand_id) if cand_id else None
     if candidate_obj:
-        managers = candidate_obj.recruitment_id.recruitment_managers.all()
+        recruitment_managers = candidate_obj.recruitment_id.recruitment_managers.all()
+        stage_managers = (
+            candidate_obj.stage_id.stage_managers.all()
+            if candidate_obj.stage_id
+            else recruitment_managers.none()
+        )
+        managers = (recruitment_managers | stage_managers).distinct()
         form.fields["employee_id"].queryset = managers
     else:
         form.fields["employee_id"].queryset = form.fields["employee_id"].queryset.none()
@@ -2406,7 +2483,11 @@ def send_acknowledgement(request):
             # due to not having solid template we first need to pass the context
             template_bdy = template.Template(html)
             context = template.Context(
-                {"instance": candidate, "self": request.user.employee_get}
+                {
+                    "instance": candidate,
+                    "self": request.user.employee_get,
+                    "request": request,
+                }
             )
             render_bdy = template_bdy.render(context)
             attachments.append(
@@ -2419,7 +2500,11 @@ def send_acknowledgement(request):
 
         template_bdy = template.Template(bdy)
         context = template.Context(
-            {"instance": candidate, "self": request.user.employee_get}
+            {
+                "instance": candidate,
+                "self": request.user.employee_get,
+                "request": request,
+            }
         )
         render_bdy = template_bdy.render(context)
         to = candidate.email
@@ -3121,8 +3206,8 @@ def candidate_self_tracking_rating_option(request):
 
 def candidate_login(request):
     if request.method == "POST":
-        email = request.POST["email"]
-        mobile = request.POST["phone"]
+        email = request.POST.get("email", "").strip()
+        mobile = request.POST.get("phone", "").strip()
 
         backend = CandidateAuthenticationBackend()
         candidate = backend.authenticate(request, username=email, password=mobile)

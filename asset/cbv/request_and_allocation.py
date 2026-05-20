@@ -269,14 +269,34 @@ class RequestAndAllocationTab(HorillaTabView):
 
     def __init__(self, **kwargs: Any) -> None:
         super().__init__(**kwargs)
+        employee = self.request.user.employee_get
+        asset_count = (
+            AssetAssignment.objects.filter(assigned_to_employee_id=employee)
+            .exclude(return_status__isnull=False)
+            .count()
+        )
+        request_qs = (
+            filtersubordinates(
+                request=self.request,
+                perm="asset.view_assetrequest",
+                queryset=AssetRequest.objects.all(),
+                field="requested_employee_id",
+            )
+            | AssetRequest.objects.filter(requested_employee_id=employee)
+        ).distinct()
+        request_count = request_qs.count()
+        allocation_count = AssetAssignment.objects.count()
+
         self.tabs = [
             {
                 "title": _("Asset"),
                 "url": f"{reverse('list-asset')}",
+                "badge": asset_count,
             },
             {
                 "title": _("Asset Request"),
                 "url": f"{reverse('list-asset-request')}",
+                "badge": request_count,
                 "actions": [
                     {
                         "action": _("Create Request"),
@@ -296,6 +316,7 @@ class RequestAndAllocationTab(HorillaTabView):
                 {
                     "title": _("Asset Allocation"),
                     "url": f"{reverse('list-asset-allocation')}",
+                    "badge": allocation_count,
                     "actions": [
                         {
                             "action": _("Create Allocation"),
@@ -635,5 +656,5 @@ class AssetApproveFormView(HorillaFormView):
                 &asset_request_status={asset_request.asset_request_status}",
                 icon="bag-check",
             )
-            return HorillaRedirect(self.request)
+            return self.HttpResponse(targets_to_reload=["#applyFilter"])
         return super().form_valid(form)

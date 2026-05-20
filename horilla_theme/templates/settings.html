@@ -11,7 +11,12 @@
 
 <div class="grid grid-cols-12 gap-4 h-full pe-2">
 	<!-- Left Column: 6/12 -->
-	<div class="col-span-12 lg:col-span-3 border-r border-dark-50 pe-4">
+	<div class="col-span-12 lg:col-span-3 border-r border-dark-50 pe-4"
+		hx-boost="true"
+		hx-target="#settingsContainer"
+		hx-select="#settingsContainer"
+		hx-swap="outerHTML show:none"
+		hx-push-url="true">
 		<div class="bg-white rounded-md shadow-card p-3 h-full">
 			<div class="accordion-wrapper space-y-2">
 				<!-- Accordion Item -->
@@ -699,7 +704,7 @@
 	</div>
 
 	<!-- Right Column: 6/12 -->
-	<div class="col-span-12 lg:col-span-9">
+	<div class="col-span-12 lg:col-span-9" id="settingsContainer">
 		<div class="bg-white rounded-md shadow-card p-3">
 			<div
 				class="h-[calc(100vh_-_190px)] overflow-hidden overflow-y-auto overflow-x-auto"
@@ -748,6 +753,106 @@
 			$panel.removeClass("max-h-0").addClass("max-h-[9999px]");
 			$button.find(".icon").text("-");
 		}
+	});
+</script>
+<script>
+	function reloadSettingsContainer() {
+		if (typeof htmx === "undefined") return;
+		htmx.ajax("GET", window.location.pathname + window.location.search, {
+			target: "#settingsContainer",
+			select: "#settingsContainer",
+			swap: "outerHTML show:none",
+		});
+		var msgBtn = document.getElementById("reloadMessagesButton");
+		if (msgBtn) msgBtn.click();
+	}
+
+	function normalizePath(path) {
+		if (!path) return "";
+		if (typeof path !== "string") return "";
+		return path.replace(/\/+$/, "") || "/";
+	}
+
+	function enhanceSettingsForms() {
+		if (typeof htmx === "undefined") return;
+		var settingsContainer = document.getElementById("settingsContainer");
+		if (!settingsContainer) return;
+		settingsContainer.querySelectorAll("form").forEach(function (form) {
+			if (form.getAttribute("data-settings-native") === "true") return;
+			var method = (form.getAttribute("method") || "GET").toUpperCase();
+			if (method !== "POST") return;
+			if (form.hasAttribute("hx-get") || form.hasAttribute("hx-put") || form.hasAttribute("hx-patch") || form.hasAttribute("hx-delete")) return;
+			if (!form.hasAttribute("hx-post")) {
+				form.setAttribute("hx-post", form.getAttribute("action") || window.location.href);
+			}
+			if (!form.hasAttribute("hx-target")) form.setAttribute("hx-target", "#settingsContainer");
+			if (!form.hasAttribute("hx-select")) form.setAttribute("hx-select", "#settingsContainer");
+			if (!form.hasAttribute("hx-swap")) form.setAttribute("hx-swap", "outerHTML show:none");
+		});
+	}
+
+	function activateSettingsMenu(selectedHref) {
+		const currentPath = normalizePath(location.pathname);
+		const links = $(".accordion-panel a[href]");
+		links.removeClass("text-primary-600");
+		const desiredPath = normalizePath(selectedHref) || currentPath;
+		let active = links.filter(function () {
+			const href = $(this).attr("href") || "";
+			const hrefPath = normalizePath(href.split("?")[0]);
+			return hrefPath === desiredPath;
+		}).first();
+		if (!active.length) {
+			active = links.filter(function () {
+				const href = $(this).attr("href") || "";
+				const hrefPath = normalizePath(href.split("?")[0]);
+				return hrefPath === currentPath;
+			}).first();
+		}
+		if (active.length) {
+			active.addClass("text-primary-600");
+			const panel = active.closest(".accordion-panel");
+			if (panel.length) {
+				panel.removeClass("max-h-0").addClass("max-h-[9999px]");
+				panel.prev(".accordion-btn-stng").find(".icon").text("-");
+			}
+		}
+	}
+	$(document).ready(function () {
+		activateSettingsMenu();
+		enhanceSettingsForms();
+	});
+	document.body.addEventListener("click", function (ev) {
+		const link = ev.target && ev.target.closest(".accordion-panel a[href]");
+		if (!link) return;
+		activateSettingsMenu(link.getAttribute("href"));
+	});
+	document.body.addEventListener(
+		"submit",
+		function (ev) {
+			var form = ev.target;
+			var settingsContainer = document.getElementById("settingsContainer");
+			if (!form || !settingsContainer || !settingsContainer.contains(form)) return;
+			if (form.getAttribute("data-settings-native") === "true") return;
+			if (typeof htmx === "undefined") return;
+			var method = (form.getAttribute("method") || "GET").toUpperCase();
+			if (method !== "POST") return;
+			ev.preventDefault();
+			var action = form.getAttribute("action") || window.location.href;
+			htmx.ajax(method, action, {
+				source: form,
+				target: "#settingsContainer",
+				swap: "none",
+			});
+			setTimeout(reloadSettingsContainer, 150);
+		},
+		true
+	);
+	document.body.addEventListener("htmx:afterSwap", function (ev) {
+		const target = ev.detail && ev.detail.target;
+		const settingsContainer = document.getElementById("settingsContainer");
+		if (!target || !settingsContainer || target !== settingsContainer) return;
+		activateSettingsMenu();
+		enhanceSettingsForms();
 	});
 </script>
 

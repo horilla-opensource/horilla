@@ -1,0 +1,64 @@
+{% load i18n %}
+
+{% if form.errors %}
+  <div class="oh-wrapper">
+    <div class="oh-alert-container">
+      {% for error in form.non_field_errors %}
+        <div class="oh-alert oh-alert--animated oh-alert--danger">{{ error }}</div>
+      {% endfor %}
+    </div>
+  </div>
+{% endif %}
+
+<div class="oh-wrapper d-flex justify-content-center">
+  <div class="oh-onboarding-card w-100" style="max-width: 980px;">
+    <form
+      {% if is_htmx %}
+        hx-post="{{ post_url }}"
+        hx-target="#listContainer"
+        hx-swap="innerHTML"
+      {% else %}
+        method="post"
+        action="{{ post_url }}"
+      {% endif %}
+      enctype="multipart/form-data"
+    >
+      {% csrf_token %}
+
+      <div class="oh-onboarding-card__address-group">
+        <h2 class="oh-onboarding-card__section-title">{{ title }}</h2>
+
+        <div class="row">
+          {% for field in form %}
+            <div class="col-sm-12 col-md-12 col-lg-6">
+              <div class="oh-input-group">
+                <label class="oh-label" for="{{ field.id_for_label }}">{{ field.label }}</label>
+                {{ field }}
+                {{ field.errors }}
+              </div>
+            </div>
+          {% endfor %}
+        </div>
+
+        <div class="d-flex justify-content-between mt-3">
+          {% if is_htmx %}
+            <button
+              type="button"
+              class="oh-btn oh-btn--light-bkg"
+              hx-get="{% url 'leave-type-list' %}?{{ request.GET.urlencode }}"
+              hx-target="#listContainer"
+              hx-swap="innerHTML"
+            >
+              {% trans "Back" %}
+            </button>
+          {% else %}
+            <a class="oh-btn oh-btn--light-bkg" href="{% url 'type-view' %}">{% trans "Back" %}</a>
+          {% endif %}
+          <button type="submit" class="oh-btn oh-btn--secondary oh-btn--shadow">
+            {% trans "Save" %}
+          </button>
+        </div>
+      </div>
+    </form>
+  </div>
+</div>

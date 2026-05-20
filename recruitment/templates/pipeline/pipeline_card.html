@@ -114,7 +114,12 @@
           style="cursor: pointer;overflow: visible;"
           data-candidate = "{{cand.name}}"
           data-job-position ="{{cand.job_position_id}}"
-          onclick="window.location.href = `{% url 'candidate-view-individual' cand.id %}`"
+          onclick="
+            try {
+              sessionStorage.setItem('candidateProfileBackUrl', window.location.pathname + window.location.search);
+            } catch (e) {}
+            window.location.href = `{% url 'candidate-view-individual' cand.id %}?next=${encodeURIComponent(window.location.pathname + window.location.search)}`;
+          "
         >
           <div class="oh-kanban__card-head align-items-baseline pb-0" {% if cand.is_offer_rejected %}
           style="border-left: solid orangered;"

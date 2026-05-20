@@ -28,7 +28,6 @@ from employee.cbv.employees import EmployeeCard, EmployeeNav, EmployeesList
 from employee.filters import EmployeeFilter
 from employee.models import Employee
 from horilla.filters import HorillaFilterSet
-from horilla.http.response import HorillaRedirect
 from horilla_views.cbv_methods import (
     hx_request_required,
     login_required,
@@ -181,6 +180,16 @@ class AttendancesTabView(HorillaTabView):
                 "url": f"{reverse('validated-attendance-tab')}",
             },
         ]
+
+    def get_context_data(self, **kwargs: Any):
+        """
+        Populate tab badges with list counts so they show before each tab loads.
+        """
+        context = super().get_context_data(**kwargs)
+        counts = attendance_tabs_badge_counts(self.request)
+        for idx, tab in enumerate(self.tabs):
+            tab["badge"] = counts[idx] if idx < len(counts) else 0
+        return context
 
 
 @method_decorator(login_required, name="dispatch")
@@ -417,6 +426,29 @@ class ValidatedAttendancesList(AttendancesListView):
                 """
 
 
+def _badge_count_from_attendance_list_view(request, view_cls):
+    """
+    Use the same queryset rules as each tab's HorillaListView (filters, subordinates).
+    """
+    view = view_cls()
+    view.request = request
+    view.args = ()
+    view.kwargs = {}
+    view.queryset = None
+    return view.get_queryset().count()
+
+
+def attendance_tabs_badge_counts(request):
+    """
+    Badge order matches AttendancesTabView.tabs: validate, OT, validated.
+    """
+    return [
+        _badge_count_from_attendance_list_view(request, ValidateAttendancesList),
+        _badge_count_from_attendance_list_view(request, OTAttendancesList),
+        _badge_count_from_attendance_list_view(request, ValidatedAttendancesList),
+    ]
+
+
 @method_decorator(login_required, name="dispatch")
 @method_decorator(manager_can_enter("attendance.view_attendance"), name="dispatch")
 class GenericAttendancesDetailView(HorillaDetailedView):
@@ -509,7 +541,9 @@ class AttendancesFormView(HorillaFormView):
             message = _("Attendance Added")
             form.save()
             messages.success(self.request, message)
-            return self.HttpResponse("<script>window.location.reload()</script>")
+            return self.HttpResponse(
+                script="if(typeof refreshAttendanceListContainer==='function'){refreshAttendanceListContainer();}"
+            )
         return super().form_valid(form)
 
 
@@ -537,7 +571,9 @@ class AttendanceUpdateFormView(HorillaFormView):
             message = _("Attandance Updated")
             form.save()
             messages.success(self.request, message)
-            return HorillaRedirect(self.request)
+            return self.HttpResponse(
+                script="if(typeof refreshAttendanceListContainer==='function'){refreshAttendanceListContainer();}"
+            )
         return super().form_valid(form)
 
 

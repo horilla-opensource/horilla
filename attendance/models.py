@@ -935,6 +935,7 @@ class Attendance(HorillaModel):
 
         if (
             self.attendance_clock_out_date
+            and self.attendance_clock_in_date
             and self.attendance_clock_out_date < self.attendance_clock_in_date
         ):
             raise ValidationError(

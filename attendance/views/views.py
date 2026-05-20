@@ -456,6 +456,21 @@ def attendance_update(request, obj_id):
     )
 
 
+def attendance_view_redirect(request):
+    """
+    Full page redirect for normal navigation; for HTMX requests (attendance-view),
+    trigger a client-side refresh of the list container without reloading the page.
+    """
+    if request.META.get("HTTP_HX_REQUEST"):
+        response = HttpResponse("", status=200)
+        # Fire on document body so handlers run even if the initiating node is swapped/removed (hx-swap=none).
+        response["HX-Trigger"] = json.dumps(
+            {"reloadAttendanceView": {"target": "body"}}
+        )
+        return response
+    return HorillaRedirect(request)
+
+
 @login_required
 @permission_required("attendance.delete_attendance")
 @require_http_methods(["POST"])
@@ -501,7 +516,7 @@ def attendance_delete(request, obj_id):
             )
     except (Attendance.DoesNotExist, OverflowError):
         messages.error(request, _("Attendance Does not exists.."))
-    return HorillaRedirect(request)
+    return attendance_view_redirect(request)
 
 
 @login_required
@@ -1426,7 +1441,7 @@ def validate_this_attendance(request, obj_id):
         if not request.user.is_superuser:
             if attendance.employee_id.id == request.user.employee_get.id:
                 messages.error(request, _("You cannot validate your own attendance."))
-                return HorillaRedirect(request)
+                return attendance_view_redirect(request)
         attendance.attendance_validated = True
         # Recalculate worked hours from attendance activities before validation
         # to ensure Hours Account reflects actual worked time.
@@ -1463,7 +1478,7 @@ def validate_this_attendance(request, obj_id):
     except (Attendance.DoesNotExist, ValueError):
         messages.error(request, _("Attendance not found"))
 
-    return HorillaRedirect(request)
+    return attendance_view_redirect(request)
 
 
 @login_required
@@ -1510,6 +1525,7 @@ def revalidate_this_attendance(request, obj_id):
 
 @login_required
 @manager_can_enter("attendance.change_attendance")
+@require_http_methods(["GET", "POST"])
 def approve_overtime(request, obj_id):
     """
     This method is used to approve attendance overtime
@@ -1521,7 +1537,7 @@ def approve_overtime(request, obj_id):
         if not request.user.is_superuser:
             if attendance.employee_id.id == request.user.employee_get.id:
                 messages.error(request, _("You cannot approve your own overtime."))
-                return HorillaRedirect(request)
+                return attendance_view_redirect(request)
         attendance.attendance_overtime_approve = True
         attendance.save()
         urlencode = request.GET.urlencode()
@@ -1549,7 +1565,7 @@ def approve_overtime(request, obj_id):
             )
     except (Attendance.DoesNotExist, OverflowError):
         messages.error(request, _("Attendance not found"))
-    return HorillaRedirect(request)
+    return attendance_view_redirect(request)
 
 
 @login_required

@@ -34,7 +34,8 @@
 </style>
 
 <meta name="csrf-token" content="{{ csrf_token }}">
-<div hx-get="{% url "deduction-view-nav" %}" hx-trigger="load">
+<div id="payrollDeductionsNavBar">
+  <div hx-get="{% url "deduction-view-nav" %}" hx-trigger="load"></div>
 </div>
 
 
@@ -48,4 +49,39 @@
   <div class="animated-background">
 </div>
 </div>
+
+<script>
+  (function () {
+    function syncDeductionsNavVisibility() {
+      var nav = document.getElementById("payrollDeductionsNavBar");
+      var list = document.getElementById("listContainer");
+      if (!nav || !list) return;
+      var isForm = !!list.querySelector("#contractFormTarget");
+      nav.style.display = isForm ? "none" : "";
+    }
+    function refreshDeductionsListContainer() {
+      if (typeof htmx === "undefined") return;
+      var query = window.location.search || "";
+      var url = "{% url 'deduction-view-list' %}" + query;
+      htmx.ajax("GET", url, { target: "#listContainer", swap: "innerHTML" });
+      var $msg = $("#reloadMessagesButton");
+      if ($msg.length) $msg.click();
+    }
+    document.addEventListener("reloadPayrollDeductions", function () {
+      refreshDeductionsListContainer();
+    });
+    document.addEventListener("DOMContentLoaded", syncDeductionsNavVisibility);
+    document.body.addEventListener("htmx:afterSwap", function (e) {
+      if (e.detail && e.detail.target && e.detail.target.id === "listContainer") {
+        syncDeductionsNavVisibility();
+        setTimeout(syncDeductionsNavVisibility, 0);
+      }
+    });
+    document.body.addEventListener("htmx:afterSettle", function (e) {
+      if (e.detail && e.detail.target && e.detail.target.id === "listContainer") {
+        syncDeductionsNavVisibility();
+      }
+    });
+  })();
+</script>
 {% endblock %}

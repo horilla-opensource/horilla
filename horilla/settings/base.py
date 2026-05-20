@@ -15,6 +15,8 @@ from django.core.files.storage import FileSystemStorage
 # BASE PATH & ENVIRONMENT CONFIGURATION
 # ========================================
 BASE_DIR = Path(__file__).resolve().parent.parent.parent
+# settings.py
+import os
 
 env = environ.Env(
     DEBUG=(bool, True),
@@ -43,6 +45,7 @@ INSTALLED_APPS = [
     "django.contrib.sessions",
     "django.contrib.messages",
     "django.contrib.staticfiles",
+    "django.contrib.sites",
     # Third-party apps
     "notifications",
     "mathfilters",
@@ -84,6 +87,7 @@ INSTALLED_APPS = [
     "report",
     "whatsapp",
     "horilla_ldap",
+    "horilla_dbtemplate",
 ]
 
 # ========================================
@@ -222,6 +226,7 @@ TEMPLATES = [
                 "horilla_crumbs.context_processors.breadcrumbs",
             ],
             "loaders": [
+                "horilla_dbtemplate.loaders.Loader",
                 (
                     "django.template.loaders.filesystem.Loader",
                     [BASE_DIR / THEME_APP / "templates"],

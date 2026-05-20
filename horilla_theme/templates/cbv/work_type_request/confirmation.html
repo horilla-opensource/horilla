@@ -13,9 +13,10 @@
 			class="filter brightness-0 invert" />
 			</a>
 		{% else %}
-			<a href="{% url 'work-type-request-approve' instance.id %}" title="{% trans 'Approve' %}"
-				onclick="return confirm(`{% trans 'Do you want to approve this request?' %}`)"
-				class="w-24 px-4 py-2 bg-primary-600 text-white rounded-md text-xs flex items-center justify-center gap-2 hover:bg-primary-800 transition duration-300">
+			<a href="#" title="{% trans 'Approve' %}"
+				onclick="event.preventDefault(); event.stopPropagation(); workTypeRequestRowApprove('{% url 'work-type-request-approve' instance.id %}', '{% trans 'Do you want to approve this request?' %}');"
+				class="w-24 px-4 py-2 bg-primary-600 text-white rounded-md text-xs flex items-center justify-center gap-2 hover:bg-primary-800 transition duration-300"
+				style="cursor:pointer;">
 				<img src="{% static 'horilla_theme/assets/img/icons/check.svg' %}" alt="{% trans 'Approve' %}" width="13"
 			class="filter brightness-0 invert" />
 			</a>
@@ -27,9 +28,10 @@
 				/>
 			</a>
 		{% else %}
-			<a href="{% url 'work-type-request-cancel' instance.id %}" title="{% trans 'Reject' %}"
-				onclick="return confirm(`{% trans 'Do you want to reject this request?' %}`)"
-				class="w-24 px-4 py-2 bg-white rounded-md text-xs flex items-center justify-center gap-2 border border-primary-500 hover:border-primary-600 transition duration-300">
+			<a href="#" title="{% trans 'Reject' %}"
+				onclick="event.preventDefault(); event.stopPropagation(); workTypeRequestRowApprove('{% url 'work-type-request-cancel' instance.id %}', '{% trans 'Do you want to reject this request?' %}');"
+				class="w-24 px-4 py-2 bg-white rounded-md text-xs flex items-center justify-center gap-2 border border-primary-500 hover:border-primary-600 transition duration-300"
+				style="cursor:pointer;">
 				<img class="mt-[-1px]" src="{% static 'horilla_theme/assets/img/icons/close.svg' %}" alt="{% trans 'Reject' %}" width="13"
 				/>
 			</a>

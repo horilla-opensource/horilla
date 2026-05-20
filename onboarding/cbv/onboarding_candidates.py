@@ -155,7 +155,14 @@ class OnboardingCandidatesList(HorillaListView):
     ]
 
     row_attrs = """
-                onclick="window.location.href='{get_individual_url}'"
+                onclick="
+                    try {{ sessionStorage.setItem('candidateProfileFrom', 'onboarding'); }} catch (e) {{}}
+                "
+                hx-get="{get_profile_url}?from=onboarding&instance_ids={ordered_ids}"
+                hx-target="#listContainer"
+                hx-swap="innerHTML"
+                hx-push-url="{get_individual_url}"
+                class="cursor-pointer"
                 """
 
 

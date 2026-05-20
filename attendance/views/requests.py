@@ -566,6 +566,16 @@ def approve_validate_attendance_request(request, attendance_id):
             redirect=reverse("request-attendance-view") + f"?id={attendance.id}",
             icon="checkmark-circle-outline",
         )
+    if request.headers.get("HX-Request"):
+        return HttpResponse(
+            """
+            <script>
+                $('#validateAttendanceRequest').removeClass('oh-modal--show');
+                $('.reload-record').click();
+                $('#reloadMessagesButton').click();
+            </script>
+            """
+        )
     return HorillaRedirect(request)
 
 
@@ -607,6 +617,16 @@ def cancel_attendance_request(request, attendance_id):
             )
     except (Attendance.DoesNotExist, OverflowError):
         messages.error(request, _("Attendance request not found"))
+    if request.headers.get("HX-Request"):
+        return HttpResponse(
+            """
+            <script>
+                $('#validateAttendanceRequest').removeClass('oh-modal--show');
+                $('.reload-record').click();
+                $('#reloadMessagesButton').click();
+            </script>
+            """
+        )
     return HorillaRedirect(request)
 
 

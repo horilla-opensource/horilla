@@ -10,11 +10,19 @@
 
     {% if perms.leave.change_leavetype and perms.leave.add_availableleave %}
         {% if compensatory %}
-        <a href="{% url 'type-update' instance.id %}?compensatory=True" class="oh-btn oh-btn--light-bkg w-100" title="{% trans 'Update' %}">
+        <a href="#"
+            hx-get="{% url 'type-update' instance.id %}?compensatory=True"
+            hx-target="#listContainer"
+            hx-swap="innerHTML"
+            class="oh-btn oh-btn--light-bkg w-100" title="{% trans 'Update' %}">
             <ion-icon class="me-1" name="create-outline"></ion-icon>
         </a>
         {% else %}
-        <a href="{% url 'type-update' instance.id %}" class="oh-btn oh-btn--light-bkg w-100" title="{% trans 'Update' %}">
+        <a href="#"
+            hx-get="{% url 'type-update' instance.id %}"
+            hx-target="#listContainer"
+            hx-swap="innerHTML"
+            class="oh-btn oh-btn--light-bkg w-100" title="{% trans 'Update' %}">
             <ion-icon class="me-1" name="create-outline"></ion-icon>
 
         </a>

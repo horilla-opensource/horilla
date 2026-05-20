@@ -289,6 +289,7 @@ def asset_delete(request, asset_id):
         messages.error(request, _("Asset not found"))
         return HorillaRedirect(request)
     asset_cat_id = asset.asset_category_id.id
+    is_hx_request = bool(request.headers.get("HX-Request"))
     status = asset.asset_status
     asset_list_filter = request.GET.get("asset_list")
     asset_allocation = AssetAssignment.objects.filter(asset_id=asset).first()
@@ -298,8 +299,8 @@ def asset_delete(request, asset_id):
         assets = Asset.objects.all()
         previous_data = request.GET.urlencode()
         asset_filtered = AssetFilter(request.GET, queryset=assets)
-        asset_list = asset_filtered.qs
-        paginator = Paginator(asset_list, get_pagination())
+        filtered_assets = asset_filtered.qs
+        paginator = Paginator(filtered_assets, get_pagination())
         page_number = request.GET.get("page")
         page_obj = paginator.get_page(page_number)
         context = {
@@ -318,6 +319,18 @@ def asset_delete(request, asset_id):
 
     instances_ids = request.GET.get("requests_ids", "[]")
     instances_list = eval_validate(instances_ids)
+
+    # For category-row HTMX deletes, refresh the same accordion container instead of
+    # redirecting to detail pages. This keeps the table in sync immediately.
+    if is_hx_request:
+        if status == "In use":
+            messages.info(request, _("Asset is in use"))
+            return asset_list(request, asset_cat_id)
+        if asset_allocation:
+            messages.error(request, _("Asset is used in allocation!."))
+            return asset_list(request, asset_cat_id)
+        asset_del(request, asset)
+        return asset_list(request, asset_cat_id)
     if status == "In use":
         messages.info(request, _("Asset is in use"))
         return redirect(
@@ -484,6 +497,10 @@ def delete_asset_category(request, cat_id):
 
     if not AssetCategory.objects.exists():
         return HttpResponse(status=204, headers={"HX-Refresh": "true"})
+
+    if request.headers.get("HX-Request"):
+        context = filter_pagination_asset_category(request)
+        return render(request, "category/asset_category.html", context)
 
     return redirect(f"/asset/asset-category-view-search-filter?{previous_data}")
 
@@ -704,6 +721,13 @@ def asset_request_approve(request, req_id):
 def reject_request_return(request, asset_request, req_id):
     if not request.META.get("HTTP_HX_REQUEST"):
         return HorillaRedirect(request)
+
+    # Request & Allocation page uses tab/list container; refresh that container only.
+    referrer = request.META.get("HTTP_REFERER", "")
+    if "/asset/asset-request-allocation-view/" in referrer:
+        return redirect(
+            f"{reverse('tab-asset-request-allocation')}?{request.GET.urlencode()}"
+        )
 
     hx_target = request.META.get("HTTP_HX_TARGET")
     if hx_target == "objectDetailsModalW25Target":
@@ -962,6 +986,7 @@ def filter_pagination_asset_request_allocation(request):
     previous_data = request.GET.urlencode()
     assets_filtered = CustomAssetFilter(request.GET, queryset=assets)
     asset_request_filtered = AssetRequestFilter(request.GET, queryset=asset_request).qs
+    asset_request_count = asset_request_filtered.count()
     if request_field != "" and request_field is not None:
         asset_request_filtered = group_by_queryset(
             asset_request_filtered, request_field, request.GET.get("page"), "page"
@@ -985,6 +1010,7 @@ def filter_pagination_asset_request_allocation(request):
     asset_allocation_filtered = AssetAllocationFilter(
         request.GET, queryset=asset_assignment
     ).qs
+    asset_allocation_count = asset_allocation_filtered.count()
 
     if allocation_field != "" and allocation_field is not None:
         asset_allocation_filtered = group_by_queryset(
@@ -1019,6 +1045,9 @@ def filter_pagination_asset_request_allocation(request):
         "assets": assets,
         "asset_requests": asset_request_filtered,
         "asset_allocations": asset_allocation_filtered,
+        "assets_count": assets_filtered.qs.count(),
+        "asset_requests_count": asset_request_count,
+        "asset_allocations_count": asset_allocation_count,
         "assets_filter_form": assets_filtered.form,
         "asset_request_filter_form": AssetRequestFilter().form,
         "asset_allocation_filter_form": AssetAllocationFilter().form,

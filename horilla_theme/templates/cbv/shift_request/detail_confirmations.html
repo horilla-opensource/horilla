@@ -18,9 +18,10 @@
 			</a>
 		{% else %}
 			<a
-				href="{% url 'shift-request-approve' instance.id %}"
-				onclick="return confirm(`{% trans 'Do you want to approve this request?' %}`)"
+				href="#"
+				onclick="event.preventDefault(); event.stopPropagation(); shiftRequestRowApprove('{% url 'shift-request-approve' instance.id %}', '{% trans 'Do you want to approve this request?' %}');"
 				class="w-24 px-4 py-2 bg-primary-600 text-white rounded-md text-xs flex items-center justify-center gap-2 hover:bg-primary-800 transition duration-300"
+				style="cursor:pointer;"
 			>
 			<img src="{% static 'horilla_theme/assets/img/icons/check.svg' %}" alt="{% trans 'Approve' %}" width="13"
 			class="filter brightness-0 invert" />
@@ -40,14 +41,15 @@
 			</a>
 		{% else %}
 			<a
-				href="{% url 'shift-request-cancel' instance.id %}"
-				onclick="return confirm(`{% trans 'Do you want to reject this request?' %}`)"
+				href="#"
+				onclick="event.preventDefault(); event.stopPropagation(); shiftRequestRowApprove('{% url 'shift-request-cancel' instance.id %}', '{% trans 'Do you want to reject this request?' %}');"
 				class="w-24 px-4 py-2 bg-white rounded-md text-xs flex items-center justify-center gap-2 border border-primary-500 hover:border-primary-600 transition duration-300"
+				style="cursor:pointer;"
 			>
 				<img src="{% static 'horilla_theme/assets/img/icons/close-circle-icon-original.svg' %}" alt="{% trans 'Reject' %}" width="13"
 			class="mt-[-1px]" />
 			{% trans 'Reject' %}
 			</a>
 		{% endif %}
-
+	</div>
 {% endif %}

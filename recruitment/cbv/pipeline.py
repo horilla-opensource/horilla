@@ -293,10 +293,8 @@ class CandidateList(HorillaListView):
     ]
 
     row_attrs = """
-        hx-get='{get_details_candidate}'
-        data-toggle="oh-modal-toggle"
-        data-target="#genericModal"
-        hx-target="#genericModalBody"
+        class="cursor-pointer"
+        onclick="window.location.href = '{get_profile_url}?next=' + encodeURIComponent(window.location.pathname + window.location.search)"
     """
 
     actions = [
@@ -440,10 +438,7 @@ class CandidateCard(HorillaKanbanView):
     group_label_key = "stage"
 
     kanban_attrs = """
-        hx-get='{get_details_candidate}'
-        data-toggle="oh-modal-toggle"
-        data-target="#genericModal"
-        hx-target="#genericModalBody"
+        onclick="window.location.href = '{get_profile_url}?next=' + encodeURIComponent(window.location.pathname + window.location.search)"
     """
 
     details = {

@@ -1,6 +1,6 @@
 import json
 from datetime import datetime, timedelta
-from urllib.parse import parse_qs
+from urllib.parse import parse_qs, urlparse
 
 from django.apps import apps
 from django.contrib import messages
@@ -946,6 +946,42 @@ def resignation_tab(request, pk):
     )
 
 
+def resignation_list_swap_response(original_request):
+    """
+    Render the resignation list CBV fragment for hx-target=\"#listContainer\" swaps.
+    Subrequest keeps session (Horilla CACHE filters) without relying on client-side JS reload.
+    """
+    from django.test import RequestFactory
+
+    from offboarding.cbv.resignation import ResignationListView
+
+    list_path = reverse("list-resignation-request")
+    qs = ""
+    hx_cur = original_request.headers.get("HX-Current-URL", "")
+    if hx_cur:
+        p = urlparse(hx_cur)
+        if "list-resignation-requests" in (p.path or ""):
+            qs = p.query or ""
+
+    try:
+        rf = RequestFactory()
+        path = f"{list_path}?{qs}" if qs else list_path
+        sub = rf.get(
+            path,
+            HTTP_HX_REQUEST="true",
+            HTTP_COOKIE=original_request.META.get("HTTP_COOKIE", ""),
+            HTTP_HOST=original_request.META.get("HTTP_HOST", ""),
+        )
+        sub.user = getattr(original_request, "user", None)
+        sub.session = original_request.session
+        resp = ResignationListView.as_view()(sub)
+        if hasattr(resp, "render") and callable(resp.render):
+            resp = resp.render()
+        return resp
+    except Exception:
+        return HttpResponse(" ", content_type="text/html")
+
+
 @login_required
 @check_feature_enabled("resignation_request")
 def delete_resignation_request(request):
@@ -959,8 +995,9 @@ def delete_resignation_request(request):
         "employee-profile/"
     ):
         return redirect("/employee/employee-profile/")
-    else:
-        return redirect("resignation-request-view")
+    if request.headers.get("HX-Request"):
+        return resignation_list_swap_response(request)
+    return redirect("resignation-request-view")
 
 
 @login_required
@@ -1052,7 +1089,8 @@ def update_status(request):
                 redirect="#",
                 icon="information",
             )
-    # return redirect(request_view)
+    if request.headers.get("HX-Request"):
+        return resignation_list_swap_response(request)
     return redirect(reverse("resignation-request-view"))
 
 

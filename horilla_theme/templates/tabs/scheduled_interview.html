@@ -71,14 +71,15 @@
     <div class="interview-list">
         <ol class="oh-activity-sidebar__qa-list" role="list">
             {% for interview in interviews %}
-                <li class="oh-activity-sidebar__qa-item">
+                <li class="oh-activity-sidebar__qa-item" style="cursor: default;">
                     <span
-                        class="float-end"
+                        class="float-end cursor-pointer"
                         title="{% trans 'delete' %}"
                         hx-get="{% url 'delete-interview' interview.id %}?view=false"
                         data-target="#activitySidebar"
                         hx-swap="innerHTML"
-                        hx-target="#interview"
+                        hx-confirm="{% trans 'Are you sure you want to delete this interview?' %}"
+                        hx-target="closest .tracking-card"
                     >
                         <ion-icon
                             name="close-outline"
@@ -90,12 +91,12 @@
                     </span>
                     {% if perms.recruitment.add_interview or request.user|is_stagemanager %}
                         <span
-                            class="float-end"
+                            class="float-end cursor-pointer"
                             title="{% trans 'edit' %}"
                             hx-get="{% url 'edit-interview' interview.id %}?view=false"
-                            data-target="#createModal"
+                            data-target="#genericModal"
                             hx-swap="innerHTML"
-                            hx-target="#createTarget"
+                            hx-target="#genericModalBody"
                             data-toggle="oh-modal-toggle"
                         >
                             <ion-icon

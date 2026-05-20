@@ -6,6 +6,7 @@
 {% load basefilters %}
 {% load mathfilters %}
 
+<div id="feedbackDetailContainer">
 <style>
   .oh-profile__avatar-limit-height {
     height: 30px !important;
@@ -83,6 +84,17 @@
       <h3 class="text-md font-semibold">Feedback: {{ feedback }}</h3>
 
       <div class="flex items-center flex-wrap gap-1">
+        <button
+          type="button"
+          class="px-3 py-1 text-xs bg-primary-600 text-white rounded-full hover:bg-primary-800 transition duration-300 flex items-center gap-2"
+          hx-get="{% url 'feedback-generic-tab' %}"
+          hx-target="#listContainer"
+          hx-swap="innerHTML"
+          hx-push-url="{% url 'feedback-view' %}"
+        >
+          <i class="fa-solid fa-arrow-left"></i>
+          {% trans "Back" %}
+        </button>
         {% if perms.pms.change_feedback or request.user|is_reportingmanager %}
           <div class="relative dropdown-wrapper">
             <select id="status" name="feedback_status"
@@ -635,4 +647,5 @@
           });
       });
   </script>
+ </div>
 {% endblock %}

@@ -19,8 +19,11 @@
                 <a
                     class="oh-btn oh-btn--danger w-50"
                     role="button"
-                    href="{% url 'asset-request-reject' instance.id %}"
-                    onclick="return confirm(`{% trans 'Do you want to reject this request?' %}`)"
+                    hx-get="{% url 'asset-request-reject' instance.id %}"
+                    hx-target="#listContainer"
+                    hx-swap="innerHTML"
+                    hx-confirm="{% trans 'Do you want to reject this request?' %}"
+                    onclick="event.stopPropagation()"
                     title="{% trans 'Reject' %}"
                 >
                     <ion-icon name="close-outline"></ion-icon>

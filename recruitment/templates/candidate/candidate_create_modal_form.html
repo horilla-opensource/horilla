@@ -1,17 +1,53 @@
 {% load static i18n %}
+{% if onboarding_container_mode %}
+<div id="onboarding-candidate-update-form-root">
+{% endif %}
 {{form.load}}
 <form
   action="{{request.path}}?{{request.GET.urlencode}}"
   method="post"
   enctype="multipart/form-data"
   hx-post="{{request.path}}?{{request.GET.urlencode}}"
-  hx-target="{% if request.GET.container == 'true' %}#candidateMainContainer{% else %}#objectCreateModalTarget{% endif %}"
+  hx-target="{% if onboarding_container_mode %}#listContainer{% elif request.GET.container == 'true' %}#candidateMainContainer{% else %}#objectCreateModalTarget{% endif %}"
   hx-swap="innerHTML"
 >
   <div class="oh-general__tab-target oh-profile-section mb-4" id="personal">
     <div class="oh-profile-section__card">
       <div class="w-100 d-flex justify-content-end mb-3">
-        {% if request.GET.container == 'true' %}
+        {% if onboarding_container_mode %}
+        <div class="bg-white rounded-md shadow-card px-3 py-2 d-inline-flex align-items-center">
+        <button
+          type="button"
+          title="{% trans 'Back' %}"
+          class="px-3 py-1 text-xs bg-primary-600 text-white rounded-full hover:bg-primary-800 transition duration-300 flex items-center gap-2"
+          onclick="
+            var navBar = document.getElementById('onboardingCandidatesNavBar');
+            var list = document.getElementById('listContainer');
+            var candidatesPage = '{% url 'candidates-view' %}';
+            document.body.classList.remove('onboarding-list-hide-toolbar');
+            if (navBar && list) {
+              if (window.history && history.pushState) {
+                history.pushState({}, '', candidatesPage);
+              }
+              navBar.style.display = '';
+              var tagRow = navBar.querySelector('#filterTagContainerSectionNav');
+              if (tagRow) { tagRow.innerHTML = ''; }
+              list.innerHTML = '<div class=&quot;animated-background&quot;></div>';
+              setTimeout(function () {
+                var btn = document.getElementById('applyFilter');
+                if (btn) { btn.click(); }
+              }, 100);
+            } else {
+              window.location.href = candidatesPage;
+            }
+          "
+        >
+          <i class="fa-solid fa-arrow-left"></i>
+          {% trans "Back" %}
+        </button>
+        </div>
+        {% elif request.GET.container == 'true' %}
+        <div class="bg-white rounded-md shadow-card px-3 py-2 d-inline-flex align-items-center">
         <button
           type="button"
           title="{% trans 'Back' %}"
@@ -34,6 +70,7 @@
           <i class="fa-solid fa-arrow-left"></i>
           {% trans "Back" %}
         </button>
+        </div>
         {% else %}
         <button
           type="button"
@@ -142,3 +179,19 @@
   });
 </script>
 <script src="{% static '/recruitment/stageScript.js' %}"></script>
+{% if onboarding_container_mode %}
+<script>
+(function () {
+  var nav = document.getElementById("onboardingCandidatesNavBar");
+  if (nav) {
+    nav.style.display = "none";
+    document.body.classList.add("onboarding-list-hide-toolbar");
+    var tagRow = nav.querySelector("#filterTagContainerSectionNav");
+    if (tagRow) {
+      tagRow.innerHTML = "";
+    }
+  }
+})();
+</script>
+</div>
+{% endif %}

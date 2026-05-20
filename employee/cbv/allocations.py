@@ -90,11 +90,9 @@ class AllocationView(HorillaDetailedView):
             # set candidate to request for accessing inside work info signal
             request.employee_candidate = candidate
             instance = candidate.converted_employee_id
-            candidate.save()
             if instance is None and (candidate.hired or candidate.onboarding_stage):
                 instance = Employee.objects.get_or_create(
                     employee_first_name=candidate.name,
-                    employee_profile=candidate.profile,
                     email=candidate.email,
                     phone=candidate.mobile,
                     address=candidate.address,
@@ -105,8 +103,12 @@ class AllocationView(HorillaDetailedView):
                     dob=candidate.dob,
                     gender=candidate.gender,
                 )[0]
+                # Candidate may fail business validation on unrelated fields
+                # during allocation, so only persist the link directly.
+                model.objects.filter(pk=candidate.pk).update(
+                    converted_employee_id=instance
+                )
                 candidate.converted_employee_id = instance
-                candidate.save()
                 instance.employee_user_id.is_active = False
                 instance.employee_user_id.save()
 
@@ -905,9 +907,17 @@ if app_installed("payroll"):
         """
         Allocation method
         """
+        request = getattr(_thread_locals, "request", None)
+        employee = None
+        if request:
+            employee_id = request.GET.get("instance_id") or request.POST.get(
+                "instance_id"
+            )
+            if employee_id:
+                employee = Employee.objects.filter(pk=employee_id).first()
         return render_template(
             "cbv/allocations/payroll/allowance/actions.html",
-            {"instance": self, "employee": _thread_locals.allowance_employee},
+            {"instance": self, "employee": employee},
         )
 
     Allowance.allowance_allocation_metod = allowance_allocation_metod
@@ -951,7 +961,6 @@ if app_installed("payroll"):
         def post(self, *args, **kwargs):
             employee_id = self.request.POST["instance_id"]
             self.instance = Employee.objects.get(pk=employee_id)
-            _thread_locals.allowance_employee = self.instance
             if self.request.GET.get("exclude"):
                 allowance = Allowance.objects.get(pk=self.request.POST["allowance_id"])
                 allowance.exclude_employees.add(self.instance)
@@ -979,7 +988,6 @@ if app_installed("payroll"):
 
         def get(self, request, *args, **kwargs):
             self.instance = Employee.objects.get(pk=request.GET["instance_id"])
-            _thread_locals.allowance_employee = self.instance
 
             return super().get(request, *args, **kwargs)
 
@@ -1014,9 +1022,17 @@ if app_installed("payroll"):
         """
         Allocation method
         """
+        request = getattr(_thread_locals, "request", None)
+        employee = None
+        if request:
+            employee_id = request.GET.get("instance_id") or request.POST.get(
+                "instance_id"
+            )
+            if employee_id:
+                employee = Employee.objects.filter(pk=employee_id).first()
         return render_template(
             "cbv/allocations/payroll/deduction/actions.html",
-            {"instance": self, "employee": _thread_locals.deduction_employee},
+            {"instance": self, "employee": employee},
         )
 
     Deduction.deduction_allocation_metod = deduction_allocation_metod
@@ -1063,7 +1079,6 @@ if app_installed("payroll"):
         def post(self, *args, **kwargs):
             employee_id = self.request.POST["instance_id"]
             self.instance = Employee.objects.get(pk=employee_id)
-            _thread_locals.deduction_employee = self.instance
             if self.request.GET.get("exclude"):
                 deduction = Deduction.objects.get(pk=self.request.POST["deduction_id"])
                 deduction.exclude_employees.add(self.instance)
@@ -1091,7 +1106,6 @@ if app_installed("payroll"):
 
         def get(self, request, *args, **kwargs):
             self.instance = Employee.objects.get(pk=request.GET["instance_id"])
-            _thread_locals.deduction_employee = self.instance
 
             return super().get(request, *args, **kwargs)
 

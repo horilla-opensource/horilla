@@ -2,7 +2,11 @@
 <div class="oh-inner-sidebar-content__header mt-4">
     <h2 class="oh-inner-sidebar-content__title">{% trans 'Badge Prefix' %}</h2>
 </div>
-<form action="{% url 'initial-prefix' %}" method="post">
+<form action="{% url 'initial-prefix' %}" method="post"
+  hx-post="{% url 'initial-prefix' %}"
+  hx-target="#settingsContainer"
+  hx-select="#settingsContainer"
+  hx-swap="outerHTML show:none">
   {% csrf_token %}
   <div>
     <div class="row">

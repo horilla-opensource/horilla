@@ -28,6 +28,10 @@
   action="{% url 'history-field-settings' %}"
   class="settings-label mb-1"
   method="post"
+  hx-post="{% url 'history-field-settings' %}"
+  hx-target="#settingsContainer"
+  hx-select="#settingsContainer"
+  hx-swap="outerHTML show:none"
 >
   {% csrf_token %}
   <div class="oh-inner-sidebar-content__header mt-4">

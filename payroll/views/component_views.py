@@ -388,15 +388,32 @@ def create_allowance(request):
     This method is used to create allowance condition template
     """
     form = forms.AllowanceForm()
+    is_htmx = request.headers.get("HX-Request") is not None
     if request.method == "POST":
         form = forms.AllowanceForm(request.POST)
         if form.is_valid():
             form.save()
             form = forms.AllowanceForm()
             messages.success(request, _("Allowance created."))
-            # return redirect(view_allowance)
+            if is_htmx:
+                response = HttpResponse("", status=200)
+                response["HX-Trigger"] = json.dumps(
+                    {"reloadPayrollAllowances": {"target": "body"}}
+                )
+                return response
             return redirect(reverse("view-allowance"))
-    return render(request, "payroll/common/form.html", {"form": form})
+    template_name = (
+        "payroll/common/form_fragment.html" if is_htmx else "payroll/common/form.html"
+    )
+    return render(
+        request,
+        template_name,
+        {
+            "form": form,
+            "post_url": request.get_full_path(),
+            "back_url": reverse("allowances-list-view"),
+        },
+    )
 
 
 @login_required
@@ -489,6 +506,7 @@ def update_allowance(request, allowance_id, **kwargs):
         id : allowance instance id
     """
     instance = Allowance.find(allowance_id)
+    is_htmx = request.headers.get("HX-Request") is not None
     if not instance:
         return HorillaRedirect(request, message=_("Allowance not found."))
     form = forms.AllowanceForm(instance=instance)
@@ -497,8 +515,25 @@ def update_allowance(request, allowance_id, **kwargs):
         if form.is_valid():
             form.save()
             messages.success(request, _("Allowance updated."))
+            if is_htmx:
+                response = HttpResponse("", status=200)
+                response["HX-Trigger"] = json.dumps(
+                    {"reloadPayrollAllowances": {"target": "body"}}
+                )
+                return response
             return redirect(reverse("view-allowance"))
-    return render(request, "payroll/common/form.html", {"form": form})
+    template_name = (
+        "payroll/common/form_fragment.html" if is_htmx else "payroll/common/form.html"
+    )
+    return render(
+        request,
+        template_name,
+        {
+            "form": form,
+            "post_url": request.get_full_path(),
+            "back_url": reverse("allowances-list-view"),
+        },
+    )
 
 
 # @login_required
@@ -594,14 +629,31 @@ def create_deduction(request):
     This method is used to create deduction
     """
     form = forms.DeductionForm()
+    is_htmx = request.headers.get("HX-Request") is not None
     if request.method == "POST":
         form = forms.DeductionForm(request.POST)
         if form.is_valid():
             form.save()
             messages.success(request, _("Deduction created."))
-            # return redirect(view_deduction)
+            if is_htmx:
+                response = HttpResponse("", status=200)
+                response["HX-Trigger"] = json.dumps(
+                    {"reloadPayrollDeductions": {"target": "body"}}
+                )
+                return response
             return redirect(reverse("view-deduction"))
-    return render(request, "payroll/common/form.html", {"form": form})
+    template_name = (
+        "payroll/common/form_fragment.html" if is_htmx else "payroll/common/form.html"
+    )
+    return render(
+        request,
+        template_name,
+        {
+            "form": form,
+            "post_url": request.get_full_path(),
+            "back_url": reverse("deduction-view-list"),
+        },
+    )
 
 
 @login_required
@@ -717,6 +769,7 @@ def update_deduction(request, deduction_id, **kwargs):
     This method is used to update the deduction instance
     """
     instance = Deduction.find(deduction_id)
+    is_htmx = request.headers.get("HX-Request") is not None
     if not instance:
         return HorillaRedirect(request, message=_("Deduction not found."))
     form = forms.DeductionForm(instance=instance)
@@ -725,8 +778,25 @@ def update_deduction(request, deduction_id, **kwargs):
         if form.is_valid():
             form.save()
             messages.success(request, _("Deduction updated."))
+            if is_htmx:
+                response = HttpResponse("", status=200)
+                response["HX-Trigger"] = json.dumps(
+                    {"reloadPayrollDeductions": {"target": "body"}}
+                )
+                return response
             return redirect(reverse("view-deduction"))
-    return render(request, "payroll/common/form.html", {"form": form})
+    template_name = (
+        "payroll/common/form_fragment.html" if is_htmx else "payroll/common/form.html"
+    )
+    return render(
+        request,
+        template_name,
+        {
+            "form": form,
+            "post_url": request.get_full_path(),
+            "back_url": reverse("deduction-view-list"),
+        },
+    )
 
 
 @login_required
@@ -1555,7 +1625,12 @@ def delete_loan(request):
             messages.success(request, "Loan account deleted")
         else:
             messages.error(request, "Loan account cannot be deleted")
-    # return redirect(view_loans)
+    if request.headers.get("HX-Request"):
+        response = HttpResponse("", status=200)
+        response["HX-Trigger"] = json.dumps(
+            {"reloadPayrollLoanTabs": {"target": "body"}}
+        )
+        return response
     return redirect(reverse("view-loan"))
 
 
@@ -1910,6 +1985,12 @@ def approve_reimbursements(request):
                 redirect=reverse("view-reimbursement") + f"?id={reimbursement.id}",
                 icon="checkmark",
             )
+    if request.headers.get("HX-Request"):
+        response = HttpResponse("", status=200)
+        response["HX-Trigger"] = json.dumps(
+            {"reloadPayrollReimbursements": {"target": "body"}}
+        )
+        return response
     return redirect(reverse("view-reimbursement"))
 
 
@@ -1920,22 +2001,37 @@ def delete_reimbursements(request):
     This method is used to delete the reimbursements
     """
     ids = request.GET.getlist("ids")
-    reimbursements = Reimbursement.objects.filter(id__in=ids)
-    user = list(reimbursements.values_list("employee_id__employee_user_id", flat=True))
+    reimbursements = Reimbursement.objects.filter(id__in=ids).select_related(
+        "employee_id__employee_user_id"
+    )
+    recipients = []
+    seen_user_ids = set()
+    for reimbursement in reimbursements:
+        recipient = getattr(reimbursement.employee_id, "employee_user_id", None)
+        if recipient and recipient.id not in seen_user_ids:
+            recipients.append(recipient)
+            seen_user_ids.add(recipient.id)
     reimbursements.delete()
     messages.success(request, "Reimbursements deleted")
-    notify.send(
-        request.user.employee_get,
-        recipient=user,
-        verb="Your reimbursement request has been deleted.",
-        verb_ar="تم حذف طلب استرداد نفقاتك.",
-        verb_de="Ihr Rückerstattungsantrag wurde gelöscht.",
-        verb_es="Tu solicitud de reembolso ha sido eliminada.",
-        verb_fr="Votre demande de remboursement a été supprimée.",
-        redirect="/",
-        icon="trash",
-    )
+    if recipients:
+        notify.send(
+            request.user.employee_get,
+            recipient=recipients,
+            verb="Your reimbursement request has been deleted.",
+            verb_ar="تم حذف طلب استرداد نفقاتك.",
+            verb_de="Ihr Rückerstattungsantrag wurde gelöscht.",
+            verb_es="Tu solicitud de reembolso ha sido eliminada.",
+            verb_fr="Votre demande de remboursement a été supprimée.",
+            redirect="/",
+            icon="trash",
+        )
 
+    if request.headers.get("HX-Request"):
+        response = HttpResponse("", status=200)
+        response["HX-Trigger"] = json.dumps(
+            {"reloadPayrollReimbursements": {"target": "body"}}
+        )
+        return response
     return redirect("view-reimbursement")
 
 

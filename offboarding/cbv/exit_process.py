@@ -2,8 +2,10 @@
 This page handles the cbv methods for existing process
 """
 
+import json
 import re
 from datetime import datetime, timedelta
+from urllib.parse import urlencode, urlparse
 
 from django import forms
 from django.apps import apps
@@ -15,7 +17,6 @@ from django.utils.translation import gettext_lazy as _
 
 from base.context_processors import intial_notice_period
 from base.methods import eval_validate
-from horilla.http.response import HorillaRedirect
 from horilla.methods import get_horilla_model_class
 from horilla_views.cbv_methods import (
     hx_request_required,
@@ -62,6 +63,45 @@ from offboarding.templatetags.offboarding_filter import (
 )
 
 
+def offboarding_pipeline_modal_success_response(request) -> HttpResponse:
+    """
+    Close modals and refresh the Exit Process pipeline area without a full-page reload.
+
+    Uses the pipeline nav filter form's apply button when present (preserves filters
+    and active list/card view); otherwise falls back to HTMX-loading the tabs view.
+    """
+    qs = urlparse(request.headers.get("HX-Current-URL", "") or "").query
+    tab_url = reverse("get-offboarding-tab")
+    if qs:
+        tab_url = f"{tab_url}?{qs}"
+
+    tab_url_lit = json.dumps(tab_url)
+
+    snippet = rf"""
+<script>
+(function () {{
+  document.querySelectorAll(".oh-modal--show").forEach(function (el) {{
+    el.classList.remove("oh-modal--show");
+  }});
+  var applyBtn =
+    document.querySelector("#filterForm button#applyFilter") ||
+    document.querySelector("#filterForm #applyFilter") ||
+    document.getElementById("applyFilter");
+  if (applyBtn) {{
+    applyBtn.click();
+  }} else if (typeof htmx !== "undefined") {{
+    htmx.ajax("GET", {tab_url_lit}, {{ target: "#pipelineContainer", swap: "innerHTML" }});
+  }}
+  var msgBtn = document.getElementById("reloadMessagesButton");
+  if (msgBtn) {{
+    msgBtn.click();
+  }}
+}})();
+</script>
+"""
+    return HttpResponse(snippet)
+
+
 @method_decorator(login_required, name="dispatch")
 @method_decorator(
     offboarding_manager_can_enter("offboarding.add_offboardingstage"), name="dispatch"
@@ -93,7 +133,7 @@ class OffboardingStageFormView(HorillaFormView):
             form.save()
 
             messages.success(self.request, message)
-            return HorillaRedirect(self.request)
+            return offboarding_pipeline_modal_success_response(self.request)
 
         return super().form_valid(form)
 
@@ -148,7 +188,7 @@ class OffboardingStageAddEmployeeForm(HorillaFormView):
                 )
             form.save()
             messages.success(self.request, message)
-            return HorillaRedirect(self.request)
+            return offboarding_pipeline_modal_success_response(self.request)
 
 
 @method_decorator(login_required, name="dispatch")
@@ -178,7 +218,7 @@ class OffboardingCreateFormView(HorillaFormView):
             form.save()
 
             messages.success(self.request, message)
-            return HorillaRedirect(self.request)
+            return offboarding_pipeline_modal_success_response(self.request)
 
         return super().form_valid(form)
 
@@ -228,7 +268,7 @@ class OffboardingTaskFormView(HorillaFormView):
             form.save()
 
             messages.success(self.request, message)
-            return self.HttpResponse()
+            return offboarding_pipeline_modal_success_response(self.request)
         return super().form_valid(form)
 
 
@@ -399,7 +439,11 @@ class PipeLineTabView(HorillaTabView):
                         "attrs": f"""
                             data-toggle="oh-modal-toggle"
                             data-target="#deleteConfirmation"
-                            hx-get="{reverse('generic-delete')}?model=offboarding.Offboarding&pk={offboarding.pk}"
+                            hx-get="{reverse('generic-delete')}?{urlencode({
+                                'model': 'offboarding.Offboarding',
+                                'pk': str(offboarding.pk),
+                                'reload_target': '#applyFilter',
+                            })}"
                             hx-target="#deleteConfirmationBody"
                             style="cursor: pointer;"
                         """,

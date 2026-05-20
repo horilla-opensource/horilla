@@ -81,7 +81,7 @@
 
 					{% if tab.actions %}
 					<div
-						class="dropdown-menu absolute right-0 min-w-[100px] bg-white rounded-lg shadow-card py-2 z-50 transition-all duration-200"
+						class="dropdown-menu absolute right-0 min-w-[100px] bg-white rounded-lg shadow-card py-2 hidden z-50 transition-all duration-200"
 					>
 						<ul class="text-xs">
 							{% for action in tab.actions %}
@@ -161,23 +161,34 @@
 		});
 	}
 
-	$(document).ready(function(){
-		{% if active_target %}
-			let tabHead = $("div.oh-tabs").find(`{{active_target|safe}}`)[0];
-			setTimeout(() => {
-				tabHead.click()
-			}, 25);
-			if (!$(".oh-tabs__tab--active").length) {
-				$("#{{view_id}}").find(".oh-tabs__tab").first().click()
-			}else{
-				setTimeout(() => {
-					$(".oh-tabs__tab--active").click();
-				}, 100);
-			}
-		{% else %}
-			$(".oh-tabs__tab--active").click();
-		{% endif %}
-	})
+	$(document).ready(function () {
+		function triggerInitialTabLoad() {
+			var $scope = $("#{{view_id}}");
+			if (!$scope.length) return;
+			{% if active_target %}
+				var $preferred = $scope.find(`{{active_target|safe}}`).first();
+				if ($preferred.length) {
+					setTimeout(function () {
+						$preferred[0].click();
+					}, 25);
+				}
+			{% endif %}
+
+			setTimeout(function () {
+				var $activeTab = $scope.find(".oh-tabs__tab--active").first();
+				if ($activeTab.length) {
+					$activeTab[0].click();
+				} else {
+					var $firstTab = $scope.find(".oh-tabs__tab").first();
+					if ($firstTab.length) {
+						$firstTab[0].click();
+					}
+				}
+			}, 100);
+		}
+
+		triggerInitialTabLoad();
+	});
 
 	function actionClick(event) {
 		event.stopPropagation(); // Prevents closing when clicking inside
@@ -186,16 +197,12 @@
 			.closest(".dropdown-wrapper-tab")
 			.find(".dropdown-menu");
 
-		const isOpen = dropdownMenu.is(":visible");
+		const isHidden = dropdownMenu.hasClass("hidden");
 
 		// Close all other dropdowns
-		$(".dropdown-menu").not(dropdownMenu).hide();
+		$(".dropdown-menu").not(dropdownMenu).addClass("hidden");
 
-		if (isOpen) {
-			dropdownMenu.hide();
-		} else {
-			dropdownMenu.show();
-		}
+		dropdownMenu.toggleClass("hidden", !isHidden);
 	}
 
 	document.addEventListener("click", function (e) {
@@ -204,7 +211,7 @@
 		$(".dropdown-wrapper-tab").each(function () {
 			const $wrapper = $(this);
 			if (!$wrapper.is($clickedWrapper)) {
-				$wrapper.find(".dropdown-menu").hide();
+				$wrapper.find(".dropdown-menu").addClass("hidden");
 			}
 		});
 	});

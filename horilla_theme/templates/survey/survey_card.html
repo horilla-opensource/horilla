@@ -157,11 +157,20 @@
                 $(".dropdown-menu").addClass("hidden");
             });
             $(".oh-tabs__content").hide();
-            var activeTab = localStorage.getItem("activeSurveyTab")
+            const params = new URLSearchParams(window.location.search);
+            const shouldOpenDefault = params.get("closed") === "false";
+            let activeTab = localStorage.getItem("activeSurveyTab");
+            const tabSelector = `.oh-tabs__tab[data-target='${activeTab}']`;
+            if (shouldOpenDefault || !activeTab || $(tabSelector).length === 0) {
+                activeTab = "#templateTab";
+                localStorage.setItem("activeSurveyTab", activeTab);
+            }
             $(".bg-primary-300").removeClass("bg-primary-300");
             $(`[data-target='${activeTab}']`).addClass("bg-primary-300");
             setTimeout(function () {
-                $(`[data-target='${activeTab}']`).click();
+                if ($(`[data-target='${activeTab}']`).length) {
+                    $(`[data-target='${activeTab}']`).click();
+                }
             }, 50);
 
             $(".oh-tabs__tab").on("click", function (e) {

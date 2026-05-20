@@ -14,12 +14,13 @@
         </a>
     {% endif %}
     {% if can_delete or can_manage %}
-        <form action="{% url 'attendance-delete' instance.id %}" onclick="event.stopPropagation()"
-            onsubmit="return confirm('{% trans "Are you sure want to delete this attendance?" %}')"
-            hx-target="#tab_contents" method='post' class='w-50'>
+        <form hx-post="{% url 'attendance-delete' instance.id %}" onclick="event.stopPropagation()"
+            hx-swap="none"
+            class='w-50'>
             {% csrf_token %}
             <button type="submit" class="oh-btn oh-btn--danger-outline oh-btn--light-bkg w-100"
-                title="{% trans 'Remove' %}">
+                title="{% trans 'Remove' %}"
+                onclick="return confirm('{% trans "Are you sure want to delete this attendance?" %}')">
                 <ion-icon name="trash-outline"></ion-icon>
             </button>
         </form>

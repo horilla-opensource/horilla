@@ -126,6 +126,18 @@ def delete_policies(request):
             messages.success(request, "Policies deleted")
     except ValueError:
         messages.error(request, _("Policies Not Found"))
+    if request.META.get("HTTP_HX_REQUEST"):
+        policies_qs = Policy.objects.all()
+        if not request.user.has_perm("employee.view_policy"):
+            policies_qs = policies_qs.filter(is_visible_to_all=True)
+        return render(
+            request,
+            "policies/records.html",
+            {
+                "policies": paginator_qry(policies_qs, request.GET.get("page")),
+                "pd": request.GET.urlencode(),
+            },
+        )
     return redirect(view_policies)
 
 

@@ -61,7 +61,14 @@ class EmployeeProfileView(HorillaProfileView):
                     "title": _("Edit"),
                     "src": f"/{settings.STATIC_URL}images/ui/editing.png",
                     "accessibility": "employee.cbv.accessibility.edit_accessibility",
-                    "attrs": """onclick="window.location.href='{get_update_url}'" """,
+                    "attrs": """
+                        href="#"
+                        hx-get="{get_update_url}?container=true"
+                        hx-target="#listContainer"
+                        hx-swap="innerHTML"
+                        hx-push-url="{get_update_url}?container=true"
+                        onclick="if (!document.getElementById('listContainer')) {{ event.preventDefault(); event.stopPropagation(); window.location.href = this.getAttribute('hx-get'); return false; }}"
+                    """,
                 },
                 {
                     "title": _("Block Account"),

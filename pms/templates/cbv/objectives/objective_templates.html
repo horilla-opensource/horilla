@@ -1,0 +1,35 @@
+{% extends "index.html" %}
+{% load i18n static %}
+
+{% block content %}
+
+<div hx-get="{% url 'nav-objective-templates-view' %}" hx-trigger="load"></div>
+
+{% include "generic/components.html" %}
+
+<div
+    class="oh-checkpoint-badge mb-2"
+    id="selectedInastacesAll"
+    data-ids="[]"
+    data-clicked=""
+    style="display: none"
+></div>
+
+<div class="oh-wrapper" id="listContainer">
+    <div class="animated-background"></div>
+</div>
+
+<script>
+    $(document).on("htmx:afterSettle", function () {
+        $("[data-toggle-count]")
+            .off("click")
+            .on("click", function (e) {
+                e.stopPropagation();
+                let recViewContainer = $(this).closest(".oh-sticky-table__tr");
+                span = recViewContainer.find(".count-span").toggle();
+                var row = $(this).closest(".oh-sticky-table__tr");
+                row.toggleClass("oh-permission-table--collapsed");
+            });
+    });
+</script>
+{% endblock content %}

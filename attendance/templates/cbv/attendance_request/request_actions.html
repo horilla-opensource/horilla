@@ -6,9 +6,13 @@
         hx-target="#validateAttendanceRequestModalBody" class="oh-btn oh-btn--light-bkg w-100"
         title="{% trans 'View' %}"><ion-icon name="eye-outline" role="img"></ion-icon></a>
     {% if perms.attendance.change_attendance or can_manage %}
-        <a type="submit" class="oh-btn oh-btn--danger-outline oh-btn--light-bkg w-100" title="{% trans 'Cancel / Reject' %}"
-            onclick="event.stopPropagation();return confirm('{% trans "Are you sure want to cancel the request?" %}');"
-            href="{% url 'cancel-validate-attendance-request' instance.id %}">
+        <a href="#"
+            hx-get="{% url 'cancel-validate-attendance-request' instance.id %}"
+            hx-target="#validateAttendanceRequestModalBody"
+            hx-swap="innerHTML"
+            class="oh-btn oh-btn--danger-outline oh-btn--light-bkg w-100"
+            title="{% trans 'Cancel / Reject' %}"
+            onclick="event.preventDefault(); event.stopPropagation(); return confirm('{% trans "Are you sure want to cancel the request?" %}');">
             <ion-icon name="close-circle-outline"></ion-icon>
         </a>
     {% endif %}

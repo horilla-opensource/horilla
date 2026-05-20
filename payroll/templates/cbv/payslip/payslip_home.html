@@ -59,6 +59,22 @@
 	<div class="animated-background"></div>
 </div>
 
+<script>
+	(function () {
+		function refreshPayslipListContainer() {
+			if (typeof htmx === "undefined") return;
+			var query = window.location.search || "";
+			var url = "{% url 'payslip-list' %}" + query;
+			htmx.ajax("GET", url, { target: "#listContainer", swap: "innerHTML" });
+			var $msg = $("#reloadMessagesButton");
+			if ($msg.length) $msg.click();
+		}
+		document.addEventListener("reloadPayrollPayslips", function () {
+			refreshPayslipListContainer();
+		});
+	})();
+</script>
+
 <div
 	class="oh-modal"
 	id="individualPayslipModal"
