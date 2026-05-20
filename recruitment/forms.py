@@ -1295,7 +1295,7 @@ class ScheduleInterviewForm(BaseModelForm):
         candidate_attr = {
             "hx-include": "#InterviewCreateForm",
             "hx-target": "#id_employee_id_parent_div",
-            "hx-get": "/recruitment/get-interview-managers",
+            "hx-get": "/recruitment/get-interview-managers/",
             "hx-swap": "innerHTML",
             "hx-select": "#id_employee_id_parent_div",
             "hx-trigger": "change, load delay:300ms",
