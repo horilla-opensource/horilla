@@ -114,6 +114,16 @@
         $(".oh-tabs__tab--active").click();
       }, 100);
     }
+    {% else %}
+    setTimeout(() => {
+      const $scope = $("#{{view_id}}");
+      const $activeTab = $scope.find(".oh-tabs__tab--active").first();
+      if ($activeTab.length) {
+        $activeTab.click();
+      } else {
+        $scope.find(".oh-tabs__tab").first().click();
+      }
+    }, 50);
     {% endif %}
   </script>
 </div>

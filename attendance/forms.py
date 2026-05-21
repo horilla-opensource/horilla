@@ -756,6 +756,30 @@ class NewRequestForm(AttendanceRequestForm):
     def clean(self) -> Dict[str, Any]:
         super().clean()
 
+        required_for_logic = (
+            "employee_id",
+            "attendance_date",
+            "attendance_clock_in_date",
+            "attendance_clock_in",
+            "shift_id",
+            "work_type_id",
+            "attendance_worked_hour",
+        )
+        for key in required_for_logic:
+            if key not in self.cleaned_data:
+                if not self._errors.get(key):
+                    self.add_error(
+                        key,
+                        ValidationError(_("This field is required.")),
+                    )
+        if any(k not in self.cleaned_data for k in required_for_logic):
+            return self.cleaned_data
+
+        if "attendance_clock_out" not in self.cleaned_data:
+            self.cleaned_data["attendance_clock_out"] = None
+        if "attendance_clock_out_date" not in self.cleaned_data:
+            self.cleaned_data["attendance_clock_out_date"] = None
+
         employee = self.cleaned_data["employee_id"]
         attendance_date = self.cleaned_data["attendance_date"]
         attendances = Attendance.objects.filter(
@@ -773,13 +797,15 @@ class NewRequestForm(AttendanceRequestForm):
             "shift_id": self.cleaned_data["shift_id"],
             "work_type_id": self.cleaned_data["work_type_id"],
             "attendance_worked_hour": self.cleaned_data["attendance_worked_hour"],
-            "minimum_hour": self.data["minimum_hour"],
+            "minimum_hour": self.data.get("minimum_hour", ""),
         }
         if attendances.exists():
             data["employee_id"] = employee.id
             data["attendance_date"] = str(attendance_date)
-            data["attendance_clock_in_date"] = self.data["attendance_clock_in_date"]
-            data["attendance_clock_in"] = self.data["attendance_clock_in"]
+            data["attendance_clock_in_date"] = self.data.get(
+                "attendance_clock_in_date", ""
+            )
+            data["attendance_clock_in"] = self.data.get("attendance_clock_in", "")
             data["attendance_clock_out"] = (
                 None
                 if data["attendance_clock_out"] == "None"
@@ -790,8 +816,8 @@ class NewRequestForm(AttendanceRequestForm):
                 if data["attendance_clock_out_date"] == "None"
                 else data["attendance_clock_out_date"]
             )
-            data["work_type_id"] = self.data["work_type_id"]
-            data["shift_id"] = self.data["shift_id"]
+            data["work_type_id"] = self.data.get("work_type_id")
+            data["shift_id"] = self.data.get("shift_id")
             attendance = attendances.first()
             for key, value in data.items():
                 data[key] = str(value)
@@ -799,18 +825,18 @@ class NewRequestForm(AttendanceRequestForm):
             attendance.is_validate_request = True
             if attendance.request_type != "create_request":
                 attendance.request_type = "update_request"
-            attendance.request_description = self.data["request_description"]
+            attendance.request_description = self.data.get("request_description", "")
             attendance.save()
             self.new_instance = None
-            return
+            return self.cleaned_data
 
         new_instance = Attendance(**data)
         new_instance.is_validate_request = True
         new_instance.attendance_validated = False
-        new_instance.request_description = self.data["request_description"]
+        new_instance.request_description = self.data.get("request_description", "")
         new_instance.request_type = "create_request"
         self.new_instance = new_instance
-        return
+        return self.cleaned_data
 
 
 excluded_fields = [

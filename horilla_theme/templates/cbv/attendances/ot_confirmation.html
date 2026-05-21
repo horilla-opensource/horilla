@@ -5,22 +5,30 @@
 	<div class="oh-btn-group w-100" onclick="event.stopPropagation();">
 		 {% if instance.attendance_overtime_approve %}
 			<a type="submit" href="#" title="{% trans 'Approve' %}"
-            class="h-8 w-24 px-4 py-2 bg-primary-600 text-white rounded-md text-xs flex items-center justify-center gap-2 hover:bg-primary-800 transition duration-300 oh-btn--disabled"
-            >
+            class="h-8 w-24 px-4 py-2 bg-primary-600 text-white rounded-md text-xs flex items-center justify-center gap-2 hover:bg-primary-800 transition duration-300 oh-btn--disabled">
 				<img src="{% static 'horilla_theme/assets/img/icons/check.svg' %}" alt="{% trans 'Approve' %}" width="13"
                 class="filter brightness-0 invert" />
 			</a>
 
         {% elif minot <= instance.overtime_second %}
-            <a type="submit" href="{% url 'approve-overtime' instance.id %}" title="{% trans 'Approve Overtime' %}" onclick="return confirm(`{% trans 'Do you want to approve this overtime?' %}`)"
-                class="h-8 w-24 px-4 py-2 bg-primary-600 text-white rounded-md text-xs flex items-center justify-center gap-2 hover:bg-primary-800 transition duration-300" onclick="event.stopPropagation()">
-                <img src="{% static 'horilla_theme/assets/img/icons/check.svg' %}" alt="{% trans 'Approve' %}" width="13"
-			    class="filter brightness-0 invert" />
-            </a>
+            <form
+                hx-post="{% url 'approve-overtime' instance.id %}"
+                hx-swap="none"
+                hx-confirm="{% trans 'Do you want to approve this overtime?' %}"
+                style="display: inline; margin: 0; padding: 0; border: none; background: none;"
+                onclick="event.stopPropagation();"
+            >
+                {% csrf_token %}
+                <button type="submit" title="{% trans 'Approve Overtime' %}"
+                    class="h-8 w-24 px-4 py-2 bg-primary-600 text-white rounded-md text-xs flex items-center justify-center gap-2 hover:bg-primary-800 transition duration-300">
+                    <img src="{% static 'horilla_theme/assets/img/icons/check.svg' %}" alt="{% trans 'Approve' %}" width="13"
+                        class="filter brightness-0 invert" />
+                </button>
+            </form>
         {% elif instance.overtime_second >= 60 %}
-            <a type="submit" href="#" title="{% trans 'Approve Overtime (OT < min.OT)' %}"
+            <a href="#" title="{% trans 'Approve Overtime (OT < min.OT)' %}"
                 class="h-8 w-24 px-4 py-2 bg-white rounded-md text-xs flex items-center justify-center gap-2 border border-primary-500 hover:border-primary-600 transition duration-300"
-                onclick="event.stopPropagation();
+                onclick="event.preventDefault(); event.stopPropagation(); (function(pk){
                     Swal.fire({
                         title: '{% trans 'Are you sure?' %}',
                         text: '{% trans 'This does not satisfy the minimum OT requirement!' %}',
@@ -30,26 +38,23 @@
                         cancelButtonColor: '#d33',
                         confirmButtonText: 'Approve',
                         cancelButtonText: 'Cancel'
-                        }).then((result) => {
+                    }).then(function(result) {
                         if (result.isConfirmed) {
-                            // Your approve action logic here
-                            Swal.fire(
-                                '{% trans 'Approved!' %}',
-                                '{% trans 'Your action has been approved.' %}',
-                                'success'
-                            );
-                            $('[data-ot-approve-id={{instance.id}}]').click();
+                            var f = document.getElementById('ot-approve-confirm-' + pk);
+                            if (f && f.requestSubmit) f.requestSubmit();
                         }
-                        });">
+                    });
+                })({{ instance.id }}); return false;">
                 <img class="mt-[-1px]" src="{% static 'horilla_theme/assets/img/icons/check.svg' %}" alt="{% trans 'Approve' %}" width="13"/>
             </a>
-            {% comment %} <button type="submit" data-ot-approve-id="{{instance.id}}" hidden href=""
-                onclick="window.location.href='{% url 'approve-overtime' instance.id %}'"
-                title="{% trans 'Approve Overtime' %}" class="h-8 w-24 px-4 py-2 bg-primary-600 text-white rounded-md text-xs flex items-center justify-center gap-2 hover:bg-primary-800 transition duration-300">
-                <img src="{% static 'horilla_theme/assets/img/icons/check.svg' %}" alt="{% trans 'Approve' %}" width="13"
-			    class="filter brightness-0 invert" />
-                {% trans 'Approve' %}
-            </button> {% endcomment %}
+            <form
+                id="ot-approve-confirm-{{ instance.id }}"
+                hx-post="{% url 'approve-overtime' instance.id %}"
+                hx-swap="none"
+                hidden
+            >
+                {% csrf_token %}
+            </form>
 	    {% endif %}
     </div>
 {% endif %}

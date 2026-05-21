@@ -8,7 +8,11 @@
 }
 </style>
 <div class="col-span-12">
-    <form  action="{% url 'initial-prefix' %}" method="post">
+    <form  action="{% url 'initial-prefix' %}" method="post"
+        hx-post="{% url 'initial-prefix' %}"
+        hx-target="#settingsContainer"
+        hx-select="#settingsContainer"
+        hx-swap="outerHTML show:none">
         {% csrf_token %}
 
                 <div class="flex space-x-2 pb-2">

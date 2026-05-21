@@ -66,6 +66,7 @@ from base.models import (
     WorkTypeRequest,
 )
 from base.views import generate_error_report
+from employee.cbv.document_request import htmx_refresh_document_request_container
 from employee.filters import DocumentRequestFilter, EmployeeFilter, EmployeeReGroup
 from employee.forms import (
     BonusPointAddForm,
@@ -849,12 +850,31 @@ def document_delete(request, id):
                     )
                     return HttpResponse(html)
 
+            refreshed = htmx_refresh_document_request_container(request)
+            if refreshed is not None:
+                return refreshed
+
             return HttpResponse("<script>$('#reloadMessagesButton').click();</script>")
         else:
             messages.error(request, _("Document not found"))
     except ProtectedError:
         messages.error(request, _("You cannot delete this document."))
+    refreshed = htmx_refresh_document_request_container(request)
+    if refreshed is not None:
+        return refreshed
     return HorillaRedirect(request)
+
+
+def can_access_document(request, document, perm):
+    """
+    Check if the current user is authorized to access the given document.
+    """
+    employee = request.user.employee_get
+    return (
+        document.employee_id == employee
+        or document.employee_id.get_reporting_manager() == employee
+        or request.user.has_perm(perm)
+    )
 
 
 @login_required
@@ -870,7 +890,19 @@ def file_upload(request, id):
     Returns: return document_form template
     """
 
-    document_item = Document.objects.get(id=id)
+    document_item = Document.find(id)
+    if document_item is None:
+        return HorillaRedirect(
+            request, message=_("No Document found matching the query.")
+        )
+
+    if not can_access_document(
+        request, document_item, "horilla_documents.change_document"
+    ):
+        return HorillaRedirect(
+            request, message=_("You do not have permission to update this document.")
+        )
+
     form = DocumentUpdateForm(instance=document_item)
     if request.method == "POST":
         form = DocumentUpdateForm(request.POST, request.FILES, instance=document_item)
@@ -936,6 +968,18 @@ def view_file(request, id):
     """
 
     document_obj = Document.objects.filter(id=id).first()
+    if document_obj is None:
+        return HorillaRedirect(
+            request, message=_("No Document found matching the query.")
+        )
+
+    if not can_access_document(
+        request, document_obj, "horilla_documents.view_document"
+    ):
+        return HorillaRedirect(
+            request, message=_("You do not have permission to view this document.")
+        )
+
     context = {
         "document": document_obj,
     }
@@ -986,7 +1030,11 @@ def document_approve(request, id):
         messages.success(request, _("Document request approved"))
     else:
         messages.error(request, _("No document uploaded"))
-    # 918
+
+    refreshed = htmx_refresh_document_request_container(request)
+    if refreshed is not None:
+        return refreshed
+
     if refresh_url:
         span = f"""
         <span
@@ -1071,6 +1119,9 @@ def document_bulk_approve(request):
                 request, _(f"{not_uploaded_count} document(s) skipped (not uploaded)")
             )
 
+    refreshed = htmx_refresh_document_request_container(request)
+    if refreshed is not None:
+        return refreshed
     return HorillaRedirect(request)
 
 
@@ -1102,6 +1153,9 @@ def document_bulk_reject(request):
         messages.success(
             request, _("{} Document request rejected").format(updated_count)
         )
+        refreshed = htmx_refresh_document_request_container(request)
+        if refreshed is not None:
+            return refreshed
         return HorillaRedirect(request)
 
     return render(
@@ -1432,7 +1486,7 @@ def view_employee_bulk_update(request):
             messages.warning(
                 request, _("There are no employees selected for bulk update.")
             )
-            return redirect(employee_view)
+            return redirect(f"{reverse('employee-view')}?view=list")
 
 
 @login_required
@@ -1500,11 +1554,11 @@ def employee_account_block_unblock(request, emp_id):
     employee = get_object_or_404(Employee, id=emp_id)
     if not employee:
         messages.info(request, _("Employee not found"))
-        return redirect(employee_view)
+        return redirect(f"{reverse('employee-view')}?view=list")
     user = get_object_or_404(HorillaUser, id=employee.employee_user_id.id)
     if not user:
         messages.info(request, _("Employee not found"))
-        return redirect(employee_view)
+        return redirect(f"{reverse('employee-view')}?view=list")
     if not user.is_superuser:
         user.is_active = not user.is_active
         action_message = _("blocked") if not user.is_active else _("unblocked")
@@ -1548,8 +1602,14 @@ def employee_view_update(request, obj_id, **kwargs):
     """
     This method is used to render update form for employee.
     """
+    container_mode = (
+        request.GET.get("container") == "true"
+        or request.POST.get("container") == "true"
+    )
     employee = Employee.objects.filter(id=obj_id).first()
-    if not employee:
+    emp = Employee.objects.entire().filter(id=obj_id).first()
+
+    if not employee and not emp:
         return HorillaRedirect(
             request, message=_("No Employee found matching the query.")
         )
@@ -1560,7 +1620,6 @@ def employee_view_update(request, obj_id, **kwargs):
         work_info_track=True
     ).exists()
 
-    emp = Employee.objects.entire().filter(id=obj_id).first()
     if not employee and emp and hasattr(emp, "employee_work_info"):
         if (
             emp.employee_work_info
@@ -1571,7 +1630,7 @@ def employee_view_update(request, obj_id, **kwargs):
             messages.error(
                 request, _("Employee is not working in the selected company.")
             )
-            return redirect(employee_view)
+            return redirect(f"{reverse('employee-view')}?view=list")
 
     if employee is None:
         employee = emp
@@ -1652,17 +1711,30 @@ def employee_view_update(request, obj_id, **kwargs):
                     instance.employee_id = employee
                     instance.save()
                     messages.success(request, _("Employee bank details updated."))
-        return render(
+        use_edit_fragment = request.META.get("HTTP_HX_REQUEST") == "true"
+        template_name = (
+            "employee/update_form/form_view_fragment.html"
+            if use_edit_fragment
+            else "employee/update_form/form_view.html"
+        )
+        submitted_form = request.POST.get("form", "") if request.POST else ""
+        active_tab = (
+            submitted_form if submitted_form in ("personal", "work", "bank") else ""
+        )
+        response = render(
             request,
-            "employee/update_form/form_view.html",
+            template_name,
             {
                 "obj_id": obj_id,
                 "form": form,
                 "work_form": work_form,
                 "bank_form": bank_form,
                 "work_info_history": work_info_history,
+                "container_mode": container_mode,
+                "active_tab": active_tab,
             },
         )
+        return response
     return HorillaRedirect(request, fallback_url="/employee/employee-view")
 
 
@@ -1794,12 +1866,12 @@ def employee_create_update_personal_info(request, obj_id=None):
             form = EmployeeForm(request.POST, instance=form.instance)
             work_form = EmployeeWorkInformationForm(
                 instance=EmployeeWorkInformation.objects.filter(
-                    employee_id=employee
+                    employee_id=form.instance
                 ).first()
             )
             bank_form = EmployeeBankDetailsForm(
                 instance=EmployeeBankDetails.objects.filter(
-                    employee_id=employee
+                    employee_id=form.instance
                 ).first()
             )
             return redirect(
@@ -2334,7 +2406,7 @@ def replace_employee(request, emp_id):
         employee.is_active = False
         employee.save()
         messages.success(request, _("{} archived successfully").format(employee))
-    return redirect(employee_view)
+    return redirect(f"{reverse('employee-view')}?view=list")
 
 
 @login_required
@@ -3696,6 +3768,8 @@ def encashment_condition_create(request):
             if encashment_form.is_valid():
                 encashment_form.save()
                 messages.success(request, _("Settings updated."))
+                if request.headers.get("HX-Request"):
+                    return HttpResponse("")
                 return HorillaRedirect(request)
         else:
             encashment_form = EncashmentGeneralSettingsForm(instance=instance)
@@ -3707,6 +3781,8 @@ def encashment_condition_create(request):
         )
 
     messages.warning(request, _("Payroll app not installed"))
+    if request.headers.get("HX-Request"):
+        return HttpResponse("", status=400)
     return HorillaRedirect(request)
 
 
@@ -3725,12 +3801,16 @@ def initial_prefix(request):
         if form.is_valid():
             form.save()
             messages.success(request, "Initial prefix updated successfully.")
+            if request.headers.get("HX-Request"):
+                return HttpResponse("")
             return HorillaRedirect(request)
         else:
             messages.error(request, "There was an error updating the prefix.")
     else:
         form = EmployeeGeneralSettingPrefixForm(instance=instance)
 
+    if request.headers.get("HX-Request"):
+        return HttpResponse("", status=400)
     return HorillaRedirect(request)
 
 

@@ -41,7 +41,7 @@ class SkillZoneFormView(HorillaFormView):
             form.save()
 
             messages.success(self.request, _(message))
-            return self.HttpResponse("<script>window.location.reload()</script>")
+            return self.HttpResponse(script="$('.filterButton').first().click();")
         return super().form_valid(form)
 
 
@@ -79,7 +79,7 @@ class SkillZoneCandidateFormView(HorillaFormView):
                 message = _("Candidate added successfully.")
             form.save(commit=True)
             messages.success(self.request, _(message))
-            return self.HttpResponse("<script>window.location.reload()</script>")
+            return self.HttpResponse(script="$('.filterButton').first().click();")
         return super().form_valid(form)
 
 

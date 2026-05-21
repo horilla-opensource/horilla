@@ -1,52 +1,14 @@
-{% load i18n %}
-{% if messages %}
-    <script>
-        $('.filterButton')[0].click()
-        setTimeout(function () { $('.oh-modal__close').click(); }, 1000);
-    </script>
-{% endif %}
-<form hx-post="{% url 'create-interview-schedule' %}" hx-target="#createTarget" hx-encoding="multipart/form-data"
-    id="skillform">
-    {{form.as_p}}
-</form>
-<!-- <script>
-    $("#skillform .col-md-6").toggleClass("col-md-6");
-
-    $('[name=candidate_id]').change(function () {
-        var candidate_id = $('[name=candidate_id]').val();
-        var selectedmanagers = $('[name=employee_id]').val();
-
-        // Make AJAX request to fetch available Managers for the selected Candidate
-        $.ajax({
-            url: "{% url 'get_managers' %}",
-            method: 'GET',
-            data: {
-                'cand_id': candidate_id
-            },
-            success: function (data) {
-                // Clear existing options in the Managers dropdown
-                $('[name=employee_id]').empty();
-
-                // Append new options based on the response
-                $.each(data.employees, function (key, value) {
-
-                    $('[name=employee_id]').append($('<option>', {
-                        value: key,
-                        text: value
-                    }));
-
-                });
-
-                // Set the selected Managers back to the dropdown
-                if (selectedmanagers) {
-                    $('[name=employee_id]').val(selectedmanagers);
-                }
-            }
-        });
-    });
-
-<<<<<<< HEAD
-</script> -->
-=======
-</script>
->>>>>>> a557b8a4c05c90515a575c7585620c822d2503d6
+{% load i18n widget_tweaks %}
+<div id="id_employee_id_parent_div">
+    <div class="flex oh-label" for="id_employee_id">
+        <label class="{% if form.employee_id.field.required %}required-star{% endif %}"
+            for="id_employee_id">{% trans form.employee_id.label %}</label>
+        {% if form.employee_id.help_text %}
+            <span class="oh-info mr-2" title="{{ form.employee_id.help_text }}"></span>
+        {% endif %}
+    </div>
+    <div id="dynamic_field_employee_id">
+        {{ form.employee_id|add_class:'form-control' }}
+        {{ form.employee_id.errors }}
+    </div>
+</div>

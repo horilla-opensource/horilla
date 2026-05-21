@@ -27,7 +27,7 @@
 
         {% else %}
           {% if field.name|startswith:"option" %}
-            <div id="optionDiv">
+            <div id="optionDiv{{ forloop.counter }}">
               {% if field.name == "options" %}
                 <label
                   class="oh-label {% if field.field.required %} required-star{% endif %}"
@@ -39,16 +39,6 @@
               {{field.errors}}
               <div style="width: 100%;display:flex;" class="pt-2">
                 {{ field|add_class:"form-control" }}
-                {% if not field.name == "options" %}
-                  <a class="oh-btn oh-btn--danger-outline oh-btn--light-bkg"
-                    hx-get="{% url 'add-remove-options-field' %}"
-                    hx-target="#optionDiv{{forloop.counter}}"
-                    hx-swap="outerHTML"
-                    id="delete-link"
-                    >
-                    <ion-icon name="trash-outline"></ion-icon>
-                  </a>
-                {% endif %}
               </div>
             </div>
             {% if forloop.last %}

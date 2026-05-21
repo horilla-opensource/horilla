@@ -247,8 +247,13 @@ x-data="{searchShow: false}"
       <div class="oh-btn-group ml-2">
         <div class="oh-dropdown" >
           {% if perms.recruitment.add_candidate %}
-          <a href="{% url 'candidate-create' %}"
-          class='oh-btn oh-btn--secondary'
+          <a
+            hx-get="{% url 'candidate-create' %}"
+            hx-target="#objectCreateModalTarget"
+            data-toggle="oh-modal-toggle"
+            data-target="#objectCreateModal"
+            class='oh-btn oh-btn--secondary'
+            role="button"
           >
           <ion-icon name="add-sharp" class="mr-1"></ion-icon>{% trans "Create" %}
         </a>

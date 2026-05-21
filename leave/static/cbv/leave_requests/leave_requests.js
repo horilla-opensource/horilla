@@ -7,6 +7,39 @@ function makeLeaverequestsListUnique(list) {
 //            LEAVE REQUEST
 // ---------------------------------------
 
+function refreshLeaveRequestListContainer() {
+    if (typeof htmx === "undefined") return;
+    var query = window.location.search || "";
+    var url = "/leave/request-filter/" + query;
+    htmx.ajax("GET", url, { target: "#listContainer", swap: "innerHTML" });
+    var rejectModal = document.getElementById("rejectModal");
+    if (rejectModal) rejectModal.classList.remove("oh-modal--show");
+}
+
+document.addEventListener("reloadLeaveRequestList", function () {
+    refreshLeaveRequestListContainer();
+});
+
+document.addEventListener("horillaMessage", function (evt) {
+    var detail = (evt && evt.detail) ? evt.detail : {};
+    var text = detail.text || "";
+    if (!text) return;
+
+    if (typeof Swal !== "undefined" && Swal && typeof Swal.fire === "function") {
+        Swal.fire({
+            toast: true,
+            position: "top-end",
+            icon: (detail.level === "error" ? "error" : "success"),
+            title: text,
+            showConfirmButton: false,
+            timer: 2500,
+            timerProgressBar: true,
+        });
+        return;
+    }
+    alert(text);
+});
+
 function tickLeaverequestsCheckboxes() {
     var ids = JSON.parse($("#selectedLeaverequests").attr("data-ids") || "[]");
     uniqueIds = makeLeaverequestsListUnique(ids);

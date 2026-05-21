@@ -264,7 +264,9 @@ class AssetCategoryNav(HorillaNavView):
 
 @method_decorator(hx_request_required, name="dispatch")
 class AssetDeleteConfirmationView(HorillaDeleteConfirmationView):
+    generic_delete_url_name = "generic-delete-asset-category"
 
     def post(self, *args, **kwargs):
         super().post(*args, **kwargs)
-        return HorillaFormView.HttpResponse(targets_to_reload=["#applyFilter"])
+        # asset-category-view uses `.filterButton` (theme nav may also have `#applyFilter`)
+        return HorillaFormView.HttpResponse(targets_to_reload=[".filterButton"])

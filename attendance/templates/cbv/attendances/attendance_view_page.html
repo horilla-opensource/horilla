@@ -9,6 +9,14 @@
 </div>
 
 {% include "generic/components.html" %}
+<button
+    type="button"
+    id="attendanceViewReload"
+    hidden
+    hx-get="{% url 'attendances-tab-view' %}"
+    hx-target="#listContainer"
+    hx-swap="innerHTML"
+></button>
 <div class="oh-checkpoint-badge mb-2" id="selectedInstances" data-ids="[]" data-clicked="" style="display: none"></div>
 <div class="oh-checkpoint-badge mb-2" id="validateselectedInstances" data-ids="[]" data-clicked="" style="display: none"></div>
 <div class="oh-checkpoint-badge mb-2" id="overtimeselectedInstances" data-ids="[]" data-clicked="" style="display: none"></div>

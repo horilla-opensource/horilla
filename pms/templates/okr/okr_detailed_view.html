@@ -1,11 +1,18 @@
 {% extends 'index.html' %} {% load static i18n %}
 {% load widget_tweaks %} {% block content %} {% load basefilters %}
-{% include 'filter_tags.html' %}
-{% include "okr/emp_objective/emp_objective_nav.html" %}
 {% include "generic/components.html" %}
 <main :class="sidebarOpen ? 'oh-main__sidebar-visible' : ''">
   <div id="ObjectiveDetailedViewContainer">
     <div class="oh-wrapper" style="margin-top: 5px">
+      <div class="d-flex justify-content-end mb-2">
+        <a
+          href="{% url 'objective-list-view' %}"
+          class="px-3 py-1 text-xs bg-primary-600 text-white rounded-full hover:bg-primary-800 transition duration-300 flex items-center gap-2"
+        >
+          <i class="fa-solid fa-arrow-left"></i>
+          {% trans "Back" %}
+        </a>
+      </div>
       <div class="oh-card">
         <div class="oh-helpdesk__header">
           <div class="d-flex justify-content-between align-items-center">
@@ -52,6 +59,7 @@
                       class="avatars__item"
                       title="{{manager}}"
                       ><img class="avatar" src="{{manager.get_avatar}}" alt=""
+                      style="width: 32px; height: 32px; object-fit: cover; border-radius: 50%;"
                     /></a>
                     {% endfor %}
                   </div>

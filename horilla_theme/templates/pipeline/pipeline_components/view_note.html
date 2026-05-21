@@ -106,24 +106,31 @@
 				hx-target="#activitySidebar"
 				hx-post="{% url 'create-note' cand.id %}"
 				id="commentForm"
+				hx-on-htmx-after-request="$('#commentInput').val('');$('#commentButton').prop('disabled', true);reloadMessage();"
 			>
 				{% csrf_token %}
+				<label for="commentInput" class="font-semibold text-sm mt-3 block">
+					{% trans "Add a note" %}
+				</label>
 				<input
 					type="text"
 					name="description"
 					id="commentInput"
 					class="oh-input w-full mt-2"
-					placeholder="{% trans 'Add notes' %}"
-					hx-on:keyup="toggleCommentButton(this);"
+					placeholder="{% trans 'Example: Candidate requested interview reschedule to Friday 3 PM.' %}"
+					oninput="$('#commentButton').prop('disabled', $(this).val().trim() === '')"
 				/>
+				<p class="text-xs text-[#666] mt-2 mb-0">
+					{% trans "Type your update, then click Add note." %}
+				</p>
 				<button
 					type="submit"
 					id="commentButton"
 					class="oh-btn oh-btn--secondary mt-2"
-					style="display: none"
+					disabled
 				>
 					<i class="fa-regular fa-square-plus"></i>
-					{% trans "Add" %}
+					{% trans "Add note" %}
 				</button>
 			</form>
 		{% endif %}
@@ -279,7 +286,7 @@
 								class="mb-4"
 							/>
 							<p class="text-[#666] mb-5">
-								{% trans "No notes have been added for this employee" %}
+								{% trans "No notes yet. Use the 'Add a note' field above to save interview updates." %}
 							</p>
 						</div>
 					</div>

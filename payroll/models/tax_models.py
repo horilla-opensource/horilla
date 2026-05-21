@@ -25,7 +25,7 @@ class PayrollSettings(HorillaModel):
 
     choices = [
         ("prefix", _("Prefix")),
-        ("postfix", _("Postfix")),
+        ("postfix", _("Suffix")),
     ]
 
     currency_symbol = models.CharField(null=True, default="$", max_length=5)

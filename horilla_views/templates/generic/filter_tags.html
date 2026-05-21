@@ -66,32 +66,20 @@
 		if (`{{keys_to_remove|safe}}`.includes(field)) {
 			return "";
 		}
-		fiedlElem = $(`#applyFilter`).closest(`form`).find(`[name=${field}]`);
+		const fiedlElem = $(`#applyFilter`).closest(`form`).find(`[name=${field}]`);
 		if (fiedlElem.is("select")) {
-			// my conditions
 			if (fiedlElem.is("select[multiple]")) {
-				values = fiedlElem.val();
-				values.push(field);
-				$.each(values, function (index, value) {
-					fiedlElem.append(
-						$("<option>", {
-							value: value,
-							text: fiedlElem.find(`[value=${field}]`).html(),
-						}),
-					);
-				});
+				const optionText = fiedlElem.find(`option[value="${value}"]`).text();
+				return optionText || value;
 			} else {
-				fiedlElem.val(value);
-				if (!fiedlElem == "field") {
-					fiedlElem.change();
-				} else {
-					fiedlElem.select2("destroy");
-					fiedlElem.select2();
+				const selectedText = fiedlElem.find("option:selected").text();
+				const optionText = fiedlElem.find(`option[value="${value}"]`).text();
+				if (selectedText && fiedlElem.val() == value) {
+					return selectedText;
 				}
-			}
-		} else {
-			if (!fiedlElem.is(":focus")) {
-				fiedlElem.val(value);
+				if (optionText) {
+					return optionText;
+				}
 			}
 		}
 		if (field == "field") {
@@ -120,8 +108,6 @@
 			$("#loadsavedfilterform").click();
 			$("#savedFilterModal").addClass("oh-modal--show");
 		});
-
-		$(".oh-tabs__tab--active:first").click();
 
 		$(".filter-field").each(function () {
 			var field = $(this).attr("data-field");

@@ -1,0 +1,42 @@
+{% extends "admin/base_site.html" %}
+{% load i18n %}
+
+{% block title %}{% trans "Restore Template Version" %}{% endblock %}
+
+{% block breadcrumbs %}
+<div class="breadcrumbs">
+  <a href="{% url 'admin:index' %}">{% trans "Home" %}</a> ›
+  <a href="{% url 'admin:horilla_dbtemplate_template_changelist' %}">{% trans "Templates" %}</a> ›
+  <a href="{{ change_url }}">{{ template.name }}</a> ›
+  {% trans "Restore Version" %} {{ version.version }}
+</div>
+{% endblock %}
+
+{% block content %}
+<h1>{% blocktrans with name=template.name v=version.version %}Restore "{{ name }}" to Version {{ v }}{% endblocktrans %}</h1>
+
+<div style="background:#fff3cd;border:1px solid #ffc107;border-radius:4px;padding:14px 18px;margin-bottom:20px">
+  <strong>⚠️ {% trans "You are about to restore this template to version" %} {{ version.version }}.</strong><br>
+  {% trans "The current content will be replaced and a new version snapshot will be created automatically." %}<br>
+  {% if version.created_by %}
+    {% blocktrans with user=version.created_by ts=version.created_at %}
+      This version was saved by <strong>{{ user }}</strong> at {{ ts }}.
+    {% endblocktrans %}
+  {% endif %}
+</div>
+
+<h2 style="margin-top:24px">{% trans "Diff: Current vs Version" %} {{ version.version }}</h2>
+<div style="overflow-x:auto;margin-bottom:24px">
+  {{ diff_html }}
+</div>
+
+<form method="post">
+  {% csrf_token %}
+  <div style="display:flex;gap:12px">
+    <input type="submit" value="✅ {% trans 'Confirm Restore' %}" class="button default"
+           style="background:#2e7d32;color:#fff;border:none;padding:8px 18px;cursor:pointer;border-radius:4px">
+    <a class="button" href="{{ change_url }}"
+       style="padding:8px 18px;border-radius:4px">{% trans "Cancel" %}</a>
+  </div>
+</form>
+{% endblock %}

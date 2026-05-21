@@ -648,6 +648,28 @@ class Employee(models.Model):
         )
         return subordinates
 
+    def _employee_profile_path_matches_db(self, file) -> bool:
+        """
+        True if the in-memory file field still points at the same path as in the DB.
+        Used to skip strict validation when the file is missing from storage but the
+        row was not given a new upload (e.g. archive, other saves that touch is_active).
+        """
+        if not self.pk or not file:
+            return False
+        current = (getattr(file, "name", None) or "").strip()
+        if not current:
+            return False
+        try:
+            stored = (
+                Employee.objects.filter(pk=self.pk)
+                .values_list("employee_profile", flat=True)
+                .first()
+            )
+        except Exception:
+            return False
+        stored = (stored or "").strip()
+        return bool(stored) and stored == current
+
     def clean(self):
         super().clean()
 
@@ -655,10 +677,16 @@ class Employee(models.Model):
         if not file:
             return
 
+        # Committed = already saved to storage; unreadable path → don't block saves.
+        committed = getattr(file, "committed", False)
+        same_as_db = self._employee_profile_path_matches_db(file)
+
         try:
             file.seek(0)
             content = file.read()
         except Exception:
+            if committed or same_as_db:
+                return
             raise ValidationError({"employee_profile": "Unable to read uploaded file."})
 
         is_svg = False
@@ -675,6 +703,8 @@ class Employee(models.Model):
                 file.seek(0)
                 Image.open(file).verify()
             except Exception:
+                if committed or same_as_db:
+                    return
                 raise ValidationError(
                     {"employee_profile": "Invalid image or SVG file."}
                 )

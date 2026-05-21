@@ -2,6 +2,8 @@
 This page handles the cbv methods for canidate profile page
 """
 
+from django.shortcuts import redirect
+from django.urls import reverse
 from django.utils.decorators import method_decorator
 from django.utils.translation import gettext_lazy as _
 
@@ -32,6 +34,20 @@ class CandidateProfileView(HorillaProfileView):
     filter_class = CandidateFilter
     push_url = "candidate-view-individual"
     key_name = "cand_id"
+
+    def dispatch(self, request, *args, **kwargs):
+        # This endpoint returns only the profile fragment; direct browser opens should
+        # land on the full candidate page that loads this fragment via HTMX.
+        if request.META.get("HTTP_HX_REQUEST") != "true":
+            candidate_id = kwargs.get("pk")
+            redirect_url = reverse(
+                "candidate-view-individual", kwargs={"cand_id": candidate_id}
+            )
+            query_string = request.GET.urlencode()
+            if query_string:
+                redirect_url = f"{redirect_url}?{query_string}"
+            return redirect(redirect_url)
+        return super().dispatch(request, *args, **kwargs)
 
     actions = [
         {

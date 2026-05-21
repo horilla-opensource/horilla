@@ -1,7 +1,11 @@
 {% load static i18n %}
 {% if perms.payroll.change_allowance %}
     <!-- Start of Edit a Tag -->
-    <a href="{% url 'update-allowance' instance.id %}" onclick="event.stopPropagation();"
+    <a href="#"
+        hx-get="{% url 'update-allowance' instance.id %}"
+        hx-target="#listContainer"
+        hx-swap="innerHTML"
+        onclick="event.stopPropagation();"
         class="w-24 px-4 py-2 bg-primary-600 text-white rounded-md text-xs flex items-center justify-center gap-2 hover:bg-primary-800 transition duration-300">
         <img src="{% static 'horilla_theme/assets/img/icons/edit.svg' %}" alt="{% trans 'Edit' %}" width="13"
             class="filter brightness-0 invert" />

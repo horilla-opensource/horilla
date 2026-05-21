@@ -37,7 +37,8 @@
     border-radius: 4px 0 0 4px;
   }
 </style>
-<div hx-get="{% url "allowances-nav-view" %}" hx-trigger="load">
+<div id="payrollAllowancesNavBar">
+  <div hx-get="{% url "allowances-nav-view" %}" hx-trigger="load"></div>
 </div>
 
 
@@ -51,6 +52,41 @@
   <div class="animated-background">
 </div>
 </div>
+
+<script>
+  (function () {
+    function syncAllowancesNavVisibility() {
+      var nav = document.getElementById("payrollAllowancesNavBar");
+      var list = document.getElementById("listContainer");
+      if (!nav || !list) return;
+      var isForm = !!list.querySelector("#contractFormTarget");
+      nav.style.display = isForm ? "none" : "";
+    }
+    function refreshAllowancesListContainer() {
+      if (typeof htmx === "undefined") return;
+      var query = window.location.search || "";
+      var url = "{% url 'allowances-list-view' %}" + query;
+      htmx.ajax("GET", url, { target: "#listContainer", swap: "innerHTML" });
+      var $msg = $("#reloadMessagesButton");
+      if ($msg.length) $msg.click();
+    }
+    document.addEventListener("reloadPayrollAllowances", function () {
+      refreshAllowancesListContainer();
+    });
+    document.addEventListener("DOMContentLoaded", syncAllowancesNavVisibility);
+    document.body.addEventListener("htmx:afterSwap", function (e) {
+      if (e.detail && e.detail.target && e.detail.target.id === "listContainer") {
+        syncAllowancesNavVisibility();
+        setTimeout(syncAllowancesNavVisibility, 0);
+      }
+    });
+    document.body.addEventListener("htmx:afterSettle", function (e) {
+      if (e.detail && e.detail.target && e.detail.target.id === "listContainer") {
+        syncAllowancesNavVisibility();
+      }
+    });
+  })();
+</script>
 
 <script>
     $("#filterForm").submit(function (e) {

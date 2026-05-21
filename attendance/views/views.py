@@ -456,6 +456,21 @@ def attendance_update(request, obj_id):
     )
 
 
+def attendance_view_redirect(request):
+    """
+    Full page redirect for normal navigation; for HTMX requests (attendance-view),
+    trigger a client-side refresh of the list container without reloading the page.
+    """
+    if request.META.get("HTTP_HX_REQUEST"):
+        response = HttpResponse("", status=200)
+        # Fire on document body so handlers run even if the initiating node is swapped/removed (hx-swap=none).
+        response["HX-Trigger"] = json.dumps(
+            {"reloadAttendanceView": {"target": "body"}}
+        )
+        return response
+    return HorillaRedirect(request)
+
+
 @login_required
 @permission_required("attendance.delete_attendance")
 @require_http_methods(["POST"])
@@ -501,7 +516,7 @@ def attendance_delete(request, obj_id):
             )
     except (Attendance.DoesNotExist, OverflowError):
         messages.error(request, _("Attendance Does not exists.."))
-    return HorillaRedirect(request)
+    return attendance_view_redirect(request)
 
 
 @login_required
@@ -738,7 +753,6 @@ def attendance_overtime_delete(request, obj_id):
 
 
 @login_required
-@hx_request_required
 @permission_required("attendance.delete_attendanceovertime")
 def attendance_account_bulk_delete(request):
     """
@@ -1369,6 +1383,16 @@ def validate_bulk_attendance(request):
                 continue
 
             attendance.attendance_validated = True
+            # Recalculate worked hours from attendance activities before validation
+            # to ensure Hours Account reflects actual worked time.
+            # Fixes: https://github.com/horilla/horilla-hr/issues/1055
+            if (
+                not attendance.attendance_worked_hour
+                or attendance.attendance_worked_hour == "00:00"
+            ):
+                at_work_seconds = attendance.get_at_work_from_activities()
+                if at_work_seconds > 0:
+                    attendance.attendance_worked_hour = format_time(at_work_seconds)
             attendance.save()
             validate_req_count += 1
 
@@ -1417,8 +1441,18 @@ def validate_this_attendance(request, obj_id):
         if not request.user.is_superuser:
             if attendance.employee_id.id == request.user.employee_get.id:
                 messages.error(request, _("You cannot validate your own attendance."))
-                return HorillaRedirect(request)
+                return attendance_view_redirect(request)
         attendance.attendance_validated = True
+        # Recalculate worked hours from attendance activities before validation
+        # to ensure Hours Account reflects actual worked time.
+        # Fixes: https://github.com/horilla/horilla-hr/issues/1055
+        if (
+            not attendance.attendance_worked_hour
+            or attendance.attendance_worked_hour == "00:00"
+        ):
+            at_work_seconds = attendance.get_at_work_from_activities()
+            if at_work_seconds > 0:
+                attendance.attendance_worked_hour = format_time(at_work_seconds)
         attendance.save()
         urlencode = request.GET.urlencode()
         modified_url = f"/attendance/attendance-view/?{urlencode}"
@@ -1444,7 +1478,7 @@ def validate_this_attendance(request, obj_id):
     except (Attendance.DoesNotExist, ValueError):
         messages.error(request, _("Attendance not found"))
 
-    return HorillaRedirect(request)
+    return attendance_view_redirect(request)
 
 
 @login_required
@@ -1491,6 +1525,7 @@ def revalidate_this_attendance(request, obj_id):
 
 @login_required
 @manager_can_enter("attendance.change_attendance")
+@require_http_methods(["GET", "POST"])
 def approve_overtime(request, obj_id):
     """
     This method is used to approve attendance overtime
@@ -1502,7 +1537,7 @@ def approve_overtime(request, obj_id):
         if not request.user.is_superuser:
             if attendance.employee_id.id == request.user.employee_get.id:
                 messages.error(request, _("You cannot approve your own overtime."))
-                return HorillaRedirect(request)
+                return attendance_view_redirect(request)
         attendance.attendance_overtime_approve = True
         attendance.save()
         urlencode = request.GET.urlencode()
@@ -1530,11 +1565,10 @@ def approve_overtime(request, obj_id):
             )
     except (Attendance.DoesNotExist, OverflowError):
         messages.error(request, _("Attendance not found"))
-    return HorillaRedirect(request)
+    return attendance_view_redirect(request)
 
 
 @login_required
-@hx_request_required
 @manager_can_enter("attendance.change_attendance")
 def approve_bulk_overtime(request):
     """
@@ -2776,7 +2810,6 @@ def work_record_export(request):
 
 
 @login_required
-@hx_request_required
 @permission_required("attendance.add_attendancegeneralsetting")
 def enable_timerunner(request):
     """

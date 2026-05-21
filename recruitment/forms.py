@@ -831,14 +831,12 @@ class QuestionForm(ModelForm):
 
     def clean(self):
         cleaned_data = super().clean()
-        recruitment = self.cleaned_data["recruitment"]
-        question_type = self.cleaned_data["type"]
+        recruitment = self.cleaned_data.get("recruitment")
+        question_type = self.cleaned_data.get("type")
         options = self.cleaned_data.get("options")
-        if not recruitment.exists():  # or jobs.exists()):
-            raise ValidationError(
-                {"recruitment": _("Choose any recruitment to apply this question")}
-            )
-        self.recruitment = recruitment
+        self.recruitment = (
+            recruitment if recruitment is not None else Recruitment.objects.none()
+        )
         if question_type in ["options", "multiple"] and (
             options is None or options == ""
         ):
@@ -1277,13 +1275,27 @@ class ScheduleInterviewForm(BaseModelForm):
         self.fields["interview_date"].widget = forms.DateInput(
             attrs={"type": "date", "class": "oh-input w-100"}
         )
-        self.fields["interview_time"].widget = forms.TimeInput(
-            attrs={"type": "time", "class": "oh-input w-100"}
-        )
+        if self.instance.pk:
+            # Update mode: keep this permissive and normalize manually in clean()
+            # so unchanged browser values do not fail with "Enter a valid time".
+            self.fields["interview_time"] = forms.CharField(
+                required=False,
+                widget=forms.TimeInput(
+                    attrs={"type": "time", "class": "oh-input w-100"}
+                ),
+            )
+        else:
+            self.fields["interview_time"] = forms.TimeField(
+                required=True,
+                input_formats=["%H:%M", "%I:%M %p", "%H:%M:%S", "%I:%M:%S %p"],
+                widget=forms.TimeInput(
+                    attrs={"type": "time", "class": "oh-input w-100"}
+                ),
+            )
         candidate_attr = {
             "hx-include": "#InterviewCreateForm",
             "hx-target": "#id_employee_id_parent_div",
-            "hx-get": "/recruitment/get-interview-managers",
+            "hx-get": "/recruitment/get-interview-managers/",
             "hx-swap": "innerHTML",
             "hx-select": "#id_employee_id_parent_div",
             "hx-trigger": "change, load delay:300ms",
@@ -1297,10 +1309,31 @@ class ScheduleInterviewForm(BaseModelForm):
     def clean(self):
 
         instance = self.instance
-        cleaned_data = super().clean()
+        cleaned_data = super().clean() or {}
         interview_date = cleaned_data.get("interview_date")
         interview_time = cleaned_data.get("interview_time")
-        managers = cleaned_data["employee_id"]
+        raw_interview_time = (self.data.get("interview_time") or "").strip()
+        managers = cleaned_data.get("employee_id") or []
+
+        if instance.pk:
+            parsed_time = None
+            if raw_interview_time:
+                for fmt in (
+                    "%H:%M",
+                    "%I:%M %p",
+                    "%H:%M:%S",
+                    "%I:%M:%S %p",
+                    "%I:%M%p",
+                    "%H:%M:%S.%f",
+                ):
+                    try:
+                        parsed_time = datetime.strptime(raw_interview_time, fmt).time()
+                        break
+                    except ValueError:
+                        continue
+            cleaned_data["interview_time"] = parsed_time or instance.interview_time
+            interview_time = cleaned_data.get("interview_time")
+
         if not instance.pk and interview_date and interview_date < date.today():
             self.add_error("interview_date", _("Interview date cannot be in the past."))
 
@@ -1315,7 +1348,7 @@ class ScheduleInterviewForm(BaseModelForm):
                     "interview_time", _("Interview time cannot be in the past.")
                 )
 
-        if apps.is_installed("leave"):
+        if managers and apps.is_installed("leave"):
             from leave.models import LeaveRequest
 
             leave_employees = LeaveRequest.objects.filter(
@@ -1327,7 +1360,7 @@ class ScheduleInterviewForm(BaseModelForm):
         employees = [
             leave.employee_id.get_full_name()
             for leave in leave_employees
-            if interview_date in leave.requested_dates()
+            if interview_date and interview_date in leave.requested_dates()
         ]
 
         if employees:

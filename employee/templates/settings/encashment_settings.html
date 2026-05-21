@@ -1,6 +1,10 @@
 {% load i18n %}
 <div id="encashment_container">
-  <form action="{% url 'encashment-condition-create' %}" class="settings-label mb-1" method="post">
+  <form action="{% url 'encashment-condition-create' %}" class="settings-label mb-1" method="post"
+    hx-post="{% url 'encashment-condition-create' %}"
+    hx-target="#settingsContainer"
+    hx-select="#settingsContainer"
+    hx-swap="outerHTML show:none">
     {% csrf_token %}
     <div class="oh-inner-sidebar-content__header mt-4">
       <h2 class="oh-inner-sidebar-content__title">{% trans 'Encashment Redeem Condition' %}</h2>

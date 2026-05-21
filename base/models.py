@@ -664,7 +664,7 @@ class EmployeeType(HorillaModel):
     employee_type = models.CharField(max_length=50, verbose_name=_("Employee Type"))
     company_id = models.ManyToManyField(Company, blank=True, verbose_name=_("Company"))
 
-    objects = HorillaCompanyManager("employee_id__employee_work_info__company_id")
+    objects = HorillaCompanyManager()
 
     class Meta:
         """
@@ -773,7 +773,7 @@ class EmployeeShift(HorillaModel):
             verbose_name=_("Grace Time"),
         )
 
-    objects = HorillaCompanyManager("employee_shift__company_id")
+    objects = HorillaCompanyManager()
 
     class Meta:
         """
@@ -869,7 +869,7 @@ class EmployeeShiftSchedule(HorillaModel):
 
     company_id = models.ManyToManyField(Company, blank=True, verbose_name=_("Company"))
 
-    objects = HorillaCompanyManager("shift_id__employee_shift__company_id")
+    objects = HorillaCompanyManager()
 
     class Meta:
         """

@@ -2,7 +2,7 @@
 <script>
   $("#reloadMessagesButton").click()
 </script>
-<button hidden class="reload-record" hx-get="{% url "generic-delete" %}?{{request.GET.urlencode}}" hx-target="#{{confirmation_target}}">{{request.GET.urlencode}}</button>
+<button hidden class="reload-record" hx-get="{% url generic_delete_url_name %}?{{request.GET.urlencode}}" hx-target="#{{confirmation_target}}">{{request.GET.urlencode}}</button>
 <div class="oh-modal__dialog-header">
   <span class="oh-modal__dialog-title" id="deleteConfirmationLabel">{% trans "Delete Confirmation" %}</span>
   <button class="oh-modal__close--custom" onclick="$(this).closest('.oh-modal--show').removeClass('oh-modal--show')" aria-label="Close"><ion-icon name="close-outline" role="img" class="md hydrated" aria-label="close outline"></ion-icon></button>
@@ -124,7 +124,7 @@
               >{{summary.0|capfirst}} : {{summary.1|capfirst}}</li>
               {% endfor %}
             </ul>
-            <form hx-post="{% url "generic-delete" %}?{{request.GET.urlencode}}" hx-target="#deleteConfirmationBody">
+            <form hx-post="{% url generic_delete_url_name %}?{{request.GET.urlencode}}" hx-target="#deleteConfirmationBody">
               <div class="d-flex justify-content-end">
                 <div>
                   <div class="mt-2">

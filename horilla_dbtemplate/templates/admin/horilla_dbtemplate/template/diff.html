@@ -1,0 +1,63 @@
+{% extends "admin/base_site.html" %}
+{% load i18n %}
+
+{% block title %}{% trans "Template Diff" %}{% endblock %}
+
+{% block breadcrumbs %}
+<div class="breadcrumbs">
+  <a href="{% url 'admin:index' %}">{% trans "Home" %}</a> ›
+  <a href="{% url 'admin:horilla_dbtemplate_template_changelist' %}">{% trans "Templates" %}</a> ›
+  <a href="{{ change_url }}">{{ template.name }}</a> ›
+  {% trans "Diff" %}
+</div>
+{% endblock %}
+
+{% block content %}
+<h1>{% blocktrans with name=template.name %}Diff — {{ name }}{% endblocktrans %}</h1>
+
+<form method="get" style="background:#f9f9f9;border:1px solid #e0e0e0;border-radius:4px;padding:14px 18px;margin-bottom:20px;display:flex;gap:16px;align-items:flex-end;flex-wrap:wrap">
+  <div>
+    <label style="display:block;font-weight:600;margin-bottom:4px">{% trans "From Version" %}</label>
+    <select name="v1" style="padding:6px 10px;border-radius:4px;border:1px solid #ccc">
+      {% for vnum, vlabel in version_choices %}
+        <option value="{{ vnum }}" {% if vnum == v1.version %}selected{% endif %}>{{ vlabel }}</option>
+      {% endfor %}
+    </select>
+  </div>
+  <div>
+    <label style="display:block;font-weight:600;margin-bottom:4px">{% trans "To Version" %}</label>
+    <select name="v2" style="padding:6px 10px;border-radius:4px;border:1px solid #ccc">
+      {% for vnum, vlabel in version_choices %}
+        <option value="{{ vnum }}" {% if vnum == v2.version %}selected{% endif %}>{{ vlabel }}</option>
+      {% endfor %}
+    </select>
+  </div>
+  <div>
+    <button type="submit" class="button default"
+            style="padding:8px 18px;background:#1976d2;color:#fff;border:none;border-radius:4px;cursor:pointer">
+      {% trans "Compare" %}
+    </button>
+  </div>
+</form>
+
+<div style="display:flex;gap:12px;margin-bottom:10px">
+  <div style="flex:1;background:#ffeef0;border-radius:3px;padding:6px 12px;font-size:12px">
+    <strong>v{{ v1.version }}</strong>
+    {% if v1.created_by %} — {{ v1.created_by }}{% endif %}
+    — {{ v1.created_at|date:"Y-m-d H:i" }}
+  </div>
+  <div style="flex:1;background:#e6ffed;border-radius:3px;padding:6px 12px;font-size:12px">
+    <strong>v{{ v2.version }}</strong>
+    {% if v2.created_by %} — {{ v2.created_by }}{% endif %}
+    — {{ v2.created_at|date:"Y-m-d H:i" }}
+  </div>
+</div>
+
+<div style="overflow-x:auto">
+  {{ diff_html }}
+</div>
+
+<div style="margin-top:20px">
+  <a class="button" href="{{ change_url }}">← {% trans "Back to Template" %}</a>
+</div>
+{% endblock %}

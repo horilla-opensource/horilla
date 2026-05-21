@@ -1013,11 +1013,18 @@ class Candidate(HorillaModel):
 
         return f"'{url}','{message}'"
 
+    def get_archive_action_url(self):
+        """
+        This method returns just the archive/un-archive endpoint URL
+        (without JS-formatted arguments), suitable for direct HTMX use.
+        """
+        return reverse_lazy("rec-candidate-archive", kwargs={"cand_id": self.pk})
+
     def get_delete_url(self):
         """
         This method to get delete url
         """
-        url = reverse_lazy("generic-delete")
+        url = reverse_lazy("rec-candidate-delete", kwargs={"cand_id": self.pk})
         return url
 
     def get_self_tracking_url(self):
@@ -1178,12 +1185,26 @@ class Candidate(HorillaModel):
         if self.stage_id is not None:
             self.hired = self.stage_id.stage_type == "hired"
 
+        should_validate_job_position = not self.pk
+        if self.pk:
+            previous = (
+                Candidate.objects.filter(pk=self.pk)
+                .values("recruitment_id", "job_position_id")
+                .first()
+            )
+            if previous:
+                should_validate_job_position = (
+                    previous["recruitment_id"] != self.recruitment_id_id
+                    or previous["job_position_id"] != self.job_position_id_id
+                )
+
         if not self.recruitment_id.is_event_based and self.job_position_id is None:
             self.job_position_id = self.recruitment_id.job_position_id
-        if self.job_position_id not in self.recruitment_id.open_positions.all():
-            raise ValidationError({"job_position_id": _("Choose valid choice")})
-        if self.recruitment_id.is_event_based and self.job_position_id is None:
-            raise ValidationError({"job_position_id": _("This field is required.")})
+        if should_validate_job_position:
+            if self.job_position_id not in self.recruitment_id.open_positions.all():
+                raise ValidationError({"job_position_id": _("Choose valid choice")})
+            if self.recruitment_id.is_event_based and self.job_position_id is None:
+                raise ValidationError({"job_position_id": _("This field is required.")})
         if self.stage_id and self.stage_id.stage_type == "cancelled":
             self.canceled = True
         if self.canceled:
@@ -1920,7 +1941,7 @@ class CandidateDocumentRequest(HorillaModel):
     )
     description = models.TextField(blank=True, null=True, verbose_name=_("Description"))
     objects = HorillaCompanyManager(
-        related_company_field="employee_id__employee_work_info__company_id"
+        related_company_field="candidate_id__recruitment_id__company_id"
     )
 
     def __str__(self):

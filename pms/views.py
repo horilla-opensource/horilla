@@ -808,7 +808,11 @@ def objective_detailed_view(request, obj_id, **kwargs):
         "comment_form": ObjectiveCommentForm,
         "current_date": now,
         "emp_obj_form": EmployeeObjectiveFilter(),
+        "back_url": reverse("tab-objectives-view"),
+        "objective_list_url": reverse("objective-list-view"),
     }
+    if request.headers.get("HX-Request"):
+        return render(request, "okr/okr_detailed_view_fragment.html", context)
     return render(request, "okr/okr_detailed_view.html", context)
 
 
@@ -1551,6 +1555,7 @@ def feedback_creation(request):
     context = {
         "feedback_form": form,
     }
+    is_htmx = request.headers.get("HX-Request") is not None
     if request.method == "POST":
         form = FeedbackForm(request.POST)
         form.fields["manager_id"].required = False
@@ -1568,10 +1573,26 @@ def feedback_creation(request):
 
             messages.success(request, _("Feedback created successfully."))
             send_feedback_notifications(request, feedback=instance)
+            if is_htmx:
+                response = HttpResponse("", status=200)
+                response["HX-Trigger"] = json.dumps(
+                    {"reloadFeedbackContainer": {"target": "body"}}
+                )
+                return response
             return redirect(reverse("feedback-view"))
         else:
             context["feedback_form"] = form
-    return render(request, "feedback/feedback_creation.html", context)
+            if is_htmx:
+                return render(
+                    request,
+                    "cbv/360_feedback/form/feedback_creation_fragment.html",
+                    context,
+                )
+    if is_htmx:
+        return render(
+            request, "cbv/360_feedback/form/feedback_creation_fragment.html", context
+        )
+    return render(request, "cbv/360_feedback/feedback_home.html", context)
 
 
 # @login_required
@@ -2064,6 +2085,7 @@ def feedback_delete(request, id):
     Returns:
         it will redirect to  feedback_list_view.
     """
+    error_message = None
     try:
         feedback = Feedback.objects.get(id=id)
         answered = Answer.objects.filter(feedback_id=feedback).first()
@@ -2078,6 +2100,13 @@ def feedback_delete(request, id):
                 _("Feedback %(review_cycle)s deleted successfully!")
                 % {"review_cycle": feedback.review_cycle},
             )
+            if request.headers.get("HX-Request"):
+                response = HttpResponse("", status=200)
+                response["HX-Trigger"] = json.dumps(
+                    {"reloadFeedbackContainer": {"target": "body"}}
+                )
+                return response
+            return redirect(reverse("feedback-view"))
 
         else:
             messages.warning(
@@ -2085,12 +2114,24 @@ def feedback_delete(request, id):
                 _("You can't delete feedback %(review_cycle)s with status %(status)s")
                 % {"review_cycle": feedback.review_cycle, "status": feedback.status},
             )
+            if request.headers.get("HX-Request"):
+                response = HttpResponse("", status=200)
+                response["HX-Trigger"] = json.dumps(
+                    {"reloadFeedbackContainer": {"target": "body"}}
+                )
+                return response
             return redirect(reverse("feedback-view"))
 
     except Feedback.DoesNotExist:
         error_message = _("No Feedback found matching the query.")
     except ProtectedError:
         error_message = _("Related entries exists")
+    if request.headers.get("HX-Request"):
+        response = HttpResponse("", status=200)
+        response["HX-Trigger"] = json.dumps(
+            {"reloadFeedbackContainer": {"target": "body"}}
+        )
+        return response
     return HorillaRedirect(request, message=error_message)
 
 
@@ -2197,6 +2238,12 @@ def feedback_archive(request, id):
         feedback.archive = True
         feedback.save()
         messages.info(request, _("Feedback archived successfully!."))
+    if request.headers.get("HX-Request"):
+        response = HttpResponse("", status=200)
+        response["HX-Trigger"] = json.dumps(
+            {"reloadFeedbackContainer": {"target": "body"}}
+        )
+        return response
     return redirect(reverse("feedback-view"))
 
 

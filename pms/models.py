@@ -221,6 +221,7 @@ class Objective(HorillaModel):
     )
     duration = models.IntegerField(default=1, validators=[MinValueValidator(0)])
     add_assignees = models.BooleanField(default=False)
+    is_template = models.BooleanField(default=False)
     archive = models.BooleanField(default=False)
     history = HorillaAuditLog(bases=[HorillaAuditInfo])
     company_id = models.ForeignKey(

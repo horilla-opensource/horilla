@@ -307,7 +307,10 @@ def project_delete(request, project_id):
     project_view_url = reverse("project-view")
     redirected_url = f"{project_view_url}?view={view_type}"
     Project.objects.get(id=project_id).delete()
-
+    if request.headers.get("HX-Request"):
+        return HttpResponse(
+            "<script>$('#applyFilter').click();$('#reloadMessagesButton').click();</script>"
+        )
     return redirect(redirected_url)
 
 
@@ -709,6 +712,10 @@ def project_archive(request, project_id):
     if not project.is_active:
         message = _(f"{project} Archived successfully.")
     messages.success(request, message)
+    if request.headers.get("HX-Request"):
+        return HttpResponse(
+            "<script>$('#applyFilter').click();$('#reloadMessagesButton').click();</script>"
+        )
     return HorillaRedirect(request)
 
 
@@ -913,7 +920,7 @@ def delete_task(request, task_id):
     messages.success(request, _("The task has been deleted successfully."))
     if request.META.get("HTTP_HX_REQUEST"):
         return HttpResponse(
-            f"<span hx-get='/project/task-filter/{project_id}/?view={view_type}' hx-trigger='load' hx-target='#viewContainer'></span>"
+            "<script>$('#applyFilter').click();$('#reloadMessagesButton').click();</script>"
         )
     return redirect(redirected_url)
 
@@ -1067,6 +1074,11 @@ def drag_and_drop_task(request):
     if not task:
         messages.error(request, _("Task not found"))
         return JsonResponse({"error": "Task not found"}, status=404)
+
+    if task.end_date and task.end_date < date.today():
+        messages.warning(request, _("Cannot update status. Task has already expired."))
+        return JsonResponse({"change": True})
+
     project = task.project
     if (
         request.user.has_perm("project.change_task")
@@ -1285,9 +1297,10 @@ def task_all_archive(request, task_id):
     if not task.is_active:
         message = _(f"{task} archived")
     messages.success(request, message)
-    # return HttpResponse("<script>$('.oh-btn--view').click();</script>")
-    # return HttpResponse("<script>$('#hiddenbutton').click();</script>")
-
+    if request.META.get("HTTP_HX_REQUEST"):
+        return HttpResponse(
+            "<script>$('#applyFilter').click();$('#reloadMessagesButton').click();</script>"
+        )
     return HorillaRedirect(request)
 
 
@@ -1405,6 +1418,7 @@ def get_stages(request):
 
 
 @login_required
+@hx_request_required
 def create_stage_taskall(request):
     """
     This is an ajax method to return json response to create stage related
@@ -1560,6 +1574,7 @@ def get_members(request):
 
 
 @login_required
+@hx_request_required
 def get_tasks_in_timesheet(request):
     project_id = request.GET.get("project_id")
     form = TimeSheetForm()
@@ -1826,6 +1841,7 @@ def time_sheet_filter(request):
 
 
 @login_required
+@hx_request_required
 def time_sheet_initial(request):
     """
     This is an ajax method to return json response to take only tasks related

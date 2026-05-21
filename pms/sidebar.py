@@ -21,6 +21,10 @@ SUBMENUS = [
         "redirect": reverse_lazy("objective-list-view"),
     },
     {
+        "menu": _("Objective Template"),
+        "redirect": reverse_lazy("objective-template-list-view"),
+    },
+    {
         "menu": _("360 Feedback"),
         "redirect": reverse_lazy("feedback-view"),
     },

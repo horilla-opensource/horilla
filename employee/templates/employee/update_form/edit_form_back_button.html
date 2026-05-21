@@ -1,0 +1,41 @@
+{% load i18n %}
+<div class="w-100 d-flex justify-content-end align-items-center mb-3 pb-2 border-bottom">
+    {% if container_mode %}
+    <button
+        type="button"
+        title="{% trans 'Back' %}"
+        class="px-3 py-1 text-xs bg-primary-600 text-white rounded-full hover:bg-primary-800 transition duration-300 inline-flex items-center gap-2"
+        onclick="
+            var navBar = document.getElementById('employeeListNavBar');
+            var list = document.getElementById('listContainer');
+            if (navBar && list) {
+                if (window.history && history.pushState) {
+                    history.pushState({}, '', '{% url 'employee-view' %}');
+                }
+                navBar.style.display = '';
+                var tagRow = navBar.querySelector('#filterTagContainerSectionNav');
+                if (tagRow) { tagRow.innerHTML = ''; }
+                list.innerHTML = '<div class=&quot;animated-background&quot;></div>';
+                setTimeout(function () {
+                    var btn = document.getElementById('applyFilter');
+                    if (btn) { btn.click(); }
+                }, 100);
+            } else {
+                window.location.href = '{% url 'employee-view' %}';
+            }
+        "
+    >
+        <i class="fa-solid fa-arrow-left"></i>
+        {% trans "Back" %}
+    </button>
+    {% else %}
+    <a
+        href="{% url 'employee-view' %}"
+        title="{% trans 'Back' %}"
+        class="px-3 py-1 text-xs bg-primary-600 text-white rounded-full hover:bg-primary-800 transition duration-300 inline-flex items-center gap-2 text-decoration-none"
+    >
+        <i class="fa-solid fa-arrow-left"></i>
+        {% trans "Back" %}
+    </a>
+    {% endif %}
+</div>

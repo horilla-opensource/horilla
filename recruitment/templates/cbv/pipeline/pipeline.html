@@ -107,9 +107,14 @@
 	}
 
 	function getCSRFToken() {
-		return document
-			.querySelector('meta[name="csrf-token"]')
-			.getAttribute("content");
+		const metaToken = document.querySelector('meta[name="csrf-token"]');
+		if (metaToken && metaToken.getAttribute("content")) {
+			return metaToken.getAttribute("content");
+		}
+		const tokenPair = document.cookie
+			.split("; ")
+			.find((row) => row.startsWith("csrftoken="));
+		return tokenPair ? decodeURIComponent(tokenPair.split("=")[1]) : "";
 	}
 
 	function deleteCandidate(url) {

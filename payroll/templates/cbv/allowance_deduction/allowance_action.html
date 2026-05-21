@@ -4,7 +4,11 @@
         <div class="oh-btn-group">
             {% if perms.payroll.change_allowance %}
                 <a onclick="event.stopPropagation();" class="oh-btn oh-btn--light-bkg w-100"
-                    href="{% url 'update-allowance' instance.id %}" title='{% trans "Update" %}'>
+                    href="#"
+                    hx-get="{% url 'update-allowance' instance.id %}"
+                    hx-target="#listContainer"
+                    hx-swap="innerHTML"
+                    title='{% trans "Update" %}'>
                     <ion-icon name="create-outline" role="img" class="md hydrated" style="color: blue"
                     aria-label="create outline"></ion-icon>
                 </a>

@@ -36,17 +36,6 @@ def attendance_post_save(sender, instance, **kwargs):
             employee_id=instance.employee_id,
         )
     except WorkRecords.MultipleObjectsReturned:
-        # work_records = WorkRecords.objects.filter(
-        #     date=instance.attendance_date,
-        #     employee_id=instance.employee_id,
-        # )
-        # work_record = work_records.first()
-        # print('**********************')
-        # print(work_records)
-        # print(work_record)
-        # print(str(work_records.query))
-        # print('**********************')
-        # work_records.exclude(id=work_record.id).delete()
         work_records = WorkRecords.objects.filter(
             date=instance.attendance_date,
             employee_id=instance.employee_id,

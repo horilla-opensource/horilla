@@ -103,15 +103,20 @@ class LeaveMailSendThread(Thread):
 
             email.attach_alternative(html_message, "text/html")
 
-            # Attach company logo inline if available
-            if company and company.icon:
-                with open(company.icon.path, "rb") as f:
+            # Attach company logo inline, fall back to static Horilla logo if file missing
+            if company and company.icon and os.path.exists(company.icon.path):
+                image_path = company.icon.path
+            else:
+                image_path = finders.find("images/ui/horilla-sticker-round.png")
+
+            if image_path:
+                with open(image_path, "rb") as f:
                     logo = MIMEImage(f.read())
                     logo.add_header("Content-ID", "<company_logo>")
                     logo.add_header(
                         "Content-Disposition",
                         "inline",
-                        filename=os.path.basename(company.icon.path),
+                        filename=os.path.basename(image_path),
                     )
                     email.attach(logo)
 

@@ -87,9 +87,9 @@
             {% if perms.recruitment.add_candidate or request.user|is_stagemanager %}
             <div class="oh-dropdown" x-data="{open: false}">
               <a class="" hx-get="{% url 'add-candidate-to-stage' %}?stage_id={{stage.grouper.id}}"
-              hx-target="#genericModalBody"
+              hx-target="#objectCreateModalTarget"
               data-toggle="oh-modal-toggle"
-              data-target="#genericModal" @click="open = !open" title="{% trans 'Add Candidates' %}">
+              data-target="#objectCreateModal" @click="open = !open" title="{% trans 'Add Candidates' %}">
                 <ion-icon name="add-sharp" role="img" class="md hydrated mt-1" aria-label="add sharp"></ion-icon>
               </a>
             </div>
@@ -114,7 +114,12 @@
           style="cursor: pointer;overflow: visible;"
           data-candidate = "{{cand.name}}"
           data-job-position ="{{cand.job_position_id}}"
-          onclick="window.location.href = `{% url 'candidate-view-individual' cand.id %}`"
+          onclick="
+            try {
+              sessionStorage.setItem('candidateProfileBackUrl', window.location.pathname + window.location.search);
+            } catch (e) {}
+            window.location.href = `{% url 'candidate-view-individual' cand.id %}?next=${encodeURIComponent(window.location.pathname + window.location.search)}`;
+          "
         >
           <div class="oh-kanban__card-head align-items-baseline pb-0" {% if cand.is_offer_rejected %}
           style="border-left: solid orangered;"
@@ -269,9 +274,9 @@
                     {% endif %}
                     {% if perms.recruitment.delete_candidate %}
                     <li class="oh-dropdown__item">
-                    <form action="{% url 'rec-candidate-delete' cand.id %}" onsubmit="return confirm('{% trans "Are you sure you want to delete this stage?" %}');" method="post">
+                    <form action="{% url 'rec-candidate-delete' cand.id %}" onsubmit="return confirm('{% trans "Are you sure you want to delete this candidate?" %}');" method="post">
                       {% csrf_token %}
-                      <button class="oh-dropdown__link oh-dropdown__link--danger ">{% trans "Delete" %}</button>
+                      <button type="submit" class="oh-dropdown__link oh-dropdown__link--danger ">{% trans "Delete" %}</button>
                     </form>
                   </li>
                   {% endif %}

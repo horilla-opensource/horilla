@@ -32,5 +32,28 @@
     </div>
 </div>
 
+<script>
+    if (window._skillZoneContainerReloadHandler) {
+        document.body.removeEventListener(
+            "skillZoneContainerReload",
+            window._skillZoneContainerReloadHandler
+        );
+    }
+    window._skillZoneContainerReloadHandler = function () {
+        var $filter = $(".filterButton").first();
+        if ($filter.length) {
+            $filter.click();
+        }
+        var $msg = $("#reloadMessagesButton");
+        if ($msg.length) {
+            $msg.click();
+        }
+    };
+    document.body.addEventListener(
+        "skillZoneContainerReload",
+        window._skillZoneContainerReloadHandler
+    );
+</script>
+
 
 {% endblock %}

@@ -1,6 +1,10 @@
 {% extends 'settings.html' %} {% block settings %}{% load i18n %}
 
-<form action="{% url 'payroll-settings' %}" class='settings-label mb-1' method="post">
+<form action="{% url 'payroll-settings' %}" class='settings-label mb-1' method="post"
+  hx-post="{% url 'payroll-settings' %}"
+  hx-target="#settingsContainer"
+  hx-select="#settingsContainer"
+  hx-swap="outerHTML show:none">
   {% csrf_token %}
   <div class="oh-inner-sidebar-content__header mt-3">
     <h2 class="oh-inner-sidebar-content__title">{% trans "Currency" %}</h2>

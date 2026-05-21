@@ -385,7 +385,7 @@ class PayrollTab(PayslipList):
     def get_queryset(self):
         queryset = super().get_queryset()
         pk = self.kwargs.get("pk")
-        queryset = queryset.filter(employee_id=pk)
+        queryset = self.model.objects.filter(employee_id=pk)
         return queryset
 
     def __init__(self, **kwargs: Any) -> None:

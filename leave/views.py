@@ -122,13 +122,31 @@ def leave_type_creation(request):
     GET : return leave type creation template
     POST : return leave view
     """
+    is_htmx = request.headers.get("HX-Request") is not None
     form = LeaveTypeForm()
     if request.method == "POST":
         form = LeaveTypeForm(request.POST, request.FILES)
         if form.is_valid():
             form.save()
             messages.success(request, _("New leave type Created.."))
+            if is_htmx:
+                response = HttpResponse("", status=200)
+                response["HX-Trigger"] = json.dumps(
+                    {"reloadLeaveTypeList": {"target": "body"}}
+                )
+                return response
             return redirect(reverse("type-view"))
+    if is_htmx:
+        return render(
+            request,
+            "leave/leave_type/leave_type_form_fragment.html",
+            {
+                "form": form,
+                "title": _("Create Leave Type"),
+                "post_url": reverse("type-creation"),
+                "is_htmx": True,
+            },
+        )
     return render(request, "leave/leave_type/leave_type_creation.html", {"form": form})
 
 
@@ -258,6 +276,7 @@ def leave_type_update(request, id, **kwargs):
     except (LeaveType.DoesNotExist, OverflowError, ValueError):
         messages.error(request, _("Leave type not found"))
         return redirect("type-view")
+    is_htmx = request.headers.get("HX-Request") is not None
     form = UpdateLeaveTypeForm(instance=leave_type)
     compensatory = request.GET.get("compensatory")
     redirect_url = reverse("type-view")
@@ -270,7 +289,25 @@ def leave_type_update(request, id, **kwargs):
         if form_data.is_valid():
             form_data.save()
             messages.success(request, _("Leave type is updated successfully.."))
+            if is_htmx:
+                response = HttpResponse("", status=200)
+                response["HX-Trigger"] = json.dumps(
+                    {"reloadLeaveTypeList": {"target": "body"}}
+                )
+                return response
             return redirect(redirect_url)
+        form = form_data
+    if is_htmx:
+        return render(
+            request,
+            "leave/leave_type/leave_type_form_fragment.html",
+            {
+                "form": form,
+                "title": _("Update Leave Type"),
+                "post_url": request.get_full_path(),
+                "is_htmx": True,
+            },
+        )
     return render(
         request,
         "leave/leave_type/leave_type_update.html",
@@ -1100,6 +1137,18 @@ def leave_request_approve(request, id, emp_id=None):
             )
     else:
         messages.error(request, _("Leave request already approved"))
+    if request.headers.get("HX-Request"):
+        response = HttpResponse("", status=200)
+        response["HX-Trigger"] = json.dumps(
+            {
+                "reloadLeaveRequestList": {"target": "body"},
+                "horillaMessage": {
+                    "level": "success",
+                    "text": _("Leave request approved successfully.."),
+                },
+            }
+        )
+        return response
     if emp_id is not None:
         employee_id = emp_id
         return redirect(f"/employee/employee-view/{employee_id}/")
@@ -1251,6 +1300,18 @@ def leave_request_cancel(request, id, emp_id=None):
             else:
                 messages.error(request, _("Leave request already rejected."))
 
+            if request.headers.get("HX-Request"):
+                response = HttpResponse("", status=200)
+                response["HX-Trigger"] = json.dumps(
+                    {
+                        "reloadLeaveRequestList": {"target": "body"},
+                        "horillaMessage": {
+                            "level": "success",
+                            "text": _("Leave request rejected successfully.."),
+                        },
+                    }
+                )
+                return response
             if emp_id is not None:
                 employee_id = emp_id
                 return redirect(f"/employee/employee-view/{employee_id}/")

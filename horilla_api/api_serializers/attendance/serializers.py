@@ -225,6 +225,8 @@ class UserAttendanceListSerializer(serializers.ModelSerializer):
 
 
 class UserAttendanceDetailedSerializer(serializers.ModelSerializer):
+    shift_name = serializers.CharField(source="shift_id.employee_shift", read_only=True)
+
     class Meta:
         model = Attendance
         fields = "__all__"

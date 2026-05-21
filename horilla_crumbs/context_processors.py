@@ -298,11 +298,15 @@ def breadcrumbs(request):
                         pass
 
             key = "HTTP_HX_REQUEST"
+            sidebar_nav_key = "HTTP_HX_SIDEBAR_NAV"
             names = [d["name"] for d in breadcrumbs]
             if (
                 new_dict not in breadcrumbs
                 and new_dict["name"] not in remove_urls + names
-                and key not in request.META.keys()
+                and (
+                    key not in request.META.keys()
+                    or request.META.get(sidebar_nav_key) == "true"
+                )
                 and not new_dict["name"].isdigit()
             ):
                 if new_dict["name"] in ["employee-view", "candidate-view"]:

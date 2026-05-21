@@ -82,13 +82,31 @@ def contract_create(request):
     from payroll.forms.forms import ContractForm
 
     form = ContractForm()
+    is_htmx = request.headers.get("HX-Request") is not None
     if request.method == "POST":
         form = ContractForm(request.POST, request.FILES)
         if form.is_valid():
             form.save()
             messages.success(request, _("Contract Created"))
+            if is_htmx:
+                response = HttpResponse("", status=200)
+                response["HX-Trigger"] = json.dumps(
+                    {"reloadPayrollContracts": {"target": "body"}}
+                )
+                return response
             return redirect("view-contract")
-    return render(request, "payroll/common/form.html", {"form": form})
+    template_name = (
+        "payroll/common/form_fragment.html" if is_htmx else "payroll/common/form.html"
+    )
+    return render(
+        request,
+        template_name,
+        {
+            "form": form,
+            "post_url": request.get_full_path(),
+            "back_url": reverse("contract-filter"),
+        },
+    )
 
 
 @login_required
@@ -109,6 +127,7 @@ def contract_update(request, contract_id, **kwargs):
     from payroll.forms.forms import ContractForm
 
     contract = Contract.objects.filter(id=contract_id).first()
+    is_htmx = request.headers.get("HX-Request") is not None
     if not contract:
         messages.info(request, _("The contract could not be found."))
         return redirect("view-contract")
@@ -118,12 +137,23 @@ def contract_update(request, contract_id, **kwargs):
         if contract_form.is_valid():
             contract_form.save()
             messages.success(request, _("Contract updated"))
+            if is_htmx:
+                response = HttpResponse("", status=200)
+                response["HX-Trigger"] = json.dumps(
+                    {"reloadPayrollContracts": {"target": "body"}}
+                )
+                return response
             return redirect(reverse("view-contract"))
+    template_name = (
+        "payroll/common/form_fragment.html" if is_htmx else "payroll/common/form.html"
+    )
     return render(
         request,
-        "payroll/common/form.html",
+        template_name,
         {
             "form": contract_form,
+            "post_url": request.get_full_path(),
+            "back_url": reverse("contract-filter"),
         },
     )
 
@@ -436,9 +466,15 @@ def settings(request):
 
             currency_form.save()
             messages.success(request, _("Payroll settings updated."))
+            if request.headers.get("HX-Request"):
+                return HttpResponse("")
             return HorillaRedirect(request)
         else:
             messages.error(request, "There was an error updating the currency.")
+            if request.headers.get("HX-Request"):
+                return HttpResponse("", status=400)
+    if request.headers.get("HX-Request"):
+        return HttpResponse("", status=400)
     return HorillaRedirect(request)
 
 
@@ -474,6 +510,7 @@ def update_payslip_status(request, payslip_id):
 
 
 @login_required
+@hx_request_required
 def update_payslip_status_no_id(request):
     """
     This method is used to update the payslip confirmation status
@@ -616,6 +653,12 @@ def delete_payslip(request, payslip_id):
         messages.error(request, _("Payslip not found."))
     except ProtectedError:
         messages.error(request, _("Something went wrong"))
+    if request.headers.get("HX-Request"):
+        response = HttpResponse("", status=200)
+        response["HX-Trigger"] = json.dumps(
+            {"reloadPayrollPayslips": {"target": "body"}}
+        )
+        return response
     if not Payslip.objects.filter():
         return HorillaRedirect(request)
     return redirect(reverse("payslip-list"))
@@ -1566,6 +1609,7 @@ def payslip_pdf(request, id):
 
 
 @login_required
+@hx_request_required
 @permission_required("payroll.view_contract")
 def contract_select(request):
     page_number = request.GET.get("page")
@@ -1583,6 +1627,7 @@ def contract_select(request):
 
 
 @login_required
+@hx_request_required
 def contract_select_filter(request):
     page_number = request.GET.get("page")
     filtered = request.GET.get("filter")
@@ -1604,6 +1649,7 @@ def contract_select_filter(request):
 
 
 @login_required
+@hx_request_required
 def payslip_select(request):
     page_number = request.GET.get("page")
     payslip = Payslip.objects.none()
@@ -1623,6 +1669,7 @@ def payslip_select(request):
 
 
 @login_required
+@hx_request_required
 def payslip_select_filter(request):
     page_number = request.GET.get("page")
     filtered = request.GET.get("filter")
@@ -1796,11 +1843,13 @@ def delete_payrollrequest_comment(request, comment_id):
     """
     This method is used to delete Reimbursement request comments
     """
-    script = ""
+
     comment = ReimbursementrequestComment.objects.filter(id=comment_id)
+    if not comment.exists():
+        messages.error(request, _("Comment not found."))
+        return HorillaRedirect(request)
     comment.delete()
-    messages.success(request, _("Comment deleted successfully!"))
-    return HttpResponse(script)
+    return HorillaRedirect(request, message=_("Comment deleted successfully!"))
 
 
 @login_required
@@ -1808,14 +1857,14 @@ def delete_reimbursement_comment_file(request):
     """
     Used to delete attachment
     """
-    script = ""
     ids = request.GET.getlist("ids")
+    if not ids:
+        return HorillaRedirect(request, message=_("No file IDs provided for deletion."))
     records = ReimbursementFile.objects.filter(id__in=ids)
     if not request.user.has_perm("payroll.delete_reimbursmentfile"):
         records = records.filter(employee_id__employee_user_id=request.user)
     records.delete()
-    messages.success(request, _("File deleted successfully"))
-    return HttpResponse(script)
+    return HorillaRedirect(request, message=_("File deleted successfully"))
 
 
 @login_required
@@ -1877,6 +1926,7 @@ def create_or_update_auto_payslip(request, auto_id=None):
 
 
 @login_required
+@hx_request_required
 @permission_required("payroll.change_payslipautogenerate")
 def activate_auto_payslip_generate(request):
     """

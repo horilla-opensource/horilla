@@ -150,6 +150,12 @@ class EmployeeShiftSheduleDetailView(HorillaDetailedView):
 
     action_method = "detail_actions_col"
 
+    def dispatch(self, request, *args, **kwargs):
+        if not EmployeeShiftSchedule.objects.filter(id=kwargs.get("pk")).exists():
+            messages.error(request, _("Shift schedule not found."))
+            return HorillaRedirect(request)
+        return super().dispatch(request, *args, **kwargs)
+
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
         instance = self.get_object()

@@ -35,7 +35,9 @@
 		}
 	</style>
 
-	<div hx-get="{% url 'contracts-nav' %}" hx-trigger="load"></div>
+	<div id="payrollContractsNavBar">
+		<div hx-get="{% url 'contracts-nav' %}" hx-trigger="load"></div>
+	</div>
 
 	{% include "generic/components.html" %}
 
@@ -50,6 +52,41 @@
 	<div class="oh-wrapper" id="listContainer">
 		<div class="animated-background"></div>
 	</div>
+
+	<script>
+		(function () {
+			function syncContractsNavVisibility() {
+				var nav = document.getElementById("payrollContractsNavBar");
+				var list = document.getElementById("listContainer");
+				if (!nav || !list) return;
+				var isForm = !!list.querySelector("#contractFormTarget");
+				nav.style.display = isForm ? "none" : "";
+			}
+			function refreshContractsListContainer() {
+				if (typeof htmx === "undefined") return;
+				var query = window.location.search || "";
+				var url = "{% url 'contract-filter' %}" + query;
+				htmx.ajax("GET", url, { target: "#listContainer", swap: "innerHTML" });
+				var $msg = $("#reloadMessagesButton");
+				if ($msg.length) $msg.click();
+			}
+			document.addEventListener("reloadPayrollContracts", function () {
+				refreshContractsListContainer();
+			});
+			document.addEventListener("DOMContentLoaded", syncContractsNavVisibility);
+			document.body.addEventListener("htmx:afterSwap", function (e) {
+				if (e.detail && e.detail.target && e.detail.target.id === "listContainer") {
+					syncContractsNavVisibility();
+					setTimeout(syncContractsNavVisibility, 0);
+				}
+			});
+			document.body.addEventListener("htmx:afterSettle", function (e) {
+				if (e.detail && e.detail.target && e.detail.target.id === "listContainer") {
+					syncContractsNavVisibility();
+				}
+			});
+		})();
+	</script>
 
 	<div
 		class="oh-modal"

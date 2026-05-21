@@ -39,21 +39,45 @@
                 <button
                     class="py-1.5 hover:text-primary-600 transition duration-300 text-sm gap-4 items-center flex w-full"
                 >
-                    <a class="text-[13px]" href="{% url 'employee-profile' %}">{% trans "My Profile" %}</a>
+                    <a
+                        class="text-[13px]"
+                        href="{% url 'employee-profile' %}"
+                        hx-get="{% url 'employee-profile' %}"
+                        hx-target="#ohMainContent"
+                        hx-select="#ohMainContent > *"
+                        hx-swap="innerHTML show:window:top"
+                        hx-push-url="true"
+                    >{% trans "My Profile" %}</a>
                 </button>
             </li>
             <li>
                 <button
                     class="py-1.5 hover:text-primary-600 transition duration-300 text-sm gap-4 items-center flex w-full"
                 >
-                    <a class="text-[13px]" href="{% url 'change-username' %}">{% trans "Change Username" %}</a>
+                    <a
+                        class="text-[13px]"
+                        href="{% url 'change-username' %}"
+                        hx-get="{% url 'change-username' %}"
+                        hx-target="#ohMainContent"
+                        hx-select="#ohMainContent > *"
+                        hx-swap="innerHTML show:window:top"
+                        hx-push-url="true"
+                    >{% trans "Change Username" %}</a>
                 </button>
             </li>
             <li>
                 <button
                     class="py-1.5 hover:text-primary-600 transition duration-300 text-sm gap-4 items-center flex w-full"
                 >
-                    <a class="text-[13px]" href="{% url 'change-password' %}"> {% trans "Change Password" %} </a>
+                    <a
+                        class="text-[13px]"
+                        href="{% url 'change-password' %}"
+                        hx-get="{% url 'change-password' %}"
+                        hx-target="#ohMainContent"
+                        hx-select="#ohMainContent > *"
+                        hx-swap="innerHTML show:window:top"
+                        hx-push-url="true"
+                    >{% trans "Change Password" %}</a>
                 </button>
             </li>
         {% endif %}

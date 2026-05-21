@@ -36,7 +36,7 @@ from django.urls import reverse, reverse_lazy
 from django.utils import timezone
 from django.utils._os import safe_join
 from django.utils.decorators import method_decorator
-from django.utils.html import strip_tags
+from django.utils.html import format_html, strip_tags
 from django.utils.http import url_has_allowed_host_and_scheme
 from django.utils.translation import gettext as _
 from django.views import View
@@ -1411,6 +1411,32 @@ def object_delete(request, obj_id, **kwargs):
             return redirect(redirect_path)
         else:
             return HorillaRedirect(request)
+
+    if (
+        redirect_path
+        and request.headers.get("HX-Request") == "true"
+        and redirect_path.startswith("/employee/document-request-view")
+    ):
+        referer = request.META.get("HTTP_REFERER", "")
+        if "/employee/document-request-view" in referer:
+            qs = urlparse(referer).query
+            filter_url = reverse("document-request-filter-view")
+            if qs:
+                filter_url = f"{filter_url}?{qs}"
+            inner = format_html(
+                '<span hx-get="{}" hx-target="#view-container" hx-swap="innerHTML" '
+                'hx-trigger="load"></span>',
+                filter_url,
+            )
+            script = (
+                "<script>"
+                "document.querySelectorAll('.oh-modal--show').forEach(function (m) {"
+                "m.classList.remove('oh-modal--show');"
+                "});"
+                "document.getElementById('reloadMessagesButton')?.click();"
+                "</script>"
+            )
+            return HttpResponse(str(inner) + script)
 
     if redirect_path:
         previous_data = request.GET.urlencode()
@@ -3998,10 +4024,11 @@ def work_type_request_cancel(request, id):
         id  : work type request id
 
     """
+    is_ajax = request.META.get("HTTP_X_REQUESTED_WITH") == "XMLHttpRequest"
     work_type_request = WorkTypeRequest.find(id)
     if not work_type_request:
         messages.error(request, _("Work type request not found."))
-        return HorillaRedirect(request)
+        return JsonResponse({"result": False}) if is_ajax else HorillaRedirect(request)
 
     if not (
         is_reportingmanger(request, work_type_request)
@@ -4010,7 +4037,7 @@ def work_type_request_cancel(request, id):
         and work_type_request.approved == False
     ):
         messages.error(request, _("You don't have permission"))
-        return HorillaRedirect(request)
+        return JsonResponse({"result": False}) if is_ajax else HorillaRedirect(request)
     work_type_request.canceled = True
     work_type_request.approved = False
     work_info = EmployeeWorkInformation.objects.filter(
@@ -4034,6 +4061,8 @@ def work_type_request_cancel(request, id):
         redirect=reverse("work-type-request-view") + f"?id={work_type_request.id}",
         icon="close",
     )
+    if is_ajax:
+        return JsonResponse({"result": True})
     return handle_wtr_redirect(request, work_type_request)
 
 
@@ -4088,10 +4117,11 @@ def work_type_request_approve(request, id):
     This method is used to approve requested work type
     """
 
+    is_ajax = request.META.get("HTTP_X_REQUESTED_WITH") == "XMLHttpRequest"
     work_type_request = WorkTypeRequest.find(id)
     if not work_type_request:
         messages.error(request, _("Work type request not found."))
-        return HorillaRedirect(request)
+        return JsonResponse({"result": False}) if is_ajax else HorillaRedirect(request)
     if not (
         is_reportingmanger(request, work_type_request)
         or request.user.has_perm("approve_worktyperequest")
@@ -4099,7 +4129,7 @@ def work_type_request_approve(request, id):
         and not work_type_request.approved
     ):
         messages.error(request, _("You don't have permission"))
-        return HorillaRedirect(request)
+        return JsonResponse({"result": False}) if is_ajax else HorillaRedirect(request)
     """
     Here the request will be approved, can send mail right here
     """
@@ -4119,11 +4149,15 @@ def work_type_request_approve(request, id):
             redirect=reverse("work-type-request-view") + f"?id={work_type_request.id}",
             icon="checkmark",
         )
+        if is_ajax:
+            return JsonResponse({"result": True})
     else:
         messages.error(
             request,
             _("An approved work type request already exists during this time period."),
         )
+        if is_ajax:
+            return JsonResponse({"result": False})
     return handle_wtr_redirect(request, work_type_request)
 
 
@@ -4704,6 +4738,9 @@ def shift_request_details(request, id):
         id : shift request instance id
     """
     shift_request = ShiftRequest.find(id)
+    if not shift_request:
+        messages.error(request, _("Shift request not found."))
+        return HorillaRedirect(request)
     requests_ids_json = request.GET.get("instances_ids")
     context = {
         "shift_request": shift_request,
@@ -4731,6 +4768,9 @@ def shift_allocation_request_details(request, id):
         id : shift request instance id
     """
     shift_request = ShiftRequest.find(id)
+    if not shift_request:
+        messages.error(request, _("Shift request not found."))
+        return HorillaRedirect(request)
     requests_ids_json = request.GET.get("instances_ids")
     context = {
         "shift_request": shift_request,
@@ -4855,10 +4895,11 @@ def shift_request_cancel(request, id):
 
     """
 
+    is_ajax = request.META.get("HTTP_X_REQUESTED_WITH") == "XMLHttpRequest"
     shift_request = ShiftRequest.find(id)
     if not shift_request:
         messages.error(request, _("Shift request not found."))
-        return HorillaRedirect(request)
+        return JsonResponse({"result": False}) if is_ajax else HorillaRedirect(request)
     if not (
         is_reportingmanger(request, shift_request)
         or request.user.has_perm("base.cancel_shiftrequest")
@@ -4866,7 +4907,7 @@ def shift_request_cancel(request, id):
         and shift_request.approved == False
     ):
         messages.error(request, _("You don't have permission"))
-        return HorillaRedirect(request)
+        return JsonResponse({"result": False}) if is_ajax else HorillaRedirect(request)
     today_date = datetime.today().date()
     if (
         shift_request.approved
@@ -4916,7 +4957,7 @@ def shift_request_cancel(request, id):
             redirect=reverse("shift-request-view") + f"?id={shift_request.id}",
             icon="close",
         )
-    return HorillaRedirect(request)
+    return JsonResponse({"result": True}) if is_ajax else HorillaRedirect(request)
 
 
 @login_required
@@ -5030,10 +5071,11 @@ def shift_request_approve(request, id):
         id : shift request instance id
     """
 
+    is_ajax = request.META.get("HTTP_X_REQUESTED_WITH") == "XMLHttpRequest"
     shift_request = ShiftRequest.find(id)
     if not shift_request:
         messages.error(request, _("Shift request not found."))
-        return HorillaRedirect(request)
+        return JsonResponse({"result": False}) if is_ajax else HorillaRedirect(request)
 
     user = request.user
     if not (
@@ -5043,14 +5085,14 @@ def shift_request_approve(request, id):
         and not shift_request.approved
     ):
         messages.error(request, _("You don't have permission"))
-        return HorillaRedirect(request)
+        return JsonResponse({"result": False}) if is_ajax else HorillaRedirect(request)
 
     if shift_request.is_any_request_exists():
         messages.error(
             request,
             _("An approved shift request already exists during this time period."),
         )
-        return HorillaRedirect(request)
+        return JsonResponse({"result": False}) if is_ajax else HorillaRedirect(request)
 
     today_date = datetime.today().date()
     if not shift_request.is_permanent_shift:
@@ -5088,7 +5130,7 @@ def shift_request_approve(request, id):
             icon="checkmark",
         )
 
-    return HorillaRedirect(request)
+    return JsonResponse({"result": True}) if is_ajax else HorillaRedirect(request)
 
 
 @login_required
@@ -5339,15 +5381,22 @@ def delete_notification(request, id):
     """
     This method is used to delete notification
     """
-    script = ""
     try:
         request.user.notifications.get(id=id).delete()
         messages.success(request, _("Notification deleted."))
+    except request.user.notifications.model.DoesNotExist:
+        messages.error(request, _("Notification not found."))
+        return HorillaRedirect(request)
     except Exception as e:
         messages.error(request, e)
-    if not request.user.notifications.all():
-        script = """<span hx-get='/all-notifications' hx-target='#allNotificationBody' hx-trigger='load'></span>"""
-    return HttpResponse(script)
+    return HttpResponse(
+        "<script>"
+        "setTimeout(function(){"
+        "$('#reloadMessagesButton').click();"
+        "htmx.ajax('GET','/all-notifications/',{target:'#sidebarModalBody',swap:'innerHTML'});"
+        "},100);"
+        "</script>"
+    )
 
 
 @login_required
@@ -5724,6 +5773,8 @@ def history_field_settings(request):
             messages.success(request, _("Settings updated."))
             history_object.save()
 
+    if request.headers.get("HX-Request"):
+        return HttpResponse("")
     return redirect(general_settings)
 
 
@@ -6154,15 +6205,15 @@ def get_condition_value_fields(request):
 @hx_request_required
 @permission_required("base.add_multipleapprovalcondition")
 def add_more_approval_managers(request):
-    currnet_hx_target = request.META.get("HTTP_HX_TARGET")
-    hx_target_split = currnet_hx_target.split("_")
+    current_hx_target = request.META.get("HTTP_HX_TARGET")
+    hx_target_split = current_hx_target.split("_")
     next_hx_target = "_".join([hx_target_split[0], str(int(hx_target_split[-1]) + 1)])
 
     form = MultipleApproveConditionForm()
     managers_count = request.GET.get("managers_count")
     context = {
         "next_hx_target": next_hx_target,
-        "currnet_hx_target": currnet_hx_target,
+        "current_hx_target": current_hx_target,
     }
     if managers_count:
         managers_count = int(managers_count) + 1
@@ -7790,18 +7841,15 @@ def is_jwt_token_valid(auth_header):
 
 
 def protected_media(request, path):
-    public_pages = [
-        "/login",
-        "/forgot-password",
-        "/change-username",
-        "/change-password",
-        "/employee-reset-password",
-        "/recruitment/candidate-survey",
-        "/recruitment/open-recruitments",
-        "/recruitment/candidate-self-status-tracking",
-    ]
-
-    exempted_folders = ["base/icon/"]
+    # Media-path prefixes that are safe to serve without authentication.
+    # These are assets rendered on genuinely-public pages (login screen,
+    # open recruitments, candidate self-tracking) and contain no sensitive
+    # employee data. Do NOT add prefixes here without security review.
+    public_media_prefixes = (
+        "base/icon/",
+        "base/company/icon/",
+        "recruitment/candidate/profile/",
+    )
 
     # Prevent path traversal
     try:
@@ -7813,15 +7861,10 @@ def protected_media(request, path):
     if not os.path.exists(media_path) or not os.path.isfile(media_path):
         raise Http404("File not found")
 
-    referer_path = urlparse(request.META.get("HTTP_REFERER", "")).path
+    is_public_asset = any(path.startswith(prefix) for prefix in public_media_prefixes)
 
-    # Try Bearer token auth
-    jwt_user = is_jwt_token_valid(request.META.get("HTTP_AUTHORIZATION", ""))
-
-    # Access control logic
-    if referer_path not in public_pages and not any(
-        path.startswith(folder) for folder in exempted_folders
-    ):
+    if not is_public_asset:
+        jwt_user = is_jwt_token_valid(request.META.get("HTTP_AUTHORIZATION", ""))
         if not request.user.is_authenticated and not jwt_user:
             messages.error(
                 request,

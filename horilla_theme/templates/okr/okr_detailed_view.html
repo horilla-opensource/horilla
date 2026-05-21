@@ -2,16 +2,22 @@
 {% load static i18n widget_tweaks basefilters %}
 
 {% block content %}
-{% include "okr/emp_objective/emp_objective_nav.html" %}
-
-
-
 <!-- Sidebar & Header Loaders -->
 <div id="sidebar"></div>
   <div class="bg-[#F6F6F6]">
     <div id="header"></div>
 
     <!-- Main Content -->
+
+      <div class="flex justify-end mb-2">
+        <a
+          href="{% url 'objective-list-view' %}"
+          class="px-3 py-1 text-xs bg-primary-600 text-white rounded-full hover:bg-primary-800 transition duration-300 flex items-center gap-2"
+        >
+          <i class="fa-solid fa-arrow-left"></i>
+          {% trans "Back" %}
+        </a>
+      </div>
 
       <!-- Top Card (Objective Details) -->
       <div class="bg-white p-3 rounded-md shadow-card mb-5">

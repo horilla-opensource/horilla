@@ -6,7 +6,10 @@
         <a
           onclick="event.stopPropagation();"
           class="oh-btn oh-btn--light-bkg w-100"
-          href="{% url 'update-deduction' instance.id %}"
+          href="#"
+          hx-get="{% url 'update-deduction' instance.id %}"
+          hx-target="#listContainer"
+          hx-swap="innerHTML"
           title="{% trans 'Update' %}"
           >
           <ion-icon

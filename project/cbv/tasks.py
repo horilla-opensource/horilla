@@ -481,8 +481,11 @@ class TaskCardView(HorillaCardView):
                 "action": _("archive_status"),
                 "accessibility": "project.cbv.accessibility.task_crud_accessibility",
                 "attrs": """
-                    href="{get_archive_url}"
-                    onclick="return confirm('Do you want to {archive_status} this task?')"
+                    hx-get="{get_archive_url}"
+                    hx-target="#listContainer"
+                    hx-swap="innerHTML"
+                    hx-confirm="Do you want to {archive_status} this task?"
+                    onclick="event.stopPropagation()"
                     class="oh-dropdown__link"
                 """,
             },
@@ -490,10 +493,11 @@ class TaskCardView(HorillaCardView):
                 "action": _("Delete"),
                 "accessibility": "project.cbv.accessibility.task_crud_accessibility",
                 "attrs": """
-                    onclick="
-                        event.stopPropagation()
-                        deleteItem({get_delete_url});
-                    "
+                    hx-post="{get_delete_url}"
+                    hx-target="#listContainer"
+                    hx-swap="innerHTML"
+                    hx-confirm="Do you want Delete this Task ?"
+                    onclick="event.stopPropagation()"
                     class="oh-dropdown__link oh-dropdown__link--danger"
                 """,
             },

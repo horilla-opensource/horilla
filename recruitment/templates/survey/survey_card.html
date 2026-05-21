@@ -30,14 +30,15 @@
         </div>
         {% if perms.recruitment.delete_recruitmentsurvey or perms.recruitment.change_recruitmentsurvey or perms.recruitment.add_recruitmentsurvey %}
         <div class="oh-kanban-card__dots">
-          <div class="oh-dropdown" x-data="{show: false}">
-            <button class="oh-btn oh-btn--transparent text-muted p-3" @click="show = !show" title={% trans "Actions" %} onclick="event.stopPropagation()" >
+          <div class="oh-dropdown" x-data="{show: false}" @click.stop>
+            <button class="oh-btn oh-btn--transparent text-muted p-3" @click.stop="show = !show" title="{% trans 'Actions' %}" onclick="event.stopPropagation()" >
               <ion-icon name="ellipsis-vertical-sharp"></ion-icon>
             </button>
             <div
               class="oh-dropdown__menu oh-dropdown__menu--dark-border oh-dropdown__menu--right"
               x-show="show"
               @click.outside="show = false"
+              @click.stop
             >
               <ul class="oh-dropdown__items">
                 {% if perms.recruitment.change_recruitmentsurvey %}
@@ -64,10 +65,17 @@
                 </li>
                 {% endif %} {% if perms.recruitment.delete_recruitmentsurvey %}
                 <li class="oh-dropdown__item">
-                  <a href="{% url 'recruitment-survey-question-template-delete' question.id %}" onclick="event.preventDefault();event.stopPropagation(); confirm('{% trans "Are you sure want to delete?" %}')"
-                      class="text-danger" >
-                    {% trans "Delete" %}
-                  </a>
+                  <form
+                    hx-post="{% url 'recruitment-survey-question-template-delete' question.id %}"
+                    hx-swap="none"
+                    hx-confirm="{% trans 'Are you sure want to delete?' %}"
+                    onsubmit="event.stopPropagation();"
+                  >
+                    {% csrf_token %}
+                    <button type="submit" class="oh-dropdown__link oh-dropdown__link--danger">
+                      {% trans "Delete" %}
+                    </button>
+                  </form>
                 </li>
                 {% endif %}
               </ul>

@@ -1,19 +1,27 @@
-tickShiftCheckboxes();
+if (typeof tickShiftCheckboxes === "function") {
+    tickShiftCheckboxes();
+}
 function makeShiftListUnique(list) {
     return Array.from(new Set(list));
 }
 
-tickWorktypeCheckboxes();
+if (typeof tickWorktypeCheckboxes === "function") {
+    tickWorktypeCheckboxes();
+}
 function makeWorktypeListUnique(list) {
     return Array.from(new Set(list));
 }
 
-tickRShiftCheckboxes();
+if (typeof tickRShiftCheckboxes === "function") {
+    tickRShiftCheckboxes();
+}
 function makeRShiftListUnique(list) {
     return Array.from(new Set(list));
 }
 
-tickRWorktypeCheckboxes();
+if (typeof tickRWorktypeCheckboxes === "function") {
+    tickRWorktypeCheckboxes();
+}
 function makeRWorktypeListUnique(list) {
     return Array.from(new Set(list));
 }
@@ -34,6 +42,91 @@ function getCookie(name) {
     return cookieValue;
 }
 
+function workTypeRequestListUrl() {
+    var url = "/work-list-view/";
+    var form = document.getElementById("filterForm");
+    if (form && typeof jQuery !== "undefined") {
+        var params = jQuery(form).serialize();
+        if (params) {
+            url = "/work-list-view/?" + params;
+        }
+    }
+    return url;
+}
+
+function refreshWorkTypeRequestList() {
+    var doneMessages = function () {
+        if (typeof jQuery !== "undefined" && $("#reloadMessagesButton").length) {
+            $("#reloadMessagesButton").click();
+        }
+    };
+    var listUrl = workTypeRequestListUrl();
+
+    if (typeof htmx !== "undefined" && typeof htmx.ajax === "function") {
+        htmx
+            .ajax("GET", listUrl, {
+                target: "#listContainer",
+                swap: "innerHTML",
+                headers: {
+                    "HX-Current-URL": window.location.href,
+                },
+            })
+            .then(doneMessages)
+            .catch(doneMessages);
+        return;
+    }
+
+    $.ajax({
+        type: "GET",
+        url: listUrl,
+        headers: {
+            "HX-Request": "true",
+            "HX-Current-URL": window.location.href,
+            "HX-Target": "listContainer",
+        },
+        success: function (html) {
+            var container = document.getElementById("listContainer");
+            if (container) {
+                container.innerHTML = html;
+                if (typeof htmx !== "undefined") {
+                    htmx.process(container);
+                }
+            }
+            doneMessages();
+        },
+    });
+}
+
+function workTypeRequestRowApprove(url, confirmText) {
+    Swal.fire({
+        text: confirmText,
+        icon: "question",
+        showCancelButton: true,
+        confirmButtonColor: "#008000",
+        cancelButtonColor: "#d33",
+        confirmButtonText: i18nMessages.confirm,
+        cancelButtonText: i18nMessages.cancel,
+    }).then(function (result) {
+        if (result.isConfirmed) {
+            $.ajax({
+                type: "GET",
+                url: url,
+                headers: {
+                    "X-Requested-With": "XMLHttpRequest",
+                },
+                dataType: "json",
+                success: function () {
+                    refreshWorkTypeRequestList();
+                },
+                error: function () {
+                    if (typeof jQuery !== "undefined" && $("#reloadMessagesButton").length) {
+                        $("#reloadMessagesButton").click();
+                    }
+                },
+            });
+        }
+    });
+}
 
 function handleApproveRequestsClick() {
     ids = [];
@@ -66,12 +159,8 @@ function handleApproveRequestsClick() {
                         csrfmiddlewaretoken: getCookie("csrftoken"),
                         ids: JSON.stringify(ids),
                     },
-                    success: function (response, textStatus, jqXHR) {
-                        if (jqXHR.status === 200) {
-                            location.reload(); // Reload the current page
-                        } else {
-                            // console.log("Unexpected HTTP status:", jqXHR.status);
-                        }
+                    complete: function () {
+                        refreshWorkTypeRequestList();
                     },
                 });
             }
@@ -111,12 +200,8 @@ function handleRejectRequestsClick() {
                         csrfmiddlewaretoken: getCookie("csrftoken"),
                         ids: JSON.stringify(ids),
                     },
-                    success: function (response, textStatus, jqXHR) {
-                        if (jqXHR.status === 200) {
-                            location.reload(); // Reload the current page
-                        } else {
-                            // console.log("Unexpected HTTP status:", jqXHR.status);
-                        }
+                    complete: function () {
+                        refreshWorkTypeRequestList();
                     },
                 });
             }
@@ -155,12 +240,8 @@ function handleDeleteRequestsClick() {
                         csrfmiddlewaretoken: getCookie("csrftoken"),
                         ids: JSON.stringify(ids),
                     },
-                    success: function (response, textStatus, jqXHR) {
-                        if (jqXHR.status === 200) {
-                            location.reload(); // Reload the current page
-                        } else {
-                            // console.log("Unexpected HTTP status:", jqXHR.status);
-                        }
+                    complete: function () {
+                        refreshWorkTypeRequestList();
                     },
                 });
             }

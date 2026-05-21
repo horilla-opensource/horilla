@@ -309,6 +309,11 @@ class MyLeaveRequestForm(HorillaFormView):
     #     return super().form_invalid(form)
 
     def form_valid(self, form: UserLeaveRequestCreationForm) -> HttpResponse:
+        def _done():
+            if self.request.META.get("HTTP_HX_REQUEST"):
+                return self.HttpResponse(targets_to_reload=["#userRequestReload"])
+            return HorillaRedirect(self.request)
+
         emp = self.request.user.employee_get
         emp_id = emp.id
         form = self.form_class(
@@ -443,14 +448,14 @@ class MyLeaveRequestForm(HorillaFormView):
                                 len(LeaveRequest.objects.filter(employee_id=emp_id))
                                 == 1
                             ):
-                                return HorillaRedirect(self.request)
+                                return _done()
                             form.save(commit=False)
 
-                        return HorillaRedirect(self.request)
+                        return _done()
                 else:
                     messages.error(self.request, _("You don't have permission"))
 
-            return HorillaRedirect(self.request)
+            return _done()
         return super().form_valid(form)
 
 

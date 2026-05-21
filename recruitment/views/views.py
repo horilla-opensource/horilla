@@ -761,11 +761,20 @@ def recruitment_archive(request, rec_id):
         recruitment = Recruitment.objects.get(id=rec_id)
         if recruitment.is_active:
             recruitment.is_active = False
+            messages.success(request, _("Recruitment archived successfully."))
         else:
             recruitment.is_active = True
+            messages.success(request, _("Recruitment un-archived successfully."))
         recruitment.save()
     except (Recruitment.DoesNotExist, OverflowError):
         messages.error(request, _("Recruitment Does not exists.."))
+    if request.META.get("HTTP_HX_REQUEST") == "true":
+        return HttpResponse(
+            "<script>"
+            "$('#applyFilter').click();"
+            "$('#reloadMessagesButton').click();"
+            "</script>"
+        )
     return HorillaRedirect(request)
 
 
@@ -1401,6 +1410,9 @@ def candidate(request):
     form = CandidateCreationForm()
     open_recruitment = Recruitment.objects.filter(closed=False, is_active=True)
     path = "/recruitment/candidate-view"
+    template_name = "candidate/candidate_create_form.html"
+    if request.META.get("HTTP_HX_REQUEST") == "true":
+        template_name = "candidate/candidate_create_modal_form.html"
     if request.method == "POST":
         form = CandidateCreationForm(request.POST, request.FILES)
         if form.is_valid():
@@ -1422,14 +1434,37 @@ def candidate(request):
                 messages.error(request, "Job position field is required")
                 return render(
                     request,
-                    "candidate/candidate_create_form.html",
+                    template_name,
                     {"form": form, "open_recruitment": open_recruitment},
+                )
+            if request.META.get("HTTP_HX_REQUEST") == "true":
+                close_modal_script = ""
+                if request.GET.get("container") != "true":
+                    close_modal_script = (
+                        "$('#objectCreateModal').removeClass('oh-modal--show');"
+                    )
+                container_reload_script = (
+                    "$('#candidateMainContainer').html("
+                    '\'<div hx-get="/recruitment/nav-candidate/?" hx-trigger="load"></div>\' + '
+                    '\'<div class="oh-checkpoint-badge mb-2" id="selectedInstances" data-ids="[]" data-clicked="" style="display: none"></div>\' + '
+                    '\'<div class="oh-wrapper" id="listContainer"><div class="animated-background"></div></div>\''
+                    ");"
+                    "htmx.process($('#candidateMainContainer')[0]);"
+                )
+                if request.GET.get("container") != "true":
+                    container_reload_script = "$('#applyFilter').click();"
+                return HttpResponse(
+                    "<script>"
+                    + close_modal_script
+                    + container_reload_script
+                    + "$('#reloadMessagesButton').click();"
+                    + "</script>"
                 )
             return redirect(path)
 
     return render(
         request,
-        "candidate/candidate_create_form.html",
+        template_name,
         {"form": form, "open_recruitment": open_recruitment},
     )
 
@@ -1901,6 +1936,19 @@ def candidate_view_individual(request, cand_id, **kwargs):
     )
 
 
+def _query_param_truthy(get_dict, key):
+    val = get_dict.get(key)
+    if val is None:
+        return False
+    return str(val).lower() in ("true", "1", "yes")
+
+
+def _onboarding_container_request(request):
+    return request.GET.get("container") == "true" and _query_param_truthy(
+        request.GET, "onboarding"
+    )
+
+
 @login_required
 @manager_can_enter(
     perms=["recruitment.change_candidate", "onboarding.change_onboardingcandidate"]
@@ -1915,6 +1963,9 @@ def candidate_update(request, cand_id, **kwargs):
         candidate_obj = Candidate.objects.get(id=cand_id)
         form = CandidateCreationForm(instance=candidate_obj)
         path = "/recruitment/candidate-view"
+        template_name = "candidate/candidate_create_form.html"
+        if request.META.get("HTTP_HX_REQUEST") == "true":
+            template_name = "candidate/candidate_create_modal_form.html"
         if request.method == "POST":
             form = CandidateCreationForm(
                 request.POST, request.FILES, instance=candidate_obj
@@ -1936,13 +1987,63 @@ def candidate_update(request, cand_id, **kwargs):
                                 stage_type="initial"
                             ).first()
                         )
-                if request.GET.get("onboarding") == "True":
+                if _query_param_truthy(request.GET, "onboarding"):
                     candidate_obj.hired = True
                     path = "/onboarding/candidates-view"
                 candidate_obj.save()
                 messages.success(request, _("Candidate Updated Successfully."))
+                if request.META.get("HTTP_HX_REQUEST") == "true":
+                    close_modal_script = ""
+                    if request.GET.get("container") != "true":
+                        close_modal_script = (
+                            "$('#objectCreateModal').removeClass('oh-modal--show');"
+                        )
+                    if request.GET.get("container") == "true":
+                        if _query_param_truthy(request.GET, "onboarding"):
+                            _onboarding_candidates_url = reverse("candidates-view")
+                            container_reload_script = (
+                                "if (window.history && history.pushState) { "
+                                f"history.pushState({{}}, '', '{_onboarding_candidates_url}'); "
+                                "}"
+                                "document.body.classList.remove('onboarding-list-hide-toolbar');"
+                                "var nav = document.getElementById('onboardingCandidatesNavBar');"
+                                "if (nav) { nav.style.display = ''; }"
+                                "var tagRow = nav && nav.querySelector('#filterTagContainerSectionNav');"
+                                "if (tagRow) { tagRow.innerHTML = ''; }"
+                                "var list = document.getElementById('listContainer');"
+                                "if (list) { list.innerHTML = '<div class=\"animated-background\"></div>'; }"
+                                "setTimeout(function () { "
+                                "var b = document.getElementById('applyFilter'); "
+                                "if (b) { b.click(); } }, 100);"
+                            )
+                        else:
+                            container_reload_script = (
+                                "$('#candidateMainContainer').html("
+                                '\'<div hx-get="/recruitment/nav-candidate/?" hx-trigger="load"></div>\' + '
+                                '\'<div class="oh-checkpoint-badge mb-2" id="selectedInstances" data-ids="[]" data-clicked="" style="display: none"></div>\' + '
+                                '\'<div class="oh-wrapper" id="listContainer"><div class="animated-background"></div></div>\''
+                                ");"
+                                "htmx.process($('#candidateMainContainer')[0]);"
+                            )
+                    else:
+                        container_reload_script = "$('#applyFilter').click();"
+                    return HttpResponse(
+                        "<script>"
+                        + close_modal_script
+                        + container_reload_script
+                        + "$('#reloadMessagesButton').click();"
+                        + "</script>"
+                    )
                 return redirect(path)
-        return render(request, "candidate/candidate_create_form.html", {"form": form})
+        onboarding_container_mode = _onboarding_container_request(request)
+        return render(
+            request,
+            template_name,
+            {
+                "form": form,
+                "onboarding_container_mode": onboarding_container_mode,
+            },
+        )
     except (Candidate.DoesNotExist, OverflowError):
         messages.error(request, _("Candidate Does not exists.."))
     return HorillaRedirect(request)
@@ -1952,14 +2053,19 @@ def candidate_update(request, cand_id, **kwargs):
 @login_required
 @manager_can_enter(perm="recruitment.change_candidate")
 def candidate_conversion(request, cand_id, **kwargs):
+    container_request = request.GET.get("container") == "true"
     candidate_obj = Candidate.find(cand_id)
 
     if not candidate_obj:
         messages.error(request, ("Candidate not found"))
+        if container_request:
+            return JsonResponse({"message": "Candidate not found"}, status=404)
         return HorillaRedirect(request)
 
     if candidate_obj.converted_employee_id:
         messages.info(request, "This candidate is already converted to an employee.")
+        if container_request:
+            return JsonResponse({"message": "Already converted"}, status=200)
         return HorillaRedirect(request)
 
     user_exists = HorillaUser.objects.filter(username=candidate_obj.email).exists()
@@ -2010,6 +2116,9 @@ def candidate_conversion(request, cand_id, **kwargs):
 
     else:
         messages.info(request, "An employee with this email already exists")
+
+    if container_request:
+        return JsonResponse({"message": "Success"}, status=200)
 
     if "HTTP_HX_REQUEST" in request.META:
         return HttpResponse(status=204, headers={"HX-Refresh": "true"})
@@ -2085,6 +2194,37 @@ def form_send_mail(request, cand_id=None):
     else:
         stage_id = None
 
+    HorillaMailTemplate.objects.get_or_create(
+        title="Candidate Portal Login",
+        defaults={
+            "body": (
+                "<div style=\"font-family: 'Segoe UI', Arial, sans-serif; background-color: #f4f6f9; padding: 24px;\">"
+                '<div style="max-width: 640px; margin: auto; background: #ffffff; border-radius: 12px; padding: 28px; '
+                'box-shadow: 0 4px 14px rgba(0,0,0,0.08); border: 1px solid #eceff3;">'
+                '<h2 style="margin: 0 0 18px 0; color: #1f2937; font-size: 22px;">Candidate Portal Login Details</h2>'
+                '<p style="font-size: 14px; color: #374151; line-height: 1.7; margin: 0 0 14px 0;">'
+                "Hi {{instance.get_full_name}},</p>"
+                '<p style="font-size: 14px; color: #374151; line-height: 1.7; margin: 0 0 16px 0;">'
+                "You can track your application status from the candidate portal using the credentials below.</p>"
+                '<div style="margin: 18px 0; padding: 16px; background: #f9fafb; border-left: 4px solid hsl(8, 77%, 56%); border-radius: 8px;">'
+                '<p style="margin: 0 0 8px 0; font-size: 14px; color: #111827;">'
+                "<strong>Portal Link:</strong> "
+                '<a href="{{ request.scheme }}://{{ request.get_host }}/recruitment/candidate-login/" target="_blank" '
+                'style="color: hsl(8, 77%, 56%); text-decoration: none;">'
+                "{{ request.scheme }}://{{ request.get_host }}/recruitment/candidate-login/"
+                "</a></p>"
+                '<p style="margin: 0 0 8px 0; font-size: 14px; color: #111827;"><strong>Username (Email):</strong> {{instance.email}}</p>'
+                '<p style="margin: 0; font-size: 14px; color: #111827;"><strong>Password (Mobile Number):</strong> {{instance.mobile}}</p>'
+                "</div>"
+                '<p style="font-size: 13px; color: #6b7280; margin: 0 0 18px 0;">'
+                "For security, please keep these credentials private.</p>"
+                '<hr style="border: none; border-top: 1px solid #e5e7eb; margin: 20px 0;">'
+                '<p style="font-size: 13px; color: #6b7280; margin: 0;">Regards,</p>'
+                '<p style="font-size: 13px; color: #111827; margin: 6px 0 0 0;"><strong>{{self.get_full_name}} | {{self.get_department}} | {{self.get_company}}</strong></p>'
+                "</div></div>"
+            )
+        },
+    )
     templates = HorillaMailTemplate.objects.all()
     return render(
         request,
@@ -2186,14 +2326,18 @@ def interview_delete(request, interview_id):
     Args:
         interview_id: InterviewSchedule instance ID
     """
-    view = request.GET.get("view", "false")
-
     try:
         InterviewSchedule.objects.get(id=interview_id).delete()
         messages.success(request, _("Interview deleted successfully."))
     except:
         messages.error(request, _("Scheduled Interview not found"))
-
+    if request.META.get("HTTP_HX_REQUEST") == "true":
+        return HttpResponse(
+            "<script>"
+            "$('#applyFilter').click();"
+            "$('#reloadMessagesButton').click();"
+            "</script>"
+        )
     return HorillaRedirect(request)
 
 
@@ -2253,22 +2397,26 @@ def interview_edit(request, interview_id):
 @login_required
 def get_interview_managers(request):
     cand_id = request.GET.get("candidate_id")
-    if not cand_id or not (candidate_obj := Candidate.find(cand_id)):
-        message = (
-            _("Missing Candidate ID")
-            if not cand_id
-            else _("No Candidate found matching the query.")
-        )
-        return HorillaRedirect(request, message=message)
-
     form = ScheduleInterviewForm()
-    managers = candidate_obj.recruitment_id.recruitment_managers.all()
-
-    form.fields["employee_id"].queryset = managers
+    candidate_obj = Candidate.find(cand_id) if cand_id else None
+    if candidate_obj:
+        recruitment_managers = candidate_obj.recruitment_id.recruitment_managers.all()
+        stage_managers = (
+            candidate_obj.stage_id.stage_managers.all()
+            if candidate_obj.stage_id
+            else recruitment_managers.none()
+        )
+        managers = (recruitment_managers | stage_managers).distinct()
+        form.fields["employee_id"].queryset = managers
+    else:
+        form.fields["employee_id"].queryset = form.fields["employee_id"].queryset.none()
     pk = request.GET.get("pk")
     if pk:
-        interviewer = InterviewSchedule.objects.get(id=pk)
-        form.fields["employee_id"].initial = interviewer.employee_id.all()
+        try:
+            interviewer = InterviewSchedule.objects.get(id=pk)
+            form.fields["employee_id"].initial = interviewer.employee_id.all()
+        except InterviewSchedule.DoesNotExist:
+            pass
     return render(
         request,
         "candidate/interview_form.html",
@@ -2335,7 +2483,11 @@ def send_acknowledgement(request):
             # due to not having solid template we first need to pass the context
             template_bdy = template.Template(html)
             context = template.Context(
-                {"instance": candidate, "self": request.user.employee_get}
+                {
+                    "instance": candidate,
+                    "self": request.user.employee_get,
+                    "request": request,
+                }
             )
             render_bdy = template_bdy.render(context)
             attachments.append(
@@ -2348,7 +2500,11 @@ def send_acknowledgement(request):
 
         template_bdy = template.Template(bdy)
         context = template.Context(
-            {"instance": candidate, "self": request.user.employee_get}
+            {
+                "instance": candidate,
+                "self": request.user.employee_get,
+                "request": request,
+            }
         )
         render_bdy = template_bdy.render(context)
         to = candidate.email
@@ -2587,6 +2743,10 @@ def skill_zone_delete(request, sz_id):
             messages.error(request, _("Skill zone not found."))
     except ProtectedError:
         messages.error(request, _("Related entries exists"))
+    if request.META.get("HTTP_HX_REQUEST") == "true":
+        response = HttpResponse(status=204)
+        response["HX-Trigger"] = "skillZoneContainerReload"
+        return response
     return HttpResponse(
         "<script>$('.filterButton')[0].click();reloadMessage();</script>"
     )
@@ -2629,6 +2789,10 @@ def skill_zone_archive(request, sz_id):
         skill_zone.save()
     else:
         messages.error(request, _("Skill zone not found."))
+    if request.META.get("HTTP_HX_REQUEST") == "true":
+        response = HttpResponse(status=204)
+        response["HX-Trigger"] = "skillZoneContainerReload"
+        return response
     return redirect(skill_zone_view)
 
 
@@ -2791,6 +2955,10 @@ def skill_zone_cand_delete(request, sz_cand_id):
         messages.error(request, _("Skill zone not found."))
     except ProtectedError:
         messages.error(request, _("Related entries exists"))
+    if request.META.get("HTTP_HX_REQUEST") == "true":
+        response = HttpResponse(status=204)
+        response["HX-Trigger"] = "skillZoneContainerReload"
+        return response
     return redirect(skill_zone_view)
 
 
@@ -2873,6 +3041,10 @@ def skill_zone_cand_delete(request, sz_cand_id):
         messages.error(request, _("Candidate not found."))
     except ProtectedError:
         messages.error(request, _("Related entries exists"))
+    if request.META.get("HTTP_HX_REQUEST") == "true":
+        response = HttpResponse(status=204)
+        response["HX-Trigger"] = "skillZoneContainerReload"
+        return response
     return redirect(skill_zone_view)
 
 
@@ -3034,8 +3206,8 @@ def candidate_self_tracking_rating_option(request):
 
 def candidate_login(request):
     if request.method == "POST":
-        email = request.POST["email"]
-        mobile = request.POST["phone"]
+        email = request.POST.get("email", "").strip()
+        mobile = request.POST.get("phone", "").strip()
 
         backend = CandidateAuthenticationBackend()
         candidate = backend.authenticate(request, username=email, password=mobile)
@@ -3660,7 +3832,13 @@ def candidate_document_request(request):
         if form.is_valid():
             form.save()
             messages.success(request, _("Document request created successfully"))
-            return HorillaRedirect(request)
+            return HttpResponse(
+                "<script>"
+                "$('.oh-modal--show').removeClass('oh-modal--show');"
+                "$('#applyFilter').click();"
+                "$('#reloadMessagesButton').click();"
+                "</script>"
+            )
 
     context = {
         "form": form,

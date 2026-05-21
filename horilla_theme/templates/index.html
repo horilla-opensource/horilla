@@ -153,7 +153,7 @@
                     {% include "horilla_theme/components/header.html" %}
                 </div>
 
-                <div class="p-6 pt-24">
+                <div id="ohMainContent" class="p-6 pt-24">
                     {% block content %}
                         {% include "horilla_theme/components/dashboard.html" %}
                     {% endblock %}
@@ -183,5 +183,11 @@
         </div>
         {% include "generic/components.html" %}
         {% include "horilla_theme/components/footer_scripts.html" %}
+        <script>
+            document.body.addEventListener("showMessages", function () {
+                var b = document.getElementById("reloadMessagesButton");
+                if (b) b.click();
+            });
+        </script>
     </body>
 </html>

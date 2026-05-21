@@ -10,7 +10,7 @@ from datetime import datetime
 from uuid import uuid4
 
 from django.contrib import messages
-from django.contrib.auth.models import User
+from django.contrib.auth import get_user_model
 from django.core import serializers
 from django.core.files.storage import default_storage
 from django.core.files.uploadedfile import SimpleUploadedFile
@@ -87,9 +87,12 @@ def survey_preview(request, pk=None):
         return HorillaRedirect(request, message=message)
 
     form = SurveyPreviewForm(template=template).form
+    preview_template = "survey/survey_preview.html"
+    if request.META.get("HTTP_HX_REQUEST") == "true":
+        preview_template = "survey/survey_preview_container.html"
     return render(
         request,
-        "survey/survey_preview.html",
+        preview_template,
         {"form": form, "template": template},
     )
 
@@ -146,10 +149,11 @@ def candidate_survey(request):
     candidate_dict[0]["fields"]["recruitment_id"] = recruitment
     candidate_dict[0]["fields"]["job_position_id"] = job
     candidate_dict[0]["fields"]["stage_id"] = Stage.objects.get(id=stage_id)
+    UserModel = get_user_model()
     if created_by:
-        candidate_dict[0]["fields"]["created_by"] = User(id=created_by)
+        candidate_dict[0]["fields"]["created_by"] = UserModel(id=created_by)
     if modified_by:
-        candidate_dict[0]["fields"]["modified_by"] = User(id=modified_by)
+        candidate_dict[0]["fields"]["modified_by"] = UserModel(id=modified_by)
     candidate = Candidate(**candidate_dict[0]["fields"])
     form = SurveyForm(recruitment=recruitment).form
     if request.method == "POST":
@@ -348,6 +352,10 @@ def delete_survey_question(request, survey_id):
         messages.error(request, _("Question not found."))
     except ProtectedError:
         messages.error(request, _("You cannot delete this question"))
+    if request.META.get("HTTP_HX_REQUEST") == "true":
+        from recruitment.views.search import filter_survey
+
+        return filter_survey(request)
     return redirect(view_question_template)
 
 
@@ -398,19 +406,14 @@ def application_form(request):
             request.session["candidate"] = serializers.serialize(
                 "json", [candidate_obj]
             )
-            if RecruitmentSurvey.objects.filter(
+            has_direct_survey = RecruitmentSurvey.objects.filter(
                 recruitment_ids=recruitment_id
-            ).exists():
-                try:
-                    employee = request.user.employee_get
-                    if (
-                        not request.user.has_perm("perms.recruitment.add_candidate")
-                        or employee not in recruitment.recruitment_managers.all()
-                        or not employee.stage_set.filter(recruitment_id=recruitment)
-                    ):
-                        return redirect(candidate_survey)
-                except:
-                    return redirect(candidate_survey)
+            ).exists()
+            has_template_survey = RecruitmentSurvey.objects.filter(
+                template_id__in=recruitment.survey_templates.all()
+            ).exists()
+            if has_direct_survey or has_template_survey:
+                return redirect(candidate_survey)
             candidate_obj.save()
 
             if resume_obj:
@@ -418,9 +421,27 @@ def application_form(request):
                 resume_obj.save()
 
             return render(request, "candidate/success.html")
-        form.fields["job_position_id"].queryset = (
-            form.instance.recruitment_id.open_positions.all()
-        )
+        for field_name, field_errors in form.errors.items():
+            if field_name == "__all__":
+                for error in field_errors:
+                    messages.error(request, error)
+            else:
+                field_label = (
+                    form.fields.get(field_name).label
+                    if form.fields.get(field_name)
+                    else field_name
+                )
+                for error in field_errors:
+                    messages.error(request, f"{field_label}: {error}")
+        recruitment_for_job_position = form.data.get("recruitment_id") or recruitment_id
+        if recruitment_for_job_position:
+            recruitment_for_job_position = Recruitment.objects.filter(
+                id=recruitment_for_job_position
+            ).first()
+            if recruitment_for_job_position:
+                form.fields["job_position_id"].queryset = (
+                    recruitment_for_job_position.open_positions.all()
+                )
     else:
         # 811
         initial_data = {"resume": resume_obj.file.url} if resume_obj else {}
@@ -493,6 +514,8 @@ def delete_template(request):
     else:
         messages.success(request, "Template group deleted")
 
+    if request.META.get("HTTP_HX_REQUEST") == "true":
+        return HttpResponse("<script>$('#filterSubmit').click();</script>")
     return HorillaRedirect(request)
 
 
@@ -514,5 +537,13 @@ def question_add(request):
         if form.is_valid():
             form.save()
             messages.success(request, "Question added")
+            if request.META.get("HTTP_HX_REQUEST") == "true":
+                return HttpResponse(
+                    "<script>"
+                    "$('#templateModal').removeClass('oh-modal--show');"
+                    "$('#genericModal').removeClass('oh-modal--show');"
+                    "$('#filterSubmit').click();"
+                    "</script>"
+                )
             return HorillaRedirect(request)
     return render(request, "survey/add_form.html", {"form": form})

@@ -35,9 +35,8 @@ class OnboardingCandidatesView(TemplateView):
         context = super().get_context_data(**kwargs)
         hired_candidates = Candidate.objects.filter(
             is_active=True,
-            hired=True,
             recruitment_id__closed=False,
-        )
+        ).filter(Q(hired=True) | Q(stage_id__stage_type="hired"))
         mail_templates = HorillaMailTemplate.objects.all()
         context["mail_templates"] = mail_templates
         context["hired_candidates"] = hired_candidates
@@ -156,7 +155,14 @@ class OnboardingCandidatesList(HorillaListView):
     ]
 
     row_attrs = """
-                onclick="window.location.href='{get_individual_url}'"
+                onclick="
+                    try {{ sessionStorage.setItem('candidateProfileFrom', 'onboarding'); }} catch (e) {{}}
+                "
+                hx-get="{get_profile_url}?from=onboarding&instance_ids={ordered_ids}"
+                hx-target="#listContainer"
+                hx-swap="innerHTML"
+                hx-push-url="{get_individual_url}"
+                class="cursor-pointer"
                 """
 
 

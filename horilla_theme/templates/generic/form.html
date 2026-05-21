@@ -103,6 +103,31 @@
             {% endfor %}
 
             <div class="d-flex flex gap-1 justify-end pt-3 mt-3">
+                {% if not form.instance.pk %}
+                    <button
+                        type="submit"
+                        name="save_and_add_another"
+                        value="true"
+                        class="oh-btn mt-2 mr-0 pl-4 pr-5 oh-btn--w-100-resp"
+                        style="background-color: #f97066; color: #ffffff; border: 1px solid #f97066;"
+                        hx-swap="none"
+                        hx-on:htmx:after-request="
+                            if (event.detail.successful) {
+                                const form = this.form;
+                                if (form) {
+                                    form.reset();
+                                    $(form).find('select').val(null).trigger('change');
+                                }
+                                $('#reloadMessagesButton').click();
+                                $('.reload-record').click();
+                                $('.reload-field').click();
+                            }
+                        "
+                        {{form.submit_button_attrs|safe}}
+                    >
+                        {% trans 'Save And Add Another' %}
+                    </button>
+                {% endif %}
                 <button
                     type="submit"
                     class="oh-btn oh-btn--secondary mt-2 mr-0 pl-4 pr-5 oh-btn--w-100-resp"

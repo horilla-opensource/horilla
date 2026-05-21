@@ -2,7 +2,11 @@
 
 {% if perms.payroll.change_reimbursement %}
     <div id="requestCard{{ instance.id }}" onclick="event.stopPropagation()">
-        <form action="{% url 'approve-reimbursements' %}">
+        <form
+            hx-get="{% url 'approve-reimbursements' %}"
+            hx-swap="none"
+            onclick="event.stopPropagation()"
+        >
             <input type="hidden" name="ids" value="{{ instance.id }}" />
             <input type="hidden" name="status" />
             <input type="hidden" name="amount" default="0" min="0" />

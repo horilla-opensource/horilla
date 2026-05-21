@@ -7,7 +7,7 @@
 			onclick="validateHours('{% url 'attendance-view' %}?employee_id={{instance.employee_id.id}}&month={{ dates.1.month}}');"
             title="{% trans 'Validate Hours' %}"
 		>
-			<img src="{% static 'horilla_theme/assets/img/icons/check.svg' %}" alt="{% trans 'Validate Hours' %}" width="13"
+			<img src="{% static 'horilla_theme/assets/img/icons/eye.svg' %}" alt="{% trans 'Validate Hours' %}" width="13"
 			class="filter brightness-0 invert" />
             {% trans 'Validate' %}
 		</a>
@@ -18,7 +18,7 @@
 			href="{% url 'view-my-attendance' %}?month={{ dates.1.month}}"
             title="{% trans 'Validate Hours' %}"
 		>
-			<img src="{% static 'horilla_theme/assets/img/icons/check.svg' %}" alt="{% trans 'Validate Hours' %}" width="13"
+			<img src="{% static 'horilla_theme/assets/img/icons/eye.svg' %}" alt="{% trans 'Validate Hours' %}" width="13"
 			class="filter brightness-0 invert" />
             {% trans 'Validate' %}
 		</a>
@@ -30,7 +30,7 @@
 			onclick="validateOTHours('{% url 'attendance-view' %}?employee_id={{instance.employee_id.id}}&month={{ dates.1.month}}');"
             title="{% trans 'Validate OT Hours' %}"
 		>
-			<img src="{% static 'horilla_theme/assets/img/icons/check_1.png' %}" alt="{% trans 'Validate Hours' %}" width="13"
+			<img src="{% static 'horilla_theme/assets/img/icons/eye.svg' %}" alt="{% trans 'Validate OT Hours' %}" width="13"
 			class="mt-[-1px]" />
             {% trans 'Approve' %}
 		</a>
@@ -40,7 +40,7 @@
 			href="{% url 'view-my-attendance' %}?month={{ dates.1.month}}"
             title="{% trans 'Validate OT Hours' %}"
 		>
-			<img src="{% static 'horilla_theme/assets/img/icons/check_1.png' %}" alt="{% trans 'Validate Hours' %}" width="13"
+			<img src="{% static 'horilla_theme/assets/img/icons/eye.svg' %}" alt="{% trans 'Validate OT Hours' %}" width="13"
 			class="mt-[-1px]" />
             {% trans 'Approve' %}
 		</a>
