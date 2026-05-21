@@ -8,6 +8,7 @@ from django.urls import path
 
 from base.templatetags.horillafilters import app_installed
 from base.views import object_delete, object_duplicate
+from employee import dashboard_modern as emp_dashboard_modern
 from employee import not_in_out_dashboard, policies, views
 from employee.cbv import (
     action_type,
@@ -249,7 +250,16 @@ urlpatterns = [
     # ),
     path("work-info-export/", views.work_info_export, name="work-info-export"),
     path("get-birthday/", views.get_employees_birthday, name="get-birthday"),
-    path("dashboard/", views.dashboard, name="dashboard"),
+    path("dashboard/", emp_dashboard_modern.modern_employee_dashboard, name="dashboard"),
+    path("dashboard/api/kpi/", emp_dashboard_modern.employee_kpi_data, name="employee-modern-kpi"),
+    path("dashboard/api/departments/", emp_dashboard_modern.employee_by_department, name="employee-modern-dept"),
+    path("dashboard/api/gender/", emp_dashboard_modern.employee_by_gender, name="employee-modern-gender"),
+    path("dashboard/api/type/", emp_dashboard_modern.employee_by_type, name="employee-modern-type"),
+    path("dashboard/api/position/", emp_dashboard_modern.employee_by_job_position, name="employee-modern-position"),
+    path("dashboard/api/joining-trend/", emp_dashboard_modern.employee_joining_trend, name="employee-modern-joining-trend"),
+    path("dashboard/api/headcount/", emp_dashboard_modern.employee_headcount_trend, name="employee-modern-headcount"),
+    path("dashboard/api/recent/", emp_dashboard_modern.employee_recent_list, name="employee-modern-recent"),
+    path("dashboard/api/birthdays/", emp_dashboard_modern.employee_upcoming_birthdays, name="employee-modern-birthdays"),
     path(
         "total-employees-count/",
         views.total_employees_count,

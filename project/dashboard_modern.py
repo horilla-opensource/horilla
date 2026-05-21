@@ -36,7 +36,17 @@ def modern_project_dashboard(request):
 def project_kpi_data(request):
     from project.models import Project, Task
 
-    total = Project.objects.count()
+    from_date, to_date = _parse_period(request)
+    period_projects = Project.objects.filter(
+        created_at__date__gte=from_date,
+        created_at__date__lte=to_date,
+    )
+    period_tasks = Task.objects.filter(
+        created_at__date__gte=from_date,
+        created_at__date__lte=to_date,
+    )
+
+    total = period_projects.count()
     active = Project.objects.filter(status="in_progress").count()
     completed = Project.objects.filter(status="completed").count()
     on_hold = Project.objects.filter(status="on_hold").count()
@@ -46,8 +56,8 @@ def project_kpi_data(request):
         .count()
     )
 
-    total_tasks = Task.objects.count()
-    tasks_done = Task.objects.filter(status="completed").count()
+    total_tasks = period_tasks.count()
+    tasks_done = period_tasks.filter(status="completed").count()
     task_completion_rate = (
         round(tasks_done / total_tasks * 100, 1) if total_tasks else 0
     )
@@ -68,11 +78,22 @@ def project_kpi_data(request):
 
 @login_required
 def project_status_distribution(request):
+    """Project status breakdown, for projects created in the picker range."""
     from project.models import Project
 
-    qs = Project.objects.values("status").annotate(count=Count("id"))
+    from_date, to_date = _parse_period(request)
+    qs = (
+        Project.objects.filter(
+            created_at__date__gte=from_date,
+            created_at__date__lte=to_date,
+        )
+        .order_by()
+        .values("status")
+        .annotate(count=Count("id"))
+    )
     labels = []
     counts = []
+    keys = []
     label_map = {
         "new": "New",
         "in_progress": "In Progress",
@@ -84,14 +105,25 @@ def project_status_distribution(request):
     for row in qs:
         labels.append(label_map.get(row["status"], row["status"]))
         counts.append(row["count"])
-    return JsonResponse({"labels": labels, "counts": counts})
+        keys.append(row["status"])
+    return JsonResponse({"labels": labels, "counts": counts, "keys": keys})
 
 
 @login_required
 def project_task_status(request):
+    """Task status breakdown, for tasks created in the picker range."""
     from project.models import Task
 
-    qs = Task.objects.values("status").annotate(count=Count("id"))
+    from_date, to_date = _parse_period(request)
+    qs = (
+        Task.objects.filter(
+            created_at__date__gte=from_date,
+            created_at__date__lte=to_date,
+        )
+        .order_by()
+        .values("status")
+        .annotate(count=Count("id"))
+    )
     label_map = {
         "to_do": "To Do",
         "in_progress": "In Progress",
@@ -100,10 +132,12 @@ def project_task_status(request):
     }
     labels = []
     counts = []
+    keys = []
     for row in qs:
         labels.append(label_map.get(row["status"], row["status"]))
         counts.append(row["count"])
-    return JsonResponse({"labels": labels, "counts": counts})
+        keys.append(row["status"])
+    return JsonResponse({"labels": labels, "counts": counts, "keys": keys})
 
 
 @login_required
@@ -117,11 +151,16 @@ def project_monthly_trend(request):
     completed = []
     for i in range(5, -1, -1):
         # months ago
-        first = (today.replace(day=1) - timedelta(days=i * 28)).replace(day=1)
+        year = today.year
+        month = today.month - i
+        while month <= 0:
+            month += 12
+            year -= 1
+        first = date(year, month, 1)
         if first.month == 12:
-            last = first.replace(day=31)
+            last = date(first.year + 1, 1, 1) - timedelta(days=1)
         else:
-            last = first.replace(month=first.month + 1) - timedelta(days=1)
+            last = date(first.year, first.month + 1, 1) - timedelta(days=1)
         months.append(first.strftime("%b %Y"))
         started.append(
             Project.objects.filter(start_date__gte=first, start_date__lte=last).count()
@@ -149,6 +188,7 @@ def project_upcoming_deadlines(request):
     )
     data = [
         {
+            "id": p.id,
             "title": p.title,
             "end_date": str(p.end_date),
             "status": p.get_status_display(),
@@ -170,6 +210,7 @@ def project_top_active(request):
     )
     data = [
         {
+            "id": p.id,
             "title": p.title,
             "task_count": p.task_count,
             "end_date": str(p.end_date) if p.end_date else "—",

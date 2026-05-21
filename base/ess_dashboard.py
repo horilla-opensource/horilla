@@ -5,7 +5,6 @@ Accessible at /ess/ — shows personal data only for the logged-in employee.
 All data is scoped to request.user.employee_get; no cross-employee access.
 """
 
-import calendar
 from datetime import date, timedelta
 
 from django.contrib.auth.decorators import login_required
@@ -20,17 +19,21 @@ def _get_employee(request):
     return getattr(request.user, "employee_get", None)
 
 
-def _parse_month(request):
-    """Parse year/month from GET params. Defaults to current month."""
+def _parse_period(request):
+    """Parse from_date and to_date from GET params. Defaults to current month."""
     today = date.today()
+    from_str = request.GET.get("from_date")
+    to_str = request.GET.get("to_date")
     try:
-        year = int(request.GET.get("year", today.year))
-        month = int(request.GET.get("month", today.month))
-        from_date = date(year, month, 1)
+        from_date = date.fromisoformat(from_str) if from_str else today.replace(day=1)
     except (ValueError, TypeError):
         from_date = today.replace(day=1)
-    last_day = calendar.monthrange(from_date.year, from_date.month)[1]
-    to_date = date(from_date.year, from_date.month, last_day)
+    try:
+        to_date = date.fromisoformat(to_str) if to_str else today
+    except (ValueError, TypeError):
+        to_date = today
+    if to_date < from_date:
+        to_date = from_date
     return from_date, to_date
 
 
@@ -60,15 +63,20 @@ def ess_dashboard(request):
 
 @login_required
 def ess_kpi_data(request):
-    """GET /ess/api/kpi/ — four personal KPI cards."""
+    """GET /ess/api/kpi/?year=&month= — four personal KPI cards.
+
+    Attendance counts honor the picker month; balances/objectives/payslip
+    are current-state and ignore the picker.
+    """
     from leave.models import AvailableLeave, LeaveRequest
 
     employee = _get_employee(request)
     if not employee:
         return JsonResponse({"error": "no employee"}, status=403)
 
-    today = date.today()
-    first_of_month = today.replace(day=1)
+    from_date, to_date = _parse_period(request)
+    # Don't count attendance in future days of the selected month
+    range_end = min(to_date, date.today())
 
     # Leave balances
     total_available = 0.0
@@ -80,28 +88,29 @@ def ess_kpi_data(request):
     except Exception:
         pass
 
-    # Attendance this month
+    # Attendance in the selected month
     present_count = 0
     late_count = 0
     try:
         from attendance.models import Attendance, AttendanceLateComeEarlyOut
 
-        present_count = Attendance.objects.filter(
-            employee_id=employee,
-            attendance_date__gte=first_of_month,
-            attendance_date__lte=today,
-        ).count()
-        late_count = (
-            AttendanceLateComeEarlyOut.objects.filter(
+        if range_end >= from_date:
+            present_count = Attendance.objects.filter(
                 employee_id=employee,
-                type="late_come",
-                attendance_id__attendance_date__gte=first_of_month,
-                attendance_id__attendance_date__lte=today,
+                attendance_date__gte=from_date,
+                attendance_date__lte=range_end,
+            ).count()
+            late_count = (
+                AttendanceLateComeEarlyOut.objects.filter(
+                    employee_id=employee,
+                    type="late_come",
+                    attendance_id__attendance_date__gte=from_date,
+                    attendance_id__attendance_date__lte=range_end,
+                )
+                .values("attendance_id")
+                .distinct()
+                .count()
             )
-            .values("attendance_id")
-            .distinct()
-            .count()
-        )
     except Exception:
         pass
 
@@ -155,13 +164,14 @@ def ess_kpi_data(request):
 
 @login_required
 def ess_leave_balance(request):
-    """GET /ess/api/leave-balance/ — available days per leave type (for chart)."""
-    from leave.models import AvailableLeave
+    """GET /ess/api/leave-balance/?year=&month= — leave balance with days taken in the selected month."""
+    from leave.models import AvailableLeave, LeaveRequest
 
     employee = _get_employee(request)
     if not employee:
         return JsonResponse({"error": "no employee"}, status=403)
 
+    from_date, to_date = _parse_period(request)
     balances = []
     try:
         qs = (
@@ -170,12 +180,27 @@ def ess_leave_balance(request):
             .order_by("leave_type_id__name")
         )
         for al in qs:
+            taken = 0.0
+            try:
+                approved = LeaveRequest.objects.filter(
+                    employee_id=employee,
+                    leave_type_id=al.leave_type_id,
+                    status="approved",
+                    start_date__lte=to_date,
+                    end_date__gte=from_date,
+                )
+                taken = float(
+                    sum(float(lr.requested_days or 0) for lr in approved)
+                )
+            except Exception:
+                pass
             balances.append(
                 {
                     "type": al.leave_type_id.name,
                     "available": round(float(al.available_days), 1),
                     "carryforward": round(float(al.carryforward_days), 1),
                     "total": round(float(al.total_leave_days), 1),
+                    "taken_in_month": round(taken, 1),
                 }
             )
     except Exception:
@@ -189,18 +214,23 @@ def ess_leave_balance(request):
 
 @login_required
 def ess_leave_requests(request):
-    """GET /ess/api/leave-requests/ — recent leave requests for the employee."""
+    """GET /ess/api/leave-requests/?year=&month= — leave requests overlapping the picker month."""
     from leave.models import LeaveRequest
 
     employee = _get_employee(request)
     if not employee:
         return JsonResponse({"error": "no employee"}, status=403)
 
+    from_date, to_date = _parse_period(request)
     status_filter = request.GET.get("status")
     results = []
     try:
         qs = (
-            LeaveRequest.objects.filter(employee_id=employee)
+            LeaveRequest.objects.filter(
+                employee_id=employee,
+                start_date__lte=to_date,
+                end_date__gte=from_date,
+            )
             .select_related("leave_type_id")
             .order_by("-start_date")
         )
@@ -244,7 +274,7 @@ def ess_attendance_calendar(request):
     if not employee:
         return JsonResponse({"error": "no employee"}, status=403)
 
-    from_date, to_date = _parse_month(request)
+    from_date, to_date = _parse_period(request)
 
     attendance_map = {}
     late_dates = set()
@@ -351,6 +381,9 @@ def ess_attendance_calendar(request):
             "year": from_date.year,
             "month": from_date.month,
             "month_name": from_date.strftime("%B %Y"),
+            "start_weekday": from_date.weekday(),  # 0=Mon .. 6=Sun
+            "from_date": from_date.isoformat(),
+            "to_date": to_date.isoformat(),
             "days": days,
             "summary": summary,
         }
@@ -362,13 +395,21 @@ def ess_attendance_calendar(request):
 
 @login_required
 def ess_work_hours_week(request):
-    """GET /ess/api/work-hours-week/ — Mon–Sun hours for the current week."""
+    """GET /ess/api/work-hours-week/?year=&month= — daily hours for the most recent week within the selected month."""
     employee = _get_employee(request)
     if not employee:
         return JsonResponse({"error": "no employee"}, status=403)
 
+    from_date, to_date = _parse_period(request)
     today = date.today()
-    week_start = today - timedelta(days=today.weekday())
+
+    # Anchor the week to today if the picker is the current month, otherwise the
+    # last day of the selected month — so prev/next month visibly moves the chart.
+    if from_date <= today <= to_date:
+        anchor = today
+    else:
+        anchor = to_date
+    week_start = anchor - timedelta(days=anchor.weekday())
     week_end = week_start + timedelta(days=6)
 
     hours_map = {}
@@ -392,7 +433,7 @@ def ess_work_hours_week(request):
         d = week_start + timedelta(days=i)
         h = hours_map.get(d.isoformat(), 0.0)
         total_hours += h
-        days.append({"day": day_names[i], "date": d.strftime("%b %d"), "hours": h})
+        days.append({"day": day_names[i], "date": d.strftime("%b %d"), "iso_date": d.isoformat(), "hours": h})
 
     return JsonResponse(
         {
@@ -408,11 +449,12 @@ def ess_work_hours_week(request):
 
 @login_required
 def ess_payslips(request):
-    """GET /ess/api/payslips/ — last 6 confirmed/paid payslips."""
+    """GET /ess/api/payslips/?year=&month= — last 6 confirmed/paid payslips ending on or before the selected month."""
     employee = _get_employee(request)
     if not employee:
         return JsonResponse({"error": "no employee"}, status=403)
 
+    _, to_date = _parse_period(request)
     results = []
     latest_net = None
     try:
@@ -421,6 +463,7 @@ def ess_payslips(request):
         qs = Payslip.objects.filter(
             employee_id=employee,
             status__in=["confirmed", "paid"],
+            end_date__lte=to_date,
         ).order_by("-end_date")[:6]
         for ps in qs:
             net = round(float(ps.net_pay or 0), 2)
@@ -447,30 +490,56 @@ def ess_payslips(request):
 
 @login_required
 def ess_objectives(request):
-    """GET /ess/api/objectives/ — active PMS objectives with progress."""
+    """GET /ess/api/objectives/?year=&month= — PMS objectives overlapping the selected month."""
+    from django.db.models import Q as _Q
+
     employee = _get_employee(request)
     if not employee:
         return JsonResponse({"error": "no employee"}, status=403)
 
+    from_date, to_date = _parse_period(request)
     results = []
     try:
         from pms.models import EmployeeObjective
 
-        qs = EmployeeObjective.objects.filter(
-            employee_id=employee,
-            archive=False,
-        ).order_by("-progress_percentage")[:8]
+        # Employee-specific progress records overlapping the selected month
+        month_overlap = (
+            _Q(start_date__lte=to_date) & (
+                _Q(end_date__gte=from_date) | _Q(end_date__isnull=True)
+            )
+        )
+        qs = (
+            EmployeeObjective.objects.filter(
+                employee_id=employee,
+                archive=False,
+            )
+            .filter(month_overlap)
+            .select_related("objective_id")
+            .order_by("-progress_percentage")[:8]
+        )
 
-        for obj in qs:
+        for emp_obj in qs:
+            title = ""
+            if emp_obj.objective_id:
+                title = emp_obj.objective_id.title or ""
+            elif emp_obj.objective:
+                title = emp_obj.objective
+            try:
+                kr_count = emp_obj.key_result_id.count()
+            except Exception:
+                kr_count = 0
             results.append(
                 {
-                    "id": obj.pk,
-                    "title": obj.objective or "",
-                    "status": obj.status,
-                    "progress": obj.progress_percentage or 0,
-                    "key_results_count": obj.key_result_id.count(),
+                    "id": emp_obj.pk,
+                    "title": title,
+                    "status": emp_obj.status,
+                    "progress": emp_obj.progress_percentage or 0,
+                    "key_results_count": kr_count,
                 }
             )
+
+        # Fallbacks removed: the chart honours the date filter and shows empty
+        # when no EmployeeObjective overlaps the selected month.
     except Exception:
         pass
 
@@ -482,7 +551,7 @@ def ess_objectives(request):
 
 @login_required
 def ess_announcements(request):
-    """GET /ess/api/announcements/ — announcements relevant to this employee."""
+    """GET /ess/api/announcements/?year=&month= — announcements active during the selected month."""
     from django.db.models import Q
 
     from base.models import Announcement
@@ -491,7 +560,7 @@ def ess_announcements(request):
     if not employee:
         return JsonResponse({"error": "no employee"}, status=403)
 
-    today = date.today()
+    from_date, to_date = _parse_period(request)
     emp_department = None
     emp_job_position = None
     try:
@@ -503,7 +572,12 @@ def ess_announcements(request):
 
     results = []
     try:
-        not_expired = Q(expire_date__gte=today) | Q(expire_date__isnull=True)
+        # Active during the selected month: created on/before month end AND not yet expired by month start.
+        active_in_month = (
+            Q(created_at__date__lte=to_date)
+            & (Q(expire_date__gte=from_date) | Q(expire_date__isnull=True))
+        )
+        not_expired = active_in_month
 
         # Use filtered_employees (pre-computed denormalised M2M) if available
         if Announcement.objects.filter(filtered_employees=employee).exists():
@@ -548,14 +622,18 @@ def ess_announcements(request):
 
 @login_required
 def ess_upcoming(request):
-    """GET /ess/api/upcoming/ — holidays, birthday, work anniversary in next 30 days."""
+    """GET /ess/api/upcoming/?year=&month= — holidays, birthday, anniversary within 30 days from the start of the selected month."""
     from base.models import Holidays
 
     employee = _get_employee(request)
     if not employee:
         return JsonResponse({"error": "no employee"}, status=403)
 
-    today = date.today()
+    from_date, to_date = _parse_period(request)
+    real_today = date.today()
+    # When the picker covers today, anchor on today; otherwise anchor on the
+    # period start so the panel reflects what was/will be upcoming in that window.
+    today = real_today if from_date <= real_today <= to_date else from_date
     horizon = today + timedelta(days=30)
 
     # Holidays in the next 30 days

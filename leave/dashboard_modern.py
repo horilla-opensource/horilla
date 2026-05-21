@@ -122,17 +122,18 @@ def leave_monthly_trend(request):
     today = to_date
     months = []
 
+    base = today.replace(day=1)
     for i in range(5, -1, -1):
-        month_date = today.replace(day=1) - timedelta(days=i * 30)
-        month_start = month_date.replace(day=1)
+        year = base.year
+        month = base.month - i
+        while month <= 0:
+            month += 12
+            year -= 1
+        month_start = date(year, month, 1)
         if month_start.month == 12:
-            month_end = month_start.replace(
-                year=month_start.year + 1, month=1
-            ) - timedelta(days=1)
+            month_end = date(month_start.year + 1, 1, 1) - timedelta(days=1)
         else:
-            month_end = month_start.replace(month=month_start.month + 1) - timedelta(
-                days=1
-            )
+            month_end = date(month_start.year, month_start.month + 1, 1) - timedelta(days=1)
 
         approved = LeaveRequest.objects.filter(
             status="approved",
@@ -158,6 +159,8 @@ def leave_monthly_trend(request):
                 "approved": approved,
                 "rejected": rejected,
                 "pending": pending,
+                "from_date": month_start.isoformat(),
+                "to_date": month_end.isoformat(),
             }
         )
 
@@ -182,7 +185,7 @@ def leave_type_distribution(request):
                 start_date__lte=today,
             )
             .values(
-                "leave_type_id__name", "leave_type_id__color", "leave_type_id__payment"
+                "leave_type_id", "leave_type_id__name", "leave_type_id__color", "leave_type_id__payment"
             )
             .annotate(count=Count("id"), total_days=Sum("requested_days"))
             .order_by("-total_days")
@@ -191,6 +194,7 @@ def leave_type_distribution(request):
         for item in data:
             types.append(
                 {
+                    "id": item["leave_type_id"],
                     "type": item["leave_type_id__name"] or "Unknown",
                     "color": item["leave_type_id__color"] or None,
                     "payment": item["leave_type_id__payment"] or "unpaid",
@@ -244,16 +248,16 @@ def leave_department_breakdown(request):
 
 @login_required
 def leave_utilization_rate(request):
-    """Leave utilization: used vs available across all employees."""
-    from employee.models import Employee
-    from leave.models import AvailableLeave
+    """Leave utilization per leave type: days used in the selected period vs total allocated."""
+    from leave.models import AvailableLeave, LeaveRequest
 
+    from_date, to_date = _parse_period(request)
     utilization = []
 
     try:
-        data = (
+        allocations = (
             AvailableLeave.objects.filter(employee_id__is_active=True)
-            .values("leave_type_id__name")
+            .values("leave_type_id", "leave_type_id__name")
             .annotate(
                 total_available=Sum("available_days"),
                 total_carryforward=Sum("carryforward_days"),
@@ -262,12 +266,26 @@ def leave_utilization_rate(request):
             .order_by("-total_allocated")
         )
 
-        for item in data:
+        used_by_type = {
+            row["leave_type_id"]: float(row["total"] or 0)
+            for row in (
+                LeaveRequest.objects.filter(
+                    status="approved",
+                    start_date__lte=to_date,
+                    end_date__gte=from_date,
+                )
+                .values("leave_type_id")
+                .annotate(total=Sum("requested_days"))
+            )
+        }
+
+        for item in allocations:
+            lt_id = item["leave_type_id"]
             allocated = float(item["total_allocated"] or 0)
             available = float(item["total_available"] or 0) + float(
                 item["total_carryforward"] or 0
             )
-            used = max(0, allocated - available)
+            used = used_by_type.get(lt_id, 0.0)
             rate = round((used / allocated * 100), 1) if allocated > 0 else 0
 
             utilization.append(
@@ -381,17 +399,18 @@ def leave_top_takers(request):
 
 @login_required
 def leave_on_leave_today(request):
-    """Employees currently on leave."""
+    """Employees with approved leave overlapping the selected period."""
     from leave.models import LeaveRequest
 
+    from_date, to_date = _parse_period(request)
     today = date.today()
     employees = []
 
     try:
         qs = (
             LeaveRequest.objects.filter(
-                start_date__lte=today,
-                end_date__gte=today,
+                start_date__lte=to_date,
+                end_date__gte=from_date,
                 status="approved",
             )
             .select_related("employee_id", "leave_type_id")
@@ -427,17 +446,17 @@ def leave_on_leave_today(request):
 
 @login_required
 def leave_upcoming_holidays(request):
-    """Upcoming holidays in the next 30 days."""
+    """Holidays falling within the selected period."""
     from base.models import Holidays
 
+    from_date, to_date = _parse_period(request)
     today = date.today()
-    end = today + timedelta(days=30)
     holidays = []
 
     try:
         qs = Holidays.objects.filter(
-            start_date__gte=today,
-            start_date__lte=end,
+            start_date__gte=from_date,
+            start_date__lte=to_date,
         ).order_by("start_date")[:10]
 
         for h in qs:
@@ -461,11 +480,10 @@ def leave_upcoming_holidays(request):
 
 @login_required
 def leave_weekly_pattern(request):
-    """Leave requests by day of week for the last 3 months (pattern analysis)."""
+    """Leave requests by day of week for the selected period (pattern analysis)."""
     from leave.models import LeaveRequest
 
-    today = date.today()
-    three_months_ago = today - timedelta(days=90)
+    from_date, to_date = _parse_period(request)
     days = [
         "Monday",
         "Tuesday",
@@ -480,15 +498,15 @@ def leave_weekly_pattern(request):
     try:
         leaves = LeaveRequest.objects.filter(
             status="approved",
-            start_date__gte=three_months_ago,
-            start_date__lte=today,
+            start_date__lte=to_date,
+            end_date__gte=from_date,
         )
 
         for lr in leaves:
-            d = lr.start_date
-            while d <= (lr.end_date or lr.start_date) and d <= today:
-                if d >= three_months_ago:
-                    counts[d.weekday()] += 1
+            d = max(lr.start_date, from_date)
+            end = min(lr.end_date or lr.start_date, to_date)
+            while d <= end:
+                counts[d.weekday()] += 1
                 d += timedelta(days=1)
     except Exception:
         pass
@@ -503,19 +521,19 @@ def leave_weekly_pattern(request):
 
 @login_required
 def leave_upcoming(request):
-    """Approved leaves starting in the next 7 days."""
+    """Approved leaves starting within the selected period."""
     from leave.models import LeaveRequest
 
+    from_date, to_date = _parse_period(request)
     today = date.today()
-    end = today + timedelta(days=7)
     upcoming = []
 
     try:
         qs = (
             LeaveRequest.objects.filter(
                 status="approved",
-                start_date__gt=today,
-                start_date__lte=end,
+                start_date__gte=from_date,
+                start_date__lte=to_date,
             )
             .select_related("employee_id", "leave_type_id")
             .order_by("start_date")[:15]

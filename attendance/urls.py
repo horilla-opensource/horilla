@@ -386,7 +386,7 @@ urlpatterns = [
         views.attendance_add_to_batch,
         name="attendance-add-to-batch",
     ),
-    path("dashboard/", attendance_dashboard.dashboard, name="attendance-dashboard"),
+    path("dashboard/", att_dashboard_modern.modern_attendance_dashboard, name="attendance-dashboard"),
     path(
         "on-break-employees/",
         attendance_dashboard.on_break_employees,
@@ -920,12 +920,7 @@ urlpatterns = [
     path(
         "settings/geo-face-config/", geofaceconfig.geofaceconfig, name="geo-face-config"
     ),
-    # ── Attendance Modern Dashboard ──────────────────────────────────────────
-    path(
-        "dashboard/",
-        att_dashboard_modern.modern_attendance_dashboard,
-        name="attendance-modern-dashboard",
-    ),
+    # ── Attendance Modern Dashboard API ──────────────────────────────────────
     path(
         "dashboard/api/kpi/",
         att_dashboard_modern.attendance_kpi_data,
@@ -990,5 +985,10 @@ urlpatterns = [
         "dashboard/api/calendar/",
         att_dashboard_modern.attendance_calendar_heatmap,
         name="attendance-modern-calendar",
+    ),
+    path(
+        "dashboard/api/overview/",
+        att_dashboard_modern.attendance_modern_overview,
+        name="attendance-modern-overview",
     ),
 ]

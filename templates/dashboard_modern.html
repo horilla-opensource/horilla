@@ -1,4 +1,4 @@
-{% extends "index.html" %}
+﻿{% extends "index.html" %}
 {% load static i18n %}
 
 {% block styles %}
@@ -25,7 +25,7 @@
     }
 
     .dark .md-dashboard {
-        background: #0f172a;
+        background: #000000;
     }
 
     .md-header {
@@ -116,27 +116,43 @@
     }
 
     .md-kpi-card {
-        border-radius: 12px;
-        padding: 18px;
+        border-radius: 16px;
+        padding: 20px;
         background: #ffffff;
-        border: 1px solid rgba(128,128,128,0.12);
-        transition: all 0.2s;
+        border: 1px solid rgba(128,128,128,0.09);
+        box-shadow: 0 1px 4px rgba(0,0,0,0.04), 0 4px 14px rgba(0,0,0,0.05);
+        transition: all 0.25s ease;
         cursor: pointer;
         text-decoration: none;
         color: inherit;
         display: block;
+        position: relative;
+        overflow: hidden;
+    }
+    .md-kpi-card::after {
+        content: '';
+        position: absolute;
+        bottom: 0; right: 0;
+        width: 80px; height: 80px;
+        border-radius: 50%;
+        opacity: 0.06;
+        background: currentColor;
+        transform: translate(20px, 20px);
+        pointer-events: none;
     }
 
-    .md-kpi-card:active { transform: scale(0.98); }
+    .md-kpi-card:active { transform: scale(0.97); }
 
     .dark .md-kpi-card {
-        background: rgba(255,255,255,0.04);
-        border-color: rgba(255,255,255,0.08);
+        background: #242424;
+        border-color: rgba(255,255,255,0.07);
+        box-shadow: 0 2px 8px rgba(0,0,0,0.3);
     }
 
     .md-kpi-card:hover {
-        box-shadow: 0 4px 12px rgba(0,0,0,0.08);
-        transform: translateY(-1px);
+        box-shadow: 0 6px 24px rgba(0,0,0,0.1);
+        transform: translateY(-2px);
+        text-decoration: none;
     }
 
     .md-kpi-card__icon {
@@ -197,27 +213,50 @@
     .md-chart-grid {
         display: grid;
         grid-template-columns: repeat(2, 1fr);
-        gap: 16px;
+        gap: 18px;
         margin-bottom: 20px;
     }
 
     .md-chart-card {
-        border-radius: 12px;
+        border-radius: 16px;
         background: #ffffff;
-        border: 1px solid rgba(128,128,128,0.12);
-        overflow: visible;
+        border: 1px solid rgba(128,128,128,0.09);
+        box-shadow: 0 1px 4px rgba(0,0,0,0.04), 0 4px 16px rgba(0,0,0,0.05);
+        overflow: hidden;
+        transition: box-shadow 0.25s ease, transform 0.25s ease;
+        position: relative;
+    }
+    .md-chart-card:hover {
+        box-shadow: 0 6px 24px rgba(0,0,0,0.1);
+        transform: translateY(-2px);
+    }
+    .dark .md-chart-card {
+        background: #242424;
+        border-color: rgba(255,255,255,0.07);
+        box-shadow: 0 2px 8px rgba(0,0,0,0.3), 0 4px 20px rgba(0,0,0,0.25);
+    }
+    .dark .md-chart-card:hover {
+        box-shadow: 0 6px 28px rgba(0,0,0,0.4);
     }
 
-    .dark .md-chart-card {
-        background: rgba(255,255,255,0.04);
-        border-color: rgba(255,255,255,0.08);
+    /* Section accent top-border strip */
+    .md-chart-card::before {
+        content: '';
+        position: absolute;
+        top: 0; left: 0; right: 0;
+        height: 3px;
+        border-radius: 16px 16px 0 0;
     }
+    .md-chart-card[data-chart-section="overview"]::before    { background: linear-gradient(90deg, #6366f1, #a855f7); }
+    .md-chart-card[data-chart-section="attendance"]::before  { background: linear-gradient(90deg, #22c55e, #06b6d4); }
+    .md-chart-card[data-chart-section="recruitment"]::before { background: linear-gradient(90deg, #f59e0b, #ef4444); }
+    .md-chart-card[data-chart-section="leave"]::before       { background: linear-gradient(90deg, #3b82f6, #6366f1); }
 
     .md-chart-card--wide { grid-column: span 2; }
     .md-chart-card--hidden { display: none !important; }
 
     .md-chart-card__header {
-        padding: 14px 18px 0;
+        padding: 16px 18px 4px;
         display: flex;
         justify-content: space-between;
         align-items: center;
@@ -225,16 +264,18 @@
 
     .md-chart-card__title {
         font-size: 14px;
-        font-weight: 600;
+        font-weight: 700;
+        letter-spacing: -0.01em;
     }
 
     .md-chart-card__subtitle {
         font-size: 11px;
-        opacity: 0.5;
+        opacity: 0.45;
         margin-top: 2px;
+        font-weight: 500;
     }
 
-    .md-chart-card__body { padding: 6px 10px 10px; }
+    .md-chart-card__body { padding: 4px 12px 12px; }
 
     /* Section labels inside the grid */
     .md-section-divider {
@@ -287,7 +328,7 @@
     }
 
     .dark .md-info-panel {
-        background: rgba(255,255,255,0.04);
+        background: #242424;
         border-color: rgba(255,255,255,0.08);
     }
 
@@ -361,7 +402,7 @@
         box-shadow: 0 20px 60px rgba(0,0,0,0.2); transform: translateY(12px); transition: transform 0.2s;
     }
     .md-modal-overlay--open .md-modal { transform: translateY(0); }
-    .dark .md-modal { background: #1e293b; }
+    .dark .md-modal { background: #242424; }
 
     .md-modal__header {
         padding: 18px 22px; border-bottom: 1px solid rgba(128,128,128,0.12);
@@ -417,7 +458,7 @@
         flex-direction: column;
         transition: right 0.25s ease;
     }
-    .dark .md-customize-panel { background: #1e293b; }
+    .dark .md-customize-panel { background: #242424; }
     .md-customize-panel--open { right: 0; }
 
     .md-customize-panel__header {
@@ -629,27 +670,31 @@
     .md-payroll-summary {
         display: grid;
         grid-template-columns: 1fr 1fr;
-        gap: 12px;
-        padding: 10px 0 0;
+        gap: 8px;
+        padding: 0;
     }
     .md-payroll-stat {
         text-align: center;
+        transition: transform 0.15s;
     }
+    .md-payroll-stat:hover { transform: translateY(-1px); }
     .md-payroll-stat__value {
-        font-size: 18px;
+        font-size: 17px;
         font-weight: 800;
         line-height: 1.2;
     }
     .md-payroll-stat__label {
         font-size: 10px;
         text-transform: uppercase;
-        opacity: 0.5;
-        font-weight: 600;
+        opacity: 0.55;
+        font-weight: 700;
+        letter-spacing: 0.04em;
+        margin-top: 2px;
     }
 
     /* Period Picker */
     .md-period-picker {
-        display: none; /* DATE FILTER DISABLED */
+        display: flex;
         align-items: center;
         gap: 6px;
         font-size: 12px;
@@ -759,7 +804,7 @@
 
                 <!-- Attendance Trend -->
                 <div class="md-chart-card md-chart-card--wide" data-chart-id="attendance_trend" data-chart-section="overview" data-chart-label="{% trans 'Attendance Trend' %}" data-chart-wide="1">
-                    <div class="md-chart-card__header"><div><div class="md-chart-card__title">{% trans "Attendance Trend" %}</div><div class="md-chart-card__subtitle">{% trans "Weekly rate — last 12 weeks" %}</div></div></div>
+                    <div class="md-chart-card__header"><div><div class="md-chart-card__title">{% trans "Attendance Trend" %}</div><div class="md-chart-card__subtitle" id="md-attendance-trend-subtitle">{% trans "Weekly rate — last 12 weeks" %}</div></div></div>
                     <div class="md-chart-card__body"><div id="chart-attendance-trend"></div></div>
                 </div>
 
@@ -921,10 +966,17 @@
 <script>
 (function() {
     const isDark = document.documentElement.classList.contains('dark') || document.body.classList.contains('dark');
-    const textColor = isDark ? '#e2e8f0' : '#334155';
-    const gridColor = isDark ? 'rgba(255,255,255,0.06)' : 'rgba(0,0,0,0.06)';
-    const cardBg = isDark ? '#1e293b' : '#ffffff';
+    const textColor = isDark ? '#cbd5e1' : '#334155';
+    const subTextColor = isDark ? '#64748b' : '#94a3b8';
+    const gridColor = isDark ? 'rgba(255,255,255,0.05)' : 'rgba(0,0,0,0.05)';
+    const cardBg = isDark ? '#242424' : '#ffffff';
     const COLORS = ['#6366f1','#22c55e','#f59e0b','#ef4444','#3b82f6','#a855f7','#06b6d4','#ec4899','#14b8a6','#f97316'];
+    const ANIM = { enabled: true, easing: 'easeinout', speed: 700, animateGradually: { enabled: true, delay: 80 }, dynamicAnimation: { enabled: true, speed: 500 } };
+    const GRID = { borderColor: gridColor, strokeDashArray: 5, padding: { left: 4, right: 4 } };
+    const TOOLTIP_STYLE = { theme: isDark ? 'dark' : 'light', style: { fontSize: '12px' } };
+    const LEGEND_STYLE = { position: 'bottom', labels: { colors: textColor }, fontSize: '11px', fontWeight: 500, markers: { width: 8, height: 8, radius: 3 }, itemMargin: { horizontal: 8 } };
+    const XAXIS_STYLE = { labels: { style: { colors: textColor, fontSize: '11px', fontWeight: 500 } }, axisBorder: { show: false }, axisTicks: { show: false } };
+    const YAXIS_STYLE = { labels: { style: { colors: textColor, fontSize: '11px' } } };
     const STORAGE_KEY = 'md_dashboard_prefs';
 
     const SECTION_LABELS = {
@@ -948,11 +1000,26 @@
     const fromInput = document.getElementById('md-from-date');
     const toInput = document.getElementById('md-to-date');
 
-    function getToday() { return new Date().toISOString().split('T')[0]; }
-    function getFirstOfMonth(d) { const dt = new Date(d || getToday()); dt.setDate(1); return dt.toISOString().split('T')[0]; }
-    function getLastOfMonth(d) { const dt = new Date(d || getToday()); return new Date(dt.getFullYear(), dt.getMonth()+1, 0).toISOString().split('T')[0]; }
+    function ymdLocal(d) {
+        const y = d.getFullYear();
+        const m = String(d.getMonth() + 1).padStart(2, '0');
+        const da = String(d.getDate()).padStart(2, '0');
+        return `${y}-${m}-${da}`;
+    }
+    function getToday() { return ymdLocal(new Date()); }
+    function getFirstOfMonth() { const dt = new Date(); return ymdLocal(new Date(dt.getFullYear(), dt.getMonth(), 1)); }
+    function getLastOfMonth() { const dt = new Date(); return ymdLocal(new Date(dt.getFullYear(), dt.getMonth() + 1, 0)); }
 
     function initPeriod() {
+        const urlParams = new URLSearchParams(location.search);
+        const urlFrom = urlParams.get('from_date');
+        const urlTo = urlParams.get('to_date');
+        if (urlFrom && urlTo) {
+            fromInput.value = urlFrom;
+            toInput.value = urlTo;
+            savePeriod();
+            return;
+        }
         const saved = sessionStorage.getItem(PERIOD_KEY);
         if (saved) {
             try {
@@ -971,7 +1038,10 @@
     }
 
     function periodParams() {
-        return ""; /* DATE FILTER DISABLED */
+        const from = fromInput.value;
+        const to = toInput.value;
+        if (!from || !to) return "";
+        return "from_date=" + encodeURIComponent(from) + "&to_date=" + encodeURIComponent(to);
     }
 
     function urlWithPeriod(baseUrl) {
@@ -993,8 +1063,8 @@
             from = new Date(today.getFullYear(), qMonth, 1);
             to = new Date(today.getFullYear(), qMonth + 3, 0);
         }
-        fromInput.value = from.toISOString().split('T')[0];
-        toInput.value = to.toISOString().split('T')[0];
+        fromInput.value = ymdLocal(from);
+        toInput.value = ymdLocal(to);
         savePeriod();
         highlightPreset(preset);
         loadAllData();
@@ -1004,6 +1074,31 @@
         document.querySelectorAll('.md-period-preset').forEach(btn => {
             btn.classList.toggle('md-period-preset--active', btn.dataset.preset === active);
         });
+    }
+
+    function detectPreset() {
+        const today = new Date();
+        const ranges = {
+            this_month: [
+                ymdLocal(new Date(today.getFullYear(), today.getMonth(), 1)),
+                ymdLocal(new Date(today.getFullYear(), today.getMonth() + 1, 0)),
+            ],
+            last_month: [
+                ymdLocal(new Date(today.getFullYear(), today.getMonth() - 1, 1)),
+                ymdLocal(new Date(today.getFullYear(), today.getMonth(), 0)),
+            ],
+            this_quarter: (() => {
+                const qMonth = Math.floor(today.getMonth() / 3) * 3;
+                return [
+                    ymdLocal(new Date(today.getFullYear(), qMonth, 1)),
+                    ymdLocal(new Date(today.getFullYear(), qMonth + 3, 0)),
+                ];
+            })(),
+        };
+        for (const [key, [f, t]] of Object.entries(ranges)) {
+            if (fromInput.value === f && toInput.value === t) return key;
+        }
+        return '';
     }
 
     // Preset buttons
@@ -1021,7 +1116,7 @@
     });
 
     initPeriod();
-    highlightPreset('this_month');
+    highlightPreset(detectPreset());
 
     // ═══════════════════════════════════════════
     //  CHART REORDER + VISIBILITY SYSTEM
@@ -1036,7 +1131,13 @@
         try {
             const raw = localStorage.getItem(STORAGE_KEY);
             if (!raw) return null;
-            return JSON.parse(raw);
+            const parsed = JSON.parse(raw);
+            // Validate: must be array of objects with id property (not old Horilla string format)
+            if (!Array.isArray(parsed) || (parsed.length > 0 && typeof parsed[0] !== 'object')) {
+                localStorage.removeItem(STORAGE_KEY);
+                return null;
+            }
+            return parsed;
         } catch { return null; }
     }
 
@@ -1241,9 +1342,9 @@
     //  PERIOD-AWARE RELOAD
     // ═══════════════════════════════════════════
     function loadAllData() {
-        // Reload the page with period params preserved in sessionStorage
-        // All fetches below already use urlWithPeriod() for period-sensitive endpoints
-        location.reload();
+        const params = periodParams();
+        const newUrl = location.pathname + (params ? '?' + params : '');
+        location.assign(newUrl);
     }
 
     // Helper: fetch with period params for period-sensitive endpoints
@@ -1290,7 +1391,7 @@
         .then(data => {
             document.getElementById('md-kpi-grid').innerHTML = `
                 <a href="{% url 'employee-view' %}" class="md-kpi-card">
-                    <div class="md-kpi-card__icon md-kpi-card__icon--indigo">👥</div>
+                    <div class="md-kpi-card__icon md-kpi-card__icon--indigo"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M22 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg></div>
                     <div class="md-kpi-card__label">{% trans "Total Employees" %}</div>
                     <div class="md-kpi-card__value">${data.total_employees}</div>
                     <div class="md-kpi-card__sub">${data.new_joiners > 0
@@ -1298,13 +1399,13 @@
                         : '<span style="opacity:0.5">{% trans "No new joiners" %}</span>'}</div>
                 </a>
                 <a href="{% url 'attendance-view' %}" class="md-kpi-card">
-                    <div class="md-kpi-card__icon md-kpi-card__icon--green">✓</div>
+                    <div class="md-kpi-card__icon md-kpi-card__icon--green"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M16 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="8.5" cy="7" r="4"/><polyline points="17 11 19 13 23 9"/></svg></div>
                     <div class="md-kpi-card__label">{% trans "Present Today" %}</div>
                     <div class="md-kpi-card__value">${data.present_today}</div>
                     <div class="md-kpi-card__sub"><span class="md-badge ${data.attendance_rate >= 80 ? 'md-badge--green' : 'md-badge--amber'}">${data.attendance_rate}% {% trans "rate" %}</span></div>
                 </a>
                 <a href="{% url 'request-view' %}" class="md-kpi-card">
-                    <div class="md-kpi-card__icon md-kpi-card__icon--amber">🏖</div>
+                    <div class="md-kpi-card__icon md-kpi-card__icon--amber"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="18" rx="2" ry="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg></div>
                     <div class="md-kpi-card__label">{% trans "On Leave" %}</div>
                     <div class="md-kpi-card__value">${data.on_leave}</div>
                     <div class="md-kpi-card__sub">${data.pending_leaves > 0
@@ -1312,7 +1413,7 @@
                         : '<span style="opacity:0.5">{% trans "No pending" %}</span>'}</div>
                 </a>
                 <a href="{% url 'recruitment-view' %}" class="md-kpi-card">
-                    <div class="md-kpi-card__icon md-kpi-card__icon--purple">📋</div>
+                    <div class="md-kpi-card__icon md-kpi-card__icon--purple"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="7" width="20" height="14" rx="2" ry="2"/><path d="M16 21V5a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v16"/></svg></div>
                     <div class="md-kpi-card__label">{% trans "Open Recruitments" %}</div>
                     <div class="md-kpi-card__value">${data.open_recruitments}</div>
                     <div class="md-kpi-card__sub"><span style="opacity:0.5">{% trans "Active hiring" %}</span></div>
@@ -1385,20 +1486,29 @@
         }).catch(() => { document.getElementById('md-todays-leave').innerHTML = '<div class="md-info-panel__empty">{% trans "No one on leave today" %}</div>'; });
 
     // ─── ATTENDANCE TREND ───
-    fetch("{% url 'dashboard-attendance-trend' %}")
+    (function () {
+        const sub = document.getElementById('md-attendance-trend-subtitle');
+        if (sub && fromInput.value && toInput.value) {
+            sub.textContent = `{% trans "Weekly rate" %} — ${fromInput.value} → ${toInput.value}`;
+        }
+    })();
+    fetchP("{% url 'dashboard-attendance-trend' %}")
         .then(r => r.json())
         .then(data => {
             new ApexCharts(document.querySelector("#chart-attendance-trend"), {
                 series: [{ name: 'Attendance Rate', data: data.weeks.map(w => w.rate) }],
-                chart: { type: 'area', height: 260, toolbar: { show: false }, background: 'transparent', fontFamily: 'inherit' },
+                chart: { type: 'area', height: 280, toolbar: { show: false }, background: 'transparent', fontFamily: 'inherit', animations: ANIM,
+                    dropShadow: { enabled: true, top: 4, blur: 10, opacity: 0.12, color: '#6366f1' } },
                 colors: ['#6366f1'],
-                fill: { type: 'gradient', gradient: { shadeIntensity: 1, opacityFrom: 0.4, opacityTo: 0.05, stops: [0, 95, 100] } },
+                fill: { type: 'gradient', gradient: { type: 'vertical', shadeIntensity: 1, opacityFrom: 0.45, opacityTo: 0.02, stops: [0, 90, 100],
+                    colorStops: [{ offset: 0, color: '#6366f1', opacity: 0.4 }, { offset: 100, color: '#a855f7', opacity: 0.02 }] } },
                 stroke: { curve: 'smooth', width: 3 },
+                markers: { size: 5, colors: ['#6366f1'], strokeColors: cardBg, strokeWidth: 2, hover: { size: 7 } },
                 dataLabels: { enabled: false },
-                xaxis: { categories: data.weeks.map(w => w.week), labels: { style: { colors: textColor, fontSize: '11px' } }, axisBorder: { show: false }, axisTicks: { show: false } },
-                yaxis: { min: 0, max: 100, labels: { style: { colors: textColor }, formatter: v => v + '%' } },
-                grid: { borderColor: gridColor, strokeDashArray: 4 },
-                tooltip: { theme: isDark ? 'dark' : 'light', y: { formatter: v => v + '% attendance' } },
+                xaxis: { ...XAXIS_STYLE, categories: data.weeks.map(w => w.week) },
+                yaxis: { ...YAXIS_STYLE, min: 0, max: 100, labels: { ...YAXIS_STYLE.labels, formatter: v => v + '%' } },
+                grid: GRID,
+                tooltip: { ...TOOLTIP_STYLE, y: { formatter: v => v + '% attendance' } },
             }).render();
         });
 
@@ -1409,7 +1519,7 @@
             if (!data.departments.length) { document.querySelector("#chart-departments").innerHTML = emptyHtml('No department data'); return; }
             new ApexCharts(document.querySelector("#chart-departments"), {
                 series: data.departments.map(d => d.count),
-                chart: { type: 'donut', height: 300, background: 'transparent', fontFamily: 'inherit',
+                chart: { type: 'donut', height: 300, background: 'transparent', fontFamily: 'inherit', animations: ANIM,
                     events: { dataPointSelection: (e, ctx, config) => {
                         const dept = data.departments[config.dataPointIndex].department;
                         window.location.href = "{% url 'employee-view' %}?department=" + encodeURIComponent(dept);
@@ -1417,11 +1527,15 @@
                 },
                 labels: data.departments.map(d => d.department),
                 colors: COLORS.slice(0, data.departments.length),
-                plotOptions: { pie: { donut: { size: '65%', labels: { show: true, total: { show: true, label: 'Total', color: textColor, fontSize: '13px', fontWeight: 600, formatter: w => w.globals.seriesTotals.reduce((a,b)=>a+b,0) } } } } },
-                stroke: { width: 2, colors: [cardBg] },
+                plotOptions: { pie: { expandOnClick: true, donut: { size: '68%',
+                    labels: { show: true,
+                        name: { fontSize: '13px', fontWeight: 700, color: textColor, offsetY: -4 },
+                        value: { fontSize: '22px', fontWeight: 800, color: textColor, offsetY: 4 },
+                        total: { show: true, label: 'Total', color: subTextColor, fontSize: '12px', fontWeight: 600, formatter: w => w.globals.seriesTotals.reduce((a,b)=>a+b,0) } } } } },
+                stroke: { width: 3, colors: [cardBg] },
                 dataLabels: { enabled: false },
-                legend: { position: 'bottom', labels: { colors: textColor }, fontSize: '11px', markers: { width: 8, height: 8, radius: 2 } },
-                tooltip: { theme: isDark ? 'dark' : 'light' },
+                legend: { ...LEGEND_STYLE },
+                tooltip: { ...TOOLTIP_STYLE },
             }).render();
         });
 
@@ -1434,7 +1548,7 @@
             const genderKeys = { 'Male': 'male', 'Female': 'female', 'Other': 'other', 'Not Specified': '' };
             new ApexCharts(document.querySelector("#chart-gender"), {
                 series: data.genders.map(g => g.count),
-                chart: { type: 'donut', height: 300, background: 'transparent', fontFamily: 'inherit',
+                chart: { type: 'pie', height: 300, background: 'transparent', fontFamily: 'inherit', animations: ANIM,
                     events: { dataPointSelection: (e, ctx, config) => {
                         const gender = data.genders[config.dataPointIndex].gender;
                         window.location.href = "{% url 'employee-view' %}?gender=" + (genderKeys[gender] || gender.toLowerCase());
@@ -1442,11 +1556,11 @@
                 },
                 labels: data.genders.map(g => g.gender),
                 colors: data.genders.map(g => gc[g.gender] || '#94a3b8'),
-                plotOptions: { pie: { donut: { size: '70%', labels: { show: true, total: { show: true, label: 'Employees', color: textColor, fontSize: '12px', fontWeight: 600, formatter: w => w.globals.seriesTotals.reduce((a,b)=>a+b,0) } } } } },
-                stroke: { width: 2, colors: [cardBg] },
-                dataLabels: { enabled: false },
-                legend: { position: 'bottom', labels: { colors: textColor }, fontSize: '11px', markers: { width: 8, height: 8, radius: 2 } },
-                tooltip: { theme: isDark ? 'dark' : 'light' },
+                plotOptions: { pie: { expandOnClick: true, dataLabels: { offset: -5, minAngleToShowLabel: 10 } } },
+                stroke: { width: 3, colors: [cardBg] },
+                dataLabels: { enabled: true, formatter: (v, opts) => opts.w.globals.labels[opts.seriesIndex] + ': ' + Math.round(v) + '%', style: { fontSize: '11px', fontWeight: 600 }, dropShadow: { enabled: false } },
+                legend: { ...LEGEND_STYLE },
+                tooltip: { ...TOOLTIP_STYLE },
             }).render();
         });
 
@@ -1458,20 +1572,21 @@
             if (!data.breakdown.length) { document.querySelector("#chart-leave").innerHTML = emptyHtml('No leave data this month'); return; }
             new ApexCharts(document.querySelector("#chart-leave"), {
                 series: [{ name: 'Requests', data: data.breakdown.map(b => b.count) }],
-                chart: { type: 'bar', height: 300, toolbar: { show: false }, background: 'transparent', fontFamily: 'inherit',
+                chart: { type: 'bar', height: 300, toolbar: { show: false }, background: 'transparent', fontFamily: 'inherit', animations: ANIM,
                     events: { dataPointSelection: (e, ctx, config) => {
                         const leaveType = data.breakdown[config.dataPointIndex]?.type || '';
                         window.location.href = "{% url 'request-view' %}?leave_type_id__name=" + encodeURIComponent(leaveType);
                     }}
                 },
                 colors: COLORS,
-                plotOptions: { bar: { borderRadius: 6, horizontal: true, barHeight: '55%', distributed: true } },
-                xaxis: { categories: data.breakdown.map(b => b.type), labels: { style: { colors: textColor } } },
-                yaxis: { labels: { style: { colors: textColor, fontSize: '11px' } } },
-                grid: { borderColor: gridColor },
-                dataLabels: { enabled: true, formatter: (v, { dataPointIndex: i }) => v + ' (' + data.breakdown[i].days + 'd)', style: { fontSize: '11px' } },
+                plotOptions: { bar: { borderRadius: 8, borderRadiusApplication: 'end', horizontal: true, barHeight: '52%', distributed: true } },
+                xaxis: { ...XAXIS_STYLE, categories: data.breakdown.map(b => b.type) },
+                yaxis: { labels: { style: { colors: textColor, fontSize: '11px', fontWeight: 500 } } },
+                grid: GRID,
+                dataLabels: { enabled: true, formatter: (v, { dataPointIndex: i }) => v + ' (' + data.breakdown[i].days + 'd)', style: { fontSize: '11px', fontWeight: 600 }, offsetX: 0 },
                 legend: { show: false },
-                tooltip: { theme: isDark ? 'dark' : 'light', y: { formatter: v => v + ' requests' } },
+                tooltip: { ...TOOLTIP_STYLE, y: { formatter: v => v + ' requests' } },
+                states: { hover: { filter: { type: 'darken', value: 0.85 } } },
             }).render();
         });
 
@@ -1483,7 +1598,7 @@
             const sc = { 'Active': '#22c55e', 'Inactive': '#ef4444' };
             new ApexCharts(document.querySelector("#chart-employee-status"), {
                 series: data.dataSet[0].data,
-                chart: { type: 'radialBar', height: 300, background: 'transparent', fontFamily: 'inherit',
+                chart: { type: 'radialBar', height: 300, background: 'transparent', fontFamily: 'inherit', animations: ANIM,
                     events: { legendClick: (ctx, seriesIndex) => {
                         const label = data.labels[seriesIndex];
                         const active = label.toLowerCase().includes('active') && !label.toLowerCase().includes('in') ? 'true' : 'false';
@@ -1492,9 +1607,18 @@
                 },
                 labels: data.labels,
                 colors: data.labels.map(l => sc[l] || '#6366f1'),
-                plotOptions: { radialBar: { hollow: { size: '45%' }, track: { background: isDark ? '#334155' : '#f1f5f9' }, dataLabels: { name: { fontSize: '12px', color: textColor }, value: { fontSize: '22px', fontWeight: 700, color: textColor }, total: { show: true, label: 'Total', color: textColor, formatter: w => w.globals.seriesTotals.reduce((a,b)=>a+b,0) } } } },
+                plotOptions: { radialBar: {
+                    hollow: { size: '40%', background: 'transparent' },
+                    track: { background: isDark ? '#242424' : '#f1f5f9', strokeWidth: '90%', margin: 6 },
+                    dataLabels: {
+                        name: { fontSize: '12px', fontWeight: 600, color: textColor, offsetY: -4 },
+                        value: { fontSize: '20px', fontWeight: 800, color: textColor, offsetY: 4 },
+                        total: { show: true, label: 'Total', color: subTextColor, fontSize: '11px', fontWeight: 600,
+                            formatter: w => w.globals.seriesTotals.reduce((a,b)=>a+b,0) }
+                    }
+                } },
                 stroke: { lineCap: 'round' },
-                legend: { show: true, position: 'bottom', labels: { colors: textColor }, fontSize: '11px' },
+                legend: { ...LEGEND_STYLE, show: true },
             }).render();
         });
 
@@ -1505,25 +1629,27 @@
             if (!data.dataSet || !data.dataSet.length) { document.querySelector("#chart-attendance-overview").innerHTML = emptyHtml('No attendance records available'); return; }
             new ApexCharts(document.querySelector("#chart-attendance-overview"), {
                 series: data.dataSet.map(d => ({ name: d.label, data: d.data })),
-                chart: { type: 'bar', height: 320, toolbar: { show: false }, background: 'transparent', fontFamily: 'inherit', stacked: false,
+                chart: { type: 'bar', height: 320, toolbar: { show: false }, background: 'transparent', fontFamily: 'inherit', stacked: false, animations: ANIM,
                     events: { dataPointSelection: (e, ctx, config) => {
                         const dept = data.labels[config.dataPointIndex];
                         const seriesLabel = data.dataSet[config.seriesIndex]?.label || '';
                         if (seriesLabel.toLowerCase().includes('late') || seriesLabel.toLowerCase().includes('early')) {
-                            window.location.href = "/attendance/late-come-early-out-view?department=" + encodeURIComponent(dept);
+                            window.location.href = "{% url 'late-come-early-out-view' %}?department=" + encodeURIComponent(dept);
                         } else {
                             window.location.href = "{% url 'attendance-view' %}?department=" + encodeURIComponent(dept);
                         }
                     }}
                 },
                 colors: ['#22c55e', '#f59e0b', '#ef4444'],
-                plotOptions: { bar: { borderRadius: 4, columnWidth: '60%' } },
-                xaxis: { categories: data.labels, labels: { style: { colors: textColor, fontSize: '11px' } }, axisBorder: { show: false }, axisTicks: { show: false } },
-                yaxis: { labels: { style: { colors: textColor } } },
-                grid: { borderColor: gridColor, strokeDashArray: 4 },
+                fill: { type: 'gradient', gradient: { type: 'vertical', shadeIntensity: 0.25, opacityFrom: 1, opacityTo: 0.85 } },
+                plotOptions: { bar: { borderRadius: 6, borderRadiusApplication: 'end', columnWidth: '58%' } },
+                xaxis: { ...XAXIS_STYLE, categories: data.labels },
+                yaxis: { ...YAXIS_STYLE },
+                grid: GRID,
                 dataLabels: { enabled: false },
-                legend: { position: 'top', horizontalAlign: 'right', labels: { colors: textColor }, fontSize: '11px', markers: { width: 8, height: 8, radius: 2 } },
-                tooltip: { theme: isDark ? 'dark' : 'light' },
+                legend: { ...LEGEND_STYLE, position: 'top', horizontalAlign: 'right' },
+                tooltip: { ...TOOLTIP_STYLE },
+                states: { hover: { filter: { type: 'darken', value: 0.85 } } },
             }).render();
         }).catch(() => { document.querySelector("#chart-attendance-overview").innerHTML = emptyHtml('Unable to load attendance data'); });
 
@@ -1534,19 +1660,23 @@
             if (!data.labels || !data.labels.length || !data.dataset || !data.dataset.length) { document.querySelector("#chart-overtime").innerHTML = emptyHtml('No overtime data'); return; }
             new ApexCharts(document.querySelector("#chart-overtime"), {
                 series: data.dataset[0].data,
-                chart: { type: 'donut', height: 300, background: 'transparent', fontFamily: 'inherit',
+                chart: { type: 'donut', height: 300, background: 'transparent', fontFamily: 'inherit', animations: ANIM,
                     events: { dataPointSelection: (e, ctx, config) => {
                         const dept = data.labels[config.dataPointIndex];
-                        window.location.href = "/attendance/attendance-overtime-view?department=" + encodeURIComponent(dept);
+                        window.location.href = "{% url 'attendance-overtime-view' %}?department=" + encodeURIComponent(dept);
                     }}
                 },
                 labels: data.labels,
-                colors: COLORS.slice(0, data.labels.length),
-                plotOptions: { pie: { donut: { size: '65%', labels: { show: true, total: { show: true, label: 'Total Hrs', color: textColor, fontSize: '12px', fontWeight: 600, formatter: w => w.globals.seriesTotals.reduce((a,b)=>a+b,0).toFixed(1) } } } } },
-                stroke: { width: 2, colors: [cardBg] },
+                colors: ['#22c55e','#06b6d4','#6366f1','#f59e0b','#a855f7','#ef4444'].slice(0, data.labels.length),
+                plotOptions: { pie: { expandOnClick: true, donut: { size: '68%',
+                    labels: { show: true,
+                        name: { fontSize: '13px', fontWeight: 700, color: textColor },
+                        value: { fontSize: '20px', fontWeight: 800, color: textColor, formatter: v => parseFloat(v).toFixed(1) + 'h' },
+                        total: { show: true, label: 'Total Hrs', color: subTextColor, fontSize: '11px', fontWeight: 600, formatter: w => w.globals.seriesTotals.reduce((a,b)=>a+b,0).toFixed(1) + 'h' } } } } },
+                stroke: { width: 3, colors: [cardBg] },
                 dataLabels: { enabled: false },
-                legend: { position: 'bottom', labels: { colors: textColor }, fontSize: '11px', markers: { width: 8, height: 8, radius: 2 } },
-                tooltip: { theme: isDark ? 'dark' : 'light', y: { formatter: v => v.toFixed(1) + ' hrs' } },
+                legend: { ...LEGEND_STYLE },
+                tooltip: { ...TOOLTIP_STYLE, y: { formatter: v => v.toFixed(1) + ' hrs' } },
             }).render();
         }).catch(() => { document.querySelector("#chart-overtime").innerHTML = emptyHtml('No overtime data'); });
 
@@ -1558,50 +1688,53 @@
             const seriesArr = Array.isArray(data.dataset) ? data.dataset : [data.dataset];
             new ApexCharts(document.querySelector("#chart-leave-trend"), {
                 series: seriesArr.map(s => ({ name: s.label || 'Leaves', data: s.data })),
-                chart: { type: 'area', height: 300, toolbar: { show: false }, background: 'transparent', fontFamily: 'inherit' },
+                chart: { type: 'area', height: 300, toolbar: { show: false }, background: 'transparent', fontFamily: 'inherit', animations: ANIM,
+                    dropShadow: { enabled: true, top: 4, blur: 10, opacity: 0.1, color: '#a855f7' } },
                 colors: ['#a855f7'],
-                fill: { type: 'gradient', gradient: { shadeIntensity: 1, opacityFrom: 0.4, opacityTo: 0.05, stops: [0, 95, 100] } },
+                fill: { type: 'gradient', gradient: { type: 'vertical', shadeIntensity: 1, opacityFrom: 0.45, opacityTo: 0.02, stops: [0, 90, 100] } },
                 stroke: { curve: 'smooth', width: 3 },
-                dataLabels: { enabled: true, style: { fontSize: '11px' } },
-                xaxis: { categories: data.labels, labels: { style: { colors: textColor, fontSize: '11px' } }, axisBorder: { show: false }, axisTicks: { show: false } },
-                yaxis: { labels: { style: { colors: textColor } }, min: 0 },
-                grid: { borderColor: gridColor, strokeDashArray: 4 },
-                tooltip: { theme: isDark ? 'dark' : 'light', y: { formatter: v => v + ' leave(s)' } },
+                markers: { size: 5, colors: ['#a855f7'], strokeColors: cardBg, strokeWidth: 2, hover: { size: 7 } },
+                dataLabels: { enabled: true, style: { fontSize: '11px', fontWeight: 700, colors: ['#a855f7'] }, background: { enabled: true, foreColor: '#fff', borderRadius: 4, padding: 3, borderWidth: 0, fillColors: ['#a855f7'] } },
+                xaxis: { ...XAXIS_STYLE, categories: data.labels },
+                yaxis: { ...YAXIS_STYLE, min: 0, tickAmount: 4 },
+                grid: GRID,
+                tooltip: { ...TOOLTIP_STYLE, y: { formatter: v => v + ' leave(s)' } },
             }).render();
         }).catch(() => { document.querySelector("#chart-leave-trend").innerHTML = emptyHtml('No data for this week'); });
 
     // ─── RECRUITMENT PIPELINE ───
-    fetch("{% url 'recruitment-pipeline' %}")
+    fetch("{% url 'recruitment-pipeline' %}?_t=" + Date.now())
         .then(r => r.json())
         .then(data => {
             if (!data.dataSet || !data.dataSet.length) { document.querySelector("#chart-pipeline").innerHTML = emptyHtml('No active recruitments'); return; }
-            requestAnimationFrame(() => { new ApexCharts(document.querySelector("#chart-pipeline"), {
-                series: data.dataSet.map(r => ({ name: r.label, data: r.data })),
-                chart: { type: 'bar', height: 320, toolbar: { show: false }, background: 'transparent', fontFamily: 'inherit',
-                    events: { dataPointSelection: (e, ctx, config) => {
-                        const recruitment = data.dataSet[config.seriesIndex]?.label || '';
-                        const stage = data.labels[config.dataPointIndex] || '';
-                        window.location.href = "/recruitment/candidate-view?recruitment=" + encodeURIComponent(recruitment) + "&stage_id__stage_type=" + encodeURIComponent(stage.toLowerCase());
-                    }}
-                },
-                colors: ['#6366f1', '#3b82f6', '#06b6d4', '#22c55e', '#ef4444'],
-                plotOptions: { bar: { borderRadius: 4, columnWidth: '65%' } },
-                xaxis: { categories: data.labels, labels: { style: { colors: textColor, fontSize: '11px' } }, axisBorder: { show: false }, axisTicks: { show: false } },
-                yaxis: { labels: { style: { colors: textColor } } },
-                grid: { borderColor: gridColor, strokeDashArray: 4 },
-                dataLabels: { enabled: false },
-                legend: { position: 'top', horizontalAlign: 'right', labels: { colors: textColor }, fontSize: '11px', markers: { width: 8, height: 8, radius: 2 } },
-                tooltip: {
-                    theme: isDark ? 'dark' : 'light',
-                    custom: ({ seriesIndex, dataPointIndex, w }) => {
-                        const stage = w.globals.labels[dataPointIndex] || '';
-                        const recruitment = w.globals.seriesNames[seriesIndex] || '';
-                        const value = w.globals.series[seriesIndex][dataPointIndex] || 0;
-                        return `<div style="padding:8px 12px;font-size:12px;"><b>${recruitment}</b><br>${stage}: ${value} candidates</div>`;
-                    }
-                },
-            }).render(); });
-        }).catch(() => { document.querySelector("#chart-pipeline").innerHTML = emptyHtml('No recruitment data'); });
+            try {
+                new ApexCharts(document.querySelector("#chart-pipeline"), {
+                    series: data.dataSet.map(r => ({ name: r.label, data: r.data })),
+                    chart: { type: 'bar', height: 320, toolbar: { show: false }, background: 'transparent', fontFamily: 'inherit',
+                        events: { dataPointSelection: (e, ctx, config) => {
+                            const recruitment = data.dataSet[config.seriesIndex]?.label || '';
+                            const stage = data.labels[config.dataPointIndex] || '';
+                            window.location.href = "{% url 'candidate-view' %}?recruitment=" + encodeURIComponent(recruitment) + "&stage_id__stage_type=" + encodeURIComponent(stage.toLowerCase());
+                        }}
+                    },
+                    colors: ['#6366f1', '#3b82f6', '#06b6d4', '#22c55e', '#f59e0b'],
+                    plotOptions: { bar: { borderRadius: 6, columnWidth: '60%' } },
+                    xaxis: { ...XAXIS_STYLE, categories: data.labels },
+                    yaxis: { ...YAXIS_STYLE },
+                    grid: GRID,
+                    dataLabels: { enabled: false },
+                    legend: { ...LEGEND_STYLE, position: 'top', horizontalAlign: 'right' },
+                    tooltip: { ...TOOLTIP_STYLE,
+                        custom: ({ seriesIndex, dataPointIndex, w }) => {
+                            const stage = w.globals.labels[dataPointIndex] || '';
+                            const recruitment = w.globals.seriesNames[seriesIndex] || '';
+                            const value = w.globals.series[seriesIndex][dataPointIndex] || 0;
+                            return `<div style="padding:10px 14px;font-size:12px;border-radius:8px;"><b>${recruitment}</b><br><span style="opacity:0.7">${stage}:</span> <b>${value}</b> candidates</div>`;
+                        }
+                    },
+                }).render();
+            } catch(e) { document.querySelector("#chart-pipeline").innerHTML = emptyHtml('Chart error: ' + e.message); }
+        }).catch(e => { document.querySelector("#chart-pipeline").innerHTML = emptyHtml('Failed to load recruitment data'); });
 
     // ─── HIRING TIMELINE ───
     fetch("{% url 'dashboard-hiring' %}")
@@ -1610,19 +1743,30 @@
             if (!data.dataSet || !data.dataSet.length) { document.querySelector("#chart-hiring").innerHTML = emptyHtml('No hiring data'); return; }
             new ApexCharts(document.querySelector("#chart-hiring"), {
                 series: [{ name: data.dataSet[0].label || 'Joined', data: data.dataSet[0].data }],
-                chart: { type: 'bar', height: 260, toolbar: { show: false }, background: 'transparent', fontFamily: 'inherit',
+                chart: { type: 'bar', height: 280, toolbar: { show: false }, background: 'transparent', fontFamily: 'inherit', animations: ANIM,
                     events: { dataPointSelection: (e, ctx, config) => {
+                        const monthNames = ['January','February','March','April','May','June','July','August','September','October','November','December'];
                         const label = data.labels[config.dataPointIndex] || '';
-                        window.location.href = "/recruitment/candidate-view?recruitment=" + encodeURIComponent(label) + "&hired=true";
+                        const monthNum = monthNames.indexOf(label) + 1;
+                        if (!monthNum) return;
+                        const year = new Date().getFullYear();
+                        const lastDay = new Date(year, monthNum, 0).getDate();
+                        const pad = n => String(n).padStart(2, '0');
+                        const from = `${year}-${pad(monthNum)}-01`;
+                        const till = `${year}-${pad(monthNum)}-${lastDay}`;
+                        window.location.href = "{% url 'candidate-view' %}?joining_date_from=" + from + "&joining_date_till=" + till + "&hired=true";
                     }}
                 },
                 colors: ['#f59e0b'],
-                plotOptions: { bar: { borderRadius: 6, columnWidth: '50%' } },
-                xaxis: { categories: data.labels, labels: { style: { colors: textColor, fontSize: '11px' } }, axisBorder: { show: false }, axisTicks: { show: false } },
-                yaxis: { labels: { style: { colors: textColor } } },
-                grid: { borderColor: gridColor, strokeDashArray: 4 },
-                dataLabels: { enabled: true, style: { fontSize: '11px', colors: ['#fff'] } },
-                tooltip: { theme: isDark ? 'dark' : 'light', y: { formatter: v => v + ' employee(s)' } },
+                fill: { type: 'gradient', gradient: { type: 'vertical', shadeIntensity: 0.4, opacityFrom: 1, opacityTo: 0.75,
+                    colorStops: [{ offset: 0, color: '#f59e0b', opacity: 1 }, { offset: 100, color: '#ef4444', opacity: 0.8 }] } },
+                plotOptions: { bar: { borderRadius: 8, borderRadiusApplication: 'end', columnWidth: '48%' } },
+                xaxis: { ...XAXIS_STYLE, categories: data.labels },
+                yaxis: { ...YAXIS_STYLE },
+                grid: GRID,
+                dataLabels: { enabled: true, style: { fontSize: '11px', fontWeight: 700, colors: ['#fff'] }, background: { enabled: false } },
+                tooltip: { ...TOOLTIP_STYLE, y: { formatter: v => v + ' employee(s)' } },
+                states: { hover: { filter: { type: 'darken', value: 0.85 } } },
             }).render();
         }).catch(() => { document.querySelector("#chart-hiring").innerHTML = emptyHtml('No hiring data'); });
 
@@ -1633,19 +1777,23 @@
             if (!data.labels || !data.labels.length || !data.data || !data.data.length) { document.querySelector("#chart-leave-dept").innerHTML = emptyHtml('No leave data'); return; }
             new ApexCharts(document.querySelector("#chart-leave-dept"), {
                 series: data.data,
-                chart: { type: 'donut', height: 300, background: 'transparent', fontFamily: 'inherit',
+                chart: { type: 'donut', height: 300, background: 'transparent', fontFamily: 'inherit', animations: ANIM,
                     events: { dataPointSelection: (e, ctx, config) => {
                         const dept = data.labels[config.dataPointIndex];
                         window.location.href = "{% url 'request-view' %}?department=" + encodeURIComponent(dept);
                     }}
                 },
                 labels: data.labels,
-                colors: COLORS.slice(0, data.labels.length),
-                plotOptions: { pie: { donut: { size: '65%', labels: { show: true, total: { show: true, label: 'Total', color: textColor, fontSize: '12px', fontWeight: 600, formatter: w => w.globals.seriesTotals.reduce((a,b)=>a+b,0) } } } } },
-                stroke: { width: 2, colors: [cardBg] },
+                colors: ['#3b82f6','#6366f1','#a855f7','#ec4899','#06b6d4','#14b8a6'].slice(0, data.labels.length),
+                plotOptions: { pie: { expandOnClick: true, donut: { size: '68%',
+                    labels: { show: true,
+                        name: { fontSize: '13px', fontWeight: 700, color: textColor },
+                        value: { fontSize: '20px', fontWeight: 800, color: textColor },
+                        total: { show: true, label: 'Total', color: subTextColor, fontSize: '11px', fontWeight: 600, formatter: w => w.globals.seriesTotals.reduce((a,b)=>a+b,0) } } } } },
+                stroke: { width: 3, colors: [cardBg] },
                 dataLabels: { enabled: false },
-                legend: { position: 'bottom', labels: { colors: textColor }, fontSize: '11px', markers: { width: 8, height: 8, radius: 2 } },
-                tooltip: { theme: isDark ? 'dark' : 'light' },
+                legend: { ...LEGEND_STYLE },
+                tooltip: { ...TOOLTIP_STYLE },
             }).render();
         }).catch(() => { document.querySelector("#chart-leave-dept").innerHTML = emptyHtml('No leave data'); });
 
@@ -1656,15 +1804,16 @@
             if (!data.labels || !data.labels.length || !data.dataset || !data.dataset.length) { document.querySelector("#chart-leave-days").innerHTML = emptyHtml('No leave data this month'); return; }
             new ApexCharts(document.querySelector("#chart-leave-days"), {
                 series: [{ name: 'Leave Days', data: data.dataset[0].data }],
-                chart: { type: 'bar', height: 300, toolbar: { show: false }, background: 'transparent', fontFamily: 'inherit' },
-                colors: COLORS,
-                plotOptions: { bar: { borderRadius: 6, horizontal: true, barHeight: '55%', distributed: true } },
-                xaxis: { categories: data.labels, labels: { style: { colors: textColor } } },
-                yaxis: { labels: { style: { colors: textColor, fontSize: '11px' } } },
-                grid: { borderColor: gridColor },
-                dataLabels: { enabled: true, formatter: v => v + ' days', style: { fontSize: '11px' } },
+                chart: { type: 'bar', height: 300, toolbar: { show: false }, background: 'transparent', fontFamily: 'inherit', animations: ANIM },
+                colors: ['#3b82f6','#6366f1','#a855f7','#06b6d4','#14b8a6','#ec4899','#f59e0b','#22c55e','#ef4444','#f97316'],
+                plotOptions: { bar: { borderRadius: 8, borderRadiusApplication: 'end', horizontal: true, barHeight: '50%', distributed: true } },
+                xaxis: { ...XAXIS_STYLE, categories: data.labels },
+                yaxis: { labels: { style: { colors: textColor, fontSize: '11px', fontWeight: 500 } } },
+                grid: GRID,
+                dataLabels: { enabled: true, formatter: v => v + ' days', style: { fontSize: '11px', fontWeight: 600 }, offsetX: 0 },
                 legend: { show: false },
-                tooltip: { theme: isDark ? 'dark' : 'light', y: { formatter: v => v + ' day(s)' } },
+                tooltip: { ...TOOLTIP_STYLE, y: { formatter: v => v + ' day(s)' } },
+                states: { hover: { filter: { type: 'darken', value: 0.85 } } },
             }).render();
         }).catch(() => { document.querySelector("#chart-leave-days").innerHTML = emptyHtml('No leave data this month'); });
 
@@ -1732,37 +1881,36 @@
         }).catch(() => { document.getElementById('md-pending-approvals').innerHTML = '<div class="md-info-panel__empty">{% trans "Unable to load" %}</div>'; });
 
     // ─── RECRUITMENT FUNNEL ───
-    fetch("{% url 'dashboard-recruitment-pipeline' %}")
+    fetch("{% url 'dashboard-recruitment-pipeline' %}?_t=" + Date.now())
         .then(r => r.json())
         .then(data => {
-            if (!data.stages.length) { document.querySelector("#chart-recruitment-funnel").innerHTML = emptyHtml('{% trans "No active recruitments" %}'); return; }
-            requestAnimationFrame(() => { new ApexCharts(document.querySelector("#chart-recruitment-funnel"), {
-                series: [{ name: '{% trans "Candidates" %}', data: data.stages.map(s => s.count) }],
-                chart: { type: 'bar', height: 300, toolbar: { show: false }, background: 'transparent', fontFamily: 'inherit' },
-                colors: ['#6366f1'],
-                plotOptions: {
-                    bar: {
-                        borderRadius: 6, horizontal: true, barHeight: '60%',
-                        distributed: true,
-                        dataLabels: { position: 'bottom' }
-                    }
-                },
-                xaxis: { categories: data.stages.map(s => s.stage), labels: { style: { colors: textColor } } },
-                yaxis: { labels: { style: { colors: textColor, fontSize: '12px' } } },
-                grid: { borderColor: gridColor },
-                dataLabels: { enabled: true, formatter: v => v + ' {% trans "candidates" %}', style: { fontSize: '11px' } },
-                legend: { show: false },
-                colors: data.stages.map((s, i) => {
-                    const stageColors = { initial: '#94a3b8', test: '#3b82f6', interview: '#f59e0b', hired: '#22c55e', cancelled: '#ef4444' };
-                    return stageColors[s.type] || COLORS[i % COLORS.length];
-                }),
-                subtitle: {
-                    text: `${data.active_recruitments} {% trans "active" %} · ${data.total_candidates} {% trans "total" %} · ${data.hired} {% trans "hired" %}`,
-                    align: 'right', style: { fontSize: '11px', color: textColor }
-                },
-                tooltip: { theme: isDark ? 'dark' : 'light', y: { formatter: v => v + ' candidate(s)' } },
-            }).render(); });
-        }).catch(() => { document.querySelector("#chart-recruitment-funnel").innerHTML = emptyHtml('{% trans "No recruitment data" %}'); });
+            if (!data.stages || !data.stages.length) { document.querySelector("#chart-recruitment-funnel").innerHTML = emptyHtml('{% trans "No active recruitments" %}'); return; }
+            const stageColors = { initial: '#94a3b8', applied: '#6366f1', test: '#3b82f6', interview: '#f59e0b', hired: '#22c55e', cancelled: '#ef4444' };
+            try {
+                new ApexCharts(document.querySelector("#chart-recruitment-funnel"), {
+                    series: [{ name: '{% trans "Candidates" %}', data: data.stages.map(s => s.count) }],
+                    chart: { type: 'bar', height: 300, toolbar: { show: false }, background: 'transparent', fontFamily: 'inherit',
+                        events: { dataPointSelection: (e, ctx, config) => {
+                            const stage = data.stages[config.dataPointIndex];
+                            if (!stage) return;
+                            window.location.href = "{% url 'candidate-view' %}?stage_id__stage_type=" + encodeURIComponent(stage.type);
+                        }}
+                    },
+                    colors: data.stages.map((s, i) => stageColors[s.type] || COLORS[i % COLORS.length]),
+                    plotOptions: { bar: { horizontal: true, barHeight: '55%', distributed: true } },
+                    xaxis: { ...XAXIS_STYLE, categories: data.stages.map(s => s.stage) },
+                    yaxis: { labels: { style: { colors: textColor, fontSize: '12px', fontWeight: 600 } } },
+                    grid: GRID,
+                    dataLabels: { enabled: true, formatter: v => v + ' {% trans "candidates" %}', style: { fontSize: '11px', fontWeight: 600 }, offsetX: 0 },
+                    legend: { show: false },
+                    subtitle: {
+                        text: `${data.total_active || ''} {% trans "active recruitments" %} · ${data.total_candidates || ''} {% trans "total" %} · ${data.hired || ''} {% trans "hired" %}`,
+                        align: 'right', style: { fontSize: '11px', color: subTextColor }
+                    },
+                    tooltip: { ...TOOLTIP_STYLE, y: { formatter: v => v + ' candidate(s)' } },
+                }).render();
+            } catch(e) { document.querySelector("#chart-recruitment-funnel").innerHTML = emptyHtml('Chart error: ' + e.message); }
+        }).catch(e => { document.querySelector("#chart-recruitment-funnel").innerHTML = emptyHtml('{% trans "Failed to load recruitment data" %}'); });
 
     // ─── EMPLOYEE TURNOVER ───
     fetchP("{% url 'dashboard-turnover' %}")
@@ -1775,15 +1923,17 @@
                     { name: '{% trans "New Hires" %}', data: data.months.map(m => m.hires) },
                     { name: '{% trans "Exits" %}', data: data.months.map(m => m.exits) },
                 ],
-                chart: { type: 'bar', height: 280, toolbar: { show: false }, background: 'transparent', fontFamily: 'inherit' },
+                chart: { type: 'bar', height: 290, toolbar: { show: false }, background: 'transparent', fontFamily: 'inherit', animations: ANIM },
                 colors: ['#22c55e', '#ef4444'],
-                plotOptions: { bar: { borderRadius: 5, columnWidth: '55%' } },
-                xaxis: { categories: data.months.map(m => m.month), labels: { style: { colors: textColor, fontSize: '11px' } }, axisBorder: { show: false }, axisTicks: { show: false } },
-                yaxis: { labels: { style: { colors: textColor } } },
-                grid: { borderColor: gridColor, strokeDashArray: 4 },
-                dataLabels: { enabled: true, style: { fontSize: '11px', colors: ['#fff'] } },
-                legend: { position: 'top', horizontalAlign: 'right', labels: { colors: textColor }, fontSize: '11px', markers: { width: 8, height: 8, radius: 2 } },
-                tooltip: { theme: isDark ? 'dark' : 'light' },
+                fill: { type: 'gradient', gradient: { type: 'vertical', shadeIntensity: 0.3, opacityFrom: 1, opacityTo: 0.8 } },
+                plotOptions: { bar: { borderRadius: 6, borderRadiusApplication: 'end', columnWidth: '52%', grouped: true } },
+                xaxis: { ...XAXIS_STYLE, categories: data.months.map(m => m.month) },
+                yaxis: { ...YAXIS_STYLE },
+                grid: GRID,
+                dataLabels: { enabled: true, style: { fontSize: '11px', fontWeight: 700, colors: ['#fff'] }, background: { enabled: false } },
+                legend: { ...LEGEND_STYLE, position: 'top', horizontalAlign: 'right' },
+                tooltip: { ...TOOLTIP_STYLE },
+                states: { hover: { filter: { type: 'darken', value: 0.85 } } },
             }).render();
         }).catch(() => { document.querySelector("#chart-turnover").innerHTML = emptyHtml('{% trans "No turnover data" %}'); });
 
@@ -1802,29 +1952,29 @@
             const changeClass = data.change_percent > 0 ? 'md-badge--amber' : data.change_percent < 0 ? 'md-badge--green' : '';
 
             el.innerHTML = `
-                <div style="padding: 8px 8px 0;">
-                    <div style="display:flex;justify-content:space-between;align-items:baseline;margin-bottom:12px;">
+                <div style="padding:10px 4px 4px;">
+                    <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:16px;padding:14px 16px;border-radius:12px;background:linear-gradient(135deg,#6366f1 0%,#a855f7 100%);">
                         <div>
-                            <div style="font-size:11px;opacity:0.5;text-transform:uppercase;font-weight:600;">{% trans "Net Pay" %}</div>
-                            <div style="font-size:26px;font-weight:800;">${fmt(data.current.net)}</div>
+                            <div style="font-size:10px;color:rgba(255,255,255,0.7);text-transform:uppercase;font-weight:700;letter-spacing:0.06em;margin-bottom:2px;">{% trans "Net Pay" %}</div>
+                            <div style="font-size:28px;font-weight:800;color:#fff;line-height:1;">${fmt(data.current.net)}</div>
                         </div>
-                        <span class="md-badge ${changeClass}">${changeIcon} ${Math.abs(data.change_percent)}%</span>
+                        <span style="background:rgba(255,255,255,0.2);color:#fff;font-size:12px;font-weight:700;padding:4px 10px;border-radius:20px;">${changeIcon} ${Math.abs(data.change_percent)}%</span>
                     </div>
                     <div class="md-payroll-summary">
-                        <div class="md-payroll-stat">
+                        <div class="md-payroll-stat" style="background:rgba(34,197,94,0.08);border-radius:10px;padding:10px;">
                             <div class="md-payroll-stat__value" style="color:var(--md-green)">${fmt(data.current.gross)}</div>
                             <div class="md-payroll-stat__label">{% trans "Gross" %}</div>
                         </div>
-                        <div class="md-payroll-stat">
+                        <div class="md-payroll-stat" style="background:rgba(239,68,68,0.08);border-radius:10px;padding:10px;">
                             <div class="md-payroll-stat__value" style="color:var(--md-red)">${fmt(data.current.deductions)}</div>
                             <div class="md-payroll-stat__label">{% trans "Deductions" %}</div>
                         </div>
-                        <div class="md-payroll-stat">
-                            <div class="md-payroll-stat__value">${data.current.count}</div>
+                        <div class="md-payroll-stat" style="background:rgba(99,102,241,0.08);border-radius:10px;padding:10px;">
+                            <div class="md-payroll-stat__value" style="color:var(--md-indigo)">${data.current.count}</div>
                             <div class="md-payroll-stat__label">{% trans "Payslips" %}</div>
                         </div>
-                        <div class="md-payroll-stat">
-                            <div class="md-payroll-stat__value" style="opacity:0.5">${fmt(data.previous.net)}</div>
+                        <div class="md-payroll-stat" style="background:rgba(128,128,128,0.06);border-radius:10px;padding:10px;">
+                            <div class="md-payroll-stat__value" style="opacity:0.55">${fmt(data.previous.net)}</div>
                             <div class="md-payroll-stat__label">{% trans "Prev Month" %}</div>
                         </div>
                     </div>

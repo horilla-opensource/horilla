@@ -1,4 +1,4 @@
-{% extends "index.html" %}
+﻿{% extends "index.html" %}
 {% load static i18n %}
 
 {% block styles %}
@@ -18,7 +18,7 @@
         font-family: inherit; background: #ffffff;
         margin: -24px; padding: 24px; min-height: calc(100vh - 80px);
     }
-    .dark .ld-dashboard { background: #0f172a; }
+    .dark .ld-dashboard { background: #000000; }
 
     .ld-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; }
     .ld-header h1 { font-size: 22px; font-weight: 700; }
@@ -37,7 +37,7 @@
         text-decoration: none; color: inherit; display: block;
     }
     .ld-kpi-card:hover { box-shadow: 0 4px 12px rgba(0,0,0,0.08); transform: translateY(-1px); text-decoration: none; color: inherit; }
-    .dark .ld-kpi-card { background: rgba(255,255,255,0.04); border-color: rgba(255,255,255,0.08); }
+    .dark .ld-kpi-card { background: #242424; border-color: rgba(255,255,255,0.08); }
     .ld-kpi-card__icon {
         width: 38px; height: 38px; border-radius: 10px;
         display: flex; align-items: center; justify-content: center; font-size: 18px; margin-bottom: 10px;
@@ -69,7 +69,7 @@
     /* Chart Grid */
     .ld-chart-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 16px; margin-bottom: 20px; }
     .ld-chart-card { border-radius: 12px; background: #ffffff; border: 1px solid rgba(128,128,128,0.12); overflow: visible; }
-    .dark .ld-chart-card { background: rgba(255,255,255,0.04); border-color: rgba(255,255,255,0.08); }
+    .dark .ld-chart-card { background: #242424; border-color: rgba(255,255,255,0.08); }
     .ld-chart-card--wide { grid-column: span 2; }
     .ld-chart-card__header { padding: 14px 18px 0; display: flex; justify-content: space-between; align-items: center; }
     .ld-chart-card__title { font-size: 14px; font-weight: 600; }
@@ -85,7 +85,7 @@
 
     /* Sidebar panels */
     .ld-info-panel { border-radius: 12px; background: #ffffff; border: 1px solid rgba(128,128,128,0.12); overflow: hidden; display: flex; flex-direction: column; }
-    .dark .ld-info-panel { background: rgba(255,255,255,0.04); border-color: rgba(255,255,255,0.08); }
+    .dark .ld-info-panel { background: #242424; border-color: rgba(255,255,255,0.08); }
     .ld-info-panel__header { padding: 14px 16px 10px; display: flex; justify-content: space-between; align-items: center; flex-shrink: 0; border-bottom: 1px solid rgba(128,128,128,0.08); }
     .ld-info-panel__title { font-size: 13px; font-weight: 700; }
     .ld-info-panel__body { padding: 8px 16px 12px; overflow-y: auto; flex: 1; max-height: 350px; }
@@ -136,7 +136,7 @@
     .ld-customize-overlay { position: fixed; inset: 0; background: rgba(0,0,0,0.3); z-index: 1050; opacity: 0; pointer-events: none; transition: opacity 0.2s; }
     .ld-customize-overlay--open { opacity: 1; pointer-events: auto; }
     .ld-customize-panel { position: fixed; top: 0; right: -420px; width: 400px; height: 100vh; background: #ffffff; box-shadow: -4px 0 24px rgba(0,0,0,0.12); z-index: 1051; display: flex; flex-direction: column; transition: right 0.25s ease; }
-    .dark .ld-customize-panel { background: #1e293b; }
+    .dark .ld-customize-panel { background: #242424; }
     .ld-customize-panel--open { right: 0; }
     .ld-customize-panel__header { padding: 18px 20px; border-bottom: 1px solid rgba(128,128,128,0.12); display: flex; justify-content: space-between; align-items: center; flex-shrink: 0; }
     .ld-customize-panel__header h3 { font-size: 16px; font-weight: 700; margin: 0; }
@@ -165,7 +165,7 @@
     @media (max-width: 640px) { .ld-customize-panel { width: 100%; right: -100%; } }
 
     /* Period Picker */
-    .ld-period-picker { display: none; /* DATE FILTER DISABLED */ align-items: center; gap: 6px; font-size: 12px; }
+    .ld-period-picker { display: flex; align-items: center; gap: 6px; font-size: 12px; }
     .ld-period-picker input[type="date"] { padding: 5px 8px; border-radius: 6px; border: 1px solid rgba(128,128,128,0.2); font-size: 12px; background: transparent; color: inherit; outline: none; transition: border-color 0.15s; }
     .ld-period-picker input[type="date"]:focus { border-color: var(--ld-indigo); }
     .ld-period-picker__sep { opacity: 0.4; font-size: 11px; }
@@ -181,7 +181,8 @@
     @keyframes ld-pulse { 0%, 100% { opacity: 1; } 50% { opacity: 0.3; } }
     .ld-refresh__toggle { cursor: pointer; opacity: 0.6; font-size: 13px; border: none; background: none; color: inherit; padding: 2px; }
     .ld-refresh__toggle:hover { opacity: 1; }
-
+    #chart-leave-types .apexcharts-pie-slice-donut,
+    #chart-dept-leave .apexcharts-bar-area { cursor: pointer; }
 
     /* Responsive */
     @media (max-width: 1280px) {
@@ -337,7 +338,7 @@
     const isDark = document.documentElement.classList.contains('dark') || document.body.classList.contains('dark');
     const textColor = isDark ? '#e2e8f0' : '#334155';
     const gridColor = isDark ? 'rgba(255,255,255,0.06)' : 'rgba(0,0,0,0.06)';
-    const cardBg = isDark ? '#1e293b' : '#ffffff';
+    const cardBg = isDark ? '#242424' : '#ffffff';
     const COLORS = ['#6366f1','#22c55e','#f59e0b','#ef4444','#3b82f6','#a855f7','#06b6d4','#ec4899','#14b8a6','#f97316'];
     const emptyHtml = (msg) => `<div class="ld-empty"><img src="/static/images/ui/no_records.svg" alt="">${msg}</div>`;
 
@@ -359,7 +360,7 @@
         fromInput.value = getFirstOfMonth(); toInput.value = getLastOfMonth();
     }
     function savePeriod() { sessionStorage.setItem(PERIOD_KEY, JSON.stringify({ from: fromInput.value, to: toInput.value })); }
-    function periodParams() { return ""; /* DATE FILTER DISABLED */ }
+    function periodParams() { const f = fromInput.value, t = toInput.value; return (f && t) ? ("from_date=" + encodeURIComponent(f) + "&to_date=" + encodeURIComponent(t)) : ""; }
     function urlWithPeriod(u) { return u + (u.includes('?') ? '&' : '?') + periodParams(); }
     function fetchP(url) { return fetch(urlWithPeriod(url)); }
     function setPreset(p) {
@@ -468,25 +469,25 @@
         .then(data => {
             document.getElementById('ld-kpi-grid').innerHTML = `
                 <a href="{% url 'request-view' %}?status=requested" class="ld-kpi-card">
-                    <div class="ld-kpi-card__icon ld-kpi-card__icon--amber">⏳</div>
+                    <div class="ld-kpi-card__icon ld-kpi-card__icon--amber"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 22h14"/><path d="M5 2h14"/><path d="M17 22v-4.172a2 2 0 0 0-.586-1.414L12 12l-4.414 4.414A2 2 0 0 0 7 17.828V22"/><path d="M7 2v4.172a2 2 0 0 0 .586 1.414L12 12l4.414-4.414A2 2 0 0 0 17 6.172V2"/></svg></div>
                     <div class="ld-kpi-card__label">{% trans "Pending Approval" %}</div>
                     <div class="ld-kpi-card__value">${data.pending_approval}</div>
                     <div class="ld-kpi-card__sub">${data.pending_allocations > 0 ? '<span class="ld-badge ld-badge--amber">' + data.pending_allocations + ' {% trans "allocation req" %}</span>' : '{% trans "Requests awaiting review" %}'}</div>
                 </a>
                 <a href="{% url 'request-view' %}?status=approved" class="ld-kpi-card">
-                    <div class="ld-kpi-card__icon ld-kpi-card__icon--green">✓</div>
+                    <div class="ld-kpi-card__icon ld-kpi-card__icon--green"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg></div>
                     <div class="ld-kpi-card__label">{% trans "Approved" %}</div>
                     <div class="ld-kpi-card__value">${data.approved_this_month}</div>
                     <div class="ld-kpi-card__sub"><span class="ld-badge ld-badge--green">${data.total_days_used} {% trans "days used" %}</span></div>
                 </a>
                 <a href="{% url 'request-view' %}?status=rejected" class="ld-kpi-card">
-                    <div class="ld-kpi-card__icon ld-kpi-card__icon--red">✕</div>
+                    <div class="ld-kpi-card__icon ld-kpi-card__icon--red"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><line x1="15" y1="9" x2="9" y2="15"/><line x1="9" y1="9" x2="15" y2="15"/></svg></div>
                     <div class="ld-kpi-card__label">{% trans "Rejected" %}</div>
                     <div class="ld-kpi-card__value">${data.rejected_this_month}</div>
                     <div class="ld-kpi-card__sub">${data.month}</div>
                 </a>
                 <a href="{% url 'request-view' %}?status=approved" class="ld-kpi-card">
-                    <div class="ld-kpi-card__icon ld-kpi-card__icon--blue">🏖</div>
+                    <div class="ld-kpi-card__icon ld-kpi-card__icon--blue"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="18" rx="2" ry="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg></div>
                     <div class="ld-kpi-card__label">{% trans "On Leave Today" %}</div>
                     <div class="ld-kpi-card__value">${data.on_leave_today}</div>
                     <div class="ld-kpi-card__sub">${data.pending_comp > 0 ? '<span class="ld-badge ld-badge--amber">' + data.pending_comp + ' {% trans "comp. requests" %}</span>' : '{% trans "Employees away" %}'}</div>
@@ -498,13 +499,23 @@
         .then(r => r.json())
         .then(data => {
             if (!data.months.length) { document.querySelector("#chart-monthly-trend").innerHTML = emptyHtml('{% trans "No data" %}'); return; }
+            const statusForSeries = ['approved', 'rejected', 'requested'];
             new ApexCharts(document.querySelector("#chart-monthly-trend"), {
                 series: [
                     { name: '{% trans "Approved" %}', data: data.months.map(m => m.approved) },
                     { name: '{% trans "Rejected" %}', data: data.months.map(m => m.rejected) },
                     { name: '{% trans "Pending" %}', data: data.months.map(m => m.pending) },
                 ],
-                chart: { type: 'bar', height: 280, toolbar: { show: false }, background: 'transparent', fontFamily: 'inherit', stacked: false },
+                chart: { type: 'bar', height: 280, toolbar: { show: false }, background: 'transparent', fontFamily: 'inherit', stacked: false,
+                    events: { dataPointSelection: (e, ctx, config) => {
+                        const m = data.months[config.dataPointIndex];
+                        const status = statusForSeries[config.seriesIndex] || 'approved';
+                        if (m) {
+                            window.location.href = "{% url 'request-view' %}?status=" + status +
+                                "&from_date=" + m.from_date + "&to_date=" + m.to_date;
+                        }
+                    }}
+                },
                 colors: ['#22c55e', '#ef4444', '#f59e0b'],
                 plotOptions: { bar: { borderRadius: 5, columnWidth: '55%' } },
                 xaxis: { categories: data.months.map(m => m.month), labels: { style: { colors: textColor, fontSize: '11px' } }, axisBorder: { show: false }, axisTicks: { show: false } },
@@ -527,8 +538,9 @@
                 series: data.types.map(t => t.days),
                 chart: { type: 'donut', height: 300, background: 'transparent', fontFamily: 'inherit',
                     events: { dataPointSelection: (e, ctx, config) => {
-                        const type = data.types[config.dataPointIndex].type;
-                        window.location.href = "{% url 'request-view' %}?leave_type_id__name=" + encodeURIComponent(type);
+                        const t = data.types[config.dataPointIndex];
+                        if (t && t.id) window.location.href = "{% url 'request-view' %}?leave_type_id=" + t.id;
+                        else window.location.href = "{% url 'request-view' %}";
                     }}
                 },
                 labels: data.types.map(t => t.type),
@@ -571,7 +583,7 @@
                 chart: { type: 'bar', height: 300, toolbar: { show: false }, background: 'transparent', fontFamily: 'inherit',
                     events: { dataPointSelection: (e, ctx, config) => {
                         const dept = data.departments[config.dataPointIndex].department;
-                        window.location.href = "{% url 'request-view' %}?department=" + encodeURIComponent(dept);
+                        window.location.href = "{% url 'request-view' %}?department_name=" + encodeURIComponent(dept);
                     }}
                 },
                 colors: COLORS,
@@ -586,7 +598,7 @@
         });
 
     // ─── WEEKLY PATTERN ───
-    fetch("{% url 'leave-modern-weekly-pattern' %}")
+    fetchP("{% url 'leave-modern-weekly-pattern' %}")
         .then(r => r.json())
         .then(data => {
             if (!data.counts.some(c => c > 0)) { document.querySelector("#chart-weekly-pattern").innerHTML = emptyHtml('{% trans "No data" %}'); return; }
@@ -605,7 +617,7 @@
         });
 
     // ─── LEAVE UTILIZATION ───
-    fetch("{% url 'leave-modern-utilization' %}")
+    fetchP("{% url 'leave-modern-utilization' %}")
         .then(r => r.json())
         .then(data => {
             const el = document.querySelector("#chart-utilization");
@@ -624,7 +636,7 @@
         });
 
     // ─── ON LEAVE TODAY ───
-    fetch("{% url 'leave-modern-on-leave' %}")
+    fetchP("{% url 'leave-modern-on-leave' %}")
         .then(r => r.json())
         .then(data => {
             const el = document.getElementById('ld-on-leave');
@@ -632,7 +644,7 @@
             el.innerHTML = data.employees.map(e => {
                 const initials = e.name.split(' ').map(w => w[0]).join('').slice(0, 2).toUpperCase();
                 const avatarInner = e.avatar ? `<img src="${e.avatar}" alt="">` : initials;
-                return `<a href="/employee/employee-view-individual/${e.id}/" class="ld-leave-item">
+                return `<a href="/employee/employee-view/${e.id}/" class="ld-leave-item">
                     <div class="ld-leave-item__avatar">${avatarInner}</div>
                     <div class="ld-leave-item__info">
                         <div class="ld-leave-item__name">${e.name}</div>
@@ -644,7 +656,7 @@
         }).catch(() => { document.getElementById('ld-on-leave').innerHTML = '<div class="ld-info-panel__empty">{% trans "No one on leave today" %}</div>'; });
 
     // ─── UPCOMING LEAVES ───
-    fetch("{% url 'leave-modern-upcoming' %}")
+    fetchP("{% url 'leave-modern-upcoming' %}")
         .then(r => r.json())
         .then(data => {
             const el = document.getElementById('ld-upcoming');
@@ -655,7 +667,7 @@
                 const badge = u.days_away === 1
                     ? '<span class="ld-badge ld-badge--amber">{% trans "Tomorrow" %}</span>'
                     : `<span class="ld-badge ld-badge--green">${u.days_away}d</span>`;
-                return `<a href="/employee/employee-view-individual/${u.id}/" class="ld-leave-item">
+                return `<a href="/employee/employee-view/${u.id}/" class="ld-leave-item">
                     <div class="ld-leave-item__avatar">${avatarInner}</div>
                     <div class="ld-leave-item__info">
                         <div class="ld-leave-item__name">${u.name}</div>
@@ -676,7 +688,7 @@
             el.innerHTML = data.takers.map(t => {
                 const initials = t.name.split(' ').map(w => w[0]).join('').slice(0, 2).toUpperCase();
                 const avatarInner = t.avatar ? `<img src="${t.avatar}" alt="">` : initials;
-                return `<a href="/employee/employee-view-individual/${t.id}/" class="ld-leave-item">
+                return `<a href="/employee/employee-view/${t.id}/" class="ld-leave-item">
                     <div class="ld-leave-item__avatar">${avatarInner}</div>
                     <div class="ld-leave-item__info">
                         <div class="ld-leave-item__name">${t.name}</div>
@@ -688,7 +700,7 @@
         }).catch(() => { document.getElementById('ld-top-takers').innerHTML = '<div class="ld-info-panel__empty">{% trans "No leaves this month" %}</div>'; });
 
     // ─── UPCOMING HOLIDAYS ───
-    fetch("{% url 'leave-modern-holidays' %}")
+    fetchP("{% url 'leave-modern-holidays' %}")
         .then(r => r.json())
         .then(data => {
             const el = document.getElementById('ld-holidays');

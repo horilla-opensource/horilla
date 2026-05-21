@@ -1,4 +1,4 @@
-{% extends "index.html" %}
+﻿{% extends "index.html" %}
 {% load static i18n %}
 
 {% block styles %}
@@ -21,7 +21,7 @@
         padding: 24px;
         min-height: calc(100vh - 80px);
     }
-    .dark .rd-dashboard { background: #0f172a; }
+    .dark .rd-dashboard { background: #000000; }
 
     .rd-header {
         display: flex;
@@ -55,7 +55,7 @@
         text-decoration: none; color: inherit; display: block;
     }
     .rd-kpi-card:hover { box-shadow: 0 4px 12px rgba(0,0,0,0.08); transform: translateY(-1px); text-decoration: none; color: inherit; }
-    .dark .rd-kpi-card { background: rgba(255,255,255,0.04); border-color: rgba(255,255,255,0.08); }
+    .dark .rd-kpi-card { background: #242424; border-color: rgba(255,255,255,0.08); }
 
     .rd-kpi-card__icon {
         width: 38px; height: 38px; border-radius: 10px;
@@ -101,7 +101,7 @@
         border-radius: 12px; background: #ffffff;
         border: 1px solid rgba(128,128,128,0.12); overflow: visible;
     }
-    .dark .rd-chart-card { background: rgba(255,255,255,0.04); border-color: rgba(255,255,255,0.08); }
+    .dark .rd-chart-card { background: #242424; border-color: rgba(255,255,255,0.08); }
     .rd-chart-card--wide { grid-column: span 2; }
 
     .rd-chart-card__header {
@@ -174,12 +174,14 @@
 
     /* Conversion funnel */
     .rd-funnel { display: flex; flex-direction: column; gap: 6px; padding: 10px 0; }
-    .rd-funnel-step { display: flex; align-items: center; gap: 10px; }
+    .rd-funnel-step { display: flex; align-items: center; gap: 10px; cursor: pointer; border-radius: 6px; padding: 2px 4px; transition: background 0.15s; }
+    .rd-funnel-step:hover { background: rgba(99,102,241,0.06); }
     .rd-funnel-step__bar {
         height: 28px; border-radius: 6px; display: flex; align-items: center;
         padding: 0 10px; font-size: 11px; font-weight: 600; color: #fff;
-        transition: width 0.5s ease;
+        transition: width 0.5s ease, opacity 0.15s;
     }
+    .rd-funnel-step:hover .rd-funnel-step__bar { opacity: 0.85; }
     .rd-funnel-step__label { font-size: 11px; font-weight: 500; min-width: 70px; text-align: right; }
     .rd-funnel-step__rate { font-size: 11px; font-weight: 700; min-width: 45px; }
 
@@ -192,7 +194,7 @@
         border-radius: 12px; background: #ffffff; border: 1px solid rgba(128,128,128,0.12);
         overflow: hidden; display: flex; flex-direction: column;
     }
-    .dark .rd-info-panel { background: rgba(255,255,255,0.04); border-color: rgba(255,255,255,0.08); }
+    .dark .rd-info-panel { background: #242424; border-color: rgba(255,255,255,0.08); }
     .rd-info-panel__header {
         padding: 14px 16px 10px; display: flex; justify-content: space-between; align-items: center;
         flex-shrink: 0; border-bottom: 1px solid rgba(128,128,128,0.08);
@@ -207,7 +209,7 @@
     .rd-customize-overlay { position: fixed; inset: 0; background: rgba(0,0,0,0.3); z-index: 1050; opacity: 0; pointer-events: none; transition: opacity 0.2s; }
     .rd-customize-overlay--open { opacity: 1; pointer-events: auto; }
     .rd-customize-panel { position: fixed; top: 0; right: -420px; width: 400px; height: 100vh; background: #ffffff; box-shadow: -4px 0 24px rgba(0,0,0,0.12); z-index: 1051; display: flex; flex-direction: column; transition: right 0.25s ease; }
-    .dark .rd-customize-panel { background: #1e293b; }
+    .dark .rd-customize-panel { background: #242424; }
     .rd-customize-panel--open { right: 0; }
     .rd-customize-panel__header { padding: 18px 20px; border-bottom: 1px solid rgba(128,128,128,0.12); display: flex; justify-content: space-between; align-items: center; flex-shrink: 0; }
     .rd-customize-panel__header h3 { font-size: 16px; font-weight: 700; margin: 0; }
@@ -236,7 +238,7 @@
     @media (max-width: 640px) { .rd-customize-panel { width: 100%; right: -100%; } }
 
     /* Period Picker */
-    .rd-period-picker { display: none; /* DATE FILTER DISABLED */ align-items: center; gap: 6px; font-size: 12px; }
+    .rd-period-picker { display: flex; align-items: center; gap: 6px; font-size: 12px; }
     .rd-period-picker input[type="date"] { padding: 5px 8px; border-radius: 6px; border: 1px solid rgba(128,128,128,0.2); font-size: 12px; background: transparent; color: inherit; outline: none; transition: border-color 0.15s; }
     .rd-period-picker input[type="date"]:focus { border-color: var(--rd-indigo); }
     .rd-period-picker__sep { opacity: 0.4; font-size: 11px; }
@@ -253,6 +255,13 @@
     .rd-refresh__toggle { cursor: pointer; opacity: 0.6; font-size: 13px; border: none; background: none; color: inherit; padding: 2px; }
     .rd-refresh__toggle:hover { opacity: 1; }
 
+    /* Clickable charts */
+    #chart-stage-summary .apexcharts-bar-area,
+    #chart-source-hire .apexcharts-pie-slice-donut,
+    #chart-offer-status .apexcharts-pie-slice-donut,
+    #chart-hire-rate .apexcharts-bar-area,
+    #chart-time-to-hire .apexcharts-bar-area,
+    #chart-joinings .apexcharts-bar-area { cursor: pointer; }
 
     /* Responsive */
     @media (max-width: 1280px) {
@@ -361,8 +370,7 @@
                 <!-- Joinings Per Month -->
                 <div class="rd-chart-card rd-chart-card--wide" data-chart-id="joinings_monthly" data-chart-label="{% trans 'Joinings Per Month' %}">
                     <div class="rd-chart-card__header">
-                        <div><div class="rd-chart-card__title">{% trans "Joinings Per Month" %}</div><div class="rd-chart-card__subtitle" id="rd-joining-year"></div></div>
-                        <select id="rd-year-select" style="padding:4px 8px;border-radius:6px;border:1px solid rgba(128,128,128,0.2);font-size:12px;background:transparent;color:inherit;"></select>
+                        <div><div class="rd-chart-card__title">{% trans "Joinings Per Month" %}</div><div class="rd-chart-card__subtitle">{% trans "In selected period" %}</div></div>
                     </div>
                     <div class="rd-chart-card__body"><div id="chart-joinings"></div></div>
                 </div>
@@ -387,8 +395,8 @@
         <div class="rd-sidebar">
             <div class="rd-info-panel">
                 <div class="rd-info-panel__header">
-                    <div class="rd-info-panel__title">{% trans "Upcoming Interviews" %}</div>
-                    <span style="font-size:11px;opacity:0.5;">{% trans "Next 7 days" %}</span>
+                    <div class="rd-info-panel__title">{% trans "Interviews" %}</div>
+                    <span style="font-size:11px;opacity:0.5;">{% trans "In selected period" %}</span>
                 </div>
                 <div class="rd-info-panel__body" id="rd-interviews">
                     <div class="rd-info-panel__empty">{% trans "Loading..." %}</div>
@@ -439,8 +447,8 @@
         fromInput.value = getFirstOfMonth(); toInput.value = getLastOfMonth();
     }
     function savePeriod() { sessionStorage.setItem(PERIOD_KEY, JSON.stringify({ from: fromInput.value, to: toInput.value })); }
-    function periodParams() { return ""; /* DATE FILTER DISABLED */ }
-    function urlWithPeriod(u) { return u + (u.includes('?') ? '&' : '?') + periodParams(); }
+    function periodParams() { const f = fromInput.value, t = toInput.value; return (f && t) ? ("from_date=" + encodeURIComponent(f) + "&to_date=" + encodeURIComponent(t)) : ""; }
+    function urlWithPeriod(u) { const p = periodParams(); return p ? u + (u.includes('?') ? '&' : '?') + p : u; }
     function fetchP(url) { return fetch(urlWithPeriod(url)); }
     function setPreset(p) {
         const t = new Date(); let f, to;
@@ -548,31 +556,31 @@
         .then(data => {
             document.getElementById('rd-kpi-grid').innerHTML = `
                 <a href="{% url 'recruitment-view' %}" class="rd-kpi-card">
-                    <div class="rd-kpi-card__icon rd-kpi-card__icon--amber">📋</div>
+                    <div class="rd-kpi-card__icon rd-kpi-card__icon--amber"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="7" width="20" height="14" rx="2" ry="2"/><path d="M16 21V5a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v16"/></svg></div>
                     <div class="rd-kpi-card__label">{% trans "Total Vacancies" %}</div>
                     <div class="rd-kpi-card__value">${data.total_vacancy}</div>
                     <div class="rd-kpi-card__sub">{% trans "Open positions" %}</div>
                 </a>
                 <a href="{% url 'recruitment-view' %}" class="rd-kpi-card">
-                    <div class="rd-kpi-card__icon rd-kpi-card__icon--red">🔄</div>
+                    <div class="rd-kpi-card__icon rd-kpi-card__icon--red"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="23 4 23 10 17 10"/><polyline points="1 20 1 14 7 14"/><path d="M3.51 9a9 9 0 0 1 14.85-3.36L23 10M1 14l4.64 4.36A9 9 0 0 0 20.49 15"/></svg></div>
                     <div class="rd-kpi-card__label">{% trans "Ongoing" %}</div>
                     <div class="rd-kpi-card__value">${data.ongoing_recruitments}</div>
                     <div class="rd-kpi-card__sub">{% trans "Active recruitments" %}</div>
                 </a>
                 <a href="{% url 'candidate-view' %}?hired=true" class="rd-kpi-card">
-                    <div class="rd-kpi-card__icon rd-kpi-card__icon--green">✓</div>
+                    <div class="rd-kpi-card__icon rd-kpi-card__icon--green"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M16 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="8.5" cy="7" r="4"/><polyline points="17 11 19 13 23 9"/></svg></div>
                     <div class="rd-kpi-card__label">{% trans "Hired" %}</div>
                     <div class="rd-kpi-card__value">${data.total_hired}</div>
                     <div class="rd-kpi-card__sub">{% trans "of" %} ${data.total_candidates} {% trans "candidates" %}</div>
                 </a>
                 <a href="{% url 'candidate-view' %}" class="rd-kpi-card">
-                    <div class="rd-kpi-card__icon rd-kpi-card__icon--blue">📊</div>
+                    <div class="rd-kpi-card__icon rd-kpi-card__icon--blue"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="23 6 13.5 15.5 8.5 10.5 1 18"/><polyline points="17 6 23 6 23 12"/></svg></div>
                     <div class="rd-kpi-card__label">{% trans "Conversion Rate" %}</div>
                     <div class="rd-kpi-card__value">${data.conversion_rate}%</div>
                     <div class="rd-kpi-card__sub">{% trans "Hired / Total" %}</div>
                 </a>
                 <a href="{% url 'candidate-view' %}?offer_letter_status=accepted" class="rd-kpi-card">
-                    <div class="rd-kpi-card__icon rd-kpi-card__icon--purple">🤝</div>
+                    <div class="rd-kpi-card__icon rd-kpi-card__icon--purple"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><path d="m9 18 2 2 4-4"/></svg></div>
                     <div class="rd-kpi-card__label">{% trans "Acceptance Rate" %}</div>
                     <div class="rd-kpi-card__value">${data.acceptance_rate}%</div>
                     <div class="rd-kpi-card__sub">{% trans "Offer accepted" %}</div>
@@ -591,7 +599,8 @@
             data.conversions.forEach(c => {
                 const pct = Math.max(20, (c.count / maxCount) * 100);
                 const color = funnelColors[c.type] || '#6366f1';
-                html += `<div class="rd-funnel-step">
+                const url = "{% url 'candidate-view' %}?stage_id__stage_type=" + encodeURIComponent(c.type);
+                html += `<div class="rd-funnel-step" onclick="window.location.href='${url}'" title="View ${c.stage} candidates">
                     <div class="rd-funnel-step__label">${c.stage}</div>
                     <div class="rd-funnel-step__bar" style="width:${pct}%;background:${color};">${c.count}</div>
                     <div class="rd-funnel-step__rate">${c.conversion_rate}%</div>
@@ -612,15 +621,19 @@
                 chart: { type: 'donut', height: 300, background: 'transparent', fontFamily: 'inherit',
                     events: { dataPointSelection: (e, ctx, config) => {
                         const src = data.sources[config.dataPointIndex];
-                        if (src.key !== 'referral') {
+                        if (src.key === 'referral') {
+                            window.location.href = "{% url 'candidate-view' %}?referral=true";
+                        } else if (src.key && src.key !== 'not_set') {
                             window.location.href = "{% url 'candidate-view' %}?source=" + src.key;
+                        } else {
+                            window.location.href = "{% url 'candidate-view' %}";
                         }
                     }}
                 },
                 labels: data.sources.map(s => s.source),
                 colors: data.sources.map(s => sourceColors[s.source] || COLORS[data.sources.indexOf(s) % COLORS.length]),
                 plotOptions: { pie: { donut: { size: '65%', labels: { show: true, total: { show: true, label: '{% trans "Total" %}', color: textColor, fontSize: '13px', fontWeight: 600, formatter: w => w.globals.seriesTotals.reduce((a,b)=>a+b,0) } } } } },
-                stroke: { width: 2, colors: [isDark ? '#0f172a' : '#ffffff'] },
+                stroke: { width: 2, colors: [isDark ? '#242424' : '#ffffff'] },
                 dataLabels: { enabled: false },
                 legend: { position: 'bottom', labels: { colors: textColor }, fontSize: '11px', markers: { width: 8, height: 8, radius: 2 } },
                 tooltip: { theme: isDark ? 'dark' : 'light' },
@@ -650,7 +663,7 @@
         });
 
     // ─── SOURCE CONVERSION ───
-    fetch("{% url 'recruitment-modern-source-conv' %}")
+    fetchP("{% url 'recruitment-modern-source-conv' %}")
         .then(r => r.json())
         .then(data => {
             if (!data.sources.length) { document.querySelector("#chart-source-conv").innerHTML = emptyHtml('{% trans "No source data" %}'); return; }
@@ -671,8 +684,8 @@
             }).render();
         });
 
-    // ─── UPCOMING INTERVIEWS ───
-    fetch("{% url 'recruitment-modern-interviews' %}")
+    // ─── INTERVIEWS IN PERIOD ───
+    fetchP("{% url 'recruitment-modern-interviews' %}")
         .then(r => r.json())
         .then(data => {
             const el = document.getElementById('rd-interviews');
@@ -731,7 +744,7 @@
                 labels: data.labels,
                 colors: offerColors,
                 plotOptions: { pie: { donut: { size: '65%', labels: { show: true, total: { show: true, label: '{% trans "Total" %}', color: textColor, fontSize: '13px', fontWeight: 600, formatter: w => w.globals.seriesTotals.reduce((a,b)=>a+b,0) } } } } },
-                stroke: { width: 2, colors: [isDark ? '#0f172a' : '#ffffff'] },
+                stroke: { width: 2, colors: [isDark ? '#242424' : '#ffffff'] },
                 dataLabels: { enabled: false },
                 legend: { position: 'bottom', labels: { colors: textColor }, fontSize: '11px', markers: { width: 8, height: 8, radius: 2 } },
                 tooltip: { theme: isDark ? 'dark' : 'light' },
@@ -790,7 +803,12 @@
             if (!data.data.length) { document.querySelector("#chart-time-to-hire").innerHTML = emptyHtml('{% trans "No hire date data available" %}'); return; }
             new ApexCharts(document.querySelector("#chart-time-to-hire"), {
                 series: [{ name: '{% trans "Avg Days" %}', data: data.data.map(d => d.avg_days) }],
-                chart: { type: 'bar', height: 300, toolbar: { show: false }, background: 'transparent', fontFamily: 'inherit' },
+                chart: { type: 'bar', height: 300, toolbar: { show: false }, background: 'transparent', fontFamily: 'inherit',
+                    events: { dataPointSelection: (e, ctx, config) => {
+                        const rec = data.data[config.dataPointIndex]?.recruitment || '';
+                        window.location.href = "{% url 'candidate-view' %}?recruitment=" + encodeURIComponent(rec) + "&hired=true";
+                    }}
+                },
                 colors: ['#6366f1'],
                 plotOptions: { bar: { borderRadius: 6, columnWidth: '50%' } },
                 xaxis: { categories: data.data.map(d => d.recruitment), labels: { style: { colors: textColor, fontSize: '11px' }, rotate: -45 }, axisBorder: { show: false }, axisTicks: { show: false } },
@@ -801,41 +819,36 @@
             }).render();
         });
 
-    // ─── JOININGS PER MONTH ───
-    const yearSelect = document.getElementById('rd-year-select');
-    const currentYear = new Date().getFullYear();
-    for (let y = currentYear; y >= 2020; y--) {
-        const opt = document.createElement('option');
-        opt.value = y; opt.textContent = y;
-        yearSelect.appendChild(opt);
-    }
-    let joiningsChart = null;
-
-    function loadJoinings(year) {
-        document.getElementById('rd-joining-year').textContent = year;
-        fetch("{% url 'dashboard-hiring' %}?id=" + year)
-            .then(r => r.json())
-            .then(data => {
-                if (!data.dataSet || !data.dataSet.length) { document.querySelector("#chart-joinings").innerHTML = emptyHtml('{% trans "No data" %}'); return; }
-                const opts = {
-                    series: [{ name: data.dataSet[0].label || 'Joined', data: data.dataSet[0].data }],
-                    chart: { type: 'bar', height: 280, toolbar: { show: false }, background: 'transparent', fontFamily: 'inherit' },
-                    colors: ['#f59e0b'],
-                    plotOptions: { bar: { borderRadius: 6, columnWidth: '50%' } },
-                    xaxis: { categories: data.labels, labels: { style: { colors: textColor, fontSize: '11px' } }, axisBorder: { show: false }, axisTicks: { show: false } },
-                    yaxis: { labels: { style: { colors: textColor } } },
-                    grid: { borderColor: gridColor, strokeDashArray: 4 },
-                    dataLabels: { enabled: true, style: { fontSize: '11px', colors: ['#fff'] } },
-                    tooltip: { theme: isDark ? 'dark' : 'light', y: { formatter: v => v + ' employee(s)' } },
-                };
-                if (joiningsChart) { joiningsChart.destroy(); }
-                joiningsChart = new ApexCharts(document.querySelector("#chart-joinings"), opts);
-                joiningsChart.render();
-            });
-    }
-
-    yearSelect.addEventListener('change', () => loadJoinings(yearSelect.value));
-    loadJoinings(currentYear);
+    // ─── JOININGS PER MONTH (period-driven) ───
+    fetchP("{% url 'recruitment-modern-joinings' %}")
+        .then(r => r.json())
+        .then(data => {
+            if (!data.data || !data.data.length || !data.data.some(v => v > 0)) {
+                document.querySelector("#chart-joinings").innerHTML = emptyHtml('{% trans "No joinings in this period" %}');
+                return;
+            }
+            new ApexCharts(document.querySelector("#chart-joinings"), {
+                series: [{ name: '{% trans "Joined" %}', data: data.data }],
+                chart: { type: 'bar', height: 280, toolbar: { show: false }, background: 'transparent', fontFamily: 'inherit',
+                    events: { dataPointSelection: (e, ctx, config) => {
+                        const b = data.buckets[config.dataPointIndex];
+                        if (!b) return;
+                        const lastDay = new Date(b.year, b.month, 0).getDate();
+                        const pad = n => String(n).padStart(2, '0');
+                        const from = `${b.year}-${pad(b.month)}-01`;
+                        const till = `${b.year}-${pad(b.month)}-${lastDay}`;
+                        window.location.href = "{% url 'candidate-view' %}?joining_date_from=" + from + "&joining_date_till=" + till + "&hired=true";
+                    }}
+                },
+                colors: ['#f59e0b'],
+                plotOptions: { bar: { borderRadius: 6, columnWidth: '50%' } },
+                xaxis: { categories: data.labels, labels: { style: { colors: textColor, fontSize: '11px' } }, axisBorder: { show: false }, axisTicks: { show: false } },
+                yaxis: { labels: { style: { colors: textColor } } },
+                grid: { borderColor: gridColor, strokeDashArray: 4 },
+                dataLabels: { enabled: true, style: { fontSize: '11px', colors: ['#fff'] } },
+                tooltip: { theme: isDark ? 'dark' : 'light', y: { formatter: v => v + ' employee(s)' } },
+            }).render();
+        });
 
     // ─── ONGOING RECRUITMENTS & MANAGERS ───
     fetchP("{% url 'recruitment-modern-managers' %}")

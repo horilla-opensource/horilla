@@ -1082,4 +1082,9 @@ urlpatterns = [
         rec_dashboard_modern.recruitment_source_conversion,
         name="recruitment-modern-source-conv",
     ),
+    path(
+        "dashboard/api/joinings/",
+        rec_dashboard_modern.recruitment_joinings_monthly,
+        name="recruitment-modern-joinings",
+    ),
 ]

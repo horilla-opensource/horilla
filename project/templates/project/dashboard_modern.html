@@ -1,4 +1,4 @@
-{% extends "index.html" %}
+﻿{% extends "index.html" %}
 {% load static i18n %}
 
 {% block styles %}
@@ -22,7 +22,7 @@
         padding: 24px;
         min-height: calc(100vh - 80px);
     }
-    .dark .pr-dashboard { background: #0f172a; }
+    .dark .pr-dashboard { background: #000000; }
 
     .pr-header {
         display: flex;
@@ -49,7 +49,7 @@
         flex-wrap: wrap;
     }
     .pr-period-picker {
-        display: none; /* DATE FILTER DISABLED */
+        display: flex;
         align-items: center;
         gap: 6px;
         background: rgba(128,128,128,0.07);
@@ -94,7 +94,7 @@
         position: relative;
         overflow: hidden;
     }
-    .dark .pr-kpi-card { background: #1e293b; border-color: rgba(255,255,255,0.07); }
+    .dark .pr-kpi-card { background: #242424; border-color: rgba(255,255,255,0.07); }
     .pr-kpi-card:hover { transform: translateY(-2px); box-shadow: 0 8px 25px rgba(0,0,0,0.08); }
     .pr-kpi-card__icon {
         width: 38px; height: 38px;
@@ -128,7 +128,7 @@
         padding: 20px;
         border: 1px solid rgba(0,0,0,0.06);
     }
-    .dark .pr-chart-card { background: #1e293b; border-color: rgba(255,255,255,0.07); }
+    .dark .pr-chart-card { background: #242424; border-color: rgba(255,255,255,0.07); }
     .pr-chart-card--wide { grid-column: span 2; }
     .pr-chart-card__title { font-size: 13px; font-weight: 700; margin-bottom: 4px; }
     .pr-chart-card__sub { font-size: 11px; opacity: 0.45; margin-bottom: 14px; }
@@ -232,6 +232,9 @@ const PR_URLS = {
     trend:     "{% url 'project-modern-trend' %}",
     deadlines: "{% url 'project-modern-deadlines' %}",
     top:       "{% url 'project-modern-top' %}",
+    projectView: "{% url 'project-view' %}",
+    taskAll:   "{% url 'task-all' %}",
+    projectDetail: "/project/task-view/__ID__/?view=list",
 };
 
 let prFromDate = "", prToDate = "";
@@ -256,37 +259,47 @@ function prSetPreset(preset, btn) {
 }
 
 function prParams() {
-    return ""; /* DATE FILTER DISABLED */
+    const f = document.getElementById("pr-from-date").value;
+    const t = document.getElementById("pr-to-date").value;
+    if (!f || !t) return "";
+    const sep = "?";
+    return sep + "from_date=" + encodeURIComponent(f) + "&to_date=" + encodeURIComponent(t);
 }
 
-function prFetch(url) { return fetch(url + prParams()).then(r => r.json()); }
+function prFetch(url) {
+    const p = prParams();
+    if (!p) return fetch(url).then(r => r.json());
+    const sep = url.includes("?") ? "&" : "?";
+    return fetch(url + sep + p.slice(1)).then(r => r.json());
+}
 
 function prLoadKpi() {
     prFetch(PR_URLS.kpi).then(d => {
         const grid = document.getElementById("pr-kpi-grid");
+        const pv = PR_URLS.projectView;
         grid.innerHTML = `
-            <div class="pr-kpi-card pr-kpi-card--blue">
-                <div class="pr-kpi-card__icon">📋</div>
+            <a href="${pv}" class="pr-kpi-card pr-kpi-card--blue" style="text-decoration:none;color:inherit;cursor:pointer;">
+                <div class="pr-kpi-card__icon"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 19a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h5l2 3h9a2 2 0 0 1 2 2z"/></svg></div>
                 <div class="pr-kpi-card__label">{% trans "Total Projects" %}</div>
                 <div class="pr-kpi-card__value">${d.total_projects}</div>
-            </div>
-            <div class="pr-kpi-card pr-kpi-card--green">
-                <div class="pr-kpi-card__icon">✅</div>
+            </a>
+            <a href="${pv}?status=in_progress" class="pr-kpi-card pr-kpi-card--green" style="text-decoration:none;color:inherit;cursor:pointer;">
+                <div class="pr-kpi-card__icon"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><polygon points="10 8 16 12 10 16 10 8"/></svg></div>
                 <div class="pr-kpi-card__label">{% trans "Active" %}</div>
                 <div class="pr-kpi-card__value">${d.active_projects}</div>
                 <div class="pr-kpi-card__sub">{% trans "In Progress" %}</div>
-            </div>
-            <div class="pr-kpi-card pr-kpi-card--purple">
-                <div class="pr-kpi-card__icon">🏁</div>
+            </a>
+            <a href="${pv}?status=completed" class="pr-kpi-card pr-kpi-card--purple" style="text-decoration:none;color:inherit;cursor:pointer;">
+                <div class="pr-kpi-card__icon"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg></div>
                 <div class="pr-kpi-card__label">{% trans "Completed" %}</div>
                 <div class="pr-kpi-card__value">${d.completed_projects}</div>
-            </div>
-            <div class="pr-kpi-card pr-kpi-card--red">
-                <div class="pr-kpi-card__icon">⚠️</div>
+            </a>
+            <a href="${pv}?overdue=1" class="pr-kpi-card pr-kpi-card--red" style="text-decoration:none;color:inherit;cursor:pointer;">
+                <div class="pr-kpi-card__icon"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10.29 3.86 1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg></div>
                 <div class="pr-kpi-card__label">{% trans "Overdue" %}</div>
                 <div class="pr-kpi-card__value">${d.overdue_projects}</div>
                 <div class="pr-kpi-card__sub">{% trans "Past end date" %}</div>
-            </div>
+            </a>
         `;
         document.getElementById("pr-last-updated").textContent =
             `{% trans "Last updated" %}: ${new Date().toLocaleTimeString()}`;
@@ -295,10 +308,20 @@ function prLoadKpi() {
 
 function prLoadStatus() {
     prFetch(PR_URLS.status).then(d => {
-        new ApexCharts(document.getElementById("pr-status-chart"), {
+        const el = document.getElementById("pr-status-chart");
+        el.style.cursor = "pointer";
+        new ApexCharts(el, {
             series: d.counts,
             labels: d.labels,
-            chart: { type: "donut", height: 260, toolbar: { show: false } },
+            chart: {
+                type: "donut", height: 260, toolbar: { show: false },
+                events: { dataPointSelection: (e, ctx, cfg) => {
+                    const key = d.keys[cfg.dataPointIndex];
+                    window.location.href = key
+                        ? PR_URLS.projectView + "?status=" + encodeURIComponent(key)
+                        : PR_URLS.projectView;
+                }},
+            },
             colors: ["#6366f1","#22c55e","#a855f7","#f59e0b","#ef4444","#94a3b8"],
             legend: { position: "bottom", fontSize: "12px" },
             dataLabels: { enabled: true },
@@ -309,10 +332,20 @@ function prLoadStatus() {
 
 function prLoadTasks() {
     prFetch(PR_URLS.tasks).then(d => {
-        new ApexCharts(document.getElementById("pr-task-chart"), {
+        const el = document.getElementById("pr-task-chart");
+        el.style.cursor = "pointer";
+        new ApexCharts(el, {
             series: d.counts,
             labels: d.labels,
-            chart: { type: "pie", height: 260, toolbar: { show: false } },
+            chart: {
+                type: "pie", height: 260, toolbar: { show: false },
+                events: { dataPointSelection: (e, ctx, cfg) => {
+                    const key = d.keys[cfg.dataPointIndex];
+                    window.location.href = key
+                        ? PR_URLS.taskAll + "?status=" + encodeURIComponent(key)
+                        : PR_URLS.taskAll;
+                }},
+            },
             colors: ["#94a3b8","#3b82f6","#22c55e","#ef4444"],
             legend: { position: "bottom", fontSize: "12px" },
             dataLabels: { enabled: true },
@@ -354,7 +387,7 @@ function prLoadDeadlines() {
         };
         const urgency = days => days <= 7 ? "pr-badge--red" : days <= 14 ? "pr-badge--amber" : "pr-badge--green";
         const rows = d.projects.map(p => `
-            <tr>
+            <tr onclick="window.location.href='${PR_URLS.projectDetail.replace('__ID__', p.id)}'" style="cursor:pointer;">
                 <td>${p.title}</td>
                 <td>${p.end_date}</td>
                 <td><span class="pr-badge ${statusColor(p.status)}">${p.status}</span></td>
@@ -380,9 +413,19 @@ function prLoadTop() {
                 '<p style="font-size:13px;opacity:0.5;text-align:center;padding:40px 0">{% trans "No active projects" %}</p>';
             return;
         }
-        new ApexCharts(document.getElementById("pr-top-chart"), {
+        const el = document.getElementById("pr-top-chart");
+        el.style.cursor = "pointer";
+        new ApexCharts(el, {
             series: [{ name: "{% trans 'Tasks' %}", data: d.projects.map(p => p.task_count) }],
-            chart: { type: "bar", height: 260, toolbar: { show: false } },
+            chart: {
+                type: "bar", height: 260, toolbar: { show: false },
+                events: { dataPointSelection: (e, ctx, cfg) => {
+                    const proj = d.projects[cfg.dataPointIndex];
+                    if (proj && proj.id) {
+                        window.location.href = PR_URLS.projectDetail.replace('__ID__', proj.id);
+                    }
+                }},
+            },
             colors: ["#6366f1"],
             xaxis: { categories: d.projects.map(p => p.title.length > 18 ? p.title.slice(0,18)+"…" : p.title), labels: { style: { fontSize: "11px" } } },
             yaxis: { labels: { style: { fontSize: "11px" } } },

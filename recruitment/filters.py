@@ -90,6 +90,26 @@ class CandidateFilter(HorillaFilterSet):
         field_name="hired_date",
         widget=forms.DateInput(attrs={"type": "date"}),
     )
+    joining_date_from = django_filters.DateFilter(
+        field_name="joining_date",
+        lookup_expr="gte",
+        widget=forms.DateInput(attrs={"type": "date"}),
+    )
+    joining_date_till = django_filters.DateFilter(
+        field_name="joining_date",
+        lookup_expr="lte",
+        widget=forms.DateInput(attrs={"type": "date"}),
+    )
+    onboarding_end_date_from = django_filters.DateFilter(
+        field_name="onboarding_stage__onboarding_end_date",
+        lookup_expr="gte",
+        widget=forms.DateInput(attrs={"type": "date"}),
+    )
+    onboarding_end_date_till = django_filters.DateFilter(
+        field_name="onboarding_stage__onboarding_end_date",
+        lookup_expr="lte",
+        widget=forms.DateInput(attrs={"type": "date"}),
+    )
     interview_date = django_filters.DateFilter(
         field_name="candidate_interview__interview_date",
         widget=forms.DateInput(attrs={"type": "date"}),

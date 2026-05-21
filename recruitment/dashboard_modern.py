@@ -4,7 +4,7 @@ Modern recruitment dashboard views — KPI summary + ApexCharts.
 Accessible at /recruitment/dashboard/modern/ alongside the existing dashboard.
 """
 
-from datetime import date, timedelta
+from datetime import date
 
 from django.contrib.auth.decorators import login_required
 from django.db.models import Count, Q
@@ -28,6 +28,17 @@ def _parse_period(request):
     return from_date, to_date
 
 
+def _candidates_in_period(request):
+    """Return Candidate queryset filtered to the requested period (by created_at)."""
+    from recruitment.models import Candidate
+
+    from_date, to_date = _parse_period(request)
+    return Candidate.objects.filter(
+        created_at__date__gte=from_date,
+        created_at__date__lte=to_date,
+    )
+
+
 @login_required
 def modern_recruitment_dashboard(request):
     """Render the modern recruitment dashboard page."""
@@ -47,7 +58,7 @@ def recruitment_kpi_data(request):
         if rec.vacancy is not None:
             total_vacancy += rec.vacancy
 
-    candidates = Candidate.objects.all()
+    candidates = _candidates_in_period(request)
     total_candidates = candidates.count()
 
     hired_candidates = candidates.filter(
@@ -89,14 +100,14 @@ def recruitment_kpi_data(request):
 @login_required
 def recruitment_offer_status(request):
     """Candidate offer letter status breakdown."""
-    from recruitment.models import Candidate
+    candidates = _candidates_in_period(request)
 
     statuses = ["not_sent", "sent", "accepted", "rejected", "joined"]
     labels = ["Not Sent", "Sent", "Accepted", "Rejected", "Joined"]
     data = []
 
     for status in statuses:
-        data.append(Candidate.objects.filter(offer_letter_status=status).count())
+        data.append(candidates.filter(offer_letter_status=status).count())
 
     return JsonResponse({"labels": labels, "data": data, "statuses": statuses})
 
@@ -104,16 +115,17 @@ def recruitment_offer_status(request):
 @login_required
 def recruitment_stage_summary(request):
     """Candidates grouped by stage type across all active recruitments."""
-    from recruitment.models import Candidate, Recruitment, Stage
+    from recruitment.models import Recruitment, Stage
 
     recruitments = Recruitment.objects.filter(closed=False)
-    stage_types = dict(Stage.stage_types)
+    candidates = _candidates_in_period(request)
 
     stages = []
     for type_key, type_label in Stage.stage_types:
-        count = Candidate.objects.filter(
+        count = candidates.filter(
             recruitment_id__in=recruitments,
             stage_id__stage_type=type_key,
+            is_active=True,
         ).count()
         stages.append({"type": type_key, "label": str(type_label), "count": count})
 
@@ -123,23 +135,25 @@ def recruitment_stage_summary(request):
 @login_required
 def recruitment_pipeline_data(request):
     """Hiring pipeline — candidates per stage per recruitment."""
-    from recruitment.models import Candidate, Recruitment, Stage
+    from recruitment.models import Recruitment, Stage
 
     recruitments = Recruitment.objects.filter(closed=False)
+    period_candidates = _candidates_in_period(request)
     pipeline = []
 
     for rec in recruitments:
-        if not rec.candidate.exists():
+        rec_cands = period_candidates.filter(recruitment_id=rec)
+        total = rec_cands.count()
+        if not total:
             continue
         stages = {}
         for stage_type, stage_label in Stage.stage_types:
-            count = rec.candidate.filter(stage_id__stage_type=stage_type).count()
-            stages[stage_type] = count
+            stages[stage_type] = rec_cands.filter(stage_id__stage_type=stage_type).count()
         pipeline.append(
             {
                 "recruitment": rec.title or str(rec),
                 "stages": stages,
-                "total": rec.candidate.count(),
+                "total": total,
             }
         )
 
@@ -149,17 +163,19 @@ def recruitment_pipeline_data(request):
 @login_required
 def recruitment_source_quality(request):
     """Top recruitments by hire rate."""
-    from recruitment.models import Candidate, Recruitment
+    from recruitment.models import Recruitment
 
     recruitments = Recruitment.objects.filter(closed=False)
+    period_candidates = _candidates_in_period(request)
     sources = []
 
     for rec in recruitments:
-        total = rec.candidate.count()
+        rec_cands = period_candidates.filter(recruitment_id=rec)
+        total = rec_cands.count()
         if total == 0:
             continue
         hired = (
-            rec.candidate.filter(Q(hired=True) | Q(stage_id__stage_type="hired"))
+            rec_cands.filter(Q(hired=True) | Q(stage_id__stage_type="hired"))
             .distinct()
             .count()
         )
@@ -181,13 +197,14 @@ def recruitment_source_quality(request):
 @login_required
 def recruitment_time_to_hire(request):
     """Average time from candidate creation to hired stage, per recruitment."""
-    from recruitment.models import Candidate, Recruitment
+    from recruitment.models import Recruitment
 
     recruitments = Recruitment.objects.filter(closed=False)
+    period_candidates = _candidates_in_period(request)
     data = []
 
     for rec in recruitments:
-        hired = rec.candidate.filter(
+        hired = period_candidates.filter(recruitment_id=rec).filter(
             Q(hired=True) | Q(stage_id__stage_type="hired")
         ).distinct()
         if not hired.exists():
@@ -221,6 +238,7 @@ def recruitment_managers_data(request):
     from recruitment.models import Recruitment
 
     recruitments = Recruitment.objects.filter(closed=False)
+    period_candidates = _candidates_in_period(request)
     data = []
 
     for rec in recruitments:
@@ -230,7 +248,7 @@ def recruitment_managers_data(request):
                 "recruitment": rec.title or str(rec),
                 "managers": managers,
                 "vacancy": rec.vacancy or 0,
-                "candidates": rec.candidate.count(),
+                "candidates": period_candidates.filter(recruitment_id=rec).count(),
             }
         )
 
@@ -240,44 +258,35 @@ def recruitment_managers_data(request):
 @login_required
 def recruitment_source_of_hire(request):
     """Candidate count grouped by source (Application, Inside software, Other)."""
-    from recruitment.models import Candidate
+    from django.db.models import Q
 
+    candidates = _candidates_in_period(request)
     sources = []
 
     try:
-        data = (
-            Candidate.objects.exclude(source__isnull=True)
-            .exclude(source="")
-            .values("source")
-            .annotate(count=Count("id"))
-            .order_by("-count")
-        )
-
         source_labels = {
             "application": "Application Form",
             "software": "Inside Software",
             "other": "Other",
         }
 
-        for item in data:
-            sources.append(
-                {
-                    "source": source_labels.get(item["source"], item["source"]),
-                    "key": item["source"],
-                    "count": item["count"],
-                }
-            )
+        for key, label in source_labels.items():
+            count = candidates.filter(source=key).count()
+            if count > 0:
+                sources.append({"source": label, "key": key, "count": count})
 
-        # Add referral count separately
-        referral_count = Candidate.objects.filter(referral__isnull=False).count()
+        referral_count = candidates.filter(referral__isnull=False).count()
         if referral_count > 0:
-            sources.append(
-                {
-                    "source": "Referral",
-                    "key": "referral",
-                    "count": referral_count,
-                }
-            )
+            sources.append({"source": "Referral", "key": "referral", "count": referral_count})
+
+        not_set_count = candidates.filter(
+            Q(source__isnull=True) | Q(source=""), referral__isnull=True
+        ).count()
+        if not_set_count > 0:
+            sources.append({"source": "Not Specified", "key": "not_set", "count": not_set_count})
+
+        sources.sort(key=lambda x: x["count"], reverse=True)
+
     except Exception:
         pass
 
@@ -286,18 +295,18 @@ def recruitment_source_of_hire(request):
 
 @login_required
 def recruitment_upcoming_interviews(request):
-    """Interviews scheduled in the next 7 days."""
+    """Interviews scheduled within the selected period."""
     from recruitment.models import InterviewSchedule
 
+    from_date, to_date = _parse_period(request)
     today = date.today()
-    end = today + timedelta(days=7)
     interviews = []
 
     try:
         qs = (
             InterviewSchedule.objects.filter(
-                interview_date__gte=today,
-                interview_date__lte=end,
+                interview_date__gte=from_date,
+                interview_date__lte=to_date,
             )
             .select_related("candidate_id", "candidate_id__stage_id")
             .order_by("interview_date", "interview_time")[:15]
@@ -328,14 +337,19 @@ def recruitment_upcoming_interviews(request):
 
 @login_required
 def recruitment_open_by_department(request):
-    """Open positions grouped by department."""
+    """Open positions grouped by department, scoped to recruitments active in the selected period."""
     from base.models import Department
     from recruitment.models import Recruitment
 
+    from_date, to_date = _parse_period(request)
     departments = []
 
     try:
-        recruitments = Recruitment.objects.filter(closed=False, is_event_based=False)
+        recruitments = Recruitment.objects.filter(
+            closed=False,
+            is_event_based=False,
+            start_date__lte=to_date,
+        ).filter(Q(end_date__isnull=True) | Q(end_date__gte=from_date))
 
         dept_data = {}
         for rec in recruitments:
@@ -379,9 +393,10 @@ def recruitment_open_by_department(request):
 @login_required
 def recruitment_stage_conversion(request):
     """Funnel conversion rates between stages."""
-    from recruitment.models import Candidate, Recruitment, Stage
+    from recruitment.models import Recruitment, Stage
 
     recruitments = Recruitment.objects.filter(closed=False)
+    candidates = _candidates_in_period(request)
     conversions = []
 
     try:
@@ -390,13 +405,13 @@ def recruitment_stage_conversion(request):
 
         counts = {}
         for st in stage_types:
-            counts[st] = Candidate.objects.filter(
+            counts[st] = candidates.filter(
                 recruitment_id__in=recruitments,
                 stage_id__stage_type=st,
             ).count()
 
         # Also count total candidates
-        total = Candidate.objects.filter(
+        total = candidates.filter(
             recruitment_id__in=recruitments,
             canceled=False,
         ).count()
@@ -421,7 +436,7 @@ def recruitment_stage_conversion(request):
     return JsonResponse(
         {
             "conversions": conversions,
-            "total_candidates": total if "total" in dir() else 0,
+            "total_candidates": conversions[0]["count"] if conversions else 0,
         }
     )
 
@@ -431,7 +446,7 @@ def recruitment_source_conversion(request):
     """Hire rate per candidate source."""
     from django.db.models import Q
 
-    from recruitment.models import Candidate
+    candidates = _candidates_in_period(request)
 
     sources = []
     try:
@@ -441,9 +456,9 @@ def recruitment_source_conversion(request):
             ("other", "Other"),
         ]
         for key, label in source_choices:
-            total = Candidate.objects.filter(source=key).count()
+            total = candidates.filter(source=key).count()
             hired = (
-                Candidate.objects.filter(source=key)
+                candidates.filter(source=key)
                 .filter(Q(hired=True) | Q(stage_id__stage_type="hired"))
                 .distinct()
                 .count()
@@ -454,9 +469,9 @@ def recruitment_source_conversion(request):
                     {"source": label, "total": total, "hired": hired, "rate": rate}
                 )
         # Referrals
-        total_ref = Candidate.objects.filter(referral__isnull=False).count()
+        total_ref = candidates.filter(referral__isnull=False).count()
         hired_ref = (
-            Candidate.objects.filter(referral__isnull=False)
+            candidates.filter(referral__isnull=False)
             .filter(Q(hired=True) | Q(stage_id__stage_type="hired"))
             .distinct()
             .count()
@@ -470,6 +485,72 @@ def recruitment_source_conversion(request):
                     "rate": round((hired_ref / total_ref * 100), 1),
                 }
             )
+
+        # Not Specified — candidates with no source and no referral
+        total_ns = candidates.filter(
+            Q(source__isnull=True) | Q(source=""), referral__isnull=True
+        ).count()
+        if total_ns > 0:
+            hired_ns = (
+                candidates.filter(
+                    Q(source__isnull=True) | Q(source=""), referral__isnull=True
+                )
+                .filter(Q(hired=True) | Q(stage_id__stage_type="hired"))
+                .distinct()
+                .count()
+            )
+            sources.append(
+                {
+                    "source": "Not Specified",
+                    "total": total_ns,
+                    "hired": hired_ns,
+                    "rate": round((hired_ns / total_ns * 100), 1),
+                }
+            )
     except Exception:
         pass
     return JsonResponse({"sources": sources})
+
+
+@login_required
+def recruitment_joinings_monthly(request):
+    """Employee joinings grouped by month within the selected period."""
+    from employee.models import EmployeeWorkInformation
+
+    from_date, to_date = _parse_period(request)
+
+    month_names = [
+        "January", "February", "March", "April", "May", "June",
+        "July", "August", "September", "October", "November", "December",
+    ]
+
+    buckets = []
+    cursor = date(from_date.year, from_date.month, 1)
+    end_marker = date(to_date.year, to_date.month, 1)
+    while cursor <= end_marker:
+        buckets.append({"year": cursor.year, "month": cursor.month, "count": 0})
+        if cursor.month == 12:
+            cursor = date(cursor.year + 1, 1, 1)
+        else:
+            cursor = date(cursor.year, cursor.month + 1, 1)
+
+    qs = EmployeeWorkInformation.objects.filter(
+        date_joining__gte=from_date,
+        date_joining__lte=to_date,
+    )
+    for info in qs:
+        if not info.date_joining:
+            continue
+        for b in buckets:
+            if b["year"] == info.date_joining.year and b["month"] == info.date_joining.month:
+                b["count"] += 1
+                break
+
+    multi_year = from_date.year != to_date.year
+    labels = [
+        f"{month_names[b['month'] - 1][:3]} {b['year']}" if multi_year else month_names[b["month"] - 1]
+        for b in buckets
+    ]
+    data = [b["count"] for b in buckets]
+
+    return JsonResponse({"labels": labels, "data": data, "buckets": buckets})

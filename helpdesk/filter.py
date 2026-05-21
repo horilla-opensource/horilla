@@ -80,6 +80,9 @@ class TicketFilter(FilterSet):
     pipeline_status = django_filters.CharFilter(
         field_name="status",
     )
+    department = django_filters.NumberFilter(
+        field_name="employee_id__employee_work_info__department_id",
+    )
 
     class Meta:
         """

@@ -28,6 +28,18 @@ def _parse_period(request):
     return from_date, to_date
 
 
+def _onboarding_candidates_in_period(request):
+    """Return Candidate queryset (start_onboard=True) filtered to the requested period."""
+    from recruitment.models import Candidate
+
+    from_date, to_date = _parse_period(request)
+    return Candidate.objects.filter(
+        start_onboard=True,
+        created_at__date__gte=from_date,
+        created_at__date__lte=to_date,
+    )
+
+
 @login_required
 def modern_onboarding_dashboard(request):
     """Render the modern onboarding dashboard page."""
@@ -38,24 +50,27 @@ def modern_onboarding_dashboard(request):
 def onboarding_kpi_data(request):
     """Return onboarding KPI summary data as JSON."""
     from onboarding.models import CandidateStage, CandidateTask
-    from recruitment.models import Candidate, Recruitment
+    from recruitment.models import Recruitment
 
-    total_candidates = Candidate.objects.filter(start_onboard=True).count()
+    period_candidates = _onboarding_candidates_in_period(request)
+    total_candidates = period_candidates.count()
     active_recruitments = Recruitment.objects.filter(
         closed=False, is_active=True
     ).count()
 
-    # Task stats
-    total_tasks = CandidateTask.objects.all().count()
-    completed_tasks = CandidateTask.objects.filter(status="done").count()
-    stuck_tasks = CandidateTask.objects.filter(status="stuck").count()
+    # Task stats — restrict to tasks belonging to candidates in the selected period
+    period_tasks = CandidateTask.objects.filter(candidate_id__in=period_candidates)
+    total_tasks = period_tasks.count()
+    completed_tasks = period_tasks.filter(status="done").count()
+    stuck_tasks = period_tasks.filter(status="stuck").count()
     task_completion = (
         round((completed_tasks / total_tasks * 100), 1) if total_tasks > 0 else 0
     )
 
-    # Candidates who completed onboarding (on final stage)
+    # Candidates who completed onboarding (on final stage) — within the period
     completed_onboarding = CandidateStage.objects.filter(
         onboarding_stage_id__is_final_stage=True,
+        candidate_id__in=period_candidates,
     ).count()
 
     # Candidates in progress (not on final stage)
@@ -80,15 +95,20 @@ def onboarding_stage_distribution(request):
     """Candidates by onboarding stage."""
     from onboarding.models import CandidateStage, OnboardingStage
 
+    period_candidates = _onboarding_candidates_in_period(request)
     stages = []
 
     try:
         stage_qs = OnboardingStage.objects.all().order_by("sequence")
         for stage in stage_qs:
-            count = CandidateStage.objects.filter(onboarding_stage_id=stage).count()
+            count = CandidateStage.objects.filter(
+                onboarding_stage_id=stage,
+                candidate_id__in=period_candidates,
+            ).count()
             if count > 0:
                 stages.append(
                     {
+                        "id": stage.pk,
                         "stage": stage.stage_title,
                         "count": count,
                         "is_final": stage.is_final_stage,
@@ -108,6 +128,9 @@ def onboarding_task_status(request):
     """Task status breakdown."""
     from onboarding.models import CandidateTask
 
+    period_candidates = _onboarding_candidates_in_period(request)
+    period_tasks = CandidateTask.objects.filter(candidate_id__in=period_candidates)
+
     statuses = []
     task_choices = [
         ("todo", "Todo"),
@@ -118,7 +141,7 @@ def onboarding_task_status(request):
     ]
 
     for status, label in task_choices:
-        count = CandidateTask.objects.filter(status=status).count()
+        count = period_tasks.filter(status=status).count()
         statuses.append({"status": status, "label": label, "count": count})
 
     return JsonResponse({"statuses": statuses})
@@ -127,13 +150,11 @@ def onboarding_task_status(request):
 @login_required
 def onboarding_by_recruitment(request):
     """Candidates onboarding per recruitment."""
-    from recruitment.models import Candidate, Recruitment
-
     recruitments = []
 
     try:
         data = (
-            Candidate.objects.filter(start_onboard=True)
+            _onboarding_candidates_in_period(request)
             .values("recruitment_id__title")
             .annotate(count=Count("id"))
             .order_by("-count")
@@ -152,22 +173,21 @@ def onboarding_by_recruitment(request):
 @login_required
 def onboarding_by_job_position(request):
     """Candidates onboarding per job position."""
-    from recruitment.models import Candidate
-
     positions = []
 
     try:
         data = (
-            Candidate.objects.filter(start_onboard=True)
-            .values("job_position_id__job_position")
+            _onboarding_candidates_in_period(request)
+            .values("job_position_id", "job_position_id__job_position")
             .annotate(count=Count("id"))
             .order_by("-count")
         )
 
         for item in data:
             pos = item["job_position_id__job_position"]
+            pos_id = item["job_position_id"]
             if pos:
-                positions.append({"position": pos, "count": item["count"]})
+                positions.append({"position": pos, "position_id": pos_id, "count": item["count"]})
     except Exception:
         pass
 
@@ -177,14 +197,13 @@ def onboarding_by_job_position(request):
 @login_required
 def onboarding_candidates_list(request):
     """Current onboarding candidates with progress."""
-    from onboarding.models import CandidateStage, CandidateTask
-    from recruitment.models import Candidate
+    from onboarding.models import CandidateTask
 
     candidates = []
 
     try:
         qs = (
-            Candidate.objects.filter(start_onboard=True)
+            _onboarding_candidates_in_period(request)
             .select_related("recruitment_id", "job_position_id", "onboarding_stage")
             .order_by("-id")[:15]
         )
@@ -229,7 +248,7 @@ def onboarding_candidates_list(request):
 
 @login_required
 def onboarding_task_managers(request):
-    """Task assignment by manager (logged-in user's tasks)."""
+    """Task assignment by manager (logged-in user's tasks), scoped to the selected period."""
     from onboarding.models import CandidateTask, OnboardingTask
 
     tasks = []
@@ -237,18 +256,21 @@ def onboarding_task_managers(request):
     try:
         user_emp = getattr(request.user, "employee_get", None)
         if user_emp:
+            period_candidates = _onboarding_candidates_in_period(request)
             task_qs = OnboardingTask.objects.filter(
                 employee_id=user_emp,
             ).order_by("stage_id__sequence")
 
             for task in task_qs[:10]:
-                total = CandidateTask.objects.filter(onboarding_task_id=task).count()
-                done = CandidateTask.objects.filter(
-                    onboarding_task_id=task, status="done"
-                ).count()
-                stuck = CandidateTask.objects.filter(
-                    onboarding_task_id=task, status="stuck"
-                ).count()
+                ct_base = CandidateTask.objects.filter(
+                    onboarding_task_id=task,
+                    candidate_id__in=period_candidates,
+                )
+                total = ct_base.count()
+                if total == 0:
+                    continue
+                done = ct_base.filter(status="done").count()
+                stuck = ct_base.filter(status="stuck").count()
 
                 tasks.append(
                     {
@@ -268,29 +290,26 @@ def onboarding_task_managers(request):
 
 @login_required
 def onboarding_completion_trend(request):
-    """Monthly onboarding completions for the last 6 months."""
+    """Monthly onboarding completions within the selected period."""
     from onboarding.models import CandidateStage
 
-    _, to_date = _parse_period(request)
-    today = to_date
+    from_date, to_date = _parse_period(request)
     months = []
     try:
-        for i in range(5, -1, -1):
-            month_date = today.replace(day=1) - timedelta(days=i * 30)
-            month_start = month_date.replace(day=1)
-            if month_start.month == 12:
-                month_end = month_start.replace(
-                    year=month_start.year + 1, month=1
-                ) - timedelta(days=1)
+        cursor = from_date.replace(day=1)
+        end_marker = to_date.replace(day=1)
+        while cursor <= end_marker:
+            if cursor.month == 12:
+                next_month = cursor.replace(year=cursor.year + 1, month=1)
             else:
-                month_end = month_start.replace(
-                    month=month_start.month + 1
-                ) - timedelta(days=1)
+                next_month = cursor.replace(month=cursor.month + 1)
+            month_end = next_month - timedelta(days=1)
             count = CandidateStage.objects.filter(
-                onboarding_end_date__gte=month_start,
+                onboarding_end_date__gte=cursor,
                 onboarding_end_date__lte=month_end,
             ).count()
-            months.append({"month": month_start.strftime("%b %Y"), "count": count})
+            months.append({"month": cursor.strftime("%b %Y"), "count": count})
+            cursor = next_month
     except Exception:
         pass
     return JsonResponse({"months": months})
@@ -298,14 +317,17 @@ def onboarding_completion_trend(request):
 
 @login_required
 def onboarding_portal_status(request):
-    """Portal access status for onboarding candidates."""
+    """Portal access status for onboarding candidates within the selected period."""
     from onboarding.models import OnboardingPortal
 
     portals = []
     try:
-        qs = OnboardingPortal.objects.select_related("candidate_id").order_by("-count")[
-            :15
-        ]
+        period_candidates = _onboarding_candidates_in_period(request)
+        qs = (
+            OnboardingPortal.objects.filter(candidate_id__in=period_candidates)
+            .select_related("candidate_id")
+            .order_by("-count")[:15]
+        )
         for p in qs:
             cand = p.candidate_id
             portals.append(

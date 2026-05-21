@@ -1,4 +1,4 @@
-{% extends "index.html" %}
+﻿{% extends "index.html" %}
 {% load static i18n %}
 
 {% block styles %}
@@ -6,7 +6,7 @@
 <style>
     :root { --as-indigo: #6366f1; --as-green: #22c55e; --as-amber: #f59e0b; --as-red: #ef4444; --as-blue: #3b82f6; --as-purple: #a855f7; }
     .as-dashboard { font-family: inherit; background: #ffffff; margin: -24px; padding: 24px; min-height: calc(100vh - 80px); }
-    .dark .as-dashboard { background: #0f172a; }
+    .dark .as-dashboard { background: #000000; }
     .as-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; }
     .as-header h1 { font-size: 22px; font-weight: 700; }
     .as-header__date { font-size: 13px; opacity: 0.6; margin-top: 2px; }
@@ -16,7 +16,7 @@
     .as-kpi-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 14px; margin-bottom: 20px; }
     .as-kpi-card { border-radius: 12px; padding: 18px; background: #ffffff; border: 1px solid rgba(128,128,128,0.12); transition: all 0.2s; text-decoration: none; color: inherit; display: block; }
     .as-kpi-card:hover { box-shadow: 0 4px 12px rgba(0,0,0,0.08); transform: translateY(-1px); text-decoration: none; color: inherit; }
-    .dark .as-kpi-card { background: rgba(255,255,255,0.04); border-color: rgba(255,255,255,0.08); }
+    .dark .as-kpi-card { background: #242424; border-color: rgba(255,255,255,0.08); }
     .as-kpi-card__icon { width: 38px; height: 38px; border-radius: 10px; display: flex; align-items: center; justify-content: center; font-size: 18px; margin-bottom: 10px; }
     .as-kpi-card__icon--blue { background: #dbeafe; color: var(--as-blue); } .as-kpi-card__icon--green { background: #dcfce7; color: var(--as-green); }
     .as-kpi-card__icon--amber { background: #fef3c7; color: var(--as-amber); } .as-kpi-card__icon--red { background: #fee2e2; color: var(--as-red); }
@@ -33,7 +33,7 @@
     .as-main { min-width: 0; } .as-sidebar { display: flex; flex-direction: column; gap: 16px; position: sticky; top: 90px; }
     .as-chart-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 16px; margin-bottom: 20px; }
     .as-chart-card { border-radius: 12px; background: #ffffff; border: 1px solid rgba(128,128,128,0.12); overflow: visible; }
-    .dark .as-chart-card { background: rgba(255,255,255,0.04); border-color: rgba(255,255,255,0.08); }
+    .dark .as-chart-card { background: #242424; border-color: rgba(255,255,255,0.08); }
     .as-chart-card--wide { grid-column: span 2; }
     .as-chart-card__header { padding: 14px 18px 0; display: flex; justify-content: space-between; align-items: center; }
     .as-chart-card__title { font-size: 14px; font-weight: 600; }
@@ -45,7 +45,7 @@
     @keyframes as-shimmer { 0% { background-position: 200% 0; } 100% { background-position: -200% 0; } }
     .as-skeleton--kpi { height: 110px; }
     .as-info-panel { border-radius: 12px; background: #ffffff; border: 1px solid rgba(128,128,128,0.12); overflow: hidden; display: flex; flex-direction: column; }
-    .dark .as-info-panel { background: rgba(255,255,255,0.04); border-color: rgba(255,255,255,0.08); }
+    .dark .as-info-panel { background: #242424; border-color: rgba(255,255,255,0.08); }
     .as-info-panel__header { padding: 14px 16px 10px; display: flex; justify-content: space-between; align-items: center; flex-shrink: 0; border-bottom: 1px solid rgba(128,128,128,0.08); }
     .as-info-panel__title { font-size: 13px; font-weight: 700; }
     .as-info-panel__body { padding: 8px 16px 12px; overflow-y: auto; flex: 1; max-height: 350px; }
@@ -65,7 +65,7 @@
     .as-customize-overlay { position: fixed; inset: 0; background: rgba(0,0,0,0.3); z-index: 1050; opacity: 0; pointer-events: none; transition: opacity 0.2s; }
     .as-customize-overlay--open { opacity: 1; pointer-events: auto; }
     .as-customize-panel { position: fixed; top: 0; right: -420px; width: 400px; height: 100vh; background: #ffffff; box-shadow: -4px 0 24px rgba(0,0,0,0.12); z-index: 1051; display: flex; flex-direction: column; transition: right 0.25s ease; }
-    .dark .as-customize-panel { background: #1e293b; }
+    .dark .as-customize-panel { background: #242424; }
     .as-customize-panel--open { right: 0; }
     .as-customize-panel__header { padding: 18px 20px; border-bottom: 1px solid rgba(128,128,128,0.12); display: flex; justify-content: space-between; align-items: center; flex-shrink: 0; }
     .as-customize-panel__header h3 { font-size: 16px; font-weight: 700; margin: 0; }
@@ -94,7 +94,7 @@
     @media (max-width: 640px) { .as-customize-panel { width: 100%; right: -100%; } }
 
     /* Period Picker */
-    .as-period-picker { display: none; /* DATE FILTER DISABLED */ align-items: center; gap: 6px; font-size: 12px; }
+    .as-period-picker { display: flex; align-items: center; gap: 6px; font-size: 12px; }
     .as-period-picker input[type="date"] { padding: 5px 8px; border-radius: 6px; border: 1px solid rgba(128,128,128,0.2); font-size: 12px; background: transparent; color: inherit; outline: none; transition: border-color 0.15s; }
     .as-period-picker input[type="date"]:focus { border-color: var(--as-indigo); }
     .as-period-picker__sep { opacity: 0.4; font-size: 11px; }
@@ -110,6 +110,12 @@
     @keyframes as-pulse { 0%, 100% { opacity: 1; } 50% { opacity: 0.3; } }
     .as-refresh__toggle { cursor: pointer; opacity: 0.6; font-size: 13px; border: none; background: none; color: inherit; padding: 2px; }
     .as-refresh__toggle:hover { opacity: 1; }
+    #chart-request-status .apexcharts-pie-slice-donut,
+    #chart-asset-status .apexcharts-pie-slice-donut,
+    #chart-value-category .apexcharts-pie-slice-donut,
+    #chart-dept-assets .apexcharts-pie-slice-donut,
+    #chart-by-category .apexcharts-bar-area,
+    #chart-age-dist .apexcharts-bar-area { cursor: pointer; }
 
 
     /* Responsive */
@@ -218,7 +224,7 @@
     const isDark = document.documentElement.classList.contains('dark') || document.body.classList.contains('dark');
     const textColor = isDark ? '#e2e8f0' : '#334155';
     const gridColor = isDark ? 'rgba(255,255,255,0.06)' : 'rgba(0,0,0,0.06)';
-    const cardBg = isDark ? '#1e293b' : '#ffffff';
+    const cardBg = isDark ? '#242424' : '#ffffff';
     const COLORS = ['#6366f1','#22c55e','#f59e0b','#ef4444','#3b82f6','#a855f7','#06b6d4','#ec4899','#14b8a6','#f97316'];
     const emptyHtml = (msg) => `<div class="as-empty"><img src="/static/images/ui/no_records.svg" alt="">${msg}</div>`;
     const fmt = v => Number(v).toLocaleString(undefined, { minimumFractionDigits: 0, maximumFractionDigits: 0 });
@@ -240,7 +246,7 @@
         fromInput.value = getFirstOfMonth(); toInput.value = getLastOfMonth();
     }
     function savePeriod() { sessionStorage.setItem(PERIOD_KEY, JSON.stringify({ from: fromInput.value, to: toInput.value })); }
-    function periodParams() { return ""; /* DATE FILTER DISABLED */ }
+    function periodParams() { const f = fromInput.value, t = toInput.value; return (f && t) ? ("from_date=" + encodeURIComponent(f) + "&to_date=" + encodeURIComponent(t)) : ""; }
     function urlWithPeriod(u) { return u + (u.includes('?') ? '&' : '?') + periodParams(); }
     function fetchP(url) { return fetch(urlWithPeriod(url)); }
     function setPreset(p) {
@@ -349,30 +355,31 @@
         .then(data => {
             document.getElementById('as-kpi-grid').innerHTML = `
                 <a href="{% url 'asset-category-view' %}" class="as-kpi-card">
-                    <div class="as-kpi-card__icon as-kpi-card__icon--blue">📦</div>
+                    <div class="as-kpi-card__icon as-kpi-card__icon--blue"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16Z"/><polyline points="3.27 6.96 12 12.01 20.73 6.96"/><line x1="12" y1="22.08" x2="12" y2="12"/></svg></div>
                     <div class="as-kpi-card__label">{% trans "Total Assets" %}</div>
                     <div class="as-kpi-card__value">${data.total_assets}</div>
                     <div class="as-kpi-card__sub"><span class="as-badge as-badge--green">${data.in_use} {% trans "in use" %}</span> <span class="as-badge as-badge--amber">${data.available} {% trans "available" %}</span></div>
                 </a>
                 <a href="{% url 'asset-request-allocation-view' %}" class="as-kpi-card">
-                    <div class="as-kpi-card__icon as-kpi-card__icon--amber">📋</div>
+                    <div class="as-kpi-card__icon as-kpi-card__icon--amber"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M16 4h2a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h2"/><rect x="8" y="2" width="8" height="4" rx="1" ry="1"/></svg></div>
                     <div class="as-kpi-card__label">{% trans "Pending Requests" %}</div>
                     <div class="as-kpi-card__value">${data.pending_requests}</div>
                     <div class="as-kpi-card__sub">${data.return_requests > 0 ? '<span class="as-badge as-badge--red">' + data.return_requests + ' {% trans "return req" %}</span>' : '{% trans "Awaiting approval" %}'}</div>
                 </a>
                 <a href="{% url 'asset-category-view' %}" class="as-kpi-card">
-                    <div class="as-kpi-card__icon as-kpi-card__icon--green">💰</div>
+                    <div class="as-kpi-card__icon as-kpi-card__icon--green"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="1" x2="12" y2="23"/><path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/></svg></div>
                     <div class="as-kpi-card__label">{% trans "Total Value" %}</div>
                     <div class="as-kpi-card__value">${fmt(data.total_value)}</div>
                     <div class="as-kpi-card__sub">{% trans "Purchase cost" %}</div>
                 </a>
                 <a href="{% url 'asset-category-view' %}" class="as-kpi-card">
-                    <div class="as-kpi-card__icon as-kpi-card__icon--red">⏰</div>
+                    <div class="as-kpi-card__icon as-kpi-card__icon--red"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg></div>
                     <div class="as-kpi-card__label">{% trans "Expiring Soon" %}</div>
                     <div class="as-kpi-card__value">${data.expiring_soon}</div>
                     <div class="as-kpi-card__sub">{% trans "Next 30 days" %}</div>
                 </a>`;
-        });
+        })
+        .catch(() => { document.getElementById('as-kpi-grid').innerHTML = emptyHtml('{% trans "Could not load KPIs" %}'); });
 
     // ─── ASSET STATUS ───
     fetchP("{% url 'asset-modern-status' %}")
@@ -382,7 +389,11 @@
             if (!total) { document.querySelector("#chart-asset-status").innerHTML = emptyHtml('{% trans "No assets" %}'); return; }
             new ApexCharts(document.querySelector("#chart-asset-status"), {
                 series: data.statuses.map(s => s.count),
-                chart: { type: 'donut', height: 300, background: 'transparent', fontFamily: 'inherit' },
+                chart: { type: 'donut', height: 300, background: 'transparent', fontFamily: 'inherit',
+                    events: { dataPointSelection: (e, ctx, config) => {
+                        window.location.href = "{% url 'asset-category-view' %}";
+                    }}
+                },
                 labels: data.statuses.map(s => s.label),
                 colors: ['#3b82f6', '#22c55e', '#94a3b8'],
                 plotOptions: { pie: { donut: { size: '65%', labels: { show: true, total: { show: true, label: '{% trans "Total" %}', color: textColor, fontSize: '13px', fontWeight: 600, formatter: w => w.globals.seriesTotals.reduce((a,b)=>a+b,0) } } } } },
@@ -390,7 +401,8 @@
                 legend: { position: 'bottom', labels: { colors: textColor }, fontSize: '11px', markers: { width: 8, height: 8, radius: 2 } },
                 tooltip: { theme: isDark ? 'dark' : 'light' },
             }).render();
-        });
+        })
+        .catch(() => { document.querySelector("#chart-asset-status").innerHTML = emptyHtml('{% trans "Could not load data" %}'); });
 
     // ─── REQUEST STATUS ───
     fetchP("{% url 'asset-modern-requests' %}")
@@ -403,7 +415,7 @@
                 chart: { type: 'donut', height: 300, background: 'transparent', fontFamily: 'inherit',
                     events: { dataPointSelection: (e, ctx, config) => {
                         const status = data.statuses[config.dataPointIndex].status;
-                        window.location.href = "{% url 'asset-request-allocation-view' %}?asset_request_status=" + status;
+                        window.location.href = "{% url 'asset-request-allocation-view' %}?asset_request_status=" + encodeURIComponent(status);
                     }}
                 },
                 labels: data.statuses.map(s => s.label),
@@ -413,7 +425,8 @@
                 legend: { position: 'bottom', labels: { colors: textColor }, fontSize: '11px', markers: { width: 8, height: 8, radius: 2 } },
                 tooltip: { theme: isDark ? 'dark' : 'light' },
             }).render();
-        });
+        })
+        .catch(() => { document.querySelector("#chart-request-status").innerHTML = emptyHtml('{% trans "Could not load data" %}'); });
 
     // ─── ASSETS BY CATEGORY ───
     fetchP("{% url 'asset-modern-category' %}")
@@ -425,7 +438,13 @@
                     { name: '{% trans "In Use" %}', data: data.categories.map(c => c.in_use) },
                     { name: '{% trans "Available" %}', data: data.categories.map(c => c.available) },
                 ],
-                chart: { type: 'bar', height: 300, toolbar: { show: false }, background: 'transparent', fontFamily: 'inherit', stacked: true },
+                chart: { type: 'bar', height: 300, toolbar: { show: false }, background: 'transparent', fontFamily: 'inherit', stacked: true,
+                    events: { dataPointSelection: (e, ctx, config) => {
+                        const cat = data.categories[config.dataPointIndex];
+                        const base = "{% url 'asset-category-view' %}";
+                        window.location.href = cat && cat.category ? base + "?search=" + encodeURIComponent(cat.category) : base;
+                    }}
+                },
                 colors: ['#3b82f6', '#22c55e'],
                 plotOptions: { bar: { borderRadius: 4, horizontal: true, barHeight: '55%' } },
                 xaxis: { categories: data.categories.map(c => c.category), labels: { style: { colors: textColor } } },
@@ -435,7 +454,8 @@
                 legend: { position: 'top', horizontalAlign: 'right', labels: { colors: textColor }, fontSize: '11px', markers: { width: 8, height: 8, radius: 2 } },
                 tooltip: { theme: isDark ? 'dark' : 'light' },
             }).render();
-        });
+        })
+        .catch(() => { document.querySelector("#chart-by-category").innerHTML = emptyHtml('{% trans "Could not load data" %}'); });
 
     // ─── VALUE BY CATEGORY ───
     fetchP("{% url 'asset-modern-value' %}")
@@ -444,7 +464,13 @@
             if (!data.categories.length) { document.querySelector("#chart-value-category").innerHTML = emptyHtml('{% trans "No data" %}'); return; }
             new ApexCharts(document.querySelector("#chart-value-category"), {
                 series: data.categories.map(c => c.value),
-                chart: { type: 'donut', height: 300, background: 'transparent', fontFamily: 'inherit' },
+                chart: { type: 'donut', height: 300, background: 'transparent', fontFamily: 'inherit',
+                    events: { dataPointSelection: (e, ctx, config) => {
+                        const cat = data.categories[config.dataPointIndex];
+                        const base = "{% url 'asset-category-view' %}";
+                        window.location.href = cat && cat.category ? base + "?search=" + encodeURIComponent(cat.category) : base;
+                    }}
+                },
                 labels: data.categories.map(c => c.category),
                 colors: COLORS.slice(0, data.categories.length),
                 plotOptions: { pie: { donut: { size: '65%', labels: { show: true, total: { show: true, label: '{% trans "Total" %}', color: textColor, fontSize: '12px', fontWeight: 600, formatter: w => fmt(w.globals.seriesTotals.reduce((a,b)=>a+b,0)) } } } } },
@@ -452,7 +478,8 @@
                 legend: { position: 'bottom', labels: { colors: textColor }, fontSize: '11px', markers: { width: 8, height: 8, radius: 2 } },
                 tooltip: { theme: isDark ? 'dark' : 'light', y: { formatter: (v, { seriesIndex: i }) => `${fmt(v)} (${data.categories[i].count} assets)` } },
             }).render();
-        });
+        })
+        .catch(() => { document.querySelector("#chart-value-category").innerHTML = emptyHtml('{% trans "Could not load data" %}'); });
 
     // ─── ASSETS BY DEPARTMENT ───
     fetchP("{% url 'asset-modern-dept' %}")
@@ -461,7 +488,13 @@
             if (!data.departments.length) { document.querySelector("#chart-dept-assets").innerHTML = emptyHtml('{% trans "No allocated assets" %}'); return; }
             new ApexCharts(document.querySelector("#chart-dept-assets"), {
                 series: data.departments.map(d => d.count),
-                chart: { type: 'donut', height: 300, background: 'transparent', fontFamily: 'inherit' },
+                chart: { type: 'donut', height: 300, background: 'transparent', fontFamily: 'inherit',
+                    events: { dataPointSelection: (e, ctx, config) => {
+                        const deptId = data.departments[config.dataPointIndex] && data.departments[config.dataPointIndex].department_id;
+                        const url = "{% url 'asset-request-allocation-view' %}";
+                        window.location.href = deptId ? url + "?assigned_to_employee_id__employee_work_info__department_id=" + deptId : url;
+                    }}
+                },
                 labels: data.departments.map(d => d.department),
                 colors: COLORS.slice(0, data.departments.length),
                 plotOptions: { pie: { donut: { size: '65%', labels: { show: true, total: { show: true, label: '{% trans "Total" %}', color: textColor, fontSize: '13px', fontWeight: 600, formatter: w => w.globals.seriesTotals.reduce((a,b)=>a+b,0) } } } } },
@@ -469,17 +502,22 @@
                 legend: { position: 'bottom', labels: { colors: textColor }, fontSize: '11px', markers: { width: 8, height: 8, radius: 2 } },
                 tooltip: { theme: isDark ? 'dark' : 'light' },
             }).render();
-        });
+        })
+        .catch(() => { document.querySelector("#chart-dept-assets").innerHTML = emptyHtml('{% trans "Could not load data" %}'); });
 
     // ─── ASSET AGE ───
-    fetch("{% url 'asset-modern-age' %}")
+    fetchP("{% url 'asset-modern-age' %}")
         .then(r => r.json())
         .then(data => {
             if (!data.brackets.length) { document.querySelector("#chart-age-dist").innerHTML = emptyHtml('{% trans "No purchase date data" %}'); return; }
             const ageColors = ['#22c55e', '#3b82f6', '#f59e0b', '#ef4444', '#94a3b8'];
             new ApexCharts(document.querySelector("#chart-age-dist"), {
                 series: [{ name: '{% trans "Assets" %}', data: data.brackets.map(b => b.count) }],
-                chart: { type: 'bar', height: 280, toolbar: { show: false }, background: 'transparent', fontFamily: 'inherit' },
+                chart: { type: 'bar', height: 280, toolbar: { show: false }, background: 'transparent', fontFamily: 'inherit',
+                    events: { dataPointSelection: (e, ctx, config) => {
+                        window.location.href = "{% url 'asset-category-view' %}";
+                    }}
+                },
                 colors: ageColors.slice(0, data.brackets.length),
                 plotOptions: { bar: { borderRadius: 6, columnWidth: '55%', distributed: true } },
                 xaxis: { categories: data.brackets.map(b => b.bracket), labels: { style: { colors: textColor, fontSize: '11px' } }, axisBorder: { show: false }, axisTicks: { show: false } },
@@ -489,10 +527,11 @@
                 legend: { show: false },
                 tooltip: { theme: isDark ? 'dark' : 'light' },
             }).render();
-        });
+        })
+        .catch(() => { document.querySelector("#chart-age-dist").innerHTML = emptyHtml('{% trans "Could not load data" %}'); });
 
     // ─── EXPIRING SOON ───
-    fetch("{% url 'asset-modern-expiring' %}")
+    fetchP("{% url 'asset-modern-expiring' %}")
         .then(r => r.json())
         .then(data => {
             const el = document.getElementById('as-expiring');
@@ -502,18 +541,18 @@
                 if (a.days_left <= 7) badge = `<span class="as-badge as-badge--red">${a.days_left}d</span>`;
                 else if (a.days_left <= 30) badge = `<span class="as-badge as-badge--amber">${a.days_left}d</span>`;
                 else badge = `<span class="as-badge as-badge--green">${a.days_left}d</span>`;
-                return `<div class="as-list-item">
+                return `<a href="/asset/asset-information/${a.id}/" class="as-list-item">
                     <div class="as-list-item__info">
                         <div class="as-list-item__name">${a.name}</div>
                         <div class="as-list-item__detail">${a.category} · ${a.tracking_id}</div>
                     </div>
                     <div class="as-list-item__badge">${badge}</div>
-                </div>`;
+                </a>`;
             }).join('');
         }).catch(() => { document.getElementById('as-expiring').innerHTML = '<div class="as-info-panel__empty">{% trans "No data" %}</div>'; });
 
     // ─── RECENT ALLOCATIONS ───
-    fetch("{% url 'asset-modern-allocations' %}")
+    fetchP("{% url 'asset-modern-allocations' %}")
         .then(r => r.json())
         .then(data => {
             const el = document.getElementById('as-allocations');
@@ -521,7 +560,7 @@
             el.innerHTML = data.allocations.map(a => {
                 const initials = a.employee.split(' ').map(w => w[0]).join('').slice(0, 2).toUpperCase();
                 const avatarInner = a.avatar ? `<img src="${a.avatar}" alt="">` : initials;
-                return `<a href="/employee/employee-view-individual/${a.id}/" class="as-list-item">
+                return `<a href="/employee/employee-view/${a.id}/" class="as-list-item">
                     <div class="as-list-item__avatar">${avatarInner}</div>
                     <div class="as-list-item__info">
                         <div class="as-list-item__name">${a.employee}</div>

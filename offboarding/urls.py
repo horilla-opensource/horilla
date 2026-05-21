@@ -250,11 +250,6 @@ urlpatterns = [
         name="offboarding-pipeline-filter",
     ),
     path(
-        "dashboard/",
-        views.offboarding_dashboard,
-        name="offboarding-dashboard",
-    ),
-    path(
         "dashboard-task-table/",
         views.dashboard_task_table,
         name="dashboard-task-table",

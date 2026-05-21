@@ -1,4 +1,4 @@
-{% extends "index.html" %}
+﻿{% extends "index.html" %}
 {% load static i18n %}
 
 {% block styles %}
@@ -6,7 +6,7 @@
 <style>
     :root { --hd-indigo: #6366f1; --hd-green: #22c55e; --hd-amber: #f59e0b; --hd-red: #ef4444; --hd-blue: #3b82f6; --hd-purple: #a855f7; }
     .hd-dashboard { font-family: inherit; background: #ffffff; margin: -24px; padding: 24px; min-height: calc(100vh - 80px); }
-    .dark .hd-dashboard { background: #0f172a; }
+    .dark .hd-dashboard { background: #000000; }
     .hd-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; }
     .hd-header h1 { font-size: 22px; font-weight: 700; }
     .hd-header__date { font-size: 13px; opacity: 0.6; margin-top: 2px; }
@@ -16,7 +16,7 @@
     .hd-kpi-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 14px; margin-bottom: 20px; }
     .hd-kpi-card { border-radius: 12px; padding: 18px; background: #ffffff; border: 1px solid rgba(128,128,128,0.12); transition: all 0.2s; text-decoration: none; color: inherit; display: block; }
     .hd-kpi-card:hover { box-shadow: 0 4px 12px rgba(0,0,0,0.08); transform: translateY(-1px); text-decoration: none; color: inherit; }
-    .dark .hd-kpi-card { background: rgba(255,255,255,0.04); border-color: rgba(255,255,255,0.08); }
+    .dark .hd-kpi-card { background: #242424; border-color: rgba(255,255,255,0.08); }
     .hd-kpi-card__icon { width: 38px; height: 38px; border-radius: 10px; display: flex; align-items: center; justify-content: center; font-size: 18px; margin-bottom: 10px; }
     .hd-kpi-card__icon--blue { background: #dbeafe; color: var(--hd-blue); } .hd-kpi-card__icon--amber { background: #fef3c7; color: var(--hd-amber); }
     .hd-kpi-card__icon--green { background: #dcfce7; color: var(--hd-green); } .hd-kpi-card__icon--red { background: #fee2e2; color: var(--hd-red); }
@@ -33,7 +33,7 @@
     .hd-main { min-width: 0; } .hd-sidebar { display: flex; flex-direction: column; gap: 16px; position: sticky; top: 90px; }
     .hd-chart-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 16px; margin-bottom: 20px; }
     .hd-chart-card { border-radius: 12px; background: #ffffff; border: 1px solid rgba(128,128,128,0.12); overflow: visible; }
-    .dark .hd-chart-card { background: rgba(255,255,255,0.04); border-color: rgba(255,255,255,0.08); }
+    .dark .hd-chart-card { background: #242424; border-color: rgba(255,255,255,0.08); }
     .hd-chart-card--wide { grid-column: span 2; }
     .hd-chart-card__header { padding: 14px 18px 0; display: flex; justify-content: space-between; align-items: center; }
     .hd-chart-card__title { font-size: 14px; font-weight: 600; }
@@ -45,7 +45,7 @@
     @keyframes hd-shimmer { 0% { background-position: 200% 0; } 100% { background-position: -200% 0; } }
     .hd-skeleton--kpi { height: 110px; }
     .hd-info-panel { border-radius: 12px; background: #ffffff; border: 1px solid rgba(128,128,128,0.12); overflow: hidden; display: flex; flex-direction: column; }
-    .dark .hd-info-panel { background: rgba(255,255,255,0.04); border-color: rgba(255,255,255,0.08); }
+    .dark .hd-info-panel { background: #242424; border-color: rgba(255,255,255,0.08); }
     .hd-info-panel__header { padding: 14px 16px 10px; display: flex; justify-content: space-between; align-items: center; flex-shrink: 0; border-bottom: 1px solid rgba(128,128,128,0.08); }
     .hd-info-panel__title { font-size: 13px; font-weight: 700; }
     .hd-info-panel__body { padding: 8px 16px 12px; overflow-y: auto; flex: 1; max-height: 350px; }
@@ -65,7 +65,7 @@
     .hd-customize-overlay { position: fixed; inset: 0; background: rgba(0,0,0,0.3); z-index: 1050; opacity: 0; pointer-events: none; transition: opacity 0.2s; }
     .hd-customize-overlay--open { opacity: 1; pointer-events: auto; }
     .hd-customize-panel { position: fixed; top: 0; right: -420px; width: 400px; height: 100vh; background: #ffffff; box-shadow: -4px 0 24px rgba(0,0,0,0.12); z-index: 1051; display: flex; flex-direction: column; transition: right 0.25s ease; }
-    .dark .hd-customize-panel { background: #1e293b; }
+    .dark .hd-customize-panel { background: #242424; }
     .hd-customize-panel--open { right: 0; }
     .hd-customize-panel__header { padding: 18px 20px; border-bottom: 1px solid rgba(128,128,128,0.12); display: flex; justify-content: space-between; align-items: center; flex-shrink: 0; }
     .hd-customize-panel__header h3 { font-size: 16px; font-weight: 700; margin: 0; }
@@ -94,7 +94,7 @@
     @media (max-width: 640px) { .hd-customize-panel { width: 100%; right: -100%; } }
 
     /* Period Picker */
-    .hd-period-picker { display: none; /* DATE FILTER DISABLED */ align-items: center; gap: 6px; font-size: 12px; }
+    .hd-period-picker { display: flex; align-items: center; gap: 6px; font-size: 12px; }
     .hd-period-picker input[type="date"] { padding: 5px 8px; border-radius: 6px; border: 1px solid rgba(128,128,128,0.2); font-size: 12px; background: transparent; color: inherit; outline: none; transition: border-color 0.15s; }
     .hd-period-picker input[type="date"]:focus { border-color: var(--hd-indigo); }
     .hd-period-picker__sep { opacity: 0.4; font-size: 11px; }
@@ -110,6 +110,13 @@
     @keyframes hd-pulse { 0%, 100% { opacity: 1; } 50% { opacity: 0.3; } }
     .hd-refresh__toggle { cursor: pointer; opacity: 0.6; font-size: 13px; border: none; background: none; color: inherit; padding: 2px; }
     .hd-refresh__toggle:hover { opacity: 1; }
+    #chart-hd-status .apexcharts-pie-slice-donut,
+    #chart-hd-workload .apexcharts-bar-area,
+    #chart-hd-trend .apexcharts-bar-area,
+    #chart-hd-priority .apexcharts-bar-area,
+    #chart-hd-dept .apexcharts-bar-area,
+    #chart-hd-status .apexcharts-pie-slice-donut,
+    #chart-hd-type .apexcharts-pie-slice-donut { cursor: pointer; }
 
 
     /* Responsive */
@@ -223,7 +230,7 @@
     const isDark = document.documentElement.classList.contains('dark') || document.body.classList.contains('dark');
     const textColor = isDark ? '#e2e8f0' : '#334155';
     const gridColor = isDark ? 'rgba(255,255,255,0.06)' : 'rgba(0,0,0,0.06)';
-    const cardBg = isDark ? '#1e293b' : '#ffffff';
+    const cardBg = isDark ? '#242424' : '#ffffff';
     const COLORS = ['#6366f1','#22c55e','#f59e0b','#ef4444','#3b82f6','#a855f7','#06b6d4','#ec4899','#14b8a6','#f97316'];
     const statusColors = { new: '#3b82f6', in_progress: '#f59e0b', on_hold: '#ef4444', resolved: '#22c55e', canceled: '#94a3b8' };
     const priorityColors = { low: '#22c55e', medium: '#f59e0b', high: '#ef4444' };
@@ -246,7 +253,7 @@
         fromInput.value = getFirstOfMonth(); toInput.value = getLastOfMonth();
     }
     function savePeriod() { sessionStorage.setItem(PERIOD_KEY, JSON.stringify({ from: fromInput.value, to: toInput.value })); }
-    function periodParams() { return ""; /* DATE FILTER DISABLED */ }
+    function periodParams() { const f = fromInput.value, t = toInput.value; return (f && t) ? ("from_date=" + encodeURIComponent(f) + "&to_date=" + encodeURIComponent(t)) : ""; }
     function urlWithPeriod(u) { return u + (u.includes('?') ? '&' : '?') + periodParams(); }
     function fetchP(url) { return fetch(urlWithPeriod(url)); }
     function setPreset(p) {
@@ -355,25 +362,25 @@
         .then(data => {
             document.getElementById('hd-kpi-grid').innerHTML = `
                 <a href="{% url 'ticket-view' %}" class="hd-kpi-card">
-                    <div class="hd-kpi-card__icon hd-kpi-card__icon--blue">🎫</div>
+                    <div class="hd-kpi-card__icon hd-kpi-card__icon--blue"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M2 9a3 3 0 0 1 0 6v2a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2v-2a3 3 0 0 1 0-6V7a2 2 0 0 0-2-2H4a2 2 0 0 0-2 2Z"/><path d="M13 5v2"/><path d="M13 17v2"/><path d="M13 11v2"/></svg></div>
                     <div class="hd-kpi-card__label">{% trans "Open Tickets" %}</div>
                     <div class="hd-kpi-card__value">${data.open_tickets}</div>
                     <div class="hd-kpi-card__sub"><span class="hd-badge hd-badge--amber">${data.new_tickets} {% trans "new" %}</span> ${data.in_progress} {% trans "in progress" %}</div>
                 </a>
                 <a href="{% url 'ticket-view' %}" class="hd-kpi-card">
-                    <div class="hd-kpi-card__icon hd-kpi-card__icon--green">✓</div>
+                    <div class="hd-kpi-card__icon hd-kpi-card__icon--green"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg></div>
                     <div class="hd-kpi-card__label">{% trans "Resolution Rate" %}</div>
                     <div class="hd-kpi-card__value">${data.resolution_rate}%</div>
                     <div class="hd-kpi-card__sub">${data.resolved} {% trans "resolved of" %} ${data.total_tickets}</div>
                 </a>
                 <a href="{% url 'ticket-view' %}" class="hd-kpi-card">
-                    <div class="hd-kpi-card__icon hd-kpi-card__icon--red">⚠</div>
+                    <div class="hd-kpi-card__icon hd-kpi-card__icon--red"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10.29 3.86 1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg></div>
                     <div class="hd-kpi-card__label">{% trans "Overdue" %}</div>
                     <div class="hd-kpi-card__value">${data.overdue}</div>
                     <div class="hd-kpi-card__sub">${data.on_hold > 0 ? '<span class="hd-badge hd-badge--red">' + data.on_hold + ' {% trans "on hold" %}</span>' : '{% trans "Past deadline" %}'}</div>
                 </a>
                 <a href="{% url 'ticket-view' %}" class="hd-kpi-card">
-                    <div class="hd-kpi-card__icon hd-kpi-card__icon--amber">⏱</div>
+                    <div class="hd-kpi-card__icon hd-kpi-card__icon--amber"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg></div>
                     <div class="hd-kpi-card__label">{% trans "Avg Resolution" %}</div>
                     <div class="hd-kpi-card__value">${data.avg_resolution_days !== null ? data.avg_resolution_days + 'd' : '—'}</div>
                     <div class="hd-kpi-card__sub">${data.pending_claims > 0 ? '<span class="hd-badge hd-badge--amber">' + data.pending_claims + ' {% trans "claims pending" %}</span>' : '{% trans "Days to resolve" %}'}</div>
@@ -391,7 +398,7 @@
                 chart: { type: 'donut', height: 300, background: 'transparent', fontFamily: 'inherit',
                     events: { dataPointSelection: (e, ctx, config) => {
                         const status = data.statuses[config.dataPointIndex].status;
-                        window.location.href = "{% url 'ticket-view' %}";
+                        window.location.href = "{% url 'ticket-view' %}?ticket_tab=all_tickets&status=" + encodeURIComponent(status);
                     }}
                 },
                 labels: data.statuses.map(s => s.label),
@@ -411,7 +418,12 @@
             if (!total) { document.querySelector("#chart-hd-priority").innerHTML = emptyHtml('{% trans "No tickets" %}'); return; }
             new ApexCharts(document.querySelector("#chart-hd-priority"), {
                 series: [{ name: '{% trans "Tickets" %}', data: data.priorities.map(p => p.count) }],
-                chart: { type: 'bar', height: 300, toolbar: { show: false }, background: 'transparent', fontFamily: 'inherit' },
+                chart: { type: 'bar', height: 300, toolbar: { show: false }, background: 'transparent', fontFamily: 'inherit',
+                    events: { dataPointSelection: (e, ctx, config) => {
+                        const p = data.priorities[config.dataPointIndex];
+                        if (p && p.priority) window.location.href = "{% url 'ticket-view' %}?ticket_tab=all_tickets&priority=" + encodeURIComponent(p.priority);
+                    }}
+                },
                 colors: data.priorities.map(p => priorityColors[p.priority] || '#94a3b8'),
                 plotOptions: { bar: { borderRadius: 8, columnWidth: '50%', distributed: true } },
                 xaxis: { categories: data.priorities.map(p => p.label), labels: { style: { colors: textColor, fontSize: '12px' } }, axisBorder: { show: false }, axisTicks: { show: false } },
@@ -430,7 +442,13 @@
             if (!data.types.length) { document.querySelector("#chart-hd-type").innerHTML = emptyHtml('{% trans "No tickets" %}'); return; }
             new ApexCharts(document.querySelector("#chart-hd-type"), {
                 series: data.types.map(t => t.count),
-                chart: { type: 'donut', height: 300, background: 'transparent', fontFamily: 'inherit' },
+                chart: { type: 'donut', height: 300, background: 'transparent', fontFamily: 'inherit',
+                    events: { dataPointSelection: (e, ctx, config) => {
+                        const t = data.types[config.dataPointIndex];
+                        const base = "{% url 'ticket-view' %}?ticket_tab=all_tickets";
+                        window.location.href = t && t.id ? base + "&ticket_type=" + t.id : base;
+                    }}
+                },
                 labels: data.types.map(t => t.type),
                 colors: COLORS.slice(0, data.types.length),
                 plotOptions: { pie: { donut: { size: '65%', labels: { show: true, total: { show: true, label: '{% trans "Total" %}', color: textColor, fontSize: '13px', fontWeight: 600, formatter: w => w.globals.seriesTotals.reduce((a,b)=>a+b,0) } } } } },
@@ -447,7 +465,13 @@
             if (!data.departments.length) { document.querySelector("#chart-hd-dept").innerHTML = emptyHtml('{% trans "No data" %}'); return; }
             new ApexCharts(document.querySelector("#chart-hd-dept"), {
                 series: [{ name: '{% trans "Tickets" %}', data: data.departments.map(d => d.count) }],
-                chart: { type: 'bar', height: 300, toolbar: { show: false }, background: 'transparent', fontFamily: 'inherit' },
+                chart: { type: 'bar', height: 300, toolbar: { show: false }, background: 'transparent', fontFamily: 'inherit',
+                    events: { dataPointSelection: (e, ctx, config) => {
+                        const d = data.departments[config.dataPointIndex];
+                        const base = "{% url 'ticket-view' %}?ticket_tab=all_tickets";
+                        window.location.href = d && d.id ? base + "&department=" + d.id : base;
+                    }}
+                },
                 colors: COLORS,
                 plotOptions: { bar: { borderRadius: 6, horizontal: true, barHeight: '55%', distributed: true } },
                 xaxis: { categories: data.departments.map(d => d.department), labels: { style: { colors: textColor } } },
@@ -469,7 +493,18 @@
                     { name: '{% trans "Created" %}', data: data.months.map(m => m.created) },
                     { name: '{% trans "Resolved" %}', data: data.months.map(m => m.resolved) },
                 ],
-                chart: { type: 'bar', height: 280, toolbar: { show: false }, background: 'transparent', fontFamily: 'inherit' },
+                chart: { type: 'bar', height: 280, toolbar: { show: false }, background: 'transparent', fontFamily: 'inherit',
+                    events: { dataPointSelection: (e, ctx, config) => {
+                        const m = data.months[config.dataPointIndex];
+                        const base = "{% url 'ticket-view' %}?ticket_tab=all_tickets";
+                        if (!m || !m.from_date) { window.location.href = base; return; }
+                        if (config.seriesIndex === 1) {
+                            window.location.href = base + "&status=resolved&resolved_date__gte=" + m.from_date + "&resolved_date__lte=" + m.to_date;
+                        } else {
+                            window.location.href = base + "&created_date__gte=" + m.from_date + "&created_date__lte=" + m.to_date;
+                        }
+                    }}
+                },
                 colors: ['#3b82f6', '#22c55e'],
                 plotOptions: { bar: { borderRadius: 5, columnWidth: '55%' } },
                 xaxis: { categories: data.months.map(m => m.month), labels: { style: { colors: textColor, fontSize: '11px' } }, axisBorder: { show: false }, axisTicks: { show: false } },
@@ -485,15 +520,22 @@
     fetchP("{% url 'helpdesk-modern-sla' %}")
         .then(r => r.json())
         .then(data => {
-            if (data.total_with_deadline === 0) { document.querySelector("#chart-hd-sla").innerHTML = emptyHtml('{% trans "No tickets with deadlines" %}'); return; }
-            new ApexCharts(document.querySelector("#chart-hd-sla"), {
+            const slaEl = document.querySelector("#chart-hd-sla");
+            if (data.total_with_deadline === 0) { slaEl.innerHTML = emptyHtml('{% trans "No tickets with deadlines" %}'); return; }
+            new ApexCharts(slaEl, {
                 series: [data.compliance_rate],
-                chart: { type: 'radialBar', height: 300, background: 'transparent', fontFamily: 'inherit' },
+                chart: { type: 'radialBar', height: 300, background: 'transparent', fontFamily: 'inherit',
+                    events: {
+                        click: () => { window.location.href = "{% url 'ticket-view' %}?ticket_tab=all_tickets&status=resolved"; },
+                    },
+                },
                 colors: [data.compliance_rate >= 90 ? '#22c55e' : data.compliance_rate >= 70 ? '#f59e0b' : '#ef4444'],
                 plotOptions: { radialBar: { hollow: { size: '60%' }, track: { background: isDark ? '#334155' : '#f1f5f9' }, dataLabels: { name: { fontSize: '13px', color: textColor, offsetY: -10 }, value: { fontSize: '28px', fontWeight: 800, color: textColor, formatter: v => v + '%' } } } },
                 labels: ['{% trans "SLA Compliance" %}'],
                 subtitle: { text: `${data.resolved_on_time} {% trans "on time" %} · ${data.resolved_late} {% trans "late" %} · ${data.open_overdue} {% trans "overdue" %}`, align: 'center', style: { fontSize: '11px', color: textColor }, offsetY: 280 },
             }).render();
+            slaEl.style.cursor = 'pointer';
+            slaEl.addEventListener('click', () => { window.location.href = "{% url 'ticket-view' %}?ticket_tab=all_tickets&status=resolved"; });
         });
 
     // ─── ASSIGNEE WORKLOAD ───
@@ -505,7 +547,11 @@
                 series: [{ name: '{% trans "Tickets" %}', data: data.assignees.map(a => a.count) }],
                 chart: { type: 'bar', height: 300, toolbar: { show: false }, background: 'transparent', fontFamily: 'inherit',
                     events: { dataPointSelection: (e, ctx, config) => {
-                        window.location.href = "{% url 'ticket-view' %}";
+                        const assignee = data.assignees[config.dataPointIndex];
+                        const url = assignee && assignee.id
+                            ? "{% url 'ticket-view' %}?ticket_tab=all_tickets&assigned_to=" + assignee.id
+                            : "{% url 'ticket-view' %}?ticket_tab=all_tickets";
+                        window.location.href = url;
                     }}
                 },
                 colors: data.assignees.map(a => a.count > 10 ? '#ef4444' : a.count > 5 ? '#f59e0b' : '#22c55e'),
@@ -520,13 +566,13 @@
         });
 
     // ─── OVERDUE TICKETS ───
-    fetch("{% url 'helpdesk-modern-overdue' %}")
+    fetchP("{% url 'helpdesk-modern-overdue' %}")
         .then(r => r.json())
         .then(data => {
             const el = document.getElementById('hd-overdue');
             if (!data.tickets.length) { el.innerHTML = '<div class="hd-info-panel__empty">{% trans "No overdue tickets" %}</div>'; return; }
             el.innerHTML = data.tickets.map(t => `
-                <a href="{% url 'ticket-view' %}" class="hd-ticket-item">
+                <a href="/helpdesk/ticket-detail/${t.id}/" class="hd-ticket-item">
                     <div class="hd-priority-dot hd-priority-dot--${t.priority}"></div>
                     <div class="hd-ticket-item__info">
                         <div class="hd-ticket-item__title">${t.title}</div>
@@ -537,7 +583,7 @@
         }).catch(() => { document.getElementById('hd-overdue').innerHTML = '<div class="hd-info-panel__empty">{% trans "No data" %}</div>'; });
 
     // ─── RECENT TICKETS ───
-    fetch("{% url 'helpdesk-modern-recent' %}")
+    fetchP("{% url 'helpdesk-modern-recent' %}")
         .then(r => r.json())
         .then(data => {
             const el = document.getElementById('hd-recent');
@@ -545,7 +591,7 @@
             const sc = { new: 'hd-badge--amber', in_progress: 'hd-badge--amber', on_hold: 'hd-badge--red', resolved: 'hd-badge--green', canceled: '' };
             const sl = { new: '{% trans "New" %}', in_progress: '{% trans "In Progress" %}', on_hold: '{% trans "On Hold" %}', resolved: '{% trans "Resolved" %}', canceled: '{% trans "Canceled" %}' };
             el.innerHTML = data.tickets.map(t => `
-                <a href="{% url 'ticket-view' %}" class="hd-ticket-item">
+                <a href="/helpdesk/ticket-detail/${t.id}/" class="hd-ticket-item">
                     <div class="hd-priority-dot hd-priority-dot--${t.priority}"></div>
                     <div class="hd-ticket-item__info">
                         <div class="hd-ticket-item__title">${t.title}</div>

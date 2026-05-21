@@ -304,7 +304,7 @@ urlpatterns = [
         asset_category.AssetReportFormView.as_view(),
         name="add-asset-report",
     ),
-    path("dashboard/", views.asset_dashboard, name="asset-dashboard"),
+    path("dashboard/", asset_dashboard_modern.modern_asset_dashboard, name="asset-dashboard"),
     path(
         "asset-dashboard-requests/",
         views.asset_dashboard_requests,
@@ -430,11 +430,6 @@ urlpatterns = [
         name="dashboard-allocated-asset",
     ),
     # ── Asset Modern Dashboard ───────────────────────────────────────────────
-    path(
-        "dashboard/",
-        asset_dashboard_modern.modern_asset_dashboard,
-        name="asset-modern-dashboard",
-    ),
     path(
         "dashboard/api/kpi/",
         asset_dashboard_modern.asset_kpi_data,

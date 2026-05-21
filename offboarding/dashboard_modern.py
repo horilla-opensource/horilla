@@ -37,28 +37,42 @@ def modern_offboarding_dashboard(request):
 
 @login_required
 def offboarding_kpi_data(request):
-    """Return offboarding KPI summary data as JSON."""
+    """Return offboarding KPI summary data as JSON.
+
+    Total offboardings and resignation counts reflect the picker range.
+    Current-state KPIs (active offboardings, headcount, notice ending) ignore it.
+    """
     from employee.models import Employee
     from offboarding.models import EmployeeTask, OffboardingEmployee, ResignationLetter
 
+    from_date, to_date = _parse_period(request)
+    period_offboardings = OffboardingEmployee.objects.filter(
+        created_at__date__gte=from_date,
+        created_at__date__lte=to_date,
+    )
+    period_resignations = ResignationLetter.objects.filter(
+        created_at__date__gte=from_date,
+        created_at__date__lte=to_date,
+    )
+
     employees = Employee.objects.filter(is_active=True).count()
-    total_offboarding = OffboardingEmployee.objects.all().count()
-    archived = OffboardingEmployee.objects.filter(stage_id__type="archived").count()
+    total_offboarding = period_offboardings.count()
+    archived = period_offboardings.filter(stage_id__type="archived").count()
 
     exit_ratio = round((archived / employees * 100), 1) if employees > 0 else 0
 
-    # Resignation stats
-    pending_resignations = ResignationLetter.objects.filter(status="requested").count()
-    approved_resignations = ResignationLetter.objects.filter(status="approved").count()
+    # Resignation stats (in period)
+    pending_resignations = period_resignations.filter(status="requested").count()
+    approved_resignations = period_resignations.filter(status="approved").count()
 
-    # Task completion
+    # Task completion (current state across all offboardings)
     total_tasks = EmployeeTask.objects.all().count()
     completed_tasks = EmployeeTask.objects.filter(status="completed").count()
     task_completion = (
         round((completed_tasks / total_tasks * 100), 1) if total_tasks > 0 else 0
     )
 
-    # Active offboarding (not archived)
+    # Active offboarding (current state, not archived)
     active_offboarding = OffboardingEmployee.objects.exclude(
         stage_id__type="archived"
     ).count()
@@ -93,15 +107,20 @@ def offboarding_kpi_data(request):
 
 @login_required
 def offboarding_pipeline(request):
-    """Employees grouped by offboarding stage."""
+    """Employees grouped by offboarding stage (offboardings opened within the selected period)."""
     from offboarding.models import OffboardingEmployee, OffboardingStage
 
+    from_date, to_date = _parse_period(request)
     stages = []
 
     try:
         stage_qs = OffboardingStage.objects.all().order_by("sequence")
         for stage in stage_qs:
-            count = OffboardingEmployee.objects.filter(stage_id=stage).count()
+            count = OffboardingEmployee.objects.filter(
+                stage_id=stage,
+                created_at__date__gte=from_date,
+                created_at__date__lte=to_date,
+            ).count()
             stages.append(
                 {
                     "stage": stage.title,
@@ -117,24 +136,29 @@ def offboarding_pipeline(request):
 
 @login_required
 def offboarding_resignation_status(request):
-    """Resignation letter status breakdown."""
+    """Resignation letter status breakdown for letters created within the selected period."""
     from offboarding.models import ResignationLetter
 
+    from_date, to_date = _parse_period(request)
+    base = ResignationLetter.objects.filter(
+        created_at__date__gte=from_date,
+        created_at__date__lte=to_date,
+    )
     statuses = [
         {
             "status": "requested",
             "label": "Requested",
-            "count": ResignationLetter.objects.filter(status="requested").count(),
+            "count": base.filter(status="requested").count(),
         },
         {
             "status": "approved",
             "label": "Approved",
-            "count": ResignationLetter.objects.filter(status="approved").count(),
+            "count": base.filter(status="approved").count(),
         },
         {
             "status": "rejected",
             "label": "Rejected",
-            "count": ResignationLetter.objects.filter(status="rejected").count(),
+            "count": base.filter(status="rejected").count(),
         },
     ]
 
@@ -143,12 +167,17 @@ def offboarding_resignation_status(request):
 
 @login_required
 def offboarding_task_status(request):
-    """Task completion status breakdown."""
+    """Task completion status for tasks created within the selected period."""
     from offboarding.models import EmployeeTask
 
+    from_date, to_date = _parse_period(request)
+    base = EmployeeTask.objects.filter(
+        created_at__date__gte=from_date,
+        created_at__date__lte=to_date,
+    )
     statuses = []
     for status, label in EmployeeTask.statuses:
-        count = EmployeeTask.objects.filter(status=status).count()
+        count = base.filter(status=status).count()
         statuses.append({"status": status, "label": str(label), "count": count})
 
     return JsonResponse({"statuses": statuses})
@@ -156,25 +185,34 @@ def offboarding_task_status(request):
 
 @login_required
 def offboarding_department_attrition(request):
-    """Offboarding count by department."""
+    """Offboarding count by department (offboardings opened within the selected period)."""
     from offboarding.models import OffboardingEmployee
 
+    from_date, to_date = _parse_period(request)
     departments = []
 
     try:
         data = (
-            OffboardingEmployee.objects.all()
-            .values("employee_id__employee_work_info__department_id__department")
+            OffboardingEmployee.objects.filter(
+                created_at__date__gte=from_date,
+                created_at__date__lte=to_date,
+            )
+            .values(
+                "employee_id__employee_work_info__department_id",
+                "employee_id__employee_work_info__department_id__department",
+            )
             .annotate(count=Count("id"))
             .order_by("-count")
         )
 
         for item in data:
             dept = item["employee_id__employee_work_info__department_id__department"]
+            dept_id = item["employee_id__employee_work_info__department_id"]
             if dept:
                 departments.append(
                     {
                         "department": dept,
+                        "dept_id": dept_id,
                         "count": item["count"],
                     }
                 )
@@ -186,14 +224,18 @@ def offboarding_department_attrition(request):
 
 @login_required
 def offboarding_exit_reasons(request):
-    """Exit reasons breakdown."""
+    """Exit reasons breakdown for reasons logged within the selected period."""
     from offboarding.models import ExitReason
 
+    from_date, to_date = _parse_period(request)
     reasons = []
 
     try:
         data = (
-            ExitReason.objects.all()
+            ExitReason.objects.filter(
+                created_at__date__gte=from_date,
+                created_at__date__lte=to_date,
+            )
             .values("title")
             .annotate(count=Count("id"))
             .order_by("-count")
@@ -214,9 +256,10 @@ def offboarding_exit_reasons(request):
 
 @login_required
 def offboarding_notice_period_tracker(request):
-    """Employees with active notice periods."""
+    """Employees with notice periods overlapping the selected period."""
     from offboarding.models import OffboardingEmployee
 
+    from_date, to_date = _parse_period(request)
     today = date.today()
     employees = []
 
@@ -224,6 +267,8 @@ def offboarding_notice_period_tracker(request):
         qs = (
             OffboardingEmployee.objects.filter(
                 notice_period_ends__isnull=False,
+                notice_period_starts__lte=to_date,
+                notice_period_ends__gte=from_date,
             )
             .exclude(stage_id__type="archived")
             .select_related("employee_id", "stage_id")
@@ -270,7 +315,8 @@ def offboarding_notice_period_tracker(request):
 
 @login_required
 def offboarding_unreturned_assets(request):
-    """Unreturned assets from offboarding employees."""
+    """Unreturned assets from employees offboarded within the selected period."""
+    from_date, to_date = _parse_period(request)
     assets = []
 
     try:
@@ -278,9 +324,10 @@ def offboarding_unreturned_assets(request):
             from asset.models import AssetAssignment
             from offboarding.models import OffboardingEmployee
 
-            offboarding_emp_ids = OffboardingEmployee.objects.values_list(
-                "employee_id", flat=True
-            )
+            offboarding_emp_ids = OffboardingEmployee.objects.filter(
+                created_at__date__gte=from_date,
+                created_at__date__lte=to_date,
+            ).values_list("employee_id", flat=True)
 
             qs = AssetAssignment.objects.filter(
                 assigned_to_employee_id__in=offboarding_emp_ids,
@@ -295,7 +342,7 @@ def offboarding_unreturned_assets(request):
                         "employee": emp.get_full_name() if emp else "—",
                         "asset": aa.asset_id.asset_name if aa.asset_id else "—",
                         "category": (
-                            aa.asset_id.asset_category_id.asset_category
+                            aa.asset_id.asset_category_id.asset_category_name
                             if aa.asset_id and aa.asset_id.asset_category_id
                             else "—"
                         ),
@@ -309,25 +356,22 @@ def offboarding_unreturned_assets(request):
 
 @login_required
 def offboarding_joining_vs_exiting(request):
-    """Monthly joining vs exiting trend for the last 6 months."""
+    """Monthly joining vs exiting trend within the selected period."""
     from employee.models import EmployeeWorkInformation
     from offboarding.models import ResignationLetter
 
-    _, to_date = _parse_period(request)
-    today = to_date
+    from_date, to_date = _parse_period(request)
     months = []
 
-    for i in range(5, -1, -1):
-        month_date = today.replace(day=1) - timedelta(days=i * 30)
-        month_start = month_date.replace(day=1)
-        if month_start.month == 12:
-            month_end = month_start.replace(
-                year=month_start.year + 1, month=1
-            ) - timedelta(days=1)
+    cursor = from_date.replace(day=1)
+    end_marker = to_date.replace(day=1)
+    while cursor <= end_marker:
+        if cursor.month == 12:
+            next_month = date(cursor.year + 1, 1, 1)
         else:
-            month_end = month_start.replace(month=month_start.month + 1) - timedelta(
-                days=1
-            )
+            next_month = date(cursor.year, cursor.month + 1, 1)
+        month_start = cursor
+        month_end = next_month - timedelta(days=1)
 
         joining = EmployeeWorkInformation.objects.filter(
             date_joining__gte=month_start,
@@ -345,24 +389,30 @@ def offboarding_joining_vs_exiting(request):
                 "month": month_start.strftime("%b %Y"),
                 "joining": joining,
                 "exiting": exiting,
+                "from_date": month_start.isoformat(),
+                "to_date": month_end.isoformat(),
             }
         )
+        cursor = next_month
 
     return JsonResponse({"months": months})
 
 
 @login_required
 def offboarding_avg_duration(request):
-    """Average offboarding duration from notice start to archived."""
+    """Average offboarding duration for offboardings archived within the selected period."""
     from offboarding.models import OffboardingEmployee
 
+    from_date, to_date = _parse_period(request)
     avg_days = None
+    durations = []
     try:
         archived = OffboardingEmployee.objects.filter(
             stage_id__type="archived",
             notice_period_starts__isnull=False,
+            notice_period_ends__gte=from_date,
+            notice_period_ends__lte=to_date,
         )
-        durations = []
         for oe in archived:
             if oe.notice_period_ends and oe.notice_period_starts:
                 delta = (oe.notice_period_ends - oe.notice_period_starts).days
@@ -375,6 +425,6 @@ def offboarding_avg_duration(request):
     return JsonResponse(
         {
             "avg_days": avg_days,
-            "total_archived": len(durations) if "durations" in dir() else 0,
+            "total_archived": len(durations),
         }
     )

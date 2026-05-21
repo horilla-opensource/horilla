@@ -29,6 +29,14 @@ def _parse_period(request):
     return from_date, to_date
 
 
+def _period_overlap(qs, request, start_field="start_date", end_field="end_date"):
+    """Restrict a queryset to rows whose [start, end] overlaps the requested period."""
+    from_date, to_date = _parse_period(request)
+    return qs.filter(
+        **{f"{start_field}__lte": to_date, f"{end_field}__gte": from_date}
+    )
+
+
 @login_required
 def modern_pms_dashboard(request):
     """Render the modern PMS dashboard page."""
@@ -37,31 +45,37 @@ def modern_pms_dashboard(request):
 
 @login_required
 def pms_kpi_data(request):
-    """Return PMS KPI summary data as JSON."""
+    """Return PMS KPI summary data as JSON, scoped to objectives/feedback active in the picker range."""
     from pms.models import EmployeeKeyResult, EmployeeObjective, Feedback
 
-    total_objectives = EmployeeObjective.objects.filter(archive=False).count()
-    total_key_results = EmployeeKeyResult.objects.all().count()
-    total_feedbacks = Feedback.objects.filter(archive=False).count()
+    objectives = _period_overlap(
+        EmployeeObjective.objects.filter(archive=False), request
+    )
+    key_results = _period_overlap(EmployeeKeyResult.objects.all(), request)
+    feedbacks = _period_overlap(Feedback.objects.filter(archive=False), request)
+
+    total_objectives = objectives.count()
+    total_key_results = key_results.count()
+    total_feedbacks = feedbacks.count()
 
     # Average progress
-    avg_progress = EmployeeObjective.objects.filter(archive=False).aggregate(
+    avg_progress = objectives.aggregate(
         avg=Coalesce(Avg("progress_percentage"), 0.0, output_field=FloatField())
     )["avg"]
 
     # At-risk count
-    at_risk = EmployeeObjective.objects.filter(archive=False, status="At Risk").count()
+    at_risk = objectives.filter(status="At Risk").count()
 
     # Closed objectives
-    closed = EmployeeObjective.objects.filter(archive=False, status="Closed").count()
+    closed = objectives.filter(status="Closed").count()
 
     completion_rate = (
         round((closed / total_objectives * 100), 1) if total_objectives > 0 else 0
     )
 
     # Pending feedback (not started + on track)
-    pending_feedback = Feedback.objects.filter(
-        archive=False, status__in=["Not Started", "On Track"]
+    pending_feedback = feedbacks.filter(
+        status__in=["Not Started", "On Track"]
     ).count()
 
     return JsonResponse(
@@ -80,13 +94,16 @@ def pms_kpi_data(request):
 
 @login_required
 def pms_objective_status(request):
-    """Objective status distribution."""
+    """Objective status distribution for objectives active in the picker range."""
     from pms.models import EmployeeObjective
 
+    objectives = _period_overlap(
+        EmployeeObjective.objects.filter(archive=False), request
+    )
     statuses = []
 
     for status, label in EmployeeObjective.STATUS_CHOICES:
-        count = EmployeeObjective.objects.filter(archive=False, status=status).count()
+        count = objectives.filter(status=status).count()
         statuses.append({"status": status, "label": str(label), "count": count})
 
     return JsonResponse({"statuses": statuses})
@@ -94,13 +111,14 @@ def pms_objective_status(request):
 
 @login_required
 def pms_key_result_status(request):
-    """Key result status distribution."""
+    """Key result status distribution for KRs active in the picker range."""
     from pms.models import EmployeeKeyResult
 
+    key_results = _period_overlap(EmployeeKeyResult.objects.all(), request)
     statuses = []
 
     for status, label in EmployeeKeyResult.STATUS_CHOICES:
-        count = EmployeeKeyResult.objects.filter(status=status).count()
+        count = key_results.filter(status=status).count()
         statuses.append({"status": status, "label": str(label), "count": count})
 
     return JsonResponse({"statuses": statuses})
@@ -108,13 +126,14 @@ def pms_key_result_status(request):
 
 @login_required
 def pms_feedback_status(request):
-    """Feedback status distribution."""
+    """Feedback status distribution for feedback active in the picker range."""
     from pms.models import Feedback
 
+    feedbacks = _period_overlap(Feedback.objects.filter(archive=False), request)
     statuses = []
 
     for status, label in Feedback.STATUS_CHOICES:
-        count = Feedback.objects.filter(archive=False, status=status).count()
+        count = feedbacks.filter(status=status).count()
         statuses.append({"status": status, "label": str(label), "count": count})
 
     return JsonResponse({"statuses": statuses})
@@ -122,15 +141,18 @@ def pms_feedback_status(request):
 
 @login_required
 def pms_department_performance(request):
-    """Average objective progress by department."""
+    """Average objective progress by department for objectives active in the picker range."""
     from pms.models import EmployeeObjective
 
     departments = []
 
     try:
         data = (
-            EmployeeObjective.objects.filter(archive=False)
-            .values("employee_id__employee_work_info__department_id__department")
+            _period_overlap(EmployeeObjective.objects.filter(archive=False), request)
+            .values(
+                "employee_id__employee_work_info__department_id",
+                "employee_id__employee_work_info__department_id__department",
+            )
             .annotate(
                 avg_progress=Avg("progress_percentage"),
                 total=Count("id"),
@@ -142,10 +164,12 @@ def pms_department_performance(request):
 
         for item in data:
             dept = item["employee_id__employee_work_info__department_id__department"]
+            dept_id = item["employee_id__employee_work_info__department_id"]
             if dept:
                 departments.append(
                     {
                         "department": dept,
+                        "dept_id": dept_id,
                         "avg_progress": round(float(item["avg_progress"] or 0), 1),
                         "total": item["total"],
                         "closed": item["closed"],
@@ -160,15 +184,18 @@ def pms_department_performance(request):
 
 @login_required
 def pms_at_risk_objectives(request):
-    """Objectives that are at risk or behind."""
+    """Objectives that are at risk or behind, scoped to the picker range."""
     from pms.models import EmployeeObjective
 
     objectives = []
 
     try:
         qs = (
-            EmployeeObjective.objects.filter(
-                archive=False, status__in=["At Risk", "Behind"]
+            _period_overlap(
+                EmployeeObjective.objects.filter(
+                    archive=False, status__in=["At Risk", "Behind"]
+                ),
+                request,
             )
             .select_related("employee_id", "objective_id")
             .order_by("end_date")[:15]
@@ -207,7 +234,7 @@ def pms_at_risk_objectives(request):
 
 @login_required
 def pms_top_performers(request):
-    """Top performers by objective completion and bonus points."""
+    """Top performers by objective completion and bonus points, for the picker range."""
     from pms.models import EmployeeBonusPoint, EmployeeObjective
 
     performers = []
@@ -215,7 +242,7 @@ def pms_top_performers(request):
     try:
         # By objective progress
         data = (
-            EmployeeObjective.objects.filter(archive=False)
+            _period_overlap(EmployeeObjective.objects.filter(archive=False), request)
             .values(
                 "employee_id",
                 "employee_id__employee_first_name",
@@ -263,14 +290,14 @@ def pms_top_performers(request):
 
 @login_required
 def pms_kr_progress_overview(request):
-    """Key result progress grouped by objective."""
+    """Key result progress grouped by objective, for objectives active in the picker range."""
     from pms.models import EmployeeKeyResult, EmployeeObjective
 
     overview = []
 
     try:
         objectives = (
-            EmployeeObjective.objects.filter(archive=False)
+            _period_overlap(EmployeeObjective.objects.filter(archive=False), request)
             .select_related("objective_id")
             .order_by("-progress_percentage")[:10]
         )
@@ -318,17 +345,17 @@ def pms_kr_progress_overview(request):
 
 @login_required
 def pms_upcoming_meetings(request):
-    """Upcoming PMS meetings in the next 14 days."""
+    """PMS meetings scheduled within the selected period."""
     from pms.models import Meetings
 
+    from_date, to_date = _parse_period(request)
     today = date.today()
-    end = today + timedelta(days=14)
     meetings = []
 
     try:
         qs = Meetings.objects.filter(
-            date__date__gte=today,
-            date__date__lte=end,
+            date__date__gte=from_date,
+            date__date__lte=to_date,
         ).order_by("date")[:10]
 
         for m in qs:
@@ -350,24 +377,20 @@ def pms_upcoming_meetings(request):
 
 @login_required
 def pms_progress_trend(request):
-    """Average objective progress over the last 6 months."""
+    """Average objective progress per month within the selected period."""
     from pms.models import EmployeeObjective
 
-    _, to_date = _parse_period(request)
-    today = to_date
+    from_date, to_date = _parse_period(request)
     months = []
     try:
-        for i in range(5, -1, -1):
-            month_date = today.replace(day=1) - timedelta(days=i * 30)
-            month_start = month_date.replace(day=1)
-            if month_start.month == 12:
-                month_end = month_start.replace(
-                    year=month_start.year + 1, month=1
-                ) - timedelta(days=1)
+        cursor = from_date.replace(day=1)
+        end_marker = to_date.replace(day=1)
+        while cursor <= end_marker:
+            if cursor.month == 12:
+                next_month = date(cursor.year + 1, 1, 1)
             else:
-                month_end = month_start.replace(
-                    month=month_start.month + 1
-                ) - timedelta(days=1)
+                next_month = date(cursor.year, cursor.month + 1, 1)
+            month_end = next_month - timedelta(days=1)
             avg = EmployeeObjective.objects.filter(
                 archive=False,
                 updated_at__lte=month_end,
@@ -378,10 +401,13 @@ def pms_progress_trend(request):
             ]
             months.append(
                 {
-                    "month": month_start.strftime("%b %Y"),
+                    "month": cursor.strftime("%b %Y"),
                     "avg_progress": round(float(avg), 1),
+                    "from_date": cursor.isoformat(),
+                    "to_date": month_end.isoformat(),
                 }
             )
+            cursor = next_month
     except Exception:
         pass
     return JsonResponse({"months": months})
@@ -389,13 +415,16 @@ def pms_progress_trend(request):
 
 @login_required
 def pms_feedback_completion(request):
-    """Feedback answer completion rate per active feedback cycle."""
+    """Feedback answer completion rate per feedback cycle active in the picker range."""
     from pms.models import Answer, Feedback, Question
 
     completions = []
     try:
-        feedbacks = Feedback.objects.filter(
-            archive=False, status__in=["On Track", "Not Started"]
+        feedbacks = _period_overlap(
+            Feedback.objects.filter(
+                archive=False, status__in=["On Track", "Not Started"]
+            ),
+            request,
         )
         for fb in feedbacks[:8]:
             total_questions = Question.objects.filter(

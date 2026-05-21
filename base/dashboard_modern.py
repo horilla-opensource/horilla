@@ -172,9 +172,19 @@ def dashboard_kpi_data(request):
 
 @login_required
 def dashboard_attendance_trend(request):
-    """Weekly attendance trend for the last 12 weeks."""
+    """Weekly attendance trend.
+
+    Honors from_date/to_date when present; otherwise shows the last 12 weeks.
+    """
     today = date.today()
     weeks = []
+
+    has_period = bool(request.GET.get("from_date") and request.GET.get("to_date"))
+    if has_period:
+        from_date, to_date = _parse_period(request)
+    else:
+        to_date = today
+        from_date = today - timedelta(weeks=11) - timedelta(days=today.weekday())
 
     try:
         from attendance.models import Attendance
@@ -182,28 +192,26 @@ def dashboard_attendance_trend(request):
 
         total = Employee.objects.filter(is_active=True).count()
 
-        current_week_monday = today - timedelta(days=today.weekday())
-        for i in range(11, -1, -1):
-            week_start = current_week_monday - timedelta(weeks=i)
-            # For the current week, use today as the end; otherwise use Friday
-            if i == 0:
-                week_end = today
-            else:
-                week_end = week_start + timedelta(days=4)
-
+        # Iterate weekly buckets between from_date and to_date (inclusive).
+        bucket_start = from_date - timedelta(days=from_date.weekday())
+        last_monday = to_date - timedelta(days=to_date.weekday())
+        while bucket_start <= last_monday:
+            week_end = min(bucket_start + timedelta(days=6), to_date)
+            week_start_q = max(bucket_start, from_date)
             present = (
                 Attendance.objects.filter(
-                    attendance_date__gte=week_start,
+                    attendance_date__gte=week_start_q,
                     attendance_date__lte=week_end,
                 )
                 .values("employee_id")
                 .distinct()
                 .count()
             )
-
             rate = round((present / total * 100), 1) if total > 0 else 0
-            label = week_start.strftime("%b %d") + (" (now)" if i == 0 else "")
+            is_current = bucket_start <= today <= bucket_start + timedelta(days=6)
+            label = bucket_start.strftime("%b %d") + (" (now)" if is_current else "")
             weeks.append({"week": label, "rate": rate, "present": present})
+            bucket_start += timedelta(weeks=1)
     except Exception:
         weeks = [{"week": f"W{i+1}", "rate": 0, "present": 0} for i in range(12)]
 
@@ -563,7 +571,7 @@ def dashboard_birthdays_anniversaries(request):
 
 @login_required
 def dashboard_recruitment_pipeline(request):
-    """Recruitment pipeline funnel — candidates by stage for active recruitments."""
+    """Recruitment pipeline funnel — candidates aggregated by stage type."""
     stages = []
 
     try:
@@ -574,23 +582,32 @@ def dashboard_recruitment_pipeline(request):
         active_recruitments = Recruitment.objects.filter(is_active=True, closed=False)
         total_active = active_recruitments.count()
 
+        # Aggregate by stage_type so duplicate stage names across recruitments collapse
+        stage_type_order = [t[0] for t in Stage.stage_types]
+        stage_type_labels = {t[0]: str(t[1]) for t in Stage.stage_types}
+
         data = (
             Candidate.objects.filter(
                 recruitment_id__in=active_recruitments,
             )
-            .values("stage_id__stage", "stage_id__stage_type", "stage_id__sequence")
+            .values("stage_id__stage_type")
             .annotate(count=Count("id"))
-            .order_by("stage_id__sequence")
         )
 
+        # Build ordered dict keyed by stage_type
+        totals = {}
         for item in data:
-            stages.append(
-                {
-                    "stage": item["stage_id__stage"] or "Unknown",
-                    "type": item["stage_id__stage_type"] or "",
-                    "count": item["count"],
-                }
-            )
+            st = item["stage_id__stage_type"] or ""
+            totals[st] = totals.get(st, 0) + item["count"]
+
+        # Output in canonical stage order
+        for st in stage_type_order:
+            if st in totals:
+                stages.append({
+                    "stage": stage_type_labels.get(st, st.capitalize()),
+                    "type": st,
+                    "count": totals[st],
+                })
 
         # Summary counts
         total_candidates = Candidate.objects.filter(
@@ -608,15 +625,17 @@ def dashboard_recruitment_pipeline(request):
         hired = 0
         rejected = 0
 
-    return JsonResponse(
+    response = JsonResponse(
         {
             "stages": stages,
-            "active_recruitments": total_active,
+            "total_active": total_active,
             "total_candidates": total_candidates,
             "hired": hired,
             "rejected": rejected,
         }
     )
+    response["Cache-Control"] = "no-store, no-cache, must-revalidate"
+    return response
 
 
 @login_required
@@ -625,9 +644,9 @@ def dashboard_payroll_summary(request):
     from_date, to_date = _parse_period(request)
     today = to_date
     first_of_month = from_date
-    period_days = (to_date - from_date).days or 30
-    prev_month_end = first_of_month - timedelta(days=1)
-    prev_month_start = prev_month_end - timedelta(days=period_days)
+    # Always use full calendar month boundaries for previous month
+    prev_month_end = first_of_month - timedelta(days=1)          # last day of previous month
+    prev_month_start = prev_month_end.replace(day=1)             # first day of previous month
 
     current = {"gross": 0, "deductions": 0, "net": 0, "count": 0}
     previous = {"gross": 0, "deductions": 0, "net": 0, "count": 0}
@@ -809,9 +828,13 @@ def dashboard_turnover(request):
         from employee.models import Employee, EmployeeWorkInformation
 
         for i in range(5, -1, -1):
-            # Calculate month boundaries
-            month_date = today.replace(day=1) - timedelta(days=i * 30)
-            month_start = month_date.replace(day=1)
+            # Calculate month boundaries using calendar-correct month subtraction
+            year = today.year
+            month = today.month - i
+            while month <= 0:
+                month += 12
+                year -= 1
+            month_start = today.replace(year=year, month=month, day=1)
             if month_start.month == 12:
                 month_end = month_start.replace(
                     year=month_start.year + 1, month=1

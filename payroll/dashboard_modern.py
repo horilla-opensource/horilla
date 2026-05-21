@@ -183,7 +183,10 @@ def payroll_department_cost(request):
                 start_date__lte=today,
                 status__in=["confirmed", "paid", "review_ongoing"],
             )
-            .values("employee_id__employee_work_info__department_id__department")
+            .values(
+                "employee_id__employee_work_info__department_id",
+                "employee_id__employee_work_info__department_id__department",
+            )
             .annotate(
                 total_net=Coalesce(Sum("net_pay"), 0.0, output_field=FloatField()),
                 total_gross=Coalesce(Sum("gross_pay"), 0.0, output_field=FloatField()),
@@ -194,10 +197,12 @@ def payroll_department_cost(request):
 
         for item in data:
             dept = item["employee_id__employee_work_info__department_id__department"]
+            dept_id = item["employee_id__employee_work_info__department_id"]
             if dept:
                 departments.append(
                     {
                         "department": dept,
+                        "dept_id": dept_id,
                         "net": round(float(item["total_net"]), 2),
                         "gross": round(float(item["total_gross"]), 2),
                         "count": item["count"],
@@ -256,6 +261,7 @@ def payroll_top_earners(request):
         data = (
             Payslip.objects.filter(
                 start_date__gte=first_of_month,
+                start_date__lte=to_date,
                 status__in=["confirmed", "paid"],
             )
             .values(
@@ -290,33 +296,21 @@ def payroll_top_earners(request):
 
 @login_required
 def payroll_contract_status(request):
-    """Contracts ending/expired this month and next month."""
+    """Contracts ending or expired within the selected period."""
     from payroll.models.models import Contract
 
+    from_date, to_date = _parse_period(request)
     today = date.today()
-    first_of_month = today.replace(day=1)
-    if first_of_month.month == 12:
-        next_month_end = first_of_month.replace(
-            year=first_of_month.year + 1, month=2
-        ) - timedelta(days=1)
-    elif first_of_month.month == 11:
-        next_month_end = first_of_month.replace(
-            year=first_of_month.year + 1, month=1
-        ) - timedelta(days=1)
-    else:
-        next_month_end = first_of_month.replace(
-            month=first_of_month.month + 2
-        ) - timedelta(days=1)
-
     ending_soon = []
     expired = []
 
     try:
-        # Ending this month or next
+        # Ending within the period (still active and end_date is on/after today)
+        ending_cutoff = max(today, from_date)
         ending_qs = (
             Contract.objects.filter(
-                contract_end_date__gte=today,
-                contract_end_date__lte=next_month_end,
+                contract_end_date__gte=ending_cutoff,
+                contract_end_date__lte=to_date,
                 contract_status="active",
             )
             .select_related("employee_id")
@@ -340,11 +334,12 @@ def payroll_contract_status(request):
                 }
             )
 
-        # Recently expired (last 30 days)
+        # Expired within the period (end_date is before today and within the window)
+        expired_cap = min(today - timedelta(days=1), to_date)
         expired_qs = (
             Contract.objects.filter(
-                contract_end_date__lt=today,
-                contract_end_date__gte=today - timedelta(days=30),
+                contract_end_date__gte=from_date,
+                contract_end_date__lte=expired_cap,
             )
             .select_related("employee_id")
             .order_by("-contract_end_date")[:10]
@@ -374,13 +369,22 @@ def payroll_contract_status(request):
 
 @login_required
 def payroll_loan_summary(request):
-    """Active loans and advances summary."""
+    """Loans provided within the selected period (still unsettled)."""
     from payroll.models.models import LoanAccount
 
+    from_date, to_date = _parse_period(request)
     loans = []
 
     try:
-        qs = LoanAccount.objects.filter(settled=False).select_related("employee_id")
+        qs = (
+            LoanAccount.objects.filter(
+                settled=False,
+                provided_date__gte=from_date,
+                provided_date__lte=to_date,
+            )
+            .select_related("employee_id")
+            .order_by("-provided_date")
+        )
 
         for loan in qs[:15]:
             emp = loan.employee_id
@@ -425,14 +429,18 @@ def payroll_loan_summary(request):
 
 @login_required
 def payroll_reimbursement_summary(request):
-    """Reimbursement requests summary."""
+    """Reimbursement requests summary for the selected period."""
     from payroll.models.models import Reimbursement
 
+    from_date, to_date = _parse_period(request)
     summary = {"requested": 0, "approved": 0, "rejected": 0, "total_amount": 0}
     by_type = []
 
     try:
-        qs = Reimbursement.objects.all()
+        qs = Reimbursement.objects.filter(
+            allowance_on__gte=from_date,
+            allowance_on__lte=to_date,
+        )
         summary["requested"] = qs.filter(status="requested").count()
         summary["approved"] = qs.filter(status="approved").count()
         summary["rejected"] = qs.filter(status="rejected").count()
@@ -463,6 +471,7 @@ def payroll_reimbursement_summary(request):
             by_type.append(
                 {
                     "type": type_labels.get(item["type"], item["type"]),
+                    "type_key": item["type"],
                     "count": item["count"],
                     "amount": round(float(item["total"]), 2),
                 }
@@ -475,15 +484,17 @@ def payroll_reimbursement_summary(request):
 
 @login_required
 def payroll_salary_distribution(request):
-    """Salary band distribution across active employees."""
+    """Salary band distribution across employees who were active during the selected period."""
     from employee.models import EmployeeWorkInformation
 
+    _from, to_date = _parse_period(request)
     bands = []
     try:
         salaries = list(
             EmployeeWorkInformation.objects.filter(
                 employee_id__is_active=True,
                 basic_salary__gt=0,
+                date_joining__lte=to_date,
             ).values_list("basic_salary", flat=True)
         )
         if salaries:
@@ -494,11 +505,22 @@ def payroll_salary_distribution(request):
                 band_start = int(s // step * step)
                 label = f"{band_start:,}–{band_start + step:,}"
                 band_map[band_start] = band_map.get(
-                    band_start, {"label": label, "count": 0}
+                    band_start,
+                    {
+                        "label": label,
+                        "count": 0,
+                        "min": band_start,
+                        "max": band_start + int(step),
+                    },
                 )
                 band_map[band_start]["count"] += 1
             bands = [
-                {"label": v["label"], "count": v["count"]}
+                {
+                    "label": v["label"],
+                    "count": v["count"],
+                    "min": v["min"],
+                    "max": v["max"],
+                }
                 for k, v in sorted(band_map.items())
             ]
     except Exception:
