@@ -760,7 +760,9 @@ window.confirm = function (message) {
 
                 // Handle <a>
             } else if (triggerEl.tagName.toLowerCase() === "a") {
-                if (triggerEl.href) {
+                const rawHref = triggerEl.getAttribute("href");
+                const hasRealHref = rawHref && rawHref !== "#" && !rawHref.startsWith("#");
+                if (hasRealHref && !path) {
                     window.location.href = triggerEl.href;
                 } else {
                     if (verb === "post") {
