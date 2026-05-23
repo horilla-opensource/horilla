@@ -398,11 +398,18 @@
                     </span>
                 </div>
                 <div class="oh-card-dashboard__body" id="leaveApproveCardBody" style="height:80%"
-                    hx-get="{% url 'leave-request-and-approve' %}" hx-trigger="load">
+                    hx-get="{% url 'leave-request-and-approve' %}" hx-trigger="load, reloadLeaveRequestList from:body">
                     <div class="animated-background"></div>
                 </div>
             </div>
         </div>
+        <script>
+            document.body.addEventListener("reloadLeaveRequestList", function () {
+                document.querySelectorAll(".oh-modal--show").forEach(function (el) {
+                    el.classList.remove("oh-modal--show");
+                });
+            });
+        </script>
     {% endif %}
 {% endif %}
 {% if "leave"|app_installed and not 'leave_allocation_approve' in charts %}

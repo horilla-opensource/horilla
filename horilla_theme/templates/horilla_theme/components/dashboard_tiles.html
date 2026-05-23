@@ -531,8 +531,15 @@
             <div
                 class="flex-col items-center justify-center"
                 hx-get="{% url 'leave-request-and-approve' %}"
-                hx-trigger="load"
+                hx-trigger="load, reloadLeaveRequestList from:body"
             ></div>
+            <script>
+                document.body.addEventListener("reloadLeaveRequestList", function () {
+                    document.querySelectorAll(".oh-modal--show").forEach(function (el) {
+                        el.classList.remove("oh-modal--show");
+                    });
+                });
+            </script>
         </div>
 
     {% elif chart == "leave_allocation_approve" and "leave_allocation_approve" in charts %}
