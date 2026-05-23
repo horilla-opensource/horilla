@@ -309,7 +309,10 @@ SIDEBARS = [
     "report",
 ]
 
-AUDITLOG_INCLUDE_ALL_MODELS = True
+# Audit logging is opt-in: the horilla_audit app registers models explicitly
+# through its registry, driven by AuditModelConfig and a default whitelist
+# (Employee, EmployeeWorkInformation, EmployeeBankDetails).
+AUDITLOG_INCLUDE_ALL_MODELS = False
 AUDITLOG_EXCLUDE_TRACKING_MODELS = (
     # "<app_name>",
     # "<app_name>.<model>"

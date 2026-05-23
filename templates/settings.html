@@ -69,7 +69,12 @@
 <div class="oh-wrapper">
 	<div class="oh-card">
 		<div class="row">
-			<div class="col-12 col-sm-12 col-md-12 col-lg-3">
+			<div class="col-12 col-sm-12 col-md-12 col-lg-3"
+				hx-boost="true"
+				hx-target="#settingsContainer"
+				hx-select="#settingsContainer"
+				hx-swap="outerHTML show:none"
+				hx-push-url="true">
 				<button
 					class="oh-btn oh-btn--light oh-inner-sidebar-toggle w-100"
 					data-action="toggle"
@@ -152,6 +157,16 @@
 														href="{% url 'tag-view' %}"
 														class="oh-inner-sidebar__link oh-dropdown__link"
 														>{% trans "History Tags" %}</a
+													>
+												{% endif %}
+											</div>
+											<div class="oh-input-group">
+												{% if perms.horilla_audit.view_auditmodelconfig %}
+													<a
+														id="auditTracking"
+														href="{% url 'audit-model-settings' %}"
+														class="oh-inner-sidebar__link oh-dropdown__link"
+														>{% trans "Audit Tracking" %}</a
 													>
 												{% endif %}
 											</div>
@@ -716,13 +731,24 @@
 					</ul>
 				</div>
 			</div>
-			<div class="col-12 col-sm-12 col-md-12 col-lg-9">
+			<div class="col-12 col-sm-12 col-md-12 col-lg-9" id="settingsContainer">
 				{% block settings %} {% endblock settings %}
 			</div>
 		</div>
 	</div>
 </div>
 <script>
+	function reloadSettingsContainer() {
+		if (typeof htmx === "undefined") return;
+		htmx.ajax("GET", window.location.pathname + window.location.search, {
+			target: "#settingsContainer",
+			select: "#settingsContainer",
+			swap: "outerHTML show:none",
+		});
+		var msgBtn = document.getElementById("reloadMessagesButton");
+		if (msgBtn) msgBtn.click();
+	}
+
 	$(document).ready(function () {
 	$(".oh-accordion--show").removeClass("oh-accordion--show");
 	$('.oh-accordion-header').on("click", function (e) {
@@ -735,24 +761,100 @@
 
 	});
 
-    $(document).ready(function () {
-        var path = location.pathname;
-        var menu = $(`a[href="${path}"].oh-inner-sidebar__link.oh-dropdown__link`);
+    function normalizePath(path) {
+        if (!path) return "";
+        if (typeof path !== "string") return "";
+        return path.replace(/\/+$/, "") || "/";
+    }
+
+    function enhanceSettingsForms() {
+        if (typeof htmx === "undefined") return;
+        var settingsContainer = document.getElementById("settingsContainer");
+        if (!settingsContainer) return;
+        settingsContainer.querySelectorAll("form").forEach(function (form) {
+            if (form.getAttribute("data-settings-native") === "true") return;
+            var method = (form.getAttribute("method") || "GET").toUpperCase();
+            if (method !== "POST") return;
+            if (form.hasAttribute("hx-get") || form.hasAttribute("hx-put") || form.hasAttribute("hx-patch") || form.hasAttribute("hx-delete")) return;
+            if (!form.hasAttribute("hx-post")) {
+                form.setAttribute("hx-post", form.getAttribute("action") || window.location.href);
+            }
+            if (!form.hasAttribute("hx-target")) form.setAttribute("hx-target", "#settingsContainer");
+            if (!form.hasAttribute("hx-select")) form.setAttribute("hx-select", "#settingsContainer");
+            if (!form.hasAttribute("hx-swap")) form.setAttribute("hx-swap", "outerHTML show:none");
+        });
+    }
+
+    function activateSettingsMenu(selectedHref) {
+        var path = normalizePath(location.pathname);
+        var menu = $();
+        var desiredPath = normalizePath(selectedHref);
+        if (desiredPath) {
+            menu = $(".oh-inner-sidebar__link.oh-dropdown__link").filter(function () {
+                var href = ($(this).attr("href") || "").split("?")[0];
+                return normalizePath(href) === desiredPath;
+            }).first();
+        }
         if (menu.length == 0) {
-            var path = localStorage.getItem("lastActiveTab");
+            menu = $(".oh-inner-sidebar__link.oh-dropdown__link").filter(function () {
+                var href = ($(this).attr("href") || "").split("?")[0];
+                return normalizePath(href) === path;
+            }).first();
+        }
+        if (menu.length == 0) {
+            path = localStorage.getItem("lastActiveTab");
             menu = $(`a[href="${path}"].oh-inner-sidebar__link.oh-dropdown__link`);
         }
+        $(".oh-inner-sidebar__link.oh-dropdown__link")
+            .removeClass("oh-inner-sidebar__link--active")
+            .removeAttr("style");
         menu.addClass("oh-inner-sidebar__link--active");
         menu.attr("style", "border:2px solid #FF820D ; border-radius:15px;");
 
-        // Find the parent accordion element and show it
         var parentAccordion = menu.closest('.oh-accordion');
         parentAccordion.addClass('accordion--show');
 
-        menu[0].scrollIntoView({ behavior: "smooth", block: "center" });
-        if (menu.length != undefined) {
+        if (menu.length && menu[0]) {
+            menu[0].scrollIntoView({ behavior: "smooth", block: "center" });
             localStorage.setItem("lastActiveTab", path);
         }
+    }
+    $(document).ready(function () {
+        activateSettingsMenu();
+        enhanceSettingsForms();
+    });
+    document.body.addEventListener("click", function (ev) {
+        var link = ev.target && ev.target.closest(".oh-inner-sidebar__link.oh-dropdown__link[href]");
+        if (!link) return;
+        activateSettingsMenu(link.getAttribute("href"));
+    });
+    document.body.addEventListener(
+        "submit",
+        function (ev) {
+            var form = ev.target;
+            var settingsContainer = document.getElementById("settingsContainer");
+            if (!form || !settingsContainer || !settingsContainer.contains(form)) return;
+            if (form.getAttribute("data-settings-native") === "true") return;
+            if (typeof htmx === "undefined") return;
+            var method = (form.getAttribute("method") || "GET").toUpperCase();
+            if (method !== "POST") return;
+            ev.preventDefault();
+            var action = form.getAttribute("action") || window.location.href;
+            htmx.ajax(method, action, {
+                source: form,
+                target: "#settingsContainer",
+                swap: "none",
+            });
+            setTimeout(reloadSettingsContainer, 150);
+        },
+        true
+    );
+    document.body.addEventListener("htmx:afterSwap", function (ev) {
+        var t = ev.detail && ev.detail.target;
+        var settingsContainer = document.getElementById("settingsContainer");
+        if (!t || !settingsContainer || t !== settingsContainer) return;
+        activateSettingsMenu();
+        enhanceSettingsForms();
     });
 
 

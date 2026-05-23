@@ -96,6 +96,16 @@
 									>
 								</li>
 								{% endif %}
+								{% if perms.horilla_audit.view_auditmodelconfig %}
+								<li class="py-1">
+									<a
+										id="auditTracking"
+										href="{% url 'audit-model-settings' %}"
+										class="hover:text-primary-600 transition duration-300 text-[13px]"
+										>{% trans "Audit Tracking" %}</a
+									>
+								</li>
+								{% endif %}
 								{% if perms.base.view_dynamicemailconfiguration and not "outlook_auth"|app_installed %}
 								<li class="py-1">
 									<a

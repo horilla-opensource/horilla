@@ -1,3 +1,128 @@
-from django.shortcuts import render
+"""
+views.py
+"""
 
-# Create your views here.
+from django.contrib import messages
+from django.contrib.auth.decorators import login_required, permission_required
+from django.http import HttpResponse, HttpResponseBadRequest
+from django.shortcuts import render
+from django.urls import reverse
+from django.utils.translation import gettext as _
+from django.views.decorators.http import require_http_methods
+
+from horilla.http.response import HorillaRedirect
+from horilla_audit.forms import (
+    AuditModelConfigForm,
+    AuditModelFieldsForm,
+    field_choices_for,
+)
+from horilla_audit.models import AuditModelConfig
+from horilla_audit.registry import DEFAULT_TRACKED_MODELS
+
+
+@login_required
+@permission_required("horilla_audit.view_auditmodelconfig")
+def audit_model_settings(request):
+    """Render the audit-tracking configuration card."""
+
+    form = AuditModelConfigForm()
+    configs = AuditModelConfig.objects.all().order_by("app_label", "model_name")
+    context = {
+        "audit_model_form": form,
+        "audit_model_configs": configs,
+    }
+    return render(
+        request,
+        "horilla_audit/audit_model_settings.html",
+        context,
+    )
+
+
+@login_required
+@permission_required("horilla_audit.change_auditmodelconfig")
+@require_http_methods(["POST"])
+def save_audit_models(request):
+    """Persist the list of audit-tracked models."""
+
+    selected = request.POST.getlist("model_paths")
+    selected_pairs = []
+    for path in selected:
+        if "." not in path:
+            continue
+        app_label, model_name = path.split(".", 1)
+        selected_pairs.append((app_label, model_name))
+
+    # Built-in defaults are always tracked — they cannot be turned off here
+    # so audit history never silently disappears for the core Employee models.
+    default_set = set(DEFAULT_TRACKED_MODELS)
+    selected_set = set(selected_pairs) | default_set
+    existing = {(c.app_label, c.model_name): c for c in AuditModelConfig.objects.all()}
+
+    # Remove configs that were unchecked, but never delete defaults.
+    for key, cfg in existing.items():
+        if key in selected_set or key in default_set:
+            continue
+        cfg.delete()
+
+    # Create new configs for newly checked entries (and ensure defaults exist).
+    for app_label, model_name in selected_set:
+        if (app_label, model_name) not in existing:
+            AuditModelConfig.objects.create(
+                app_label=app_label,
+                model_name=model_name,
+                is_enabled=True,
+                tracked_fields=[],
+            )
+
+    messages.success(request, _("Audit tracking configuration updated."))
+
+    if request.headers.get("HX-Request"):
+        return HttpResponse(
+            status=200,
+            headers={"HX-Redirect": reverse("audit-model-settings")},
+        )
+    return HorillaRedirect(request)
+
+
+@login_required
+@permission_required("horilla_audit.change_auditmodelconfig")
+def edit_audit_model_fields(request, pk):
+    """Edit which fields of a single model are tracked."""
+
+    try:
+        config = AuditModelConfig.objects.get(pk=pk)
+    except AuditModelConfig.DoesNotExist:
+        return HttpResponseBadRequest("Audit configuration not found.")
+
+    if request.method == "POST":
+        form = AuditModelFieldsForm(
+            request.POST,
+            app_label=config.app_label,
+            model_name=config.model_name,
+        )
+        if form.is_valid():
+            config.tracked_fields = form.cleaned_data["fields_to_track"]
+            config.save()
+            messages.success(
+                request,
+                _("Tracked fields updated for %(model)s.")
+                % {"model": config.model_name},
+            )
+            if request.headers.get("HX-Request"):
+                return HttpResponse(
+                    status=200,
+                    headers={"HX-Redirect": reverse("audit-model-settings")},
+                )
+            return HorillaRedirect(request)
+    else:
+        form = AuditModelFieldsForm(
+            initial={"fields_to_track": config.tracked_fields or []},
+            app_label=config.app_label,
+            model_name=config.model_name,
+        )
+
+    return render(
+        request,
+        "horilla_audit/audit_model_fields_form.html",
+        {"form": form, "config": config},
+    )

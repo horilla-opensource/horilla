@@ -156,3 +156,34 @@ class HistoryTrackingFields(HorillaModel):
 class AccountBlockUnblock(HorillaModel):
     is_enabled = models.BooleanField(default=False, null=True, blank=True)
     objects = models.Manager()
+
+
+class AuditModelConfig(HorillaModel):
+    """
+    Stores which models (and optionally which fields) are tracked by the
+    django-auditlog registry. When no rows exist, a built-in default set
+    of Employee-related models is tracked. Rows here fully override the
+    defaults.
+    """
+
+    app_label = models.CharField(max_length=100, verbose_name=_("App"))
+    model_name = models.CharField(max_length=100, verbose_name=_("Model"))
+    is_enabled = models.BooleanField(default=True, verbose_name=_("Enabled"))
+    tracked_fields = models.JSONField(
+        default=list,
+        blank=True,
+        verbose_name=_("Tracked Fields"),
+        help_text=_("Leave empty to track every field on the model."),
+    )
+
+    class Meta:
+        unique_together = ("app_label", "model_name")
+        verbose_name = _("Audit Tracking Configuration")
+        verbose_name_plural = _("Audit Tracking Configurations")
+
+    def __str__(self):
+        return f"{self.app_label}.{self.model_name}"
+
+    @property
+    def dotted_path(self):
+        return f"{self.app_label}.{self.model_name}"
