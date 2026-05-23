@@ -12,7 +12,6 @@ import re
 from uuid import uuid4
 
 from auditlog.models import AuditlogHistoryField
-from auditlog.registry import auditlog
 from django.contrib.auth.models import User
 from django.core.exceptions import ValidationError
 from django.db import models
@@ -225,6 +224,3 @@ class HorillaModel(models.Model):
 
 class NoPermissionModel:
     _no_permission_model = True
-
-
-auditlog.register(HorillaModel, serialize_data=True)
