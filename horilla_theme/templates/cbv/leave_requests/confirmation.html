@@ -38,7 +38,7 @@
                     class="filter brightness-0 invert" />
                 </a>
             {% else %}
-                <a type="button" href="#" title="{% trans 'Approve' %}"
+                <a type="button" href="#" onclick="event.preventDefault();" title="{% trans 'Approve' %}"
                     class="w-24 px-4 py-2 bg-primary-600 text-white rounded-md text-xs flex items-center justify-center gap-2 hover:bg-primary-800 transition duration-300 oh-btn--disabled">
                     <img src="{% static 'horilla_theme/assets/img/icons/check.svg' %}" alt="{% trans 'Approve' %}" width="13"
                     class="filter brightness-0 invert" />
@@ -53,7 +53,7 @@
                     class="mt-[-1px]" />
                 </a>
             {% else %}
-                <a type="button" href="#" title="{% trans 'Reject' %}"
+                <a type="button" href="#" onclick="event.preventDefault();" title="{% trans 'Reject' %}"
                     class="w-24 px-4 py-2 bg-primary-600 text-white rounded-md text-xs flex items-center justify-center gap-2 hover:bg-primary-800 transition duration-300 oh-btn--disabled">
                     <img src="{% static 'horilla_theme/assets/img/icons/close-circle-icon-original.svg' %}" alt="{% trans 'Reject' %}" width="13"
                     class="mt-[-1px]" />
