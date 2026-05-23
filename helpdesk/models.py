@@ -208,6 +208,9 @@ class Ticket(HorillaModel):
         if self.status == "resolved" or self.status == "canceled":
             return ticket_id
 
+        if self.deadline is None:
+            return ticket_id
+
         if self.deadline == today:
             due_text = _("Due today")
         else:
