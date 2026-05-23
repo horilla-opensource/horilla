@@ -37,11 +37,69 @@ from leave.models import (
     LeaverequestComment,
     LeaverequestFile,
     LeaveType,
+    LeaveTypeCondition,
     RestrictLeave,
 )
 
 CHOICES = [("yes", _("Yes")), ("no", _("No"))]
 LEAVE_MAX_LIMIT = 1e5
+
+
+class LeaveTypeConditionForm(forms.ModelForm):
+    """
+    Form for creating/updating a single LeaveTypeCondition.
+    Following the same style as payroll ConditionForm.
+    """
+
+    class Meta:
+        model = LeaveTypeCondition
+        fields = ["condition_type", "value"]
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        for field in self.fields.values():
+            widget = field.widget
+            if isinstance(widget, forms.Select):
+                field.widget.attrs["style"] = (
+                    "width:100%; height:50px;"
+                    "border: 1px solid hsl(213deg,22%,84%);"
+                    "border-radius: 0rem;"
+                    "padding: 0.8rem 1.25rem;"
+                )
+            elif isinstance(
+                widget, (forms.NumberInput, forms.EmailInput, forms.TextInput)
+            ):
+                field.widget.attrs.update(
+                    {"class": "oh-input w-100", "placeholder": field.label or ""}
+                )
+            elif isinstance(widget, forms.Textarea):
+                field.widget.attrs.update(
+                    {
+                        "class": "oh-input w-100",
+                        "placeholder": field.label or "",
+                        "rows": 2,
+                    }
+                )
+
+    def clean(self):
+        cleaned_data = super().clean()
+        condition_type = cleaned_data.get("condition_type")
+        value = cleaned_data.get("value")
+        value_required_types = {
+            "gender",
+            "marital_status",
+            "nationality",
+            "department",
+            "employment_type",
+            "grade",
+            "service_duration",
+        }
+        if condition_type in value_required_types and not value:
+            self.add_error(
+                "value",
+                _("A value is required for the selected condition type."),
+            )
+        return cleaned_data
 
 
 class ConditionForm(forms.ModelForm):
@@ -126,7 +184,7 @@ class LeaveTypeForm(ConditionForm):
     class Meta:
         model = LeaveType
         fields = "__all__"
-        exclude = ["is_active"]
+        exclude = ["is_active", "conditions"]
         labels = {
             "name": _("Name"),
         }
@@ -139,61 +197,67 @@ class LeaveTypeForm(ConditionForm):
 
     def clean(self):
         cleaned_data = super().clean()
-        if "employee_id" in self.errors:
-            del self.errors["employee_id"]
-        if "exceed_days" in self.errors:
-            del self.errors["exceed_days"]
-        if not cleaned_data["limit_leave"]:
+        for key in ["employee_id", "exceed_days"]:
+            if key in self.errors:
+                del self.errors[key]
+        if not cleaned_data.get("limit_leave"):
             cleaned_data["total_days"] = LEAVE_MAX_LIMIT
             cleaned_data["reset"] = True
             cleaned_data["reset_based"] = "yearly"
             cleaned_data["reset_month"] = "1"
             cleaned_data["reset_day"] = "1"
 
+        payment_type = cleaned_data.get("payment_type")
+        payment_percentage = cleaned_data.get("payment_percentage")
+        if payment_type == "custom":
+            if payment_percentage is None:
+                self.add_error(
+                    "payment_percentage",
+                    _("Payment percentage is required for Custom payment type."),
+                )
+            elif not (0 <= payment_percentage <= 100):
+                self.add_error(
+                    "payment_percentage",
+                    _("Payment percentage must be between 0 and 100."),
+                )
+        elif payment_type and payment_type != "custom":
+            cleaned_data["payment_percentage"] = None
+
         return cleaned_data
 
     def save(self, *args, **kwargs):
+        from leave.services import evaluate_leave_type_conditions
+
         leave_type = super().save(*args, **kwargs)
         if employees := self.data.getlist("employee_id"):
             for employee_id in employees:
-                employee = Employee.objects.get(id=employee_id)
-                AvailableLeave(
-                    leave_type_id=leave_type,
-                    employee_id=employee,
-                    available_days=leave_type.total_days,
-                ).save()
+                try:
+                    employee = Employee.objects.get(id=employee_id)
+                except Employee.DoesNotExist:
+                    continue
+                is_eligible, _ = evaluate_leave_type_conditions(leave_type, employee)
+                if is_eligible:
+                    if not AvailableLeave.objects.filter(
+                        leave_type_id=leave_type, employee_id=employee
+                    ).exists():
+                        AvailableLeave(
+                            leave_type_id=leave_type,
+                            employee_id=employee,
+                            available_days=leave_type.total_days,
+                        ).save()
+        return leave_type
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
+        self.fields["payment_percentage"].required = False
 
 
 class UpdateLeaveTypeForm(ConditionForm):
 
-    def __init__(self, *args, **kwargs):
-        super(UpdateLeaveTypeForm, self).__init__(*args, **kwargs)
-
-        empty_fields = []
-        for field_name, field_value in self.instance.__dict__.items():
-            if field_value is None or field_value == "":
-                if field_name.endswith("_id"):
-                    foreign_key_field_name = re.sub("_id$", "", field_name)
-                    empty_fields.append(foreign_key_field_name)
-                empty_fields.append(field_name)
-
-        for index, visible in enumerate(self.visible_fields()):
-            if list(self.fields.keys())[index] in empty_fields:
-                visible.field.widget.attrs["style"] = (
-                    "display:none;width:100%; height:50px;border: 1px solid hsl(213deg,22%,84%);border-radius: 0rem;padding: 0.8rem 1.25rem;"
-                )
-                visible.field.widget.attrs["data-hidden"] = True
-
-        if expire_date := self.instance.carryforward_expire_date:
-            self.fields["carryforward_expire_date"] = expire_date
-
     class Meta:
         model = LeaveType
         fields = "__all__"
-        exclude = ["is_active"]
+        exclude = ["is_active", "conditions"]
         widgets = {
             "color": TextInput(attrs={"type": "color", "style": "height:40px;"}),
             "period_in": forms.HiddenInput(),
@@ -201,21 +265,64 @@ class UpdateLeaveTypeForm(ConditionForm):
             "carryforward_expire_date": forms.DateInput(attrs={"type": "date"}),
         }
 
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.fields["payment_percentage"].required = False
+
+        # Fields that must always be visible regardless of current value
+        js_managed = {"payment_type", "payment_percentage", "icon", "color", "name"}
+
+        for field_name, field in self.fields.items():
+            if field_name in js_managed:
+                continue
+            if isinstance(field.widget, forms.HiddenInput):
+                continue
+            instance_value = self.instance.__dict__.get(field_name)
+            # For FK fields Django stores the id with _id suffix
+            if instance_value is None:
+                instance_value = self.instance.__dict__.get(f"{field_name}_id")
+            if instance_value is None or instance_value == "":
+                field.widget.attrs["style"] = (
+                    "display:none;width:100%; height:50px;"
+                    "border: 1px solid hsl(213deg,22%,84%);"
+                    "border-radius: 0rem;padding: 0.8rem 1.25rem;"
+                )
+                field.widget.attrs["data-hidden"] = True
+
+        if expire_date := self.instance.carryforward_expire_date:
+            self.fields["carryforward_expire_date"].initial = expire_date
+
     def clean(self):
         cleaned_data = super().clean()
         if "exceed_days" in self.errors:
             del self.errors["exceed_days"]
-        if not cleaned_data["limit_leave"]:
+        if not cleaned_data.get("limit_leave"):
             cleaned_data["total_days"] = LEAVE_MAX_LIMIT
             cleaned_data["reset"] = True
             cleaned_data["reset_based"] = "yearly"
             cleaned_data["reset_month"] = "1"
             cleaned_data["reset_day"] = "1"
 
+        payment_type = cleaned_data.get("payment_type")
+        payment_percentage = cleaned_data.get("payment_percentage")
+        if payment_type == "custom":
+            if payment_percentage is None:
+                self.add_error(
+                    "payment_percentage",
+                    _("Payment percentage is required for Custom payment type."),
+                )
+            elif not (0 <= payment_percentage <= 100):
+                self.add_error(
+                    "payment_percentage",
+                    _("Payment percentage must be between 0 and 100."),
+                )
+        elif payment_type and payment_type != "custom":
+            cleaned_data["payment_percentage"] = None
+
         return cleaned_data
 
     def save(self, *args, **kwargs):
-        leave_type = super().save(*args, **kwargs)
+        return super().save(*args, **kwargs)
 
 
 class LeaveRequestCreationForm(BaseModelForm):
