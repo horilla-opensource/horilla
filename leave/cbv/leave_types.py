@@ -26,6 +26,7 @@ from horilla_views.generic.cbv.views import (
 from leave.filters import LeaveTypeFilter
 from leave.forms import AssignLeaveForm, LeaveOneAssignForm
 from leave.models import AvailableLeave, LeaveType
+from leave.services import evaluate_leave_type_conditions
 from notifications.signals import notify
 
 
@@ -55,8 +56,12 @@ class LeaveTypeListView(HorillaListView):
 
     columns = [
         (_("Leave Type"), "name", "get_avatar"),
-        (_("Payment"), "payment"),
+        (_("Payment"), "payment_type_display"),
         (_("Total Days"), "count"),
+        (_("Approval"), "approval_display"),
+        (_("Carry Forward"), "carryforward_display"),
+        (_("Encashable"), "encashable"),
+        (_("Conditions"), "conditions_display"),
     ]
 
     action_method = "leave_list_actions"
@@ -165,12 +170,13 @@ class LeaveTypeDetailView(HorillaDetailedView):
         (_("Total Days"), "count"),
         (_("Reset"), "reset"),
         (_("Carryforward Type"), "carryforward_type"),
-        (_("Is paid"), "payment"),
+        (_("Payment Type"), "payment_type_display"),
         (_("Require Approval"), "require_approval"),
         (_("Require Attachment"), "require_attachment"),
         (_("Exclude company Leaves"), "exclude_company_leave"),
         (_("Exclude Holidays"), "exclude_holiday"),
         (_("Is Encashable"), "encashable"),
+        (_("Conditions"), "conditions_display"),
     ]
     action_method = "detail_view_actions"
 
@@ -357,6 +363,18 @@ class LeaveTypeAssignForm(HorillaFormView):
                         if not AvailableLeave.objects.filter(
                             leave_type_id=leave_type, employee_id=employee
                         ).exists():
+                            is_eligible, error_msg = evaluate_leave_type_conditions(
+                                leave_type, employee
+                            )
+                            if not is_eligible:
+                                messages.warning(
+                                    self.request,
+                                    _("{employee}: {reason}").format(
+                                        employee=employee.get_full_name(),
+                                        reason=error_msg,
+                                    ),
+                                )
+                                continue
                             AvailableLeave(
                                 leave_type_id=leave_type,
                                 employee_id=employee,

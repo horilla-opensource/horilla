@@ -602,7 +602,9 @@ class DashboardOnLeaveTable(LeaveRequestsListView):
         queryset = super().get_queryset()
         today = date.today()
 
-        self.queryset = queryset.filter(start_date__lte=today, end_date__gte=today)
+        self.queryset = queryset.filter(
+            start_date__lte=today, end_date__gte=today, status="approved"
+        )
 
         return self.queryset
 
