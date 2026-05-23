@@ -9,7 +9,8 @@
 </div>
 {% endif %}
 
-<form hx-post="{% url 'request-cancel' id %}" hx-encoding="multipart/form-data">
+<form hx-post="{% url 'request-cancel' id %}" hx-encoding="multipart/form-data"
+  hx-on::after-request="if(event.detail.successful){$('#rejectModal').removeClass('oh-modal--show');$('.reload-record').click();}">
   <div class="oh-general__tab-target oh-profile-section">
     <div class="col-sm-12 col-md-12 col-lg-12">
       <label class="oh-label">{% trans "Reason" %}</label>
