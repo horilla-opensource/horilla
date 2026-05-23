@@ -130,6 +130,7 @@ def payroll_calculation(employee, start_date, end_date):
     contract_wage = basic_pay_details["contract_wage"]
     basic_pay = basic_pay_details["basic_pay"]
     loss_of_pay = basic_pay_details["loss_of_pay"]
+    custom_leave_deduction = basic_pay_details.get("custom_leave_deduction", 0.0)
     paid_days = basic_pay_details["paid_days"]
     unpaid_days = basic_pay_details["unpaid_days"]
 
@@ -244,6 +245,7 @@ def payroll_calculation(employee, start_date, end_date):
         "net_deductions": net_pay_deduction_list,
         "total_deductions": total_deductions,
         "loss_of_pay": loss_of_pay,
+        "custom_leave_deduction": custom_leave_deduction,
         "federal_tax": federal_tax,
         "start_date": start_date,
         "end_date": end_date,

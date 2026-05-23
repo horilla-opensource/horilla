@@ -66,28 +66,29 @@ def get_leaves(employee, start_date, end_date):
     unpaid_half = 0
     paid_leave_dates = []
     unpaid_leave_dates = []
+    # list of (date, payment_percentage) for partial-pay leaves
+    custom_leave_dates = []
     company_leave_dates = get_working_days(start_date, end_date)["company_leave_dates"]
 
     if approved_leaves and approved_leaves.exists():
         for instance in approved_leaves:
-            if instance.leave_type_id.payment == "paid":
-                # if the taken leave is paid
-                # for the start date
-                all_the_paid_leave_taken_dates = instance.requested_dates()
-                paid_leave_dates = paid_leave_dates + [
-                    date
-                    for date in all_the_paid_leave_taken_dates
-                    if start_date <= date <= end_date
-                ]
+            leave_type = instance.leave_type_id
+            # Resolve payment category: use payment_type (new) with fallback to payment (legacy)
+            if leave_type.payment_type:
+                ptype = leave_type.payment_type
             else:
-                # if the taken leave is unpaid
-                # for the start date
-                all_unpaid_leave_taken_dates = instance.requested_dates()
-                unpaid_leave_dates = unpaid_leave_dates + [
-                    date
-                    for date in all_unpaid_leave_taken_dates
-                    if start_date <= date <= end_date
-                ]
+                ptype = "paid" if leave_type.payment == "paid" else "unpaid"
+
+            all_dates = instance.requested_dates()
+            dates_in_range = [d for d in all_dates if start_date <= d <= end_date]
+
+            if ptype == "paid":
+                paid_leave_dates += dates_in_range
+            elif ptype == "custom":
+                pct = float(leave_type.payment_percentage or 0)
+                custom_leave_dates += [(d, pct) for d in dates_in_range]
+            else:
+                unpaid_leave_dates += dates_in_range
 
     half_day_data = find_half_day_leaves()
 
@@ -96,18 +97,24 @@ def get_leaves(employee, start_date, end_date):
 
     paid_leave_dates = list(set(paid_leave_dates) - set(company_leave_dates))
     unpaid_leave_dates = list(set(unpaid_leave_dates) - set(company_leave_dates))
+    custom_leave_dates = [
+        (d, pct) for d, pct in custom_leave_dates if d not in company_leave_dates
+    ]
+    custom_dates_only = [d for d, _ in custom_leave_dates]
     paid_leave = len(paid_leave_dates) - paid_half
     unpaid_leave = len(unpaid_leave_dates) - unpaid_half
 
     return {
         "paid_leave": paid_leave,
         "unpaid_leaves": unpaid_leave,
-        "total_leaves": paid_leave + unpaid_leave,
+        "total_leaves": paid_leave + unpaid_leave + len(custom_dates_only),
         # List of paid leave date between range
         "paid_leave_dates": paid_leave_dates,
-        # List of un paid date between range
+        # List of unpaid leave date between range
         "unpaid_leave_dates": unpaid_leave_dates,
-        "leave_dates": unpaid_leave_dates + paid_leave_dates,
+        # List of (date, payment_percentage) for custom partial-pay leaves
+        "custom_leave_dates": custom_leave_dates,
+        "leave_dates": unpaid_leave_dates + paid_leave_dates + custom_dates_only,
     }
 
 
@@ -243,9 +250,15 @@ def daily_computation(employee, wage, start_date, end_date):
     loss_of_pay = 0
 
     date_range = get_date_range(start_date, end_date)
+    # Half-day filter: only truly unpaid leaves (exclude custom payment_type)
+    unpaid_only_q = (
+        Q(leave_type_id__payment_type="unpaid")
+        | Q(leave_type_id__payment_type__isnull=True, leave_type_id__payment="unpaid")
+        | Q(leave_type_id__payment_type="", leave_type_id__payment="unpaid")
+    )
     half_day_leaves_between_period_on_start_date = (
         employee.leaverequest_set.filter(
-            leave_type_id__payment="unpaid",
+            unpaid_only_q,
             start_date__in=date_range,
             status="approved",
         )
@@ -255,7 +268,7 @@ def daily_computation(employee, wage, start_date, end_date):
 
     half_day_leaves_between_period_on_end_date = (
         employee.leaverequest_set.filter(
-            leave_type_id__payment="unpaid", end_date__in=date_range, status="approved"
+            unpaid_only_q, end_date__in=date_range, status="approved"
         )
         .exclude(end_date_breakdown="full_day")
         .exclude(start_date=F("end_date"))
@@ -272,16 +285,31 @@ def daily_computation(employee, wage, start_date, end_date):
 
     unpaid_leaves = leave_data["unpaid_leaves"] - unpaid_half_leaves
     if contract.calculate_daily_leave_amount:
-        loss_of_pay = (unpaid_leaves) * wage
+        loss_of_pay = unpaid_leaves * wage
     else:
         fixed_penalty = contract.deduction_for_one_leave_amount
-        loss_of_pay = (unpaid_leaves) * fixed_penalty
+        loss_of_pay = unpaid_leaves * fixed_penalty
+
+    # Partial deduction for custom payment_type leaves (tracked separately for payslip display)
+    custom_leave_dates = leave_data.get("custom_leave_dates", [])
+    custom_leave_deduction = 0.0
+    for _leave_date, pct in custom_leave_dates:
+        deductible_fraction = 1.0 - (pct / 100.0)
+        if contract.calculate_daily_leave_amount:
+            custom_leave_deduction += wage * deductible_fraction
+        else:
+            custom_leave_deduction += (
+                contract.deduction_for_one_leave_amount * deductible_fraction
+            )
+    loss_of_pay += custom_leave_deduction
+
     if contract.deduct_leave_from_basic_pay:
         basic_pay = basic_pay - loss_of_pay
 
     return {
         "basic_pay": basic_pay,
         "loss_of_pay": loss_of_pay,
+        "custom_leave_deduction": custom_leave_deduction,
         "paid_days": total_working_days,
         "unpaid_days": unpaid_leaves,
     }
@@ -434,10 +462,16 @@ def monthly_computation(employee, wage, start_date, end_date, *args, **kwargs):
     contract = employee.contract_set.filter(contract_status="active").first()
     loss_of_pay = 0
     date_range = get_date_range(start_date, end_date)
+    # Half-day filter: only truly unpaid leaves (exclude custom payment_type)
+    unpaid_only_q = (
+        Q(leave_type_id__payment_type="unpaid")
+        | Q(leave_type_id__payment_type__isnull=True, leave_type_id__payment="unpaid")
+        | Q(leave_type_id__payment_type="", leave_type_id__payment="unpaid")
+    )
     if apps.is_installed("leave"):
         start_date_leaves = (
             employee.leaverequest_set.filter(
-                leave_type_id__payment="unpaid",
+                unpaid_only_q,
                 start_date__in=date_range,
                 status="approved",
             )
@@ -446,7 +480,7 @@ def monthly_computation(employee, wage, start_date, end_date, *args, **kwargs):
         )
         end_date_leaves = (
             employee.leaverequest_set.filter(
-                leave_type_id__payment="unpaid",
+                unpaid_only_q,
                 end_date__in=date_range,
                 status="approved",
             )
@@ -476,16 +510,30 @@ def monthly_computation(employee, wage, start_date, end_date, *args, **kwargs):
         "day_wage"
     ]
     if contract.calculate_daily_leave_amount:
-        loss_of_pay = (unpaid_leaves) * daily_computed_salary
+        loss_of_pay = unpaid_leaves * daily_computed_salary
     else:
         fixed_penalty = contract.deduction_for_one_leave_amount
-        loss_of_pay = (unpaid_leaves) * fixed_penalty
+        loss_of_pay = unpaid_leaves * fixed_penalty
+
+    # Partial deduction for custom payment_type leaves (tracked separately for payslip display)
+    custom_leave_dates = leave_data.get("custom_leave_dates", [])
+    custom_leave_deduction = 0.0
+    for _leave_date, pct in custom_leave_dates:
+        deductible_fraction = 1.0 - (pct / 100.0)
+        if contract.calculate_daily_leave_amount:
+            custom_leave_deduction += daily_computed_salary * deductible_fraction
+        else:
+            custom_leave_deduction += (
+                contract.deduction_for_one_leave_amount * deductible_fraction
+            )
+    loss_of_pay += custom_leave_deduction
 
     if contract.deduct_leave_from_basic_pay:
         basic_pay = basic_pay - loss_of_pay
     return {
         "basic_pay": basic_pay,
         "loss_of_pay": loss_of_pay,
+        "custom_leave_deduction": custom_leave_deduction,
         "month_data": month_data,
         "unpaid_days": unpaid_leaves,
         "paid_days": paid_days,
@@ -515,11 +563,11 @@ def compute_salary_on_period(employee, start_date, end_date, wage=None):
         data = hourly_computation(employee, wage, start_date, end_date)
         month_data = months_between_range(wage, start_date, end_date)
         data["month_data"] = month_data
+        data.setdefault("custom_leave_deduction", 0.0)
     elif wage_type == "daily":
         data = daily_computation(employee, wage, start_date, end_date)
         month_data = months_between_range(wage, start_date, end_date)
         data["month_data"] = month_data
-
     else:
         data = monthly_computation(employee, wage, start_date, end_date)
     data["contract_wage"] = wage
