@@ -205,6 +205,17 @@
 									{{loss_of_pay|floatformat:2|currency_symbol_position}}
 								</td>
 							</tr>
+							{% if custom_leave_deduction %}
+							<tr class="oh-payslip__table-tr" style="color: #c47d00;">
+								<td class="oh-payslip__table-td" style="padding-left: 1.5rem; font-size:0.85em;">
+									&#8627; {% trans "Leave Payment Reduction" %}
+									<br><span style="color:#888; font-size:0.8em;">{% trans "Partial deduction — leave type pays reduced %" %}</span>
+								</td>
+								<td class="oh-payslip__table-td">
+									{{custom_leave_deduction|floatformat:2|currency_symbol_position}}
+								</td>
+							</tr>
+							{% endif %}
 							{% for deduction in basic_pay_deductions %}
 								<tr class="oh-payslip__table-tr">
 									<td class="oh-payslip__table-td">{{deduction.title}}</td>
