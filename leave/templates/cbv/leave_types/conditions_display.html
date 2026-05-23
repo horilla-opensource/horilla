@@ -1,0 +1,11 @@
+{% load i18n %}
+{% if instance.conditions.exists %}
+  {% for condition in instance.conditions.all %}
+    <span class="oh-badge oh-badge--info"
+          style="font-size:0.72rem; margin:1px 2px; display:inline-block;">
+      {{ condition }}
+    </span>
+  {% endfor %}
+{% else %}
+  <span class="text-muted">{% trans "None" %}</span>
+{% endif %}

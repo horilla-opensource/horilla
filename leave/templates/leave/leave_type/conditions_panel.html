@@ -1,0 +1,104 @@
+{% load i18n %}
+{# HTMX partial for leave-type eligibility conditions #}
+<div id="leaveTypeConditionsPanel">
+
+  {# ── Section header ─────────────────────────────────────────── #}
+  <div class="d-flex align-items-center gap-2 mb-3" style="border-top: 1px solid hsl(213deg,22%,90%); padding-top: 1.25rem;">
+    <h6 class="oh-card__title mb-0">{% trans "Eligibility Conditions" %}</h6>
+    <span class="oh-info"
+      title="{% trans 'Only employees matching all conditions below will be eligible for this leave type.' %}">
+    </span>
+  </div>
+
+  {# ── Existing conditions as removable chips ─────────────────── #}
+  {% if leave_type.conditions.exists %}
+  <div class="d-flex flex-wrap gap-2 mb-4">
+    {% for condition in leave_type.conditions.all %}
+    <span class="d-inline-flex align-items-center gap-2 px-3 py-1"
+          style="background:hsl(213deg,22%,94%); border:1px solid hsl(213deg,22%,82%);
+                 border-radius:20px; font-size:0.82rem;">
+      <strong class="text-dark">{{ condition.get_condition_type_display }}</strong>
+      {% if condition.value %}
+        <span class="text-muted">: {{ condition.value }}</span>
+      {% endif %}
+      <button type="button"
+        style="background:none;border:none;padding:0;line-height:1;cursor:pointer;
+               color:hsl(0,70%,55%);font-size:0.9rem;margin-left:2px;"
+        title="{% trans 'Remove' %}"
+        hx-post="{% url 'leave-type-condition-delete' leave_type.id condition.id %}"
+        hx-target="#leaveTypeConditionsPanel"
+        hx-swap="outerHTML"
+        hx-confirm="{% trans 'Remove this condition?' %}"
+        hx-headers='{"X-CSRFToken": "{{ csrf_token }}"}'>
+        &times;
+      </button>
+    </span>
+    {% endfor %}
+  </div>
+  {% else %}
+  <p class="text-muted small mb-3">
+    {% trans "No conditions set — this leave type can be assigned to any employee." %}
+  </p>
+  {% endif %}
+
+  {# ── Add-condition form ─────────────────────────────────────── #}
+  <div class="p-3" style="background:hsl(213deg,22%,97%); border:1px solid hsl(213deg,22%,88%);
+                           border-radius:6px;">
+    <p class="oh-label mb-2" style="font-size:0.8rem; text-transform:uppercase;
+                                     letter-spacing:.04em; color:hsl(213deg,18%,55%);">
+      {% trans "Add Condition" %}
+    </p>
+
+    <form hx-post="{% url 'leave-type-condition-create' leave_type.id %}"
+          hx-target="#leaveTypeConditionsPanel"
+          hx-swap="outerHTML"
+          hx-headers='{"X-CSRFToken": "{{ csrf_token }}"}'>
+      {% csrf_token %}
+
+      {% if condition_form.non_field_errors %}
+      <div class="oh-alert oh-alert--danger oh-alert--animated mb-2">
+        {{ condition_form.non_field_errors }}
+      </div>
+      {% endif %}
+
+      <div class="row g-3 mb-2">
+        <div class="col-sm-12 col-md-6">
+          <label class="oh-label">{% trans "Condition Type" %}</label>
+          {{ condition_form.condition_type }}
+          {% if condition_form.condition_type.errors %}
+            <small class="text-danger">{{ condition_form.condition_type.errors.0 }}</small>
+          {% endif %}
+        </div>
+
+        <div class="col-sm-12 col-md-6" id="conditionValueCol">
+          <label class="oh-label">{% trans "Value" %}</label>
+          {{ condition_form.value }}
+          {% if condition_form.value.errors %}
+            <small class="text-danger">{{ condition_form.value.errors.0 }}</small>
+          {% endif %}
+        </div>
+      </div>
+
+      <div class="d-flex justify-content-end">
+        <button type="submit" class="oh-btn oh-btn--secondary oh-btn--sm px-4">
+          {% trans "Add Condition" %}
+        </button>
+      </div>
+    </form>
+  </div>
+
+</div>
+
+<script>
+(function () {
+  var noValueTypes = ["once_per_employment"];
+  function toggleConditionValue() {
+    var type = document.querySelector("#id_condition_type");
+    var col  = document.querySelector("#conditionValueCol");
+    if (!type || !col) return;
+    col.style.display = noValueTypes.includes(type.value) ? "none" : "";
+  }
+  var sel = document.querySelector("#id_condition_type");
+  if (sel) { sel.addEventListener("change", toggleConditionValue); toggleConditionValue(); }
+})();
+</script>

@@ -128,6 +128,16 @@ urlpatterns = [
         name="leave-type-card-view",
     ),
     path("type-creation/", views.leave_type_creation, name="type-creation"),
+    path(
+        "leave-type/<int:leave_type_id>/condition/create/",
+        views.leave_type_condition_create,
+        name="leave-type-condition-create",
+    ),
+    path(
+        "leave-type/<int:leave_type_id>/condition/<int:condition_id>/delete/",
+        views.leave_type_condition_delete,
+        name="leave-type-condition-delete",
+    ),
     # path("type-view/", views.leave_type_view, name="type-view"),
     path(
         "leave-type-individual-view/<int:id>/",

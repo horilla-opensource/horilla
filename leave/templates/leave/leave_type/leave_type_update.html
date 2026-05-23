@@ -42,11 +42,19 @@
                     </div>
                     <div class="col-sm-12 col-md-12 col-lg-12">
                         <div class="oh-input-group">
-                            <label for="" class="oh-label">{{ form.payment.label }}</label>
-                            {{ form.payment }}
-                            {{ form.payment.errors }}
+                            <label for="" class="oh-label">{{ form.payment_type.label }}</label>
+                            {{ form.payment_type }}
+                            {{ form.payment_type.errors }}
                         </div>
                     </div>
+                    <div class="col-sm-12 col-md-12 col-lg-12" id="paymentPercentageContainer" style="display:none;">
+                        <div class="oh-input-group">
+                            <label for="id_payment_percentage" class="oh-label">{{ form.payment_percentage.label }}</label>
+                            {{ form.payment_percentage }}
+                            {{ form.payment_percentage.errors }}
+                        </div>
+                    </div>
+                    <div hidden>{{ form.payment }}</div>
                     <div class="col-sm-12 col-md-6">
                         <div class="oh-input-group oh-label__info justify-content-between">
                             <div class="d-flex align-items-center">
@@ -250,6 +258,19 @@
                 {% trans "Update" %}
             </button>
         </form>
+
+        {% if leave_type %}
+        <div class="oh-onboarding-card__address-group mt-4">
+            <div hx-get="{% url 'leave-type-condition-create' leave_type.id %}"
+                 hx-trigger="load"
+                 hx-target="#leaveTypeConditionsPanel"
+                 hx-swap="outerHTML">
+                <div id="leaveTypeConditionsPanel">
+                    <p class="text-muted small">{% trans "Loading conditions…" %}</p>
+                </div>
+            </div>
+        </div>
+        {% endif %}
     </div>
 </div>
 
@@ -257,6 +278,25 @@
     $(document).ready(function () {
         var icon = $("#id_icon");
         icon.show();
+
+        // Payment type toggle
+        function togglePaymentPercentage() {
+            if ($("#id_payment_type").val() === "custom") {
+                $("#paymentPercentageContainer").show();
+                $("#id_payment_percentage").prop("required", true);
+            } else {
+                $("#paymentPercentageContainer").hide();
+                $("#id_payment_percentage").prop("required", false);
+            }
+        }
+        togglePaymentPercentage();
+        $("#id_payment_type").on("change", function () {
+            togglePaymentPercentage();
+            var val = $(this).val();
+            if (val === "paid") { $("#id_payment").val("paid"); }
+            else { $("#id_payment").val("unpaid"); }
+        });
+
         var reset = $("#id_reset");
         var reset_based_label = $("label[for='id_reset_based']").closest(".oh-input-group");
         var reset_based = $("#id_reset_based");

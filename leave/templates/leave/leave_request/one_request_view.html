@@ -148,10 +148,21 @@
             <div class="oh-btn-group">
                 {% if request.user|is_reportingmanager or perms.leave.change_leaverequest or request.user|is_leave_approval_manager%}
                     {% if leave_request.status == 'requested'  %}
-                        <a type="submit" href="{% url 'request-approve' leave_request.id %}" title="{% trans 'Approve' %}"
-                            class="oh-btn oh-btn--success w-100">
-                            <ion-icon class="me-1" name="checkmark-outline"></ion-icon>
-                        </a>
+                        {% if dashboard %}
+                            <a href="#"
+                                hx-get="{% url 'request-approve' leave_request.id %}"
+                                hx-swap="none"
+                                hx-confirm="{% trans 'Do you want to Approve this leave request?' %}"
+                                title="{% trans 'Approve' %}"
+                                class="oh-btn oh-btn--success w-100">
+                                <ion-icon class="me-1" name="checkmark-outline"></ion-icon>
+                            </a>
+                        {% else %}
+                            <a type="submit" href="{% url 'request-approve' leave_request.id %}" title="{% trans 'Approve' %}"
+                                class="oh-btn oh-btn--success w-100">
+                                <ion-icon class="me-1" name="checkmark-outline"></ion-icon>
+                            </a>
+                        {% endif %}
                     {% else %}
                         <a type="submit" href="#" title="{% trans 'Approve' %}"
                             class="oh-btn oh-btn--success oh-btn--disabled
