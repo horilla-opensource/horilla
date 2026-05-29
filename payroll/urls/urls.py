@@ -6,6 +6,7 @@ This module is used to map url pattern or request path with view functions
 
 from django.urls import include, path
 
+from payroll import dashboard_modern as pay_dashboard_modern
 from payroll.cbv import contracts, dashboard, payslip_automation
 from payroll.models.models import Contract, Payslip
 from payroll.views import views
@@ -244,5 +245,61 @@ urlpatterns = [
         "pay-slip-automation-delete/<int:auto_id>/",
         payslip_automation.DeleteAutoPayslipView.as_view(),
         name="pay-slip-automation-delete",
+    ),
+    # ── Payroll Modern Dashboard ─────────────────────────────────────────────
+    path(
+        "dashboard/",
+        pay_dashboard_modern.modern_payroll_dashboard,
+        name="payroll-modern-dashboard",
+    ),
+    path(
+        "dashboard/api/kpi/",
+        pay_dashboard_modern.payroll_kpi_data,
+        name="payroll-modern-kpi",
+    ),
+    path(
+        "dashboard/api/trend/",
+        pay_dashboard_modern.payroll_monthly_trend,
+        name="payroll-modern-trend",
+    ),
+    path(
+        "dashboard/api/department/",
+        pay_dashboard_modern.payroll_department_cost,
+        name="payroll-modern-dept",
+    ),
+    path(
+        "dashboard/api/pipeline/",
+        pay_dashboard_modern.payroll_status_pipeline,
+        name="payroll-modern-pipeline",
+    ),
+    path(
+        "dashboard/api/top-earners/",
+        pay_dashboard_modern.payroll_top_earners,
+        name="payroll-modern-earners",
+    ),
+    path(
+        "dashboard/api/contracts/",
+        pay_dashboard_modern.payroll_contract_status,
+        name="payroll-modern-contracts",
+    ),
+    path(
+        "dashboard/api/loans/",
+        pay_dashboard_modern.payroll_loan_summary,
+        name="payroll-modern-loans",
+    ),
+    path(
+        "dashboard/api/reimbursement/",
+        pay_dashboard_modern.payroll_reimbursement_summary,
+        name="payroll-modern-reimbursement",
+    ),
+    path(
+        "dashboard/api/salary-dist/",
+        pay_dashboard_modern.payroll_salary_distribution,
+        name="payroll-modern-salary-dist",
+    ),
+    path(
+        "dashboard/api/components/",
+        pay_dashboard_modern.payroll_component_breakdown,
+        name="payroll-modern-components",
     ),
 ]

@@ -23,6 +23,7 @@ from base.models import (
 )
 from employee.models import Employee
 from horilla.decorators import hx_request_required, login_required, permission_required
+from horilla.http.response import HorillaRedirect
 from horilla_auth.models import HorillaUser
 from notifications.signals import notify
 
@@ -206,26 +207,32 @@ def delete_announcement(request, anoun_id):
     """
     This method is used to delete announcements.
     """
+    from horilla.horilla_middlewares import _thread_locals
+
     announcement = Announcement.find(anoun_id)
     if announcement:
         announcement.delete()
         messages.success(request, _("Announcement deleted successfully."))
 
-    instance_ids = request.GET.get("instance_ids")
-    instance_ids_list = json.loads(instance_ids)
-    __, next_instance_id = (
-        closest_numbers(instance_ids_list, anoun_id)
-        if instance_ids_list
-        else (None, None)
-    )
+    instance_ids = request.GET.get("instance_ids", "[]")
+    try:
+        instance_ids_list = json.loads(instance_ids) if instance_ids else []
+    except (json.JSONDecodeError, TypeError):
+        instance_ids_list = []
 
+    __, next_instance_id = closest_numbers(instance_ids_list, anoun_id)
     if anoun_id in instance_ids_list:
         instance_ids_list.remove(anoun_id)
 
+    if not instance_ids_list:
+        # Last announcement deleted — refresh the page to show empty state
+        return HorillaRedirect(request)
+
     if next_instance_id and next_instance_id != anoun_id:
-        url = reverse("announcement-single-view", kwargs={"anoun_id": next_instance_id})
+        url = reverse("announcement-single-view", kwargs={"pk": next_instance_id})
         return redirect(f"{url}?instance_ids={json.dumps(instance_ids_list)}")
-    return redirect(announcement_single_view)
+
+    return HorillaRedirect(request)
 
 
 @login_required

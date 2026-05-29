@@ -147,7 +147,7 @@ def dashboard(request):
     skill_zone = SkillZone.objects.filter(is_active=True)
     return render(
         request,
-        "dashboard/dashboard.html",
+        "recruitment/dashboard_modern.html",
         {
             "ongoing_recruitments": ongoing_recruitments,
             "total_candidate_ratio": total_candidate_ratio,
@@ -174,12 +174,15 @@ def dashboard(request):
 
 
 @login_required
-@manager_can_enter(perm="recruitment.view_recruitment")
 def dashboard_pipeline(request):
     """
     This method is used generate recruitment dataset for the dashboard
     """
-    recruitment_obj = Recruitment.objects.filter(closed=False)
+    import datetime as _dt
+
+    today = _dt.date.today()
+    # Exclude future recruitments (start_date > today) — they have no candidates yet
+    recruitment_obj = Recruitment.objects.filter(closed=False, start_date__lte=today)
     data_set = []
     labels = [type[1] for type in Stage.stage_types]
     for rec in recruitment_obj:
@@ -196,23 +199,24 @@ def dashboard_pipeline(request):
                     "data": data,
                 }
             )
-    return JsonResponse(
+    response = JsonResponse(
         {
             "dataSet": data_set,
             "labels": labels,
             "message": _("No records available at the moment."),
         }
     )
+    response["Cache-Control"] = "no-store, no-cache, must-revalidate"
+    return response
 
 
 @login_required
-@manager_can_enter(perm="recruitment.view_recruitment")
 def dashboard_hiring(request):
     """
     This method is used generate employee joining status for the dashboard
     """
 
-    selected_year = request.GET.get("id")
+    selected_year = request.GET.get("id") or datetime.date.today().year
 
     employee_info = EmployeeWorkInformation.objects.filter(
         date_joining__year=selected_year

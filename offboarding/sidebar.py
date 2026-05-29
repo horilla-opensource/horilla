@@ -19,7 +19,7 @@ ACCESSIBILITY = "offboarding.sidebar.offboarding_accessibility"
 SUBMENUS = [
     {
         "menu": _("Dashboard"),
-        "redirect": reverse("offboarding-dashboard"),
+        "redirect": reverse("offboarding-modern-dashboard"),
         "accessibility": "offboarding.sidebar.dashboard_accessibility",
     },
     {

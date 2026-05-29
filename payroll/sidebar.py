@@ -12,7 +12,7 @@ IMG_SRC = "images/ui/wallet-outline.svg"
 SUBMENUS = [
     {
         "menu": _("Dashboard"),
-        "redirect": reverse("view-payroll-dashboard"),
+        "redirect": reverse("payroll-modern-dashboard"),
         "accessibility": "payroll.sidebar.dasbhoard_accessibility",
     },
     {
