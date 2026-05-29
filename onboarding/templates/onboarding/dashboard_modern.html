@@ -1,7 +1,7 @@
 ﻿{% extends "index.html" %}
 {% load static i18n %}
 
-{% block styles %}
+{% block content %}
 <script src="https://cdn.jsdelivr.net/npm/apexcharts"></script>
 <style>
     :root { --on-indigo: #6366f1; --on-green: #22c55e; --on-amber: #f59e0b; --on-red: #ef4444; --on-blue: #3b82f6; --on-purple: #a855f7; }
@@ -127,9 +127,7 @@
     @media (max-width: 1024px) { .on-kpi-grid { grid-template-columns: repeat(2, 1fr); } .on-chart-grid { grid-template-columns: 1fr; } .on-chart-card--wide { grid-column: span 1; } .on-sidebar { grid-template-columns: 1fr; } }
     @media (max-width: 640px) { .on-kpi-grid { grid-template-columns: 1fr; } }
 </style>
-{% endblock %}
 
-{% block content %}
 <div class="on-dashboard">
     <div class="on-header">
         <div>
@@ -358,7 +356,7 @@
     if (autoRefreshOn) startAutoRefresh(); else stopAutoRefresh();
 
     // ─── KPI CARDS ───
-    fetchP("{% url 'onboarding-modern-kpi' %}")
+    fetchP("{% url 'onboarding-dashboard-kpi' %}")
         .then(r => r.json())
         .then(data => {
             document.getElementById('on-kpi-grid').innerHTML = `
@@ -389,7 +387,7 @@
         });
 
     // ─── STAGE PIPELINE ───
-    fetchP("{% url 'onboarding-modern-stages' %}")
+    fetchP("{% url 'onboarding-dashboard-stages' %}")
         .then(r => r.json())
         .then(data => {
             if (!data.stages.length) { document.querySelector("#chart-on-stages").innerHTML = emptyHtml('{% trans "No onboarding stages" %}'); return; }
@@ -414,7 +412,7 @@
         });
 
     // ─── TASK STATUS ───
-    fetchP("{% url 'onboarding-modern-tasks' %}")
+    fetchP("{% url 'onboarding-dashboard-tasks' %}")
         .then(r => r.json())
         .then(data => {
             const total = data.statuses.reduce((a, s) => a + s.count, 0);
@@ -436,7 +434,7 @@
         });
 
     // ─── BY RECRUITMENT ───
-    fetchP("{% url 'onboarding-modern-recruitment' %}")
+    fetchP("{% url 'onboarding-dashboard-recruitment' %}")
         .then(r => r.json())
         .then(data => {
             if (!data.recruitments.length) { document.querySelector("#chart-on-recruitment").innerHTML = emptyHtml('{% trans "No data" %}'); return; }
@@ -458,7 +456,7 @@
         });
 
     // ─── BY JOB POSITION ───
-    fetchP("{% url 'onboarding-modern-position' %}")
+    fetchP("{% url 'onboarding-dashboard-position' %}")
         .then(r => r.json())
         .then(data => {
             if (!data.positions.length) { document.querySelector("#chart-on-position").innerHTML = emptyHtml('{% trans "No data" %}'); return; }
@@ -483,7 +481,7 @@
         });
 
     // ─── COMPLETION TREND ───
-    fetchP("{% url 'onboarding-modern-completion-trend' %}")
+    fetchP("{% url 'onboarding-dashboard-completion-trend' %}")
         .then(r => r.json())
         .then(data => {
             if (!data.months.length || !data.months.some(m => m.count > 0)) { document.querySelector("#chart-completion-trend").innerHTML = emptyHtml('{% trans "No completions" %}'); return; }
@@ -516,7 +514,7 @@
         });
 
     // ─── CANDIDATES LIST ───
-    fetchP("{% url 'onboarding-modern-candidates' %}")
+    fetchP("{% url 'onboarding-dashboard-candidates' %}")
         .then(r => r.json())
         .then(data => {
             const el = document.getElementById('on-candidates');
@@ -540,7 +538,7 @@
         }).catch(() => { document.getElementById('on-candidates').innerHTML = '<div class="on-info-panel__empty">{% trans "No data" %}</div>'; });
 
     // ─── MY TASKS ───
-    fetchP("{% url 'onboarding-modern-my-tasks' %}")
+    fetchP("{% url 'onboarding-dashboard-my-tasks' %}")
         .then(r => r.json())
         .then(data => {
             const el = document.getElementById('on-my-tasks');
@@ -561,7 +559,7 @@
         }).catch(() => { document.getElementById('on-my-tasks').innerHTML = '<div class="on-info-panel__empty">{% trans "No data" %}</div>'; });
 
     // ─── PORTAL ACCESS ───
-    fetchP("{% url 'onboarding-modern-portal-status' %}")
+    fetchP("{% url 'onboarding-dashboard-portal-status' %}")
         .then(r => r.json())
         .then(data => {
             const el = document.getElementById('on-portal-status');

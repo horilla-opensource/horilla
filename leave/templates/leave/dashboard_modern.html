@@ -1,7 +1,7 @@
 ﻿{% extends "index.html" %}
 {% load static i18n %}
 
-{% block styles %}
+{% block content %}
 <script src="https://cdn.jsdelivr.net/npm/apexcharts"></script>
 <style>
     :root {
@@ -197,9 +197,7 @@
     }
     @media (max-width: 640px) { .ld-kpi-grid { grid-template-columns: 1fr; } }
 </style>
-{% endblock %}
 
-{% block content %}
 <div class="ld-dashboard">
 
     <!-- Header -->
@@ -464,7 +462,7 @@
     if (autoRefreshOn) startAutoRefresh(); else stopAutoRefresh();
 
     // ─── KPI CARDS ───
-    fetchP("{% url 'leave-modern-kpi' %}")
+    fetchP("{% url 'leave-dashboard-kpi' %}")
         .then(r => r.json())
         .then(data => {
             document.getElementById('ld-kpi-grid').innerHTML = `
@@ -495,7 +493,7 @@
         });
 
     // ─── MONTHLY TREND ───
-    fetchP("{% url 'leave-modern-monthly-trend' %}")
+    fetchP("{% url 'leave-dashboard-monthly-trend' %}")
         .then(r => r.json())
         .then(data => {
             if (!data.months.length) { document.querySelector("#chart-monthly-trend").innerHTML = emptyHtml('{% trans "No data" %}'); return; }
@@ -528,7 +526,7 @@
         });
 
     // ─── LEAVE TYPE DISTRIBUTION ───
-    fetchP("{% url 'leave-modern-type-dist' %}")
+    fetchP("{% url 'leave-dashboard-type-dist' %}")
         .then(r => r.json())
         .then(data => {
             document.getElementById('lt-month').textContent = data.month;
@@ -554,7 +552,7 @@
         });
 
     // ─── PAID VS UNPAID ───
-    fetchP("{% url 'leave-modern-paid-unpaid' %}")
+    fetchP("{% url 'leave-dashboard-paid-unpaid' %}")
         .then(r => r.json())
         .then(data => {
             document.getElementById('pu-month').textContent = data.month;
@@ -573,7 +571,7 @@
         });
 
     // ─── DEPARTMENT BREAKDOWN ───
-    fetchP("{% url 'leave-modern-dept' %}")
+    fetchP("{% url 'leave-dashboard-dept' %}")
         .then(r => r.json())
         .then(data => {
             document.getElementById('dept-month').textContent = data.month;
@@ -598,7 +596,7 @@
         });
 
     // ─── WEEKLY PATTERN ───
-    fetchP("{% url 'leave-modern-weekly-pattern' %}")
+    fetchP("{% url 'leave-dashboard-weekly-pattern' %}")
         .then(r => r.json())
         .then(data => {
             if (!data.counts.some(c => c > 0)) { document.querySelector("#chart-weekly-pattern").innerHTML = emptyHtml('{% trans "No data" %}'); return; }
@@ -617,7 +615,7 @@
         });
 
     // ─── LEAVE UTILIZATION ───
-    fetchP("{% url 'leave-modern-utilization' %}")
+    fetchP("{% url 'leave-dashboard-utilization' %}")
         .then(r => r.json())
         .then(data => {
             const el = document.querySelector("#chart-utilization");
@@ -636,7 +634,7 @@
         });
 
     // ─── ON LEAVE TODAY ───
-    fetchP("{% url 'leave-modern-on-leave' %}")
+    fetchP("{% url 'leave-dashboard-on-leave' %}")
         .then(r => r.json())
         .then(data => {
             const el = document.getElementById('ld-on-leave');
@@ -656,7 +654,7 @@
         }).catch(() => { document.getElementById('ld-on-leave').innerHTML = '<div class="ld-info-panel__empty">{% trans "No one on leave today" %}</div>'; });
 
     // ─── UPCOMING LEAVES ───
-    fetchP("{% url 'leave-modern-upcoming' %}")
+    fetchP("{% url 'leave-dashboard-upcoming' %}")
         .then(r => r.json())
         .then(data => {
             const el = document.getElementById('ld-upcoming');
@@ -679,7 +677,7 @@
         }).catch(() => { document.getElementById('ld-upcoming').innerHTML = '<div class="ld-info-panel__empty">{% trans "No upcoming leaves" %}</div>'; });
 
     // ─── TOP LEAVE TAKERS ───
-    fetchP("{% url 'leave-modern-top-takers' %}")
+    fetchP("{% url 'leave-dashboard-top-takers' %}")
         .then(r => r.json())
         .then(data => {
             const el = document.getElementById('ld-top-takers');
@@ -700,7 +698,7 @@
         }).catch(() => { document.getElementById('ld-top-takers').innerHTML = '<div class="ld-info-panel__empty">{% trans "No leaves this month" %}</div>'; });
 
     // ─── UPCOMING HOLIDAYS ───
-    fetchP("{% url 'leave-modern-holidays' %}")
+    fetchP("{% url 'leave-dashboard-holidays' %}")
         .then(r => r.json())
         .then(data => {
             const el = document.getElementById('ld-holidays');

@@ -366,7 +366,7 @@
         <span class="ess-period-picker__sep">&rarr;</span>
         <input type="date" id="essToDate" title="{% trans 'To' %}">
       </div>
-      <a href="{% url 'modern-dashboard' %}" class="ess-btn-back">{% trans "Back" %}</a>
+      <a href="{% url 'dashboard' %}" class="ess-btn-back">{% trans "Back" %}</a>
     </div>
   </div>
 
@@ -651,7 +651,7 @@
                   '{% url "view-my-attendance" %}') +
           kpiCard('amber',  iconGoals, '{% trans "Open Goals" %}',
                   d.open_objectives, '{% trans "active objectives" %}',
-                  '{% url "pms-modern-dashboard" %}') +
+                  '{% url "dashboard-view" %}') +
           kpiCard('purple', iconPay, '{% trans "Last Net Pay" %}',
                   d.latest_net_pay !== null ? d.latest_net_pay : '—',
                   d.latest_payslip_period || '',
@@ -873,7 +873,7 @@
         }
         container.className = '';
         container.id = 'essGoalsContainer';
-        var goalsUrl = '{% url "pms-modern-dashboard" %}';
+        var goalsUrl = '{% url "dashboard-view" %}';
         container.innerHTML = d.objectives.map(function (obj) {
           return '<div class="ess-goal-row" onclick="window.location.href=\'' + goalsUrl + '\'">' +
             '<div class="ess-goal-row__header">' +

@@ -1,7 +1,7 @@
 ﻿{% extends "index.html" %}
 {% load static i18n %}
 
-{% block styles %}
+{% block content %}
 <script src="https://cdn.jsdelivr.net/npm/apexcharts"></script>
 <style>
     :root {
@@ -276,9 +276,7 @@
     }
     @media (max-width: 640px) { .rd-kpi-grid { grid-template-columns: 1fr; } }
 </style>
-{% endblock %}
 
-{% block content %}
 <div class="rd-dashboard">
 
     <!-- Header -->
@@ -551,7 +549,7 @@
     if (autoRefreshOn) startAutoRefresh(); else stopAutoRefresh();
 
     // ─── KPI CARDS ───
-    fetchP("{% url 'recruitment-modern-kpi' %}")
+    fetchP("{% url 'recruitment-dashboard-kpi' %}")
         .then(r => r.json())
         .then(data => {
             document.getElementById('rd-kpi-grid').innerHTML = `
@@ -588,7 +586,7 @@
         });
 
     // ─── STAGE CONVERSION FUNNEL ───
-    fetchP("{% url 'recruitment-modern-conversion' %}")
+    fetchP("{% url 'recruitment-dashboard-conversion' %}")
         .then(r => r.json())
         .then(data => {
             const el = document.querySelector("#chart-conversion-funnel");
@@ -611,7 +609,7 @@
         });
 
     // ─── SOURCE OF HIRE ───
-    fetchP("{% url 'recruitment-modern-source' %}")
+    fetchP("{% url 'recruitment-dashboard-source' %}")
         .then(r => r.json())
         .then(data => {
             if (!data.sources.length) { document.querySelector("#chart-source-hire").innerHTML = emptyHtml('{% trans "No source data" %}'); return; }
@@ -641,7 +639,7 @@
         });
 
     // ─── OPEN POSITIONS BY DEPARTMENT ───
-    fetchP("{% url 'recruitment-modern-open-dept' %}")
+    fetchP("{% url 'recruitment-dashboard-open-dept' %}")
         .then(r => r.json())
         .then(data => {
             if (!data.departments.length) { document.querySelector("#chart-open-dept").innerHTML = emptyHtml('{% trans "No open positions" %}'); return; }
@@ -663,7 +661,7 @@
         });
 
     // ─── SOURCE CONVERSION ───
-    fetchP("{% url 'recruitment-modern-source-conv' %}")
+    fetchP("{% url 'recruitment-dashboard-source-conv' %}")
         .then(r => r.json())
         .then(data => {
             if (!data.sources.length) { document.querySelector("#chart-source-conv").innerHTML = emptyHtml('{% trans "No source data" %}'); return; }
@@ -685,7 +683,7 @@
         });
 
     // ─── INTERVIEWS IN PERIOD ───
-    fetchP("{% url 'recruitment-modern-interviews' %}")
+    fetchP("{% url 'recruitment-dashboard-interviews' %}")
         .then(r => r.json())
         .then(data => {
             const el = document.getElementById('rd-interviews');
@@ -702,7 +700,7 @@
         }).catch(() => { document.getElementById('rd-interviews').innerHTML = '<div class="rd-info-panel__empty">{% trans "No interviews scheduled" %}</div>'; });
 
     // ─── CANDIDATES BY STAGE ───
-    fetchP("{% url 'recruitment-modern-stage-summary' %}")
+    fetchP("{% url 'recruitment-dashboard-stage-summary' %}")
         .then(r => r.json())
         .then(data => {
             if (!data.stages.length) { document.querySelector("#chart-stage-summary").innerHTML = emptyHtml('{% trans "No data" %}'); return; }
@@ -727,7 +725,7 @@
         });
 
     // ─── OFFER LETTER STATUS ───
-    fetchP("{% url 'recruitment-modern-offer-status' %}")
+    fetchP("{% url 'recruitment-dashboard-offer-status' %}")
         .then(r => r.json())
         .then(data => {
             const total = data.data.reduce((a, b) => a + b, 0);
@@ -752,7 +750,7 @@
         });
 
     // ─── HIRING PIPELINE TABLE ───
-    fetchP("{% url 'recruitment-modern-pipeline' %}")
+    fetchP("{% url 'recruitment-dashboard-pipeline' %}")
         .then(r => r.json())
         .then(data => {
             const el = document.getElementById('rd-pipeline-table');
@@ -774,7 +772,7 @@
         });
 
     // ─── HIRE RATE ───
-    fetchP("{% url 'recruitment-modern-source-quality' %}")
+    fetchP("{% url 'recruitment-dashboard-source-quality' %}")
         .then(r => r.json())
         .then(data => {
             if (!data.sources.length) { document.querySelector("#chart-hire-rate").innerHTML = emptyHtml('{% trans "No data" %}'); return; }
@@ -797,7 +795,7 @@
         });
 
     // ─── TIME TO HIRE ───
-    fetchP("{% url 'recruitment-modern-time-to-hire' %}")
+    fetchP("{% url 'recruitment-dashboard-time-to-hire' %}")
         .then(r => r.json())
         .then(data => {
             if (!data.data.length) { document.querySelector("#chart-time-to-hire").innerHTML = emptyHtml('{% trans "No hire date data available" %}'); return; }
@@ -820,7 +818,7 @@
         });
 
     // ─── JOININGS PER MONTH (period-driven) ───
-    fetchP("{% url 'recruitment-modern-joinings' %}")
+    fetchP("{% url 'recruitment-dashboard-joinings' %}")
         .then(r => r.json())
         .then(data => {
             if (!data.data || !data.data.length || !data.data.some(v => v > 0)) {
@@ -851,7 +849,7 @@
         });
 
     // ─── ONGOING RECRUITMENTS & MANAGERS ───
-    fetchP("{% url 'recruitment-modern-managers' %}")
+    fetchP("{% url 'recruitment-dashboard-managers' %}")
         .then(r => r.json())
         .then(data => {
             const el = document.getElementById('rd-managers-table');

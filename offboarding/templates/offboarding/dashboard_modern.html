@@ -1,7 +1,7 @@
 ﻿{% extends "index.html" %}
 {% load static i18n %}
 
-{% block styles %}
+{% block content %}
 <script src="https://cdn.jsdelivr.net/npm/apexcharts"></script>
 <style>
     :root { --ob-indigo: #6366f1; --ob-green: #22c55e; --ob-amber: #f59e0b; --ob-red: #ef4444; --ob-blue: #3b82f6; --ob-purple: #a855f7; }
@@ -130,9 +130,7 @@
     @media (max-width: 1024px) { .ob-kpi-grid { grid-template-columns: repeat(2, 1fr); } .ob-chart-grid { grid-template-columns: 1fr; } .ob-chart-card--wide { grid-column: span 1; } .ob-sidebar { grid-template-columns: 1fr; } }
     @media (max-width: 640px) { .ob-kpi-grid { grid-template-columns: 1fr; } }
 </style>
-{% endblock %}
 
-{% block content %}
 <div class="ob-dashboard">
 
     <div class="ob-header">
@@ -363,7 +361,7 @@
     if (autoRefreshOn) startAutoRefresh(); else stopAutoRefresh();
 
     // ─── KPI CARDS ───
-    fetchP("{% url 'offboarding-modern-kpi' %}")
+    fetchP("{% url 'offboarding-dashboard-kpi' %}")
         .then(r => r.json())
         .then(data => {
             document.getElementById('ob-kpi-grid').innerHTML = `
@@ -394,7 +392,7 @@
         });
 
     // ─── AVG OFFBOARDING DURATION ───
-    fetchP("{% url 'offboarding-modern-avg-duration' %}")
+    fetchP("{% url 'offboarding-dashboard-avg-duration' %}")
         .then(r => r.json())
         .then(data => {
             const el = document.getElementById('ob-avg-duration');
@@ -402,7 +400,7 @@
         });
 
     // ─── OFFBOARDING PIPELINE ───
-    fetchP("{% url 'offboarding-modern-pipeline' %}")
+    fetchP("{% url 'offboarding-dashboard-pipeline' %}")
         .then(r => r.json())
         .then(data => {
             const el = document.getElementById('ob-pipeline');
@@ -418,7 +416,7 @@
         });
 
     // ─── RESIGNATION STATUS ───
-    fetchP("{% url 'offboarding-modern-resignation' %}")
+    fetchP("{% url 'offboarding-dashboard-resignation' %}")
         .then(r => r.json())
         .then(data => {
             const total = data.statuses.reduce((a, s) => a + s.count, 0);
@@ -441,7 +439,7 @@
         });
 
     // ─── TASK COMPLETION ───
-    fetchP("{% url 'offboarding-modern-tasks' %}")
+    fetchP("{% url 'offboarding-dashboard-tasks' %}")
         .then(r => r.json())
         .then(data => {
             const total = data.statuses.reduce((a, s) => a + s.count, 0);
@@ -464,7 +462,7 @@
         });
 
     // ─── DEPARTMENT ATTRITION ───
-    fetchP("{% url 'offboarding-modern-dept' %}")
+    fetchP("{% url 'offboarding-dashboard-dept' %}")
         .then(r => r.json())
         .then(data => {
             if (!data.departments.length) { document.querySelector("#chart-dept-attrition").innerHTML = emptyHtml('{% trans "No data" %}'); return; }
@@ -491,7 +489,7 @@
         });
 
     // ─── EXIT REASONS ───
-    fetchP("{% url 'offboarding-modern-reasons' %}")
+    fetchP("{% url 'offboarding-dashboard-reasons' %}")
         .then(r => r.json())
         .then(data => {
             if (!data.reasons.length) { document.querySelector("#chart-exit-reasons").innerHTML = emptyHtml('{% trans "No exit reasons recorded" %}'); return; }
@@ -514,7 +512,7 @@
         });
 
     // ─── JOINING VS EXITING ───
-    fetchP("{% url 'offboarding-modern-join-exit' %}")
+    fetchP("{% url 'offboarding-dashboard-join-exit' %}")
         .then(r => r.json())
         .then(data => {
             if (!data.months.length) { document.querySelector("#chart-join-exit").innerHTML = emptyHtml('{% trans "No data" %}'); return; }
@@ -548,7 +546,7 @@
         });
 
     // ─── NOTICE PERIOD TRACKER ───
-    fetchP("{% url 'offboarding-modern-notice' %}")
+    fetchP("{% url 'offboarding-dashboard-notice' %}")
         .then(r => r.json())
         .then(data => {
             const el = document.getElementById('ob-notice');
@@ -572,7 +570,7 @@
         }).catch(() => { document.getElementById('ob-notice').innerHTML = '<div class="ob-info-panel__empty">{% trans "No data" %}</div>'; });
 
     // ─── UNRETURNED ASSETS ───
-    fetchP("{% url 'offboarding-modern-assets' %}")
+    fetchP("{% url 'offboarding-dashboard-assets' %}")
         .then(r => r.json())
         .then(data => {
             const el = document.getElementById('ob-assets');

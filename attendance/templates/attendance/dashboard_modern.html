@@ -1,7 +1,7 @@
 ﻿{% extends "index.html" %}
 {% load static i18n %}
 
-{% block styles %}
+{% block content %}
 <script src="https://cdn.jsdelivr.net/npm/apexcharts"></script>
 <style>
     :root {
@@ -490,16 +490,14 @@
         .am-customize-panel { width: 100%; right: -100%; }
     }
 </style>
-{% endblock %}
 
-{% block content %}
 <div class="am-dashboard">
 
     <!-- Header -->
     <div class="am-header">
         <div>
             <nav class="oh-breadcrumb" style="margin-bottom:4px;">
-                <a href="{% url 'modern-dashboard' %}" class="oh-breadcrumb__item" style="font-size:12px;opacity:0.6;text-decoration:none;color:inherit;">{% trans "Home" %}</a>
+                <a href="{% url 'dashboard' %}" class="oh-breadcrumb__item" style="font-size:12px;opacity:0.6;text-decoration:none;color:inherit;">{% trans "Home" %}</a>
                 <span class="oh-breadcrumb__divider" style="font-size:12px;opacity:0.4;margin:0 4px;">/</span>
                 <span class="oh-breadcrumb__item" style="font-size:12px;opacity:0.6;">{% trans "Attendance" %}</span>
             </nav>
@@ -957,7 +955,7 @@
     // ═══════════════════════════════════════════
 
     // ─── KPI CARDS ───
-    fetchP("{% url 'attendance-modern-kpi' %}")
+    fetchP("{% url 'attendance-dashboard-kpi' %}")
         .then(r => r.json())
         .then(data => {
             document.getElementById('am-kpi-grid').innerHTML = `
@@ -992,7 +990,7 @@
         }).catch(() => { document.getElementById('am-kpi-grid').innerHTML = emptyHtml('{% trans "Unable to load KPIs" %}'); });
 
     // ─── ATTENDANCE TREND ───
-    fetchP("{% url 'attendance-modern-weekly' %}")
+    fetchP("{% url 'attendance-dashboard-weekly' %}")
         .then(r => r.json())
         .then(data => {
             const subEl = document.getElementById('weekly-trend-subtitle');
@@ -1030,7 +1028,7 @@
         }).catch(() => { document.querySelector("#chart-weekly-trend").innerHTML = emptyHtml('{% trans "Unable to load" %}'); });
 
     // ─── DEPARTMENT ATTENDANCE ───
-    fetchP("{% url 'attendance-modern-dept' %}")
+    fetchP("{% url 'attendance-dashboard-dept' %}")
         .then(r => r.json())
         .then(data => {
             const subEl = document.getElementById('dept-attendance-subtitle');
@@ -1058,7 +1056,7 @@
         }).catch(() => { document.querySelector("#chart-dept-attendance").innerHTML = emptyHtml('{% trans "Unable to load" %}'); });
 
     // ─── LATE COME & EARLY OUT ───
-    fetchP("{% url 'attendance-modern-late-early' %}")
+    fetchP("{% url 'attendance-dashboard-late-early' %}")
         .then(r => r.json())
         .then(data => {
             const subEl = document.getElementById('late-early-subtitle');
@@ -1093,7 +1091,7 @@
         }).catch(() => { document.querySelector("#chart-late-early").innerHTML = emptyHtml('{% trans "Unable to load" %}'); });
 
     // ─── OVERTIME BY DEPARTMENT ───
-    fetchP("{% url 'attendance-modern-overtime' %}")
+    fetchP("{% url 'attendance-dashboard-overtime' %}")
         .then(r => r.json())
         .then(data => {
             document.getElementById('ot-month').textContent = data.month;
@@ -1128,7 +1126,7 @@
         }).catch(() => { document.querySelector("#chart-overtime").innerHTML = emptyHtml('{% trans "No overtime data" %}'); });
 
     // ─── HOURS DISTRIBUTION ───
-    fetchP("{% url 'attendance-modern-hours' %}")
+    fetchP("{% url 'attendance-dashboard-hours' %}")
         .then(r => r.json())
         .then(data => {
             if (!data.departments.length) { document.querySelector("#chart-hours").innerHTML = emptyHtml('{% trans "No data" %}'); return; }
@@ -1158,7 +1156,7 @@
         }).catch(() => { document.querySelector("#chart-hours").innerHTML = emptyHtml('{% trans "Unable to load" %}'); });
 
     // ─── SHIFT DISTRIBUTION ───
-    fetchP("{% url 'attendance-modern-shifts' %}")
+    fetchP("{% url 'attendance-dashboard-shifts' %}")
         .then(r => r.json())
         .then(data => {
             if (!data.shifts.length) { document.querySelector("#chart-shifts").innerHTML = emptyHtml('{% trans "No shift data" %}'); return; }
@@ -1187,7 +1185,7 @@
         }).catch(() => { document.querySelector("#chart-shifts").innerHTML = emptyHtml('{% trans "Unable to load" %}'); });
 
     // ─── CLOCK-IN DISTRIBUTION ───
-    fetchP("{% url 'attendance-modern-clockin' %}")
+    fetchP("{% url 'attendance-dashboard-clockin' %}")
         .then(r => r.json())
         .then(data => {
             const subEl = document.getElementById('clockin-subtitle');
@@ -1222,7 +1220,7 @@
         }).catch(() => { document.querySelector("#chart-clockin-dist").innerHTML = emptyHtml('{% trans "Unable to load" %}'); });
 
     // ─── CALENDAR HEATMAP ───
-    fetchP("{% url 'attendance-modern-calendar' %}")
+    fetchP("{% url 'attendance-dashboard-calendar' %}")
         .then(r => r.json())
         .then(data => {
             document.getElementById('calendar-month').textContent = data.period_label || data.month || '{% trans "Daily attendance rate" %}';
@@ -1256,7 +1254,7 @@
         }).catch(() => { document.querySelector("#chart-calendar").innerHTML = emptyHtml('{% trans "Unable to load" %}'); });
 
     // ─── ABSENTEEISM RATE TREND ───
-    fetchP("{% url 'attendance-modern-absenteeism' %}")
+    fetchP("{% url 'attendance-dashboard-absenteeism' %}")
         .then(r => r.json())
         .then(data => {
             if (!data.months.length) { document.querySelector("#chart-absenteeism").innerHTML = emptyHtml('{% trans "No data" %}'); return; }
@@ -1279,7 +1277,7 @@
         }).catch(() => { document.querySelector("#chart-absenteeism").innerHTML = emptyHtml('{% trans "Unable to load" %}'); });
 
     // ─── AVG WORKING HOURS ───
-    fetchP("{% url 'attendance-modern-avg-hours' %}")
+    fetchP("{% url 'attendance-dashboard-avg-hours' %}")
         .then(r => r.json())
         .then(data => {
             document.getElementById('avg-hours-month').textContent = data.month;
@@ -1312,7 +1310,7 @@
         }).catch(() => { document.querySelector("#chart-avg-hours").innerHTML = emptyHtml('{% trans "Unable to load" %}'); });
 
     // ─── WORK TYPE DISTRIBUTION ───
-    fetchP("{% url 'attendance-modern-work-types' %}")
+    fetchP("{% url 'attendance-dashboard-work-types' %}")
         .then(r => r.json())
         .then(data => {
             if (!data.work_types.length) { document.querySelector("#chart-work-types").innerHTML = emptyHtml('{% trans "No work type data" %}'); return; }
@@ -1342,7 +1340,7 @@
         }).catch(() => { document.querySelector("#chart-work-types").innerHTML = emptyHtml('{% trans "Unable to load" %}'); });
 
     // ─── TOP ABSENTEES ───
-    fetchP("{% url 'attendance-modern-absentees' %}")
+    fetchP("{% url 'attendance-dashboard-absentees' %}")
         .then(r => r.json())
         .then(data => {
             const el = document.getElementById('am-absentees');
@@ -1364,7 +1362,7 @@
         }).catch(() => { document.getElementById('am-absentees').innerHTML = '<div class="am-info-panel__empty">{% trans "No absences this month" %}</div>'; });
 
     // ─── ATTENDANCE OVERVIEW ───
-    fetchP("{% url 'attendance-modern-overview' %}")
+    fetchP("{% url 'attendance-dashboard-overview' %}")
         .then(r => r.json())
         .then(data => {
             const subEl = document.getElementById('att-overview-subtitle');

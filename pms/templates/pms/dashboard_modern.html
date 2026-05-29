@@ -1,7 +1,7 @@
 ﻿{% extends "index.html" %}
 {% load static i18n %}
 
-{% block styles %}
+{% block content %}
 <script src="https://cdn.jsdelivr.net/npm/apexcharts"></script>
 <style>
     :root { --pm-indigo: #6366f1; --pm-green: #22c55e; --pm-amber: #f59e0b; --pm-red: #ef4444; --pm-blue: #3b82f6; --pm-purple: #a855f7; --pm-cyan: #06b6d4; }
@@ -149,9 +149,7 @@
     @media (max-width: 1024px) { .pm-kpi-grid { grid-template-columns: repeat(2, 1fr); } .pm-chart-grid { grid-template-columns: 1fr; } .pm-chart-card--wide { grid-column: span 1; } .pm-sidebar { grid-template-columns: 1fr; } }
     @media (max-width: 640px) { .pm-kpi-grid { grid-template-columns: 1fr; } }
 </style>
-{% endblock %}
 
-{% block content %}
 <div class="pm-dashboard">
 
     <div class="pm-header">
@@ -396,7 +394,7 @@
     if (autoRefreshOn) startAutoRefresh(); else stopAutoRefresh();
 
     // ─── KPI CARDS ───
-    fetchP("{% url 'pms-modern-kpi' %}")
+    fetchP("{% url 'pms-dashboard-kpi' %}")
         .then(r => r.json())
         .then(data => {
             document.getElementById('pm-kpi-grid').innerHTML = `
@@ -427,7 +425,7 @@
         });
 
     // ─── OBJECTIVE STATUS ───
-    fetchP("{% url 'pms-modern-obj-status' %}")
+    fetchP("{% url 'pms-dashboard-obj-status' %}")
         .then(r => r.json())
         .then(data => {
             const total = data.statuses.reduce((a, s) => a + s.count, 0);
@@ -451,7 +449,7 @@
         });
 
     // ─── KEY RESULT STATUS ───
-    fetchP("{% url 'pms-modern-kr-status' %}")
+    fetchP("{% url 'pms-dashboard-kr-status' %}")
         .then(r => r.json())
         .then(data => {
             const total = data.statuses.reduce((a, s) => a + s.count, 0);
@@ -475,7 +473,7 @@
         });
 
     // ─── FEEDBACK STATUS ───
-    fetchP("{% url 'pms-modern-fb-status' %}")
+    fetchP("{% url 'pms-dashboard-fb-status' %}")
         .then(r => r.json())
         .then(data => {
             const total = data.statuses.reduce((a, s) => a + s.count, 0);
@@ -499,7 +497,7 @@
         });
 
     // ─── DEPARTMENT PERFORMANCE ───
-    fetchP("{% url 'pms-modern-dept' %}")
+    fetchP("{% url 'pms-dashboard-dept' %}")
         .then(r => r.json())
         .then(data => {
             if (!data.departments.length) { document.querySelector("#chart-dept-perf").innerHTML = emptyHtml('{% trans "No data" %}'); return; }
@@ -528,7 +526,7 @@
         });
 
     // ─── OKR PROGRESS OVERVIEW ───
-    fetchP("{% url 'pms-modern-okr-overview' %}")
+    fetchP("{% url 'pms-dashboard-okr-overview' %}")
         .then(r => r.json())
         .then(data => {
             const el = document.getElementById('pm-okr-overview');
@@ -567,7 +565,7 @@
         });
 
     // ─── PROGRESS TREND ───
-    fetchP("{% url 'pms-modern-progress-trend' %}")
+    fetchP("{% url 'pms-dashboard-progress-trend' %}")
         .then(r => r.json())
         .then(data => {
             if (!data.months.length) { document.querySelector("#chart-progress-trend").innerHTML = emptyHtml('{% trans "No data" %}'); return; }
@@ -596,7 +594,7 @@
         });
 
     // ─── FEEDBACK COMPLETION ───
-    fetchP("{% url 'pms-modern-fb-completion' %}")
+    fetchP("{% url 'pms-dashboard-fb-completion' %}")
         .then(r => r.json())
         .then(data => {
             const el = document.querySelector("#chart-fb-completion");
@@ -611,7 +609,7 @@
         });
 
     // ─── AT RISK OBJECTIVES ───
-    fetchP("{% url 'pms-modern-at-risk' %}")
+    fetchP("{% url 'pms-dashboard-at-risk' %}")
         .then(r => r.json())
         .then(data => {
             const el = document.getElementById('pm-at-risk');
@@ -635,7 +633,7 @@
         }).catch(() => { document.getElementById('pm-at-risk').innerHTML = '<div class="pm-info-panel__empty">{% trans "No data" %}</div>'; });
 
     // ─── TOP PERFORMERS ───
-    fetchP("{% url 'pms-modern-performers' %}")
+    fetchP("{% url 'pms-dashboard-performers' %}")
         .then(r => r.json())
         .then(data => {
             const el = document.getElementById('pm-performers');
@@ -655,7 +653,7 @@
         }).catch(() => { document.getElementById('pm-performers').innerHTML = '<div class="pm-info-panel__empty">{% trans "No data" %}</div>'; });
 
     // ─── UPCOMING MEETINGS ───
-    fetchP("{% url 'pms-modern-meetings' %}")
+    fetchP("{% url 'pms-dashboard-meetings' %}")
         .then(r => r.json())
         .then(data => {
             const el = document.getElementById('pm-meetings');
