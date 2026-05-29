@@ -1,7 +1,7 @@
 ﻿{% extends "index.html" %}
 {% load static i18n %}
 
-{% block styles %}
+{% block content %}
 <script src="https://cdn.jsdelivr.net/npm/apexcharts"></script>
 <style>
     :root {
@@ -155,9 +155,7 @@
     @media (max-width: 1024px) { .pd-kpi-grid { grid-template-columns: repeat(2, 1fr); } .pd-chart-grid { grid-template-columns: 1fr; } .pd-chart-card--wide { grid-column: span 1; } .pd-sidebar { grid-template-columns: 1fr; } .pd-pipeline { flex-wrap: wrap; } .pd-pipeline-step { min-width: 70px; } }
     @media (max-width: 640px) { .pd-kpi-grid { grid-template-columns: 1fr; } }
 </style>
-{% endblock %}
 
-{% block content %}
 <div class="pd-dashboard">
 
     <div class="pd-header">
@@ -409,7 +407,7 @@
     if (autoRefreshOn) startAutoRefresh(); else stopAutoRefresh();
 
     // ─── KPI CARDS ───
-    fetchP("{% url 'payroll-modern-kpi' %}")
+    fetchP("{% url 'payroll-dashboard-kpi' %}")
         .then(r => r.json())
         .then(data => {
             const changeIcon = data.change_pct > 0 ? '↑' : data.change_pct < 0 ? '↓' : '→';
@@ -448,7 +446,7 @@
         });
 
     // ─── PAYSLIP PIPELINE ───
-    fetchP("{% url 'payroll-modern-pipeline' %}")
+    fetchP("{% url 'payroll-dashboard-pipeline' %}")
         .then(r => r.json())
         .then(data => {
             const el = document.getElementById('pd-pipeline');
@@ -464,7 +462,7 @@
         });
 
     // ─── PAYROLL COST TREND ───
-    fetchP("{% url 'payroll-modern-trend' %}")
+    fetchP("{% url 'payroll-dashboard-trend' %}")
         .then(r => r.json())
         .then(data => {
             if (!data.months.length || !data.months.some(m => m.net > 0)) { document.querySelector("#chart-payroll-trend").innerHTML = emptyHtml('{% trans "No payroll data" %}'); return; }
@@ -488,7 +486,7 @@
         });
 
     // ─── DEPARTMENT COST ───
-    fetchP("{% url 'payroll-modern-dept' %}")
+    fetchP("{% url 'payroll-dashboard-dept' %}")
         .then(r => r.json())
         .then(data => {
             document.getElementById('dept-month').textContent = data.month;
@@ -517,7 +515,7 @@
         });
 
     // ─── REIMBURSEMENT SUMMARY ───
-    fetchP("{% url 'payroll-modern-reimbursement' %}")
+    fetchP("{% url 'payroll-dashboard-reimbursement' %}")
         .then(r => r.json())
         .then(data => {
             const s = data.summary;
@@ -550,7 +548,7 @@
         });
 
     // ─── SALARY DISTRIBUTION ───
-    fetchP("{% url 'payroll-modern-salary-dist' %}")
+    fetchP("{% url 'payroll-dashboard-salary-dist' %}")
         .then(r => r.json())
         .then(data => {
             if (!data.bands.length) { document.querySelector("#chart-salary-dist").innerHTML = emptyHtml('{% trans "No salary data" %}'); return; }
@@ -579,7 +577,7 @@
         });
 
     // ─── DEDUCTION COMPONENTS ───
-    fetchP("{% url 'payroll-modern-components' %}")
+    fetchP("{% url 'payroll-dashboard-components' %}")
         .then(r => r.json())
         .then(data => {
             if (!data.components.length) { document.querySelector("#chart-components").innerHTML = emptyHtml('{% trans "No data" %}'); return; }
@@ -603,7 +601,7 @@
         });
 
     // ─── TOP EARNERS ───
-    fetchP("{% url 'payroll-modern-earners' %}")
+    fetchP("{% url 'payroll-dashboard-earners' %}")
         .then(r => r.json())
         .then(data => {
             const el = document.getElementById('pd-top-earners');
@@ -624,7 +622,7 @@
         }).catch(() => { document.getElementById('pd-top-earners').innerHTML = '<div class="pd-info-panel__empty">{% trans "No data" %}</div>'; });
 
     // ─── CONTRACTS ENDING ───
-    fetchP("{% url 'payroll-modern-contracts' %}")
+    fetchP("{% url 'payroll-dashboard-contracts' %}")
         .then(r => r.json())
         .then(data => {
             const el = document.getElementById('pd-contracts');
@@ -645,7 +643,7 @@
         }).catch(() => { document.getElementById('pd-contracts').innerHTML = '<div class="pd-info-panel__empty">{% trans "No data" %}</div>'; });
 
     // ─── ACTIVE LOANS ───
-    fetchP("{% url 'payroll-modern-loans' %}")
+    fetchP("{% url 'payroll-dashboard-loans' %}")
         .then(r => r.json())
         .then(data => {
             const el = document.getElementById('pd-loans');

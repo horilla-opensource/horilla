@@ -1,7 +1,7 @@
 ﻿{% extends "index.html" %}
 {% load static i18n %}
 
-{% block styles %}
+{% block content %}
 <script src="https://cdn.jsdelivr.net/npm/apexcharts"></script>
 <style>
     :root {
@@ -754,16 +754,14 @@
         .md-customize-panel { width: 100%; right: -100%; }
     }
 </style>
-{% endblock %}
 
-{% block content %}
 <div class="md-dashboard">
 
     <!-- Header -->
     <div class="md-header">
         <div>
             <nav class="oh-breadcrumb" style="margin-bottom:4px;">
-                <a href="{% url 'modern-dashboard' %}" class="oh-breadcrumb__item" style="font-size:12px;opacity:0.6;text-decoration:none;color:inherit;">{% trans "Home" %}</a>
+                <a href="{% url 'dashboard' %}" class="oh-breadcrumb__item" style="font-size:12px;opacity:0.6;text-decoration:none;color:inherit;">{% trans "Home" %}</a>
                 <span class="oh-breadcrumb__divider" style="font-size:12px;opacity:0.4;margin:0 4px;">/</span>
                 <span class="oh-breadcrumb__item" style="font-size:12px;opacity:0.6;">{% trans "Dashboard" %}</span>
             </nav>

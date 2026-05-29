@@ -1,7 +1,7 @@
 ﻿{% extends "index.html" %}
 {% load static i18n %}
 
-{% block styles %}
+{% block content %}
 <script src="https://cdn.jsdelivr.net/npm/apexcharts"></script>
 <style>
     :root {
@@ -172,9 +172,7 @@
     @media (max-width: 900px)  { .em-layout { grid-template-columns: 1fr; } .em-sidebar { position: static; } .em-chart-grid { grid-template-columns: 1fr; } .em-chart-card--wide { grid-column: span 1; } }
     @media (max-width: 600px)  { .em-kpi-grid { grid-template-columns: repeat(2, 1fr); } }
 </style>
-{% endblock %}
 
-{% block content %}
 <div class="em-dashboard">
 
     <!-- Header -->
@@ -336,7 +334,7 @@
     document.getElementById('em-today-date').textContent = d.toLocaleDateString('en-US', { weekday:'long', year:'numeric', month:'long', day:'numeric' });
 
     // ─── KPI ───
-    fetchP("{% url 'employee-modern-kpi' %}")
+    fetchP("{% url 'employee-dashboard-kpi' %}")
         .then(r => r.json())
         .then(data => {
             document.getElementById('kpi-total').textContent   = data.total;
@@ -348,7 +346,7 @@
         });
 
     // ─── BY DEPARTMENT ───
-    fetchP("{% url 'employee-modern-dept' %}")
+    fetchP("{% url 'employee-dashboard-dept' %}")
         .then(r => r.json())
         .then(data => {
             if (!data.departments.length) { document.querySelector('#chart-em-dept').innerHTML = emptyHtml('{% trans "No department data" %}'); return; }
@@ -372,7 +370,7 @@
         });
 
     // ─── GENDER ───
-    fetchP("{% url 'employee-modern-gender' %}")
+    fetchP("{% url 'employee-dashboard-gender' %}")
         .then(r => r.json())
         .then(data => {
             if (!data.genders.length) { document.querySelector('#chart-em-gender').innerHTML = emptyHtml('{% trans "No gender data" %}'); return; }
@@ -395,7 +393,7 @@
         });
 
     // ─── EMPLOYMENT TYPE ───
-    fetchP("{% url 'employee-modern-type' %}")
+    fetchP("{% url 'employee-dashboard-type' %}")
         .then(r => r.json())
         .then(data => {
             if (!data.types.length) { document.querySelector('#chart-em-type').innerHTML = emptyHtml('{% trans "No type data" %}'); return; }
@@ -417,7 +415,7 @@
         });
 
     // ─── BY JOB POSITION ───
-    fetchP("{% url 'employee-modern-position' %}")
+    fetchP("{% url 'employee-dashboard-position' %}")
         .then(r => r.json())
         .then(data => {
             if (!data.positions.length) { document.querySelector('#chart-em-position').innerHTML = emptyHtml('{% trans "No position data" %}'); return; }
@@ -441,7 +439,7 @@
         });
 
     // ─── MONTHLY JOININGS ───
-    fetchP("{% url 'employee-modern-joining-trend' %}")
+    fetchP("{% url 'employee-dashboard-joining-trend' %}")
         .then(r => r.json())
         .then(data => {
             if (!data.months.length) { document.querySelector('#chart-em-joining').innerHTML = emptyHtml('{% trans "No data" %}'); return; }
@@ -461,7 +459,7 @@
         });
 
     // ─── RECENT EMPLOYEES ───
-    fetchP("{% url 'employee-modern-recent' %}")
+    fetchP("{% url 'employee-dashboard-recent' %}")
         .then(r => r.json())
         .then(data => {
             const container = document.getElementById('em-recent-list');
@@ -482,7 +480,7 @@
         });
 
     // ─── BIRTHDAYS ───
-    fetchP("{% url 'employee-modern-birthdays' %}")
+    fetchP("{% url 'employee-dashboard-birthdays' %}")
         .then(r => r.json())
         .then(data => {
             const container = document.getElementById('em-bday-list');

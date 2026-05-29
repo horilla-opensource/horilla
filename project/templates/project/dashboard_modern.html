@@ -1,7 +1,7 @@
 ﻿{% extends "index.html" %}
 {% load static i18n %}
 
-{% block styles %}
+{% block content %}
 <script src="https://cdn.jsdelivr.net/npm/apexcharts"></script>
 <style>
     :root {
@@ -155,9 +155,7 @@
     .dark .pr-skeleton { background: linear-gradient(90deg, rgba(255,255,255,0.06) 25%, rgba(255,255,255,0.03) 50%, rgba(255,255,255,0.06) 75%); background-size: 200% 100%; }
     @keyframes pr-shimmer { 0% { background-position: 200% 0; } 100% { background-position: -200% 0; } }
 </style>
-{% endblock %}
 
-{% block content %}
 <div class="pr-dashboard">
 
     <!-- Header -->
@@ -226,12 +224,12 @@
 
 <script>
 const PR_URLS = {
-    kpi:       "{% url 'project-modern-kpi' %}",
-    status:    "{% url 'project-modern-status' %}",
-    tasks:     "{% url 'project-modern-tasks' %}",
-    trend:     "{% url 'project-modern-trend' %}",
-    deadlines: "{% url 'project-modern-deadlines' %}",
-    top:       "{% url 'project-modern-top' %}",
+    kpi:       "{% url 'project-dashboard-kpi' %}",
+    status:    "{% url 'project-dashboard-status' %}",
+    tasks:     "{% url 'project-dashboard-tasks' %}",
+    trend:     "{% url 'project-dashboard-trend' %}",
+    deadlines: "{% url 'project-dashboard-deadlines' %}",
+    top:       "{% url 'project-dashboard-top' %}",
     projectView: "{% url 'project-view' %}",
     taskAll:   "{% url 'task-all' %}",
     projectDetail: "/project/task-view/__ID__/?view=list",

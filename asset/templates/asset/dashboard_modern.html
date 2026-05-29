@@ -1,7 +1,7 @@
 ﻿{% extends "index.html" %}
 {% load static i18n %}
 
-{% block styles %}
+{% block content %}
 <script src="https://cdn.jsdelivr.net/npm/apexcharts"></script>
 <style>
     :root { --as-indigo: #6366f1; --as-green: #22c55e; --as-amber: #f59e0b; --as-red: #ef4444; --as-blue: #3b82f6; --as-purple: #a855f7; }
@@ -123,9 +123,7 @@
     @media (max-width: 1024px) { .as-kpi-grid { grid-template-columns: repeat(2, 1fr); } .as-chart-grid { grid-template-columns: 1fr; } .as-chart-card--wide { grid-column: span 1; } .as-sidebar { grid-template-columns: 1fr; } }
     @media (max-width: 640px) { .as-kpi-grid { grid-template-columns: 1fr; } }
 </style>
-{% endblock %}
 
-{% block content %}
 <div class="as-dashboard">
     <div class="as-header">
         <div>
@@ -350,7 +348,7 @@
     if (autoRefreshOn) startAutoRefresh(); else stopAutoRefresh();
 
     // ─── KPI CARDS ───
-    fetchP("{% url 'asset-modern-kpi' %}")
+    fetchP("{% url 'asset-dashboard-kpi' %}")
         .then(r => r.json())
         .then(data => {
             document.getElementById('as-kpi-grid').innerHTML = `
@@ -382,7 +380,7 @@
         .catch(() => { document.getElementById('as-kpi-grid').innerHTML = emptyHtml('{% trans "Could not load KPIs" %}'); });
 
     // ─── ASSET STATUS ───
-    fetchP("{% url 'asset-modern-status' %}")
+    fetchP("{% url 'asset-dashboard-status' %}")
         .then(r => r.json())
         .then(data => {
             const total = data.statuses.reduce((a, s) => a + s.count, 0);
@@ -405,7 +403,7 @@
         .catch(() => { document.querySelector("#chart-asset-status").innerHTML = emptyHtml('{% trans "Could not load data" %}'); });
 
     // ─── REQUEST STATUS ───
-    fetchP("{% url 'asset-modern-requests' %}")
+    fetchP("{% url 'asset-dashboard-requests' %}")
         .then(r => r.json())
         .then(data => {
             const total = data.statuses.reduce((a, s) => a + s.count, 0);
@@ -429,7 +427,7 @@
         .catch(() => { document.querySelector("#chart-request-status").innerHTML = emptyHtml('{% trans "Could not load data" %}'); });
 
     // ─── ASSETS BY CATEGORY ───
-    fetchP("{% url 'asset-modern-category' %}")
+    fetchP("{% url 'asset-dashboard-category' %}")
         .then(r => r.json())
         .then(data => {
             if (!data.categories.length) { document.querySelector("#chart-by-category").innerHTML = emptyHtml('{% trans "No data" %}'); return; }
@@ -458,7 +456,7 @@
         .catch(() => { document.querySelector("#chart-by-category").innerHTML = emptyHtml('{% trans "Could not load data" %}'); });
 
     // ─── VALUE BY CATEGORY ───
-    fetchP("{% url 'asset-modern-value' %}")
+    fetchP("{% url 'asset-dashboard-value' %}")
         .then(r => r.json())
         .then(data => {
             if (!data.categories.length) { document.querySelector("#chart-value-category").innerHTML = emptyHtml('{% trans "No data" %}'); return; }
@@ -482,7 +480,7 @@
         .catch(() => { document.querySelector("#chart-value-category").innerHTML = emptyHtml('{% trans "Could not load data" %}'); });
 
     // ─── ASSETS BY DEPARTMENT ───
-    fetchP("{% url 'asset-modern-dept' %}")
+    fetchP("{% url 'asset-dashboard-dept' %}")
         .then(r => r.json())
         .then(data => {
             if (!data.departments.length) { document.querySelector("#chart-dept-assets").innerHTML = emptyHtml('{% trans "No allocated assets" %}'); return; }
@@ -506,7 +504,7 @@
         .catch(() => { document.querySelector("#chart-dept-assets").innerHTML = emptyHtml('{% trans "Could not load data" %}'); });
 
     // ─── ASSET AGE ───
-    fetchP("{% url 'asset-modern-age' %}")
+    fetchP("{% url 'asset-dashboard-age' %}")
         .then(r => r.json())
         .then(data => {
             if (!data.brackets.length) { document.querySelector("#chart-age-dist").innerHTML = emptyHtml('{% trans "No purchase date data" %}'); return; }
@@ -531,7 +529,7 @@
         .catch(() => { document.querySelector("#chart-age-dist").innerHTML = emptyHtml('{% trans "Could not load data" %}'); });
 
     // ─── EXPIRING SOON ───
-    fetchP("{% url 'asset-modern-expiring' %}")
+    fetchP("{% url 'asset-dashboard-expiring' %}")
         .then(r => r.json())
         .then(data => {
             const el = document.getElementById('as-expiring');
@@ -552,7 +550,7 @@
         }).catch(() => { document.getElementById('as-expiring').innerHTML = '<div class="as-info-panel__empty">{% trans "No data" %}</div>'; });
 
     // ─── RECENT ALLOCATIONS ───
-    fetchP("{% url 'asset-modern-allocations' %}")
+    fetchP("{% url 'asset-dashboard-allocations' %}")
         .then(r => r.json())
         .then(data => {
             const el = document.getElementById('as-allocations');
