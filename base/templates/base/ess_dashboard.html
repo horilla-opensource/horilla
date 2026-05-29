@@ -1,7 +1,7 @@
 ﻿{% extends "index.html" %}
 {% load static i18n %}
 
-{% block styles %}
+{% block content %}
 <script src="https://cdn.jsdelivr.net/npm/apexcharts"></script>
 <style>
   :root {
@@ -346,9 +346,6 @@
   .ess-skeleton--kpi { height: 110px; }
   @keyframes ess-shimmer { 0% { background-position: 200% 0; } 100% { background-position: -200% 0; } }
 </style>
-{% endblock %}
-
-{% block content %}
 <div class="ess-dashboard">
 
   <!-- Header -->
