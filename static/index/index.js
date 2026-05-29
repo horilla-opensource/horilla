@@ -1,19 +1,21 @@
-const i18nMessages = {
-    // General dialog buttons
-    confirm: gettext("Confirm"),
-    close: gettext("Close"),
-    cancel: gettext("Cancel"),
-    selected: gettext("Selected"),
-    uploading: gettext("Uploading..."),
-    emptyMessages: gettext("No Records found"),
-    downloadExcel: gettext("Do you want to download the excel file?"),
-    downloadTemplate: gettext("Do you want to download the template?"),
-    noRowsSelected: gettext("No rows are selected from the records."),
-    confirmBulkDelete: gettext("Do you really want to delete all the selected records?"),
-    confirmBulkArchive: gettext("Do you really want to archive all the selected records?"),
-    confirmBulkReject: gettext("Do you really want to approve all the selected requests?"),
-    confirmBulkApprove: gettext("Do you really want to approve all the selected requests?"),
-    confirmBulkUnArchive: gettext("Do you really want to unarchive all the selected records?"),
+if (typeof i18nMessages === 'undefined') {
+    var i18nMessages = {
+        // General dialog buttons
+        confirm: gettext("Confirm"),
+        close: gettext("Close"),
+        cancel: gettext("Cancel"),
+        selected: gettext("Selected"),
+        uploading: gettext("Uploading..."),
+        emptyMessages: gettext("No Records found"),
+        downloadExcel: gettext("Do you want to download the excel file?"),
+        downloadTemplate: gettext("Do you want to download the template?"),
+        noRowsSelected: gettext("No rows are selected from the records."),
+        confirmBulkDelete: gettext("Do you really want to delete all the selected records?"),
+        confirmBulkArchive: gettext("Do you really want to archive all the selected records?"),
+        confirmBulkReject: gettext("Do you really want to approve all the selected requests?"),
+        confirmBulkApprove: gettext("Do you really want to approve all the selected requests?"),
+        confirmBulkUnArchive: gettext("Do you really want to unarchive all the selected records?"),
+    }
 }
 
 var confirmModal = {
