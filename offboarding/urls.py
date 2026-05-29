@@ -6,6 +6,7 @@ This module is used to register url mappings to functions
 
 from django.apps import apps
 from django.urls import path
+from django.views.generic import RedirectView
 
 from horilla_views.cbv_methods import check_feature_enabled
 from offboarding import dashboard_modern as ob_dashboard_modern
@@ -273,57 +274,57 @@ urlpatterns = [
     path(
         "dashboard/",
         ob_dashboard_modern.modern_offboarding_dashboard,
-        name="offboarding-modern-dashboard",
+        name="offboarding-dashboard",
     ),
     path(
         "dashboard/api/kpi/",
         ob_dashboard_modern.offboarding_kpi_data,
-        name="offboarding-modern-kpi",
+        name="offboarding-dashboard-kpi",
     ),
     path(
         "dashboard/api/pipeline/",
         ob_dashboard_modern.offboarding_pipeline,
-        name="offboarding-modern-pipeline",
+        name="offboarding-dashboard-pipeline",
     ),
     path(
         "dashboard/api/resignation/",
         ob_dashboard_modern.offboarding_resignation_status,
-        name="offboarding-modern-resignation",
+        name="offboarding-dashboard-resignation",
     ),
     path(
         "dashboard/api/tasks/",
         ob_dashboard_modern.offboarding_task_status,
-        name="offboarding-modern-tasks",
+        name="offboarding-dashboard-tasks",
     ),
     path(
         "dashboard/api/department/",
         ob_dashboard_modern.offboarding_department_attrition,
-        name="offboarding-modern-dept",
+        name="offboarding-dashboard-dept",
     ),
     path(
         "dashboard/api/exit-reasons/",
         ob_dashboard_modern.offboarding_exit_reasons,
-        name="offboarding-modern-reasons",
+        name="offboarding-dashboard-reasons",
     ),
     path(
         "dashboard/api/notice/",
         ob_dashboard_modern.offboarding_notice_period_tracker,
-        name="offboarding-modern-notice",
+        name="offboarding-dashboard-notice",
     ),
     path(
         "dashboard/api/assets/",
         ob_dashboard_modern.offboarding_unreturned_assets,
-        name="offboarding-modern-assets",
+        name="offboarding-dashboard-assets",
     ),
     path(
         "dashboard/api/join-exit/",
         ob_dashboard_modern.offboarding_joining_vs_exiting,
-        name="offboarding-modern-join-exit",
+        name="offboarding-dashboard-join-exit",
     ),
     path(
         "dashboard/api/avg-duration/",
         ob_dashboard_modern.offboarding_avg_duration,
-        name="offboarding-modern-avg-duration",
+        name="offboarding-dashboard-avg-duration",
     ),
 ]
 
