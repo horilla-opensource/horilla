@@ -47,9 +47,9 @@ def _latest_attendance_date(reference_date=None):
 
 
 @login_required
-def modern_attendance_dashboard(request):
+def attendance_dashboard_view(request):
     """Render the modern attendance dashboard page."""
-    return render(request, "attendance/dashboard_modern.html")
+    return render(request, "attendance/dashboard.html")
 
 
 @login_required
@@ -807,7 +807,7 @@ def attendance_calendar_heatmap(request):
 
 
 @login_required
-def attendance_modern_overview(request):
+def attendance_overview(request):
     """Department-wise on-time / late / early counts for the latest day with attendance.
 
     Same shape as the legacy dashboard_attendance endpoint, but falls back to the most

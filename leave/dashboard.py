@@ -30,9 +30,9 @@ def _parse_period(request):
 
 
 @login_required
-def modern_leave_dashboard(request):
+def leave_dashboard_view(request):
     """Render the modern leave dashboard page."""
-    return render(request, "leave/dashboard_modern.html")
+    return render(request, "leave/dashboard.html")
 
 
 @login_required

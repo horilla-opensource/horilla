@@ -8,7 +8,7 @@ from django.urls import path
 
 from base.templatetags.horillafilters import app_installed
 from base.views import object_delete, object_duplicate
-from employee import dashboard_modern as emp_dashboard_modern
+from employee import dashboard as emp_dashboard
 from employee import not_in_out_dashboard, policies, views
 from employee.cbv import (
     action_type,
@@ -251,51 +251,51 @@ urlpatterns = [
     path("work-info-export/", views.work_info_export, name="work-info-export"),
     path("get-birthday/", views.get_employees_birthday, name="get-birthday"),
     path(
-        "dashboard/", emp_dashboard_modern.modern_employee_dashboard, name="employee-dashboard"
+        "dashboard/", emp_dashboard.employee_dashboard_view, name="employee-dashboard"
     ),
     path(
         "dashboard/api/kpi/",
-        emp_dashboard_modern.employee_kpi_data,
+        emp_dashboard.employee_kpi_data,
         name="employee-dashboard-kpi",
     ),
     path(
         "dashboard/api/departments/",
-        emp_dashboard_modern.employee_by_department,
+        emp_dashboard.employee_by_department,
         name="employee-dashboard-dept",
     ),
     path(
         "dashboard/api/gender/",
-        emp_dashboard_modern.employee_by_gender,
+        emp_dashboard.employee_by_gender,
         name="employee-dashboard-gender",
     ),
     path(
         "dashboard/api/type/",
-        emp_dashboard_modern.employee_by_type,
+        emp_dashboard.employee_by_type,
         name="employee-dashboard-type",
     ),
     path(
         "dashboard/api/position/",
-        emp_dashboard_modern.employee_by_job_position,
+        emp_dashboard.employee_by_job_position,
         name="employee-dashboard-position",
     ),
     path(
         "dashboard/api/joining-trend/",
-        emp_dashboard_modern.employee_joining_trend,
+        emp_dashboard.employee_joining_trend,
         name="employee-dashboard-joining-trend",
     ),
     path(
         "dashboard/api/headcount/",
-        emp_dashboard_modern.employee_headcount_trend,
+        emp_dashboard.employee_headcount_trend,
         name="employee-dashboard-headcount",
     ),
     path(
         "dashboard/api/recent/",
-        emp_dashboard_modern.employee_recent_list,
+        emp_dashboard.employee_recent_list,
         name="employee-dashboard-recent",
     ),
     path(
         "dashboard/api/birthdays/",
-        emp_dashboard_modern.employee_upcoming_birthdays,
+        emp_dashboard.employee_upcoming_birthdays,
         name="employee-dashboard-birthdays",
     ),
     path(

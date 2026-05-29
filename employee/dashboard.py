@@ -27,8 +27,8 @@ def _parse_period(request):
 
 
 @login_required
-def modern_employee_dashboard(request):
-    return render(request, "employee/dashboard_modern.html")
+def employee_dashboard_view(request):
+    return render(request, "employee/dashboard.html")
 
 
 @login_required

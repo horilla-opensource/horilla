@@ -6,7 +6,7 @@ This module is used to map url path with view methods.
 
 from django.urls import path
 
-from onboarding import dashboard_modern as on_dashboard_modern
+from onboarding import dashboard as on_dashboard
 from onboarding import views
 from onboarding.cbv import dashboard, onboarding_candidates, onboarding_view, pipeline
 from recruitment.cbv import candidates
@@ -283,52 +283,52 @@ urlpatterns = [
     # ── Onboarding Modern Dashboard ──────────────────────────────────────────
     path(
         "dashboard/",
-        on_dashboard_modern.modern_onboarding_dashboard,
+        on_dashboard.onboarding_dashboard_view,
         name="onboarding-dashboard",
     ),
     path(
         "dashboard/api/kpi/",
-        on_dashboard_modern.onboarding_kpi_data,
+        on_dashboard.onboarding_kpi_data,
         name="onboarding-dashboard-kpi",
     ),
     path(
         "dashboard/api/stages/",
-        on_dashboard_modern.onboarding_stage_distribution,
+        on_dashboard.onboarding_stage_distribution,
         name="onboarding-dashboard-stages",
     ),
     path(
         "dashboard/api/tasks/",
-        on_dashboard_modern.onboarding_task_status,
+        on_dashboard.onboarding_task_status,
         name="onboarding-dashboard-tasks",
     ),
     path(
         "dashboard/api/recruitment/",
-        on_dashboard_modern.onboarding_by_recruitment,
+        on_dashboard.onboarding_by_recruitment,
         name="onboarding-dashboard-recruitment",
     ),
     path(
         "dashboard/api/position/",
-        on_dashboard_modern.onboarding_by_job_position,
+        on_dashboard.onboarding_by_job_position,
         name="onboarding-dashboard-position",
     ),
     path(
         "dashboard/api/candidates/",
-        on_dashboard_modern.onboarding_candidates_list,
+        on_dashboard.onboarding_candidates_list,
         name="onboarding-dashboard-candidates",
     ),
     path(
         "dashboard/api/my-tasks/",
-        on_dashboard_modern.onboarding_task_managers,
+        on_dashboard.onboarding_task_managers,
         name="onboarding-dashboard-my-tasks",
     ),
     path(
         "dashboard/api/completion-trend/",
-        on_dashboard_modern.onboarding_completion_trend,
+        on_dashboard.onboarding_completion_trend,
         name="onboarding-dashboard-completion-trend",
     ),
     path(
         "dashboard/api/portal-status/",
-        on_dashboard_modern.onboarding_portal_status,
+        on_dashboard.onboarding_portal_status,
         name="onboarding-dashboard-portal-status",
     ),
 ]

@@ -8,7 +8,7 @@ from django.urls import path
 
 from base.views import add_remove_dynamic_fields, object_duplicate
 from recruitment import cbvs
-from recruitment import dashboard_modern as rec_dashboard_modern
+from recruitment import dashboard as rec_dashboard
 from recruitment.cbv import (
     candidate_mail_log,
     candidate_profile,
@@ -1014,72 +1014,72 @@ urlpatterns = [
     # ── Recruitment Modern Dashboard ─────────────────────────────────────────
     path(
         "dashboard/",
-        rec_dashboard_modern.modern_recruitment_dashboard,
+        rec_dashboard.recruitment_dashboard_view,
         name="recruitment-dashboard",
     ),
     path(
         "dashboard/api/kpi/",
-        rec_dashboard_modern.recruitment_kpi_data,
+        rec_dashboard.recruitment_kpi_data,
         name="recruitment-dashboard-kpi",
     ),
     path(
         "dashboard/api/offer-status/",
-        rec_dashboard_modern.recruitment_offer_status,
+        rec_dashboard.recruitment_offer_status,
         name="recruitment-dashboard-offer-status",
     ),
     path(
         "dashboard/api/stage-summary/",
-        rec_dashboard_modern.recruitment_stage_summary,
+        rec_dashboard.recruitment_stage_summary,
         name="recruitment-dashboard-stage-summary",
     ),
     path(
         "dashboard/api/pipeline/",
-        rec_dashboard_modern.recruitment_pipeline_data,
+        rec_dashboard.recruitment_pipeline_data,
         name="recruitment-dashboard-pipeline",
     ),
     path(
         "dashboard/api/source-quality/",
-        rec_dashboard_modern.recruitment_source_quality,
+        rec_dashboard.recruitment_source_quality,
         name="recruitment-dashboard-source-quality",
     ),
     path(
         "dashboard/api/time-to-hire/",
-        rec_dashboard_modern.recruitment_time_to_hire,
+        rec_dashboard.recruitment_time_to_hire,
         name="recruitment-dashboard-time-to-hire",
     ),
     path(
         "dashboard/api/managers/",
-        rec_dashboard_modern.recruitment_managers_data,
+        rec_dashboard.recruitment_managers_data,
         name="recruitment-dashboard-managers",
     ),
     path(
         "dashboard/api/source-of-hire/",
-        rec_dashboard_modern.recruitment_source_of_hire,
+        rec_dashboard.recruitment_source_of_hire,
         name="recruitment-dashboard-source",
     ),
     path(
         "dashboard/api/upcoming-interviews/",
-        rec_dashboard_modern.recruitment_upcoming_interviews,
+        rec_dashboard.recruitment_upcoming_interviews,
         name="recruitment-dashboard-interviews",
     ),
     path(
         "dashboard/api/open-by-dept/",
-        rec_dashboard_modern.recruitment_open_by_department,
+        rec_dashboard.recruitment_open_by_department,
         name="recruitment-dashboard-open-dept",
     ),
     path(
         "dashboard/api/stage-conversion/",
-        rec_dashboard_modern.recruitment_stage_conversion,
+        rec_dashboard.recruitment_stage_conversion,
         name="recruitment-dashboard-conversion",
     ),
     path(
         "dashboard/api/source-conversion/",
-        rec_dashboard_modern.recruitment_source_conversion,
+        rec_dashboard.recruitment_source_conversion,
         name="recruitment-dashboard-source-conv",
     ),
     path(
         "dashboard/api/joinings/",
-        rec_dashboard_modern.recruitment_joinings_monthly,
+        rec_dashboard.recruitment_joinings_monthly,
         name="recruitment-dashboard-joinings",
     ),
 ]

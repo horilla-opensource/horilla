@@ -30,9 +30,9 @@ def _parse_period(request):
 
 
 @login_required
-def modern_offboarding_dashboard(request):
+def offboarding_dashboard_view(request):
     """Render the modern offboarding dashboard page."""
-    return render(request, "offboarding/dashboard_modern.html")
+    return render(request, "offboarding/dashboard.html")
 
 
 @login_required

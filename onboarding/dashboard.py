@@ -41,9 +41,9 @@ def _onboarding_candidates_in_period(request):
 
 
 @login_required
-def modern_onboarding_dashboard(request):
+def onboarding_dashboard_view(request):
     """Render the modern onboarding dashboard page."""
-    return render(request, "onboarding/dashboard_modern.html")
+    return render(request, "onboarding/dashboard.html")
 
 
 @login_required

@@ -30,7 +30,7 @@ def _parse_period(request):
 
 
 @login_required
-def modern_dashboard(request):
+def main_dashboard_view(request):
     """Render the modern dashboard page."""
     from django.apps import apps
 
@@ -69,7 +69,7 @@ def modern_dashboard(request):
 
     return render(
         request,
-        "dashboard_modern.html",
+        "dashboard.html",
         {
             "enabled_timerunner": enabled_timerunner,
             "get_forecasted_at_work": get_forecasted_at_work,

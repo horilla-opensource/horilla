@@ -40,9 +40,9 @@ def _candidates_in_period(request):
 
 
 @login_required
-def modern_recruitment_dashboard(request):
+def recruitment_dashboard_view(request):
     """Render the modern recruitment dashboard page."""
-    return render(request, "recruitment/dashboard_modern.html")
+    return render(request, "recruitment/dashboard.html")
 
 
 @login_required

@@ -7,7 +7,7 @@ This page is used to map request or url path with function
 
 from django.urls import path
 
-from attendance import dashboard_modern as att_dashboard_modern
+from attendance import dashboard as att_dashboard
 from attendance.cbv import (
     attendance_activity,
     attendance_request,
@@ -388,7 +388,7 @@ urlpatterns = [
     ),
     path(
         "dashboard/",
-        att_dashboard_modern.modern_attendance_dashboard,
+        att_dashboard.attendance_dashboard_view,
         name="attendance-dashboard",
     ),
     path(
@@ -927,72 +927,72 @@ urlpatterns = [
     # ── Attendance Modern Dashboard API ──────────────────────────────────────
     path(
         "dashboard/api/kpi/",
-        att_dashboard_modern.attendance_kpi_data,
+        att_dashboard.attendance_kpi_data,
         name="attendance-dashboard-kpi",
     ),
     path(
         "dashboard/api/weekly/",
-        att_dashboard_modern.attendance_weekly_trend,
+        att_dashboard.attendance_weekly_trend,
         name="attendance-dashboard-weekly",
     ),
     path(
         "dashboard/api/departments/",
-        att_dashboard_modern.attendance_department_breakdown,
+        att_dashboard.attendance_department_breakdown,
         name="attendance-dashboard-dept",
     ),
     path(
         "dashboard/api/late-early/",
-        att_dashboard_modern.attendance_late_early_data,
+        att_dashboard.attendance_late_early_data,
         name="attendance-dashboard-late-early",
     ),
     path(
         "dashboard/api/overtime/",
-        att_dashboard_modern.attendance_overtime_summary,
+        att_dashboard.attendance_overtime_summary,
         name="attendance-dashboard-overtime",
     ),
     path(
         "dashboard/api/hours/",
-        att_dashboard_modern.attendance_hours_distribution,
+        att_dashboard.attendance_hours_distribution,
         name="attendance-dashboard-hours",
     ),
     path(
         "dashboard/api/shifts/",
-        att_dashboard_modern.attendance_shift_distribution,
+        att_dashboard.attendance_shift_distribution,
         name="attendance-dashboard-shifts",
     ),
     path(
         "dashboard/api/absenteeism/",
-        att_dashboard_modern.attendance_absenteeism_trend,
+        att_dashboard.attendance_absenteeism_trend,
         name="attendance-dashboard-absenteeism",
     ),
     path(
         "dashboard/api/work-types/",
-        att_dashboard_modern.attendance_work_type_distribution,
+        att_dashboard.attendance_work_type_distribution,
         name="attendance-dashboard-work-types",
     ),
     path(
         "dashboard/api/avg-hours/",
-        att_dashboard_modern.attendance_avg_working_hours,
+        att_dashboard.attendance_avg_working_hours,
         name="attendance-dashboard-avg-hours",
     ),
     path(
         "dashboard/api/top-absentees/",
-        att_dashboard_modern.attendance_top_absentees,
+        att_dashboard.attendance_top_absentees,
         name="attendance-dashboard-absentees",
     ),
     path(
         "dashboard/api/clockin-dist/",
-        att_dashboard_modern.attendance_clockin_distribution,
+        att_dashboard.attendance_clockin_distribution,
         name="attendance-dashboard-clockin",
     ),
     path(
         "dashboard/api/calendar/",
-        att_dashboard_modern.attendance_calendar_heatmap,
+        att_dashboard.attendance_calendar_heatmap,
         name="attendance-dashboard-calendar",
     ),
     path(
         "dashboard/api/overview/",
-        att_dashboard_modern.attendance_modern_overview,
+        att_dashboard.attendance_overview,
         name="attendance-dashboard-overview",
     ),
 ]

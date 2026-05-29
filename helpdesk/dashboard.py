@@ -29,9 +29,9 @@ def _parse_period(request):
 
 
 @login_required
-def modern_helpdesk_dashboard(request):
+def helpdesk_dashboard_view(request):
     """Render the modern helpdesk dashboard page."""
-    return render(request, "helpdesk/dashboard_modern.html")
+    return render(request, "helpdesk/dashboard.html")
 
 
 @login_required

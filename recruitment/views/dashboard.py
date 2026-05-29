@@ -147,7 +147,7 @@ def dashboard(request):
     skill_zone = SkillZone.objects.filter(is_active=True)
     return render(
         request,
-        "recruitment/dashboard_modern.html",
+        "recruitment/dashboard.html",
         {
             "ongoing_recruitments": ongoing_recruitments,
             "total_candidate_ratio": total_candidate_ratio,

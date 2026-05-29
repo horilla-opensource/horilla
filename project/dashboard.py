@@ -28,8 +28,8 @@ def _parse_period(request):
 
 
 @login_required
-def modern_project_dashboard(request):
-    return render(request, "project/dashboard_modern.html")
+def project_dashboard_view(request):
+    return render(request, "project/dashboard.html")
 
 
 @login_required
