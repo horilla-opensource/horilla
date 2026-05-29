@@ -5,7 +5,7 @@ from django.views.generic import RedirectView
 
 from base.cbv import company_leaves, holidays
 from employee.models import Employee
-from leave import dashboard_modern as leave_dashboard_modern
+from leave import dashboard as leave_dashboard
 
 if apps.is_installed("attendance"):
     from leave.cbv import compensatory_leave_request
@@ -664,62 +664,62 @@ urlpatterns = [
     # ── Leave Modern Dashboard ───────────────────────────────────────────────
     path(
         "dashboard/",
-        leave_dashboard_modern.modern_leave_dashboard,
+        leave_dashboard.leave_dashboard_view,
         name="leave-dashboard",
     ),
     path(
         "dashboard/api/kpi/",
-        leave_dashboard_modern.leave_kpi_data,
+        leave_dashboard.leave_kpi_data,
         name="leave-dashboard-kpi",
     ),
     path(
         "dashboard/api/monthly-trend/",
-        leave_dashboard_modern.leave_monthly_trend,
+        leave_dashboard.leave_monthly_trend,
         name="leave-dashboard-monthly-trend",
     ),
     path(
         "dashboard/api/type-distribution/",
-        leave_dashboard_modern.leave_type_distribution,
+        leave_dashboard.leave_type_distribution,
         name="leave-dashboard-type-dist",
     ),
     path(
         "dashboard/api/department/",
-        leave_dashboard_modern.leave_department_breakdown,
+        leave_dashboard.leave_department_breakdown,
         name="leave-dashboard-dept",
     ),
     path(
         "dashboard/api/utilization/",
-        leave_dashboard_modern.leave_utilization_rate,
+        leave_dashboard.leave_utilization_rate,
         name="leave-dashboard-utilization",
     ),
     path(
         "dashboard/api/paid-unpaid/",
-        leave_dashboard_modern.leave_paid_unpaid_split,
+        leave_dashboard.leave_paid_unpaid_split,
         name="leave-dashboard-paid-unpaid",
     ),
     path(
         "dashboard/api/top-takers/",
-        leave_dashboard_modern.leave_top_takers,
+        leave_dashboard.leave_top_takers,
         name="leave-dashboard-top-takers",
     ),
     path(
         "dashboard/api/on-leave/",
-        leave_dashboard_modern.leave_on_leave_today,
+        leave_dashboard.leave_on_leave_today,
         name="leave-dashboard-on-leave",
     ),
     path(
         "dashboard/api/holidays/",
-        leave_dashboard_modern.leave_upcoming_holidays,
+        leave_dashboard.leave_upcoming_holidays,
         name="leave-dashboard-holidays",
     ),
     path(
         "dashboard/api/weekly-pattern/",
-        leave_dashboard_modern.leave_weekly_pattern,
+        leave_dashboard.leave_weekly_pattern,
         name="leave-dashboard-weekly-pattern",
     ),
     path(
         "dashboard/api/upcoming/",
-        leave_dashboard_modern.leave_upcoming,
+        leave_dashboard.leave_upcoming,
         name="leave-dashboard-upcoming",
     ),
 ]

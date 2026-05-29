@@ -4,7 +4,7 @@ from django.utils.translation import gettext_lazy as _
 
 from base import (
     announcement,
-    dashboard_modern,
+    dashboard as dashboard_module,
     ess_dashboard,
     request_and_approve,
     views,
@@ -69,85 +69,85 @@ from horilla_audit.models import AuditTag
 
 urlpatterns = [
     path("", views.home, name="home-page"),
-    path("dashboard/", dashboard_modern.modern_dashboard, name="dashboard"),
+    path("dashboard/", dashboard_module.main_dashboard_view, name="dashboard"),
     path(
         "dashboard/api/kpi/",
-        dashboard_modern.dashboard_kpi_data,
+        dashboard_module.dashboard_kpi_data,
         name="dashboard-kpi-data",
     ),
     path(
         "dashboard/api/attendance-trend/",
-        dashboard_modern.dashboard_attendance_trend,
+        dashboard_module.dashboard_attendance_trend,
         name="dashboard-attendance-trend",
     ),
     path(
         "dashboard/api/leave-breakdown/",
-        dashboard_modern.dashboard_leave_breakdown,
+        dashboard_module.dashboard_leave_breakdown,
         name="dashboard-leave-breakdown",
     ),
     path(
         "dashboard/api/departments/",
-        dashboard_modern.dashboard_department_headcount,
+        dashboard_module.dashboard_department_headcount,
         name="dashboard-department-headcount",
     ),
     path(
         "dashboard/api/gender/",
-        dashboard_modern.dashboard_gender_split,
+        dashboard_module.dashboard_gender_split,
         name="dashboard-gender-split",
     ),
     path(
         "dashboard/api/announcements/",
-        dashboard_modern.dashboard_announcements,
+        dashboard_module.dashboard_announcements,
         name="dashboard-announcements",
     ),
     path(
         "dashboard/api/announcements/<int:pk>/",
-        dashboard_modern.dashboard_announcement_detail,
+        dashboard_module.dashboard_announcement_detail,
         name="dashboard-announcement-detail",
     ),
     path(
         "dashboard/api/todays-leave/",
-        dashboard_modern.dashboard_todays_leave,
+        dashboard_module.dashboard_todays_leave,
         name="dashboard-todays-leave",
     ),
     path(
         "dashboard/api/upcoming-holidays/",
-        dashboard_modern.dashboard_upcoming_holidays,
+        dashboard_module.dashboard_upcoming_holidays,
         name="dashboard-upcoming-holidays",
     ),
     path(
         "dashboard/api/birthdays-anniversaries/",
-        dashboard_modern.dashboard_birthdays_anniversaries,
+        dashboard_module.dashboard_birthdays_anniversaries,
         name="dashboard-birthdays-anniversaries",
     ),
     path(
         "dashboard/api/recruitment-pipeline/",
-        dashboard_modern.dashboard_recruitment_pipeline,
+        dashboard_module.dashboard_recruitment_pipeline,
         name="dashboard-recruitment-pipeline",
     ),
     path(
         "dashboard/api/payroll-summary/",
-        dashboard_modern.dashboard_payroll_summary,
+        dashboard_module.dashboard_payroll_summary,
         name="dashboard-payroll-summary",
     ),
     path(
         "dashboard/api/pending-approvals/",
-        dashboard_modern.dashboard_pending_approvals,
+        dashboard_module.dashboard_pending_approvals,
         name="dashboard-pending-approvals",
     ),
     path(
         "dashboard/api/turnover/",
-        dashboard_modern.dashboard_turnover,
+        dashboard_module.dashboard_turnover,
         name="dashboard-turnover",
     ),
     path(
         "dashboard/save-prefs/",
-        dashboard_modern.save_dashboard_prefs,
+        dashboard_module.save_dashboard_prefs,
         name="dashboard-save-prefs",
     ),
     path(
         "dashboard/load-prefs/",
-        dashboard_modern.load_dashboard_prefs,
+        dashboard_module.load_dashboard_prefs,
         name="dashboard-load-prefs",
     ),
     # ── ESS Dashboard ──────────────────────────────────────────────────────────

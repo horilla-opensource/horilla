@@ -30,9 +30,9 @@ def _parse_period(request):
 
 
 @login_required
-def modern_payroll_dashboard(request):
+def payroll_dashboard_view(request):
     """Render the modern payroll dashboard page."""
-    return render(request, "payroll/dashboard_modern.html")
+    return render(request, "payroll/dashboard.html")
 
 
 @login_required

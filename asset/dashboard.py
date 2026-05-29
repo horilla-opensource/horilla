@@ -41,9 +41,9 @@ def _assets_in_period(request):
 
 
 @login_required
-def modern_asset_dashboard(request):
+def asset_dashboard_view(request):
     """Render the modern asset dashboard page."""
-    return render(request, "asset/dashboard_modern.html")
+    return render(request, "asset/dashboard.html")
 
 
 @login_required

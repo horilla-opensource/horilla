@@ -5,7 +5,7 @@ URL configuration for asset-related views.
 from django import views
 from django.urls import path
 
-from asset import dashboard_modern as asset_dashboard_modern
+from asset import dashboard as asset_dashboard
 from asset.cbv import (
     asset,
     asset_batch_no,
@@ -306,7 +306,7 @@ urlpatterns = [
     ),
     path(
         "dashboard/",
-        asset_dashboard_modern.modern_asset_dashboard,
+        asset_dashboard.asset_dashboard_view,
         name="asset-dashboard",
     ),
     path(
@@ -436,47 +436,47 @@ urlpatterns = [
     # ── Asset Modern Dashboard ───────────────────────────────────────────────
     path(
         "dashboard/api/kpi/",
-        asset_dashboard_modern.asset_kpi_data,
+        asset_dashboard.asset_kpi_data,
         name="asset-dashboard-kpi",
     ),
     path(
         "dashboard/api/status/",
-        asset_dashboard_modern.asset_status_distribution,
+        asset_dashboard.asset_status_distribution,
         name="asset-dashboard-status",
     ),
     path(
         "dashboard/api/category/",
-        asset_dashboard_modern.asset_by_category,
+        asset_dashboard.asset_by_category,
         name="asset-dashboard-category",
     ),
     path(
         "dashboard/api/requests/",
-        asset_dashboard_modern.asset_request_status,
+        asset_dashboard.asset_request_status,
         name="asset-dashboard-requests",
     ),
     path(
         "dashboard/api/value/",
-        asset_dashboard_modern.asset_value_by_category,
+        asset_dashboard.asset_value_by_category,
         name="asset-dashboard-value",
     ),
     path(
         "dashboard/api/expiring/",
-        asset_dashboard_modern.asset_expiring_soon,
+        asset_dashboard.asset_expiring_soon,
         name="asset-dashboard-expiring",
     ),
     path(
         "dashboard/api/allocations/",
-        asset_dashboard_modern.asset_recent_allocations,
+        asset_dashboard.asset_recent_allocations,
         name="asset-dashboard-allocations",
     ),
     path(
         "dashboard/api/department/",
-        asset_dashboard_modern.asset_department_distribution,
+        asset_dashboard.asset_department_distribution,
         name="asset-dashboard-dept",
     ),
     path(
         "dashboard/api/age/",
-        asset_dashboard_modern.asset_age_distribution,
+        asset_dashboard.asset_age_distribution,
         name="asset-dashboard-age",
     ),
 ]

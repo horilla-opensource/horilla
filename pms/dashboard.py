@@ -36,9 +36,9 @@ def _period_overlap(qs, request, start_field="start_date", end_field="end_date")
 
 
 @login_required
-def modern_pms_dashboard(request):
+def pms_dashboard_view(request):
     """Render the modern PMS dashboard page."""
-    return render(request, "pms/dashboard_modern.html")
+    return render(request, "pms/dashboard.html")
 
 
 @login_required
