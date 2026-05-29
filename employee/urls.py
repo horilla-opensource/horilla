@@ -250,16 +250,54 @@ urlpatterns = [
     # ),
     path("work-info-export/", views.work_info_export, name="work-info-export"),
     path("get-birthday/", views.get_employees_birthday, name="get-birthday"),
-    path("dashboard/", emp_dashboard_modern.modern_employee_dashboard, name="dashboard"),
-    path("dashboard/api/kpi/", emp_dashboard_modern.employee_kpi_data, name="employee-modern-kpi"),
-    path("dashboard/api/departments/", emp_dashboard_modern.employee_by_department, name="employee-modern-dept"),
-    path("dashboard/api/gender/", emp_dashboard_modern.employee_by_gender, name="employee-modern-gender"),
-    path("dashboard/api/type/", emp_dashboard_modern.employee_by_type, name="employee-modern-type"),
-    path("dashboard/api/position/", emp_dashboard_modern.employee_by_job_position, name="employee-modern-position"),
-    path("dashboard/api/joining-trend/", emp_dashboard_modern.employee_joining_trend, name="employee-modern-joining-trend"),
-    path("dashboard/api/headcount/", emp_dashboard_modern.employee_headcount_trend, name="employee-modern-headcount"),
-    path("dashboard/api/recent/", emp_dashboard_modern.employee_recent_list, name="employee-modern-recent"),
-    path("dashboard/api/birthdays/", emp_dashboard_modern.employee_upcoming_birthdays, name="employee-modern-birthdays"),
+    path(
+        "dashboard/", emp_dashboard_modern.modern_employee_dashboard, name="employee-dashboard"
+    ),
+    path(
+        "dashboard/api/kpi/",
+        emp_dashboard_modern.employee_kpi_data,
+        name="employee-dashboard-kpi",
+    ),
+    path(
+        "dashboard/api/departments/",
+        emp_dashboard_modern.employee_by_department,
+        name="employee-dashboard-dept",
+    ),
+    path(
+        "dashboard/api/gender/",
+        emp_dashboard_modern.employee_by_gender,
+        name="employee-dashboard-gender",
+    ),
+    path(
+        "dashboard/api/type/",
+        emp_dashboard_modern.employee_by_type,
+        name="employee-dashboard-type",
+    ),
+    path(
+        "dashboard/api/position/",
+        emp_dashboard_modern.employee_by_job_position,
+        name="employee-dashboard-position",
+    ),
+    path(
+        "dashboard/api/joining-trend/",
+        emp_dashboard_modern.employee_joining_trend,
+        name="employee-dashboard-joining-trend",
+    ),
+    path(
+        "dashboard/api/headcount/",
+        emp_dashboard_modern.employee_headcount_trend,
+        name="employee-dashboard-headcount",
+    ),
+    path(
+        "dashboard/api/recent/",
+        emp_dashboard_modern.employee_recent_list,
+        name="employee-dashboard-recent",
+    ),
+    path(
+        "dashboard/api/birthdays/",
+        emp_dashboard_modern.employee_upcoming_birthdays,
+        name="employee-dashboard-birthdays",
+    ),
     path(
         "total-employees-count/",
         views.total_employees_count,

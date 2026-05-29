@@ -406,11 +406,6 @@ urlpatterns = [
         "send-acknowledgement/", views.send_acknowledgement, name="send-acknowledgement"
     ),
     path(
-        "dashboard/",
-        views_dashboard.dashboard,
-        name="recruitment-dashboard",
-    ),
-    path(
         "skill-zone-status-dashboard/",
         dashboard.SkillZoneStatusList.as_view(),
         name="skill-zone-status-dashboard",
@@ -1020,71 +1015,71 @@ urlpatterns = [
     path(
         "dashboard/",
         rec_dashboard_modern.modern_recruitment_dashboard,
-        name="recruitment-modern-dashboard",
+        name="recruitment-dashboard",
     ),
     path(
         "dashboard/api/kpi/",
         rec_dashboard_modern.recruitment_kpi_data,
-        name="recruitment-modern-kpi",
+        name="recruitment-dashboard-kpi",
     ),
     path(
         "dashboard/api/offer-status/",
         rec_dashboard_modern.recruitment_offer_status,
-        name="recruitment-modern-offer-status",
+        name="recruitment-dashboard-offer-status",
     ),
     path(
         "dashboard/api/stage-summary/",
         rec_dashboard_modern.recruitment_stage_summary,
-        name="recruitment-modern-stage-summary",
+        name="recruitment-dashboard-stage-summary",
     ),
     path(
         "dashboard/api/pipeline/",
         rec_dashboard_modern.recruitment_pipeline_data,
-        name="recruitment-modern-pipeline",
+        name="recruitment-dashboard-pipeline",
     ),
     path(
         "dashboard/api/source-quality/",
         rec_dashboard_modern.recruitment_source_quality,
-        name="recruitment-modern-source-quality",
+        name="recruitment-dashboard-source-quality",
     ),
     path(
         "dashboard/api/time-to-hire/",
         rec_dashboard_modern.recruitment_time_to_hire,
-        name="recruitment-modern-time-to-hire",
+        name="recruitment-dashboard-time-to-hire",
     ),
     path(
         "dashboard/api/managers/",
         rec_dashboard_modern.recruitment_managers_data,
-        name="recruitment-modern-managers",
+        name="recruitment-dashboard-managers",
     ),
     path(
         "dashboard/api/source-of-hire/",
         rec_dashboard_modern.recruitment_source_of_hire,
-        name="recruitment-modern-source",
+        name="recruitment-dashboard-source",
     ),
     path(
         "dashboard/api/upcoming-interviews/",
         rec_dashboard_modern.recruitment_upcoming_interviews,
-        name="recruitment-modern-interviews",
+        name="recruitment-dashboard-interviews",
     ),
     path(
         "dashboard/api/open-by-dept/",
         rec_dashboard_modern.recruitment_open_by_department,
-        name="recruitment-modern-open-dept",
+        name="recruitment-dashboard-open-dept",
     ),
     path(
         "dashboard/api/stage-conversion/",
         rec_dashboard_modern.recruitment_stage_conversion,
-        name="recruitment-modern-conversion",
+        name="recruitment-dashboard-conversion",
     ),
     path(
         "dashboard/api/source-conversion/",
         rec_dashboard_modern.recruitment_source_conversion,
-        name="recruitment-modern-source-conv",
+        name="recruitment-dashboard-source-conv",
     ),
     path(
         "dashboard/api/joinings/",
         rec_dashboard_modern.recruitment_joinings_monthly,
-        name="recruitment-modern-joinings",
+        name="recruitment-dashboard-joinings",
     ),
 ]

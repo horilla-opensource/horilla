@@ -347,9 +347,7 @@ def asset_department_distribution(request):
             dept = item[
                 "assigned_to_employee_id__employee_work_info__department_id__department"
             ]
-            dept_id = item[
-                "assigned_to_employee_id__employee_work_info__department_id"
-            ]
+            dept_id = item["assigned_to_employee_id__employee_work_info__department_id"]
             if dept:
                 departments.append(
                     {

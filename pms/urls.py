@@ -1,4 +1,5 @@
 from django.urls import path
+from django.views.generic import RedirectView
 
 from base.views import object_delete
 from horilla_audit.methods import history_tracking
@@ -381,7 +382,7 @@ urlpatterns = [
         "period-update/<int:pk>/", period.PeriodFormView.as_view(), name="period-update"
     ),
     path("period-change/", views.period_change, name="period-change"),
-    path("dashboard-view/", views.dashboard_view, name="dashboard-view"),
+    path("dashboard-view/", RedirectView.as_view(pattern_name="dashboard-view"), name="dashboard-view-legacy"),
     path(
         "dashboard-risk-objectives/",
         dashboard.DasboardObjectivesRisk.as_view(),
@@ -825,59 +826,59 @@ urlpatterns = [
     path(
         "dashboard/",
         pms_dashboard_modern.modern_pms_dashboard,
-        name="pms-modern-dashboard",
+        name="dashboard-view",
     ),
     path(
-        "dashboard/api/kpi/", pms_dashboard_modern.pms_kpi_data, name="pms-modern-kpi"
+        "dashboard/api/kpi/", pms_dashboard_modern.pms_kpi_data, name="pms-dashboard-kpi"
     ),
     path(
         "dashboard/api/objective-status/",
         pms_dashboard_modern.pms_objective_status,
-        name="pms-modern-obj-status",
+        name="pms-dashboard-obj-status",
     ),
     path(
         "dashboard/api/kr-status/",
         pms_dashboard_modern.pms_key_result_status,
-        name="pms-modern-kr-status",
+        name="pms-dashboard-kr-status",
     ),
     path(
         "dashboard/api/feedback-status/",
         pms_dashboard_modern.pms_feedback_status,
-        name="pms-modern-fb-status",
+        name="pms-dashboard-fb-status",
     ),
     path(
         "dashboard/api/department/",
         pms_dashboard_modern.pms_department_performance,
-        name="pms-modern-dept",
+        name="pms-dashboard-dept",
     ),
     path(
         "dashboard/api/at-risk/",
         pms_dashboard_modern.pms_at_risk_objectives,
-        name="pms-modern-at-risk",
+        name="pms-dashboard-at-risk",
     ),
     path(
         "dashboard/api/performers/",
         pms_dashboard_modern.pms_top_performers,
-        name="pms-modern-performers",
+        name="pms-dashboard-performers",
     ),
     path(
         "dashboard/api/okr-overview/",
         pms_dashboard_modern.pms_kr_progress_overview,
-        name="pms-modern-okr-overview",
+        name="pms-dashboard-okr-overview",
     ),
     path(
         "dashboard/api/meetings/",
         pms_dashboard_modern.pms_upcoming_meetings,
-        name="pms-modern-meetings",
+        name="pms-dashboard-meetings",
     ),
     path(
         "dashboard/api/progress-trend/",
         pms_dashboard_modern.pms_progress_trend,
-        name="pms-modern-progress-trend",
+        name="pms-dashboard-progress-trend",
     ),
     path(
         "dashboard/api/feedback-completion/",
         pms_dashboard_modern.pms_feedback_completion,
-        name="pms-modern-fb-completion",
+        name="pms-dashboard-fb-completion",
     ),
 ]

@@ -189,9 +189,7 @@ def ess_leave_balance(request):
                     start_date__lte=to_date,
                     end_date__gte=from_date,
                 )
-                taken = float(
-                    sum(float(lr.requested_days or 0) for lr in approved)
-                )
+                taken = float(sum(float(lr.requested_days or 0) for lr in approved))
             except Exception:
                 pass
             balances.append(
@@ -433,7 +431,14 @@ def ess_work_hours_week(request):
         d = week_start + timedelta(days=i)
         h = hours_map.get(d.isoformat(), 0.0)
         total_hours += h
-        days.append({"day": day_names[i], "date": d.strftime("%b %d"), "iso_date": d.isoformat(), "hours": h})
+        days.append(
+            {
+                "day": day_names[i],
+                "date": d.strftime("%b %d"),
+                "iso_date": d.isoformat(),
+                "hours": h,
+            }
+        )
 
     return JsonResponse(
         {
@@ -503,10 +508,8 @@ def ess_objectives(request):
         from pms.models import EmployeeObjective
 
         # Employee-specific progress records overlapping the selected month
-        month_overlap = (
-            _Q(start_date__lte=to_date) & (
-                _Q(end_date__gte=from_date) | _Q(end_date__isnull=True)
-            )
+        month_overlap = _Q(start_date__lte=to_date) & (
+            _Q(end_date__gte=from_date) | _Q(end_date__isnull=True)
         )
         qs = (
             EmployeeObjective.objects.filter(
@@ -573,9 +576,8 @@ def ess_announcements(request):
     results = []
     try:
         # Active during the selected month: created on/before month end AND not yet expired by month start.
-        active_in_month = (
-            Q(created_at__date__lte=to_date)
-            & (Q(expire_date__gte=from_date) | Q(expire_date__isnull=True))
+        active_in_month = Q(created_at__date__lte=to_date) & (
+            Q(expire_date__gte=from_date) | Q(expire_date__isnull=True)
         )
         not_expired = active_in_month
 

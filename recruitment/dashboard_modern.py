@@ -148,7 +148,9 @@ def recruitment_pipeline_data(request):
             continue
         stages = {}
         for stage_type, stage_label in Stage.stage_types:
-            stages[stage_type] = rec_cands.filter(stage_id__stage_type=stage_type).count()
+            stages[stage_type] = rec_cands.filter(
+                stage_id__stage_type=stage_type
+            ).count()
         pipeline.append(
             {
                 "recruitment": rec.title or str(rec),
@@ -204,9 +206,11 @@ def recruitment_time_to_hire(request):
     data = []
 
     for rec in recruitments:
-        hired = period_candidates.filter(recruitment_id=rec).filter(
-            Q(hired=True) | Q(stage_id__stage_type="hired")
-        ).distinct()
+        hired = (
+            period_candidates.filter(recruitment_id=rec)
+            .filter(Q(hired=True) | Q(stage_id__stage_type="hired"))
+            .distinct()
+        )
         if not hired.exists():
             continue
 
@@ -277,13 +281,17 @@ def recruitment_source_of_hire(request):
 
         referral_count = candidates.filter(referral__isnull=False).count()
         if referral_count > 0:
-            sources.append({"source": "Referral", "key": "referral", "count": referral_count})
+            sources.append(
+                {"source": "Referral", "key": "referral", "count": referral_count}
+            )
 
         not_set_count = candidates.filter(
             Q(source__isnull=True) | Q(source=""), referral__isnull=True
         ).count()
         if not_set_count > 0:
-            sources.append({"source": "Not Specified", "key": "not_set", "count": not_set_count})
+            sources.append(
+                {"source": "Not Specified", "key": "not_set", "count": not_set_count}
+            )
 
         sources.sort(key=lambda x: x["count"], reverse=True)
 
@@ -520,8 +528,18 @@ def recruitment_joinings_monthly(request):
     from_date, to_date = _parse_period(request)
 
     month_names = [
-        "January", "February", "March", "April", "May", "June",
-        "July", "August", "September", "October", "November", "December",
+        "January",
+        "February",
+        "March",
+        "April",
+        "May",
+        "June",
+        "July",
+        "August",
+        "September",
+        "October",
+        "November",
+        "December",
     ]
 
     buckets = []
@@ -542,13 +560,20 @@ def recruitment_joinings_monthly(request):
         if not info.date_joining:
             continue
         for b in buckets:
-            if b["year"] == info.date_joining.year and b["month"] == info.date_joining.month:
+            if (
+                b["year"] == info.date_joining.year
+                and b["month"] == info.date_joining.month
+            ):
                 b["count"] += 1
                 break
 
     multi_year = from_date.year != to_date.year
     labels = [
-        f"{month_names[b['month'] - 1][:3]} {b['year']}" if multi_year else month_names[b["month"] - 1]
+        (
+            f"{month_names[b['month'] - 1][:3]} {b['year']}"
+            if multi_year
+            else month_names[b["month"] - 1]
+        )
         for b in buckets
     ]
     data = [b["count"] for b in buckets]

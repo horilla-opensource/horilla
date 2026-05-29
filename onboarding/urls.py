@@ -284,51 +284,51 @@ urlpatterns = [
     path(
         "dashboard/",
         on_dashboard_modern.modern_onboarding_dashboard,
-        name="onboarding-modern-dashboard",
+        name="onboarding-dashboard",
     ),
     path(
         "dashboard/api/kpi/",
         on_dashboard_modern.onboarding_kpi_data,
-        name="onboarding-modern-kpi",
+        name="onboarding-dashboard-kpi",
     ),
     path(
         "dashboard/api/stages/",
         on_dashboard_modern.onboarding_stage_distribution,
-        name="onboarding-modern-stages",
+        name="onboarding-dashboard-stages",
     ),
     path(
         "dashboard/api/tasks/",
         on_dashboard_modern.onboarding_task_status,
-        name="onboarding-modern-tasks",
+        name="onboarding-dashboard-tasks",
     ),
     path(
         "dashboard/api/recruitment/",
         on_dashboard_modern.onboarding_by_recruitment,
-        name="onboarding-modern-recruitment",
+        name="onboarding-dashboard-recruitment",
     ),
     path(
         "dashboard/api/position/",
         on_dashboard_modern.onboarding_by_job_position,
-        name="onboarding-modern-position",
+        name="onboarding-dashboard-position",
     ),
     path(
         "dashboard/api/candidates/",
         on_dashboard_modern.onboarding_candidates_list,
-        name="onboarding-modern-candidates",
+        name="onboarding-dashboard-candidates",
     ),
     path(
         "dashboard/api/my-tasks/",
         on_dashboard_modern.onboarding_task_managers,
-        name="onboarding-modern-my-tasks",
+        name="onboarding-dashboard-my-tasks",
     ),
     path(
         "dashboard/api/completion-trend/",
         on_dashboard_modern.onboarding_completion_trend,
-        name="onboarding-modern-completion-trend",
+        name="onboarding-dashboard-completion-trend",
     ),
     path(
         "dashboard/api/portal-status/",
         on_dashboard_modern.onboarding_portal_status,
-        name="onboarding-modern-portal-status",
+        name="onboarding-dashboard-portal-status",
     ),
 ]

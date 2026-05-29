@@ -69,7 +69,7 @@ from horilla_audit.models import AuditTag
 
 urlpatterns = [
     path("", views.home, name="home-page"),
-    path("dashboard/", dashboard_modern.modern_dashboard, name="modern-dashboard"),
+    path("dashboard/", dashboard_modern.modern_dashboard, name="dashboard"),
     path(
         "dashboard/api/kpi/",
         dashboard_modern.dashboard_kpi_data,

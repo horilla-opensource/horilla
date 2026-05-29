@@ -187,7 +187,9 @@ def onboarding_by_job_position(request):
             pos = item["job_position_id__job_position"]
             pos_id = item["job_position_id"]
             if pos:
-                positions.append({"position": pos, "position_id": pos_id, "count": item["count"]})
+                positions.append(
+                    {"position": pos, "position_id": pos_id, "count": item["count"]}
+                )
     except Exception:
         pass
 

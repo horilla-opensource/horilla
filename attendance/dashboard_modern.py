@@ -303,7 +303,9 @@ def attendance_late_early_data(request):
     except Exception:
         pass
 
-    return JsonResponse({"late_come": late_data, "early_out": early_data, "date": today.isoformat()})
+    return JsonResponse(
+        {"late_come": late_data, "early_out": early_data, "date": today.isoformat()}
+    )
 
 
 @login_required
@@ -740,7 +742,11 @@ def attendance_calendar_heatmap(request):
                         "date": d.isoformat(),
                         "day": d.strftime("%a"),
                         "dom": d.day,
-                        "label": d.strftime("%b %d") if from_date.month != to_date.month else d.day,
+                        "label": (
+                            d.strftime("%b %d")
+                            if from_date.month != to_date.month
+                            else d.day
+                        ),
                         "count": c,
                         "rate": rate,
                     }
@@ -782,9 +788,13 @@ def attendance_calendar_heatmap(request):
     if from_date.year == to_date.year and from_date.month == to_date.month:
         period_label = from_date.strftime("%B %Y")
     elif from_date.year == to_date.year:
-        period_label = f"{from_date.strftime('%b %d')} – {to_date.strftime('%b %d, %Y')}"
+        period_label = (
+            f"{from_date.strftime('%b %d')} – {to_date.strftime('%b %d, %Y')}"
+        )
     else:
-        period_label = f"{from_date.strftime('%b %d, %Y')} – {to_date.strftime('%b %d, %Y')}"
+        period_label = (
+            f"{from_date.strftime('%b %d, %Y')} – {to_date.strftime('%b %d, %Y')}"
+        )
 
     return JsonResponse(
         {
