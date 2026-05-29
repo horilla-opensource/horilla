@@ -174,6 +174,7 @@ def dashboard(request):
 
 
 @login_required
+@manager_can_enter(perm="recruitment.view_recruitment")
 def dashboard_pipeline(request):
     """
     This method is used generate recruitment dataset for the dashboard
@@ -211,6 +212,7 @@ def dashboard_pipeline(request):
 
 
 @login_required
+@manager_can_enter(perm="recruitment.view_recruitment")
 def dashboard_hiring(request):
     """
     This method is used generate employee joining status for the dashboard
