@@ -1,4 +1,4 @@
-class DateFormattingUtility {
+var DateFormattingUtility = DateFormattingUtility || class DateFormattingUtility {
     constructor() {
         // Default date format
         this.dateFormat = 'MMM. D, YYYY';
@@ -74,10 +74,10 @@ class DateFormattingUtility {
 }
 
 // Create an instance of the utility
-const dateFormatter = new DateFormattingUtility();
+var dateFormatter = dateFormatter || new DateFormattingUtility();
 
 // Retrieve the selected date format from localStorage
-const storedDateFormat = localStorage.getItem('selectedDateFormat');
+var storedDateFormat = localStorage.getItem('selectedDateFormat');
 
 if (storedDateFormat) {
     // If a date format is stored, set it in the utility

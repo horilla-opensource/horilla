@@ -1,4 +1,4 @@
-class TimeFormattingUtility {
+var TimeFormattingUtility = TimeFormattingUtility || class TimeFormattingUtility {
     constructor() {
         // Default time format
         this.timeFormat = 'hh:mm A'; // Default to 12-hour format
@@ -61,10 +61,10 @@ class TimeFormattingUtility {
 }
 
 // Create an instance of the TimeFormattingUtility
-const timeFormatter = new TimeFormattingUtility();
+var timeFormatter = timeFormatter || new TimeFormattingUtility();
 
 // Retrieve the selected time format from localStorage
-const storedTimeFormat = localStorage.getItem('selectedTimeFormat');
+var storedTimeFormat = localStorage.getItem('selectedTimeFormat');
 
 if (storedTimeFormat) {
     // If a time format is stored, set it in the utility
