@@ -13,6 +13,7 @@ from django import forms
 from django.apps import apps
 from django.db.models import Q, Value
 from django.db.models.functions import Coalesce, Concat, TruncYear
+from django.utils.timezone import now
 from django.utils.translation import gettext as __
 from django.utils.translation import gettext_lazy as _
 from django_filters import DateFilter, FilterSet, NumberFilter, filters
@@ -132,6 +133,7 @@ class LeaveRequestFilter(HorillaFilterSet):
 
     search = django_filters.CharFilter(method="filter_by_name")
     search_field = django_filters.CharFilter(method="search_in")
+    today_leave = django_filters.BooleanFilter(method="filter_today_leave")
     overall_leave = django_filters.CharFilter(method="overall_leave_filter")
     from_date = DateFilter(
         field_name="end_date",
@@ -225,6 +227,15 @@ class LeaveRequestFilter(HorillaFilterSet):
             queryset = yearly_leave_requests
         else:
             queryset = today_leave_requests
+        return queryset
+
+    def filter_today_leave(self, queryset, name, value):
+        if value:
+            today = now().date()
+            return queryset.filter(
+                start_date__lte=today,
+                end_date__gte=today,
+            )
         return queryset
 
     def filter_by_name(self, queryset, name, value):

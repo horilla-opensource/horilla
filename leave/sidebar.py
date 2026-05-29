@@ -15,7 +15,7 @@ IMG_SRC = "images/ui/leave.svg"
 SUBMENUS = [
     {
         "menu": _("Dashboard"),
-        "redirect": reverse_lazy("leave-dashboard"),
+        "redirect": reverse_lazy("leave-modern-dashboard"),
         "accessibility": "leave.sidebar.dashboard_accessibility",
     },
     {

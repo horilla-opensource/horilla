@@ -76,13 +76,23 @@ def is_clocked_in(user):
         employee = user.employee_get
     except:
         return False
+    today = date.today()
+    yesterday = today - timedelta(days=1)
     last_attendance = (
-        employee.employee_attendances.all().order_by("attendance_date", "id").last()
+        employee.employee_attendances.filter(
+            attendance_date__in=[yesterday, today]
+        )
+        .order_by("attendance_date", "id")
+        .last()
     )
     if last_attendance is not None:
-        last_activity = employee.employee_attendance_activities.filter(
-            attendance_date=last_attendance.attendance_date
-        ).last()
+        last_activity = (
+            employee.employee_attendance_activities.filter(
+                attendance_date=last_attendance.attendance_date
+            )
+            .order_by("id")
+            .last()
+        )
         return False if last_activity is None else last_activity.clock_out is None
     return False
 

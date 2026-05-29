@@ -261,10 +261,50 @@ def initialize_database_condition():
     return init_database
 
 
+def _shift_fixture_dates(file_path):
+    """
+    Return a date-shifted version of a JSON fixture as a string.
+
+    All dates between 2020-01-01 and 2030-12-31 are shifted so that the
+    fixture's anchor month (2025-07-01) maps to the first day of the current
+    month. Static dates outside that window (e.g. DOBs in the 1960s) are left
+    untouched. Returns None if no shift is needed (delta == 0).
+    """
+    import re
+
+    ANCHOR = datetime(2025, 7, 1).date()
+    today = datetime.today().date()
+    target = today.replace(day=1)
+    delta = (target - ANCHOR).days
+
+    if delta == 0:
+        return None
+
+    DATE_RE = re.compile(r"\b(\d{4}-\d{2}-\d{2})\b")
+    SHIFT_MIN = datetime(2020, 1, 1).date()
+    SHIFT_MAX = datetime(2030, 12, 31).date()
+
+    def _shift(match):
+        try:
+            d = datetime.strptime(match.group(1), "%Y-%m-%d").date()
+            if SHIFT_MIN <= d <= SHIFT_MAX:
+                return (d + timedelta(days=delta)).strftime("%Y-%m-%d")
+        except ValueError:
+            pass
+        return match.group(1)
+
+    with open(file_path, "r", encoding="utf-8") as f:
+        content = f.read()
+
+    return DATE_RE.sub(_shift, content)
+
+
 def load_demo_database(request):
     if initialize_database_condition():
         if request.method == "POST":
             if request.POST.get("load_data_password") == settings.DB_INIT_PASSWORD:
+                import tempfile
+
                 data_files = [
                     "user_data.json",
                     "employee_info_data.json",
@@ -289,13 +329,30 @@ def load_demo_database(request):
                     file for app, file in optional_apps if apps.is_installed(app)
                 ]
 
-                # Load all data files
+                # Load all data files, shifting dates relative to today
                 for file in data_files:
                     file_path = path.join(settings.BASE_DIR, "load_data", file)
+                    tmp = None
                     try:
-                        call_command("loaddata", file_path)
+                        shifted = _shift_fixture_dates(file_path)
+                        if shifted is not None:
+                            suffix = path.splitext(file)[1]
+                            with tempfile.NamedTemporaryFile(
+                                mode="w",
+                                suffix=suffix,
+                                delete=False,
+                                encoding="utf-8",
+                            ) as tmp_f:
+                                tmp_f.write(shifted)
+                                tmp = tmp_f.name
+                            call_command("loaddata", tmp)
+                        else:
+                            call_command("loaddata", file_path)
                     except Exception as e:
                         messages.error(request, f"An error occured : {e}")
+                    finally:
+                        if tmp and path.exists(tmp):
+                            os.remove(tmp)
 
                 messages.success(request, _("Database loaded successfully."))
             else:
@@ -961,57 +1018,9 @@ class Workinfo:
 @login_required
 def home(request):
     """
-    This method is used to render index page
+    This method is used to render index page — redirects to the modern dashboard.
     """
-
-    today = datetime.today()
-    today_weekday = today.weekday()
-    first_day_of_week = today - timedelta(days=today_weekday)
-    last_day_of_week = first_day_of_week + timedelta(days=6)
-
-    employee_charts = DashboardEmployeeCharts.objects.get_or_create(
-        employee=request.user.employee_get
-    )[0]
-
-    user = request.user
-    today = timezone.now().date()  # Get today's date
-    is_birthday = None
-
-    if user.employee_get.dob != None:
-        is_birthday = (
-            user.employee_get.dob.month == today.month
-            and user.employee_get.dob.day == today.day
-        )
-
-    # show_section = any(
-    #     [
-    #         request.user.has_perm("attendance.view_attendancevalidationcondition"),
-    #         request.user.has_perm("helpdesk.view_departmentmanager"),
-    #         request.user.has_perm("helpdesk.view_tickettype"),
-    #         request.user.has_perm("employee.view_employeetag"),
-    #         request.user.has_perm("pms.add_bonuspointsetting"),
-    #         request.user.has_perm("payroll.view_payslipautogenerate"),
-    #         request.user.has_perm("leave.add_restrictleave"),
-    #         request.user.has_perm("base.view_biometricattendance"),
-    #         request.user.has_perm("attendance.add_attendance"),
-    #         request.user.has_perm("geofencing.add_geofencing"),
-    #         request.user.has_perm("facedetection.add_facedetection"),
-    #         request.user.has_perm("recruitment.view_recruitment"),
-    #         request.user.has_perm("recruitment.view_rejectreason"),
-    #         request.user.has_perm("recruitment.add_recruitment"),
-    #         request.user.has_perm("recruitment.add_linkedinaccount"),
-    #     ]
-    # )
-
-    context = {
-        "first_day_of_week": first_day_of_week.strftime("%Y-%m-%d"),
-        "last_day_of_week": last_day_of_week.strftime("%Y-%m-%d"),
-        "charts": employee_charts.charts,
-        "is_birthday": is_birthday,
-        # "show_section": show_section,
-    }
-
-    return render(request, "index.html", context)
+    return redirect("modern-dashboard")
 
 
 @login_required
