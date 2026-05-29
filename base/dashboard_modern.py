@@ -603,11 +603,13 @@ def dashboard_recruitment_pipeline(request):
         # Output in canonical stage order
         for st in stage_type_order:
             if st in totals:
-                stages.append({
-                    "stage": stage_type_labels.get(st, st.capitalize()),
-                    "type": st,
-                    "count": totals[st],
-                })
+                stages.append(
+                    {
+                        "stage": stage_type_labels.get(st, st.capitalize()),
+                        "type": st,
+                        "count": totals[st],
+                    }
+                )
 
         # Summary counts
         total_candidates = Candidate.objects.filter(
@@ -645,8 +647,8 @@ def dashboard_payroll_summary(request):
     today = to_date
     first_of_month = from_date
     # Always use full calendar month boundaries for previous month
-    prev_month_end = first_of_month - timedelta(days=1)          # last day of previous month
-    prev_month_start = prev_month_end.replace(day=1)             # first day of previous month
+    prev_month_end = first_of_month - timedelta(days=1)  # last day of previous month
+    prev_month_start = prev_month_end.replace(day=1)  # first day of previous month
 
     current = {"gross": 0, "deductions": 0, "net": 0, "count": 0}
     previous = {"gross": 0, "deductions": 0, "net": 0, "count": 0}

@@ -261,56 +261,56 @@ urlpatterns = [
     path(
         "dashboard/",
         hd_dashboard_modern.modern_helpdesk_dashboard,
-        name="helpdesk-modern-dashboard",
+        name="helpdesk-dashboard",
     ),
     path(
         "dashboard/api/kpi/",
         hd_dashboard_modern.helpdesk_kpi_data,
-        name="helpdesk-modern-kpi",
+        name="helpdesk-dashboard-kpi",
     ),
     path(
         "dashboard/api/status/",
         hd_dashboard_modern.helpdesk_status_distribution,
-        name="helpdesk-modern-status",
+        name="helpdesk-dashboard-status",
     ),
     path(
         "dashboard/api/priority/",
         hd_dashboard_modern.helpdesk_priority_distribution,
-        name="helpdesk-modern-priority",
+        name="helpdesk-dashboard-priority",
     ),
     path(
         "dashboard/api/type/",
         hd_dashboard_modern.helpdesk_type_distribution,
-        name="helpdesk-modern-type",
+        name="helpdesk-dashboard-type",
     ),
     path(
         "dashboard/api/trend/",
         hd_dashboard_modern.helpdesk_monthly_trend,
-        name="helpdesk-modern-trend",
+        name="helpdesk-dashboard-trend",
     ),
     path(
         "dashboard/api/department/",
         hd_dashboard_modern.helpdesk_department_breakdown,
-        name="helpdesk-modern-dept",
+        name="helpdesk-dashboard-dept",
     ),
     path(
         "dashboard/api/overdue/",
         hd_dashboard_modern.helpdesk_overdue_tickets,
-        name="helpdesk-modern-overdue",
+        name="helpdesk-dashboard-overdue",
     ),
     path(
         "dashboard/api/recent/",
         hd_dashboard_modern.helpdesk_recent_tickets,
-        name="helpdesk-modern-recent",
+        name="helpdesk-dashboard-recent",
     ),
     path(
         "dashboard/api/sla/",
         hd_dashboard_modern.helpdesk_sla_compliance,
-        name="helpdesk-modern-sla",
+        name="helpdesk-dashboard-sla",
     ),
     path(
         "dashboard/api/workload/",
         hd_dashboard_modern.helpdesk_assignee_workload,
-        name="helpdesk-modern-workload",
+        name="helpdesk-dashboard-workload",
     ),
 ]

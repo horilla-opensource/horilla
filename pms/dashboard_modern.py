@@ -32,9 +32,7 @@ def _parse_period(request):
 def _period_overlap(qs, request, start_field="start_date", end_field="end_date"):
     """Restrict a queryset to rows whose [start, end] overlaps the requested period."""
     from_date, to_date = _parse_period(request)
-    return qs.filter(
-        **{f"{start_field}__lte": to_date, f"{end_field}__gte": from_date}
-    )
+    return qs.filter(**{f"{start_field}__lte": to_date, f"{end_field}__gte": from_date})
 
 
 @login_required
@@ -74,9 +72,7 @@ def pms_kpi_data(request):
     )
 
     # Pending feedback (not started + on track)
-    pending_feedback = feedbacks.filter(
-        status__in=["Not Started", "On Track"]
-    ).count()
+    pending_feedback = feedbacks.filter(status__in=["Not Started", "On Track"]).count()
 
     return JsonResponse(
         {

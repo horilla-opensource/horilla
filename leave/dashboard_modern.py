@@ -133,7 +133,9 @@ def leave_monthly_trend(request):
         if month_start.month == 12:
             month_end = date(month_start.year + 1, 1, 1) - timedelta(days=1)
         else:
-            month_end = date(month_start.year, month_start.month + 1, 1) - timedelta(days=1)
+            month_end = date(month_start.year, month_start.month + 1, 1) - timedelta(
+                days=1
+            )
 
         approved = LeaveRequest.objects.filter(
             status="approved",
@@ -185,7 +187,10 @@ def leave_type_distribution(request):
                 start_date__lte=today,
             )
             .values(
-                "leave_type_id", "leave_type_id__name", "leave_type_id__color", "leave_type_id__payment"
+                "leave_type_id",
+                "leave_type_id__name",
+                "leave_type_id__color",
+                "leave_type_id__payment",
             )
             .annotate(count=Count("id"), total_days=Sum("requested_days"))
             .order_by("-total_days")

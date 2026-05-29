@@ -113,7 +113,9 @@ class ActualObjectiveFilter(HorillaFilterSet):
     """
 
     search = django_filters.CharFilter(method="search_method")
-    status = django_filters.CharFilter(method="filter_by_emp_obj_status", label=_("Status"))
+    status = django_filters.CharFilter(
+        method="filter_by_emp_obj_status", label=_("Status")
+    )
 
     class Meta:
         model = Objective

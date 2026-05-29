@@ -16,32 +16,32 @@ urlpatterns = [
     path(
         "dashboard/api/kpi/",
         proj_dashboard_modern.project_kpi_data,
-        name="project-modern-kpi",
+        name="project-dashboard-kpi",
     ),
     path(
         "dashboard/api/status/",
         proj_dashboard_modern.project_status_distribution,
-        name="project-modern-status",
+        name="project-dashboard-status",
     ),
     path(
         "dashboard/api/tasks/",
         proj_dashboard_modern.project_task_status,
-        name="project-modern-tasks",
+        name="project-dashboard-tasks",
     ),
     path(
         "dashboard/api/trend/",
         proj_dashboard_modern.project_monthly_trend,
-        name="project-modern-trend",
+        name="project-dashboard-trend",
     ),
     path(
         "dashboard/api/deadlines/",
         proj_dashboard_modern.project_upcoming_deadlines,
-        name="project-modern-deadlines",
+        name="project-dashboard-deadlines",
     ),
     path(
         "dashboard/api/top/",
         proj_dashboard_modern.project_top_active,
-        name="project-modern-top",
+        name="project-dashboard-top",
     ),
     path(
         "projects-due-in-this-month/",

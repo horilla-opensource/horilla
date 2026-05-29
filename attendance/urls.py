@@ -386,7 +386,11 @@ urlpatterns = [
         views.attendance_add_to_batch,
         name="attendance-add-to-batch",
     ),
-    path("dashboard/", att_dashboard_modern.modern_attendance_dashboard, name="attendance-dashboard"),
+    path(
+        "dashboard/",
+        att_dashboard_modern.modern_attendance_dashboard,
+        name="attendance-dashboard",
+    ),
     path(
         "on-break-employees/",
         attendance_dashboard.on_break_employees,
@@ -924,71 +928,71 @@ urlpatterns = [
     path(
         "dashboard/api/kpi/",
         att_dashboard_modern.attendance_kpi_data,
-        name="attendance-modern-kpi",
+        name="attendance-dashboard-kpi",
     ),
     path(
         "dashboard/api/weekly/",
         att_dashboard_modern.attendance_weekly_trend,
-        name="attendance-modern-weekly",
+        name="attendance-dashboard-weekly",
     ),
     path(
         "dashboard/api/departments/",
         att_dashboard_modern.attendance_department_breakdown,
-        name="attendance-modern-dept",
+        name="attendance-dashboard-dept",
     ),
     path(
         "dashboard/api/late-early/",
         att_dashboard_modern.attendance_late_early_data,
-        name="attendance-modern-late-early",
+        name="attendance-dashboard-late-early",
     ),
     path(
         "dashboard/api/overtime/",
         att_dashboard_modern.attendance_overtime_summary,
-        name="attendance-modern-overtime",
+        name="attendance-dashboard-overtime",
     ),
     path(
         "dashboard/api/hours/",
         att_dashboard_modern.attendance_hours_distribution,
-        name="attendance-modern-hours",
+        name="attendance-dashboard-hours",
     ),
     path(
         "dashboard/api/shifts/",
         att_dashboard_modern.attendance_shift_distribution,
-        name="attendance-modern-shifts",
+        name="attendance-dashboard-shifts",
     ),
     path(
         "dashboard/api/absenteeism/",
         att_dashboard_modern.attendance_absenteeism_trend,
-        name="attendance-modern-absenteeism",
+        name="attendance-dashboard-absenteeism",
     ),
     path(
         "dashboard/api/work-types/",
         att_dashboard_modern.attendance_work_type_distribution,
-        name="attendance-modern-work-types",
+        name="attendance-dashboard-work-types",
     ),
     path(
         "dashboard/api/avg-hours/",
         att_dashboard_modern.attendance_avg_working_hours,
-        name="attendance-modern-avg-hours",
+        name="attendance-dashboard-avg-hours",
     ),
     path(
         "dashboard/api/top-absentees/",
         att_dashboard_modern.attendance_top_absentees,
-        name="attendance-modern-absentees",
+        name="attendance-dashboard-absentees",
     ),
     path(
         "dashboard/api/clockin-dist/",
         att_dashboard_modern.attendance_clockin_distribution,
-        name="attendance-modern-clockin",
+        name="attendance-dashboard-clockin",
     ),
     path(
         "dashboard/api/calendar/",
         att_dashboard_modern.attendance_calendar_heatmap,
-        name="attendance-modern-calendar",
+        name="attendance-dashboard-calendar",
     ),
     path(
         "dashboard/api/overview/",
         att_dashboard_modern.attendance_modern_overview,
-        name="attendance-modern-overview",
+        name="attendance-dashboard-overview",
     ),
 ]

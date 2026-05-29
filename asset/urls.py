@@ -304,7 +304,11 @@ urlpatterns = [
         asset_category.AssetReportFormView.as_view(),
         name="add-asset-report",
     ),
-    path("dashboard/", asset_dashboard_modern.modern_asset_dashboard, name="asset-dashboard"),
+    path(
+        "dashboard/",
+        asset_dashboard_modern.modern_asset_dashboard,
+        name="asset-dashboard",
+    ),
     path(
         "asset-dashboard-requests/",
         views.asset_dashboard_requests,
@@ -433,46 +437,46 @@ urlpatterns = [
     path(
         "dashboard/api/kpi/",
         asset_dashboard_modern.asset_kpi_data,
-        name="asset-modern-kpi",
+        name="asset-dashboard-kpi",
     ),
     path(
         "dashboard/api/status/",
         asset_dashboard_modern.asset_status_distribution,
-        name="asset-modern-status",
+        name="asset-dashboard-status",
     ),
     path(
         "dashboard/api/category/",
         asset_dashboard_modern.asset_by_category,
-        name="asset-modern-category",
+        name="asset-dashboard-category",
     ),
     path(
         "dashboard/api/requests/",
         asset_dashboard_modern.asset_request_status,
-        name="asset-modern-requests",
+        name="asset-dashboard-requests",
     ),
     path(
         "dashboard/api/value/",
         asset_dashboard_modern.asset_value_by_category,
-        name="asset-modern-value",
+        name="asset-dashboard-value",
     ),
     path(
         "dashboard/api/expiring/",
         asset_dashboard_modern.asset_expiring_soon,
-        name="asset-modern-expiring",
+        name="asset-dashboard-expiring",
     ),
     path(
         "dashboard/api/allocations/",
         asset_dashboard_modern.asset_recent_allocations,
-        name="asset-modern-allocations",
+        name="asset-dashboard-allocations",
     ),
     path(
         "dashboard/api/department/",
         asset_dashboard_modern.asset_department_distribution,
-        name="asset-modern-dept",
+        name="asset-dashboard-dept",
     ),
     path(
         "dashboard/api/age/",
         asset_dashboard_modern.asset_age_distribution,
-        name="asset-modern-age",
+        name="asset-dashboard-age",
     ),
 ]

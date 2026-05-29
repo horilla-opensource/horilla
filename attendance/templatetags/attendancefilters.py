@@ -79,9 +79,7 @@ def is_clocked_in(user):
     today = date.today()
     yesterday = today - timedelta(days=1)
     last_attendance = (
-        employee.employee_attendances.filter(
-            attendance_date__in=[yesterday, today]
-        )
+        employee.employee_attendances.filter(attendance_date__in=[yesterday, today])
         .order_by("attendance_date", "id")
         .last()
     )

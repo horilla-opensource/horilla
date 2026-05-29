@@ -50,8 +50,10 @@ def employee_kpi_data(request):
     on_leave = 0
     try:
         from django.apps import apps
+
         if apps.is_installed("leave"):
             from leave.models import LeaveRequest
+
             on_leave = LeaveRequest.objects.filter(
                 start_date__lte=today,
                 end_date__gte=today,
@@ -60,14 +62,16 @@ def employee_kpi_data(request):
     except Exception:
         pass
 
-    return JsonResponse({
-        "total": total,
-        "active": active,
-        "inactive": inactive,
-        "new_this_month": new_this_month,
-        "on_leave": on_leave,
-        "active_pct": round(active / total * 100, 1) if total else 0,
-    })
+    return JsonResponse(
+        {
+            "total": total,
+            "active": active,
+            "inactive": inactive,
+            "new_this_month": new_this_month,
+            "on_leave": on_leave,
+            "active_pct": round(active / total * 100, 1) if total else 0,
+        }
+    )
 
 
 @login_required
@@ -98,14 +102,18 @@ def employee_by_department(request):
 @login_required
 def employee_by_gender(request):
     from collections import Counter
+
     from employee.models import Employee
 
-    gender_list = Employee.objects.filter(is_active=True).values_list("gender", flat=True)
+    gender_list = Employee.objects.filter(is_active=True).values_list(
+        "gender", flat=True
+    )
     counts = Counter(gender_list)
     gender_labels = {"male": "Male", "female": "Female", "other": "Other"}
     genders = [
         {"gender": g, "label": gender_labels.get(g, g or "Unknown"), "count": c}
-        for g, c in counts.items() if c > 0 and g
+        for g, c in counts.items()
+        if c > 0 and g
     ]
     genders.sort(key=lambda x: -x["count"])
     return JsonResponse({"genders": genders})
@@ -126,7 +134,11 @@ def employee_by_type(request):
     )
 
     types = [
-        {"id": item["employee_type_id"], "type": item["employee_type_id__employee_type"], "count": item["count"]}
+        {
+            "id": item["employee_type_id"],
+            "type": item["employee_type_id__employee_type"],
+            "count": item["count"],
+        }
         for item in data
     ]
     return JsonResponse({"types": types})
@@ -221,21 +233,35 @@ def employee_recent_list(request):
 
     qs = (
         Employee.objects.filter(is_active=True)
-        .select_related("employee_work_info__department_id", "employee_work_info__job_position_id")
+        .select_related(
+            "employee_work_info__department_id", "employee_work_info__job_position_id"
+        )
         .order_by("-id")[:12]
     )
 
     employees = []
     for emp in qs:
         wi = getattr(emp, "employee_work_info", None)
-        employees.append({
-            "id": emp.id,
-            "name": emp.get_full_name(),
-            "avatar": emp.employee_profile.url if emp.employee_profile else None,
-            "department": wi.department_id.department if wi and wi.department_id else "—",
-            "position": wi.job_position_id.job_position if wi and wi.job_position_id else "—",
-            "date_joining": wi.date_joining.strftime("%d %b %Y") if wi and wi.date_joining else "—",
-        })
+        employees.append(
+            {
+                "id": emp.id,
+                "name": emp.get_full_name(),
+                "avatar": emp.employee_profile.url if emp.employee_profile else None,
+                "department": (
+                    wi.department_id.department if wi and wi.department_id else "—"
+                ),
+                "position": (
+                    wi.job_position_id.job_position
+                    if wi and wi.job_position_id
+                    else "—"
+                ),
+                "date_joining": (
+                    wi.date_joining.strftime("%d %b %Y")
+                    if wi and wi.date_joining
+                    else "—"
+                ),
+            }
+        )
 
     return JsonResponse({"employees": employees})
 
@@ -255,13 +281,17 @@ def employee_upcoming_birthdays(request):
             if birthday_this_year < today:
                 birthday_this_year = emp.dob.replace(year=today.year + 1)
             if today <= birthday_this_year <= window_end:
-                birthdays.append({
-                    "id": emp.id,
-                    "name": emp.get_full_name(),
-                    "avatar": emp.employee_profile.url if emp.employee_profile else None,
-                    "date": birthday_this_year.strftime("%d %b"),
-                    "days_left": (birthday_this_year - today).days,
-                })
+                birthdays.append(
+                    {
+                        "id": emp.id,
+                        "name": emp.get_full_name(),
+                        "avatar": (
+                            emp.employee_profile.url if emp.employee_profile else None
+                        ),
+                        "date": birthday_this_year.strftime("%d %b"),
+                        "days_left": (birthday_this_year - today).days,
+                    }
+                )
         birthdays.sort(key=lambda x: x["days_left"])
     except Exception:
         pass

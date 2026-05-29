@@ -1020,7 +1020,7 @@ def home(request):
     """
     This method is used to render index page — redirects to the modern dashboard.
     """
-    return redirect("modern-dashboard")
+    return redirect("dashboard")
 
 
 @login_required
