@@ -10,7 +10,28 @@ import uuid
 
 import django_filters
 from django import forms
+from django.db.models import Q
 from django.utils.translation import gettext_lazy as _
+
+
+def _filter_has_referral(qs, name, value):
+    if value:
+        return qs.filter(referral__isnull=False)
+    return qs.filter(referral__isnull=True)
+
+
+def _filter_source_not_set(qs, name, value):
+    if value:
+        return qs.filter(Q(source__isnull=True) | Q(source=""), referral__isnull=True)
+    return qs
+
+
+def _filter_recruitment_by_obj_id(qs, name, value):
+    try:
+        return qs.filter(id=int(value))
+    except (ValueError, TypeError):
+        return qs
+
 
 from base.filters import FilterSet
 from horilla.filters import HorillaFilterSet, filter_by_name
@@ -42,6 +63,14 @@ class CandidateFilter(HorillaFilterSet):
 
     name = django_filters.CharFilter(field_name="name", lookup_expr="icontains")
     search = django_filters.CharFilter(method="search_by_name", lookup_expr="icontains")
+    has_referral = django_filters.BooleanFilter(
+        method=_filter_has_referral,
+        widget=django_filters.widgets.BooleanWidget(),
+    )
+    source_not_set = django_filters.BooleanFilter(
+        method=_filter_source_not_set,
+        widget=django_filters.widgets.BooleanWidget(),
+    )
 
     # start_onboard = django_filters.CharFilter(
     #     method="start_onboard_method", lookup_expr="icontains"
@@ -197,6 +226,7 @@ class CandidateFilter(HorillaFilterSet):
             "offer_letter_status",
             "candidate_rating__rating",
             "candidate_interview__employee_id",
+            "source",
         ]
 
     def __init__(self, *args, **kwargs):
@@ -354,6 +384,7 @@ class RecruitmentFilter(HorillaFilterSet):
             (False, "No"),
         ]
     )
+    obj_id = django_filters.CharFilter(method=_filter_recruitment_by_obj_id)
 
     class Meta:
         """

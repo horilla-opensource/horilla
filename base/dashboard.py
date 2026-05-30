@@ -588,7 +588,8 @@ def dashboard_recruitment_pipeline(request):
 
         data = (
             Candidate.objects.filter(
-                recruitment_id__in=active_recruitments,
+                # recruitment_id__in=active_recruitments,
+                is_active=True,
             )
             .values("stage_id__stage_type")
             .annotate(count=Count("id"))

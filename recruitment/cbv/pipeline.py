@@ -248,6 +248,7 @@ class CandidateList(HorillaListView):
     quick_export = False
     next_prev = False
     show_filter_tags = True
+    filter_keys_to_remove = ["rec_id", "obj_id"]
     records_per_page = 10
     records_count_in_tab = False
 
@@ -434,7 +435,7 @@ class CandidateCard(HorillaKanbanView):
     group_filter_class = filters.StageFilter
     group_key = "stage_id"
     records_per_page = 10
-    filter_keys_to_remove = ["rec_id"]
+    filter_keys_to_remove = ["rec_id", "obj_id"]
     group_label_key = "stage"
 
     kanban_attrs = """
@@ -635,11 +636,13 @@ class PipelineNav(HorillaNavView):
         else:
             self.create_attrs = None
 
+        rec_id = self.request.GET.get("obj_id", "")
+        id_suffix = f"&obj_id={rec_id}" if rec_id else ""
         self.view_types = [
             {
                 "type": "list",
                 "icon": "list-outline",
-                "url": f'{reverse_lazy("cbv-pipeline-tab")}?view=list',
+                "url": f'{reverse_lazy("cbv-pipeline-tab")}?view=list{id_suffix}',
                 "attrs": f"""
                     title ='List'
                 """,
@@ -647,7 +650,7 @@ class PipelineNav(HorillaNavView):
             {
                 "type": "card",
                 "icon": "grid-outline",
-                "url": f'{reverse_lazy("cbv-pipeline-tab")}?view=card',
+                "url": f'{reverse_lazy("cbv-pipeline-tab")}?view=card{id_suffix}',
                 "attrs": f"""
                     title ='Card'
                 """,

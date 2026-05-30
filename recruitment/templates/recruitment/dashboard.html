@@ -1,4 +1,4 @@
-﻿{% extends "index.html" %}
+{% extends "index.html" %}
 {% load static i18n %}
 
 {% block content %}
@@ -43,7 +43,7 @@
     /* KPI Grid */
     .rd-kpi-grid {
         display: grid;
-        grid-template-columns: repeat(5, 1fr);
+        grid-template-columns: repeat(6, 1fr);
         gap: 14px;
         margin-bottom: 20px;
     }
@@ -173,7 +173,7 @@
     .rd-interview-item__time { font-size: 11px; font-weight: 500; opacity: 0.6; flex-shrink: 0; }
 
     /* Conversion funnel */
-    .rd-funnel { display: flex; flex-direction: column; gap: 6px; padding: 10px 0; }
+    .rd-funnel { display: flex; flex-direction: column; gap: 0; padding: 10px 0; }
     .rd-funnel-step { display: flex; align-items: center; gap: 10px; cursor: pointer; border-radius: 6px; padding: 2px 4px; transition: background 0.15s; }
     .rd-funnel-step:hover { background: rgba(99,102,241,0.06); }
     .rd-funnel-step__bar {
@@ -184,6 +184,18 @@
     .rd-funnel-step:hover .rd-funnel-step__bar { opacity: 0.85; }
     .rd-funnel-step__label { font-size: 11px; font-weight: 500; min-width: 70px; text-align: right; }
     .rd-funnel-step__rate { font-size: 11px; font-weight: 700; min-width: 45px; }
+    .rd-funnel-connector {
+        display: flex; align-items: center; gap: 6px;
+        padding: 2px 4px 2px 84px; /* align with bar start (label 70px + gap 10px + padding 4px) */
+    }
+    .rd-funnel-connector__line { width: 2px; height: 10px; background: var(--rd-border, #e2e8f0); border-radius: 1px; }
+    .rd-funnel-connector__badge {
+        font-size: 10px; font-weight: 600; padding: 1px 7px; border-radius: 10px;
+        background: rgba(99,102,241,0.1); color: #6366f1;
+    }
+    .rd-funnel-connector__drop {
+        font-size: 10px; color: var(--rd-sub, #94a3b8);
+    }
 
     /* Sidebar layout */
     .rd-layout { display: grid; grid-template-columns: 1fr 300px; gap: 20px; align-items: start; }

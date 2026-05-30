@@ -100,14 +100,15 @@ def recruitment_kpi_data(request):
 @login_required
 def recruitment_offer_status(request):
     """Candidate offer letter status breakdown."""
-    candidates = _candidates_in_period(request)
+    from recruitment.models import Candidate
 
     statuses = ["not_sent", "sent", "accepted", "rejected", "joined"]
     labels = ["Not Sent", "Sent", "Accepted", "Rejected", "Joined"]
     data = []
 
+    base_qs = Candidate.objects.filter(is_active=True)
     for status in statuses:
-        data.append(candidates.filter(offer_letter_status=status).count())
+        data.append(base_qs.filter(offer_letter_status=status).count())
 
     return JsonResponse({"labels": labels, "data": data, "statuses": statuses})
 
@@ -115,15 +116,13 @@ def recruitment_offer_status(request):
 @login_required
 def recruitment_stage_summary(request):
     """Candidates grouped by stage type across all active recruitments."""
-    from recruitment.models import Recruitment, Stage
+    from recruitment.models import Candidate, Recruitment, Stage
 
     recruitments = Recruitment.objects.filter(closed=False)
-    candidates = _candidates_in_period(request)
 
     stages = []
     for type_key, type_label in Stage.stage_types:
-        count = candidates.filter(
-            recruitment_id__in=recruitments,
+        count = Candidate.objects.filter(
             stage_id__stage_type=type_key,
             is_active=True,
         ).count()
@@ -153,6 +152,7 @@ def recruitment_pipeline_data(request):
             ).count()
         pipeline.append(
             {
+                "id": rec.id,
                 "recruitment": rec.title or str(rec),
                 "stages": stages,
                 "total": total,
@@ -264,7 +264,9 @@ def recruitment_source_of_hire(request):
     """Candidate count grouped by source (Application, Inside software, Other)."""
     from django.db.models import Q
 
-    candidates = _candidates_in_period(request)
+    from recruitment.models import Candidate
+
+    base_qs = Candidate.objects.filter(is_active=True)
     sources = []
 
     try:
@@ -275,17 +277,17 @@ def recruitment_source_of_hire(request):
         }
 
         for key, label in source_labels.items():
-            count = candidates.filter(source=key).count()
+            count = base_qs.filter(source=key).count()
             if count > 0:
                 sources.append({"source": label, "key": key, "count": count})
 
-        referral_count = candidates.filter(referral__isnull=False).count()
+        referral_count = base_qs.filter(referral__isnull=False).count()
         if referral_count > 0:
             sources.append(
                 {"source": "Referral", "key": "referral", "count": referral_count}
             )
 
-        not_set_count = candidates.filter(
+        not_set_count = base_qs.filter(
             Q(source__isnull=True) | Q(source=""), referral__isnull=True
         ).count()
         if not_set_count > 0:
@@ -401,10 +403,8 @@ def recruitment_open_by_department(request):
 @login_required
 def recruitment_stage_conversion(request):
     """Funnel conversion rates between stages."""
-    from recruitment.models import Recruitment, Stage
+    from recruitment.models import Candidate, Stage
 
-    recruitments = Recruitment.objects.filter(closed=False)
-    candidates = _candidates_in_period(request)
     conversions = []
 
     try:
@@ -413,14 +413,13 @@ def recruitment_stage_conversion(request):
 
         counts = {}
         for st in stage_types:
-            counts[st] = candidates.filter(
-                recruitment_id__in=recruitments,
+            counts[st] = Candidate.objects.filter(
                 stage_id__stage_type=st,
+                is_active=True,
             ).count()
 
-        # Also count total candidates
-        total = candidates.filter(
-            recruitment_id__in=recruitments,
+        total = Candidate.objects.filter(
+            is_active=True,
             canceled=False,
         ).count()
 
