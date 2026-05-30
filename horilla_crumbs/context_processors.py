@@ -30,8 +30,13 @@ def _split_path(self, path=None):
     return parts
 
 
+BREADCRUMB_URL_NAMES = {
+    "ess": "Employee Dashboard",
+}
+
 sidebar_urls = [
     "dashboard",
+    "ess",
     "pipeline",
     "recruitment-survey-question-template-view",
     "candidate-view",
@@ -261,6 +266,11 @@ def breadcrumbs(request):
             request.session["breadcrumbs"].clear()
             breadcrumbs.append({"url": base_url, "name": company, "found": True})
 
+        if len(parts) == 1 and parts[0] in sidebar_urls:
+            first_path = breadcrumbs[0]
+            request.session["breadcrumbs"].clear()
+            request.session["breadcrumbs"].append(first_path)
+
         if len(parts) > 1:
             last_path = parts[-1]
             if (
@@ -282,7 +292,11 @@ def breadcrumbs(request):
             except Resolver404:
                 found = False
 
-            new_dict = {"url": path, "name": item, "found": found}
+            new_dict = {
+                "url": path,
+                "name": BREADCRUMB_URL_NAMES.get(item, item),
+                "found": found,
+            }
 
             if item.isdigit() or is_valid_uuid(item):
                 # Handle the case when item is a digit (e.g., an ID)
@@ -337,9 +351,9 @@ urlpatterns.append(
     path("recruitment/", lambda request: redirect("recruitment-dashboard"))
 )
 urlpatterns.append(
-    path("onboarding/", lambda request: redirect("view-onboarding-dashboard"))
+    path("onboarding/", lambda request: redirect("onboarding-modern-dashboard"))
 )
-urlpatterns.append(path("employee/", lambda request: redirect("employee-view")))
+urlpatterns.append(path("employee/", lambda request: redirect("ess-dashboard")))
 urlpatterns.append(
     path("attendance/", lambda request: redirect("attendance-dashboard"))
 )

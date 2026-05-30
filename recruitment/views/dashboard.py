@@ -198,6 +198,7 @@ def dashboard_pipeline(request):
                     {rec.start_date}"""
                     ),
                     "data": data,
+                    "id": rec.id,
                 }
             )
     response = JsonResponse(
@@ -215,25 +216,22 @@ def dashboard_pipeline(request):
 @manager_can_enter(perm="recruitment.view_recruitment")
 def dashboard_hiring(request):
     """
-    This method is used generate employee joining status for the dashboard
+    This method is used generate hired candidate count per month for the dashboard
     """
 
-    selected_year = request.GET.get("id") or datetime.date.today().year
+    selected_year = int(request.GET.get("id") or datetime.date.today().year)
 
-    employee_info = EmployeeWorkInformation.objects.filter(
-        date_joining__year=selected_year
+    hired_candidates = Candidate.objects.filter(
+        hired=True,
+        joining_date__year=selected_year,
+        joining_date__isnull=False,
     )
 
-    # Create a list to store the count of employees for each month
-    employee_count_per_month = [0] * 12  # Initialize with zeros for all months
+    candidate_count_per_month = [0] * 12
 
-    # Count the number of employees who joined in each month for the selected year
-    for info in employee_info:
-        if isinstance(info.date_joining, datetime.date):
-            month_index = info.date_joining.month - 1  # Month index is zero-based
-            employee_count_per_month[
-                month_index
-            ] += 1  # Increment the count for the corresponding month
+    for candidate in hired_candidates:
+        month_index = candidate.joining_date.month - 1
+        candidate_count_per_month[month_index] += 1
 
     labels = [
         _("January"),
@@ -252,8 +250,8 @@ def dashboard_hiring(request):
 
     data_set = [
         {
-            "label": _("Employees joined in %(year)s") % {"year": selected_year},
-            "data": employee_count_per_month,
+            "label": _("Hired in %(year)s") % {"year": selected_year},
+            "data": candidate_count_per_month,
             "backgroundColor": "rgba(236, 131, 25)",
         }
     ]

@@ -39,7 +39,7 @@
 {% include "generic/components.html" %}
 
 <div
-    hx-get="{% url 'cbv-pipeline-nav' %}"
+    hx-get="{% url 'cbv-pipeline-nav' %}{% if request.GET.obj_id %}?obj_id={{ request.GET.obj_id }}{% endif %}"
     hx-trigger="load"
 ></div>
 
