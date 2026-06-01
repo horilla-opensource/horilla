@@ -7,6 +7,7 @@ within an Asset Management System.
 
 from django.core.exceptions import ValidationError
 from django.db import models
+from django.db.models import Count, F, Q
 from django.urls import reverse, reverse_lazy
 from django.utils.html import format_html
 from django.utils.text import format_lazy
@@ -170,11 +171,27 @@ class Asset(HorillaModel):
         blank=True,
         verbose_name=_("Batch No"),
     )
+    quantity = models.IntegerField(default=1, verbose_name=_("Quantity"))
     expiry_date = models.DateField(null=True, blank=True, verbose_name=_("Expiry Date"))
     notify_before = models.IntegerField(
         default=1, null=True, verbose_name=_("Notify Before (days)")
     )
     objects = HorillaCompanyManager("asset_category_id__company_id")
+
+    @classmethod
+    def available_assets(cls):
+        """Return assets that still have at least one unit available for assignment."""
+        return cls.objects.annotate(
+            active_assignments=Count(
+                "assetassignment",
+                filter=Q(assetassignment__return_date__isnull=True),
+            )
+        ).filter(active_assignments__lt=F("quantity"))
+
+    @property
+    def available_count(self):
+        active = self.assetassignment_set.filter(return_date__isnull=True).count()
+        return max(0, self.quantity - active)
 
     class Meta:
         ordering = ["-created_at"]
@@ -191,6 +208,17 @@ class Asset(HorillaModel):
         return render_template(
             path="asset/action_column.html", context={"instance": self}
         )
+
+    def asset_status_col(self):
+        """
+        This method for get custom column for status.
+        """
+
+        if self.asset_status == "Available":
+            label = self.get_asset_status_display()
+            label = f"{label}<span class='inline-block border-2 border-solid rounded font-bold text-[0.8rem] px-2 py-1 text-[hsl(8,77%,56%)] border-[hsl(8,77%,56%)] ms-5' title='{self.available_count} {self.get_asset_status_display()}'>{self.available_count}/{self.quantity}</span>"
+            return label
+        return self.get_asset_status_display()
 
     def detail_view_action(self):
         """
@@ -223,6 +251,17 @@ class Asset(HorillaModel):
         """
         url = reverse_lazy("asset-delete", kwargs={"asset_id": self.pk})
         return url
+
+    def save(self, *args, **kwargs):
+        if self.quantity < 1:
+            self.asset_status = "Not-Available"
+        elif self.asset_status == "Not-Available":
+            active = self.assetassignment_set.filter(return_date__isnull=True).count()
+            if active >= self.quantity:
+                self.asset_status = "In use"
+            else:
+                self.asset_status = "Available"
+        super().save(*args, **kwargs)
 
     def clean(self):
         existing_asset = Asset.objects.filter(

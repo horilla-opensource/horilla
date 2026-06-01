@@ -290,9 +290,11 @@ def asset_delete(request, asset_id):
         return HorillaRedirect(request)
     asset_cat_id = asset.asset_category_id.id
     is_hx_request = bool(request.headers.get("HX-Request"))
-    status = asset.asset_status
     asset_list_filter = request.GET.get("asset_list")
     asset_allocation = AssetAssignment.objects.filter(asset_id=asset).first()
+    active_assignments = AssetAssignment.objects.filter(
+        asset_id=asset, return_date__isnull=True
+    ).exists()
     if asset_list_filter:
         # if the asset deleted is from the filtered list of asset
         asset_under = "asset_filter"
@@ -309,7 +311,7 @@ def asset_delete(request, asset_id):
             "asset_category_id": asset.asset_category_id.id,
             "asset_under": asset_under,
         }
-        if status == "In use":
+        if active_assignments:
             messages.info(request, _("Asset is in use"))
         elif asset_allocation:
             messages.error(request, _("Asset is used in allocation!."))
@@ -323,7 +325,7 @@ def asset_delete(request, asset_id):
     # For category-row HTMX deletes, refresh the same accordion container instead of
     # redirecting to detail pages. This keeps the table in sync immediately.
     if is_hx_request:
-        if status == "In use":
+        if active_assignments:
             messages.info(request, _("Asset is in use"))
             return asset_list(request, asset_cat_id)
         if asset_allocation:
@@ -331,7 +333,7 @@ def asset_delete(request, asset_id):
             return asset_list(request, asset_cat_id)
         asset_del(request, asset)
         return asset_list(request, asset_cat_id)
-    if status == "In use":
+    if active_assignments:
         messages.info(request, _("Asset is in use"))
         return redirect(
             f"/asset/asset-information/{asset.id}/?{previous_data}&requests_ids={instances_list}&asset_info=true"
@@ -675,7 +677,9 @@ def asset_request_approve(request, req_id):
         messages.error(request, _("Asset request does not exist."))
         return HttpResponse(error_response)
 
-    assets = asset_request.asset_category_id.asset_set.filter(asset_status="Available")
+    assets = Asset.available_assets().filter(
+        asset_category_id=asset_request.asset_category_id
+    )
     if request.method == "POST":
         post_data = request.POST.copy()
         post_data["assigned_to_employee_id"] = asset_request.requested_employee_id
@@ -685,12 +689,15 @@ def asset_request_approve(request, req_id):
         if form.is_valid():
             try:
                 asset = form.cleaned_data["asset_id"]
-                asset.asset_status = "In use"
-                asset.save()
-
                 allocation = form.save(commit=False)
                 allocation.assigned_by_employee_id = request.user.employee_get
                 allocation.save()
+                active_count = AssetAssignment.objects.filter(
+                    asset_id=asset, return_date__isnull=True
+                ).count()
+                if active_count >= asset.quantity:
+                    asset.asset_status = "In use"
+                    asset.save()
 
                 asset_request.asset_request_status = "Approved"
                 asset_request.save()
@@ -813,10 +820,14 @@ def asset_allocate_creation(request):
     if request.method == "POST":
         form = AssetAllocationForm(request.POST)
         if form.is_valid():
-            asset = form.instance.asset_id
-            asset.asset_status = "In use"
-            asset.save()
             instance = form.save()
+            asset = instance.asset_id
+            active_count = AssetAssignment.objects.filter(
+                asset_id=asset, return_date__isnull=True
+            ).count()
+            if active_count >= asset.quantity:
+                asset.asset_status = "In use"
+                asset.save()
             files = request.FILES.getlist("assign_images")
             attachments = []
             if request.FILES:
@@ -922,12 +933,16 @@ def asset_allocate_return(request, asset_id):
                         attachment.save()
                         attachments.append(attachment)
                     asset_allocation.return_images.add(*attachments)
-                asset.asset_status = "Available"
+                active_count = AssetAssignment.objects.filter(
+                    asset_id=asset, return_date__isnull=True
+                ).count()
+                if active_count < asset.quantity:
+                    asset.asset_status = "Available"
+                else:
+                    asset.asset_status = "In use"
                 asset.save()
                 messages.success(request, _("Asset Returned Successfully..."))
                 return HorillaRedirect(request)
-            asset.asset_status = "Not-Available"
-            asset.save()
             asset_allocation = AssetAssignment.objects.filter(
                 asset_id=asset_id, return_status__isnull=True
             ).first()
@@ -942,6 +957,21 @@ def asset_allocate_return(request, asset_id):
                     attachment.save()
                     attachments.append(attachment)
                 asset_allocation.return_images.add(*attachments)
+            if asset.quantity > 1:
+                # Damaged unit removed from pool; reduce serviceable quantity
+                asset.quantity = asset.quantity - 1
+                active_count = AssetAssignment.objects.filter(
+                    asset_id=asset, return_date__isnull=True
+                ).count()
+                if asset.quantity == 0:
+                    asset.asset_status = "Not-Available"
+                elif active_count < asset.quantity:
+                    asset.asset_status = "Available"
+                else:
+                    asset.asset_status = "In use"
+            else:
+                asset.asset_status = "Not-Available"
+            asset.save()
             messages.info(request, _("Asset Return Successful!."))
             return HorillaRedirect(request)
     context = {"asset_return_form": asset_return_form, "asset_id": asset_id}

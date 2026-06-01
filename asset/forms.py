@@ -333,9 +333,7 @@ class AssetAllocationForm(ModelForm):
         user = request.user
         super(AssetAllocationForm, self).__init__(*args, **kwargs)
         reload_queryset(self.fields)
-        self.fields["asset_id"].queryset = Asset.objects.filter(
-            asset_status="Available"
-        )
+        self.fields["asset_id"].queryset = Asset.available_assets()
         self.fields["assigned_by_employee_id"].initial = user.employee_get
 
         self.fields["assign_images"] = MultipleFileField(

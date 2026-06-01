@@ -57,7 +57,14 @@
               >
             </div>
           </div>
-          <div class="oh-sticky-table__td">{% trans asset.asset_status %}</div>
+          <div class="oh-sticky-table__td">
+            {% trans asset.asset_status %}
+            {% if asset.quantity > 1 %}
+              <span class="oh-badge oh-badge--light ms-1" title="{% trans 'Available / Total' %}">
+                {{asset.available_count}}/{{asset.quantity}}
+              </span>
+            {% endif %}
+          </div>
           <div class="oh-sticky-table__td">{{asset.asset_tracking_id}}</div>
           <div class="oh-sticky-table__td">{{asset.asset_lot_number_id}}</div>
           {% if perms.asset.change_asset or perms.asset.delete_asset %}
