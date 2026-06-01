@@ -84,11 +84,16 @@
         <div class="col-12 col-md-12 col-lg-6 mt-3">
             <div class="oh-modal__group">
                 <label class="oh-timeoff-modal__stat-title">{% trans "Status" %}</label>
-                <label class="oh-timeoff-modal__stat-count">{{asset.get_asset_status_display}}
-                    {% if asset.asset_status == "In use" %} {% trans "by " %}
-                        {% with assigned=asset.assetassignment_set.last %}
-                            {{assigned.assigned_to_employee_id.get_full_name}}
-                        {% endwith %}
+                <label class="oh-timeoff-modal__stat-count">
+                    {% if asset.quantity > 1 %}
+                        {{asset.available_count}} / {{asset.quantity}} {% trans "available" %}
+                    {% else %}
+                        {{asset.get_asset_status_display}}
+                        {% if asset.asset_status == "In use" %} {% trans "by " %}
+                            {% with assigned=asset.assetassignment_set.last %}
+                                {{assigned.assigned_to_employee_id.get_full_name}}
+                            {% endwith %}
+                        {% endif %}
                     {% endif %}
                 </label>
             </div>

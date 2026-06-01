@@ -559,11 +559,15 @@ class AssetAllocationFormView(HorillaFormView):
         form valid function
         """
         if form.is_valid():
-            asset = form.instance.asset_id
-            asset.asset_status = "In use"
-            asset.save()
             message = _("Asset allocated Successfully")
-            form.save()
+            instance = form.save()
+            asset = instance.asset_id
+            active_count = AssetAssignment.objects.filter(
+                asset_id=asset, return_date__isnull=True
+            ).count()
+            if active_count >= asset.quantity:
+                asset.asset_status = "In use"
+                asset.save()
             request = getattr(_thread_locals, "request", None)
             files = request.FILES.getlist("assign_images")
             attachments = []
@@ -598,7 +602,7 @@ class AssetApproveFormView(HorillaFormView):
         req_id = self.kwargs.get("req_id")
         asset_request = AssetRequest.objects.filter(id=req_id).first()
         asset_category = asset_request.asset_category_id
-        assets = asset_category.asset_set.filter(asset_status="Available")
+        assets = Asset.available_assets().filter(asset_category_id=asset_category)
         self.form.fields["asset_id"].queryset = assets
         self.form.fields["assigned_to_employee_id"].initial = (
             asset_request.requested_employee_id
@@ -623,13 +627,14 @@ class AssetApproveFormView(HorillaFormView):
         req_id = self.kwargs.get("req_id")
         asset_request = AssetRequest.objects.filter(id=req_id).first()
         if form.is_valid():
-            asset = form.instance.asset_id.id
-            asset = Asset.objects.filter(id=asset).first()
-            asset.asset_status = "In use"
-            asset.save()
-            # form = form.save(commit=False)
-            # form.assigned_by_employee_id = self.request.user.employee_get
-            form.save()
+            instance = form.save()
+            asset = instance.asset_id
+            active_count = AssetAssignment.objects.filter(
+                asset_id=asset, return_date__isnull=True
+            ).count()
+            if active_count >= asset.quantity:
+                asset.asset_status = "In use"
+                asset.save()
             asset_request.asset_request_status = "Approved"
             asset_request.save()
             request = getattr(_thread_locals, "request", None)
