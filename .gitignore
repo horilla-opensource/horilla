@@ -152,3 +152,9 @@ whoosh_index/
 
 #PyCharm
 .idea/
+
+# .gitignore
+venv_test/
+venv/
+env/
+.venv/
