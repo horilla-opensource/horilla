@@ -9,14 +9,19 @@ import json
 from django import template
 from django.contrib import messages
 from django.contrib.auth.models import Permission
-from django.db.models import ProtectedError
+from django.db.models import ProtectedError, Q
 from django.http import HttpResponse, JsonResponse
 from django.shortcuts import redirect, render
 from django.utils.translation import gettext as __
 from django.utils.translation import gettext_lazy as _
 from django.views.decorators.http import require_http_methods
 
-from base.methods import sanitize_mail_template_body
+from base.forms import MailTemplateForm
+from base.methods import (
+    build_safe_template_request,
+    sanitize_mail_template_body,
+    sanitize_mail_template_placeholders,
+)
 from base.models import HorillaMailTemplate
 from employee.models import Employee
 from horilla.decorators import hx_request_required, login_required, permission_required
@@ -481,20 +486,36 @@ def get_template(request, obj_id=None):
 
 
 @login_required
+@permission_required("recruitment.view_candidate")
 def get_template_hint(request, obj_id=None):
     """
     This method is used to return the mail template
     """
-    body = ""
+    body = " "
+    template_bdy = None
+    allowed_template_words = set(MailTemplateForm().get_template_language().values())
     if obj_id:
         body = HorillaMailTemplate.objects.get(id=obj_id).body
-        template_bdy = template.Template(body)
+        template_bdy = template.Template(sanitize_mail_template_body(body))
     if request.GET.get("word"):
-        word = request.GET.get("word")
-        template_bdy = template.Template("{{" + word + "}}")
+        word = request.GET.get("word").strip()
+        # Allow only known template placeholders used by the editor hints.
+        # This prevents arbitrary attribute traversal through user input.
+        sanitized_word_template = sanitize_mail_template_body("{{" + word + "}}")
+        if word in allowed_template_words and sanitized_word_template.strip():
+            template_bdy = template.Template(sanitized_word_template)
     candidate_id = request.GET.get("candidate_id")
-    if candidate_id:
-        candidate_obj = Candidate.objects.get(id=candidate_id)
+    if candidate_id and template_bdy is not None:
+        candidate_qs = Candidate.objects.filter(id=candidate_id)
+        if not request.user.has_perm("recruitment.view_candidate"):
+            employee = request.user.employee_get
+            candidate_qs = candidate_qs.filter(
+                Q(recruitment_id__recruitment_managers=employee)
+                | Q(stage_id__stage_managers=employee)
+            )
+        candidate_obj = candidate_qs.first()
+        if not candidate_obj:
+            return JsonResponse({"body": " "}, status=404)
         context = template.Context(
             {"instance": candidate_obj, "self": request.user.employee_get}
         )
@@ -511,9 +532,10 @@ def get_mail_preview(request):
     if not body:
         return HttpResponse("No body provided", status=400)
 
-    # Strip template constructs that could leak password hashes or request
-    # metadata via attribute traversal in the Django template engine.
+    # Strip dangerous template constructs first.
     body = sanitize_mail_template_body(body)
+    allowed_template_words = set(MailTemplateForm().get_template_language().values())
+    body = sanitize_mail_template_placeholders(body, allowed_template_words)
 
     candidate_id = request.GET.get("candidate_id")
     candidate_ids = request.POST.getlist("candidates")  # 875
@@ -526,13 +548,12 @@ def get_mail_preview(request):
         if not candidate_obj:
             return HttpResponse("Candidate not found", status=404)
 
-    # Build context — `request` is intentionally omitted to prevent
-    # attribute traversal to request.user.password / request.META.
+    # Keep `request` in context, but only as a sanitized proxy.
     context = {
         "instance": candidate_obj,
         "model_instance": candidate_obj,
         "self": getattr(request.user, "employee_get", None),
-        "request": request,
+        "request": build_safe_template_request(request),
     }
 
     # Render template
