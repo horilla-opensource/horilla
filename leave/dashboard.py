@@ -98,7 +98,6 @@ def leave_kpi_data(request):
         ).count()
     except Exception:
         pass
-
     return JsonResponse(
         {
             "pending_approval": pending_approval,
@@ -109,6 +108,9 @@ def leave_kpi_data(request):
             "pending_allocations": pending_allocations,
             "pending_comp": pending_comp,
             "month": to_date.strftime("%B %Y"),
+            "from_date": first_of_month.isoformat(),
+            "to_date": to_date.isoformat(),
+            "today": real_today.isoformat(),
         }
     )
 
