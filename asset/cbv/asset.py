@@ -19,7 +19,7 @@ class AssetListView(HorillaListView):
     model = Asset
     filter_class = AssetFilter
     columns = [
-        "asset_name",
+        (_("Asset Name"), "asset_name_display"),
         (_("Status"), "asset_status_col"),
         "asset_tracking_id",
         "asset_lot_number_id",
@@ -69,6 +69,5 @@ class AssetInformationView(HorillaDetailedView):
         """
 
         context = super().get_context_data(**kwargs)
-        asset_name = context["asset"].asset_name
-        context["title"] = asset_name
+        context["title"] = context["asset"].asset_name_display()
         return context

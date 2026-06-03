@@ -53,6 +53,22 @@ def notify_expiring_assets():
                 )
 
 
+def mark_expired_assets():
+    """
+    Finds all assets past their expiry date and sets their status to Not-Available.
+    """
+    from asset.models import Asset
+
+    today = date.today()
+    expired = Asset.objects.filter(
+        expiry_date__isnull=False,
+        expiry_date__lt=today,
+    ).exclude(asset_status="Not-Available")
+    for asset in expired:
+        asset.asset_status = "Not-Available"
+        asset.save()
+
+
 def notify_expiring_documents():
     """
     Finds all Expiring Documents and send a notification on the notify_before date.
@@ -97,4 +113,5 @@ if not any(
     scheduler = BackgroundScheduler()
     scheduler.add_job(notify_expiring_assets, "interval", days=1)
     scheduler.add_job(notify_expiring_documents, "interval", hours=4)
+    scheduler.add_job(mark_expired_assets, "interval", days=1)
     scheduler.start()

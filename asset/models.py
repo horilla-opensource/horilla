@@ -9,6 +9,7 @@ from django.core.exceptions import ValidationError
 from django.db import models
 from django.db.models import Count, F, Q
 from django.urls import reverse, reverse_lazy
+from django.utils import timezone
 from django.utils.html import format_html
 from django.utils.text import format_lazy
 from django.utils.translation import gettext_lazy as _
@@ -181,12 +182,21 @@ class Asset(HorillaModel):
     @classmethod
     def available_assets(cls):
         """Return assets that still have at least one unit available for assignment."""
-        return cls.objects.annotate(
-            active_assignments=Count(
-                "assetassignment",
-                filter=Q(assetassignment__return_date__isnull=True),
+        today = timezone.now().date()
+        return (
+            cls.objects.annotate(
+                active_assignments=Count(
+                    "assetassignment",
+                    filter=Q(assetassignment__return_date__isnull=True),
+                )
             )
-        ).filter(active_assignments__lt=F("quantity"))
+            .filter(active_assignments__lt=F("quantity"))
+            .filter(Q(expiry_date__isnull=True) | Q(expiry_date__gte=today))
+        )
+
+    @property
+    def is_expired(self):
+        return bool(self.expiry_date and self.expiry_date < timezone.now().date())
 
     @property
     def available_count(self):
@@ -200,6 +210,16 @@ class Asset(HorillaModel):
 
     def __str__(self):
         return f"{self.asset_name}-{self.asset_tracking_id}"
+
+    def asset_name_display(self):
+        if self.is_expired:
+            return format_html(
+                "{} <span class='inline-block border-2 border-solid rounded font-bold"
+                " text-[0.8rem] px-2 py-1 text-[hsl(0,77%,56%)] border-[hsl(0,77%,56%)] ms-2'>{}</span>",
+                self.asset_name,
+                _("Expired"),
+            )
+        return self.asset_name
 
     def action_column(self):
         """
