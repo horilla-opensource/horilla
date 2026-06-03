@@ -185,13 +185,20 @@ def resignation_request_enabled(request):
     """
     Check weather resignation_request enabled of not in offboarding
     """
+    selected_company = request.session.get("selected_company")
     enabled_resignation_request = False
     first = None
     if apps.is_installed("offboarding"):
         OffboardingGeneralSetting = get_horilla_model_class(
             app_label="offboarding", model="offboardinggeneralsetting"
         )
-        first = OffboardingGeneralSetting.objects.first()
+        if selected_company and selected_company != "all":
+            first = OffboardingGeneralSetting.objects.filter(
+                company_id=selected_company
+            ).first()
+        else:
+            first = OffboardingGeneralSetting.objects.first()
+
     if first:
         enabled_resignation_request = first.resignation_request
     return {"enabled_resignation_request": enabled_resignation_request}

@@ -1,0 +1,50 @@
+{% extends 'index.html' %} {% block content %} {% load i18n %} {% load static %}
+
+
+<section class="oh-wrapper oh-main__topbar" x-data="{searchShow: false}">
+  <div class="oh-main__titlebar oh-main__titlebar--left">
+    <h1 class="oh-main__titlebar-title fw-bold">{% trans "Deductions" %}</h1>
+  </div>
+  <div class="oh-main__titlebar oh-main__titlebar--right">
+    <div class="oh-main__titlebar-button-container">
+      <div class="oh-btn-group ml-2">
+        {% if perms.payroll.add_deduction %}
+          <div>
+            <a
+              class="oh-btn oh-btn--secondary oh-btn--shadow"
+              data-toggle="oh-modal-toggle"
+              data-target="#deductionModal"
+              href="{% url 'create-deduction' %}"
+            >
+              <ion-icon
+                class="me-2 md hydrated"
+                name="add-outline"
+                role="img"
+                aria-label="add outline"
+              ></ion-icon
+              >{% trans "Create" %}</a
+            >
+          </div>
+        {% endif %}
+      </div>
+    </div>
+  </div>
+</section>
+
+
+<div
+class="oh-wrapper-main"
+>
+  <main :class="sidebarOpen ? 'oh-main__sidebar-visible' : ''">
+
+    <div class="oh-wrapper">
+      <div class="oh-404">
+          <img style="    width: 190px;height: 190px;" src="{% static 'images/ui/deduction.png' %}" class="oh-404__image mb-4" alt="Page not found. 404."/>
+          <h5 class="oh-404__subtitle">{% trans "No deduction has been included." %}</h5>
+      </div>
+    </div>
+  </main>
+</div>
+</div>
+
+{% endblock content %}

@@ -1,0 +1,20 @@
+{% extends 'index.html' %}{% block content %}
+{% load i18n %}
+{% load static %}
+
+    <div
+      class="oh-wrapper-main"
+    >
+        <main :class="sidebarOpen ? 'oh-main__sidebar-visible' : ''">
+
+          <div class="oh-wrapper">
+            <div class="oh-404">
+                <img style="    width: 150px;height: 150px;" src="{% static 'images/ui/leave_types.png' %}" class="oh-404__image mb-4" alt="Page not found. 404."/>
+                <h3 class="oh-404__subtitle">{% trans "Leave types not assigned to you." %}</h3>
+                <p class="oh-404__subtitle">{% trans "Please contact your administrators for assistance." %}</p>
+            </div>
+          </div>
+        </main>
+      </div>
+    </div>
+    {% endblock  %}

@@ -1,0 +1,51 @@
+{% extends 'index.html' %} {% block content %} {% load static %}{% load i18n %}
+<section class="oh-wrapper oh-main__topbar" x-data="{searchShow: false}">
+    <div class="oh-main__titlebar oh-main__titlebar--left">
+        <h1 class="oh-main__titlebar-title fw-bold">{% trans "Payslip" %}</h1>
+    </div>
+    <div class="oh-main__titlebar-button-container">
+        {% if perms.payroll.add_payslip %}
+            <div class="oh-btn-group ml-2">
+                <div class="oh-dropdown" x-data="{open: false}">
+                    <button class="oh-btn oh-btn--dropdown " @click="open = !open" @click.outside="open = false">
+                        {% trans "Actions" %}
+                    </button>
+                    <div class="oh-dropdown__menu oh-dropdown__menu--right" x-show="open" style="display: none; cursor:pointer;">
+                        <ul class="oh-dropdown__items">
+                            <li class="oh-dropdown__item">
+                                <a class="oh-dropdown__link" data-toggle="oh-modal-toggle" data-target="#objectCreateModal"
+                                    hx-get="{% url 'generate-payslip' %}" hx-target="#objectCreateModalTarget">
+                                    {% trans "Generate" %}
+                                </a>
+                            </li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        {% endif %}
+        {% if perms.payroll.add_payslip %}
+            <div class="oh-btn-group ml-2">
+                <div>
+                    <a class="oh-btn oh-btn--secondary oh-btn--shadow" data-toggle="oh-modal-toggle"
+                        data-target="#objectCreateModal" hx-get="{% url 'create-payslip' %}"
+                        hx-target="#objectCreateModalTarget">
+                        <ion-icon class="me-2 md hydrated" name="add-outline" role="img" aria-label="add outline"></ion-icon>
+                        {% trans "Create" %}
+                    </a>
+                </div>
+            </div>
+        {% endif %}
+    </div>
+</section>
+
+<div class="oh-wrapper-main">
+    <main :class="sidebarOpen ? 'oh-main__sidebar-visible' : ''">
+        <div class="oh-wrapper">
+            <div class="oh-404">
+                <img style="width: 190px;height: 190px;" src="{% static 'images/ui/no-money.png' %}" class="oh-404__image mb-4" alt="Page not found. 404." />
+                <h5 class="oh-404__subtitle">{% trans "No payslips have been generated." %}</h5>
+            </div>
+        </div>
+    </main>
+</div>
+{% endblock content %}

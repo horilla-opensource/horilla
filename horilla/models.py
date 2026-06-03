@@ -8,6 +8,7 @@ the application, such as tracking creation and modification timestamps and user
 information, audit logging, and active/inactive status management.
 """
 
+import html
 import re
 from uuid import uuid4
 
@@ -44,6 +45,11 @@ def has_xss(value: str) -> bool:
     if not isinstance(value, str):
         return False
 
+    # Decode HTML entities so obfuscated payloads (e.g. "jav&#x61;script:")
+    # are matched after the browser would have decoded them. Decode twice to
+    # catch double-encoded variants (e.g. "&amp;#x61;").
+    decoded = html.unescape(html.unescape(value))
+
     xss_patterns = [
         r"<\s*script.*?>.*?<\s*/\s*script\s*>",  # <script> ... </script>
         r"javascript\s*:",  # javascript: pseudo-protocol
@@ -53,7 +59,7 @@ def has_xss(value: str) -> bool:
     ]
 
     combined = re.compile("|".join(xss_patterns), re.IGNORECASE | re.DOTALL)
-    return bool(combined.search(value))
+    return bool(combined.search(value) or combined.search(decoded))
 
 
 def upload_path(instance, filename):

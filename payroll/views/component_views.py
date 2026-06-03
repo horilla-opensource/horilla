@@ -272,9 +272,16 @@ def allowances_deductions_tab(request, emp_id):
     condition-based rules. The results are then rendered in the allowance and
     deduction tab template.
     """
+    user = request.user
     employee_deductions = []
     employee_allowances = []
     employee = Employee.objects.get(id=emp_id)
+    if getattr(user, "employee_get", None) != employee and not (
+        user.has_perm("payroll.view_allowance")
+        and user.has_perm("payroll.view_deduction")
+    ):
+        return handle_no_permission(request)
+
     active_contracts = employee.contract_set.filter(contract_status="active").first()
     basic_pay = active_contracts.wage if active_contracts else None
     if basic_pay:

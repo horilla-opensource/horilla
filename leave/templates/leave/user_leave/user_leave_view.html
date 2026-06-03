@@ -1,0 +1,106 @@
+{% extends 'index.html' %}
+{% block content %}
+{% load static %}
+{% load i18n %}
+<section class="oh-wrapper oh-main__topbar" x-data="{searchShow: false}">
+    <div class="oh-main__titlebar oh-main__titlebar--left">
+        <h1 class="oh-main__titlebar-title fw-bold">{% trans "My Leave" %}</h1>
+        <a class="oh-main__titlebar-search-toggle" role="button" aria-label="Toggle Search"
+            @click="searchShow = !searchShow">
+            <ion-icon name="search-outline" class="oh-main__titlebar-serach-icon"></ion-icon>
+        </a>
+    </div>
+    <div class="oh-main__titlebar oh-main__titlebar--right">
+        <div class="oh-input-group oh-input__search-group" :class="searchShow ? 'oh-input__search-group--show' : ''">
+            <ion-icon name="search-outline" class="oh-input-group__icon oh-input-group__icon--left"></ion-icon>
+            <input type="text" class="oh-input oh-input__icon" aria-label="Search Input" placeholder="{% trans 'Search' %}"
+                name="leave_type" hx-get="{% url 'user-leave-filter' %}" hx-trigger="keyup" hx-target="#userLeaves" />
+        </div>
+        <div class="oh-main__titlebar-button-container">
+            <div class="oh-dropdown" x-data="{open: false}">
+                <button class="oh-btn ml-2" @click="open = !open">
+                    <ion-icon name="filter" class="mr-1"></ion-icon>{% trans "Filter" %}<div id='filterCount'></div>
+                </button>
+                <form hx-get="{% url 'user-leave-filter' %}" hx-target="#userLeaves" id="filterForm">
+                    <div class="oh-dropdown__menu oh-dropdown__menu--right oh-dropdown__filter p-4" x-show="open" style="display: none;"
+                        @click.outside="open = false">
+                        <div class="oh-dropdown__filter-body">
+                            <div class="oh-accordion">
+                                <div class="oh-accordion-header">{% trans "User Leave" %}</div>
+                                <div class="oh-accordion-body">
+                                    <div class="row">
+                                        <div class="col-sm-12 col-md-12">
+                                            <div class="oh-input-group">
+                                                <label class="oh-label">{% trans "Leave Type" %}</label>
+                                                {{form.leave_type_id}}
+                                            </div>
+
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+
+                        </div>
+                        <div class="oh-dropdown__filter-footer">
+                            <button class="oh-btn oh-btn--secondary oh-btn--small w-100 filterButton" type="submit">{% trans "Filter" %}</button>
+                        </div>
+                    </div>
+                </form>
+            </div>
+
+        </div>
+    </div>
+</section>
+
+<div class="oh-wrapper" id="userLeaves">
+    {% include 'leave/user_leave/user_leave.html' %}
+</div>
+
+
+<!-- Time-Off -->
+<div
+  class="oh-modal"
+  id="editDialog"
+  role="dialog"
+  aria-labelledby="editDialogModal"
+  aria-hidden="true"
+>
+  <div class="oh-modal__dialog">
+    <div class="oh-modal__dialog-header">
+      <h2 class="oh-modal__dialog-title" id="editDialogDialog">
+        {% trans "Leave Request" %}
+      </h2>
+      <button class="oh-modal__close" aria-label="Close">
+        <ion-icon name="close-outline"></ion-icon>
+      </button>
+    </div>
+    <div class="oh-modal__dialog-body" id="requestForm"></div>
+  </div>
+</div>
+<!-- End of Time-Off -->
+
+<script>
+    $(document).on('htmx:load','#userLeaves', function () {
+        // Create a new script element
+        var scriptElement = document.createElement("script");
+        // Set the source URL of the script file to be loaded
+        scriptElement.src = "{% static 'build/js/web.frontend.min.js' %}";
+        // Append the script element to the head of the HTML document
+        document.head.appendChild(scriptElement);
+    });
+
+    $(document).on('htmx:load', '#requestForm', function () {
+        {% include 'select2.js' %}
+        $('#leaveType #id_leave_type_id').select2();
+        $('#employee #id_employee_id').select2();
+        $('#startDate #id_start_date_breakdown').select2();
+        $('#endDate #id_end_date_breakdown').select2();
+    });
+
+</script>
+
+<script src="{% static '/base/filter.js' %}"></script>
+
+
+{% endblock %}

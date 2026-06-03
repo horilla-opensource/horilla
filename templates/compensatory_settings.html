@@ -7,7 +7,8 @@
         <div class="oh-inner-sidebar-content__header d-flex justify-content-between align-items-center">
             <h2 class="oh-inner-sidebar-content__title">{% trans "Compensatory Leave" %}</h2>
         </div>
-        <form  hx-get="{% url 'enable-compensatory-leave' %}" hx-swap="none" hx-target="#message">
+        <form hx-post="{% url 'enable-compensatory-leave' %}" hx-swap="none" hx-target="#message">
+          {% csrf_token %}
           <div class="oh-label__info" for="application_tracking">
             <label class="oh-label" for="application_tracking">{% trans "Compensatory Leave Request" %}</label>
             <span class="oh-info mr-2" title="{% trans "By enabling this compensatory leave feature will avilable on Leave." %}">

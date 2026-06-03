@@ -555,3 +555,4 @@ class OffboardingGeneralSetting(HorillaModel):
 
     resignation_request = models.BooleanField(default=False)
     company_id = models.ForeignKey(Company, on_delete=models.CASCADE, null=True)
+    objects = HorillaCompanyManager("company_id")

@@ -1,0 +1,249 @@
+{% extends 'index.html' %}
+{% block content %}
+{% load static %}
+{% load i18n %}
+{% if messages %}
+<div class="oh-wrapper">
+    {% for message in messages %}
+    <div class="oh-alert-container">
+        <div class="oh-alert oh-alert--animated {{ message.tags }}">
+            {{ message }}
+        </div>
+    </div>
+    {% endfor %}
+</div>
+{% endif %}
+
+<section class="oh-wrapper oh-main__topbar" x-data="{searchShow: false}">
+    <div class="oh-main__titlebar oh-main__titlebar--left">
+        <h1 class="oh-main__titlebar-title fw-bold">{% trans "Leave Requests" %}</h1>
+        <a class="oh-main__titlebar-search-toggle" role="button" aria-label="Toggle Search"
+            @click="searchShow = !searchShow">
+            <ion-icon name="search-outline" class="oh-main__titlebar-serach-icon"></ion-icon>
+        </a>
+    </div>
+    <div class="oh-main__titlebar oh-main__titlebar--right">
+        {% if leave_requests %}
+        <div class="oh-input-group oh-input__search-group" :class="searchShow ? 'oh-input__search-group--show' : ''">
+            <ion-icon name="search-outline" class="oh-input-group__icon oh-input-group__icon--left"></ion-icon>
+            <input type="text" class="oh-input oh-input__icon" aria-label="Search Input" placeholder="{% trans 'Search' %}"
+                name="employee_id" hx-get="{% url 'request-filter' %}" hx-trigger="keyup" hx-target="#leaveRequest" />
+        </div>
+        <div class="oh-main__titlebar-button-container">
+            <div class="oh-dropdown" x-data="{open: false}">
+                <button class="oh-btn ml-2" @click="open = !open">
+                    <ion-icon name="filter" class="mr-1"></ion-icon>{% trans "Filter" %}<div id="filterCount"></div>
+                </button>
+                <form method="post" hx-get="{% url 'request-filter' %}" hx-target="#leaveRequest" id="filterForm">
+                    {% csrf_token %}
+                    <div class="oh-dropdown__menu oh-dropdown__menu--right oh-dropdown__filter p-4" x-show="open"
+                        style="display: none;" @click.outside="open = false">
+                        <div class="oh-dropdown__filter-body">
+                            <div class="oh-accordion">
+                                <div class="oh-accordion-header" onclick="event.stopImmediatePropagation();$(this).parent().toggleClass('oh-accordion--show');">{% trans "Leave Request" %}</div>
+                                <div class="oh-accordion-body">
+                                    <div class="row">
+                                        <div class="col-sm-12 col-md-12 col-lg-12">
+                                            <div class="oh-input-group">
+                                                <label class="oh-label">{% trans "Leave Type" %}</label>
+                                                {{form.leave_type_id}}
+                                            </div>
+                                        </div>
+                                        <div class="col-sm-12 col-md-12 col-lg-6">
+                                            <div class="oh-input-group">
+                                                <label class="oh-label">{% trans "Start Date" %}</label>
+                                                {{form.start_date}}
+                                            </div>
+                                        </div>
+
+                                        <div class="col-sm-12 col-md-12 col-lg-6">
+                                            <div class="oh-input-group">
+                                                <label class="oh-label">{% trans "End Date" %}</label>
+                                                {{form.end_date}}
+                                            </div>
+                                        </div>
+                                        <div class="col-sm-12 col-md-12">
+                                            <div class="oh-input-group">
+                                                <label class="oh-label">{% trans "Status" %}</label>
+                                                {{form.status}}
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="oh-accordion" >
+                                <div class="oh-accordion-header" onclick="event.stopImmediatePropagation();$(this).parent().toggleClass('oh-accordion--show');">{% trans "Advanced" %}</div>
+                                <div class="oh-accordion-body">
+                                    <div class="row">
+                                        <div class="col-sm-12 col-md-12 col-lg-6">
+                                            <div class="oh-input-group">
+                                                <label class="oh-label">{% trans "From Date" %}</label>
+                                                {{form.from_date}}
+                                            </div>
+                                        </div>
+
+                                        <div class="col-sm-12 col-md-12 col-lg-6">
+                                            <div class="oh-input-group">
+                                                <label class="oh-label">{% trans "To Date" %}</label>
+                                                {{form.to_date}}
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                        </div>
+                        <div class="oh-dropdown__filter-footer">
+                            <button class="oh-btn oh-btn--secondary oh-btn--small w-100 filterButton" type="submit">{% trans "Filter" %}</button>
+                        </div>
+                    </div>
+                </form>
+            </div>
+            {% endif %}
+            <div class="oh-btn-group ml-2">
+                <div class="oh-dropdown" x-data="{open: false}">
+                    <button class="oh-btn  oh-btn--secondary oh-btn--shadow" data-toggle="oh-modal-toggle"
+                        data-target="#editModal1" hx-get="{% url 'request-creation' %}" hx-target="#requestForm">
+                        <ion-icon name="add-outline" class="me-1"></ion-icon>
+                        {% trans "Create" %}
+                    </button>
+
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<div class="oh-wrapper" id="leaveRequest">
+    {% if leave_requests %}
+    {% include 'leave/leave_request/leave_requests.html' %}
+    {% else %}
+    <div style="height: 70vh; display:flex;align-items: center;justify-content: center;" class="">
+        <div style="" class="oh-404">
+        <img style="display: block;width:150px;height:150px;margin: 10px auto ;" src="{% static 'images/ui/attendance.png' %}" class="mb-4" alt=""/>
+        <h3 style="font-size:20px" class="oh-404__subtitle">{% trans "There are no leave requests at the moment." %}</h3>
+        </div>
+    </div>
+    {% endif %}
+    <!-- Sticky Table -->
+</div>
+
+<!-- Create request -->
+
+<div
+  class="oh-modal"
+  id="editModal1"
+  role="dialog"
+  aria-labelledby="editModal1"
+  aria-hidden="true"
+>
+  <div class="oh-modal__dialog">
+    <div class="oh-modal__dialog-header">
+      <h2 class="oh-modal__dialog-title" id="editModal1ModalLabel">
+        {% trans "Leave Request Create" %}
+      </h2>
+      <button class="oh-modal__close" aria-label="Close">
+        <ion-icon name="close-outline"></ion-icon>
+      </button>
+    </div>
+    <div class="oh-modal__dialog-body" id="requestForm"></div>
+  </div>
+</div>
+
+
+<!-- update request -->
+<div
+  class="oh-modal"
+  id="editModal2"
+  role="dialog"
+  aria-labelledby="editModal2"
+  aria-hidden="true"
+>
+  <div class="oh-modal__dialog">
+    <div class="oh-modal__dialog-header">
+      <h2 class="oh-modal__dialog-title" id="editModal2ModalLabel">
+        {% trans "Leave Request Create" %}
+      </h2>
+      <button class="oh-modal__close" aria-label="Close">
+        <ion-icon name="close-outline"></ion-icon>
+      </button>
+    </div>
+    <div class="oh-modal__dialog-body" id="updateForm"></div>
+  </div>
+</div>
+
+
+
+<div class="oh-modal" id="tableTimeOff" role="dialog" aria-labelledby="tableTimeOffModal" aria-hidden="true">
+    <div class="oh-modal__dialog oh-modal__dialog--timeoff oh-timeoff-modal">
+        <div class="oh-modal__dialog-header">
+
+            <button class="oh-modal__close" aria-label="Close">
+                <ion-icon name="close-outline"></ion-icon>
+            </button>
+        </div>
+
+        <div id="requestView">
+
+        </div>
+
+    </div>
+</div>
+
+
+
+<script>
+    $(document).on('htmx:afterSwap', function () {
+        // Create a new script element
+        var scriptElement = document.createElement("script");
+        // Set the source URL of the script file to be loaded
+        scriptElement.src = "{% static 'build/js/web.frontend.min.js' %}";
+        // Append the script element to the head of the HTML document
+        document.head.appendChild(scriptElement);
+    });
+
+    $(document).on('htmx:load', '#requestForm', function () {
+        {% include 'select2.js' %}
+        $('#leaveType #id_leave_type_id').select2();
+        $('#employee #id_employee_id').select2();
+        $('#startDate #id_start_date_breakdown').select2();
+        $('#endDate #id_end_date_breakdown').select2();
+    });
+    $(document).on('htmx:load', '#updateForm', function () {
+        {% include 'select2.js' %}
+        $('#updateLeaveType #id_leave_type_id').select2();
+        $('#updateEmployee #id_employee_id').select2();
+        $('#updateStartDate #id_start_date_breakdown').select2();
+        $('#updateEndDate #id_end_date_breakdown').select2();
+        $('#updateStatus #id_status').select2();
+    });
+
+    $('#delete-link').on('click', function (event) {
+        event.preventDefault(); // prevent the default behavior of the link
+
+        const link = $(this);
+        const confirmation = confirm('{% trans "Are you sure you want to delete?" %}');
+
+        if (confirmation) {
+            window.location.href = link.attr('href'); // execute the href if confirmed
+        }
+    });
+
+    $("#filterForm").submit(function (e) {
+        var formData = $(this).serialize();
+        count = 0;
+        formData.split("&").forEach(function (field) {
+            parts = field.split("=");
+            value = parts[1];
+            if (value !='' && parts[0] !== "csrfmiddlewaretoken") {
+                count++;
+            }
+        });
+        $("#filterCount").empty();
+        if (count > 0) {
+            $("#filterCount").text("(" + count + ")");
+        }
+      });
+
+</script>
+{% endblock %}
