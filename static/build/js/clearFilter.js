@@ -44,9 +44,9 @@ function clearAllFilter(element) {
 	let form = $(formButton).closest('form')
 	let search_url = form.attr("hx-get")
 	let swap_target = form.attr("hx-target")
-	form.attr("hx-get", search_url.split('?')[0])
-	let newUrl = search_url.split('?')[0]
-	htmx.ajax("GET", newUrl, {
+	let baseUrl = search_url.split('?')[0]
+	form.attr("hx-get", baseUrl)
+	htmx.ajax("GET", baseUrl + '?filter_applied=on', {
 		target: swap_target,
 		swap: "innerHTML"
 	});

@@ -157,6 +157,11 @@ class LeaveRequestFilter(HorillaFilterSet):
         lookup_expr="exact",
         widget=forms.DateInput(attrs={"type": "date"}),
     )
+    start_date_gte = DateFilter(
+        field_name="start_date",
+        lookup_expr="gte",
+        widget=forms.DateInput(attrs={"type": "date"}),
+    )
     department_name = django_filters.CharFilter(
         field_name="employee_id__employee_work_info__department_id__department",
         lookup_expr="icontains",
