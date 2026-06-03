@@ -4678,14 +4678,29 @@ def view_clashes(request, leave_request_id):
 @login_required
 @permission_required("leave.view_leavegeneralsetting")
 def compensatory_leave_settings_view(request):
-    enabled_compensatory = (
-        LeaveGeneralSetting.objects.exists()
-        and LeaveGeneralSetting.objects.first().compensatory_leave
-    )
-    leave_type, create = LeaveType.objects.get_or_create(
-        is_compensatory_leave=True,
-        defaults={"name": "Compensatory Leave Type", "payment": "paid"},
-    )
+    selected_company = request.session.get("selected_company")
+    if selected_company != "all":
+        enabled_compensatory = (
+            LeaveGeneralSetting.objects.filter(company_id_id=selected_company).exists()
+            and LeaveGeneralSetting.objects.filter(company_id_id=selected_company)
+            .first()
+            .compensatory_leave
+        )
+        leave_type, create = LeaveType.objects.get_or_create(
+            is_compensatory_leave=True,
+            company_id_id=selected_company,
+            defaults={"name": "Compensatory Leave Type", "payment": "paid"},
+        )
+    else:
+        enabled_compensatory = (
+            LeaveGeneralSetting.objects.exists()
+            and LeaveGeneralSetting.objects.first().compensatory_leave
+        )
+        leave_type, create = LeaveType.objects.get_or_create(
+            is_compensatory_leave=True,
+            company_id=None,
+            defaults={"name": "Compensatory Leave Type", "payment": "paid"},
+        )
     request.session["ordered_ids_leavetype"] = []
     context = {"enabled_compensatory": enabled_compensatory, "leave_type": leave_type}
     return render(request, "compensatory_settings.html", context)
@@ -4698,11 +4713,20 @@ def enable_compensatory_leave(request):
     """
     This method is used to enable/disable the compensatory leave feature
     """
-    compensatory_leave = LeaveGeneralSetting.objects.first()
-    compensatory_leave = (
-        compensatory_leave if compensatory_leave else LeaveGeneralSetting()
-    )
-    compensatory_leave.compensatory_leave = not compensatory_leave.compensatory_leave
+    selected_company = request.session.get("selected_company")
+    if selected_company != "all":
+        compensatory_leave = LeaveGeneralSetting.objects.filter(
+            company_id_id=selected_company
+        ).first()
+        if not compensatory_leave:
+            compensatory_leave = LeaveGeneralSetting(company_id_id=selected_company)
+    else:
+        compensatory_leave = LeaveGeneralSetting.objects.first()
+        compensatory_leave = (
+            compensatory_leave if compensatory_leave else LeaveGeneralSetting()
+        )
+    enable = request.POST.get("compensatory_leave") == "on"
+    compensatory_leave.compensatory_leave = enable
     compensatory_leave.save()
     if compensatory_leave.compensatory_leave:
         messages.success(request, _("Compensatory leave is enabled successfully!"))

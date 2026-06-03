@@ -1101,12 +1101,21 @@ def enable_resignation_request(request):
     """
     Enable disable resignation letter feature
     """
-    resignation_request_feature = OffboardingGeneralSetting.objects.first()
-    resignation_request_feature = (
-        resignation_request_feature
-        if resignation_request_feature
-        else OffboardingGeneralSetting()
-    )
+    selected_company = request.session.get("selected_company")
+
+    if selected_company and selected_company != "all":
+        resignation_request_feature = OffboardingGeneralSetting.objects.filter(
+            company_id=selected_company
+        ).first()
+        if not resignation_request_feature:
+            resignation_request_feature = OffboardingGeneralSetting(
+                company_id_id=selected_company
+            )
+    else:
+        resignation_request_feature = OffboardingGeneralSetting.objects.first()
+        if not resignation_request_feature:
+            resignation_request_feature = OffboardingGeneralSetting()
+
     resignation_request_feature.resignation_request = (
         "resignation_request" in request.GET.keys()
     )

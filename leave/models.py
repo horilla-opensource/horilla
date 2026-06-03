@@ -2417,7 +2417,7 @@ class LeaveGeneralSetting(HorillaModel):
     """
 
     compensatory_leave = models.BooleanField(default=True)
-    objects = models.Manager()
+    objects = HorillaCompanyManager(related_company_field="company_id")
     company_id = models.ForeignKey(Company, on_delete=models.CASCADE, null=True)
 
 
