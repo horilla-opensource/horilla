@@ -5,6 +5,7 @@ import os
 import random
 import re
 from datetime import date, datetime, time, timedelta
+from types import SimpleNamespace
 
 import pandas as pd
 import pdfkit
@@ -169,6 +170,68 @@ def sanitize_mail_template_body(body):
     body = re.sub(r"\{\{(.*?)\}\}", _strip_variable, body, flags=re.DOTALL)
     body = re.sub(r"\{%(.*?)%\}", _strip_tag, body, flags=re.DOTALL)
     return body
+
+
+def sanitize_mail_template_placeholders(body, allowed_template_words):
+    """
+    Keep only known-safe ``{{ ... }}`` placeholders in user-provided mail bodies.
+
+    Args:
+        body (str): Raw user-provided HTML/template content.
+        allowed_template_words (set[str]): Allowed placeholder expressions like
+            ``instance.get_full_name`` or ``instance.get_interview|safe``.
+
+    Returns:
+        str: Body with unknown template variables and all template tags removed.
+    """
+    if not body:
+        return body
+
+    allowed_words = {
+        word.replace(" ", "") for word in (allowed_template_words or set())
+    }
+
+    def _keep_only_allowed_variable(match):
+        original = match.group(0)
+        # Normalize whitespace so bypasses like `{{ instance . get_full_name }}`
+        # compare against the canonical allowlist entries.
+        expression = re.sub(r"\s+", "", match.group(1))
+        return original if expression in allowed_words else ""
+
+    # Keep only allowlisted variables.
+    body = re.sub(
+        r"\{\{(.*?)\}\}",
+        _keep_only_allowed_variable,
+        body,
+        flags=re.DOTALL,
+    )
+    # Drop all `{% ... %}` blocks in previews (debug/if/for/load/etc.).
+    body = re.sub(r"\{%(.*?)%\}", "", body, flags=re.DOTALL)
+    return body
+
+
+def build_safe_template_request(request):
+    """
+    Build a sanitized request proxy for template rendering.
+
+    Keeps a `request` object available in context while preventing access to
+    sensitive request/user internals such as password hashes, META, session,
+    csrf token internals, etc.
+    """
+    user = getattr(request, "user", None)
+    safe_user = SimpleNamespace(
+        id=getattr(user, "id", None),
+        username=getattr(user, "username", ""),
+        is_authenticated=bool(getattr(user, "is_authenticated", False)),
+        is_staff=bool(getattr(user, "is_staff", False)),
+        is_superuser=bool(getattr(user, "is_superuser", False)),
+    )
+
+    return SimpleNamespace(
+        method=getattr(request, "method", ""),
+        path=getattr(request, "path", ""),
+        user=safe_user,
+    )
 
 
 def users_count(self):
