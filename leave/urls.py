@@ -326,7 +326,11 @@ urlpatterns = [
     path("user-request-one/<int:id>/", views.user_request_one, name="user-request-one"),
     # path("employee-leave/", views.employee_leave, name="employee-leave"),
     path("overall-leave/", views.overall_leave, name="overall-leave"),
-    path("leave-dashboard/", RedirectView.as_view(pattern_name="leave-dashboard"), name="leave-dashboard-legacy"),
+    path(
+        "leave-dashboard/",
+        RedirectView.as_view(pattern_name="leave-dashboard"),
+        name="leave-dashboard-legacy",
+    ),
     path(
         "leave-employee-dashboard/",
         views.employee_dashboard,

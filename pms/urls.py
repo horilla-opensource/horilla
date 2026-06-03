@@ -382,7 +382,11 @@ urlpatterns = [
         "period-update/<int:pk>/", period.PeriodFormView.as_view(), name="period-update"
     ),
     path("period-change/", views.period_change, name="period-change"),
-    path("dashboard-view/", RedirectView.as_view(pattern_name="dashboard-view"), name="dashboard-view-legacy"),
+    path(
+        "dashboard-view/",
+        RedirectView.as_view(pattern_name="dashboard-view"),
+        name="dashboard-view-legacy",
+    ),
     path(
         "dashboard-risk-objectives/",
         dashboard.DasboardObjectivesRisk.as_view(),
@@ -828,9 +832,7 @@ urlpatterns = [
         pms_dashboard.pms_dashboard_view,
         name="dashboard-view",
     ),
-    path(
-        "dashboard/api/kpi/", pms_dashboard.pms_kpi_data, name="pms-dashboard-kpi"
-    ),
+    path("dashboard/api/kpi/", pms_dashboard.pms_kpi_data, name="pms-dashboard-kpi"),
     path(
         "dashboard/api/objective-status/",
         pms_dashboard.pms_objective_status,
