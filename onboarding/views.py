@@ -2175,6 +2175,8 @@ def candidate_select_filter(request):
         )
 
 
+@login_required
+@permission_required("recruitment.change_candidate")
 def offer_letter_bulk_status_update(request):
     """
     This function is used to bulk update the offerletter status
@@ -2202,6 +2204,8 @@ def offer_letter_bulk_status_update(request):
     return JsonResponse("success", safe=False)
 
 
+@login_required
+@permission_required("recruitment.delete_candidate")
 def onboarding_candidate_bulk_delete(request):
     """
     This function is used to bulk delete onboarding candidates
