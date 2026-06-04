@@ -1,0 +1,81 @@
+{% load i18n %}
+{% load widget_tweaks %}
+<div class="oh-dropdown__filter-body">
+    <div class="oh-accordion">
+        <div class="oh-accordion-header">{% trans "Asset Renewal" %}</div>
+        <div class="oh-accordion-body">
+            <div class="row">
+                <div class="col-sm-12 col-md-12 col-lg-6">
+                    <div class="oh-input-group">
+                        <label class="oh-label" for="{{ form.asset_category_id.id_for_label }}">
+                            {% trans "Category" %}
+                        </label>
+                        {{ form.asset_category_id }}
+                    </div>
+                </div>
+                <div class="col-sm-12 col-md-12 col-lg-6">
+                    <div class="oh-input-group">
+                        <label class="oh-label" for="{{ form.asset_id.id_for_label }}">
+                            {% trans "Asset" %}
+                        </label>
+                        {{ form.asset_id }}
+                    </div>
+                </div>
+                <div class="col-sm-12 col-md-12 col-lg-6">
+                    <div class="oh-input-group">
+                        <label class="oh-label" for="{{ form.asset_status.id_for_label }}">
+                            {% trans "Asset Status" %}
+                        </label>
+                        {{ form.asset_status }}
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="oh-accordion">
+        <div class="oh-accordion-header">{% trans "Expiry Date" %}</div>
+        <div class="oh-accordion-body">
+            <div class="row">
+                <div class="col-sm-12 col-md-12 col-lg-6">
+                    <div class="oh-input-group">
+                        <label class="oh-label" for="{{ form.expiry_date_gte.id_for_label }}">
+                            {% trans "Expiry Date From" %}
+                        </label>
+                        {{ form.expiry_date_gte }}
+                    </div>
+                </div>
+                <div class="col-sm-12 col-md-12 col-lg-6">
+                    <div class="oh-input-group">
+                        <label class="oh-label" for="{{ form.expiry_date_lte.id_for_label }}">
+                            {% trans "Expiry Date To" %}
+                        </label>
+                        {{ form.expiry_date_lte }}
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="oh-accordion">
+        <div class="oh-accordion-header">{% trans "Assigned Date" %}</div>
+        <div class="oh-accordion-body">
+            <div class="row">
+                <div class="col-sm-12 col-md-12 col-lg-6">
+                    <div class="oh-input-group">
+                        <label class="oh-label" for="{{ form.assigned_date_gte.id_for_label }}">
+                            {% trans "Assigned Date From" %}
+                        </label>
+                        {{ form.assigned_date_gte }}
+                    </div>
+                </div>
+                <div class="col-sm-12 col-md-12 col-lg-6">
+                    <div class="oh-input-group">
+                        <label class="oh-label" for="{{ form.assigned_date_lte.id_for_label }}">
+                            {% trans "Assigned Date To" %}
+                        </label>
+                        {{ form.assigned_date_lte }}
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

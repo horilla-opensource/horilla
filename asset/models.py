@@ -629,6 +629,35 @@ class AssetAssignment(HorillaModel):
         )
         return html
 
+    def days_left_display(self):
+        expiry = self.asset_id.expiry_date
+        if not expiry:
+            return "—"
+        delta = (expiry - timezone.now().date()).days
+        if delta < 0:
+            return format_html(
+                "<span class='text-danger fw-bold'>Expired {} days ago</span>",
+                abs(delta),
+            )
+        if delta == 0:
+            return format_html("<span class='text-danger fw-bold'>Expires today</span>")
+        if delta <= 7:
+            return format_html("<span class='link-warning'>{} days left</span>", delta)
+        return format_html("<span class='link-success'>{} days left</span>", delta)
+
+    def reassign_action(self):
+        url = reverse("asset-reassign", kwargs={"pk": self.pk})
+        return format_html(
+            "<a class='oh-btn oh-btn--secondary oh-btn--sm'"
+            "   hx-get='{}'"
+            "   hx-target='#genericModalBody'"
+            "   data-toggle='oh-modal-toggle'"
+            "   data-target='#genericModal'"
+            "   onclick='event.stopPropagation()'>{}</a>",
+            url,
+            _("Reassign"),
+        )
+
 
 class AssetRequest(HorillaModel):
     """

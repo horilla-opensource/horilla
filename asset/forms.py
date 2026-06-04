@@ -469,3 +469,29 @@ class AssetBatchForm(ModelForm):
         model = AssetLot
         fields = "__all__"
         exclude = ["is_active"]
+
+
+class AssetReassignForm(ModelForm):
+    """
+    ModelForm to swap the asset on an existing assignment to a replacement asset.
+    Only exposes asset_id with queryset scoped to the same category.
+    """
+
+    class Meta:
+        model = AssetAssignment
+        fields = ["asset_id"]
+        labels = {"asset_id": _("Replacement Asset")}
+        widgets = {
+            "asset_id": forms.Select(attrs={"class": "oh-select oh-select-2 w-100"}),
+        }
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        if self.instance and self.instance.pk:
+            self.fields["asset_id"].queryset = (
+                Asset.available_assets()
+                .filter(asset_category_id=self.instance.asset_id.asset_category_id)
+                .exclude(id=self.instance.asset_id.id)
+            )
+        else:
+            self.fields["asset_id"].queryset = Asset.available_assets()
