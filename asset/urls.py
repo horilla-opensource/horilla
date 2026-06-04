@@ -479,4 +479,24 @@ urlpatterns = [
         asset_dashboard.asset_age_distribution,
         name="asset-dashboard-age",
     ),
+    path(
+        "asset-renewal/",
+        request_and_allocation.AssetRenewalView.as_view(),
+        name="asset-renewal",
+    ),
+    path(
+        "asset-renewal-nav/",
+        request_and_allocation.AssetRenewalNav.as_view(),
+        name="asset-renewal-nav",
+    ),
+    path(
+        "asset-renewal-list/",
+        request_and_allocation.ExpiringAssignmentList.as_view(),
+        name="asset-renewal-list",
+    ),
+    path(
+        "asset-reassign/<int:pk>/",
+        request_and_allocation.AssetReassignFormView.as_view(),
+        name="asset-reassign",
+    ),
 ]

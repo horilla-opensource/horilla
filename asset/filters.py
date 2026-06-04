@@ -7,6 +7,7 @@ import uuid
 import django_filters
 from django import forms
 from django.db.models import Q
+from django.utils.translation import gettext_lazy as _
 from django_filters import FilterSet
 
 from base.methods import reload_queryset
@@ -374,6 +375,62 @@ class AssetHistoryReGroup:
         ("assigned_date", "Assigned Date"),
         ("return_date", "Return Date"),
     ]
+
+
+class AssetRenewalFilter(HorillaFilterSet):
+    """
+    Filter set for the Asset Renewal page — expiring/expired active assignments.
+    Filters operate on AssetAssignment with traversal into the related Asset.
+    """
+
+    search = django_filters.CharFilter(
+        field_name="asset_id__asset_name",
+        lookup_expr="icontains",
+        label=_("Asset Name"),
+    )
+    asset_category_id = django_filters.ModelChoiceFilter(
+        field_name="asset_id__asset_category_id",
+        queryset=AssetCategory.objects.all(),
+        label=_("Category"),
+    )
+    expiry_date_gte = django_filters.DateFilter(
+        field_name="asset_id__expiry_date",
+        lookup_expr="gte",
+        label=_("Expiry Date From"),
+        widget=forms.DateInput(attrs={"type": "date"}),
+    )
+    expiry_date_lte = django_filters.DateFilter(
+        field_name="asset_id__expiry_date",
+        lookup_expr="lte",
+        label=_("Expiry Date To"),
+        widget=forms.DateInput(attrs={"type": "date"}),
+    )
+    assigned_date_gte = django_filters.DateFilter(
+        field_name="assigned_date",
+        lookup_expr="gte",
+        label=_("Assigned Date From"),
+        widget=forms.DateInput(attrs={"type": "date"}),
+    )
+    assigned_date_lte = django_filters.DateFilter(
+        field_name="assigned_date",
+        lookup_expr="lte",
+        label=_("Assigned Date To"),
+        widget=forms.DateInput(attrs={"type": "date"}),
+    )
+    asset_status = django_filters.ChoiceFilter(
+        field_name="asset_id__asset_status",
+        choices=[
+            ("Available", "Available"),
+            ("In use", "In use"),
+            ("Not-Available", "Not-Available"),
+        ],
+        label=_("Asset Status"),
+        empty_label=_("All"),
+    )
+
+    class Meta:
+        model = AssetAssignment
+        fields = "__all__"
 
 
 class AssetBatchNoFilter(FilterSet):
