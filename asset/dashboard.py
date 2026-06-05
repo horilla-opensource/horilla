@@ -58,17 +58,17 @@ def asset_kpi_data(request):
     from_date, to_date = _parse_period(request)
     period_assets = _assets_in_period(request)
 
-    total_assets = period_assets.count()
-    # Status breakdown reflects current state across the whole inventory
+    # Total assets reflects the full inventory, not the picker range
+    total_assets = Asset.objects.count()
     in_use = Asset.objects.filter(asset_status="In use").count()
     available = Asset.objects.filter(asset_status="Available").count()
     not_available = Asset.objects.filter(asset_status="Not-Available").count()
 
+    # Pending requests is a current-state KPI — count all unresolved requests
+    # regardless of when they were raised, not just those in the picker range
     pending_requests = AssetRequest.objects.filter(
         asset_request_status="Requested",
         requested_employee_id__is_active=True,
-        created_at__date__gte=from_date,
-        created_at__date__lte=to_date,
     ).count()
 
     total_value = period_assets.aggregate(
