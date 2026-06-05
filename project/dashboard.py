@@ -37,21 +37,18 @@ def project_kpi_data(request):
     from project.models import Project, Task
 
     from_date, to_date = _parse_period(request)
-    period_projects = Project.objects.filter(
-        created_at__date__gte=from_date,
-        created_at__date__lte=to_date,
-    )
     period_tasks = Task.objects.filter(
         created_at__date__gte=from_date,
         created_at__date__lte=to_date,
     )
 
-    total = period_projects.count()
-    active = Project.objects.filter(status="in_progress").count()
-    completed = Project.objects.filter(status="completed").count()
-    on_hold = Project.objects.filter(status="on_hold").count()
+    active_qs = Project.objects.filter(is_active=True)
+    total = active_qs.count()
+    active = active_qs.filter(status="in_progress").count()
+    completed = active_qs.filter(status="completed").count()
+    on_hold = active_qs.filter(status="on_hold").count()
     overdue = (
-        Project.objects.filter(end_date__lt=date.today())
+        active_qs.filter(end_date__lt=date.today())
         .exclude(status__in=["completed", "cancelled", "expired"])
         .count()
     )
