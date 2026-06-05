@@ -21,6 +21,7 @@ from base.cbv import (
     mail_template,
     multiple_approval_condition,
     penalty,
+    roster,
     rotating_shift,
     rotating_shift_assign,
     rotating_work_type,
@@ -1829,6 +1830,68 @@ urlpatterns = [
         views.EnableIntegrationsView.as_view(),
         name="enable-integration",
     ),
+    # ── Shift Roster ──────────────────────────────────────────────────────
+    path(
+        "employee/roster/",
+        roster.RosterHomeView.as_view(),
+        name="roster-home",
+    ),
+    path(
+        "roster/nav/",
+        roster.RosterNavView.as_view(),
+        name="roster-nav",
+    ),
+    path(
+        "roster/grid/",
+        roster.RosterGridView.as_view(),
+        name="roster-grid",
+    ),
+    path(
+        "roster/cell/",
+        roster.RosterCellUpdateView.as_view(),
+        name="roster-cell-form",
+    ),
+    path(
+        "roster/cell/update/",
+        roster.RosterCellUpdateView.as_view(),
+        name="roster-cell-update",
+    ),
+    path(
+        "roster/publish/form/",
+        roster.RosterPublishFormView.as_view(),
+        name="roster-publish-form",
+    ),
+    path(
+        "roster/publish/",
+        roster.RosterPublishView.as_view(),
+        name="roster-publish",
+    ),
+    path(
+        "roster/employees/publish/",
+        roster.RosterEmployeeBulkPublishView.as_view(),
+        name="roster-employees-publish",
+    ),
+    path(
+        "roster/my/",
+        roster.MyRosterView.as_view(),
+        name="my-roster",
+    ),
+    path(
+        "roster/import/form/",
+        roster.RosterImportFormView.as_view(),
+        name="roster-import-form",
+    ),
+    path(
+        "roster/import/",
+        roster.RosterImportView.as_view(),
+        name="roster-import",
+    ),
+    path(
+        "roster/import/template/",
+        roster.RosterTemplateDownloadView.as_view(),
+        name="roster-template-download",
+    ),
+    # ── End Shift Roster ──────────────────────────────────────────────────
 ]
 
 urlpatterns.append(

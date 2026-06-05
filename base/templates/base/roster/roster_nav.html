@@ -1,0 +1,57 @@
+{% load i18n %}
+
+<section class="oh-wrapper oh-main__topbar">
+  <div class="oh-main__titlebar oh-main__titlebar--left">
+    <h1 class="oh-main__titlebar-title fw-bold">{% trans "Roster Planner" %}</h1>
+  </div>
+
+  <div class="oh-main__titlebar oh-main__titlebar--right">
+    <form id="rosterFilterForm" class="d-flex align-items-center gap-2"
+          hx-get="{% url 'roster-grid' %}"
+          hx-target="#rosterGridContainer"
+          hx-swap="innerHTML"
+          hx-trigger="change from:#rosterFilterForm, submit">
+
+      <select name="department" class="oh-select oh-select-2" style="min-width:180px;"
+              id="rosterDeptSelect">
+        <option value="">{% trans "All Departments" %}</option>
+        {% for dept in departments %}
+          <option value="{{ dept.pk }}"
+            {% if dept.pk == selected_dept_id %}selected{% endif %}>
+            {{ dept.department }}
+          </option>
+        {% endfor %}
+      </select>
+
+      <input type="date" name="from_date" class="oh-input"
+             value="{{ from_date|date:'Y-m-d' }}" style="width:145px;">
+      <span class="oh-label mb-0">–</span>
+      <input type="date" name="to_date" class="oh-input"
+             value="{{ to_date|date:'Y-m-d' }}" style="width:145px;">
+
+      <button type="submit" class="oh-btn oh-btn--light filterButton">
+        <ion-icon name="search-outline"></ion-icon>
+      </button>
+    </form>
+
+    <div class="oh-main__titlebar-button-container ms-2">
+      <button class="oh-btn oh-btn--secondary oh-btn--shadow"
+              data-toggle="oh-modal-toggle"
+              data-target="#genericModal"
+              hx-get="{% url 'roster-publish-form' %}"
+              hx-target="#genericModalBody">
+        <ion-icon name="cloud-upload-outline" class="me-1"></ion-icon>
+        {% trans "Publish" %}
+      </button>
+      <button class="oh-btn oh-btn--light oh-btn--shadow"
+              data-toggle="oh-modal-toggle"
+              data-target="#genericModal"
+              hx-get="{% url 'roster-import-form' %}"
+              hx-target="#genericModalBody">
+        <ion-icon name="cloud-download-outline" class="me-1"></ion-icon>
+        {% trans "Import" %}
+      </button>
+    </div>
+  </div>
+</section>
+<div id="filterTagContainerSectionNav" class="oh-titlebar-container__filters mb-2 mt-0 oh-wrapper"></div>

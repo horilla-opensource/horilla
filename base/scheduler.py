@@ -431,6 +431,33 @@ def recurring_holiday():
         recurring_holiday.save()
 
 
+def sync_roster_shifts():
+    """
+    Daily at 00:05 — sync published roster entries to employee work info.
+    For each employee with a published non-off roster entry dated today,
+    update their EmployeeWorkInformation.shift_id to match.
+    """
+    from base.models import Roster
+    from employee.models import EmployeeWorkInformation
+
+    today = date.today()
+    entries = (
+        Roster.objects.filter(date=today, is_published=True, is_off=False)
+        .select_related("employee", "shift")
+        .exclude(shift__isnull=True)
+    )
+    for entry in entries:
+        try:
+            work_info = EmployeeWorkInformation.objects.filter(
+                employee_id=entry.employee
+            ).first()
+            if work_info and work_info.shift_id != entry.shift:
+                work_info.shift_id = entry.shift
+                work_info.save(update_fields=["shift_id"])
+        except Exception:
+            pass
+
+
 if not any(
     cmd in sys.argv
     for cmd in ["makemigrations", "migrate", "compilemessages", "flush", "shell"]
@@ -494,4 +521,5 @@ if not any(
         pass
 
     scheduler.add_job(recurring_holiday, "interval", hours=4)
+    scheduler.add_job(sync_roster_shifts, "interval", hours=4)
     scheduler.start()

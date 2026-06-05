@@ -1,0 +1,42 @@
+{% load i18n %}
+<div class="oh-dropdown__filter-body">
+  <div class="oh-accordion">
+    <div class="oh-accordion-header">{% trans "Department" %}</div>
+    <div class="oh-accordion-body">
+      <div class="oh-input-group">
+        <select name="department" class="oh-select w-100"
+                onchange="$(this).closest('form').find('#applyFilter').click()">
+          <option value="">{% trans "All Departments" %}</option>
+          {% for dept in departments %}
+            <option value="{{ dept.pk }}"
+              {% if request.GET.department == dept.pk|stringformat:"s" %}selected{% endif %}>
+              {{ dept.department }}
+            </option>
+          {% endfor %}
+        </select>
+      </div>
+    </div>
+  </div>
+
+  <div class="oh-accordion mt-2">
+    <div class="oh-accordion-header">{% trans "Date Range" %}</div>
+    <div class="oh-accordion-body">
+      <div class="row">
+        <div class="col-6">
+          <div class="oh-input-group">
+            <label class="oh-label">{% trans "From" %}</label>
+            <input type="date" name="from_date" class="oh-input w-100"
+                   value="{{ default_from_date }}">
+          </div>
+        </div>
+        <div class="col-6">
+          <div class="oh-input-group">
+            <label class="oh-label">{% trans "To" %}</label>
+            <input type="date" name="to_date" class="oh-input w-100"
+                   value="{{ default_to_date }}">
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

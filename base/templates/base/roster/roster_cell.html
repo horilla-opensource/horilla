@@ -1,0 +1,20 @@
+{% load i18n %}
+{% with date_str=cell_date|date:"Y-m-d" %}
+<script>
+$('#genericModal').removeClass('oh-modal--show');
+(function () {
+  var cell = document.querySelector(
+    '[hx-get*="employee={{ employee.pk }}"][hx-get*="date={{ date_str }}"]'
+  );
+  if (cell) {
+    {% if entry.is_off %}
+    cell.innerHTML = '<span class="inline-block rounded-md px-2 py-0.5 text-[11px] font-semibold max-w-[70px] truncate bg-[#fff3e0] text-[#e65100] border border-[#ffcc80]">{% trans "OFF" %}</span>';
+    {% elif not entry.is_published %}
+    cell.innerHTML = '<span class="inline-block rounded-md px-2 py-0.5 text-[11px] font-semibold max-w-[70px] truncate bg-[#f3f0fb] text-[#7e57c2] border border-[#d1c4e9]" title="{{ entry.notes|escapejs }}">{{ entry.shift.employee_shift|truncatechars:9 }}</span>';
+    {% else %}
+    cell.innerHTML = '<span class="inline-block rounded-md px-2 py-0.5 text-[11px] font-semibold max-w-[70px] truncate bg-[#e8f0fe] text-[#3a5bbf] border border-[#c5d4f8]" title="{{ entry.notes|escapejs }}">{{ entry.shift.employee_shift|truncatechars:9 }}</span>';
+    {% endif %}
+  }
+})();
+</script>
+{% endwith %}

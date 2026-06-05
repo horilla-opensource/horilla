@@ -55,6 +55,7 @@ from base.models import (
     JobRole,
     MultipleApprovalCondition,
     PenaltyAccounts,
+    Roster,
     RotatingShift,
     RotatingShiftAssign,
     RotatingWorkType,
@@ -3198,3 +3199,22 @@ class PenaltyAccountForm(ModelForm):
                 id__in=available_leaves.values_list("leave_type_id", flat=True)
             )
             self.fields["leave_type_id"].queryset = assigned_leave_types
+
+
+# ---------------------------------------------------------------------------
+# Roster Forms
+# ---------------------------------------------------------------------------
+
+
+class RosterCellUpdateForm(ModelForm):
+    """
+    Inline HTMX form for updating a single roster cell (shift / day-off / notes).
+    """
+
+    class Meta:
+        model = Roster
+        fields = ["shift", "is_off", "is_published", "notes"]
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.fields["shift"].required = False

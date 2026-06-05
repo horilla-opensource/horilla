@@ -1,0 +1,130 @@
+{% load i18n %}
+
+<div class="oh-modal__dialog-header pb-0">
+	<span class="oh-modal__dialog-title">
+		{{ employee.employee_first_name }} {{ employee.employee_last_name }} —
+		{{ cell_date|date:"D, d M Y" }}
+	</span>
+	<button
+		class="oh-modal__close"
+		aria-label="Close"
+		onclick="$('#genericModal').removeClass('oh-modal--show')"
+	>
+		<ion-icon name="close-outline"></ion-icon>
+	</button>
+</div>
+
+<div class="oh-modal__dialog-body">
+	<form
+		hx-post="{% url 'roster-cell-update' %}"
+		hx-target="#genericModalBody"
+		hx-swap="innerHTML"
+	>
+		{% csrf_token %}
+		<input type="hidden" name="employee" value="{{ employee.pk }}" />
+		<input type="hidden" name="date" value="{{ cell_date|date:'Y-m-d' }}" />
+		<input type="hidden" name="department" value="{{ dept_id }}" />
+
+		<div class="row">
+			<div class="col-12 mb-3">
+				<div class="oh-input-wrapper">
+					<label class="oh-label" for="{{ form.shift.id_for_label }}"
+						>{{ form.shift.label }}</label
+					>
+					{{ form.shift }} {{ form.shift.errors }}
+				</div>
+			</div>
+			<div class="col-6 mb-3">
+				<div class="d-flex align-items-center gap-3">
+					<label class="oh-label" for="id_is_off"
+						>{{ form.is_off.label }}</label
+					>
+					<div class="oh-switch" style="width: 36px">
+						<input
+							type="checkbox"
+							id="id_is_off"
+							name="is_off"
+							class="oh-switch__checkbox"
+							{% if form.is_off.value %} checked {% endif %}
+						/>
+					</div>
+				</div>
+			</div>
+			<div class="col-6 mb-3">
+				<div class="d-flex align-items-center gap-3">
+					<label class="oh-label" for="id_is_published">
+						{{ form.is_published.label }}
+					</label>
+					<div class="oh-switch" style="width: 36px">
+						<input
+							type="checkbox"
+							id="id_is_published"
+							name="is_published"
+							class="oh-switch__checkbox"
+							{% if form.is_published.value %} checked {% endif %}
+						/>
+					</div>
+				</div>
+			</div>
+			<div class="col-12 mb-3">
+				<div class="oh-input-wrapper">
+					<label class="oh-label" for="{{ form.notes.id_for_label }}"
+						>{{ form.notes.label }}</label
+					>
+					{{ form.notes }} {{ form.notes.errors }}
+				</div>
+			</div>
+		</div>
+
+		{% if form.non_field_errors %}
+			{% for error in form.non_field_errors %}
+			<div class="oh-alert oh-alert--animated oh-alert--danger mb-2">
+				{{ error }}
+			</div>
+			{% endfor %}
+		{% endif %}
+
+		<div class="oh-modal__dialog-footer p-0 mt-2 d-flex gap-2 justify-content-between">
+			<span></span>
+			<button type="submit" class="oh-btn oh-btn--secondary oh-btn--shadow">
+				{% trans "Save" %}
+			</button>
+		</div>
+	</form>
+</div>
+
+<script>
+	(function () {
+		var isOffCb = document.getElementById("id_is_off");
+		var shiftSelect = document.getElementById("id_shift");
+		var shiftWrapper = shiftSelect && shiftSelect.closest(".oh-input-wrapper");
+		var publishCb = document.getElementById("id_is_published");
+		var originalShift = shiftSelect ? shiftSelect.value : null;
+
+		function toggleShiftField() {
+			if (!shiftSelect) return;
+			if (isOffCb && isOffCb.checked) {
+				shiftSelect.style.pointerEvents = "none";
+				shiftSelect.style.backgroundColor = "#f1f1f1";
+				if (shiftWrapper) shiftWrapper.style.opacity = "0.4";
+			} else {
+				shiftSelect.style.pointerEvents = "";
+				shiftSelect.style.backgroundColor = "";
+				if (shiftWrapper) shiftWrapper.style.opacity = "";
+			}
+		}
+
+		if (isOffCb) {
+			isOffCb.addEventListener("change", toggleShiftField);
+			toggleShiftField();
+		}
+
+		if (shiftSelect && publishCb) {
+			$(shiftSelect).on("change", function () {
+				if (this.value !== originalShift) {
+					publishCb.checked = false;
+				}
+			});
+		}
+	})();
+</script>
