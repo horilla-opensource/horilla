@@ -32,6 +32,8 @@ def _split_path(self, path=None):
 
 BREADCRUMB_URL_NAMES = {
     "ess": "Employee Dashboard",
+    "offboarding": "Offboarding",
+    "helpdesk": "Helpdesk",
 }
 
 sidebar_urls = [
@@ -189,6 +191,7 @@ remove_urls = [
     "faq-view",
     "get-job-positions",
     "task-view",
+    "dashboard",
 ]
 
 user_breadcrumbs = {}
@@ -369,3 +372,4 @@ urlpatterns.append(path("payroll/", lambda request: redirect("view-payroll-dashb
 urlpatterns.append(path("pms/", lambda request: redirect("dashboard-view")))
 urlpatterns.append(path("asset/", lambda request: redirect("asset-dashboard")))
 urlpatterns.append(path("project/", lambda request: redirect("project-dashboard-view")))
+urlpatterns.append(path("helpdesk/", lambda request: redirect("helpdesk-dashboard")))
