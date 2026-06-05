@@ -954,14 +954,16 @@ def ticket_detail(request, ticket_id, **kwargs):
         sorted_activity_list = sorted(activity_list, key=itemgetter("date"))
 
         color = "success"
-        remaining_days = ticket.deadline - today
-        remaining = f"Due in {remaining_days.days} days"
-        if remaining_days.days < 0:
-            remaining = f"{abs(remaining_days.days)} days overdue"
-            color = "danger"
-        elif remaining_days.days == 0:
-            remaining = "Due Today"
-            color = "warning"
+        remaining = ""
+        if ticket.deadline:
+            remaining_days = ticket.deadline - today
+            remaining = f"Due in {remaining_days.days} days"
+            if remaining_days.days < 0:
+                remaining = f"{abs(remaining_days.days)} days overdue"
+                color = "danger"
+            elif remaining_days.days == 0:
+                remaining = "Due Today"
+                color = "warning"
 
         rating = ""
         if ticket.priority == "low":
