@@ -1,3 +1,5 @@
+from datetime import date as _date
+
 import django_filters
 from django import forms
 from django.db.models import Q
@@ -36,11 +38,19 @@ class ProjectFilter(HorillaFilterSet):
         widget=forms.DateInput(attrs={"type": "date"}),
         label=_("End Till"),
     )
+    overdue = django_filters.CharFilter(method="filter_overdue", label=_("Overdue"))
 
     def filter_by_project(self, queryset, _, value):
         if self.data.get("search_field"):
             return queryset
         queryset = queryset.filter(title__icontains=value)
+        return queryset
+
+    def filter_overdue(self, queryset, name, value):
+        if value == "True":
+            return queryset.filter(end_date__lt=_date.today()).exclude(
+                status__in=["completed", "cancelled", "expired"]
+            )
         return queryset
 
 
