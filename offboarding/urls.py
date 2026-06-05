@@ -16,6 +16,11 @@ from offboarding.models import OffboardingGeneralSetting
 
 urlpatterns = [
     path(
+        "",
+        RedirectView.as_view(pattern_name="offboarding-dashboard", permanent=False),
+        name="offboarding-root",
+    ),
+    path(
         "individual-resignation-tab-list/<int:pk>/",
         resignation_tab.ResignationTabView.as_view(),
         name="individual-resignation-tab-list",
