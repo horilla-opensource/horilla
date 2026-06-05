@@ -1,0 +1,69 @@
+{% load i18n %}
+
+<div class="oh-modal__dialog-header pb-0">
+  <span class="oh-modal__dialog-title">{% trans "Publish Roster" %}</span>
+  <button class="oh-modal__close" aria-label="Close"
+          onclick="$('#genericModal').removeClass('oh-modal--show');">
+    <ion-icon name="close-outline"></ion-icon>
+  </button>
+</div>
+
+<div class="oh-modal__dialog-body">
+  <form hx-post="{% url 'roster-publish' %}"
+        hx-target="#genericModalBody"
+        hx-swap="innerHTML">
+    {% csrf_token %}
+
+    <div class="row">
+      <div class="col-12 mb-3">
+        <div class="oh-input-wrapper">
+          <label class="oh-label">{% trans "Department" %}</label>
+          <select name="department" class="oh-select oh-select-2 w-100">
+            <option value="">{% trans "All Departments" %}</option>
+            {% for dept in departments %}
+              <option value="{{ dept.pk }}">{{ dept.department }}</option>
+            {% endfor %}
+          </select>
+        </div>
+      </div>
+      <div class="col-12 col-md-6 mb-3">
+        <div class="oh-input-wrapper">
+          <label class="oh-label oh-label--mandatory">{% trans "From Date" %}</label>
+          <input type="date" name="from_date" class="oh-input w-100" required>
+        </div>
+      </div>
+      <div class="col-12 col-md-6 mb-3">
+        <div class="oh-input-wrapper">
+          <label class="oh-label">{% trans "To Date" %}</label>
+          <input type="date" name="to_date" class="oh-input w-100">
+          <small class="text-muted" style="font-size:11px;">{% trans "Leave blank to publish all entries from start date" %}</small>
+        </div>
+      </div>
+    </div>
+
+    <div class="oh-alert oh-alert--info mb-3" style="font-size:13px;">
+      <ion-icon name="information-circle-outline" class="me-1"></ion-icon>
+      {% trans "All unpublished roster entries in this range will be made visible to employees." %}
+    </div>
+
+    <div class="oh-modal__dialog-footer p-0 mt-2">
+      <button type="submit" class="oh-btn oh-btn--secondary oh-btn--shadow">
+        <ion-icon name="cloud-upload-outline" class="me-1"></ion-icon>
+        {% trans "Publish" %}
+      </button>
+    </div>
+  </form>
+</div>
+
+<script>
+(function () {
+  var body = document.getElementById("genericModalBody");
+  if (body && typeof $ !== "undefined") {
+    $(body).find("select").each(function () {
+      if (!$(this).data("select2-id")) {
+        $(this).addClass("oh-select oh-select-2").select2();
+      }
+    });
+  }
+})();
+</script>

@@ -26,6 +26,7 @@ from base.models import (
     JobPosition,
     MultipleApprovalCondition,
     PenaltyAccounts,
+    Roster,
     RotatingShift,
     RotatingShiftAssign,
     RotatingWorkType,
@@ -647,3 +648,43 @@ class AnnouncementViewFilter(HorillaFilterSet):
     class Meta:
         model = AnnouncementView
         fields = "__all__"
+
+
+# ---------------------------------------------------------------------------
+# Roster Filter
+# ---------------------------------------------------------------------------
+
+
+class RosterFilter(django_filters.FilterSet):
+    """
+    Filters the Roster queryset by department and date range.
+    """
+
+    department = django_filters.ModelChoiceFilter(
+        queryset=None,
+        label="Department",
+        widget=forms.Select(attrs={"class": "oh-select oh-select-2 w-100"}),
+    )
+    from_date = django_filters.DateFilter(
+        field_name="date",
+        lookup_expr="gte",
+        label="From Date",
+        widget=forms.DateInput(attrs={"type": "date", "class": "oh-input w-100"}),
+    )
+    to_date = django_filters.DateFilter(
+        field_name="date",
+        lookup_expr="lte",
+        label="To Date",
+        widget=forms.DateInput(attrs={"type": "date", "class": "oh-input w-100"}),
+    )
+    search = django_filters.CharFilter(method=filter_by_name)
+
+    class Meta:
+        model = Roster
+        fields = ["department", "from_date", "to_date"]
+
+    def __init__(self, data=None, queryset=None, *, request=None, prefix=None):
+        super().__init__(data=data, queryset=queryset, request=request, prefix=prefix)
+        from base.models import Department
+
+        self.form.fields["department"].queryset = Department.objects.all()

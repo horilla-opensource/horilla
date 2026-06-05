@@ -1,0 +1,44 @@
+{% extends "index.html" %}
+{% load i18n %}
+{% block content %}
+
+<div class="oh-wrapper">
+  <div class="oh-main__titlebar">
+    <h1 class="oh-main__titlebar-title fw-bold">{% trans "My Roster" %}</h1>
+    <span class="text-muted" style="font-size:13px;">
+      {{ today|date:"d M Y" }} – {{ end_date|date:"d M Y" }}
+    </span>
+  </div>
+
+  {% if not entries %}
+    <div class="oh-alert oh-alert--animated oh-alert--info mt-3">
+      {% trans "No published roster entries for the next 14 days." %}
+    </div>
+  {% else %}
+    <div class="row mt-3">
+      {% for entry in entries %}
+      <div class="col-12 col-md-6 col-lg-4 mb-3">
+        <div class="oh-card p-3 h-100"
+             style="border-left: 4px solid {% if entry.is_off %}#f0ad4e{% else %}#4e89f0{% endif %};">
+          <div class="d-flex justify-content-between align-items-start mb-1">
+            <span class="fw-bold" style="font-size:15px;">{{ entry.date|date:"D, d M" }}</span>
+            {% if entry.is_off %}
+              <span class="oh-badge oh-badge--warning">{% trans "Day Off" %}</span>
+            {% else %}
+              <span class="oh-badge oh-badge--info">{{ entry.shift.employee_shift }}</span>
+            {% endif %}
+          </div>
+          <div class="text-muted" style="font-size:12px;">{{ entry.department.department }}</div>
+          {% if entry.notes %}
+            <div class="mt-2" style="font-size:12px; color:#555;">
+              <ion-icon name="chatbubble-outline" class="me-1"></ion-icon>{{ entry.notes }}
+            </div>
+          {% endif %}
+        </div>
+      </div>
+      {% endfor %}
+    </div>
+  {% endif %}
+</div>
+
+{% endblock %}

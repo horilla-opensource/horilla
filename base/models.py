@@ -1258,6 +1258,114 @@ class RotatingShiftAssign(HorillaModel):
             raise ValidationError(_("Date must be greater than or equal to today"))
 
 
+# ---------------------------------------------------------------------------
+# Roster
+# ---------------------------------------------------------------------------
+
+
+class Roster(HorillaModel):
+    """
+    Forward-planning shift roster entry: one employee, one date, one shift.
+    Planners assign shifts in advance; employees see published entries via My Roster.
+    """
+
+    employee = models.ForeignKey(
+        "employee.Employee",
+        on_delete=models.CASCADE,
+        related_name="roster_entries",
+        verbose_name=_("Employee"),
+    )
+    date = models.DateField(verbose_name=_("Date"))
+    shift = models.ForeignKey(
+        "base.EmployeeShift",
+        on_delete=models.PROTECT,
+        null=True,
+        blank=True,
+        related_name="roster_entries",
+        verbose_name=_("Shift"),
+    )
+    department = models.ForeignKey(
+        "base.Department",
+        on_delete=models.CASCADE,
+        related_name="roster_entries",
+        verbose_name=_("Department"),
+    )
+    is_published = models.BooleanField(
+        default=False,
+        verbose_name=_("Published"),
+        help_text=_("Visible to the employee once published."),
+    )
+    is_off = models.BooleanField(
+        default=False,
+        verbose_name=_("Day Off"),
+        help_text=_("Planned weekly rest day."),
+    )
+    notes = models.CharField(
+        max_length=200,
+        blank=True,
+        verbose_name=_("Notes"),
+    )
+    created_by = models.ForeignKey(
+        "employee.Employee",
+        on_delete=models.SET_NULL,
+        null=True,
+        blank=True,
+        related_name="created_roster_entries",
+        verbose_name=_("Created By"),
+    )
+
+    objects = HorillaCompanyManager("employee__employee_work_info__company_id")
+
+    class Meta:
+        verbose_name = _("Roster Entry")
+        verbose_name_plural = _("Roster Entries")
+        unique_together = [("employee", "date")]
+
+    def __str__(self):
+        shift_label = "OFF" if self.is_off else self.shift or "-"
+        return f"{self.employee} — {self.date} — {shift_label}"
+
+
+class RosterPublishLog(models.Model):
+    """
+    Audit trail for each roster publish action.
+    """
+
+    department = models.ForeignKey(
+        "base.Department",
+        on_delete=models.CASCADE,
+        related_name="roster_publish_logs",
+        verbose_name=_("Department"),
+    )
+    from_date = models.DateField(verbose_name=_("From Date"))
+    to_date = models.DateField(verbose_name=_("To Date"))
+    published_by = models.ForeignKey(
+        "employee.Employee",
+        on_delete=models.SET_NULL,
+        null=True,
+        related_name="roster_publishes",
+        verbose_name=_("Published By"),
+    )
+    published_on = models.DateTimeField(
+        auto_now_add=True,
+        verbose_name=_("Published On"),
+    )
+    total_employees = models.IntegerField(
+        default=0,
+        verbose_name=_("Total Employees"),
+    )
+
+    objects = models.Manager()
+
+    class Meta:
+        verbose_name = _("Roster Publish Log")
+        verbose_name_plural = _("Roster Publish Logs")
+        ordering = ["-published_on"]
+
+    def __str__(self):
+        return f"{self.department} — {self.from_date} to {self.to_date}"
+
+
 class BaserequestFile(models.Model):
     file = models.FileField(upload_to=upload_path)
     objects = models.Manager()
