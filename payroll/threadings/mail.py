@@ -55,19 +55,24 @@ class MailSendThread(Thread):
                 )
             employee = record["instances"][0].employee_id
             email_backend = ConfiguredEmailBackend()
+
+            # Use the SMTP configuration sender exactly as configured
             display_email_name = email_backend.dynamic_from_email_with_display_name
+
+            reply_to = []
+
             if self.request:
                 try:
-                    display_email_name = f"{self.request.user.employee_get.get_full_name()} <{self.request.user.employee_get.email}>"
-                except:
-                    logger.error(Exception)
+                    reply_to = [self.request.user.employee_get.email]
+                except Exception:
+                    logger.exception("Unable to determine reply-to address")
 
             email = EmailMessage(
                 f"Hello, {record['instances'][0].get_name()} Your Payslips is Ready!",
                 html_message,
                 display_email_name,
                 [employee.get_mail()],
-                reply_to=[display_email_name],
+                reply_to=reply_to,
             )
             email.attachments = attachments
 
