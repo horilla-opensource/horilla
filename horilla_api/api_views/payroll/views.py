@@ -47,12 +47,15 @@ class PayslipView(APIView):
     def get(self, request, id=None):
         if id:
             payslip = Payslip.objects.filter(id=id).first()
+            if payslip is None:
+                return Response({"detail": "Not found."}, status=404)
             if (
                 request.user.has_perm("payroll.view_payslip")
                 or payslip.employee_id == request.user.employee_get
             ):
                 serializer = PayslipSerializer(payslip)
-            return Response(serializer.data, status=200)
+                return Response(serializer.data, status=200)
+            return Response({"detail": "Permission denied."}, status=403)
         if request.user.has_perm("payroll.view_payslip"):
             payslips = Payslip.objects.all()
         else:
