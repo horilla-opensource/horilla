@@ -97,10 +97,6 @@ def survey_preview(request, pk=None):
     )
 
 
-from django.views.decorators.csrf import csrf_exempt
-
-
-@csrf_exempt
 @login_required
 def question_order_update(request):
     if request.method == "POST":
