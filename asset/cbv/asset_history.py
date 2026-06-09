@@ -111,9 +111,28 @@ class AssetHistoryDetailView(HorillaDetailedView):
         (_("Allocated Date"), "assigned_date"),
         (_("Returned Date"), "return_date"),
         (_("Return Description"), "return_condition"),
-        (_("Assign Condition Images"), "assign_condition_img", True),
-        (_("Return Condition Images"), "return_condition_img", True),
     ]
     cols = {
         "return_condition": 12,
     }
+
+    def get_context_data(self, **kwargs: Any) -> dict:
+        context = super().get_context_data(**kwargs)
+        instance = self.get_object()
+        if instance.assign_images.all():
+            self.body.append(
+                (
+                    _("Assign Condition Images"),
+                    "assign_condition_img",
+                    True,
+                )
+            )
+        if instance.return_images.all():
+            self.body.append(
+                (
+                    _("Return Condition Images"),
+                    "return_condition_img",
+                    True,
+                )
+            )
+        return context
