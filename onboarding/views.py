@@ -33,7 +33,6 @@ from django.template.loader import render_to_string
 from django.urls import reverse
 from django.utils.translation import gettext as __
 from django.utils.translation import gettext_lazy as _
-from django.views.decorators.csrf import csrf_exempt
 from django.views.decorators.http import require_http_methods, require_POST
 
 from base.backends import ConfiguredEmailBackend
@@ -1717,7 +1716,6 @@ def onboard_candidate_chart(request):
 
 @login_required
 @permission_required("candidate.change_candidate")
-@csrf_exempt
 @require_POST
 def update_joining(request):
     """
@@ -1927,7 +1925,6 @@ def onboarding_send_mail(request, candidate_id):
 
 @login_required
 @stage_manager_can_enter("recruitment.change_stage")
-@csrf_exempt
 @require_POST
 def update_probation_end(request):
     """
