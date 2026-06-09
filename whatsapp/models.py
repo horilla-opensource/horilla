@@ -22,7 +22,7 @@ class WhatsappCredientials(HorillaModel):
     company_id = models.ManyToManyField(Company, blank=True, verbose_name="Company")
     is_primary = models.BooleanField(default=False)
 
-    # objects = HorillaCompanyManager()
+    objects = HorillaCompanyManager()
 
     def __str__(self):
         return f"WhatsApp Business {self.meta_business_id} ({self.meta_phone_number})"
