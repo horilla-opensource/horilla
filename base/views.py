@@ -40,7 +40,6 @@ from django.utils.html import format_html, strip_tags
 from django.utils.http import url_has_allowed_host_and_scheme
 from django.utils.translation import gettext as _
 from django.views import View
-from django.views.decorators.csrf import csrf_exempt
 from django.views.decorators.http import require_http_methods
 from rest_framework_simplejwt.authentication import JWTAuthentication
 from rest_framework_simplejwt.exceptions import InvalidToken, TokenError
@@ -371,6 +370,8 @@ def initialize_database(request):
     Returns:
         HttpResponse: The rendered HTML template or a redirect response.
     """
+    if not settings.DEBUG:
+        raise Http404
     if initialize_database_condition():
         if request.method == "POST":
             password = request._post.get("password")
@@ -764,10 +765,7 @@ class HorillaPasswordResetView(PasswordResetView):
                 )
                 return HorillaRedirect(self.request)
 
-            return redirect(reverse_lazy("reset-send-success"))
-
-        messages.info(self.request, _("No user found with the username"))
-        return redirect("forgot-password")
+        return redirect(reverse_lazy("reset-send-success"))
 
 
 class EmployeePasswordResetView(PasswordResetView):
@@ -804,11 +802,10 @@ class EmployeePasswordResetView(PasswordResetView):
                     "extra_email_context": self.extra_email_context,
                 }
                 form.save(**opts)
-                messages.success(
-                    self.request, _("Password reset link sent successfully")
-                )
-            else:
-                messages.error(self.request, _("No user with the given username"))
+            messages.success(
+                self.request,
+                _("If your account exists, a password reset link has been sent"),
+            )
             return HorillaRedirect(self.request)
 
         except Exception as e:
@@ -5563,7 +5560,6 @@ def date_settings(request):
 
 @login_required
 @permission_required("base.change_company")
-@csrf_exempt  # Use this decorator if CSRF protection is enabled
 def save_date_format(request):
     if request.method == "POST":
         # Taking the selected Date Format
@@ -5662,7 +5658,6 @@ def get_date_format(request):
 
 @login_required
 @permission_required("base.change_company")
-@csrf_exempt  # Use this decorator if CSRF protection is enabled
 def save_time_format(request):
     if request.method == "POST":
         # Taking the selected Time Format

@@ -26,6 +26,7 @@ from django.core.validators import validate_ipv46_address
 from django.forms import DateInput, HiddenInput, TextInput
 from django.template import loader
 from django.template.loader import render_to_string
+from django.urls import reverse_lazy
 from django.utils.encoding import force_bytes
 from django.utils.html import strip_tags
 from django.utils.http import urlsafe_base64_encode
@@ -3043,13 +3044,13 @@ class AttendanceAllowedIPUpdateForm(ModelForm):
 class TrackLateComeEarlyOutForm(ModelForm):
     class Meta:
         model = TrackLateComeEarlyOut
-        fields = ["is_enable"]
+        fields = ["is_enable", "company_id"]
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
         self.fields["is_enable"].widget.attrs.update(
             {
-                "hx-post": "/attendance/enable-disable-tracking-late-come-early-out",
+                "hx-post": reverse_lazy("enable-disable-tracking-late-come-early-out"),
                 "hx-target": "this",
                 "hx-trigger": "change",
             }
