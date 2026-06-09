@@ -2829,9 +2829,20 @@ def track_late_come_early_out(request):
     """
     Renders the form to track late arrivals and early departures in attendance.
     """
-    tracking = TrackLateComeEarlyOut.objects.first()
+    selected_company = request.session.get("selected_company")
+    if selected_company == "all":
+        company = None
+    else:
+        from base.models import Company
+
+        company = Company.objects.filter(id=selected_company).first()
+    tracking = TrackLateComeEarlyOut.objects.filter(company_id=company).first()
     form = TrackLateComeEarlyOutForm(
-        initial={"is_enable": tracking.is_enable} if tracking else {}
+        initial=(
+            {"is_enable": tracking.is_enable, "company_id": company}
+            if tracking
+            else {"company_id": company}
+        )
     )
     return render(
         request, "attendance/late_come_early_out/tracking.html", {"form": form}
@@ -2845,8 +2856,18 @@ def enable_disable_tracking_late_come_early_out(request):
     Enables or disables the tracking of late arrivals and early departures in attendance.
     """
     if request.method == "POST":
+        from base.models import Company
+
         enable = bool(request.POST.get("is_enable"))
-        tracking, created = TrackLateComeEarlyOut.objects.get_or_create()
+        selected_company = request.session.get("selected_company")
+        if selected_company == "all":
+            company = None
+        else:
+            company = Company.objects.filter(id=selected_company).first()
+
+        tracking, created = TrackLateComeEarlyOut.objects.get_or_create(
+            company_id=company
+        )
         tracking.is_enable = enable
         tracking.save()
         message = _("enabled") if enable else _("disabled")

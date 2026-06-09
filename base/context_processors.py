@@ -291,7 +291,17 @@ def biometric_app_exists(request):
 
 
 def enable_late_come_early_out_tracking(request):
-    tracking = TrackLateComeEarlyOut.objects.first()
+    if request is None:
+        tracking = TrackLateComeEarlyOut.objects.first()
+        enable = tracking.is_enable if tracking else True
+        return {"tracking": enable, "late_come_early_out_tracking": enable}
+    selected_company = request.session.get("selected_company")
+    if selected_company == "all":
+        company = None
+    else:
+        company = Company.objects.filter(id=selected_company).first()
+
+    tracking = TrackLateComeEarlyOut.objects.filter(company_id=company).first()
     enable = tracking.is_enable if tracking else True
     return {"tracking": enable, "late_come_early_out_tracking": enable}
 

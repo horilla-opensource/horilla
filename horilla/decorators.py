@@ -323,11 +323,19 @@ def owner_can_enter(
 
 
 def install_required(function):
-    from base.models import BiometricAttendance, TrackLateComeEarlyOut
+    from base.models import BiometricAttendance, Company, TrackLateComeEarlyOut
 
     def _function(request, *args, **kwargs):
         if request.path_info.endswith("late-come-early-out-view/"):
-            object, created = TrackLateComeEarlyOut.objects.get_or_create()
+            selected_company = request.session.get("selected_company")
+            if selected_company == "all":
+                company = None
+            else:
+                company = Company.objects.filter(id=selected_company).first()
+
+            object, created = TrackLateComeEarlyOut.objects.get_or_create(
+                company_id=company
+            )
             if not object or object.is_enable:
                 return function(request, *args, **kwargs)
             else:

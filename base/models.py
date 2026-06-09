@@ -2644,6 +2644,13 @@ class TrackLateComeEarlyOut(HorillaModel):
             "By enabling this, you track the late comes and early outs of employees in their attendance."
         ),
     )
+    company_id = models.ForeignKey(
+        Company,
+        null=True,
+        on_delete=models.CASCADE,
+        verbose_name=_("Company"),
+    )
+    objects = HorillaCompanyManager()
 
     class Meta:
         verbose_name = _("Track Late Come Early Out")
@@ -2654,9 +2661,14 @@ class TrackLateComeEarlyOut(HorillaModel):
         return f"Tracking late come early out {tracking}"
 
     def save(self, *args, **kwargs):
-        if not self.pk and TrackLateComeEarlyOut.objects.exists():
+        if (
+            not self.pk
+            and TrackLateComeEarlyOut.objects.filter(
+                company_id=self.company_id
+            ).exists()
+        ):
             raise ValidationError(
-                _("Only one TrackLateComeEarlyOut instance is allowed.")
+                _("Only one TrackLateComeEarlyOut instance is allowed per company.")
             )
         return super().save(*args, **kwargs)
 
