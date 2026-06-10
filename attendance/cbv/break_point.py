@@ -40,6 +40,7 @@ class BreakPointList(HorillaListView):
         (_("Auto Validate Till"), "validation_at_work"),
         (_("Min Hour To Approve OT"), "minimum_overtime_to_approve"),
         (_("OT Cut-Off/Day"), "overtime_cutoff"),
+        (_("Auto Approve OT"), "auto_approve_ot"),
         (_("Actions"), "break_point_actions"),
     ]
     header_attrs = {

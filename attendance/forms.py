@@ -570,6 +570,14 @@ class AttendanceValidationConditionForm(forms.ModelForm):
         fields = "__all__"
         exclude = ["is_active"]
 
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        active_company_id = horilla_middlewares.get_selected_company()
+        if active_company_id and not active_company_id == "all":
+            self.fields["company_id"].queryset = Company.objects.filter(
+                id=active_company_id
+            )
+
 
 class AttendanceRequestForm(BaseModelForm):
     """
