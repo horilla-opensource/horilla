@@ -2925,7 +2925,7 @@ def grace_time_view(request):
     """
     condition = AttendanceValidationCondition.objects.first()
     default_grace_time = GraceTime.objects.filter(is_default=True).first()
-    grace_times = GraceTime.objects.all().exclude(is_default=True)
+    grace_times = GraceTime.objects.entire().exclude(is_default=True)
     return render(
         request,
         "attendance/grace_time/grace_time.html",
