@@ -15931,6 +15931,22 @@ msgstr "Survey Template Preview"
 msgid "theme"
 msgstr "Theme"
 
+#: base/translator.py:381
+msgid "objective-template-list-view"
+msgstr "Objective Template"
+
+#: base/translator.py:382
+msgid "roster"
+msgstr "Roster Planner"
+
+#: base/translator.py:383
+msgid "view-biometric-devices"
+msgstr "Biometric Devices"
+
+#: base/translator.py:384
+msgid "biometric"
+msgstr "Biometric"
+
 #: base/views.py:205
 #, fuzzy
 #| msgid "employee"

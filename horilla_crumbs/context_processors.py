@@ -31,7 +31,7 @@ def _split_path(self, path=None):
 
 
 BREADCRUMB_URL_NAMES = {
-    "ess": "Employee Dashboard",
+    "ess": "Employee",
     "offboarding": "Offboarding",
     "helpdesk": "Helpdesk",
 }
@@ -78,6 +78,7 @@ sidebar_urls = [
     "company-leave-view",
     "dashboard-view",
     "objective-list-view",
+    "objective-template-list-view",
     "feedback-view",
     "period-view",
     "question-template-view",
@@ -118,6 +119,7 @@ sidebar_urls = [
     "pagination-settings-view",
     "organisation-chart",
     "disciplinary-actions",
+    "roster",
     "view-policies",
     "resignation-requests-view",
     "action-type",
