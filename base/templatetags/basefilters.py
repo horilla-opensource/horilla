@@ -8,6 +8,7 @@ from django.template.defaultfilters import register
 from base.methods import get_pagination
 from base.models import MultipleApprovalManagers
 from employee.models import Employee, EmployeeWorkInformation
+from horilla.menu.settings_menu import get_settings_menu
 
 register = template.Library()
 
@@ -313,3 +314,12 @@ def show_section(context):
             user.has_perm("horilla_theme.view_horillacolortheme"),
         ]
     )
+
+
+@register.simple_tag(takes_context=True)
+def settings_menu(context):
+
+    request = context.get("request")
+    if request is None:
+        return []
+    return get_settings_menu(request)
