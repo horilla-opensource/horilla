@@ -10,6 +10,7 @@ from django.utils.translation import gettext_lazy as _
 from accessibility.methods import check_is_accessible
 from base.templatetags.basefilters import is_reportingmanager
 from horilla.horilla_middlewares import _thread_locals
+from horilla.menu import settings_menu
 
 request = getattr(_thread_locals, "request", None)
 MENU = _("Employee")
@@ -125,3 +126,88 @@ def employee_accessibility(request, submenu, user_perms, *args, **kwargs):
         or request.user.has_perm("employee.view_employee")
         or check_is_accessible("employee_view", cache_key, employee)
     )
+
+
+# ---------------------------------------------------------------------------
+# Settings menu registrations
+# ---------------------------------------------------------------------------
+
+
+def work_type_accessibility(request, submenu, user_perms, *args, **kwargs):
+    return request.user.has_perm("base.view_worktype")
+
+
+def rotating_work_type_accessibility(request, submenu, user_perms, *args, **kwargs):
+    return request.user.has_perm("base.view_rotatingworktype")
+
+
+def employee_shift_accessibility(request, submenu, user_perms, *args, **kwargs):
+    return request.user.has_perm("base.view_employeeshift")
+
+
+def rotating_shift_accessibility(request, submenu, user_perms, *args, **kwargs):
+    return request.user.has_perm("base.view_rotatingshift")
+
+
+def shift_schedule_accessibility(request, submenu, user_perms, *args, **kwargs):
+    return request.user.has_perm("base.view_employeeshiftschedule")
+
+
+def employee_type_accessibility(request, submenu, user_perms, *args, **kwargs):
+    return request.user.has_perm("base.view_employeetype")
+
+
+def disciplinary_action_accessibility(request, submenu, user_perms, *args, **kwargs):
+    return request.user.has_perm("employee.view_actiontype")
+
+
+def employee_tag_accessibility(request, submenu, user_perms, *args, **kwargs):
+    return request.user.has_perm("employee.view_employeetag")
+
+
+@settings_menu.register
+class EmployeeSettings:
+    title = _("Employee")
+    order = 3
+    items = [
+        {
+            "label": _("Work Type"),
+            "url": reverse_lazy("work-type-view"),
+            "accessibility": work_type_accessibility,
+        },
+        {
+            "label": _("Rotating Work Type"),
+            "url": reverse_lazy("rotating-work-type-view"),
+            "accessibility": rotating_work_type_accessibility,
+        },
+        {
+            "label": _("Employee Shift"),
+            "url": reverse_lazy("employee-shift-view"),
+            "accessibility": employee_shift_accessibility,
+        },
+        {
+            "label": _("Rotating Shift"),
+            "url": reverse_lazy("rotating-shift-view"),
+            "accessibility": rotating_shift_accessibility,
+        },
+        {
+            "label": _("Employee Shift Schedule"),
+            "url": reverse_lazy("employee-shift-schedule-view"),
+            "accessibility": shift_schedule_accessibility,
+        },
+        {
+            "label": _("Employee Type"),
+            "url": reverse_lazy("employee-type-view"),
+            "accessibility": employee_type_accessibility,
+        },
+        {
+            "label": _("Disciplinary Action Type"),
+            "url": reverse_lazy("action-type"),
+            "accessibility": disciplinary_action_accessibility,
+        },
+        {
+            "label": _("Employee Tags"),
+            "url": reverse_lazy("employee-tag-view"),
+            "accessibility": employee_tag_accessibility,
+        },
+    ]
