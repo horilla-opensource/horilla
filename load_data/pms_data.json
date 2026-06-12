@@ -10,7 +10,11 @@
       "period_name": "First Half 2024",
       "start_date": "2024-01-01",
       "end_date": "2024-06-30",
-      "company_id": [1, 2, 3]
+      "company_id": [
+        1,
+        2,
+        3
+      ]
     }
   },
   {
@@ -24,7 +28,11 @@
       "period_name": "Second Half 2024",
       "start_date": "2024-07-01",
       "end_date": "2025-07-30",
-      "company_id": [1, 2, 3]
+      "company_id": [
+        1,
+        2,
+        3
+      ]
     }
   },
   {
@@ -1081,9 +1089,19 @@
       "add_assignees": false,
       "archive": false,
       "company_id": null,
-      "managers": [37],
-      "assignees": [12, 13, 68],
-      "key_result_id": [3, 2, 1]
+      "managers": [
+        37
+      ],
+      "assignees": [
+        12,
+        13,
+        68
+      ],
+      "key_result_id": [
+        3,
+        2,
+        1
+      ]
     }
   },
   {
@@ -1101,9 +1119,19 @@
       "add_assignees": false,
       "archive": false,
       "company_id": null,
-      "managers": [37],
-      "assignees": [12, 13, 68],
-      "key_result_id": [3, 2, 1]
+      "managers": [
+        37
+      ],
+      "assignees": [
+        12,
+        13,
+        68
+      ],
+      "key_result_id": [
+        3,
+        2,
+        1
+      ]
     }
   },
   {
@@ -1121,9 +1149,19 @@
       "add_assignees": false,
       "archive": false,
       "company_id": null,
-      "managers": [37],
-      "assignees": [12, 13, 68],
-      "key_result_id": [3, 2, 1]
+      "managers": [
+        37
+      ],
+      "assignees": [
+        12,
+        13,
+        68
+      ],
+      "key_result_id": [
+        3,
+        2,
+        1
+      ]
     }
   },
   {
@@ -1141,9 +1179,19 @@
       "add_assignees": false,
       "archive": false,
       "company_id": null,
-      "managers": [37],
-      "assignees": [12, 13, 68],
-      "key_result_id": [3, 2, 1]
+      "managers": [
+        37
+      ],
+      "assignees": [
+        12,
+        13,
+        68
+      ],
+      "key_result_id": [
+        3,
+        2,
+        1
+      ]
     }
   },
   {
@@ -1398,7 +1446,11 @@
       "modified_by": 1,
       "is_active": true,
       "question_template": "Developer Question",
-      "company_id": [1, 2, 3]
+      "company_id": [
+        1,
+        2,
+        3
+      ]
     }
   },
   {
@@ -1476,7 +1528,10 @@
       "cyclic_feedback_period": null,
       "cyclic_next_start_date": null,
       "cyclic_next_end_date": null,
-      "colleague_id": [16, 18],
+      "colleague_id": [
+        16,
+        18
+      ],
       "subordinate_id": [],
       "employee_key_results_id": []
     }
@@ -1494,9 +1549,241 @@
       "question_template": 1,
       "response": null,
       "show_response": false,
-      "employee_id": [12, 1, 37, 13],
-      "manager": [1],
-      "answer_employees": [12, 37, 13]
+      "employee_id": [
+        12,
+        1,
+        37,
+        13
+      ],
+      "manager": [
+        1
+      ],
+      "answer_employees": [
+        12,
+        37,
+        13
+      ]
+    }
+  },
+  {
+    "model": "pms.objective",
+    "pk": 105,
+    "fields": {
+      "created_at": "2025-06-15T07:00:00.000Z",
+      "created_by": 1,
+      "modified_by": 1,
+      "is_active": true,
+      "title": "Q3 Product Launch Readiness",
+      "description": "Ensure all teams are aligned and prepared for the upcoming product launch in Q3.",
+      "duration": 1,
+      "duration_unit": "months",
+      "add_assignees": false,
+      "archive": false,
+      "company_id": null,
+      "assignees": [
+        12,
+        13,
+        68
+      ],
+      "managers": [
+        37
+      ],
+      "key_result_id": [
+        1,
+        2,
+        3
+      ]
+    }
+  },
+  {
+    "model": "pms.objective",
+    "pk": 106,
+    "fields": {
+      "created_at": "2025-06-01T07:00:00.000Z",
+      "created_by": 1,
+      "modified_by": 1,
+      "is_active": true,
+      "title": "Employee Onboarding Improvement",
+      "description": "Streamline the onboarding process to reduce ramp-up time by 30%.",
+      "duration": 2,
+      "duration_unit": "months",
+      "add_assignees": false,
+      "archive": false,
+      "company_id": null,
+      "assignees": [
+        12,
+        13
+      ],
+      "managers": [
+        37
+      ],
+      "key_result_id": [
+        1,
+        2
+      ]
+    }
+  },
+  {
+    "model": "pms.employeeobjective",
+    "pk": 104,
+    "fields": {
+      "created_at": "2025-06-15",
+      "updated_at": "2025-06-28",
+      "created_by": 1,
+      "modified_by": 1,
+      "is_active": true,
+      "employee_id": 12,
+      "objective_id": 105,
+      "objective": null,
+      "objective_description": null,
+      "start_date": "2025-06-15",
+      "end_date": "2025-07-15",
+      "status": "In Progress",
+      "progress_percentage": 68,
+      "archive": false,
+      "key_result_id": []
+    }
+  },
+  {
+    "model": "pms.employeeobjective",
+    "pk": 105,
+    "fields": {
+      "created_at": "2025-06-15",
+      "updated_at": "2025-06-27",
+      "created_by": 1,
+      "modified_by": 1,
+      "is_active": true,
+      "employee_id": 13,
+      "objective_id": 105,
+      "objective": null,
+      "objective_description": null,
+      "start_date": "2025-06-15",
+      "end_date": "2025-07-15",
+      "status": "In Progress",
+      "progress_percentage": 75,
+      "archive": false,
+      "key_result_id": []
+    }
+  },
+  {
+    "model": "pms.employeeobjective",
+    "pk": 106,
+    "fields": {
+      "created_at": "2025-06-01",
+      "updated_at": "2025-06-29",
+      "created_by": 1,
+      "modified_by": 1,
+      "is_active": true,
+      "employee_id": 12,
+      "objective_id": 106,
+      "objective": null,
+      "objective_description": null,
+      "start_date": "2025-06-01",
+      "end_date": "2025-07-31",
+      "status": "In Progress",
+      "progress_percentage": 60,
+      "archive": false,
+      "key_result_id": []
+    }
+  },
+  {
+    "model": "pms.employeekeyresult",
+    "pk": 110,
+    "fields": {
+      "created_at": "2025-06-15",
+      "updated_at": "2025-06-28",
+      "employee_objective_id": 104,
+      "key_result_id": 1,
+      "key_result": "Contact Customer",
+      "key_result_description": null,
+      "progress_type": "%",
+      "start_value": 0,
+      "target_value": 100,
+      "current_value": 72,
+      "progress_percentage": 72,
+      "status": "In Progress",
+      "start_date": "2025-06-15",
+      "end_date": "2025-07-15"
+    }
+  },
+  {
+    "model": "pms.employeekeyresult",
+    "pk": 111,
+    "fields": {
+      "created_at": "2025-06-15",
+      "updated_at": "2025-06-27",
+      "employee_objective_id": 104,
+      "key_result_id": 2,
+      "key_result": "Digital Marketing",
+      "key_result_description": null,
+      "progress_type": "%",
+      "start_value": 0,
+      "target_value": 100,
+      "current_value": 65,
+      "progress_percentage": 65,
+      "status": "In Progress",
+      "start_date": "2025-06-15",
+      "end_date": "2025-07-15"
+    }
+  },
+  {
+    "model": "pms.employeekeyresult",
+    "pk": 112,
+    "fields": {
+      "created_at": "2025-06-15",
+      "updated_at": "2025-06-27",
+      "employee_objective_id": 105,
+      "key_result_id": 3,
+      "key_result": "Social Media Influencer",
+      "key_result_description": null,
+      "progress_type": "%",
+      "start_value": 0,
+      "target_value": 100,
+      "current_value": 78,
+      "progress_percentage": 78,
+      "status": "In Progress",
+      "start_date": "2025-06-15",
+      "end_date": "2025-07-15"
+    }
+  },
+  {
+    "model": "pms.employeekeyresult",
+    "pk": 113,
+    "fields": {
+      "created_at": "2025-06-01",
+      "updated_at": "2025-06-29",
+      "employee_objective_id": 106,
+      "key_result_id": 1,
+      "key_result": "Contact Customer",
+      "key_result_description": null,
+      "progress_type": "%",
+      "start_value": 0,
+      "target_value": 100,
+      "current_value": 60,
+      "progress_percentage": 60,
+      "status": "In Progress",
+      "start_date": "2025-06-01",
+      "end_date": "2025-07-31"
+    }
+  },
+  {
+    "model": "pms.employeekeyresult",
+    "pk": 114,
+    "fields": {
+      "created_at": "2025-06-01",
+      "updated_at": "2025-06-29",
+      "employee_objective_id": 106,
+      "key_result_id": 2,
+      "key_result": "Digital Marketing",
+      "key_result_description": null,
+      "progress_type": "%",
+      "start_value": 0,
+      "target_value": 100,
+      "current_value": 63,
+      "progress_percentage": 63,
+      "status": "In Progress",
+      "start_date": "2025-06-01",
+      "end_date": "2025-07-31"
     }
   }
 ]
