@@ -268,15 +268,15 @@ def _shift_fixture_dates(file_path):
     Return a date-shifted version of a JSON fixture as a string.
 
     All dates between 2020-01-01 and 2030-12-31 are shifted so that the
-    fixture's anchor month (2025-07-01) maps to the first day of the current
-    month. Static dates outside that window (e.g. DOBs in the 1960s) are left
-    untouched. Returns None if no shift is needed (delta == 0).
+    fixture's anchor date (2025-07-01) maps to today. Static dates outside
+    that window (e.g. DOBs in the 1960s) are left untouched. Returns None
+    if no shift is needed (delta == 0).
     """
     import re
 
     ANCHOR = datetime(2025, 7, 1).date()
     today = datetime.today().date()
-    target = today.replace(day=1)
+    target = today
     delta = (target - ANCHOR).days
 
     if delta == 0:
