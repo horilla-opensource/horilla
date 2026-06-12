@@ -1764,7 +1764,10 @@ class RecruitmentGeneralSetting(HorillaModel):
 
     candidate_self_tracking = models.BooleanField(default=False)
     show_overall_rating = models.BooleanField(default=False)
-    company_id = models.ForeignKey(Company, on_delete=models.CASCADE, null=True)
+    company_id = models.OneToOneField(
+        Company, on_delete=models.CASCADE, null=True, blank=True, unique=True
+    )
+    objects = HorillaCompanyManager()
 
 
 class InterviewSchedule(HorillaModel):

@@ -177,10 +177,13 @@ def check_candidate_self_tracking(request, instance, user_perm):
     """
     This method is used to get the candidate self tracking is enabled or not
     """
-
-    candidate_self_tracking = False
-    if RecruitmentGeneralSetting.objects.exists():
-        candidate_self_tracking = (
-            RecruitmentGeneralSetting.objects.first().candidate_self_tracking
-        )
-    return candidate_self_tracking
+    selected_company = request.session.get("selected_company")
+    if selected_company and selected_company != "all":
+        setting = RecruitmentGeneralSetting.objects.filter(
+            company_id_id=selected_company
+        ).first()
+    else:
+        setting = RecruitmentGeneralSetting.objects.filter(
+            company_id__isnull=True
+        ).first()
+    return setting.candidate_self_tracking if setting else False
