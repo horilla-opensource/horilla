@@ -1,4 +1,5 @@
 import os
+import shutil
 import tempfile
 from pathlib import Path
 
@@ -43,6 +44,8 @@ class Command(BaseCommand):
             self.stdout.write("Flushing database...")
             call_command("flush", "--no-input", verbosity=0)
             self.stdout.write(self.style.SUCCESS("Database flushed."))
+
+        self._copy_demo_icons(load_dir=Path(settings.BASE_DIR) / "load_data")
 
         data_files = [
             "user_data.json",
@@ -99,3 +102,21 @@ class Command(BaseCommand):
         self.stdout.write(
             self.style.SUCCESS(f"\nDone. {loaded} fixture(s) loaded, {errors} error(s).")
         )
+
+    def _copy_demo_icons(self, load_dir: Path):
+        """Copy bundled company icons to MEDIA_ROOT so fixture image paths resolve."""
+        icons_src = load_dir / "icons"
+        if not icons_src.exists():
+            return
+
+        dest_dir = Path(settings.MEDIA_ROOT) / "base" / "icon"
+        dest_dir.mkdir(parents=True, exist_ok=True)
+
+        copied = 0
+        for icon_file in icons_src.glob("*.png"):
+            dest = dest_dir / icon_file.name
+            shutil.copy2(icon_file, dest)
+            copied += 1
+
+        if copied:
+            self.stdout.write(self.style.SUCCESS(f"  Copied {copied} company icon(s) to media."))
