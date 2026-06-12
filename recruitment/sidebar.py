@@ -4,10 +4,12 @@ recruitment/sidebar.py
 To set Horilla sidebar for onboarding
 """
 
+from django.apps import apps
 from django.contrib.auth.context_processors import PermWrapper
-from django.urls import reverse
+from django.urls import reverse, reverse_lazy
 from django.utils.translation import gettext_lazy as _
 
+from horilla.menu import settings_menu
 from recruitment.models import InterviewSchedule
 from recruitment.templatetags.recruitmentfilters import (
     is_recruitmentmangers,
@@ -137,3 +139,44 @@ def skill_zone_accessibility(
 
 def dashboard_accessibility(request, submenu, user_perms, *args, **kwargs):
     return is_stagemanager(request.user) or "recruitment" in user_perms
+
+
+# ---------------------------------------------------------------------------
+# Settings menu registrations
+# ---------------------------------------------------------------------------
+
+
+def self_tracking_accessibility(request, submenu, user_perms, *args, **kwargs):
+    return request.user.has_perm("recruitment.view_recruitment")
+
+
+def reject_reason_accessibility(request, submenu, user_perms, *args, **kwargs):
+    return request.user.has_perm("recruitment.view_rejectreason")
+
+
+def skills_accessibility(request, submenu, user_perms, *args, **kwargs):
+    return request.user.has_perm("recruitment.add_recruitment")
+
+
+@settings_menu.register
+class RecruitmentSettings:
+    title = _("Recruitment")
+    order = 4
+    condition = lambda self, request: apps.is_installed("recruitment")
+    items = [
+        {
+            "label": _("Candidate Self Tracking"),
+            "url": reverse_lazy("self-tracking-feature"),
+            "accessibility": self_tracking_accessibility,
+        },
+        {
+            "label": _("Candidate Reject Reason"),
+            "url": reverse_lazy("candidate-reject-reasons"),
+            "accessibility": reject_reason_accessibility,
+        },
+        {
+            "label": _("Skills"),
+            "url": reverse_lazy("skills-view"),
+            "accessibility": skills_accessibility,
+        },
+    ]

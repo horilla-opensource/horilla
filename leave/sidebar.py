@@ -7,6 +7,7 @@ from django.urls import reverse_lazy
 from django.utils.translation import gettext_lazy as _
 
 from base.templatetags.basefilters import is_leave_approval_manager, is_reportingmanager
+from horilla.menu import settings_menu
 from leave.templatetags.leavefilters import is_compensatory
 
 MENU = _("Leave")
@@ -116,3 +117,37 @@ if apps.is_installed("attendance"):
 
     def componstory_accessibility(request, submenu, user_perms, *args, **kwargs):
         return is_compensatory(request.user)
+
+
+# ---------------------------------------------------------------------------
+# Settings menu registrations
+# ---------------------------------------------------------------------------
+
+
+def restrictions_accessibility(request, submenu, user_perms, *args, **kwargs):
+    return request.user.has_perm("leave.add_restrictleave")
+
+
+def compensatory_leave_accessibility(request, submenu, user_perms, *args, **kwargs):
+    return apps.is_installed("attendance") and request.user.has_perm(
+        "attendance.view_attendancevalidationcondition"
+    )
+
+
+@settings_menu.register
+class LeaveSettings:
+    title = _("Leave")
+    order = 6
+    condition = lambda self, request: apps.is_installed("leave")
+    items = [
+        {
+            "label": _("Restrictions"),
+            "url": reverse_lazy("employee-past-leave-restriction"),
+            "accessibility": restrictions_accessibility,
+        },
+        {
+            "label": _("Compensatory Leave"),
+            "url": reverse_lazy("compensatory-leave-settings-view"),
+            "accessibility": compensatory_leave_accessibility,
+        },
+    ]
