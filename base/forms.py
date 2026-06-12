@@ -884,6 +884,17 @@ class WorkTypeForm(ModelForm):
         fields = "__all__"
         exclude = ["is_active"]
 
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        if not self.instance.pk:
+            request = getattr(_thread_locals, "request", None)
+            if request:
+                selected_company = request.session.get("selected_company")
+                if selected_company and selected_company != "all":
+                    self.initial["company_id"] = Company.objects.filter(
+                        id=selected_company
+                    )
+
 
 class RotatingWorkTypeForm(ModelForm):
     """

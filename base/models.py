@@ -357,6 +357,16 @@ class WorkType(HorillaModel):
                 raise ValidationError("This work type already exists in this company")
         return
 
+    def get_company_name(self):
+        """
+        Returns comma-separated company names for display in list views.
+        Returns 'All Company' when no company is assigned.
+        """
+        companies = self.company_id.all()
+        if companies.exists():
+            return ", ".join(c.company for c in companies)
+        return _("All Company")
+
     def get_update_url(self):
         """
         This method to get update url
@@ -2597,11 +2607,22 @@ class BiometricAttendance(models.Model):
         editable=False,
         on_delete=models.PROTECT,
         related_name="biometric_enabled_company",
+        verbose_name=_("Company"),
     )
-    objects = models.Manager()
+    objects = HorillaCompanyManager()
 
     def __str__(self):
         return f"{self.is_installed}"
+
+    def save(self, *args, **kwargs):
+        if (
+            not self.pk
+            and BiometricAttendance.objects.filter(company_id=self.company_id).exists()
+        ):
+            raise ValidationError(
+                _("Only one BiometricAttendance instance is allowed per company.")
+            )
+        return super().save(*args, **kwargs)
 
 
 def default_additional_data():

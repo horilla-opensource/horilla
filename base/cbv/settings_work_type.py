@@ -61,6 +61,7 @@ class WorkTypeList(HorillaListView):
 
     columns = [
         (_("Work Type"), "work_type"),
+        (_("Company"), "get_company_name"),
     ]
 
     row_attrs = """ id="workTypeTr{get_delete_instance}" """
