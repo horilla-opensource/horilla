@@ -329,7 +329,8 @@ urlpatterns = [
     path("send-otp/", views.send_otp, name="send-otp"),
     path("logout/", views.logout_user, name="logout"),
     path("toggle-theme/", views.toggle_theme, name="toggle_theme"),
-    path("settings/", views.common_settings, name="settings"),
+    # path("settings/", views.common_settings, name="settings"),
+    path("settings/", views.SettingsView.as_view(), name="settings"),
     path(
         "settings/user-group-create/", views.user_group_table, name="user-group-create"
     ),
