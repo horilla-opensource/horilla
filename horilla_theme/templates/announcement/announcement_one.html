@@ -1,6 +1,37 @@
 {% load i18n static %}
 {% load generic_template_filters %}
 
+<style>
+    /* Normalize author-entered rich text so oversized headings / inline
+       font-sizes from the editor can't overflow and clip the modal. */
+    .announcement-desc,
+    .announcement-desc * {
+        font-size: .95rem !important;
+        line-height: 1.6;
+        font-weight: 400;
+        max-width: 100%;
+    }
+    .announcement-desc h1,
+    .announcement-desc h2,
+    .announcement-desc h3,
+    .announcement-desc strong,
+    .announcement-desc b {
+        font-size: 1.05rem !important;
+        font-weight: 600;
+        margin: .35rem 0;
+    }
+    .announcement-desc {
+        overflow-wrap: anywhere;
+        word-break: break-word;
+    }
+    .announcement-desc img,
+    .announcement-desc table,
+    .announcement-desc video {
+        max-width: 100%;
+        height: auto;
+    }
+</style>
+
 <script>
     function enlargeDoc(src, $element) {
         var enlargeDocContainer = $('#detailViewContainer').find("#enlargeattachmentContainer");
@@ -110,7 +141,7 @@
                 <span class=" block font-semibold text-sm mb-2 text-[#565E6C] w-32">
                     {% trans "Description" %}
                 </span>
-                <div class="text-gray-700 text-base leading-relaxed px-2">
+                <div class="announcement-desc text-gray-700 text-base leading-relaxed px-2">
                     {{ announcement.description|safe }}
                 </div>
             </div>
