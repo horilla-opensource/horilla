@@ -4,6 +4,7 @@ admin.py
 This page is used to register attendance models with admins site.
 """
 
+# pyrefly: ignore [missing-import]
 from django.contrib import admin
 
 from .models import (
