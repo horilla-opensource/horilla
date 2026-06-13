@@ -5,7 +5,9 @@ This module is used to map url pattern or request path with view functions
 """
 
 from django.urls import include, path
+from django.views.generic import RedirectView
 
+from payroll import dashboard as pay_dashboard
 from payroll.cbv import contracts, dashboard, payslip_automation
 from payroll.models.models import Contract, Payslip
 from payroll.views import views
@@ -85,8 +87,8 @@ urlpatterns = [
     ),
     path(
         "view-payroll-dashboard/",
-        views.view_payroll_dashboard,
-        name="view-payroll-dashboard",
+        RedirectView.as_view(pattern_name="view-payroll-dashboard"),
+        name="view-payroll-dashboard-legacy",
     ),
     path(
         "dashboard-employee-chart/",
@@ -244,5 +246,61 @@ urlpatterns = [
         "pay-slip-automation-delete/<int:auto_id>/",
         payslip_automation.DeleteAutoPayslipView.as_view(),
         name="pay-slip-automation-delete",
+    ),
+    # ── Payroll Modern Dashboard ─────────────────────────────────────────────
+    path(
+        "dashboard/",
+        pay_dashboard.payroll_dashboard_view,
+        name="view-payroll-dashboard",
+    ),
+    path(
+        "dashboard/api/kpi/",
+        pay_dashboard.payroll_kpi_data,
+        name="payroll-dashboard-kpi",
+    ),
+    path(
+        "dashboard/api/trend/",
+        pay_dashboard.payroll_monthly_trend,
+        name="payroll-dashboard-trend",
+    ),
+    path(
+        "dashboard/api/department/",
+        pay_dashboard.payroll_department_cost,
+        name="payroll-dashboard-dept",
+    ),
+    path(
+        "dashboard/api/pipeline/",
+        pay_dashboard.payroll_status_pipeline,
+        name="payroll-dashboard-pipeline",
+    ),
+    path(
+        "dashboard/api/top-earners/",
+        pay_dashboard.payroll_top_earners,
+        name="payroll-dashboard-earners",
+    ),
+    path(
+        "dashboard/api/contracts/",
+        pay_dashboard.payroll_contract_status,
+        name="payroll-dashboard-contracts",
+    ),
+    path(
+        "dashboard/api/loans/",
+        pay_dashboard.payroll_loan_summary,
+        name="payroll-dashboard-loans",
+    ),
+    path(
+        "dashboard/api/reimbursement/",
+        pay_dashboard.payroll_reimbursement_summary,
+        name="payroll-dashboard-reimbursement",
+    ),
+    path(
+        "dashboard/api/salary-dist/",
+        pay_dashboard.payroll_salary_distribution,
+        name="payroll-dashboard-salary-dist",
+    ),
+    path(
+        "dashboard/api/components/",
+        pay_dashboard.payroll_component_breakdown,
+        name="payroll-dashboard-components",
     ),
 ]

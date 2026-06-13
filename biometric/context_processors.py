@@ -8,28 +8,34 @@ Functions:
     biometric_is_installed(request): Checks if the biometric system is installed.
 """
 
-from base.models import BiometricAttendance
+from base.models import BiometricAttendance, Company
 
 
-def biometric_is_installed(_request):
+def biometric_is_installed(request):
     """
-    Check if the biometric system is installed.
-
-    This function checks if the biometric system is installed by querying the
-    BiometricAttendance model. If no BiometricAttendance object exists, it
-    creates one with 'is_installed' set to False.
+    Check if the biometric system is installed for the selected company.
 
     Args:
         request: The HTTP request object.
 
     Returns:
-        dict: A dictionary containing a single key-value pair indicating whether
-        the biometric system is installed. The key is 'is_installed', and the value
-        is a boolean indicating the installation status.
+        dict: A dictionary with 'is_installed' boolean for the selected company.
     """
-    instance = BiometricAttendance.objects.first()
+    selected_company = (
+        request.session.get("selected_company") if hasattr(request, "session") else None
+    )
+    if selected_company == "all":
+        company = None
+    else:
+        company = (
+            Company.objects.filter(id=selected_company).first()
+            if selected_company
+            else None
+        )
+
+    instance = BiometricAttendance.objects.filter(company_id=company).first()
     if not instance:
-        BiometricAttendance.objects.create(is_installed=False)
-        instance = BiometricAttendance.objects.first()
-    is_installed = instance.is_installed
-    return {"is_installed": is_installed}
+        instance = BiometricAttendance.objects.create(
+            is_installed=False, company_id=company
+        )
+    return {"is_installed": instance.is_installed}

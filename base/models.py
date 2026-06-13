@@ -357,6 +357,16 @@ class WorkType(HorillaModel):
                 raise ValidationError("This work type already exists in this company")
         return
 
+    def get_company_name(self):
+        """
+        Returns comma-separated company names for display in list views.
+        Returns 'All Company' when no company is assigned.
+        """
+        companies = self.company_id.all()
+        if companies.exists():
+            return ", ".join(c.company for c in companies)
+        return _("All Company")
+
     def get_update_url(self):
         """
         This method to get update url
@@ -1256,6 +1266,114 @@ class RotatingShiftAssign(HorillaModel):
 
         if self.start_date < timezone.now().date():
             raise ValidationError(_("Date must be greater than or equal to today"))
+
+
+# ---------------------------------------------------------------------------
+# Roster
+# ---------------------------------------------------------------------------
+
+
+class Roster(HorillaModel):
+    """
+    Forward-planning shift roster entry: one employee, one date, one shift.
+    Planners assign shifts in advance; employees see published entries via My Roster.
+    """
+
+    employee = models.ForeignKey(
+        "employee.Employee",
+        on_delete=models.CASCADE,
+        related_name="roster_entries",
+        verbose_name=_("Employee"),
+    )
+    date = models.DateField(verbose_name=_("Date"))
+    shift = models.ForeignKey(
+        "base.EmployeeShift",
+        on_delete=models.PROTECT,
+        null=True,
+        blank=True,
+        related_name="roster_entries",
+        verbose_name=_("Shift"),
+    )
+    department = models.ForeignKey(
+        "base.Department",
+        on_delete=models.CASCADE,
+        related_name="roster_entries",
+        verbose_name=_("Department"),
+    )
+    is_published = models.BooleanField(
+        default=False,
+        verbose_name=_("Published"),
+        help_text=_("Visible to the employee once published."),
+    )
+    is_off = models.BooleanField(
+        default=False,
+        verbose_name=_("Day Off"),
+        help_text=_("Planned weekly rest day."),
+    )
+    notes = models.CharField(
+        max_length=200,
+        blank=True,
+        verbose_name=_("Notes"),
+    )
+    created_by = models.ForeignKey(
+        "employee.Employee",
+        on_delete=models.SET_NULL,
+        null=True,
+        blank=True,
+        related_name="created_roster_entries",
+        verbose_name=_("Created By"),
+    )
+
+    objects = HorillaCompanyManager("employee__employee_work_info__company_id")
+
+    class Meta:
+        verbose_name = _("Roster Entry")
+        verbose_name_plural = _("Roster Entries")
+        unique_together = [("employee", "date")]
+
+    def __str__(self):
+        shift_label = "OFF" if self.is_off else self.shift or "-"
+        return f"{self.employee} — {self.date} — {shift_label}"
+
+
+class RosterPublishLog(models.Model):
+    """
+    Audit trail for each roster publish action.
+    """
+
+    department = models.ForeignKey(
+        "base.Department",
+        on_delete=models.CASCADE,
+        related_name="roster_publish_logs",
+        verbose_name=_("Department"),
+    )
+    from_date = models.DateField(verbose_name=_("From Date"))
+    to_date = models.DateField(verbose_name=_("To Date"))
+    published_by = models.ForeignKey(
+        "employee.Employee",
+        on_delete=models.SET_NULL,
+        null=True,
+        related_name="roster_publishes",
+        verbose_name=_("Published By"),
+    )
+    published_on = models.DateTimeField(
+        auto_now_add=True,
+        verbose_name=_("Published On"),
+    )
+    total_employees = models.IntegerField(
+        default=0,
+        verbose_name=_("Total Employees"),
+    )
+
+    objects = models.Manager()
+
+    class Meta:
+        verbose_name = _("Roster Publish Log")
+        verbose_name_plural = _("Roster Publish Logs")
+        ordering = ["-published_on"]
+
+    def __str__(self):
+        return f"{self.department} — {self.from_date} to {self.to_date}"
 
 
 class BaserequestFile(models.Model):
@@ -2489,11 +2607,22 @@ class BiometricAttendance(models.Model):
         editable=False,
         on_delete=models.PROTECT,
         related_name="biometric_enabled_company",
+        verbose_name=_("Company"),
     )
-    objects = models.Manager()
+    objects = HorillaCompanyManager()
 
     def __str__(self):
         return f"{self.is_installed}"
+
+    def save(self, *args, **kwargs):
+        if (
+            not self.pk
+            and BiometricAttendance.objects.filter(company_id=self.company_id).exists()
+        ):
+            raise ValidationError(
+                _("Only one BiometricAttendance instance is allowed per company.")
+            )
+        return super().save(*args, **kwargs)
 
 
 def default_additional_data():
@@ -2536,6 +2665,13 @@ class TrackLateComeEarlyOut(HorillaModel):
             "By enabling this, you track the late comes and early outs of employees in their attendance."
         ),
     )
+    company_id = models.ForeignKey(
+        Company,
+        null=True,
+        on_delete=models.CASCADE,
+        verbose_name=_("Company"),
+    )
+    objects = HorillaCompanyManager()
 
     class Meta:
         verbose_name = _("Track Late Come Early Out")
@@ -2546,9 +2682,14 @@ class TrackLateComeEarlyOut(HorillaModel):
         return f"Tracking late come early out {tracking}"
 
     def save(self, *args, **kwargs):
-        if not self.pk and TrackLateComeEarlyOut.objects.exists():
+        if (
+            not self.pk
+            and TrackLateComeEarlyOut.objects.filter(
+                company_id=self.company_id
+            ).exists()
+        ):
             raise ValidationError(
-                _("Only one TrackLateComeEarlyOut instance is allowed.")
+                _("Only one TrackLateComeEarlyOut instance is allowed per company.")
             )
         return super().save(*args, **kwargs)
 

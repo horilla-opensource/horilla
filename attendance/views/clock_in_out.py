@@ -297,6 +297,8 @@ def clock_in(request):
                 end_time=end_time_sec,
                 in_datetime=datetime_now,
             )
+            # Refresh employee from DB so template re-evaluates is_clocked_in correctly
+            employee.refresh_from_db()
             return render(
                 request, "attendance/components/in_out_component.html", {"run": 1}
             )
@@ -516,6 +518,8 @@ def clock_out(request):
                         shift=shift,
                     )
 
+        # Refresh employee from DB so template re-evaluates is_clocked_in correctly
+        employee.refresh_from_db()
         return render(
             request, "attendance/components/in_out_component.html", {"run": 1}
         )

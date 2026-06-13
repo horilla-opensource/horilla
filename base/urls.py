@@ -2,7 +2,9 @@ from django.contrib.auth.models import Group
 from django.urls import path, re_path
 from django.utils.translation import gettext_lazy as _
 
-from base import announcement, request_and_approve, views
+from base import announcement
+from base import dashboard as dashboard_module
+from base import ess_dashboard, request_and_approve, views
 from base.cbv import (
     announcement_cbv,
     company,
@@ -19,6 +21,7 @@ from base.cbv import (
     mail_template,
     multiple_approval_condition,
     penalty,
+    roster,
     rotating_shift,
     rotating_shift_assign,
     rotating_work_type,
@@ -63,6 +66,118 @@ from horilla_audit.models import AuditTag
 
 urlpatterns = [
     path("", views.home, name="home-page"),
+    path("dashboard/", dashboard_module.main_dashboard_view, name="dashboard"),
+    path(
+        "dashboard/api/kpi/",
+        dashboard_module.dashboard_kpi_data,
+        name="dashboard-kpi-data",
+    ),
+    path(
+        "dashboard/api/attendance-trend/",
+        dashboard_module.dashboard_attendance_trend,
+        name="dashboard-attendance-trend",
+    ),
+    path(
+        "dashboard/api/leave-breakdown/",
+        dashboard_module.dashboard_leave_breakdown,
+        name="dashboard-leave-breakdown",
+    ),
+    path(
+        "dashboard/api/departments/",
+        dashboard_module.dashboard_department_headcount,
+        name="dashboard-department-headcount",
+    ),
+    path(
+        "dashboard/api/gender/",
+        dashboard_module.dashboard_gender_split,
+        name="dashboard-gender-split",
+    ),
+    path(
+        "dashboard/api/announcements/",
+        dashboard_module.dashboard_announcements,
+        name="dashboard-announcements",
+    ),
+    path(
+        "dashboard/api/announcements/<int:pk>/",
+        dashboard_module.dashboard_announcement_detail,
+        name="dashboard-announcement-detail",
+    ),
+    path(
+        "dashboard/api/todays-leave/",
+        dashboard_module.dashboard_todays_leave,
+        name="dashboard-todays-leave",
+    ),
+    path(
+        "dashboard/api/upcoming-holidays/",
+        dashboard_module.dashboard_upcoming_holidays,
+        name="dashboard-upcoming-holidays",
+    ),
+    path(
+        "dashboard/api/birthdays-anniversaries/",
+        dashboard_module.dashboard_birthdays_anniversaries,
+        name="dashboard-birthdays-anniversaries",
+    ),
+    path(
+        "dashboard/api/recruitment-pipeline/",
+        dashboard_module.dashboard_recruitment_pipeline,
+        name="dashboard-recruitment-pipeline",
+    ),
+    path(
+        "dashboard/api/payroll-summary/",
+        dashboard_module.dashboard_payroll_summary,
+        name="dashboard-payroll-summary",
+    ),
+    path(
+        "dashboard/api/pending-approvals/",
+        dashboard_module.dashboard_pending_approvals,
+        name="dashboard-pending-approvals",
+    ),
+    path(
+        "dashboard/api/turnover/",
+        dashboard_module.dashboard_turnover,
+        name="dashboard-turnover",
+    ),
+    path(
+        "dashboard/save-prefs/",
+        dashboard_module.save_dashboard_prefs,
+        name="dashboard-save-prefs",
+    ),
+    path(
+        "dashboard/load-prefs/",
+        dashboard_module.load_dashboard_prefs,
+        name="dashboard-load-prefs",
+    ),
+    # ── ESS Dashboard ──────────────────────────────────────────────────────────
+    path("ess/", ess_dashboard.ess_dashboard, name="ess-dashboard"),
+    path("ess/api/kpi/", ess_dashboard.ess_kpi_data, name="ess-kpi-data"),
+    path(
+        "ess/api/leave-balance/",
+        ess_dashboard.ess_leave_balance,
+        name="ess-leave-balance",
+    ),
+    path(
+        "ess/api/leave-requests/",
+        ess_dashboard.ess_leave_requests,
+        name="ess-leave-requests",
+    ),
+    path(
+        "ess/api/attendance-calendar/",
+        ess_dashboard.ess_attendance_calendar,
+        name="ess-attendance-calendar",
+    ),
+    path(
+        "ess/api/work-hours-week/",
+        ess_dashboard.ess_work_hours_week,
+        name="ess-work-hours-week",
+    ),
+    path("ess/api/payslips/", ess_dashboard.ess_payslips, name="ess-payslips"),
+    path("ess/api/objectives/", ess_dashboard.ess_objectives, name="ess-objectives"),
+    path(
+        "ess/api/announcements/",
+        ess_dashboard.ess_announcements,
+        name="ess-announcements",
+    ),
+    path("ess/api/upcoming/", ess_dashboard.ess_upcoming, name="ess-upcoming"),
     path(
         "employee/work-type-request-view/",
         work_type_request.WorkRequestView.as_view(),
@@ -214,7 +329,8 @@ urlpatterns = [
     path("send-otp/", views.send_otp, name="send-otp"),
     path("logout/", views.logout_user, name="logout"),
     path("toggle-theme/", views.toggle_theme, name="toggle_theme"),
-    path("settings/", views.common_settings, name="settings"),
+    # path("settings/", views.common_settings, name="settings"),
+    path("settings/", views.SettingsView.as_view(), name="settings"),
     path(
         "settings/user-group-create/", views.user_group_table, name="user-group-create"
     ),
@@ -1715,6 +1831,68 @@ urlpatterns = [
         views.EnableIntegrationsView.as_view(),
         name="enable-integration",
     ),
+    # ── Shift Roster ──────────────────────────────────────────────────────
+    path(
+        "employee/roster/",
+        roster.RosterHomeView.as_view(),
+        name="roster-home",
+    ),
+    path(
+        "roster/nav/",
+        roster.RosterNavView.as_view(),
+        name="roster-nav",
+    ),
+    path(
+        "roster/grid/",
+        roster.RosterGridView.as_view(),
+        name="roster-grid",
+    ),
+    path(
+        "roster/cell/",
+        roster.RosterCellUpdateView.as_view(),
+        name="roster-cell-form",
+    ),
+    path(
+        "roster/cell/update/",
+        roster.RosterCellUpdateView.as_view(),
+        name="roster-cell-update",
+    ),
+    path(
+        "roster/publish/form/",
+        roster.RosterPublishFormView.as_view(),
+        name="roster-publish-form",
+    ),
+    path(
+        "roster/publish/",
+        roster.RosterPublishView.as_view(),
+        name="roster-publish",
+    ),
+    path(
+        "roster/employees/publish/",
+        roster.RosterEmployeeBulkPublishView.as_view(),
+        name="roster-employees-publish",
+    ),
+    path(
+        "roster/my/",
+        roster.MyRosterView.as_view(),
+        name="my-roster",
+    ),
+    path(
+        "roster/import/form/",
+        roster.RosterImportFormView.as_view(),
+        name="roster-import-form",
+    ),
+    path(
+        "roster/import/",
+        roster.RosterImportView.as_view(),
+        name="roster-import",
+    ),
+    path(
+        "roster/import/template/",
+        roster.RosterTemplateDownloadView.as_view(),
+        name="roster-template-download",
+    ),
+    # ── End Shift Roster ──────────────────────────────────────────────────
 ]
 
 urlpatterns.append(

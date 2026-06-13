@@ -2,19 +2,26 @@
 Request and allocation page
 """
 
+from datetime import timedelta
 from typing import Any
 
 from django.contrib import messages
-from django.http import HttpResponse
+from django.http import HttpRequest, HttpResponse
 from django.shortcuts import render
 from django.urls import reverse
+from django.utils import timezone
 from django.utils.decorators import method_decorator
 from django.utils.translation import gettext_lazy as _
 from django.views.decorators.http import require_http_methods
 from django.views.generic.edit import DeleteView
 
-from asset.filters import AssetAllocationFilter, AssetRequestFilter, CustomAssetFilter
-from asset.forms import AssetAllocationForm, AssetRequestForm
+from asset.filters import (
+    AssetAllocationFilter,
+    AssetRenewalFilter,
+    AssetRequestFilter,
+    CustomAssetFilter,
+)
+from asset.forms import AssetAllocationForm, AssetReassignForm, AssetRequestForm
 from asset.models import Asset, AssetAssignment, AssetRequest, ReturnImages
 from base.methods import filtersubordinates
 from employee.models import Employee
@@ -327,7 +334,13 @@ class RequestAndAllocationTab(HorillaTabView):
                                 hx-target="#genericModalBody"
                                 style="cursor: pointer;"
                             """,
-                        }
+                        },
+                        {
+                            "action": _("Asset Renewal"),
+                            "attrs": f"""
+                                href="{reverse('asset-renewal')}"
+                            """,
+                        },
                     ],
                 },
             )
@@ -559,11 +572,15 @@ class AssetAllocationFormView(HorillaFormView):
         form valid function
         """
         if form.is_valid():
-            asset = form.instance.asset_id
-            asset.asset_status = "In use"
-            asset.save()
             message = _("Asset allocated Successfully")
-            form.save()
+            instance = form.save()
+            asset = instance.asset_id
+            active_count = AssetAssignment.objects.filter(
+                asset_id=asset, return_date__isnull=True
+            ).count()
+            if active_count >= asset.quantity:
+                asset.asset_status = "In use"
+                asset.save()
             request = getattr(_thread_locals, "request", None)
             files = request.FILES.getlist("assign_images")
             attachments = []
@@ -598,7 +615,7 @@ class AssetApproveFormView(HorillaFormView):
         req_id = self.kwargs.get("req_id")
         asset_request = AssetRequest.objects.filter(id=req_id).first()
         asset_category = asset_request.asset_category_id
-        assets = asset_category.asset_set.filter(asset_status="Available")
+        assets = Asset.available_assets().filter(asset_category_id=asset_category)
         self.form.fields["asset_id"].queryset = assets
         self.form.fields["assigned_to_employee_id"].initial = (
             asset_request.requested_employee_id
@@ -623,13 +640,14 @@ class AssetApproveFormView(HorillaFormView):
         req_id = self.kwargs.get("req_id")
         asset_request = AssetRequest.objects.filter(id=req_id).first()
         if form.is_valid():
-            asset = form.instance.asset_id.id
-            asset = Asset.objects.filter(id=asset).first()
-            asset.asset_status = "In use"
-            asset.save()
-            # form = form.save(commit=False)
-            # form.assigned_by_employee_id = self.request.user.employee_get
-            form.save()
+            instance = form.save()
+            asset = instance.asset_id
+            active_count = AssetAssignment.objects.filter(
+                asset_id=asset, return_date__isnull=True
+            ).count()
+            if active_count >= asset.quantity:
+                asset.asset_status = "In use"
+                asset.save()
             asset_request.asset_request_status = "Approved"
             asset_request.save()
             request = getattr(_thread_locals, "request", None)
@@ -658,3 +676,121 @@ class AssetApproveFormView(HorillaFormView):
             )
             return self.HttpResponse(targets_to_reload=["#applyFilter"])
         return super().form_valid(form)
+
+
+@method_decorator(login_required, name="dispatch")
+@method_decorator(
+    permission_required(perm="asset.change_assetassignment"), name="dispatch"
+)
+class AssetRenewalView(TemplateView):
+    """
+    Page wrapper for the asset renewal / expiring assignments view.
+    """
+
+    template_name = "cbv/request_and_allocation/asset_renewal.html"
+
+
+@method_decorator(login_required, name="dispatch")
+@method_decorator(
+    permission_required(perm="asset.change_assetassignment"), name="dispatch"
+)
+class AssetRenewalNav(HorillaNavView):
+    """
+    Nav bar for the asset renewal page.
+    """
+
+    nav_title = _("Asset Renewal")
+    search_swap_target = "#listContainer"
+    filter_body_template = "cbv/request_and_allocation/asset_renewal_filter.html"
+    filter_form_context_name = "form"
+    filter_instance = AssetRenewalFilter()
+
+    def __init__(self, **kwargs: Any) -> None:
+        super().__init__(**kwargs)
+        self.search_url = reverse("asset-renewal-list")
+
+
+@method_decorator(login_required, name="dispatch")
+@method_decorator(
+    permission_required(perm="asset.change_assetassignment"), name="dispatch"
+)
+class ExpiringAssignmentList(HorillaListView):
+    """
+    Lists active assignments whose asset expires within 30 days (or is already expired).
+    """
+
+    model = AssetAssignment
+    filter_class = AssetRenewalFilter
+    action_method = "reassign_action"
+    row_attrs = ""
+
+    columns = [
+        (
+            _("Employee"),
+            "assigned_to_employee_id",
+            "assigned_to_employee_id__get_avatar",
+        ),
+        (_("Asset"), "asset_id__asset_name_display"),
+        (_("Category"), "asset_id__asset_category_id"),
+        (_("Expiry Date"), "asset_id__expiry_date"),
+        (_("Days Left"), "days_left_display"),
+    ]
+
+    bulk_update_fields = ["asset_id"]
+
+    def __init__(self, **kwargs: Any) -> None:
+        super().__init__(**kwargs)
+        self.search_url = reverse("asset-renewal-list")
+
+    def get_queryset(self):
+        queryset = super().get_queryset()
+        today = timezone.now().date()
+        threshold = today + timedelta(days=30)
+        queryset = queryset.filter(
+            return_date__isnull=True,
+            asset_id__expiry_date__isnull=False,
+            asset_id__expiry_date__lte=threshold,
+        ).order_by("asset_id__expiry_date")
+        return queryset
+
+
+@method_decorator(login_required, name="dispatch")
+@method_decorator(
+    permission_required(perm="asset.change_assetassignment"), name="dispatch"
+)
+class AssetReassignFormView(HorillaFormView):
+    """
+    Modal form to swap the asset on an existing assignment to a replacement.
+    """
+
+    model = AssetAssignment
+    form_class = AssetReassignForm
+    template_name = "cbv/request_and_allocation/forms/reassign_form.html"
+    new_display_title = _("Reassign Asset")
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context["assignment"] = AssetAssignment.objects.get(pk=self.kwargs["pk"])
+        return context
+
+    def form_valid(self, form):
+        old_asset = AssetAssignment.objects.get(pk=self.kwargs["pk"]).asset_id
+        instance = form.save()
+        new_asset = instance.asset_id
+
+        old_active = AssetAssignment.objects.filter(
+            asset_id=old_asset, return_date__isnull=True
+        ).count()
+        if old_active < old_asset.quantity and not old_asset.is_expired:
+            old_asset.asset_status = "Available"
+            old_asset.save()
+
+        new_active = AssetAssignment.objects.filter(
+            asset_id=new_asset, return_date__isnull=True
+        ).count()
+        if new_active >= new_asset.quantity:
+            new_asset.asset_status = "In use"
+            new_asset.save()
+
+        messages.success(self.request, _("Asset reassigned successfully."))
+        return self.HttpResponse(targets_to_reload=["#listContainer"])

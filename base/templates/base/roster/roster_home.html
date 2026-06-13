@@ -1,0 +1,17 @@
+{% extends "index.html" %}
+{% load i18n %}
+{% block content %}
+{% include "generic/components.html" %}
+
+<div hx-get="{% url 'roster-nav' %}?{{ request.GET.urlencode }}"
+     hx-trigger="load"
+     hx-target="this"
+     hx-swap="outerHTML">
+</div>
+<div id="rosterEmployeeInstances" data-ids="[]" hidden></div>
+
+<div class="oh-wrapper mt-3" id="rosterGridContainer">
+  <div class="animated-background"></div>
+</div>
+
+{% endblock %}

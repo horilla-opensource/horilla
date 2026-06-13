@@ -24,31 +24,266 @@
       enctype="multipart/form-data"
     >
       {% csrf_token %}
-
       <div class="oh-onboarding-card__address-group">
         <h2 class="oh-onboarding-card__section-title">{{ title }}</h2>
 
         <div class="row">
-          {% for field in form %}
-            <div class="col-sm-12 col-md-12 col-lg-6">
-              <div class="oh-input-group">
-                <label class="oh-label" for="{{ field.id_for_label }}">{{ field.label }}</label>
-                {{ field }}
-                {{ field.errors }}
+          {# ── Basic info ────────────────────────────────── #}
+          <div class="col-sm-12 col-md-12">
+            <div class="oh-input-group">
+              <label class="oh-label" for="{{ form.name.id_for_label }}">{{ form.name.label }}</label>
+              {{ form.name }}
+              {{ form.name.errors }}
+            </div>
+          </div>
+
+          <div class="col-sm-12 col-md-6">
+            <div class="oh-input-group">
+              <label class="oh-label">{{ form.icon.label }}</label>
+              {{ form.icon }}
+              {{ form.icon.errors }}
+            </div>
+          </div>
+
+          <div class="col-sm-12 col-md-6">
+            <div class="oh-input-group">
+              <label class="oh-label">{{ form.color.label }}</label>
+              {{ form.color }}
+              {{ form.color.errors }}
+            </div>
+          </div>
+
+          {# ── Payment ───────────────────────────────────── #}
+          <div class="col-sm-12 col-md-12">
+            <div class="oh-input-group">
+              <label class="oh-label" for="{{ form.payment_type.id_for_label }}">{{ form.payment_type.label }}</label>
+              {{ form.payment_type }}
+              {{ form.payment_type.errors }}
+            </div>
+          </div>
+
+          <div class="col-sm-12 col-md-12" id="frag-paymentPercentageContainer" style="display:none;">
+            <div class="oh-input-group">
+              <label class="oh-label" for="{{ form.payment_percentage.id_for_label }}">{{ form.payment_percentage.label }}</label>
+              {{ form.payment_percentage }}
+              {{ form.payment_percentage.errors }}
+            </div>
+          </div>
+
+          {# ── Leave count ───────────────────────────────── #}
+          <div class="col-sm-12 col-md-6">
+            <div class="oh-input-group oh-label__info justify-content-between">
+              <div class="d-flex align-items-center">
+                <label class="oh-label" for="{{ form.limit_leave.id_for_label }}">{{ form.limit_leave.label }}</label>
+                <span class="oh-info me-3" title="{% trans 'Limit the total number of leave days for this type' %}"></span>
+              </div>
+              <div class="oh-switch p-3">
+                {{ form.limit_leave }}
+                {{ form.limit_leave.errors }}
               </div>
             </div>
-          {% endfor %}
+          </div>
+
+          <div class="col-sm-12 col-md-12 frag-totalDaysContainer">
+            <div class="oh-input-group">
+              <label class="oh-label">{% trans "Total Days" %}</label>
+              {{ form.count }}
+              {{ form.count.errors }}
+            </div>
+          </div>
+
+          {# ── Reset ─────────────────────────────────────── #}
+          <div class="col-sm-12 col-md-6 frag-resetContainer">
+            <div class="oh-input-group oh-label__info justify-content-between">
+              <div class="d-flex align-items-center">
+                <label class="oh-label" for="{{ form.reset.id_for_label }}">{{ form.reset.label }}</label>
+                <span class="oh-info me-3" title="{% trans 'Reset leave balance on a schedule' %}"></span>
+              </div>
+              <div class="oh-switch p-3">
+                {{ form.reset }}
+                {{ form.reset.errors }}
+              </div>
+            </div>
+          </div>
+
+          <div class="col-sm-12 col-md-12">
+            <div class="oh-input-group oh-label__info">
+              <label class="oh-label" for="{{ form.reset_based.id_for_label }}">{{ form.reset_based.label }}</label>
+            </div>
+            {{ form.reset_based }}
+            {{ form.reset_based.errors }}
+          </div>
+
+          <div class="col-sm-12 col-md-12">
+            <div class="oh-input-group">
+              <label class="oh-label" for="{{ form.reset_month.id_for_label }}">{{ form.reset_month.label }}</label>
+              {{ form.reset_month }}
+              {{ form.reset_month.errors }}
+            </div>
+          </div>
+
+          <div class="col-sm-12 col-md-12">
+            <div class="oh-input-group">
+              <label class="oh-label" for="{{ form.reset_day.id_for_label }}">{{ form.reset_day.label }}</label>
+              {{ form.reset_day }}
+              {{ form.reset_day.errors }}
+            </div>
+          </div>
+
+          <div class="col-sm-12 col-md-12">
+            <div class="oh-input-group">
+              <label class="oh-label" for="{{ form.reset_weekend.id_for_label }}">{{ form.reset_weekend.label }}</label>
+              {{ form.reset_weekend }}
+              {{ form.reset_weekend.errors }}
+            </div>
+          </div>
+
+          {# ── Carry-forward ─────────────────────────────── #}
+          <div class="col-sm-12 col-md-12">
+            <div class="oh-input-group oh-label__info">
+              <label class="oh-label">{{ form.carryforward_type.label }}</label>
+              <span class="oh-info me-3" title="{% trans 'How unused leave is carried forward' %}"></span>
+            </div>
+            {{ form.carryforward_type }}
+            {{ form.carryforward_type.errors }}
+          </div>
+
+          <div class="col-sm-12 col-md-12">
+            <div class="oh-input-group oh-label__info">
+              <label class="oh-label">{{ form.carryforward_max.label }}</label>
+            </div>
+            {{ form.carryforward_max }}
+            {{ form.carryforward_max.errors }}
+          </div>
+
+          <div class="col-sm-12 col-md-12">
+            <div class="oh-input-group">
+              <label class="oh-label">{{ form.carryforward_expire_in.label }}</label>
+              {{ form.carryforward_expire_in }}
+              {{ form.carryforward_expire_in.errors }}
+            </div>
+          </div>
+
+          <div class="col-sm-12 col-md-12">
+            <div class="oh-input-group">
+              <label class="oh-label">{{ form.carryforward_expire_period.label }}</label>
+              {{ form.carryforward_expire_period }}
+              {{ form.carryforward_expire_period.errors }}
+            </div>
+          </div>
+
+          <div class="col-sm-12 col-md-12">
+            <div class="oh-input-group oh-label__info">
+              <label class="oh-label">{{ form.carryforward_expire_date.label }}</label>
+            </div>
+            {{ form.carryforward_expire_date }}
+            {{ form.carryforward_expire_date.errors }}
+          </div>
+
+          {# ── Approval / attachment / exclusions ────────── #}
+          <div class="col-sm-12 col-md-6">
+            <div class="oh-input-group oh-label__info justify-content-between">
+              <div class="d-flex align-items-center">
+                <label class="oh-label">{{ form.require_approval.label }}</label>
+                <span class="oh-info me-3" title="{% trans 'Require manager approval for leave requests' %}"></span>
+              </div>
+              <div class="oh-switch p-3">
+                <input type="checkbox" class="oh-switch__checkbox frag-yesOrNo" id="frag_id_approval"
+                  {% if form.instance.require_approval == "yes" or not form.instance.pk %}checked{% endif %}>
+                <div hidden>{{ form.require_approval }}</div>
+              </div>
+            </div>
+          </div>
+
+          <div class="col-sm-12 col-md-6">
+            <div class="oh-input-group oh-label__info justify-content-between">
+              <div class="d-flex align-items-center">
+                <label class="oh-label">{{ form.require_attachment.label }}</label>
+                <span class="oh-info me-3" title="{% trans 'Require a document attachment for leave requests' %}"></span>
+              </div>
+              <div class="oh-switch p-3">
+                <input type="checkbox" class="oh-switch__checkbox frag-yesOrNo" id="frag_id_attachment"
+                  {% if form.instance.require_attachment == "yes" %}checked{% endif %}>
+                <div hidden>{{ form.require_attachment }}</div>
+              </div>
+            </div>
+          </div>
+
+          <div class="col-sm-12 col-md-6">
+            <div class="oh-input-group oh-label__info justify-content-between">
+              <div class="d-flex align-items-center">
+                <label class="oh-label">{{ form.exclude_company_leave.label }}</label>
+                <span class="oh-info me-3" title="{% trans 'Exclude company holidays from requested days' %}"></span>
+              </div>
+              <div class="oh-switch p-3">
+                <input type="checkbox" class="oh-switch__checkbox frag-yesOrNo" id="frag_id_exclude_comp"
+                  {% if form.instance.exclude_company_leave == "yes" %}checked{% endif %}>
+                <div hidden>{{ form.exclude_company_leave }}</div>
+              </div>
+            </div>
+          </div>
+
+          <div class="col-sm-12 col-md-6">
+            <div class="oh-input-group oh-label__info justify-content-between">
+              <div class="d-flex align-items-center">
+                <label class="oh-label">{{ form.exclude_holiday.label }}</label>
+                <span class="oh-info me-3" title="{% trans 'Exclude public holidays from requested days' %}"></span>
+              </div>
+              <div class="oh-switch p-3">
+                <input type="checkbox" class="oh-switch__checkbox frag-yesOrNo" id="frag_id_exclude_hol"
+                  {% if form.instance.exclude_holiday == "yes" %}checked{% endif %}>
+                <div hidden>{{ form.exclude_holiday }}</div>
+              </div>
+            </div>
+          </div>
+
+          <div class="col-sm-12 col-md-6">
+            <div class="oh-input-group oh-label__info justify-content-between">
+              <div class="d-flex align-items-center">
+                <label class="oh-label">{{ form.is_encashable.label }}</label>
+                <span class="oh-info me-3" title="{% trans 'Allow encashment of pending leave days' %}"></span>
+              </div>
+              <div class="oh-switch p-3">
+                {{ form.is_encashable }}
+                {{ form.is_encashable.errors }}
+              </div>
+            </div>
+          </div>
+
+          {# ── Hidden fields ─────────────────────────────── #}
+          {{ form.period_in }}
+          {{ form.total_days }}
+          <div hidden>{{ form.payment }}</div>
         </div>
 
-        <div class="d-flex justify-content-between mt-3">
+        {# ── Conditions panel ──────────────────────────── #}
+        {% if form.instance.pk %}
+        <div class="mt-4 pt-3" style="border-top: 1px solid hsl(213deg,22%,90%);">
+          <div hx-get="{% url 'leave-type-condition-create' form.instance.pk %}"
+               hx-trigger="load"
+               hx-target="#leaveTypeConditionsPanel"
+               hx-swap="outerHTML">
+            <div id="leaveTypeConditionsPanel">
+              <p class="text-muted small">{% trans "Loading conditions…" %}</p>
+            </div>
+          </div>
+        </div>
+        {% else %}
+        <div class="mt-4 pt-3" style="border-top: 1px solid hsl(213deg,22%,90%);">
+          <div class="oh-input-group oh-label__info">
+            <span class="oh-info me-2" title="{% trans 'Eligibility conditions' %}"></span>
+            <p class="oh-label mb-0 text-muted" style="font-size:0.85rem;">
+              {% trans "Eligibility conditions can be configured after saving the leave type." %}
+            </p>
+          </div>
+        </div>
+        {% endif %}
+
+        <div class="d-flex justify-content-between mt-4">
           {% if is_htmx %}
-            <button
-              type="button"
-              class="oh-btn oh-btn--light-bkg"
+            <button type="button" class="oh-btn oh-btn--light-bkg"
               hx-get="{% url 'leave-type-list' %}?{{ request.GET.urlencode }}"
-              hx-target="#listContainer"
-              hx-swap="innerHTML"
-            >
+              hx-target="#listContainer" hx-swap="innerHTML">
               {% trans "Back" %}
             </button>
           {% else %}
@@ -62,3 +297,125 @@
     </form>
   </div>
 </div>
+
+<script>
+(function () {
+  // All variables declared upfront so every function can reference them safely
+  var payType    = document.querySelector("#id_payment_type");
+  var pctCont    = document.querySelector("#frag-paymentPercentageContainer");
+  var pctField   = document.querySelector("#id_payment_percentage");
+  var limitLeave = document.querySelector("#id_limit_leave");
+  var resetChk   = document.querySelector("#id_reset");
+  var resetBased = document.querySelector("#id_reset_based");
+  var resetMonth = document.querySelector("#id_reset_month");
+  var resetDay   = document.querySelector("#id_reset_day");
+  var resetWeek  = document.querySelector("#id_reset_weekend");
+  var cfType     = document.querySelector("#id_carryforward_type");
+  var cfMax      = document.querySelector("#id_carryforward_max");
+  var cfExpIn    = document.querySelector("#id_carryforward_expire_in");
+  var cfExpPer   = document.querySelector("#id_carryforward_expire_period");
+  var cfExpDate  = document.querySelector("#id_carryforward_expire_date");
+
+  function hideCol(el) { if (el) { el.closest(".col-sm-12").style.display = "none"; el.required = false; } }
+  function showCol(el) { if (el) { el.closest(".col-sm-12").style.display = ""; } }
+
+  function syncPayment() {
+    if (!payType || !pctCont) return;
+    var isCustom = payType.value === "custom";
+    pctCont.style.display = isCustom ? "" : "none";
+    if (pctField) pctField.required = isCustom;
+  }
+
+  function syncCF() {
+    if (!cfType) return;
+    var v      = cfType.value;
+    var hasCF  = (v === "carryforward" || v === "carryforward expire");
+    var hasExp = (v === "carryforward expire");
+    if (cfMax) cfMax.closest(".col-sm-12").style.display = hasCF  ? "" : "none";
+    [cfExpIn, cfExpPer, cfExpDate].forEach(function (el) {
+      if (el) el.closest(".col-sm-12").style.display = hasExp ? "" : "none";
+    });
+  }
+
+  function syncResetBased() {
+    if (!resetBased) return;
+    var v = resetBased.value;
+    if      (v === "yearly")  { showCol(resetMonth); showCol(resetDay); hideCol(resetWeek); }
+    else if (v === "monthly") { hideCol(resetMonth); showCol(resetDay); hideCol(resetWeek); }
+    else if (v === "weekly")  { hideCol(resetMonth); hideCol(resetDay); showCol(resetWeek); }
+    else                      { hideCol(resetMonth); hideCol(resetDay); hideCol(resetWeek); }
+  }
+
+  // syncReset also controls carryforward_type visibility
+  function syncReset() {
+    if (!resetChk) return;
+    if (resetChk.checked) {
+      showCol(resetBased);
+      if (cfType) cfType.closest(".col-sm-12").style.display = "";
+      syncResetBased();
+      syncCF();
+    } else {
+      hideCol(resetBased); hideCol(resetMonth); hideCol(resetDay); hideCol(resetWeek);
+      [cfType, cfMax, cfExpIn, cfExpPer, cfExpDate].forEach(function (el) {
+        if (el) el.closest(".col-sm-12").style.display = "none";
+      });
+    }
+  }
+
+  // syncLimitLeave cascades down to syncReset and syncCF
+  function syncLimitLeave() {
+    if (!limitLeave) return;
+    var show = limitLeave.checked;
+    document.querySelectorAll(".frag-totalDaysContainer, .frag-resetContainer").forEach(function (el) {
+      el.style.display = show ? "" : "none";
+    });
+    if (show) {
+      syncReset();
+    } else {
+      [resetBased, resetMonth, resetDay, resetWeek, cfType, cfMax, cfExpIn, cfExpPer, cfExpDate].forEach(hideCol);
+    }
+  }
+
+  function syncYesNo() {
+    [
+      ["frag_id_approval",     "id_require_approval"],
+      ["frag_id_attachment",   "id_require_attachment"],
+      ["frag_id_exclude_comp", "id_exclude_company_leave"],
+      ["frag_id_exclude_hol",  "id_exclude_holiday"],
+    ].forEach(function (pair) {
+      var chk = document.querySelector("#" + pair[0]);
+      var sel = document.querySelector("#" + pair[1]);
+      if (chk && sel) sel.value = chk.checked ? "yes" : "no";
+    });
+  }
+
+  function calcTotalDays() {
+    var unit  = (document.querySelector("#id_period_in") || {}).value;
+    var count = parseFloat((document.querySelector("#id_count") || {}).value) || 0;
+    var td    = document.querySelector("#id_total_days");
+    if (td) td.value = unit === "day" ? count : unit === "month" ? count * 30 : count * 365;
+  }
+
+  if (payType) payType.addEventListener("change", function () {
+    syncPayment();
+    var lf = document.querySelector("#id_payment");
+    if (lf) lf.value = payType.value === "paid" ? "paid" : "unpaid";
+  });
+  if (cfType)     cfType.addEventListener("change", syncCF);
+  if (resetChk)   resetChk.addEventListener("change", syncReset);
+  if (resetBased) resetBased.addEventListener("change", syncResetBased);
+  if (limitLeave) limitLeave.addEventListener("change", syncLimitLeave);
+  document.querySelectorAll(".frag-yesOrNo").forEach(function (el) {
+    el.addEventListener("change", syncYesNo);
+  });
+  ["#id_period_in", "#id_count"].forEach(function (s) {
+    var el = document.querySelector(s);
+    if (el) el.addEventListener("change", calcTotalDays);
+  });
+
+  // Single cascade from limitLeave initialises everything
+  syncPayment();
+  syncLimitLeave();
+  syncYesNo();
+})();
+</script>

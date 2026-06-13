@@ -3170,8 +3170,13 @@ def candidate_self_tracking(request):
     """
     This method is used to update the recruitment general setting
     """
-    settings = RecruitmentGeneralSetting.objects.first()
-    settings = settings if settings else RecruitmentGeneralSetting()
+    selected_company = request.session.get("selected_company")
+    company_id = (
+        None if not selected_company or selected_company == "all" else selected_company
+    )
+    settings, created = RecruitmentGeneralSetting.objects.get_or_create(
+        company_id_id=company_id
+    )
     if request.GET.get("candidate_self_tracking") == "true":
         settings.candidate_self_tracking = True
         message = _("Application Tracking is enabled ")
@@ -3190,8 +3195,13 @@ def candidate_self_tracking_rating_option(request):
     """
     This method is used to enable/disable the selt tracking rating field
     """
-    settings = RecruitmentGeneralSetting.objects.first()
-    settings = settings if settings else RecruitmentGeneralSetting()
+    selected_company = request.session.get("selected_company")
+    company_id = (
+        None if not selected_company or selected_company == "all" else selected_company
+    )
+    settings, created = RecruitmentGeneralSetting.objects.get_or_create(
+        company_id_id=company_id
+    )
     if request.GET.get("candidate_self_tracking") == "true":
         settings.show_overall_rating = True
         message = _("Rating visibility is enabled ")
@@ -3200,7 +3210,6 @@ def candidate_self_tracking_rating_option(request):
         message = _("Rating visibility is disabled ")
     settings.save()
     messages.success(request, message)
-    settings.save()
     return HttpResponse("<script>$('#reloadMessagesButton').click()</script>")
 
 

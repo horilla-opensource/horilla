@@ -6,13 +6,20 @@ This module is used to register url mappings to functions
 
 from django.apps import apps
 from django.urls import path
+from django.views.generic import RedirectView
 
 from horilla_views.cbv_methods import check_feature_enabled
+from offboarding import dashboard as ob_dashboard
 from offboarding import views
 from offboarding.cbv import exit_process, resignation, resignation_tab
 from offboarding.models import OffboardingGeneralSetting
 
 urlpatterns = [
+    path(
+        "",
+        RedirectView.as_view(pattern_name="offboarding-dashboard", permanent=False),
+        name="offboarding-root",
+    ),
     path(
         "individual-resignation-tab-list/<int:pk>/",
         resignation_tab.ResignationTabView.as_view(),
@@ -249,11 +256,6 @@ urlpatterns = [
         name="offboarding-pipeline-filter",
     ),
     path(
-        "dashboard/",
-        views.offboarding_dashboard,
-        name="offboarding-dashboard",
-    ),
-    path(
         "dashboard-task-table/",
         views.dashboard_task_table,
         name="dashboard-task-table",
@@ -272,6 +274,62 @@ urlpatterns = [
         "list-dashboard-task-status/",
         exit_process.DashboardTaskListview.as_view(),
         name="list-dashboard-task-status",
+    ),
+    # ── Offboarding Modern Dashboard ─────────────────────────────────────────
+    path(
+        "dashboard/",
+        ob_dashboard.offboarding_dashboard_view,
+        name="offboarding-dashboard",
+    ),
+    path(
+        "dashboard/api/kpi/",
+        ob_dashboard.offboarding_kpi_data,
+        name="offboarding-dashboard-kpi",
+    ),
+    path(
+        "dashboard/api/pipeline/",
+        ob_dashboard.offboarding_pipeline,
+        name="offboarding-dashboard-pipeline",
+    ),
+    path(
+        "dashboard/api/resignation/",
+        ob_dashboard.offboarding_resignation_status,
+        name="offboarding-dashboard-resignation",
+    ),
+    path(
+        "dashboard/api/tasks/",
+        ob_dashboard.offboarding_task_status,
+        name="offboarding-dashboard-tasks",
+    ),
+    path(
+        "dashboard/api/department/",
+        ob_dashboard.offboarding_department_attrition,
+        name="offboarding-dashboard-dept",
+    ),
+    path(
+        "dashboard/api/exit-reasons/",
+        ob_dashboard.offboarding_exit_reasons,
+        name="offboarding-dashboard-reasons",
+    ),
+    path(
+        "dashboard/api/notice/",
+        ob_dashboard.offboarding_notice_period_tracker,
+        name="offboarding-dashboard-notice",
+    ),
+    path(
+        "dashboard/api/assets/",
+        ob_dashboard.offboarding_unreturned_assets,
+        name="offboarding-dashboard-assets",
+    ),
+    path(
+        "dashboard/api/join-exit/",
+        ob_dashboard.offboarding_joining_vs_exiting,
+        name="offboarding-dashboard-join-exit",
+    ),
+    path(
+        "dashboard/api/avg-duration/",
+        ob_dashboard.offboarding_avg_duration,
+        name="offboarding-dashboard-avg-duration",
     ),
 ]
 

@@ -406,6 +406,16 @@ class OnboardingCandidateFilter(FilterSet):
         field_name="candidate_id__candidate_task__onboarding_task_id",
         queryset=OnboardingTask.objects.all(),
     )
+    onboarding_end_date__gte = django_filters.DateFilter(
+        field_name="onboarding_end_date",
+        lookup_expr="gte",
+        widget=forms.DateInput(attrs={"type": "date"}),
+    )
+    onboarding_end_date__lte = django_filters.DateFilter(
+        field_name="onboarding_end_date",
+        lookup_expr="lte",
+        widget=forms.DateInput(attrs={"type": "date"}),
+    )
 
     class Meta:
         model = CandidateStage

@@ -36,6 +36,7 @@ urlpatterns = [
     path("", include("base.urls")),
     path("", include("horilla_automations.urls")),
     path("", include("horilla_views.urls")),
+    path("", include("horilla_audit.urls")),
     path("employee/", include("employee.urls")),
     path("horilla-widget/", include("horilla_widgets.urls")),
     re_path(

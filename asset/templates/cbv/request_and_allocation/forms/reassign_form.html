@@ -1,0 +1,39 @@
+{% load i18n %}
+
+<div class="oh-modal__dialog-header">
+    <span class="oh-modal__dialog-title text-md font-semibold">{% trans "Reassign Asset" %}</span>
+    <button class="oh-modal__close" aria-label="Close">
+        <ion-icon name="close-outline"></ion-icon>
+    </button>
+</div>
+
+<div class="oh-modal__dialog-body">
+    <div class="row mb-3">
+        <div class="col-12 col-md-6">
+            <label class="oh-label">{% trans "Employee" %}</label>
+            <p class="text-sm text-left p-3 text-[#666]">{{ assignment.assigned_to_employee_id.get_full_name }}</p>
+        </div>
+        <div class="col-12 col-md-6">
+            <label class="oh-label">{% trans "Current Asset" %}</label>
+            <p class="text-sm text-left p-3 text-[#666]">{{ assignment.asset_id.asset_name }}</p>
+        </div>
+    </div>
+
+    <form hx-post="{% url 'asset-reassign' pk=assignment.pk %}"
+          hx-target="#genericModalBody"
+          method="post">
+        {% csrf_token %}
+        <div class="oh-input-group mb-3">
+            <label class="oh-label">{{ form.asset_id.label }}</label>
+            {{ form.asset_id }}
+            {% if form.asset_id.errors %}
+                <span class="oh-input__error-text">{{ form.asset_id.errors.0 }}</span>
+            {% endif %}
+        </div>
+        <div class="d-flex justify-content-end gap-2 mt-3">
+            <button type="submit" class="oh-btn oh-btn--secondary">
+                {% trans "Reassign" %}
+            </button>
+        </div>
+    </form>
+</div>

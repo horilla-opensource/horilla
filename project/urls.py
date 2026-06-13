@@ -1,14 +1,47 @@
 from django.urls import path
 
+from project import dashboard as proj_dashboard
 from project.cbv import dashboard, project_stage, projects, tasks, timesheet
 from project.models import Project
 
 from . import views
 
 urlpatterns = [
-    # Dashboard
+    # Dashboard (modern)
     path(
-        "project-dashboard-view/", views.dashboard_view, name="project-dashboard-view"
+        "dashboard/",
+        proj_dashboard.project_dashboard_view,
+        name="project-dashboard-view",
+    ),
+    path(
+        "dashboard/api/kpi/",
+        proj_dashboard.project_kpi_data,
+        name="project-dashboard-kpi",
+    ),
+    path(
+        "dashboard/api/status/",
+        proj_dashboard.project_status_distribution,
+        name="project-dashboard-status",
+    ),
+    path(
+        "dashboard/api/tasks/",
+        proj_dashboard.project_task_status,
+        name="project-dashboard-tasks",
+    ),
+    path(
+        "dashboard/api/trend/",
+        proj_dashboard.project_monthly_trend,
+        name="project-dashboard-trend",
+    ),
+    path(
+        "dashboard/api/deadlines/",
+        proj_dashboard.project_upcoming_deadlines,
+        name="project-dashboard-deadlines",
+    ),
+    path(
+        "dashboard/api/top/",
+        proj_dashboard.project_top_active,
+        name="project-dashboard-top",
     ),
     path(
         "projects-due-in-this-month/",

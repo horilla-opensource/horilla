@@ -122,6 +122,23 @@ TIME_PERIOD = [("day", _("Day")), ("month", _("Month")), ("year", _("Year"))]
 
 PAYMENT = [("paid", _("Paid")), ("unpaid", _("Unpaid"))]
 
+PAYMENT_TYPE = [
+    ("paid", _("Paid")),
+    ("unpaid", _("Unpaid")),
+    ("custom", _("Custom")),
+]
+
+LEAVE_CONDITION_TYPE = [
+    ("gender", _("Gender")),
+    ("once_per_employment", _("Once Per Employment")),
+    ("marital_status", _("Marital Status")),
+    ("nationality", _("Nationality")),
+    ("department", _("Department")),
+    ("employment_type", _("Employment Type")),
+    ("grade", _("Grade")),
+    ("service_duration", _("Service Duration")),
+]
+
 CARRYFORWARD_TYPE = [
     ("no carryforward", _("No Carry Forward")),
     ("carryforward", _("Carry Forward")),
@@ -162,6 +179,55 @@ WEEK_DAYS = [
     ("5", _("Saturday")),
     ("6", _("Sunday")),
 ]
+
+
+class LeaveTypeCondition(HorillaModel):
+    """
+    Configurable conditions that restrict leave type assignment to eligible employees.
+    Mirrors the allowance condition pattern for consistency.
+    """
+
+    condition_type = models.CharField(
+        max_length=50,
+        choices=LEAVE_CONDITION_TYPE,
+        verbose_name=_("Condition Type"),
+    )
+    value = models.CharField(
+        max_length=255,
+        null=True,
+        blank=True,
+        verbose_name=_("Value"),
+        help_text=_("Required for value-based conditions such as gender"),
+    )
+
+    objects = models.Manager()
+
+    class Meta:
+        ordering = ["-id"]
+        verbose_name = _("Leave Type Condition")
+        verbose_name_plural = _("Leave Type Conditions")
+
+    def __str__(self):
+        label = dict(LEAVE_CONDITION_TYPE).get(self.condition_type, self.condition_type)
+        if self.value:
+            return f"{label}: {self.value}"
+        return str(label)
+
+    def clean(self):
+        super().clean()
+        value_required_types = {
+            "gender",
+            "marital_status",
+            "nationality",
+            "department",
+            "employment_type",
+            "grade",
+            "service_duration",
+        }
+        if self.condition_type in value_required_types and not self.value:
+            raise ValidationError(
+                {"value": _("A value is required for the selected condition type.")}
+            )
 
 
 class LeaveType(HorillaModel):
@@ -250,6 +316,34 @@ class LeaveType(HorillaModel):
     company_id = models.ForeignKey(
         Company, null=True, blank=True, on_delete=models.PROTECT
     )
+    payment_type = models.CharField(
+        max_length=20,
+        choices=PAYMENT_TYPE,
+        null=True,
+        blank=True,
+        verbose_name=_("Payment Type"),
+        help_text=_(
+            "Specifies how leave days are paid: fully, half, unpaid, or custom percentage"
+        ),
+    )
+    payment_percentage = models.DecimalField(
+        max_digits=5,
+        decimal_places=2,
+        null=True,
+        blank=True,
+        verbose_name=_("Payment Percentage"),
+        help_text=_(
+            "Percentage of salary paid during leave (0–100). Used only when Payment Type is Custom."
+        ),
+    )
+    conditions = models.ManyToManyField(
+        LeaveTypeCondition,
+        blank=True,
+        verbose_name=_("Conditions"),
+        help_text=_(
+            "Eligibility conditions evaluated before assigning this leave type to an employee"
+        ),
+    )
     objects = HorillaCompanyManager(related_company_field="company_id")
 
     class Meta:
@@ -322,18 +416,6 @@ class LeaveType(HorillaModel):
             expired_date = assigned_date + relativedelta(years=period)
 
         return expired_date
-
-    def clean(self, *args, **kwargs):
-        super().clean(self)
-        if self.is_compensatory_leave:
-            if (
-                LeaveType.objects.filter(is_compensatory_leave=True)
-                .exclude(pk=self.pk)
-                .exists()
-            ):
-                raise ValidationError(
-                    {"name": _("Compensatory Leave Request already exists.")}
-                )
 
     def save(self, *args, **kwargs):
         request = getattr(horilla_middlewares._thread_locals, "request", None)
@@ -446,10 +528,17 @@ class LeaveType(HorillaModel):
         return url
 
     def encashable(self):
-        """
-        encashable condition
-        """
         return _("Yes") if self.is_encashable else _("No")
+
+    def approval_display(self):
+        yes = str(_("Yes"))
+        no = str(_("No"))
+        if self.require_approval == "yes":
+            return f'<span class="oh-badge oh-badge--info">{yes}</span>'
+        return f'<span class="oh-badge oh-badge--secondary">{no}</span>'
+
+    def carryforward_display(self):
+        return dict(CARRYFORWARD_TYPE).get(self.carryforward_type, "—")
 
     def detail_view_actions(self):
         """
@@ -458,6 +547,69 @@ class LeaveType(HorillaModel):
         return render_template(
             path="cbv/leave_types/detail_actions.html", context={"instance": self}
         )
+
+    def get_payment_percentage(self):
+        """
+        Returns the effective payment percentage (0–100) based on payment_type.
+        Falls back to legacy payment field for backward compatibility.
+        """
+        if self.payment_type:
+            mapping = {"paid": 100.0, "unpaid": 0.0}
+            if self.payment_type == "custom":
+                return float(self.payment_percentage or 0)
+            return mapping.get(self.payment_type, 0.0)
+        # backward-compat: legacy paid/unpaid values
+        return 100.0 if self.payment == "paid" else 0.0
+
+    def payment_type_display(self):
+        """
+        Human-readable payment description including percentage.
+        """
+        if self.payment_type:
+            label = dict(PAYMENT_TYPE).get(self.payment_type, self.payment_type)
+            pct = self.get_payment_percentage()
+            return f"{label} ({pct:.0f}%)"
+        return dict(PAYMENT).get(self.payment, self.payment)
+
+    def conditions_display(self):
+        """
+        Renders configured conditions as a template column for the detail view.
+        """
+        return render_template(
+            path="cbv/leave_types/conditions_display.html",
+            context={"instance": self},
+        )
+
+    def clean(self, *args, **kwargs):
+        super().clean(self)
+        if self.is_compensatory_leave:
+            if (
+                LeaveType.objects.filter(is_compensatory_leave=True)
+                .exclude(pk=self.pk)
+                .exists()
+            ):
+                raise ValidationError(
+                    {"name": _("Compensatory Leave Request already exists.")}
+                )
+        if self.payment_type == "custom":
+            if self.payment_percentage is None:
+                raise ValidationError(
+                    {
+                        "payment_percentage": _(
+                            "Payment percentage is required for Custom payment type."
+                        )
+                    }
+                )
+            if not (0 <= self.payment_percentage <= 100):
+                raise ValidationError(
+                    {
+                        "payment_percentage": _(
+                            "Payment percentage must be between 0 and 100."
+                        )
+                    }
+                )
+        elif self.payment_type and self.payment_type != "custom":
+            self.payment_percentage = None
 
 
 class Holiday(HorillaModel):
@@ -1273,7 +1425,7 @@ class LeaveRequest(HorillaModel):
         """
         today = date.today() if today is None else today
         queryset = LeaveRequest.objects.filter(
-            start_date__lte=today, end_date__gte=today
+            start_date__lte=today, end_date__gte=today, is_active=True
         )
 
         if status is not None:
@@ -2265,7 +2417,7 @@ class LeaveGeneralSetting(HorillaModel):
     """
 
     compensatory_leave = models.BooleanField(default=True)
-    objects = models.Manager()
+    objects = HorillaCompanyManager(related_company_field="company_id")
     company_id = models.ForeignKey(Company, on_delete=models.CASCADE, null=True)
 
 

@@ -113,6 +113,9 @@ class ActualObjectiveFilter(HorillaFilterSet):
     """
 
     search = django_filters.CharFilter(method="search_method")
+    status = django_filters.CharFilter(
+        method="filter_by_emp_obj_status", label=_("Status")
+    )
 
     class Meta:
         model = Objective
@@ -122,7 +125,14 @@ class ActualObjectiveFilter(HorillaFilterSet):
             "assignees",
             "duration",
             "employee_objective__key_result_id",
+            "employee_objective__status",
         ]
+
+    def filter_by_emp_obj_status(self, queryset, name, value):
+        """Filter parent Objectives that have any EmployeeObjective with the given status."""
+        if not value:
+            return queryset
+        return queryset.filter(employee_objective__status=value).distinct()
 
     def search_method(self, queryset, _, value: str):
         """

@@ -5,6 +5,7 @@ URL configuration for asset-related views.
 from django import views
 from django.urls import path
 
+from asset import dashboard as asset_dashboard
 from asset.cbv import (
     asset,
     asset_batch_no,
@@ -303,7 +304,11 @@ urlpatterns = [
         asset_category.AssetReportFormView.as_view(),
         name="add-asset-report",
     ),
-    path("dashboard/", views.asset_dashboard, name="asset-dashboard"),
+    path(
+        "dashboard/",
+        asset_dashboard.asset_dashboard_view,
+        name="asset-dashboard",
+    ),
     path(
         "asset-dashboard-requests/",
         views.asset_dashboard_requests,
@@ -427,5 +432,71 @@ urlpatterns = [
         "dashboard-allocated-asset/",
         dashboard.AllocatedAssetsList.as_view(),
         name="dashboard-allocated-asset",
+    ),
+    # ── Asset Modern Dashboard ───────────────────────────────────────────────
+    path(
+        "dashboard/api/kpi/",
+        asset_dashboard.asset_kpi_data,
+        name="asset-dashboard-kpi",
+    ),
+    path(
+        "dashboard/api/status/",
+        asset_dashboard.asset_status_distribution,
+        name="asset-dashboard-status",
+    ),
+    path(
+        "dashboard/api/category/",
+        asset_dashboard.asset_by_category,
+        name="asset-dashboard-category",
+    ),
+    path(
+        "dashboard/api/requests/",
+        asset_dashboard.asset_request_status,
+        name="asset-dashboard-requests",
+    ),
+    path(
+        "dashboard/api/value/",
+        asset_dashboard.asset_value_by_category,
+        name="asset-dashboard-value",
+    ),
+    path(
+        "dashboard/api/expiring/",
+        asset_dashboard.asset_expiring_soon,
+        name="asset-dashboard-expiring",
+    ),
+    path(
+        "dashboard/api/allocations/",
+        asset_dashboard.asset_recent_allocations,
+        name="asset-dashboard-allocations",
+    ),
+    path(
+        "dashboard/api/department/",
+        asset_dashboard.asset_department_distribution,
+        name="asset-dashboard-dept",
+    ),
+    path(
+        "dashboard/api/age/",
+        asset_dashboard.asset_age_distribution,
+        name="asset-dashboard-age",
+    ),
+    path(
+        "asset-renewal/",
+        request_and_allocation.AssetRenewalView.as_view(),
+        name="asset-renewal",
+    ),
+    path(
+        "asset-renewal-nav/",
+        request_and_allocation.AssetRenewalNav.as_view(),
+        name="asset-renewal-nav",
+    ),
+    path(
+        "asset-renewal-list/",
+        request_and_allocation.ExpiringAssignmentList.as_view(),
+        name="asset-renewal-list",
+    ),
+    path(
+        "asset-reassign/<int:pk>/",
+        request_and_allocation.AssetReassignFormView.as_view(),
+        name="asset-reassign",
     ),
 ]

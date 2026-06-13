@@ -4,10 +4,10 @@
   htmx boost params used by submenu links so clicking Dashboard swaps
   only the main content region instead of doing a full page reload.
 {% endcomment %}
-<a href="/" title="{% trans 'Dashboard' %}"
+<a href="{% url 'dashboard' %}" title="{% trans 'Dashboard' %}"
    class="sideboxmain group flex items-center gap-3 p-3 rounded-full transition duration-300"
    data-menu="Dashboard"
-   hx-get="/"
+   hx-get="{% url 'dashboard' %}"
    hx-target="#ohMainContent"
    hx-select="#ohMainContent > *"
    hx-swap="innerHTML show:window:top"

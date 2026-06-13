@@ -1,0 +1,56 @@
+{% extends 'settings.html' %}
+{% load i18n %}
+
+{% block settings %}
+<div class="border border-[#ebebeb] rounded-md overflow-hidden mb-5">
+    <h5 class="text-sm font-semibold bg-[#f3f3f3] px-4 py-3 text-[#333] flex items-center justify-between">
+        <span>
+            {% trans "Audit Fields" %} —
+            <span class="text-primary-600">{{ config.model_name }}</span>
+        </span>
+        <a href="{% url 'audit-model-settings' %}"
+           class="text-xs text-[#666] hover:text-primary-600">
+            &larr; {% trans "Back" %}
+        </a>
+    </h5>
+
+    <div class="p-4">
+        <p class="text-xs text-[#666] mb-4">
+            {% blocktrans with model_name=config.model_name app_label=config.app_label %}
+                Select the fields of <strong>{{ app_label }}.{{ model_name }}</strong>
+                that should be recorded in the audit log. Leave the list empty to
+                track every field.
+            {% endblocktrans %}
+        </p>
+
+        <form method="post" action="">
+            {% csrf_token %}
+            <div class="grid grid-cols-12 gap-4 myform">
+                <div class="col-span-12">
+                    <div class="flex space-x-2 pb-2">
+                        <label class="text-sm font-medium">{% trans "Tracked Fields" %}</label>
+                    </div>
+                    {{ form.fields_to_track }}
+                </div>
+                <div class="col-span-12 flex gap-2 mt-2">
+                    <button class="btn h-[36px]" type="submit">
+                        {% trans "Save Fields" %}
+                    </button>
+                    <a href="{% url 'audit-model-settings' %}"
+                       class="btn h-[36px] bg-[#f3f3f3] text-[#333] border border-[#ddd] hover:bg-[#e9e9e9]">
+                        {% trans "Cancel" %}
+                    </a>
+                </div>
+            </div>
+        </form>
+    </div>
+</div>
+
+<script>
+    $(document).ready(function () {
+        $('select[name="fields_to_track"]')
+            .removeClass('select2-hidden-accessible')
+            .addClass('oh-select oh-select-2');
+    });
+</script>
+{% endblock settings %}

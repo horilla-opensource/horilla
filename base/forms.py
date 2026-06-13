@@ -26,6 +26,7 @@ from django.core.validators import validate_ipv46_address
 from django.forms import DateInput, HiddenInput, TextInput
 from django.template import loader
 from django.template.loader import render_to_string
+from django.urls import reverse_lazy
 from django.utils.encoding import force_bytes
 from django.utils.html import strip_tags
 from django.utils.http import urlsafe_base64_encode
@@ -55,6 +56,7 @@ from base.models import (
     JobRole,
     MultipleApprovalCondition,
     PenaltyAccounts,
+    Roster,
     RotatingShift,
     RotatingShiftAssign,
     RotatingWorkType,
@@ -881,6 +883,17 @@ class WorkTypeForm(ModelForm):
         model = WorkType
         fields = "__all__"
         exclude = ["is_active"]
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        if not self.instance.pk:
+            request = getattr(_thread_locals, "request", None)
+            if request:
+                selected_company = request.session.get("selected_company")
+                if selected_company and selected_company != "all":
+                    self.initial["company_id"] = Company.objects.filter(
+                        id=selected_company
+                    )
 
 
 class RotatingWorkTypeForm(ModelForm):
@@ -3042,13 +3055,13 @@ class AttendanceAllowedIPUpdateForm(ModelForm):
 class TrackLateComeEarlyOutForm(ModelForm):
     class Meta:
         model = TrackLateComeEarlyOut
-        fields = ["is_enable"]
+        fields = ["is_enable", "company_id"]
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
         self.fields["is_enable"].widget.attrs.update(
             {
-                "hx-post": "/attendance/enable-disable-tracking-late-come-early-out",
+                "hx-post": reverse_lazy("enable-disable-tracking-late-come-early-out"),
                 "hx-target": "this",
                 "hx-trigger": "change",
             }
@@ -3198,3 +3211,22 @@ class PenaltyAccountForm(ModelForm):
                 id__in=available_leaves.values_list("leave_type_id", flat=True)
             )
             self.fields["leave_type_id"].queryset = assigned_leave_types
+
+
+# ---------------------------------------------------------------------------
+# Roster Forms
+# ---------------------------------------------------------------------------
+
+
+class RosterCellUpdateForm(ModelForm):
+    """
+    Inline HTMX form for updating a single roster cell (shift / day-off / notes).
+    """
+
+    class Meta:
+        model = Roster
+        fields = ["shift", "is_off", "is_published", "notes"]
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.fields["shift"].required = False

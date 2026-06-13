@@ -18,7 +18,12 @@ class AssetListView(HorillaListView):
 
     model = Asset
     filter_class = AssetFilter
-    columns = ["asset_name", "asset_status", "asset_tracking_id", "asset_lot_number_id"]
+    columns = [
+        (_("Asset Name"), "asset_name_display"),
+        (_("Status"), "asset_status_col"),
+        "asset_tracking_id",
+        "asset_lot_number_id",
+    ]
     show_filter_tags = False
     bulk_select_option = False
     action_method = "action_column"
@@ -53,7 +58,7 @@ class AssetInformationView(HorillaDetailedView):
         "asset_tracking_id",
         "asset_purchase_date",
         "asset_purchase_cost",
-        "asset_status",
+        "asset_status_col",
         "asset_lot_number_id",
         "asset_category_id",
     ]
@@ -64,6 +69,5 @@ class AssetInformationView(HorillaDetailedView):
         """
 
         context = super().get_context_data(**kwargs)
-        asset_name = context["asset"].asset_name
-        context["title"] = asset_name
+        context["title"] = context["asset"].asset_name_display()
         return context

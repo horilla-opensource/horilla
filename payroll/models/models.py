@@ -1372,7 +1372,9 @@ class Allowance(HorillaModel):
 
     def save(self):
         request = getattr(horilla_middlewares._thread_locals, "request", None)
-        selected_company = request.session.get("selected_company")
+        selected_company = (
+            request.session.get("selected_company") if request else None
+        )
         if not self.id and selected_company and selected_company != "all":
             self.company_id = Company.find(selected_company)
         super().save()
@@ -1872,7 +1874,9 @@ class Deduction(HorillaModel):
 
     def save(self):
         request = getattr(horilla_middlewares._thread_locals, "request", None)
-        selected_company = request.session.get("selected_company")
+        selected_company = (
+            request.session.get("selected_company") if request else None
+        )
         if not self.id and selected_company and selected_company != "all":
             self.company_id = Company.find(selected_company)
         super().save()

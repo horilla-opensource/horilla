@@ -51,7 +51,7 @@
 
 
 
-<div hx-get="{% url 'tasks-navbar' %}" hx-trigger="load">
+<div hx-get="{% url 'tasks-navbar' %}{% if request.GET %}?{{ request.GET.urlencode }}{% endif %}" hx-trigger="load">
 </div>
 
 

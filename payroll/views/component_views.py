@@ -40,6 +40,7 @@ from base.methods import (
 from base.models import Company
 from employee.models import Employee, EmployeeWorkInformation
 from horilla.decorators import (
+    handle_no_permission,
     hx_request_required,
     login_required,
     owner_can_enter,
@@ -130,6 +131,7 @@ def payroll_calculation(employee, start_date, end_date):
     contract_wage = basic_pay_details["contract_wage"]
     basic_pay = basic_pay_details["basic_pay"]
     loss_of_pay = basic_pay_details["loss_of_pay"]
+    custom_leave_deduction = basic_pay_details.get("custom_leave_deduction", 0.0)
     paid_days = basic_pay_details["paid_days"]
     unpaid_days = basic_pay_details["unpaid_days"]
 
@@ -244,6 +246,7 @@ def payroll_calculation(employee, start_date, end_date):
         "net_deductions": net_pay_deduction_list,
         "total_deductions": total_deductions,
         "loss_of_pay": loss_of_pay,
+        "custom_leave_deduction": custom_leave_deduction,
         "federal_tax": federal_tax,
         "start_date": start_date,
         "end_date": end_date,
@@ -272,9 +275,16 @@ def allowances_deductions_tab(request, emp_id):
     condition-based rules. The results are then rendered in the allowance and
     deduction tab template.
     """
+    user = request.user
     employee_deductions = []
     employee_allowances = []
     employee = Employee.objects.get(id=emp_id)
+    if getattr(user, "employee_get", None) != employee and not (
+        user.has_perm("payroll.view_allowance")
+        and user.has_perm("payroll.view_deduction")
+    ):
+        return handle_no_permission(request)
+
     active_contracts = employee.contract_set.filter(contract_status="active").first()
     basic_pay = active_contracts.wage if active_contracts else None
     if basic_pay:

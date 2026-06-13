@@ -1,4 +1,4 @@
-{% load static %} {% block content %}
+{% load static %} {% load i18n %} {% block content %}
 <style>
 	.cancelled--dot {
 		background-color: grey;
@@ -46,5 +46,26 @@
 ></div>
 
 {% include "generic/horilla_list_table.html" %}
+
+<div class="oh-modal" id="rejectModal" role="dialog" aria-labelledby="rejectModal" aria-hidden="true">
+    <div class="oh-modal__dialog">
+        <div class="oh-modal__dialog-header">
+            <h2 class="oh-modal__dialog-title">
+                {% trans "Rejection" %}
+                <button class="oh-modal_close--custom"
+                    onclick="$('#rejectModal').removeClass('oh-modal--show');"
+                    aria-label="Close"
+                    style="margin-left:80%; border:none; background:none;">
+                    <ion-icon name="close-outline"></ion-icon>
+                </button>
+            </h2>
+        </div>
+        <div class="oh-modal__dialog-body" id="rejectForm"></div>
+    </div>
+</div>
+
+<div class="oh-modal" id="cancelModal" role="dialog" aria-labelledby="cancelModal" aria-hidden="true">
+    <div class="oh-modal__dialog" id="cancelForm"></div>
+</div>
 
 {% endblock content %}

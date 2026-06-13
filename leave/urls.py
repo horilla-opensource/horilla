@@ -1,9 +1,11 @@
 from django import views
 from django.apps import apps
 from django.urls import path
+from django.views.generic import RedirectView
 
 from base.cbv import company_leaves, holidays
 from employee.models import Employee
+from leave import dashboard as leave_dashboard
 
 if apps.is_installed("attendance"):
     from leave.cbv import compensatory_leave_request
@@ -128,6 +130,16 @@ urlpatterns = [
         name="leave-type-card-view",
     ),
     path("type-creation/", views.leave_type_creation, name="type-creation"),
+    path(
+        "leave-type/<int:leave_type_id>/condition/create/",
+        views.leave_type_condition_create,
+        name="leave-type-condition-create",
+    ),
+    path(
+        "leave-type/<int:leave_type_id>/condition/<int:condition_id>/delete/",
+        views.leave_type_condition_delete,
+        name="leave-type-condition-delete",
+    ),
     # path("type-view/", views.leave_type_view, name="type-view"),
     path(
         "leave-type-individual-view/<int:id>/",
@@ -314,7 +326,11 @@ urlpatterns = [
     path("user-request-one/<int:id>/", views.user_request_one, name="user-request-one"),
     # path("employee-leave/", views.employee_leave, name="employee-leave"),
     path("overall-leave/", views.overall_leave, name="overall-leave"),
-    path("leave-dashboard/", views.dashboard, name="leave-dashboard"),
+    path(
+        "leave-dashboard/",
+        RedirectView.as_view(pattern_name="leave-dashboard"),
+        name="leave-dashboard-legacy",
+    ),
     path(
         "leave-employee-dashboard/",
         views.employee_dashboard,
@@ -648,6 +664,92 @@ urlpatterns = [
             "form": RestrictLeaveForm,
             "template": "leave/restrict/restrict_form.html",
         },
+    ),
+    # ── Leave Modern Dashboard ───────────────────────────────────────────────
+    path(
+        "dashboard/",
+        leave_dashboard.leave_dashboard_view,
+        name="leave-dashboard",
+    ),
+    path(
+        "dashboard/api/kpi/",
+        leave_dashboard.leave_kpi_data,
+        name="leave-dashboard-kpi",
+    ),
+    path(
+        "dashboard/api/monthly-trend/",
+        leave_dashboard.leave_monthly_trend,
+        name="leave-dashboard-monthly-trend",
+    ),
+    path(
+        "dashboard/api/type-distribution/",
+        leave_dashboard.leave_type_distribution,
+        name="leave-dashboard-type-dist",
+    ),
+    path(
+        "dashboard/api/department/",
+        leave_dashboard.leave_department_breakdown,
+        name="leave-dashboard-dept",
+    ),
+    path(
+        "dashboard/api/utilization/",
+        leave_dashboard.leave_utilization_rate,
+        name="leave-dashboard-utilization",
+    ),
+    path(
+        "dashboard/api/paid-unpaid/",
+        leave_dashboard.leave_paid_unpaid_split,
+        name="leave-dashboard-paid-unpaid",
+    ),
+    path(
+        "dashboard/api/top-takers/",
+        leave_dashboard.leave_top_takers,
+        name="leave-dashboard-top-takers",
+    ),
+    path(
+        "dashboard/api/on-leave/",
+        leave_dashboard.leave_on_leave_today,
+        name="leave-dashboard-on-leave",
+    ),
+    path(
+        "dashboard/api/holidays/",
+        leave_dashboard.leave_upcoming_holidays,
+        name="leave-dashboard-holidays",
+    ),
+    path(
+        "dashboard/api/weekly-pattern/",
+        leave_dashboard.leave_weekly_pattern,
+        name="leave-dashboard-weekly-pattern",
+    ),
+    path(
+        "dashboard/api/upcoming/",
+        leave_dashboard.leave_upcoming,
+        name="leave-dashboard-upcoming",
+    ),
+    path(
+        "employee-dashboard/api/kpi/",
+        leave_dashboard.employee_kpi_data,
+        name="employee-dashboard-kpi",
+    ),
+    path(
+        "employee-dashboard/api/balance/",
+        leave_dashboard.employee_leave_balance,
+        name="employee-dashboard-balance",
+    ),
+    path(
+        "employee-dashboard/api/trend/",
+        leave_dashboard.employee_monthly_trend,
+        name="employee-dashboard-trend",
+    ),
+    path(
+        "employee-dashboard/api/upcoming/",
+        leave_dashboard.employee_upcoming_leaves,
+        name="employee-dashboard-upcoming",
+    ),
+    path(
+        "employee-dashboard/api/history/",
+        leave_dashboard.employee_leave_history,
+        name="employee-dashboard-history",
     ),
 ]
 

@@ -3,8 +3,11 @@ payroll/sidebar.py
 
 """
 
-from django.urls import reverse
+from django.apps import apps
+from django.urls import reverse, reverse_lazy
 from django.utils.translation import gettext_lazy as _
+
+from horilla.menu import settings_menu
 
 MENU = _("Payroll")
 IMG_SRC = "images/ui/wallet-outline.svg"
@@ -69,3 +72,28 @@ def loan_accessibility(request, submenu, user_perms, *args, **kwargs):
 
 def federal_tax_accessibility(request, submenu, user_perms, *args, **kwargs):
     return request.user.has_perm("payroll.view_filingstatus")
+
+
+# ---------------------------------------------------------------------------
+# Settings menu registrations
+# ---------------------------------------------------------------------------
+
+
+def payslip_auto_generation_accessibility(
+    request, submenu, user_perms, *args, **kwargs
+):
+    return request.user.has_perm("payroll.view_payslipautogenerate")
+
+
+@settings_menu.register
+class PayrollSettings:
+    title = _("Payroll")
+    order = 7
+    condition = lambda self, request: apps.is_installed("payroll")
+    items = [
+        {
+            "label": _("Payslip Auto Generation"),
+            "url": reverse_lazy("auto-payslip-settings-view"),
+            "accessibility": payslip_auto_generation_accessibility,
+        },
+    ]

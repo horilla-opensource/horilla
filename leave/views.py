@@ -65,6 +65,7 @@ from leave.methods import (
 )
 from leave.models import *
 from leave.models import leave_requested_dates
+from leave.services import evaluate_leave_type_conditions
 from leave.threading import LeaveMailSendThread
 from notifications.signals import notify
 
@@ -127,15 +128,14 @@ def leave_type_creation(request):
     if request.method == "POST":
         form = LeaveTypeForm(request.POST, request.FILES)
         if form.is_valid():
-            form.save()
+            leave_type = form.save()
             messages.success(request, _("New leave type Created.."))
+            update_url = reverse("type-update", kwargs={"id": leave_type.id})
             if is_htmx:
                 response = HttpResponse("", status=200)
-                response["HX-Trigger"] = json.dumps(
-                    {"reloadLeaveTypeList": {"target": "body"}}
-                )
+                response["HX-Redirect"] = update_url
                 return response
-            return redirect(reverse("type-view"))
+            return redirect(update_url)
     if is_htmx:
         return render(
             request,
@@ -297,22 +297,17 @@ def leave_type_update(request, id, **kwargs):
                 return response
             return redirect(redirect_url)
         form = form_data
+    context = {
+        "form": form,
+        "title": _("Update Leave Type"),
+        "post_url": request.get_full_path(),
+        "is_htmx": is_htmx,
+    }
     if is_htmx:
         return render(
-            request,
-            "leave/leave_type/leave_type_form_fragment.html",
-            {
-                "form": form,
-                "title": _("Update Leave Type"),
-                "post_url": request.get_full_path(),
-                "is_htmx": True,
-            },
+            request, "leave/leave_type/leave_type_form_fragment.html", context
         )
-    return render(
-        request,
-        "leave/leave_type/leave_type_update.html",
-        {"form": form, "compensatory": compensatory},
-    )
+    return render(request, "leave/leave_type/leave_type_update_page.html", context)
 
 
 @login_required
@@ -1040,13 +1035,39 @@ def leave_request_approve(request, id, emp_id=None):
                 return redirect(f"/employee/employee-view/{employee_id}/")
             return HorillaRedirect(request)
     leave_type_id = leave_request.leave_type_id
-    available_leave = AvailableLeave.objects.get(
-        leave_type_id=leave_type_id, employee_id=employee_id
-    )
+    try:
+        available_leave = AvailableLeave.objects.get(
+            leave_type_id=leave_type_id, employee_id=employee_id
+        )
+    except AvailableLeave.DoesNotExist:
+        messages.error(
+            request,
+            _("No available leave record found for this employee and leave type."),
+        )
+        if request.headers.get("HX-Request"):
+            response = HttpResponse("", status=200)
+            response["HX-Trigger"] = json.dumps(
+                {
+                    "reloadLeaveRequestList": {"target": "body"},
+                    "horillaMessage": {
+                        "level": "error",
+                        "text": str(
+                            _(
+                                "No available leave record found for this employee and leave type."
+                            )
+                        ),
+                    },
+                }
+            )
+            return response
+        return HorillaRedirect(request)
+
     total_available_leave = (
         available_leave.available_days + available_leave.carryforward_days
     )
     send_notification = False
+    approved = False
+    error_message = ""
     if leave_request.status != "approved":
         if total_available_leave >= leave_request.requested_days:
             if leave_request.requested_days > available_leave.carryforward_days:
@@ -1066,6 +1087,7 @@ def leave_request_approve(request, id, emp_id=None):
                 leave_request.save()
                 available_leave.save()
                 send_notification = True
+                approved = True
             else:
                 if request.user.is_superuser:
                     LeaveRequestConditionApproval.objects.filter(
@@ -1074,6 +1096,7 @@ def leave_request_approve(request, id, emp_id=None):
                     leave_request.save()
                     available_leave.save()
                     send_notification = True
+                    approved = True
                 else:
                     conditional_requests = leave_request.multiple_approvals()
                     approver = next(
@@ -1087,67 +1110,77 @@ def leave_request_approve(request, id, emp_id=None):
                     condition_approval = LeaveRequestConditionApproval.objects.filter(
                         manager_id=approver, leave_request_id=leave_request
                     ).first()
-                    condition_approval.is_approved = True
-                    managers = []
-                    for manager in conditional_requests["managers"]:
-                        managers.append(manager.employee_user_id)
-                    if len(managers) > condition_approval.sequence:
-                        with contextlib.suppress(Exception):
-                            notify.send(
-                                request.user.employee_get,
-                                recipient=managers[condition_approval.sequence],
-                                verb="You have a new leave request to validate.",
-                                verb_ar="لديك طلب إجازة جديد يجب التحقق منه.",
-                                verb_de="Sie haben eine neue Urlaubsanfrage zur Validierung.",
-                                verb_es="Tiene una nueva solicitud de permiso que debe validar.",
-                                verb_fr="Vous avez une nouvelle demande de congé à valider.",
-                                icon="people-circle",
-                                redirect=f"/leave/request-view?id={leave_request.id}",
-                            )
-
-                    condition_approval.save()
-                    if approver == conditional_requests["managers"][-1]:
-                        leave_request.save()
-                        available_leave.save()
-                        send_notification = True
-            messages.success(request, _("Leave request approved successfully.."))
-            if send_notification:
-                with contextlib.suppress(Exception):
-                    notify.send(
-                        request.user.employee_get,
-                        recipient=leave_request.employee_id.employee_user_id,
-                        verb="Your Leave request has been approved",
-                        verb_ar="تمت الموافقة على طلب الإجازة الخاص بك",
-                        verb_de="Ihr Urlaubsantrag wurde genehmigt",
-                        verb_es="Se ha aprobado su solicitud de permiso",
-                        verb_fr="Votre demande de congé a été approuvée",
-                        icon="people-circle",
-                        redirect=reverse("user-request-view")
-                        + f"?id={leave_request.id}",
+                    if condition_approval is None:
+                        error_message = str(
+                            _("You are not an approver for this leave request.")
+                        )
+                        messages.error(request, error_message)
+                    else:
+                        condition_approval.is_approved = True
+                        managers = []
+                        for manager in conditional_requests["managers"]:
+                            managers.append(manager.employee_user_id)
+                        if len(managers) > condition_approval.sequence:
+                            with contextlib.suppress(Exception):
+                                notify.send(
+                                    request.user.employee_get,
+                                    recipient=managers[condition_approval.sequence],
+                                    verb="You have a new leave request to validate.",
+                                    verb_ar="لديك طلب إجازة جديد يجب التحقق منه.",
+                                    verb_de="Sie haben eine neue Urlaubsanfrage zur Validierung.",
+                                    verb_es="Tiene una nueva solicitud de permiso que debe validar.",
+                                    verb_fr="Vous avez une nouvelle demande de congé à valider.",
+                                    icon="people-circle",
+                                    redirect=f"/leave/request-view?id={leave_request.id}",
+                                )
+                        condition_approval.save()
+                        approved = True
+                        if approver == conditional_requests["managers"][-1]:
+                            leave_request.save()
+                            available_leave.save()
+                            send_notification = True
+            if approved:
+                messages.success(request, _("Leave request approved successfully.."))
+                if send_notification:
+                    with contextlib.suppress(Exception):
+                        notify.send(
+                            request.user.employee_get,
+                            recipient=leave_request.employee_id.employee_user_id,
+                            verb="Your Leave request has been approved",
+                            verb_ar="تمت الموافقة على طلب الإجازة الخاص بك",
+                            verb_de="Ihr Urlaubsantrag wurde genehmigt",
+                            verb_es="Se ha aprobado su solicitud de permiso",
+                            verb_fr="Votre demande de congé a été approuvée",
+                            icon="people-circle",
+                            redirect=reverse("user-request-view")
+                            + f"?id={leave_request.id}",
+                        )
+                    mail_thread = LeaveMailSendThread(
+                        request, leave_request, type="approve"
                     )
-
-                mail_thread = LeaveMailSendThread(
-                    request, leave_request, type="approve"
-                )
-                mail_thread.start()
+                    mail_thread.start()
         else:
-            messages.error(
-                request,
-                f"{employee_id} dont have enough leave days to approve the request..",
+            error_message = str(
+                _(f"{employee_id} dont have enough leave days to approve the request..")
             )
+            messages.error(request, error_message)
     else:
-        messages.error(request, _("Leave request already approved"))
+        error_message = str(_("Leave request already approved"))
+        messages.error(request, error_message)
     if request.headers.get("HX-Request"):
         response = HttpResponse("", status=200)
-        response["HX-Trigger"] = json.dumps(
-            {
-                "reloadLeaveRequestList": {"target": "body"},
-                "horillaMessage": {
-                    "level": "success",
-                    "text": _("Leave request approved successfully.."),
-                },
+        trigger_data = {"reloadLeaveRequestList": {"target": "body"}}
+        if approved:
+            trigger_data["horillaMessage"] = {
+                "level": "success",
+                "text": str(_("Leave request approved successfully..")),
             }
-        )
+        elif error_message:
+            trigger_data["horillaMessage"] = {
+                "level": "error",
+                "text": error_message,
+            }
+        response["HX-Trigger"] = json.dumps(trigger_data)
         return response
     if emp_id is not None:
         employee_id = emp_id
@@ -1307,7 +1340,7 @@ def leave_request_cancel(request, id, emp_id=None):
                         "reloadLeaveRequestList": {"target": "body"},
                         "horillaMessage": {
                             "level": "success",
-                            "text": _("Leave request rejected successfully.."),
+                            "text": str(_("Leave request rejected successfully..")),
                         },
                     }
                 )
@@ -1452,15 +1485,34 @@ def leave_assign_one(request, obj_id):
             if leave_type.carryforward_expire_date
             else None
         )
-        new_employees = list(set(employee_ids) - existing_leaves_set)
+        new_employee_ids = list(set(employee_ids) - existing_leaves_set)
+        new_employees_qs = Employee.objects.filter(id__in=new_employee_ids)
+
+        # Evaluate conditions before assignment
+        condition_blocked = []
+        eligible_employees = []
+        for employee in new_employees_qs:
+            is_eligible, error_msg = evaluate_leave_type_conditions(
+                leave_type, employee
+            )
+            if is_eligible:
+                eligible_employees.append(employee)
+            else:
+                condition_blocked.append((employee, error_msg))
+                messages.warning(
+                    request,
+                    _("{employee}: {reason}").format(
+                        employee=employee.get_full_name(), reason=error_msg
+                    ),
+                )
 
         assigned_count = 0
-        if new_employees:
+        if eligible_employees:
             available_leaves = []
-            for employee_id in new_employees:
+            for employee in eligible_employees:
                 leave = AvailableLeave(
                     leave_type_id=leave_type,
-                    employee_id_id=employee_id,
+                    employee_id=employee,
                     available_days=leave_type.total_days,
                 )
                 if leave.reset_date is None:
@@ -1491,9 +1543,9 @@ def leave_assign_one(request, obj_id):
             )
             form = LeaveOneAssignForm()
 
-            employees = Employee.objects.filter(id__in=new_employees).only(
-                "id", "employee_user_id"
-            )
+            notify_employees = Employee.objects.filter(
+                id__in=[e.id for e in eligible_employees]
+            ).only("id", "employee_user_id")
             notifications = [
                 notify.send(
                     request.user.employee_get,
@@ -1506,15 +1558,16 @@ def leave_assign_one(request, obj_id):
                     icon="people-circle",
                     redirect=reverse("user-request-view"),
                 )
-                for employee in employees
+                for employee in notify_employees
             ]
 
-        if len(employee_ids) != assigned_count:
+        already_assigned_count = len(employee_ids) - len(new_employee_ids)
+        if already_assigned_count:
             messages.info(
                 request,
                 _(
                     "Leave type is already assigned to some selected {} employees."
-                ).format(len(employee_ids) - assigned_count),
+                ).format(already_assigned_count),
             )
 
     return render(
@@ -1692,6 +1745,20 @@ def leave_assign(request):
                 for leave_type in leave_types:
                     assignment_key = (leave_type.id, employee.id)
                     if assignment_key not in existing_assignments:
+                        # Evaluate conditions before creating the assignment
+                        is_eligible, error_msg = evaluate_leave_type_conditions(
+                            leave_type, employee
+                        )
+                        if not is_eligible:
+                            messages.warning(
+                                request,
+                                _("{employee} — {leave_type}: {reason}").format(
+                                    employee=employee.get_full_name(),
+                                    leave_type=leave_type.name,
+                                    reason=error_msg,
+                                ),
+                            )
+                            continue
                         new_assignment = AvailableLeave(
                             leave_type_id=leave_type,
                             employee_id=employee,
@@ -4611,14 +4678,29 @@ def view_clashes(request, leave_request_id):
 @login_required
 @permission_required("leave.view_leavegeneralsetting")
 def compensatory_leave_settings_view(request):
-    enabled_compensatory = (
-        LeaveGeneralSetting.objects.exists()
-        and LeaveGeneralSetting.objects.first().compensatory_leave
-    )
-    leave_type, create = LeaveType.objects.get_or_create(
-        is_compensatory_leave=True,
-        defaults={"name": "Compensatory Leave Type", "payment": "paid"},
-    )
+    selected_company = request.session.get("selected_company")
+    if selected_company != "all":
+        enabled_compensatory = (
+            LeaveGeneralSetting.objects.filter(company_id_id=selected_company).exists()
+            and LeaveGeneralSetting.objects.filter(company_id_id=selected_company)
+            .first()
+            .compensatory_leave
+        )
+        leave_type, create = LeaveType.objects.get_or_create(
+            is_compensatory_leave=True,
+            company_id_id=selected_company,
+            defaults={"name": "Compensatory Leave Type", "payment": "paid"},
+        )
+    else:
+        enabled_compensatory = (
+            LeaveGeneralSetting.objects.exists()
+            and LeaveGeneralSetting.objects.first().compensatory_leave
+        )
+        leave_type, create = LeaveType.objects.get_or_create(
+            is_compensatory_leave=True,
+            company_id=None,
+            defaults={"name": "Compensatory Leave Type", "payment": "paid"},
+        )
     request.session["ordered_ids_leavetype"] = []
     context = {"enabled_compensatory": enabled_compensatory, "leave_type": leave_type}
     return render(request, "compensatory_settings.html", context)
@@ -4631,11 +4713,20 @@ def enable_compensatory_leave(request):
     """
     This method is used to enable/disable the compensatory leave feature
     """
-    compensatory_leave = LeaveGeneralSetting.objects.first()
-    compensatory_leave = (
-        compensatory_leave if compensatory_leave else LeaveGeneralSetting()
-    )
-    compensatory_leave.compensatory_leave = not compensatory_leave.compensatory_leave
+    selected_company = request.session.get("selected_company")
+    if selected_company != "all":
+        compensatory_leave = LeaveGeneralSetting.objects.filter(
+            company_id_id=selected_company
+        ).first()
+        if not compensatory_leave:
+            compensatory_leave = LeaveGeneralSetting(company_id_id=selected_company)
+    else:
+        compensatory_leave = LeaveGeneralSetting.objects.first()
+        compensatory_leave = (
+            compensatory_leave if compensatory_leave else LeaveGeneralSetting()
+        )
+    enable = request.POST.get("compensatory_leave") == "on"
+    compensatory_leave.compensatory_leave = enable
     compensatory_leave.save()
     if compensatory_leave.compensatory_leave:
         messages.success(request, _("Compensatory leave is enabled successfully!"))
@@ -5509,5 +5600,57 @@ def leave_allocation_approve(request):
             "reqests_ids": allocation_reqests_ids,
             "pd": previous_data,
             # "current_date":date.today(),
+        },
+    )
+
+
+# ---------------------------------------------------------------------------
+# Leave Type Condition CRUD views
+# ---------------------------------------------------------------------------
+
+
+@login_required
+@hx_request_required
+@permission_required("leave.change_leavetype")
+def leave_type_condition_create(request, leave_type_id):
+    """
+    HTMX view to add a condition to a LeaveType.
+    Returns an updated conditions panel partial.
+    """
+    leave_type = get_object_or_404(LeaveType, id=leave_type_id)
+    form = LeaveTypeConditionForm(request.POST or None)
+    if request.method == "POST" and form.is_valid():
+        condition = form.save()
+        leave_type.conditions.add(condition)
+        messages.success(request, _("Condition added successfully."))
+        form = LeaveTypeConditionForm()
+    return render(
+        request,
+        "leave/leave_type/conditions_panel.html",
+        {
+            "leave_type": leave_type,
+            "condition_form": form,
+        },
+    )
+
+
+@login_required
+@hx_request_required
+@permission_required("leave.change_leavetype")
+def leave_type_condition_delete(request, leave_type_id, condition_id):
+    """
+    HTMX view to remove a condition from a LeaveType and delete it.
+    """
+    leave_type = get_object_or_404(LeaveType, id=leave_type_id)
+    condition = get_object_or_404(LeaveTypeCondition, id=condition_id)
+    leave_type.conditions.remove(condition)
+    condition.delete()
+    messages.success(request, _("Condition removed successfully."))
+    return render(
+        request,
+        "leave/leave_type/conditions_panel.html",
+        {
+            "leave_type": leave_type,
+            "condition_form": LeaveTypeConditionForm(),
         },
     )

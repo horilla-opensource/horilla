@@ -45,11 +45,19 @@
                     </div>
                     <div class="col-sm-12 col-md-12 col-lg-12">
                         <div class="oh-input-group">
-                            <label for="" class="oh-label">{{ form.payment.label }}</label>
-                            {{form.payment}}
-                            {{form.payment.errors}}
+                            <label for="" class="oh-label">{{ form.payment_type.label }}</label>
+                            {{ form.payment_type }}
+                            {{ form.payment_type.errors }}
                         </div>
                     </div>
+                    <div class="col-sm-12 col-md-12 col-lg-12" id="paymentPercentageContainer" style="display:none;">
+                        <div class="oh-input-group">
+                            <label for="id_payment_percentage" class="oh-label">{{ form.payment_percentage.label }}</label>
+                            {{ form.payment_percentage }}
+                            {{ form.payment_percentage.errors }}
+                        </div>
+                    </div>
+                    <div hidden>{{ form.payment }}</div>
                     <div class="col-sm-12 col-md-6">
                         <div class="oh-input-group oh-label__info justify-content-between">
                             <div class="d-flex align-items-center">
@@ -262,6 +270,15 @@
                     <div hidden>{{form.exclude_holiday}}</div>
 
                 </div>
+
+                <div class="mt-3 pt-3" style="border-top: 1px solid hsl(213deg,22%,90%);">
+                    <div class="oh-input-group oh-label__info">
+                        <span class="oh-info me-2" title="{% trans 'Eligibility conditions' %}"></span>
+                        <p class="oh-label mb-0 text-muted" style="font-size:0.85rem;">
+                            {% trans "Eligibility conditions can be configured after saving the leave type." %}
+                        </p>
+                    </div>
+                </div>
             </div>
 
             <button type="submit"
@@ -275,6 +292,26 @@
 
 <script>
     $(document).ready(function () {
+        // Payment type toggle: show percentage only for 'custom'
+        function togglePaymentPercentage() {
+            if ($("#id_payment_type").val() === "custom") {
+                $("#paymentPercentageContainer").show();
+                $("#id_payment_percentage").prop("required", true);
+            } else {
+                $("#paymentPercentageContainer").hide();
+                $("#id_payment_percentage").prop("required", false).val("");
+            }
+        }
+        togglePaymentPercentage();
+        $("#id_payment_type").on("change", togglePaymentPercentage);
+
+        // Sync legacy payment field with payment_type selection
+        $("#id_payment_type").on("change", function () {
+            var val = $(this).val();
+            if (val === "paid") { $("#id_payment").val("paid"); }
+            else { $("#id_payment").val("unpaid"); }
+        });
+
         var reset = $("#id_reset");
         var reset_based_label = $("label[for='id_reset_based']");
         var reset_based_span = $("#reset_based_id");

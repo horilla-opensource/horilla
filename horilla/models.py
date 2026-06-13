@@ -8,11 +8,11 @@ the application, such as tracking creation and modification timestamps and user
 information, audit logging, and active/inactive status management.
 """
 
+import html
 import re
 from uuid import uuid4
 
 from auditlog.models import AuditlogHistoryField
-from auditlog.registry import auditlog
 from django.contrib.auth.models import User
 from django.core.exceptions import ValidationError
 from django.db import models
@@ -22,6 +22,10 @@ from django.utils.text import slugify
 from django.utils.translation import gettext_lazy as _
 
 from horilla.horilla_middlewares import _thread_locals
+from horilla.inherit.model_inherit import (  # noqa: F401
+    EXTENSION_REGISTRY,
+    HorillaModelBase,
+)
 from horilla_auth.models import HorillaUser
 
 
@@ -45,6 +49,11 @@ def has_xss(value: str) -> bool:
     if not isinstance(value, str):
         return False
 
+    # Decode HTML entities so obfuscated payloads (e.g. "jav&#x61;script:")
+    # are matched after the browser would have decoded them. Decode twice to
+    # catch double-encoded variants (e.g. "&amp;#x61;").
+    decoded = html.unescape(html.unescape(value))
+
     xss_patterns = [
         r"<\s*script.*?>.*?<\s*/\s*script\s*>",  # <script> ... </script>
         r"javascript\s*:",  # javascript: pseudo-protocol
@@ -54,7 +63,7 @@ def has_xss(value: str) -> bool:
     ]
 
     combined = re.compile("|".join(xss_patterns), re.IGNORECASE | re.DOTALL)
-    return bool(combined.search(value))
+    return bool(combined.search(value) or combined.search(decoded))
 
 
 def upload_path(instance, filename):
@@ -84,7 +93,7 @@ def upload_path(instance, filename):
     return f"{app_label}/{model_name}/{unique_name}"
 
 
-class HorillaModel(models.Model):
+class HorillaModel(models.Model, metaclass=HorillaModelBase):
     """
     An abstract base model that includes common fields and functionalities
     for models within the Horilla application.
@@ -225,6 +234,3 @@ class HorillaModel(models.Model):
 
 class NoPermissionModel:
     _no_permission_model = True
-
-
-auditlog.register(HorillaModel, serialize_data=True)
