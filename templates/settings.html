@@ -111,27 +111,27 @@
 												{% endif %}
 											</div>
 											{% if perms.base.view_dynamicemailconfiguration and not "outlook_auth"|app_installed %}
-											<div class="oh-input-group">
-												<a
-													id="date"
-													href="{% url 'mail-server-conf' %}"
-													class="oh-inner-sidebar__link oh-dropdown__link"
-													>{% trans "Mail Server" %}</a
-												>
-											</div>
-											{% else %}
-											{% url 'outlook_view_records' as outlook_url %} <!-- Added this to gracefully handle exceptions -->
-  											{% if outlook_url %}
-											<div class="oh-input-group">
+												<div class="oh-input-group">
 													<a
-													id="date"
-													href="{{ outlook_url }}"
-													class="oh-inner-sidebar__link oh-dropdown__link"
-													>{% trans "Outlook Mail" %}</a
-												>
-											</div>
-										{% endif %}
-										{% endif %}
+														id="date"
+														href="{% url 'mail-server-conf' %}"
+														class="oh-inner-sidebar__link oh-dropdown__link"
+														>{% trans "Mail Server" %}</a
+													>
+												</div>
+											{% else %}
+												{% url 'outlook_view_records' as outlook_url %} <!-- Added this to gracefully handle exceptions -->
+												{% if outlook_url %}
+													<div class="oh-input-group">
+															<a
+															id="date"
+															href="{{ outlook_url }}"
+															class="oh-inner-sidebar__link oh-dropdown__link"
+															>{% trans "Outlook Mail" %}</a
+														>
+													</div>
+												{% endif %}
+											{% endif %}
 											<div class="oh-input-group">
 												{% if perms.horilla_backup.view_googledrivebackup %}
 													<a
@@ -644,4 +644,3 @@
 </script>
 {% endif %}
 {% endblock content %}
-

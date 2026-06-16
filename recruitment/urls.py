@@ -700,7 +700,6 @@ urlpatterns = [
         linkedin.update_isactive_linkedin,
         name="update-isactive-linkedin-account",
     ),
-    path("check-linkedin", linkedin.check_linkedin, name="check-linkedin"),
     path(
         "val-linkedin/<int:pk>/", linkedin.validate_linkedin_token, name="val-linkedin"
     ),

@@ -217,7 +217,8 @@
               </div>
               <div class="cs-payslip_right cs-text_right">
                 <div class="oh-logo cs-mb5">
-                  <img src="{{protocol}}://{{host}}{{employee.employee_work_info.company_id.icon.url}}" alt="Logo" />
+                  {% comment %} This works for: Local media, Cloud storage (GCS / S3), Signed URLs, PDF printing {% endcomment %}
+                  <img src="{{employee.employee_work_info.company_id.icon.url}}" alt="Logo" />
                 </div>
               </div>
             </div>

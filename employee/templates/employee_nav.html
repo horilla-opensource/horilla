@@ -82,7 +82,7 @@
                     <ion-icon name="search-outline" class="oh-input-group__icon oh-input-group__icon--left"></ion-icon>
                     <input type="text" placeholder="{% trans 'Search' %}" name="search" id="employee-search"
                         class="oh-input oh-input__icon" aria-label="Search Input" onkeyup="$('.filterButton')[0].click();if(this.value) {
-                            $('.search_text').html(this.value)
+                            $('.search_text').text(this.value)
                             $(this).parent().find('#dropdown').show()
                         }else{
                             $(this).parent().find('#dropdown').hide()

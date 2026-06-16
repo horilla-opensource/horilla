@@ -20,8 +20,12 @@ REST_FRAMEWORK_SETTINGS = {
         "horilla_api.auth.RejectBasicAuthentication",
         "rest_framework_simplejwt.authentication.JWTAuthentication",
     ),
+    "DEFAULT_PERMISSION_CLASSES": [
+        "rest_framework.permissions.IsAuthenticated",
+    ],
     "PAGE_SIZE": 20,
 }
+
 
 SIMPLE_JWT = {
     "ACCESS_TOKEN_LIFETIME": timedelta(days=30),

@@ -19,6 +19,7 @@ class AssetAPIView(APIView):
     permission_classes = [IsAuthenticated]
     filter_backends = [DjangoFilterBackend]
     filterset_class = AssetFilter
+    queryset = Asset.objects.all()
 
     def get_asset(self, pk):
         try:
@@ -63,6 +64,7 @@ class AssetCategoryAPIView(APIView):
     permission_classes = [IsAuthenticated]
     filter_backends = [DjangoFilterBackend]
     filterset_class = AssetCategoryFilter
+    queryset = AssetCategory.objects.all()
 
     def get_asset_category(self, pk):
         try:
@@ -226,6 +228,21 @@ class AssetRequestAPIView(APIView):
         return Response(status=status.HTTP_204_NO_CONTENT)
 
 
+def _user_can_manage_asset_request(request, asset_request):
+    """Approver must own the perm or be the requester's reporting manager."""
+    if request.user.has_perm("asset.change_assetrequest"):
+        return True
+    user_employee = getattr(request.user, "employee_get", None)
+    if user_employee is None:
+        return False
+    requester = asset_request.requested_employee_id
+    work_info = getattr(requester, "employee_work_info", None)
+    reporting_manager = (
+        getattr(work_info, "reporting_manager_id", None) if work_info else None
+    )
+    return reporting_manager == user_employee
+
+
 class AssetRejectAPIView(APIView):
     permission_classes = [IsAuthenticated]
 
@@ -237,6 +254,11 @@ class AssetRejectAPIView(APIView):
 
     def put(self, request, pk):
         asset_request = self.get_asset_request(pk)
+        if not _user_can_manage_asset_request(request, asset_request):
+            return Response(
+                {"error": "You do not have permission to reject this asset request."},
+                status=status.HTTP_403_FORBIDDEN,
+            )
         if asset_request.asset_request_status == "Requested":
             asset_request.asset_request_status = "Rejected"
             asset_request.save()
@@ -255,6 +277,11 @@ class AssetApproveAPIView(APIView):
 
     def put(self, request, pk):
         asset_request = self.get_asset_request(pk)
+        if not _user_can_manage_asset_request(request, asset_request):
+            return Response(
+                {"error": "You do not have permission to approve this asset request."},
+                status=status.HTTP_403_FORBIDDEN,
+            )
         if asset_request.asset_request_status == "Requested":
             data = request.data
             if isinstance(data, QueryDict):

@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*-
-""" Django Notifications example views """
+"""Django Notifications example views"""
 from distutils.version import (  # pylint: disable=no-name-in-module,import-error
     StrictVersion,
 )
@@ -10,6 +10,8 @@ from django.forms import model_to_dict
 from django.http import HttpResponse  # noqa
 from django.shortcuts import get_object_or_404, redirect
 from django.utils.decorators import method_decorator
+from django.utils.encoding import iri_to_uri
+from django.utils.http import url_has_allowed_host_and_scheme
 from django.views.decorators.cache import never_cache
 from django.views.generic import ListView
 from swapper import load_model
@@ -71,8 +73,8 @@ def mark_all_as_read(request):
 
     _next = request.GET.get("next")
 
-    if _next:
-        return redirect(_next)
+    if _next and url_has_allowed_host_and_scheme(_next, settings.ALLOWED_HOSTS):
+        return redirect(iri_to_uri(_next))
     return redirect("notifications:unread")
 
 
@@ -87,8 +89,8 @@ def mark_as_read(request, slug=None):
 
     _next = request.GET.get("next")
 
-    if _next:
-        return redirect(_next)
+    if _next and url_has_allowed_host_and_scheme(_next, settings.ALLOWED_HOSTS):
+        return redirect(iri_to_uri(_next))
 
     return redirect("notifications:unread")
 
@@ -104,8 +106,8 @@ def mark_as_unread(request, slug=None):
 
     _next = request.GET.get("next")
 
-    if _next:
-        return redirect(_next)
+    if _next and url_has_allowed_host_and_scheme(_next, settings.ALLOWED_HOSTS):
+        return redirect(iri_to_uri(_next))
 
     return redirect("notifications:unread")
 
@@ -126,8 +128,8 @@ def delete(request, slug=None):
 
     _next = request.GET.get("next")
 
-    if _next:
-        return redirect(_next)
+    if _next and url_has_allowed_host_and_scheme(_next, settings.ALLOWED_HOSTS):
+        return redirect(iri_to_uri(_next))
 
     return redirect("notifications:all")
 

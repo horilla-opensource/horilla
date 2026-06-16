@@ -4,13 +4,15 @@ from functools import wraps
 from urllib.parse import urlencode
 
 from django.contrib import messages
-from django.http import HttpResponse, HttpResponseRedirect
+from django.http import HttpResponse
 from django.shortcuts import redirect, render
 from django.urls import reverse
+from django.utils.http import url_has_allowed_host_and_scheme
 from django.utils.translation import gettext as _
 
-from horilla import settings
-from horilla.settings import BASE_DIR, TEMPLATES
+from horilla.http import HorillaRedirect
+from horilla.methods import handle_no_permission
+from horilla.settings import BASE_DIR, DEBUG, TEMPLATES
 
 logger = logging.getLogger(__name__)
 
@@ -40,14 +42,7 @@ def permission_required(function, perm):
         if request.user.has_perm(perm):
             return function(request, *args, **kwargs)
 
-        else:
-            messages.info(request, "You dont have permission.")
-            previous_url = request.META.get("HTTP_REFERER", "/")
-            key = "HTTP_HX_REQUEST"
-            if key in request.META.keys():
-                return render(request, "decorator_404.html")
-            script = f'<script>window.location.href = "{previous_url}"</script>'
-            return HttpResponse(script)
+        return handle_no_permission(request)
 
     return _function
 
@@ -57,14 +52,8 @@ def any_permission_required(function, perms):
     def _function(request, *args, **kwargs):
         if any(request.user.has_perm(perm) for perm in perms):
             return function(request, *args, **kwargs)
-        else:
-            messages.info(request, "You don’t have permission.")
-            previous_url = request.META.get("HTTP_REFERER", "/")
-            if request.META.get("HTTP_HX_REQUEST"):
-                return render(request, "decorator_404.html")
-            return HttpResponse(
-                f'<script>window.location.href = "{previous_url}"</script>'
-            )
+
+        return handle_no_permission(request)
 
     return _function
 
@@ -95,14 +84,10 @@ def delete_permission(function):
             or is_manager
         ):
             return function(request, *args, **kwargs)
-        else:
-            messages.info(request, "You dont have permission for delete.")
-            previous_url = request.META.get("HTTP_REFERER", "/")
-            key = "HTTP_HX_REQUEST"
-            if key in request.META.keys():
-                return render(request, "decorator_404.html")
-            script = f'<script>window.location.href = "{previous_url}"</script>'
-            return HttpResponse(script)
+
+        return handle_no_permission(
+            request, message=_("You don't have permission to delete.")
+        )
 
     return _function
 
@@ -137,14 +122,10 @@ def duplicate_permission(function):
         permission = f"{app_label}.add_{model_name}"
         if request.user.has_perm(permission) or is_manager:
             return function(request, *args, **kwargs)
-        else:
-            messages.info(request, "You dont have permission for duplicate action.")
-            previous_url = request.META.get("HTTP_REFERER", "/")
-            key = "HTTP_HX_REQUEST"
-            if key in request.META.keys():
-                return render(request, "decorator_404.html")
-            script = f'<script>window.location.href = "{previous_url}"</script>'
-            return HttpResponse(script)
+
+        return handle_no_permission(
+            request, message=_("You don't have permission for duplicate action.")
+        )
 
     return _function
 
@@ -185,14 +166,8 @@ def manager_can_enter(function, perm):
         ).exists()
         if user.has_perm(perm) or is_manager:
             return function(request, *args, **kwargs)
-        else:
-            messages.info(request, "You dont have permission.")
-            previous_url = request.META.get("HTTP_REFERER", "/")
-            script = f'<script>window.location.href = "{previous_url}"</script>'
-            key = "HTTP_HX_REQUEST"
-            if key in request.META.keys():
-                return render(request, "decorator_404.html")
-            return HttpResponse(script)
+
+        return handle_no_permission(request)
 
     return _function
 
@@ -219,14 +194,8 @@ def is_recruitment_manager(function, perm):
 
         if user.has_perm(perm) or is_manager:
             return function(request, *args, **kwargs)
-        else:
-            messages.info(request, "You dont have permission.")
-            previous_url = request.META.get("HTTP_REFERER", "/")
-            script = f'<script>window.location.href = "{previous_url}"</script>'
-            key = "HTTP_HX_REQUEST"
-            if key in request.META.keys():
-                return render(request, "decorator_404.html")
-            return HttpResponse(script)
+
+        return handle_no_permission(request)
 
     return _function
 
@@ -270,12 +239,16 @@ def login_required(view_func):
                 and request.headers.get("X-Requested-With") != "XMLHttpRequest"
             ):
                 referer = request.META.get("HTTP_REFERER", "/")
+                if not url_has_allowed_host_and_scheme(
+                    referer,
+                    allowed_hosts={request.get_host()},
+                    require_https=request.is_secure(),
+                ):
+                    referer = "/"
                 messages.warning(request, str(e))
-                return HttpResponse(
-                    f"<script>window.location.href ='{str(referer)}'</script>"
-                )
+                return redirect(referer)
 
-            if not settings.DEBUG:
+            if DEBUG:
                 return render(request, "went_wrong.html")
             return view_func(request, *args, **kwargs)
         return func
@@ -314,8 +287,9 @@ def owner_can_enter(function, perm: str, model: object, manager_access=False):
                     else None
                 )
             except:
-                messages.error(request, ("Sorry, something went wrong!"))
-                return HttpResponseRedirect(request.META.get("HTTP_REFERER", "/"))
+                return HorillaRedirect(
+                    request, message=_("Sorry, something went wrong!")
+                )
         can_enter = (
             request.user.employee_get == employee
             or request.user.has_perm(perm)
@@ -348,7 +322,8 @@ def install_required(function):
                     request,
                     _("Please enable the Track Late Come & Early Out from settings"),
                 )
-                return HttpResponseRedirect(request.META.get("HTTP_REFERER", "/"))
+                return HorillaRedirect(request)
+
         object = BiometricAttendance.objects.all().first()
         if not object or object.is_installed:
             return function(request, *args, **kwargs)
@@ -359,7 +334,7 @@ def install_required(function):
                     "Please activate the biometric attendance feature in the settings menu."
                 ),
             )
-            return HttpResponseRedirect(request.META.get("HTTP_REFERER", "/"))
+            return HorillaRedirect(request)
 
     return _function
 
@@ -393,14 +368,8 @@ def meeting_manager_can_enter(function, perm, answerable=False):
 
         if user.has_perm(perm) or is_manager or is_answer_employee:
             return function(request, *args, **kwargs)
-        else:
-            messages.info(request, "You dont have permission.")
-            previous_url = request.META.get("HTTP_REFERER", "/")
-            script = f'<script>window.location.href = "{previous_url}"</script>'
-            key = "HTTP_HX_REQUEST"
-            if key in request.META.keys():
-                return render(request, "decorator_404.html")
-            return HttpResponse(script)
+
+        return handle_no_permission(request)
 
     return _function
 

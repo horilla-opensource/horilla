@@ -10,12 +10,13 @@ from django.http import HttpResponse
 from django.utils.decorators import method_decorator
 from django.utils.translation import gettext_lazy as _
 
+from horilla.http import HorillaRedirect
+from horilla.methods import handle_no_permission
 from horilla_views.cbv_methods import login_required
 from horilla_views.generic.cbv.views import HorillaFormView
 
 # from project.decorator import project_delete_permission
 from project.forms import ProjectStageForm
-from project.methods import you_dont_have_permission
 from project.models import Project, ProjectStage
 
 logger = logging.getLogger(__name__)
@@ -49,12 +50,10 @@ class ProjectStageCreateForm(HorillaFormView):
                     or request.user.is_superuser
                 ):
                     return super().get(request, *args, pk=pk, **kwargs)
-                else:
-                    return you_dont_have_permission(request)
+                return handle_no_permission(request)
             except Exception as e:
                 logger.error(e)
-                messages.error(request, _("Something went wrong!"))
-                return HttpResponse("<script>window.location.reload()</script>")
+                return HorillaRedirect(request, message=_("Something went wrong!"))
         else:
             return super().get(request, *args, pk=pk, **kwargs)
 

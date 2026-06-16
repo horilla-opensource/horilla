@@ -12,6 +12,7 @@ from base.methods import filter_own_and_subordinate_recordes, is_reportingmanage
 from employee.models import Employee
 from horilla import horilla_middlewares
 from horilla.decorators import login_required, owner_can_enter, permission_required
+from horilla.http.response import HorillaRedirect
 from horilla_views.generic.cbv import views
 from pms import models
 from pms.filters import BonusPointSettingFilter, EmployeeBonusPointFilter
@@ -310,7 +311,7 @@ class FeedbackEmployeeFormView(views.HorillaFormView):
             form.cleaned_data["others_id"] = other_employees
             form.save()
             messages.success(self.request, _(message))
-            return self.HttpResponse("<script>window.location.reload()</script>")
+            return HorillaRedirect(self.request)
         return super().form_valid(form)
 
 
@@ -407,5 +408,5 @@ class BulkFeedbackFormView(views.HorillaFormView):
                     )
                     feedback.others_id.add(*other_employees)
             messages.success(self.request, _(message))
-            return self.HttpResponse("<script>window.location.reload()</script>")
+            return HorillaRedirect(self.request)
         return super().form_valid(form)

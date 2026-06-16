@@ -54,6 +54,7 @@ from horilla.decorators import (
     permission_required,
 )
 from horilla.group_by import group_by_queryset as general_group_by
+from horilla.http.response import HorillaRedirect
 from horilla_documents.models import Document
 from notifications.signals import notify
 from onboarding.decorators import (
@@ -188,14 +189,7 @@ def stage_update(request, stage_id, recruitment_id):
                 icon="people-circle",
                 redirect=reverse("onboarding-view"),
             )
-            response = render(
-                request,
-                "onboarding/stage_update.html",
-                {"form": form, "stage_id": stage_id, "recruitment_id": recruitment_id},
-            )
-            return HttpResponse(
-                response.content.decode("utf-8") + "<script>location.reload();</script>"
-            )
+            return HorillaRedirect(request)
     return render(
         request,
         "onboarding/stage_update.html",
@@ -225,7 +219,7 @@ def stage_delete(request, stage_id):
         messages.error(request, _("Stage not found."))
     except ProtectedError:
         messages.error(request, _("There are candidates in this stage..."))
-    return HttpResponseRedirect(request.META.get("HTTP_REFERER", "/"))
+    return HorillaRedirect(request)
 
 
 @login_required
@@ -281,7 +275,7 @@ def task_creation(request):
                 redirect=reverse("onboarding-view"),
             )
             messages.success(request, _("New task created successfully..."))
-            return HttpResponse(status=204, headers={"HX-Refresh": "true"})
+            return HorillaRedirect(request)
     return render(
         request, "onboarding/task_form.html", {"form": form, "stage_id": stage_id}
     )
@@ -332,7 +326,7 @@ def task_update(
                 icon="people-circle",
                 redirect=reverse("onboarding-view"),
             )
-            return HttpResponse(status=204, headers={"HX-Refresh": "true"})
+            return HorillaRedirect(request)
     return render(
         request,
         "onboarding/task_update.html",
@@ -641,7 +635,7 @@ def email_send(request):
     email_backend = ConfiguredEmailBackend()
     if not candidates:
         messages.info(request, "Please choose candidates")
-        return HttpResponse("<script>window.location.reload()</script>")
+        return HorillaRedirect(request)
 
     bodys = list(
         HorillaMailTemplate.objects.filter(id__in=template_attachment_ids).values_list(
@@ -726,7 +720,7 @@ def email_send(request):
         except Exception as e:
             logger.error(e)
 
-    return HttpResponse("<script>window.location.reload()</script>")
+    return HorillaRedirect(request)
 
 
 def onboarding_query_grouper(request, queryset):
@@ -1798,7 +1792,7 @@ def add_to_rejected_candidates(request):
             form.save()
             form = RejectedCandidateForm()
             messages.success(request, "Candidate reject reason saved")
-            return HttpResponse("<script>window.location.reload()</script>")
+            return HorillaRedirect(request)
     return render(request, "onboarding/rejection/form.html", {"form": form})
 
 
@@ -1818,7 +1812,7 @@ def delete_candidate_rejection(request, rej_id):
             messages.error(request, "Candidate rejection not found")
     except Exception as e:
         messages.error(request, "Error occurred while deleting candidate rejection")
-    return HttpResponse("<script>window.location.reload()</script>")
+    return HorillaRedirect(request)
 
 
 @login_required
@@ -1873,6 +1867,8 @@ def candidate_select_filter(request):
         return JsonResponse(context)
 
 
+@login_required
+@permission_required("recruitment.change_candidate")
 def offer_letter_bulk_status_update(request):
     """
     This function is used to bulk update the offerletter status
@@ -1894,6 +1890,8 @@ def offer_letter_bulk_status_update(request):
     return JsonResponse("success", safe=False)
 
 
+@login_required
+@permission_required("recruitment.delete_candidate")
 def onboarding_candidate_bulk_delete(request):
     """
     This function is used to bulk delete onboarding candidates

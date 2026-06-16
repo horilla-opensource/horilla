@@ -3,6 +3,7 @@ Module for managing announcements, including creation, updates, comments, and vi
 """
 
 import json
+import os
 from datetime import datetime, timedelta
 
 from django.contrib import messages
@@ -78,6 +79,19 @@ def announcement_list(request):
     return render(request, "announcement/announcements_list.html", context)
 
 
+BLOCKED_EXTENSIONS = {
+    ".html",
+    ".htm",
+    ".js",
+    ".svg",
+    ".xml",
+    ".php",
+    ".py",
+    ".sh",
+    ".exe",
+}
+
+
 @login_required
 @hx_request_required
 def create_announcement(request):
@@ -85,12 +99,31 @@ def create_announcement(request):
     Create a new announcement and notify relevant users.
     """
     form = AnnouncementForm()
+
     if request.method == "POST":
         form = AnnouncementForm(request.POST, request.FILES)
+
         if form.is_valid():
-            announcement, attachment_ids = form.save(commit=False)
+            announcement, unused_attachment_ids = form.save(commit=False)
             announcement.save()
-            announcement.attachments.set(attachment_ids)
+
+            # Attachment validation (same as CBV)
+            files = request.FILES.getlist("attachments")
+            safe_attachment_ids = []
+
+            for file in files:
+                ext = os.path.splitext(file.name)[1].lower()
+
+                if ext in BLOCKED_EXTENSIONS:
+                    messages.error(
+                        request, f"File type {ext} is not allowed for security reasons."
+                    )
+                    continue
+
+                attachment = Attachment.objects.create(file=file)
+                safe_attachment_ids.append(attachment.id)
+
+            announcement.attachments.set(safe_attachment_ids)
 
             employees = form.cleaned_data["employees"]
             departments = form.cleaned_data["department"]
@@ -156,9 +189,13 @@ def create_announcement(request):
             )
 
             messages.success(request, _("Announcement created successfully."))
-            form = AnnouncementForm()  # Reset the form
+            form = AnnouncementForm()  # Reset form
 
-    return render(request, "announcement/announcement_form.html", {"form": form})
+    return render(
+        request,
+        "announcement/announcement_form.html",
+        {"form": form},
+    )
 
 
 @login_required
@@ -195,7 +232,6 @@ def update_announcement(request, anoun_id):
     """
     This method renders form and template to update Announcement
     """
-
     announcement = Announcement.objects.get(id=anoun_id)
     form = AnnouncementForm(instance=announcement)
     existing_attachments = list(announcement.attachments.all())
@@ -204,24 +240,40 @@ def update_announcement(request, anoun_id):
 
     if request.method == "POST":
         form = AnnouncementForm(request.POST, request.FILES, instance=announcement)
+
         if form.is_valid():
             anou, attachment_ids = form.save(commit=False)
             anou.save()
-            if attachment_ids:
-                all_attachments = set(existing_attachments) | set(
-                    Attachment.objects.filter(id__in=attachment_ids)
-                )
-                anou.attachments.set(all_attachments)
-            else:
-                anou.attachments.set(existing_attachments)
+
+            # 🔒 Attachment validation (NEW + SAFE)
+            files = request.FILES.getlist("attachments")
+            safe_new_attachments = []
+
+            for file in files:
+                ext = os.path.splitext(file.name)[1].lower()
+
+                if ext in BLOCKED_EXTENSIONS:
+                    messages.error(
+                        request, f"File type {ext} is not allowed for security reasons."
+                    )
+                    continue
+
+                attachment = Attachment.objects.create(file=file)
+                safe_new_attachments.append(attachment)
+
+            # ✅ Merge existing + safe new attachments
+            all_attachments = set(existing_attachments) | set(safe_new_attachments)
+            anou.attachments.set(all_attachments)
 
             employees = form.cleaned_data["employees"]
             departments = form.cleaned_data["department"]
             job_positions = form.cleaned_data["job_position"]
             company = form.cleaned_data["company_id"]
+
             anou.department.set(departments)
             anou.job_position.set(job_positions)
             anou.company_id.set(company)
+
             messages.success(request, _("Announcement updated successfully."))
 
             emp_dep = User.objects.filter(
@@ -230,12 +282,14 @@ def update_announcement(request, anoun_id):
             emp_jobs = User.objects.filter(
                 employee_get__employee_work_info__job_position_id__in=job_positions
             )
+
             employees = employees | Employee.objects.filter(
                 employee_work_info__department_id__in=departments
             )
             employees = employees | Employee.objects.filter(
                 employee_work_info__job_position_id__in=job_positions
             )
+
             anou.employees.add(*employees)
 
             notify.send(
@@ -261,6 +315,7 @@ def update_announcement(request, anoun_id):
                 redirect="/",
                 icon="chatbox-ellipses",
             )
+
     return render(
         request,
         "announcement/announcement_update_form.html",

@@ -16,19 +16,18 @@ from .models import *
 
 
 class LocalBackupSetupForm(ModelForm):
-    verbose_name = "Server Backup"
     backup_db = forms.BooleanField(
-        required=False, help_text="Enable to backup database to server."
+        required=False, help_text=_("Enable to backup database to server.")
     )
     backup_media = forms.BooleanField(
-        required=False, help_text="Enable to backup all media files to server."
+        required=False, help_text=_("Enable to backup all media files to server.")
     )
     interval = forms.BooleanField(
         required=False,
-        help_text="Enable to automate the backup in a period of seconds.",
+        help_text=_("Enable to automate the backup in a period of seconds."),
     )
     fixed = forms.BooleanField(
-        required=False, help_text="Enable to automate the backup in a fixed time."
+        required=False, help_text=_("Enable to automate the backup in a fixed time.")
     )
 
     class Meta:
@@ -83,19 +82,19 @@ class GdriveBackupSetupForm(ModelForm):
     backup_db = forms.BooleanField(
         required=False,
         label="Backup DB",
-        help_text="Enable to backup database to Gdrive",
+        help_text=_("Enable to backup database to Gdrive"),
     )
     backup_media = forms.BooleanField(
         required=False,
         label="Backup Media",
-        help_text="Enable to backup all media files to Gdrive",
+        help_text=_("Enable to backup all media files to Gdrive"),
     )
     interval = forms.BooleanField(
         required=False,
-        help_text="Enable to automate the backup in a period of seconds.",
+        help_text=_("Enable to automate the backup in a period of seconds."),
     )
     fixed = forms.BooleanField(
-        required=False, help_text="Enable to automate the backup in a fixed time."
+        required=False, help_text=_("Enable to automate the backup in a fixed time.")
     )
 
     class Meta:

@@ -17,12 +17,19 @@ from django.shortcuts import render
 
 from base.backends import ConfiguredEmailBackend
 from base.forms import MailTemplateForm
-from base.methods import export_data, generate_pdf
+from base.methods import (
+    build_safe_template_request,
+    export_data,
+    generate_pdf,
+    sanitize_mail_template_body,
+    sanitize_mail_template_placeholders,
+)
 from base.models import HorillaMailTemplate
 from employee.filters import EmployeeFilter
 from employee.models import Employee
 from horilla import settings
 from horilla.decorators import login_required, manager_can_enter
+from horilla.http.response import HorillaRedirect
 
 
 def paginator_qry(qryset, page_number):
@@ -185,6 +192,13 @@ def get_mail_preview(request):
     if not body:
         return HttpResponse("No body provided", status=400)
 
+    # Strip dangerous template constructs first.
+    body = sanitize_mail_template_body(body)
+    allowed_template_words = set(
+        MailTemplateForm().get_employee_template_language().values()
+    )
+    body = sanitize_mail_template_placeholders(body, allowed_template_words)
+
     emp_id = request.GET.get("emp_id")
     employee_ids = request.POST.getlist("employees")
 
@@ -196,12 +210,12 @@ def get_mail_preview(request):
         if not employee_obj:
             return HttpResponse("Employee not found", status=404)
 
-    # Build context
+    # Keep `request` in context, but only as a sanitized proxy.
     context = {
         "instance": employee_obj,
         "model_instance": employee_obj,
         "self": getattr(request.user, "employee_get", None),
-        "request": request,
+        "request": build_safe_template_request(request),
     }
 
     # Render template
@@ -298,4 +312,4 @@ def send_mail_to_employee(request):
                 messages.info(request, f"Email not set for {employee.get_full_name()}")
         except Exception as e:
             messages.error(request, "Something went wrong")
-    return HttpResponse("<script>window.location.reload()</script>")
+    return HorillaRedirect(request)

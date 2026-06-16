@@ -9,7 +9,7 @@
       <label
       class="oh-label"
       for="id_{{ field.name }}"
-      title="{{ field.help_text|safe }}"
+      title="{{ field.help_text }}"
       >{{ field.label }}</label
       >
       {{field.errors}}
@@ -23,7 +23,7 @@
         <label
           class="oh-label"
           for="id_{{ field.name }}"
-          title="{{ field.help_text|safe }}"
+          title="{{ field.help_text }}"
           >{{ field.label }}</label
           >
           {% if field.field.widget.input_type == "checkbox" %}

@@ -118,7 +118,14 @@ class ContractView(APIView):
 
     def get(self, request, id=None):
         if id:
-            contract = Contract.objects.filter(id=id).first()
+            if request.user.has_perm("payroll.view_contract"):
+                contract = Contract.objects.filter(id=id).first()
+            else:
+                contract = Contract.objects.filter(
+                    id=id, employee_id=request.user.employee_get
+                ).first()
+            if not contract:
+                return Response(status=404)
             serializer = ContractSerializer(contract)
             return Response(serializer.data, status=200)
         if request.user.has_perm("payroll.view_contract"):
@@ -330,22 +337,42 @@ class ReimbusementApproveRejectView(APIView):
     permission_classes = [IsAuthenticated]
 
     def post(self, request, pk):
+        from django.shortcuts import get_object_or_404
+
+        reimbursement = get_object_or_404(Reimbursement, id=pk)
+        user_employee = getattr(request.user, "employee_get", None)
+        owner = reimbursement.employee_id
+        work_info = getattr(owner, "employee_work_info", None)
+        reporting_manager = (
+            getattr(work_info, "reporting_manager_id", None) if work_info else None
+        )
+        is_manager = user_employee is not None and reporting_manager == user_employee
+        has_permission = request.user.has_perm("payroll.change_reimbursement")
+
+        if not (is_manager or has_permission):
+            return Response(
+                {
+                    "error": "You do not have permission to approve/reject this reimbursement."
+                },
+                status=403,
+            )
+
         status = request.data.get("status", None)
-        amount = request.data.get("amount", None)
         amount = (
             eval_validate(request.data.get("amount"))
             if request.data.get("amount")
             else 0
         )
         amount = max(0, amount)
-        reimbursement = Reimbursement.objects.filter(id=pk)
         if amount:
-            reimbursement.update(amount=amount)
-        reimbursement.update(status=status)
-        return Response({"status": reimbursement.first().status}, status=200)
+            reimbursement.amount = amount
+        reimbursement.status = status
+        reimbursement.save()
+        return Response({"status": reimbursement.status}, status=200)
 
 
 class TaxBracketView(APIView):
+    permission_classes = [IsAuthenticated]
 
     def get(self, request, pk=None):
         if pk:

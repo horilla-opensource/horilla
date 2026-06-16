@@ -15,7 +15,7 @@
                 {% for field in form.visible_fields %}
                     <div class="col-12" id="id_{{ field.name }}_parent_div">
                         <label class="oh-label {% if field.field.required %} required-star{% endif %}"
-                            for="id_{{ field.name }}" title="{{ field.help_text|safe }}">
+                            for="id_{{ field.name }}" title="{{ field.help_text }}">
                             {% trans field.label %}
                         </label>
                         {{ field|add_class:"oh-input w-100 form-control" }}

@@ -31,6 +31,7 @@ from employee.models import (
     PolicyMultipleFile,
 )
 from horilla.decorators import hx_request_required, login_required, permission_required
+from horilla.http.response import HorillaRedirect
 from notifications.signals import notify
 
 
@@ -285,7 +286,7 @@ def create_actions(request):
             )
         dis = DisciplinaryAction.objects.all()
         if len(dis) == 1:
-            return HttpResponse("<script>window.location.reload()</script>")
+            return HorillaRedirect(request)
 
     return render(
         request, "disciplinary_actions/form.html", {"form": form, "dynamic": dynamic}
@@ -396,7 +397,7 @@ def delete_actions(request, action_id):
 
     if dis_actions.exists():
         return redirect(disciplinary_filter_view)
-    return HttpResponse("<script>window.location.reload()</script>")
+    return HorillaRedirect(request)
 
 
 @login_required

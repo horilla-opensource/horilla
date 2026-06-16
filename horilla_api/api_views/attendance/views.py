@@ -196,7 +196,10 @@ class AttendanceView(APIView):
     permission_classes = [IsAuthenticated]
     filterset_class = AttendanceFilters
 
-    def get_queryset(self, request, type):
+    def get_queryset(self, request=None, type=None):
+        # Handle schema generation for DRF-YASG
+        if getattr(self, "swagger_fake_view", False) or request is None:
+            return Attendance.objects.none()
         if type == "ot":
 
             condition = AttendanceValidationCondition.objects.first()
@@ -365,6 +368,7 @@ class OvertimeApproveView(APIView):
 
     permission_classes = [IsAuthenticated]
 
+    @method_decorator(manager_permission_required("attendance.change_attendance"))
     def put(self, request, pk):
         try:
             attendance = Attendance.objects.filter(id=pk).update(
@@ -758,7 +762,7 @@ class OfflineEmployeesCountView(APIView):
 
 class OfflineEmployeesListView(APIView):
     """
-    Li sts active employees who have not clocked in today, including their leave status.
+    Lists active employees who have not clocked in today, including their leave status.
     """
 
     permission_classes = [IsAuthenticated]
