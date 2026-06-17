@@ -26,6 +26,7 @@ from typing import Any
 
 from django import forms
 from django.template.loader import render_to_string
+from django.utils.translation import gettext_lazy as _
 
 from base.forms import ModelForm
 from base.methods import filtersubordinatesemployeemodel, is_reportingmanager
@@ -52,6 +53,38 @@ class TicketTypeForm(ModelForm):
         model = TicketType
         fields = "__all__"
         exclude = ["is_active"]
+
+    def clean(self):
+        cleaned_data = super().clean()
+        title = cleaned_data.get("title")
+        prefix = cleaned_data.get("prefix")
+        instance = self.instance
+
+        request = getattr(horilla_middlewares._thread_locals, "request", None)
+        selected_company = request.session.get("selected_company") if request else None
+
+        if selected_company and selected_company != "all":
+            from base.models import Company as CompanyModel
+
+            company = CompanyModel.find(selected_company)
+            qs_title = TicketType.objects.filter(title=title, company_id=company)
+            qs_prefix = TicketType.objects.filter(prefix=prefix, company_id=company)
+        else:
+            qs_title = TicketType.objects.filter(title=title, company_id__isnull=True)
+            qs_prefix = TicketType.objects.filter(
+                prefix=prefix, company_id__isnull=True
+            )
+
+        if instance.pk:
+            qs_title = qs_title.exclude(pk=instance.pk)
+            qs_prefix = qs_prefix.exclude(pk=instance.pk)
+
+        if title and qs_title.exists():
+            self.add_error("title", _("Ticket type with this title already exists."))
+        if prefix and qs_prefix.exists():
+            self.add_error("prefix", _("Ticket type with this prefix already exists."))
+
+        return cleaned_data
 
     def as_p(self, *args, **kwargs):
         """

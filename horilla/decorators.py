@@ -344,7 +344,14 @@ def install_required(function):
                     _("Please enable the Track Late Come & Early Out from settings"),
                 )
                 return HorillaRedirect(request)
-        object = BiometricAttendance.objects.all().first()
+        selected_company = request.session.get("selected_company")
+        if selected_company == "all":
+            biometric_company = None
+        else:
+            biometric_company = Company.objects.filter(id=selected_company).first()
+        object = BiometricAttendance.objects.filter(
+            company_id=biometric_company
+        ).first()
         if not object or object.is_installed:
             return function(request, *args, **kwargs)
         else:

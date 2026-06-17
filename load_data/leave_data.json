@@ -3307,7 +3307,9 @@
       "company_id": 1,
       "job_position": [],
       "spesific_leave_types": [],
-      "exclued_leave_types": [3]
+      "exclued_leave_types": [
+        3
+      ]
     }
   },
   {
@@ -3327,7 +3329,9 @@
       "company_id": 1,
       "job_position": [],
       "spesific_leave_types": [],
-      "exclued_leave_types": [3]
+      "exclued_leave_types": [
+        3
+      ]
     }
   },
   {
@@ -3339,6 +3343,156 @@
       "modified_by": null,
       "is_active": true,
       "enabled": true
+    }
+  },
+  {
+    "model": "leave.leaverequest",
+    "pk": 114,
+    "fields": {
+      "created_at": "2025-06-25T09:15:00.000Z",
+      "created_by": 1,
+      "modified_by": 1,
+      "is_active": true,
+      "employee_id": 22,
+      "leave_type_id": 2,
+      "start_date": "2025-07-03",
+      "end_date": "2025-07-05",
+      "start_date_breakdown": "full_day",
+      "end_date_breakdown": "full_day",
+      "requested_days": 3.0,
+      "requested_date": "2025-06-25",
+      "status": "requested",
+      "description": "Personal work - need 3 days off",
+      "attachment": "",
+      "reject_reason": "",
+      "approved_available_days": 0.0,
+      "approved_carryforward_days": 0.0,
+      "leave_clashes_count": 0
+    }
+  },
+  {
+    "model": "leave.leaverequest",
+    "pk": 115,
+    "fields": {
+      "created_at": "2025-06-26T10:30:00.000Z",
+      "created_by": 1,
+      "modified_by": 1,
+      "is_active": true,
+      "employee_id": 40,
+      "leave_type_id": 3,
+      "start_date": "2025-07-03",
+      "end_date": "2025-07-04",
+      "start_date_breakdown": "full_day",
+      "end_date_breakdown": "full_day",
+      "requested_days": 2.0,
+      "requested_date": "2025-06-26",
+      "status": "requested",
+      "description": "Not feeling well, medical appointment",
+      "attachment": "",
+      "reject_reason": "",
+      "approved_available_days": 0.0,
+      "approved_carryforward_days": 0.0,
+      "leave_clashes_count": 0
+    }
+  },
+  {
+    "model": "leave.leaverequest",
+    "pk": 116,
+    "fields": {
+      "created_at": "2025-06-27T08:45:00.000Z",
+      "created_by": 1,
+      "modified_by": 1,
+      "is_active": true,
+      "employee_id": 28,
+      "leave_type_id": 2,
+      "start_date": "2025-07-03",
+      "end_date": "2025-07-05",
+      "start_date_breakdown": "full_day",
+      "end_date_breakdown": "full_day",
+      "requested_days": 3.0,
+      "requested_date": "2025-06-27",
+      "status": "requested",
+      "description": "Family event out of town",
+      "attachment": "",
+      "reject_reason": "",
+      "approved_available_days": 0.0,
+      "approved_carryforward_days": 0.0,
+      "leave_clashes_count": 0
+    }
+  },
+  {
+    "model": "leave.leaverequest",
+    "pk": 117,
+    "fields": {
+      "created_at": "2025-06-20T11:00:00.000Z",
+      "created_by": 1,
+      "modified_by": 1,
+      "is_active": true,
+      "employee_id": 11,
+      "leave_type_id": 2,
+      "start_date": "2025-07-07",
+      "end_date": "2025-07-08",
+      "start_date_breakdown": "full_day",
+      "end_date_breakdown": "full_day",
+      "requested_days": 2.0,
+      "requested_date": "2025-06-20",
+      "status": "approved",
+      "description": "Pre-planned vacation",
+      "attachment": "",
+      "reject_reason": "",
+      "approved_available_days": 2.0,
+      "approved_carryforward_days": 0.0,
+      "leave_clashes_count": 0
+    }
+  },
+  {
+    "model": "leave.leaverequest",
+    "pk": 118,
+    "fields": {
+      "created_at": "2025-06-18T09:30:00.000Z",
+      "created_by": 1,
+      "modified_by": 1,
+      "is_active": true,
+      "employee_id": 47,
+      "leave_type_id": 3,
+      "start_date": "2025-07-07",
+      "end_date": "2025-07-07",
+      "start_date_breakdown": "full_day",
+      "end_date_breakdown": "full_day",
+      "requested_days": 1.0,
+      "requested_date": "2025-06-18",
+      "status": "approved",
+      "description": "Medical check-up",
+      "attachment": "",
+      "reject_reason": "",
+      "approved_available_days": 1.0,
+      "approved_carryforward_days": 0.0,
+      "leave_clashes_count": 0
+    }
+  },
+  {
+    "model": "leave.leaverequest",
+    "pk": 119,
+    "fields": {
+      "created_at": "2025-06-30T14:20:00.000Z",
+      "created_by": 1,
+      "modified_by": 1,
+      "is_active": true,
+      "employee_id": 16,
+      "leave_type_id": 2,
+      "start_date": "2025-07-02",
+      "end_date": "2025-07-02",
+      "start_date_breakdown": "full_day",
+      "end_date_breakdown": "full_day",
+      "requested_days": 1.0,
+      "requested_date": "2025-06-30",
+      "status": "requested",
+      "description": "Urgent personal matter",
+      "attachment": "",
+      "reject_reason": "",
+      "approved_available_days": 0.0,
+      "approved_carryforward_days": 0.0,
+      "leave_clashes_count": 0
     }
   }
 ]

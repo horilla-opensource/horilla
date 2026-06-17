@@ -5401,21 +5401,36 @@ if apps.is_installed("recruitment"):
 @login_required
 @permission_required("leave.view_leavegeneralsetting")
 def employee_past_leave_restriction(request):
-    enabled_restriction = EmployeePastLeaveRestrict.objects.first()
-    if not enabled_restriction:
-        enabled_restriction = EmployeePastLeaveRestrict.objects.create(enabled=True)
+    selected_company = request.session.get("selected_company")
+    if selected_company != "all":
+        enabled_restriction = EmployeePastLeaveRestrict.objects.filter(
+            company_id_id=selected_company
+        ).first()
+        if not enabled_restriction:
+            enabled_restriction = EmployeePastLeaveRestrict.objects.create(
+                enabled=True, company_id_id=selected_company
+            )
+    else:
+        enabled_restriction = EmployeePastLeaveRestrict.objects.filter(
+            company_id__isnull=True
+        ).first()
+        if not enabled_restriction:
+            enabled_restriction = EmployeePastLeaveRestrict.objects.create(
+                enabled=True, company_id=None
+            )
     if request.method == "POST":
-        enabled_restriction.enabled = not enabled_restriction.enabled
+        enabled_restriction.enabled = "enabled" in request.POST
         enabled_restriction.save()
 
         if enabled_restriction.enabled:
             messages.success(
-                request, "Past Date Leave Request Restriction has been enabled"
+                request, _("Past Date Leave Request Restriction has been enabled")
             )
         else:
             messages.success(
-                request, "Past Date Leave Request Restriction has been disabled"
+                request, _("Past Date Leave Request Restriction has been disabled")
             )
+        return HorillaRedirect(request)
 
     return render(
         request,

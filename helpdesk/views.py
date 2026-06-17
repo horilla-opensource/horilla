@@ -1889,11 +1889,16 @@ def get_department_employees(request):
 
     employees = []
     if dep_id:
-        employees = list(
+        raw = (
             EmployeeWorkInformation.objects.filter(department_id=dep_id)
             .select_related("employee_id")
-            .values_list("employee_id__id", "employee_id")
+            .values_list(
+                "employee_id__id",
+                "employee_id__employee_first_name",
+                "employee_id__employee_last_name",
+            )
         )
+        employees = [(emp_id, f"{first} {last}".strip()) for emp_id, first, last in raw]
 
     employee_html = render_to_string(
         "employee/employees_select.html",

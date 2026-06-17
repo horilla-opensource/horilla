@@ -151,7 +151,7 @@ class PaySlipAutomationFormView(HorillaFormView):
         if form.is_valid():
             if form.instance.pk:
                 message = _(
-                    f"Payslip Auto generate for {company} created successfully "
+                    f"Payslip Auto generate for {company} updated successfully "
                 )
             else:
                 message = _(

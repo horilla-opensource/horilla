@@ -21,6 +21,7 @@ from django.apps import apps
 from django.conf import settings
 from django.contrib import messages
 from django.contrib.auth import authenticate, login, logout
+from django.contrib.auth.mixins import LoginRequiredMixin
 from django.contrib.auth.models import Group, Permission
 from django.contrib.auth.views import PasswordResetConfirmView, PasswordResetView
 from django.core.exceptions import ValidationError
@@ -41,6 +42,7 @@ from django.utils.http import url_has_allowed_host_and_scheme
 from django.utils.translation import gettext as _
 from django.views import View
 from django.views.decorators.http import require_http_methods
+from django.views.generic import TemplateView
 from rest_framework_simplejwt.authentication import JWTAuthentication
 from rest_framework_simplejwt.exceptions import InvalidToken, TokenError
 from rest_framework_simplejwt.tokens import UntypedToken
@@ -181,6 +183,7 @@ from horilla.decorators import (
 )
 from horilla.group_by import group_by_queryset
 from horilla.http.response import HorillaRedirect
+from horilla.menu import get_settings_menu
 from horilla.methods import get_horilla_model_class, remove_dynamic_url
 from horilla_audit.forms import HistoryTrackingFieldsForm
 from horilla_audit.models import AccountBlockUnblock, AuditTag, HistoryTrackingFields
@@ -1103,6 +1106,15 @@ def common_settings(request):
     This method is used to render setting page template
     """
     return render(request, "settings.html")
+
+
+class SettingsView(LoginRequiredMixin, TemplateView):
+    """
+    Settings page — builds the sidebar menu from registered app menu.py
+    entries and passes it directly into the template context.
+    """
+
+    template_name = "settings.html"
 
 
 @login_required
@@ -2153,14 +2165,18 @@ def work_type_create(request):
     This method is used to create work type
     """
     dynamic = request.GET.get("dynamic")
-    form = WorkTypeForm()
+    selected_company = request.session.get("selected_company")
+    company = None
+    if selected_company and selected_company != "all":
+        company = Company.objects.filter(id=selected_company).first()
+    initial = {"company_id": [company] if company else []}
+    form = WorkTypeForm(initial=initial)
     work_types = WorkType.objects.all()
     if request.method == "POST":
         form = WorkTypeForm(request.POST)
         if form.is_valid():
             form.save()
-            form = WorkTypeForm()
-
+            form = WorkTypeForm(initial=initial)
             messages.success(request, _("Work Type has been created successfully!"))
             return HorillaRedirect(request)
 
@@ -2177,8 +2193,10 @@ def work_type_view(request):
     """
     This method is used to view work type
     """
-
+    selected_company = request.session.get("selected_company")
     work_types = WorkType.objects.all()
+    if selected_company and selected_company != "all":
+        work_types = work_types.filter(company_id__id=selected_company)
     return render(
         request,
         "base/work_type/work_type.html",
@@ -7077,7 +7095,12 @@ def reorder_dashboard_charts(request):
 @login_required
 @permission_required("base.view_biometricattendance")
 def enable_biometric_attendance_view(request):
-    biometric = BiometricAttendance.objects.first()
+    selected_company = request.session.get("selected_company")
+    if selected_company == "all":
+        company = None
+    else:
+        company = Company.objects.filter(id=selected_company).first()
+    biometric = BiometricAttendance.objects.filter(company_id=company).first()
     return render(
         request,
         "base/install_biometric_attendance.html",
@@ -7090,9 +7113,14 @@ def enable_biometric_attendance_view(request):
 def activate_biometric_attendance(request):
     if request.method == "GET":
         is_installed = request.GET.get("is_installed")
-        instance = BiometricAttendance.objects.first()
-        if not instance:
-            instance = BiometricAttendance.objects.create()
+        selected_company = request.session.get("selected_company")
+        if selected_company == "all":
+            company = None
+        else:
+            company = Company.objects.filter(id=selected_company).first()
+        instance, created = BiometricAttendance.objects.get_or_create(
+            company_id=company
+        )
         if is_installed == "true":
             instance.is_installed = True
             messages.success(

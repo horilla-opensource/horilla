@@ -241,11 +241,19 @@ def check_candidate_self_tracking(request):
     """
 
     candidate_self_tracking = False
+    selected_company = request.session.get("selected_company")
     if apps.is_installed("recruitment"):
         RecruitmentGeneralSetting = get_horilla_model_class(
             app_label="recruitment", model="recruitmentgeneralsetting"
         )
-        first = RecruitmentGeneralSetting.objects.first()
+        if selected_company and selected_company != "all":
+            first = RecruitmentGeneralSetting.objects.filter(
+                company_id_id=selected_company
+            ).first()
+        else:
+            first = RecruitmentGeneralSetting.objects.filter(
+                company_id__isnull=True
+            ).first()
     else:
         first = None
     if first:
@@ -258,11 +266,19 @@ def check_candidate_self_tracking_rating(request):
     This method is used to check enabled/disabled of rating option
     """
     rating_option = False
+    selected_company = request.session.get("selected_company")
     if apps.is_installed("recruitment"):
         RecruitmentGeneralSetting = get_horilla_model_class(
             app_label="recruitment", model="recruitmentgeneralsetting"
         )
-        first = RecruitmentGeneralSetting.objects.first()
+        if selected_company and selected_company != "all":
+            first = RecruitmentGeneralSetting.objects.filter(
+                company_id_id=selected_company
+            ).first()
+        else:
+            first = RecruitmentGeneralSetting.objects.filter(
+                company_id__isnull=True
+            ).first()
     else:
         first = None
     if first:

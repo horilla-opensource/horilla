@@ -1370,12 +1370,12 @@ class Allowance(HorillaModel):
     def __str__(self) -> str:
         return str(self.title)
 
-    def save(self):
+    def save(self, *args, **kwargs):
         request = getattr(horilla_middlewares._thread_locals, "request", None)
         selected_company = request.session.get("selected_company")
         if not self.id and selected_company and selected_company != "all":
             self.company_id = Company.find(selected_company)
-        super().save()
+        super().save(*args, **kwargs)
 
 
 class Deduction(HorillaModel):
@@ -1870,12 +1870,12 @@ class Deduction(HorillaModel):
     def __str__(self) -> str:
         return str(self.title)
 
-    def save(self):
+    def save(self, *args, **kwargs):
         request = getattr(horilla_middlewares._thread_locals, "request", None)
         selected_company = request.session.get("selected_company")
         if not self.id and selected_company and selected_company != "all":
             self.company_id = Company.find(selected_company)
-        super().save()
+        super().save(*args, **kwargs)
 
 
 class Payslip(HorillaModel):
@@ -2668,6 +2668,7 @@ class PayslipAutoGenerate(models.Model):
         blank=True,
         verbose_name=_("Company"),
     )
+    objects = HorillaCompanyManager(related_company_field="company_id")
 
     def get_generate_day_display(self):
         """
