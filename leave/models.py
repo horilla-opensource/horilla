@@ -1660,11 +1660,15 @@ class LeaveRequest(HorillaModel):
                 )
 
         # Past date restriction
-        if (
-            not request.user.is_superuser
-            and EmployeePastLeaveRestrict.objects.filter(enabled=True).exists()
-        ):
-            restrict = EmployeePastLeaveRestrict.objects.first()
+        if not request.user.is_superuser:
+            emp_company = getattr(
+                getattr(self.employee_id, "employee_work_info", None),
+                "company_id",
+                None,
+            )
+            restrict = EmployeePastLeaveRestrict.objects.filter(
+                enabled=True, company_id=emp_company
+            ).first()
             if restrict and self.start_date < date.today():
                 raise ValidationError(_("Requests cannot be made for past dates."))
 
@@ -2441,6 +2445,10 @@ if apps.is_installed("attendance"):
 
 class EmployeePastLeaveRestrict(HorillaModel):
     enabled = models.BooleanField(default=True)
+    company_id = models.ForeignKey(
+        Company, null=True, blank=True, on_delete=models.CASCADE
+    )
+    objects = HorillaCompanyManager(related_company_field="company_id")
 
 
 if apps.is_installed("attendance"):
