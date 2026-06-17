@@ -96,9 +96,9 @@ class DepartmentManager(HorillaModel):
 
 
 class TicketType(HorillaModel):
-    title = models.CharField(max_length=100, unique=True, verbose_name=_("Title"))
+    title = models.CharField(max_length=100, verbose_name=_("Title"))
     type = models.CharField(choices=TICKET_TYPES, max_length=50, verbose_name=_("Type"))
-    prefix = models.CharField(max_length=3, unique=True, verbose_name=_("Prefix"))
+    prefix = models.CharField(max_length=3, verbose_name=_("Prefix"))
     company_id = models.ForeignKey(
         Company, null=True, editable=False, on_delete=models.PROTECT
     )
@@ -106,6 +106,18 @@ class TicketType(HorillaModel):
 
     def __str__(self):
         return self.title
+
+    def save(self, *args, **kwargs):
+        request = getattr(horilla_middlewares._thread_locals, "request", None)
+        selected_company = request.session.get("selected_company")
+        if (
+            not self.id
+            and not self.company_id
+            and selected_company
+            and selected_company != "all"
+        ):
+            self.company_id = Company.find(selected_company)
+        super().save(*args, **kwargs)
 
     def get_update_url(self):
         """
