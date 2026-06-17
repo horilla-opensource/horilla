@@ -1910,6 +1910,19 @@ class Tags(HorillaModel):
     def __str__(self):
         return self.title
 
+    def save(self, *args, **kwargs):
+        request = getattr(horilla_middlewares._thread_locals, "request", None)
+        if request:
+            selected_company = request.session.get("selected_company")
+            if (
+                not self.id
+                and not self.company_id_id
+                and selected_company
+                and selected_company != "all"
+            ):
+                self.company_id = Company.find(selected_company)
+        super().save(*args, **kwargs)
+
     def get_color(self):
         """
         This method returns the style string with the tag's color
@@ -2632,29 +2645,37 @@ def default_additional_data():
 class AttendanceAllowedIP(models.Model):
     """
     Represents client IP addresses that are allowed to mark attendance.
-    Usage:
-        - This model is used to store IP addresses that are permitted to access the attendance system.
-        - It ensures that only authorized IP addresses can mark attendance.
+    Each company has its own record so IP restrictions are company-specific.
     """
 
+    company_id = models.OneToOneField(
+        Company,
+        null=True,
+        blank=True,
+        on_delete=models.CASCADE,
+        related_name="attendance_allowed_ip",
+        verbose_name=_("Company"),
+    )
     is_enabled = models.BooleanField(default=False)
     additional_data = models.JSONField(
         null=True, blank=True, default=default_additional_data
     )
+    objects = HorillaCompanyManager(related_company_field="company_id")
 
     def clean(self):
         """
         Validate that all entries in `allowed_ips` are either valid IP addresses or network prefixes.
         """
-        allowed_ips = self.additional_data.get("allowed_ips", [])
+        allowed_ips = (self.additional_data or {}).get("allowed_ips", [])
         for ip in allowed_ips:
             try:
-                ipaddress.ip_network(ip)
+                ipaddress.ip_network(ip, strict=False)
             except ValueError:
                 raise ValidationError(f"Invalid IP address or network prefix: {ip}")
 
     def __str__(self):
-        return f"AttendanceAllowedIP - {self.is_enabled}"
+        company = self.company_id.company if self.company_id else "Global"
+        return f"AttendanceAllowedIP ({company}) - {'enabled' if self.is_enabled else 'disabled'}"
 
 
 class TrackLateComeEarlyOut(HorillaModel):
