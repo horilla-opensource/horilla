@@ -17,6 +17,7 @@ from django.utils.translation import gettext_lazy as _
 import payroll.models.models
 from base.forms import Form, ModelForm
 from base.methods import reload_queryset
+from base.models import Company
 from employee.filters import EmployeeFilter
 from employee.models import BonusPoint, Employee
 from horilla import horilla_middlewares
@@ -1063,6 +1064,14 @@ class PayslipAutoGenerateForm(ModelForm):
     class Meta:
         model = PayslipAutoGenerate
         fields = ["generate_day", "company_id", "auto_generate"]
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        active_company_id = horilla_middlewares.get_selected_company()
+        if active_company_id and active_company_id != "all":
+            self.fields["company_id"].queryset = Company.objects.filter(
+                id=active_company_id
+            )
 
     def as_p(self):
         """
