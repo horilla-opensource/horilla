@@ -206,6 +206,7 @@ def clock_in(request):
     # check wether check in/check out feature is enabled
     selected_company = request.session.get("selected_company")
     if selected_company == "all":
+        company = None
         attendance_general_settings = AttendanceGeneralSetting.objects.filter(
             company_id=None
         ).first()
@@ -220,20 +221,23 @@ def clock_in(request):
         and attendance_general_settings.enable_check_in
         or request.__dict__.get("datetime")
     ):
-        allowed_attendance_ips = AttendanceAllowedIP.objects.first()
+        allowed_attendance_ips = AttendanceAllowedIP.objects.filter(
+            company_id=company
+        ).first()
 
         if (
             not request.__dict__.get("datetime")
             and allowed_attendance_ips
             and allowed_attendance_ips.is_enabled
         ):
-
             x_forwarded_for = request.META.get("HTTP_X_FORWARDED_FOR")
             ip = request.META.get("REMOTE_ADDR")
             if x_forwarded_for:
                 ip = x_forwarded_for.split(",")[0]
 
-            allowed_ips = allowed_attendance_ips.additional_data.get("allowed_ips", [])
+            allowed_ips = (allowed_attendance_ips.additional_data or {}).get(
+                "allowed_ips", []
+            )
             ip_allowed = False
             for allowed_ip in allowed_ips:
                 try:
@@ -246,7 +250,11 @@ def clock_in(request):
                     continue
 
             if not ip_allowed:
-                return HttpResponse(_("You cannot mark attendance from this network"))
+                messages.error(
+                    request,
+                    _("Check-In Restricted: Your current network is not authorized "),
+                )
+                return HorillaRedirect(request)
 
         employee, work_info = employee_exists(request)
         datetime_now = timezone.localtime()
@@ -302,13 +310,20 @@ def clock_in(request):
             return render(
                 request, "attendance/components/in_out_component.html", {"run": 1}
             )
-        return HttpResponse(
+        messages.error(
+            request,
             _(
-                "You Don't have work information filled or your employee detail neither entered "
-            )
+                "Check-In Unavailable: Your employee profile or work information is incomplete."
+            ),
         )
+        return HorillaRedirect(request)
     else:
-        messages.error(request, _("Check in/Check out feature is not enabled."))
+        messages.error(
+            request,
+            _(
+                "The attendance check-in/check-out feature has not been enabled for your company."
+            ),
+        )
         return HorillaRedirect(request)
 
 
@@ -447,6 +462,7 @@ def clock_out(request):
     # check wether check in/check out feature is enabled
     selected_company = request.session.get("selected_company")
     if selected_company == "all":
+        company = None
         attendance_general_settings = AttendanceGeneralSetting.objects.filter(
             company_id=None
         ).first()
@@ -460,6 +476,41 @@ def clock_out(request):
         and attendance_general_settings.enable_check_in
         or request.__dict__.get("datetime")
     ):
+        allowed_attendance_ips = AttendanceAllowedIP.objects.filter(
+            company_id=company
+        ).first()
+
+        if (
+            not request.__dict__.get("datetime")
+            and allowed_attendance_ips
+            and allowed_attendance_ips.is_enabled
+        ):
+            x_forwarded_for = request.META.get("HTTP_X_FORWARDED_FOR")
+            ip = request.META.get("REMOTE_ADDR")
+            if x_forwarded_for:
+                ip = x_forwarded_for.split(",")[0]
+
+            allowed_ips = (allowed_attendance_ips.additional_data or {}).get(
+                "allowed_ips", []
+            )
+            ip_allowed = False
+            for allowed_ip in allowed_ips:
+                try:
+                    if ipaddress.ip_address(ip) in ipaddress.ip_network(
+                        allowed_ip, strict=False
+                    ):
+                        ip_allowed = True
+                        break
+                except ValueError:
+                    continue
+
+            if not ip_allowed:
+                messages.error(
+                    request,
+                    _("Check-Out Restricted: Your current network is not authorized"),
+                )
+                return HorillaRedirect(request)
+
         datetime_now = timezone.localtime()
         if request.__dict__.get("datetime"):
             datetime_now = request.datetime
@@ -525,5 +576,10 @@ def clock_out(request):
         )
 
     else:
-        messages.error(request, _("Check in/Check out feature is not enabled."))
+        messages.error(
+            request,
+            _(
+                "The attendance check-in/check-out feature has not been enabled for your company."
+            ),
+        )
         return HorillaRedirect(request)

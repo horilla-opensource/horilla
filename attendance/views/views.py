@@ -2998,17 +2998,30 @@ def validation_condition_update(request, obj_id):
     )
 
 
+def _get_session_company(request):
+    """Return the Company instance for the session-selected company, or None."""
+    from base.models import Company
+
+    selected = request.session.get("selected_company")
+    if selected == "all" or not selected:
+        return None
+    return Company.objects.filter(id=selected).first()
+
+
 @login_required
 @permission_required("attendance.add_attendance")
 def allowed_ips(request):
     """
-    This function is used to view the allowed ips
+    This function is used to view the allowed ips for the active company.
     """
-    allowed_ips = AttendanceAllowedIP.objects.first()
+    company = _get_session_company(request)
+    allowed_ip_obj, created = AttendanceAllowedIP.objects.get_or_create(
+        company_id=company
+    )
     return render(
         request,
         "attendance/ip_restriction/ip_restriction.html",
-        {"allowed_ips": allowed_ips},
+        {"allowed_ips": allowed_ip_obj},
     )
 
 
@@ -3017,19 +3030,13 @@ def allowed_ips(request):
 @require_http_methods(["POST"])
 def enable_ip_restriction(request):
     """
-    This function is used to enable the allowed ips
+    This function is used to toggle IP restriction for the active company.
     """
-    form = AttendanceAllowedIPForm()
-    if request.method == "POST":
-        ip_restiction = AttendanceAllowedIP.objects.first()
-
-        if not ip_restiction:
-            ip_restiction = AttendanceAllowedIP.objects.create(is_enabled=True)
-            return HorillaRedirect(request)
-
-        ip_restiction.is_enabled = not ip_restiction.is_enabled
-
-        ip_restiction.save()
+    company = _get_session_company(request)
+    obj, _created = AttendanceAllowedIP.objects.get_or_create(company_id=company)
+    is_enabled = True if request.POST.get("is_enabled") == "on" else False
+    obj.is_enabled = is_enabled
+    obj.save()
     return HorillaRedirect(request)
 
 
@@ -3052,43 +3059,36 @@ def validate_ip_address(self, value):
 @permission_required("attendance.add_attendance")
 def create_allowed_ips(request):
     """
-    This function is used to create the allowed IPs.
+    This function is used to create the allowed IPs for the active company.
     """
+    company = _get_session_company(request)
     if request.method == "POST":
         form = AttendanceAllowedIPForm(request.POST)
         if form.is_valid():
             ip_addresses = form.cleaned_data.get("ip_addresses")
-            allowed_ips = AttendanceAllowedIP.objects.first()
-            if allowed_ips:
-                existing_ips = set(allowed_ips.additional_data.get("allowed_ips", []))
-                new_ips = set(ip_addresses)
-                duplicates = new_ips.intersection(existing_ips)
-
-                if duplicates:
-                    messages.error(
-                        request, f"IP addresses already exist: {', '.join(duplicates)}"
-                    )
-
-                non_duplicates = new_ips - duplicates
-
-                if non_duplicates:
-                    allowed_ips.additional_data["allowed_ips"] = list(
-                        existing_ips.union(non_duplicates)
-                    )
-                    allowed_ips.save()
-                    messages.success(request, "IP addresses saved successfully")
-                else:
-                    messages.info(
-                        request,
-                        "All provided IP addresses are already in the allowed list.",
-                    )
-
-            else:
-                AttendanceAllowedIP.objects.create(
-                    is_enabled=True, additional_data={"allowed_ips": ip_addresses}
+            obj, _created = AttendanceAllowedIP.objects.get_or_create(
+                company_id=company,
+                defaults={"additional_data": {"allowed_ips": []}, "is_enabled": True},
+            )
+            if not obj.additional_data:
+                obj.additional_data = {"allowed_ips": []}
+            existing_ips = set(obj.additional_data.get("allowed_ips", []))
+            new_ips = set(ip_addresses)
+            duplicates = new_ips & existing_ips
+            if duplicates:
+                messages.error(
+                    request, f"IP addresses already exist: {', '.join(duplicates)}"
                 )
-                messages.success(request, "IP addresses saved successfully")
-
+            non_duplicates = new_ips - duplicates
+            if non_duplicates:
+                obj.additional_data["allowed_ips"] = list(existing_ips | non_duplicates)
+                obj.save()
+                messages.success(request, _("IP addresses saved successfully"))
+            else:
+                messages.info(
+                    request,
+                    _("All provided IP addresses are already in the allowed list."),
+                )
             return HorillaRedirect(request)
     else:
         form = AttendanceAllowedIPForm()
@@ -3102,21 +3102,21 @@ def create_allowed_ips(request):
 @permission_required("attendance.delete_attendance")
 def delete_allowed_ips(request):
     """
-    This function is used to delete the allowed ips
+    This function is used to delete the allowed ips for the active company.
     """
+    company = _get_session_company(request)
     try:
         ids = request.GET.getlist("id")
-        allowed_ips = AttendanceAllowedIP.objects.first()
-        ips = allowed_ips.additional_data["allowed_ips"]
-        for id in ids:
-            ips.pop(eval_validate(id))
-
-        allowed_ips.additional_data["allowed_ips"] = ips
-        allowed_ips.save()
-
-        messages.success(request, "IP address removed successfully")
-    except:
-        messages.error(request, "Invalid id")
+        obj = AttendanceAllowedIP.objects.filter(company_id=company).first()
+        if obj:
+            ips = (obj.additional_data or {}).get("allowed_ips", [])
+            for id in ids:
+                ips.pop(eval_validate(id))
+            obj.additional_data["allowed_ips"] = ips
+            obj.save()
+        messages.success(request, _("IP address removed successfully"))
+    except Exception:
+        messages.error(request, _("Invalid id"))
     return redirect("allowed-ips")
 
 
@@ -3124,15 +3124,16 @@ def delete_allowed_ips(request):
 @permission_required("attendance.change_attendance")
 def edit_allowed_ips(request):
     """
-    This function is used to edit the allowed IPs.
+    This function is used to edit the allowed IPs for the active company.
     """
-    allowed_ips = AttendanceAllowedIP.objects.first()
-    if not allowed_ips:
-        messages.error(request, "No allowed IPs found.")
+    company = _get_session_company(request)
+    obj = AttendanceAllowedIP.objects.filter(company_id=company).first()
+    if not obj:
+        messages.error(request, _("No allowed IPs found."))
         return redirect("allowed-ips")
 
-    ips = allowed_ips.additional_data.get("allowed_ips", [])
-    id = request.GET["id"]
+    ips = (obj.additional_data or {}).get("allowed_ips", [])
+    id = request.GET.get("id", request.POST.get("id"))
 
     try:
         id = int(id)
@@ -3146,22 +3147,19 @@ def edit_allowed_ips(request):
             form = AttendanceAllowedIPForm(request.POST)
             if form.is_valid():
                 new_ip = form.cleaned_data["ip_addresses"][0]
-
-                existing_ips = set(allowed_ips.additional_data.get("allowed_ips", []))
-
+                existing_ips = set(ips)
                 if new_ip in existing_ips:
-                    messages.error(request, "IP address already exists.")
+                    messages.error(request, _("IP address already exists."))
                 else:
                     existing_ips.discard(initial_ip)
                     existing_ips.add(new_ip)
-
-                    allowed_ips.additional_data["allowed_ips"] = list(existing_ips)
-                    allowed_ips.save()
-                    messages.success(request, "IP address updated successfully")
+                    obj.additional_data["allowed_ips"] = list(existing_ips)
+                    obj.save()
+                    messages.success(request, _("IP address updated successfully"))
                 return HorillaRedirect(request)
 
     except (ValueError, IndexError):
-        messages.error(request, "Invalid ID provided.")
+        messages.error(request, _("Invalid ID provided."))
 
     return render(
         request,
