@@ -100,7 +100,9 @@ class Command(BaseCommand):
                     os.remove(tmp)
 
         self.stdout.write(
-            self.style.SUCCESS(f"\nDone. {loaded} fixture(s) loaded, {errors} error(s).")
+            self.style.SUCCESS(
+                f"\nDone. {loaded} fixture(s) loaded, {errors} error(s)."
+            )
         )
 
     def _copy_demo_icons(self, load_dir: Path):
@@ -119,4 +121,6 @@ class Command(BaseCommand):
             copied += 1
 
         if copied:
-            self.stdout.write(self.style.SUCCESS(f"  Copied {copied} company icon(s) to media."))
+            self.stdout.write(
+                self.style.SUCCESS(f"  Copied {copied} company icon(s) to media.")
+            )

@@ -11,6 +11,16 @@ from horilla_views.cbv_methods import (
 from horilla_views.generic.cbv.views import HorillaListView, HorillaNavView
 
 
+def _get_session_company(request):
+    """Return the Company instance for the session-selected company, or None."""
+    from base.models import Company
+
+    selected = request.session.get("selected_company")
+    if selected == "all" or not selected:
+        return None
+    return Company.objects.filter(id=selected).first()
+
+
 @method_decorator(login_required, name="dispatch")
 @method_decorator(
     permission_required("attendance.view_attendanceallowedip"),
@@ -37,7 +47,8 @@ class IpRestrictionList(HorillaListView):
 
     def get_queryset(self, *args, **kwargs):
         self._saved_filters = self.request.GET.copy()
-        qs = self.model.objects.first()
+        company = _get_session_company(self.request)
+        qs = self.model.objects.filter(company_id=company).first()
 
         class IP:
             def __init__(self, ip, idx):
@@ -53,8 +64,8 @@ class IpRestrictionList(HorillaListView):
                     context={"instance": self},
                 )
 
-        sorted_qs = qs.additional_data.get("allowed_ips", [])
-        self.queryset = [IP(ip, idx) for idx, ip in enumerate(sorted_qs)]
+        ip_list = (qs.additional_data or {}).get("allowed_ips", []) if qs else []
+        self.queryset = [IP(ip, idx) for idx, ip in enumerate(ip_list)]
         return self.queryset
 
 
