@@ -1916,8 +1916,10 @@ def create_or_update_auto_payslip(request, auto_id=None):
             company = (
                 auto_payslip.company_id if auto_payslip.company_id else "All company"
             )
+            action = _("updated") if auto_id else _("created")
             messages.success(
-                request, _(f"Payslip Auto generate for {company} created successfully ")
+                request,
+                _(f"Payslip Auto generate for {company} {action} successfully "),
             )
             return HorillaRedirect(request)
     return render(
