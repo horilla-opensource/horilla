@@ -1724,6 +1724,14 @@ class BonusPointSetting(models.Model):
         default=0, validators=[MinValueValidator(0)], verbose_name=_("Points")
     )
     is_active = models.BooleanField(default=True)
+    company_id = models.ForeignKey(
+        Company,
+        null=True,
+        blank=True,
+        verbose_name=_("Company"),
+        on_delete=models.CASCADE,
+    )
+    objects = HorillaCompanyManager()
 
     def get_model_display(self):
         """
@@ -1807,6 +1815,15 @@ class BonusPointSetting(models.Model):
             ).save()
 
     def save(self, *args, **kwargs):
+        request = getattr(_thread_locals, "request", None)
+        selected_company = request.session.get("selected_company") if request else None
+        if (
+            not self.id
+            and not self.company_id
+            and selected_company
+            and selected_company != "all"
+        ):
+            self.company_id = Company.find(selected_company)
         super().save(*args, **kwargs)
 
     def __str__(self) -> str:

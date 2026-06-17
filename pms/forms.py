@@ -1184,6 +1184,13 @@ class BonusPointSettingForm(HorillaModelForm):
         model = BonusPointSetting
         fields = "__all__"
 
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        reload_queryset(self.fields)
+        self.fields["company_id"].widget.attrs.update(
+            {"class": "oh-select oh-select-2 w-100"}
+        )
+
     def clean(self):
         cleaned_data = super().clean()
         model = cleaned_data.get("model")
