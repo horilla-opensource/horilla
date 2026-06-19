@@ -1,6 +1,6 @@
 from django.contrib.auth import authenticate
 from drf_yasg import openapi
-from rest_framework.permissions import IsAuthenticated
+from rest_framework.permissions import AllowAny, IsAuthenticated
 from rest_framework.response import Response
 from rest_framework.views import APIView
 from rest_framework_simplejwt.tokens import RefreshToken
@@ -15,6 +15,8 @@ from ...api_serializers.auth.serializers import (
 
 
 class LoginAPIView(APIView):
+    permission_classes = [AllowAny]
+
     @document_api(
         operation_description="Authenticate user and return JWT access token with employee info",
         request_body=LoginRequestSerializer,
