@@ -108,7 +108,7 @@ urlpatterns = [
         "user-group-delete/<int:obj_id>/",
         views.object_delete,
         name="user-group-delete",
-        kwargs={"model": Group, "redirect": "user-group-view"},
+        kwargs={"model": Group, "redirect_path": "/settings/user-group-view/"},
     ),
     path(
         "group-permission-remove/<int:pid>/<int:gid>/",
@@ -206,7 +206,7 @@ urlpatterns = [
         "settings/company-delete/<int:obj_id>/",
         views.object_delete,
         name="company-delete",
-        kwargs={"model": Company, "redirect": "/settings/company-view"},
+        kwargs={"model": Company, "redirect_path": "/settings/company-view/"},
     ),
     path("settings/department-view/", views.department_view, name="department-view"),
     path(
@@ -489,7 +489,7 @@ urlpatterns = [
         name="rotating-shift-delete",
         kwargs={
             "model": RotatingShift,
-            "redirect": "/settings/rotating-shift-view",
+            "redirect_path": "/settings/rotating-shift-view/",
         },
     ),
     path(
