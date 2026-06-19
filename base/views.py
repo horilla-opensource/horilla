@@ -7830,9 +7830,16 @@ class EnableIntegrationsView(View):
             messages.error(request, "Missing app_label")
             return HttpResponse("<script>window.location.reload()</script>")
 
+        selected_company = request.session.get("selected_company")
+        if selected_company and selected_company != "all":
+            company = Company.objects.filter(id=selected_company).first()
+        else:
+            company = None
+
         enabled = request.POST.get("is_enabled") is not None
         integration_app, created = IntegrationApps.objects.update_or_create(
             app_label=app_label,
+            company=company,
             defaults={"is_enabled": enabled},
         )
         try:

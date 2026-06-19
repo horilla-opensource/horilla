@@ -266,15 +266,25 @@ def app_installed(app_name):
 @register.filter(name="integration_installed")
 def is_integration_installed(app_name):
     """
-    Custom function to check if an app is installed and enabled.
+    Custom function to check if an app is installed and enabled for the current company.
     """
+    from base.models import Company
 
-    integrations = IntegrationApps.objects.values_list("app_label", flat=True)
+    request = _thread_locals.request
+    company = None
+    if request:
+        selected_company = request.session.get("selected_company")
+        if selected_company and selected_company != "all":
+            company = Company.objects.filter(id=selected_company).first()
 
-    if app_name not in integrations and not apps.is_installed(app_name):
+    if not IntegrationApps.objects.filter(
+        app_label=app_name
+    ).exists() and not apps.is_installed(app_name):
         return False
 
-    return IntegrationApps.objects.filter(app_label=app_name, is_enabled=True).exists()
+    return IntegrationApps.objects.filter(
+        app_label=app_name, company=company, is_enabled=True
+    ).exists()
 
 
 @register.filter(name="is_stagemanager")

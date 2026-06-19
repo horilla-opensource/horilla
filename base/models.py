@@ -2998,8 +2998,18 @@ class NotificationSound(models.Model):
 
 
 class IntegrationApps(HorillaModel, NoPermissionModel):
-    app_label = models.CharField(max_length=255, unique=True)
+    app_label = models.CharField(max_length=255)
+    company = models.ForeignKey(
+        "base.Company",
+        on_delete=models.CASCADE,
+        null=True,
+        blank=True,
+        verbose_name=_("Company"),
+    )
     is_enabled = models.BooleanField(default=False)
+
+    class Meta:
+        unique_together = ("app_label", "company")
 
 
 # User.add_to_class("is_new_employee", models.BooleanField(default=False))
