@@ -1,0 +1,17 @@
+{% load i18n %}
+<div class="oh-input__group d-flex align-items-center mb-2 leave-approver-row">
+    <select name="approver" class="oh-select oh-select-2 w-100" required>
+        <option value="">{% trans "Select approver" %}</option>
+        <option value="reporting_manager" {% if selected == "reporting_manager" %}selected{% endif %}>
+            {% trans "Reporting Manager" %}
+        </option>
+        {% for emp in employees %}
+        <option value="{{ emp.id }}" {% if selected == emp.id|stringformat:"s" %}selected{% endif %}>{{ emp }}</option>
+        {% endfor %}
+    </select>
+    <button type="button" class="oh-btn oh-btn--danger-outline ms-2"
+        title="{% trans 'Remove' %}"
+        onclick="this.closest('.leave-approver-row').remove()">
+        <ion-icon name="trash-outline"></ion-icon>
+    </button>
+</div>

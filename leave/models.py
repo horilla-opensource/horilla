@@ -24,7 +24,11 @@ from base.models import (
     MultipleApprovalCondition,
     clear_messages,
 )
-from employee.models import Employee, EmployeeWorkInformation
+from employee.models import (
+    Employee,
+    EmployeeLeaveApprover,
+    EmployeeWorkInformation,
+)
 from horilla import horilla_middlewares
 from horilla.models import HorillaModel, upload_path
 from horilla_audit.methods import get_diff
@@ -904,7 +908,30 @@ class LeaveRequest(HorillaModel):
                         applicable_condition = condition
                         break
 
-        if applicable_condition and self.status == "requested":
+        # A per-employee approver list (configured by HR in the employee profile)
+        # takes precedence over department-level approval conditions. When present,
+        # it fully governs the sequential approval chain for this request.
+        personal_approvers = EmployeeLeaveApprover.objects.filter(
+            employee_id=self.employee_id
+        ).order_by("sequence")
+
+        if personal_approvers.exists() and self.status == "requested":
+            LeaveRequestConditionApproval.objects.filter(leave_request_id=self).delete()
+            sequence = 0
+            previous_manager = None
+            for approver in personal_approvers:
+                manager = approver.resolved_manager()
+                # Skip empty steps and consecutive duplicates (e.g. an explicit
+                # pick that resolves to the same person as a reporting-manager step).
+                if manager and manager != previous_manager:
+                    sequence += 1
+                    LeaveRequestConditionApproval.objects.create(
+                        sequence=sequence,
+                        leave_request_id=self,
+                        manager_id=manager,
+                    )
+                    previous_manager = manager
+        elif applicable_condition and self.status == "requested":
             LeaveRequestConditionApproval.objects.filter(leave_request_id=self).delete()
             sequence = 0
             managers = applicable_condition.approval_managers()

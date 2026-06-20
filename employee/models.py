@@ -1036,6 +1036,62 @@ class ProfileEditFeature(HorillaModel):
     objects = models.Manager()
 
 
+class EmployeeLeaveApprover(HorillaModel):
+    """
+    Per-employee ordered list of leave approvers, configured by HR in the
+    employee profile. Each row is one step in the sequential approval chain;
+    a step is either a specific employee or the employee's reporting manager.
+    """
+
+    employee_id = models.ForeignKey(
+        Employee,
+        on_delete=models.CASCADE,
+        related_name="leave_approvers",
+        verbose_name=_("Employee"),
+    )
+    sequence = models.IntegerField(verbose_name=_("Sequence"))
+    approver_id = models.ForeignKey(
+        Employee,
+        on_delete=models.CASCADE,
+        null=True,
+        blank=True,
+        related_name="leave_approver_for",
+        verbose_name=_("Approver"),
+    )
+    is_reporting_manager = models.BooleanField(
+        default=False, verbose_name=_("Use Reporting Manager")
+    )
+    objects = HorillaCompanyManager(
+        related_company_field="employee_id__employee_work_info__company_id"
+    )
+
+    class Meta:
+        ordering = ["sequence"]
+        verbose_name = _("Employee Leave Approver")
+        verbose_name_plural = _("Employee Leave Approvers")
+
+    def resolved_manager(self):
+        """
+        Resolve this step to a concrete approver Employee. For a dynamic
+        "Reporting Manager" step, look it up from the leave employee's work info.
+        """
+        if self.is_reporting_manager:
+            work_info = getattr(self.employee_id, "employee_work_info", None)
+            return work_info.reporting_manager_id if work_info else None
+        return self.approver_id
+
+    @property
+    def selected_value(self):
+        """Form-select value for this step: token or approver id (as string)."""
+        if self.is_reporting_manager:
+            return "reporting_manager"
+        return str(self.approver_id_id or "")
+
+    def __str__(self):
+        who = _("Reporting Manager") if self.is_reporting_manager else self.approver_id
+        return f"{self.employee_id} #{self.sequence}: {who}"
+
+
 ACCESSBILITY_FEATURE.append(("gender_chart", "Can view Gender Chart"))
 ACCESSBILITY_FEATURE.append(("department_chart", "Can view Department Chart"))
 ACCESSBILITY_FEATURE.append(("employees_chart", "Can view Employees Chart"))

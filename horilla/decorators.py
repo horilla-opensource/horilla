@@ -156,9 +156,18 @@ def manager_can_enter(function, perm):
         user = request.user
         employee = user.employee_get
         if perm in leave_perm:
-            is_approval_manager = MultipleApprovalManagers.objects.filter(
-                employee_id=employee.id
-            ).exists()
+            from leave.models import LeaveRequestConditionApproval
+
+            is_approval_manager = (
+                MultipleApprovalManagers.objects.filter(
+                    employee_id=employee.id
+                ).exists()
+                # Covers per-employee profile chains and any other request a user
+                # is assigned to approve via the conditional approval engine.
+                or LeaveRequestConditionApproval.objects.filter(
+                    manager_id=employee
+                ).exists()
+            )
             if is_approval_manager:
                 return function(request, *args, **kwargs)
         is_manager = EmployeeWorkInformation.objects.filter(

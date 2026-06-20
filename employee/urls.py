@@ -61,6 +61,11 @@ urlpatterns = [
         kwargs={"model": Employee},
     ),
     path(
+        "add-leave-approver-row",
+        views.add_leave_approver_row,
+        name="add-leave-approver-row",
+    ),
+    path(
         "employee-create-personal-info",
         views.employee_create_update_personal_info,
         name="employee-create-personal-info",

@@ -103,6 +103,7 @@ from employee.models import (
     Employee,
     EmployeeBankDetails,
     EmployeeGeneralSetting,
+    EmployeeLeaveApprover,
     EmployeeNote,
     EmployeeTag,
     EmployeeWorkInformation,
@@ -1583,6 +1584,30 @@ def employee_view_update(request, obj_id, **kwargs):
                     instance.employee_id = employee
                     instance.save()
                     messages.success(request, _("Employee bank details updated."))
+            elif request.POST.get("form") == "leave_approvers":
+                EmployeeLeaveApprover.objects.filter(employee_id=employee).delete()
+                sequence = 0
+                for value in request.POST.getlist("approver"):
+                    value = (value or "").strip()
+                    if not value:
+                        continue
+                    if value == "reporting_manager":
+                        sequence += 1
+                        EmployeeLeaveApprover.objects.create(
+                            employee_id=employee,
+                            sequence=sequence,
+                            is_reporting_manager=True,
+                        )
+                    else:
+                        approver = Employee.objects.filter(id=value).first()
+                        if approver:
+                            sequence += 1
+                            EmployeeLeaveApprover.objects.create(
+                                employee_id=employee,
+                                sequence=sequence,
+                                approver_id=approver,
+                            )
+                messages.success(request, _("Leave approvers updated."))
         return render(
             request,
             "employee/update_form/form_view.html",
@@ -1592,9 +1617,27 @@ def employee_view_update(request, obj_id, **kwargs):
                 "work_form": work_form,
                 "bank_form": bank_form,
                 "work_info_history": work_info_history,
+                "leave_approvers": EmployeeLeaveApprover.objects.filter(
+                    employee_id=employee
+                ).order_by("sequence"),
+                "employees": Employee.objects.filter(is_active=True),
             },
         )
     return HorillaRedirect(request, fallback_url="/employee/employee-view")
+
+
+@login_required
+@permission_required("employee.change_employee")
+def add_leave_approver_row(request):
+    """
+    Returns a single empty approver-select row for the Leave Approvers panel
+    on the employee edit profile (HTMX, appended to the list).
+    """
+    return render(
+        request,
+        "employee/update_form/leave_approver_row.html",
+        {"employees": Employee.objects.filter(is_active=True), "selected": ""},
+    )
 
 
 @login_required

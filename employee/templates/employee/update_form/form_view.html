@@ -17,12 +17,20 @@
                 <li class="oh-general__tab">
         <a href="#" class="oh-general__tab-link" data-action="general-tab" data-target="#bank">{% trans "Bank Info" %}</a>
     </li>
+    {% if perms.employee.change_employee %}
+                <li class="oh-general__tab">
+        <a href="#" class="oh-general__tab-link" data-action="general-tab" data-target="#leave_approvers">{% trans "Leave Approvers" %}</a>
+    </li>
+    {% endif %}
 </ul>
 </div>
 </section>
 {% include 'employee/update_form/personal_info.html' %}
 {% include 'employee/update_form/work_details.html' %}
 {% include 'employee/update_form/bank_details.html' %}
+{% if perms.employee.change_employee %}
+{% include 'employee/update_form/leave_approvers.html' %}
+{% endif %}
 
 </div>
 <script>

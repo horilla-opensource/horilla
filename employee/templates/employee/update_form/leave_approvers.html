@@ -1,0 +1,34 @@
+{% load i18n %}
+<div class="oh-wrapper">
+    <div class="oh-general__tab-target oh-profile-section mb-4 d-none" id="leave_approvers">
+        <div class="oh-profile-section__card">
+            <form method="post" action="">
+                {% csrf_token %}
+                <input type="hidden" name="form" value="leave_approvers">
+                <div class="oh-profile-section__card-title mb-2 fw-bold">
+                    {% trans "Leave Approvers" %}
+                </div>
+                <p class="text-muted mb-4">
+                    {% trans "Leave requests are approved in this order. Each approver is notified only after the previous one approves, and the leave is approved only when everyone approves." %}
+                </p>
+                <div id="leaveApproverRows">
+                    {% for row in leave_approvers %}
+                        {% include 'employee/update_form/leave_approver_row.html' with selected=row.selected_value %}
+                    {% endfor %}
+                </div>
+                <button type="button" class="oh-btn oh-btn--secondary-outline mt-2"
+                    hx-get="{% url 'add-leave-approver-row' %}"
+                    hx-target="#leaveApproverRows"
+                    hx-swap="beforeend">
+                    <ion-icon name="add-outline"></ion-icon> {% trans "Add approver" %}
+                </button>
+                <hr class="mt-5 mb-3">
+                <div class="w-100 d-flex align-items-center justify-content-end">
+                    <button type="submit" class="oh-btn oh-btn--secondary oh-btn--w-100-resp">
+                        {% trans "Save" %}
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>

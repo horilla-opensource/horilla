@@ -12151,3 +12151,30 @@ msgstr "Особиста картка"
 
 msgid "Crypto Wallet"
 msgstr "Криптогаманець"
+
+msgid "Leave Approvers"
+msgstr "Апрувери відпустки"
+
+msgid "Add approver"
+msgstr "Додати апрувера"
+
+msgid "Approver"
+msgstr "Апрувер"
+
+msgid "Select approver"
+msgstr "Оберіть апрувера"
+
+msgid "Use Reporting Manager"
+msgstr "Використати безпосереднього керівника"
+
+msgid "Leave approvers updated."
+msgstr "Апруверів відпустки оновлено."
+
+msgid "Employee Leave Approver"
+msgstr "Апрувер відпустки працівника"
+
+msgid "Employee Leave Approvers"
+msgstr "Апрувери відпустки працівника"
+
+msgid "Leave requests are approved in this order. Each approver is notified only after the previous one approves, and the leave is approved only when everyone approves."
+msgstr "Запити на відпустку погоджуються в цьому порядку. Кожен апрувер отримує сповіщення лише після погодження попереднім, а відпустка вважається погодженою лише коли всі погодили."
