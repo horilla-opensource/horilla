@@ -5591,7 +5591,7 @@ msgid "Offline"
 msgstr "Офлайн"
 
 msgid "About"
-msgstr "Про"
+msgstr "Особиста інформація"
 
 msgid "Work type & Shift"
 msgstr "Тип роботи та зміна"
