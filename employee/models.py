@@ -101,6 +101,18 @@ class Employee(models.Model):
         max_length=50, blank=True, null=True, choices=choice_marital, default="single"
     )
     children = models.IntegerField(blank=True, null=True)
+    children_info = models.TextField(
+        blank=True, null=True, verbose_name=_("Children Information")
+    )
+    np_branch = models.CharField(
+        max_length=100, blank=True, null=True, verbose_name=_("Nova Poshta Branch")
+    )
+    np_postomat = models.CharField(
+        max_length=100,
+        blank=True,
+        null=True,
+        verbose_name=_("Nova Poshta Parcel Locker"),
+    )
     emergency_contact = models.CharField(max_length=15, null=True, blank=True)
     emergency_contact_name = models.CharField(max_length=20, null=True, blank=True)
     emergency_contact_relation = models.CharField(max_length=20, null=True, blank=True)
@@ -755,7 +767,9 @@ class EmployeeBankDetails(HorillaModel):
         related_name="employee_bank_details",
         verbose_name=_("Employee"),
     )
-    bank_name = models.CharField(max_length=50)
+    bank_name = models.CharField(
+        max_length=50, blank=True, null=True, verbose_name=_("Bank Name")
+    )
     account_number = models.CharField(
         max_length=50,
         null=True,
@@ -771,6 +785,30 @@ class EmployeeBankDetails(HorillaModel):
     )
     any_other_code2 = models.CharField(
         max_length=50, null=True, blank=True, verbose_name="Bank Code #2"
+    )
+    # ФОП (sole proprietor) payment details
+    iban = models.CharField(
+        max_length=34, blank=True, null=True, verbose_name=_("IBAN")
+    )
+    rnokpp = models.CharField(
+        max_length=20, blank=True, null=True, verbose_name=_("RNOKPP")
+    )
+    payment_purpose = models.CharField(
+        max_length=255, blank=True, null=True, verbose_name=_("Payment Purpose")
+    )
+    fop_maintained = models.BooleanField(
+        default=False, verbose_name=_("Maintained")
+    )
+    # Особиста картка (personal card) — reuses bank_name above
+    card_number = models.CharField(
+        max_length=32, blank=True, null=True, verbose_name=_("Card Number")
+    )
+    # Криптогаманець (crypto wallet)
+    wallet_number = models.CharField(
+        max_length=255, blank=True, null=True, verbose_name=_("Wallet Number")
+    )
+    wallet_currency = models.CharField(
+        max_length=20, blank=True, null=True, verbose_name=_("Wallet Currency")
     )
     additional_info = models.JSONField(null=True, blank=True)
     objects = HorillaCompanyManager(

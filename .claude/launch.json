@@ -1,0 +1,15 @@
+{
+  "version": "0.0.1",
+  "configurations": [
+    {
+      "name": "horilla-verify",
+      "runtimeExecutable": "/bin/bash",
+      "runtimeArgs": [
+        "-c",
+        "DB_NAME=/tmp/horilla_live.sqlite3 /Users/eugene/Projects/horilla/.venv/bin/python manage.py runserver 127.0.0.1:8001 --noreload"
+      ],
+      "port": 8001,
+      "autoPort": false
+    }
+  ]
+}

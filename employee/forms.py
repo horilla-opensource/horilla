@@ -218,6 +218,7 @@ class EmployeeForm(ModelForm):
             "is_from_onboarding",
             "is_directly_converted",
             "is_active",
+            "qualification",
         )
 
     def __init__(self, *args, **kwargs):
@@ -351,7 +352,14 @@ class EmployeeWorkInformationForm(ModelForm):
 
         model = EmployeeWorkInformation
         fields = "__all__"
-        exclude = ("employee_id", "additional_info", "experience")
+        exclude = (
+            "employee_id",
+            "additional_info",
+            "experience",
+            "location",
+            "contract_end_date",
+            "shift_id",
+        )
 
     def __init__(self, *args, disable=False, **kwargs):
         super().__init__(*args, **kwargs)
@@ -433,7 +441,7 @@ class EmployeeWorkInformationUpdateForm(ModelForm):
 
         model = EmployeeWorkInformation
         fields = "__all__"
-        exclude = ("employee_id",)
+        exclude = ("employee_id", "location", "contract_end_date", "shift_id")
 
     def as_p(self, *args, **kwargs):
         context = {"form": self}
@@ -445,8 +453,6 @@ class EmployeeBankDetailsForm(ModelForm):
     Form for EmployeeBankDetails model
     """
 
-    address = forms.CharField(widget=forms.Textarea(attrs={"rows": 2, "cols": 40}))
-
     class Meta:
         """
         Meta class to add the additional info
@@ -454,21 +460,19 @@ class EmployeeBankDetailsForm(ModelForm):
 
         model = EmployeeBankDetails
         fields = (
+            "iban",
+            "rnokpp",
+            "payment_purpose",
+            "fop_maintained",
             "bank_name",
-            "account_number",
-            "branch",
-            "any_other_code1",
-            "address",
-            "country",
-            "state",
-            "city",
-            "any_other_code2",
+            "card_number",
+            "wallet_number",
+            "wallet_currency",
         )
         exclude = ["employee_id", "is_active", "additional_info"]
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
-        self.fields["address"].widget.attrs["autocomplete"] = "address"
         for visible in self.visible_fields():
             visible.field.widget.attrs["class"] = "oh-input w-100"
 
@@ -488,7 +492,16 @@ class EmployeeBankDetailsUpdateForm(ModelForm):
         """
 
         model = EmployeeBankDetails
-        fields = "__all__"
+        fields = (
+            "iban",
+            "rnokpp",
+            "payment_purpose",
+            "fop_maintained",
+            "bank_name",
+            "card_number",
+            "wallet_number",
+            "wallet_currency",
+        )
         exclude = ["employee_id", "is_active", "additional_info"]
 
     def __init__(self, *args, **kwargs):

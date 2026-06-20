@@ -12115,3 +12115,39 @@ msgstr "Будь ласка, завантажте дійсний XLSX-файл."
 
 msgid "Progress"
 msgstr "Прогрес"
+
+msgid "Nova Poshta Branch"
+msgstr "Відділення НП"
+
+msgid "Nova Poshta Parcel Locker"
+msgstr "Поштомат НП"
+
+msgid "Children Information"
+msgstr "Інформація про дітей"
+
+msgid "IBAN"
+msgstr "IBAN"
+
+msgid "RNOKPP"
+msgstr "РНОКПП"
+
+msgid "Payment Purpose"
+msgstr "Призначення платежу"
+
+msgid "Maintained"
+msgstr "Ведення"
+
+msgid "Wallet Number"
+msgstr "Номер гаманця"
+
+msgid "Wallet Currency"
+msgstr "Валюта"
+
+msgid "FOP"
+msgstr "ФОП"
+
+msgid "Personal Card"
+msgstr "Особиста картка"
+
+msgid "Crypto Wallet"
+msgstr "Криптогаманець"
