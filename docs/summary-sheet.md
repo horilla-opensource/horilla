@@ -8,7 +8,7 @@
 ## 1. What is your forked repository link and development branch?
 *   **Repository Link:** [sleeptoken7/horilla-hr](https://github.com/sleeptoken7/horilla-hr)
 *   **Branch:** `deepthought-qa-assessment`
-*   **Latest Commit SHA:** `d52878974f844912b1ccc43a384184b7f2daed49`
+*   **Latest Commit SHA:** `1a858f7f468a45c9a4831c5918711afaa3be2b95`
 
 ---
 
