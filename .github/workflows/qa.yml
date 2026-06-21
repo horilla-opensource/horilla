@@ -1,0 +1,64 @@
+name: Horilla HRMS — QA Pipeline
+
+on:
+  push:
+    branches: [main, develop]
+  pull_request:
+    branches: [main, develop]
+  workflow_dispatch:
+
+jobs:
+  qa:
+    name: QA Test Suite
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Set up Python 3.11
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+          cache: "pip"
+
+      - name: Install dependencies
+        run: |
+          python -m pip install --upgrade pip
+          pip install -r requirements.txt
+          pip install pytest pytest-django
+
+      - name: Set up environment
+        run: |
+          cp horilla/.env.example horilla/.env || true
+          echo "SECRET_KEY=ci-test-secret-key-not-for-production" >> horilla/.env
+          echo "DEBUG=True" >> horilla/.env
+
+      - name: Run database migrations
+        run: |
+          python manage.py migrate --run-syncdb --noinput
+        env:
+          DJANGO_SETTINGS_MODULE: horilla.settings
+
+      - name: Run regression tests
+        run: |
+          pytest tests/regression/ -v --tb=short
+        env:
+          DJANGO_SETTINGS_MODULE: horilla.settings
+
+      - name: Run full test suite
+        run: |
+          python manage.py test --verbosity=2
+        env:
+          DJANGO_SETTINGS_MODULE: horilla.settings
+        continue-on-error: true
+
+      - name: Upload test results
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: qa-test-results
+          path: |
+            test-results/
+            *.log
+          retention-days: 30
