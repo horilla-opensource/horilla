@@ -26,6 +26,8 @@
                     <p class="oh-navbar__notification-text" class="oh-navbar__notification-text--unread">{{ notification.data.verb_fr }}</p>
                 {% elif LANGUAGE_CODE == 'es' %}
                     <p class="oh-navbar__notification-text" class="oh-navbar__notification-text--unread">{{ notification.data.verb_es }}</p>
+                {% elif LANGUAGE_CODE == 'ua' %}
+                    <p class="oh-navbar__notification-text" class="oh-navbar__notification-text--unread">{{ notification.data.verb_ua|default:notification.verb }}</p>
                 {% else %}
                     <p class="oh-navbar__notification-text" class="oh-navbar__notification-text--unread">{{ notification.verb }}</p>
                 {% endif %}

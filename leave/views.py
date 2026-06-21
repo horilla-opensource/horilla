@@ -484,6 +484,7 @@ def leave_request_creation(request, type_id=None, emp_id=None):
                             verb_de="Sie haben eine neue Urlaubsanfrage zur Validierung.",
                             verb_es="Tiene una nueva solicitud de permiso que debe validar.",
                             verb_fr="Vous avez une nouvelle demande de congé à valider.",
+                            verb_ua="У вас новий запит на відпустку для погодження.",
                             icon="people-circle",
                             redirect=f"/leave/request-view?id={leave_request.id}",
                         )
@@ -502,6 +503,7 @@ def leave_request_creation(request, type_id=None, emp_id=None):
                         verb_de=f"Neuer Urlaubsantrag erstellt für {leave_request.employee_id}.",
                         verb_es=f"Nueva solicitud de permiso creada para {leave_request.employee_id}.",
                         verb_fr=f"Nouvelle demande de congé créée pour {leave_request.employee_id}.",
+                        verb_ua=f"Створено новий запит на відпустку для {leave_request.employee_id}.",
                         icon="people-circle",
                         redirect=reverse("request-view") + f"?id={leave_request.id}",
                     )
@@ -1053,6 +1055,7 @@ def leave_request_approve(request, id, emp_id=None):
                                 verb_de="Sie haben eine neue Urlaubsanfrage zur Validierung.",
                                 verb_es="Tiene una nueva solicitud de permiso que debe validar.",
                                 verb_fr="Vous avez une nouvelle demande de congé à valider.",
+                                verb_ua="У вас новий запит на відпустку для погодження.",
                                 icon="people-circle",
                                 redirect=f"/leave/request-view?id={leave_request.id}",
                             )
@@ -1073,6 +1076,7 @@ def leave_request_approve(request, id, emp_id=None):
                         verb_de="Ihr Urlaubsantrag wurde genehmigt",
                         verb_es="Se ha aprobado su solicitud de permiso",
                         verb_fr="Votre demande de congé a été approuvée",
+                        verb_ua="Вашу заявку на відпустку погоджено",
                         icon="people-circle",
                         redirect=reverse("user-request-view")
                         + f"?id={leave_request.id}",
@@ -1221,6 +1225,7 @@ def leave_request_cancel(request, id, emp_id=None):
                         verb_de="Ihr Urlaubsantrag wurde abgelehnt",
                         verb_es="Tu solicitud de permiso ha sido rechazada",
                         verb_fr="Votre demande de congé a été rejetée",
+                        verb_ua="Вашу заявку на відпустку відхилено.",
                         icon="people-circle",
                         redirect=reverse("user-request-view")
                         + f"?id={leave_request.id}",
@@ -2274,6 +2279,7 @@ def user_leave_request(request, id):
                             verb_de="Sie haben eine neue Urlaubsanfrage zur Validierung.",
                             verb_es="Tiene una nueva solicitud de permiso que debe validar.",
                             verb_fr="Vous avez une nouvelle demande de congé à valider.",
+                            verb_ua="У вас новий запит на відпустку для погодження.",
                             icon="people-circle",
                             redirect=f"/leave/request-view?id={leave_request.id}",
                         )
@@ -2291,6 +2297,7 @@ def user_leave_request(request, id):
                         verb_de="Sie haben eine neue Urlaubsanfrage zur Validierung.",
                         verb_es="Tiene una nueva solicitud de permiso que debe validar.",
                         verb_fr="Vous avez une nouvelle demande de congé à valider.",
+                        verb_ua="У вас новий запит на відпустку для погодження.",
                         icon="people-circle",
                         redirect=reverse("request-view") + f"?id={leave_request.id}",
                     )
@@ -3186,6 +3193,7 @@ def leave_request_create(request):
                                 verb_de="Sie haben eine neue Urlaubsanfrage zur Validierung.",
                                 verb_es="Tiene una nueva solicitud de permiso que debe validar.",
                                 verb_fr="Vous avez une nouvelle demande de congé à valider.",
+                                verb_ua="У вас новий запит на відпустку для погодження.",
                                 icon="people-circle",
                                 redirect=f"/leave/request-view?id={leave_request.id}",
                             )
@@ -3200,6 +3208,7 @@ def leave_request_create(request):
                             verb_de=f"Neuer Urlaubsantrag für {leave_request.employee_id} erstellt.",
                             verb_es=f"Nueva solicitud de permiso creada para {leave_request.employee_id}.",
                             verb_fr=f"Nouvelle demande de congé créée pour {leave_request.employee_id}.",
+                            verb_ua=f"Створено новий запит на відпустку для {leave_request.employee_id}.",
                             icon="people-circle",
                             redirect=reverse("request-view")
                             + f"?id={leave_request.id}",

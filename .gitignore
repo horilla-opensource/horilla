@@ -130,10 +130,9 @@ dmypy.json
 
 *.pyc
 
-# migration files
-**/migrations/**
-!**/migrations
-!**/migrations/__init__.py
+# migration files are tracked in git (so schema changes deploy correctly);
+# only ignore their compiled caches.
+**/migrations/__pycache__/
 
 # media file
 media/

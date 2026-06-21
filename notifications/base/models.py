@@ -325,6 +325,7 @@ def notify_handler(verb, **kwargs):
             newnotify.verb_de = newnotify.data.get("verb_de", None)
             newnotify.verb_es = newnotify.data.get("verb_es", None)
             newnotify.verb_fr = newnotify.data.get("verb_fr", None)
+            newnotify.verb_ua = newnotify.data.get("verb_ua", None)
         newnotify.save()
         new_notifications.append(newnotify)
 
