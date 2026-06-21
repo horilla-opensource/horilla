@@ -1,6 +1,6 @@
 # DeepThought QA Fellowship — Submission Readiness Checklist
 **Project:** Horilla HRMS  
-**Candidate:** QA Lead  
+**Candidate:** Purabh Singh  
 **Date:** 2026-06-21
 
 ---
@@ -9,7 +9,7 @@
 
 | Task | ID | Deliverable | File | Status |
 |------|----|-------------|------|--------|
-| Repository audit & workflow mapping | QA-301 | Evidence report of top 10 workflows, ranked by business impact | `docs/horilla_repo_audit.md` | ✅ Complete |
+| Domain analysis & grounding questions | QA-301 | Answers to all 3 DeepThought grounding questions + workflow mapping | `docs/QA-301-domain-analysis.md` | ✅ Complete |
 | Payroll defect verification | QA-302 | 5 defects with severity, reproduction steps, root cause, fix recommendations | `bug-reports/payroll-defects.md` | ✅ Complete |
 | Negative testing scenarios | QA-303 | 5 negative test scenarios grounded in verified failures | `docs/QA-303-negative-testing.md` | ✅ Complete |
 | Regression test (automated) | QA-304 | Pytest regression for Defect B (bulk payslip start_date mutation) | `tests/regression/test_bulk_payslip_start_date.py` | ✅ Complete |
@@ -21,12 +21,13 @@
 
 | Artifact | Purpose |
 |----------|---------|
+| `docs/QA-301-domain-analysis.md` | Domain analysis: 3 grounding questions answered with code evidence |
+| `docs/quality-reflection.md` | Personal QA habits, bug story, systems-thinking examples |
+| `docs/quality-process.md` | CI/CD process, branch protection, regression rules, smoke tests |
 | `docs/test-strategy.md` | Full QA strategy with scope, risk, and exit criteria |
+| `docs/QA-303-negative-testing.md` | 5 negative test scenarios grounded in verified failures |
 | `specs/overtime-entry-screen.md` | Product requirement specification for Overtime Entry Screen |
-| `docs/overtime_existing_system_analysis.md` | Discovery report on existing overtime architecture |
-| `docs/negative_testing_matrix.md` | Full field-level negative testing matrix |
-| `screenshots/` | UI evidence from E2E payroll verification |
-| `docs/e2e_payroll_verification_report.md` | End-to-end payroll flow verification results |
+| `bug-reports/payroll-defects.md` | 5 verified payroll defect reports with root cause and fix |
 
 ---
 
