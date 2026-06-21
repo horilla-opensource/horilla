@@ -2,9 +2,9 @@ name: Horilla HRMS — QA Pipeline
 
 on:
   push:
-    branches: [main, develop]
+    branches: [main, develop, deepthought-qa-assessment]
   pull_request:
-    branches: [main, develop]
+    branches: [main, develop, deepthought-qa-assessment]
   workflow_dispatch:
 
 jobs:
@@ -40,9 +40,21 @@ jobs:
         env:
           DJANGO_SETTINGS_MODULE: horilla.settings
 
+      - name: Run smoke tests
+        run: |
+          pytest tests/smoke/ -v
+        env:
+          DJANGO_SETTINGS_MODULE: horilla.settings
+
       - name: Run regression tests
         run: |
           pytest tests/regression/ -v --tb=short
+        env:
+          DJANGO_SETTINGS_MODULE: horilla.settings
+
+      - name: Run negative tests
+        run: |
+          pytest tests/negative/ -v
         env:
           DJANGO_SETTINGS_MODULE: horilla.settings
 
