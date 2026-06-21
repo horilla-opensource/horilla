@@ -7,21 +7,56 @@
 
 ---
 
-# Executive Summary
+# 🚀 Submission Context
 
-This repository contains my Quality Engineering assessment performed on the Horilla HRMS platform.
+*   **Chosen HRMS:** Horilla HRMS. I chose it because payroll calculations are uniquely dependent on multi-model relationships (contracts, attendance, schedules) rather than single-form workflows, creating high-risk boundary states.
+*   **AI Tools Used:** Antigravity (Advanced Agentic Coding Assistant) was utilized to analyze Django middleware redirects, write modular unit tests with mocked objects, and structure the test runner configuration in GitHub Actions.
 
-The objective was not merely to find bugs, but to understand how payroll data flows through the system, identify where failures could harm real stakeholders, and build automated safeguards to prevent those failures from recurring.
+---
 
-During this assessment I:
+# 📦 Setup & Verification Instructions
 
-* Analyzed the payroll domain and construction workforce workflows
-* Created a complete overtime-entry specification from an ambiguous product request
-* Performed exploratory testing on live functionality
-* Discovered and documented verified payroll defects
-* Built automated regression and negative test coverage
-* Implemented CI/CD quality gates through GitHub Actions
-* Produced risk-focused documentation centered on stakeholder impact
+To clone the repository, spin up the database, and execute the tests locally:
+
+1. **Clone the repository and check out the assessment branch:**
+   ```bash
+   git clone https://github.com/sleeptoken7/horilla-hr.git
+   cd horilla-hr
+   git checkout deepthought-qa-assessment
+   ```
+2. **Create and activate a virtual environment:**
+   ```bash
+   python -m venv .venv
+   # On Windows:
+   .venv\Scripts\activate
+   # On Linux/macOS:
+   source .venv/bin/activate
+   ```
+3. **Install dependencies:**
+   ```bash
+   pip install -r requirements.txt
+   pip install pytest pytest-django
+   ```
+4. **Configure environment:**
+   ```bash
+   cp horilla/.env.example horilla/.env
+   # Ensure DEBUG=True and SECRET_KEY are specified in horilla/.env
+   ```
+5. **Run DB Migrations:**
+   ```bash
+   python manage.py migrate --run-syncdb --noinput
+   ```
+6. **Run Smoke tests & Django assertions:**
+   ```bash
+   python manage.py test tests.smoke.test_smoke
+   ```
+7. **Run fast unit regression and negative suites:**
+   ```bash
+   # Sets pythonpath for module lookup
+   # On Windows (PowerShell):
+   $env:PYTHONPATH="."
+   pytest -k "test_bulk_payslip_start_date or test_salary_propagation or test_create_payslip_get_method"
+   ```
 
 ---
 
@@ -57,6 +92,25 @@ The most critical quality objective therefore became:
 
 ---
 
+# 🛠️ Quality Process (QA-305 Gate)
+
+Our pre-merge gate prevents regression leakage using standard branch protections:
+1. **CI Pipeline Validation:** All code pushes and PRs targeting `deepthought-qa-assessment` trigger the pipeline, automatically creating a clean database, applying migrations, and executing tests.
+2. **Failure Blocking:** Any fail status in the pipeline completely blocks merge ability on the branch.
+3. **Fast Pipeline Rule:** By separating DB-dependent integrations from purely logic-based payroll mocks, CI runs in under 3 minutes, resolving the developer velocity vs safety tension.
+
+---
+
+# 📋 Test Coverage Summary
+
+| Coverage Class | Scenarios Covered | Scenarios DELIBERATELY Not Automated | Rationale for Exclusion |
+| --- | --- | --- | --- |
+| **Smoke Tests** | Base login, root redirect, and creation endpoint availability. | Direct dashboard UI elements. | Low ROI; standard views are heavily dependent on session templates which change frequently. |
+| **Negative Tests** | POST requests with missing required fields, GET submissions on transactional endpoints, missing contracts. | XSS/SQL injections payloads in entry fields. | SQLite and Django ORM automatically parameterize queries, handling basic injection patterns. |
+| **Regression Tests** | Mid-period salary adjustments, pro-rated pay calculations for mid-month hires, zero attendance. | Third-party payroll accounting API syncs. | Unstable/unreliable testing sandbox environments from external payroll providers. |
+
+---
+
 # QA-301 — Product Specification
 
 A vague overtime-entry requirement was transformed into a build-ready specification.
@@ -72,9 +126,8 @@ Deliverables include:
 
 Location:
 
-```text
-specs/overtime-entry-screen.md
-```
+* Primary: [`specs/overtime-entry.md`](specs/overtime-entry.md) (Standard Path)
+* Reference: [`specs/overtime-entry-screen.md`](specs/overtime-entry-screen.md)
 
 ---
 
@@ -84,35 +137,11 @@ Five payroll-related defects were identified and documented.
 
 ## Verified Defects
 
-### HOR-PAY-001
-
-Broken redirect after payslip creation.
-
-**Impact:** Payroll operator cannot access newly created payslip.
-
-### HOR-PAY-002
-
-Bulk payslip generation mutates shared start date variable.
-
-**Impact:** Employees can receive incorrect salary calculations.
-
-### HOR-PAY-003
-
-Missing contract triggers runtime crash.
-
-**Impact:** Payslip generation fails unexpectedly.
-
-### HOR-PAY-004
-
-Half-day leave calculation helper is stubbed.
-
-**Impact:** Leave deductions are silently incorrect.
-
-### HOR-PAY-005
-
-Direct GET submission silently fails.
-
-**Impact:** Payroll operator believes action succeeded when no payslip was created.
+*   [HOR-PAY-001](/bug-reports/HOR-PAY-001-payslip-redirect-crash.md) (Blocker): Broken redirect after payslip creation.
+*   [HOR-PAY-002](/bug-reports/HOR-PAY-002-bulk-payslip-startdate-mutation.md) (Critical): Bulk payslip generation mutates shared start date variable.
+*   [HOR-PAY-003](/bug-reports/HOR-PAY-003-missing-contract-typeerror.md) (High): Missing contract triggers runtime crash.
+*   [HOR-PAY-004](/bug-reports/HOR-PAY-004-stubbed-halfday-leaves.md) (Medium): Half-day leave calculation helper is stubbed.
+*   [HOR-PAY-005](/bug-reports/HOR-PAY-005-get-submission-silent-failure.md) (Medium): Direct GET submission silently fails.
 
 Location:
 
@@ -126,20 +155,9 @@ bug-reports/
 
 Negative testing focused on breaking payroll workflows and validation boundaries.
 
-Coverage includes:
-
-* Invalid inputs
-* Missing fields
-* Boundary values
-* Invalid workflow states
-* Silent failure scenarios
-
-Artifacts:
-
-```text
-docs/QA-303-negative-testing.md
-tests/
-```
+Location:
+* Primary Report: [`negative-testing-report.md`](negative-testing-report.md)
+* Reference Report: [`docs/QA-303-negative-testing.md`](docs/QA-303-negative-testing.md)
 
 ### Verified Live End-to-End Execution Evidence:
 The step-by-step verification below documents the payslip computation flow under test:
@@ -174,14 +192,6 @@ Goal:
 
 A CI pipeline was implemented using GitHub Actions.
 
-Pipeline responsibilities:
-
-* Install dependencies
-* Run automated tests
-* Execute regression suites
-* Generate reports
-* Block broken changes before merge
-
 Workflow:
 
 ```text
@@ -190,30 +200,11 @@ Workflow:
 
 ---
 
-# Risk-Based Testing Strategy
-
-Testing was prioritized based on stakeholder impact rather than technical complexity.
-
-## Most Vulnerable Stakeholder
-
-Hourly and daily wage workers.
-
-A payroll failure for these employees can directly affect:
-
-* Rent payments
-* Food expenses
-* Loan obligations
-* Family finances
-
-This understanding influenced bug severity classification throughout the assessment.
-
----
-
 # Repository Structure
 
 ```text
 specs/
-├── overtime-entry-screen.md
+├── overtime-entry.md
 
 bug-reports/
 ├── HOR-PAY-001-...
@@ -247,15 +238,3 @@ The most important lesson from this assessment was:
 > Payroll defects are rarely technical problems alone. They become financial problems for real people.
 
 Quality engineering is not simply verifying software behavior. It is building systems that prevent human mistakes, surface hidden failures, and protect the people who depend on the software.
-
----
-
-# Assessment Status
-
-* QA-301 ✅
-* QA-302 ✅
-* QA-303 ✅
-* QA-304 ✅
-* QA-305 ✅
-
-All deliverables completed and committed to the assessment branch.
