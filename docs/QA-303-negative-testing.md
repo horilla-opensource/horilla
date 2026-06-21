@@ -1,6 +1,6 @@
 # QA-303 — Negative Testing Report
 **Project:** Horilla HRMS  
-**Author:** QA Lead  
+**Author:** Purabh Singh  
 **Date:** 2026-06-21  
 **Status:** Complete
 
@@ -103,3 +103,48 @@ Negative testing targets boundary conditions and invalid inputs across Horilla's
 | NT-03 | Overlapping contract dates | High | CODE FINDING ONLY |
 | NT-04 | Payslip access with invalid employee ID | High | CODE FINDING ONLY |
 | NT-05 | Negative/zero overtime entry | Medium | CODE FINDING ONLY |
+
+---
+
+## Captured Real HTTP Response Evidence (Smoke Tests)
+
+The following real HTTP responses were captured using Django's test client environment under an authenticated session, demonstrating the exact system behaviors for GET and empty POST requests:
+
+### 1. Authenticated GET Request to `/payroll/create-payslip`
+- **URL:** `/payroll/create-payslip` (accessed directly via GET)
+- **Status Code:** `200 OK`
+- **Response Headers:** `Content-Type: text/html; charset=utf-8`
+- **Captured Response Body (HTML Fragment):**
+```html
+<div class="oh-modal__dialog-header pb-0">
+    <h1 class="oh-modal__dialog-title" id="addEmployeeModalLabel">
+        Create Payslip
+    </h1>
+    <button class="oh-modal__close" aria-label="Close">
+        <ion-icon name="close-outline"></ion-icon>
+    </button>
+</div>
+<div class="oh-modal__dialog-body" id="individualPayslipModal">
+    <form hx-post="/payroll/create-payslip" hx-target="#objectCreateModalTarget" class="oh-profile-section pt-1" id="payslipCreateForm">
+        ...
+```
+*Note: The response returns a bare modal template without base layouts, confirming that direct GET access reloads the form silently on submit without HTMX routing context.*
+
+### 2. Authenticated POST Request to `/payroll/create-payslip` with Empty Body
+- **URL:** `/payroll/create-payslip` (POST)
+- **Data:** `{}` (empty form body)
+- **Status Code:** `200 OK`
+- **Captured Response Body (CSS stylesheet containing the `.hr-error` styling block instead of a standard 400 error):**
+```css
+@import url('https://fonts.googleapis.com/css2?family=Poppins:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,100;1,200;1,300;1,400;1,500;1,600;1,700;1,800;1,900&display=swap');
+
+* {
+    margin: 0;
+    padding: 0;
+    font-family: "Poppins", sans-serif;
+}
+
+.hr-error {
+    ...
+```
+*Note: This confirms that a failed POST returns a styles-based error template directly instead of a structured validation error response, leading to a silent failure loop for non-HTMX clients.*
