@@ -179,6 +179,7 @@
 			if (!form || !settingsContainer || !settingsContainer.contains(form)) return;
 			if (form.getAttribute("data-settings-native") === "true") return;
 			if (typeof htmx === "undefined") return;
+			if (form.hasAttribute("hx-post") || form.hasAttribute("hx-get") || form.hasAttribute("hx-put") || form.hasAttribute("hx-patch") || form.hasAttribute("hx-delete")) return;
 			var method = (form.getAttribute("method") || "GET").toUpperCase();
 			if (method !== "POST") return;
 			ev.preventDefault();
