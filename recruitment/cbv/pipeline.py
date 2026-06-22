@@ -11,6 +11,7 @@ from django.utils.decorators import method_decorator
 from django.utils.http import urlencode
 from django.utils.translation import gettext_lazy as _
 
+from horilla.decorators import hx_request_required
 from horilla_views.cbv_methods import login_required
 from horilla_views.generic.cbv.kanban import HorillaKanbanView
 from horilla_views.generic.cbv.views import (
@@ -197,6 +198,7 @@ class RecruitmentTabView(HorillaTabView):
 
 
 @method_decorator(login_required, name="dispatch")
+@method_decorator(hx_request_required, name="dispatch")
 @method_decorator(
     manager_can_enter(perm="recruitment.view_recruitment"), name="dispatch"
 )
@@ -216,6 +218,12 @@ class GetStages(TemplateView):
         """
         rec_id = kwargs["rec_id"]
         cache = CACHE.get(request.session.session_key + "pipeline")
+        if cache is None:
+            cache = {
+                "stages": self.filter_class(request.GET).qs.order_by("sequence"),
+                "candidates": False,
+            }
+            CACHE.set(request.session.session_key + "pipeline", cache, timeout=600)
         if not cache.get("candidates"):
             cache["candidates"] = CandidateList.filter_class(
                 self.request.GET
