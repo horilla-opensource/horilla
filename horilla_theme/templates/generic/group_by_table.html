@@ -3,6 +3,19 @@
 <div id="{{view_id|safe}}" class="bg-white p-4 rounded-md shadow-card">
 	{% include "generic/export_fields_modal.html" %}
 
+    <div
+        class="oh-modal"
+        id="bulkUpdateModal{{view_id|safe}}"
+        role="dialog"
+        aria-labelledby="bulkUpdateModal{{view_id|safe}}"
+        aria-hidden="true"
+    >
+        <div
+            class="oh-modal__dialog"
+            id="bulkUpdateModalBody{{view_id|safe}}"
+        ></div>
+    </div>
+
 	<script>
 		if (!$(".HTV").length) {
 			$("#reloadMessagesButton").click();
