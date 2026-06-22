@@ -122,10 +122,10 @@ def whatsapp(request):
     Returns:
         HttpResponse: A response indicating the status of the operation.
     """
-
     if request.method == "GET":
         credentials = WhatsappCredientials.objects.first()
-
+        if not credentials:
+            return HttpResponse(status=403)
         token = request.GET.get("hub.verify_token")
         challenge = request.GET.get("hub.challenge")
         if token == credentials.meta_webhook_token:
