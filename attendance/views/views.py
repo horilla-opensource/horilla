@@ -463,9 +463,8 @@ def attendance_view_redirect(request):
     """
     if request.META.get("HTTP_HX_REQUEST"):
         response = HttpResponse("", status=200)
-        # Fire on document body so handlers run even if the initiating node is swapped/removed (hx-swap=none).
         response["HX-Trigger"] = json.dumps(
-            {"reloadAttendanceView": {"target": "body"}}
+            {"reloadAttendanceView": True, "showMessages": True}
         )
         return response
     return HorillaRedirect(request)

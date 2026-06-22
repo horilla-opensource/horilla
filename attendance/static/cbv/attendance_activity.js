@@ -394,12 +394,29 @@ document.addEventListener("reloadAttendanceView", function () {
     refreshAttendanceListContainer();
 });
 
+document.addEventListener("showMessages", function () {
+    var btn = document.getElementById("reloadMessagesButton");
+    if (btn) btn.click();
+});
+
 document.body.addEventListener("htmx:afterRequest", function (evt) {
     var d = evt.detail;
-    if (!d || !d.successful || !d.xhr || !d.xhr.responseURL) {
+    if (!d || !d.xhr || !d.xhr.responseURL) {
         return;
     }
-    if (d.xhr.responseURL.indexOf("/attendance/approve-overtime/") === -1) {
+    var url = d.xhr.responseURL;
+    if (url.indexOf("/attendance/validate-this-attendance/") !== -1) {
+        var btn = document.getElementById("reloadMessagesButton");
+        if (btn) btn.click();
+        if (d.successful) {
+            refreshAttendanceListContainer();
+        }
+        return;
+    }
+    if (!d.successful) {
+        return;
+    }
+    if (url.indexOf("/attendance/approve-overtime/") === -1) {
         return;
     }
     refreshAttendanceListContainer();

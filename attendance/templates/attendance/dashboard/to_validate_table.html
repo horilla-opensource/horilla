@@ -71,12 +71,22 @@
                         </div>
                         <div class="oh-sticky-table__td oh-sticky-table__right">
                             {% if perms.attendance.change_attendance or request.user|is_reportingmanager %}
-                                <a href='{% url "validate-this-attendance" attendance.id %}' hx-target="#updateAttendanceBody"
+                                {% if attendance.is_validate_request %}
+                                <a href="#"
                                     data-req="/attendance/request-attendance-view/?id={{attendance.id}}"
-                                    onclick="event.stopPropagation(); {% if attendance.is_validate_request %}  event.preventDefault(); showSweetAlert($(this).data('req')); {% endif %}"
+                                    onclick="event.stopPropagation(); event.preventDefault(); showSweetAlert($(this).data('req'));"
                                     class="oh-btn oh-btn--info">
                                     {% trans "Validate" %}
                                 </a>
+                                {% else %}
+                                <a hx-get="{% url 'validate-this-attendance' attendance.id %}"
+                                    hx-swap="none"
+                                    hx-on-htmx-after-request="reloadMessage(); if(event.detail.successful){var w=document.getElementById('attendanceValidateCardBody');if(w)htmx.trigger(w,'reload');}"
+                                    onclick="event.stopPropagation();"
+                                    class="oh-btn oh-btn--info">
+                                    {% trans "Validate" %}
+                                </a>
+                                {% endif %}
                             {% endif %}
                         </div>
 

@@ -191,7 +191,7 @@
                             <span class="oh-card-dashboard__title">{% trans "Attendance To Validate" %}</span>
                         </div>
                         <div class="oh-card-dashboard__body" style="height:400px" id="attendanceValidateCardBody"
-                            hx-get="{% url 'dashboard-validate-attendances' %}" hx-trigger="load">
+                            hx-get="{% url 'dashboard-validate-attendances' %}" hx-trigger="load, reloadAttendanceView from:body, reload">
                             <div class="animated-background h-100"></div>
                         </div>
                     </div>
