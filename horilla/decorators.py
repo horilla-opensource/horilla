@@ -293,7 +293,12 @@ def owner_can_enter(
     """
 
     def _function(request, *args, **kwargs):
-        instance_id = kwargs[list(kwargs.keys())[0]]
+        if kwargs:
+            instance_id = kwargs[list(kwargs.keys())[0]]
+        else:
+            instance_id = request.GET.get("employee_id") or request.POST.get(
+                "employee_id"
+            )
         if model == Employee:
             employee = Employee.objects.filter(id=instance_id).first()
         else:
