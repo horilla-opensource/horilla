@@ -1371,7 +1371,7 @@ class EmployeeShiftScheduleUpdateForm(ModelForm):
 
         model = EmployeeShiftSchedule
         fields = "__all__"
-        exclude = ["is_active", "is_night_shift"]
+        exclude = ["is_active"]
         widgets = {
             "start_time": forms.TimeInput(attrs={"type": "time"}),
             "end_time": forms.TimeInput(attrs={"type": "time"}),
@@ -1461,7 +1461,7 @@ class EmployeeShiftScheduleForm(ModelForm):
 
         model = EmployeeShiftSchedule
         fields = "__all__"
-        exclude = ["is_active", "day", "is_night_shift"]
+        exclude = ["is_active", "day"]
         widgets = {
             "start_time": forms.TimeInput(),
             "end_time": forms.TimeInput(),

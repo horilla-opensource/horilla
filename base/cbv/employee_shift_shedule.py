@@ -105,7 +105,12 @@ class EmployeeShiftSheduleList(HorillaListView):
         ) and not self.request.user.has_perm("base.delete_employeeshiftschedule"):
             self.action_method = None
 
-    bulk_update_fields = ["start_time", "end_time", "minimum_working_hour"]
+    bulk_update_fields = [
+        "start_time",
+        "end_time",
+        "minimum_working_hour",
+        "is_night_shift",
+    ]
 
     model = EmployeeShiftSchedule
     filter_class = EmployeeShiftScheduleFilter

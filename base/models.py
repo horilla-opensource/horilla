@@ -955,7 +955,8 @@ class EmployeeShiftSchedule(HorillaModel):
 
     def save(self, *args, **kwargs):
         if self.start_time and self.end_time:
-            self.is_night_shift = self.start_time > self.end_time
+            if self.start_time > self.end_time:
+                self.is_night_shift = True
         super().save(*args, **kwargs)
 
     def day_col(self):
