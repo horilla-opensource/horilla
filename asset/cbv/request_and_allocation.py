@@ -276,6 +276,8 @@ class RequestAndAllocationTab(HorillaTabView):
 
     def __init__(self, **kwargs: Any) -> None:
         super().__init__(**kwargs)
+        if not self.request or not self.request.user.is_authenticated:
+            return
         employee = self.request.user.employee_get
         asset_count = (
             AssetAssignment.objects.filter(assigned_to_employee_id=employee)
