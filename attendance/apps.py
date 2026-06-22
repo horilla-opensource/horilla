@@ -28,9 +28,6 @@ class AttendanceConfig(AppConfig):
         urlpatterns.append(
             path("attendance/", include("attendance.urls")),
         )
-        middleware_path = "attendance.middleware.AttendanceMiddleware"
-        if middleware_path not in MIDDLEWARE:
-            MIDDLEWARE.append(middleware_path)
 
         settings.APP_URLS.append("attendance.urls")
 
