@@ -12,6 +12,8 @@ from django.db.models.functions import Coalesce
 from django.http import JsonResponse
 from django.shortcuts import render
 
+from horilla.decorators import permission_required
+
 
 def _parse_period(request):
     """Parse from_date and to_date from GET params. Defaults to current month."""
@@ -30,12 +32,14 @@ def _parse_period(request):
 
 
 @login_required
+@permission_required("leave.delete_leaverequest")
 def leave_dashboard_view(request):
     """Render the modern leave dashboard page."""
     return render(request, "leave/dashboard.html")
 
 
 @login_required
+@permission_required("leave.delete_leaverequest")
 def leave_kpi_data(request):
     """Return leave KPI summary data as JSON."""
     from leave.models import AvailableLeave, LeaveAllocationRequest, LeaveRequest
@@ -116,6 +120,7 @@ def leave_kpi_data(request):
 
 
 @login_required
+@permission_required("leave.delete_leaverequest")
 def leave_monthly_trend(request):
     """Monthly leave request counts for the last 6 months."""
     from leave.models import LeaveRequest
@@ -172,6 +177,7 @@ def leave_monthly_trend(request):
 
 
 @login_required
+@permission_required("leave.delete_leaverequest")
 def leave_type_distribution(request):
     """Leave days by type for the current month."""
     from leave.models import LeaveRequest
@@ -216,6 +222,7 @@ def leave_type_distribution(request):
 
 
 @login_required
+@permission_required("leave.delete_leaverequest")
 def leave_department_breakdown(request):
     """Leave days by department for the current month."""
     from leave.models import LeaveRequest
@@ -254,6 +261,7 @@ def leave_department_breakdown(request):
 
 
 @login_required
+@permission_required("leave.delete_leaverequest")
 def leave_utilization_rate(request):
     """Leave utilization per leave type: days used in the selected period vs total allocated."""
     from leave.models import AvailableLeave, LeaveRequest
@@ -311,6 +319,7 @@ def leave_utilization_rate(request):
 
 
 @login_required
+@permission_required("leave.delete_leaverequest")
 def leave_paid_unpaid_split(request):
     """Paid vs unpaid leave days for the current month."""
     from leave.models import LeaveRequest
@@ -352,6 +361,7 @@ def leave_paid_unpaid_split(request):
 
 
 @login_required
+@permission_required("leave.delete_leaverequest")
 def leave_top_takers(request):
     """Top 10 employees by leave days taken this month."""
     from leave.models import LeaveRequest
@@ -405,6 +415,7 @@ def leave_top_takers(request):
 
 
 @login_required
+@permission_required("leave.delete_leaverequest")
 def leave_on_leave_today(request):
     """Employees with approved leave overlapping the selected period."""
     from leave.models import LeaveRequest
@@ -452,6 +463,7 @@ def leave_on_leave_today(request):
 
 
 @login_required
+@permission_required("leave.delete_leaverequest")
 def leave_upcoming_holidays(request):
     """Holidays falling within the selected period."""
     from base.models import Holidays
@@ -486,6 +498,7 @@ def leave_upcoming_holidays(request):
 
 
 @login_required
+@permission_required("leave.delete_leaverequest")
 def leave_weekly_pattern(request):
     """Leave requests by day of week for the selected period (pattern analysis)."""
     from leave.models import LeaveRequest
@@ -527,6 +540,7 @@ def leave_weekly_pattern(request):
 
 
 @login_required
+@permission_required("leave.delete_leaverequest")
 def leave_upcoming(request):
     """Approved leaves starting within the selected period."""
     from leave.models import LeaveRequest

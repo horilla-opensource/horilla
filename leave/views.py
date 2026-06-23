@@ -2911,6 +2911,10 @@ def overall_leave(request):
     Returns:
     GET : return Json response of labels, data
     """
+    if not (
+        request.user.is_superuser or request.user.has_perm("leave.view_leaverequest")
+    ):
+        return JsonResponse({"no_permission": True})
 
     labels = []
     data = []
@@ -3151,6 +3155,11 @@ def department_leave_chart(request):
     Returns:
     GET : return Json response of labels, dataset.
     """
+    if not (
+        request.user.is_superuser or request.user.has_perm("leave.view_leaverequest")
+    ):
+        return JsonResponse({"no_permission": True})
+
     day = date.today()
     if request.GET.get("date"):
         day = request.GET.get("date")
@@ -3249,6 +3258,11 @@ def leave_over_period(request):
     Returns:
     GET : return Json response of labels, dataset.
     """
+    if not (
+        request.user.is_superuser or request.user.has_perm("leave.view_leaverequest")
+    ):
+        return JsonResponse({"no_permission": True})
+
     today = date.today()
     start_of_week = today - timedelta(days=today.weekday())
     week_dates = [start_of_week + timedelta(days=i) for i in range(6)]
