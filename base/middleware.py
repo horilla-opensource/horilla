@@ -2,12 +2,15 @@
 middleware.py
 """
 
+from urllib.parse import urlparse
+
 from django.apps import apps
 from django.conf import settings
 from django.contrib import messages
 from django.contrib.auth import logout
 from django.core.cache import cache
 from django.db.models import Q
+from django.http import HttpResponse
 from django.shortcuts import redirect
 from django.utils.translation import gettext_lazy as _
 
@@ -337,6 +340,31 @@ class ForcePasswordChangeMiddleware:
 
         if hasattr(request, "user") and request.user.is_authenticated:
             if getattr(request.user, "is_new_employee", True):
+                # HTMX sub-requests that originate from the change-password page
+                # (e.g. the notification button's hx-trigger="load") must be allowed
+                # through. Without this, the middleware redirects those sub-requests
+                # back to /change-password/, HTMX swaps the full page HTML into the
+                # notification container (which contains yet another notification
+                # button), and the loop repeats indefinitely.
+                hx_current_url = request.headers.get("HX-Current-URL", "")
+                if request.headers.get("HX-Request") and hx_current_url:
+                    current_path = urlparse(hx_current_url).path.rstrip("/")
+                    if current_path in excluded_paths:
+                        return self.get_response(request)
+
+                # For HTMX navigation requests coming from other pages, respond with
+                # HX-Redirect so the browser performs a proper full-page navigation
+                # to /change-password/ instead of swapping partial content, which
+                # would leave the URL and displayed content out of sync.
+                messages.warning(
+                    request,
+                    _("You must change your password before continuing."),
+                )
+                if request.headers.get("HX-Request"):
+                    response = HttpResponse(status=204)
+                    response["HX-Redirect"] = "/change-password/"
+                    return response
+
                 return redirect("change-password")
 
         return self.get_response(request)
