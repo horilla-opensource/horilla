@@ -125,14 +125,14 @@
                                     {% endwith %}
                                 {% endfor %}
                                 {% if options or option_method %}
-                                    <th class="text-sm font-medium min-w-[150px]" {{header_attrs.option|safe}}>
+                                    <th class="option-col-header text-sm font-medium min-w-[150px]" {{header_attrs.option|safe}}>
                                         <div class="p-3" {{header_attrs.option|safe}}>
                                             {% trans "Options" %}
                                         </div>
                                     </th>
                                 {% endif %}
                                 {% if actions or action_method %}
-                                    <th class="stickyright text-sm font-medium min-w-[150px]" {{header_attrs.action|safe}} >
+                                    <th class="stickyright action-col-header text-sm font-medium min-w-[150px]" {{header_attrs.action|safe}} >
                                         <div class="p-3" {{header_attrs.action|safe}}>
                                             {% trans "Actions" %}
                                         </div>
@@ -198,7 +198,7 @@
                                     {% endfor %}
 
                                     {% if options or option_method %}
-                                        <td class="text-sm text-center p-3 text-[#666] h-[45px]"
+                                        <td class="option-col-cell text-sm text-center p-3 text-[#666] h-[45px]"
                                             onclick="event.stopPropagation()"
                                         >
                                             {% if not option_method %}
@@ -231,7 +231,7 @@
                                     {% endif %}
 
                                     {% if actions or action_method %}
-                                        <td class="stickyright text-sm text-center p-3 text-[#666] h-[45px]"
+                                        <td class="stickyright action-col-cell text-sm text-center p-3 text-[#666] h-[45px]"
                                             onclick="event.stopPropagation()"
                                         >
                                             {% if not action_method %}
@@ -383,6 +383,19 @@
             $('#{{view_id}} .lastTh').css("width", `${thWidth}px`);
         }
 
+    });
+  </script>
+  <script>
+    $(document).ready(function () {
+      var $view = $('#{{view_id}}');
+      var $optCells = $view.find('td.option-col-cell');
+      if ($optCells.length && !$optCells.find('a, button').length) {
+        $view.find('th.option-col-header, td.option-col-cell').hide();
+      }
+      var $actCells = $view.find('td.action-col-cell');
+      if ($actCells.length && !$actCells.find('a, button').length) {
+        $view.find('th.action-col-header, td.action-col-cell').hide();
+      }
     });
   </script>
   <script>
