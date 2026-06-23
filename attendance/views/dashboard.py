@@ -331,6 +331,11 @@ def dashboard_attendance(request):
     Returns:
         JsonResponse: returns data set as json
     """
+    if not (
+        request.user.is_superuser or request.user.has_perm("attendance.view_attendance")
+    ):
+        return JsonResponse({"no_permission": True})
+
     labels = [
         _("On Time"),
         _("Late Come"),
@@ -379,6 +384,11 @@ def pending_hours(request):
 
 @login_required
 def department_overtime_chart(request):
+    if not (
+        request.user.is_superuser or request.user.has_perm("attendance.view_attendance")
+    ):
+        return JsonResponse({"no_permission": True})
+
     start_date = request.GET.get("date") if request.GET.get("date") else date.today()
     chart_type = request.GET.get("type") if request.GET.get("type") else "day"
     end_date = (
