@@ -760,6 +760,11 @@
     <!-- Header -->
     <div class="md-header">
         <div>
+            <nav class="oh-breadcrumb" style="margin-bottom:4px;">
+                <a href="{% url 'dashboard' %}" class="oh-breadcrumb__item" style="font-size:12px;opacity:0.6;text-decoration:none;color:inherit;">{% trans "Home" %}</a>
+                <span class="oh-breadcrumb__divider" style="font-size:12px;opacity:0.4;margin:0 4px;">/</span>
+                <span class="oh-breadcrumb__item" style="font-size:12px;opacity:0.6;">{% trans "Dashboard" %}</span>
+            </nav>
             <h1>{% trans "Dashboard" %}</h1>
             <div class="md-header__date" id="md-date"></div>
             <div class="md-refresh"><span class="md-refresh__dot" id="md-refresh-dot"></span><span id="md-refresh-text">{% trans "Just now" %}</span><button class="md-refresh__toggle" id="md-refresh-toggle" title="{% trans 'Toggle auto-refresh' %}">⟳</button></div>
@@ -795,11 +800,13 @@
         <div class="md-main">
             <div class="md-chart-grid" id="md-charts-container">
 
+                {% if perms.attendance.view_attendance or request.user.is_superuser %}
                 <!-- Attendance Trend -->
                 <div class="md-chart-card md-chart-card--wide" data-chart-id="attendance_trend" data-chart-section="overview" data-chart-label="{% trans 'Attendance Trend' %}" data-chart-wide="1">
                     <div class="md-chart-card__header"><div><div class="md-chart-card__title">{% trans "Attendance Trend" %}</div><div class="md-chart-card__subtitle" id="md-attendance-trend-subtitle">{% trans "Weekly rate — last 12 weeks" %}</div></div></div>
                     <div class="md-chart-card__body"><div id="chart-attendance-trend"></div></div>
                 </div>
+                {% endif %}
 
                 <!-- Department Headcount -->
                 <div class="md-chart-card" data-chart-id="department_headcount" data-chart-section="overview" data-chart-label="{% trans 'Department Headcount' %}">
@@ -813,11 +820,13 @@
                     <div class="md-chart-card__body"><div id="chart-gender"></div></div>
                 </div>
 
+                {% if perms.leave.view_leaverequest or request.user.is_superuser %}
                 <!-- Leave Breakdown -->
                 <div class="md-chart-card" data-chart-id="leave_breakdown" data-chart-section="overview" data-chart-label="{% trans 'Leave Breakdown' %}">
                     <div class="md-chart-card__header"><div><div class="md-chart-card__title">{% trans "Leave Breakdown" %}</div><div class="md-chart-card__subtitle" id="leave-month">{% trans "This month" %}</div></div></div>
                     <div class="md-chart-card__body"><div id="chart-leave"></div></div>
                 </div>
+                {% endif %}
 
                 <!-- Employee Status -->
                 <div class="md-chart-card" data-chart-id="employee_status" data-chart-section="overview" data-chart-label="{% trans 'Employee Status' %}">
@@ -825,6 +834,7 @@
                     <div class="md-chart-card__body"><div id="chart-employee-status"></div></div>
                 </div>
 
+                {% if perms.attendance.view_attendance or request.user.is_superuser %}
                 <!-- Attendance Overview -->
                 <div class="md-chart-card md-chart-card--wide" data-chart-id="attendance_overview" data-chart-section="attendance" data-chart-label="{% trans 'Attendance Overview' %}" data-chart-wide="1">
                     <div class="md-chart-card__header"><div><div class="md-chart-card__title">{% trans "Attendance Overview" %}</div><div class="md-chart-card__subtitle">{% trans "On-time, late arrivals & early departures by department" %}</div></div></div>
@@ -836,13 +846,17 @@
                     <div class="md-chart-card__header"><div><div class="md-chart-card__title">{% trans "Department Overtime" %}</div><div class="md-chart-card__subtitle">{% trans "Overtime hours distribution" %}</div></div></div>
                     <div class="md-chart-card__body"><div id="chart-overtime"></div></div>
                 </div>
+                {% endif %}
 
+                {% if perms.leave.view_leaverequest or request.user.is_superuser %}
                 <!-- Leave Trends -->
                 <div class="md-chart-card" data-chart-id="leave_trends" data-chart-section="attendance" data-chart-label="{% trans 'Leave Trends' %}">
                     <div class="md-chart-card__header"><div><div class="md-chart-card__title">{% trans "Leave Trends" %}</div><div class="md-chart-card__subtitle">{% trans "Daily leaves — current week" %}</div></div></div>
                     <div class="md-chart-card__body"><div id="chart-leave-trend"></div></div>
                 </div>
+                {% endif %}
 
+                {% if perms.recruitment.view_recruitment or request.user.is_superuser %}
                 <!-- Recruitment Pipeline -->
                 <div class="md-chart-card md-chart-card--wide" data-chart-id="recruitment_pipeline" data-chart-section="recruitment" data-chart-label="{% trans 'Recruitment Pipeline' %}" data-chart-wide="1">
                     <div class="md-chart-card__header"><div><div class="md-chart-card__title">{% trans "Recruitment Pipeline" %}</div><div class="md-chart-card__subtitle">{% trans "Candidates by stage per recruitment" %}</div></div></div>
@@ -854,7 +868,9 @@
                     <div class="md-chart-card__header"><div><div class="md-chart-card__title">{% trans "Hiring Timeline" %}</div><div class="md-chart-card__subtitle">{% trans "Employees joined by month" %}</div></div></div>
                     <div class="md-chart-card__body"><div id="chart-hiring"></div></div>
                 </div>
+                {% endif %}
 
+                {% if perms.leave.view_leaverequest or request.user.is_superuser %}
                 <!-- Leave by Department -->
                 <div class="md-chart-card" data-chart-id="leave_by_department" data-chart-section="leave" data-chart-label="{% trans 'Leave by Department' %}">
                     <div class="md-chart-card__header"><div><div class="md-chart-card__title">{% trans "Leave by Department" %}</div><div class="md-chart-card__subtitle">{% trans "Department-wise leave requests" %}</div></div></div>
@@ -866,24 +882,31 @@
                     <div class="md-chart-card__header"><div><div class="md-chart-card__title">{% trans "Department Leave Days" %}</div><div class="md-chart-card__subtitle">{% trans "Total leave days by department" %}</div></div></div>
                     <div class="md-chart-card__body"><div id="chart-leave-days"></div></div>
                 </div>
+                {% endif %}
 
+                {% if perms.recruitment.view_recruitment or request.user.is_superuser %}
                 <!-- Recruitment Funnel (NEW) -->
                 <div class="md-chart-card md-chart-card--wide" data-chart-id="recruitment_funnel" data-chart-section="recruitment" data-chart-label="{% trans 'Recruitment Funnel' %}" data-chart-wide="1">
                     <div class="md-chart-card__header"><div><div class="md-chart-card__title">{% trans "Recruitment Funnel" %}</div><div class="md-chart-card__subtitle">{% trans "Candidates by stage — active recruitments" %}</div></div></div>
                     <div class="md-chart-card__body"><div id="chart-recruitment-funnel"></div></div>
                 </div>
+                {% endif %}
 
-                <!-- Employee Turnover (NEW) -->
+                {% if perms.employee.view_employee or request.user.is_superuser %}
+                <!-- Employee Turnover -->
                 <div class="md-chart-card md-chart-card--wide" data-chart-id="employee_turnover" data-chart-section="overview" data-chart-label="{% trans 'Employee Turnover' %}" data-chart-wide="1">
                     <div class="md-chart-card__header"><div><div class="md-chart-card__title">{% trans "Employee Turnover" %}</div><div class="md-chart-card__subtitle" id="turnover-rate">{% trans "New hires vs exits — last 6 months" %}</div></div></div>
                     <div class="md-chart-card__body"><div id="chart-turnover"></div></div>
                 </div>
+                {% endif %}
 
+                {% if perms.payroll.view_payslip or request.user.is_superuser %}
                 <!-- Payroll Summary (NEW) -->
                 <div class="md-chart-card" data-chart-id="payroll_summary" data-chart-section="overview" data-chart-label="{% trans 'Payroll Summary' %}">
                     <div class="md-chart-card__header"><div><div class="md-chart-card__title">{% trans "Payroll Summary" %}</div><div class="md-chart-card__subtitle" id="payroll-month">{% trans "Current vs previous month" %}</div></div></div>
                     <div class="md-chart-card__body"><div id="chart-payroll"></div></div>
                 </div>
+                {% endif %}
 
             </div>
         </div>
@@ -980,7 +1003,21 @@
         payroll: "{% trans 'Payroll' %}"
     };
 
+    // Permission flags — server-rendered; control chart click/drill-down behaviour
+    const PERM = {
+        employee:    {% if perms.employee.view_employee    or request.user.is_superuser %}true{% else %}false{% endif %},
+        attendance:  {% if perms.attendance.view_attendance or request.user.is_superuser %}true{% else %}false{% endif %},
+        leave:       {% if perms.leave.view_leaverequest   or request.user.is_superuser %}true{% else %}false{% endif %},
+        candidate:   {% if perms.recruitment.view_candidate or request.user.is_superuser %}true{% else %}false{% endif %},
+        recruitment: {% if perms.recruitment.view_recruitment or request.user.is_superuser %}true{% else %}false{% endif %},
+    };
+
     const emptyHtml = (msg) => `<div class="md-empty"><img src="/static/images/ui/no_records.svg" alt="">${msg}</div>`;
+    const hideCard  = id => document.querySelector(`[data-chart-id="${id}"]`)?.classList.add('md-chart-card--hidden');
+    const kpiCard   = (href, perm, colorClass, svg, label, value, sub) => {
+        const inner = `<div class="md-kpi-card__icon ${colorClass}">${svg}</div><div class="md-kpi-card__label">${label}</div><div class="md-kpi-card__value">${value}</div><div class="md-kpi-card__sub">${sub}</div>`;
+        return perm ? `<a href="${href}" class="md-kpi-card">${inner}</a>` : `<div class="md-kpi-card">${inner}</div>`;
+    };
 
     document.getElementById('md-date').textContent = new Date().toLocaleDateString('en-US', {
         weekday: 'long', year: 'numeric', month: 'long', day: 'numeric'
@@ -1382,35 +1419,15 @@
     fetchP("{% url 'dashboard-kpi-data' %}")
         .then(r => r.json())
         .then(data => {
-            document.getElementById('md-kpi-grid').innerHTML = `
-                <a href="{% url 'employee-view' %}" class="md-kpi-card">
-                    <div class="md-kpi-card__icon md-kpi-card__icon--indigo"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M22 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg></div>
-                    <div class="md-kpi-card__label">{% trans "Total Employees" %}</div>
-                    <div class="md-kpi-card__value">${data.total_employees}</div>
-                    <div class="md-kpi-card__sub">${data.new_joiners > 0
-                        ? '<span class="md-badge md-badge--green">+' + data.new_joiners + ' {% trans "this month" %}</span>'
-                        : '<span style="opacity:0.5">{% trans "No new joiners" %}</span>'}</div>
-                </a>
-                <a href="{% url 'attendance-view' %}" class="md-kpi-card">
-                    <div class="md-kpi-card__icon md-kpi-card__icon--green"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M16 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="8.5" cy="7" r="4"/><polyline points="17 11 19 13 23 9"/></svg></div>
-                    <div class="md-kpi-card__label">{% trans "Present Today" %}</div>
-                    <div class="md-kpi-card__value">${data.present_today}</div>
-                    <div class="md-kpi-card__sub"><span class="md-badge ${data.attendance_rate >= 80 ? 'md-badge--green' : 'md-badge--amber'}">${data.attendance_rate}% {% trans "rate" %}</span></div>
-                </a>
-                <a href="{% url 'request-view' %}" class="md-kpi-card">
-                    <div class="md-kpi-card__icon md-kpi-card__icon--amber"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="18" rx="2" ry="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg></div>
-                    <div class="md-kpi-card__label">{% trans "On Leave" %}</div>
-                    <div class="md-kpi-card__value">${data.on_leave}</div>
-                    <div class="md-kpi-card__sub">${data.pending_leaves > 0
-                        ? '<span class="md-badge md-badge--amber">' + data.pending_leaves + ' {% trans "pending" %}</span>'
-                        : '<span style="opacity:0.5">{% trans "No pending" %}</span>'}</div>
-                </a>
-                <a href="{% url 'recruitment-view' %}" class="md-kpi-card">
-                    <div class="md-kpi-card__icon md-kpi-card__icon--purple"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="7" width="20" height="14" rx="2" ry="2"/><path d="M16 21V5a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v16"/></svg></div>
-                    <div class="md-kpi-card__label">{% trans "Open Recruitments" %}</div>
-                    <div class="md-kpi-card__value">${data.open_recruitments}</div>
-                    <div class="md-kpi-card__sub"><span style="opacity:0.5">{% trans "Active hiring" %}</span></div>
-                </a>`;
+            const empSvg   = '<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M22 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>';
+            const attSvg   = '<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M16 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="8.5" cy="7" r="4"/><polyline points="17 11 19 13 23 9"/></svg>';
+            const leaveSvg = '<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="18" rx="2" ry="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>';
+            const recruSvg = '<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="7" width="20" height="14" rx="2" ry="2"/><path d="M16 21V5a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v16"/></svg>';
+            document.getElementById('md-kpi-grid').innerHTML =
+                kpiCard("{% url 'employee-view' %}",   PERM.employee,    'md-kpi-card__icon--indigo', empSvg,   '{% trans "Total Employees" %}',   data.total_employees,   data.new_joiners > 0 ? '<span class="md-badge md-badge--green">+' + data.new_joiners + ' {% trans "this month" %}</span>' : '<span style="opacity:0.5">{% trans "No new joiners" %}</span>') +
+                kpiCard("{% url 'attendance-view' %}",  PERM.attendance,  'md-kpi-card__icon--green',  attSvg,   '{% trans "Present Today" %}',     data.present_today,     '<span class="md-badge ' + (data.attendance_rate >= 80 ? 'md-badge--green' : 'md-badge--amber') + '">' + data.attendance_rate + '% {% trans "rate" %}</span>') +
+                kpiCard("{% url 'request-view' %}",     PERM.leave,       'md-kpi-card__icon--amber',  leaveSvg, '{% trans "On Leave" %}',           data.on_leave,          data.pending_leaves > 0 ? '<span class="md-badge md-badge--amber">' + data.pending_leaves + ' {% trans "pending" %}</span>' : '<span style="opacity:0.5">{% trans "No pending" %}</span>') +
+                (PERM.recruitment ? kpiCard("{% url 'recruitment-view' %}", true, 'md-kpi-card__icon--purple', recruSvg, '{% trans "Open Recruitments" %}', data.open_recruitments, '<span style="opacity:0.5">{% trans "Active hiring" %}</span>') : '');
         });
 
     // ─── ANNOUNCEMENTS ───
@@ -1450,15 +1467,44 @@
         .then(r => r.json())
         .then(data => {
             const el = document.getElementById('md-todays-leave');
-            // Update "View all" to filter for today's approved leave
-            const todayStr = new Date().toISOString().split('T')[0];
             const viewAllLink = document.getElementById('md-leave-viewall');
-            if (viewAllLink) viewAllLink.href = `{% url 'request-view' %}?status=approved&today_leave=true`;
 
-            if (!data.leaves.length) { el.innerHTML = '<div class="md-info-panel__empty">{% trans "No one on leave today" %}</div>'; return; }
+            if (data.is_restricted) {
+                // Normal user: hide "View all" and update panel title
+                if (viewAllLink) viewAllLink.style.display = 'none';
+                const leaveTitle = document.getElementById('md-todays-leave')
+                    ?.closest('.md-info-panel')
+                    ?.querySelector('.md-info-panel__title');
+                if (leaveTitle) leaveTitle.textContent = '{% trans "My Leave Today" %}';
+            } else {
+                if (viewAllLink) viewAllLink.href = `{% url 'request-view' %}?status=approved&today_leave=true`;
+            }
+
+            if (!data.leaves.length) {
+                el.innerHTML = data.is_restricted
+                    ? '<div class="md-info-panel__empty">{% trans "You are not on leave today" %}</div>'
+                    : '<div class="md-info-panel__empty">{% trans "No one on leave today" %}</div>';
+                return;
+            }
+
             el.innerHTML = data.leaves.map(l => {
                 const initials = (l.employee || '').split(' ').map(w => w[0]).join('').slice(0, 2).toUpperCase() || '?';
                 const avatarInner = l.avatar ? `<img src="${l.avatar}" alt="" onerror="this.parentElement.textContent='${initials}'">` : initials;
+                if (data.is_restricted) {
+                    // No clickable HTMX link — restricted user can't open the leave detail
+                    return `
+                    <div class="md-leave-item">
+                        <div class="md-leave-item__avatar">${avatarInner}</div>
+                        <div class="md-leave-item__info">
+                            <div class="md-leave-item__name">${l.employee}</div>
+                            <div class="md-leave-item__type">${l.leave_type}</div>
+                        </div>
+                        <div class="md-leave-item__dates">
+                            <div>${l.start}${l.start !== l.end ? ' – ' + l.end : ''}</div>
+                            <span class="md-leave-item__days">${l.days}d</span>
+                        </div>
+                    </div>`;
+                }
                 return `
                 <div class="md-leave-item" style="cursor:pointer;"
                      hx-get="/leave/leave-requests-detail-view/${l.id}/?instance_ids=&dashboard=True"
@@ -1475,19 +1521,19 @@
                     </div>
                 </div>`;
             }).join('');
-            htmx.process(el);
+            if (!data.is_restricted) htmx.process(el);
         }).catch(() => { document.getElementById('md-todays-leave').innerHTML = '<div class="md-info-panel__empty">{% trans "No one on leave today" %}</div>'; });
 
+    {% if perms.attendance.view_attendance or request.user.is_superuser %}
     // ─── ATTENDANCE TREND ───
-    (function () {
-        const sub = document.getElementById('md-attendance-trend-subtitle');
-        if (sub && fromInput.value && toInput.value) {
-            sub.textContent = `{% trans "Weekly rate" %} — ${fromInput.value} → ${toInput.value}`;
-        }
-    })();
     fetchP("{% url 'dashboard-attendance-trend' %}")
         .then(r => r.json())
         .then(data => {
+            if (data.no_permission) { hideCard('attendance_trend'); return; }
+            const sub = document.getElementById('md-attendance-trend-subtitle');
+            if (sub && fromInput.value && toInput.value) {
+                sub.textContent = `{% trans "Weekly rate" %} — ${fromInput.value} → ${toInput.value}`;
+            }
             new ApexCharts(document.querySelector("#chart-attendance-trend"), {
                 series: [{ name: 'Attendance Rate', data: data.weeks.map(w => w.rate) }],
                 chart: { type: 'area', height: 280, toolbar: { show: false }, background: 'transparent', fontFamily: 'inherit', animations: ANIM,
@@ -1504,6 +1550,7 @@
                 tooltip: { ...TOOLTIP_STYLE, y: { formatter: v => v + '% attendance' } },
             }).render();
         });
+    {% endif %}
 
     // ─── DEPARTMENT HEADCOUNT ───
     fetch("{% url 'dashboard-department-headcount' %}")
@@ -1514,6 +1561,7 @@
                 series: data.departments.map(d => d.count),
                 chart: { type: 'donut', height: 300, background: 'transparent', fontFamily: 'inherit', animations: ANIM,
                     events: { dataPointSelection: (e, ctx, config) => {
+                        if (!PERM.employee) return;
                         const dept = data.departments[config.dataPointIndex].department;
                         window.location.href = "{% url 'employee-view' %}?department=" + encodeURIComponent(dept);
                     }}
@@ -1543,6 +1591,7 @@
                 series: data.genders.map(g => g.count),
                 chart: { type: 'pie', height: 300, background: 'transparent', fontFamily: 'inherit', animations: ANIM,
                     events: { dataPointSelection: (e, ctx, config) => {
+                        if (!PERM.employee) return;
                         const gender = data.genders[config.dataPointIndex].gender;
                         window.location.href = "{% url 'employee-view' %}?gender=" + (genderKeys[gender] || gender.toLowerCase());
                     }}
@@ -1557,16 +1606,19 @@
             }).render();
         });
 
+    {% if perms.leave.view_leaverequest or request.user.is_superuser %}
     // ─── LEAVE BREAKDOWN ───
     fetchP("{% url 'dashboard-leave-breakdown' %}")
         .then(r => r.json())
         .then(data => {
+            if (data.no_permission) { hideCard('leave_breakdown'); return; }
             document.getElementById('leave-month').textContent = data.month;
             if (!data.breakdown.length) { document.querySelector("#chart-leave").innerHTML = emptyHtml('No leave data this month'); return; }
             new ApexCharts(document.querySelector("#chart-leave"), {
                 series: [{ name: 'Requests', data: data.breakdown.map(b => b.count) }],
                 chart: { type: 'bar', height: 300, toolbar: { show: false }, background: 'transparent', fontFamily: 'inherit', animations: ANIM,
                     events: { dataPointSelection: (e, ctx, config) => {
+                        if (!PERM.leave) return;
                         const leaveType = data.breakdown[config.dataPointIndex]?.type || '';
                         window.location.href = "{% url 'request-view' %}?leave_type_id__name=" + encodeURIComponent(leaveType);
                     }}
@@ -1582,6 +1634,7 @@
                 states: { hover: { filter: { type: 'darken', value: 0.85 } } },
             }).render();
         });
+    {% endif %}
 
     // ─── EMPLOYEE STATUS ───
     fetch("/employee/dashboard-employee")
@@ -1593,6 +1646,7 @@
                 series: data.dataSet[0].data,
                 chart: { type: 'radialBar', height: 300, background: 'transparent', fontFamily: 'inherit', animations: ANIM,
                     events: { legendClick: (ctx, seriesIndex) => {
+                        if (!PERM.employee) return;
                         const label = data.labels[seriesIndex];
                         const active = label.toLowerCase().includes('active') && !label.toLowerCase().includes('in') ? 'true' : 'false';
                         window.location.href = "{% url 'employee-view' %}?is_active=" + active;
@@ -1615,15 +1669,18 @@
             }).render();
         });
 
+    {% if perms.attendance.view_attendance or request.user.is_superuser %}
     // ─── ATTENDANCE OVERVIEW ───
     fetch("{% url 'dashboard-attendance' %}")
         .then(r => r.json())
         .then(data => {
+            if (data.no_permission) { hideCard('attendance_overview'); return; }
             if (!data.dataSet || !data.dataSet.length) { document.querySelector("#chart-attendance-overview").innerHTML = emptyHtml('No attendance records available'); return; }
             new ApexCharts(document.querySelector("#chart-attendance-overview"), {
                 series: data.dataSet.map(d => ({ name: d.label, data: d.data })),
                 chart: { type: 'bar', height: 320, toolbar: { show: false }, background: 'transparent', fontFamily: 'inherit', stacked: false, animations: ANIM,
                     events: { dataPointSelection: (e, ctx, config) => {
+                        if (!PERM.attendance) return;
                         const dept = data.labels[config.dataPointIndex];
                         const seriesLabel = data.dataSet[config.seriesIndex]?.label || '';
                         if (seriesLabel.toLowerCase().includes('late') || seriesLabel.toLowerCase().includes('early')) {
@@ -1650,6 +1707,7 @@
     fetch("{% url 'department-overtime-chart' %}")
         .then(r => r.json())
         .then(data => {
+            if (data.no_permission) { hideCard('department_overtime'); return; }
             if (!data.labels || !data.labels.length || !data.dataset || !data.dataset.length) { document.querySelector("#chart-overtime").innerHTML = emptyHtml('No overtime data'); return; }
             new ApexCharts(document.querySelector("#chart-overtime"), {
                 series: data.dataset[0].data,
@@ -1672,11 +1730,14 @@
                 tooltip: { ...TOOLTIP_STYLE, y: { formatter: v => v.toFixed(1) + ' hrs' } },
             }).render();
         }).catch(() => { document.querySelector("#chart-overtime").innerHTML = emptyHtml('No overtime data'); });
+    {% endif %}
 
+    {% if perms.leave.view_leaverequest or request.user.is_superuser %}
     // ─── LEAVE OVER PERIOD ───
     fetch("{% url 'leave-over-period' %}")
         .then(r => r.json())
         .then(data => {
+            if (data.no_permission) { hideCard('leave_trends'); return; }
             if (!data.labels || !data.labels.length) { document.querySelector("#chart-leave-trend").innerHTML = emptyHtml('No data for this week'); return; }
             const seriesArr = Array.isArray(data.dataset) ? data.dataset : [data.dataset];
             new ApexCharts(document.querySelector("#chart-leave-trend"), {
@@ -1694,17 +1755,28 @@
                 tooltip: { ...TOOLTIP_STYLE, y: { formatter: v => v + ' leave(s)' } },
             }).render();
         }).catch(() => { document.querySelector("#chart-leave-trend").innerHTML = emptyHtml('No data for this week'); });
+    {% endif %}
 
+    {% if perms.recruitment.view_recruitment or request.user.is_superuser %}
     // ─── RECRUITMENT PIPELINE ───
     fetch("{% url 'recruitment-pipeline' %}?_t=" + Date.now())
-        .then(r => r.json())
+        .then(r => {
+            const ct = r.headers.get('content-type') || '';
+            if (!r.ok || !ct.includes('application/json')) {
+                hideCard('recruitment_pipeline');
+                return null;
+            }
+            return r.json();
+        })
         .then(data => {
+            if (!data) return;
             if (!data.dataSet || !data.dataSet.length) { document.querySelector("#chart-pipeline").innerHTML = emptyHtml('No active recruitments'); return; }
             try {
                 new ApexCharts(document.querySelector("#chart-pipeline"), {
                     series: data.dataSet.map(r => ({ name: r.label, data: r.data })),
                     chart: { type: 'bar', height: 320, toolbar: { show: false }, background: 'transparent', fontFamily: 'inherit',
                         events: { dataPointSelection: (e, ctx, config) => {
+                            if (!PERM.candidate) return;
                             const recruitment = data.dataSet[config.seriesIndex]?.label || '';
                             const stage = data.labels[config.dataPointIndex] || '';
                             window.location.href = "{% url 'candidate-view' %}?recruitment=" + encodeURIComponent(recruitment) + "&stage_id__stage_type=" + encodeURIComponent(stage.toLowerCase());
@@ -1727,17 +1799,26 @@
                     },
                 }).render();
             } catch(e) { document.querySelector("#chart-pipeline").innerHTML = emptyHtml('Chart error: ' + e.message); }
-        }).catch(e => { document.querySelector("#chart-pipeline").innerHTML = emptyHtml('Failed to load recruitment data'); });
+        }).catch(() => { hideCard('recruitment_pipeline'); });
 
     // ─── HIRING TIMELINE ───
     fetch("{% url 'dashboard-hiring' %}")
-        .then(r => r.json())
+        .then(r => {
+            const ct = r.headers.get('content-type') || '';
+            if (!r.ok || !ct.includes('application/json')) {
+                hideCard('hiring_timeline');
+                return null;
+            }
+            return r.json();
+        })
         .then(data => {
+            if (!data) return;
             if (!data.dataSet || !data.dataSet.length) { document.querySelector("#chart-hiring").innerHTML = emptyHtml('No hiring data'); return; }
             new ApexCharts(document.querySelector("#chart-hiring"), {
                 series: [{ name: data.dataSet[0].label || 'Joined', data: data.dataSet[0].data }],
                 chart: { type: 'bar', height: 280, toolbar: { show: false }, background: 'transparent', fontFamily: 'inherit', animations: ANIM,
                     events: { dataPointSelection: (e, ctx, config) => {
+                        if (!PERM.candidate) return;
                         const monthNames = ['January','February','March','April','May','June','July','August','September','October','November','December'];
                         const label = data.labels[config.dataPointIndex] || '';
                         const monthNum = monthNames.indexOf(label) + 1;
@@ -1761,17 +1842,21 @@
                 tooltip: { ...TOOLTIP_STYLE, y: { formatter: v => v + ' employee(s)' } },
                 states: { hover: { filter: { type: 'darken', value: 0.85 } } },
             }).render();
-        }).catch(() => { document.querySelector("#chart-hiring").innerHTML = emptyHtml('No hiring data'); });
+        }).catch(() => { hideCard('hiring_timeline'); });
+    {% endif %}
 
+    {% if perms.leave.view_leaverequest or request.user.is_superuser %}
     // ─── LEAVE BY DEPARTMENT ───
     fetch("{% url 'overall-leave' %}")
         .then(r => r.json())
         .then(data => {
+            if (data.no_permission) { hideCard('leave_by_department'); return; }
             if (!data.labels || !data.labels.length || !data.data || !data.data.length) { document.querySelector("#chart-leave-dept").innerHTML = emptyHtml('No leave data'); return; }
             new ApexCharts(document.querySelector("#chart-leave-dept"), {
                 series: data.data,
                 chart: { type: 'donut', height: 300, background: 'transparent', fontFamily: 'inherit', animations: ANIM,
                     events: { dataPointSelection: (e, ctx, config) => {
+                        if (!PERM.leave) return;
                         const dept = data.labels[config.dataPointIndex];
                         window.location.href = "{% url 'request-view' %}?department=" + encodeURIComponent(dept);
                     }}
@@ -1794,6 +1879,7 @@
     fetch("{% url 'department-leave-chart' %}")
         .then(r => r.json())
         .then(data => {
+            if (data.no_permission) { hideCard('department_leave_days'); return; }
             if (!data.labels || !data.labels.length || !data.dataset || !data.dataset.length) { document.querySelector("#chart-leave-days").innerHTML = emptyHtml('No leave data this month'); return; }
             new ApexCharts(document.querySelector("#chart-leave-days"), {
                 series: [{ name: 'Leave Days', data: data.dataset[0].data }],
@@ -1809,6 +1895,7 @@
                 states: { hover: { filter: { type: 'darken', value: 0.85 } } },
             }).render();
         }).catch(() => { document.querySelector("#chart-leave-days").innerHTML = emptyHtml('No leave data this month'); });
+    {% endif %}
 
     // ─── UPCOMING HOLIDAYS ───
     fetch("{% url 'dashboard-upcoming-holidays' %}")
@@ -1844,6 +1931,16 @@
         .then(r => r.json())
         .then(data => {
             const p = data.pending;
+            const isRestricted = data.is_restricted;
+
+            // Hide the entire panel for normal users without approval permission
+            if (isRestricted) {
+                const panel = document.getElementById('md-pending-approvals')?.closest('.md-info-panel');
+                if (panel) panel.style.display = 'none';
+                return;
+            }
+
+            // Admins / managers: render clickable approval cards
             document.getElementById('md-pending-approvals').innerHTML = `
                 <div class="md-pending-grid">
                     <a href="{% url 'request-view' %}?status=requested" class="md-pending-card md-pending-card--amber">
@@ -1873,10 +1970,15 @@
                 </div>`;
         }).catch(() => { document.getElementById('md-pending-approvals').innerHTML = '<div class="md-info-panel__empty">{% trans "Unable to load" %}</div>'; });
 
+    {% if perms.recruitment.view_recruitment or request.user.is_superuser %}
     // ─── RECRUITMENT FUNNEL ───
     fetch("{% url 'dashboard-recruitment-pipeline' %}?_t=" + Date.now())
         .then(r => r.json())
         .then(data => {
+            if (data.no_permission) {
+                hideCard('recruitment_funnel');
+                return;
+            }
             if (!data.stages || !data.stages.length) { document.querySelector("#chart-recruitment-funnel").innerHTML = emptyHtml('{% trans "No active recruitments" %}'); return; }
             const stageColors = { initial: '#94a3b8', applied: '#6366f1', test: '#3b82f6', interview: '#f59e0b', hired: '#22c55e', cancelled: '#ef4444' };
             try {
@@ -1884,6 +1986,7 @@
                     series: [{ name: '{% trans "Candidates" %}', data: data.stages.map(s => s.count) }],
                     chart: { type: 'bar', height: 300, toolbar: { show: false }, background: 'transparent', fontFamily: 'inherit',
                         events: { dataPointSelection: (e, ctx, config) => {
+                            if (!PERM.candidate) return;
                             const stage = data.stages[config.dataPointIndex];
                             if (!stage) return;
                             window.location.href = "{% url 'candidate-view' %}?stage_id__stage_type=" + encodeURIComponent(stage.type);
@@ -1904,7 +2007,9 @@
                 }).render();
             } catch(e) { document.querySelector("#chart-recruitment-funnel").innerHTML = emptyHtml('Chart error: ' + e.message); }
         }).catch(e => { document.querySelector("#chart-recruitment-funnel").innerHTML = emptyHtml('{% trans "Failed to load recruitment data" %}'); });
+    {% endif %}
 
+    {% if perms.employee.view_employee or request.user.is_superuser %}
     // ─── EMPLOYEE TURNOVER ───
     fetchP("{% url 'dashboard-turnover' %}")
         .then(r => r.json())
@@ -1929,11 +2034,14 @@
                 states: { hover: { filter: { type: 'darken', value: 0.85 } } },
             }).render();
         }).catch(() => { document.querySelector("#chart-turnover").innerHTML = emptyHtml('{% trans "No turnover data" %}'); });
+    {% endif %}
 
+    {% if perms.payroll.view_payslip or request.user.is_superuser %}
     // ─── PAYROLL SUMMARY ───
     fetchP("{% url 'dashboard-payroll-summary' %}")
         .then(r => r.json())
         .then(data => {
+            if (data.no_permission) { hideCard('payroll_summary'); return; }
             const el = document.querySelector("#chart-payroll");
             document.getElementById('payroll-month').textContent = data.current_month;
             if (data.current.count === 0 && data.previous.count === 0) {
@@ -1973,6 +2081,7 @@
                     </div>
                 </div>`;
         }).catch(() => { document.querySelector("#chart-payroll").innerHTML = emptyHtml('{% trans "No payroll data" %}'); });
+    {% endif %}
 
     // ═══════════════════════════════════════════
     //  ANNOUNCEMENT MODALS
