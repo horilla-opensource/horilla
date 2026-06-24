@@ -108,6 +108,13 @@
         color: #ffffff !important;
     }
 
+    /* Pin button icon: show the OPEN padlock when unpinned (hover-to-expand mode)
+       and the CLOSED padlock when pinned (locked open). */
+    #sidebar #sidebarPinBtn .sidebar-lock-closed { display: none; }
+    #sidebar #sidebarPinBtn .sidebar-lock-open { display: block; }
+    #sidebar.sidebar-pinned #sidebarPinBtn .sidebar-lock-open { display: none; }
+    #sidebar.sidebar-pinned #sidebarPinBtn .sidebar-lock-closed { display: block; }
+
     /* Module button transitions */
     .sideboxmain {
         transition: background-color 0.18s ease, box-shadow 0.18s ease;
@@ -254,19 +261,33 @@
         <div class="flex items-center gap-3 mb-6">
             <button
                 id="sidebarPinBtn"
-                title="{% trans 'Pin sidebar' %}"
-                aria-label="{% trans 'Toggle sidebar pin' %}"
+                title="{% trans 'Lock sidebar open' %}"
+                aria-label="{% trans 'Lock sidebar open' %}"
+                data-pin-label="{% trans 'Lock sidebar open' %}"
+                data-unpin-label="{% trans 'Unlock sidebar (auto-collapses on hover-out)' %}"
                 class="flex-shrink-0 p-1.5 rounded-lg text-gray-400 hover:bg-gray-100 hover:text-gray-600 transition-colors duration-150"
             >
+                <!-- Unlocked padlock: shown when the sidebar is NOT pinned (hover-to-expand mode) -->
                 <svg
-                    class="w-5 h-5"
+                    class="sidebar-lock-open w-5 h-5"
                     fill="none"
                     stroke="currentColor"
                     stroke-width="2"
                     viewBox="0 0 24 24"
                     aria-hidden="true"
                 >
-                    <path stroke-linecap="round" stroke-linejoin="round" d="M4 6h16M4 12h16M4 18h16" />
+                    <path stroke-linecap="round" stroke-linejoin="round" d="M13.5 10.5V6.75a4.5 4.5 0 1 1 9 0v3.75M3.75 21.75h10.5a2.25 2.25 0 0 0 2.25-2.25v-6.75a2.25 2.25 0 0 0-2.25-2.25H3.75a2.25 2.25 0 0 0-2.25 2.25v6.75a2.25 2.25 0 0 0 2.25 2.25Z" />
+                </svg>
+                <!-- Locked padlock: shown when the sidebar IS pinned (locked open) -->
+                <svg
+                    class="sidebar-lock-closed w-5 h-5"
+                    fill="none"
+                    stroke="currentColor"
+                    stroke-width="2"
+                    viewBox="0 0 24 24"
+                    aria-hidden="true"
+                >
+                    <path stroke-linecap="round" stroke-linejoin="round" d="M16.5 10.5V6.75a4.5 4.5 0 1 0-9 0v3.75m-.75 11.25h10.5a2.25 2.25 0 0 0 2.25-2.25v-6.75a2.25 2.25 0 0 0-2.25-2.25H6.75a2.25 2.25 0 0 0-2.25 2.25v6.75a2.25 2.25 0 0 0 2.25 2.25Z" />
                 </svg>
             </button>
             <div class="flex items-center gap-2 min-w-0 flex-1">
@@ -566,6 +587,14 @@
 
           sidebarEl.classList.toggle("sidebar-pinned", pinned);
           if (content) content.style.marginLeft = pinned ? "13rem" : "";
+
+          // Keep the lock button's tooltip/aria-label in sync with the state.
+          // (The open vs closed padlock icon itself is swapped via CSS on .sidebar-pinned.)
+          var pinBtnEl = document.getElementById("sidebarPinBtn");
+          if (pinBtnEl) {
+            var lockLabel = pinned ? pinBtnEl.dataset.unpinLabel : pinBtnEl.dataset.pinLabel;
+            if (lockLabel) { pinBtnEl.title = lockLabel; pinBtnEl.setAttribute("aria-label", lockLabel); }
+          }
 
           if (!animate && content) {
             requestAnimationFrame(function () {
