@@ -50,6 +50,45 @@
         transition: margin-left 0.22s cubic-bezier(0.4, 0, 0.2, 1);
     }
 
+    /* Fixed navbar: align left edge and width with main content area */
+    .oh-main-header {
+        left: 4rem;
+        right: 0;
+        transition: left 0.22s cubic-bezier(0.4, 0, 0.2, 1);
+    }
+    #sidebar.sidebar-pinned ~ .oh-main-content .oh-main-header {
+        left: 13rem;
+    }
+
+    /* Company name / link in sidebar header */
+    #sidebar .oh-sidebar__company-details {
+        display: flex;
+        flex-direction: column;
+        min-width: 0;
+    }
+    #sidebar .oh-sidebar__company-title {
+        color: #111827;
+        font-weight: 600;
+        line-height: 1.25;
+    }
+    #sidebar .oh-sidebar__company-link {
+        color: #6b7280;
+        line-height: 1.25;
+    }
+    #sidebar .oh-sidebar__company-link:hover {
+        color: #374151;
+        text-decoration: none;
+    }
+    body.dark #sidebar .oh-sidebar__company-title {
+        color: #f3f4f6;
+    }
+    body.dark #sidebar .oh-sidebar__company-link {
+        color: #9ca3af;
+    }
+    body.dark #sidebar .oh-sidebar__company-link:hover {
+        color: #e5e7eb;
+    }
+
     /* Pin button highlight when sidebar is pinned */
     #sidebar.sidebar-pinned #sidebarPinBtn {
         background-color: #f3f4f6;
@@ -141,6 +180,11 @@
         justify-content: center !important;
         gap: 0 !important;
     }
+    #sidebar:not(:hover):not(.sidebar-pinned) > div > div:first-child > div {
+        flex: 0 0 auto !important;
+        justify-content: center !important;
+        gap: 0 !important;
+    }
 
     /* Collapsed: hide the hamburger (pin button); user hovers to expand, then
        clicks the hamburger that appears in expanded state. */
@@ -198,7 +242,7 @@
     }
 
     @media (prefers-reduced-motion: reduce) {
-        #sidebar, .oh-main-content, .sideboxmain, .sidebar-chevron, .sidebar-subnav {
+        #sidebar, .oh-main-content, .oh-main-header, .sideboxmain, .sidebar-chevron, .sidebar-subnav {
             animation: none !important;
             transition: none !important;
         }
@@ -225,19 +269,40 @@
                     <path stroke-linecap="round" stroke-linejoin="round" d="M4 6h16M4 12h16M4 18h16" />
                 </svg>
             </button>
-            {% if request.session.selected_company_instance %}
-                <img
-                    src="{{request.session.selected_company_instance.icon}}"
-                    class="oh-sidebar-label w-7 h-7 rounded-full flex-shrink-0"
-                    title="{{request.session.selected_company_instance.company}}"
-                >
-            {% else %}
-                <img
-                    src="/static/horilla_theme/assets/img/horilla-logo.png"
-                    alt="Logo"
-                    class="oh-sidebar-label w-7 h-7 flex-shrink-0"
-                >
-            {% endif %}
+            <div class="flex items-center gap-2 min-w-0 flex-1">
+                {% if request.session.selected_company_instance %}
+                    <img
+                        src="{{ request.session.selected_company_instance.icon }}"
+                        class="oh-sidebar-label w-7 h-7 rounded-full flex-shrink-0"
+                        title="{{ request.session.selected_company_instance.company }}"
+                        alt="{{ request.session.selected_company_instance.company }}"
+                    >
+                    <div class="oh-sidebar__company-details oh-sidebar-label min-w-0">
+                        <span
+                            class="oh-sidebar__company-title truncate"
+                            style="font-size: 13px"
+                        >{{ request.session.selected_company_instance.company }}.</span>
+                        <a href="#" class="oh-sidebar__company-link truncate" style="font-size: 10px">
+                            {% trans request.session.selected_company_instance.text %}
+                        </a>
+                    </div>
+                {% else %}
+                    <img
+                        src="{% if request.user.employee_get.employee_work_info.company_id.icon %}{{ request.user.employee_get.employee_work_info.company_id.icon.url }}{% else %}/static/horilla_theme/assets/img/horilla-logo.png{% endif %}"
+                        alt="{% trans 'Company logo' %}"
+                        class="oh-sidebar-label w-7 h-7 rounded-full flex-shrink-0"
+                    >
+                    <div class="oh-sidebar__company-details oh-sidebar-label min-w-0">
+                        <span
+                            class="oh-sidebar__company-title truncate"
+                            style="font-size: 13px"
+                        >{{ request.user.employee_get.employee_work_info.company_id }}.</span>
+                        <a href="#" class="oh-sidebar__company-link truncate" style="font-size: 10px">
+                            {% trans "My Company" %}
+                        </a>
+                    </div>
+                {% endif %}
+            </div>
         </div>
 
         <nav
