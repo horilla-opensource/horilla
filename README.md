@@ -64,7 +64,7 @@ To clone the repository, spin up the database, and execute the tests locally:
 
 As required by the DeepThought assessment, here is the hand-drawn Mind Map mapping the interactions between Psychology (team and user human dynamics), Business (financial risk and stakeholder impact), and Technology (the Django/SQLite platform & stubbed boundaries).
 
-![Purabh's Quality & System Mind Map](dt_mindmap_purabh.jpeg)
+![Purabh's Quality & System Mind Map](dt_qa_p.jpg)
 
 ---
 
