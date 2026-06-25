@@ -1,6 +1,6 @@
 # Horilla HRMS — Quality Engineering Assessment
 
-**Candidate:** Purabh Singh
+**Candidate:** Purabh Singh ; purabhsingh200426@gmail.com ,
 **Assessment:** DeepThought Quality Engineer Fellowship
 **Repository Branch:** `deepthought-qa-assessment`
 **CI/CD Build Pipeline Status:** ![QA Status](https://github.com/sleeptoken7/horilla-hr/actions/workflows/qa.yml/badge.svg)
