@@ -800,6 +800,18 @@
         <div class="md-main">
             <div class="md-chart-grid" id="md-charts-container">
 
+                <!-- Department Headcount -->
+                <div class="md-chart-card" data-chart-id="department_headcount" data-chart-section="overview" data-chart-label="{% trans 'Department Headcount' %}">
+                    <div class="md-chart-card__header"><div><div class="md-chart-card__title">{% trans "Department Headcount" %}</div><div class="md-chart-card__subtitle">{% trans "Top 10 departments" %}</div></div></div>
+                    <div class="md-chart-card__body"><div id="chart-departments"></div></div>
+                </div>
+
+                <!-- Employee Status -->
+                <div class="md-chart-card" data-chart-id="employee_status" data-chart-section="overview" data-chart-label="{% trans 'Employee Status' %}">
+                    <div class="md-chart-card__header"><div><div class="md-chart-card__title">{% trans "Employee Status" %}</div><div class="md-chart-card__subtitle">{% trans "Active vs Inactive" %}</div></div></div>
+                    <div class="md-chart-card__body"><div id="chart-employee-status"></div></div>
+                </div>
+
                 {% if perms.attendance.view_attendance or request.user.is_superuser %}
                 <!-- Attendance Trend -->
                 <div class="md-chart-card md-chart-card--wide" data-chart-id="attendance_trend" data-chart-section="overview" data-chart-label="{% trans 'Attendance Trend' %}" data-chart-wide="1">
@@ -807,12 +819,6 @@
                     <div class="md-chart-card__body"><div id="chart-attendance-trend"></div></div>
                 </div>
                 {% endif %}
-
-                <!-- Department Headcount -->
-                <div class="md-chart-card" data-chart-id="department_headcount" data-chart-section="overview" data-chart-label="{% trans 'Department Headcount' %}">
-                    <div class="md-chart-card__header"><div><div class="md-chart-card__title">{% trans "Department Headcount" %}</div><div class="md-chart-card__subtitle">{% trans "Top 10 departments" %}</div></div></div>
-                    <div class="md-chart-card__body"><div id="chart-departments"></div></div>
-                </div>
 
                 <!-- Gender Distribution -->
                 <div class="md-chart-card" data-chart-id="gender_distribution" data-chart-section="overview" data-chart-label="{% trans 'Gender Distribution' %}">
@@ -827,12 +833,6 @@
                     <div class="md-chart-card__body"><div id="chart-leave"></div></div>
                 </div>
                 {% endif %}
-
-                <!-- Employee Status -->
-                <div class="md-chart-card" data-chart-id="employee_status" data-chart-section="overview" data-chart-label="{% trans 'Employee Status' %}">
-                    <div class="md-chart-card__header"><div><div class="md-chart-card__title">{% trans "Employee Status" %}</div><div class="md-chart-card__subtitle">{% trans "Active vs Inactive" %}</div></div></div>
-                    <div class="md-chart-card__body"><div id="chart-employee-status"></div></div>
-                </div>
 
                 {% if perms.attendance.view_attendance or request.user.is_superuser %}
                 <!-- Attendance Overview -->
