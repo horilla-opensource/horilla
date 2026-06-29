@@ -192,17 +192,16 @@ BLOCKED_EXTENSIONS = {
 
 
 def _check_reporting_manager(request, *args, **kwargs):
+    from base.access import manages
+
     if kwargs.get("obj_id"):
         obj_id = kwargs["obj_id"]
-        emp = Employee.objects.get(id=obj_id)
-        re_manager = None
-        if emp.employee_work_info.reporting_manager_id != None:
-            re_manager = emp.employee_work_info.reporting_manager_id
-        employee = request.user.employee_get
-        if re_manager != None:
-            return re_manager == employee
-        else:
+        emp = Employee.objects.filter(id=obj_id).first()
+        if not emp:
             return False
+        # Nested: a manager may open anyone in their whole subordinate chain
+        # (direct AND indirect), not just their direct reports.
+        return manages(request.user.employee_get, emp)
     return request.user.employee_get.reporting_manager.exists()
 
 
@@ -343,6 +342,12 @@ def employee_view_individual(request, obj_id, **kwargs):
         except Exception as e:
             return render(request, "404.html", status=404)
 
+    from base.access import can_edit_employee, is_ceo, is_hr
+
+    # The CEO is hidden from everyone except HR (admin).
+    if is_ceo(employee) and not is_hr(request.user):
+        return render(request, "404.html", status=404)
+
     employee_leaves = (
         employee.available_leave.all() if apps.is_installed("leave") else None
     )
@@ -395,6 +400,7 @@ def employee_view_individual(request, obj_id, **kwargs):
         "current_date": date.today(),
         "leave_request_ids": json.dumps([]),
         "enabled_block_unblock": enabled_block_unblock,
+        "can_edit_employee": can_edit_employee(request.user, employee),
     }
     # if the requesting user opens own data
     if request.user.employee_get == employee:
@@ -1125,7 +1131,10 @@ def employee_view(request):
     page_number = request.GET.get("page")
     error_message = request.session.pop("error_message", None)
 
-    queryset = Employee.objects.filter()
+    from base.access import visible_employees_qs
+
+    # Everyone may see the full employee list, but the CEO is hidden from non-HR.
+    queryset = visible_employees_qs(request.user, Employee.objects.filter())
     filter_obj = EmployeeFilter(request.GET, queryset=queryset).qs
     if request.GET.get("is_active") != "False":
         filter_obj = filter_obj.filter(is_active=True)
@@ -1133,7 +1142,7 @@ def employee_view(request):
     update_fields = BulkUpdateFieldForm()
     data_dict = parse_qs(previous_data)
     get_key_instances(Employee, data_dict)
-    emp = Employee.objects.filter()
+    emp = visible_employees_qs(request.user, Employee.objects.filter())
 
     # Store the employees in the session
     request.session["filtered_employees"] = [employee.id for employee in queryset]
@@ -1520,6 +1529,16 @@ def employee_view_update(request, obj_id, **kwargs):
             work.save()
 
         employee.save()
+
+    # Enforce nested edit access: only HR or a manager (direct OR indirect) of
+    # this employee may open/submit the edit form. The CEO is HR-only.
+    from base.access import can_edit_employee, is_ceo, is_hr
+
+    if employee is None or (is_ceo(employee) and not is_hr(request.user)):
+        return render(request, "404.html", status=404)
+    if not can_edit_employee(request.user, employee):
+        messages.error(request, _("You do not have access to edit this employee."))
+        return redirect(employee_view)
 
     if (
         user

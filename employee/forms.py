@@ -219,6 +219,9 @@ class EmployeeForm(ModelForm):
             "is_directly_converted",
             "is_active",
             "qualification",
+            # HR-only flag, managed via Django admin (superuser) — never exposed
+            # in the manager-editable employee form.
+            "is_ceo",
         )
 
     def __init__(self, *args, **kwargs):

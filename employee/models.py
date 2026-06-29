@@ -117,6 +117,11 @@ class Employee(models.Model):
     emergency_contact_name = models.CharField(max_length=20, null=True, blank=True)
     emergency_contact_relation = models.CharField(max_length=20, null=True, blank=True)
     is_active = models.BooleanField(default=True)
+    is_ceo = models.BooleanField(
+        default=False,
+        verbose_name=_("CEO"),
+        help_text=_("Hidden from everyone except HR (admin)."),
+    )
     additional_info = models.JSONField(null=True, blank=True)
     is_from_onboarding = models.BooleanField(
         default=False, null=True, blank=True, editable=False
