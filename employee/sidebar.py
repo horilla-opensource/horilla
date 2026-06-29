@@ -25,6 +25,11 @@ SUBMENUS = [
         "accessibility": "employee.sidebar.employee_accessibility",
     },
     {
+        "menu": trans("Archived Employees"),
+        "redirect": reverse("employee-archived-view"),
+        "accessibility": "employee.sidebar.employee_accessibility",
+    },
+    {
         "menu": trans("Document Requests"),
         "redirect": reverse("document-request-view"),
         "accessibility": "employee.sidebar.document_accessibility",

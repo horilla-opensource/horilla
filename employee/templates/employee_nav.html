@@ -65,8 +65,11 @@
 
 <section class="oh-wrapper oh-main__topbar pb-3" x-data="{searchShow: false}">
     <div class="oh-main__titlebar oh-main__titlebar--left">
-        <a href="{% url 'employee-view' %}" class="oh-main__titlebar-title fw-bold mb-0 text-dark"
-            hx-target="#view-container" style="cursor: pointer">{% trans "Employees" %}</a>
+        <a href="{% if is_archived_list %}{% url 'employee-archived-view' %}{% else %}{% url 'employee-view' %}{% endif %}"
+            class="oh-main__titlebar-title fw-bold mb-0 text-dark"
+            hx-target="#view-container" style="cursor: pointer">
+            {% if is_archived_list %}{% trans "Archived Employees" %}{% else %}{% trans "Employees" %}{% endif %}
+        </a>
         <a class="oh-main__titlebar-search-toggle" role="button" aria-label="Toggle Search"
             @click="searchShow = !searchShow">
             <ion-icon name="search-outline" class="oh-main__titlebar-serach-icon"></ion-icon>
@@ -76,6 +79,9 @@
     <div class="oh-main__titlebar oh-main__titlebar--right">
         <form hx-get='{% url "employee-filter-view" %}' id="filterForm" hx-target="#view-container" class="d-flex"
             onsubmit="event.preventDefault()">
+            {% if is_archived_list %}
+                <input type="hidden" name="is_active" value="False">
+            {% endif %}
             {% if emp %}
                 <div class="oh-input-group oh-input__search-group"
                     :class="searchShow ? 'oh-input__search-group--show' : ''">

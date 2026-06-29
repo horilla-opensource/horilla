@@ -53,6 +53,12 @@ urlpatterns = [
         name="employee-profile-bank-update",
     ),
     path("employee-view/", views.employee_view, name="employee-view"),
+    path(
+        "archived-employees/",
+        views.employee_view,
+        name="employee-archived-view",
+        kwargs={"archived": True},
+    ),
     path("employee-view-new", views.employee_view_new, name="employee-view-new"),
     path(
         "employee-view-update/<int:obj_id>/",

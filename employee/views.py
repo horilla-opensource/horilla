@@ -1023,7 +1023,7 @@ def paginator_qry(qryset, page_number):
     perm="employee.view_employee",
     method=_check_reporting_manager,
 )
-def employee_view(request):
+def employee_view(request, archived=False):
     """
     This method is used to render template for view all employee
     """
@@ -1032,9 +1032,13 @@ def employee_view(request):
     page_number = request.GET.get("page")
     error_message = request.session.pop("error_message", None)
 
-    queryset = Employee.objects.filter()
+    is_archived_list = archived or request.GET.get("is_active", "").lower() == "false"
+
+    queryset = Employee.objects.entire() if is_archived_list else Employee.objects.filter()
     filter_obj = EmployeeFilter(request.GET, queryset=queryset).qs
-    if request.GET.get("is_active") != "False":
+    if is_archived_list:
+        filter_obj = filter_obj.filter(is_active=False)
+    else:
         filter_obj = filter_obj.filter(is_active=True)
 
     update_fields = BulkUpdateFieldForm()
@@ -1058,6 +1062,7 @@ def employee_view(request):
             "emp": emp,
             "gp_fields": EmployeeReGroup.fields,
             "error_message": error_message,
+            "is_archived_list": is_archived_list,
         },
     )
 
@@ -1756,10 +1761,13 @@ def employee_filter_view(request):
     """
     previous_data = request.GET.urlencode()
     field = request.GET.get("field")
-    queryset = Employee.objects.filter()
+    is_archived_list = request.GET.get("is_active", "").lower() == "false"
+    queryset = Employee.objects.entire() if is_archived_list else Employee.objects.filter()
     selected_company = request.session.get("selected_company")
     employees = EmployeeFilter(request.GET, queryset=queryset).qs
-    if request.GET.get("is_active") != "False":
+    if is_archived_list:
+        employees = employees.filter(is_active=False)
+    else:
         employees = employees.filter(is_active=True)
     if (
         request.GET.get("employee_work_info__company_id") == None
