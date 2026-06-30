@@ -183,6 +183,16 @@ class AttendanceRequestListTab(AttendancesRequestListView):
                 hx-target="#validateAttendanceRequestModalBody"
                 """
 
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        if not (
+            self.request.user.has_perm("attendance.change_validateattendance")
+            or is_reportingmanager(self.request)
+        ):
+            context["action_method"] = ""
+            context["actions"] = []
+        return context
+
     def get_queryset(self):
         queryset = super().get_queryset()
         self_data = queryset
