@@ -58,9 +58,10 @@ class PoliciesNav(HorillaNavView):
 
     def __init__(self, **kwargs):
         super().__init__(**kwargs)
-        self.create_attrs = f"""
-            data-toggle="oh-modal-toggle"
-            data-target="#genericModal"
-            hx-get="{reverse_lazy('create-policy')}"
-            hx-target="#genericModalBody"
-        """
+        if self.request.user.has_perm("employee.add_policy"):
+            self.create_attrs = f"""
+                data-toggle="oh-modal-toggle"
+                data-target="#genericModal"
+                hx-get="{reverse_lazy('create-policy')}"
+                hx-target="#genericModalBody"
+            """
