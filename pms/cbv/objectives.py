@@ -314,12 +314,15 @@ class ObjectiveTemplateNav(ObjectivesNav):
     def __init__(self, **kwargs: Any) -> None:
         super().__init__(**kwargs)
         self.search_url = reverse("list-objective-templates-view")
-        self.create_attrs = f"""
-                        hx-get='{reverse_lazy('objective-template-creation')}'"
-                        data-toggle="oh-modal-toggle"
-                        data-target="#genericModal"
-                        hx-target="#genericModalBody"
-                        """
+        if self.request.user.has_perm("pms.add_objective"):
+            self.create_attrs = f"""
+                            hx-get='{reverse_lazy('objective-template-creation')}'"
+                            data-toggle="oh-modal-toggle"
+                            data-target="#genericModal"
+                            hx-target="#genericModalBody"
+                            """
+        else:
+            self.create_attrs = ""
 
 
 @method_decorator(login_required, name="dispatch")
@@ -394,6 +397,8 @@ class CreateObjectiveFormView(HorillaFormView):
     dynamic_create_fields = [("key_result_id", DynamicKeyResultCreateForm)]
     template_name = "cbv/objectives/form.html"
     force_template = False
+    create_message = _("Objective created successfully")
+    update_message = _("Objective updated successfully")
 
     def __init__(self, **kwargs: Any) -> None:
         super().__init__(**kwargs)
@@ -410,12 +415,13 @@ class CreateObjectiveFormView(HorillaFormView):
         if form.is_valid():
             if self.force_template:
                 form.instance.is_template = True
+            is_new = not form.instance.pk
             objective = form.save()
             assignees = self.form.cleaned_data["assignees"]
             start_date = self.form.cleaned_data["start_date"]
             default_krs = self.form.cleaned_data["key_result_id"]
-            if form.instance.pk:
-                message = _("Objective Updated successfully")
+            if not is_new:
+                message = self.update_message
                 new_emp = [assignee for assignee in assignees]
                 delete_list = []
                 if objective.employee_objective.exists():
@@ -472,7 +478,7 @@ class CreateObjectiveFormView(HorillaFormView):
                         ),
                     )
             else:
-                message = _("Objective created successfully")
+                message = self.create_message
                 if assignees:
                     for emp in assignees:
                         emp_objective = EmployeeObjective(
@@ -518,6 +524,18 @@ class CreateTemplateObjectiveFormView(CreateObjectiveFormView):
 
     force_template = True
     new_display_title = _("Create Objective Template")
+    create_message = _("Objective template created successfully")
+    update_message = _("Objective template updated successfully")
+
+    def dispatch(self, request, *args, **kwargs):
+        pk = resolve(request.path_info).kwargs.get("pk")
+        required_perm = "pms.change_objective" if pk else "pms.add_objective"
+        if not request.user.has_perm(required_perm):
+            messages.info(
+                request, _("You don't have permission to perform this action")
+            )
+            return HorillaRedirect(request)
+        return super().dispatch(request, *args, **kwargs)
 
 
 @method_decorator(login_required, name="dispatch")
