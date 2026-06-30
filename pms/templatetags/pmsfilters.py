@@ -17,7 +17,7 @@ Filters:
 from django.template.defaultfilters import register
 
 from employee.models import Employee, EmployeeWorkInformation
-from pms.models import AnonymousFeedback, EmployeeObjective, Feedback, Objective
+from pms.models import AnonymousFeedback, Answer, EmployeeObjective, Feedback, Objective
 
 
 @register.filter(name="replace")
@@ -114,6 +114,17 @@ def is_feedback_answer(feedback, user):
     elif Feedback.objects.filter(id=feedback.id, subordinate_id=employee).exists():
         return True
     return False
+
+
+@register.filter(name="has_user_answered")
+def has_user_answered(feedback, user):
+    """
+    Returns True if the given user has already submitted an answer for this feedback.
+    """
+    employee = Employee.objects.filter(employee_user_id=user).first()
+    if not employee:
+        return False
+    return Answer.objects.filter(feedback_id=feedback, employee_id=employee).exists()
 
 
 @register.filter(name="is_anonymous_feedback_owner")
