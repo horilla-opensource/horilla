@@ -66,8 +66,11 @@ def leave_kpi_data(request):
     on_leave_today = (
         LeaveRequest.objects.filter(
             start_date__lte=real_today,
-            end_date__gte=real_today,
             status="approved",
+        )
+        .filter(
+            Q(end_date__gte=real_today)
+            | Q(end_date__isnull=True, start_date=real_today)
         )
         .values("employee_id")
         .distinct()

@@ -136,8 +136,7 @@ class LeaveRequestFilter(HorillaFilterSet):
     today_leave = django_filters.BooleanFilter(method="filter_today_leave")
     overall_leave = django_filters.CharFilter(method="overall_leave_filter")
     from_date = DateFilter(
-        field_name="end_date",
-        lookup_expr="gte",
+        method="filter_from_date",
         widget=forms.DateInput(attrs={"type": "date"}),
     )
     to_date = DateFilter(
@@ -237,11 +236,16 @@ class LeaveRequestFilter(HorillaFilterSet):
     def filter_today_leave(self, queryset, name, value):
         if value:
             today = now().date()
-            return queryset.filter(
-                start_date__lte=today,
-                end_date__gte=today,
+            return queryset.filter(start_date__lte=today).filter(
+                Q(end_date__gte=today) | Q(end_date__isnull=True, start_date=today)
             )
         return queryset
+
+    def filter_from_date(self, queryset, name, value):
+        # end_date >= value, or for single-day leaves (end_date null) start_date >= value
+        return queryset.filter(
+            Q(end_date__gte=value) | Q(end_date__isnull=True, start_date__gte=value)
+        )
 
     def filter_by_name(self, queryset, name, value):
 

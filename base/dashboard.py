@@ -8,6 +8,7 @@ import json
 from datetime import date, timedelta
 
 from django.contrib.auth.decorators import login_required
+from django.db.models import Q
 from django.http import JsonResponse
 from django.shortcuts import render
 from django.views.decorators.http import require_http_methods
@@ -137,11 +138,15 @@ def dashboard_kpi_data(request):
     try:
         from leave.models import LeaveRequest
 
+        real_today = date.today()
         on_leave = (
             LeaveRequest.objects.filter(
-                start_date__lte=today,
-                end_date__gte=today,
+                start_date__lte=real_today,
                 status="approved",
+            )
+            .filter(
+                Q(end_date__gte=real_today)
+                | Q(end_date__isnull=True, start_date=real_today)
             )
             .values("employee_id")
             .distinct()
