@@ -297,11 +297,39 @@ def breadcrumbs(request):
             except Resolver404:
                 found = False
 
+            clickable = True
+            if found and not request.user.is_superuser:
+                view_func = resolver_match.func
+                required_perms = getattr(view_func, "_required_perms", [])
+                if not required_perms:
+                    redirect_to = getattr(view_func, "_redirect_to", None)
+                    if redirect_to:
+                        try:
+                            dest_path = reverse(redirect_to)
+                            dest_match = resolve(dest_path)
+                            required_perms = getattr(
+                                dest_match.func, "_required_perms", []
+                            )
+                        except Exception:
+                            pass
+                if required_perms:
+                    clickable = all(request.user.has_perm(p) for p in required_perms)
+
             new_dict = {
                 "url": path,
                 "name": BREADCRUMB_URL_NAMES.get(item, item),
                 "found": found,
+                "clickable": clickable,
             }
+
+            if item == "attendance":
+                from base.templatetags.basefilters import is_reportingmanager
+
+                new_dict["clickable"] = (
+                    request.user.is_superuser
+                    or request.user.has_perm("attendance.view_attendance")
+                    or is_reportingmanager(request.user)
+                )
 
             if item.isdigit() or is_valid_uuid(item):
                 # Handle the case when item is a digit (e.g., an ID)
@@ -352,26 +380,41 @@ def breadcrumbs(request):
     return {"breadcrumbs": request.session["breadcrumbs"]}
 
 
+def _section_redirect(url_name):
+    """Return a named redirect view that stores its destination for breadcrumb permission checks."""
+
+    def _redirect(request):
+        return redirect(url_name)
+
+    _redirect._redirect_to = url_name
+    return _redirect
+
+
+def _leave_redirect(request):
+    return redirect(reverse("leave-employee-dashboard") + "?dashboard=true")
+
+
+def _attendance_redirect(request):
+    from base.templatetags.basefilters import is_reportingmanager
+
+    if (
+        request.user.is_superuser
+        or request.user.has_perm("attendance.view_attendance")
+        or is_reportingmanager(request.user)
+    ):
+        return redirect("attendance-dashboard")
+    return redirect("attendance-view")
+
+
+urlpatterns.append(path("recruitment/", _section_redirect("recruitment-dashboard")))
 urlpatterns.append(
-    path("recruitment/", lambda request: redirect("recruitment-dashboard"))
+    path("onboarding/", _section_redirect("onboarding-modern-dashboard"))
 )
-urlpatterns.append(
-    path("onboarding/", lambda request: redirect("onboarding-modern-dashboard"))
-)
-urlpatterns.append(path("employee/", lambda request: redirect("ess-dashboard")))
-urlpatterns.append(
-    path("attendance/", lambda request: redirect("attendance-dashboard"))
-)
-urlpatterns.append(
-    path(
-        "leave/",
-        lambda request: redirect(
-            reverse("leave-employee-dashboard") + "?dashboard=true"
-        ),
-    )
-)
-urlpatterns.append(path("payroll/", lambda request: redirect("view-payroll-dashboard")))
-urlpatterns.append(path("pms/", lambda request: redirect("dashboard-view")))
-urlpatterns.append(path("asset/", lambda request: redirect("asset-dashboard")))
-urlpatterns.append(path("project/", lambda request: redirect("project-dashboard-view")))
-urlpatterns.append(path("helpdesk/", lambda request: redirect("helpdesk-dashboard")))
+urlpatterns.append(path("employee/", _section_redirect("ess-dashboard")))
+urlpatterns.append(path("attendance/", _attendance_redirect))
+urlpatterns.append(path("leave/", _leave_redirect))
+urlpatterns.append(path("payroll/", _section_redirect("view-payroll-dashboard")))
+urlpatterns.append(path("pms/", _section_redirect("dashboard-view")))
+urlpatterns.append(path("asset/", _section_redirect("asset-dashboard")))
+urlpatterns.append(path("project/", _section_redirect("project-dashboard-view")))
+urlpatterns.append(path("helpdesk/", _section_redirect("helpdesk-dashboard")))
