@@ -12,6 +12,8 @@ from django.db.models.functions import Coalesce
 from django.http import JsonResponse
 from django.shortcuts import render
 
+from horilla.decorators import permission_required
+
 
 def _parse_period(request):
     """Parse from_date and to_date from GET params. Defaults to current month."""
@@ -30,12 +32,14 @@ def _parse_period(request):
 
 
 @login_required
+@permission_required("payroll.view_payslip")
 def payroll_dashboard_view(request):
     """Render the modern payroll dashboard page."""
     return render(request, "payroll/dashboard.html")
 
 
 @login_required
+@permission_required("payroll.view_payslip")
 def payroll_kpi_data(request):
     """Return payroll KPI summary data as JSON."""
     from payroll.models.models import LoanAccount, Payslip, Reimbursement
@@ -121,6 +125,7 @@ def payroll_kpi_data(request):
 
 
 @login_required
+@permission_required("payroll.view_payslip")
 def payroll_monthly_trend(request):
     """Payroll cost trend for the last 6 months."""
     from payroll.models.models import Payslip
@@ -167,6 +172,7 @@ def payroll_monthly_trend(request):
 
 
 @login_required
+@permission_required("payroll.view_payslip")
 def payroll_department_cost(request):
     """Payroll cost by department for the current month."""
     from payroll.models.models import Payslip
@@ -215,6 +221,7 @@ def payroll_department_cost(request):
 
 
 @login_required
+@permission_required("payroll.view_payslip")
 def payroll_status_pipeline(request):
     """Payslip status distribution for the current month."""
     from payroll.models.models import Payslip
@@ -248,6 +255,7 @@ def payroll_status_pipeline(request):
 
 
 @login_required
+@permission_required("payroll.view_payslip")
 def payroll_top_earners(request):
     """Top 10 employees by net pay this month."""
     from payroll.models.models import Payslip
@@ -295,6 +303,7 @@ def payroll_top_earners(request):
 
 
 @login_required
+@permission_required("payroll.view_payslip")
 def payroll_contract_status(request):
     """Contracts ending or expired within the selected period."""
     from payroll.models.models import Contract
@@ -368,6 +377,7 @@ def payroll_contract_status(request):
 
 
 @login_required
+@permission_required("payroll.view_payslip")
 def payroll_loan_summary(request):
     """Loans provided within the selected period (still unsettled)."""
     from payroll.models.models import LoanAccount
@@ -428,6 +438,7 @@ def payroll_loan_summary(request):
 
 
 @login_required
+@permission_required("payroll.view_payslip")
 def payroll_reimbursement_summary(request):
     """Reimbursement requests summary for the selected period."""
     from payroll.models.models import Reimbursement
@@ -483,6 +494,7 @@ def payroll_reimbursement_summary(request):
 
 
 @login_required
+@permission_required("payroll.view_payslip")
 def payroll_salary_distribution(request):
     """Salary band distribution across employees who were active during the selected period."""
     from employee.models import EmployeeWorkInformation
@@ -529,6 +541,7 @@ def payroll_salary_distribution(request):
 
 
 @login_required
+@permission_required("payroll.view_payslip")
 def payroll_component_breakdown(request):
     """Top allowance and deduction components from pay_head_data."""
     from payroll.models.models import Payslip
