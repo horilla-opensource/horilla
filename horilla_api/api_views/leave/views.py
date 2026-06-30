@@ -584,7 +584,7 @@ class CompanyLeaveGetCreateAPIView(APIView):
         name="dispatch",
     )
     def get(self, request):
-        company_leave = CompanyLeave.objects.all().order_by("-id")
+        company_leave = CompanyLeaves.objects.all().order_by("-id")
         paginator = PageNumberPagination()
         page = paginator.paginate_queryset(company_leave, request)
         serializer = CompanyLeaveSerializer(page, many=True)
@@ -607,8 +607,8 @@ class CompanyLeaveGetUpdateDeleteAPIView(APIView):
 
     def get_company_leave(self, pk):
         try:
-            return CompanyLeave.objects.get(pk=pk)
-        except CompanyLeave.DoesNotExist as e:
+            return CompanyLeaves.objects.get(pk=pk)
+        except CompanyLeaves.DoesNotExist as e:
             raise serializers.ValidationError(e)
 
     @method_decorator(
@@ -649,7 +649,7 @@ class HolidayGetCreateAPIView(APIView):
         permission_required("leave.view_holiday", raise_exception=True), name="dispatch"
     )
     def get(self, request):
-        holiday = Holiday.objects.all().order_by("-id")
+        holiday = Holidays.objects.all().order_by("-id")
         paginator = PageNumberPagination()
         page = paginator.paginate_queryset(holiday, request)
         serializer = HoildaySerializer(page, many=True)
@@ -670,8 +670,8 @@ class HolidayGetUpdateDeleteAPIView(APIView):
 
     def get_holiday(self, pk):
         try:
-            return Holiday.objects.get(pk=pk)
-        except Holiday.DoesNotExist as e:
+            return Holidays.objects.get(pk=pk)
+        except Holidays.DoesNotExist as e:
             raise serializers.ValidationError(e)
 
     @method_decorator(
