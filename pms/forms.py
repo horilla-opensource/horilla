@@ -372,6 +372,10 @@ class EmployeeObjectiveCreateForm(BaseForm):
             self.fields["employee_id"].queryset = employees | Employee.objects.filter(
                 employee_user_id=request.user
             )
+        else:
+            self.fields["employee_id"].queryset = Employee.objects.filter(
+                employee_user_id=request.user
+            )
 
     def as_p(self):
         """
