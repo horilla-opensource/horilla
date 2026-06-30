@@ -2581,29 +2581,34 @@ def work_info_import(request):
                     "employee/employee_import.html",
                     {"error_message": error_message},
                 )
-            success_list, error_list, created_count = process_employee_records(
-                data_frame
+            create_list, update_list, error_list, created_count, updated_count = (
+                process_employee_records(data_frame)
             )
-            if success_list:
+            import_rows = create_list + update_list
+            if import_rows:
                 try:
-                    users = bulk_create_user_import(success_list)
-                    employees = bulk_create_employee_import(success_list)
-                    bulk_create_department_import(success_list)
-                    bulk_create_job_position_import(success_list)
-                    bulk_create_job_role_import(success_list)
-                    bulk_create_work_types(success_list)
-                    bulk_create_shifts(success_list)
-                    bulk_create_employee_types(success_list)
-                    bulk_create_work_info_import(success_list)
-                    thread = threading.Thread(
-                        target=set_initial_password, args=(employees,)
-                    )
-                    thread.start()
+                    employees = []
+                    if create_list:
+                        bulk_create_user_import(create_list)
+                        employees = bulk_create_employee_import(create_list)
+                    bulk_create_department_import(import_rows)
+                    bulk_create_job_position_import(import_rows)
+                    bulk_create_job_role_import(import_rows)
+                    bulk_create_work_types(import_rows)
+                    bulk_create_shifts(import_rows)
+                    bulk_create_employee_types(import_rows)
+                    bulk_create_work_info_import(import_rows)
+                    if employees:
+                        thread = threading.Thread(
+                            target=set_initial_password, args=(employees,)
+                        )
+                        thread.start()
 
                 except Exception as e:
                     messages.error(request, _("Error Occured {}").format(e))
                     logger.error(e)
 
+            imported_count = created_count + updated_count
             path_info = (
                 generate_error_report(
                     error_list, error_data_template, "EmployeesImportError.xlsx"
@@ -2613,8 +2618,8 @@ def work_info_import(request):
             )
 
             context = {
-                "created_count": created_count,
-                "total_count": created_count + len(error_list),
+                "created_count": imported_count,
+                "total_count": imported_count + len(error_list),
                 "error_count": len(error_list),
                 "model": _("Employees"),
                 "path_info": path_info,
