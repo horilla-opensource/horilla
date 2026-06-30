@@ -1,0 +1,18 @@
+{% load i18n %}
+<div class="oh-card oh-card--border mb-2" style="border:1px solid #eee;border-radius:8px;padding:14px;">
+    <div class="d-flex align-items-center justify-content-between">
+        <div>
+            <a href="{% url 'knowledge-space' space.id %}" class="fw-bold" style="font-size:1.05rem;text-decoration:none;">
+                {{ space.title }}
+            </a>
+            {% if space.description %}<div class="text-muted" style="font-size:.9rem;">{{ space.description }}</div>{% endif %}
+        </div>
+        {% if can_manage %}
+        <div class="d-flex" style="gap:6px;">
+            <a class="oh-btn oh-btn--light-bkg" href="{% url 'knowledge-space-access' space.id %}" title="{% trans 'Manage access' %}"><ion-icon name="people-outline"></ion-icon></a>
+            <a class="oh-btn oh-btn--light-bkg" href="{% url 'knowledge-space-create' %}?id={{ space.id }}" title="{% trans 'Edit' %}"><ion-icon name="create-outline"></ion-icon></a>
+            <a class="oh-btn oh-btn--danger-outline" href="{% url 'knowledge-space-delete' space.id %}" onclick="return confirm('{% trans 'Delete this space?' %}')" title="{% trans 'Delete' %}"><ion-icon name="trash-outline"></ion-icon></a>
+        </div>
+        {% endif %}
+    </div>
+</div>

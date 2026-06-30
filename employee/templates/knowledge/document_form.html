@@ -1,0 +1,36 @@
+{% extends 'index.html' %}
+{% load i18n widget_tweaks %}
+{% block content %}
+<div class="oh-wrapper">
+    <section class="oh-wrapper oh-main__topbar">
+        <div class="d-flex align-items-center">
+            <a href="{% url 'knowledge-space' space.id %}" class="me-2"><ion-icon name="arrow-back-circle-outline" style="font-size:30px;"></ion-icon></a>
+            <h1 class="oh-main__titlebar-title fw-bold mb-0">{% trans "Add Document" %} — {{ space.title }}</h1>
+        </div>
+    </section>
+    <div class="oh-card oh-card--margin">
+        <div class="oh-card__body mt-3">
+            <form method="post" enctype="multipart/form-data">
+                {% csrf_token %}
+                <div class="oh-input__group mb-3">
+                    <label class="oh-label">{% trans "Title" %}</label>
+                    {{ form.title|add_class:"oh-input w-100" }}
+                </div>
+                <div class="oh-input__group mb-3">
+                    <label class="oh-label">{% trans "Description" %}</label>
+                    {{ form.description|add_class:"oh-input w-100" }}
+                </div>
+                <div class="oh-input__group mb-3">
+                    <label class="oh-label">{% trans "Attachment" %}</label>
+                    {{ form.attachment }}
+                </div>
+                <hr>
+                <div class="d-flex flex-row-reverse" style="gap:8px;">
+                    <button type="submit" class="oh-btn oh-btn--secondary">{% trans "Save" %}</button>
+                    <a href="{% url 'knowledge-space' space.id %}" class="oh-btn oh-btn--light-bkg">{% trans "Cancel" %}</a>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+{% endblock content %}

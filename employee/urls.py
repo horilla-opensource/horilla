@@ -7,7 +7,7 @@ This module is used to map url path with view methods.
 from django.urls import path
 
 from base.views import object_delete, object_duplicate
-from employee import not_in_out_dashboard, policies, views
+from employee import knowledge, not_in_out_dashboard, policies, views
 from employee.forms import DisciplinaryActionForm
 from employee.models import DisciplinaryAction, Employee, EmployeeTag
 from horilla_documents.models import DocumentRequest
@@ -278,6 +278,46 @@ urlpatterns = [
         "get-employee-mail-preview",
         not_in_out_dashboard.get_mail_preview,
         name="get-employee-mail-preview",
+    ),
+    # Knowledge Base ("База знань")
+    path("knowledge-base/", knowledge.knowledge_base, name="knowledge-base"),
+    path(
+        "knowledge-space/<int:space_id>/",
+        knowledge.knowledge_space,
+        name="knowledge-space",
+    ),
+    path(
+        "knowledge-space-create/", knowledge.create_space, name="knowledge-space-create"
+    ),
+    path(
+        "knowledge-space-delete/<int:space_id>/",
+        knowledge.delete_space,
+        name="knowledge-space-delete",
+    ),
+    path(
+        "knowledge-space-access/<int:space_id>/",
+        knowledge.assign_access,
+        name="knowledge-space-access",
+    ),
+    path(
+        "knowledge-access-remove/<int:access_id>/",
+        knowledge.remove_access,
+        name="knowledge-access-remove",
+    ),
+    path(
+        "knowledge-document-create/<int:space_id>/",
+        knowledge.create_document,
+        name="knowledge-document-create",
+    ),
+    path(
+        "knowledge-document-delete/<int:doc_id>/",
+        knowledge.delete_document,
+        name="knowledge-document-delete",
+    ),
+    path(
+        "knowledge-comment-add/<int:doc_id>/",
+        knowledge.add_comment,
+        name="knowledge-comment-add",
     ),
     path("view-policies/", policies.view_policies, name="view-policies"),
     path("search-policies", policies.search_policies, name="search-policies"),

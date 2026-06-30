@@ -155,3 +155,54 @@ def sidebar_hr_or_operations(request, *args, **kwargs):
     """Show only to HR (superuser) or the Operations Manager group."""
     user = request.user
     return is_hr(user) or is_operations_manager(user)
+
+
+# --- Knowledge Base ---------------------------------------------------------
+
+
+def kb_can_manage(user):
+    """Only HR creates/edits knowledge spaces and assigns access."""
+    return is_hr(user)
+
+
+def kb_space_level(user, space):
+    """
+    The user's access level to a knowledge space:
+      'full' -> view + comment + add + delete
+      'view' -> view + comment
+      None   -> no access
+    """
+    if is_hr(user):
+        return "full"
+    employee = get_employee(user)
+    level = None
+    if employee:
+        from employee.models import KnowledgeSpaceAccess
+
+        access = KnowledgeSpaceAccess.objects.filter(
+            space_id=space, employee_id=employee
+        ).first()
+        level = access.level if access else None
+    if level == "full":
+        return "full"
+    if getattr(space, "is_public", False) or level == "view":
+        return "view"
+    return None
+
+
+def kb_accessible_spaces(user):
+    """Knowledge spaces the user may see (HR: all; else public + assigned)."""
+    from django.db.models import Q
+
+    from employee.models import KnowledgeSpace, KnowledgeSpaceAccess
+
+    qs = KnowledgeSpace.objects.all()
+    if is_hr(user):
+        return qs
+    employee = get_employee(user)
+    if not employee:
+        return qs.filter(is_public=True)
+    assigned = KnowledgeSpaceAccess.objects.filter(
+        employee_id=employee
+    ).values_list("space_id", flat=True)
+    return qs.filter(Q(is_public=True) | Q(id__in=list(assigned)))

@@ -60,6 +60,10 @@ SUBMENUS = [
         "redirect": reverse("view-policies"),
     },
     {
+        "menu": trans("Knowledge Base"),
+        "redirect": reverse("knowledge-base"),
+    },
+    {
         "menu": trans("Organization Chart"),
         "redirect": reverse("organisation-chart"),
     },

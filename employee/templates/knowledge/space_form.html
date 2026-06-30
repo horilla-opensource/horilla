@@ -1,0 +1,36 @@
+{% extends 'index.html' %}
+{% load i18n widget_tweaks %}
+{% block content %}
+<div class="oh-wrapper">
+    <section class="oh-wrapper oh-main__topbar">
+        <h1 class="oh-main__titlebar-title fw-bold mb-0">{% trans "Knowledge Space" %}</h1>
+    </section>
+    <div class="oh-card oh-card--margin">
+        <div class="oh-card__body mt-3">
+            <form method="post">
+                {% csrf_token %}
+                <div class="oh-input__group mb-3">
+                    <label class="oh-label">{% trans "Title" %}</label>
+                    {{ form.title|add_class:"oh-input w-100" }}
+                </div>
+                <div class="oh-input__group mb-3">
+                    <label class="oh-label">{% trans "Description" %}</label>
+                    {{ form.description|add_class:"oh-input w-100" }}
+                </div>
+                <div class="oh-input__group mb-3 d-flex align-items-center" style="gap:8px;">
+                    {{ form.is_public }}
+                    <label class="oh-label mb-0">{% trans "Available to everyone" %}</label>
+                </div>
+                <p class="text-muted" style="font-size:.85rem;">
+                    {% trans "If unchecked, the space is private and visible only to employees you assign access to." %}
+                </p>
+                <hr>
+                <div class="d-flex flex-row-reverse" style="gap:8px;">
+                    <button type="submit" class="oh-btn oh-btn--secondary">{% trans "Save" %}</button>
+                    <a href="{% url 'knowledge-base' %}" class="oh-btn oh-btn--light-bkg">{% trans "Cancel" %}</a>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+{% endblock content %}

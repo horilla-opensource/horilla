@@ -1,0 +1,38 @@
+{% extends 'index.html' %}
+{% load i18n %}
+{% block content %}
+<div class="oh-wrapper">
+    <section class="oh-wrapper oh-main__topbar">
+        <div class="oh-main__titlebar oh-main__titlebar--left d-flex align-items-center justify-content-between">
+            <h1 class="oh-main__titlebar-title fw-bold mb-0">{% trans "Knowledge Base" %}</h1>
+            {% if can_manage %}
+            <a class="oh-btn oh-btn--secondary" href="{% url 'knowledge-space-create' %}">
+                <ion-icon name="add-outline"></ion-icon> {% trans "New Space" %}
+            </a>
+            {% endif %}
+        </div>
+    </section>
+
+    <div class="oh-card oh-card--margin">
+        <div class="oh-card__header"><span class="oh-card__title fw-bold">{% trans "Available to everyone" %}</span></div>
+        <div class="oh-card__body mt-3">
+            {% for space in public_spaces %}
+            {% include "knowledge/_space_card.html" %}
+            {% empty %}
+            <p class="text-muted">{% trans "No spaces yet." %}</p>
+            {% endfor %}
+        </div>
+    </div>
+
+    <div class="oh-card oh-card--margin">
+        <div class="oh-card__header"><span class="oh-card__title fw-bold">{% trans "Available to me" %}</span></div>
+        <div class="oh-card__body mt-3">
+            {% for space in private_spaces %}
+            {% include "knowledge/_space_card.html" %}
+            {% empty %}
+            <p class="text-muted">{% trans "No private spaces assigned to you." %}</p>
+            {% endfor %}
+        </div>
+    </div>
+</div>
+{% endblock content %}

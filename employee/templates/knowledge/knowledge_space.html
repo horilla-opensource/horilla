@@ -1,0 +1,55 @@
+{% extends 'index.html' %}
+{% load i18n %}
+{% block content %}
+<div class="oh-wrapper">
+    <section class="oh-wrapper oh-main__topbar">
+        <div class="oh-main__titlebar oh-main__titlebar--left d-flex align-items-center justify-content-between">
+            <div class="d-flex align-items-center">
+                <a href="{% url 'knowledge-base' %}" class="me-2"><ion-icon name="arrow-back-circle-outline" style="font-size:30px;"></ion-icon></a>
+                <h1 class="oh-main__titlebar-title fw-bold mb-0">{{ space.title }}</h1>
+            </div>
+            {% if can_edit %}
+            <a class="oh-btn oh-btn--secondary" href="{% url 'knowledge-document-create' space.id %}">
+                <ion-icon name="add-outline"></ion-icon> {% trans "Add Document" %}
+            </a>
+            {% endif %}
+        </div>
+    </section>
+
+    {% if space.description %}<p class="text-muted mb-4">{{ space.description }}</p>{% endif %}
+
+    {% for doc in documents %}
+    <div class="oh-card oh-card--margin">
+        <div class="oh-card__header d-flex align-items-center justify-content-between">
+            <span class="oh-card__title fw-bold">{{ doc.title }}</span>
+            {% if can_edit %}
+            <a class="oh-btn oh-btn--danger-outline" href="{% url 'knowledge-document-delete' doc.id %}" onclick="return confirm('{% trans 'Delete this document?' %}')"><ion-icon name="trash-outline"></ion-icon></a>
+            {% endif %}
+        </div>
+        <div class="oh-card__body mt-2">
+            {% if doc.description %}<p>{{ doc.description|linebreaksbr }}</p>{% endif %}
+            {% if doc.attachment %}<a href="{{ doc.attachment.url }}" target="_blank" class="oh-btn oh-btn--light-bkg"><ion-icon name="document-attach-outline"></ion-icon> {% trans "Attachment" %}</a>{% endif %}
+
+            <hr>
+            <div class="fw-bold mb-2">{% trans "Comments" %}</div>
+            {% for c in doc.comments.all %}
+            <div class="mb-2" style="background:#f7f7f7;border-radius:6px;padding:8px;">
+                <span class="text-muted" style="font-size:.8rem;">{{ c.created_by|default:"" }} · {{ c.created_at|date:"Y-m-d H:i" }}</span>
+                <div>{{ c.comment|linebreaksbr }}</div>
+            </div>
+            {% empty %}
+            <p class="text-muted">{% trans "No comments yet." %}</p>
+            {% endfor %}
+
+            <form method="post" action="{% url 'knowledge-comment-add' doc.id %}" class="d-flex mt-2" style="gap:8px;">
+                {% csrf_token %}
+                <input type="text" name="comment" class="oh-input w-100" placeholder="{% trans 'Add a comment...' %}" required>
+                <button type="submit" class="oh-btn oh-btn--secondary">{% trans "Post" %}</button>
+            </form>
+        </div>
+    </div>
+    {% empty %}
+    <p class="text-muted">{% trans "No documents yet." %}</p>
+    {% endfor %}
+</div>
+{% endblock content %}
