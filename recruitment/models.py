@@ -1986,7 +1986,10 @@ class CandidateDocument(HorillaModel):
                         {"document": _("File size exceeds the limit")}
                     )
 
-            ext = file.name.split(".")[1].lower()
+            # Use the true final extension so a double extension such as
+            # "file.pdf.html" cannot bypass the format check and enable stored
+            # XSS when served. See GHSA-p68r-g665-5cm9.
+            ext = os.path.splitext(file.name)[1].lstrip(".").lower()
             if format == "any":
                 pass
             elif ext != format:

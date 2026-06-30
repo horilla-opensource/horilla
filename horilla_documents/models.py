@@ -145,7 +145,12 @@ class Document(HorillaModel):
                         {"document": _("File size exceeds the limit")}
                     )
 
-            ext = file.name.split(".")[1].lower()
+            # Use the true final extension. A double extension such as
+            # "file.pdf.html" must be rejected for a "pdf" request -- taking
+            # an earlier segment (or splitext on the wrong part) would let an
+            # HTML/script file through and enable stored XSS when served.
+            # See GHSA-p68r-g665-5cm9.
+            ext = os.path.splitext(file.name)[1].lstrip(".").lower()
             if format == "any":
                 pass
             elif ext != format:

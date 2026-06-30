@@ -6,6 +6,7 @@ This module is used to map url pattens with django views or methods
 
 import csv
 import json
+import mimetypes
 import os
 import threading
 import uuid
@@ -7902,4 +7903,32 @@ def protected_media(request, path):
             )
             return redirect("login")
 
-    return FileResponse(open(media_path, "rb"))
+    # Determine the content type from the extension and decide whether the
+    # browser may render it inline. User-uploaded content that browsers treat
+    # as active markup (HTML/SVG/XML/etc.) must never render in this origin --
+    # doing so would turn any file upload into stored XSS (CWE-79). Such files
+    # are forced to download instead. See GHSA-p68r-g665-5cm9.
+    content_type, _encoding = mimetypes.guess_type(media_path)
+    renderable_active_types = {
+        "text/html",
+        "application/xhtml+xml",
+        "image/svg+xml",
+        "application/xml",
+        "text/xml",
+        "application/xslt+xml",
+        "text/javascript",
+        "application/javascript",
+        "application/x-javascript",
+    }
+    force_download = content_type is None or content_type in renderable_active_types
+
+    response = FileResponse(open(media_path, "rb"))
+    # Always send a content type so the browser does not sniff one of its own.
+    response["Content-Type"] = content_type or "application/octet-stream"
+    # Block MIME sniffing -- a browser must honour the declared type and not
+    # re-interpret e.g. an octet-stream as HTML.
+    response["X-Content-Type-Options"] = "nosniff"
+    if force_download:
+        filename = os.path.basename(media_path)
+        response["Content-Disposition"] = f'attachment; filename="{filename}"'
+    return response
