@@ -23,6 +23,7 @@ from base.methods import get_key_instances
 from horilla.decorators import hx_request_required, login_required, permission_required
 from horilla.http.response import HorillaRedirect
 from payroll.forms.tax_forms import FilingStatusForm, TaxBracketForm
+from payroll.methods.safe_tax_code import TaxCodeValidationError, validate_tax_code
 from payroll.models.models import FilingStatus
 from payroll.models.tax_models import TaxBracket
 
@@ -301,6 +302,12 @@ def update_py_code(request, pk):
     if not filing:
         messages.error(request, _("Filing status not found"))
         return JsonResponse({"message": "Filing status not found"}, status=404)
+
+    try:
+        validate_tax_code(code)
+    except TaxCodeValidationError as exc:
+        messages.error(request, _("Invalid tax code"))
+        return JsonResponse({"message": str(exc)}, status=400)
 
     if not filing.python_code == code:
         filing.python_code = code
