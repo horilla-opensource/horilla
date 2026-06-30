@@ -12178,3 +12178,115 @@ msgstr "Апрувери відпустки працівника"
 
 msgid "Leave requests are approved in this order. Each approver is notified only after the previous one approves, and the leave is approved only when everyone approves."
 msgstr "Запити на відпустку погоджуються в цьому порядку. Кожен апрувер отримує сповіщення лише після погодження попереднім, а відпустка вважається погодженою лише коли всі погодили."
+
+msgid "Knowledge Base"
+msgstr "База знань"
+
+msgid "New Space"
+msgstr "Новий простір"
+
+msgid "Available to everyone"
+msgstr "Доступні всім"
+
+msgid "Available to me"
+msgstr "Доступні для мене"
+
+msgid "No spaces yet."
+msgstr "Поки немає просторів."
+
+msgid "No private spaces assigned to you."
+msgstr "Вам не призначено приватних просторів."
+
+msgid "Manage access"
+msgstr "Керувати доступом"
+
+msgid "Delete this space?"
+msgstr "Видалити цей простір?"
+
+msgid "Add Document"
+msgstr "Додати документ"
+
+msgid "Delete this document?"
+msgstr "Видалити цей документ?"
+
+msgid "No comments yet."
+msgstr "Поки немає коментарів."
+
+msgid "Post"
+msgstr "Надіслати"
+
+msgid "No documents yet."
+msgstr "Поки немає документів."
+
+msgid "Knowledge Space"
+msgstr "Простір бази знань"
+
+msgid "Knowledge Spaces"
+msgstr "Простори бази знань"
+
+msgid "Knowledge Space Access"
+msgstr "Доступ до простору бази знань"
+
+msgid "Knowledge Space Accesses"
+msgstr "Доступи до просторів бази знань"
+
+msgid "Knowledge Document"
+msgstr "Документ бази знань"
+
+msgid "Knowledge Documents"
+msgstr "Документи бази знань"
+
+msgid "If unchecked, the space is private and visible only to employees you assign access to."
+msgstr "Якщо вимкнено, простір приватний і видимий лише працівникам, яким ви надасте доступ."
+
+msgid "Access"
+msgstr "Доступ"
+
+msgid "Assign access"
+msgstr "Призначити доступ"
+
+msgid "Access level"
+msgstr "Рівень доступу"
+
+msgid "Add / Update"
+msgstr "Додати / Оновити"
+
+msgid "Assigned employees"
+msgstr "Призначені працівники"
+
+msgid "No one assigned yet."
+msgstr "Ще нікого не призначено."
+
+msgid "View & comment"
+msgstr "Перегляд і коментування"
+
+msgid "Full access"
+msgstr "Повний доступ"
+
+msgid "Space"
+msgstr "Простір"
+
+msgid "Only HR can manage the knowledge base."
+msgstr "Лише HR може керувати базою знань."
+
+msgid "Knowledge space saved."
+msgstr "Простір бази знань збережено."
+
+msgid "Knowledge space deleted."
+msgstr "Простір бази знань видалено."
+
+msgid "Access updated."
+msgstr "Доступ оновлено."
+
+msgid "Access removed."
+msgstr "Доступ видалено."
+
+msgid "Document added."
+msgstr "Документ додано."
+
+msgid "Document deleted."
+msgstr "Документ видалено."
+
+msgid "Comment added."
+msgstr "Коментар додано."
+
