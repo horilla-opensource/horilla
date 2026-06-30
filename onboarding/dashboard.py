@@ -11,6 +11,23 @@ from django.db.models import Count, Q
 from django.http import JsonResponse
 from django.shortcuts import render
 
+from horilla.methods import handle_no_permission
+
+
+def _has_onboarding_permission(request):
+    """Return True if the user may access the onboarding dashboard."""
+    user = request.user
+    if user.is_superuser or user.has_perm("onboarding.view_onboardingstage"):
+        return True
+    try:
+        employee = user.employee_get
+        return (
+            employee.onboardingstage_set.all().exists()
+            or employee.onboarding_task.all().exists()
+        )
+    except Exception:
+        return False
+
 
 def _parse_period(request):
     """Parse from_date and to_date from GET params. Defaults to current month."""
@@ -43,12 +60,16 @@ def _onboarding_candidates_in_period(request):
 @login_required
 def onboarding_dashboard_view(request):
     """Render the modern onboarding dashboard page."""
+    if not _has_onboarding_permission(request):
+        return handle_no_permission(request)
     return render(request, "onboarding/dashboard.html")
 
 
 @login_required
 def onboarding_kpi_data(request):
     """Return onboarding KPI summary data as JSON."""
+    if not _has_onboarding_permission(request):
+        return JsonResponse({"no_permission": True})
     from onboarding.models import CandidateStage, CandidateTask
     from recruitment.models import Recruitment
 
@@ -93,6 +114,8 @@ def onboarding_kpi_data(request):
 @login_required
 def onboarding_stage_distribution(request):
     """Candidates by onboarding stage."""
+    if not _has_onboarding_permission(request):
+        return JsonResponse({"no_permission": True})
     from onboarding.models import CandidateStage, OnboardingStage
 
     period_candidates = _onboarding_candidates_in_period(request)
@@ -126,6 +149,8 @@ def onboarding_stage_distribution(request):
 @login_required
 def onboarding_task_status(request):
     """Task status breakdown."""
+    if not _has_onboarding_permission(request):
+        return JsonResponse({"no_permission": True})
     from onboarding.models import CandidateTask
 
     period_candidates = _onboarding_candidates_in_period(request)
@@ -150,6 +175,8 @@ def onboarding_task_status(request):
 @login_required
 def onboarding_by_recruitment(request):
     """Candidates onboarding per recruitment."""
+    if not _has_onboarding_permission(request):
+        return JsonResponse({"no_permission": True})
     recruitments = []
 
     try:
@@ -173,6 +200,8 @@ def onboarding_by_recruitment(request):
 @login_required
 def onboarding_by_job_position(request):
     """Candidates onboarding per job position."""
+    if not _has_onboarding_permission(request):
+        return JsonResponse({"no_permission": True})
     positions = []
 
     try:
@@ -199,6 +228,8 @@ def onboarding_by_job_position(request):
 @login_required
 def onboarding_candidates_list(request):
     """Current onboarding candidates with progress."""
+    if not _has_onboarding_permission(request):
+        return JsonResponse({"no_permission": True})
     from onboarding.models import CandidateTask
 
     candidates = []
@@ -251,6 +282,8 @@ def onboarding_candidates_list(request):
 @login_required
 def onboarding_task_managers(request):
     """Task assignment by manager (logged-in user's tasks), scoped to the selected period."""
+    if not _has_onboarding_permission(request):
+        return JsonResponse({"no_permission": True})
     from onboarding.models import CandidateTask, OnboardingTask
 
     tasks = []
@@ -293,6 +326,8 @@ def onboarding_task_managers(request):
 @login_required
 def onboarding_completion_trend(request):
     """Monthly onboarding completions within the selected period."""
+    if not _has_onboarding_permission(request):
+        return JsonResponse({"no_permission": True})
     from onboarding.models import CandidateStage
 
     from_date, to_date = _parse_period(request)
@@ -320,6 +355,8 @@ def onboarding_completion_trend(request):
 @login_required
 def onboarding_portal_status(request):
     """Portal access status for onboarding candidates within the selected period."""
+    if not _has_onboarding_permission(request):
+        return JsonResponse({"no_permission": True})
     from onboarding.models import OnboardingPortal
 
     portals = []
