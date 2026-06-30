@@ -12,6 +12,8 @@ from django.db.models.functions import Coalesce
 from django.http import JsonResponse
 from django.shortcuts import render
 
+from horilla.decorators import permission_required
+
 
 def _parse_period(request):
     """Parse from_date and to_date from GET params. Defaults to current month."""
@@ -36,12 +38,14 @@ def _period_overlap(qs, request, start_field="start_date", end_field="end_date")
 
 
 @login_required
+@permission_required("pms.view_employeeobjective")
 def pms_dashboard_view(request):
     """Render the modern PMS dashboard page."""
     return render(request, "pms/dashboard.html")
 
 
 @login_required
+@permission_required("pms.view_employeeobjective")
 def pms_kpi_data(request):
     """Return PMS KPI summary data as JSON, scoped to objectives/feedback active in the picker range."""
     from pms.models import EmployeeKeyResult, EmployeeObjective, Feedback
@@ -89,6 +93,7 @@ def pms_kpi_data(request):
 
 
 @login_required
+@permission_required("pms.view_employeeobjective")
 def pms_objective_status(request):
     """Objective status distribution for objectives active in the picker range."""
     from pms.models import EmployeeObjective
@@ -106,6 +111,7 @@ def pms_objective_status(request):
 
 
 @login_required
+@permission_required("pms.view_employeekeyresult")
 def pms_key_result_status(request):
     """Key result status distribution for KRs active in the picker range."""
     from pms.models import EmployeeKeyResult
@@ -121,6 +127,7 @@ def pms_key_result_status(request):
 
 
 @login_required
+@permission_required("pms.view_feedback")
 def pms_feedback_status(request):
     """Feedback status distribution for feedback active in the picker range."""
     from pms.models import Feedback
@@ -136,6 +143,7 @@ def pms_feedback_status(request):
 
 
 @login_required
+@permission_required("pms.view_employeeobjective")
 def pms_department_performance(request):
     """Average objective progress by department for objectives active in the picker range."""
     from pms.models import EmployeeObjective
@@ -179,6 +187,7 @@ def pms_department_performance(request):
 
 
 @login_required
+@permission_required("pms.view_employeeobjective")
 def pms_at_risk_objectives(request):
     """Objectives that are at risk or behind, scoped to the picker range."""
     from pms.models import EmployeeObjective
@@ -229,6 +238,7 @@ def pms_at_risk_objectives(request):
 
 
 @login_required
+@permission_required("pms.view_employeeobjective")
 def pms_top_performers(request):
     """Top performers by objective completion and bonus points, for the picker range."""
     from pms.models import EmployeeBonusPoint, EmployeeObjective
@@ -285,6 +295,7 @@ def pms_top_performers(request):
 
 
 @login_required
+@permission_required("pms.view_employeekeyresult")
 def pms_kr_progress_overview(request):
     """Key result progress grouped by objective, for objectives active in the picker range."""
     from pms.models import EmployeeKeyResult, EmployeeObjective
@@ -340,6 +351,7 @@ def pms_kr_progress_overview(request):
 
 
 @login_required
+@permission_required("pms.view_meetings")
 def pms_upcoming_meetings(request):
     """PMS meetings scheduled within the selected period."""
     from pms.models import Meetings
@@ -372,6 +384,7 @@ def pms_upcoming_meetings(request):
 
 
 @login_required
+@permission_required("pms.view_employeeobjective")
 def pms_progress_trend(request):
     """Average objective progress per month within the selected period."""
     from pms.models import EmployeeObjective
@@ -410,6 +423,7 @@ def pms_progress_trend(request):
 
 
 @login_required
+@permission_required("pms.view_feedback")
 def pms_feedback_completion(request):
     """Feedback answer completion rate per feedback cycle active in the picker range."""
     from pms.models import Answer, Feedback, Question
