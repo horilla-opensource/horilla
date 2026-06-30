@@ -47,6 +47,8 @@ def permission_required(function, perm):
 
         return handle_no_permission(request)
 
+    # Accumulate perms so login_required's @wraps propagates them automatically.
+    _function._required_perms = getattr(function, "_required_perms", []) + [perm]
     return _function
 
 
