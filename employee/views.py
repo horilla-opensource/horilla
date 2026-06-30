@@ -2522,7 +2522,7 @@ def work_info_import_file(request):
             "Job Role",
             "Shift",
             "Work Type",
-            "Reporting Manager",
+            "Reporting Manager Badge ID",
             "Employee Type",
             "Location",
             "Date Joining",

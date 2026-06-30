@@ -45,7 +45,7 @@ error_data_template = {
         "Work Type",
         "Shift",
         "Employee Type",
-        "Reporting Manager",
+        "Reporting Manager Badge ID",
         "Company",
         "Location",
         "Date Joining",
@@ -232,7 +232,6 @@ def valid_import_file_headers(data_frame):
         "Work Type",
         "Shift",
         "Employee Type",
-        "Reporting Manager",
         "Company",
         "Location",
         "Date Joining",
@@ -543,24 +542,6 @@ def set_initial_password(employees):
     logger.info("initial password configured")
 
 
-def optimize_reporting_manager_lookup():
-    """
-    Optimizes the lookup of reporting managers from a list of work information.
-
-    This function identifies unique reporting manager names from the provided
-    list of work information, queries all matching `Employee` objects in a
-    single database query, and creates a dictionary for quick lookups based
-    on the full name of the reporting managers.
-    """
-    employees = Employee.objects.entire()
-
-    employee_dict = {
-        f"{employee.employee_first_name} {employee.employee_last_name}": employee
-        for employee in employees
-    }
-    return employee_dict
-
-
 def bulk_create_department_import(success_lists):
     """
     Bulk creation of department instances based on the excel import of employees
@@ -865,7 +846,13 @@ def bulk_create_work_info_import(success_lists):
         comp.company: comp
         for comp in Company.objects.filter(company__in=companies).only("company")
     }
-    reporting_manager_dict = optimize_reporting_manager_lookup()
+    managers_by_badge = {
+        emp.badge_id: emp
+        for emp in Employee.objects.entire()
+        .exclude(badge_id__isnull=True)
+        .exclude(badge_id="")
+        .only("id", "badge_id")
+    }
     hq_company = Company.objects.filter(hq=True).first()
 
     for work_info in success_lists:
@@ -893,11 +880,12 @@ def bulk_create_work_info_import(success_lists):
         work_type_obj = existing_work_types.get(work_info.get("Work Type"))
         employee_type_obj = existing_employee_types.get(work_info.get("Employee Type"))
         shift_obj = existing_shifts.get(work_info.get("Shift"))
-        reporting_manager = work_info.get("Reporting Manager")
-        reporting_manager_obj = None
-        if isinstance(reporting_manager, str) and " " in reporting_manager:
-            if reporting_manager in reporting_manager_dict:
-                reporting_manager_obj = reporting_manager_dict[reporting_manager]
+        manager_badge = clean_badge_id(
+            work_info.get("Reporting Manager Badge ID")
+        )
+        reporting_manager_obj = (
+            managers_by_badge.get(manager_badge) if manager_badge else None
+        )
 
         company_obj = existing_companies.get(work_info.get("Company"))
         if not company_obj:
