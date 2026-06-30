@@ -16,5 +16,6 @@ SUBMENUS = [
     {
         "menu": trans("Tickets"),
         "redirect": reverse("ticket-view"),
+        "accessibility": "base.access.sidebar_disabled",
     },
 ]

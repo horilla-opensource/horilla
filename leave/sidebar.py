@@ -30,16 +30,20 @@ SUBMENUS = [
     {
         "menu": trans("Leave Types"),
         "redirect": reverse("type-view"),
-        "accessibility": "leave.sidebar.type_accessibility",
+        # Leave types are managed by HR only.
+        "accessibility": "base.access.sidebar_hr_only",
     },
     {
         "menu": trans("Assigned Leave"),
-        "redirect": reverse("assign-view"),
-        "accessibility": "leave.sidebar.assign_accessibility",
+        "redirect": reverse("assign-view") + "?field=leave_type_id",
+        # Only HR can assign leave.
+        "accessibility": "base.access.sidebar_hr_only",
     },
     {
         "menu": trans("Leave Allocation Request"),
         "redirect": reverse("leave-allocation-request-view"),
+        # Leave allocation requests are disabled for everyone.
+        "accessibility": "base.access.sidebar_disabled",
     },
     {
         "menu": trans("Holidays"),

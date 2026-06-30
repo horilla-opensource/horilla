@@ -131,7 +131,7 @@
 				</button>
 				<div class="oh-dropdown__menu oh-dropdown__menu--right" style="min-width:250px" x-show="open">
 					<ul class="oh-dropdown__items">
-						{% if perms.employee.change_employee or employee.employee_work_info.reporting_manager_id == request.user.employee_get %}
+						{% if can_edit_employee %}
 							<li class="oh-dropdown__item">
 								<a href="{% url 'employee-view-update' employee.id %}" class="">
 									<img src="{% static 'images/ui/edit_btn.png' %}" style="width: 20px; height: auto"
@@ -261,13 +261,7 @@
 							<ion-icon name="mail-outline"></ion-icon>
 							<span>{% trans "Email" %}:</span>
 						</span>
-						<span class="oh-profile__info-value">
-							{% if perms.employee.view_employee or request.user == employee.employee_user_id %}
-							{{employee.email}}
-							{% else %}
-							**********
-							{% endif %}
-						</span>
+						<span class="oh-profile__info-value">{{employee.email}}</span>
 					</li>
 
 					{% if employee.employee_work_info.mobile %}
@@ -285,12 +279,7 @@
 							<ion-icon name="call-outline"></ion-icon>
 							<span>{% trans "Phone" %}:</span>
 						</span>
-						<span class="oh-profile__info-value">{% if perms.employee.view_employee or request.user == employee.employee_user_id %}
-							{{employee.phone}}
-							{% else %}
-							**********
-							{% endif %}
-						</span>
+						<span class="oh-profile__info-value">{{employee.phone}}</span>
 					</li>
 				</ul>
 			</div>
@@ -321,6 +310,7 @@
 									data-target="#personal_target">{% trans "About" %}</a>
 							</li>
 
+							{% if is_full_profile %}
 							{% if "leave"|app_installed %}
 								{% if perms.leave.view_leaverequest or request.user|check_manager:employee or request.user == employee.employee_user_id %}
 									<li data-cell-index="12" data-cell-title="{% trans 'Leave' %}" class="oh-general__tab">
@@ -424,6 +414,7 @@
 											class="oh-general__tab-link" role="button">{% trans "Reimbursement" %}</a>
 									</li>
 								{% endif %}
+							{% endif %}
 							{% endif %}
 						</ul>
 						<button

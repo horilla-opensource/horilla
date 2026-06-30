@@ -8,6 +8,10 @@ from django.utils.translation import gettext_lazy as _
 MENU = _("Assets")
 IMG_SRC = "images/ui/assets.svg"
 
+# The Assets module is operated by HR only. Assigned assets still show on the
+# owner's own profile (separate from this menu).
+ACCESSIBILITY = "base.access.sidebar_hr_only"
+
 SUBMENUS = [
     {
         "menu": _("Dashboard"),

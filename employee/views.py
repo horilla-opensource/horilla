@@ -316,11 +316,6 @@ def profile_edit_access(request, emp_id):
 
 
 @login_required
-@enter_if_accessible(
-    feature="employee_detailed_view",
-    perm="employee.view_employee",
-    method=_check_reporting_manager,
-)
 def employee_view_individual(request, obj_id, **kwargs):
     """
     This method is used to view profile of an employee.
@@ -342,11 +337,20 @@ def employee_view_individual(request, obj_id, **kwargs):
         except Exception as e:
             return render(request, "404.html", status=404)
 
-    from base.access import can_edit_employee, is_ceo, is_hr
+    from base.access import (
+        can_edit_employee,
+        can_view_full_profile,
+        is_ceo,
+        is_hr,
+    )
 
     # The CEO is hidden from everyone except HR (admin).
     if is_ceo(employee) and not is_hr(request.user):
         return render(request, "404.html", status=404)
+
+    # Everyone may open a profile, but only HR / self / a manager (anywhere up
+    # the chain) sees the full profile; others get a limited public view.
+    is_full_profile = can_view_full_profile(request.user, employee)
 
     employee_leaves = (
         employee.available_leave.all() if apps.is_installed("leave") else None
@@ -401,6 +405,7 @@ def employee_view_individual(request, obj_id, **kwargs):
         "leave_request_ids": json.dumps([]),
         "enabled_block_unblock": enabled_block_unblock,
         "can_edit_employee": can_edit_employee(request.user, employee),
+        "is_full_profile": is_full_profile,
     }
     # if the requesting user opens own data
     if request.user.employee_get == employee:
@@ -421,7 +426,14 @@ def about_tab(request, obj_id, **kwargs):
     """
     This method is used to view profile of an employee.
     """
-    employee = Employee.objects.get(id=obj_id)
+    from base.access import can_view_full_profile, is_ceo, is_hr
+
+    employee = Employee.objects.filter(id=obj_id).first()
+    if not employee or (is_ceo(employee) and not is_hr(request.user)):
+        return render(request, "404.html", status=404)
+
+    # Non-managers only ever receive the limited public profile partial.
+    is_full_profile = can_view_full_profile(request.user, employee)
     contracts = employee.contract_set.all() if apps.is_installed("payroll") else None
     employee_leaves = (
         employee.available_leave.all() if apps.is_installed("leave") else None
@@ -433,6 +445,7 @@ def about_tab(request, obj_id, **kwargs):
             "employee": employee,
             "employee_leaves": employee_leaves,
             "contracts": contracts,
+            "is_full_profile": is_full_profile,
         },
     )
 
@@ -1117,11 +1130,6 @@ def paginator_qry(qryset, page_number):
 
 
 @login_required
-@enter_if_accessible(
-    feature="employee_view",
-    perm="employee.view_employee",
-    method=_check_reporting_manager,
-)
 def employee_view(request):
     """
     This method is used to render template for view all employee
@@ -1540,11 +1548,8 @@ def employee_view_update(request, obj_id, **kwargs):
         messages.error(request, _("You do not have access to edit this employee."))
         return redirect(employee_view)
 
-    if (
-        user
-        and user.reporting_manager.filter(employee_id=employee).exists()
-        or request.user.has_perm("employee.change_employee")
-    ):
+    # Access already enforced above (HR or nested manager of this employee).
+    if can_edit_employee(request.user, employee):
         form = EmployeeForm(instance=employee)
         work_form = EmployeeWorkInformationForm(
             instance=EmployeeWorkInformation.objects.filter(
@@ -2981,7 +2986,9 @@ def dashboard(request):
 
 @login_required
 def total_employees_count(request):
-    employees = Employee.objects.all().count()
+    from base.access import visible_employees_qs
+
+    employees = visible_employees_qs(request.user, Employee.objects.all()).count()
     return HttpResponse(employees)
 
 
@@ -3559,20 +3566,28 @@ def organisation_chart(request):
     """
     This method is used to view oganisation chart
     """
+    from base.access import is_ceo, is_hr, visible_employees_qs
+
     selected_company = request.session.get("selected_company")
     if (
         request.GET.get("employee_work_info__company_id") == None
         and selected_company != "all"
     ):
-        reporting_managers = Employee.objects.filter(
-            is_active=True,
-            reporting_manager__isnull=False,
-            employee_work_info__company_id=selected_company,
+        reporting_managers = visible_employees_qs(
+            request.user,
+            Employee.objects.filter(
+                is_active=True,
+                reporting_manager__isnull=False,
+                employee_work_info__company_id=selected_company,
+            ),
         ).distinct()
     else:
-        reporting_managers = Employee.objects.filter(
-            is_active=True,
-            reporting_manager__isnull=False,
+        reporting_managers = visible_employees_qs(
+            request.user,
+            Employee.objects.filter(
+                is_active=True,
+                reporting_manager__isnull=False,
+            ),
         ).distinct()
 
     # Iterate through the queryset and add reporting manager id and name to the dictionary
@@ -3589,9 +3604,12 @@ def organisation_chart(request):
         # check the manager is a reporting manager if yes, store it into entered_req_managers
         if manager.id in result_dict.keys():
             entered_req_managers.append(manager)
-        # filter the subordinates
-        subordinates = Employee.objects.filter(
-            is_active=True, employee_work_info__reporting_manager_id=manager
+        # filter the subordinates (CEO hidden for non-HR)
+        subordinates = visible_employees_qs(
+            request.user,
+            Employee.objects.filter(
+                is_active=True, employee_work_info__reporting_manager_id=manager
+            ),
         ).exclude(id=manager.id)
 
         # itrating through subordinates
@@ -3630,14 +3648,18 @@ def organisation_chart(request):
         request.GET.get("employee_work_info__company_id") == None
         and selected_company != "all"
     ):
-        reporting_managers = Employee.objects.filter(
-            is_active=True,
-            reporting_manager__isnull=False,
-            employee_work_info__company_id=selected_company,
+        reporting_managers = visible_employees_qs(
+            request.user,
+            Employee.objects.filter(
+                is_active=True,
+                reporting_manager__isnull=False,
+                employee_work_info__company_id=selected_company,
+            ),
         ).distinct()
     else:
-        reporting_managers = Employee.objects.filter(
-            is_active=True, reporting_manager__isnull=False
+        reporting_managers = visible_employees_qs(
+            request.user,
+            Employee.objects.filter(is_active=True, reporting_manager__isnull=False),
         ).distinct()
 
     manager = request.user.employee_get
@@ -3651,6 +3673,9 @@ def organisation_chart(request):
         if request.POST.get("manager_id"):
             manager_id = int(request.POST.get("manager_id"))
             manager = Employee.objects.get(id=manager_id)
+        # The CEO must never be the root of the chart for non-HR viewers.
+        if is_ceo(manager) and not is_hr(request.user):
+            return render(request, "404.html", status=404)
         node = {
             "name": manager.get_full_name(),
             "title": getattr(manager.get_job_position(), "job_position", _("Not set")),

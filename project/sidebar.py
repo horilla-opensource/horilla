@@ -39,7 +39,8 @@ SUBMENUS = [
     {
         "menu": trans("Timesheet"),
         "redirect": reverse("view-time-sheet"),
-        "accessibility": "project.sidebar.timesheet_accessibility",
+        # Timesheet is removed for everyone per the access spec.
+        "accessibility": "base.access.sidebar_disabled",
     },
 ]
 
@@ -50,7 +51,7 @@ def menu_accessibilty(
     user = request.user
     return (
         "project" in user_perms
-        # or has_subordinates(request)
+        or has_subordinates(request)
         or any_project_manager(user)
         or any_project_member(user)
         or any_task_manager(user)
@@ -62,7 +63,7 @@ def dashboard_accessibility(request, submenu, user_perms, *args, **kwargs):
     user = request.user
     if (
         user.has_perm("project.view_project")
-        # or has_subordinates(request)
+        or has_subordinates(request)
         or is_reportingmanager(user)
         or any_project_manager(user)
         or any_task_manager(user)
@@ -76,7 +77,7 @@ def project_accessibility(request, submenu, user_perms, *args, **kwargs):
     user = request.user
     if (
         user.has_perm("project.view_project")
-        # or has_subordinates(request)
+        or has_subordinates(request)
         or any_project_manager(user)
         or any_project_member(user)
         or any_task_manager(user)
@@ -91,7 +92,7 @@ def task_accessibility(request, submenu, user_perms, *args, **kwargs):
     user = request.user
     if (
         user.has_perm("project.view_task")
-        # or has_subordinates(request)
+        or has_subordinates(request)
         or any_project_manager(user)
         or any_project_member(user)
         or any_task_manager(user)
@@ -106,7 +107,7 @@ def timesheet_accessibility(request, submenu, user_perms, *args, **kwargs):
     user = request.user
     if (
         user.has_perm("project.view_timesheet")
-        # or has_subordinates(request)
+        or has_subordinates(request)
         or any_project_manager(user)
         or any_project_member(user)
         or any_task_manager(user)

@@ -55,20 +55,27 @@ def nested_subordinate_ids(employee):
     if not employee:
         return set()
 
+    # Use the unscoped manager: reporting chains must resolve regardless of the
+    # viewer's currently selected company (the company manager would otherwise
+    # filter out subordinates and break nested access).
+    base = (
+        Employee.objects.entire()
+        if hasattr(Employee.objects, "entire")
+        else Employee.objects.all()
+    )
+
     result = set()
     current = [employee.id]
     while current:
         subs = list(
-            Employee.objects.filter(
-                employee_work_info__reporting_manager_id__in=current
-            )
+            base.filter(employee_work_info__reporting_manager_id__in=current)
             .exclude(id__in=result)
             .values_list("id", flat=True)
         )
         if not subs:
             break
         result.update(subs)
-        current = subs
+        current = list(subs)
     return result
 
 
@@ -116,3 +123,35 @@ def visible_employees_qs(user, queryset):
     if is_hr(user):
         return queryset
     return queryset.filter(is_ceo=False)
+
+
+# --- Sidebar accessibility gates -------------------------------------------
+# Referenced from <app>/sidebar.py via the "accessibility" string path, e.g.
+# "base.access.sidebar_disabled". Signature: (request, submenu, user_perms, ...).
+
+
+def sidebar_disabled(request, *args, **kwargs):
+    """Hide a menu / submenu from everyone (feature turned off)."""
+    return False
+
+
+def sidebar_visible_to_all(request, *args, **kwargs):
+    """Show a menu / submenu to every authenticated user."""
+    return True
+
+
+def sidebar_hr_only(request, *args, **kwargs):
+    """Show only to HR (superuser)."""
+    return is_hr(request.user)
+
+
+def sidebar_managers_only(request, *args, **kwargs):
+    """Show only to HR or anyone who has at least one subordinate."""
+    user = request.user
+    return is_hr(user) or is_manager(get_employee(user))
+
+
+def sidebar_hr_or_operations(request, *args, **kwargs):
+    """Show only to HR (superuser) or the Operations Manager group."""
+    user = request.user
+    return is_hr(user) or is_operations_manager(user)

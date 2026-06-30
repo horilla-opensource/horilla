@@ -22,30 +22,34 @@ SUBMENUS = [
     {
         "menu": trans("Employees"),
         "redirect": reverse("employee-view"),
-        "accessibility": "employee.sidebar.employee_accessibility",
+        # Everyone may see the employee list (limited public info).
+        "accessibility": "base.access.sidebar_visible_to_all",
     },
     {
         "menu": trans("Document Requests"),
         "redirect": reverse("document-request-view"),
-        "accessibility": "employee.sidebar.document_accessibility",
+        # Everyone can send/receive document requests.
+        "accessibility": "base.access.sidebar_visible_to_all",
     },
     {
         "menu": trans("Shift Requests"),
         "redirect": reverse("shift-request-view"),
+        "accessibility": "base.access.sidebar_disabled",
     },
     {
         "menu": trans("Work Type Requests"),
         "redirect": reverse("work-type-request-view"),
+        "accessibility": "base.access.sidebar_disabled",
     },
     {
         "menu": trans("Rotating Shift Assign"),
         "redirect": reverse("rotating-shift-assign"),
-        "accessibility": "employee.sidebar.rotating_shift_accessibility",
+        "accessibility": "base.access.sidebar_disabled",
     },
     {
         "menu": trans("Rotating Work Type Assign"),
         "redirect": reverse("rotating-work-type-assign"),
-        "accessibility": "employee.sidebar.rotating_work_type_accessibility",
+        "accessibility": "base.access.sidebar_disabled",
     },
     {
         "menu": trans("Disciplinary Actions"),

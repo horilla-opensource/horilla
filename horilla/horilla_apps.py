@@ -45,10 +45,9 @@ if SETTINGS_EMAIL_BACKEND:
 
 
 SIDEBARS = [
-    "recruitment",
-    "onboarding",
+    # Recruitment, Onboarding and Attendance are disabled for everyone
+    # (removed from the sidebar) per the access spec.
     "employee",
-    "attendance",
     "leave",
     "payroll",
     "pms",

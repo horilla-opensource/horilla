@@ -1,4 +1,5 @@
 {% load i18n %} {% load static %} {% load horillafilters %}
+{% if is_full_profile %}
 <div class="row">
 	<div class="col-sm-12 col-md-12 col-lg-4">
 		<div class="oh-card oh-card--margin">
@@ -395,6 +396,69 @@
 		{% endif %}
 	</div>
 </div>
+{% else %}
+<div class="row">
+	<div class="col-sm-12 col-md-12 col-lg-12">
+		<div class="oh-card oh-card--margin">
+			<div class="oh-card__header">
+				<span class="oh-card__title oh-card__title--sm fw-bold me-2">{% trans "Personal Information" %}</span>
+			</div>
+			<div class="oh-card__body mt-4">
+				<div class="row">
+					<div class="col-12 col-md-6">
+						<ul class="oh-profile__card-info-list">
+							<li class="oh-profile__card-info-item">
+								<span class="oh-profile__info-label mb-1"><ion-icon name="calendar-outline"></ion-icon><span>{% trans "Date of Birth" %}</span></span>
+								<span class="oh-profile__info-value dateformat_changer">{{employee.get_employee_dob|default:_("None")}}</span>
+							</li>
+							<li class="oh-profile__card-info-item">
+								<span class="oh-profile__info-label mb-1"><ion-icon name="transgender-outline"></ion-icon><span>{% trans "Gender" %}</span></span>
+								<span class="oh-profile__info-value">{% trans employee.get_gender_display %}</span>
+							</li>
+							<li class="oh-profile__card-info-item">
+								<span class="oh-profile__info-label mb-1"><ion-icon name="flag-outline"></ion-icon><span>{% trans "Country" %}</span></span>
+								<span class="oh-profile__info-value">{{employee.country|default:_("None")}}</span>
+							</li>
+							<li class="oh-profile__card-info-item">
+								<span class="oh-profile__info-label mb-1"><ion-icon name="planet-outline"></ion-icon><span>{% trans "City" %}</span></span>
+								<span class="oh-profile__info-value">{{employee.city|default:_("None")}}</span>
+							</li>
+						</ul>
+					</div>
+					<div class="col-12 col-md-6">
+						<ul class="oh-profile__card-info-list">
+							<li class="oh-profile__card-info-item">
+								<span class="oh-profile__info-label mb-1"><ion-icon name="construct-outline"></ion-icon><span>{% trans "Department" %}</span></span>
+								<span class="oh-profile__info-value">{{employee.employee_work_info.department_id|default:_("None")}}</span>
+							</li>
+							<li class="oh-profile__card-info-item">
+								<span class="oh-profile__info-label mb-1"><ion-icon name="briefcase-outline"></ion-icon><span>{% trans "Job Position" %}</span></span>
+								<span class="oh-profile__info-value">{{employee.employee_work_info.job_position_id|default:_("None")}}</span>
+							</li>
+							<li class="oh-profile__card-info-item">
+								<span class="oh-profile__info-label mb-1"><ion-icon name="time-outline"></ion-icon><span>{% trans "Work Type" %}</span></span>
+								<span class="oh-profile__info-value">{{employee.employee_work_info.work_type_id|default:_("None")}}</span>
+							</li>
+							<li class="oh-profile__card-info-item">
+								<span class="oh-profile__info-label mb-1"><ion-icon name="briefcase-outline"></ion-icon><span>{% trans "Employee Type" %}</span></span>
+								<span class="oh-profile__info-value">{{employee.employee_work_info.employee_type_id|default:_("None")}}</span>
+							</li>
+							<li class="oh-profile__card-info-item">
+								<span class="oh-profile__info-label mb-1"><ion-icon name="person-circle-outline"></ion-icon><span>{% trans "Reporting Manager" %}</span></span>
+								<span class="oh-profile__info-value">{{employee.employee_work_info.reporting_manager_id|default:_("None")}}</span>
+							</li>
+							<li class="oh-profile__card-info-item">
+								<span class="oh-profile__info-label mb-1"><ion-icon name="calendar-outline"></ion-icon><span>{% trans "Joining Date" %}</span></span>
+								<span class="oh-profile__info-value dateformat_changer">{{employee.employee_work_info.date_joining|default:_("None")}}</span>
+							</li>
+						</ul>
+					</div>
+				</div>
+			</div>
+		</div>
+	</div>
+</div>
+{% endif %}
 <script>
 	$(document).ready(function () {
 		$(".oh-tabs__tab[data-target]").click(function (e) {

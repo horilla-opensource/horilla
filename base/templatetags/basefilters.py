@@ -66,13 +66,16 @@ def is_leave_approval_manager(user):
 
 @register.filter(name="check_manager")
 def check_manager(user, instance):
+    """
+    True if `user` manages the employee tied to `instance` anywhere down their
+    reporting chain (direct OR indirect).
+    """
     try:
-        if isinstance(instance, Employee):
-            return instance.employee_work_info.reporting_manager_id == user.employee_get
-        return (
-            user.employee_get
-            == instance.employee_id.employee_work_info.reporting_manager_id
-        )
+        from base.access import manages
+
+        viewer = user.employee_get
+        target = instance if isinstance(instance, Employee) else instance.employee_id
+        return manages(viewer, target)
     except:
         return False
 
@@ -118,26 +121,10 @@ def abs_value(value):
 
 @register.filter(name="config_perms")
 def config_perms(user):
-    app_permissions = {
-        "leave": [
-            "leave.view_restrictleave",
-        ],
-        "base": [
-            "base.add_holiday",
-            "base.change_holiday",
-            "base.add_companyleaves",
-            "base.change_companyleaves",
-            "base.add_horillamailtemplates",
-            "base.view_horillamailtemplates",
-        ],
-    }
+    # Configuration is visible only to HR (superuser) and the Operations Manager.
+    from base.access import is_hr, is_operations_manager
 
-    for app, perms in app_permissions.items():
-        if apps.is_installed(app):
-            for perm in perms:
-                if user.has_perm(perm):
-                    return True
-    return False
+    return is_hr(user) or is_operations_manager(user)
 
 
 @register.filter(name="startswith")
