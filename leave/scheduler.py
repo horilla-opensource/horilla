@@ -62,6 +62,6 @@ if not any(
     Initializes and starts background tasks using APScheduler when the server is running.
     """
     scheduler = BackgroundScheduler()
-    scheduler.add_job(leave_reset, "interval", seconds=20)
+    scheduler.add_job(leave_reset, "interval", hours=4)
 
     scheduler.start()
