@@ -553,7 +553,14 @@ class Employee(models.Model):
             user.user_permissions.add(change_ownprofile)
 
         if not hasattr(self, "employee_work_info"):
-            EmployeeWorkInformation.objects.get_or_create(employee_id=self)
+            hq_company = Company.objects.filter(hq=True).first()
+            defaults = {}
+            if hq_company:
+                defaults["company_id"] = hq_company
+            EmployeeWorkInformation.objects.get_or_create(
+                employee_id=self,
+                defaults=defaults,
+            )
             return self.save()
 
         return self
