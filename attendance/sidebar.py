@@ -78,8 +78,10 @@ def work_record_accessibility(request, submenu, user_perms, *args, **kwargs):
     """
     Check if the user has permission to view attendance or is a reporting manager.
     """
-    return request.user.has_perm("attendance.view_attendance") or is_reportingmanager(
-        request.user
+    return (
+        request.user.is_superuser
+        or request.user.has_perm("attendance.view_attendance")
+        or is_reportingmanager(request.user)
     )
 
 
@@ -87,16 +89,24 @@ def dashboard_accessibility(request, submenu, user_perms, *args, **kwargs):
     """
     Check if the user has permission to view attendance or is a reporting manager.
     """
-    return request.user.has_perm("attendance.view_attendance") or is_reportingmanager(
-        request.user
+    return (
+        request.user.is_superuser
+        or request.user.has_perm("attendance.view_attendance")
+        or is_reportingmanager(request.user)
     )
 
 
 def tracking_accessibility(request, submenu, user_perms, *args, **kwargs):
     """
-    Determine if late come/early out tracking is enabled.
+    Determine if late come/early out tracking is enabled and user has access.
     """
-    return enable_late_come_early_out_tracking(None).get("tracking")
+    tracking_enabled = enable_late_come_early_out_tracking(None).get("tracking")
+    has_access = (
+        request.user.is_superuser
+        or request.user.has_perm("attendance.view_attendancelatecomeearlyout")
+        or is_reportingmanager(request.user)
+    )
+    return tracking_enabled and has_access
 
 
 # ---------------------------------------------------------------------------

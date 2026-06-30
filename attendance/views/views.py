@@ -2504,6 +2504,7 @@ def delete_comment_file(request):
 
 
 @login_required
+@manager_can_enter("attendance.view_attendance")
 def work_records(request):
     today = date.today()
     previous_data = request.GET.urlencode()
@@ -2519,6 +2520,7 @@ def work_records(request):
 
 
 @login_required
+@manager_can_enter("attendance.view_attendance")
 @hx_request_required
 def work_records_change_month(request):
     previous_data = request.GET.urlencode()
