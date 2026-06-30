@@ -904,6 +904,21 @@ class Policy(HorillaModel):
         self.attachments.all().delete()
 
 
+class PolicyComment(HorillaModel):
+    """A comment left on a policy. Anyone who can view a policy may comment."""
+
+    policy_id = models.ForeignKey(
+        Policy,
+        on_delete=models.CASCADE,
+        related_name="policy_comments",
+        verbose_name=_("Policy"),
+    )
+    comment = models.TextField(verbose_name=_("Comment"))
+
+    class Meta:
+        ordering = ["id"]
+
+
 class BonusPoint(HorillaModel):
     """
     Model representing bonus points for employees with associated conditions.

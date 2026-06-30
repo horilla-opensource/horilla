@@ -1,3 +1,4 @@
+{% load i18n %}
 <style>
   #enlargeImageContainer {
     position: absolute;
@@ -20,6 +21,18 @@
   <p class="oh-card__footer--border-top"></p>
   {{ policy.body|safe }}
   <div id="attachmentContainer" class="d-flex" hx-get="{% url 'get-attachments-policy' %}?policy_id={{ policy.id }}" hx-trigger="load"></div>
+
+  <hr>
+  <div class="fw-bold mb-2">{% trans "Comments" %}</div>
+  <div id="policyComments">
+    {% include "policies/comments.html" %}
+  </div>
+  <form hx-post="{% url 'add-policy-comment' policy.id %}" hx-target="#policyComments" hx-swap="innerHTML"
+        class="d-flex mt-2" style="gap:8px;">
+    {% csrf_token %}
+    <input type="text" name="comment" class="oh-input w-100" placeholder="{% trans 'Add a comment...' %}" required>
+    <button type="submit" class="oh-btn oh-btn--secondary">{% trans "Post" %}</button>
+  </form>
 
   <div id="enlargeImageContainer"></div>
 </div>

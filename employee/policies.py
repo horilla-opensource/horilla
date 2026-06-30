@@ -28,6 +28,7 @@ from employee.models import (
     DisciplinaryAction,
     Employee,
     Policy,
+    PolicyComment,
     PolicyMultipleFile,
 )
 from horilla.decorators import hx_request_required, login_required, permission_required
@@ -104,7 +105,26 @@ def view_policy(request):
         "policies/view_policy.html",
         {
             "policy": policy,
+            "comments": policy.policy_comments.all() if policy else [],
         },
+    )
+
+
+@login_required
+@hx_request_required
+def add_policy_comment(request, policy_id):
+    """
+    Add a comment to a policy. Everyone who can view a policy may comment;
+    returns the refreshed comment list.
+    """
+    policy = get_object_or_404(Policy, id=policy_id)
+    text = (request.POST.get("comment") or "").strip()
+    if text:
+        PolicyComment.objects.create(policy_id=policy, comment=text)
+    return render(
+        request,
+        "policies/comments.html",
+        {"comments": policy.policy_comments.all()},
     )
 
 

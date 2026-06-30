@@ -1,0 +1,9 @@
+{% load i18n %}
+{% for c in comments %}
+<div class="mb-2" style="background:#f7f7f7;border-radius:6px;padding:8px;">
+    <span class="text-muted" style="font-size:.8rem;">{{ c.created_by|default:"" }} · {{ c.created_at|date:"Y-m-d H:i" }}</span>
+    <div>{{ c.comment|linebreaksbr }}</div>
+</div>
+{% empty %}
+<p class="text-muted">{% trans "No comments yet." %}</p>
+{% endfor %}

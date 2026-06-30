@@ -324,6 +324,11 @@ urlpatterns = [
     path("create-policy", policies.create_policy, name="create-policy"),
     path("view-policy", policies.view_policy, name="view-policy"),
     path(
+        "add-policy-comment/<int:policy_id>/",
+        policies.add_policy_comment,
+        name="add-policy-comment",
+    ),
+    path(
         "add-attachment-policy", policies.add_attachment, name="add-attachment-policy"
     ),
     path(
