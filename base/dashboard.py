@@ -117,11 +117,24 @@ def dashboard_kpi_data(request):
     present_today = 0
     try:
         from attendance.models import Attendance
+        from leave.models import LeaveRequest
 
-        present_today = (
-            Attendance.objects.filter(
-                attendance_date=today,
+        real_today = date.today()
+        leave_employee_ids = list(
+            LeaveRequest.objects.filter(
+                start_date__lte=real_today,
+                status="approved",
             )
+            .filter(
+                Q(end_date__gte=real_today)
+                | Q(end_date__isnull=True, start_date=real_today)
+            )
+            .values_list("employee_id", flat=True)
+            .distinct()
+        )
+        present_today = (
+            Attendance.objects.filter(attendance_date=today)
+            .exclude(employee_id__in=leave_employee_ids)
             .values("employee_id")
             .distinct()
             .count()
