@@ -219,9 +219,6 @@ class EmployeeForm(ModelForm):
             "is_directly_converted",
             "is_active",
             "qualification",
-            # HR-only flag, managed via Django admin (superuser) — never exposed
-            # in the manager-editable employee form.
-            "is_ceo",
         )
 
     def __init__(self, *args, **kwargs):
@@ -229,6 +226,15 @@ class EmployeeForm(ModelForm):
         self.fields["email"].widget.attrs["autocomplete"] = "email"
         self.fields["phone"].widget.attrs["autocomplete"] = "phone"
         self.fields["address"].widget.attrs["autocomplete"] = "address"
+        # The CEO flag is HR-only: keep it in the form for HR (superuser) so it
+        # renders and saves, and drop it for everyone else so it is neither shown
+        # nor accepted from a crafted POST.
+        from horilla.horilla_middlewares import _thread_locals
+        from base.access import is_hr
+
+        request = getattr(_thread_locals, "request", None)
+        if not (request and is_hr(request.user)):
+            self.fields.pop("is_ceo", None)
         if instance := kwargs.get("instance"):
             # ----
             # django forms not showing value inside the date, time html element.
