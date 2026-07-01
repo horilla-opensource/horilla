@@ -73,11 +73,33 @@ def chunked(iterable, size):
         yield iterable[i : i + size]
 
 
+def is_blank_cell(value):
+    if pd.isna(value) or value is None:
+        return True
+    return str(value).strip().lower() in ("", "nan", "none")
+
+
 def normalize_phone(phone):
+    if is_blank_cell(phone):
+        return ""
     phone = str(phone).strip()
     if phone.startswith("+"):
-        return "+" + re.sub(r"\D", "", phone[1:])
-    return re.sub(r"\D", "", phone)
+        digits = re.sub(r"\D", "", phone[1:])
+        return f"+{digits}" if digits else ""
+    digits = re.sub(r"\D", "", phone)
+    if not digits:
+        return ""
+    if len(digits) == 10 and digits.startswith("0"):
+        digits = "254" + digits[1:]
+    elif len(digits) == 9 and digits.startswith("7"):
+        digits = "254" + digits
+    return digits
+
+
+def normalize_gender(value):
+    if is_blank_cell(value):
+        return None
+    return str(value).strip().lower()
 
 
 def import_valid_date(date_value, field_label, errors_dict, error_key):
@@ -111,8 +133,11 @@ def clean_badge_id(value):
     - If the value is a non-numeric string (e.g., "A101"), returns the stripped string.
     - If the value is NaN or None, returns an empty string.
     """
-    if pd.isna(value):
+    if is_blank_cell(value):
         return ""
+
+    if isinstance(value, str):
+        return value.strip()
 
     try:
         float_val = float(value)
@@ -296,7 +321,7 @@ def process_employee_records(data_frame):
         badge_id = clean_badge_id(emp.get("Badge ID"))
         first_name = convert_nan("First Name", emp)
         last_name = convert_nan("Last Name", emp)
-        gender = str(emp.get("Gender") or "").strip().lower()
+        gender = normalize_gender(emp.get("Gender"))
         company = convert_nan("Company", emp)
         basic_salary = convert_nan("Basic Salary", emp)
         salary_hour = convert_nan("Salary Hour", emp)
@@ -333,7 +358,7 @@ def process_employee_records(data_frame):
             save = False
 
         # Phone validation
-        if not phone_regex.match(phone):
+        if phone and not phone_regex.match(phone):
             errors["Phone Error"] = "Invalid phone number format."
             save = False
 
@@ -467,7 +492,7 @@ def bulk_create_user_import(success_lists):
         User(
             username=row["Email"],
             email=row["Email"],
-            password=str(row["Phone"]).strip(),
+            password=str(row.get("Phone") or "").strip() or row["Email"],
             is_superuser=False,
         )
         for row in success_lists
@@ -503,19 +528,22 @@ def bulk_create_employee_import(success_lists):
         )
     }
 
-    employees_to_create = [
-        Employee(
-            employee_user_id=existing_users[row["Email"]],
-            badge_id=row["Badge ID"],
-            employee_first_name=convert_nan("First Name", row),
-            employee_last_name=convert_nan("Last Name", row),
-            email=row["Email"],
-            phone=row["Phone"],
-            gender=row.get("Gender", "").lower(),
-        )
-        for row in success_lists
-        if row["Email"] in existing_users
-    ]
+    employees_to_create = []
+    for row in success_lists:
+        if row["Email"] not in existing_users:
+            continue
+        employee_kwargs = {
+            "employee_user_id": existing_users[row["Email"]],
+            "badge_id": row["Badge ID"],
+            "employee_first_name": convert_nan("First Name", row),
+            "employee_last_name": convert_nan("Last Name", row),
+            "email": row["Email"],
+            "phone": row.get("Phone") or "",
+        }
+        gender = normalize_gender(row.get("Gender"))
+        if gender:
+            employee_kwargs["gender"] = gender
+        employees_to_create.append(Employee(**employee_kwargs))
 
     created_employees = []
     if employees_to_create:
@@ -535,7 +563,9 @@ def set_initial_password(employees):
     logger.info("started to set initial password")
     for employee in employees:
         try:
-            employee.employee_user_id.set_password(str(employee.phone))
+            employee.employee_user_id.set_password(
+                str(employee.phone or employee.email)
+            )
             employee.employee_user_id.save()
         except Exception as e:
             logger.error(f"falied to set initial password for {employee}")

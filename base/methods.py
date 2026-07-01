@@ -601,7 +601,7 @@ def export_data(request, model, form_class, filter_class, file_name, perm=None):
                 data_export[verbose_name].append(value)
 
     data_frame = pd.DataFrame(data=data_export)
-    styled_data_frame = data_frame.style.applymap(
+    styled_data_frame = data_frame.style.map(
         lambda x: "text-align: center", subset=pd.IndexSlice[:, :]
     )
 
