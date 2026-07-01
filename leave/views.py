@@ -2758,24 +2758,34 @@ def overall_leave(request):
 
 
 @login_required
-@permission_required("leave.delete_leaverequest")
 def dashboard(request):
     """
     function used to view Admin dashboard in the leave module.
 
-    Parameters:
-    request (HttpRequest): The HTTP request object.
-
-    Returns:
-    GET : return Admin dasboard template.
+    HR sees company-wide analytics; a reporting manager sees analytics scoped to
+    their (nested) subordinates; anyone else is sent to their personal dashboard.
     """
+    from base.access import is_hr
+
+    if not (is_hr(request.user) or is_reportingmanager(request)):
+        return redirect("leave-employee-dashboard")
+
     today = date.today()
-    requested = LeaveRequest.objects.filter(start_date__gte=today, status="requested")
-    approved = LeaveRequest.objects.filter(
-        status="approved", start_date__month=today.month
+    # filtersubordinates: HR (has perm) -> all; manager -> subordinates + own.
+    requested = filtersubordinates(
+        request,
+        LeaveRequest.objects.filter(start_date__gte=today, status="requested"),
+        "leave.delete_leaverequest",
     )
-    rejected = LeaveRequest.objects.filter(
-        status="rejected", start_date__month=today.month
+    approved = filtersubordinates(
+        request,
+        LeaveRequest.objects.filter(status="approved", start_date__month=today.month),
+        "leave.delete_leaverequest",
+    )
+    rejected = filtersubordinates(
+        request,
+        LeaveRequest.objects.filter(status="rejected", start_date__month=today.month),
+        "leave.delete_leaverequest",
     )
     holidays = Holidays.objects.filter(start_date__gte=today)
     next_holiday = holidays.order_by("start_date").first() if holidays else None
@@ -2988,7 +2998,11 @@ def department_leave_chart(request):
 
     departments = Department.objects.all()
     department_counts = {dep.department: 0 for dep in departments}
-    leave_request = LeaveRequest.objects.filter(status="approved")
+    leave_request = filtersubordinates(
+        request,
+        LeaveRequest.objects.filter(status="approved"),
+        "leave.view_leaverequest",
+    )
     leave_request = leave_request.filter(
         start_date__month=day.month, start_date__year=day.year
     )
@@ -3039,7 +3053,11 @@ def leave_type_chart(request):
 
     leave_types = LeaveType.objects.all()
     leave_type_count = {types.name: 0 for types in leave_types}
-    leave_request = LeaveRequest.objects.filter(status="approved")
+    leave_request = filtersubordinates(
+        request,
+        LeaveRequest.objects.filter(status="approved"),
+        "leave.view_leaverequest",
+    )
     leave_request = leave_request.filter(
         start_date__month=day.month, start_date__year=day.year
     )

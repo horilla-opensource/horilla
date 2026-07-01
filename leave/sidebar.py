@@ -64,8 +64,11 @@ SUBMENUS = [
 
 
 def dashboard_accessibility(request, submenu, user_perms, *args, **kwargs):
-    have_perm = request.user.has_perm("leave.view_leaverequest")
-    if not have_perm:
+    from base.access import is_hr
+
+    # HR and reporting managers get the analytics dashboard (scoped to their
+    # subordinates for managers); everyone else gets the personal dashboard.
+    if not (is_hr(request.user) or is_reportingmanager(request.user)):
         submenu["redirect"] = reverse("leave-employee-dashboard") + "?dashboard=true"
     return True
 
