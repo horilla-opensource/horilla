@@ -233,23 +233,54 @@
         overflow: hidden !important;
     }
 
-    /* Accordion reveal animation */
-    .sidebar-subnav:not(.hidden) {
-        animation: sidenavIn 0.16s ease both;
+    /* Chevron hidden — accordion is replaced by hover flyout */
+    .sidebar-chevron { display: none !important; }
+
+    /* Flyout submenu panel */
+    #sidebarFlyout {
+        position: fixed;
+        z-index: 10060;
+        min-width: 200px;
+        max-width: 260px;
+        background: #ffffff;
+        border: 1px solid #e5e7eb;
+        border-radius: 10px;
+        box-shadow: 0 8px 24px -4px rgba(15, 23, 42, 0.12), 0 2px 8px -2px rgba(15, 23, 42, 0.06);
+        padding: 6px;
+        opacity: 0;
+        visibility: hidden;
+        pointer-events: none;
+        transform: translateX(-6px);
+        transition: opacity 0.15s ease, transform 0.15s ease, visibility 0s linear 0.15s;
     }
-    @keyframes sidenavIn {
-        0% {
-            transform: translateY(-4px);
-            opacity: 0;
-        }
-        100% {
-            transform: translateY(0);
-            opacity: 1;
-        }
+    #sidebarFlyout.is-visible {
+        opacity: 1;
+        visibility: visible;
+        pointer-events: auto;
+        transform: translateX(0);
+        transition: opacity 0.15s ease, transform 0.15s ease;
+    }
+    #sidebarFlyout h5 {
+        font-size: 11px;
+        font-weight: 600;
+        color: #6b7280;
+        text-transform: uppercase;
+        letter-spacing: 0.05em;
+        padding: 4px 10px 8px;
+        border-bottom: 1px solid #f3f4f6;
+        margin-bottom: 4px;
+    }
+    body.dark #sidebarFlyout {
+        background: #1f2937;
+        border-color: #374151;
+    }
+    body.dark #sidebarFlyout h5 {
+        color: #9ca3af;
+        border-bottom-color: #374151;
     }
 
     @media (prefers-reduced-motion: reduce) {
-        #sidebar, .oh-main-content, .oh-main-header, .sideboxmain, .sidebar-chevron, .sidebar-subnav {
+        #sidebar, .oh-main-content, .oh-main-header, .sideboxmain, #sidebarFlyout {
             animation: none !important;
             transition: none !important;
         }
@@ -381,6 +412,11 @@
             {% include "horilla_theme/components/sidebar/bottom_menu.html" %}
         </nav>
     </div>
+    <!-- Flyout panel: populated and positioned by JS on hover -->
+    <div id="sidebarFlyout">
+        <h5 id="sidebarFlyoutTitle"></h5>
+        <ul id="sidebarFlyoutList" class="space-y-0.5"></ul>
+    </div>
 </div>
 <script>
     function highlightRow(checkbox) {
@@ -496,75 +532,133 @@
           btn.classList.add("active");
         }
 
-        // ── Accordion helpers ────────────────────────────────────────────────
+        // ── Hover flyout helpers ─────────────────────────────────────────────
 
-        function openAccordionItem(btn) {
-          var item = btn.closest(".sidebar-item");
-          if (!item) return;
-          var subnav = item.querySelector(".sidebar-subnav");
-          if (!subnav) return;
-          subnav.classList.remove("hidden");
-          btn.classList.add("sidebox-active");
-          btn.setAttribute("aria-expanded", "true");
-        }
+        var flyoutEl = document.getElementById("sidebarFlyout");
+        var flyoutTitleEl = document.getElementById("sidebarFlyoutTitle");
+        var flyoutListEl = document.getElementById("sidebarFlyoutList");
+        var flyoutCloseTimer = null;
 
-        function closeAllAccordions() {
-          document.querySelectorAll(".sidebar-item").forEach(function (si) {
-            var sn = si.querySelector(".sidebar-subnav");
-            var sb = si.querySelector(".sideboxmain");
-            if (sn) sn.classList.add("hidden");
-            if (sb) {
-              sb.classList.remove("sidebox-active");
-              sb.setAttribute("aria-expanded", "false");
+        function positionFlyout(itemRect) {
+          var sidebarRect = sidebarEl.getBoundingClientRect();
+          var left = sidebarRect.right + 6;
+          var top = itemRect.top;
+          flyoutEl.style.left = left + "px";
+          flyoutEl.style.top = top + "px";
+          requestAnimationFrame(function () {
+            var fh = flyoutEl.offsetHeight;
+            var vh = window.innerHeight;
+            if (top + fh > vh - 8) {
+              flyoutEl.style.top = Math.max(8, vh - fh - 8) + "px";
             }
           });
         }
 
-        function toggleAccordionItem(btn) {
-          var item = btn.closest(".sidebar-item");
-          if (!item) return;
+        function showFlyout(item, btn) {
           var subnav = item.querySelector(".sidebar-subnav");
           if (!subnav) return;
-          var isOpen = !subnav.classList.contains("hidden");
-          closeAllAccordions();
-          if (!isOpen) {
-            openAccordionItem(btn);
-            setActiveSidebarMenu(btn);
-          }
+          var liItems = subnav.querySelectorAll("li");
+          if (!liItems.length) return;
+
+          clearTimeout(flyoutCloseTimer);
+
+          var label = btn.querySelector(".oh-sidebar-label");
+          var titleText = label ? label.textContent.trim() : (btn.getAttribute("aria-label") || "");
+          flyoutTitleEl.textContent = titleText;
+          flyoutTitleEl.style.display = titleText ? "" : "none";
+
+          flyoutListEl.innerHTML = "";
+          liItems.forEach(function (li) { flyoutListEl.appendChild(li.cloneNode(true)); });
+          if (window.htmx) htmx.process(flyoutListEl);
+
+          // Restore active-link highlight in flyout
+          var path = window.location.pathname;
+          flyoutListEl.querySelectorAll("a[href]").forEach(function (a) {
+            var href = a.getAttribute("href");
+            if (href && href !== "/" && path.startsWith(href)) a.classList.add("oh-sidebar-active-link");
+          });
+
+          positionFlyout(item.getBoundingClientRect());
+          flyoutEl.classList.add("is-visible");
+          setActiveSidebarMenu(btn);
         }
 
-        // Auto-open correct accordion and highlight active link based on URL
+        function hideFlyout() {
+          if (flyoutEl) flyoutEl.classList.remove("is-visible");
+        }
+
+        function scheduleFlyoutClose() {
+          clearTimeout(flyoutCloseTimer);
+          flyoutCloseTimer = setTimeout(hideFlyout, 120);
+        }
+
+        function cancelFlyoutClose() {
+          clearTimeout(flyoutCloseTimer);
+        }
+
+        // Attach hover listeners to all sidebar items
+        document.querySelectorAll(".sidebar-item").forEach(function (item) {
+          var btn = item.querySelector(".sideboxmain");
+          if (!btn) return;
+          item.addEventListener("mouseenter", function () {
+            cancelFlyoutClose();
+            showFlyout(item, btn);
+          });
+          item.addEventListener("mouseleave", function () { scheduleFlyoutClose(); });
+        });
+
+        if (flyoutEl) {
+          flyoutEl.addEventListener("mouseenter", cancelFlyoutClose);
+          flyoutEl.addEventListener("mouseleave", scheduleFlyoutClose);
+          flyoutEl.addEventListener("click", function (e) {
+            var link = e.target.closest("a[href], a[hx-get]");
+            if (!link) return;
+            var isLeftClick = !e.button || e.button === 0;
+            var isModified = e.metaKey || e.ctrlKey || e.shiftKey || e.altKey;
+            if (!isLeftClick || isModified) return;
+            e.preventDefault();
+            e.stopPropagation();
+            var href = link.getAttribute("href") || link.getAttribute("hx-get") || "/";
+            hideFlyout();
+            if (isStandaloneUrl(href)) { window.location.href = href; return; }
+            var target = document.getElementById("ohMainContent");
+            if (!target || !window.htmx) { window.location.href = href; return; }
+            document.querySelectorAll(".sidebar-subnav-link").forEach(function (l) { l.classList.remove("oh-sidebar-active-link"); });
+            flyoutListEl.querySelectorAll("a").forEach(function (a) { a.classList.remove("oh-sidebar-active-link"); });
+            link.classList.add("oh-sidebar-active-link");
+            bumpGrace(1500);
+            window.history.pushState({}, "", href);
+            htmx.ajax("GET", href, {
+              source: link, target: "#ohMainContent",
+              select: "#ohMainContent > *", swap: "innerHTML show:window:top",
+              headers: { "HX-Sidebar-Nav": "true" },
+            });
+          }, true);
+        }
+
+        // Highlight active module button based on current URL (no accordion to open)
         function ohAccordionInit() {
           var path = window.location.pathname;
-          var opened = false;
+          var matchedBtn = null;
           document.querySelectorAll(".sidebar-subnav-link").forEach(function (link) {
             var href = link.getAttribute("href");
             if (!href || href === "/" || href === "#") return;
             if (path.startsWith(href)) {
               link.classList.add("oh-sidebar-active-link");
-              if (!opened) {
+              if (!matchedBtn) {
                 var item = link.closest(".sidebar-item");
-                if (item) {
-                  var btn = item.querySelector(".sideboxmain");
-                  if (btn) {
-                    openAccordionItem(btn);
-                    setActiveSidebarMenu(btn);
-                  }
-                  opened = true;
-                }
+                matchedBtn = item && item.querySelector(".sideboxmain");
               }
             }
           });
-          // Fallback: restore last active module from localStorage
-          if (!opened) {
+          if (matchedBtn) {
+            setActiveSidebarMenu(matchedBtn);
+          } else {
             var lastMenu = null;
             try { lastMenu = localStorage.getItem("activeSidebarMenu"); } catch (_) {}
             if (lastMenu) {
               var btn = document.querySelector('.sideboxmain[data-menu="' + lastMenu.replace(/"/g, '\\"') + '"]');
-              if (btn && !btn.classList.contains("sidebox-active")) {
-                openAccordionItem(btn);
-                setActiveSidebarMenu(btn);
-              }
+              if (btn) setActiveSidebarMenu(btn);
             }
           }
         }
@@ -615,10 +709,10 @@
           });
         }
 
-        // When cursor leaves sidebar and it is not pinned, collapse the open accordion
+        // When cursor leaves sidebar, close any open flyout
         if (sidebarEl) {
           sidebarEl.addEventListener("mouseleave", function () {
-            if (!sidebarPinned) closeAllAccordions();
+            scheduleFlyoutClose();
           });
         }
 
@@ -702,7 +796,7 @@
               if (isTopDashboard) {
                 e.preventDefault();
                 e.stopPropagation();
-                closeAllAccordions();
+                hideFlyout();
                 setActiveSidebarMenu(link);
                 if (isStandaloneUrl(href)) { window.location.href = href || "/"; return; }
                 var target = document.getElementById("ohMainContent");
@@ -722,11 +816,11 @@
             if (e.target.closest(".sidebar-subnav")) return;
             if (e.target.closest("a")) return;
 
-            // Module button — toggle accordion
+            // Module button click: flyout is already shown by hover; just mark active
             var btn = e.target.closest(".sideboxmain");
             if (!btn) return;
             e.stopPropagation();
-            toggleAccordionItem(btn);
+            setActiveSidebarMenu(btn);
           });
         }
 
@@ -804,7 +898,7 @@
         window.addEventListener("popstate", function () { window.location.reload(); });
 
         document.addEventListener("keydown", function (e) {
-          if (e.key === "Escape") closeAllAccordions();
+          if (e.key === "Escape") hideFlyout();
         });
       });
 
