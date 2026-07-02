@@ -2171,8 +2171,44 @@
       "created_by": 1,
       "modified_by": 1,
       "is_active": true,
-      "time_runner": true,
+      "time_runner": false,
       "company_id": null
+    }
+  },
+  {
+    "model": "attendance.attendancegeneralsetting",
+    "pk": 2,
+    "fields": {
+      "created_at": "2025-07-24T04:16:15.566Z",
+      "created_by": 1,
+      "modified_by": 1,
+      "is_active": true,
+      "time_runner": false,
+      "company_id": 1
+    }
+  },
+  {
+    "model": "attendance.attendancegeneralsetting",
+    "pk": 3,
+    "fields": {
+      "created_at": "2025-07-24T04:16:15.566Z",
+      "created_by": 1,
+      "modified_by": 1,
+      "is_active": true,
+      "time_runner": false,
+      "company_id": 2
+    }
+  },
+  {
+    "model": "attendance.attendancegeneralsetting",
+    "pk": 4,
+    "fields": {
+      "created_at": "2025-07-24T04:16:15.566Z",
+      "created_by": 1,
+      "modified_by": 1,
+      "is_active": true,
+      "time_runner": false,
+      "company_id": 3
     }
   },
   {
@@ -4399,8 +4435,44 @@
       "created_by": 1,
       "modified_by": 1,
       "is_active": true,
-      "time_runner": true,
+      "time_runner": false,
       "company_id": null
+    }
+  },
+  {
+    "model": "attendance.attendancegeneralsetting",
+    "pk": 2,
+    "fields": {
+      "created_at": "2025-07-24T04:16:15.566Z",
+      "created_by": 1,
+      "modified_by": 1,
+      "is_active": true,
+      "time_runner": false,
+      "company_id": 1
+    }
+  },
+  {
+    "model": "attendance.attendancegeneralsetting",
+    "pk": 3,
+    "fields": {
+      "created_at": "2025-07-24T04:16:15.566Z",
+      "created_by": 1,
+      "modified_by": 1,
+      "is_active": true,
+      "time_runner": false,
+      "company_id": 2
+    }
+  },
+  {
+    "model": "attendance.attendancegeneralsetting",
+    "pk": 4,
+    "fields": {
+      "created_at": "2025-07-24T04:16:15.566Z",
+      "created_by": 1,
+      "modified_by": 1,
+      "is_active": true,
+      "time_runner": false,
+      "company_id": 3
     }
   },
   {
