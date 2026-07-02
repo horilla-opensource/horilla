@@ -806,19 +806,19 @@
                     <div class="md-chart-card__body"><div id="chart-departments"></div></div>
                 </div>
 
+                {% if perms.leave.view_leaverequest or request.user.is_superuser %}
+                <!-- Leave Trends -->
+                <div class="md-chart-card" data-chart-id="leave_trends" data-chart-section="overview" data-chart-label="{% trans 'Leave Trends' %}">
+                    <div class="md-chart-card__header"><div><div class="md-chart-card__title">{% trans "Leave Trends" %}</div><div class="md-chart-card__subtitle">{% trans "Daily leaves — current week" %}</div></div></div>
+                    <div class="md-chart-card__body"><div id="chart-leave-trend"></div></div>
+                </div>
+                {% endif %}
+
                 <!-- Employee Status -->
                 <div class="md-chart-card" data-chart-id="employee_status" data-chart-section="overview" data-chart-label="{% trans 'Employee Status' %}">
                     <div class="md-chart-card__header"><div><div class="md-chart-card__title">{% trans "Employee Status" %}</div><div class="md-chart-card__subtitle">{% trans "Active vs Inactive" %}</div></div></div>
                     <div class="md-chart-card__body"><div id="chart-employee-status"></div></div>
                 </div>
-
-                {% if perms.attendance.view_attendance or request.user.is_superuser %}
-                <!-- Attendance Trend -->
-                <div class="md-chart-card md-chart-card--wide" data-chart-id="attendance_trend" data-chart-section="overview" data-chart-label="{% trans 'Attendance Trend' %}" data-chart-wide="1">
-                    <div class="md-chart-card__header"><div><div class="md-chart-card__title">{% trans "Attendance Trend" %}</div><div class="md-chart-card__subtitle" id="md-attendance-trend-subtitle">{% trans "Weekly rate — last 12 weeks" %}</div></div></div>
-                    <div class="md-chart-card__body"><div id="chart-attendance-trend"></div></div>
-                </div>
-                {% endif %}
 
                 <!-- Gender Distribution -->
                 <div class="md-chart-card" data-chart-id="gender_distribution" data-chart-section="overview" data-chart-label="{% trans 'Gender Distribution' %}">
@@ -846,13 +846,11 @@
                     <div class="md-chart-card__header"><div><div class="md-chart-card__title">{% trans "Department Overtime" %}</div><div class="md-chart-card__subtitle">{% trans "Overtime hours distribution" %}</div></div></div>
                     <div class="md-chart-card__body"><div id="chart-overtime"></div></div>
                 </div>
-                {% endif %}
 
-                {% if perms.leave.view_leaverequest or request.user.is_superuser %}
-                <!-- Leave Trends -->
-                <div class="md-chart-card" data-chart-id="leave_trends" data-chart-section="attendance" data-chart-label="{% trans 'Leave Trends' %}">
-                    <div class="md-chart-card__header"><div><div class="md-chart-card__title">{% trans "Leave Trends" %}</div><div class="md-chart-card__subtitle">{% trans "Daily leaves — current week" %}</div></div></div>
-                    <div class="md-chart-card__body"><div id="chart-leave-trend"></div></div>
+                <!-- Attendance Trend -->
+                <div class="md-chart-card md-chart-card--wide" data-chart-id="attendance_trend" data-chart-section="attendance" data-chart-label="{% trans 'Attendance Trend' %}" data-chart-wide="1">
+                    <div class="md-chart-card__header"><div><div class="md-chart-card__title">{% trans "Attendance Trend" %}</div><div class="md-chart-card__subtitle" id="md-attendance-trend-subtitle">{% trans "Weekly rate — last 12 weeks" %}</div></div></div>
+                    <div class="md-chart-card__body"><div id="chart-attendance-trend"></div></div>
                 </div>
                 {% endif %}
 
@@ -993,7 +991,7 @@
     const LEGEND_STYLE = { position: 'bottom', labels: { colors: textColor }, fontSize: '11px', fontWeight: 500, markers: { width: 8, height: 8, radius: 3 }, itemMargin: { horizontal: 8 } };
     const XAXIS_STYLE = { labels: { style: { colors: textColor, fontSize: '11px', fontWeight: 500 } }, axisBorder: { show: false }, axisTicks: { show: false } };
     const YAXIS_STYLE = { labels: { style: { colors: textColor, fontSize: '11px' } } };
-    const STORAGE_KEY = 'md_dashboard_prefs';
+    const STORAGE_KEY = 'md_dashboard_prefs_v2';
 
     const SECTION_LABELS = {
         overview: "{% trans 'Overview' %}",
