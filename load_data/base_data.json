@@ -3066,24 +3066,6 @@
     }
   },
   {
-    "model": "base.announcement",
-    "pk": 1,
-    "fields": {
-      "created_at": "2025-07-17T10:34:52.749Z",
-      "created_by": 1,
-      "modified_by": 1,
-      "is_active": true,
-      "title": "Horilla Tour",
-      "description": "<h1 class=\"hr-heading hr-heading--h1 hr-hero__title\" style=\"-webkit-font-smoothing: auto; font-size: 5rem; margin-right: auto; margin-bottom: 0px; margin-left: auto; font-family: Poppins, &quot;Helvetica Neue&quot;, Helvetica, Arial, sans-serif; font-weight: bold; text-align: center; max-width: 855px; line-height: 96px; color: rgb(28, 28, 28);\">The&nbsp;<span class=\"hr-hero__highlight\" style=\"-webkit-font-smoothing: auto; position: relative;\">only</span>&nbsp;HR Software You'll ever need.</h1><p class=\"hr-hero__lead\" style=\"-webkit-font-smoothing: auto; font-size: 1.25rem; color: rgb(28, 28, 28); max-width: 650px; text-align: center; margin: 1rem auto 1.5rem; font-family: &quot;Open Sans&quot;, Inter, &quot;Helvetica Neue Light&quot;, &quot;Helvetica Neue&quot;, Helvetica, Arial, sans-serif;\">Horilla HRMS offers all the features you would expect from your favorite Open Source HR Software and much more.<span style=\"-webkit-font-smoothing: auto; font-weight: bolder;\"><br style=\"-webkit-font-smoothing: auto;\">It's free &amp; open-source!</span></p>",
-      "expire_date": "2025-12-31",
-      "disable_comments": false,
-      "attachments": [],
-      "employees": [],
-      "department": [],
-      "job_position": []
-    }
-  },
-  {
     "model": "base.biometricattendance",
     "pk": 1,
     "fields": {
@@ -3336,6 +3318,186 @@
       "title": "Leave Request Mail",
       "body": "<p>Dear,</p><p>This is to inform you that {{ model_instance.employee_id }} has submitted a leave request for {{model_instance.requested_days}} days. Please take the necessary actions to review and process the request at your earliest convenience.<br><br>If you require any additional information or updates, feel free to communicate directly with {{ model_instance.employee_id }}.<br><br>Thank you for your prompt attention to this matter.</p>",
       "company_id": 1
+    }
+  },
+  {
+    "model": "base.announcement",
+    "pk": 1,
+    "fields": {
+      "created_at": "2025-07-01T09:00:00.000Z",
+      "created_by": 1,
+      "modified_by": 1,
+      "is_active": true,
+      "title": "\ud83c\udf89 Q2 2026 Performance Highlights \u2014 Thank You, Team!",
+      "description": "<p><strong>Dear Team,</strong></p>\n<p>We are thrilled to share that <strong>Q2 2026 has been our strongest quarter yet</strong>. Across all three companies, we achieved:</p>\n<ul>\n<li>\u2705 Revenue target exceeded by <strong>18%</strong></li>\n<li>\u2705 Customer satisfaction score reached <strong>4.7 / 5.0</strong></li>\n<li>\u2705 Product delivery on-time rate improved to <strong>94%</strong></li>\n<li>\u2705 Employee retention rate at an all-time high of <strong>96%</strong></li>\n</ul>\n<p>This success is a direct result of your dedication, collaboration, and hard work. We are proud of every one of you.</p>\n<p>The leadership team will be sharing detailed department-wise scorecards during the <strong>All-Hands Meeting on July 10</strong>. Stay tuned for the calendar invite.</p>\n<p>Thank you for making Horilla a great place to work and grow. \ud83d\ude80</p>\n<p><em>\u2014 The Leadership Team</em></p>",
+      "expire_date": "2025-08-31",
+      "disable_comments": false,
+      "attachments": [],
+      "employees": [],
+      "department": [],
+      "job_position": []
+    }
+  },
+  {
+    "model": "base.announcement",
+    "pk": 2,
+    "fields": {
+      "created_at": "2025-07-01T10:30:00.000Z",
+      "created_by": 1,
+      "modified_by": 1,
+      "is_active": true,
+      "title": "\ud83d\udcc5 Mid-Year Performance Reviews \u2014 Schedule Now Open",
+      "description": "<p><strong>Important: Mid-Year Performance Review Cycle \u2014 July 2026</strong></p>\n<p>The mid-year performance review cycle is now open. Please complete the following by the deadlines below:</p>\n<table style=\"border-collapse:collapse; width:100%;\">\n<tr style=\"background:#f5f5f5;\"><th style=\"padding:8px; border:1px solid #ddd; text-align:left;\">Task</th><th style=\"padding:8px; border:1px solid #ddd; text-align:left;\">Deadline</th></tr>\n<tr><td style=\"padding:8px; border:1px solid #ddd;\">Self-assessment submission</td><td style=\"padding:8px; border:1px solid #ddd;\"><strong>July 12, 2026</strong></td></tr>\n<tr><td style=\"padding:8px; border:1px solid #ddd;\">Manager review and rating</td><td style=\"padding:8px; border:1px solid #ddd;\"><strong>July 19, 2026</strong></td></tr>\n<tr><td style=\"padding:8px; border:1px solid #ddd;\">1-on-1 review discussions</td><td style=\"padding:8px; border:1px solid #ddd;\"><strong>July 21\u201325, 2026</strong></td></tr>\n<tr><td style=\"padding:8px; border:1px solid #ddd;\">Final ratings submitted to HR</td><td style=\"padding:8px; border:1px solid #ddd;\"><strong>July 28, 2026</strong></td></tr>\n</table>\n<p style=\"margin-top:12px;\">Log in to Horilla \u2192 <strong>Performance</strong> \u2192 <strong>My Objectives</strong> to begin your self-assessment. If you have any questions, contact HR at <strong>hr@horilla.com</strong>.</p>\n<p><em>Missing the deadline may affect your appraisal cycle. Please prioritize this.</em></p>",
+      "expire_date": "2025-07-28",
+      "disable_comments": false,
+      "attachments": [],
+      "employees": [],
+      "department": [],
+      "job_position": []
+    }
+  },
+  {
+    "model": "base.announcement",
+    "pk": 3,
+    "fields": {
+      "created_at": "2025-07-02T08:00:00.000Z",
+      "created_by": 1,
+      "modified_by": 1,
+      "is_active": true,
+      "title": "\ud83c\udfd6\ufe0f Annual Leave Encashment \u2014 Submit Before July 15",
+      "description": "<p><strong>From: Human Resources</strong></p>\n<p>As per company policy, unused annual leave from the previous cycle can be encashed once per year. This year's encashment window closes on <strong>July 15, 2026</strong>.</p>\n<p><strong>Eligibility:</strong></p>\n<ul>\n<li>Employees with more than <strong>1 year of service</strong></li>\n<li>Maximum encashable: <strong>5 leave days</strong> per employee</li>\n<li>Encashment will be processed in the <strong>July 2026 payroll</strong></li>\n</ul>\n<p><strong>How to apply:</strong></p>\n<ol>\n<li>Go to <strong>Leave \u2192 Leave Request</strong> in Horilla</li>\n<li>Select <strong>Leave Encashment</strong> as the type</li>\n<li>Submit before July 15, 2026</li>\n</ol>\n<p>For queries, reach out to your HR Business Partner or write to <strong>hr@horilla.com</strong>.</p>",
+      "expire_date": "2025-07-15",
+      "disable_comments": false,
+      "attachments": [],
+      "employees": [],
+      "department": [],
+      "job_position": []
+    }
+  },
+  {
+    "model": "base.announcement",
+    "pk": 4,
+    "fields": {
+      "created_at": "2025-07-03T09:15:00.000Z",
+      "created_by": 1,
+      "modified_by": 1,
+      "is_active": true,
+      "title": "\ud83d\udee1\ufe0f Mandatory Cybersecurity Awareness Training \u2014 Complete by July 20",
+      "description": "<p><strong>All employees must complete the Cybersecurity Awareness Training by July 20, 2026.</strong></p>\n<p>In partnership with our security team, we are rolling out mandatory annual cybersecurity training to protect company data and our customers' information.</p>\n<p><strong>Topics covered:</strong></p>\n<ul>\n<li>Phishing and social engineering attacks</li>\n<li>Password hygiene and multi-factor authentication</li>\n<li>Safe use of company devices and networks</li>\n<li>Incident reporting procedures</li>\n<li>Data classification and handling</li>\n</ul>\n<p><strong>Duration:</strong> Approximately 45 minutes (self-paced)</p>\n<p><strong>Access:</strong> Check your company email for the training link sent by <em>security@horilla.com</em>.</p>\n<p style=\"color:#c0392b;\"><strong>\u26a0\ufe0f Non-completion by July 20 will be escalated to your reporting manager.</strong></p>\n<p>Questions? Contact the IT Security team at <strong>security@horilla.com</strong>.</p>",
+      "expire_date": "2025-07-20",
+      "disable_comments": true,
+      "attachments": [],
+      "employees": [],
+      "department": [],
+      "job_position": []
+    }
+  },
+  {
+    "model": "base.announcement",
+    "pk": 5,
+    "fields": {
+      "created_at": "2025-07-07T11:00:00.000Z",
+      "created_by": 1,
+      "modified_by": 1,
+      "is_active": true,
+      "title": "\ud83c\udf1f Employee of the Month \u2014 July 2026",
+      "description": "<p>We are delighted to recognize our <strong>Employee of the Month for July 2026</strong>!</p>\n<p style=\"font-size:1.2em; text-align:center; padding:16px; background:#fff8e1; border-radius:8px; margin:16px 0;\">\n\ud83c\udfc6 <strong>Aisha Fernandez</strong> \u2014 Senior Software Engineer, S/W Department\n</p>\n<p>Aisha has gone above and beyond this quarter by:</p>\n<ul>\n<li>Leading the successful migration of our core API to the new microservices architecture \u2014 delivered 2 weeks ahead of schedule</li>\n<li>Mentoring 3 junior engineers through their onboarding process</li>\n<li>Identifying and resolving a critical production issue within 2 hours, preventing significant downtime</li>\n<li>Volunteering to document the entire backend codebase \u2014 a task that had been pending for over a year</li>\n</ul>\n<p>Aisha will receive a <strong>\u20b95,000 gift voucher</strong>, a trophy, and a dedicated feature in our company newsletter.</p>\n<p>Please join us in congratulating Aisha! Drop your wishes in the comments below. \ud83d\udc4f</p>",
+      "expire_date": "2025-07-31",
+      "disable_comments": false,
+      "attachments": [],
+      "employees": [],
+      "department": [],
+      "job_position": []
+    }
+  },
+  {
+    "model": "base.announcement",
+    "pk": 6,
+    "fields": {
+      "created_at": "2025-07-08T10:00:00.000Z",
+      "created_by": 1,
+      "modified_by": 1,
+      "is_active": true,
+      "title": "\ud83c\udfe0 Updated Work-From-Home Policy \u2014 Effective August 1",
+      "description": "<p><strong>Updated Remote Work Policy \u2014 Effective August 1, 2026</strong></p>\n<p>After reviewing feedback from the employee survey and benchmarking with industry standards, we are updating our work-from-home policy:</p>\n<p><strong>New Policy (effective August 1, 2026):</strong></p>\n<ul>\n<li><strong>Software & Finance teams:</strong> Up to <strong>3 days WFH</strong> per week (increased from 2)</li>\n<li><strong>Sales & Marketing teams:</strong> Up to <strong>2 days WFH</strong> per week (unchanged)</li>\n<li><strong>HR team:</strong> Up to <strong>2 days WFH</strong> per week (increased from 1)</li>\n<li>WFH days must be pre-approved via Horilla's attendance module</li>\n<li>At least one anchor day (<strong>Wednesday</strong>) must be in-office for all teams</li>\n</ul>\n<p><strong>Guidelines:</strong></p>\n<ul>\n<li>Maintain core hours: <strong>10:00 AM \u2013 4:00 PM</strong> on all days</li>\n<li>Ensure a professional, distraction-free environment during video calls</li>\n<li>WFH is a privilege \u2014 continued access depends on performance</li>\n</ul>\n<p>The full updated policy document has been shared to your email. Reach out to HR for any clarifications.</p>",
+      "expire_date": "2025-08-31",
+      "disable_comments": false,
+      "attachments": [],
+      "employees": [],
+      "department": [],
+      "job_position": []
+    }
+  },
+  {
+    "model": "base.announcement",
+    "pk": 7,
+    "fields": {
+      "created_at": "2025-07-04T09:00:00.000Z",
+      "created_by": 1,
+      "modified_by": 1,
+      "is_active": true,
+      "title": "\ud83d\udcb0 Q3 2026 Salary Revision \u2014 Effective July Payroll",
+      "description": "<p><strong>Dear Team,</strong></p>\n<p>We are pleased to announce the <strong>Q3 2026 salary revision</strong>, reflecting our commitment to recognizing performance and retaining top talent.</p>\n<p><strong>Key highlights:</strong></p>\n<ul>\n<li>Average increment across the organization: <strong>8.5%</strong></li>\n<li>High performers (rating 4.5+): <strong>12\u201315%</strong> increment</li>\n<li>All revisions are effective from <strong>July 1, 2026</strong> and will reflect in the July payroll</li>\n</ul>\n<p>Your updated offer letter / compensation letter will be available in Horilla under <strong>Profile \u2192 Documents</strong> by July 10, 2026.</p>\n<p><strong>Note:</strong> Salary details are strictly confidential. Please refrain from discussing your compensation with colleagues, as it may affect team morale and is a violation of company policy.</p>\n<p>We appreciate your continued contribution to our growth. \ud83d\ude4f</p>\n<p><em>\u2014 Finance & HR Team</em></p>",
+      "expire_date": "2025-07-31",
+      "disable_comments": true,
+      "attachments": [],
+      "employees": [],
+      "department": [],
+      "job_position": []
+    }
+  },
+  {
+    "model": "base.announcement",
+    "pk": 8,
+    "fields": {
+      "created_at": "2025-07-09T11:30:00.000Z",
+      "created_by": 1,
+      "modified_by": 1,
+      "is_active": true,
+      "title": "\ud83c\udf8a Horilla Family Day \u2014 July 26, 2026",
+      "description": "<p>We are excited to announce the <strong>Annual Horilla Family Day on Saturday, July 26, 2026!</strong></p>\n<p>This is our annual celebration where we come together with our families for a day of fun, food, and team bonding.</p>\n<p><strong>Event Details:</strong></p>\n<ul>\n<li>\ud83d\udccd <strong>Venue:</strong> Palm Springs Resort, Bengaluru</li>\n<li>\ud83d\udd59 <strong>Time:</strong> 10:00 AM \u2013 6:00 PM</li>\n<li>\ud83d\udc68\u200d\ud83d\udc69\u200d\ud83d\udc67\u200d\ud83d\udc66 <strong>Guests:</strong> Each employee may bring up to 3 family members</li>\n<li>\ud83c\udfa1 <strong>Activities:</strong> Games, talent show, kids' zone, team quiz, awards ceremony</li>\n<li>\ud83c\udf7d\ufe0f <strong>Meals:</strong> All meals provided. Please indicate dietary preferences while registering</li>\n</ul>\n<p><strong>Registration closes July 18.</strong> Register via Horilla \u2192 Events or reply to the email from hr@horilla.com.</p>\n<p>Transport will be arranged from the office. Details will be shared closer to the event.</p>\n<p>Let's make it a memorable day! \ud83c\udf89</p>",
+      "expire_date": "2025-07-26",
+      "disable_comments": false,
+      "attachments": [],
+      "employees": [],
+      "department": [],
+      "job_position": []
+    }
+  },
+  {
+    "model": "base.announcement",
+    "pk": 9,
+    "fields": {
+      "created_at": "2025-07-10T14:00:00.000Z",
+      "created_by": 1,
+      "modified_by": 1,
+      "is_active": true,
+      "title": "\ud83d\udd27 Office IT Infrastructure Upgrade \u2014 July 14 (No Disruption Expected)",
+      "description": "<p><strong>From: IT Department</strong></p>\n<p>We will be performing a scheduled network and server infrastructure upgrade on <strong>Sunday, July 14, 2026</strong> from 11:00 PM to 3:00 AM.</p>\n<p><strong>What to expect:</strong></p>\n<ul>\n<li>All internal services (Horilla HRMS, internal portals, VPN) will be <strong>unavailable</strong> during this window</li>\n<li>Office Wi-Fi and LAN will be briefly interrupted</li>\n<li>External email will remain functional</li>\n</ul>\n<p><strong>What's being upgraded:</strong></p>\n<ul>\n<li>Core network switches upgraded to 10Gbps backbone</li>\n<li>Database server RAM expanded from 64GB to 256GB</li>\n<li>Backup and disaster recovery systems overhauled</li>\n<li>TLS 1.3 enforced across all internal services</li>\n</ul>\n<p>Since this is a Sunday night window, no impact on work is expected. If you notice any issues post-upgrade on Monday morning, please contact <strong>IT Helpdesk at ext. 1001</strong> or <strong>it@horilla.com</strong>.</p>\n<p>Thank you for your patience and cooperation.</p>",
+      "expire_date": "2025-07-15",
+      "disable_comments": true,
+      "attachments": [],
+      "employees": [],
+      "department": [],
+      "job_position": []
+    }
+  },
+  {
+    "model": "base.announcement",
+    "pk": 10,
+    "fields": {
+      "created_at": "2025-07-11T09:00:00.000Z",
+      "created_by": 1,
+      "modified_by": 1,
+      "is_active": true,
+      "title": "\ud83d\udce2 New Referral Bonus Program \u2014 Earn Up to \u20b925,000",
+      "description": "<p><strong>Introducing the Enhanced Employee Referral Program!</strong></p>\n<p>Our best hires come from our own team's network. To recognize this, we've significantly upgraded the referral bonus structure, effective immediately.</p>\n<p><strong>New Referral Bonus Structure:</strong></p>\n<table style=\"border-collapse:collapse; width:100%;\">\n<tr style=\"background:#e8f5e9;\"><th style=\"padding:8px; border:1px solid #ddd; text-align:left;\">Role Level</th><th style=\"padding:8px; border:1px solid #ddd; text-align:left;\">Bonus (on joining)</th><th style=\"padding:8px; border:1px solid #ddd; text-align:left;\">Retention Bonus (after 6 months)</th></tr>\n<tr><td style=\"padding:8px; border:1px solid #ddd;\">Junior / Associate</td><td style=\"padding:8px; border:1px solid #ddd;\">\u20b910,000</td><td style=\"padding:8px; border:1px solid #ddd;\">\u20b95,000</td></tr>\n<tr><td style=\"padding:8px; border:1px solid #ddd;\">Mid-level</td><td style=\"padding:8px; border:1px solid #ddd;\">\u20b915,000</td><td style=\"padding:8px; border:1px solid #ddd;\">\u20b97,500</td></tr>\n<tr><td style=\"padding:8px; border:1px solid #ddd;\">Senior / Lead</td><td style=\"padding:8px; border:1px solid #ddd;\">\u20b920,000</td><td style=\"padding:8px; border:1px solid #ddd;\">\u20b910,000</td></tr>\n<tr><td style=\"padding:8px; border:1px solid #ddd;\">Manager & above</td><td style=\"padding:8px; border:1px solid #ddd;\">\u20b925,000</td><td style=\"padding:8px; border:1px solid #ddd;\">\u20b912,500</td></tr>\n</table>\n<p style=\"margin-top:12px;\"><strong>How to refer:</strong></p>\n<ol>\n<li>Share the open positions page with your network: <a href=\"#\">careers.horilla.com</a></li>\n<li>Ask them to mention your name and employee ID in the application form</li>\n<li>HR will confirm your referral within 5 business days</li>\n</ol>\n<p>Open positions are listed on Horilla under <strong>Recruitment \u2192 Open Positions</strong>. Start referring today!</p>",
+      "expire_date": "2025-09-30",
+      "disable_comments": false,
+      "attachments": [],
+      "employees": [],
+      "department": [],
+      "job_position": []
     }
   }
 ]
