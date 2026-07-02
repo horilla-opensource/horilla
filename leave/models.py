@@ -1687,7 +1687,7 @@ class LeaveRequest(HorillaModel):
         requested_query = approvals.filter(is_approved=False).order_by("sequence")
         approved_query = approvals.filter(is_approved=True).order_by("sequence")
         managers = []
-        for manager in approvals:
+        for manager in approvals.order_by("sequence"):
             managers.append(manager.manager_id)
         if approvals.exists():
             result = {

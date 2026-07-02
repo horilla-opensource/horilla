@@ -144,6 +144,7 @@ class HorillaListView(ListView):
     bulk_update_fields: list = []
     bulk_template: str = "generic/bulk_form.html"
     records_count_in_tab: bool = True
+    show_ordered_ids: bool = True
 
     header_attrs: dict = {}
 
@@ -398,12 +399,13 @@ class HorillaListView(ListView):
             )
 
         ordered_ids = []
-        try:
-            if not self._saved_filters.get("field"):
-                for instance in queryset:
-                    ordered_ids.append(str(instance.pk))
-        except:
-            pass
+        if self.show_ordered_ids:
+            try:
+                if not self._saved_filters.get("field"):
+                    for instance in queryset:
+                        ordered_ids.append(str(instance.pk))
+            except:
+                pass
 
         self.request.session[self.ordered_ids_key] = ordered_ids
         context["queryset"] = paginator_qry(
