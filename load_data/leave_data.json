@@ -56,7 +56,7 @@
       "reset_day": "1",
       "reset_weekend": null,
       "carryforward_type": "carryforward",
-      "carryforward_max": Infinity,
+      "carryforward_max": 9999,
       "carryforward_expire_in": null,
       "carryforward_expire_period": null,
       "require_approval": "yes",
@@ -133,6 +133,155 @@
       "exclude_holiday": "no",
       "is_compensatory_leave": false,
       "company_id": null
+    }
+  },
+  {
+    "model": "leave.leaveallocationrequest",
+    "pk": 1,
+    "fields": {
+      "created_at": "2025-07-16T08:00:42.965Z",
+      "created_by": 1,
+      "modified_by": 1,
+      "is_active": true,
+      "leave_type_id": 4,
+      "employee_id": 12,
+      "requested_days": 10.0,
+      "requested_date": "2025-07-16",
+      "description": "Kindly request to allocate this leave type",
+      "attachment": "",
+      "status": "requested",
+      "reject_reason": ""
+    }
+  },
+  {
+    "model": "leave.leaveallocationrequest",
+    "pk": 2,
+    "fields": {
+      "created_at": "2025-07-16T08:01:28.674Z",
+      "created_by": 1,
+      "modified_by": 1,
+      "is_active": true,
+      "leave_type_id": 3,
+      "employee_id": 63,
+      "requested_days": 10.0,
+      "requested_date": "2025-07-16",
+      "description": "Request to allcoate some additional available leaves for this leave type",
+      "attachment": "",
+      "status": "requested",
+      "reject_reason": ""
+    }
+  },
+  {
+    "model": "leave.leaveallocationrequest",
+    "pk": 3,
+    "fields": {
+      "created_at": "2025-07-16T08:01:53.526Z",
+      "created_by": 1,
+      "modified_by": 1,
+      "is_active": true,
+      "leave_type_id": 4,
+      "employee_id": 8,
+      "requested_days": 30.0,
+      "requested_date": "2025-07-16",
+      "description": "Kindly request to allocate this leave type",
+      "attachment": "",
+      "status": "requested",
+      "reject_reason": ""
+    }
+  },
+  {
+    "model": "leave.restrictleave",
+    "pk": 2,
+    "fields": {
+      "created_at": "2025-07-16T08:06:27.474Z",
+      "created_by": 1,
+      "modified_by": 1,
+      "is_active": true,
+      "title": "Critical Projects",
+      "start_date": "2025-07-16",
+      "end_date": "2025-07-16",
+      "department": 1,
+      "include_all": true,
+      "description": "Horilla Project Installation",
+      "company_id": 1,
+      "job_position": [],
+      "spesific_leave_types": [],
+      "exclued_leave_types": []
+    }
+  },
+  {
+    "model": "leave.restrictleave",
+    "pk": 3,
+    "fields": {
+      "created_at": "2025-07-16T08:07:02.327Z",
+      "created_by": 1,
+      "modified_by": 1,
+      "is_active": true,
+      "title": "Product launch week",
+      "start_date": "2025-07-23",
+      "end_date": "2025-07-27",
+      "department": 2,
+      "include_all": true,
+      "description": "Luanch Horilla",
+      "company_id": 1,
+      "job_position": [],
+      "spesific_leave_types": [],
+      "exclued_leave_types": []
+    }
+  },
+  {
+    "model": "leave.restrictleave",
+    "pk": 4,
+    "fields": {
+      "created_at": "2025-07-16T08:07:48.937Z",
+      "created_by": 1,
+      "modified_by": 1,
+      "is_active": true,
+      "title": "Sales Days",
+      "start_date": "2025-07-24",
+      "end_date": "2025-07-26",
+      "department": 2,
+      "include_all": true,
+      "description": "Chirstmas Sales",
+      "company_id": 1,
+      "job_position": [],
+      "spesific_leave_types": [],
+      "exclued_leave_types": [
+        3
+      ]
+    }
+  },
+  {
+    "model": "leave.restrictleave",
+    "pk": 5,
+    "fields": {
+      "created_at": "2025-07-12T10:25:21.388Z",
+      "created_by": 1,
+      "modified_by": 1,
+      "is_active": true,
+      "title": "S/W Dept. Restriction",
+      "start_date": "2025-07-01",
+      "end_date": "2025-07-30",
+      "department": 1,
+      "include_all": true,
+      "description": "Description",
+      "company_id": 1,
+      "job_position": [],
+      "spesific_leave_types": [],
+      "exclued_leave_types": [
+        3
+      ]
+    }
+  },
+  {
+    "model": "leave.employeepastleaverestrict",
+    "pk": 1,
+    "fields": {
+      "created_at": "2025-07-21T04:40:18.153Z",
+      "created_by": null,
+      "modified_by": null,
+      "is_active": true,
+      "enabled": true
     }
   },
   {
@@ -2872,6 +3021,1806 @@
     }
   },
   {
+    "model": "leave.availableleave",
+    "pk": 153,
+    "fields": {
+      "created_at": "2025-07-01T08:00:00.000Z",
+      "created_by": 1,
+      "modified_by": 1,
+      "is_active": true,
+      "employee_id": 77,
+      "leave_type_id": 2,
+      "available_days": 7.2,
+      "carryforward_days": 0.0,
+      "total_leave_days": 12.0,
+      "assigned_date": "2025-07-01",
+      "reset_date": "2025-07-01",
+      "expired_date": null
+    }
+  },
+  {
+    "model": "leave.availableleave",
+    "pk": 154,
+    "fields": {
+      "created_at": "2025-07-01T08:00:00.000Z",
+      "created_by": 1,
+      "modified_by": 1,
+      "is_active": true,
+      "employee_id": 77,
+      "leave_type_id": 3,
+      "available_days": 7.7,
+      "carryforward_days": 0.0,
+      "total_leave_days": 10.0,
+      "assigned_date": "2025-07-01",
+      "reset_date": "2025-07-01",
+      "expired_date": null
+    }
+  },
+  {
+    "model": "leave.availableleave",
+    "pk": 155,
+    "fields": {
+      "created_at": "2025-07-01T08:00:00.000Z",
+      "created_by": 1,
+      "modified_by": 1,
+      "is_active": true,
+      "employee_id": 78,
+      "leave_type_id": 2,
+      "available_days": 8.3,
+      "carryforward_days": 0.0,
+      "total_leave_days": 12.0,
+      "assigned_date": "2025-07-01",
+      "reset_date": "2025-07-01",
+      "expired_date": null
+    }
+  },
+  {
+    "model": "leave.availableleave",
+    "pk": 156,
+    "fields": {
+      "created_at": "2025-07-01T08:00:00.000Z",
+      "created_by": 1,
+      "modified_by": 1,
+      "is_active": true,
+      "employee_id": 78,
+      "leave_type_id": 3,
+      "available_days": 6.6,
+      "carryforward_days": 0.0,
+      "total_leave_days": 10.0,
+      "assigned_date": "2025-07-01",
+      "reset_date": "2025-07-01",
+      "expired_date": null
+    }
+  },
+  {
+    "model": "leave.availableleave",
+    "pk": 157,
+    "fields": {
+      "created_at": "2025-07-01T08:00:00.000Z",
+      "created_by": 1,
+      "modified_by": 1,
+      "is_active": true,
+      "employee_id": 79,
+      "leave_type_id": 2,
+      "available_days": 7.6,
+      "carryforward_days": 0.0,
+      "total_leave_days": 12.0,
+      "assigned_date": "2025-07-01",
+      "reset_date": "2025-07-01",
+      "expired_date": null
+    }
+  },
+  {
+    "model": "leave.availableleave",
+    "pk": 158,
+    "fields": {
+      "created_at": "2025-07-01T08:00:00.000Z",
+      "created_by": 1,
+      "modified_by": 1,
+      "is_active": true,
+      "employee_id": 79,
+      "leave_type_id": 3,
+      "available_days": 9.9,
+      "carryforward_days": 0.0,
+      "total_leave_days": 10.0,
+      "assigned_date": "2025-07-01",
+      "reset_date": "2025-07-01",
+      "expired_date": null
+    }
+  },
+  {
+    "model": "leave.availableleave",
+    "pk": 159,
+    "fields": {
+      "created_at": "2025-07-01T08:00:00.000Z",
+      "created_by": 1,
+      "modified_by": 1,
+      "is_active": true,
+      "employee_id": 80,
+      "leave_type_id": 2,
+      "available_days": 10.6,
+      "carryforward_days": 0.0,
+      "total_leave_days": 12.0,
+      "assigned_date": "2025-07-01",
+      "reset_date": "2025-07-01",
+      "expired_date": null
+    }
+  },
+  {
+    "model": "leave.availableleave",
+    "pk": 160,
+    "fields": {
+      "created_at": "2025-07-01T08:00:00.000Z",
+      "created_by": 1,
+      "modified_by": 1,
+      "is_active": true,
+      "employee_id": 80,
+      "leave_type_id": 3,
+      "available_days": 8.1,
+      "carryforward_days": 0.0,
+      "total_leave_days": 10.0,
+      "assigned_date": "2025-07-01",
+      "reset_date": "2025-07-01",
+      "expired_date": null
+    }
+  },
+  {
+    "model": "leave.availableleave",
+    "pk": 161,
+    "fields": {
+      "created_at": "2025-07-01T08:00:00.000Z",
+      "created_by": 1,
+      "modified_by": 1,
+      "is_active": true,
+      "employee_id": 81,
+      "leave_type_id": 2,
+      "available_days": 11.7,
+      "carryforward_days": 0.0,
+      "total_leave_days": 12.0,
+      "assigned_date": "2025-07-01",
+      "reset_date": "2025-07-01",
+      "expired_date": null
+    }
+  },
+  {
+    "model": "leave.availableleave",
+    "pk": 162,
+    "fields": {
+      "created_at": "2025-07-01T08:00:00.000Z",
+      "created_by": 1,
+      "modified_by": 1,
+      "is_active": true,
+      "employee_id": 81,
+      "leave_type_id": 3,
+      "available_days": 6.8,
+      "carryforward_days": 0.0,
+      "total_leave_days": 10.0,
+      "assigned_date": "2025-07-01",
+      "reset_date": "2025-07-01",
+      "expired_date": null
+    }
+  },
+  {
+    "model": "leave.availableleave",
+    "pk": 163,
+    "fields": {
+      "created_at": "2025-07-01T08:00:00.000Z",
+      "created_by": 1,
+      "modified_by": 1,
+      "is_active": true,
+      "employee_id": 82,
+      "leave_type_id": 2,
+      "available_days": 9.6,
+      "carryforward_days": 0.0,
+      "total_leave_days": 12.0,
+      "assigned_date": "2025-07-01",
+      "reset_date": "2025-07-01",
+      "expired_date": null
+    }
+  },
+  {
+    "model": "leave.availableleave",
+    "pk": 164,
+    "fields": {
+      "created_at": "2025-07-01T08:00:00.000Z",
+      "created_by": 1,
+      "modified_by": 1,
+      "is_active": true,
+      "employee_id": 82,
+      "leave_type_id": 3,
+      "available_days": 8.3,
+      "carryforward_days": 0.0,
+      "total_leave_days": 10.0,
+      "assigned_date": "2025-07-01",
+      "reset_date": "2025-07-01",
+      "expired_date": null
+    }
+  },
+  {
+    "model": "leave.availableleave",
+    "pk": 165,
+    "fields": {
+      "created_at": "2025-07-01T08:00:00.000Z",
+      "created_by": 1,
+      "modified_by": 1,
+      "is_active": true,
+      "employee_id": 83,
+      "leave_type_id": 2,
+      "available_days": 10.2,
+      "carryforward_days": 0.0,
+      "total_leave_days": 12.0,
+      "assigned_date": "2025-07-01",
+      "reset_date": "2025-07-01",
+      "expired_date": null
+    }
+  },
+  {
+    "model": "leave.availableleave",
+    "pk": 166,
+    "fields": {
+      "created_at": "2025-07-01T08:00:00.000Z",
+      "created_by": 1,
+      "modified_by": 1,
+      "is_active": true,
+      "employee_id": 83,
+      "leave_type_id": 3,
+      "available_days": 8.2,
+      "carryforward_days": 0.0,
+      "total_leave_days": 10.0,
+      "assigned_date": "2025-07-01",
+      "reset_date": "2025-07-01",
+      "expired_date": null
+    }
+  },
+  {
+    "model": "leave.availableleave",
+    "pk": 167,
+    "fields": {
+      "created_at": "2025-07-01T08:00:00.000Z",
+      "created_by": 1,
+      "modified_by": 1,
+      "is_active": true,
+      "employee_id": 84,
+      "leave_type_id": 2,
+      "available_days": 10.8,
+      "carryforward_days": 0.0,
+      "total_leave_days": 12.0,
+      "assigned_date": "2025-07-01",
+      "reset_date": "2025-07-01",
+      "expired_date": null
+    }
+  },
+  {
+    "model": "leave.availableleave",
+    "pk": 168,
+    "fields": {
+      "created_at": "2025-07-01T08:00:00.000Z",
+      "created_by": 1,
+      "modified_by": 1,
+      "is_active": true,
+      "employee_id": 84,
+      "leave_type_id": 3,
+      "available_days": 7.4,
+      "carryforward_days": 0.0,
+      "total_leave_days": 10.0,
+      "assigned_date": "2025-07-01",
+      "reset_date": "2025-07-01",
+      "expired_date": null
+    }
+  },
+  {
+    "model": "leave.availableleave",
+    "pk": 169,
+    "fields": {
+      "created_at": "2025-07-01T08:00:00.000Z",
+      "created_by": 1,
+      "modified_by": 1,
+      "is_active": true,
+      "employee_id": 85,
+      "leave_type_id": 2,
+      "available_days": 11.1,
+      "carryforward_days": 0.0,
+      "total_leave_days": 12.0,
+      "assigned_date": "2025-07-01",
+      "reset_date": "2025-07-01",
+      "expired_date": null
+    }
+  },
+  {
+    "model": "leave.availableleave",
+    "pk": 170,
+    "fields": {
+      "created_at": "2025-07-01T08:00:00.000Z",
+      "created_by": 1,
+      "modified_by": 1,
+      "is_active": true,
+      "employee_id": 85,
+      "leave_type_id": 3,
+      "available_days": 9.0,
+      "carryforward_days": 0.0,
+      "total_leave_days": 10.0,
+      "assigned_date": "2025-07-01",
+      "reset_date": "2025-07-01",
+      "expired_date": null
+    }
+  },
+  {
+    "model": "leave.availableleave",
+    "pk": 171,
+    "fields": {
+      "created_at": "2025-07-01T08:00:00.000Z",
+      "created_by": 1,
+      "modified_by": 1,
+      "is_active": true,
+      "employee_id": 86,
+      "leave_type_id": 2,
+      "available_days": 7.9,
+      "carryforward_days": 0.0,
+      "total_leave_days": 12.0,
+      "assigned_date": "2025-07-01",
+      "reset_date": "2025-07-01",
+      "expired_date": null
+    }
+  },
+  {
+    "model": "leave.availableleave",
+    "pk": 172,
+    "fields": {
+      "created_at": "2025-07-01T08:00:00.000Z",
+      "created_by": 1,
+      "modified_by": 1,
+      "is_active": true,
+      "employee_id": 86,
+      "leave_type_id": 3,
+      "available_days": 6.7,
+      "carryforward_days": 0.0,
+      "total_leave_days": 10.0,
+      "assigned_date": "2025-07-01",
+      "reset_date": "2025-07-01",
+      "expired_date": null
+    }
+  },
+  {
+    "model": "leave.availableleave",
+    "pk": 173,
+    "fields": {
+      "created_at": "2025-07-01T08:00:00.000Z",
+      "created_by": 1,
+      "modified_by": 1,
+      "is_active": true,
+      "employee_id": 87,
+      "leave_type_id": 2,
+      "available_days": 8.7,
+      "carryforward_days": 0.0,
+      "total_leave_days": 12.0,
+      "assigned_date": "2025-07-01",
+      "reset_date": "2025-07-01",
+      "expired_date": null
+    }
+  },
+  {
+    "model": "leave.availableleave",
+    "pk": 174,
+    "fields": {
+      "created_at": "2025-07-01T08:00:00.000Z",
+      "created_by": 1,
+      "modified_by": 1,
+      "is_active": true,
+      "employee_id": 87,
+      "leave_type_id": 3,
+      "available_days": 6.8,
+      "carryforward_days": 0.0,
+      "total_leave_days": 10.0,
+      "assigned_date": "2025-07-01",
+      "reset_date": "2025-07-01",
+      "expired_date": null
+    }
+  },
+  {
+    "model": "leave.availableleave",
+    "pk": 175,
+    "fields": {
+      "created_at": "2025-07-01T08:00:00.000Z",
+      "created_by": 1,
+      "modified_by": 1,
+      "is_active": true,
+      "employee_id": 88,
+      "leave_type_id": 2,
+      "available_days": 8.7,
+      "carryforward_days": 0.0,
+      "total_leave_days": 12.0,
+      "assigned_date": "2025-07-01",
+      "reset_date": "2025-07-01",
+      "expired_date": null
+    }
+  },
+  {
+    "model": "leave.availableleave",
+    "pk": 176,
+    "fields": {
+      "created_at": "2025-07-01T08:00:00.000Z",
+      "created_by": 1,
+      "modified_by": 1,
+      "is_active": true,
+      "employee_id": 88,
+      "leave_type_id": 3,
+      "available_days": 7.7,
+      "carryforward_days": 0.0,
+      "total_leave_days": 10.0,
+      "assigned_date": "2025-07-01",
+      "reset_date": "2025-07-01",
+      "expired_date": null
+    }
+  },
+  {
+    "model": "leave.availableleave",
+    "pk": 177,
+    "fields": {
+      "created_at": "2025-07-01T08:00:00.000Z",
+      "created_by": 1,
+      "modified_by": 1,
+      "is_active": true,
+      "employee_id": 89,
+      "leave_type_id": 2,
+      "available_days": 10.8,
+      "carryforward_days": 0.0,
+      "total_leave_days": 12.0,
+      "assigned_date": "2025-07-01",
+      "reset_date": "2025-07-01",
+      "expired_date": null
+    }
+  },
+  {
+    "model": "leave.availableleave",
+    "pk": 178,
+    "fields": {
+      "created_at": "2025-07-01T08:00:00.000Z",
+      "created_by": 1,
+      "modified_by": 1,
+      "is_active": true,
+      "employee_id": 89,
+      "leave_type_id": 3,
+      "available_days": 6.2,
+      "carryforward_days": 0.0,
+      "total_leave_days": 10.0,
+      "assigned_date": "2025-07-01",
+      "reset_date": "2025-07-01",
+      "expired_date": null
+    }
+  },
+  {
+    "model": "leave.availableleave",
+    "pk": 179,
+    "fields": {
+      "created_at": "2025-07-01T08:00:00.000Z",
+      "created_by": 1,
+      "modified_by": 1,
+      "is_active": true,
+      "employee_id": 90,
+      "leave_type_id": 2,
+      "available_days": 12.0,
+      "carryforward_days": 0.0,
+      "total_leave_days": 12.0,
+      "assigned_date": "2025-07-01",
+      "reset_date": "2025-07-01",
+      "expired_date": null
+    }
+  },
+  {
+    "model": "leave.availableleave",
+    "pk": 180,
+    "fields": {
+      "created_at": "2025-07-01T08:00:00.000Z",
+      "created_by": 1,
+      "modified_by": 1,
+      "is_active": true,
+      "employee_id": 90,
+      "leave_type_id": 3,
+      "available_days": 7.4,
+      "carryforward_days": 0.0,
+      "total_leave_days": 10.0,
+      "assigned_date": "2025-07-01",
+      "reset_date": "2025-07-01",
+      "expired_date": null
+    }
+  },
+  {
+    "model": "leave.availableleave",
+    "pk": 181,
+    "fields": {
+      "created_at": "2025-07-01T08:00:00.000Z",
+      "created_by": 1,
+      "modified_by": 1,
+      "is_active": true,
+      "employee_id": 91,
+      "leave_type_id": 2,
+      "available_days": 8.8,
+      "carryforward_days": 0.0,
+      "total_leave_days": 12.0,
+      "assigned_date": "2025-07-01",
+      "reset_date": "2025-07-01",
+      "expired_date": null
+    }
+  },
+  {
+    "model": "leave.availableleave",
+    "pk": 182,
+    "fields": {
+      "created_at": "2025-07-01T08:00:00.000Z",
+      "created_by": 1,
+      "modified_by": 1,
+      "is_active": true,
+      "employee_id": 91,
+      "leave_type_id": 3,
+      "available_days": 9.8,
+      "carryforward_days": 0.0,
+      "total_leave_days": 10.0,
+      "assigned_date": "2025-07-01",
+      "reset_date": "2025-07-01",
+      "expired_date": null
+    }
+  },
+  {
+    "model": "leave.availableleave",
+    "pk": 183,
+    "fields": {
+      "created_at": "2025-07-01T08:00:00.000Z",
+      "created_by": 1,
+      "modified_by": 1,
+      "is_active": true,
+      "employee_id": 92,
+      "leave_type_id": 2,
+      "available_days": 9.8,
+      "carryforward_days": 0.0,
+      "total_leave_days": 12.0,
+      "assigned_date": "2025-07-01",
+      "reset_date": "2025-07-01",
+      "expired_date": null
+    }
+  },
+  {
+    "model": "leave.availableleave",
+    "pk": 184,
+    "fields": {
+      "created_at": "2025-07-01T08:00:00.000Z",
+      "created_by": 1,
+      "modified_by": 1,
+      "is_active": true,
+      "employee_id": 92,
+      "leave_type_id": 3,
+      "available_days": 9.7,
+      "carryforward_days": 0.0,
+      "total_leave_days": 10.0,
+      "assigned_date": "2025-07-01",
+      "reset_date": "2025-07-01",
+      "expired_date": null
+    }
+  },
+  {
+    "model": "leave.availableleave",
+    "pk": 185,
+    "fields": {
+      "created_at": "2025-07-01T08:00:00.000Z",
+      "created_by": 1,
+      "modified_by": 1,
+      "is_active": true,
+      "employee_id": 93,
+      "leave_type_id": 2,
+      "available_days": 11.3,
+      "carryforward_days": 0.0,
+      "total_leave_days": 12.0,
+      "assigned_date": "2025-07-01",
+      "reset_date": "2025-07-01",
+      "expired_date": null
+    }
+  },
+  {
+    "model": "leave.availableleave",
+    "pk": 186,
+    "fields": {
+      "created_at": "2025-07-01T08:00:00.000Z",
+      "created_by": 1,
+      "modified_by": 1,
+      "is_active": true,
+      "employee_id": 93,
+      "leave_type_id": 3,
+      "available_days": 7.7,
+      "carryforward_days": 0.0,
+      "total_leave_days": 10.0,
+      "assigned_date": "2025-07-01",
+      "reset_date": "2025-07-01",
+      "expired_date": null
+    }
+  },
+  {
+    "model": "leave.availableleave",
+    "pk": 187,
+    "fields": {
+      "created_at": "2025-07-01T08:00:00.000Z",
+      "created_by": 1,
+      "modified_by": 1,
+      "is_active": true,
+      "employee_id": 94,
+      "leave_type_id": 2,
+      "available_days": 8.2,
+      "carryforward_days": 0.0,
+      "total_leave_days": 12.0,
+      "assigned_date": "2025-07-01",
+      "reset_date": "2025-07-01",
+      "expired_date": null
+    }
+  },
+  {
+    "model": "leave.availableleave",
+    "pk": 188,
+    "fields": {
+      "created_at": "2025-07-01T08:00:00.000Z",
+      "created_by": 1,
+      "modified_by": 1,
+      "is_active": true,
+      "employee_id": 94,
+      "leave_type_id": 3,
+      "available_days": 6.8,
+      "carryforward_days": 0.0,
+      "total_leave_days": 10.0,
+      "assigned_date": "2025-07-01",
+      "reset_date": "2025-07-01",
+      "expired_date": null
+    }
+  },
+  {
+    "model": "leave.availableleave",
+    "pk": 189,
+    "fields": {
+      "created_at": "2025-07-01T08:00:00.000Z",
+      "created_by": 1,
+      "modified_by": 1,
+      "is_active": true,
+      "employee_id": 95,
+      "leave_type_id": 2,
+      "available_days": 10.5,
+      "carryforward_days": 0.0,
+      "total_leave_days": 12.0,
+      "assigned_date": "2025-07-01",
+      "reset_date": "2025-07-01",
+      "expired_date": null
+    }
+  },
+  {
+    "model": "leave.availableleave",
+    "pk": 190,
+    "fields": {
+      "created_at": "2025-07-01T08:00:00.000Z",
+      "created_by": 1,
+      "modified_by": 1,
+      "is_active": true,
+      "employee_id": 95,
+      "leave_type_id": 3,
+      "available_days": 6.7,
+      "carryforward_days": 0.0,
+      "total_leave_days": 10.0,
+      "assigned_date": "2025-07-01",
+      "reset_date": "2025-07-01",
+      "expired_date": null
+    }
+  },
+  {
+    "model": "leave.availableleave",
+    "pk": 191,
+    "fields": {
+      "created_at": "2025-07-01T08:00:00.000Z",
+      "created_by": 1,
+      "modified_by": 1,
+      "is_active": true,
+      "employee_id": 96,
+      "leave_type_id": 2,
+      "available_days": 11.6,
+      "carryforward_days": 0.0,
+      "total_leave_days": 12.0,
+      "assigned_date": "2025-07-01",
+      "reset_date": "2025-07-01",
+      "expired_date": null
+    }
+  },
+  {
+    "model": "leave.availableleave",
+    "pk": 192,
+    "fields": {
+      "created_at": "2025-07-01T08:00:00.000Z",
+      "created_by": 1,
+      "modified_by": 1,
+      "is_active": true,
+      "employee_id": 96,
+      "leave_type_id": 3,
+      "available_days": 8.8,
+      "carryforward_days": 0.0,
+      "total_leave_days": 10.0,
+      "assigned_date": "2025-07-01",
+      "reset_date": "2025-07-01",
+      "expired_date": null
+    }
+  },
+  {
+    "model": "leave.availableleave",
+    "pk": 193,
+    "fields": {
+      "created_at": "2025-07-01T08:00:00.000Z",
+      "created_by": 1,
+      "modified_by": 1,
+      "is_active": true,
+      "employee_id": 97,
+      "leave_type_id": 2,
+      "available_days": 11.6,
+      "carryforward_days": 0.0,
+      "total_leave_days": 12.0,
+      "assigned_date": "2025-07-01",
+      "reset_date": "2025-07-01",
+      "expired_date": null
+    }
+  },
+  {
+    "model": "leave.availableleave",
+    "pk": 194,
+    "fields": {
+      "created_at": "2025-07-01T08:00:00.000Z",
+      "created_by": 1,
+      "modified_by": 1,
+      "is_active": true,
+      "employee_id": 97,
+      "leave_type_id": 3,
+      "available_days": 6.7,
+      "carryforward_days": 0.0,
+      "total_leave_days": 10.0,
+      "assigned_date": "2025-07-01",
+      "reset_date": "2025-07-01",
+      "expired_date": null
+    }
+  },
+  {
+    "model": "leave.availableleave",
+    "pk": 195,
+    "fields": {
+      "created_at": "2025-07-01T08:00:00.000Z",
+      "created_by": 1,
+      "modified_by": 1,
+      "is_active": true,
+      "employee_id": 98,
+      "leave_type_id": 2,
+      "available_days": 7.3,
+      "carryforward_days": 0.0,
+      "total_leave_days": 12.0,
+      "assigned_date": "2025-07-01",
+      "reset_date": "2025-07-01",
+      "expired_date": null
+    }
+  },
+  {
+    "model": "leave.availableleave",
+    "pk": 196,
+    "fields": {
+      "created_at": "2025-07-01T08:00:00.000Z",
+      "created_by": 1,
+      "modified_by": 1,
+      "is_active": true,
+      "employee_id": 98,
+      "leave_type_id": 3,
+      "available_days": 9.0,
+      "carryforward_days": 0.0,
+      "total_leave_days": 10.0,
+      "assigned_date": "2025-07-01",
+      "reset_date": "2025-07-01",
+      "expired_date": null
+    }
+  },
+  {
+    "model": "leave.availableleave",
+    "pk": 197,
+    "fields": {
+      "created_at": "2025-07-01T08:00:00.000Z",
+      "created_by": 1,
+      "modified_by": 1,
+      "is_active": true,
+      "employee_id": 99,
+      "leave_type_id": 2,
+      "available_days": 9.8,
+      "carryforward_days": 0.0,
+      "total_leave_days": 12.0,
+      "assigned_date": "2025-07-01",
+      "reset_date": "2025-07-01",
+      "expired_date": null
+    }
+  },
+  {
+    "model": "leave.availableleave",
+    "pk": 198,
+    "fields": {
+      "created_at": "2025-07-01T08:00:00.000Z",
+      "created_by": 1,
+      "modified_by": 1,
+      "is_active": true,
+      "employee_id": 99,
+      "leave_type_id": 3,
+      "available_days": 9.3,
+      "carryforward_days": 0.0,
+      "total_leave_days": 10.0,
+      "assigned_date": "2025-07-01",
+      "reset_date": "2025-07-01",
+      "expired_date": null
+    }
+  },
+  {
+    "model": "leave.availableleave",
+    "pk": 199,
+    "fields": {
+      "created_at": "2025-07-01T08:00:00.000Z",
+      "created_by": 1,
+      "modified_by": 1,
+      "is_active": true,
+      "employee_id": 100,
+      "leave_type_id": 2,
+      "available_days": 8.7,
+      "carryforward_days": 0.0,
+      "total_leave_days": 12.0,
+      "assigned_date": "2025-07-01",
+      "reset_date": "2025-07-01",
+      "expired_date": null
+    }
+  },
+  {
+    "model": "leave.availableleave",
+    "pk": 200,
+    "fields": {
+      "created_at": "2025-07-01T08:00:00.000Z",
+      "created_by": 1,
+      "modified_by": 1,
+      "is_active": true,
+      "employee_id": 100,
+      "leave_type_id": 3,
+      "available_days": 7.6,
+      "carryforward_days": 0.0,
+      "total_leave_days": 10.0,
+      "assigned_date": "2025-07-01",
+      "reset_date": "2025-07-01",
+      "expired_date": null
+    }
+  },
+  {
+    "model": "leave.availableleave",
+    "pk": 201,
+    "fields": {
+      "created_at": "2025-07-01T08:00:00.000Z",
+      "created_by": 1,
+      "modified_by": 1,
+      "is_active": true,
+      "employee_id": 101,
+      "leave_type_id": 2,
+      "available_days": 9.6,
+      "carryforward_days": 0.0,
+      "total_leave_days": 12.0,
+      "assigned_date": "2025-07-01",
+      "reset_date": "2025-07-01",
+      "expired_date": null
+    }
+  },
+  {
+    "model": "leave.availableleave",
+    "pk": 202,
+    "fields": {
+      "created_at": "2025-07-01T08:00:00.000Z",
+      "created_by": 1,
+      "modified_by": 1,
+      "is_active": true,
+      "employee_id": 101,
+      "leave_type_id": 3,
+      "available_days": 7.5,
+      "carryforward_days": 0.0,
+      "total_leave_days": 10.0,
+      "assigned_date": "2025-07-01",
+      "reset_date": "2025-07-01",
+      "expired_date": null
+    }
+  },
+  {
+    "model": "leave.availableleave",
+    "pk": 203,
+    "fields": {
+      "created_at": "2025-07-01T08:00:00.000Z",
+      "created_by": 1,
+      "modified_by": 1,
+      "is_active": true,
+      "employee_id": 102,
+      "leave_type_id": 2,
+      "available_days": 7.6,
+      "carryforward_days": 0.0,
+      "total_leave_days": 12.0,
+      "assigned_date": "2025-07-01",
+      "reset_date": "2025-07-01",
+      "expired_date": null
+    }
+  },
+  {
+    "model": "leave.availableleave",
+    "pk": 204,
+    "fields": {
+      "created_at": "2025-07-01T08:00:00.000Z",
+      "created_by": 1,
+      "modified_by": 1,
+      "is_active": true,
+      "employee_id": 102,
+      "leave_type_id": 3,
+      "available_days": 9.4,
+      "carryforward_days": 0.0,
+      "total_leave_days": 10.0,
+      "assigned_date": "2025-07-01",
+      "reset_date": "2025-07-01",
+      "expired_date": null
+    }
+  },
+  {
+    "model": "leave.availableleave",
+    "pk": 205,
+    "fields": {
+      "created_at": "2025-07-01T08:00:00.000Z",
+      "created_by": 1,
+      "modified_by": 1,
+      "is_active": true,
+      "employee_id": 103,
+      "leave_type_id": 2,
+      "available_days": 9.1,
+      "carryforward_days": 0.0,
+      "total_leave_days": 12.0,
+      "assigned_date": "2025-07-01",
+      "reset_date": "2025-07-01",
+      "expired_date": null
+    }
+  },
+  {
+    "model": "leave.availableleave",
+    "pk": 206,
+    "fields": {
+      "created_at": "2025-07-01T08:00:00.000Z",
+      "created_by": 1,
+      "modified_by": 1,
+      "is_active": true,
+      "employee_id": 103,
+      "leave_type_id": 3,
+      "available_days": 7.4,
+      "carryforward_days": 0.0,
+      "total_leave_days": 10.0,
+      "assigned_date": "2025-07-01",
+      "reset_date": "2025-07-01",
+      "expired_date": null
+    }
+  },
+  {
+    "model": "leave.availableleave",
+    "pk": 207,
+    "fields": {
+      "created_at": "2025-07-01T08:00:00.000Z",
+      "created_by": 1,
+      "modified_by": 1,
+      "is_active": true,
+      "employee_id": 104,
+      "leave_type_id": 2,
+      "available_days": 8.4,
+      "carryforward_days": 0.0,
+      "total_leave_days": 12.0,
+      "assigned_date": "2025-07-01",
+      "reset_date": "2025-07-01",
+      "expired_date": null
+    }
+  },
+  {
+    "model": "leave.availableleave",
+    "pk": 208,
+    "fields": {
+      "created_at": "2025-07-01T08:00:00.000Z",
+      "created_by": 1,
+      "modified_by": 1,
+      "is_active": true,
+      "employee_id": 104,
+      "leave_type_id": 3,
+      "available_days": 9.1,
+      "carryforward_days": 0.0,
+      "total_leave_days": 10.0,
+      "assigned_date": "2025-07-01",
+      "reset_date": "2025-07-01",
+      "expired_date": null
+    }
+  },
+  {
+    "model": "leave.availableleave",
+    "pk": 209,
+    "fields": {
+      "created_at": "2025-07-01T08:00:00.000Z",
+      "created_by": 1,
+      "modified_by": 1,
+      "is_active": true,
+      "employee_id": 105,
+      "leave_type_id": 2,
+      "available_days": 8.5,
+      "carryforward_days": 0.0,
+      "total_leave_days": 12.0,
+      "assigned_date": "2025-07-01",
+      "reset_date": "2025-07-01",
+      "expired_date": null
+    }
+  },
+  {
+    "model": "leave.availableleave",
+    "pk": 210,
+    "fields": {
+      "created_at": "2025-07-01T08:00:00.000Z",
+      "created_by": 1,
+      "modified_by": 1,
+      "is_active": true,
+      "employee_id": 105,
+      "leave_type_id": 3,
+      "available_days": 6.2,
+      "carryforward_days": 0.0,
+      "total_leave_days": 10.0,
+      "assigned_date": "2025-07-01",
+      "reset_date": "2025-07-01",
+      "expired_date": null
+    }
+  },
+  {
+    "model": "leave.availableleave",
+    "pk": 211,
+    "fields": {
+      "created_at": "2025-07-01T08:00:00.000Z",
+      "created_by": 1,
+      "modified_by": 1,
+      "is_active": true,
+      "employee_id": 106,
+      "leave_type_id": 2,
+      "available_days": 7.4,
+      "carryforward_days": 0.0,
+      "total_leave_days": 12.0,
+      "assigned_date": "2025-07-01",
+      "reset_date": "2025-07-01",
+      "expired_date": null
+    }
+  },
+  {
+    "model": "leave.availableleave",
+    "pk": 212,
+    "fields": {
+      "created_at": "2025-07-01T08:00:00.000Z",
+      "created_by": 1,
+      "modified_by": 1,
+      "is_active": true,
+      "employee_id": 106,
+      "leave_type_id": 3,
+      "available_days": 8.1,
+      "carryforward_days": 0.0,
+      "total_leave_days": 10.0,
+      "assigned_date": "2025-07-01",
+      "reset_date": "2025-07-01",
+      "expired_date": null
+    }
+  },
+  {
+    "model": "leave.availableleave",
+    "pk": 213,
+    "fields": {
+      "created_at": "2025-07-01T08:00:00.000Z",
+      "created_by": 1,
+      "modified_by": 1,
+      "is_active": true,
+      "employee_id": 107,
+      "leave_type_id": 2,
+      "available_days": 9.0,
+      "carryforward_days": 0.0,
+      "total_leave_days": 12.0,
+      "assigned_date": "2025-07-01",
+      "reset_date": "2025-07-01",
+      "expired_date": null
+    }
+  },
+  {
+    "model": "leave.availableleave",
+    "pk": 214,
+    "fields": {
+      "created_at": "2025-07-01T08:00:00.000Z",
+      "created_by": 1,
+      "modified_by": 1,
+      "is_active": true,
+      "employee_id": 107,
+      "leave_type_id": 3,
+      "available_days": 9.9,
+      "carryforward_days": 0.0,
+      "total_leave_days": 10.0,
+      "assigned_date": "2025-07-01",
+      "reset_date": "2025-07-01",
+      "expired_date": null
+    }
+  },
+  {
+    "model": "leave.availableleave",
+    "pk": 215,
+    "fields": {
+      "created_at": "2025-07-01T08:00:00.000Z",
+      "created_by": 1,
+      "modified_by": 1,
+      "is_active": true,
+      "employee_id": 108,
+      "leave_type_id": 2,
+      "available_days": 11.9,
+      "carryforward_days": 0.0,
+      "total_leave_days": 12.0,
+      "assigned_date": "2025-07-01",
+      "reset_date": "2025-07-01",
+      "expired_date": null
+    }
+  },
+  {
+    "model": "leave.availableleave",
+    "pk": 216,
+    "fields": {
+      "created_at": "2025-07-01T08:00:00.000Z",
+      "created_by": 1,
+      "modified_by": 1,
+      "is_active": true,
+      "employee_id": 108,
+      "leave_type_id": 3,
+      "available_days": 8.3,
+      "carryforward_days": 0.0,
+      "total_leave_days": 10.0,
+      "assigned_date": "2025-07-01",
+      "reset_date": "2025-07-01",
+      "expired_date": null
+    }
+  },
+  {
+    "model": "leave.availableleave",
+    "pk": 217,
+    "fields": {
+      "created_at": "2025-07-01T08:00:00.000Z",
+      "created_by": 1,
+      "modified_by": 1,
+      "is_active": true,
+      "employee_id": 109,
+      "leave_type_id": 2,
+      "available_days": 11.6,
+      "carryforward_days": 0.0,
+      "total_leave_days": 12.0,
+      "assigned_date": "2025-07-01",
+      "reset_date": "2025-07-01",
+      "expired_date": null
+    }
+  },
+  {
+    "model": "leave.availableleave",
+    "pk": 218,
+    "fields": {
+      "created_at": "2025-07-01T08:00:00.000Z",
+      "created_by": 1,
+      "modified_by": 1,
+      "is_active": true,
+      "employee_id": 109,
+      "leave_type_id": 3,
+      "available_days": 7.3,
+      "carryforward_days": 0.0,
+      "total_leave_days": 10.0,
+      "assigned_date": "2025-07-01",
+      "reset_date": "2025-07-01",
+      "expired_date": null
+    }
+  },
+  {
+    "model": "leave.availableleave",
+    "pk": 219,
+    "fields": {
+      "created_at": "2025-07-01T08:00:00.000Z",
+      "created_by": 1,
+      "modified_by": 1,
+      "is_active": true,
+      "employee_id": 110,
+      "leave_type_id": 2,
+      "available_days": 7.5,
+      "carryforward_days": 0.0,
+      "total_leave_days": 12.0,
+      "assigned_date": "2025-07-01",
+      "reset_date": "2025-07-01",
+      "expired_date": null
+    }
+  },
+  {
+    "model": "leave.availableleave",
+    "pk": 220,
+    "fields": {
+      "created_at": "2025-07-01T08:00:00.000Z",
+      "created_by": 1,
+      "modified_by": 1,
+      "is_active": true,
+      "employee_id": 110,
+      "leave_type_id": 3,
+      "available_days": 6.8,
+      "carryforward_days": 0.0,
+      "total_leave_days": 10.0,
+      "assigned_date": "2025-07-01",
+      "reset_date": "2025-07-01",
+      "expired_date": null
+    }
+  },
+  {
+    "model": "leave.availableleave",
+    "pk": 221,
+    "fields": {
+      "created_at": "2025-07-01T08:00:00.000Z",
+      "created_by": 1,
+      "modified_by": 1,
+      "is_active": true,
+      "employee_id": 111,
+      "leave_type_id": 2,
+      "available_days": 11.6,
+      "carryforward_days": 0.0,
+      "total_leave_days": 12.0,
+      "assigned_date": "2025-07-01",
+      "reset_date": "2025-07-01",
+      "expired_date": null
+    }
+  },
+  {
+    "model": "leave.availableleave",
+    "pk": 222,
+    "fields": {
+      "created_at": "2025-07-01T08:00:00.000Z",
+      "created_by": 1,
+      "modified_by": 1,
+      "is_active": true,
+      "employee_id": 111,
+      "leave_type_id": 3,
+      "available_days": 9.2,
+      "carryforward_days": 0.0,
+      "total_leave_days": 10.0,
+      "assigned_date": "2025-07-01",
+      "reset_date": "2025-07-01",
+      "expired_date": null
+    }
+  },
+  {
+    "model": "leave.availableleave",
+    "pk": 223,
+    "fields": {
+      "created_at": "2025-07-01T08:00:00.000Z",
+      "created_by": 1,
+      "modified_by": 1,
+      "is_active": true,
+      "employee_id": 112,
+      "leave_type_id": 2,
+      "available_days": 9.7,
+      "carryforward_days": 0.0,
+      "total_leave_days": 12.0,
+      "assigned_date": "2025-07-01",
+      "reset_date": "2025-07-01",
+      "expired_date": null
+    }
+  },
+  {
+    "model": "leave.availableleave",
+    "pk": 224,
+    "fields": {
+      "created_at": "2025-07-01T08:00:00.000Z",
+      "created_by": 1,
+      "modified_by": 1,
+      "is_active": true,
+      "employee_id": 112,
+      "leave_type_id": 3,
+      "available_days": 6.1,
+      "carryforward_days": 0.0,
+      "total_leave_days": 10.0,
+      "assigned_date": "2025-07-01",
+      "reset_date": "2025-07-01",
+      "expired_date": null
+    }
+  },
+  {
+    "model": "leave.availableleave",
+    "pk": 225,
+    "fields": {
+      "created_at": "2025-07-01T08:00:00.000Z",
+      "created_by": 1,
+      "modified_by": 1,
+      "is_active": true,
+      "employee_id": 113,
+      "leave_type_id": 2,
+      "available_days": 11.2,
+      "carryforward_days": 0.0,
+      "total_leave_days": 12.0,
+      "assigned_date": "2025-07-01",
+      "reset_date": "2025-07-01",
+      "expired_date": null
+    }
+  },
+  {
+    "model": "leave.availableleave",
+    "pk": 226,
+    "fields": {
+      "created_at": "2025-07-01T08:00:00.000Z",
+      "created_by": 1,
+      "modified_by": 1,
+      "is_active": true,
+      "employee_id": 113,
+      "leave_type_id": 3,
+      "available_days": 9.1,
+      "carryforward_days": 0.0,
+      "total_leave_days": 10.0,
+      "assigned_date": "2025-07-01",
+      "reset_date": "2025-07-01",
+      "expired_date": null
+    }
+  },
+  {
+    "model": "leave.availableleave",
+    "pk": 227,
+    "fields": {
+      "created_at": "2025-07-01T08:00:00.000Z",
+      "created_by": 1,
+      "modified_by": 1,
+      "is_active": true,
+      "employee_id": 114,
+      "leave_type_id": 2,
+      "available_days": 8.7,
+      "carryforward_days": 0.0,
+      "total_leave_days": 12.0,
+      "assigned_date": "2025-07-01",
+      "reset_date": "2025-07-01",
+      "expired_date": null
+    }
+  },
+  {
+    "model": "leave.availableleave",
+    "pk": 228,
+    "fields": {
+      "created_at": "2025-07-01T08:00:00.000Z",
+      "created_by": 1,
+      "modified_by": 1,
+      "is_active": true,
+      "employee_id": 114,
+      "leave_type_id": 3,
+      "available_days": 9.4,
+      "carryforward_days": 0.0,
+      "total_leave_days": 10.0,
+      "assigned_date": "2025-07-01",
+      "reset_date": "2025-07-01",
+      "expired_date": null
+    }
+  },
+  {
+    "model": "leave.availableleave",
+    "pk": 229,
+    "fields": {
+      "created_at": "2025-07-01T08:00:00.000Z",
+      "created_by": 1,
+      "modified_by": 1,
+      "is_active": true,
+      "employee_id": 115,
+      "leave_type_id": 2,
+      "available_days": 10.4,
+      "carryforward_days": 0.0,
+      "total_leave_days": 12.0,
+      "assigned_date": "2025-07-01",
+      "reset_date": "2025-07-01",
+      "expired_date": null
+    }
+  },
+  {
+    "model": "leave.availableleave",
+    "pk": 230,
+    "fields": {
+      "created_at": "2025-07-01T08:00:00.000Z",
+      "created_by": 1,
+      "modified_by": 1,
+      "is_active": true,
+      "employee_id": 115,
+      "leave_type_id": 3,
+      "available_days": 9.1,
+      "carryforward_days": 0.0,
+      "total_leave_days": 10.0,
+      "assigned_date": "2025-07-01",
+      "reset_date": "2025-07-01",
+      "expired_date": null
+    }
+  },
+  {
+    "model": "leave.availableleave",
+    "pk": 231,
+    "fields": {
+      "created_at": "2025-07-01T08:00:00.000Z",
+      "created_by": 1,
+      "modified_by": 1,
+      "is_active": true,
+      "employee_id": 116,
+      "leave_type_id": 2,
+      "available_days": 7.7,
+      "carryforward_days": 0.0,
+      "total_leave_days": 12.0,
+      "assigned_date": "2025-07-01",
+      "reset_date": "2025-07-01",
+      "expired_date": null
+    }
+  },
+  {
+    "model": "leave.availableleave",
+    "pk": 232,
+    "fields": {
+      "created_at": "2025-07-01T08:00:00.000Z",
+      "created_by": 1,
+      "modified_by": 1,
+      "is_active": true,
+      "employee_id": 116,
+      "leave_type_id": 3,
+      "available_days": 8.1,
+      "carryforward_days": 0.0,
+      "total_leave_days": 10.0,
+      "assigned_date": "2025-07-01",
+      "reset_date": "2025-07-01",
+      "expired_date": null
+    }
+  },
+  {
+    "model": "leave.availableleave",
+    "pk": 233,
+    "fields": {
+      "created_at": "2025-07-01T08:00:00.000Z",
+      "created_by": 1,
+      "modified_by": 1,
+      "is_active": true,
+      "employee_id": 117,
+      "leave_type_id": 2,
+      "available_days": 10.5,
+      "carryforward_days": 0.0,
+      "total_leave_days": 12.0,
+      "assigned_date": "2025-07-01",
+      "reset_date": "2025-07-01",
+      "expired_date": null
+    }
+  },
+  {
+    "model": "leave.availableleave",
+    "pk": 234,
+    "fields": {
+      "created_at": "2025-07-01T08:00:00.000Z",
+      "created_by": 1,
+      "modified_by": 1,
+      "is_active": true,
+      "employee_id": 117,
+      "leave_type_id": 3,
+      "available_days": 9.3,
+      "carryforward_days": 0.0,
+      "total_leave_days": 10.0,
+      "assigned_date": "2025-07-01",
+      "reset_date": "2025-07-01",
+      "expired_date": null
+    }
+  },
+  {
+    "model": "leave.availableleave",
+    "pk": 235,
+    "fields": {
+      "created_at": "2025-07-01T08:00:00.000Z",
+      "created_by": 1,
+      "modified_by": 1,
+      "is_active": true,
+      "employee_id": 118,
+      "leave_type_id": 2,
+      "available_days": 8.6,
+      "carryforward_days": 0.0,
+      "total_leave_days": 12.0,
+      "assigned_date": "2025-07-01",
+      "reset_date": "2025-07-01",
+      "expired_date": null
+    }
+  },
+  {
+    "model": "leave.availableleave",
+    "pk": 236,
+    "fields": {
+      "created_at": "2025-07-01T08:00:00.000Z",
+      "created_by": 1,
+      "modified_by": 1,
+      "is_active": true,
+      "employee_id": 118,
+      "leave_type_id": 3,
+      "available_days": 8.2,
+      "carryforward_days": 0.0,
+      "total_leave_days": 10.0,
+      "assigned_date": "2025-07-01",
+      "reset_date": "2025-07-01",
+      "expired_date": null
+    }
+  },
+  {
+    "model": "leave.availableleave",
+    "pk": 237,
+    "fields": {
+      "created_at": "2025-07-01T08:00:00.000Z",
+      "created_by": 1,
+      "modified_by": 1,
+      "is_active": true,
+      "employee_id": 119,
+      "leave_type_id": 2,
+      "available_days": 7.6,
+      "carryforward_days": 0.0,
+      "total_leave_days": 12.0,
+      "assigned_date": "2025-07-01",
+      "reset_date": "2025-07-01",
+      "expired_date": null
+    }
+  },
+  {
+    "model": "leave.availableleave",
+    "pk": 238,
+    "fields": {
+      "created_at": "2025-07-01T08:00:00.000Z",
+      "created_by": 1,
+      "modified_by": 1,
+      "is_active": true,
+      "employee_id": 119,
+      "leave_type_id": 3,
+      "available_days": 6.3,
+      "carryforward_days": 0.0,
+      "total_leave_days": 10.0,
+      "assigned_date": "2025-07-01",
+      "reset_date": "2025-07-01",
+      "expired_date": null
+    }
+  },
+  {
+    "model": "leave.availableleave",
+    "pk": 239,
+    "fields": {
+      "created_at": "2025-07-01T08:00:00.000Z",
+      "created_by": 1,
+      "modified_by": 1,
+      "is_active": true,
+      "employee_id": 120,
+      "leave_type_id": 2,
+      "available_days": 11.0,
+      "carryforward_days": 0.0,
+      "total_leave_days": 12.0,
+      "assigned_date": "2025-07-01",
+      "reset_date": "2025-07-01",
+      "expired_date": null
+    }
+  },
+  {
+    "model": "leave.availableleave",
+    "pk": 240,
+    "fields": {
+      "created_at": "2025-07-01T08:00:00.000Z",
+      "created_by": 1,
+      "modified_by": 1,
+      "is_active": true,
+      "employee_id": 120,
+      "leave_type_id": 3,
+      "available_days": 6.6,
+      "carryforward_days": 0.0,
+      "total_leave_days": 10.0,
+      "assigned_date": "2025-07-01",
+      "reset_date": "2025-07-01",
+      "expired_date": null
+    }
+  },
+  {
+    "model": "leave.availableleave",
+    "pk": 241,
+    "fields": {
+      "created_at": "2025-07-01T08:00:00.000Z",
+      "created_by": 1,
+      "modified_by": 1,
+      "is_active": true,
+      "employee_id": 121,
+      "leave_type_id": 2,
+      "available_days": 10.1,
+      "carryforward_days": 0.0,
+      "total_leave_days": 12.0,
+      "assigned_date": "2025-07-01",
+      "reset_date": "2025-07-01",
+      "expired_date": null
+    }
+  },
+  {
+    "model": "leave.availableleave",
+    "pk": 242,
+    "fields": {
+      "created_at": "2025-07-01T08:00:00.000Z",
+      "created_by": 1,
+      "modified_by": 1,
+      "is_active": true,
+      "employee_id": 121,
+      "leave_type_id": 3,
+      "available_days": 9.5,
+      "carryforward_days": 0.0,
+      "total_leave_days": 10.0,
+      "assigned_date": "2025-07-01",
+      "reset_date": "2025-07-01",
+      "expired_date": null
+    }
+  },
+  {
+    "model": "leave.availableleave",
+    "pk": 243,
+    "fields": {
+      "created_at": "2025-07-01T08:00:00.000Z",
+      "created_by": 1,
+      "modified_by": 1,
+      "is_active": true,
+      "employee_id": 122,
+      "leave_type_id": 2,
+      "available_days": 10.4,
+      "carryforward_days": 0.0,
+      "total_leave_days": 12.0,
+      "assigned_date": "2025-07-01",
+      "reset_date": "2025-07-01",
+      "expired_date": null
+    }
+  },
+  {
+    "model": "leave.availableleave",
+    "pk": 244,
+    "fields": {
+      "created_at": "2025-07-01T08:00:00.000Z",
+      "created_by": 1,
+      "modified_by": 1,
+      "is_active": true,
+      "employee_id": 122,
+      "leave_type_id": 3,
+      "available_days": 9.9,
+      "carryforward_days": 0.0,
+      "total_leave_days": 10.0,
+      "assigned_date": "2025-07-01",
+      "reset_date": "2025-07-01",
+      "expired_date": null
+    }
+  },
+  {
+    "model": "leave.availableleave",
+    "pk": 245,
+    "fields": {
+      "created_at": "2025-07-01T08:00:00.000Z",
+      "created_by": 1,
+      "modified_by": 1,
+      "is_active": true,
+      "employee_id": 123,
+      "leave_type_id": 2,
+      "available_days": 9.6,
+      "carryforward_days": 0.0,
+      "total_leave_days": 12.0,
+      "assigned_date": "2025-07-01",
+      "reset_date": "2025-07-01",
+      "expired_date": null
+    }
+  },
+  {
+    "model": "leave.availableleave",
+    "pk": 246,
+    "fields": {
+      "created_at": "2025-07-01T08:00:00.000Z",
+      "created_by": 1,
+      "modified_by": 1,
+      "is_active": true,
+      "employee_id": 123,
+      "leave_type_id": 3,
+      "available_days": 9.1,
+      "carryforward_days": 0.0,
+      "total_leave_days": 10.0,
+      "assigned_date": "2025-07-01",
+      "reset_date": "2025-07-01",
+      "expired_date": null
+    }
+  },
+  {
+    "model": "leave.availableleave",
+    "pk": 247,
+    "fields": {
+      "created_at": "2025-07-01T08:00:00.000Z",
+      "created_by": 1,
+      "modified_by": 1,
+      "is_active": true,
+      "employee_id": 124,
+      "leave_type_id": 2,
+      "available_days": 9.0,
+      "carryforward_days": 0.0,
+      "total_leave_days": 12.0,
+      "assigned_date": "2025-07-01",
+      "reset_date": "2025-07-01",
+      "expired_date": null
+    }
+  },
+  {
+    "model": "leave.availableleave",
+    "pk": 248,
+    "fields": {
+      "created_at": "2025-07-01T08:00:00.000Z",
+      "created_by": 1,
+      "modified_by": 1,
+      "is_active": true,
+      "employee_id": 124,
+      "leave_type_id": 3,
+      "available_days": 8.4,
+      "carryforward_days": 0.0,
+      "total_leave_days": 10.0,
+      "assigned_date": "2025-07-01",
+      "reset_date": "2025-07-01",
+      "expired_date": null
+    }
+  },
+  {
+    "model": "leave.availableleave",
+    "pk": 249,
+    "fields": {
+      "created_at": "2025-07-01T08:00:00.000Z",
+      "created_by": 1,
+      "modified_by": 1,
+      "is_active": true,
+      "employee_id": 125,
+      "leave_type_id": 2,
+      "available_days": 7.4,
+      "carryforward_days": 0.0,
+      "total_leave_days": 12.0,
+      "assigned_date": "2025-07-01",
+      "reset_date": "2025-07-01",
+      "expired_date": null
+    }
+  },
+  {
+    "model": "leave.availableleave",
+    "pk": 250,
+    "fields": {
+      "created_at": "2025-07-01T08:00:00.000Z",
+      "created_by": 1,
+      "modified_by": 1,
+      "is_active": true,
+      "employee_id": 125,
+      "leave_type_id": 3,
+      "available_days": 7.3,
+      "carryforward_days": 0.0,
+      "total_leave_days": 10.0,
+      "assigned_date": "2025-07-01",
+      "reset_date": "2025-07-01",
+      "expired_date": null
+    }
+  },
+  {
+    "model": "leave.availableleave",
+    "pk": 251,
+    "fields": {
+      "created_at": "2025-07-01T08:00:00.000Z",
+      "created_by": 1,
+      "modified_by": 1,
+      "is_active": true,
+      "employee_id": 126,
+      "leave_type_id": 2,
+      "available_days": 11.5,
+      "carryforward_days": 0.0,
+      "total_leave_days": 12.0,
+      "assigned_date": "2025-07-01",
+      "reset_date": "2025-07-01",
+      "expired_date": null
+    }
+  },
+  {
+    "model": "leave.availableleave",
+    "pk": 252,
+    "fields": {
+      "created_at": "2025-07-01T08:00:00.000Z",
+      "created_by": 1,
+      "modified_by": 1,
+      "is_active": true,
+      "employee_id": 126,
+      "leave_type_id": 3,
+      "available_days": 6.9,
+      "carryforward_days": 0.0,
+      "total_leave_days": 10.0,
+      "assigned_date": "2025-07-01",
+      "reset_date": "2025-07-01",
+      "expired_date": null
+    }
+  },
+  {
     "model": "leave.leaverequest",
     "pk": 1,
     "fields": {
@@ -3197,157 +5146,8 @@
     }
   },
   {
-    "model": "leave.leaveallocationrequest",
-    "pk": 1,
-    "fields": {
-      "created_at": "2025-07-16T08:00:42.965Z",
-      "created_by": 1,
-      "modified_by": 1,
-      "is_active": true,
-      "leave_type_id": 4,
-      "employee_id": 12,
-      "requested_days": 10.0,
-      "requested_date": "2025-07-16",
-      "description": "Kindly request to allocate this leave type",
-      "attachment": "",
-      "status": "requested",
-      "reject_reason": ""
-    }
-  },
-  {
-    "model": "leave.leaveallocationrequest",
-    "pk": 2,
-    "fields": {
-      "created_at": "2025-07-16T08:01:28.674Z",
-      "created_by": 1,
-      "modified_by": 1,
-      "is_active": true,
-      "leave_type_id": 3,
-      "employee_id": 63,
-      "requested_days": 10.0,
-      "requested_date": "2025-07-16",
-      "description": "Request to allcoate some additional available leaves for this leave type",
-      "attachment": "",
-      "status": "requested",
-      "reject_reason": ""
-    }
-  },
-  {
-    "model": "leave.leaveallocationrequest",
-    "pk": 3,
-    "fields": {
-      "created_at": "2025-07-16T08:01:53.526Z",
-      "created_by": 1,
-      "modified_by": 1,
-      "is_active": true,
-      "leave_type_id": 4,
-      "employee_id": 8,
-      "requested_days": 30.0,
-      "requested_date": "2025-07-16",
-      "description": "Kindly request to allocate this leave type",
-      "attachment": "",
-      "status": "requested",
-      "reject_reason": ""
-    }
-  },
-  {
-    "model": "leave.restrictleave",
-    "pk": 2,
-    "fields": {
-      "created_at": "2025-07-16T08:06:27.474Z",
-      "created_by": 1,
-      "modified_by": 1,
-      "is_active": true,
-      "title": "Critical Projects",
-      "start_date": "2025-07-16",
-      "end_date": "2025-07-16",
-      "department": 1,
-      "include_all": true,
-      "description": "Horilla Project Installation",
-      "company_id": 1,
-      "job_position": [],
-      "spesific_leave_types": [],
-      "exclued_leave_types": []
-    }
-  },
-  {
-    "model": "leave.restrictleave",
-    "pk": 3,
-    "fields": {
-      "created_at": "2025-07-16T08:07:02.327Z",
-      "created_by": 1,
-      "modified_by": 1,
-      "is_active": true,
-      "title": "Product launch week",
-      "start_date": "2025-07-23",
-      "end_date": "2025-07-27",
-      "department": 2,
-      "include_all": true,
-      "description": "Luanch Horilla",
-      "company_id": 1,
-      "job_position": [],
-      "spesific_leave_types": [],
-      "exclued_leave_types": []
-    }
-  },
-  {
-    "model": "leave.restrictleave",
-    "pk": 4,
-    "fields": {
-      "created_at": "2025-07-16T08:07:48.937Z",
-      "created_by": 1,
-      "modified_by": 1,
-      "is_active": true,
-      "title": "Sales Days",
-      "start_date": "2025-07-24",
-      "end_date": "2025-07-26",
-      "department": 2,
-      "include_all": true,
-      "description": "Chirstmas Sales",
-      "company_id": 1,
-      "job_position": [],
-      "spesific_leave_types": [],
-      "exclued_leave_types": [
-        3
-      ]
-    }
-  },
-  {
-    "model": "leave.restrictleave",
-    "pk": 5,
-    "fields": {
-      "created_at": "2025-07-12T10:25:21.388Z",
-      "created_by": 1,
-      "modified_by": 1,
-      "is_active": true,
-      "title": "S/W Dept. Restriction",
-      "start_date": "2025-07-01",
-      "end_date": "2025-07-30",
-      "department": 1,
-      "include_all": true,
-      "description": "Description",
-      "company_id": 1,
-      "job_position": [],
-      "spesific_leave_types": [],
-      "exclued_leave_types": [
-        3
-      ]
-    }
-  },
-  {
-    "model": "leave.employeepastleaverestrict",
-    "pk": 1,
-    "fields": {
-      "created_at": "2025-07-21T04:40:18.153Z",
-      "created_by": null,
-      "modified_by": null,
-      "is_active": true,
-      "enabled": true
-    }
-  },
-  {
     "model": "leave.leaverequest",
-    "pk": 114,
+    "pk": 14,
     "fields": {
       "created_at": "2025-06-25T09:15:00.000Z",
       "created_by": 1,
@@ -3372,7 +5172,7 @@
   },
   {
     "model": "leave.leaverequest",
-    "pk": 115,
+    "pk": 15,
     "fields": {
       "created_at": "2025-06-26T10:30:00.000Z",
       "created_by": 1,
@@ -3397,7 +5197,7 @@
   },
   {
     "model": "leave.leaverequest",
-    "pk": 116,
+    "pk": 16,
     "fields": {
       "created_at": "2025-06-27T08:45:00.000Z",
       "created_by": 1,
@@ -3422,7 +5222,7 @@
   },
   {
     "model": "leave.leaverequest",
-    "pk": 117,
+    "pk": 17,
     "fields": {
       "created_at": "2025-06-20T11:00:00.000Z",
       "created_by": 1,
@@ -3447,7 +5247,7 @@
   },
   {
     "model": "leave.leaverequest",
-    "pk": 118,
+    "pk": 18,
     "fields": {
       "created_at": "2025-06-18T09:30:00.000Z",
       "created_by": 1,
@@ -3472,7 +5272,7 @@
   },
   {
     "model": "leave.leaverequest",
-    "pk": 119,
+    "pk": 19,
     "fields": {
       "created_at": "2025-06-30T14:20:00.000Z",
       "created_by": 1,
@@ -3497,7 +5297,7 @@
   },
   {
     "model": "leave.leaverequest",
-    "pk": 120,
+    "pk": 20,
     "fields": {
       "created_at": "2025-06-25T10:00:00.000Z",
       "modified_by": 1,
@@ -3522,7 +5322,7 @@
   },
   {
     "model": "leave.leaverequest",
-    "pk": 121,
+    "pk": 21,
     "fields": {
       "created_at": "2025-06-25T10:00:00.000Z",
       "modified_by": 1,
@@ -3547,7 +5347,7 @@
   },
   {
     "model": "leave.leaverequest",
-    "pk": 122,
+    "pk": 22,
     "fields": {
       "created_at": "2025-06-25T10:00:00.000Z",
       "modified_by": 1,
@@ -3572,7 +5372,7 @@
   },
   {
     "model": "leave.leaverequest",
-    "pk": 123,
+    "pk": 23,
     "fields": {
       "created_at": "2025-06-25T10:00:00.000Z",
       "modified_by": 1,
@@ -3597,7 +5397,7 @@
   },
   {
     "model": "leave.leaverequest",
-    "pk": 124,
+    "pk": 24,
     "fields": {
       "created_at": "2025-06-25T10:00:00.000Z",
       "modified_by": 1,
@@ -3622,7 +5422,7 @@
   },
   {
     "model": "leave.leaverequest",
-    "pk": 125,
+    "pk": 25,
     "fields": {
       "created_at": "2025-06-25T10:00:00.000Z",
       "modified_by": 1,
@@ -3647,7 +5447,7 @@
   },
   {
     "model": "leave.leaverequest",
-    "pk": 126,
+    "pk": 26,
     "fields": {
       "created_at": "2025-06-25T10:00:00.000Z",
       "modified_by": 1,
@@ -3672,7 +5472,7 @@
   },
   {
     "model": "leave.leaverequest",
-    "pk": 127,
+    "pk": 27,
     "fields": {
       "created_at": "2025-06-25T10:00:00.000Z",
       "modified_by": 1,
@@ -3697,7 +5497,7 @@
   },
   {
     "model": "leave.leaverequest",
-    "pk": 128,
+    "pk": 28,
     "fields": {
       "created_at": "2025-06-25T10:00:00.000Z",
       "modified_by": 1,
@@ -3722,7 +5522,7 @@
   },
   {
     "model": "leave.leaverequest",
-    "pk": 129,
+    "pk": 29,
     "fields": {
       "created_at": "2025-06-25T10:00:00.000Z",
       "modified_by": 1,
@@ -3747,7 +5547,7 @@
   },
   {
     "model": "leave.leaverequest",
-    "pk": 130,
+    "pk": 30,
     "fields": {
       "created_at": "2025-06-25T10:00:00.000Z",
       "modified_by": 1,
@@ -3772,7 +5572,7 @@
   },
   {
     "model": "leave.leaverequest",
-    "pk": 131,
+    "pk": 31,
     "fields": {
       "created_at": "2025-06-25T10:00:00.000Z",
       "modified_by": 1,
@@ -3790,6 +5590,456 @@
       "status": "approved",
       "requested_date": "2025-06-25",
       "approved_available_days": 23.0,
+      "approved_carryforward_days": 0.0,
+      "reject_reason": "",
+      "created_by": 1
+    }
+  },
+  {
+    "model": "leave.leaverequest",
+    "pk": 32,
+    "fields": {
+      "created_at": "2025-06-17T10:00:00.000Z",
+      "modified_by": 1,
+      "is_active": true,
+      "employee_id": 4,
+      "leave_type_id": 2,
+      "start_date": "2025-06-23",
+      "start_date_breakdown": "full_day",
+      "end_date": "2025-06-24",
+      "end_date_breakdown": "full_day",
+      "requested_days": 2.0,
+      "leave_clashes_count": 0,
+      "description": "Sick leave",
+      "attachment": "",
+      "status": "rejected",
+      "requested_date": "2025-06-14",
+      "approved_available_days": 0.0,
+      "approved_carryforward_days": 0.0,
+      "reject_reason": "Please reschedule to next month",
+      "created_by": 1
+    }
+  },
+  {
+    "model": "leave.leaverequest",
+    "pk": 33,
+    "fields": {
+      "created_at": "2025-06-16T10:00:00.000Z",
+      "modified_by": 1,
+      "is_active": true,
+      "employee_id": 13,
+      "leave_type_id": 3,
+      "start_date": "2025-06-30",
+      "start_date_breakdown": "full_day",
+      "end_date": "2025-06-30",
+      "end_date_breakdown": "full_day",
+      "requested_days": 1.0,
+      "leave_clashes_count": 0,
+      "description": "Home repair work",
+      "attachment": "",
+      "status": "rejected",
+      "requested_date": "2025-06-14",
+      "approved_available_days": 0.0,
+      "approved_carryforward_days": 0.0,
+      "reject_reason": "Please reschedule to next month",
+      "created_by": 1
+    }
+  },
+  {
+    "model": "leave.leaverequest",
+    "pk": 34,
+    "fields": {
+      "created_at": "2025-06-15T10:00:00.000Z",
+      "modified_by": 1,
+      "is_active": true,
+      "employee_id": 48,
+      "leave_type_id": 2,
+      "start_date": "2025-06-19",
+      "start_date_breakdown": "full_day",
+      "end_date": "2025-06-20",
+      "end_date_breakdown": "full_day",
+      "requested_days": 2.0,
+      "leave_clashes_count": 0,
+      "description": "Eye checkup",
+      "attachment": "",
+      "status": "rejected",
+      "requested_date": "2025-06-14",
+      "approved_available_days": 0.0,
+      "approved_carryforward_days": 0.0,
+      "reject_reason": "Team already short-staffed",
+      "created_by": 1
+    }
+  },
+  {
+    "model": "leave.leaverequest",
+    "pk": 35,
+    "fields": {
+      "created_at": "2025-06-16T10:00:00.000Z",
+      "modified_by": 1,
+      "is_active": true,
+      "employee_id": 63,
+      "leave_type_id": 2,
+      "start_date": "2025-06-25",
+      "start_date_breakdown": "full_day",
+      "end_date": "2025-06-26",
+      "end_date_breakdown": "full_day",
+      "requested_days": 2.0,
+      "leave_clashes_count": 0,
+      "description": "Government office work",
+      "attachment": "",
+      "status": "rejected",
+      "requested_date": "2025-06-14",
+      "approved_available_days": 0.0,
+      "approved_carryforward_days": 0.0,
+      "reject_reason": "Team already short-staffed",
+      "created_by": 1
+    }
+  },
+  {
+    "model": "leave.leaverequest",
+    "pk": 36,
+    "fields": {
+      "created_at": "2025-06-16T10:00:00.000Z",
+      "modified_by": 1,
+      "is_active": true,
+      "employee_id": 87,
+      "leave_type_id": 3,
+      "start_date": "2025-06-27",
+      "start_date_breakdown": "full_day",
+      "end_date": "2025-06-27",
+      "end_date_breakdown": "full_day",
+      "requested_days": 1.0,
+      "leave_clashes_count": 0,
+      "description": "Family function",
+      "attachment": "",
+      "status": "rejected",
+      "requested_date": "2025-06-15",
+      "approved_available_days": 0.0,
+      "approved_carryforward_days": 0.0,
+      "reject_reason": "Insufficient notice period",
+      "created_by": 1
+    }
+  },
+  {
+    "model": "leave.leaverequest",
+    "pk": 37,
+    "fields": {
+      "created_at": "2025-06-15T10:00:00.000Z",
+      "modified_by": 1,
+      "is_active": true,
+      "employee_id": 22,
+      "leave_type_id": 2,
+      "start_date": "2025-06-18",
+      "start_date_breakdown": "full_day",
+      "end_date": "2025-06-18",
+      "end_date_breakdown": "full_day",
+      "requested_days": 1.0,
+      "leave_clashes_count": 0,
+      "description": "Family function",
+      "attachment": "",
+      "status": "rejected",
+      "requested_date": "2025-06-15",
+      "approved_available_days": 0.0,
+      "approved_carryforward_days": 0.0,
+      "reject_reason": "Please reschedule to next month",
+      "created_by": 1
+    }
+  },
+  {
+    "model": "leave.leaverequest",
+    "pk": 38,
+    "fields": {
+      "created_at": "2025-06-16T10:00:00.000Z",
+      "modified_by": 1,
+      "is_active": true,
+      "employee_id": 39,
+      "leave_type_id": 3,
+      "start_date": "2025-06-24",
+      "start_date_breakdown": "full_day",
+      "end_date": "2025-06-24",
+      "end_date_breakdown": "full_day",
+      "requested_days": 1.0,
+      "leave_clashes_count": 0,
+      "description": "Not feeling well",
+      "attachment": "",
+      "status": "rejected",
+      "requested_date": "2025-06-15",
+      "approved_available_days": 0.0,
+      "approved_carryforward_days": 0.0,
+      "reject_reason": "Team already short-staffed",
+      "created_by": 1
+    }
+  },
+  {
+    "model": "leave.leaverequest",
+    "pk": 39,
+    "fields": {
+      "created_at": "2025-06-15T10:00:00.000Z",
+      "modified_by": 1,
+      "is_active": true,
+      "employee_id": 95,
+      "leave_type_id": 2,
+      "start_date": "2025-06-20",
+      "start_date_breakdown": "full_day",
+      "end_date": "2025-06-20",
+      "end_date_breakdown": "full_day",
+      "requested_days": 1.0,
+      "leave_clashes_count": 0,
+      "description": "Dental appointment",
+      "attachment": "",
+      "status": "rejected",
+      "requested_date": "2025-06-15",
+      "approved_available_days": 0.0,
+      "approved_carryforward_days": 0.0,
+      "reject_reason": "Peak season, cannot approve",
+      "created_by": 1
+    }
+  },
+  {
+    "model": "leave.leaverequest",
+    "pk": 40,
+    "fields": {
+      "created_at": "2025-07-23T10:00:00.000Z",
+      "modified_by": 1,
+      "is_active": true,
+      "employee_id": 7,
+      "leave_type_id": 2,
+      "start_date": "2025-07-28",
+      "start_date_breakdown": "full_day",
+      "end_date": "2025-07-29",
+      "end_date_breakdown": "full_day",
+      "requested_days": 2.0,
+      "leave_clashes_count": 0,
+      "description": "Family function",
+      "attachment": "",
+      "status": "requested",
+      "requested_date": "2025-07-24",
+      "approved_available_days": 0.0,
+      "approved_carryforward_days": 0.0,
+      "reject_reason": "",
+      "created_by": 1
+    }
+  },
+  {
+    "model": "leave.leaverequest",
+    "pk": 41,
+    "fields": {
+      "created_at": "2025-07-25T10:00:00.000Z",
+      "modified_by": 1,
+      "is_active": true,
+      "employee_id": 16,
+      "leave_type_id": 3,
+      "start_date": "2025-07-30",
+      "start_date_breakdown": "full_day",
+      "end_date": "2025-07-30",
+      "end_date_breakdown": "full_day",
+      "requested_days": 1.0,
+      "leave_clashes_count": 0,
+      "description": "Bank work",
+      "attachment": "",
+      "status": "requested",
+      "requested_date": "2025-07-22",
+      "approved_available_days": 0.0,
+      "approved_carryforward_days": 0.0,
+      "reject_reason": "",
+      "created_by": 1
+    }
+  },
+  {
+    "model": "leave.leaverequest",
+    "pk": 42,
+    "fields": {
+      "created_at": "2025-07-22T10:00:00.000Z",
+      "modified_by": 1,
+      "is_active": true,
+      "employee_id": 51,
+      "leave_type_id": 2,
+      "start_date": "2025-07-28",
+      "start_date_breakdown": "full_day",
+      "end_date": "2025-07-28",
+      "end_date_breakdown": "full_day",
+      "requested_days": 1.0,
+      "leave_clashes_count": 0,
+      "description": "Dental appointment",
+      "attachment": "",
+      "status": "requested",
+      "requested_date": "2025-07-23",
+      "approved_available_days": 0.0,
+      "approved_carryforward_days": 0.0,
+      "reject_reason": "",
+      "created_by": 1
+    }
+  },
+  {
+    "model": "leave.leaverequest",
+    "pk": 43,
+    "fields": {
+      "created_at": "2025-07-24T10:00:00.000Z",
+      "modified_by": 1,
+      "is_active": true,
+      "employee_id": 67,
+      "leave_type_id": 2,
+      "start_date": "2025-07-29",
+      "start_date_breakdown": "full_day",
+      "end_date": "2025-07-30",
+      "end_date_breakdown": "full_day",
+      "requested_days": 2.0,
+      "leave_clashes_count": 0,
+      "description": "Child's school event",
+      "attachment": "",
+      "status": "requested",
+      "requested_date": "2025-07-24",
+      "approved_available_days": 0.0,
+      "approved_carryforward_days": 0.0,
+      "reject_reason": "",
+      "created_by": 1
+    }
+  },
+  {
+    "model": "leave.leaverequest",
+    "pk": 44,
+    "fields": {
+      "created_at": "2025-07-23T10:00:00.000Z",
+      "modified_by": 1,
+      "is_active": true,
+      "employee_id": 100,
+      "leave_type_id": 3,
+      "start_date": "2025-07-31",
+      "start_date_breakdown": "full_day",
+      "end_date": "2025-07-31",
+      "end_date_breakdown": "full_day",
+      "requested_days": 1.0,
+      "leave_clashes_count": 0,
+      "description": "Child's school event",
+      "attachment": "",
+      "status": "requested",
+      "requested_date": "2025-07-21",
+      "approved_available_days": 0.0,
+      "approved_carryforward_days": 0.0,
+      "reject_reason": "",
+      "created_by": 1
+    }
+  },
+  {
+    "model": "leave.leaverequest",
+    "pk": 45,
+    "fields": {
+      "created_at": "2025-07-25T10:00:00.000Z",
+      "modified_by": 1,
+      "is_active": true,
+      "employee_id": 32,
+      "leave_type_id": 2,
+      "start_date": "2025-07-29",
+      "start_date_breakdown": "full_day",
+      "end_date": "2025-07-29",
+      "end_date_breakdown": "full_day",
+      "requested_days": 1.0,
+      "leave_clashes_count": 0,
+      "description": "Government office work",
+      "attachment": "",
+      "status": "requested",
+      "requested_date": "2025-07-24",
+      "approved_available_days": 0.0,
+      "approved_carryforward_days": 0.0,
+      "reject_reason": "",
+      "created_by": 1
+    }
+  },
+  {
+    "model": "leave.leaverequest",
+    "pk": 46,
+    "fields": {
+      "created_at": "2025-07-22T10:00:00.000Z",
+      "modified_by": 1,
+      "is_active": true,
+      "employee_id": 44,
+      "leave_type_id": 2,
+      "start_date": "2025-07-28",
+      "start_date_breakdown": "full_day",
+      "end_date": "2025-07-29",
+      "end_date_breakdown": "full_day",
+      "requested_days": 2.0,
+      "leave_clashes_count": 0,
+      "description": "Sick leave",
+      "attachment": "",
+      "status": "requested",
+      "requested_date": "2025-07-24",
+      "approved_available_days": 0.0,
+      "approved_carryforward_days": 0.0,
+      "reject_reason": "",
+      "created_by": 1
+    }
+  },
+  {
+    "model": "leave.leaverequest",
+    "pk": 47,
+    "fields": {
+      "created_at": "2025-07-23T10:00:00.000Z",
+      "modified_by": 1,
+      "is_active": true,
+      "employee_id": 112,
+      "leave_type_id": 3,
+      "start_date": "2025-07-30",
+      "start_date_breakdown": "full_day",
+      "end_date": "2025-07-30",
+      "end_date_breakdown": "full_day",
+      "requested_days": 1.0,
+      "leave_clashes_count": 0,
+      "description": "Travel for personal reason",
+      "attachment": "",
+      "status": "requested",
+      "requested_date": "2025-07-21",
+      "approved_available_days": 0.0,
+      "approved_carryforward_days": 0.0,
+      "reject_reason": "",
+      "created_by": 1
+    }
+  },
+  {
+    "model": "leave.leaverequest",
+    "pk": 48,
+    "fields": {
+      "created_at": "2025-07-24T10:00:00.000Z",
+      "modified_by": 1,
+      "is_active": true,
+      "employee_id": 9,
+      "leave_type_id": 2,
+      "start_date": "2025-07-31",
+      "start_date_breakdown": "full_day",
+      "end_date": "2025-07-31",
+      "end_date_breakdown": "full_day",
+      "requested_days": 1.0,
+      "leave_clashes_count": 0,
+      "description": "Attending wedding",
+      "attachment": "",
+      "status": "requested",
+      "requested_date": "2025-07-21",
+      "approved_available_days": 0.0,
+      "approved_carryforward_days": 0.0,
+      "reject_reason": "",
+      "created_by": 1
+    }
+  },
+  {
+    "model": "leave.leaverequest",
+    "pk": 49,
+    "fields": {
+      "created_at": "2025-07-24T10:00:00.000Z",
+      "modified_by": 1,
+      "is_active": true,
+      "employee_id": 80,
+      "leave_type_id": 2,
+      "start_date": "2025-07-28",
+      "start_date_breakdown": "full_day",
+      "end_date": "2025-07-28",
+      "end_date_breakdown": "full_day",
+      "requested_days": 1.0,
+      "leave_clashes_count": 0,
+      "description": "Government office work",
+      "attachment": "",
+      "status": "requested",
+      "requested_date": "2025-07-23",
+      "approved_available_days": 0.0,
       "approved_carryforward_days": 0.0,
       "reject_reason": "",
       "created_by": 1
