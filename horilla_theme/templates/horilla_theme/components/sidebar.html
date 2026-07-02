@@ -575,8 +575,8 @@
 
         var sidebarEl = document.getElementById("sidebar");
 
-        var sidebarPinned = false;
-        try { sidebarPinned = localStorage.getItem("sidebarPinned") === "true"; } catch (_) {}
+        var sidebarPinned = true; // default: pinned open
+        try { var _stored = localStorage.getItem("sidebarPinned"); if (_stored !== null) sidebarPinned = _stored === "true"; } catch (_) {}
 
         function applySidebarPin(pinned, animate) {
           sidebarPinned = pinned;
