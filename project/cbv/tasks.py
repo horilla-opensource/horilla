@@ -27,6 +27,7 @@ from horilla_views.generic.cbv.views import (
     HorillaNavView,
     TemplateView,
 )
+from project.cbv.cbv_decorators import is_projectmanager_or_member_or_perms
 from project.cbv.project_stage import StageDynamicCreateForm
 from project.cbv.projects import DynamicProjectCreationFormView
 from project.filters import TaskAllFilter
@@ -38,6 +39,9 @@ logger = logging.getLogger(__name__)
 
 
 @method_decorator(login_required, name="dispatch")
+@method_decorator(
+    is_projectmanager_or_member_or_perms(perm="project.view_task"), name="dispatch"
+)
 class TasksTemplateView(TemplateView):
     """
     view page of the task page
