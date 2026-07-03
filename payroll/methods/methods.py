@@ -68,7 +68,9 @@ def get_leaves(employee, start_date, end_date):
     unpaid_leave_dates = []
     # list of (date, payment_percentage) for partial-pay leaves
     custom_leave_dates = []
-    company_leave_dates = get_working_days(start_date, end_date)["company_leave_dates"]
+    company_leave_dates = get_working_days(start_date, end_date, employee)[
+        "company_leave_dates"
+    ]
 
     if approved_leaves and approved_leaves.exists():
         for instance in approved_leaves:
@@ -138,7 +140,7 @@ if apps.is_installed("attendance"):
         present_on = [
             attendance.attendance_date for attendance in attendances_on_period
         ]
-        working_days_between_range = get_working_days(start_date, end_date)[
+        working_days_between_range = get_working_days(start_date, end_date, employee)[
             "working_days_on"
         ]
         leave_dates = get_leaves(employee, start_date, end_date)["leave_dates"]
@@ -150,7 +152,7 @@ if apps.is_installed("attendance"):
         conflict_dates = conflict_dates + [
             date
             for date in present_on
-            if date in get_holiday_dates(start_date, end_date)
+            if date in get_holiday_dates(start_date, end_date, employee)
             or date
             in list(
                 set(
