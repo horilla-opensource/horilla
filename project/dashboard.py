@@ -6,10 +6,12 @@ Accessible at /project/dashboard/
 
 from datetime import date, timedelta
 
-from django.contrib.auth.decorators import login_required
 from django.db.models import Count, Q
 from django.http import JsonResponse
 from django.shortcuts import render
+
+from horilla.decorators import login_required
+from project.cbv.cbv_decorators import is_projectmanager_or_member_or_perms
 
 
 def _parse_period(request):
@@ -28,11 +30,13 @@ def _parse_period(request):
 
 
 @login_required
+@is_projectmanager_or_member_or_perms(perm="project.view_project")
 def project_dashboard_view(request):
     return render(request, "project/dashboard.html")
 
 
 @login_required
+@is_projectmanager_or_member_or_perms(perm="project.view_project")
 def project_kpi_data(request):
     from project.models import Project, Task
 
@@ -74,6 +78,7 @@ def project_kpi_data(request):
 
 
 @login_required
+@is_projectmanager_or_member_or_perms(perm="project.view_project")
 def project_status_distribution(request):
     """Project status breakdown, for projects created in the picker range."""
     from project.models import Project
@@ -107,6 +112,7 @@ def project_status_distribution(request):
 
 
 @login_required
+@is_projectmanager_or_member_or_perms(perm="project.view_project")
 def project_task_status(request):
     """Task status breakdown, for tasks created in the picker range."""
     from project.models import Task
@@ -138,6 +144,7 @@ def project_task_status(request):
 
 
 @login_required
+@is_projectmanager_or_member_or_perms(perm="project.view_project")
 def project_monthly_trend(request):
     from project.models import Project
 
@@ -171,6 +178,7 @@ def project_monthly_trend(request):
 
 
 @login_required
+@is_projectmanager_or_member_or_perms(perm="project.view_project")
 def project_upcoming_deadlines(request):
     from project.models import Project
 
@@ -197,6 +205,7 @@ def project_upcoming_deadlines(request):
 
 
 @login_required
+@is_projectmanager_or_member_or_perms(perm="project.view_project")
 def project_top_active(request):
     from project.models import Project
 
