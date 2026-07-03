@@ -252,6 +252,11 @@ class Employee(models.Model):
         """
         This method is used to check if the employee has a shift assigned
         """
+        from base.methods import is_holiday
+
+        today = datetime.today().date()
+        if is_holiday(today, self):
+            return None
         shift = self.get_shift()
         day = datetime.today().strftime("%A").lower()
         if not shift:
