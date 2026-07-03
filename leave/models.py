@@ -886,13 +886,20 @@ def leave_requested_dates(start_date, end_date):
     return [start_date + timedelta(i) for i in range((end_date - start_date).days + 1)]
 
 
-def cal_effective_requested_days(start_date, end_date, leave_type_id, requested_days):
+def cal_effective_requested_days(
+    start_date, end_date, leave_type_id, requested_days, employee=None
+):
     """
     Calculates the effective requested leave days by accounting for
     holidays and company leave days.
     """
     requested_dates = leave_requested_dates(start_date, end_date)
-    holidays = set(holiday_dates_list(Holidays.objects.all()))
+    holiday_qs = Holidays.objects.all()
+    if employee:
+        holiday_qs = Holidays.objects.filter(
+            Q(is_specific=False) | Q(employees=employee)
+        )
+    holidays = set(holiday_dates_list(holiday_qs))
     company_leave_dates = set(
         company_leave_dates_list(CompanyLeaves.objects.all(), start_date)
     )
@@ -1344,7 +1351,9 @@ class LeaveRequest(HorillaModel):
         :return: this functions returns a list of all holiday dates.
         """
         holiday_dates = []
-        holidays = Holidays.objects.all()
+        holidays = Holidays.objects.filter(
+            Q(is_specific=False) | Q(employees=self.employee_id)
+        )
         for holiday in holidays:
             holiday_start_date = holiday.start_date
             holiday_end_date = holiday.end_date
@@ -1573,6 +1582,7 @@ class LeaveRequest(HorillaModel):
             end_date=self.end_date,
             leave_type_id=leave_type,
             requested_days=requested_days,
+            employee=self.employee_id,
         )
         leave_dates = leave_requested_dates(self.start_date, self.end_date)
         month_year = [f"{date.year}-{date.strftime('%m')}" for date in leave_dates]

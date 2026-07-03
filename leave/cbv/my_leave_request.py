@@ -7,6 +7,7 @@ from datetime import datetime
 from typing import Any
 
 from django.contrib import messages
+from django.db.models import Q
 from django.http import HttpResponse
 from django.shortcuts import render
 from django.urls import resolve, reverse, reverse_lazy
@@ -336,7 +337,9 @@ class MyLeaveRequestForm(HorillaFormView):
                     start_date, end_date, start_date_breakdown, end_date_breakdown
                 )
                 requested_dates = leave_requested_dates(start_date, end_date)
-                holidays = Holidays.objects.all()
+                holidays = Holidays.objects.filter(
+                    Q(is_specific=False) | Q(employees=employee)
+                )
                 holiday_dates = holiday_dates_list(holidays)
                 company_leaves = CompanyLeaves.objects.all()
                 company_leave_dates = company_leave_dates_list(
@@ -511,7 +514,7 @@ class MyLeaveRequestSingleForm(HorillaFormView):
         )
         requested_dates = leave_requested_dates(start_date, end_date)
         requested_dates = [date.date() for date in requested_dates]
-        holidays = Holidays.objects.all()
+        holidays = Holidays.objects.filter(Q(is_specific=False) | Q(employees=employee))
         holiday_dates = holiday_dates_list(holidays)
         company_leaves = CompanyLeaves.objects.all()
         company_leave_dates = company_leave_dates_list(company_leaves, start_date)

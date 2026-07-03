@@ -477,6 +477,7 @@ def leave_upcoming_holidays(request):
 
     try:
         qs = Holidays.objects.filter(
+            is_specific=False,
             start_date__gte=from_date,
             start_date__lte=to_date,
         ).order_by("start_date")[:10]
