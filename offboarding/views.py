@@ -989,7 +989,12 @@ def delete_resignation_request(request):
     This method is used to delete resignation letter instance
     """
     ids = request.GET.getlist("letter_ids")
-    ResignationLetter.objects.filter(id__in=ids).delete()
+    if request.user.has_perm("offboarding.delete_resignationletter"):
+        ResignationLetter.objects.filter(id__in=ids).delete()
+    else:
+        ResignationLetter.objects.filter(
+            id__in=ids, employee_id__employee_user_id=request.user
+        ).delete()
     messages.success(request, _("Resignation letter deleted"))
     if request.META.get("HTTP_REFERER") and request.META.get("HTTP_REFERER").endswith(
         "employee-profile/"
@@ -1002,21 +1007,48 @@ def delete_resignation_request(request):
 
 @login_required
 @hx_request_required
-@check_feature_enabled("resignation_request")
 def create_resignation_request(request):
     """
     This method is used to render form to create resignation requests
     """
+    Selected_company = request.session.get("selected_company")
+    company_id = None
+    if Selected_company and Selected_company != "all":
+        company_id = Selected_company
+        general_setting = OffboardingGeneralSetting.objects.filter(
+            company_id=company_id
+        ).first()
+    else:
+        general_setting = OffboardingGeneralSetting.objects.filter(
+            company_id__isnull=True
+        ).first()
+    feature_enabled = getattr(general_setting, "resignation_request", False)
+    if not feature_enabled and not request.user.is_superuser:
+        can_create = False
+    else:
+        can_create = (
+            feature_enabled
+            or request.user.is_superuser
+            or request.user.has_perm("offboarding.add_resignationletter")
+        )
+    if not can_create:
+        messages.info(request, _("Feature is not enabled on the settings"))
+        return render(request, "decorator_404.html")
     instance_id = eval_validate(str(request.GET.get("instance_id")))
     instance = None
     if instance_id:
         instance = ResignationLetter.objects.get(id=instance_id)
+        if not (
+            request.user.has_perm("offboarding.change_resignationletter")
+            or instance.employee_id == request.user.employee_get
+        ):
+            return render(request, "no_perm.html")
     form = ResignationLetterForm(instance=instance)
     if request.method == "POST":
         form = ResignationLetterForm(request.POST, instance=instance)
         if form.is_valid():
-            form.save()
-            messages.success(request, _("Resignation letter saved"))
+            if form.save() is not None:
+                messages.success(request, _("Resignation letter saved"))
             return HorillaRedirect(request)
 
     return render(request, "offboarding/resignation/form.html", {"form": form})
@@ -1139,6 +1171,18 @@ def enable_resignation_request(request):
                             """
         )
     return redirect(general_settings)
+
+
+@login_required
+def offboarding_rules_settings_view(request):
+    """
+    Merged "Offboarding Rules" settings page that groups the Resignation
+    Request toggle and the Notice Period setting under a single header. Each
+    section reuses its existing toggle/save endpoint; the current state is
+    provided by the global context processors (enabled_resignation_request and
+    get_initial_notice_period).
+    """
+    return render(request, "offboarding/settings/offboarding_rules.html")
 
 
 @login_required

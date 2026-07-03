@@ -369,6 +369,23 @@ class ResignationLetter(HorillaModel):
         """
         return dict(self.statuses).get(self.status)
 
+    def get_status_badge(self):
+        """
+        Display status as a styled badge for the detail view.
+        """
+        badge_colors = {
+            "requested": "#808080",
+            "approved": "#8db600",
+            "rejected": "#ff0000",
+        }
+        label = dict(self.statuses).get(self.status, self.status)
+        color = badge_colors.get(self.status, "#808080")
+        return (
+            f'<span style="background-color:{color}; color:#fff; '
+            f'padding:3px 10px; border-radius:4px; font-size:0.8rem;">'
+            f"{label}</span>"
+        )
+
     def option_column(self):
         """
         This method for get custome coloumn .
