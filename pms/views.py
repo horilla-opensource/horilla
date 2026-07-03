@@ -2752,8 +2752,14 @@ def period_change(request):
         if request.method == "POST":
             data = json.load(request)
             period_obj = Period.objects.get(id=data)
-            start_date = period_obj.start_date
-            end_date = period_obj.end_date
+            start_date = (
+                period_obj.start_date.strftime("%Y-%m-%d")
+                if period_obj.start_date
+                else ""
+            )
+            end_date = (
+                period_obj.end_date.strftime("%Y-%m-%d") if period_obj.end_date else ""
+            )
             return JsonResponse({"start_date": start_date, "end_date": end_date})
         return JsonResponse({"failed": "failed"})
     return HttpResponse(status=204)
