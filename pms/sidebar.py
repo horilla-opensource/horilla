@@ -17,6 +17,7 @@ SUBMENUS = [
     {
         "menu": _("Dashboard"),
         "redirect": reverse_lazy("dashboard-view"),
+        "accessibility": "pms.sidebar.dashboard_accessibility",
     },
     {
         "menu": _("Objectives"),
@@ -55,6 +56,10 @@ SUBMENUS = [
         "accessibility": "pms.sidebar.question_template_accessibility",
     },
 ]
+
+
+def dashboard_accessibility(request, submenu, user_perms, *args, **kwargs):
+    return request.user.has_perm("pms.view_employeeobjective")
 
 
 def objective_template_accessibility(request, submenu, user_perms, *args, **kwargs):
