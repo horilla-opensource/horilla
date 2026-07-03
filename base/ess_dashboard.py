@@ -8,6 +8,7 @@ All data is scoped to request.user.employee_get; no cross-employee access.
 from datetime import date, timedelta
 
 from django.contrib.auth.decorators import login_required
+from django.db.models import Q
 from django.http import JsonResponse
 from django.shortcuts import render
 
@@ -266,7 +267,6 @@ def ess_leave_requests(request):
 @login_required
 def ess_attendance_calendar(request):
     """GET /ess/api/attendance-calendar/?year=&month= — day-by-day attendance status."""
-    from django.db.models import Q
 
     employee = _get_employee(request)
     if not employee:
@@ -324,6 +324,7 @@ def ess_attendance_calendar(request):
         from base.models import Holidays
 
         for h in Holidays.objects.filter(
+            Q(is_specific=False) | Q(employees=employee),
             start_date__lte=to_date,
             start_date__gte=from_date,
         ):
@@ -496,7 +497,6 @@ def ess_payslips(request):
 @login_required
 def ess_objectives(request):
     """GET /ess/api/objectives/?year=&month= — PMS objectives overlapping the selected month."""
-    from django.db.models import Q as _Q
 
     employee = _get_employee(request)
     if not employee:
@@ -508,8 +508,8 @@ def ess_objectives(request):
         from pms.models import EmployeeObjective
 
         # Employee-specific progress records overlapping the selected month
-        month_overlap = _Q(start_date__lte=to_date) & (
-            _Q(end_date__gte=from_date) | _Q(end_date__isnull=True)
+        month_overlap = Q(start_date__lte=to_date) & (
+            Q(end_date__gte=from_date) | Q(end_date__isnull=True)
         )
         qs = (
             EmployeeObjective.objects.filter(
@@ -555,7 +555,6 @@ def ess_objectives(request):
 @login_required
 def ess_announcements(request):
     """GET /ess/api/announcements/?year=&month= — announcements active during the selected month."""
-    from django.db.models import Q
 
     from base.models import Announcement
 
@@ -642,6 +641,7 @@ def ess_upcoming(request):
     holiday_list = []
     try:
         for h in Holidays.objects.filter(
+            Q(is_specific=False) | Q(employees=employee),
             start_date__gte=today,
             start_date__lte=horizon,
         ).order_by("start_date")[:5]:

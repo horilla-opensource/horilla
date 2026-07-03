@@ -1125,19 +1125,23 @@ def paginator_qry(queryset, page_number):
     return queryset
 
 
-def is_holiday(date):
+def is_holiday(date, employee=None):
     """
     Check if the given date is a holiday.
     Args:
         date (datetime.date): The date to check.
+        employee: Optional Employee instance. When provided, only non-specific holidays
+                  or specific holidays that include this employee are matched.
     Returns:
         Holidays or bool: The Holidays object if the date is a holiday, otherwise False.
     """
-    # Get holidays that either match the exact date range or are recurring
-    holiday = Holidays.objects.filter(
+    holidays = Holidays.objects.filter(
         Q(start_date__lte=date, end_date__gte=date)
         | Q(recurring=True, start_date__month=date.month, start_date__day=date.day)
-    ).first()
+    )
+    if employee is not None:
+        holidays = holidays.filter(Q(is_specific=False) | Q(employees=employee))
+    holiday = holidays.first()
     return holiday if holiday else False
 
 
@@ -1196,7 +1200,7 @@ def get_date_range(start_date, end_date):
     return date_list
 
 
-def get_holiday_dates(range_start: date, range_end: date) -> list:
+def get_holiday_dates(range_start: date, range_end: date, employee=None) -> list:
     """
     :return: this functions returns a list of all holiday dates.
     """
@@ -1205,6 +1209,8 @@ def get_holiday_dates(range_start: date, range_end: date) -> list:
     for check_date in pay_range_dates:
         query |= Q(start_date__lte=check_date, end_date__gte=check_date)
     holidays = Holidays.objects.filter(query)
+    if employee is not None:
+        holidays = holidays.filter(Q(is_specific=False) | Q(employees=employee))
     holiday_dates = set([])
     for holiday in holidays:
         holiday_dates = holiday_dates | (
@@ -1255,16 +1261,17 @@ def get_company_leave_dates(year):
     return company_leave_dates
 
 
-def get_working_days(start_date, end_date):
+def get_working_days(start_date, end_date, employee=None):
     """
     This method is used to calculate the total working days, total leave, worked days on that period
 
     Args:
         start_date (_type_): the start date from the data needed
         end_date (_type_): the end date till the date needed
+        employee: Optional Employee instance to scope specific holidays.
     """
 
-    holiday_dates = get_holiday_dates(start_date, end_date)
+    holiday_dates = get_holiday_dates(start_date, end_date, employee)
 
     # appending company/holiday leaves
     # Note: Duplicate entry may exist

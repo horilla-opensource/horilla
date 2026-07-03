@@ -142,6 +142,7 @@ class HolidayDetailView(HorillaDetailedView):
 
     model = Holidays
     title = _("Details")
+    template_name = "holiday/holiday_detail_view.html"
 
     header = {"title": "name", "subtitle": "", "avatar": "get_avatar"}
     body = [
@@ -150,6 +151,7 @@ class HolidayDetailView(HorillaDetailedView):
         (_("End Date"), "end_date"),
         (_("Recurring"), "get_recurring_status"),
         (_("Company"), "company_id"),
+        (_("Employee Specific"), "get_is_specific_status"),
     ]
 
     action_method = "detail_view_actions"
@@ -187,6 +189,7 @@ class HolidayFormView(HorillaFormView):
     form_class = HolidayForm
     model = Holidays
     new_display_title = _("Create Holiday")
+    template_name = "holiday/holiday_cbv_form.html"
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)

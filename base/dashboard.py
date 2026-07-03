@@ -117,24 +117,11 @@ def dashboard_kpi_data(request):
     present_today = 0
     try:
         from attendance.models import Attendance
-        from leave.models import LeaveRequest
 
-        real_today = date.today()
-        leave_employee_ids = list(
-            LeaveRequest.objects.filter(
-                start_date__lte=real_today,
-                status="approved",
-            )
-            .filter(
-                Q(end_date__gte=real_today)
-                | Q(end_date__isnull=True, start_date=real_today)
-            )
-            .values_list("employee_id", flat=True)
-            .distinct()
-        )
         present_today = (
-            Attendance.objects.filter(attendance_date=today)
-            .exclude(employee_id__in=leave_employee_ids)
+            Attendance.objects.filter(
+                attendance_date=today,
+            )
             .values("employee_id")
             .distinct()
             .count()
@@ -533,6 +520,7 @@ def dashboard_upcoming_holidays(request):
         qs = Holidays.objects.filter(
             Q(start_date__gte=today, start_date__lte=next_week)
             | Q(start_date__lte=today, end_date__gte=today),
+            is_specific=False,
         )
         if company_id:
             qs = qs.filter(company_id=company_id)
