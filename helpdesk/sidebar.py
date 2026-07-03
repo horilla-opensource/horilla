@@ -15,6 +15,7 @@ SUBMENUS = [
     {
         "menu": _("Dashboard"),
         "redirect": reverse_lazy("helpdesk-dashboard"),
+        "accessibility": "helpdesk.sidebar.dashboard_accessibility",
     },
     {
         "menu": _("FAQs"),
@@ -25,6 +26,10 @@ SUBMENUS = [
         "redirect": reverse_lazy("ticket-view"),
     },
 ]
+
+
+def dashboard_accessibility(request, submenu, user_perms, *args, **kwargs):
+    return request.user.has_perm("helpdesk.view_ticket")
 
 
 # ---------------------------------------------------------------------------
