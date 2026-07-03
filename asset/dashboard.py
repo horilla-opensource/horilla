@@ -6,11 +6,12 @@ Accessible at /asset/dashboard/modern/ alongside the existing dashboard.
 
 from datetime import date, timedelta
 
-from django.contrib.auth.decorators import login_required
 from django.db.models import Count, DecimalField, Q, Sum
 from django.db.models.functions import Coalesce
 from django.http import JsonResponse
 from django.shortcuts import render
+
+from horilla.decorators import login_required, permission_required
 
 
 def _parse_period(request):
@@ -41,6 +42,7 @@ def _assets_in_period(request):
 
 
 @login_required
+@permission_required("asset.view_assetcategory")
 def asset_dashboard_view(request):
     """Render the modern asset dashboard page."""
     return render(request, "asset/dashboard.html")
