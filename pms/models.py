@@ -913,6 +913,10 @@ class QuestionTemplate(HorillaModel):
     def __str__(self):
         return self.question_template
 
+    def get_company_display(self):
+        companies = self.company_id.values_list("company", flat=True)
+        return ", ".join(companies) if companies else "All Companies"
+
     def question_count(self):
         return self.question.count()
 

@@ -24,6 +24,7 @@ from base.methods import (
     is_reportingmanager,
     reload_queryset,
 )
+from base.models import Company
 from employee.filters import EmployeeFilter
 from horilla import horilla_middlewares
 from horilla_widgets.widgets.horilla_multi_select_field import HorillaMultiSelectField
@@ -880,6 +881,14 @@ class QuestionTemplateForm(ModelForm):
                 "class": "oh-select oh-select-2 w-100",
             }
         )
+        if not self.instance.pk:
+            request = getattr(horilla_middlewares._thread_locals, "request", None)
+            if request:
+                selected_company = request.session.get("selected_company")
+                if selected_company and selected_company != "all":
+                    self.initial["company_id"] = Company.objects.filter(
+                        id=selected_company
+                    )
 
     def as_p(self):
         """
