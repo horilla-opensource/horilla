@@ -123,16 +123,6 @@
         box-shadow: 0 4px 14px -4px rgba(227, 78, 56, 0.45);
     }
 
-    /* Active module button: brand-red background so the current section
-       stays highlighted even when not hovered */
-    .sideboxmain.active {
-        background-color: #e54f38 !important;
-        box-shadow: 0 4px 14px -4px rgba(229, 79, 56, 0.45);
-    }
-    body.dark .sideboxmain.active {
-        background-color: #c73f2a !important;
-    }
-
     /* Active submenu link highlight */
     .oh-sidebar-active-link {
         background-color: #f3f4f6;
@@ -287,30 +277,6 @@
     body.dark #sidebarFlyout h5 {
         color: #9ca3af;
         border-bottom-color: #374151;
-    }
-
-    /* Flyout link hover highlight */
-    #sidebarFlyout a.sidebar-subnav-link {
-        color: #374151;
-        transition: background-color 0.12s ease, color 0.12s ease;
-    }
-    #sidebarFlyout a.sidebar-subnav-link:hover {
-        background-color: rgba(229, 79, 56, 0.08) !important;
-        color: #e54f38 !important;
-    }
-    #sidebarFlyout a.sidebar-subnav-link.oh-sidebar-active-link {
-        background-color: rgba(229, 79, 56, 0.12) !important;
-        color: #e54f38 !important;
-        font-weight: 600;
-    }
-    body.dark #sidebarFlyout a.sidebar-subnav-link { color: #d1d5db; }
-    body.dark #sidebarFlyout a.sidebar-subnav-link:hover {
-        background-color: rgba(229, 79, 56, 0.15) !important;
-        color: #f87060 !important;
-    }
-    body.dark #sidebarFlyout a.sidebar-subnav-link.oh-sidebar-active-link {
-        background-color: rgba(229, 79, 56, 0.20) !important;
-        color: #f87060 !important;
     }
 
     @media (prefers-reduced-motion: reduce) {
@@ -660,12 +626,6 @@
             document.querySelectorAll(".sidebar-subnav-link").forEach(function (l) { l.classList.remove("oh-sidebar-active-link"); });
             flyoutListEl.querySelectorAll("a").forEach(function (a) { a.classList.remove("oh-sidebar-active-link"); });
             link.classList.add("oh-sidebar-active-link");
-            // Mark the parent module button as active
-            var matchHref = link.getAttribute("href") || link.getAttribute("hx-get") || "";
-            document.querySelectorAll(".sidebar-item").forEach(function (si) {
-              var match = si.querySelector('.sidebar-subnav a[href="' + matchHref + '"]');
-              if (match) { var b = si.querySelector(".sideboxmain"); if (b) setActiveSidebarMenu(b); }
-            });
             bumpGrace(1500);
             window.history.pushState({}, "", href);
             htmx.ajax("GET", href, {
@@ -756,8 +716,8 @@
           });
         }
 
-        // Re-highlight active module + link after any URL change (HTMX or browser back/forward)
-        function syncSidebarToUrl() {
+        // Re-highlight active link after HTMX navigation without closing accordion
+        document.addEventListener("htmx:pushUrl", function () {
           document.querySelectorAll(".sidebar-subnav-link").forEach(function (l) {
             l.classList.remove("oh-sidebar-active-link");
           });
@@ -774,9 +734,7 @@
             }
           });
           if (matchedBtn) setActiveSidebarMenu(matchedBtn);
-        }
-        document.addEventListener("htmx:pushUrl", syncSidebarToUrl);
-        window.addEventListener("popstate", syncSidebarToUrl);
+        });
 
         // ── Navigation click handlers ────────────────────────────────────────
 

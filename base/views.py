@@ -5485,26 +5485,19 @@ def notification_sound(request):
 
 
 @login_required
-def general_settings(request):
+def _system_preferences_context(request):
     """
-    This method is used to render settings template
+    Build template context shared by the System Preferences settings page.
     """
     if apps.is_installed("payroll"):
         PayrollSettings = get_horilla_model_class(
             app_label="payroll", model="payrollsettings"
         )
-        EncashmentGeneralSettings = get_horilla_model_class(
-            app_label="payroll", model="encashmentgeneralsettings"
-        )
         from payroll.forms.component_forms import PayrollSettingsForm
-        from payroll.forms.forms import EncashmentGeneralSettingsForm
 
         currency_instance = PayrollSettings.objects.first()
         currency_form = PayrollSettingsForm(instance=currency_instance)
-        encashment_instance = EncashmentGeneralSettings.objects.first()
-        encashment_form = EncashmentGeneralSettingsForm(instance=encashment_instance)
     else:
-        encashment_form = None
         currency_form = None
 
     selected_company_id = request.session.get("selected_company")
@@ -5514,7 +5507,6 @@ def general_settings(request):
     else:
         companies = Company.objects.filter(id=selected_company_id)
 
-    # Fetch or create EmployeeGeneralSetting instance
     prefix_instance = EmployeeGeneralSetting.objects.first()
     prefix_form = EmployeeGeneralSettingPrefixForm(instance=prefix_instance)
     instance = AnnouncementExpire.objects.first()
@@ -5542,28 +5534,71 @@ def general_settings(request):
         pagination_form = DynamicPaginationForm(instance=pagination)
     else:
         pagination_form = DynamicPaginationForm()
+
+    return {
+        "form": form,
+        "currency_form": currency_form,
+        "pagination_form": pagination_form,
+        "history_fields_form": history_fields_form,
+        "history_tracking_instance": history_tracking_instance,
+        "enabled_block_unblock": enabled_block_unblock,
+        "enabled_profile_edit": enabled_profile_edit,
+        "prefix_form": prefix_form,
+        "companies": companies,
+        "selected_company_id": selected_company_id,
+        "announcement_expire_instance": instance,
+    }
+
+
+@login_required
+def system_preferences_settings_view(request):
+    """
+    Merged "System Preferences" settings page that groups general defaults,
+    formatting/localization, and data access controls under a single header.
+    """
+    context = _system_preferences_context(request)
+    instance = context["announcement_expire_instance"]
+
     if request.method == "POST":
         form = AnnouncementExpireForm(request.POST, instance=instance)
         if form.is_valid():
             form.save()
             messages.success(request, _("Settings updated."))
             return HorillaRedirect(request)
+        context["form"] = form
+
+    return render(request, "base/settings/system_preferences.html", context)
+
+
+@login_required
+def general_settings(request):
+    """
+    Legacy URL — redirects to System Preferences.
+    """
+    return redirect("system-preferences-view")
+
+
+@login_required
+def encashment_general_settings_view(request):
+    """
+    Encashment redeem condition settings (moved out of General Settings).
+    """
+    if not apps.is_installed("payroll"):
+        return redirect("system-preferences-view")
+
+    EncashmentGeneralSettings = get_horilla_model_class(
+        app_label="payroll", model="encashmentgeneralsettings"
+    )
+    from payroll.forms.forms import EncashmentGeneralSettingsForm
+
+    encashment_instance = EncashmentGeneralSettings.objects.first()
+    encashment_form = EncashmentGeneralSettingsForm(instance=encashment_instance)
 
     return render(
         request,
-        "base/general_settings.html",
+        "base/encashment_general_settings.html",
         {
-            "form": form,
-            "currency_form": currency_form,
-            "pagination_form": pagination_form,
             "encashment_form": encashment_form,
-            "history_fields_form": history_fields_form,
-            "history_tracking_instance": history_tracking_instance,
-            "enabled_block_unblock": enabled_block_unblock,
-            "enabled_profile_edit": enabled_profile_edit,
-            "prefix_form": prefix_form,
-            "companies": companies,
-            "selected_company_id": selected_company_id,
         },
     )
 
@@ -5574,7 +5609,7 @@ def date_settings(request):
     """
     This method is used to render Date format selector in settings
     """
-    return render(request, "base/company/date.html")
+    return redirect("system-preferences-view")
 
 
 @login_required

@@ -183,6 +183,11 @@ sidebar_urls = [
     "gmeet-view",
     "color-theme-view",
     "survey-template-preview",
+    "system-preferences-view",
+    "attendance-rule-view",
+    "leave-rules-view",
+    "offboarding-rules-view",
+    "time-policies-view",
 ]
 remove_urls = [
     "feedback-detailed-view",

@@ -85,6 +85,10 @@ def payslip_auto_generation_accessibility(
     return request.user.has_perm("payroll.view_payslipautogenerate")
 
 
+def encashment_settings_accessibility(request, submenu, user_perms, *args, **kwargs):
+    return request.user.has_perm("payroll.change_encashmentgeneralsetting")
+
+
 @settings_menu.register
 class PayrollSettings:
     title = _("Payroll")
@@ -95,5 +99,10 @@ class PayrollSettings:
             "label": _("Payslip Auto Generation"),
             "url": reverse_lazy("auto-payslip-settings-view"),
             "accessibility": payslip_auto_generation_accessibility,
+        },
+        {
+            "label": _("Encashment Settings"),
+            "url": reverse_lazy("encashment-settings-view"),
+            "accessibility": encashment_settings_accessibility,
         },
     ]

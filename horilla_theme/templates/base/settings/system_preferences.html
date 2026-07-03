@@ -1,0 +1,66 @@
+{% extends 'settings.html' %}
+{% block settings %}{% load i18n %}{% load horillafilters %}{% load static %}
+    <div class="mb-4">
+        <h4 class="text-base font-semibold text-[#333]">{% trans "System Preferences" %}</h4>
+        <p class="text-xs text-gray-500 mt-1">
+            {% trans "Configure system defaults, display formatting, and data access controls." %}
+        </p>
+    </div>
+
+    {% if perms.base.change_announcementexpire or perms.base.view_dynamicpagination %}
+        <div class="border border-[#ebebeb] rounded-md overflow-hidden mb-5">
+            <h5 class="text-sm font-semibold bg-[#f3f3f3] px-4 py-3 text-[#333]">
+                {% trans "General Defaults" %}
+            </h5>
+            <div class="p-4">
+                <div class="grid grid-cols-12 gap-4 myform">
+                    {% if perms.base.change_announcementexpire %}
+                        {% include "announcement/expiry_day.html" %}
+                    {% endif %}
+                    {% if perms.base.view_dynamicpagination %}
+                        {% include "base/dynamic_pagination/pagination_settings.html" %}
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    {% endif %}
+
+    {% if perms.employee.change_employeegeneralsetting or "payroll"|app_installed and perms.payroll.view_payrollsettings or perms.base.view_company %}
+        <div class="border border-[#ebebeb] rounded-md overflow-hidden mb-5">
+            <h5 class="text-sm font-semibold bg-[#f3f3f3] px-4 py-3 text-[#333]">
+                {% trans "Formatting & Localization" %}
+            </h5>
+            <div class="p-4">
+                <div class="grid grid-cols-12 gap-4 myform">
+                    {% if perms.employee.change_employeegeneralsetting %}
+                        {% include "settings/settings.html" %}
+                    {% endif %}
+                    {% if "payroll"|app_installed and perms.payroll.view_payrollsettings %}
+                        {% include "payroll/settings/payroll_settings.html" %}
+                    {% endif %}
+                    {% if perms.base.view_company %}
+                        {% include "base/settings/date_time_format_section.html" %}
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    {% endif %}
+
+    {% if perms.horilla_audit.view_accountblockunblock or perms.base.view_historytrackingfields %}
+        <div class="border border-[#ebebeb] rounded-md overflow-hidden mb-5">
+            <h5 class="text-sm font-semibold bg-[#f3f3f3] px-4 py-3 text-[#333]">
+                {% trans "Data & Access Controls" %}
+            </h5>
+            <div class="p-4">
+                <div class="grid grid-cols-12 gap-4 myform">
+                    {% if perms.horilla_audit.view_accountblockunblock %}
+                        {% include "base/audit_tag/employee_account_block_unblock.html" %}
+                    {% endif %}
+                    {% if perms.base.view_historytrackingfields %}
+                        {% include "base/audit_tag/history_tracking_fields.html" %}
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    {% endif %}
+{% endblock settings %}

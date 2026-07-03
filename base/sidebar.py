@@ -21,21 +21,24 @@ from horilla.menu import settings_menu
 # ---------------------------------------------------------------------------
 
 
-def general_settings_accessibility(request, submenu, user_perms, *args, **kwargs):
+def system_preferences_accessibility(request, submenu, user_perms, *args, **kwargs):
     return any(
         request.user.has_perm(p)
         for p in [
             "base.change_announcementexpire",
             "base.view_dynamicpagination",
             "horilla_audit.view_accountblockunblock",
-            "offboarding.change_offboardinggeneralsetting",
-            "attendance.change_attendancegeneralsetting",
-            "payroll.change_payrollgeneralsetting",
             "employee.change_employeegeneralsetting",
-            "payroll.change_encashmentgeneralsetting",
             "base.view_historytrackingfields",
             "payroll.view_payrollsettings",
+            "base.view_company",
         ]
+    )
+
+
+def general_settings_accessibility(request, submenu, user_perms, *args, **kwargs):
+    return system_preferences_accessibility(
+        request, submenu, user_perms, *args, **kwargs
     )
 
 
@@ -136,9 +139,9 @@ class GeneralSettings:
     order = 1
     items = [
         {
-            "label": _("General Settings"),
-            "url": reverse_lazy("general-settings"),
-            "accessibility": general_settings_accessibility,
+            "label": _("System Preferences"),
+            "url": reverse_lazy("system-preferences-view"),
+            "accessibility": system_preferences_accessibility,
         },
         {
             "label": _("Employee Permission"),
@@ -154,11 +157,6 @@ class GeneralSettings:
             "label": _("User Group"),
             "url": reverse_lazy("user-group-view"),
             "accessibility": user_group_accessibility,
-        },
-        {
-            "label": _("Date & Time Format"),
-            "url": reverse_lazy("date-settings"),
-            "accessibility": date_settings_accessibility,
         },
         {
             "label": _("History Tags"),

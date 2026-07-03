@@ -1256,6 +1256,16 @@ urlpatterns = [
         name="notification-sound",
     ),
     path("settings/general-settings/", views.general_settings, name="general-settings"),
+    path(
+        "settings/system-preferences-view/",
+        views.system_preferences_settings_view,
+        name="system-preferences-view",
+    ),
+    path(
+        "settings/encashment-settings-view/",
+        views.encashment_general_settings_view,
+        name="encashment-settings-view",
+    ),
     path("settings/date-settings/", views.date_settings, name="date-settings"),
     path("settings/save-date/", views.save_date_format, name="save_date_format"),
     path("settings/get-date-format/", views.get_date_format, name="get-date-format"),
