@@ -1,0 +1,42 @@
+{% extends 'settings.html' %}
+{% load i18n static %}
+
+{% block settings %}
+    <div id="ohMessages"></div>
+
+    <div class="mb-4">
+        <h4 class="text-base font-semibold text-[#333]">{% trans "Time Policies" %}</h4>
+        <p class="text-xs text-gray-500 mt-1">
+            {% trans "Configure attendance validation break points and grace time buffers." %}
+        </p>
+    </div>
+
+    {# ---- Break Point Condition ---- #}
+    <div class="border border-[#ebebeb] rounded-md mb-5">
+        <div hx-get="{% url 'break-point-navbar' %}" hx-trigger="load"></div>
+        <p class="text-xs text-gray-500 mt-1 ml-5">
+            {% trans "Define the thresholds used to auto-validate attendance and approve overtime." %}
+        </p>
+        <div
+            class="oh-checkpoint-badge mb-2"
+            id="selectedInstances"
+            data-ids="[]"
+            data-clicked=""
+            style="display: none"
+        >
+        </div>
+        <div
+            class="oh-wrapper"
+            hx-get='{% url "break-point-list" %}?{{ request.GET.urlencode }}'
+            hx-trigger="load"
+            id="listContainer"
+        >
+            <div class="animated-background"></div>
+        </div>
+    </div>
+
+    {# ---- Grace Time ---- #}
+    <div id="graceTimeContainer">
+        {% include "attendance/grace_time/grace_time_table.html" %}
+    </div>
+{% endblock %}

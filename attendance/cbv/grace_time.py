@@ -102,6 +102,7 @@ class GraceTimeList(GenericGraceTimeListView):
         self.view_id = "gracetime-container"
 
     selected_instances_key_id = "selectedInstancesData"
+    bulk_select_option = False
 
     def get_queryset(self):
         queryset = super().get_queryset()
@@ -156,6 +157,8 @@ class GraceTimeNav(HorillaNavView):
     """
     Nav bar
     """
+
+    template_name = "generic/inline_nav.html"
 
     def __init__(self, **kwargs: Any) -> None:
         super().__init__(**kwargs)

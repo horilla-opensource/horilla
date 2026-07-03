@@ -2930,16 +2930,19 @@ def enable_disable_check_in(request):
 
 @login_required
 @permission_required("attendance.view_attendancevalidationcondition")
-def grace_time_view(request):
+def time_policies_settings_view(request):
     """
-    This method view attendance validation conditions.
+    Merged "Time Policies" settings page that groups the Attendance Break Point
+    condition and Grace Time settings under a single header. Each section reuses
+    its existing nav/list HTMX endpoints; this view only gathers the current
+    state used by the embedded templates.
     """
     condition = AttendanceValidationCondition.objects.first()
     default_grace_time = GraceTime.objects.filter(is_default=True).first()
     grace_times = GraceTime.objects.entire().exclude(is_default=True)
     return render(
         request,
-        "attendance/grace_time/grace_time.html",
+        "attendance/settings/time_policies.html",
         {
             "condition": condition,
             "default_grace_time": default_grace_time,
@@ -2950,18 +2953,22 @@ def grace_time_view(request):
 
 @login_required
 @permission_required("attendance.view_attendancevalidationcondition")
+def grace_time_view(request):
+    """
+    Legacy standalone Grace Time settings page. Merged into Time Policies;
+    redirect direct visits to the merged page.
+    """
+    return redirect("time-policies-view")
+
+
+@login_required
+@permission_required("attendance.view_attendancevalidationcondition")
 def validation_condition_view(request):
     """
-    This method view attendance validation conditions.
+    Legacy standalone Attendance Break Point settings page. Merged into Time
+    Policies; redirect direct visits to the merged page.
     """
-
-    condition = AttendanceValidationCondition.objects.first()
-    default_grace_time = GraceTime.objects.filter(is_default=True).first()
-    return render(
-        request,
-        "attendance/break_point/condition.html",
-        {"condition": condition, "default_grace_time": default_grace_time},
-    )
+    return redirect("time-policies-view")
 
 
 @login_required

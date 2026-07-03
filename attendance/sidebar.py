@@ -172,13 +172,8 @@ class AttendanceSettings:
             "accessibility": attendance_rule_accessibility,
         },
         {
-            "label": _("Attendance Break Point"),
-            "url": reverse_lazy("attendance-settings-view"),
-            "accessibility": validation_condition_accessibility,
-        },
-        {
-            "label": _("Grace Time"),
-            "url": reverse_lazy("grace-settings-view"),
+            "label": _("Time Policies"),
+            "url": reverse_lazy("time-policies-view"),
             "accessibility": validation_condition_accessibility,
         },
     ]

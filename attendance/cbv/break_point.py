@@ -35,6 +35,7 @@ class BreakPointList(HorillaListView):
 
     model = AttendanceValidationCondition
     filter_class = AttendanceBreakpointFilter
+    bulk_select_option = False
 
     columns = [
         (_("Auto Validate Till"), "validation_at_work"),
@@ -57,6 +58,8 @@ class BreakPointNavView(HorillaNavView):
     """
     navbar of attendance breakpoint view
     """
+
+    template_name = "generic/inline_nav.html"
 
     def __init__(self, **kwargs: Any) -> None:
         super().__init__(**kwargs)
