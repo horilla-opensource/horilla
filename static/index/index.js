@@ -84,7 +84,7 @@ function attendanceDateChange(selectElement) {
 
     $.ajax({
         type: "post",
-        url: "/attendance/update-date-details",
+        url: "/attendance/update-date-details/",
         data: {
             csrfmiddlewaretoken: getCookie("csrftoken"),
             attendance_date: selectedDate,
