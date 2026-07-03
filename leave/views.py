@@ -2368,7 +2368,7 @@ def user_leave_request(request, id):
         )
         requested_dates = leave_requested_dates(start_date, end_date)
         requested_dates = [date.date() for date in requested_dates]
-        holidays = Holidays.objects.all()
+        holidays = Holidays.objects.filter(Q(is_specific=False) | Q(employees=employee))
         holiday_dates = holiday_dates_list(holidays)
         company_leaves = CompanyLeaves.objects.all()
         company_leave_dates = company_leave_dates_list(company_leaves, start_date)
@@ -2545,7 +2545,9 @@ def user_request_update(request, id):
                         start_date, end_date, start_date_breakdown, end_date_breakdown
                     )
                     requested_dates = leave_requested_dates(start_date, end_date)
-                    holidays = Holidays.objects.all()
+                    holidays = Holidays.objects.filter(
+                        Q(is_specific=False) | Q(employees=employee)
+                    )
                     holiday_dates = holiday_dates_list(holidays)
                     company_leaves = CompanyLeaves.objects.all()
                     company_leave_dates = company_leave_dates_list(
@@ -2888,7 +2890,7 @@ def employee_leave(request):
     """
     leaves = LeaveRequest.employees_on_leave_today(status="approved")
     requests_ids = list(leaves.values_list("id", flat=True))
-    today_holidays = Holidays.today_holidays()
+    today_holidays = Holidays.today_holidays().filter(is_specific=False)
     return render(
         request,
         "leave/dashboard/on_leave.html",
@@ -2950,7 +2952,7 @@ def dashboard(request):
     rejected = LeaveRequest.objects.filter(
         status="rejected", start_date__month=today.month
     )
-    holidays = Holidays.objects.filter(start_date__gte=today)
+    holidays = Holidays.objects.filter(start_date__gte=today, is_specific=False)
     next_holiday = holidays.order_by("start_date").first() if holidays else None
 
     context = {
@@ -2986,7 +2988,9 @@ def employee_dashboard(request):
     approved = leave_requests.filter(status="approved")
     rejected = leave_requests.filter(status="rejected")
 
-    holidays = Holidays.objects.filter(start_date__gte=today)
+    holidays = Holidays.objects.filter(
+        Q(is_specific=False) | Q(employees=user), start_date__gte=today
+    )
     next_holiday = (
         holidays.order_by("start_date").first() if holidays.exists() else None
     )
@@ -4721,12 +4725,16 @@ def compensatory_leave_settings_view(request):
 
 
 @login_required
-@hx_request_required
 @permission_required("leave.add_leavegeneralsetting")
 def enable_compensatory_leave(request):
     """
-    This method is used to enable/disable the compensatory leave feature
+    This method is used to enable/disable the compensatory leave feature.
+
+    It is now only a toggle handler for the merged "Leave Rules" page, so any
+    direct GET access is redirected to that unified settings page.
     """
+    if request.method != "POST":
+        return redirect("leave-rules-view")
     selected_company = request.session.get("selected_company")
     if selected_company != "all":
         compensatory_leave = LeaveGeneralSetting.objects.filter(
@@ -4747,6 +4755,59 @@ def enable_compensatory_leave(request):
     else:
         messages.success(request, _("Compensatory leave is disabled successfully!"))
     return HttpResponse("")
+
+
+@login_required
+@permission_required("leave.view_leavegeneralsetting")
+def leave_rules_settings_view(request):
+    """
+    Merged settings page that groups the Compensatory Leave configuration and
+    the Past Date Leave Request restriction under a single "Leave Rules" header.
+    """
+    selected_company = request.session.get("selected_company")
+    if selected_company != "all":
+        enabled_compensatory = (
+            LeaveGeneralSetting.objects.filter(company_id_id=selected_company).exists()
+            and LeaveGeneralSetting.objects.filter(company_id_id=selected_company)
+            .first()
+            .compensatory_leave
+        )
+        leave_type, _create = LeaveType.objects.get_or_create(
+            is_compensatory_leave=True,
+            company_id_id=selected_company,
+            defaults={"name": "Compensatory Leave Type", "payment": "paid"},
+        )
+        enabled_restriction = EmployeePastLeaveRestrict.objects.filter(
+            company_id_id=selected_company
+        ).first()
+        if not enabled_restriction:
+            enabled_restriction = EmployeePastLeaveRestrict.objects.create(
+                enabled=True, company_id_id=selected_company
+            )
+    else:
+        enabled_compensatory = (
+            LeaveGeneralSetting.objects.exists()
+            and LeaveGeneralSetting.objects.first().compensatory_leave
+        )
+        leave_type, _create = LeaveType.objects.get_or_create(
+            is_compensatory_leave=True,
+            company_id=None,
+            defaults={"name": "Compensatory Leave Type", "payment": "paid"},
+        )
+        enabled_restriction = EmployeePastLeaveRestrict.objects.filter(
+            company_id__isnull=True
+        ).first()
+        if not enabled_restriction:
+            enabled_restriction = EmployeePastLeaveRestrict.objects.create(
+                enabled=True, company_id=None
+            )
+    request.session["ordered_ids_leavetype"] = []
+    context = {
+        "enabled_compensatory": enabled_compensatory,
+        "leave_type": leave_type,
+        "enabled_restriction": enabled_restriction,
+    }
+    return render(request, "leave/settings/leave_rules.html", context)
 
 
 @login_required
@@ -5446,11 +5507,9 @@ def employee_past_leave_restriction(request):
             )
         return HorillaRedirect(request)
 
-    return render(
-        request,
-        "leave/settings/past_leave_restrict_view.html",
-        {"enabled_restriction": enabled_restriction},
-    )
+    # This endpoint is now only a toggle handler for the merged "Leave Rules"
+    # page; direct GET access should land on that unified settings page.
+    return redirect("leave-rules-view")
 
 
 @login_required
