@@ -755,6 +755,11 @@ urlpatterns = [
         name="attendance-settings-view",
     ),
     path(
+        "attendance-rule-view/",
+        views.attendance_rule_settings_view,
+        name="attendance-rule-view",
+    ),
+    path(
         "track-late-come-early-out/",
         views.track_late_come_early_out,
         name="track-late-come-early-out",

@@ -13,6 +13,7 @@ from rest_framework.views import APIView
 from base.models import Company
 from facedetection.forms import FaceDetectionSetupForm
 from horilla.decorators import hx_request_required
+from horilla.http.response import HorillaRedirect
 
 from .serializers import *
 
@@ -165,3 +166,23 @@ def face_detection_config(request):
         else:
             messages.info(request, "Not valid")
     return render(request, "face_config.html", {"form": form})
+
+
+@login_required
+@permission_required("facedetection.add_facedetection")
+def enable_disable_face_detection(request):
+    """
+    Enables or disables the face detection feature for the active company,
+    mirroring the Track Late Come & Early Out enable/disable workflow.
+    """
+    if request.method == "POST":
+        selected_company = request.session.get("selected_company")
+        company = None
+        if selected_company and selected_company != "all":
+            company = Company.objects.filter(id=selected_company).first()
+        instance, _created = FaceDetection.objects.get_or_create(company_id=company)
+        instance.start = bool(request.POST.get("start"))
+        instance.save()
+        message = _("enabled") if instance.start else _("disabled")
+        messages.success(request, _("Face detection {} successfully").format(message))
+    return HorillaRedirect(request)

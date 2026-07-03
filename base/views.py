@@ -7094,22 +7094,6 @@ def reorder_dashboard_charts(request):
 
 
 @login_required
-@permission_required("base.view_biometricattendance")
-def enable_biometric_attendance_view(request):
-    selected_company = request.session.get("selected_company")
-    if selected_company == "all":
-        company = None
-    else:
-        company = Company.objects.filter(id=selected_company).first()
-    biometric = BiometricAttendance.objects.filter(company_id=company).first()
-    return render(
-        request,
-        "base/install_biometric_attendance.html",
-        {"biometric": biometric},
-    )
-
-
-@login_required
 @permission_required("base.add_biometricattendance")
 def activate_biometric_attendance(request):
     if request.method == "GET":
