@@ -2717,10 +2717,36 @@ class TrackLateComeEarlyOut(HorillaModel):
 
 
 class Holidays(HorillaModel):
+    ASSIGNING_TYPE = [
+        ("department", _("Department")),
+        ("job_position", _("Job Position")),
+        ("employee", _("Employee")),
+    ]
     name = models.CharField(max_length=30, null=False, verbose_name=_("Name"))
     start_date = models.DateField(verbose_name=_("Start Date"))
     end_date = models.DateField(null=True, blank=True, verbose_name=_("End Date"))
     recurring = models.BooleanField(default=False, verbose_name=_("Recurring"))
+    is_specific = models.BooleanField(default=False, verbose_name=_("Is Specific"))
+    assigning_type = models.CharField(
+        choices=ASSIGNING_TYPE,
+        max_length=100,
+        null=True,
+        blank=True,
+        verbose_name=_("Assigning Type"),
+    )
+    department = models.ManyToManyField(
+        Department,
+        blank=True,
+        related_name="holiday_departments",
+        verbose_name=_("Department"),
+    )
+    job_position = models.ManyToManyField(
+        JobPosition,
+        blank=True,
+        related_name="holiday_job_positions",
+        verbose_name=_("Job Position"),
+    )
+    employees = models.ManyToManyField("employee.Employee", blank=True)
     company_id = models.ForeignKey(
         Company,
         null=True,
@@ -2759,6 +2785,34 @@ class Holidays(HorillaModel):
         """
         return _("Yes") if self.recurring else _("No")
 
+    def get_is_specific_status(self):
+        return _("Yes") if self.is_specific else _("No")
+
+    def get_assigning_type_label(self):
+        if not self.is_specific or not self.assigning_type:
+            return "-"
+        return dict(self.ASSIGNING_TYPE).get(self.assigning_type, "-")
+
+    def get_department_names(self):
+        depts = self.department.all()
+        return ", ".join(d.department for d in depts) if depts.exists() else "-"
+
+    def get_job_position_names(self):
+        positions = self.job_position.all()
+        return (
+            ", ".join(jp.job_position for jp in positions)
+            if positions.exists()
+            else "-"
+        )
+
+    def get_employee_names(self):
+        emps = self.employees.all()
+        return (
+            ", ".join(f"{e.employee_first_name} {e.employee_last_name}" for e in emps)
+            if emps.exists()
+            else "-"
+        )
+
     def holidays_actions(self):
         """
         method for rendering actions(edit,delete)
@@ -2776,19 +2830,26 @@ class Holidays(HorillaModel):
         url = f"https://ui-avatars.com/api/?name={self.name}&background=random"
         return url
 
-    def today_holidays(today=None) -> models.QuerySet:
+    def today_holidays(today=None, employee=None) -> models.QuerySet:
         """
         Retrieve holidays that overlap with the given date (default is today).
 
         Args:
             today (date, optional): The date to check for holidays. Defaults to the current date.
+            employee: When provided, limits results to global holidays and holidays
+                      specific to this employee. When None, returns all holidays.
 
         Returns:
             QuerySet: A queryset of `Holidays` instances where the given date falls between
                     `start_date` and `end_date` (inclusive).
         """
+        from django.db.models import Q
+
         today = today or date.today()
-        return Holidays.objects.filter(start_date__lte=today, end_date__gte=today)
+        qs = Holidays.objects.filter(start_date__lte=today, end_date__gte=today)
+        if employee is not None:
+            qs = qs.filter(Q(is_specific=False) | Q(employees=employee))
+        return qs
 
 
 class CompanyLeaves(HorillaModel):
