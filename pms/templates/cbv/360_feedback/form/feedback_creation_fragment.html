@@ -145,6 +145,32 @@
             var select = $("select");
             select.siblings("span.select2.select2-container").remove();
             select.select2({ width: "100%" });
+
+            $("#id_period").on("change", function () {
+                var period_id = $(this).val();
+                if (period_id && period_id !== "create_new_period") {
+                    $.ajax({
+                        url: "/pms/period-change/",
+                        type: "POST",
+                        dataType: "json",
+                        data: JSON.stringify(period_id),
+                        headers: {
+                            "X-Requested-With": "XMLHttpRequest",
+                            "X-CSRFToken": document.cookie.split(";").reduce(function (val, c) {
+                                var parts = c.trim().split("=");
+                                return parts[0] === "csrftoken" ? decodeURIComponent(parts[1]) : val;
+                            }, ""),
+                        },
+                        success: function (data) {
+                            var startEl = document.querySelector("#feedbackCreationForm #id_start_date");
+                            var endEl = document.querySelector("#feedbackCreationForm #id_end_date");
+                            if (startEl) startEl.value = data.start_date;
+                            if (endEl) endEl.value = data.end_date;
+                        },
+                        error: function (err) { console.log("Period change error", err); },
+                    });
+                }
+            });
         }, 200);
     });
 

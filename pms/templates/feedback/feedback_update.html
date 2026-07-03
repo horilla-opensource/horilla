@@ -12,7 +12,7 @@
     </div>
 </div>
 {% endif %}
-<form hx-post="{%url 'feedback-update' id=feedback_form.instance.id %}" hx-target="#feedbackModalTarget" class="oh-profile-section">
+<form id="feedbackUpdateForm" hx-post="{%url 'feedback-update' id=feedback_form.instance.id %}" hx-target="#feedbackModalTarget" class="oh-profile-section">
     {{feedback_form.non_field_errors}}
    {% csrf_token %}
         <div class="oh-input__group ">
@@ -72,6 +72,17 @@
                             for="{{feedback_form.others_id.id_for_label}}">{{feedback_form.others_id.label}}</label>
                         {{feedback_form.others_id}}
                         {{feedback_form.others_id.errors}}
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-12 col-sm-12 col-md-6 col-lg-6">
+                <div class="oh-input__group">
+                    <div class="oh-input__group">
+                        <label class="oh-input__label" for="{{feedback_form.period.id_for_label}}">{% trans "Period" %}</label>
+                        {{feedback_form.period}}
+                        {{feedback_form.period.errors}}
                     </div>
                 </div>
             </div>
@@ -158,12 +169,37 @@
         }
         $("#id_cyclic_feedback").on("change", function(){
             if (this.checked){
-            $("#cyclic_feedback_period").show()
+                $("#cyclic_feedback_period").show()
+            } else {
+                $("#cyclic_feedback_period").hide()
             }
-            else{
-            $("#cyclic_feedback_period").hide()
+        });
+
+        $("#id_period").on("change", function () {
+            var period_id = $(this).val();
+            if (period_id && period_id !== "create_new_period") {
+                $.ajax({
+                    url: "/pms/period-change/",
+                    type: "POST",
+                    dataType: "json",
+                    data: JSON.stringify(period_id),
+                    headers: {
+                        "X-Requested-With": "XMLHttpRequest",
+                        "X-CSRFToken": document.cookie.split(";").reduce(function (val, c) {
+                            var parts = c.trim().split("=");
+                            return parts[0] === "csrftoken" ? decodeURIComponent(parts[1]) : val;
+                        }, ""),
+                    },
+                    success: function (data) {
+                        var startEl = document.querySelector("#feedbackUpdateForm #id_start_date");
+                        var endEl = document.querySelector("#feedbackUpdateForm #id_end_date");
+                        if (startEl) startEl.value = data.start_date;
+                        if (endEl) endEl.value = data.end_date;
+                    },
+                    error: function (err) { console.log("Period change error", err); },
+                });
             }
-        })
+        });
     })
 </script>
 

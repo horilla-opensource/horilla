@@ -3,7 +3,12 @@
 from horilla.decorators import decorator_with_arguments
 from horilla.horilla_middlewares import _thread_locals
 from horilla.methods import handle_no_permission
-from offboarding.models import Offboarding, OffboardingStage, OffboardingTask
+from offboarding.models import (
+    Offboarding,
+    OffboardingEmployee,
+    OffboardingStage,
+    OffboardingTask,
+)
 
 
 @decorator_with_arguments
@@ -15,14 +20,16 @@ def any_manager_can_enter(function, perm, offboarding_employee_can_enter=False):
         if not getattr(self, "request", None):
             self.request = request
         employee = request.user.employee_get
+        is_offboarding_employee = (
+            offboarding_employee_can_enter
+            and OffboardingEmployee.objects.filter(employee_id=employee).exists()
+        )
         if (
             request.user.has_perm(perm)
-            or offboarding_employee_can_enter
-            or (
-                Offboarding.objects.filter(managers=employee).exists()
-                | OffboardingStage.objects.filter(managers=employee).exists()
-                | OffboardingTask.objects.filter(managers=employee).exists()
-            )
+            or is_offboarding_employee
+            or Offboarding.objects.filter(managers=employee).exists()
+            or OffboardingStage.objects.filter(managers=employee).exists()
+            or OffboardingTask.objects.filter(managers=employee).exists()
         ):
             return function(self, *args, **kwargs)
 

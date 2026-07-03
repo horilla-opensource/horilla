@@ -8,17 +8,34 @@
 			<ion-icon class="me-1" name="checkmark-done-outline"></ion-icon>
 		</a>
 	{% elif minot <= instance.overtime_second %}
+		<a href="#" title="{% trans 'Approve Overtime' %}"
+			class="oh-btn oh-btn--success"
+			onclick="event.preventDefault(); event.stopPropagation(); (function(pk){
+				Swal.fire({
+					title: '{% trans 'Are you sure?' %}',
+					text: '{% trans 'Do you want to approve this overtime?' %}',
+					icon: 'question',
+					showCancelButton: true,
+					confirmButtonColor: '#3085d6',
+					cancelButtonColor: '#d33',
+					confirmButtonText: '{% trans 'Confirm' %}',
+					cancelButtonText: '{% trans 'Cancel' %}'
+				}).then(function(result) {
+					if (result.isConfirmed) {
+						var f = document.getElementById('ot-approve-confirm-' + pk);
+						if (f && f.requestSubmit) f.requestSubmit();
+					}
+				});
+			})({{ instance.id }}); return false;">
+			<ion-icon class="me-1" name="checkmark-done-outline"></ion-icon>
+		</a>
 		<form
+			id="ot-approve-confirm-{{ instance.id }}"
 			hx-post="{% url 'approve-overtime' instance.id %}"
 			hx-swap="none"
-			hx-confirm="{% trans 'Do you want to approve this overtime?' %}"
-			style="display: inline; margin: 0; padding: 0; border: none; background: none;"
-			onclick="event.stopPropagation();"
+			hidden
 		>
 			{% csrf_token %}
-			<button type="submit" title="{% trans 'Approve Overtime' %}" class="oh-btn oh-btn--success">
-				<ion-icon class="me-1" name="checkmark-done-outline"></ion-icon>
-			</button>
 		</form>
 	{% elif instance.overtime_second >= 60 %}
 		<a href="#" title="{% trans 'Approve Overtime (OT < min.OT)' %}"

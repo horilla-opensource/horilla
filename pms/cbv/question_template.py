@@ -57,6 +57,7 @@ class QuestionTemplateList(HorillaListView):
 
     columns = [
         (_("Title"), "question_template", "get_avatar"),
+        (_("Company"), "get_company_display"),
         (_("Total Questions"), "question_count"),
     ]
 

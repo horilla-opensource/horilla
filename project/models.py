@@ -378,7 +378,11 @@ class Task(HorillaModel):
     objects = HorillaCompanyManager("project__company_id")
 
     def clean(self) -> None:
-        if self.end_date is not None and self.project.end_date is not None:
+        if (
+            self.end_date is not None
+            and self.project is not None
+            and self.project.end_date is not None
+        ):
             if (
                 self.project.end_date < self.end_date
                 or self.project.start_date > self.end_date
@@ -390,7 +394,7 @@ class Task(HorillaModel):
                         )
                     }
                 )
-        if self.end_date < date.today():
+        if self.end_date is not None and self.end_date < date.today():
             self.status = "expired"
 
     class Meta:

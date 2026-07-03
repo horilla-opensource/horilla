@@ -1,3 +1,4 @@
+from django.http import HttpResponse
 from django.shortcuts import render
 
 from horilla.decorators import login_required
@@ -26,6 +27,8 @@ def get_filter_form(request):
     """
     This method will return filtering from
     """
-    widget_instance = ALL_INSTANCES[str(request.user.id)]
+    widget_instance = ALL_INSTANCES.get(str(request.user.id))
+    if widget_instance is None:
+        return HttpResponse()
     template_path = request.GET["template_path"]
     return render(request, template_path, {"f": widget_instance.filter_class()})

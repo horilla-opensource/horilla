@@ -113,6 +113,7 @@ from base.methods import (
 from base.models import (
     AttendanceAllowedIP,
     EmployeeShiftSchedule,
+    Holidays,
     TrackLateComeEarlyOut,
     WorkType,
 )
@@ -463,9 +464,8 @@ def attendance_view_redirect(request):
     """
     if request.META.get("HTTP_HX_REQUEST"):
         response = HttpResponse("", status=200)
-        # Fire on document body so handlers run even if the initiating node is swapped/removed (hx-swap=none).
         response["HX-Trigger"] = json.dumps(
-            {"reloadAttendanceView": {"target": "body"}}
+            {"reloadAttendanceView": True, "showMessages": True}
         )
         return response
     return HorillaRedirect(request)
@@ -1719,7 +1719,8 @@ def update_fields_based_shift(request):
     else:
         worked_hour = minimum_hour
 
-    minimum_hour = attendance_day_checking(str(attendance_date), minimum_hour)
+    employee = employee_queryset if isinstance(employee_queryset, Employee) else None
+    minimum_hour = attendance_day_checking(str(attendance_date), minimum_hour, employee)
 
     initial_data = {
         "work_type_id": WorkType.find(request.GET.get("work_type_id")),
@@ -2505,6 +2506,7 @@ def delete_comment_file(request):
 
 
 @login_required
+@manager_can_enter("attendance.view_attendance")
 def work_records(request):
     today = date.today()
     previous_data = request.GET.urlencode()
@@ -2520,6 +2522,7 @@ def work_records(request):
 
 
 @login_required
+@manager_can_enter("attendance.view_attendance")
 @hx_request_required
 def work_records_change_month(request):
     previous_data = request.GET.urlencode()
@@ -2612,9 +2615,21 @@ def work_records_change_month(request):
     paginator = Paginator(paginated_table, 20)
     page = paginator.get_page(request.GET.get("page"))
 
+    specific_employee_holidays = {}
+    specific_dates = set()
+    for h in Holidays.objects.filter(
+        is_specific=True, start_date__month=month, start_date__year=year
+    ).prefetch_related("employees"):
+        specific_dates.add(h.start_date)
+        for emp in h.employees.all():
+            specific_employee_holidays.setdefault(emp.pk, set()).add(h.start_date)
+
     context = {
         "current_month_dates_list": month_dates,
-        "leave_dates": monthly_leave_days(month, year),
+        "leave_dates": [
+            d for d in monthly_leave_days(month, year) if d not in specific_dates
+        ],
+        "specific_employee_holidays": specific_employee_holidays,
         "data": page,
         "pd": previous_data,
         "current_date": date.today(),
@@ -2682,7 +2697,21 @@ def work_record_export(request):
     while current_date <= end_date:
         all_date_objects.append(current_date)
         current_date += timedelta(days=1)
-    leave_dates = set(monthly_leave_days(month, year))
+    _export_specific_dates = set(
+        Holidays.objects.filter(
+            is_specific=True, start_date__month=month, start_date__year=year
+        ).values_list("start_date", flat=True)
+    )
+    leave_dates = {
+        d for d in monthly_leave_days(month, year) if d not in _export_specific_dates
+    }
+
+    specific_employee_holidays = {}
+    for h in Holidays.objects.filter(
+        is_specific=True, start_date__month=month, start_date__year=year
+    ).prefetch_related("employees"):
+        for emp in h.employees.all():
+            specific_employee_holidays.setdefault(emp.pk, set()).add(h.start_date)
 
     record_lookup = defaultdict(lambda: "ABS")
     for record in records:
@@ -2697,8 +2726,10 @@ def work_record_export(request):
 
     for employee in employees:
         row_data = {"Employee": employee}
+        emp_specific_holidays = specific_employee_holidays.get(employee.pk, set())
         for day, formatted_day in zip(all_date_objects, formatted_dates):
-            if not day in leave_dates and day < date.today():
+            is_holiday_day = day in leave_dates or day in emp_specific_holidays
+            if not is_holiday_day and day < date.today():
                 row_data[formatted_day] = record_lookup.get((employee, day), "DFT")
             else:
                 data = record_lookup.get((employee, day), "")
@@ -2827,26 +2858,10 @@ def enable_timerunner(request):
 @permission_required("base.view_tracklatecomeearlyout")
 def track_late_come_early_out(request):
     """
-    Renders the form to track late arrivals and early departures in attendance.
+    This standalone page has been merged into the "Attendance Rule" settings
+    page; direct access now redirects there.
     """
-    selected_company = request.session.get("selected_company")
-    if selected_company == "all":
-        company = None
-    else:
-        from base.models import Company
-
-        company = Company.objects.filter(id=selected_company).first()
-    tracking = TrackLateComeEarlyOut.objects.filter(company_id=company).first()
-    form = TrackLateComeEarlyOutForm(
-        initial=(
-            {"is_enable": tracking.is_enable, "company_id": company}
-            if tracking
-            else {"company_id": company}
-        )
-    )
-    return render(
-        request, "attendance/late_come_early_out/tracking.html", {"form": form}
-    )
+    return redirect("attendance-rule-view")
 
 
 @login_required
@@ -2880,14 +2895,10 @@ def enable_disable_tracking_late_come_early_out(request):
 @login_required
 def check_in_check_out_setting(request):
     """
-    Check in check out setting
+    This standalone page has been merged into the "Attendance Rule" settings
+    page; direct access now redirects there.
     """
-    attendance_settings = AttendanceGeneralSetting.objects.all()
-    return render(
-        request,
-        "attendance/settings/check_in_check_out_enable_form.html",
-        {"attendance_settings": attendance_settings},
-    )
+    return redirect("attendance-rule-view")
 
 
 @login_required
@@ -2919,16 +2930,19 @@ def enable_disable_check_in(request):
 
 @login_required
 @permission_required("attendance.view_attendancevalidationcondition")
-def grace_time_view(request):
+def time_policies_settings_view(request):
     """
-    This method view attendance validation conditions.
+    Merged "Time Policies" settings page that groups the Attendance Break Point
+    condition and Grace Time settings under a single header. Each section reuses
+    its existing nav/list HTMX endpoints; this view only gathers the current
+    state used by the embedded templates.
     """
     condition = AttendanceValidationCondition.objects.first()
     default_grace_time = GraceTime.objects.filter(is_default=True).first()
     grace_times = GraceTime.objects.entire().exclude(is_default=True)
     return render(
         request,
-        "attendance/grace_time/grace_time.html",
+        "attendance/settings/time_policies.html",
         {
             "condition": condition,
             "default_grace_time": default_grace_time,
@@ -2939,18 +2953,22 @@ def grace_time_view(request):
 
 @login_required
 @permission_required("attendance.view_attendancevalidationcondition")
+def grace_time_view(request):
+    """
+    Legacy standalone Grace Time settings page. Merged into Time Policies;
+    redirect direct visits to the merged page.
+    """
+    return redirect("time-policies-view")
+
+
+@login_required
+@permission_required("attendance.view_attendancevalidationcondition")
 def validation_condition_view(request):
     """
-    This method view attendance validation conditions.
+    Legacy standalone Attendance Break Point settings page. Merged into Time
+    Policies; redirect direct visits to the merged page.
     """
-
-    condition = AttendanceValidationCondition.objects.first()
-    default_grace_time = GraceTime.objects.filter(is_default=True).first()
-    return render(
-        request,
-        "attendance/break_point/condition.html",
-        {"condition": condition, "default_grace_time": default_grace_time},
-    )
+    return redirect("time-policies-view")
 
 
 @login_required
@@ -2998,18 +3016,25 @@ def validation_condition_update(request, obj_id):
     )
 
 
+def _get_session_company(request):
+    """Return the Company instance for the session-selected company, or None."""
+    from base.models import Company
+
+    selected = request.session.get("selected_company")
+    if selected == "all" or not selected:
+        return None
+    return Company.objects.filter(id=selected).first()
+
+
 @login_required
 @permission_required("attendance.add_attendance")
 def allowed_ips(request):
     """
-    This function is used to view the allowed ips
+    The standalone IP restriction page has been merged into the "Attendance
+    Rule" settings page; direct access now redirects there. (Still used as the
+    landing target after create/edit/delete of allowed IPs.)
     """
-    allowed_ips = AttendanceAllowedIP.objects.first()
-    return render(
-        request,
-        "attendance/ip_restriction/ip_restriction.html",
-        {"allowed_ips": allowed_ips},
-    )
+    return redirect("attendance-rule-view")
 
 
 @login_required
@@ -3017,20 +3042,63 @@ def allowed_ips(request):
 @require_http_methods(["POST"])
 def enable_ip_restriction(request):
     """
-    This function is used to enable the allowed ips
+    This function is used to toggle IP restriction for the active company.
     """
-    form = AttendanceAllowedIPForm()
-    if request.method == "POST":
-        ip_restiction = AttendanceAllowedIP.objects.first()
-
-        if not ip_restiction:
-            ip_restiction = AttendanceAllowedIP.objects.create(is_enabled=True)
-            return HorillaRedirect(request)
-
-        ip_restiction.is_enabled = not ip_restiction.is_enabled
-
-        ip_restiction.save()
+    company = _get_session_company(request)
+    obj, _created = AttendanceAllowedIP.objects.get_or_create(company_id=company)
+    is_enabled = True if request.POST.get("is_enabled") == "on" else False
+    obj.is_enabled = is_enabled
+    obj.save()
     return HorillaRedirect(request)
+
+
+@login_required
+def attendance_rule_settings_view(request):
+    """
+    Merged "Attendance Rule" settings page that groups four attendance
+    settings under a single header: Track Late Come & Early Out, Check In/Out,
+    Biometric Attendance and IP Restriction. Each section reuses its existing
+    toggle endpoint; this view only gathers the current state of each.
+    """
+    from base.models import BiometricAttendance
+
+    company = _get_session_company(request)
+
+    tracking = TrackLateComeEarlyOut.objects.filter(company_id=company).first()
+
+    if company is None:
+        attendance_general_settings = AttendanceGeneralSetting.objects.all()
+    else:
+        setting, _created = AttendanceGeneralSetting.objects.get_or_create(
+            company_id=company
+        )
+        attendance_general_settings = [setting]
+    show_company = len(attendance_general_settings) > 1
+
+    biometric = BiometricAttendance.objects.filter(company_id=company).first()
+
+    allowed_ips = AttendanceAllowedIP.objects.filter(company_id=company).first()
+
+    facedetection = None
+    from django.apps import apps
+
+    if apps.is_installed("facedetection"):
+        from facedetection.models import FaceDetection
+
+        facedetection = FaceDetection.objects.filter(company_id=company).first()
+
+    return render(
+        request,
+        "attendance/settings/attendance_rule.html",
+        {
+            "tracking": tracking,
+            "attendance_general_settings": attendance_general_settings,
+            "show_company": show_company,
+            "biometric": biometric,
+            "allowed_ips": allowed_ips,
+            "facedetection": facedetection,
+        },
+    )
 
 
 def validate_ip_address(self, value):
@@ -3052,43 +3120,36 @@ def validate_ip_address(self, value):
 @permission_required("attendance.add_attendance")
 def create_allowed_ips(request):
     """
-    This function is used to create the allowed IPs.
+    This function is used to create the allowed IPs for the active company.
     """
+    company = _get_session_company(request)
     if request.method == "POST":
         form = AttendanceAllowedIPForm(request.POST)
         if form.is_valid():
             ip_addresses = form.cleaned_data.get("ip_addresses")
-            allowed_ips = AttendanceAllowedIP.objects.first()
-            if allowed_ips:
-                existing_ips = set(allowed_ips.additional_data.get("allowed_ips", []))
-                new_ips = set(ip_addresses)
-                duplicates = new_ips.intersection(existing_ips)
-
-                if duplicates:
-                    messages.error(
-                        request, f"IP addresses already exist: {', '.join(duplicates)}"
-                    )
-
-                non_duplicates = new_ips - duplicates
-
-                if non_duplicates:
-                    allowed_ips.additional_data["allowed_ips"] = list(
-                        existing_ips.union(non_duplicates)
-                    )
-                    allowed_ips.save()
-                    messages.success(request, "IP addresses saved successfully")
-                else:
-                    messages.info(
-                        request,
-                        "All provided IP addresses are already in the allowed list.",
-                    )
-
-            else:
-                AttendanceAllowedIP.objects.create(
-                    is_enabled=True, additional_data={"allowed_ips": ip_addresses}
+            obj, _created = AttendanceAllowedIP.objects.get_or_create(
+                company_id=company,
+                defaults={"additional_data": {"allowed_ips": []}, "is_enabled": True},
+            )
+            if not obj.additional_data:
+                obj.additional_data = {"allowed_ips": []}
+            existing_ips = set(obj.additional_data.get("allowed_ips", []))
+            new_ips = set(ip_addresses)
+            duplicates = new_ips & existing_ips
+            if duplicates:
+                messages.error(
+                    request, f"IP addresses already exist: {', '.join(duplicates)}"
                 )
-                messages.success(request, "IP addresses saved successfully")
-
+            non_duplicates = new_ips - duplicates
+            if non_duplicates:
+                obj.additional_data["allowed_ips"] = list(existing_ips | non_duplicates)
+                obj.save()
+                messages.success(request, _("IP addresses saved successfully"))
+            else:
+                messages.info(
+                    request,
+                    _("All provided IP addresses are already in the allowed list."),
+                )
             return HorillaRedirect(request)
     else:
         form = AttendanceAllowedIPForm()
@@ -3102,21 +3163,21 @@ def create_allowed_ips(request):
 @permission_required("attendance.delete_attendance")
 def delete_allowed_ips(request):
     """
-    This function is used to delete the allowed ips
+    This function is used to delete the allowed ips for the active company.
     """
+    company = _get_session_company(request)
     try:
         ids = request.GET.getlist("id")
-        allowed_ips = AttendanceAllowedIP.objects.first()
-        ips = allowed_ips.additional_data["allowed_ips"]
-        for id in ids:
-            ips.pop(eval_validate(id))
-
-        allowed_ips.additional_data["allowed_ips"] = ips
-        allowed_ips.save()
-
-        messages.success(request, "IP address removed successfully")
-    except:
-        messages.error(request, "Invalid id")
+        obj = AttendanceAllowedIP.objects.filter(company_id=company).first()
+        if obj:
+            ips = (obj.additional_data or {}).get("allowed_ips", [])
+            for id in ids:
+                ips.pop(eval_validate(id))
+            obj.additional_data["allowed_ips"] = ips
+            obj.save()
+        messages.success(request, _("IP address removed successfully"))
+    except Exception:
+        messages.error(request, _("Invalid id"))
     return redirect("allowed-ips")
 
 
@@ -3124,15 +3185,16 @@ def delete_allowed_ips(request):
 @permission_required("attendance.change_attendance")
 def edit_allowed_ips(request):
     """
-    This function is used to edit the allowed IPs.
+    This function is used to edit the allowed IPs for the active company.
     """
-    allowed_ips = AttendanceAllowedIP.objects.first()
-    if not allowed_ips:
-        messages.error(request, "No allowed IPs found.")
+    company = _get_session_company(request)
+    obj = AttendanceAllowedIP.objects.filter(company_id=company).first()
+    if not obj:
+        messages.error(request, _("No allowed IPs found."))
         return redirect("allowed-ips")
 
-    ips = allowed_ips.additional_data.get("allowed_ips", [])
-    id = request.GET["id"]
+    ips = (obj.additional_data or {}).get("allowed_ips", [])
+    id = request.GET.get("id", request.POST.get("id"))
 
     try:
         id = int(id)
@@ -3146,22 +3208,19 @@ def edit_allowed_ips(request):
             form = AttendanceAllowedIPForm(request.POST)
             if form.is_valid():
                 new_ip = form.cleaned_data["ip_addresses"][0]
-
-                existing_ips = set(allowed_ips.additional_data.get("allowed_ips", []))
-
+                existing_ips = set(ips)
                 if new_ip in existing_ips:
-                    messages.error(request, "IP address already exists.")
+                    messages.error(request, _("IP address already exists."))
                 else:
                     existing_ips.discard(initial_ip)
                     existing_ips.add(new_ip)
-
-                    allowed_ips.additional_data["allowed_ips"] = list(existing_ips)
-                    allowed_ips.save()
-                    messages.success(request, "IP address updated successfully")
+                    obj.additional_data["allowed_ips"] = list(existing_ips)
+                    obj.save()
+                    messages.success(request, _("IP address updated successfully"))
                 return HorillaRedirect(request)
 
     except (ValueError, IndexError):
-        messages.error(request, "Invalid ID provided.")
+        messages.error(request, _("Invalid ID provided."))
 
     return render(
         request,

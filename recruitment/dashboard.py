@@ -11,6 +11,22 @@ from django.db.models import Count, Q
 from django.http import JsonResponse
 from django.shortcuts import render
 
+from employee.models import Employee
+from horilla.methods import handle_no_permission
+from recruitment.models import Recruitment, Stage
+
+
+def _has_recruitment_permission(request):
+    """Return True if the user may access the recruitment dashboard."""
+    user = request.user
+    if user.is_superuser or user.has_perm("recruitment.view_recruitment"):
+        return True
+    employee = Employee.objects.filter(employee_user_id=user).first()
+    return employee is not None and (
+        Stage.objects.filter(stage_managers=employee).exists()
+        or Recruitment.objects.filter(recruitment_managers=employee).exists()
+    )
+
 
 def _parse_period(request):
     """Parse from_date and to_date from GET params. Defaults to current month."""
@@ -42,12 +58,16 @@ def _candidates_in_period(request):
 @login_required
 def recruitment_dashboard_view(request):
     """Render the modern recruitment dashboard page."""
+    if not _has_recruitment_permission(request):
+        return handle_no_permission(request)
     return render(request, "recruitment/dashboard.html")
 
 
 @login_required
 def recruitment_kpi_data(request):
     """Return recruitment KPI summary data as JSON."""
+    if not _has_recruitment_permission(request):
+        return JsonResponse({"no_permission": True})
     from recruitment.models import Candidate, Recruitment, Stage
 
     recruitments = Recruitment.objects.filter(closed=False, is_event_based=False)
@@ -100,6 +120,8 @@ def recruitment_kpi_data(request):
 @login_required
 def recruitment_offer_status(request):
     """Candidate offer letter status breakdown."""
+    if not _has_recruitment_permission(request):
+        return JsonResponse({"no_permission": True})
     from recruitment.models import Candidate
 
     statuses = ["not_sent", "sent", "accepted", "rejected", "joined"]
@@ -116,6 +138,8 @@ def recruitment_offer_status(request):
 @login_required
 def recruitment_stage_summary(request):
     """Candidates grouped by stage type across all active recruitments."""
+    if not _has_recruitment_permission(request):
+        return JsonResponse({"no_permission": True})
     from recruitment.models import Candidate, Recruitment, Stage
 
     recruitments = Recruitment.objects.filter(closed=False)
@@ -134,6 +158,8 @@ def recruitment_stage_summary(request):
 @login_required
 def recruitment_pipeline_data(request):
     """Hiring pipeline — candidates per stage per recruitment."""
+    if not _has_recruitment_permission(request):
+        return JsonResponse({"no_permission": True})
     from recruitment.models import Recruitment, Stage
 
     recruitments = Recruitment.objects.filter(closed=False)
@@ -165,6 +191,8 @@ def recruitment_pipeline_data(request):
 @login_required
 def recruitment_source_quality(request):
     """Top recruitments by hire rate."""
+    if not _has_recruitment_permission(request):
+        return JsonResponse({"no_permission": True})
     from recruitment.models import Recruitment
 
     recruitments = Recruitment.objects.filter(closed=False)
@@ -199,6 +227,8 @@ def recruitment_source_quality(request):
 @login_required
 def recruitment_time_to_hire(request):
     """Average time from candidate creation to hired stage, per recruitment."""
+    if not _has_recruitment_permission(request):
+        return JsonResponse({"no_permission": True})
     from recruitment.models import Recruitment
 
     recruitments = Recruitment.objects.filter(closed=False)
@@ -239,6 +269,8 @@ def recruitment_time_to_hire(request):
 @login_required
 def recruitment_managers_data(request):
     """Ongoing recruitments with their managers."""
+    if not _has_recruitment_permission(request):
+        return JsonResponse({"no_permission": True})
     from recruitment.models import Recruitment
 
     recruitments = Recruitment.objects.filter(closed=False)
@@ -262,6 +294,8 @@ def recruitment_managers_data(request):
 @login_required
 def recruitment_source_of_hire(request):
     """Candidate count grouped by source (Application, Inside software, Other)."""
+    if not _has_recruitment_permission(request):
+        return JsonResponse({"no_permission": True})
     from django.db.models import Q
 
     from recruitment.models import Candidate
@@ -306,6 +340,8 @@ def recruitment_source_of_hire(request):
 @login_required
 def recruitment_upcoming_interviews(request):
     """Interviews scheduled within the selected period."""
+    if not _has_recruitment_permission(request):
+        return JsonResponse({"no_permission": True})
     from recruitment.models import InterviewSchedule
 
     from_date, to_date = _parse_period(request)
@@ -348,6 +384,8 @@ def recruitment_upcoming_interviews(request):
 @login_required
 def recruitment_open_by_department(request):
     """Open positions grouped by department, scoped to recruitments active in the selected period."""
+    if not _has_recruitment_permission(request):
+        return JsonResponse({"no_permission": True})
     from base.models import Department
     from recruitment.models import Recruitment
 
@@ -403,6 +441,8 @@ def recruitment_open_by_department(request):
 @login_required
 def recruitment_stage_conversion(request):
     """Funnel conversion rates between stages."""
+    if not _has_recruitment_permission(request):
+        return JsonResponse({"no_permission": True})
     from recruitment.models import Candidate, Stage
 
     conversions = []
@@ -451,6 +491,8 @@ def recruitment_stage_conversion(request):
 @login_required
 def recruitment_source_conversion(request):
     """Hire rate per candidate source."""
+    if not _has_recruitment_permission(request):
+        return JsonResponse({"no_permission": True})
     from django.db.models import Q
 
     candidates = _candidates_in_period(request)
@@ -522,6 +564,8 @@ def recruitment_source_conversion(request):
 @login_required
 def recruitment_joinings_monthly(request):
     """Employee joinings grouped by month within the selected period."""
+    if not _has_recruitment_permission(request):
+        return JsonResponse({"no_permission": True})
     from employee.models import EmployeeWorkInformation
 
     from_date, to_date = _parse_period(request)

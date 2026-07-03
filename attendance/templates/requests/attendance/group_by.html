@@ -59,9 +59,11 @@
 										<div class="oh-sticky-table__th oh-sticky-table__right">
 											{% trans "Comment" %}
 										</div>
+										{% if perms.attendance.change_validateattendance or request.user|is_reportingmanager %}
 										<div class="oh-sticky-table__th oh-sticky-table__right">
 											{% trans "Actions" %}
 										</div>
+										{% endif %}
 									</div>
 								</div>
 								{% for attendance in request_list.list %}
@@ -154,6 +156,7 @@
 										</div>
 
 
+										{% if perms.attendance.change_validateattendance or request.user|is_reportingmanager %}
 										<div class="oh-sticky-table__td oh-sticky-table__right">
 											<div class="oh-btn-group">
 												<a
@@ -175,6 +178,7 @@
 												</a>
 											</div>
 										</div>
+										{% endif %}
 									</div>
 								</div>
 								{% endfor %}
@@ -375,9 +379,11 @@
 										<div class="oh-sticky-table__th">
 											{% trans "Overtime" %}
 										</div>
+										{% if perms.attendance.change_attendance or request.user|is_reportingmanager %}
 										<div class="oh-sticky-table__th oh-sticky-table__right">
 											{% trans "Actions" %}
 										</div>
+										{% endif %}
 									</div>
 								</div>
 								{% for attendance in attendance_list.list %}
@@ -439,6 +445,7 @@
 										<div class="oh-sticky-table__td">
 											{{attendance.attendance_overtime}}
 										</div>
+										{% if perms.attendance.change_attendance or request.user|is_reportingmanager %}
 										<div class="oh-sticky-table__td oh-sticky-table__right">
 											<div class="oh-btn-group">
 												<a
@@ -454,6 +461,7 @@
 												</a>
 											</div>
 										</div>
+										{% endif %}
 									</div>
 								</div>
 								{% endfor %}

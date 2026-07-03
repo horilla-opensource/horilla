@@ -1050,7 +1050,10 @@ def zk_employees_fetch(device):
     conn = zk_device.connect()
     conn.enable_device()
     users = conn.get_users()
-    fingers = conn.get_templates()
+    try:  # 1002
+        fingers = conn.get_templates()
+    except:
+        fingers = []
 
     bio_employees = BiometricEmployees.objects.filter(device_id=device)
     bio_lookup = {bio.user_id: bio for bio in bio_employees}

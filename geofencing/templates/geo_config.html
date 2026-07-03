@@ -1,5 +1,39 @@
+{% load widget_tweaks i18n %}
+<p class="text-xs text-gray-500">
+    {% trans "Configure the location and radius within which employees are allowed to mark their attendance." %}
+</p>
 <form hx-post="{% url 'geo-config' %}" hx-swap="none" hx-on-htmx-after-request="$('#reloadMessagesButton').click();">
     {% csrf_token %}
-    {{form.as_p}}
 
+    <div class="grid grid-cols-12 gap-4 myform">
+        <div class="col-span-12">{{ form.non_field_errors }}</div>
+        {% for field in form.visible_fields %}
+            <div class="col-span-12 lg:col-span-6 mb-3" id="id_{{ field.name }}_parent_div">
+                <div class="oh-label__info" style="display: ruby" for="id_{{ field.name }}">
+                    <label
+                        class="oh-label {% if field.field.required %} required-star{% endif %}"
+                        for="id_{{ field.name }}"
+                    >{% trans field.label %}
+                    </label>
+                    {% if field.help_text != '' %}
+                        <span class="oh-info mr-2" title="{{ field.help_text }}"></span>
+                    {% endif %}
+                </div>
+                {% if field.field.widget.input_type == 'checkbox' %}
+                    <div class="oh-switch w-[30px]">{{ field|add_class:'oh-switch__checkbox' }}</div>
+                {% else %}
+                    {{ field|add_class:"form-control oh-input"|attr:"data-widget:" }}
+                {% endif %}
+                {{ field.errors }}
+            </div>
+        {% endfor %}
+        {% for field in form.hidden_fields %}
+            {{ field }}
+        {% endfor %}
+    </div>
+    <div class="d-flex flex-row-reverse">
+        <button type="submit" class="oh-btn oh-btn--secondary mt-2 mr-0 pl-4 pr-5 oh-btn--w-100-resp">
+            {% trans 'Save' %}
+        </button>
+    </div>
 </form>

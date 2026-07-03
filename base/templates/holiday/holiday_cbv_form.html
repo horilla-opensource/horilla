@@ -1,0 +1,54 @@
+{% load generic_template_filters %}
+
+<div id="{{ view_id }}"></div>
+<form id="{{ view_id }}Form"
+      hx-post="{{ request.path }}?{{ request.GET.urlencode }}"
+      {% if request.META.HTTP_HX_TARGET %}hx-target="#{{ request.META.HTTP_HX_TARGET }}"{% endif %}
+      hx-swap="{% if hx_target == 'this' %}outerHTML{% else %}innerHTML{% endif %}"
+      hx-encoding="multipart/form-data"
+      novalidate>
+    {{ form.structured }}
+</form>
+
+<script>
+(function () {
+    var form = document.getElementById('{{ view_id }}Form');
+    if (!form) return;
+
+    var isSpecificEl   = form.querySelector('[name="is_specific"]');
+    var assignTypeEl   = form.querySelector('[name="assigning_type"]');
+    var assignTypeDiv  = document.getElementById('id_assigning_type_parent_div');
+    var departmentDiv  = document.getElementById('id_department_parent_div');
+    var jobPositionDiv = document.getElementById('id_job_position_parent_div');
+    var employeesDiv   = document.getElementById('id_employees_parent_div');
+
+    function reinitSelect2(el) {
+        if (!el) return;
+        var sel = $(el).find('select');
+        if (sel.length) {
+            sel.select2();
+        }
+    }
+
+    function updateVisibility() {
+        var isChecked = isSpecificEl && isSpecificEl.checked;
+        var type      = assignTypeEl  ? assignTypeEl.value : '';
+
+        if (assignTypeDiv)  assignTypeDiv.style.display  = isChecked ? ''     : 'none';
+        if (departmentDiv)  departmentDiv.style.display  = (isChecked && type === 'department')   ? '' : 'none';
+        if (jobPositionDiv) jobPositionDiv.style.display = (isChecked && type === 'job_position') ? '' : 'none';
+        if (employeesDiv)   employeesDiv.style.display   = (isChecked && type === 'employee')     ? '' : 'none';
+
+        if (isChecked && type) {
+            var shown = type === 'department' ? departmentDiv : (type === 'job_position' ? jobPositionDiv : employeesDiv);
+            reinitSelect2(shown);
+        }
+    }
+
+    if (isSpecificEl)  isSpecificEl.addEventListener('change', updateVisibility);
+    if (assignTypeEl)  assignTypeEl.addEventListener('change', updateVisibility);
+
+    // Run on initial load to hide fields not applicable for the current state
+    updateVisibility();
+})();
+</script>

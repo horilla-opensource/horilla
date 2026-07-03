@@ -114,12 +114,12 @@
                   {% endwith %}
                   {% endfor %}
                   {% if options or option_method%}
-                  <th {{header_attrs.option|safe}}>
+                  <th class="option-col-header" {{header_attrs.option|safe}}>
                     {% trans "Options" %}
                   </th>
                   {% endif %}
                   {% if actions or action_method %}
-                  <th class="lastTh" {{header_attrs.action|safe}}>
+                  <th class="lastTh action-col-header" {{header_attrs.action|safe}}>
                     {% trans "Actions" %}
                   </th>
                   {% endif %}
@@ -177,7 +177,7 @@
                   {% endwith %}
                   {% endfor %}
                   {% if options or option_method %}
-                  <td onclick="event.stopPropagation()">
+                  <td class="option-col-cell" onclick="event.stopPropagation()">
                     {% if not option_method %}
                     <div class="oh-btn-group">
                       {% for option in options %}
@@ -196,7 +196,7 @@
                   </td>
                   {% endif %}
                   {% if actions or action_method %}
-                  <td class="lastTd" onclick="event.stopPropagation()">
+                  <td class="lastTd action-col-cell" onclick="event.stopPropagation()">
                     {% if not action_method %}
                     <div class="oh-btn-group">
                       {% for action in actions %}
@@ -241,6 +241,21 @@
 
                 $('#{{view_id}} .lastTh').css("width", `${thWidth}px`);
               }
+              });
+            </script>
+            <script>
+              $(document).ready(function () {
+                $('#{{view_id}} .fixed-table').each(function () {
+                  var $table = $(this);
+                  var $optCells = $table.find('td.option-col-cell');
+                  if ($optCells.length && !$optCells.find('a, button').length) {
+                    $table.find('th.option-col-header, td.option-col-cell').hide();
+                  }
+                  var $actCells = $table.find('td.action-col-cell');
+                  if ($actCells.length && !$actCells.find('a, button').length) {
+                    $table.find('th.action-col-header, td.action-col-cell').hide();
+                  }
+                });
               });
             </script>
           </div>

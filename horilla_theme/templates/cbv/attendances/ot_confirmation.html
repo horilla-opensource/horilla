@@ -3,30 +3,45 @@
 {% is_manager_of request.user instance as can_manage %}
 {% if perms.attendance.change_attendance or can_manage %}
 	<div class="oh-btn-group w-100" onclick="event.stopPropagation();">
-		 {% if instance.attendance_overtime_approve %}
-			<a type="submit" href="#" title="{% trans 'Approve' %}"
-            class="h-8 w-24 px-4 py-2 bg-primary-600 text-white rounded-md text-xs flex items-center justify-center gap-2 hover:bg-primary-800 transition duration-300 oh-btn--disabled">
-				<img src="{% static 'horilla_theme/assets/img/icons/check.svg' %}" alt="{% trans 'Approve' %}" width="13"
-                class="filter brightness-0 invert" />
-			</a>
-
+        {% if instance.attendance_overtime_approve %}
+            <button type="submit" title="{% trans 'Approve Overtime' %}"
+                class="h-8 w-24 px-4 py-2 bg-primary-600 text-white rounded-md text-xs flex items-center justify-center gap-2 hover:bg-primary-800 transition duration-300 oh-btn--disabled">
+                <img src="{% static 'horilla_theme/assets/img/icons/check.svg' %}" alt="{% trans 'Approve' %}" width="13"
+                    class="filter brightness-0 invert" />
+            </button>
         {% elif minot <= instance.overtime_second %}
+            <button href="#" title="{% trans 'Approve Overtime' %}"
+                class="h-8 w-24 px-4 py-2 bg-primary-600 text-white rounded-md text-xs flex items-center justify-center gap-2 hover:bg-primary-800 transition duration-300"
+                onclick="event.preventDefault(); event.stopPropagation(); (function(pk){
+                    Swal.fire({
+                        title: '{% trans 'Are you sure?' %}',
+                        text: '{% trans 'Do you want to approve this overtime?' %}',
+                        icon: 'question',
+                        showCancelButton: true,
+                        confirmButtonColor: '#3085d6',
+                        cancelButtonColor: '#d33',
+                        confirmButtonText: '{% trans 'Confirm' %}',
+                        cancelButtonText: '{% trans 'Cancel' %}'
+                    }).then(function(result) {
+                        if (result.isConfirmed) {
+                            var f = document.getElementById('ot-approve-confirm-' + pk);
+                            if (f && f.requestSubmit) f.requestSubmit();
+                        }
+                    });
+                })({{ instance.id }}); return false;">
+                <img src="{% static 'horilla_theme/assets/img/icons/check.svg' %}" alt="{% trans 'Approve' %}" width="13"
+                    class="filter brightness-0 invert" />
+            </button>
             <form
+                id="ot-approve-confirm-{{ instance.id }}"
                 hx-post="{% url 'approve-overtime' instance.id %}"
                 hx-swap="none"
-                hx-confirm="{% trans 'Do you want to approve this overtime?' %}"
-                style="display: inline; margin: 0; padding: 0; border: none; background: none;"
-                onclick="event.stopPropagation();"
+                hidden
             >
                 {% csrf_token %}
-                <button type="submit" title="{% trans 'Approve Overtime' %}"
-                    class="h-8 w-24 px-4 py-2 bg-primary-600 text-white rounded-md text-xs flex items-center justify-center gap-2 hover:bg-primary-800 transition duration-300">
-                    <img src="{% static 'horilla_theme/assets/img/icons/check.svg' %}" alt="{% trans 'Approve' %}" width="13"
-                        class="filter brightness-0 invert" />
-                </button>
             </form>
         {% elif instance.overtime_second >= 60 %}
-            <a href="#" title="{% trans 'Approve Overtime (OT < min.OT)' %}"
+            <button href="#" title="{% trans 'Approve Overtime (OT < min.OT)' %}"
                 class="h-8 w-24 px-4 py-2 bg-white rounded-md text-xs flex items-center justify-center gap-2 border border-primary-500 hover:border-primary-600 transition duration-300"
                 onclick="event.preventDefault(); event.stopPropagation(); (function(pk){
                     Swal.fire({
@@ -46,7 +61,7 @@
                     });
                 })({{ instance.id }}); return false;">
                 <img class="mt-[-1px]" src="{% static 'horilla_theme/assets/img/icons/check.svg' %}" alt="{% trans 'Approve' %}" width="13"/>
-            </a>
+            </button>
             <form
                 id="ot-approve-confirm-{{ instance.id }}"
                 hx-post="{% url 'approve-overtime' instance.id %}"

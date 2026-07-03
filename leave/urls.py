@@ -529,6 +529,11 @@ urlpatterns = [
     #     "view-clashes/<int:leave_request_id>/", views.view_clashes, name="view-clashes"
     # ),
     path(
+        "leave-rules-view/",
+        views.leave_rules_settings_view,
+        name="leave-rules-view",
+    ),
+    path(
         "compensatory-leave-settings-view/",
         views.compensatory_leave_settings_view,
         name="compensatory-leave-settings-view",
@@ -644,11 +649,6 @@ urlpatterns = [
         "restricted-days-detail-view/<int:pk>/",
         restricted_days.RestrictedDaysDetailView.as_view(),
         name="restricted-days-detail-view",
-    ),
-    path(
-        "employee-past-leave-restriction/",
-        views.employee_past_leave_restriction,
-        name="employee-past-leave-restriction",
     ),
     path(
         "cut-penalty/<int:instance_id>/",

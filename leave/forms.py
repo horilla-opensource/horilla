@@ -1117,7 +1117,12 @@ if apps.is_installed("attendance"):
                 and hasattr(request, "user")
                 and hasattr(request.user, "employee_get")
             ):
-                employee = request.user.employee_get
+                # When updating an existing request, use the request's employee so
+                # admins editing someone else's record see that person's attendance.
+                if self.instance and self.instance.pk and self.instance.employee_id:
+                    employee = self.instance.employee_id
+                else:
+                    employee = request.user.employee_get
                 holiday_attendance = get_leave_day_attendance(
                     employee, comp_id=instance_id
                 )

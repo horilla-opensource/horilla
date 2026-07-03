@@ -1,0 +1,102 @@
+{% extends 'settings.html' %}
+{% block settings %}{% load i18n %}{% load horillafilters %}{% load static %}
+<div class="mb-4">
+    <h4 class="text-base font-semibold text-[#333]">{% trans "Offboarding Rules" %}</h4>
+    <p class="text-xs text-gray-500 mt-1">
+        {% trans "Configure how employees exit the organization." %}
+    </p>
+</div>
+
+{% if perms.offboarding.change_offboardinggeneralsetting %}
+<div class="border border-[#ebebeb] rounded-md overflow-hidden mb-5">
+    <h5 class="text-sm font-semibold bg-[#f3f3f3] px-4 py-3 text-[#333] flex items-center justify-between">
+        {% trans "Resignation Request" %}
+    </h5>
+    <div class="p-4">
+        <div class="grid grid-cols-12 gap-4 myform">
+            <div class="col-span-12">
+                <form
+                    hx-get="{% url 'enable-resignation-request' %}"
+                    hx-trigger="change from:#enableResignationRequest"
+                    hx-swap="afterend"
+                    hx-on-htmx-after-request="reloadMessage(this);"
+                >
+                    {% csrf_token %}
+                    <div class="flex items-center justify-between mb-4">
+                        <div>
+                            <div class="flex space-x-2">
+                                <h3 class="text-sm font-medium">{% trans "Allow Resignation Request" %}</h3>
+                                <span
+                                    class="oh-info mr-2"
+                                    title="{% trans 'By enabling this normal users can request for their resignation progress' %}"
+                                >
+                                </span>
+                            </div>
+                            <p class="text-xs text-gray-500 mt-1">
+                                {% trans "By enabling this normal users can request for their resignation progress." %}
+                            </p>
+                        </div>
+                        <label class="toggle-label">
+                            <input
+                                type="checkbox"
+                                class="toggle-input"
+                                id="enableResignationRequest"
+                                name="resignation_request"
+                                {% if enabled_resignation_request %} checked {% endif %}
+                            />
+                            <div class="toggle-switch"></div>
+                        </label>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+{% endif %}
+
+{% if "payroll"|app_installed and perms.payroll.change_payrollgeneralsetting %}
+<div class="border border-[#ebebeb] rounded-md overflow-hidden mb-5">
+    <h5 class="text-sm font-semibold bg-[#f3f3f3] px-4 py-3 text-[#333] flex items-center justify-between">
+        {% trans "Notice Period" %}
+    </h5>
+    <div class="p-4">
+        <div class="grid grid-cols-12 gap-4 myform">
+            <div class="col-span-12">
+                <form
+                    hx-get="{% url 'initial-notice-period' %}"
+                    hx-swap="none"
+                    hx-on-htmx-after-request="setTimeout(() => { reloadMessage(); }, 100);"
+                >
+                    {% csrf_token %}
+                    <div>
+                        <div class="flex space-x-2">
+                            <label class="text-sm font-medium">{% trans "Default Notice Period" %}</label>
+                            <span
+                                class="oh-info mr-2"
+                                title="{% trans 'Set initial notice period (in days)' %}"
+                            >
+                            </span>
+                        </div>
+                        <p class="text-xs text-gray-500 mt-1">
+                            {% trans "Set the default number of days an employee must serve between resignation and their last working day." %}
+                        </p>
+                    </div>
+                    <div class="flex gap-2 items-center mt-3">
+                        <input
+                            type="number"
+                            name="notice_period"
+                            min="0"
+                            class="form-control oh-input w-25 mb-0"
+                            value="{{ get_initial_notice_period }}"
+                        />
+                        <button type="submit" class="oh-btn oh-btn--secondary mt-0 mr-0 pl-4 pr-4">
+                            {% trans "Save Changes" %}
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+{% endif %}
+{% endblock settings %}

@@ -6,10 +6,12 @@ from typing import Any
 
 from django.contrib import messages
 from django.http import HttpResponse
+from django.shortcuts import render
 from django.urls import reverse, reverse_lazy
 from django.utils.decorators import method_decorator
 from django.utils.translation import gettext_lazy as _
 
+from horilla.methods import handle_no_permission
 from horilla_views.cbv_methods import (
     check_feature_enabled,
     login_required,
@@ -152,12 +154,33 @@ class ResinationLettersNav(HorillaNavView):
     def __init__(self, **kwargs: Any) -> None:
         super().__init__(**kwargs)
         self.search_url = reverse("list-resignation-request")
-        self.create_attrs = f"""
-            hx-get="{reverse_lazy("resignation-requests-create")}"
-            hx-target="#genericModalBody"
-            data-target="#genericModal"
-            data-toggle="oh-modal-toggle"
-        """
+        request = self.request
+        if request:
+            selected_company = request.session.get("selected_company")
+            if selected_company and selected_company != "all":
+                general_setting = OffboardingGeneralSetting.objects.filter(
+                    company_id=selected_company
+                ).first()
+            else:
+                general_setting = OffboardingGeneralSetting.objects.filter(
+                    company_id=None
+                ).first()
+            feature_enabled = getattr(general_setting, "resignation_request", False)
+            if not feature_enabled and not request.user.is_superuser:
+                can_create = False
+            else:
+                can_create = (
+                    feature_enabled
+                    or request.user.is_superuser
+                    or request.user.has_perm("offboarding.add_resignationletter")
+                )
+            if can_create:
+                self.create_attrs = f"""
+                    hx-get="{reverse_lazy("resignation-requests-create")}"
+                    hx-target="#genericModalBody"
+                    data-target="#genericModal"
+                    data-toggle="oh-modal-toggle"
+                """
 
     nav_title = _("Resignations")
     filter_instance = LetterFilter()
@@ -180,7 +203,6 @@ class ResinationLettersNav(HorillaNavView):
 
 
 @method_decorator(login_required, name="dispatch")
-# @method_decorator(check_feature_enabled("resignation_request",OffboardingGeneralSetting),name="dispatch")
 class ResignationLettersFormView(HorillaFormView):
     """
     Create and edit form for resignations
@@ -189,6 +211,39 @@ class ResignationLettersFormView(HorillaFormView):
     model = ResignationLetter
     form_class = ResignationLetterForm
     new_display_title = _("Create Resignation Letter")
+
+    def dispatch(self, request, *args, **kwargs):
+        selected_company = request.session.get("selected_company")
+        if selected_company and selected_company != "all":
+            general_setting = OffboardingGeneralSetting.objects.filter(
+                company_id=selected_company
+            ).first()
+        else:
+            general_setting = OffboardingGeneralSetting.objects.filter(
+                company_id=None
+            ).first()
+        feature_enabled = getattr(general_setting, "resignation_request", False)
+        if not feature_enabled and not request.user.is_superuser:
+            can_create = False
+        else:
+            can_create = (
+                request.user.is_superuser
+                or request.user.has_perm("offboarding.add_resignationletter")
+                or feature_enabled
+            )
+        if not can_create:
+            return handle_no_permission(
+                request, message=_("Feature is not enabled on the settings")
+            )
+        pk = kwargs.get("pk")
+        if pk:
+            instance = ResignationLetter.objects.filter(pk=pk).first()
+            if instance and not (
+                request.user.has_perm("offboarding.change_resignationletter")
+                or instance.employee_id == request.user.employee_get
+            ):
+                return render(request, "no_perm.html")
+        return super().dispatch(request, *args, **kwargs)
 
     def form_valid(self, form: ResignationLetterForm) -> HttpResponse:
         """
@@ -200,8 +255,8 @@ class ResignationLettersFormView(HorillaFormView):
                 message = _("Resignation updated successfully")
             else:
                 message = _("Resignation created successfully")
-            form.save()
-            messages.success(self.request, message)
+            if form.save() is not None:
+                messages.success(self.request, message)
             return self.HttpResponse()
         return super().form_valid(form)
 
@@ -234,12 +289,12 @@ class ResignationLetterDetailView(HorillaDetailedView):
         return context
 
     body = [
-        ("", ""),
-        (_("Actions"), "option_column", True),
         (_("Planned To Leave"), "planned_to_leave_on"),
-        (_("Status"), "get_status"),
+        (_("Status"), "get_status_badge"),
         (_("Description"), "detail_description_col"),
     ]
+
+    cols = {"detail_description_col": 12}
 
     action_method = "actions_column"
 

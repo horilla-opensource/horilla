@@ -128,26 +128,26 @@
               <div class="d-flex justify-content-end">
                 <div>
                   <div class="mt-2">
-                    <input type="checkbox" required id="action">
+                    <input type="checkbox" required name="action" id="action">
                     <label for="action">
                       {% trans "I Have took manual action for the protected records" %}
                     </label>
                   </div>
                   <div class="mt-2">
-                      <input type="checkbox" required id="revert">
+                      <input type="checkbox" required name="revert" id="revert">
                       <label for="revert">
                         {% trans "I acknowledge, I wont be able to revert this " %}
                       </label>
                   </div>
                   <div class="mt-2">
-                    <input type="checkbox" required id="confirm">
+                    <input type="checkbox" required name="confirm" id="confirm">
                     <label for="confirm">
                       {% trans "Confirming to delete the related and protected records" %}
                     </label>
                   </div>
                 </div>
                 <div style="margin-top: 30px;">
-                  <button type="submit" class="oh-btn oh-btn--secondary m-2">{% trans "Delete" %}</button>
+                  <button type="submit" id="deleteConfirmBtn" class="oh-btn oh-btn--secondary m-2" disabled>{% trans "Delete" %}</button>
                 </div>
               </div>
             </form>
@@ -234,4 +234,29 @@
     if(!$("#deleteConfirmationBody .oh-general__tab-link--active:first").length){
       $(`#deleteConfirmationBody .oh-general__tab-link:first`).click();
     }
+
+    (function () {
+        var $deleteConfirmBtn = $('#deleteConfirmBtn');
+
+        function updateDeleteBtnState() {
+            var allChecked = $('#action').is(':checked') &&
+                             $('#revert').is(':checked') &&
+                             $('#confirm').is(':checked');
+            $deleteConfirmBtn.prop('disabled', !allChecked);
+        }
+
+        $('#action, #revert, #confirm').on('change', updateDeleteBtnState);
+        updateDeleteBtnState();
+    })();
+
+    document.addEventListener('htmx:configRequest', function (evt) {
+        var actionEl = document.getElementById('action');
+        var revertEl = document.getElementById('revert');
+        var confirmEl = document.getElementById('confirm');
+        if (actionEl && revertEl && confirmEl) {
+            if (!actionEl.checked || !revertEl.checked || !confirmEl.checked) {
+                evt.preventDefault();
+            }
+        }
+    });
 </script>

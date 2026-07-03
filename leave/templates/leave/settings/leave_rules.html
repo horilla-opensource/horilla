@@ -1,0 +1,103 @@
+{% extends 'settings.html' %}
+{% block settings %}{% load i18n %}{% load horillafilters %}{% load static %}
+<div class="mb-4">
+    <h4 class="text-base font-semibold text-[#333]">{% trans "Leave Rules" %}</h4>
+</div>
+
+{% if "attendance"|app_installed and perms.attendance.view_attendancevalidationcondition %}
+<div class="border border-[#ebebeb] rounded-md overflow-hidden mb-5">
+    <h5 class="text-sm font-semibold bg-[#f3f3f3] px-4 py-3 text-[#333] flex items-center justify-between">
+        {% trans "Compensatory Leave" %}
+    </h5>
+    <div class="p-4">
+        <div class="grid grid-cols-12 gap-4 myform">
+            <div class="col-span-12 lg:col-span-6">
+                <div class="flex items-center justify-between mb-4">
+                    <div>
+                        <div class="flex space-x-2">
+                            <h3 class="text-sm font-medium">
+                                {% trans "Compensatory Leave Request" %}
+                            </h3>
+                            <span
+                                class="oh-info mr-2"
+                                title="{% trans 'By enabling this compensatory leave feature will avilable on Leave.' %}"
+                            >
+                            </span>
+                        </div>
+                        <p class="text-xs text-gray-500 mt-1">
+                            {% trans "By enabling this compensatory leave feature will avilable on Leave." %}
+                        </p>
+                    </div>
+                    <label class="toggle-label">
+                        <input
+                            type="checkbox"
+                            name="compensatory_leave"
+                            data-widget="style-widget"
+                            class="toggle-input"
+                            id="is_enabled"
+                            hx-post="{% url 'enable-compensatory-leave' %}"
+                            hx-target="#objectDetailsModalW25Target"
+                            hx-trigger="change"
+                            hx-on-htmx-after-request="window.location.reload()"
+                            {% if enabled_compensatory %} checked {% endif %}
+                        />
+                        <div class="toggle-switch"></div>
+                    </label>
+                </div>
+            </div>
+        </div>
+    </div>
+    {% if enabled_compensatory %}
+        <div class="p-4 pt-0" id="leave_type_div">
+            {% include "leave/compensatory_leave/compensatory_leave_type.html" %}
+        </div>
+    {% endif %}
+</div>
+{% endif %}
+
+{% if perms.leave.add_restrictleave %}
+<div class="border border-[#ebebeb] rounded-md overflow-hidden mb-5">
+    <h5 class="text-sm font-semibold bg-[#f3f3f3] px-4 py-3 text-[#333] flex items-center justify-between">
+        {% trans "Past Leave Restriction" %}
+    </h5>
+    <div class="p-4">
+        <div class="grid grid-cols-12 gap-4 myform">
+            <div class="col-span-12 lg:col-span-6">
+                <div class="flex items-center justify-between mb-4">
+                    <div>
+                        <div class="flex space-x-2">
+                            <h3 class="text-sm font-medium">
+                                {% trans "Restricts Past Date Leave Request Creation" %}
+                            </h3>
+                            <span
+                                class="oh-info mr-2"
+                                title="{% trans 'By enabling this only admins and managers can create leave requests for the past dates' %}"
+                            >
+                            </span>
+                        </div>
+                        <p class="text-xs text-gray-500 mt-1">
+                            {% trans "By enabling this only admins and managers can create leave requests for the past dates" %}
+                        </p>
+                    </div>
+                    <label class="toggle-label">
+                        <input
+                            type="checkbox"
+                            class="toggle-input"
+                            id="enabled"
+                            name="enabled"
+                            style="cursor:pointer"
+                            hx-post="{% url 'employee-past-leave-restriction' %}"
+                            hx-target="#objectDetailsModalW25Target"
+                            hx-trigger="change"
+                            hx-on-htmx-after-request="window.location.reload()"
+                            {% if enabled_restriction.enabled %} checked {% endif %}
+                        />
+                        <div class="toggle-switch"></div>
+                    </label>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endif %}
+{% endblock settings %}

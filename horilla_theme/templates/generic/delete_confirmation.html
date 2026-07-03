@@ -135,6 +135,8 @@
 										<input
 											type="checkbox"
 											id="action"
+											name="action"
+											required
 											class="custom-checkbox text-xs w-4 h-4 bg-[#E9EDF7] rounded-sm text-primary-600 cursor-pointer"
 										/>
 										<label
@@ -148,6 +150,8 @@
 										<input
 											type="checkbox"
 											id="revert"
+											name="revert"
+											required
 											class="custom-checkbox text-xs w-4 h-4 bg-[#E9EDF7] rounded-sm text-primary-600 cursor-pointer"
 										/>
 										<label
@@ -161,6 +165,8 @@
 										<input
 											type="checkbox"
 											id="confirm"
+											name="confirm"
+											required
 											class="custom-checkbox text-xs w-4 h-4 bg-[#E9EDF7] rounded-sm text-primary-600 cursor-pointer"
 										/>
 										<label
@@ -172,8 +178,10 @@
 									</div>
 									<div class="flex gap-1 justify-end">
 										<button
-											class="px-4 py-2 bg-primary-600 text-white rounded-md text-xs flex items-center gap-2 hover:bg-primary-800 transition duration-300"
-											type= "submit"
+											id="deleteConfirmBtn"
+											class="px-4 py-2 bg-primary-600 text-white rounded-md text-xs flex items-center gap-2 hover:bg-primary-800 transition duration-300 disabled:opacity-50 disabled:cursor-not-allowed"
+											type="submit"
+											disabled
 										>
 											{% trans "Delete" %}
 										</button>
@@ -325,5 +333,29 @@
 	$(document).ready(function () {
 		initTabs();
 		restoreState();
+
+		var $deleteConfirmBtn = $('#deleteConfirmBtn');
+
+		function updateDeleteBtnState() {
+			var allChecked = $('#action').is(':checked') &&
+							 $('#revert').is(':checked') &&
+							 $('#confirm').is(':checked');
+			$deleteConfirmBtn.prop('disabled', !allChecked);
+		}
+
+		$('#action, #revert, #confirm').on('change', updateDeleteBtnState);
+		updateDeleteBtnState();
+	});
+
+	// Prevent HTMX from submitting the delete confirmation form unless all boxes are checked
+	document.addEventListener('htmx:configRequest', function (evt) {
+		var actionEl = document.getElementById('action');
+		var revertEl = document.getElementById('revert');
+		var confirmEl = document.getElementById('confirm');
+		if (actionEl && revertEl && confirmEl) {
+			if (!actionEl.checked || !revertEl.checked || !confirmEl.checked) {
+				evt.preventDefault();
+			}
+		}
 	});
 </script>

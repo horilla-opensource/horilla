@@ -16,6 +16,7 @@ from payroll.methods.payslip_calc import (
     calculate_gross_pay,
     calculate_taxable_gross_pay,
 )
+from payroll.methods.safe_tax_code import run_tax_code
 from payroll.models.models import Contract
 from payroll.models.tax_models import TaxBracket
 
@@ -92,18 +93,8 @@ def calculate_taxable_amount(**kwargs):
         federal_tax = sum(bracket["calculated_rate"] for bracket in filterd_brackets)
 
     elif filing.use_py:
-        code = filing.python_code
-        code = code.replace("print(", "pass_print(")
-        pass_print = """
-def pass_print(*args, **kwargs):
-    return None
-"""
-        code = pass_print + code
-        code = code.replace("  formated_result(", "#  formated_result(")
-        local_vars = {}
-        exec(code, {}, local_vars)
         try:
-            federal_tax = local_vars["calculate_federal_tax"](yearly_income)
+            federal_tax = run_tax_code(filing.python_code, yearly_income)
         except Exception as e:
             logger.error(e)
 

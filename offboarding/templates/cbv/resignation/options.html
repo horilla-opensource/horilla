@@ -1,6 +1,6 @@
 {% load i18n %}
-<div onclick="event.stopPropagation()">
-	<div class="oh-btn-group">
+<div style="width: 100%" onclick="event.stopPropagation()">
+	<div class="oh-btn-group" style="width: 100%">
 		{% if perms.offboarding.change_resignationletter %}
 		<button
 			type="button"
@@ -22,43 +22,51 @@
 		{% endif %}
 
 		{% if instance.status == "approved" %}
-			<a
+			{% if perms.offboarding.change_resignationletter or request.user == instance.employee_id.employee_user_id %}
+			<button
 				title="{% trans 'Edit' %}"
 				class="oh-btn oh-btn--light oh-btn--disabled flex-fill"
-				><ion-icon
+			>
+				<ion-icon
 					class="text-dark md hydrated"
 					name="create-outline"
 					role="img"
 					aria-label="create outline"
-				></ion-icon
-			></a>
+				></ion-icon>
+			</button>
+			{% endif %}
 			{% if perms.offboarding.delete_resignationletter %}
-			<a
+			<button
 				class="oh-btn oh-btn--light oh-btn--disabled flex-fill"
 				title="{% trans 'Delete' %}"
-				><ion-icon
+			>
+				<ion-icon
 					class="text-danger md hydrated"
 					name="trash-outline"
 					role="img"
 					aria-label="trash outline"
 				></ion-icon>
-			</a>
+			</button>
 			{% endif %}
 		{% else %}
-			<a
+			{% if perms.offboarding.change_resignationletter or request.user == instance.employee_id.employee_user_id %}
+			<button
+				type="button"
 				hx-get="{% url 'resignation-request-update' instance.id %}"
 				title="{% trans 'Edit' %}"
 				class="oh-btn oh-btn--light flex-fill"
 				data-toggle="oh-modal-toggle"
 				hx-target="#genericModalBody"
 				data-target="#genericModal"
-				><ion-icon
+			>
+				<ion-icon
 					class="text-dark md hydrated"
 					name="create-outline"
 					role="img"
 					aria-label="create outline"
-				></ion-icon
-			></a>
+				></ion-icon>
+			</button>
+			{% endif %}
 			{% if perms.offboarding.delete_resignationletter %}
 			<button
 				type="button"

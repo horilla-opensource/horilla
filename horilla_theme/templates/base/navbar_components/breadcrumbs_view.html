@@ -3,16 +3,20 @@
     {% for breadcrumb in breadcrumbs %}
         {% if forloop.last %}
             <li>
-                {% if breadcrumb.found %}
+                {% if breadcrumb.clickable and breadcrumb.found %}
                     <a href="{{breadcrumb.url}}">{% trans breadcrumb.name %}</a>
+                {% elif not breadcrumb.clickable %}
+                    <span>{% trans breadcrumb.name %}</span>
                 {% else %}
                     <a href="#">{% trans breadcrumb.name %}</a>
                 {% endif %}
             </li>
         {% else %}
             <li>
-                {% if breadcrumb.found %}
+                {% if breadcrumb.clickable and breadcrumb.found %}
                     <a href="{{breadcrumb.url}}">{% trans breadcrumb.name %}</a>
+                {% elif not breadcrumb.clickable %}
+                    <span>{% trans breadcrumb.name %}</span>
                 {% else %}
                     <a href="#">{% trans breadcrumb.name %}</a>
                 {% endif %}

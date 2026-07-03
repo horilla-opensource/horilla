@@ -78,8 +78,10 @@ def work_record_accessibility(request, submenu, user_perms, *args, **kwargs):
     """
     Check if the user has permission to view attendance or is a reporting manager.
     """
-    return request.user.has_perm("attendance.view_attendance") or is_reportingmanager(
-        request.user
+    return (
+        request.user.is_superuser
+        or request.user.has_perm("attendance.view_attendance")
+        or is_reportingmanager(request.user)
     )
 
 
@@ -87,16 +89,24 @@ def dashboard_accessibility(request, submenu, user_perms, *args, **kwargs):
     """
     Check if the user has permission to view attendance or is a reporting manager.
     """
-    return request.user.has_perm("attendance.view_attendance") or is_reportingmanager(
-        request.user
+    return (
+        request.user.is_superuser
+        or request.user.has_perm("attendance.view_attendance")
+        or is_reportingmanager(request.user)
     )
 
 
 def tracking_accessibility(request, submenu, user_perms, *args, **kwargs):
     """
-    Determine if late come/early out tracking is enabled.
+    Determine if late come/early out tracking is enabled and user has access.
     """
-    return enable_late_come_early_out_tracking(None).get("tracking")
+    tracking_enabled = enable_late_come_early_out_tracking(None).get("tracking")
+    has_access = (
+        request.user.is_superuser
+        or request.user.has_perm("attendance.view_attendancelatecomeearlyout")
+        or is_reportingmanager(request.user)
+    )
+    return tracking_enabled and has_access
 
 
 # ---------------------------------------------------------------------------
@@ -118,6 +128,28 @@ def ip_restriction_accessibility(request, submenu, user_perms, *args, **kwargs):
     return request.user.has_perm("attendance.add_attendance")
 
 
+def attendance_rule_accessibility(request, submenu, user_perms, *args, **kwargs):
+    user = request.user
+    return (
+        user.has_perm("base.view_tracklatecomeearlyout")
+        or user.has_perm("attendance.change_attendancegeneralsetting")
+        or user.has_perm("attendance.view_attendancegeneralsetting")
+        or (
+            apps.is_installed("biometric")
+            and user.has_perm("base.view_biometricattendance")
+        )
+        or user.has_perm("attendance.add_attendance")
+        or (
+            apps.is_installed("geofencing")
+            and user.has_perm("geofencing.add_geofencing")
+        )
+        or (
+            apps.is_installed("facedetection")
+            and user.has_perm("facedetection.add_facedetection")
+        )
+    )
+
+
 def geo_face_accessibility(request, submenu, user_perms, *args, **kwargs):
     has_geo = apps.is_installed("geofencing") and request.user.has_perm(
         "geofencing.add_geofencing"
@@ -135,38 +167,13 @@ class AttendanceSettings:
     condition = lambda self, request: apps.is_installed("attendance")
     items = [
         {
-            "label": _("Track Late Come & Early Out"),
-            "url": reverse_lazy("track-late-come-early-out"),
+            "label": _("Attendance Rule"),
+            "url": reverse_lazy("attendance-rule-view"),
+            "accessibility": attendance_rule_accessibility,
+        },
+        {
+            "label": _("Time Policies"),
+            "url": reverse_lazy("time-policies-view"),
             "accessibility": validation_condition_accessibility,
-        },
-        {
-            "label": _("Attendance Break Point"),
-            "url": reverse_lazy("attendance-settings-view"),
-            "accessibility": validation_condition_accessibility,
-        },
-        {
-            "label": _("Check In/Check Out"),
-            "url": reverse_lazy("check-in-check-out-setting"),
-            "accessibility": validation_condition_accessibility,
-        },
-        {
-            "label": _("Grace Time"),
-            "url": reverse_lazy("grace-settings-view"),
-            "accessibility": validation_condition_accessibility,
-        },
-        {
-            "label": _("Biometric Attendance"),
-            "url": reverse_lazy("enable-biometric-attendance"),
-            "accessibility": biometric_accessibility,
-        },
-        {
-            "label": _("IP Restriction"),
-            "url": reverse_lazy("allowed-ips"),
-            "accessibility": ip_restriction_accessibility,
-        },
-        {
-            "label": _("Geo & Face Config"),
-            "url": reverse_lazy("geo-face-config"),
-            "accessibility": geo_face_accessibility,
         },
     ]

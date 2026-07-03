@@ -1371,7 +1371,7 @@ class EmployeeShiftScheduleUpdateForm(ModelForm):
 
         model = EmployeeShiftSchedule
         fields = "__all__"
-        exclude = ["is_active", "is_night_shift"]
+        exclude = ["is_active"]
         widgets = {
             "start_time": forms.TimeInput(attrs={"type": "time"}),
             "end_time": forms.TimeInput(attrs={"type": "time"}),
@@ -1461,7 +1461,7 @@ class EmployeeShiftScheduleForm(ModelForm):
 
         model = EmployeeShiftSchedule
         fields = "__all__"
-        exclude = ["is_active", "day", "is_night_shift"]
+        exclude = ["is_active", "day"]
         widgets = {
             "start_time": forms.TimeInput(),
             "end_time": forms.TimeInput(),
@@ -3092,19 +3092,75 @@ class HolidayForm(ModelForm):
     def clean_end_date(self):
         start_date = self.cleaned_data.get("start_date")
         end_date = self.cleaned_data.get("end_date")
-
         if start_date and end_date and end_date < start_date:
             raise ValidationError(
                 _("End date should not be earlier than the start date.")
             )
-
         return end_date
 
-    class Meta:
-        """
-        Meta class for additional options
-        """
+    def clean(self):
+        cleaned_data = super().clean()
+        is_specific = cleaned_data.get("is_specific")
+        if is_specific:
+            assigning_type = cleaned_data.get("assigning_type")
+            if not assigning_type:
+                raise ValidationError(
+                    {
+                        "assigning_type": _(
+                            "Select an assigning type for this specific holiday."
+                        )
+                    }
+                )
+            if assigning_type == "department" and not cleaned_data.get("department"):
+                raise ValidationError(
+                    {"department": _("Select at least one department.")}
+                )
+            if assigning_type == "job_position" and not cleaned_data.get(
+                "job_position"
+            ):
+                raise ValidationError(
+                    {"job_position": _("Select at least one job position.")}
+                )
+            if assigning_type == "employee" and not cleaned_data.get("employees"):
+                raise ValidationError({"employees": _("Select at least one employee.")})
+        return cleaned_data
 
+    def save(self, commit=True):
+        instance = super().save(commit=False)
+        if not instance.is_specific:
+            instance.assigning_type = None
+        if commit:
+            instance.save()
+            if instance.is_specific:
+                if instance.assigning_type == "department":
+                    departments = self.cleaned_data.get("department")
+                    instance.department.set(departments)
+                    expanded = Employee.objects.filter(
+                        employee_work_info__department_id__in=departments,
+                        is_active=True,
+                    )
+                    instance.employees.set(expanded)
+                    instance.job_position.clear()
+                elif instance.assigning_type == "job_position":
+                    job_positions = self.cleaned_data.get("job_position")
+                    instance.job_position.set(job_positions)
+                    expanded = Employee.objects.filter(
+                        employee_work_info__job_position_id__in=job_positions,
+                        is_active=True,
+                    )
+                    instance.employees.set(expanded)
+                    instance.department.clear()
+                elif instance.assigning_type == "employee":
+                    self.save_m2m()
+                    instance.department.clear()
+                    instance.job_position.clear()
+            else:
+                instance.employees.clear()
+                instance.department.clear()
+                instance.job_position.clear()
+        return instance
+
+    class Meta:
         model = Holidays
         fields = "__all__"
         exclude = ["is_active"]
@@ -3121,6 +3177,14 @@ class HolidayForm(ModelForm):
         self.fields["end_date"].label = (
             f"{self.Meta.model()._meta.get_field('end_date').verbose_name}"
         )
+        self.fields["assigning_type"].required = False
+        self.fields["department"].required = False
+        self.fields["job_position"].required = False
+        self.fields["employees"].required = False
+        self.fields["employees"].queryset = Employee.objects.filter(is_active=True)
+        for fname in ("department", "job_position", "employees"):
+            self.fields[fname].widget.attrs.update({"class": "oh-select oh-select-2"})
+        reload_queryset(self.fields)
 
 
 class HolidaysColumnExportForm(forms.Form):

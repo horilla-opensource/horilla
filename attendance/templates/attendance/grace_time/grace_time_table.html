@@ -1,36 +1,41 @@
-{% load static %}{% load i18n %} {% include "generic/components.html" %}
+{% load static %}{% load i18n %}
+{% include "generic/components.html" %}
 <div id="ohMessages"></div>
 {% if messages %}
-<div class="oh-wrapper">
-	{% for message in messages %}
-	<div class="oh-alert-container">
-		<div class="oh-alert oh-alert--animated {{message.tags}}">
-			{{ message }}
-		</div>
-	</div>
-	{% endfor %}
-</div>
+    <div class="oh-wrapper">
+        {% for message in messages %}
+            <div class="oh-alert-container">
+                <div class="oh-alert oh-alert--animated {{message.tags}}">
+                    {{ message }}
+                </div>
+            </div>
+        {% endfor %}
+    </div>
 {% endif %}
 
-<div class="oh-inner-sidebar-content">
-	<div hx-get="{% url 'grace-time-nav' %}" hx-trigger="load"></div>
+<div class="oh-inner-sidebar-content border border-[#ebebeb] rounded-md">
+    <div hx-get="{% url 'grace-time-nav' %}" hx-trigger="load"></div>
+    <p class="text-xs text-gray-500 mt-1 ml-5">
+        {% trans "Set the buffer time allowed before check-in or after check-out is marked late or early." %}
+    </p>
 
-	<div
-		class="oh-checkpoint-badge mb-2"
-		id="selectedInstancesData"
-		data-ids="[]"
-		data-clicked=""
-		style="display: none"
-	></div>
+    <div
+        class="oh-checkpoint-badge mb-2"
+        id="selectedInstancesData"
+        data-ids="[]"
+        data-clicked=""
+        style="display: none"
+    >
+    </div>
 
-	<div
-		class="oh-wrapper"
-		hx-get="{% url 'grace-time-list'  %}?{{request.GET.urlencode}}"
-		hx-trigger="load"
-		id="grace-time-container"
-	>
-		<div class="animated-background"></div>
-	</div>
+    <div
+        class="oh-wrapper"
+        hx-get="{% url 'grace-time-list'  %}?{{request.GET.urlencode}}"
+        hx-trigger="load"
+        id="grace-time-container"
+    >
+        <div class="animated-background"></div>
+    </div>
 </div>
 
 <script>

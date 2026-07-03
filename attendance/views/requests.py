@@ -423,7 +423,12 @@ def validate_attendance_request(request, attendance_id):
         other_dict = first_dict
         first_dict = empty_data
     else:
-        other_dict = json.loads(attendance.requested_data)
+        requested_data = attendance.requested_data
+        other_dict = (
+            requested_data
+            if isinstance(requested_data, dict)
+            else json.loads(requested_data)
+        )
     requests_ids_json = request.session.get("ordered_ids_attendance", [])
     previous_instance_id = next_instance_id = attendance.pk
     if requests_ids_json:

@@ -66,6 +66,7 @@ RESET_BASED = [
     ("yearly", _("Yearly")),
     ("monthly", _("Monthly")),
     ("weekly", _("Weekly")),
+    ("custom", _("Custom")),
 ]
 MONTHS = [
     ("1", _("Jan")),
@@ -265,6 +266,9 @@ class LeaveType(HorillaModel):
         choices=WEEK_DAYS,
         verbose_name=_("Reset Weekday"),
     )
+    custom_reset_days = models.FloatField(
+        null=True, blank=True, help_text=_("Custom reset interval in days")
+    )
     carryforward_type = models.CharField(
         max_length=30,
         choices=CARRYFORWARD_TYPE,
@@ -364,8 +368,12 @@ class LeaveType(HorillaModel):
     def leave_type_next_reset_date(self):
         today = datetime.now().date()
 
-        if not self.reset or not self.reset_day:
+        if not self.reset:
             return None
+
+        if self.reset_based == "custom":
+            n = int(self.custom_reset_days or 1)
+            return today + timedelta(days=n)
 
         def get_reset_day(month, day):
             return (
@@ -375,6 +383,10 @@ class LeaveType(HorillaModel):
             )
 
         if self.reset_based == "yearly":
+
+            if not self.reset_day:
+                return None
+
             month, day = int(self.reset_month), get_reset_day(
                 int(self.reset_month), self.reset_day
             )
@@ -385,6 +397,10 @@ class LeaveType(HorillaModel):
             ).date()
 
         elif self.reset_based == "monthly":
+
+            if not self.reset_day:
+                return None
+
             month = today.month
             reset_date = datetime(
                 today.year, month, get_reset_day(month, self.reset_day)
@@ -612,140 +628,6 @@ class LeaveType(HorillaModel):
             self.payment_percentage = None
 
 
-class Holiday(HorillaModel):
-    name = models.CharField(max_length=30, null=False, verbose_name=_("Name"))
-    start_date = models.DateField(verbose_name=_("Start Date"))
-    end_date = models.DateField(null=True, blank=True, verbose_name=_("End Date"))
-    recurring = models.BooleanField(default=False, verbose_name=_("Recurring"))
-    company_id = models.ForeignKey(
-        Company, null=True, editable=False, on_delete=models.PROTECT
-    )
-    objects = HorillaCompanyManager(related_company_field="company_id")
-
-    def __str__(self):
-        return self.name
-
-    def detail_view(self):
-        """
-        detail view
-        """
-
-        url = reverse("holiday-detail-view", kwargs={"pk": self.pk})
-        return url
-
-    def detail_view_actions(self):
-        """
-        detail view actions
-        """
-        return render_template(
-            path="cbv/holidays/detail_view_actions.html",
-            context={"instance": self},
-        )
-
-    def get_recurring_status(self):
-        """
-        recurring data
-        """
-        return _("Yes") if self.recurring else _("No")
-
-    def holidays_actions(self):
-        """
-        method for rendering actions(edit,delete)
-        """
-
-        return render_template(
-            path="cbv/holidays/holidays_actions.html",
-            context={"instance": self},
-        )
-
-
-class CompanyLeave(HorillaModel):
-    based_on_week = models.CharField(
-        max_length=100, choices=WEEKS, blank=True, null=True
-    )
-    based_on_week_day = models.CharField(max_length=100, choices=WEEK_DAYS)
-    company_id = models.ForeignKey(
-        Company, null=True, editable=False, on_delete=models.PROTECT
-    )
-    objects = HorillaCompanyManager(related_company_field="company_id")
-
-    class Meta:
-        unique_together = ("based_on_week", "based_on_week_day")
-
-    def __str__(self):
-        return f"{dict(WEEK_DAYS).get(self.based_on_week_day)} | {dict(WEEKS).get(self.based_on_week)}"
-
-    def custom_based_on_week(self):
-        """
-        custom based on col
-        """
-
-        return render_template(
-            path="cbv/company_leaves/on_week.html",
-            context={"instance": self, "weeks": WEEKS},
-        )
-
-    def get_detail_title(self):
-        """
-        for return title
-        """
-
-        title = "Company Leaves"
-        return title
-
-    def detail_view_actions(self):
-        """
-        detail view actions
-        """
-        return render_template(
-            path="cbv/company_leaves/detail_view_actions.html",
-            context={"instance": self},
-        )
-
-    def based_on_week_day_col(self):
-        """
-        custom based on week day col
-        """
-
-        return render_template(
-            path="cbv/company_leaves/on_week_day.html",
-            context={"instance": self, "week_days": WEEK_DAYS},
-        )
-
-    def company_leave_actions(self):
-        """
-        custom actions col
-        """
-
-        return render_template(
-            path="cbv/company_leaves/company_leave_actions.html",
-            context={"instance": self, "weeks": WEEKS},
-        )
-
-    def detail_view(self):
-        """
-        detail view
-        """
-
-        url = reverse("company-leave-detail-view", kwargs={"pk": self.pk})
-        return url
-
-    def get_avatar(self):
-        """
-        Method will rerun the api to the avatar or path to the profile image
-        """
-        url = (
-            f"https://ui-avatars.com/api/?name={self.get_full_name()}&background=random"
-        )
-        if self.profile:
-            full_filename = settings.MEDIA_ROOT + self.profile.name
-
-            if default_storage.exists(full_filename):
-                url = self.profile.url
-
-        return url
-
-
 class AvailableLeave(HorillaModel):
     employee_id = models.ForeignKey(
         Employee,
@@ -898,6 +780,9 @@ class AvailableLeave(HorillaModel):
                 reset_date = assigned_date + relativedelta(days=(temp % 7))
             else:
                 reset_date = assigned_date + relativedelta(days=7)
+        elif available_leave.leave_type_id.reset_based == "custom":
+            n = int(available_leave.leave_type_id.custom_reset_days or 1)
+            reset_date = assigned_date + timedelta(days=n)
         else:
             reset_month = int(available_leave.leave_type_id.reset_month)
             reset_day = available_leave.leave_type_id.reset_day
@@ -1001,13 +886,20 @@ def leave_requested_dates(start_date, end_date):
     return [start_date + timedelta(i) for i in range((end_date - start_date).days + 1)]
 
 
-def cal_effective_requested_days(start_date, end_date, leave_type_id, requested_days):
+def cal_effective_requested_days(
+    start_date, end_date, leave_type_id, requested_days, employee=None
+):
     """
     Calculates the effective requested leave days by accounting for
     holidays and company leave days.
     """
     requested_dates = leave_requested_dates(start_date, end_date)
-    holidays = set(holiday_dates_list(Holidays.objects.all()))
+    holiday_qs = Holidays.objects.all()
+    if employee:
+        holiday_qs = Holidays.objects.filter(
+            Q(is_specific=False) | Q(employees=employee)
+        )
+    holidays = set(holiday_dates_list(holiday_qs))
     company_leave_dates = set(
         company_leave_dates_list(CompanyLeaves.objects.all(), start_date)
     )
@@ -1459,7 +1351,9 @@ class LeaveRequest(HorillaModel):
         :return: this functions returns a list of all holiday dates.
         """
         holiday_dates = []
-        holidays = Holidays.objects.all()
+        holidays = Holidays.objects.filter(
+            Q(is_specific=False) | Q(employees=self.employee_id)
+        )
         for holiday in holidays:
             holiday_start_date = holiday.start_date
             holiday_end_date = holiday.end_date
@@ -1660,11 +1554,15 @@ class LeaveRequest(HorillaModel):
                 )
 
         # Past date restriction
-        if (
-            not request.user.is_superuser
-            and EmployeePastLeaveRestrict.objects.filter(enabled=True).exists()
-        ):
-            restrict = EmployeePastLeaveRestrict.objects.first()
+        if not request.user.is_superuser:
+            emp_company = getattr(
+                getattr(self.employee_id, "employee_work_info", None),
+                "company_id",
+                None,
+            )
+            restrict = EmployeePastLeaveRestrict.objects.filter(
+                enabled=True, company_id=emp_company
+            ).first()
             if restrict and self.start_date < date.today():
                 raise ValidationError(_("Requests cannot be made for past dates."))
 
@@ -1684,6 +1582,7 @@ class LeaveRequest(HorillaModel):
             end_date=self.end_date,
             leave_type_id=leave_type,
             requested_days=requested_days,
+            employee=self.employee_id,
         )
         leave_dates = leave_requested_dates(self.start_date, self.end_date)
         month_year = [f"{date.year}-{date.strftime('%m')}" for date in leave_dates]
@@ -2441,6 +2340,10 @@ if apps.is_installed("attendance"):
 
 class EmployeePastLeaveRestrict(HorillaModel):
     enabled = models.BooleanField(default=True)
+    company_id = models.ForeignKey(
+        Company, null=True, blank=True, on_delete=models.CASCADE
+    )
+    objects = HorillaCompanyManager(related_company_field="company_id")
 
 
 if apps.is_installed("attendance"):

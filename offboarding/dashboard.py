@@ -7,10 +7,11 @@ Accessible at /offboarding/dashboard/modern/ alongside the existing dashboard.
 from datetime import date, timedelta
 
 from django.apps import apps
-from django.contrib.auth.decorators import login_required
 from django.db.models import Count, Q
 from django.http import JsonResponse
 from django.shortcuts import render
+
+from horilla.decorators import login_required, permission_required
 
 
 def _parse_period(request):
@@ -30,12 +31,14 @@ def _parse_period(request):
 
 
 @login_required
+@permission_required("offboarding.view_offboarding")
 def offboarding_dashboard_view(request):
     """Render the modern offboarding dashboard page."""
     return render(request, "offboarding/dashboard.html")
 
 
 @login_required
+@permission_required("offboarding.view_offboarding")
 def offboarding_kpi_data(request):
     """Return offboarding KPI summary data as JSON.
 
@@ -106,6 +109,7 @@ def offboarding_kpi_data(request):
 
 
 @login_required
+@permission_required("offboarding.view_offboarding")
 def offboarding_pipeline(request):
     """Employees grouped by offboarding stage (offboardings opened within the selected period)."""
     from offboarding.models import OffboardingEmployee, OffboardingStage
@@ -135,6 +139,7 @@ def offboarding_pipeline(request):
 
 
 @login_required
+@permission_required("offboarding.view_offboarding")
 def offboarding_resignation_status(request):
     """Resignation letter status breakdown for letters created within the selected period."""
     from offboarding.models import ResignationLetter
@@ -166,6 +171,7 @@ def offboarding_resignation_status(request):
 
 
 @login_required
+@permission_required("offboarding.view_offboarding")
 def offboarding_task_status(request):
     """Task completion status for tasks created within the selected period."""
     from offboarding.models import EmployeeTask
@@ -184,6 +190,7 @@ def offboarding_task_status(request):
 
 
 @login_required
+@permission_required("offboarding.view_offboarding")
 def offboarding_department_attrition(request):
     """Offboarding count by department (offboardings opened within the selected period)."""
     from offboarding.models import OffboardingEmployee
@@ -223,6 +230,7 @@ def offboarding_department_attrition(request):
 
 
 @login_required
+@permission_required("offboarding.view_offboarding")
 def offboarding_exit_reasons(request):
     """Exit reasons breakdown for reasons logged within the selected period."""
     from offboarding.models import ExitReason
@@ -255,6 +263,7 @@ def offboarding_exit_reasons(request):
 
 
 @login_required
+@permission_required("offboarding.view_offboarding")
 def offboarding_notice_period_tracker(request):
     """Employees with notice periods overlapping the selected period."""
     from offboarding.models import OffboardingEmployee
@@ -314,6 +323,7 @@ def offboarding_notice_period_tracker(request):
 
 
 @login_required
+@permission_required("offboarding.view_offboarding")
 def offboarding_unreturned_assets(request):
     """Unreturned assets from employees offboarded within the selected period."""
     from_date, to_date = _parse_period(request)
@@ -355,6 +365,7 @@ def offboarding_unreturned_assets(request):
 
 
 @login_required
+@permission_required("offboarding.view_offboarding")
 def offboarding_joining_vs_exiting(request):
     """Monthly joining vs exiting trend within the selected period."""
     from employee.models import EmployeeWorkInformation
@@ -399,6 +410,7 @@ def offboarding_joining_vs_exiting(request):
 
 
 @login_required
+@permission_required("offboarding.view_offboarding")
 def offboarding_avg_duration(request):
     """Average offboarding duration for offboardings archived within the selected period."""
     from offboarding.models import OffboardingEmployee

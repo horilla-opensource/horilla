@@ -81,6 +81,7 @@
       </div>
     </form>
     {% endif %}
+    {% if enabled_resignation_request or request.user.is_superuser or perms.offboarding.add_resignationletter %}
     <div class="oh-main__titlebar-button-container">
       <div class="oh-main__titlebar-button-container">
         <a hx-get="{% url 'create-resignation-request' %}" hx-target="#resignationModalBody" data-toggle="oh-modal-toggle" data-target="#resignationModal" class="oh-btn oh-btn--secondary">
@@ -89,6 +90,7 @@
         </a>
       </div>
     </div>
+    {% endif %}
   </div>
 </section>
 

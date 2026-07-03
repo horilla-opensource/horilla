@@ -1,4 +1,4 @@
-{% load i18n static %}
+{% load i18n static pmsfilters %}
 {% if feedbacks %}
 <div class="oh-sticky-table h-100">
     <div class="oh-sticky-table__table">
@@ -34,11 +34,15 @@
                 </div>
                 <div class="oh-sticky-table__td">
                     <div class="oh-btn-group">
-                        <a
-                            class="oh-btn oh-btn--info w-100"
-                            href="{% url 'feedback-answer-get' id=feedback.id %}"
-                            title="{% trans 'Answer' %}"
-                            >{% trans "Answer" %}</a>
+                        {% if feedback|has_user_answered:request.user %}
+                            <button class="oh-btn oh-btn--info w-100" disabled title="{% trans 'Already Answered' %}">{% trans "Already Answered" %}</button>
+                        {% else %}
+                            <a
+                                class="oh-btn oh-btn--info w-100"
+                                href="{% url 'feedback-answer-get' id=feedback.id %}"
+                                title="{% trans 'Answer' %}"
+                                >{% trans "Answer" %}</a>
+                        {% endif %}
                     </div>
                 </div>
             </div>

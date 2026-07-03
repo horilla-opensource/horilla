@@ -6,6 +6,7 @@ This module is used to map url pattens with django views or methods
 
 import csv
 import json
+import mimetypes
 import os
 import threading
 import uuid
@@ -268,21 +269,21 @@ def _shift_fixture_dates(file_path):
     Return a date-shifted version of a JSON fixture as a string.
 
     All dates between 2020-01-01 and 2030-12-31 are shifted so that the
-    fixture's anchor date (2025-07-01) maps to today. Static dates outside
-    that window (e.g. DOBs in the 1960s) are left untouched. Returns None
-    if no shift is needed (delta == 0).
+    fixture's anchor month (2025-07-01) maps to the first day of the current
+    month. Static dates outside that window (e.g. DOBs in the 1960s) are left
+    untouched. Returns None if no shift is needed (delta == 0).
     """
     import re
 
     ANCHOR = datetime(2025, 7, 1).date()
     today = datetime.today().date()
-    target = today
+    target = today.replace(day=1)
     delta = (target - ANCHOR).days
 
     if delta == 0:
         return None
 
-    DATE_RE = re.compile(r"(?<!\d)(\d{4}-\d{2}-\d{2})(?!\d)")
+    DATE_RE = re.compile(r"\b(\d{4}-\d{2}-\d{2})\b")
     SHIFT_MIN = datetime(2020, 1, 1).date()
     SHIFT_MAX = datetime(2030, 12, 31).date()
 
@@ -5484,26 +5485,19 @@ def notification_sound(request):
 
 
 @login_required
-def general_settings(request):
+def _system_preferences_context(request):
     """
-    This method is used to render settings template
+    Build template context shared by the System Preferences settings page.
     """
     if apps.is_installed("payroll"):
         PayrollSettings = get_horilla_model_class(
             app_label="payroll", model="payrollsettings"
         )
-        EncashmentGeneralSettings = get_horilla_model_class(
-            app_label="payroll", model="encashmentgeneralsettings"
-        )
         from payroll.forms.component_forms import PayrollSettingsForm
-        from payroll.forms.forms import EncashmentGeneralSettingsForm
 
         currency_instance = PayrollSettings.objects.first()
         currency_form = PayrollSettingsForm(instance=currency_instance)
-        encashment_instance = EncashmentGeneralSettings.objects.first()
-        encashment_form = EncashmentGeneralSettingsForm(instance=encashment_instance)
     else:
-        encashment_form = None
         currency_form = None
 
     selected_company_id = request.session.get("selected_company")
@@ -5513,7 +5507,6 @@ def general_settings(request):
     else:
         companies = Company.objects.filter(id=selected_company_id)
 
-    # Fetch or create EmployeeGeneralSetting instance
     prefix_instance = EmployeeGeneralSetting.objects.first()
     prefix_form = EmployeeGeneralSettingPrefixForm(instance=prefix_instance)
     instance = AnnouncementExpire.objects.first()
@@ -5541,28 +5534,71 @@ def general_settings(request):
         pagination_form = DynamicPaginationForm(instance=pagination)
     else:
         pagination_form = DynamicPaginationForm()
+
+    return {
+        "form": form,
+        "currency_form": currency_form,
+        "pagination_form": pagination_form,
+        "history_fields_form": history_fields_form,
+        "history_tracking_instance": history_tracking_instance,
+        "enabled_block_unblock": enabled_block_unblock,
+        "enabled_profile_edit": enabled_profile_edit,
+        "prefix_form": prefix_form,
+        "companies": companies,
+        "selected_company_id": selected_company_id,
+        "announcement_expire_instance": instance,
+    }
+
+
+@login_required
+def system_preferences_settings_view(request):
+    """
+    Merged "System Preferences" settings page that groups general defaults,
+    formatting/localization, and data access controls under a single header.
+    """
+    context = _system_preferences_context(request)
+    instance = context["announcement_expire_instance"]
+
     if request.method == "POST":
         form = AnnouncementExpireForm(request.POST, instance=instance)
         if form.is_valid():
             form.save()
             messages.success(request, _("Settings updated."))
             return HorillaRedirect(request)
+        context["form"] = form
+
+    return render(request, "base/settings/system_preferences.html", context)
+
+
+@login_required
+def general_settings(request):
+    """
+    Legacy URL — redirects to System Preferences.
+    """
+    return redirect("system-preferences-view")
+
+
+@login_required
+def encashment_general_settings_view(request):
+    """
+    Encashment redeem condition settings (moved out of General Settings).
+    """
+    if not apps.is_installed("payroll"):
+        return redirect("system-preferences-view")
+
+    EncashmentGeneralSettings = get_horilla_model_class(
+        app_label="payroll", model="encashmentgeneralsettings"
+    )
+    from payroll.forms.forms import EncashmentGeneralSettingsForm
+
+    encashment_instance = EncashmentGeneralSettings.objects.first()
+    encashment_form = EncashmentGeneralSettingsForm(instance=encashment_instance)
 
     return render(
         request,
-        "base/general_settings.html",
+        "base/encashment_general_settings.html",
         {
-            "form": form,
-            "currency_form": currency_form,
-            "pagination_form": pagination_form,
             "encashment_form": encashment_form,
-            "history_fields_form": history_fields_form,
-            "history_tracking_instance": history_tracking_instance,
-            "enabled_block_unblock": enabled_block_unblock,
-            "enabled_profile_edit": enabled_profile_edit,
-            "prefix_form": prefix_form,
-            "companies": companies,
-            "selected_company_id": selected_company_id,
         },
     )
 
@@ -5573,7 +5609,7 @@ def date_settings(request):
     """
     This method is used to render Date format selector in settings
     """
-    return render(request, "base/company/date.html")
+    return redirect("system-preferences-view")
 
 
 @login_required
@@ -7093,22 +7129,6 @@ def reorder_dashboard_charts(request):
 
 
 @login_required
-@permission_required("base.view_biometricattendance")
-def enable_biometric_attendance_view(request):
-    selected_company = request.session.get("selected_company")
-    if selected_company == "all":
-        company = None
-    else:
-        company = Company.objects.filter(id=selected_company).first()
-    biometric = BiometricAttendance.objects.filter(company_id=company).first()
-    return render(
-        request,
-        "base/install_biometric_attendance.html",
-        {"biometric": biometric},
-    )
-
-
-@login_required
 @permission_required("base.add_biometricattendance")
 def activate_biometric_attendance(request):
     if request.method == "GET":
@@ -7830,9 +7850,16 @@ class EnableIntegrationsView(View):
             messages.error(request, "Missing app_label")
             return HttpResponse("<script>window.location.reload()</script>")
 
+        selected_company = request.session.get("selected_company")
+        if selected_company and selected_company != "all":
+            company = Company.objects.filter(id=selected_company).first()
+        else:
+            company = None
+
         enabled = request.POST.get("is_enabled") is not None
         integration_app, created = IntegrationApps.objects.update_or_create(
             app_label=app_label,
+            company=company,
             defaults={"is_enabled": enabled},
         )
         try:
@@ -7895,4 +7922,32 @@ def protected_media(request, path):
             )
             return redirect("login")
 
-    return FileResponse(open(media_path, "rb"))
+    # Determine the content type from the extension and decide whether the
+    # browser may render it inline. User-uploaded content that browsers treat
+    # as active markup (HTML/SVG/XML/etc.) must never render in this origin --
+    # doing so would turn any file upload into stored XSS (CWE-79). Such files
+    # are forced to download instead. See GHSA-p68r-g665-5cm9.
+    content_type, _encoding = mimetypes.guess_type(media_path)
+    renderable_active_types = {
+        "text/html",
+        "application/xhtml+xml",
+        "image/svg+xml",
+        "application/xml",
+        "text/xml",
+        "application/xslt+xml",
+        "text/javascript",
+        "application/javascript",
+        "application/x-javascript",
+    }
+    force_download = content_type is None or content_type in renderable_active_types
+
+    response = FileResponse(open(media_path, "rb"))
+    # Always send a content type so the browser does not sniff one of its own.
+    response["Content-Type"] = content_type or "application/octet-stream"
+    # Block MIME sniffing -- a browser must honour the declared type and not
+    # re-interpret e.g. an octet-stream as HTML.
+    response["X-Content-Type-Options"] = "nosniff"
+    if force_download:
+        filename = os.path.basename(media_path)
+        response["Content-Disposition"] = f'attachment; filename="{filename}"'
+    return response

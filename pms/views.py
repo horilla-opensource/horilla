@@ -2752,8 +2752,14 @@ def period_change(request):
         if request.method == "POST":
             data = json.load(request)
             period_obj = Period.objects.get(id=data)
-            start_date = period_obj.start_date
-            end_date = period_obj.end_date
+            start_date = (
+                period_obj.start_date.strftime("%Y-%m-%d")
+                if period_obj.start_date
+                else ""
+            )
+            end_date = (
+                period_obj.end_date.strftime("%Y-%m-%d") if period_obj.end_date else ""
+            )
             return JsonResponse({"start_date": start_date, "end_date": end_date})
         return JsonResponse({"failed": "failed"})
     return HttpResponse(status=204)
@@ -3516,11 +3522,12 @@ def key_result_current_value_update(request):
             messages.info(
                 request, "You dont have permission to update the current value"
             )
+        # Return JSON response with updated progress
         return JsonResponse(
             {
                 "type": "sucess",
-                "progress": emp_kr.employee_objective_id.progress_percentage,
-                "kr_progress": emp_kr.progress_percentage,
+                "progress": int(emp_kr.employee_objective_id.progress_percentage),
+                "kr_progress": int(emp_kr.progress_percentage),
                 "pk": emp_kr.employee_objective_id.pk,
             }
         )
@@ -3616,6 +3623,7 @@ def create_meetings(request):
     if request.method == "POST":
         form = MeetingsForm(request.POST, instance=instance)
         if form.is_valid():
+            is_create = instance is None
             instance = form.save()
             managers = [
                 manager.employee_user_id for manager in form.cleaned_data["manager"]
@@ -3632,50 +3640,51 @@ def create_meetings(request):
                 )
             ]
 
-            try:
-                notify.send(
-                    request.user.employee_get,
-                    recipient=answer_employees,
-                    verb=f"You have been added as an answerable employee for the meeting {instance.title}",
-                    verb_ar=f"لقد تمت إضافتك كموظف مسؤول عن الاجتماع {instance.title}",
-                    verb_de=f"Du wurden als Mitarbeiter zum Ausfüllen für das {instance.title}-Meeting hinzugefügt",
-                    verb_es=f"Se le ha agregado como empleado responsable de la reunión {instance.title}",
-                    verb_fr=f"Vous avez été ajouté en tant que employé responsable pour la réunion {instance.title}",
-                    icon="information",
-                    redirect=reverse("view-meetings") + f"?search={instance.title}",
-                )
-            except Exception as error:
-                pass
+            if is_create:
+                try:
+                    notify.send(
+                        request.user.employee_get,
+                        recipient=answer_employees,
+                        verb=f"You have been added as an answerable employee for the meeting {instance.title}",
+                        verb_ar=f"لقد تمت إضافتك كموظف مسؤول عن الاجتماع {instance.title}",
+                        verb_de=f"Du wurden als Mitarbeiter zum Ausfüllen für das {instance.title}-Meeting hinzugefügt",
+                        verb_es=f"Se le ha agregado como empleado responsable de la reunión {instance.title}",
+                        verb_fr=f"Vous avez été ajouté en tant que employé responsable pour la réunion {instance.title}",
+                        icon="information",
+                        redirect=reverse("view-meetings") + f"?search={instance.title}",
+                    )
+                except Exception:
+                    pass
 
-            try:
-                notify.send(
-                    request.user.employee_get,
-                    recipient=employees,
-                    verb=f"You have been added to the meeting {instance.title}",
-                    verb_ar=f"لقد تمت إضافتك إلى اجتماع {instance.title}.",
-                    verb_de=f"Sie wurden zur {instance.title} Besprechung hinzugefügt",
-                    verb_es=f"Te han agregado a la reunión {instance.title}",
-                    verb_fr=f"Vous avez été ajouté à la réunion {instance.title}",
-                    icon="information",
-                    redirect=reverse("view-meetings") + f"?search={instance.title}",
-                )
-            except Exception as error:
-                pass
+                try:
+                    notify.send(
+                        request.user.employee_get,
+                        recipient=employees,
+                        verb=f"You have been added to the meeting {instance.title}",
+                        verb_ar=f"لقد تمت إضافتك إلى اجتماع {instance.title}.",
+                        verb_de=f"Sie wurden zur {instance.title} Besprechung hinzugefügt",
+                        verb_es=f"Te han agregado a la reunión {instance.title}",
+                        verb_fr=f"Vous avez été ajouté à la réunion {instance.title}",
+                        icon="information",
+                        redirect=reverse("view-meetings") + f"?search={instance.title}",
+                    )
+                except Exception:
+                    pass
 
-            try:
-                notify.send(
-                    request.user.employee_get,
-                    recipient=managers,
-                    verb=f"You have been added as a manager for the meeting {instance.title}",
-                    verb_ar=f"لقد تمت إضافتك كمدير للاجتماع {instance.title}",
-                    verb_de=f"Sie wurden als Manager für das Meeting {instance.title} hinzugefügt",
-                    verb_es=f"Se le ha agregado como administrador de la reunión {instance.title}",
-                    verb_fr=f"Vous avez été ajouté en tant que responsable de réunion {instance.title}",
-                    icon="information",
-                    redirect=reverse("view-meetings") + f"?search={instance.title}",
-                )
-            except Exception as error:
-                pass
+                try:
+                    notify.send(
+                        request.user.employee_get,
+                        recipient=managers,
+                        verb=f"You have been added as a manager for the meeting {instance.title}",
+                        verb_ar=f"لقد تمت إضافتك كمدير للاجتماع {instance.title}",
+                        verb_de=f"Sie wurden als Manager für das Meeting {instance.title} hinzugefügt",
+                        verb_es=f"Se le ha agregado como administrador de la reunión {instance.title}",
+                        verb_fr=f"Vous avez été ajouté en tant que responsable de réunion {instance.title}",
+                        icon="information",
+                        redirect=reverse("view-meetings") + f"?search={instance.title}",
+                    )
+                except Exception:
+                    pass
 
             messages.success(request, _("Meeting added successfully"))
     return render(

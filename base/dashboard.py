@@ -8,6 +8,7 @@ import json
 from datetime import date, timedelta
 
 from django.contrib.auth.decorators import login_required
+from django.db.models import Q
 from django.http import JsonResponse
 from django.shortcuts import render
 from django.views.decorators.http import require_http_methods
@@ -27,6 +28,19 @@ def _parse_period(request):
     except (ValueError, TypeError):
         to_date = today
     return from_date, to_date
+
+
+def _is_manager(user):
+    """Return True if user is a reporting manager for at least one active employee."""
+    try:
+        from employee.models import EmployeeWorkInformation
+
+        emp = getattr(user, "employee_get", None)
+        if not emp:
+            return False
+        return EmployeeWorkInformation.objects.filter(reporting_manager_id=emp).exists()
+    except Exception:
+        return False
 
 
 @login_required
@@ -103,11 +117,24 @@ def dashboard_kpi_data(request):
     present_today = 0
     try:
         from attendance.models import Attendance
+        from leave.models import LeaveRequest
 
-        present_today = (
-            Attendance.objects.filter(
-                attendance_date=today,
+        real_today = date.today()
+        leave_employee_ids = list(
+            LeaveRequest.objects.filter(
+                start_date__lte=real_today,
+                status="approved",
             )
+            .filter(
+                Q(end_date__gte=real_today)
+                | Q(end_date__isnull=True, start_date=real_today)
+            )
+            .values_list("employee_id", flat=True)
+            .distinct()
+        )
+        present_today = (
+            Attendance.objects.filter(attendance_date=today)
+            .exclude(employee_id__in=leave_employee_ids)
             .values("employee_id")
             .distinct()
             .count()
@@ -124,11 +151,15 @@ def dashboard_kpi_data(request):
     try:
         from leave.models import LeaveRequest
 
+        real_today = date.today()
         on_leave = (
             LeaveRequest.objects.filter(
-                start_date__lte=today,
-                end_date__gte=today,
+                start_date__lte=real_today,
                 status="approved",
+            )
+            .filter(
+                Q(end_date__gte=real_today)
+                | Q(end_date__isnull=True, start_date=real_today)
             )
             .values("employee_id")
             .distinct()
@@ -174,8 +205,12 @@ def dashboard_kpi_data(request):
 def dashboard_attendance_trend(request):
     """Weekly attendance trend.
 
-    Honors from_date/to_date when present; otherwise shows the last 12 weeks.
+    Requires attendance.view_attendance permission or superuser.
     """
+    user = request.user
+    if not (user.is_superuser or user.has_perm("attendance.view_attendance")):
+        return JsonResponse({"no_permission": True})
+
     today = date.today()
     weeks = []
 
@@ -192,12 +227,12 @@ def dashboard_attendance_trend(request):
 
         total = Employee.objects.filter(is_active=True).count()
 
-        # Iterate weekly buckets between from_date and to_date (inclusive).
         bucket_start = from_date - timedelta(days=from_date.weekday())
         last_monday = to_date - timedelta(days=to_date.weekday())
         while bucket_start <= last_monday:
             week_end = min(bucket_start + timedelta(days=6), to_date)
             week_start_q = max(bucket_start, from_date)
+
             present = (
                 Attendance.objects.filter(
                     attendance_date__gte=week_start_q,
@@ -208,6 +243,7 @@ def dashboard_attendance_trend(request):
                 .count()
             )
             rate = round((present / total * 100), 1) if total > 0 else 0
+
             is_current = bucket_start <= today <= bucket_start + timedelta(days=6)
             label = bucket_start.strftime("%b %d") + (" (now)" if is_current else "")
             weeks.append({"week": label, "rate": rate, "present": present})
@@ -220,7 +256,14 @@ def dashboard_attendance_trend(request):
 
 @login_required
 def dashboard_leave_breakdown(request):
-    """Leave type breakdown for the selected period."""
+    """Leave type breakdown for the selected period.
+
+    Requires leave.view_leaverequest permission or superuser.
+    """
+    user = request.user
+    if not (user.is_superuser or user.has_perm("leave.view_leaverequest")):
+        return JsonResponse({"no_permission": True})
+
     from_date, to_date = _parse_period(request)
     today = to_date
     first_of_month = from_date
@@ -413,22 +456,35 @@ def dashboard_announcement_detail(request, pk):
 
 @login_required
 def dashboard_todays_leave(request):
-    """Employees on leave today."""
+    """Employees on leave today.
+
+    Users without leave view permission see only their own leave.
+    """
     today = date.today()
     leaves = []
+
+    user = request.user
+    is_mgr = _is_manager(user)
+    can_view_all = user.has_perm("leave.view_leaverequest") or is_mgr
 
     try:
         from leave.models import LeaveRequest
 
-        qs = (
-            LeaveRequest.objects.filter(
-                start_date__lte=today,
-                end_date__gte=today,
-                status="approved",
-            )
-            .select_related("employee_id", "leave_type_id")
-            .order_by("employee_id__employee_first_name")[:20]
-        )
+        qs = LeaveRequest.objects.filter(
+            start_date__lte=today,
+            end_date__gte=today,
+            status="approved",
+        ).select_related("employee_id", "leave_type_id")
+
+        if not can_view_all:
+            employee = getattr(user, "employee_get", None)
+            qs = qs.filter(employee_id=employee) if employee else qs.none()
+        elif is_mgr and not user.has_perm("leave.view_leaverequest"):
+            from base.methods import filtersubordinates
+
+            qs = filtersubordinates(request, qs, "leave.view_leaverequest")
+
+        qs = qs.order_by("employee_id__employee_first_name")[:20]
 
         for lr in qs:
             emp = lr.employee_id
@@ -456,7 +512,9 @@ def dashboard_todays_leave(request):
     except Exception:
         pass
 
-    return JsonResponse({"leaves": leaves, "date": today.isoformat()})
+    return JsonResponse(
+        {"leaves": leaves, "date": today.isoformat(), "is_restricted": not can_view_all}
+    )
 
 
 @login_required
@@ -475,6 +533,7 @@ def dashboard_upcoming_holidays(request):
         qs = Holidays.objects.filter(
             Q(start_date__gte=today, start_date__lte=next_week)
             | Q(start_date__lte=today, end_date__gte=today),
+            is_specific=False,
         )
         if company_id:
             qs = qs.filter(company_id=company_id)
@@ -571,7 +630,17 @@ def dashboard_birthdays_anniversaries(request):
 
 @login_required
 def dashboard_recruitment_pipeline(request):
-    """Recruitment pipeline funnel — candidates aggregated by stage type."""
+    """Recruitment pipeline funnel — candidates aggregated by stage type.
+
+    Hidden for users without recruitment view permission.
+    """
+    user = request.user
+    is_mgr = _is_manager(user)
+    if not (user.has_perm("recruitment.view_recruitment") or is_mgr):
+        response = JsonResponse({"no_permission": True})
+        response["Cache-Control"] = "no-store, no-cache, must-revalidate"
+        return response
+
     stages = []
 
     try:
@@ -644,6 +713,8 @@ def dashboard_recruitment_pipeline(request):
 @login_required
 def dashboard_payroll_summary(request):
     """Payroll summary — selected period vs previous period."""
+    if not (request.user.is_superuser or request.user.has_perm("payroll.view_payslip")):
+        return JsonResponse({"no_permission": True})
     from_date, to_date = _parse_period(request)
     today = to_date
     first_of_month = from_date
@@ -708,15 +779,58 @@ def dashboard_payroll_summary(request):
 
 @login_required
 def dashboard_pending_approvals(request):
-    """Pending items awaiting the logged-in user's approval."""
+    """Pending items awaiting the logged-in user's approval.
+
+    For users without any approval permission, shows their own pending requests
+    (items they submitted that are waiting for approval).
+    """
     user = request.user
     pending = {}
+
+    has_leave_perm = user.has_perm("leave.change_leaverequest")
+    has_attendance_perm = user.has_perm("attendance.validate_attendance")
+    has_asset_perm = user.has_perm("asset.change_assetrequest")
+    has_shift_perm = user.has_perm("base.change_shiftrequest")
+    has_wt_perm = user.has_perm("base.change_worktyperequest")
+    has_reimb_perm = user.has_perm("payroll.change_reimbursement")
+    is_mgr = _is_manager(user)
+
+    can_approve = any(
+        [
+            has_leave_perm,
+            has_attendance_perm,
+            has_asset_perm,
+            has_shift_perm,
+            has_wt_perm,
+            has_reimb_perm,
+            is_mgr,
+        ]
+    )
+    is_restricted = not can_approve
+    employee = getattr(user, "employee_get", None)
 
     # Leave requests
     try:
         from leave.models import LeaveRequest
 
-        leave_count = LeaveRequest.objects.filter(status="requested").count()
+        if can_approve:
+            if has_leave_perm:
+                leave_count = LeaveRequest.objects.filter(status="requested").count()
+            else:
+                from base.methods import filtersubordinates
+
+                qs = LeaveRequest.objects.filter(status="requested")
+                leave_count = filtersubordinates(
+                    request, qs, "leave.change_leaverequest"
+                ).count()
+        else:
+            leave_count = (
+                LeaveRequest.objects.filter(
+                    employee_id=employee, status="requested"
+                ).count()
+                if employee
+                else 0
+            )
         pending["leave_requests"] = leave_count
     except Exception:
         pending["leave_requests"] = 0
@@ -725,10 +839,32 @@ def dashboard_pending_approvals(request):
     try:
         from attendance.models import Attendance
 
-        att_count = Attendance.objects.filter(
-            is_validate_request=True,
-            is_validate_request_approved=False,
-        ).count()
+        if can_approve:
+            if has_attendance_perm:
+                att_count = Attendance.objects.filter(
+                    is_validate_request=True,
+                    is_validate_request_approved=False,
+                ).count()
+            else:
+                from base.methods import filtersubordinates
+
+                qs = Attendance.objects.filter(
+                    is_validate_request=True,
+                    is_validate_request_approved=False,
+                )
+                att_count = filtersubordinates(
+                    request, qs, "attendance.validate_attendance"
+                ).count()
+        else:
+            att_count = (
+                Attendance.objects.filter(
+                    employee_id=employee,
+                    is_validate_request=True,
+                    is_validate_request_approved=False,
+                ).count()
+                if employee
+                else 0
+            )
         pending["attendance_requests"] = att_count
     except Exception:
         pending["attendance_requests"] = 0
@@ -737,9 +873,19 @@ def dashboard_pending_approvals(request):
     try:
         from asset.models import AssetRequest
 
-        asset_count = AssetRequest.objects.filter(
-            asset_request_status="Requested",
-        ).count()
+        if can_approve and has_asset_perm:
+            asset_count = AssetRequest.objects.filter(
+                asset_request_status="Requested",
+            ).count()
+        else:
+            asset_count = (
+                AssetRequest.objects.filter(
+                    requested_employee_id=employee,
+                    asset_request_status="Requested",
+                ).count()
+                if employee
+                else 0
+            )
         pending["asset_requests"] = asset_count
     except Exception:
         pending["asset_requests"] = 0
@@ -748,10 +894,29 @@ def dashboard_pending_approvals(request):
     try:
         from base.models import ShiftRequest
 
-        shift_count = ShiftRequest.objects.filter(
-            approved=False,
-            canceled=False,
-        ).count()
+        if can_approve:
+            if has_shift_perm:
+                shift_count = ShiftRequest.objects.filter(
+                    approved=False,
+                    canceled=False,
+                ).count()
+            else:
+                from base.methods import filtersubordinates
+
+                qs = ShiftRequest.objects.filter(approved=False, canceled=False)
+                shift_count = filtersubordinates(
+                    request, qs, "base.change_shiftrequest"
+                ).count()
+        else:
+            shift_count = (
+                ShiftRequest.objects.filter(
+                    employee_id=employee,
+                    approved=False,
+                    canceled=False,
+                ).count()
+                if employee
+                else 0
+            )
         pending["shift_requests"] = shift_count
     except Exception:
         pending["shift_requests"] = 0
@@ -760,10 +925,29 @@ def dashboard_pending_approvals(request):
     try:
         from base.models import WorkTypeRequest
 
-        wt_count = WorkTypeRequest.objects.filter(
-            approved=False,
-            canceled=False,
-        ).count()
+        if can_approve:
+            if has_wt_perm:
+                wt_count = WorkTypeRequest.objects.filter(
+                    approved=False,
+                    canceled=False,
+                ).count()
+            else:
+                from base.methods import filtersubordinates
+
+                qs = WorkTypeRequest.objects.filter(approved=False, canceled=False)
+                wt_count = filtersubordinates(
+                    request, qs, "base.change_worktyperequest"
+                ).count()
+        else:
+            wt_count = (
+                WorkTypeRequest.objects.filter(
+                    employee_id=employee,
+                    approved=False,
+                    canceled=False,
+                ).count()
+                if employee
+                else 0
+            )
         pending["work_type_requests"] = wt_count
     except Exception:
         pending["work_type_requests"] = 0
@@ -772,14 +956,23 @@ def dashboard_pending_approvals(request):
     try:
         from payroll.models.models import Reimbursement
 
-        reimb_count = Reimbursement.objects.filter(status="requested").count()
+        if can_approve and has_reimb_perm:
+            reimb_count = Reimbursement.objects.filter(status="requested").count()
+        else:
+            reimb_count = (
+                Reimbursement.objects.filter(
+                    employee_id=employee, status="requested"
+                ).count()
+                if employee
+                else 0
+            )
         pending["reimbursements"] = reimb_count
     except Exception:
         pending["reimbursements"] = 0
 
     pending["total"] = sum(pending.values())
 
-    return JsonResponse({"pending": pending})
+    return JsonResponse({"pending": pending, "is_restricted": is_restricted})
 
 
 @login_required
@@ -820,7 +1013,15 @@ def load_dashboard_prefs(request):
 
 @login_required
 def dashboard_turnover(request):
-    """Employee turnover — new hires vs exits over the last 6 months ending at selected period."""
+    """Employee turnover — new hires vs exits over the last 6 months ending at selected period.
+
+    Hidden for users without employee view permission (org-level metric).
+    """
+    user = request.user
+    is_mgr = _is_manager(user)
+    if not (user.has_perm("employee.view_employee") or is_mgr):
+        return JsonResponse({"no_permission": True})
+
     _, to_date = _parse_period(request)
     today = to_date
     months = []

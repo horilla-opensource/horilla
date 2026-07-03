@@ -8,6 +8,7 @@ Provides roster grid, cell editing, publish, my roster, and import/export.
 import json
 from datetime import date, timedelta
 
+import openpyxl
 from django.contrib import messages
 from django.http import HttpResponse, JsonResponse
 from django.shortcuts import get_object_or_404, render
@@ -16,10 +17,15 @@ from django.utils.decorators import method_decorator
 from django.utils.translation import gettext_lazy as _
 from django.views import View
 from django.views.generic import TemplateView
+from openpyxl.comments import Comment
+from openpyxl.styles import Alignment, Font, PatternFill
+from openpyxl.utils import get_column_letter
+from openpyxl.worksheet.datavalidation import DataValidation
 
 from base.filters import RosterFilter
 from base.forms import RosterCellUpdateForm
-from base.models import Roster, RosterPublishLog
+from base.models import CompanyLeaves, EmployeeShift, Holidays, Roster, RosterPublishLog
+from employee.models import Employee
 from horilla_views.cbv_methods import login_required
 from horilla_views.generic.cbv.views import HorillaCardView, HorillaNavView
 
@@ -515,15 +521,6 @@ class RosterImportFormView(View):
 class RosterTemplateDownloadView(View):
 
     def get(self, request, *args, **kwargs):
-        import openpyxl
-        from django.db.models import Q
-        from openpyxl.comments import Comment
-        from openpyxl.styles import Alignment, Font, PatternFill
-        from openpyxl.utils import get_column_letter
-        from openpyxl.worksheet.datavalidation import DataValidation
-
-        from base.models import CompanyLeaves, EmployeeShift, Holidays
-        from employee.models import Employee
 
         today = _week_start()
         start_date = _parse_date(request.GET.get("start_date"), today)
@@ -537,21 +534,33 @@ class RosterTemplateDownloadView(View):
 
         off_dates = {}
 
-        holidays = list(
-            Holidays.objects.filter(
-                Q(start_date__lte=end_date, end_date__gte=start_date)
-                | Q(recurring=True)
-            )
+        holidays = Holidays.objects.filter(
+            start_date__lte=end_date, end_date__gte=start_date
         )
-        for h in holidays:
+        for h in holidays.filter(is_specific=False):
             h_end = h.end_date or h.start_date
             for d in date_range:
-                if h.recurring:
-                    if h.start_date.month == d.month and h.start_date.day == d.day:
-                        off_dates[d] = h.name
-                else:
-                    if h.start_date <= d <= h_end:
-                        off_dates.setdefault(d, h.name)
+                if h.start_date <= d <= h_end:
+                    off_dates.setdefault(d, h.name)
+
+        # Pre-build {employee_pk: {date: holiday_name}} for specific holidays — avoids per-row DB queries
+        specific_employee_off = {}
+        for h in holidays.filter(is_specific=True).prefetch_related("employees"):
+            h_end = h.end_date or h.start_date
+            applicable_dates = [
+                d
+                for d in date_range
+                if (
+                    h.recurring
+                    and h.start_date.month == d.month
+                    and h.start_date.day == d.day
+                )
+                or (not h.recurring and h.start_date <= d <= h_end)
+            ]
+            for emp in h.employees.all():
+                emp_off = specific_employee_off.setdefault(emp.pk, {})
+                for d in applicable_dates:
+                    emp_off.setdefault(d, h.name)
 
         company_leaves = list(CompanyLeaves.objects.all())
         for d in date_range:
@@ -643,7 +652,9 @@ class RosterTemplateDownloadView(View):
             for col_i, d in enumerate(date_range, start=3):
                 c = ws.cell(row_i, col_i)
                 c.alignment = center
-                off_reason = off_dates.get(d)
+                off_reason = off_dates.get(d) or specific_employee_off.get(
+                    emp.pk, {}
+                ).get(d)
                 if off_reason:
                     c.value = "OFF"
                     c.fill = off_fill

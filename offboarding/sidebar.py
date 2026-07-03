@@ -2,10 +2,12 @@
 offboarding/sidebar.py
 """
 
-from django.urls import reverse
+from django.apps import apps
+from django.urls import reverse, reverse_lazy
 from django.utils.translation import gettext_lazy as _
 
 from base.context_processors import resignation_request_enabled
+from horilla.menu import settings_menu
 from offboarding.templatetags.offboarding_filter import (
     any_manager,
     is_offboarding_employee,
@@ -60,3 +62,30 @@ def dashboard_accessibility(request, *args):
     return request.user.has_module_perms("offboarding") or any_manager(
         request.user.employee_get
     )
+
+
+# ---------------------------------------------------------------------------
+# Settings menu registration
+# ---------------------------------------------------------------------------
+
+
+def offboarding_rules_accessibility(request, submenu, user_perms, *args, **kwargs):
+    user = request.user
+    return user.has_perm("offboarding.change_offboardinggeneralsetting") or (
+        apps.is_installed("payroll")
+        and user.has_perm("payroll.change_payrollgeneralsetting")
+    )
+
+
+@settings_menu.register
+class OffboardingSettings:
+    title = _("Offboarding")
+    order = 8
+    condition = lambda self, request: apps.is_installed("offboarding")
+    items = [
+        {
+            "label": _("Offboarding Rules"),
+            "url": reverse_lazy("offboarding-rules-view"),
+            "accessibility": offboarding_rules_accessibility,
+        },
+    ]

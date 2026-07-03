@@ -1,110 +1,144 @@
 {% load basefilters i18n horillafilters %}
 {% if request.user|config_perms %}
-  <button title="{% trans 'Configurations' %}"
-    class="sideboxmain group flex items-center gap-3 p-3 rounded-full transition duration-300"
-    data-menu="Configuration">
+    <div class="sidebar-item">
+        <button
+            class="sideboxmain group flex items-center gap-3 px-3 py-2.5 rounded-lg w-full transition duration-300"
+            data-menu="Configuration"
+            aria-expanded="false"
+            aria-haspopup="true"
+        >
+            <svg
+                class="w-4.5 h-4.5 flex-shrink-0 transition duration-300 hover:filter group-hover:filter group-hover:brightness-0 group-hover:invert"
+                fill="#ffffff"
+                height="20"
+                width="24"
+                version="1.1"
+                id="Capa_1"
+                xmlns="http://www.w3.org/2000/svg"
+                xmlns:xlink="http://www.w3.org/1999/xlink"
+                viewBox="0 0 482.568 482.568"
+                xml:space="preserve"
+                stroke="#ffffff"
+            >
+                <g id="SVGRepo_bgCarrier" stroke-width="0" />
+                <g id="SVGRepo_tracerCarrier" stroke-linecap="round" stroke-linejoin="round" />
+                <g id="SVGRepo_iconCarrier">
+                    <g>
+                        <g>
+                            <path d="M116.993,203.218c13.4-1.8,26.8,2.8,36.3,12.3l24,24l22.7-22.6l-32.8-32.7c-5.1-5.1-5.1-13.4,0-18.5s13.4-5.1,18.5,0 l32.8,32.8l22.7-22.6l-24.1-24.1c-9.5-9.5-14.1-23-12.3-36.3c4-30.4-5.7-62.2-29-85.6c-23.8-23.8-56.4-33.4-87.3-28.8 c-4.9,0.7-6.9,6.8-3.4,10.3l30.9,30.9c14.7,14.7,14.7,38.5,0,53.1l-19,19c-14.7,14.7-38.5,14.7-53.1,0l-31-30.9 c-3.5-3.5-9.5-1.5-10.3,3.4c-4.6,30.9,5,63.5,28.8,87.3C54.793,197.518,86.593,207.218,116.993,203.218z" />
+                            <path d="M309.193,243.918l-22.7,22.6l134.8,134.8c5.1,5.1,5.1,13.4,0,18.5s-13.4,5.1-18.5,0l-134.8-134.8l-22.7,22.6l138.9,138.9 c17.6,17.6,46.1,17.5,63.7-0.1s17.6-46.1,0.1-63.7L309.193,243.918z" />
+                            <path d="M361.293,153.918h59.9l59.9-119.7l-29.9-29.9l-119.8,59.8v59.9l-162.8,162.3l-29.3-29.2l-118,118 c-24.6,24.6-24.6,64.4,0,89s64.4,24.6,89,0l118-118l-29.9-29.9L361.293,153.918z" />
+                        </g>
+                    </g>
+                </g>
+            </svg>
+            <span
+                class="oh-sidebar-label text-sm font-medium truncate flex-1 text-left"
+            >{% trans "Configurations" %}</span>
+            <svg
+                class="sidebar-chevron w-3.5 h-3.5 flex-shrink-0"
+                fill="none"
+                stroke="currentColor"
+                stroke-width="2.5"
+                viewBox="0 0 24 24"
+                aria-hidden="true"
+            >
+                <path stroke-linecap="round" stroke-linejoin="round" d="M19 9l-7 7-7-7" />
+            </svg>
+        </button>
 
-    <svg class="w-4.5 h-4.5 transition duration-300 hover:filter group-hover:filter group-hover:brightness-0 group-hover:invert" fill="#ffffff" height="20" width="24" version="1.1" id="Capa_1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" viewBox="0 0 482.568 482.568" xml:space="preserve" stroke="#ffffff">
-      <g id="SVGRepo_bgCarrier" stroke-width="0"></g>
-      <g id="SVGRepo_tracerCarrier" stroke-linecap="round" stroke-linejoin="round"></g>
-      <g id="SVGRepo_iconCarrier">
-        <g>
-          <g>
-            <path d="M116.993,203.218c13.4-1.8,26.8,2.8,36.3,12.3l24,24l22.7-22.6l-32.8-32.7c-5.1-5.1-5.1-13.4,0-18.5s13.4-5.1,18.5,0 l32.8,32.8l22.7-22.6l-24.1-24.1c-9.5-9.5-14.1-23-12.3-36.3c4-30.4-5.7-62.2-29-85.6c-23.8-23.8-56.4-33.4-87.3-28.8 c-4.9,0.7-6.9,6.8-3.4,10.3l30.9,30.9c14.7,14.7,14.7,38.5,0,53.1l-19,19c-14.7,14.7-38.5,14.7-53.1,0l-31-30.9 c-3.5-3.5-9.5-1.5-10.3,3.4c-4.6,30.9,5,63.5,28.8,87.3C54.793,197.518,86.593,207.218,116.993,203.218z"></path>
-            <path d="M309.193,243.918l-22.7,22.6l134.8,134.8c5.1,5.1,5.1,13.4,0,18.5s-13.4,5.1-18.5,0l-134.8-134.8l-22.7,22.6l138.9,138.9 c17.6,17.6,46.1,17.5,63.7-0.1s17.6-46.1,0.1-63.7L309.193,243.918z"></path>
-            <path d="M361.293,153.918h59.9l59.9-119.7l-29.9-29.9l-119.8,59.8v59.9l-162.8,162.3l-29.3-29.2l-118,118 c-24.6,24.6-24.6,64.4,0,89s64.4,24.6,89,0l118-118l-29.9-29.9L361.293,153.918z"></path>
-          </g>
-        </g>
-      </g>
-    </svg>
-
-    <div class="sidebox absolute shadow-card mb-3 bg-white min-w-56 left-[75px]">
-      <h5 class="border-b border-b-dark-50 py-3 px-3 font-semibold text-left text-[15px]">Configuration</h5>
-      {% comment %}
-        All configuration entries use the same htmx boost params as the
-        regular sidebar submenu links (see components/sidebar.html).
-        Without these, each click here would trigger a full page reload
-        instead of swapping just the main content region.
-      {% endcomment %}
-      <ul class="p-3">
-        {% if 'leave'|app_installed and perms.base.view_multipleapprovalcondition %}
-          <li>
-            <a href="{% url 'multiple-approval-condition' %}"
-               class="oh-sidebar__submenu-link"
-               hx-get="{% url 'multiple-approval-condition' %}"
-               hx-target="#ohMainContent"
-               hx-select="#ohMainContent > *"
-               hx-swap="innerHTML show:window:top"
-               hx-push-url="true">{% trans 'Multiple Approvals' %}</a>
-          </li>
-        {% endif %}
-        {% if perms.base.view_horillamailtemplate %}
-          <li>
-            <a href="{% url 'view-mail-templates' %}"
-               class="oh-sidebar__submenu-link"
-               hx-get="{% url 'view-mail-templates' %}"
-               hx-target="#ohMainContent"
-               hx-select="#ohMainContent > *"
-               hx-swap="innerHTML show:window:top"
-               hx-push-url="true">{% trans 'Mail Templates' %}</a>
-          </li>
-        {% endif %}
-        {% if 'horilla_automations'|app_installed and perms.horilla_automations.view_mailautomation %}
-          <li>
-            <a href="{% url 'mail-automations' %}"
-               class="oh-sidebar__submenu-link"
-               hx-get="{% url 'mail-automations' %}"
-               hx-target="#ohMainContent"
-               hx-select="#ohMainContent > *"
-               hx-swap="innerHTML show:window:top"
-               hx-push-url="true">{% trans 'Mail Automations' %}</a>
-          </li>
-        {% endif %}
-        {% if perms.base.add_holidays %}
-          <li>
-            <a href="{% url 'holiday-view' %}"
-               class="oh-sidebar__submenu-link"
-               hx-get="{% url 'holiday-view' %}"
-               hx-target="#ohMainContent"
-               hx-select="#ohMainContent > *"
-               hx-swap="innerHTML show:window:top"
-               hx-push-url="true">{% trans 'Holidays' %}</a>
-          </li>
-        {% endif %}
-        {% if perms.base.view_companyleaves %}
-          <li>
-            <a href="{% url 'company-leave-view' %}"
-               class="oh-sidebar__submenu-link"
-               hx-get="{% url 'company-leave-view' %}"
-               hx-target="#ohMainContent"
-               hx-select="#ohMainContent > *"
-               hx-swap="innerHTML show:window:top"
-               hx-push-url="true">{% trans 'Company Leaves' %}</a>
-          </li>
-        {% endif %}
-        {% if 'leave'|app_installed %}
-          <li>
-            <a href="{% url 'restrict-view' %}"
-               class="oh-sidebar__submenu-link"
-               hx-get="{% url 'restrict-view' %}"
-               hx-target="#ohMainContent"
-               hx-select="#ohMainContent > *"
-               hx-swap="innerHTML show:window:top"
-               hx-push-url="true">{% trans 'Restrict Leaves' %}</a>
-          </li>
-        {% endif %}
-        {% if "horilla_meet"|app_installed and "horilla_meet"|integration_installed %}
-          <li>
-            <a href="{% url 'gmeet-view' %}"
-               class="oh-sidebar__submenu-link"
-               hx-get="{% url 'gmeet-view' %}"
-               hx-target="#ohMainContent"
-               hx-select="#ohMainContent > *"
-               hx-swap="innerHTML show:window:top"
-               hx-push-url="true">{% trans 'Google Meet' %}</a>
-          </li>
-        {% endif %}
-      </ul>
+        <ul class="sidebar-subnav hidden pl-2 mt-1 space-y-0.5">
+            {% if 'leave'|app_installed and perms.base.view_multipleapprovalcondition %}
+                <li>
+                    <a
+                        href="{% url 'multiple-approval-condition' %}"
+                        class="sidebar-subnav-link block text-[13px] text-gray-600 px-3 py-1.5 rounded-md hover:bg-gray-50 hover:text-gray-900 transition-colors duration-150 truncate"
+                        hx-get="{% url 'multiple-approval-condition' %}"
+                        hx-target="#ohMainContent"
+                        hx-select="#ohMainContent > *"
+                        hx-swap="innerHTML show:window:top"
+                        hx-push-url="true"
+                    >{% trans 'Multiple Approvals' %}</a>
+                </li>
+            {% endif %}
+            {% if perms.base.view_horillamailtemplate %}
+                <li>
+                    <a
+                        href="{% url 'view-mail-templates' %}"
+                        class="sidebar-subnav-link block text-[13px] text-gray-600 px-3 py-1.5 rounded-md hover:bg-gray-50 hover:text-gray-900 transition-colors duration-150 truncate"
+                        hx-get="{% url 'view-mail-templates' %}"
+                        hx-target="#ohMainContent"
+                        hx-select="#ohMainContent > *"
+                        hx-swap="innerHTML show:window:top"
+                        hx-push-url="true"
+                    >{% trans 'Mail Templates' %}</a>
+                </li>
+            {% endif %}
+            {% if 'horilla_automations'|app_installed and perms.horilla_automations.view_mailautomation %}
+                <li>
+                    <a
+                        href="{% url 'mail-automations' %}"
+                        class="sidebar-subnav-link block text-[13px] text-gray-600 px-3 py-1.5 rounded-md hover:bg-gray-50 hover:text-gray-900 transition-colors duration-150 truncate"
+                        hx-get="{% url 'mail-automations' %}"
+                        hx-target="#ohMainContent"
+                        hx-select="#ohMainContent > *"
+                        hx-swap="innerHTML show:window:top"
+                        hx-push-url="true"
+                    >{% trans 'Mail Automations' %}</a>
+                </li>
+            {% endif %}
+            {% if perms.base.add_holidays %}
+                <li>
+                    <a
+                        href="{% url 'holiday-view' %}"
+                        class="sidebar-subnav-link block text-[13px] text-gray-600 px-3 py-1.5 rounded-md hover:bg-gray-50 hover:text-gray-900 transition-colors duration-150 truncate"
+                        hx-get="{% url 'holiday-view' %}"
+                        hx-target="#ohMainContent"
+                        hx-select="#ohMainContent > *"
+                        hx-swap="innerHTML show:window:top"
+                        hx-push-url="true"
+                    >{% trans 'Holidays' %}</a>
+                </li>
+            {% endif %}
+            {% if perms.base.view_companyleaves %}
+                <li>
+                    <a
+                        href="{% url 'company-leave-view' %}"
+                        class="sidebar-subnav-link block text-[13px] text-gray-600 px-3 py-1.5 rounded-md hover:bg-gray-50 hover:text-gray-900 transition-colors duration-150 truncate"
+                        hx-get="{% url 'company-leave-view' %}"
+                        hx-target="#ohMainContent"
+                        hx-select="#ohMainContent > *"
+                        hx-swap="innerHTML show:window:top"
+                        hx-push-url="true"
+                    >{% trans 'Company Leaves' %}</a>
+                </li>
+            {% endif %}
+            {% if 'leave'|app_installed %}
+                <li>
+                    <a
+                        href="{% url 'restrict-view' %}"
+                        class="sidebar-subnav-link block text-[13px] text-gray-600 px-3 py-1.5 rounded-md hover:bg-gray-50 hover:text-gray-900 transition-colors duration-150 truncate"
+                        hx-get="{% url 'restrict-view' %}"
+                        hx-target="#ohMainContent"
+                        hx-select="#ohMainContent > *"
+                        hx-swap="innerHTML show:window:top"
+                        hx-push-url="true"
+                    >{% trans 'Restrict Leaves' %}</a>
+                </li>
+            {% endif %}
+            {% if "horilla_meet"|app_installed and "horilla_meet"|integration_installed %}
+                <li>
+                    <a
+                        href="{% url 'gmeet-view' %}"
+                        class="sidebar-subnav-link block text-[13px] text-gray-600 px-3 py-1.5 rounded-md hover:bg-gray-50 hover:text-gray-900 transition-colors duration-150 truncate"
+                        hx-get="{% url 'gmeet-view' %}"
+                        hx-target="#ohMainContent"
+                        hx-select="#ohMainContent > *"
+                        hx-swap="innerHTML show:window:top"
+                        hx-push-url="true"
+                    >{% trans 'Google Meet' %}</a>
+                </li>
+            {% endif %}
+        </ul>
     </div>
-  </button>
 {% endif %}

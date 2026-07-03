@@ -3,7 +3,26 @@
 {% load static i18n basefilters %}
 {% settings_menu as settings_menu %}
 
-<h3 class="text-lg font-semibold mb-3">{% trans "Settings" %}</h3>
+<div class="grid grid-cols-12 gap-4 items-center mb-3 pe-2">
+	<!-- Left Column: 3/12 -->
+	<div class="col-span-12 lg:col-span-3">
+		<h3 class="text-lg font-semibold mb-0">{% trans "Settings" %}</h3>
+	</div>
+	<!-- Right Column: 9/12 -->
+	<div class="col-span-12 lg:col-span-9">
+		{% if request.session.selected_company and request.session.selected_company != "all" and request.session.selected_company_instance %}
+		<div class="bg-primary-100 border border-primary-500 rounded-md px-4 py-3">
+			<p class="mb-0 text-primary-600" style="font-size:13.5px;line-height:1.4;">
+				<strong class="text-primary-600">{% trans "Company-specific settings" %}</strong>
+				&nbsp;—
+				{% blocktrans with company_name=request.session.selected_company_instance.company %}
+				You are currently setting these settings for the {{ company_name }} company specifically.
+				{% endblocktrans %}
+			</p>
+		</div>
+		{% endif %}
+	</div>
+</div>
 
 <div class="grid grid-cols-12 gap-4 h-full pe-2">
 	<!-- Left Column: 3/12 -->
@@ -179,6 +198,7 @@
 			if (!form || !settingsContainer || !settingsContainer.contains(form)) return;
 			if (form.getAttribute("data-settings-native") === "true") return;
 			if (typeof htmx === "undefined") return;
+			if (form.hasAttribute("hx-post") || form.hasAttribute("hx-get") || form.hasAttribute("hx-put") || form.hasAttribute("hx-patch") || form.hasAttribute("hx-delete")) return;
 			var method = (form.getAttribute("method") || "GET").toUpperCase();
 			if (method !== "POST") return;
 			ev.preventDefault();

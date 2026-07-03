@@ -5,38 +5,50 @@
 <!DOCTYPE html>
 <html class="{% if request.session.theme == 'dark' %}dark{% endif %}">
     <head>
-        <meta charset="UTF-8" />
-        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-        <title class="time-runner stop-runner">{{white_label_company_name}}</title>
-        <link rel="stylesheet" href="{% static 'build/css/sweetalert2.min.css' %}" />
-        <link rel="stylesheet" href="{% static 'build/css/summernote-lite.min.css' %}" />
-        <link rel="stylesheet" href="{% static 'build/css/orgChart.css' %}" />
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <title class="time-runner stop-runner">{{ white_label_company_name }}</title>
+        <link rel="stylesheet" href="{% static 'build/css/sweetalert2.min.css' %}">
+        <link rel="stylesheet" href="{% static 'build/css/summernote-lite.min.css' %}">
+        <link rel="stylesheet" href="{% static 'build/css/orgChart.css' %}">
+        <link rel="stylesheet" href="{% static 'build/css/driver.min.css' %}">
 
         <link rel="manifest" href="{% static 'build/manifest.json' %}">
-        <link rel="apple-touch-icon" sizes="180x180"
-            href="{% if white_label_company.icon %}{{white_label_company.icon.url}} {% else %}{% static 'favicons/apple-touch-icon.png' %}{% endif %}">
-        <link rel="icon" type="image/png" sizes="32x32"
-            href="{% if white_label_company.icon %}{{white_label_company.icon.url}} {% else %}{% static 'favicons/favicon-32x32.png' %}{% endif %}">
-        <link rel="icon" type="image/png" sizes="16x16"
-            href="{% if white_label_company.icon %}{{white_label_company.icon.url}} {% else %}{% static 'favicons/favicon-16x16.png' %}{% endif %}">
+        <link
+            rel="apple-touch-icon"
+            sizes="180x180"
+            href="{% if white_label_company.icon %}{{white_label_company.icon.url}} {% else %}{% static 'favicons/apple-touch-icon.png' %}{% endif %}"
+        >
+        <link
+            rel="icon"
+            type="image/png"
+            sizes="32x32"
+            href="{% if white_label_company.icon %}{{white_label_company.icon.url}} {% else %}{% static 'favicons/favicon-32x32.png' %}{% endif %}"
+        >
+        <link
+            rel="icon"
+            type="image/png"
+            sizes="16x16"
+            href="{% if white_label_company.icon %}{{white_label_company.icon.url}} {% else %}{% static 'favicons/favicon-16x16.png' %}{% endif %}"
+        >
 
-        <script src="{% static "horilla_theme/assets/js/tailwindcdn.js" %}"></script>
+        <script src='{% static "horilla_theme/assets/js/tailwindcdn.js" %}'></script>
         {% include "horilla_theme/components/header_scripts.html" %}
 
         <link
             rel="stylesheet"
             href="{% static 'cdn/font-awsome/css/all.min.css' %}"
-        />
+        >
         <link
             rel="stylesheet"
             href="{% static 'horilla_theme/assets/css/dark.css' %}"
-        />
+        >
         <link
             href="{% static 'cdn/googleapi/css/inter-font-style.css' %}"
             rel="stylesheet"
-        />
+        >
         <link href="{% static 'horilla_theme/assets/css/tailwind.css' %}" rel="stylesheet">
-        <link href="{% static 'cdn/select2/css/select2.min.css' %}" rel="stylesheet" />
+        <link href="{% static 'cdn/select2/css/select2.min.css' %}" rel="stylesheet">
 
         <script src="{% static 'horilla_theme/assets/js/global.js' %}"></script>
         <script src="{% static 'cdn/hyperscript/script/_hyperscript.min.js' %}"></script>
@@ -44,90 +56,89 @@
         <link
             rel="stylesheet"
             href="{% static 'horilla_theme/assets/css/global.css' %}"
-        />
+        >
         <link
             rel="stylesheet"
             href="{% static 'horilla_theme/assets/css/v1_styles.css' %}"
-        />
-        <link rel="stylesheet" href="{% static 'build/css/pivottable.min.css' %}" />
+        >
+        <link rel="stylesheet" href="{% static 'build/css/pivottable.min.css' %}">
         {% with theme=theme_obj %}
-        <style>
+            <style>
+                /* Primary 600 background */
+                .btn,
+                .oh-btn--secondary,
+                .toggle-input:checked + .toggle-switch,
+                .sideboxmain.active,
+                .sideboxmain:hover,
+                .usertablist li button:hover,
+                .usertablist li button.active,
+                .oh-tabs__tab--active,
+                .oh-switch .oh-switch__checkbox:checked,
+                .select2-container--default
+                .select2-selection--multiple
+                .select2-selection__choice {
+                    background-color: {{ theme.primary_600|default:"#E54F38" }};
+                }
 
-            /* Primary 600 background */
-            .btn,
-            .oh-btn--secondary,
-            .toggle-input:checked + .toggle-switch,
-            .sideboxmain.active,
-            .sideboxmain:hover,
-            .usertablist li button:hover,
-            .usertablist li button.active,
-            .oh-tabs__tab--active,
-            .oh-switch .oh-switch__checkbox:checked,
-            .select2-container--default
-            .select2-selection--multiple
-            .select2-selection__choice {
-                background-color: {{ theme.primary_600|default:"#E54F38" }};
-            }
+                .oh-titlebar__tag--custom{
+                    background-color: {{ theme.primary_600|default:"#E54F38" }} !important;
+                    color: {{ theme_obj.secondary_100|default:"#F0F0F0" }} !important;
+                }
 
-            .oh-titlebar__tag--custom{
-                background-color: {{ theme.primary_600|default:"#E54F38" }} !important;
-                color: {{theme_obj.secondary_100|default:"#F0F0F0"}} !important;
-            }
+                .usertablist li button.active,
+                .usertablist li button:hover{
+                    border: 1px solid {{ theme_obj.primary_600|default:"#E54F38" }};
+                }
 
-            .usertablist li button.active,
-            .usertablist li button:hover{
-                border: 1px solid {{ theme_obj.primary_600|default:"#E54F38" }};
-            }
+                .myform input:focus, .myform select:focus, .myform textarea:focus,
+                .oh-input:focus, .oh-input:focus-visible, .oh-select:focus, .oh-select:focus-visible
+                {
+                    border: 1px solid {{ theme_obj.primary_600|default:"#E54F38" }} !important;
+                }
 
-            .myform input:focus, .myform select:focus, .myform textarea:focus,
-            .oh-input:focus, .oh-input:focus-visible, .oh-select:focus, .oh-select:focus-visible
-            {
-                border: 1px solid {{ theme_obj.primary_600|default:"#E54F38" }} !important;
-            }
+                {% comment %} .oh-activity-sidebar {
+                    background-color: {{ theme_obj.secondary_100|default:"#F0F0F0" }} !important;
+                } {% endcomment %}
 
-            {% comment %} .oh-activity-sidebar {
-                background-color: {{theme_obj.secondary_100|default:"#F0F0F0"}} !important;
-            } {% endcomment %}
+                .btn:hover,
+                .oh-btn--secondary:hover,
+                .oh-btn--secondary:focus,
+                .oh-btn--secondary:focus-visible,
+                .oh-switch .oh-switch__checkbox:checked:hover
+                {
+                    background-color: {{ theme_obj.primary_800 | default:"#AC3B2A" }};
+                }
 
-            .btn:hover,
-            .oh-btn--secondary:hover,
-            .oh-btn--secondary:focus,
-            .oh-btn--secondary:focus-visible,
-            .oh-switch .oh-switch__checkbox:checked:hover
-            {
-                background-color: {{ theme_obj.primary_800 | default:"#AC3B2A" }};
-            }
+                /* Primary 300 background */
+                .sidebox ul li a:after,
+                .sidebox ul li a:hover,
+                .oh-accordion-header:hover {
+                    background-color: {{ theme.primary_300|default:"#FCEDEB" }};
+                }
 
-            /* Primary 300 background */
-            .sidebox ul li a:after,
-            .sidebox ul li a:hover,
-            .oh-accordion-header:hover {
-                background-color: {{ theme.primary_300|default:"#FCEDEB" }};
-            }
+                /* Accordion base */
+                .oh-accordion-header {
+                    background-color: {{ theme.primary_200|default:"#FEF6F5" }};
+                    color: {{ theme.primary_600|default:"#E54F38" }};
+                }
 
-            /* Accordion base */
-            .oh-accordion-header {
-                background-color: {{ theme.primary_200|default:"#FEF6F5" }};
-                color: {{ theme.primary_600|default:"#E54F38" }};
-            }
+                .oh-tabs__movable-header,
+                .oh-tabs__movable:hover {
+                    background-color: {{ theme.primary_100|default:"#FEF6F5" }};
+                }
 
-            .oh-tabs__movable-header,
-            .oh-tabs__movable:hover {
-                background-color: {{ theme.primary_100|default:"#FEF6F5" }};
-            }
-
-            /* Text color */
-            .oh-tabs__movable-header,
-            .sidebox ul li a:hover,
-            .breadcrumb li:last-child,
-            .breadcrumb li a:hover {
-                color: {{ theme.primary_600|default:"#E54F38" }};
-            }
-        </style>
+                /* Text color */
+                .oh-tabs__movable-header,
+                .sidebox ul li a:hover,
+                .breadcrumb li:last-child,
+                .breadcrumb li a:hover {
+                    color: {{ theme.primary_600|default:"#E54F38" }};
+                }
+            </style>
         {% endwith %}
 
         {% block styles %}
-        <!-- Page-specific styles (optional) -->
+            <!-- Page-specific styles (optional) -->
         {% endblock %}
     </head>
 
@@ -135,18 +146,16 @@
         {% get_current_language_bidi as LANGUAGE_BIDI %}
         {% get_current_language as LANGUAGE_CODE %}
         <div hidden id="statiUrl" data-url='{% static "" %}'></div>
-        <span hidden id="whiteLabelCompany" data-company = '{{ white_label_company_name }}'></span>
-        <!-- Include Sidebar -->
-        <div id="sidebar">
-            {% include "horilla_theme/components/sidebar.html" %}
-        </div>
+        <span hidden id="whiteLabelCompany" data-company="{{ white_label_company_name }}"></span>
+        <!-- Include Sidebar (sidebar.html owns id="sidebar" itself) -->
+        {% include "horilla_theme/components/sidebar.html" %}
 
         <div id="floating-buttons">
             {% include "floating_button.html" %}
         </div>
 
         <!-- Main Content -->
-        <div class="ml-[4.7rem] h-screen overflow-auto">
+        <div class="oh-main-content h-screen overflow-auto">
             <div>
                 <!-- Include Header -->
                 <div id="header">
@@ -158,24 +167,64 @@
                         {% include "horilla_theme/components/dashboard.html" %}
                     {% endblock %}
 
-                    <div id="imagePreview" style="display:none; position:absolute; z-index:9999;">
-                        <img id="previewImg" src="" style="box-shadow:0 10px 20px rgba(0,0,0,0.3); background:white;" class="rounded-lg">
+                    <div id="imagePreview" style="display: none; position: absolute; z-index: 9999">
+                        <img
+                            id="previewImg"
+                            src=""
+                            style="box-shadow: 0 10px 20px rgba(0, 0, 0, 0.3); background: white"
+                            class="rounded-lg"
+                        >
                     </div>
-                    <div class="oh-modal" style="z-index: 100;" id="objectDetailsModal" role="dialog"
-                        aria-labelledby="objectDetailsModalLabel" aria-hidden="true">
-                        <div class="oh-modal__dialog oh-modal__dialog-relative" id="objectDetailsModalTarget"> </div>
+                    <div
+                        class="oh-modal"
+                        style="z-index: 100"
+                        id="objectDetailsModal"
+                        role="dialog"
+                        aria-labelledby="objectDetailsModalLabel"
+                        aria-hidden="true"
+                    >
+                        <div class="oh-modal__dialog oh-modal__dialog-relative" id="objectDetailsModalTarget"></div>
                     </div>
-                    <div class="oh-modal" style="z-index: 100;" id="objectDetailsModalW25" role="dialog"
-                        aria-labelledby="objectDetailsModalW25Label" aria-hidden="true">
-                        <div class="oh-modal__dialog oh-modal__dialog-relative" style="max-width: 410px" id="objectDetailsModalW25Target"> </div>
+                    <div
+                        class="oh-modal"
+                        style="z-index: 100"
+                        id="objectDetailsModalW25"
+                        role="dialog"
+                        aria-labelledby="objectDetailsModalW25Label"
+                        aria-hidden="true"
+                    >
+                        <div
+                            class="oh-modal__dialog oh-modal__dialog-relative"
+                            style="max-width: 410px"
+                            id="objectDetailsModalW25Target"
+                        >
+                        </div>
                     </div>
-                    <div class="oh-modal" id="objectCreateModal" role="dialog" aria-labelledby="objectCreateModalLabel" aria-hidden="true">
+                    <div
+                        class="oh-modal"
+                        id="objectCreateModal"
+                        role="dialog"
+                        aria-labelledby="objectCreateModalLabel"
+                        aria-hidden="true"
+                    >
                         <div class="oh-modal__dialog" id="objectCreateModalTarget"></div>
                     </div>
-                    <div class="oh-modal" id="objectUpdateModal" role="dialog" aria-labelledby="objectUpdateModalLabel" aria-hidden="true">
+                    <div
+                        class="oh-modal"
+                        id="objectUpdateModal"
+                        role="dialog"
+                        aria-labelledby="objectUpdateModalLabel"
+                        aria-hidden="true"
+                    >
                         <div class="oh-modal__dialog" id="objectUpdateModalTarget"></div>
                     </div>
-                    <div class="oh-modal" id="dynamicCreateModal" role="dialog" aria-hidden="true" style="z-index: 1022;">
+                    <div
+                        class="oh-modal"
+                        id="dynamicCreateModal"
+                        role="dialog"
+                        aria-hidden="true"
+                        style="z-index: 1022"
+                    >
                         <div id="dynamicCreateModalTarget" class="oh-modal__dialog" style="max-width: 550px"></div>
                     </div>
                 </div>

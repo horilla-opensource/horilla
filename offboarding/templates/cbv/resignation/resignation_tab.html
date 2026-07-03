@@ -1,6 +1,6 @@
 {% load i18n %}
 <div id="resignation-container">
-	{% if enabled_resignation_request %}
+	{% if enabled_resignation_request or request.user.is_superuser or perms.offboarding.add_resignationletter %}
 		<div class="d-flex flex-row-reverse oh-wrapper">
 			<a
 				hx-get="{% url 'resignation-requests-create' %}?emp_id={{employee}}"

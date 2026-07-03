@@ -6,10 +6,11 @@ Accessible at /helpdesk/dashboard/modern/ alongside the existing pipeline view.
 
 from datetime import date, timedelta
 
-from django.contrib.auth.decorators import login_required
 from django.db.models import Avg, Count, F, Q
 from django.http import JsonResponse
 from django.shortcuts import render
+
+from horilla.decorators import login_required, permission_required
 
 
 def _parse_period(request):
@@ -29,12 +30,14 @@ def _parse_period(request):
 
 
 @login_required
+@permission_required("helpdesk.view_ticket")
 def helpdesk_dashboard_view(request):
     """Render the modern helpdesk dashboard page."""
     return render(request, "helpdesk/dashboard.html")
 
 
 @login_required
+@permission_required("helpdesk.view_ticket")
 def helpdesk_kpi_data(request):
     """Return helpdesk KPI summary data as JSON.
 
@@ -132,6 +135,7 @@ def _period_tickets(request):
 
 
 @login_required
+@permission_required("helpdesk.view_ticket")
 def helpdesk_status_distribution(request):
     """Ticket count by status, for tickets created in the picker range."""
     statuses = []
@@ -152,6 +156,7 @@ def helpdesk_status_distribution(request):
 
 
 @login_required
+@permission_required("helpdesk.view_ticket")
 def helpdesk_priority_distribution(request):
     """Ticket count by priority, for tickets created in the picker range."""
     priorities = []
@@ -166,6 +171,7 @@ def helpdesk_priority_distribution(request):
 
 
 @login_required
+@permission_required("helpdesk.view_ticket")
 def helpdesk_type_distribution(request):
     """Ticket count by type, for tickets created in the picker range."""
     types = []
@@ -196,6 +202,7 @@ def helpdesk_type_distribution(request):
 
 
 @login_required
+@permission_required("helpdesk.view_ticket")
 def helpdesk_monthly_trend(request):
     """Ticket creation/resolution trend per month within the selected period."""
     from helpdesk.models import Ticket
@@ -241,6 +248,7 @@ def helpdesk_monthly_trend(request):
 
 
 @login_required
+@permission_required("helpdesk.view_ticket")
 def helpdesk_department_breakdown(request):
     """Tickets by department (via employee owner), for tickets created in the picker range."""
     departments = []
@@ -270,6 +278,7 @@ def helpdesk_department_breakdown(request):
 
 
 @login_required
+@permission_required("helpdesk.view_ticket")
 def helpdesk_overdue_tickets(request):
     """Tickets created in the selected period whose deadline has already passed."""
     _from, to_date = _parse_period(request)
@@ -318,6 +327,7 @@ def helpdesk_overdue_tickets(request):
 
 
 @login_required
+@permission_required("helpdesk.view_ticket")
 def helpdesk_recent_tickets(request):
     """Most recently created tickets within the selected period."""
     tickets = []
@@ -358,6 +368,7 @@ def helpdesk_recent_tickets(request):
 
 
 @login_required
+@permission_required("helpdesk.view_ticket")
 def helpdesk_sla_compliance(request):
     """SLA compliance rate — tickets resolved within deadline, for tickets created in the picker range."""
     from helpdesk.models import Ticket
@@ -407,6 +418,7 @@ def helpdesk_sla_compliance(request):
 
 
 @login_required
+@permission_required("helpdesk.view_ticket")
 def helpdesk_assignee_workload(request):
     """Open ticket count per assignee, restricted to tickets created in the selected period."""
     assignees = []

@@ -1,5 +1,5 @@
 """
-Module for registering LeaveType, LeaveRequest, AvailableLeave, Holiday, and CompanyLeave
+Module for registering LeaveType, LeaveRequest, AvailableLeave
 models with the Django admin site.
 """
 

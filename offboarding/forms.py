@@ -279,13 +279,14 @@ class ResignationLetterForm(ModelForm):
             )
 
         request = getattr(horilla_middlewares._thread_locals, "request", None)
-        if request and not request.user.has_perm("offboarding.add_offboardingemployee"):
-            exclude = exclude + [
-                "employee_id",
-                "status",
-            ]
+        if request and not request.user.has_perm("offboarding.add_resignation"):
+            exclude = exclude + ["status"]
+            self.fields["employee_id"].queryset = Employee.objects.filter(
+                employee_user_id=request.user
+            )
+            self.fields["employee_id"].initial = request.user.employee_get
             self.instance.employee_id = request.user.employee_get
-        if request and request.user.has_perm("offboarding.add_offboardingemployee"):
+        if request and request.user.has_perm("offboarding.add_resignation"):
             if request.GET.get("emp_id"):
                 emp_id = request.GET.get("emp_id")
                 self.fields["employee_id"].queryset = Employee.objects.filter(id=emp_id)
@@ -299,19 +300,20 @@ class ResignationLetterForm(ModelForm):
         request = getattr(horilla_middlewares._thread_locals, "request", None)
         instance = self.instance
         if (
-            not request.user.has_perm("offboarding.add_offboardingemployee")
+            not request.user.has_perm("offboarding.add_resignation")
             and instance.status == "requested"
-        ) or request.user.has_perm("add_offboardingemployee"):
+        ) or request.user.has_perm("add_resignation"):
             instance = super().save(commit)
         else:
             messages.info(
                 request, "You cannot edit a request that has been rejected/approved"
             )
+            return None
 
         if (
             instance.status == "requested"
             and request
-            and not request.user.has_perm("offboarding.add_offboardingemployee")
+            and not request.user.has_perm("offboarding.add_resignation")
         ):
             with contextlib.suppress(Exception):
                 notify.send(

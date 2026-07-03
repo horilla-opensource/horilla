@@ -17,6 +17,7 @@ SUBMENUS = [
     {
         "menu": _("Dashboard"),
         "redirect": reverse_lazy("dashboard-view"),
+        "accessibility": "pms.sidebar.dashboard_accessibility",
     },
     {
         "menu": _("Objectives"),
@@ -25,6 +26,7 @@ SUBMENUS = [
     {
         "menu": _("Objective Template"),
         "redirect": reverse_lazy("objective-template-list-view"),
+        "accessibility": "pms.sidebar.objective_template_accessibility",
     },
     {
         "menu": _("360 Feedback"),
@@ -54,6 +56,14 @@ SUBMENUS = [
         "accessibility": "pms.sidebar.question_template_accessibility",
     },
 ]
+
+
+def dashboard_accessibility(request, submenu, user_perms, *args, **kwargs):
+    return request.user.has_perm("pms.view_employeeobjective")
+
+
+def objective_template_accessibility(request, submenu, user_perms, *args, **kwargs):
+    return request.user.is_superuser or request.user.has_perm("pms.add_objective")
 
 
 def key_result_accessibility(request, submenu, user_perms, *args, **kwargs):

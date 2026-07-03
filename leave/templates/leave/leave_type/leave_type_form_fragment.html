@@ -1,421 +1,855 @@
-{% load i18n %}
+{% load i18n static widget_tweaks horillafilters %}
+
+<style>
+	.bg-white.p-5.pe-2.pt-3.rounded-md.shadow-card.w-full {
+	    max-width: 980px;
+	    margin: 1.5rem auto;
+	    padding: 1.25rem;
+	    background: #ffffff;
+	    box-shadow: 0 6px 18px rgba(15, 23, 42, 0.04);
+	    border-radius: 10px;
+	}
+
+	.form-input-items {
+	    margin-bottom: 1.3rem;
+	}
+	.form-input-items label,
+	.form-input-items .text-xs {
+	    font-size: 0.875rem;
+	    color: #374151;
+	    margin-bottom: 0.35rem;
+	}
+
+	.form-input-items input[type="text"],
+	.form-input-items input[type="number"],
+	.form-input-items input[type="file"],
+	.form-input-items select,
+	.form-input-items textarea,
+	.form-input-items .oh-input,
+	.form-input-items .oh-select {
+	    width: 100%;
+	    padding: 0.48rem 0.75rem;
+	    border-radius: 0.375rem;
+	    border: 1px solid #e6e7eb;
+	    background: #fff;
+	    font-size: 0.93rem;
+	    box-sizing: border-box;
+	}
+
+	.col-span-12.md\:col-span-6.rounded-md.border.p-5.bg-gray-50,
+	.col-span-12.md\:col-span-6 > .p-5.bg-gray-50.rounded-md.border {
+	    background: #fbfbfc;
+	    padding: 1rem;
+	    border-radius: 8px;
+	    border: 1px solid #eef2f6;
+	}
+
+	.sr-only.peer { position: absolute; left: -9999px; }
+	.sr-only.peer + div,
+	.sr-only.peer + .relative {
+	    position: relative;
+	    width: 36px;
+	    height: 20px;
+	    background: #aeaeb2;
+	    border-radius: 999px;
+	    transition: background .18s ease;
+	    flex-shrink: 0;
+	}
+	.sr-only.peer + div::after,
+	.sr-only.peer + .relative::after {
+        content: "";
+        position: absolute;
+        left: 2px;
+        top: 2px;
+        width: 16px;
+        height: 16px;
+        background: #fff;
+        border-radius: 50%;
+        transition: transform .18s ease;
+        box-shadow: 0 1px 2px rgba(0,0,0,0.06);
+	}
+	.sr-only.peer:checked + div,
+	.sr-only.peer:checked + .relative {
+        background: {{ theme_obj.primary_600|default:"#E54F38" }};
+	}
+	.sr-only.peer:checked + div::after,
+	.sr-only.peer:checked + .relative::after {
+        transform: translateX(16px);
+	}
+
+	.oh-profile__avatar { width: 40px; height: 40px; border-radius: 999px; overflow: hidden; }
+	.oh-profile__avatar img { width: 100%; height: 100%; object-fit: cover; display: block; }
+
+	.oh-btn.oh-onboarding-card__button {
+        padding: 0.56rem 1.05rem;
+        border-radius: 8px;
+        font-weight: 600;
+	}
+	.oh-btn.oh-btn--secondary {
+        background-color: {{ theme_obj.primary_600|default:"#E54F38" }};
+        color: #fff;
+        border: 0;
+        box-shadow: 0 6px 18px rgba(229,79,56,0.12);
+	}
+
+	.resetContainer,
+	.totalDaysContainer,
+	.oh-input-group { display: flex; align-items: center; justify-content: space-between; gap: 1rem; }
+
+	@media (max-width: 768px) {
+	  .grid.grid-cols-12.gap-4 { grid-template-columns: repeat(1, 1fr) !important; }
+	  .col-span-12.md\:col-span-6 { grid-column: span 12 !important; }
+	  .resetContainer, .totalDaysContainer, .oh-input-group { flex-direction: column; align-items: flex-start; }
+	  label[for="fileUpload"] { width: 100%; justify-content: center; }
+	}
+
+	.form-input-items input:focus,
+	.form-input-items select:focus,
+	.form-input-items textarea:focus { outline: none; border-color: rgba(229,79,56,0.8); box-shadow: 0 6px 18px rgba(229,79,56,0.06); }
+</style>
 
 {% if form.errors %}
-  <div class="oh-wrapper">
-    <div class="oh-alert-container">
-      {% for error in form.non_field_errors %}
-        <div class="oh-alert oh-alert--animated oh-alert--danger">{{ error }}</div>
-      {% endfor %}
-    </div>
-  </div>
+<!-- form errors  -->
+<div class="oh-wrapper">
+	<div class="oh-alert-container">
+		{% for error in form.non_field_errors %}
+		<div class="oh-alert oh-alert--animated oh-alert--danger">
+			{{ error }}
+		</div>
+		{% endfor %}
+	</div>
+</div>
 {% endif %}
 
-<div class="oh-wrapper d-flex justify-content-center">
-  <div class="oh-onboarding-card w-100" style="max-width: 980px;">
-    <form
-      {% if is_htmx %}
-        hx-post="{{ post_url }}"
-        hx-target="#listContainer"
-        hx-swap="innerHTML"
-      {% else %}
-        method="post"
-        action="{{ post_url }}"
-      {% endif %}
-      enctype="multipart/form-data"
-    >
-      {% csrf_token %}
-      <div class="oh-onboarding-card__address-group">
-        <h2 class="oh-onboarding-card__section-title">{{ title }}</h2>
+<div
+	class="bg-white p-5 pe-2 pt-3 rounded-md shadow-card m-auto"
+	style="width: 70%; padding: 2%"
+>
+	<h3 class="text-lg font-semibold mb-3">{% trans "Create Leave Type" %}</h3>
+	<form
+		method="post"
+		action="{{request.path}}"
+		enctype="multipart/form-data"
+		id="mainform"
+	>
+		{% csrf_token %}
+		<div class="grid grid-cols-12 gap-4">
+			<div
+				class="col-span-12 md:col-span-6 rounded-md border border-dark-50 p-5"
+			>
+				<div class="form-input-items">
+					<label class="text-xs font-medium"
+						>{% trans "Name" %}</label
+					>
+					{{form.name}} {{form.name.errors}}
+				</div>
 
-        <div class="row">
-          {# ── Basic info ────────────────────────────────── #}
-          <div class="col-sm-12 col-md-12">
-            <div class="oh-input-group">
-              <label class="oh-label" for="{{ form.name.id_for_label }}">{{ form.name.label }}</label>
-              {{ form.name }}
-              {{ form.name.errors }}
-            </div>
-          </div>
+				<div class="form-input-items">
+					<label class="text-xs font-medium"
+						>{% trans "Is paid" %}</label
+					>
+					{{form.payment}} {{form.payment.errors}}
+				</div>
 
-          <div class="col-sm-12 col-md-6">
-            <div class="oh-input-group">
-              <label class="oh-label">{{ form.icon.label }}</label>
-              {{ form.icon }}
-              {{ form.icon.errors }}
-            </div>
-          </div>
+				<!-- Limit Leave days Toggle -->
+				<div class="flex items-center justify-between mb-2">
+					<div
+						class="flex items-center gap-1 pb-2 overflow-visible relative form-input-items"
+						style="display: ruby"
+					>
+						<label class="text-xs font-medium" for="id_reset"
+							>{% trans "Limit Leave Days" %}</label
+						>
+						<span
+							class="oh-info"
+							title="{% trans 'Do you want to limit leave days for this leave type?' %}"
+						></span>
+					</div>
+					<div class="form-input-items">
+						<label
+							class="inline-flex items-center cursor-pointer gap-3"
+						>
+							{{form.limit_leave|add_class:"sr-only peer"}}
+							<div
+								class="relative w-9 h-5 bg-[#aeaeb2] rounded-full peer-checked:bg-primary-600 after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:rounded-full after:h-4 after:w-4 after:transition-all peer-checked:after:translate-x-4 peer-checked:after:border-white"
+							></div>
+						</label>
+						{{form.limit_leave.errors}}
+					</div>
+				</div>
+				<div class="form-input-items">
+					<div class="totalDaysContainer" style="display: block">
+						<label class="text-xs font-medium" for=""
+							>{% trans "Total Days" %}</label
+						>
+						{{form.count|add_class:"mb-3 text-color-600 px-3 p-2 placeholder:text-xs w-full border border-dark-50 rounded-md focus-visible:outline-0 placeholder:text-dark-100 text-xs transition duration-300 focus:border-primary-600"}}
+						{{form.count.errors}}
+					</div>
+				</div>
 
-          <div class="col-sm-12 col-md-6">
-            <div class="oh-input-group">
-              <label class="oh-label">{{ form.color.label }}</label>
-              {{ form.color }}
-              {{ form.color.errors }}
-            </div>
-          </div>
+				<div class="oh-input-group">
+					{{form.period_in}} {{form.period_in.errors}}
+				</div>
 
-          {# ── Payment ───────────────────────────────────── #}
-          <div class="col-sm-12 col-md-12">
-            <div class="oh-input-group">
-              <label class="oh-label" for="{{ form.payment_type.id_for_label }}">{{ form.payment_type.label }}</label>
-              {{ form.payment_type }}
-              {{ form.payment_type.errors }}
-            </div>
-          </div>
+				<div class="oh-input-group">
+					{{form.total_days}} {{form.total_days.errors}}
+				</div>
 
-          <div class="col-sm-12 col-md-12" id="frag-paymentPercentageContainer" style="display:none;">
-            <div class="oh-input-group">
-              <label class="oh-label" for="{{ form.payment_percentage.id_for_label }}">{{ form.payment_percentage.label }}</label>
-              {{ form.payment_percentage }}
-              {{ form.payment_percentage.errors }}
-            </div>
-          </div>
+				<div
+					class="flex items-center justify-between mb-2 resetContainer form-input-items"
+				>
+					<div
+						class="flex items-center gap-1 pb-2 overflow-visible relative"
+						style="display: ruby"
+					>
+						<label class="text-xs font-medium" for=""
+							>{% trans "Require Approval" %}</label
+						>
+						<span
+							class="oh-info"
+							title="{% trans 'Do you need approval for leave from the authority?' %}"
+						></span>
+					</div>
+					<label
+						class="inline-flex items-center cursor-pointer gap-3"
+					>
+						<input
+							type="checkbox"
+							class="sr-only peer toggle-contro yesOrNol"
+							id="id_approval"
+							checked
+						/>
+						<div
+							class="relative w-9 h-5 bg-[#aeaeb2] rounded-full peer-checked:bg-primary-600 after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:rounded-full after:h-4 after:w-4 after:transition-all peer-checked:after:translate-x-4 peer-checked:after:border-white"
+						></div>
+					</label>
+					{{form.reset.errors}}
+				</div>
 
-          {# ── Leave count ───────────────────────────────── #}
-          <div class="col-sm-12 col-md-6">
-            <div class="oh-input-group oh-label__info justify-content-between">
-              <div class="d-flex align-items-center">
-                <label class="oh-label" for="{{ form.limit_leave.id_for_label }}">{{ form.limit_leave.label }}</label>
-                <span class="oh-info me-3" title="{% trans 'Limit the total number of leave days for this type' %}"></span>
-              </div>
-              <div class="oh-switch p-3">
-                {{ form.limit_leave }}
-                {{ form.limit_leave.errors }}
-              </div>
-            </div>
-          </div>
+				<!-- Reset Leave Toggle -->
+				<div
+					class="flex items-center justify-between mb-2 resetContainer form-input-items"
+				>
+					<div
+						class="flex items-center gap-1 pb-2 overflow-visible relative"
+						style="display: ruby"
+					>
+						<label class="text-xs font-medium" for="id_reset"
+							>{% trans "Reset" %}</label
+						>
+						<span
+							class="oh-info"
+							title="{% trans 'Do you need to reset leaves based on conditions?' %}"
+						></span>
+					</div>
+					<label
+						class="inline-flex items-center cursor-pointer gap-3"
+					>
+						{{form.reset|add_class:"sr-only peer"}}
+						<div
+							class="relative w-9 h-5 bg-[#aeaeb2] rounded-full peer-checked:bg-primary-600 after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:rounded-full after:h-4 after:w-4 after:transition-all peer-checked:after:translate-x-4 peer-checked:after:border-white"
+						></div>
+					</label>
+					{{form.reset.errors}}
+				</div>
+				<div class="form-input-items hidden">
+					<div
+						class="flex items-center gap-1 pb-2 overflow-visible relative"
+						id="reset_based_id"
+						style="display: ruby"
+					>
+						<label class="text-xs font-medium" for="id_reset_based">
+							{% trans "Reset Period" %}
+						</label>
+						<span
+							class="oh-info"
+							title="{% trans 'The time period for the leave to reset.' %}"
+						></span>
+					</div>
+					{{form.reset_based|add_class:"mb-3 text-color-600 px-3 p-2 placeholder:text-xs w-full border border-dark-50 rounded-md focus-visible:outline-0 placeholder:text-dark-100 text-xs transition duration-300 focus:border-primary-600"}}
+					{{form.reset_based.errors}}
+				</div>
+				<div class="form-input-items hidden">
+					<label class="text-xs font-medium" for="id_reset_month"
+						>{% trans "Reset Month" %}</label
+					>
+					{{form.reset_month|add_class:"mb-3 text-color-600 px-3 p-2 placeholder:text-xs w-full border border-dark-50 rounded-md focus-visible:outline-0 placeholder:text-dark-100 text-xs transition duration-300 focus:border-primary-600"}}
+					{{form.reset_month.errors}}
+				</div>
 
-          <div class="col-sm-12 col-md-12 frag-totalDaysContainer">
-            <div class="oh-input-group">
-              <label class="oh-label">{% trans "Total Days" %}</label>
-              {{ form.count }}
-              {{ form.count.errors }}
-            </div>
-          </div>
+				<div class="form-input-items hidden">
+					<label class="text-xs font-medium" for="id_reset_day"
+						>{% trans "Reset Day" %}</label
+					>
+					{{form.reset_day|add_class:"mb-3 text-color-600 px-3 p-2 placeholder:text-xs w-full border border-dark-50 rounded-md focus-visible:outline-0 placeholder:text-dark-100 text-xs transition duration-300 focus:border-primary-600"}}
+					{{form.reset_day.errors}}
+				</div>
 
-          {# ── Reset ─────────────────────────────────────── #}
-          <div class="col-sm-12 col-md-6 frag-resetContainer">
-            <div class="oh-input-group oh-label__info justify-content-between">
-              <div class="d-flex align-items-center">
-                <label class="oh-label" for="{{ form.reset.id_for_label }}">{{ form.reset.label }}</label>
-                <span class="oh-info me-3" title="{% trans 'Reset leave balance on a schedule' %}"></span>
-              </div>
-              <div class="oh-switch p-3">
-                {{ form.reset }}
-                {{ form.reset.errors }}
-              </div>
-            </div>
-          </div>
+				<div class="form-input-items hidden">
+					<label class="text-xs font-medium" for="id_reset_weekend"
+						>{% trans "Reset Weekday" %}</label
+					>
+					{{form.reset_weekend|add_class:"mb-3 text-color-600 px-3 p-2 placeholder:text-xs w-full border border-dark-50 rounded-md focus-visible:outline-0 placeholder:text-dark-100 text-xs transition duration-300 focus:border-primary-600"}}
+					{{form.reset_weekend.errors}}
+				</div>
 
-          <div class="col-sm-12 col-md-12">
-            <div class="oh-input-group oh-label__info">
-              <label class="oh-label" for="{{ form.reset_based.id_for_label }}">{{ form.reset_based.label }}</label>
-            </div>
-            {{ form.reset_based }}
-            {{ form.reset_based.errors }}
-          </div>
+				<div class="form-input-items hidden">
+					<label class="text-xs font-medium" for="id_custom_reset_days"
+						>{% trans "Custom Reset Days" %}</label
+					>
+					{{form.custom_reset_days|add_class:"mb-3 text-color-600 px-3 p-2 placeholder:text-xs w-full border border-dark-50 rounded-md focus-visible:outline-0 placeholder:text-dark-100 text-xs transition duration-300 focus:border-primary-600"}}
+					{{form.custom_reset_days.errors}}
+				</div>
 
-          <div class="col-sm-12 col-md-12">
-            <div class="oh-input-group">
-              <label class="oh-label" for="{{ form.reset_month.id_for_label }}">{{ form.reset_month.label }}</label>
-              {{ form.reset_month }}
-              {{ form.reset_month.errors }}
-            </div>
-          </div>
+				<!-- Carry Forward -->
+				<div class="form-input-items hidden">
+					<div
+						class="flex items-center gap-1 pb-2 overflow-carryforward_type relative"
+						style="display: ruby"
+					>
+						<label class="text-xs font-medium" for="">
+							{% trans "Carryforward Type" %}
+						</label>
+						<span
+							class="oh-info"
+							title="{% trans 'The conditions for carrying forward the balance of leave.' %}"
+						></span>
+					</div>
+					{{form.carryforward_type|add_class:"mb-3 text-color-600 px-3 p-2 placeholder:text-xs w-full border border-dark-50 rounded-md focus-visible:outline-0 placeholder:text-dark-100 text-xs transition duration-300 focus:border-primary-600"}}
+					{{form.carryforward_type.errors}}
+				</div>
 
-          <div class="col-sm-12 col-md-12">
-            <div class="oh-input-group">
-              <label class="oh-label" for="{{ form.reset_day.id_for_label }}">{{ form.reset_day.label }}</label>
-              {{ form.reset_day }}
-              {{ form.reset_day.errors }}
-            </div>
-          </div>
+				<div class="form-input-items hidden">
+					<div
+						class="flex items-center gap-1 pb-2 overflow-visible relative"
+						style="display: ruby"
+					>
+						<label
+							class="text-xs font-medium"
+							for="id_carryforward_max"
+						>
+							{% trans "Carryforward Max" %}
+						</label>
+						<span
+							class="oh-info"
+							title="{% trans 'The maximum number of leave that can be carried forward.' %}"
+						></span>
+					</div>
+					{{form.carryforward_max|add_class:"mb-3 text-color-600 px-3 p-2 placeholder:text-xs w-full border border-dark-50 rounded-md focus-visible:outline-0 placeholder:text-dark-100 text-xs transition duration-300 focus:border-primary-600"}}
+					{{form.carryforward_max.errors}}
+				</div>
 
-          <div class="col-sm-12 col-md-12">
-            <div class="oh-input-group">
-              <label class="oh-label" for="{{ form.reset_weekend.id_for_label }}">{{ form.reset_weekend.label }}</label>
-              {{ form.reset_weekend }}
-              {{ form.reset_weekend.errors }}
-            </div>
-          </div>
+				<div class="form-input-items hidden">
+					<div
+						class="flex items-center gap-1 pb-2 overflow-visible relative"
+						style="display: ruby"
+					>
+						<label
+							class="text-xs font-medium"
+							for="id_carryforward_expire_in"
+						>
+							{% trans "Carryforward Expire In" %}
+						</label>
+						<span
+							class="oh-info"
+							title="{% trans 'The count of carryforward expire period' %}"
+						></span>
+					</div>
+					{{form.carryforward_expire_in|add_class:"mb-3 text-color-600 px-3 p-2 placeholder:text-xs w-full border border-dark-50 rounded-md focus-visible:outline-0 placeholder:text-dark-100 text-xs transition duration-300 focus:border-primary-600"}}
+					{{form.carryforward_expire_in.errors}}
+				</div>
 
-          {# ── Carry-forward ─────────────────────────────── #}
-          <div class="col-sm-12 col-md-12">
-            <div class="oh-input-group oh-label__info">
-              <label class="oh-label">{{ form.carryforward_type.label }}</label>
-              <span class="oh-info me-3" title="{% trans 'How unused leave is carried forward' %}"></span>
-            </div>
-            {{ form.carryforward_type }}
-            {{ form.carryforward_type.errors }}
-          </div>
+				<div class="form-input-items hidden">
+					<div
+						class="flex items-center gap-1 pb-2 overflow-visible relative"
+						style="display: ruby"
+					>
+						<label
+							class="text-xs font-medium"
+							for="id_carryforward_expire_period"
+						>
+							{% trans "Carryforward Expire Period" %}
+						</label>
+						<span
+							class="oh-info me-3"
+							title="{% trans 'The time period for the expiration of carryforward leave.' %}"
+						></span>
+					</div>
+					{{form.carryforward_expire_period|add_class:"mb-3 text-color-600 px-3 p-2 placeholder:text-xs w-full border border-dark-50 rounded-md focus-visible:outline-0 placeholder:text-dark-100 text-xs transition duration-300 focus:border-primary-600"}}
+					{{form.carryforward_expire_period.errors}}
+				</div>
 
-          <div class="col-sm-12 col-md-12">
-            <div class="oh-input-group oh-label__info">
-              <label class="oh-label">{{ form.carryforward_max.label }}</label>
-            </div>
-            {{ form.carryforward_max }}
-            {{ form.carryforward_max.errors }}
-          </div>
+				<div class="form-input-items hidden">
+					<div
+						class="flex items-center gap-1 pb-2 overflow-visible relative"
+						style="display: ruby"
+					>
+						<label
+							for="id_carryforward_expire_date"
+							class="text-xs font-medium"
+						>
+							{% trans "Carryforward Expire Date" %}
+						</label>
+						<span
+							class="oh-info me-3"
+							title="{% trans 'The date on which carryforward leave resets to 0. After this reset, the date will be updated to the next expiration period.' %}"
+						></span>
+					</div>
+					{{form.carryforward_expire_date|add_class:"mb-3 text-color-600 px-3 p-2 placeholder:text-xs w-full border border-dark-50 rounded-md focus-visible:outline-0 placeholder:text-dark-100 text-xs transition duration-300 focus:border-primary-600"}}
+					{{form.carryforward_expire_date.errors}}
+				</div>
+			</div>
 
-          <div class="col-sm-12 col-md-12">
-            <div class="oh-input-group">
-              <label class="oh-label">{{ form.carryforward_expire_in.label }}</label>
-              {{ form.carryforward_expire_in }}
-              {{ form.carryforward_expire_in.errors }}
-            </div>
-          </div>
+			<!-- right col -->
+			<div class="col-span-12 md:col-span-6">
+				<div class="p-5 rounded-md border border-dark-50">
+					<div class="form-input-items">
+						<label class="text-xs font-medium"
+							>{% trans "Icon" %}</label
+						>
+						<label
+							for="fileUpload"
+							class="font-medium flex items-center bg-white justify-center gap-2 px-4 py-2 border border-dark-50 rounded-md text-xs text-gray-700 cursor-pointer hover:bg-gray-100 transition duration-300"
+						>
+							<svg
+								class="w-4 h-4 text-primary-600"
+								fill="none"
+								stroke="currentColor"
+								stroke-width="2"
+								viewBox="0 0 24 24"
+							>
+								<path
+									stroke-linecap="round"
+									stroke-linejoin="round"
+									d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1M12 12V4m0 0l4 4m-4-4L8 8"
+								></path>
+							</svg>
+							{% trans "Choose Icon" %}
+						</label>
+						{{form.icon.errors}}
+						<input
+							id="fileUpload"
+							type="file"
+							class="hidden"
+							accept="image/*"
+							name="icon"
+						/>
+						<img
+							id="imagePreview"
+							class="mt-3 w-10 h-10 object-cover rounded border border-[#0000001c] hidden"
+							alt="Preview"
+						/>
+					</div>
+					<div class="form-input-items">
+						<label class="text-xs font-medium"
+							>{% trans "Color" %}</label
+						>
+						{{form.color}} {{form.color.errors}}
+					</div>
 
-          <div class="col-sm-12 col-md-12">
-            <div class="oh-input-group">
-              <label class="oh-label">{{ form.carryforward_expire_period.label }}</label>
-              {{ form.carryforward_expire_period }}
-              {{ form.carryforward_expire_period.errors }}
-            </div>
-          </div>
+					<div
+						class="flex items-center justify-between mb-2 resetContainer form-input-items"
+					>
+						<div
+							class="flex items-center gap-1 pb-2 overflow-visible relative"
+							style="display: ruby"
+						>
+							<label class="text-xs font-medium" for=""
+								>{% trans "Require Attachment" %}</label
+							>
+							<span
+								class="oh-info"
+								title="{% trans 'Do you need to attach a document for leave?' %}"
+							></span>
+						</div>
+						<label
+							class="inline-flex items-center cursor-pointer gap-3"
+						>
+							<input
+								type="checkbox"
+								class="sr-only peer toggle-control yesOrNo"
+								id="id_attachment"
+							/>
+							<div
+								class="relative w-9 h-5 bg-[#aeaeb2] rounded-full peer-checked:bg-primary-600 after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:rounded-full after:h-4 after:w-4 after:transition-all peer-checked:after:translate-x-4 peer-checked:after:border-white"
+							></div>
+						</label>
+						{{form.require_attachment.errors}}
+					</div>
 
-          <div class="col-sm-12 col-md-12">
-            <div class="oh-input-group oh-label__info">
-              <label class="oh-label">{{ form.carryforward_expire_date.label }}</label>
-            </div>
-            {{ form.carryforward_expire_date }}
-            {{ form.carryforward_expire_date.errors }}
-          </div>
+					<div
+						class="flex items-center justify-between mb-2 resetContainer form-input-items"
+					>
+						<div
+							class="flex items-center gap-1 pb-2 overflow-visible relative"
+							style="display: ruby"
+						>
+							<label class="text-xs font-medium" for=""
+								>{% trans "Exclude Company Holidays" %}</label
+							>
+							<span
+								class="oh-info"
+								title="{% trans 'Do you need to exclude company holidays from the requested leave days?' %}"
+							></span>
+						</div>
+						<label
+							class="inline-flex items-center cursor-pointer gap-3"
+						>
+							<input
+								type="checkbox"
+								class="sr-only peer toggle-control yesOrNo"
+								id="id_exclude_comp_leave"
+							/>
+							<div
+								class="relative w-9 h-5 bg-[#aeaeb2] rounded-full peer-checked:bg-primary-600 after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:rounded-full after:h-4 after:w-4 after:transition-all peer-checked:after:translate-x-4 peer-checked:after:border-white"
+							></div>
+						</label>
+						{{form.exclude_company_leave.errors}}
+					</div>
 
-          {# ── Approval / attachment / exclusions ────────── #}
-          <div class="col-sm-12 col-md-6">
-            <div class="oh-input-group oh-label__info justify-content-between">
-              <div class="d-flex align-items-center">
-                <label class="oh-label">{{ form.require_approval.label }}</label>
-                <span class="oh-info me-3" title="{% trans 'Require manager approval for leave requests' %}"></span>
-              </div>
-              <div class="oh-switch p-3">
-                <input type="checkbox" class="oh-switch__checkbox frag-yesOrNo" id="frag_id_approval"
-                  {% if form.instance.require_approval == "yes" or not form.instance.pk %}checked{% endif %}>
-                <div hidden>{{ form.require_approval }}</div>
-              </div>
-            </div>
-          </div>
+					<div
+						class="flex items-center justify-between mb-2 resetContainer form-input-items"
+					>
+						<div
+							class="flex items-center gap-1 pb-2 overflow-visible relative"
+							style="display: ruby"
+						>
+							<label class="text-xs font-medium" for=""
+								>{% trans "Exclude Holidays" %}</label
+							>
+							<span
+								class="oh-info"
+								title="{% trans 'Do you need to exclude public holidays from the requested leave days?' %}"
+							></span>
+						</div>
+						<label
+							class="inline-flex items-center cursor-pointer gap-3"
+						>
+							<input
+								type="checkbox"
+								class="sr-only peer toggle-control yesOrNo"
+								id="id_exclude_public_leave"
+							/>
+							<div
+								class="relative w-9 h-5 bg-[#aeaeb2] rounded-full peer-checked:bg-primary-600 after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:rounded-full after:h-4 after:w-4 after:transition-all peer-checked:after:translate-x-4 peer-checked:after:border-white"
+							></div>
+						</label>
+						{{form.exclude_holiday.errors}}
+					</div>
 
-          <div class="col-sm-12 col-md-6">
-            <div class="oh-input-group oh-label__info justify-content-between">
-              <div class="d-flex align-items-center">
-                <label class="oh-label">{{ form.require_attachment.label }}</label>
-                <span class="oh-info me-3" title="{% trans 'Require a document attachment for leave requests' %}"></span>
-              </div>
-              <div class="oh-switch p-3">
-                <input type="checkbox" class="oh-switch__checkbox frag-yesOrNo" id="frag_id_attachment"
-                  {% if form.instance.require_attachment == "yes" %}checked{% endif %}>
-                <div hidden>{{ form.require_attachment }}</div>
-              </div>
-            </div>
-          </div>
-
-          <div class="col-sm-12 col-md-6">
-            <div class="oh-input-group oh-label__info justify-content-between">
-              <div class="d-flex align-items-center">
-                <label class="oh-label">{{ form.exclude_company_leave.label }}</label>
-                <span class="oh-info me-3" title="{% trans 'Exclude company holidays from requested days' %}"></span>
-              </div>
-              <div class="oh-switch p-3">
-                <input type="checkbox" class="oh-switch__checkbox frag-yesOrNo" id="frag_id_exclude_comp"
-                  {% if form.instance.exclude_company_leave == "yes" %}checked{% endif %}>
-                <div hidden>{{ form.exclude_company_leave }}</div>
-              </div>
-            </div>
-          </div>
-
-          <div class="col-sm-12 col-md-6">
-            <div class="oh-input-group oh-label__info justify-content-between">
-              <div class="d-flex align-items-center">
-                <label class="oh-label">{{ form.exclude_holiday.label }}</label>
-                <span class="oh-info me-3" title="{% trans 'Exclude public holidays from requested days' %}"></span>
-              </div>
-              <div class="oh-switch p-3">
-                <input type="checkbox" class="oh-switch__checkbox frag-yesOrNo" id="frag_id_exclude_hol"
-                  {% if form.instance.exclude_holiday == "yes" %}checked{% endif %}>
-                <div hidden>{{ form.exclude_holiday }}</div>
-              </div>
-            </div>
-          </div>
-
-          <div class="col-sm-12 col-md-6">
-            <div class="oh-input-group oh-label__info justify-content-between">
-              <div class="d-flex align-items-center">
-                <label class="oh-label">{{ form.is_encashable.label }}</label>
-                <span class="oh-info me-3" title="{% trans 'Allow encashment of pending leave days' %}"></span>
-              </div>
-              <div class="oh-switch p-3">
-                {{ form.is_encashable }}
-                {{ form.is_encashable.errors }}
-              </div>
-            </div>
-          </div>
-
-          {# ── Hidden fields ─────────────────────────────── #}
-          {{ form.period_in }}
-          {{ form.total_days }}
-          <div hidden>{{ form.payment }}</div>
-        </div>
-
-        {# ── Conditions panel ──────────────────────────── #}
-        {% if form.instance.pk %}
-        <div class="mt-4 pt-3" style="border-top: 1px solid hsl(213deg,22%,90%);">
-          <div hx-get="{% url 'leave-type-condition-create' form.instance.pk %}"
-               hx-trigger="load"
-               hx-target="#leaveTypeConditionsPanel"
-               hx-swap="outerHTML">
-            <div id="leaveTypeConditionsPanel">
-              <p class="text-muted small">{% trans "Loading conditions…" %}</p>
-            </div>
-          </div>
-        </div>
-        {% else %}
-        <div class="mt-4 pt-3" style="border-top: 1px solid hsl(213deg,22%,90%);">
-          <div class="oh-input-group oh-label__info">
-            <span class="oh-info me-2" title="{% trans 'Eligibility conditions' %}"></span>
-            <p class="oh-label mb-0 text-muted" style="font-size:0.85rem;">
-              {% trans "Eligibility conditions can be configured after saving the leave type." %}
-            </p>
-          </div>
-        </div>
-        {% endif %}
-
-        <div class="d-flex justify-content-between mt-4">
-          {% if is_htmx %}
-            <button type="button" class="oh-btn oh-btn--light-bkg"
-              hx-get="{% url 'leave-type-list' %}?{{ request.GET.urlencode }}"
-              hx-target="#listContainer" hx-swap="innerHTML">
-              {% trans "Back" %}
-            </button>
-          {% else %}
-            <a class="oh-btn oh-btn--light-bkg" href="{% url 'type-view' %}">{% trans "Back" %}</a>
-          {% endif %}
-          <button type="submit" class="oh-btn oh-btn--secondary oh-btn--shadow">
-            {% trans "Save" %}
-          </button>
-        </div>
-      </div>
-    </form>
-  </div>
+					<div
+						class="flex items-center justify-between mb-2 resetContainer form-input-items"
+					>
+						<div
+							class="flex items-center gap-1 pb-2 overflow-visible relative"
+							style="display: ruby"
+						>
+							<label class="text-xs font-medium" for=""
+								>{% trans "Is Encashable" %}</label
+							>
+							<span
+								class="oh-info"
+								title="{% trans 'Do you need to encash pending leave days?' %}"
+							></span>
+						</div>
+						<label
+							class="inline-flex items-center cursor-pointer gap-3"
+						>
+							{{form.is_encashable|add_class:"sr-only peer"}}
+							<div
+								class="relative w-9 h-5 bg-[#aeaeb2] rounded-full peer-checked:bg-primary-600 after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:rounded-full after:h-4 after:w-4 after:transition-all peer-checked:after:translate-x-4 peer-checked:after:border-white"
+							></div>
+						</label>
+						{{form.is_encashable.errors}}
+					</div>
+					{% if not form.instance.id %}
+                        {% if perms.leave.add_availableleave %}
+                        <div class="form-input-items">
+                            <div
+                                class="flex items-center gap-1 pb-2 overflow-visible relative"
+                                style="display: ruby"
+                                +
+                            >
+                                <label
+                                    for="id_employee_id"
+                                    class="text-xs font-medium"
+                                >
+                                    {% trans "Assign to Employees" %}
+                                </label>
+                                <span
+                                    class="oh-info me-3"
+                                    title="{% trans 'choose employees to assign this leave type' %}"
+                                ></span>
+                            </div>
+                            {{form.employee_id|add_class:"mb-3 text-color-600 px-3 p-2 placeholder:text-xs w-full border border-dark-50 rounded-md focus-visible:outline-0 placeholder:text-dark-100 text-xs transition duration-300 focus:border-primary-600"}}
+                            {{form.employee_id.errors}}
+                        </div>
+                        {% endif %}
+                    {% endif %}
+				</div>
+			</div>
+		</div>
+		<hr class="mt-5 mb-3 d-flex flex-row-reverse" style="color: #cdd5df" />
+		<div class="flex gap-1 justify-end pt-3 mt-3">
+			<button
+				type="submit"
+				class="oh-btn oh-onboarding-card__button mt-4 oh-btn--secondary oh-btn--shadow mb-4"
+				role="button"
+			>
+				{% trans "Save" %}
+			</button>
+		</div>
+		<div hidden>{{form.require_approval}}</div>
+		<div hidden>{{form.require_attachment}}</div>
+		<div hidden>{{form.exclude_company_leave}}</div>
+		<div hidden>{{form.exclude_holiday}}</div>
+	</form>
 </div>
 
 <script>
-(function () {
-  // All variables declared upfront so every function can reference them safely
-  var payType    = document.querySelector("#id_payment_type");
-  var pctCont    = document.querySelector("#frag-paymentPercentageContainer");
-  var pctField   = document.querySelector("#id_payment_percentage");
-  var limitLeave = document.querySelector("#id_limit_leave");
-  var resetChk   = document.querySelector("#id_reset");
-  var resetBased = document.querySelector("#id_reset_based");
-  var resetMonth = document.querySelector("#id_reset_month");
-  var resetDay   = document.querySelector("#id_reset_day");
-  var resetWeek  = document.querySelector("#id_reset_weekend");
-  var cfType     = document.querySelector("#id_carryforward_type");
-  var cfMax      = document.querySelector("#id_carryforward_max");
-  var cfExpIn    = document.querySelector("#id_carryforward_expire_in");
-  var cfExpPer   = document.querySelector("#id_carryforward_expire_period");
-  var cfExpDate  = document.querySelector("#id_carryforward_expire_date");
+	var icon = $("#id_icon");
+	icon.show();
+	document
+		.getElementById("fileUpload")
+		.addEventListener("change", function () {
+			const file = this.files[0];
+			const preview = document.getElementById("imagePreview");
 
-  function hideCol(el) { if (el) { el.closest(".col-sm-12").style.display = "none"; el.required = false; } }
-  function showCol(el) { if (el) { el.closest(".col-sm-12").style.display = ""; } }
+			if (file && file.type.startsWith("image/")) {
+				const reader = new FileReader();
+				reader.onload = function (e) {
+					preview.src = e.target.result;
+					preview.classList.remove("hidden");
+				};
+				reader.readAsDataURL(file);
+			} else {
+				preview.src = "";
+				preview.classList.add("hidden");
+			}
+		});
+	function toggleInput(inputSelector, shouldShow = null) {
+		const $target = $(inputSelector).closest(".form-input-items");
+		const $targetInput = $(inputSelector);
+		if (shouldShow === null) {
+			$target.toggle();
+		} else if (shouldShow) {
+			$target.removeClass("hidden");
+			$targetInput.prop("required", true);
+		} else {
+			$target.addClass("hidden");
+			$targetInput.prop("required", false);
+		}
+	}
 
-  function syncPayment() {
-    if (!payType || !pctCont) return;
-    var isCustom = payType.value === "custom";
-    pctCont.style.display = isCustom ? "" : "none";
-    if (pctField) pctField.required = isCustom;
-  }
+	$(document).ready(function () {
+		function initializeResetFields() {
+			const $reset = $("[name='reset']");
+			const isResetChecked = $reset.is(":checked");
 
-  function syncCF() {
-    if (!cfType) return;
-    var v      = cfType.value;
-    var hasCF  = (v === "carryforward" || v === "carryforward expire");
-    var hasExp = (v === "carryforward expire");
-    if (cfMax) cfMax.closest(".col-sm-12").style.display = hasCF  ? "" : "none";
-    [cfExpIn, cfExpPer, cfExpDate].forEach(function (el) {
-      if (el) el.closest(".col-sm-12").style.display = hasExp ? "" : "none";
-    });
-  }
+			// Toggle reset-related fields
+			toggleInput($("[name='reset_based']"), isResetChecked);
+			toggleInput($("[name='carryforward_type']"), isResetChecked);
 
-  function syncResetBased() {
-    if (!resetBased) return;
-    var v = resetBased.value;
-    if      (v === "yearly")  { showCol(resetMonth); showCol(resetDay); hideCol(resetWeek); }
-    else if (v === "monthly") { hideCol(resetMonth); showCol(resetDay); hideCol(resetWeek); }
-    else if (v === "weekly")  { hideCol(resetMonth); hideCol(resetDay); showCol(resetWeek); }
-    else                      { hideCol(resetMonth); hideCol(resetDay); hideCol(resetWeek); }
-  }
+			// Handle dependent fields based on reset_based value
+			const resetBasedValue = $("[name='reset_based']").val();
+			toggleInput(
+				$("[name='reset_month']"),
+				isResetChecked && resetBasedValue === "yearly",
+			);
+			toggleInput(
+				$("[name='reset_day']"),
+				isResetChecked &&
+					(resetBasedValue === "yearly" ||
+						resetBasedValue === "monthly"),
+			);
+			toggleInput(
+				$("[name='reset_weekend']"),
+				isResetChecked && resetBasedValue === "weekly",
+			);
 
-  // syncReset also controls carryforward_type visibility
-  function syncReset() {
-    if (!resetChk) return;
-    if (resetChk.checked) {
-      showCol(resetBased);
-      if (cfType) cfType.closest(".col-sm-12").style.display = "";
-      syncResetBased();
-      syncCF();
-    } else {
-      hideCol(resetBased); hideCol(resetMonth); hideCol(resetDay); hideCol(resetWeek);
-      [cfType, cfMax, cfExpIn, cfExpPer, cfExpDate].forEach(function (el) {
-        if (el) el.closest(".col-sm-12").style.display = "none";
-      });
-    }
-  }
+			toggleInput(
+				$("[name='custom_reset_days']"),
+				isResetChecked && resetBasedValue === "custom",
+			);
 
-  // syncLimitLeave cascades down to syncReset and syncCF
-  function syncLimitLeave() {
-    if (!limitLeave) return;
-    var show = limitLeave.checked;
-    document.querySelectorAll(".frag-totalDaysContainer, .frag-resetContainer").forEach(function (el) {
-      el.style.display = show ? "" : "none";
-    });
-    if (show) {
-      syncReset();
-    } else {
-      [resetBased, resetMonth, resetDay, resetWeek, cfType, cfMax, cfExpIn, cfExpPer, cfExpDate].forEach(hideCol);
-    }
-  }
+			// Handle carryforward fields
+			const carryforwardTypeValue = $("[name='carryforward_type']").val();
+			toggleInput(
+				$("[name='carryforward_max']"),
+				isResetChecked &&
+					(carryforwardTypeValue === "carryforward" ||
+						carryforwardTypeValue === "carryforward expire"),
+			);
+			toggleInput(
+				$("[name='carryforward_expire_in']"),
+				isResetChecked &&
+					carryforwardTypeValue === "carryforward expire",
+			);
+			toggleInput(
+				$("[name='carryforward_expire_date']"),
+				isResetChecked &&
+					carryforwardTypeValue === "carryforward expire",
+			);
+			toggleInput(
+				$("[name='carryforward_expire_period']"),
+				isResetChecked &&
+					carryforwardTypeValue === "carryforward expire",
+			);
+		}
 
-  function syncYesNo() {
-    [
-      ["frag_id_approval",     "id_require_approval"],
-      ["frag_id_attachment",   "id_require_attachment"],
-      ["frag_id_exclude_comp", "id_exclude_company_leave"],
-      ["frag_id_exclude_hol",  "id_exclude_holiday"],
-    ].forEach(function (pair) {
-      var chk = document.querySelector("#" + pair[0]);
-      var sel = document.querySelector("#" + pair[1]);
-      if (chk && sel) sel.value = chk.checked ? "yes" : "no";
-    });
-  }
+		// Call initialization immediately
+		initializeResetFields();
 
-  function calcTotalDays() {
-    var unit  = (document.querySelector("#id_period_in") || {}).value;
-    var count = parseFloat((document.querySelector("#id_count") || {}).value) || 0;
-    var td    = document.querySelector("#id_total_days");
-    if (td) td.value = unit === "day" ? count : unit === "month" ? count * 30 : count * 365;
-  }
+		const $limitLeave = $("[name='limit_leave']");
+		const $countInput = $("[name='count']");
 
-  if (payType) payType.addEventListener("change", function () {
-    syncPayment();
-    var lf = document.querySelector("#id_payment");
-    if (lf) lf.value = payType.value === "paid" ? "paid" : "unpaid";
-  });
-  if (cfType)     cfType.addEventListener("change", syncCF);
-  if (resetChk)   resetChk.addEventListener("change", syncReset);
-  if (resetBased) resetBased.addEventListener("change", syncResetBased);
-  if (limitLeave) limitLeave.addEventListener("change", syncLimitLeave);
-  document.querySelectorAll(".frag-yesOrNo").forEach(function (el) {
-    el.addEventListener("change", syncYesNo);
-  });
-  ["#id_period_in", "#id_count"].forEach(function (s) {
-    var el = document.querySelector(s);
-    if (el) el.addEventListener("change", calcTotalDays);
-  });
+		toggleInput($countInput, $limitLeave.is(":checked"));
 
-  // Single cascade from limitLeave initialises everything
-  syncPayment();
-  syncLimitLeave();
-  syncYesNo();
-})();
+		$limitLeave.on("change", function () {
+			toggleInput($countInput, $(this).is(":checked"));
+		});
+
+		$("[name='reset']").on("change", function () {
+			toggleInput($("[name='reset_based']"), $(this).is(":checked"));
+			toggleInput(
+				$("[name='carryforward_type']"),
+				$(this).is(":checked"),
+			);
+
+			if (!$(this).is(":checked")) {
+				toggleInput("[name='reset_month']", false);
+				toggleInput("[name='reset_day']", false);
+				toggleInput($("[name='reset_weekend']"), false);
+				toggleInput($("[name='custom_reset_days']"), false);
+				toggleInput($("[name='carryforward_max']"), false);
+				toggleInput($("[name='carryforward_expire_in']"), false);
+				toggleInput($("[name='carryforward_expire_date']"), false);
+				toggleInput($("[name='carryforward_expire_period']"), false);
+			}
+		});
+
+		$("[name='reset_based']").on("change", function () {
+			const value = $(this).val();
+			if (value == "yearly") {
+				toggleInput($("[name='reset_month']"), true);
+				toggleInput($("[name='reset_day']"), true);
+				toggleInput($("[name='reset_weekend']"), false);
+				toggleInput($("[name='custom_reset_days']"), false);
+			}
+			if (value == "monthly") {
+				toggleInput($("[name='reset_day']"), true);
+				toggleInput($("[name='reset_month']"), false);
+				toggleInput($("[name='reset_weekend']"), false);
+				toggleInput($("[name='custom_reset_days']"), false);
+			}
+			if (value == "weekly") {
+				toggleInput($("[name='reset_weekend']"), true);
+				toggleInput($("[name='reset_month']"), false);
+				toggleInput($("[name='reset_day']"), false);
+				toggleInput($("[name='custom_reset_days']"), false);
+			}
+			if (value == "custom") {
+				toggleInput($("[name='reset_weekend']"), false);
+				toggleInput($("[name='reset_month']"), false);
+				toggleInput($("[name='reset_day']"), false);
+				toggleInput($("[name='custom_reset_days']"), true);
+			}
+		});
+		$("[name='carryforward_type']").on("change", function () {
+			const value = $(this).val();
+			if (value == "no carryforward") {
+				toggleInput($("[name='carryforward_max']"), false);
+				toggleInput($("[name='carryforward_expire_in']"), false);
+				toggleInput($("[name='carryforward_expire_date']"), false);
+				toggleInput($("[name='carryforward_expire_period']"), false);
+			}
+			if (value == "carryforward") {
+				toggleInput($("[name='carryforward_max']"), true);
+				toggleInput($("[name='carryforward_expire_in']"), false);
+				toggleInput($("[name='carryforward_expire_date']"), false);
+				toggleInput($("[name='carryforward_expire_period']"), false);
+			}
+			if (value == "carryforward expire") {
+				toggleInput($("[name='carryforward_max']"), true);
+				toggleInput($("[name='carryforward_expire_in']"), true);
+				toggleInput($("[name='carryforward_expire_date']"), true);
+				toggleInput($("[name='carryforward_expire_period']"), true);
+				//toggleInput($("[name='reset_day']"), false);
+			}
+		});
+
+		// leave total days calculation
+		$("#id_period_in, #id_count").change(function () {
+			const month = 30;
+			const year = 365;
+			const day = 1;
+			var totalDays = 0;
+			var unit = $("#id_period_in").val();
+			var count = $("#id_count").val();
+
+			if (unit == "day") {
+				totalDays = day * count;
+			} else if (unit == "month") {
+				totalDays = month * count;
+			} else if (unit == "year") {
+				totalDays = year * count;
+			}
+			$("#id_total_days").val(totalDays);
+		});
+
+		//check the yes or no fields
+		if ($("#id_require_approval").val() == "no") {
+			$("#id_approval").prop("checked", false);
+		} else {
+			$("#id_approval").prop("checked", true);
+		}
+		if ($("#id_require_attachment").val() == "no") {
+			$("#id_attachment").prop("checked", false);
+		} else {
+			$("#id_attachment").prop("checked", true);
+		}
+		if ($("#id_exclude_company_leave").val() == "no") {
+			$("#id_exclude_comp_leave").prop("checked", false);
+		} else {
+			$("#id_exclude_comp_leave").prop("checked", true);
+		}
+		if ($("#id_exclude_holiday").val() == "no") {
+			$("#id_exclude_public_leave").prop("checked", false);
+		} else {
+			$("#id_exclude_public_leave").prop("checked", true);
+		}
+	});
+
+	function checkYesOrNoFields() {
+		if ($("#id_approval").is(":checked")) {
+			$("#id_require_approval").val("yes");
+		} else {
+			$("#id_require_approval").val("no");
+		}
+		if ($("#id_attachment").is(":checked")) {
+			$("#id_require_attachment").val("yes");
+		} else {
+			$("#id_require_attachment").val("no");
+		}
+		if ($("#id_exclude_comp_leave").is(":checked")) {
+			$("#id_exclude_company_leave").val("yes");
+		} else {
+			$("#id_exclude_company_leave").val("no");
+		}
+		if ($("#id_exclude_public_leave").is(":checked")) {
+			$("#id_exclude_holiday").val("yes");
+		} else {
+			$("#id_exclude_holiday").val("no");
+		}
+	}
+
+	$(".yesOrNo").change(function () {
+		checkYesOrNoFields();
+	});
+
+	$(document).ready(function () {
+		$("#mainform").find("select").select2({
+			width: "100%",
+		});
+	});
 </script>

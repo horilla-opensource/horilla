@@ -1,5 +1,5 @@
 {% load i18n %}
-{% if enabled_resignation_request %}
+{% if enabled_resignation_request or request.user.is_superuser or perms.offboarding.add_resignationletter %}
 <div class="d-flex flex-row-reverse oh-wrapper">
     <a hx-get="{% url 'create-resignation-request' %}" hx-target="#resignationModalBody" data-toggle="oh-modal-toggle" data-target="#resignationModal" class="oh-btn oh-btn--secondary">
       <ion-icon name="add-outline"></ion-icon>

@@ -1,24 +1,33 @@
-
 {% load i18n %}
 
 <div class="col-span-12 lg:col-span-6">
-    <form action="{% url 'general-settings' %}" method ="post"
-        hx-post="{% url 'general-settings' %}"
+    <form
+        action="{% url 'system-preferences-view' %}"
+        method="post"
+        hx-post="{% url 'system-preferences-view' %}"
         hx-target="#settingsContainer"
         hx-select="#settingsContainer"
-        hx-swap="outerHTML show:none">
+        hx-swap="outerHTML show:none"
+    >
         {% csrf_token %}
-    <div class="flex space-x-2 pb-2">
-    <label>{% trans "Default Expire Days" %}</label>
-    <span class="oh-info mr-2" title="{% trans 'Set default announcement expire days' %}">
-    </span>
-</div>
-    <div class="flex gap-2">
-        <input type="number" name="days" placeholder="{% trans 'Days' %}" value="{{form.instance.days}}" id="id_days">
-        {% if perms.payroll.change_payrollsettings %}
-        <button class="btn" type="submit">Save
-            Changes</button>
-        {% endif %}
-    </div>
-</form>
+        <div class="flex space-x-2 pb-1">
+            <label>{% trans "Default Expire Days" %}</label>
+            <span class="oh-info mr-2" title="{% trans 'Set default announcement expire days' %}"> </span>
+        </div>
+        <p class="text-xs text-gray-500 mt-1 pb-2">
+            {% trans "Number of days after which an announcement automatically expires when no expiry date is set." %}
+        </p>
+        <div class="flex gap-2">
+            <input
+                type="number"
+                name="days"
+                placeholder="{% trans 'Days' %}"
+                value="{{form.instance.days}}"
+                id="id_days"
+            >
+            {% if perms.payroll.change_payrollsettings %}
+                <button class="btn" type="submit">{% trans "Save" %}</button>
+            {% endif %}
+        </div>
+    </form>
 </div>

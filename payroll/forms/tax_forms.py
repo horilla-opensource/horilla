@@ -14,6 +14,7 @@ from django.utils.translation import gettext_lazy as _
 
 from base.forms import ModelForm
 from payroll.methods import federal_tax
+from payroll.methods.safe_tax_code import TaxCodeValidationError, validate_tax_code
 from payroll.models.models import FilingStatus
 from payroll.models.tax_models import TaxBracket
 
@@ -55,6 +56,19 @@ class FilingStatusForm(ModelForm):
         else:
             del self.fields["use_py"]
             del self.fields["python_code"]
+
+    def clean_python_code(self):
+        """Reject tax code that violates the sandbox policy at save time."""
+        code = self.cleaned_data.get("python_code")
+        use_py = self.cleaned_data.get("use_py")
+        # Only validate code that will actually be executed (use_py enabled and
+        # a non-default value supplied). The default template is trusted.
+        if use_py and code and code != federal_tax.CODE:
+            try:
+                validate_tax_code(code)
+            except TaxCodeValidationError as exc:
+                raise forms.ValidationError(str(exc)) from exc
+        return code
 
 
 class TaxBracketForm(ModelForm):

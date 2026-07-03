@@ -244,6 +244,11 @@ urlpatterns = [
         views.enable_resignation_request,
         name="enable-resignation-request",
     ),
+    path(
+        "offboarding-rules-view/",
+        views.offboarding_rules_settings_view,
+        name="offboarding-rules-view",
+    ),
     path("get-notice-period/", views.get_notice_period, name="get-notice-period"),
     path(
         "get-notice-period-end-date/",

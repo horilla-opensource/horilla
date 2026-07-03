@@ -621,6 +621,14 @@ class HorillaDeleteConfirmationView(View):
         """
         Post method to handle the delete
         """
+        confirmations = ["action", "revert", "confirm"]
+        if not all(self.request.POST.get(key) == "on" for key in confirmations):
+            messages.error(
+                self.request,
+                "All confirmation checkboxes must be acknowledged before deleting.",
+            )
+            return self.get(*args, **kwargs)
+
         pk = self.request.GET["pk"]
         app, MODEL_NAME = self.request.GET["model"].split(".")
         if not self.request.user.has_perm(app + ".delete_" + MODEL_NAME.lower()):

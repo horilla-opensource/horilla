@@ -301,6 +301,12 @@ class ExitProcessDetailView(HorillaDetailedView):
 
 
 @method_decorator(login_required, name="dispatch")
+@method_decorator(
+    any_manager_can_enter(
+        "offboarding.view_offboarding", offboarding_employee_can_enter=True
+    ),
+    name="dispatch",
+)
 class OffboardingPipelineView(HorillaSectionView):
     """
     Offboarding Pipeline View
@@ -313,6 +319,12 @@ class OffboardingPipelineView(HorillaSectionView):
 
 
 @method_decorator(login_required, name="dispatch")
+@method_decorator(
+    any_manager_can_enter(
+        "offboarding.view_offboarding", offboarding_employee_can_enter=True
+    ),
+    name="dispatch",
+)
 class OffboardingPipelineNav(HorillaNavView):
     """
     Offboarding Pipeline Navigation View
@@ -365,6 +377,12 @@ class OffboardingPipelineNav(HorillaNavView):
 
 
 @method_decorator(login_required, name="dispatch")
+@method_decorator(
+    any_manager_can_enter(
+        "offboarding.view_offboarding", offboarding_employee_can_enter=True
+    ),
+    name="dispatch",
+)
 class PipeLineTabView(HorillaTabView):
     """
     Pipeline Tab View

@@ -1,0 +1,70 @@
+{% load i18n %}
+{% if perms.base.change_company %}
+    <label>{% trans "Select Date Format:" %}</label>
+    <p class="text-xs text-gray-500 mt-1 pb-2">
+        {% trans "How dates are displayed across the system for the selected company." %}
+    </p>
+    <div class="flex gap-2 pb-5 pt-2 items-center">
+        <div class="flex-1">
+            <select id="dateFormat" name="dateFormat" class="oh-select oh-select-2">
+                <option value="">--------------</option>
+                <option value="DD-MM-YYYY">{% trans "Day, Month, Year (e.g., 30-12-2023)" %}</option>
+                <option value="DD.MM.YYYY">{% trans "Day, Month, Year (e.g., 30.12.2023)" %}</option>
+                <option value="DD/MM/YYYY">{% trans "Day, Month, Year (e.g., 30/12/2023)" %}</option>
+                <option value="MM/DD/YYYY">{% trans "Month, Day, Year (e.g., 12/30/2023)" %}</option>
+                <option value="YYYY-MM-DD">{% trans "Year, Month, Day (e.g., 2023-12-30)" %}</option>
+                <option value="YYYY/MM/DD">{% trans "Year, Month, Day (e.g., 2023/12/30)" %}</option>
+                <option value="MMMM D, YYYY">{% trans "Full Month Name, Day, Year (e.g., January 1, 2023)" %}</option>
+                <option value="DD MMMM, YYYY">{% trans "Day, Full Month Name, Year (e.g., 1 January, 2023)" %}</option>
+                <option value="MMM. D, YYYY">{% trans "Abbreviated Month Name, Day, Year (e.g., Jan. 1, 2023)" %}</option>
+                <option value="D MMM. YYYY">{% trans "Day, Abbreviated Month Name, Year (e.g., 1 Jan. 2023)" %}</option>
+                <option value="dddd, MMMM D, YYYY">{% trans "Full Day Name, Full Month Name, Day, Year (e.g., Monday, January 1, 2023)" %}</option>
+            </select>
+        </div>
+        <button onclick="saveDateFormat()" class="btn h-[35px] flex items-center">{% trans "Save" %}</button>
+    </div>
+{% endif %}
+<hr class="pt-5 border-[#ebebeb]">
+{% if perms.base.change_company %}
+    <label>{% trans "Select Time Format:" %}</label>
+    <p class="text-xs text-gray-500 mt-1 pb-2">
+        {% trans "How times are displayed across the system for the selected company." %}
+    </p>
+    <div class="flex gap-2 pb-5 pt-2 items-center">
+        <div class="flex-1">
+            <select id="timeFormat" name="timeFormat" class="oh-select oh-select-2">
+                <option value="">--------------</option>
+                <option value="hh:mm A">{% trans "12 Hr. (e.g., 06:00 AM or 06:00 PM)" %}</option>
+                <option value="HH:mm">{% trans "24 Hr. (e.g., 06:00 or 18:00)" %}</option>
+            </select>
+        </div>
+        <button onclick="saveTimeFormat()" class="btn h-[35px] flex items-center">{% trans "Save" %}</button>
+    </div>
+{% endif %}
+<script>
+    $("#dateFormat").val("{{request.user.employee_get.employee_work_info.company_id.date_format}}").change();
+    $("#timeFormat").val("{{request.user.employee_get.employee_work_info.company_id.time_format}}").change();
+
+    const formatMapping = {
+        'DD-MM-YYYY': '{% trans "Day, Month, Year (e.g., 30-12-2023)" %}',
+        'DD.MM.YYYY': '{% trans "Day, Month, Year (e.g., 30.12.2023)" %}',
+        'DD/MM/YYYY': '{% trans "Day, Month, Year (e.g., 30/12/2023)" %}',
+        'MM/DD/YYYY': '{% trans "Month, Day, Year (e.g., 12/30/2023)" %}',
+        'YYYY-MM-DD': '{% trans "Year, Month, Day (e.g., 2023-12-30)" %}',
+        'YYYY/MM/DD': '{% trans "Year, Month, Day (e.g., 2023/12/30)" %}',
+        'MMMM D, YYYY': '{% trans "Full Month Name, Day, Year (e.g., January 1, 2023)" %}',
+        'DD MMMM, YYYY': '{% trans "Day, Full Month Name, Year (e.g., 1 January, 2023)" %}',
+        'MMM. D, YYYY': '{% trans "Abbreviated Month Name, Day, Year (e.g., Jan. 1, 2023)" %}',
+        'D MMM. YYYY': '{% trans "Day, Abbreviated Month Name, Year (e.g., 1 Jan. 2023)" %}',
+        'dddd, MMMM D, YYYY': '{% trans "Full Day Name, Full Month Name, Day, Year (e.g., Monday, January 1, 2023)" %}',
+    };
+
+    document.getElementById('dateDisplay').textContent = formatMapping[storedDateFormat] || '';
+
+    const timeFormatMapping = {
+        'hh:mm A': '{% trans "12 Hr. (e.g., 06:00 AM or 06:00 PM)" %}',
+        'HH:mm': '{% trans "24 Hr. (e.g., 06:00 or 18:00)" %}',
+    };
+
+    document.getElementById('timeDisplay').textContent = timeFormatMapping[storedTimeFormat] || '';
+</script>

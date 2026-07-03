@@ -1,590 +1,818 @@
 {% load static i18n %}
 <style>
-  .oh-sidebar-delay-tooltip {
-    position: fixed;
-    z-index: 10060;
-    background: rgba(15, 23, 42, 0.96);
-    color: #fff;
-    font-size: 12px;
-    line-height: 1;
-    padding: 8px 10px;
-    border-radius: 8px;
-    white-space: nowrap;
-    pointer-events: none;
-    opacity: 0;
-    transform: translateY(-2px);
-    transition: opacity 0.12s ease, transform 0.12s ease;
-  }
-  .oh-sidebar-delay-tooltip.is-visible {
-    opacity: 1;
-    transform: translateY(0);
-  }
-
-  /* --- Smooth sidebar submenu animation --- */
-  .sidebox {
-    opacity: 0;
-    visibility: hidden;
-    transform: translateX(-12px) scale(0.985);
-    transform-origin: left center;
-    transition:
-      opacity 0.22s cubic-bezier(0.22, 1, 0.36, 1),
-      transform 0.28s cubic-bezier(0.22, 1, 0.36, 1),
-      visibility 0s linear 0.22s;
-    box-shadow: 0 16px 40px -12px rgba(15, 23, 42, 0.18),
-      0 4px 16px -4px rgba(15, 23, 42, 0.08);
-    border-radius: 12px;
-    overflow: hidden;
-    will-change: opacity, transform;
-  }
-
-  .sideboxmain.sidebox-active .sidebox {
-    opacity: 1;
-    visibility: visible;
-    transform: translateX(0) scale(1);
-    transition:
-      opacity 0.22s cubic-bezier(0.22, 1, 0.36, 1),
-      transform 0.28s cubic-bezier(0.22, 1, 0.36, 1),
-      visibility 0s linear 0s;
-  }
-
-  /* Subtle stagger on submenu items when opening */
-  .sideboxmain.sidebox-active .sidebox ul li,
-  #sidebarSharedPanel.sidebox-visible ul li {
-    animation: ohSideboxItemIn 0.32s cubic-bezier(0.22, 1, 0.36, 1) both;
-  }
-  .sideboxmain.sidebox-active .sidebox ul li:nth-child(1),
-  #sidebarSharedPanel.sidebox-visible ul li:nth-child(1) { animation-delay: 0.04s; }
-  .sideboxmain.sidebox-active .sidebox ul li:nth-child(2),
-  #sidebarSharedPanel.sidebox-visible ul li:nth-child(2) { animation-delay: 0.08s; }
-  .sideboxmain.sidebox-active .sidebox ul li:nth-child(3),
-  #sidebarSharedPanel.sidebox-visible ul li:nth-child(3) { animation-delay: 0.12s; }
-  .sideboxmain.sidebox-active .sidebox ul li:nth-child(4),
-  #sidebarSharedPanel.sidebox-visible ul li:nth-child(4) { animation-delay: 0.16s; }
-  .sideboxmain.sidebox-active .sidebox ul li:nth-child(5),
-  #sidebarSharedPanel.sidebox-visible ul li:nth-child(5) { animation-delay: 0.20s; }
-  .sideboxmain.sidebox-active .sidebox ul li:nth-child(6),
-  #sidebarSharedPanel.sidebox-visible ul li:nth-child(6) { animation-delay: 0.22s; }
-  .sideboxmain.sidebox-active .sidebox ul li:nth-child(n + 7),
-  #sidebarSharedPanel.sidebox-visible ul li:nth-child(n + 7) { animation-delay: 0.24s; }
-
-  /* During icon-to-icon submenu switch keep card stable:
-     disable fade/slide so only list content appears changed. */
-  #sidebar.sidebox-switching .sidebox,
-  #sidebar.sidebox-switching .sideboxmain.sidebox-active .sidebox {
-    transition: none !important;
-    transform: none !important;
-    opacity: 1 !important;
-    visibility: visible !important;
-  }
-  #sidebar.sidebox-switching .sidebox ul li,
-  #sidebar.sidebox-switching .sideboxmain.sidebox-active .sidebox ul li {
-    animation: none !important;
-  }
-
-  /* Per-icon sideboxes are template sources only.
-     Hide any sidebox that is directly inside an icon button. */
-  .sideboxmain > .sidebox {
-    display: none !important;
-  }
-
-  #sidebarSharedPanel {
-    z-index: 10055;
-    pointer-events: none;
-  }
-  #sidebarSharedPanel.sidebox-visible {
-    opacity: 1;
-    visibility: visible;
-    transform: translateX(0) scale(1);
-    pointer-events: auto;
-    transition:
-      opacity 0.22s cubic-bezier(0.22, 1, 0.36, 1),
-      transform 0.28s cubic-bezier(0.22, 1, 0.36, 1),
-      visibility 0s linear 0s;
-  }
-
-  @keyframes ohSideboxItemIn {
-    0%   { opacity: 0; transform: translateX(-6px); }
-    100% { opacity: 1; transform: translateX(0); }
-  }
-
-  /* Smoother active-icon button transition (no transform — avoids
-     hover oscillation loops that move the bbox under the cursor). */
-  .sideboxmain {
-    transition:
-      background-color 0.22s ease,
-      box-shadow 0.22s ease;
-  }
-  .sideboxmain.sidebox-active {
-    box-shadow: 0 4px 14px -4px rgba(227, 78, 56, 0.45);
-  }
-
-  /* Respect users who prefer reduced motion */
-  @media (prefers-reduced-motion: reduce) {
-    .sidebox,
-    .sideboxmain.sidebox-active .sidebox,
-    .sideboxmain.sidebox-active .sidebox ul li,
-    .sideboxmain {
-      transition: opacity 0.12s linear, visibility 0s linear !important;
-      animation: none !important;
-      transform: none !important;
+    /* === Sidebar collapse / expand === */
+    #sidebar {
+        width: 4rem !important; /* 64 px — collapsed default */
+        overflow: hidden !important;
+        transition: width 0.22s cubic-bezier(0.4, 0, 0.2, 1) !important;
     }
-  }
+    #sidebar:hover,
+    #sidebar.sidebar-pinned {
+        width: 13rem !important; /* 208 px — expanded */
+    }
+
+    /* Labels & chevron: invisible when collapsed, fade in when expanded */
+    .oh-sidebar-label,
+    .sidebar-chevron {
+        white-space: nowrap;
+        opacity: 0 !important;
+        pointer-events: none !important;
+        transition: opacity 0.12s ease !important;
+    }
+    #sidebar:hover .oh-sidebar-label,
+    #sidebar.sidebar-pinned .oh-sidebar-label,
+    #sidebar:hover .sidebar-chevron,
+    #sidebar.sidebar-pinned .sidebar-chevron {
+        opacity: 1 !important;
+        pointer-events: auto !important;
+        transition-delay: 0.06s;
+    }
+
+    /* Hide open accordion subnavs when sidebar is collapsed so they
+       don't bleed through the narrow sidebar as clipped text */
+    #sidebar:not(:hover):not(.sidebar-pinned) .sidebar-subnav:not(.hidden) {
+        display: none !important;
+    }
+
+    /* Active state label / chevron color */
+    .sideboxmain.sidebox-active .oh-sidebar-label,
+    .sideboxmain.active .oh-sidebar-label {
+        color: #fff;
+    }
+    .sideboxmain.sidebox-active .sidebar-chevron {
+        transform: rotate(180deg);
+        color: #fff;
+    }
+
+    /* Main content margin: tracks sidebar pin state */
+    .oh-main-content {
+        margin-left: 4rem; /* narrow when collapsed */
+        transition: margin-left 0.22s cubic-bezier(0.4, 0, 0.2, 1);
+    }
+
+    /* Fixed navbar: align left edge and width with main content area */
+    .oh-main-header {
+        left: 4rem;
+        right: 0;
+        transition: left 0.22s cubic-bezier(0.4, 0, 0.2, 1);
+    }
+    #sidebar.sidebar-pinned ~ .oh-main-content .oh-main-header {
+        left: 13rem;
+    }
+
+    /* Company name / link in sidebar header */
+    #sidebar .oh-sidebar__company-details {
+        display: flex;
+        flex-direction: column;
+        min-width: 0;
+    }
+    #sidebar .oh-sidebar__company-title {
+        color: #111827;
+        font-weight: 600;
+        line-height: 1.25;
+    }
+    #sidebar .oh-sidebar__company-link {
+        color: #6b7280;
+        line-height: 1.25;
+    }
+    #sidebar .oh-sidebar__company-link:hover {
+        color: #374151;
+        text-decoration: none;
+    }
+    body.dark #sidebar .oh-sidebar__company-title {
+        color: #f3f4f6;
+    }
+    body.dark #sidebar .oh-sidebar__company-link {
+        color: #9ca3af;
+    }
+    body.dark #sidebar .oh-sidebar__company-link:hover {
+        color: #e5e7eb;
+    }
+
+    /* Pin button highlight when sidebar is pinned */
+    #sidebar.sidebar-pinned #sidebarPinBtn {
+        background-color: #f3f4f6;
+        color: #374151;
+    }
+
+    /* Pin button — dark mode */
+    body.dark #sidebar #sidebarPinBtn {
+        color: #9ca3af !important;
+    }
+    body.dark #sidebar #sidebarPinBtn:hover {
+        background-color: rgba(255, 255, 255, 0.06) !important;
+        color: #e5e7eb !important;
+    }
+    body.dark #sidebar.sidebar-pinned #sidebarPinBtn {
+        background-color: rgba(255, 255, 255, 0.12) !important;
+        color: #ffffff !important;
+    }
+
+    /* Pin button icon: show the OPEN padlock when unpinned (hover-to-expand mode)
+       and the CLOSED padlock when pinned (locked open). */
+    #sidebar #sidebarPinBtn .sidebar-lock-closed { display: none; }
+    #sidebar #sidebarPinBtn .sidebar-lock-open { display: block; }
+    #sidebar.sidebar-pinned #sidebarPinBtn .sidebar-lock-open { display: none; }
+    #sidebar.sidebar-pinned #sidebarPinBtn .sidebar-lock-closed { display: block; }
+
+    /* Module button transitions */
+    .sideboxmain {
+        transition: background-color 0.18s ease, box-shadow 0.18s ease;
+    }
+    .sideboxmain.sidebox-active {
+        box-shadow: 0 4px 14px -4px rgba(227, 78, 56, 0.45);
+    }
+
+    /* Active module button: brand-red background so the current section
+       stays highlighted even when not hovered */
+    .sideboxmain.active {
+        background-color: #e54f38 !important;
+        box-shadow: 0 4px 14px -4px rgba(229, 79, 56, 0.45);
+    }
+    body.dark .sideboxmain.active {
+        background-color: #c73f2a !important;
+    }
+
+    /* Active submenu link highlight */
+    .oh-sidebar-active-link {
+        background-color: #f3f4f6;
+        color: #111827 !important;
+        font-weight: 500;
+    }
+
+    /* Dark mode: mirror light-mode contrast — subtle elevated bg + bright text */
+    body.dark #sidebar .sidebar-subnav-link:hover {
+        background-color: rgba(255, 255, 255, 0.06) !important;
+        color: #e5e7eb !important;
+    }
+    body.dark #sidebar .oh-sidebar-active-link {
+        background-color: rgba(255, 255, 255, 0.12) !important;
+        color: #ffffff !important;
+        font-weight: 500;
+    }
+
+    /* Make icons visible: dark-gray by default, white on hover/active red bg.
+       Overrides the hardcoded fill="#ffffff" and Tailwind group-hover utilities
+       that would otherwise leave icons invisible on the white sidebar. */
+    #sidebar nav .sideboxmain img,
+    #sidebar nav .sideboxmain svg:not(.sidebar-chevron) {
+        filter: brightness(0) opacity(0.55) !important;
+        transition: filter 0.18s ease !important;
+    }
+    #sidebar nav .sideboxmain:hover img,
+    #sidebar nav .sideboxmain.sidebox-active img,
+    #sidebar nav .sideboxmain.active img,
+    #sidebar nav .sideboxmain:hover svg:not(.sidebar-chevron),
+    #sidebar nav .sideboxmain.sidebox-active svg:not(.sidebar-chevron),
+    #sidebar nav .sideboxmain.active svg:not(.sidebar-chevron) {
+        filter: brightness(0) invert(1) !important;
+    }
+
+    /* Collapsed: minimal horizontal padding → 56 px inner width for icon circles.
+       0.25 rem (4 px) each side gives the 2.5 rem (40 px) circle 8 px breathing
+       room per side, and removes the scrollbar-width problem on Windows. */
+    #sidebar:not(:hover):not(.sidebar-pinned) > div {
+        padding-right: 0.25rem !important;
+        padding-left: 0.25rem !important;
+    }
+
+    /* Collapsed: increase spacing between icon circles from 4 px to 10 px. */
+    #sidebar:not(:hover):not(.sidebar-pinned) nav > * + * {
+        margin-top: 0.625rem !important;
+    }
+
+    /* Collapsed: hide the scrollbar so it doesn't consume horizontal space
+       and clip the right edge of circles on Windows / Linux. */
+    #sidebar:not(:hover):not(.sidebar-pinned) nav {
+        scrollbar-width: none;
+        -ms-overflow-style: none;
+    }
+    #sidebar:not(:hover):not(.sidebar-pinned) nav::-webkit-scrollbar {
+        display: none;
+    }
+
+    /* Collapsed header: centre the row and collapse the gap so the logo
+       sits alone, centred, with no phantom space from the hidden hamburger. */
+    #sidebar:not(:hover):not(.sidebar-pinned) > div > div:first-child {
+        justify-content: center !important;
+        gap: 0 !important;
+    }
+    #sidebar:not(:hover):not(.sidebar-pinned) > div > div:first-child > div {
+        flex: 0 0 auto !important;
+        justify-content: center !important;
+        gap: 0 !important;
+    }
+
+    /* Collapsed: hide the hamburger (pin button); user hovers to expand, then
+       clicks the hamburger that appears in expanded state. */
+    #sidebar:not(:hover):not(.sidebar-pinned) #sidebarPinBtn {
+        display: none !important;
+    }
+
+    /* Collapsed: show the brand logo centred at the top of the rail, overriding
+       the general oh-sidebar-label opacity:0 rule just for this element. */
+    #sidebar:not(:hover):not(.sidebar-pinned) > div > div:first-child img.oh-sidebar-label {
+        flex: 0 0 auto !important;
+        width: 2rem !important;
+        height: 2rem !important;
+        overflow: visible !important;
+        opacity: 1 !important;
+    }
+
+    /* Collapsed: circular icon buttons — full-circle, centred within the 48 px
+       inner container with 4 px breathing room each side.
+       The oh.css gray background is preserved (no override here) so buttons
+       look identical to the reference design: gray circles, active = red circle. */
+    #sidebar:not(:hover):not(.sidebar-pinned) .sideboxmain {
+        justify-content: center !important;
+        width: 2.5rem !important;
+        height: 2.5rem !important;
+        margin: 0 auto !important;
+        padding: 0 !important;
+        overflow: hidden !important;
+        gap: 0 !important;
+        border-radius: 9999px !important;
+    }
+
+    /* Collapse label/chevron to zero-width so justify-content:center only sees
+       the icon. The invisible label still occupies flex space without this. */
+    #sidebar:not(:hover):not(.sidebar-pinned) .oh-sidebar-label,
+    #sidebar:not(:hover):not(.sidebar-pinned) .sidebar-chevron {
+        flex: 0 0 0 !important;
+        width: 0 !important;
+        overflow: hidden !important;
+    }
+
+    /* Chevron hidden — accordion is replaced by hover flyout */
+    .sidebar-chevron { display: none !important; }
+
+    /* Flyout submenu panel */
+    #sidebarFlyout {
+        position: fixed;
+        z-index: 10060;
+        min-width: 200px;
+        max-width: 260px;
+        background: #ffffff;
+        border: 1px solid #e5e7eb;
+        border-radius: 10px;
+        box-shadow: 0 8px 24px -4px rgba(15, 23, 42, 0.12), 0 2px 8px -2px rgba(15, 23, 42, 0.06);
+        padding: 6px;
+        opacity: 0;
+        visibility: hidden;
+        pointer-events: none;
+        transform: translateX(-6px);
+        transition: opacity 0.15s ease, transform 0.15s ease, visibility 0s linear 0.15s;
+    }
+    #sidebarFlyout.is-visible {
+        opacity: 1;
+        visibility: visible;
+        pointer-events: auto;
+        transform: translateX(0);
+        transition: opacity 0.15s ease, transform 0.15s ease;
+    }
+    #sidebarFlyout h5 {
+        font-size: 11px;
+        font-weight: 600;
+        color: #6b7280;
+        text-transform: uppercase;
+        letter-spacing: 0.05em;
+        padding: 4px 10px 8px;
+        border-bottom: 1px solid #f3f4f6;
+        margin-bottom: 4px;
+    }
+    body.dark #sidebarFlyout {
+        background: #1f2937;
+        border-color: #374151;
+    }
+    body.dark #sidebarFlyout h5 {
+        color: #9ca3af;
+        border-bottom-color: #374151;
+    }
+
+    /* Flyout link hover highlight */
+    #sidebarFlyout a.sidebar-subnav-link {
+        color: #374151;
+        transition: background-color 0.12s ease, color 0.12s ease;
+    }
+    #sidebarFlyout a.sidebar-subnav-link:hover {
+        background-color: rgba(229, 79, 56, 0.08) !important;
+        color: #e54f38 !important;
+    }
+    #sidebarFlyout a.sidebar-subnav-link.oh-sidebar-active-link {
+        background-color: rgba(229, 79, 56, 0.12) !important;
+        color: #e54f38 !important;
+        font-weight: 600;
+    }
+    body.dark #sidebarFlyout a.sidebar-subnav-link { color: #d1d5db; }
+    body.dark #sidebarFlyout a.sidebar-subnav-link:hover {
+        background-color: rgba(229, 79, 56, 0.15) !important;
+        color: #f87060 !important;
+    }
+    body.dark #sidebarFlyout a.sidebar-subnav-link.oh-sidebar-active-link {
+        background-color: rgba(229, 79, 56, 0.20) !important;
+        color: #f87060 !important;
+    }
+
+    @media (prefers-reduced-motion: reduce) {
+        #sidebar, .oh-main-content, .oh-main-header, .sideboxmain, #sidebarFlyout {
+            animation: none !important;
+            transition: none !important;
+        }
+    }
 </style>
-<div id="sidebar" class="fixed inset-y-0 left-0 w-auto bg-white border-r border-r-dark-50 z-50">
-  <div class="p-4">
-    <div class="flex items-center justify-center gap-2 mb-6">
-      {% if request.session.selected_company_instance %}
-        <img
-          src="{{request.session.selected_company_instance.icon}}"
-          class="w-10 h-10 rounded-full"
-          title="{{request.session.selected_company_instance.company}}"
-        />
-      {% else %}
-        <img src="/static/horilla_theme/assets/img/horilla-logo.png" alt="Logo" class="w-10 h-10" />
-      {% endif %}
+<div id="sidebar" class="fixed inset-y-0 left-0 bg-white border-r border-r-dark-50 z-50">
+    <div class="p-4">
+        <!-- Header: hamburger pin toggle + company logo -->
+        <div class="flex items-center gap-3 mb-6">
+            <button
+                id="sidebarPinBtn"
+                title="{% trans 'Lock sidebar open' %}"
+                aria-label="{% trans 'Lock sidebar open' %}"
+                data-pin-label="{% trans 'Lock sidebar open' %}"
+                data-unpin-label="{% trans 'Unlock sidebar (auto-collapses on hover-out)' %}"
+                class="flex-shrink-0 p-1.5 rounded-lg text-gray-400 hover:bg-gray-100 hover:text-gray-600 transition-colors duration-150"
+            >
+                <!-- Unlocked padlock: shown when the sidebar is NOT pinned (hover-to-expand mode) -->
+                <svg
+                    class="sidebar-lock-open w-5 h-5"
+                    fill="none"
+                    stroke="currentColor"
+                    stroke-width="2"
+                    viewBox="0 0 24 24"
+                    aria-hidden="true"
+                >
+                    <path stroke-linecap="round" stroke-linejoin="round" d="M13.5 10.5V6.75a4.5 4.5 0 1 1 9 0v3.75M3.75 21.75h10.5a2.25 2.25 0 0 0 2.25-2.25v-6.75a2.25 2.25 0 0 0-2.25-2.25H3.75a2.25 2.25 0 0 0-2.25 2.25v6.75a2.25 2.25 0 0 0 2.25 2.25Z" />
+                </svg>
+                <!-- Locked padlock: shown when the sidebar IS pinned (locked open) -->
+                <svg
+                    class="sidebar-lock-closed w-5 h-5"
+                    fill="none"
+                    stroke="currentColor"
+                    stroke-width="2"
+                    viewBox="0 0 24 24"
+                    aria-hidden="true"
+                >
+                    <path stroke-linecap="round" stroke-linejoin="round" d="M16.5 10.5V6.75a4.5 4.5 0 1 0-9 0v3.75m-.75 11.25h10.5a2.25 2.25 0 0 0 2.25-2.25v-6.75a2.25 2.25 0 0 0-2.25-2.25H6.75a2.25 2.25 0 0 0-2.25 2.25v6.75a2.25 2.25 0 0 0 2.25 2.25Z" />
+                </svg>
+            </button>
+            <div class="flex items-center gap-2 min-w-0 flex-1">
+                {% if request.session.selected_company_instance %}
+                    <img
+                        src="{{ request.session.selected_company_instance.icon }}"
+                        class="oh-sidebar-label w-7 h-7 rounded-full flex-shrink-0"
+                        title="{{ request.session.selected_company_instance.company }}"
+                        alt="{{ request.session.selected_company_instance.company }}"
+                    >
+                    <div class="oh-sidebar__company-details oh-sidebar-label min-w-0">
+                        <span
+                            class="oh-sidebar__company-title truncate"
+                            style="font-size: 13px"
+                        >{{ request.session.selected_company_instance.company }}.</span>
+                        <a href="#" class="oh-sidebar__company-link truncate" style="font-size: 10px">
+                            {% trans request.session.selected_company_instance.text %}
+                        </a>
+                    </div>
+                {% else %}
+                    <img
+                        src="{% if request.user.employee_get.employee_work_info.company_id.icon %}{{ request.user.employee_get.employee_work_info.company_id.icon.url }}{% else %}/static/horilla_theme/assets/img/horilla-logo.png{% endif %}"
+                        alt="{% trans 'Company logo' %}"
+                        class="oh-sidebar-label w-7 h-7 rounded-full flex-shrink-0"
+                    >
+                    <div class="oh-sidebar__company-details oh-sidebar-label min-w-0">
+                        <span
+                            class="oh-sidebar__company-title truncate"
+                            style="font-size: 13px"
+                        >{{ request.user.employee_get.employee_work_info.company_id }}.</span>
+                        <a href="#" class="oh-sidebar__company-link truncate" style="font-size: 10px">
+                            {% trans "My Company" %}
+                        </a>
+                    </div>
+                {% endif %}
+            </div>
+        </div>
+
+        <nav
+            class="space-y-1 overflow-hidden overflow-y-auto h-[calc(100vh_-_95px)] sidebar-scroll"
+            role="navigation"
+            aria-label="{% trans 'Main navigation' %}"
+        >
+            {% include "horilla_theme/components/sidebar/top_menu.html" %}
+            {% for menues in sidebar %}
+                <div class="sidebar-item">
+                    <button
+                        class="sideboxmain group flex items-center gap-3 px-3 py-2.5 rounded-lg w-full transition duration-300"
+                        data-menu="{{ menues.menu }}"
+                        aria-label="{{ menues.menu }}"
+                        aria-expanded="false"
+                        aria-haspopup="true"
+                    >
+                        <img
+                            src="{% static menues.img_src %}"
+                            alt=""
+                            class="w-4.5 h-4.5 flex-shrink-0 transition duration-300 group-hover:filter group-hover:brightness-0 group-hover:invert"
+                        >
+                        <span
+                            class="oh-sidebar-label text-sm font-medium truncate flex-1 text-left"
+                        >{{ menues.menu }}</span>
+                        <svg
+                            class="sidebar-chevron w-3.5 h-3.5 flex-shrink-0"
+                            fill="none"
+                            stroke="currentColor"
+                            stroke-width="2.5"
+                            viewBox="0 0 24 24"
+                            aria-hidden="true"
+                        >
+                            <path stroke-linecap="round" stroke-linejoin="round" d="M19 9l-7 7-7-7" />
+                        </svg>
+                    </button>
+                    <ul class="sidebar-subnav hidden pl-2 mt-1 space-y-0.5">
+                        {% for submenu in menues.submenu %}
+                            <li>
+                                <a
+                                    href="{{ submenu.redirect }}"
+                                    class="sidebar-subnav-link block text-[13px] text-gray-600 px-3 py-1.5 rounded-md hover:bg-gray-50 hover:text-gray-900 transition-colors duration-150 truncate"
+                                    hx-get="{{ submenu.redirect }}"
+                                    hx-target="#ohMainContent"
+                                    hx-select="#ohMainContent > *"
+                                    hx-swap="innerHTML show:window:top"
+                                    hx-push-url="true"
+                                >{{ submenu.menu }}</a>
+                            </li>
+                        {% endfor %}
+                    </ul>
+                </div>
+            {% endfor %}
+            {% comment %} {{ request.active_company }} {% endcomment %}
+            {% include "horilla_theme/components/sidebar/bottom_menu.html" %}
+        </nav>
     </div>
-
-    <nav class="space-y-2 overflow-hidden overflow-y-auto h-[calc(100vh_-_95px)] sidebar-scroll" role="navigation" aria-label="{% trans 'Main navigation' %}">
-      {% include "horilla_theme/components/sidebar/top_menu.html" %}
-      {% for menues in sidebar %}
-        <button class="sideboxmain group flex items-center gap-3 p-3 rounded-full transition duration-300"
-          data-menu="{{ menues.menu }}"
-          title="{{ menues.menu }}"
-          aria-label="{{ menues.menu }}"
-          aria-expanded="false"
-          aria-haspopup="true">
-
-          <img src="{% static menues.img_src %}" alt="" class="w-4.5 h-4.5 transition duration-300 group-hover:filter group-hover:brightness-0 group-hover:invert" />
-          <div class="sidebox sidebox-template absolute shadow-card mb-3 bg-white min-w-64 left-[75px]"
-               role="menu"
-               aria-label="{{ menues.menu }} {% trans 'submenu' %}">
-            <h5 class="border-b border-b-dark-50 py-3 px-3 font-semibold text-left text-[15px]">{{ menues.menu }}</h5>
-            <ul class="p-3">
-              {% for submenu in menues.submenu %}
-                <li>
-                  <a href="{{ submenu.redirect }}"
-                     role="menuitem"
-                     hx-get="{{ submenu.redirect }}"
-                     hx-target="#ohMainContent"
-                     hx-select="#ohMainContent > *"
-                     hx-swap="innerHTML show:window:top"
-                     hx-push-url="true">{{ submenu.menu }}</a>
-                </li>
-              {% endfor %}
-            </ul>
-          </div>
-        </button>
-      {% endfor %}
-      <div
-        id="sidebarSharedPanel"
-        class="sidebox absolute shadow-card mb-3 bg-white min-w-64 left-[75px]"
-        role="menu"
-        aria-live="polite"
-      >
-        <h5 class="border-b border-b-dark-50 py-3 px-3 font-semibold text-left text-[15px]"></h5>
-        <ul class="p-3"></ul>
-      </div>
-      {% comment %} {{ request.active_company }} {% endcomment %}
-      {% include "horilla_theme/components/sidebar/bottom_menu.html" %}
-    </nav>
-  </div>
+    <!-- Flyout panel: populated and positioned by JS on hover -->
+    <div id="sidebarFlyout">
+        <h5 id="sidebarFlyoutTitle"></h5>
+        <ul id="sidebarFlyoutList" class="space-y-0.5"></ul>
+    </div>
 </div>
 <script>
-function highlightRow(checkbox) {
-    checkbox.closest(".oh-sticky-table__tr").removeClass("highlight-selected");
-    checkbox.closest("tr").removeClass("highlight-selected");
-    if (checkbox.is(":checked")) {
-      checkbox.closest(".oh-sticky-table__tr").addClass("highlight-selected");
-      checkbox.closest("tr").addClass("highlight-selected");
-    }
-  }
-
-  function toggleHighlight(ids) {
-    if (!ids.length > 0) return;
-    $.each(ids, function (indexInArray, id) {
-      setTimeout(() => {
-        $(`#${id}`)
-          .closest(".oh-sticky-table__tr")
-          .removeClass("highlight-selected");
-        if ($(`#${id}`).is(":checked")) {
-          $(`#${id}`)
-            .closest(".oh-sticky-table__tr")
-            .addClass("highlight-selected");
+    function highlightRow(checkbox) {
+        checkbox.closest(".oh-sticky-table__tr").removeClass("highlight-selected");
+        checkbox.closest("tr").removeClass("highlight-selected");
+        if (checkbox.is(":checked")) {
+          checkbox.closest(".oh-sticky-table__tr").addClass("highlight-selected");
+          checkbox.closest("tr").addClass("highlight-selected");
         }
-      }, 1);
-    });
-  }
+      }
 
-function reloadSelectedCount(targetElement, storeKey = "selectedInstances") {
-    var count = JSON.parse($(`#${storeKey}`).attr("data-ids") || "[]").length;
-    id = targetElement.attr("id");
-    if (id) {
-        id = id.split("count_")[1];
-    }
-    if (count) {
-        targetElement.html(count);
-        targetElement.parent().removeClass("d-none");
-        $(`#unselect_${id}, #export_${id}, #bulk_udate_${id}`).removeClass(
-            "d-none"
-        );
-    } else {
-        targetElement.parent().addClass("d-none");
-        $(`#unselect_${id}, #export_${id}, #bulk_udate_${id}`).addClass(
-            "d-none"
-        );
-    }
-}
+      function toggleHighlight(ids) {
+        if (!ids.length > 0) return;
+        $.each(ids, function (indexInArray, id) {
+          setTimeout(() => {
+            $(`#${id}`)
+              .closest(".oh-sticky-table__tr")
+              .removeClass("highlight-selected");
+            if ($(`#${id}`).is(":checked")) {
+              $(`#${id}`)
+                .closest(".oh-sticky-table__tr")
+                .addClass("highlight-selected");
+            }
+          }, 1);
+        });
+      }
 
-function removeHighlight() {
-    setTimeout(function () {
-        $(".toggle-highlight").removeClass("toggle-highlight");
-    }, 200);
-}
-
-function removeId(element, storeKey = "selectedInstances") {
-    id = element.val();
-    viewId = element.attr("data-view-id");
-    ids = JSON.parse($(`#${storeKey}`).attr("data-ids") || "[]");
-    let elementToRemove = 5;
-    if (ids[ids.length - 1] === id) {
-        ids.pop();
+    function reloadSelectedCount(targetElement, storeKey = "selectedInstances") {
+        var count = JSON.parse($(`#${storeKey}`).attr("data-ids") || "[]").length;
+        id = targetElement.attr("id");
+        if (id) {
+            id = id.split("count_")[1];
+        }
+        if (count) {
+            targetElement.html(count);
+            targetElement.parent().removeClass("d-none");
+            $(`#unselect_${id}, #export_${id}, #bulk_udate_${id}`).removeClass(
+                "d-none"
+            );
+        } else {
+            targetElement.parent().addClass("d-none");
+            $(`#unselect_${id}, #export_${id}, #bulk_udate_${id}`).addClass(
+                "d-none"
+            );
+        }
     }
-    ids = JSON.stringify(ids);
-    $(`#${storeKey}`).attr("data-ids", ids);
-}
+
+    function removeHighlight() {
+        setTimeout(function () {
+            $(".toggle-highlight").removeClass("toggle-highlight");
+        }, 200);
+    }
+
+    function removeId(element, storeKey = "selectedInstances") {
+        id = element.val();
+        viewId = element.attr("data-view-id");
+        ids = JSON.parse($(`#${storeKey}`).attr("data-ids") || "[]");
+        let elementToRemove = 5;
+        if (ids[ids.length - 1] === id) {
+            ids.pop();
+        }
+        ids = JSON.stringify(ids);
+        $(`#${storeKey}`).attr("data-ids", ids);
+    }
 </script>
 <script>
-  document.addEventListener("DOMContentLoaded", function () {
-    /*
-     * Delayed sidebar icon tooltip
-     * - replaces instant native title tooltip
-     * - shows after a short delay
-     * - hides immediately on mouseleave/blur/scroll/mousedown
-     */
-    (function initDelayedSidebarTooltip() {
-      var sidebar = document.getElementById("sidebar");
-      if (!sidebar) return;
+    document.addEventListener("DOMContentLoaded", function () {
 
-      var DELAY_MS = 550;
-      var showTimer = null;
-      var activeAnchor = null;
+        var ignoreCloseUntil = 0;
 
-      var tip = document.createElement("div");
-      tip.className = "oh-sidebar-delay-tooltip";
-      tip.setAttribute("aria-hidden", "true");
-      document.body.appendChild(tip);
-
-      function getLabel(el) {
-        if (!el) return "";
-        return (
-          el.getAttribute("data-tooltip") ||
-          el.getAttribute("aria-label") ||
-          el.getAttribute("title") ||
-          ""
-        ).trim();
-      }
-
-      /* Disable native instant title popups and keep the text in
-         data-tooltip for our delayed tooltip renderer. */
-      sidebar.querySelectorAll(".sideboxmain[title]").forEach(function (el) {
-        var title = (el.getAttribute("title") || "").trim();
-        if (title && !el.getAttribute("data-tooltip")) {
-          el.setAttribute("data-tooltip", title);
+        function bumpGrace(ms) {
+          var until = Date.now() + ms;
+          if (until > ignoreCloseUntil) ignoreCloseUntil = until;
         }
-        el.removeAttribute("title");
-      });
 
-      function positionTip(anchor) {
-        if (!anchor) return;
-        var rect = anchor.getBoundingClientRect();
-        var margin = 10;
-        /* Place tooltip to the right of icon column. */
-        tip.style.left = Math.round(rect.right + margin) + "px";
-        tip.style.top = Math.round(rect.top + rect.height / 2) + "px";
-        tip.style.transform = "translateY(-50%)";
-      }
-
-      function hideTip() {
-        clearTimeout(showTimer);
-        showTimer = null;
-        activeAnchor = null;
-        tip.classList.remove("is-visible");
-      }
-
-      function showTip(anchor) {
-        var label = getLabel(anchor);
-        if (!label) return;
-        tip.textContent = label;
-        positionTip(anchor);
-        tip.classList.add("is-visible");
-      }
-
-      function scheduleShow(anchor) {
-        clearTimeout(showTimer);
-        activeAnchor = anchor;
-        showTimer = setTimeout(function () {
-          if (activeAnchor === anchor && anchor.matches(":hover")) {
-            showTip(anchor);
+        var STANDALONE_URL_PATTERNS = [
+          /^\/recruitment\/open-recruitments\/?/i,
+        ];
+        function isStandaloneUrl(url) {
+          if (!url) return false;
+          try {
+            var pathname = new URL(url, window.location.origin).pathname;
+            return STANDALONE_URL_PATTERNS.some(function (rx) { return rx.test(pathname); });
+          } catch (_) {
+            return STANDALONE_URL_PATTERNS.some(function (rx) { return rx.test(url); });
           }
-        }, DELAY_MS);
-      }
-
-      sidebar.addEventListener("mouseenter", function (e) {
-        var anchor = e.target.closest(".sideboxmain");
-        if (!anchor) return;
-        scheduleShow(anchor);
-      }, true);
-
-      sidebar.addEventListener("mouseleave", function (e) {
-        if (e.target.closest(".sideboxmain")) hideTip();
-      }, true);
-
-      sidebar.addEventListener("focusin", function (e) {
-        var anchor = e.target.closest(".sideboxmain");
-        if (!anchor) return;
-        scheduleShow(anchor);
-      });
-
-      sidebar.addEventListener("focusout", function (e) {
-        if (e.target.closest(".sideboxmain")) hideTip();
-      });
-
-      sidebar.addEventListener("mousedown", hideTip, true);
-      sidebar.addEventListener("click", hideTip, true);
-      window.addEventListener("scroll", hideTip, true);
-      window.addEventListener("resize", hideTip);
-    })();
-
-    // Restore highlighted (active) state from localStorage
-    const activeMenu = localStorage.getItem("activeSidebarMenu");
-    if (activeMenu) {
-      document.querySelectorAll(".sideboxmain").forEach(btn => {
-        if (btn.dataset.menu === activeMenu) btn.classList.add("active");
-      });
-    }
-
-    var ignoreCloseUntil = 0;
-
-    function closeAll(opts) {
-      /* Unified guard: during the brief window after a sidebar-initiated
-         htmx request, suppress *any* attempt to close the panel. Even
-         explicit callers (outside-click handler, stray events from the
-         swap, etc.) will bail. Pass { force: true } to bypass the guard
-         — only the navContainer toggle handler and Escape key do so. */
-      if (!(opts && opts.force) && Date.now() < ignoreCloseUntil) return;
-      document.querySelectorAll(".sideboxmain.sidebox-active").forEach(btn => {
-        btn.classList.remove("sidebox-active");
-        btn.setAttribute("aria-expanded", "false");
-      });
-      var shared = document.getElementById("sidebarSharedPanel");
-      if (shared) shared.classList.remove("sidebox-visible");
-    }
-
-    function getHeaderBottom() {
-      /* Return the y-coordinate just below the fixed navbar so the
-         submenu panel never opens over it. Measured dynamically because
-         the header height varies with screen size / content (breadcrumbs,
-         alerts, etc.). Falls back to the CSS default (75px) if no header
-         can be found. */
-      var headerWrap = document.getElementById("header");
-      var headerBar = headerWrap ? headerWrap.querySelector(".fixed") || headerWrap.firstElementChild : null;
-      var el = headerBar || headerWrap;
-      if (el) {
-        var rect = el.getBoundingClientRect();
-        if (rect && rect.height > 0) {
-          return Math.ceil(rect.bottom) + 8; /* 8px breathing room */
         }
-      }
-      return 75;
-    }
 
-    function getSharedPanel() {
-      return document.getElementById("sidebarSharedPanel");
-    }
+        function shouldFallbackToFullNav(text) {
+          if (!text) return false;
+          var hasOurContainer =
+            text.indexOf('id="ohMainContent"') !== -1 ||
+            text.indexOf("id='ohMainContent'") !== -1;
+          if (hasOurContainer) return false;
+          return true;
+        }
 
-    function renderSharedPanelFromButton(btn) {
-      var shared = getSharedPanel();
-      if (!shared || !btn) return false;
-      var menuKey = btn.getAttribute("data-menu") || "";
-      if (
-        shared.classList.contains("sidebox-visible") &&
-        shared.getAttribute("data-current-menu") === menuKey
-      ) {
-        return true;
-      }
-      var template = btn.querySelector(".sidebox-template, :scope > .sidebox");
-      if (!template) return false;
-      var sourceTitle = template.querySelector("h5");
-      var sourceList = template.querySelector("ul");
-      var targetTitle = shared.querySelector("h5");
-      var targetList = shared.querySelector("ul");
-      if (!sourceTitle || !sourceList || !targetTitle || !targetList) return false;
-      targetTitle.innerHTML = sourceTitle.innerHTML;
-      targetList.innerHTML = sourceList.innerHTML;
-      shared.setAttribute("data-current-menu", menuKey);
-      shared.classList.add("sidebox-visible");
-      return true;
-    }
+        function fullNavigateFromEvent(evt) {
+          var trigger = evt && evt.detail && evt.detail.elt;
+          var dest =
+            (evt.detail && evt.detail.pathInfo && evt.detail.pathInfo.requestPath) ||
+            (trigger && trigger.getAttribute && trigger.getAttribute("href")) ||
+            "/";
+          window.location.href = dest;
+        }
 
-    function positionSidebox(btn) {
-      const sidebox = getSharedPanel();
-      if (!sidebox || !btn) return;
-      const btnRect = btn.getBoundingClientRect();
-      const viewportH = window.innerHeight;
-      const headerBottom = getHeaderBottom();
+        function setActiveSidebarMenu(btn) {
+          if (!btn) return;
+          try {
+            if (btn.dataset.menu) localStorage.setItem("activeSidebarMenu", btn.dataset.menu);
+          } catch (_) {}
+          document.querySelectorAll(".sideboxmain").forEach(function (el) { el.classList.remove("active"); });
+          btn.classList.add("active");
+        }
 
-      // Measure natural panel height while hidden
-      sidebox.style.display = "block";
-      const panelH = sidebox.scrollHeight;
-      sidebox.style.display = "";
+        // ── Hover flyout helpers ─────────────────────────────────────────────
 
-      // Align panel top with button top, but never above the navbar.
-      // Then clamp to viewport (still respecting the navbar floor).
-      let topPos = Math.max(btnRect.top, headerBottom);
-      const maxTop = viewportH - panelH - 8;
-      if (topPos > maxTop) topPos = Math.max(headerBottom, maxTop);
-      sidebox.style.top = topPos + "px";
+        var flyoutEl = document.getElementById("sidebarFlyout");
+        var flyoutTitleEl = document.getElementById("sidebarFlyoutTitle");
+        var flyoutListEl = document.getElementById("sidebarFlyoutList");
+        var flyoutCloseTimer = null;
 
-      // Cap panel height so it never spills below the viewport. The
-      // inner <ul> already scrolls via the sidebar-scroll styling, so
-      // long menus remain fully reachable.
-      sidebox.style.maxHeight = (viewportH - topPos - 8) + "px";
-      sidebox.style.overflowY = "auto";
-    }
-
-    function setActiveSidebarMenu(btn) {
-      if (!btn) return;
-      try {
-        if (btn.dataset.menu) localStorage.setItem("activeSidebarMenu", btn.dataset.menu);
-      } catch (_) { /* noop */ }
-      document.querySelectorAll(".sideboxmain").forEach(el => el.classList.remove("active"));
-      btn.classList.add("active");
-    }
-
-    function openSidebarMenuButton(btn, opts) {
-      if (!btn) return;
-      var options = opts || {};
-      var keepCardOpen = !!options.keepCardOpen;
-      var currentlyOpen = document.querySelector(".sideboxmain.sidebox-active");
-      var sameButton = currentlyOpen === btn;
-
-      if (sameButton) {
-        /* No-op for same button to avoid repaint flicker */
-        setActiveSidebarMenu(btn);
-        return;
-      }
-
-      if (keepCardOpen && currentlyOpen) {
-        var sidebar = document.getElementById("sidebar");
-        if (sidebar) sidebar.classList.add("sidebox-switching");
-        renderSharedPanelFromButton(btn);
-        positionSidebox(btn);
-        btn.classList.add("sidebox-active");
-        btn.setAttribute("aria-expanded", "true");
-        currentlyOpen.classList.remove("sidebox-active");
-        currentlyOpen.setAttribute("aria-expanded", "false");
-        if (sidebar) {
+        function positionFlyout(itemRect) {
+          var sidebarRect = sidebarEl.getBoundingClientRect();
+          var left = sidebarRect.right + 6;
+          var top = itemRect.top;
+          flyoutEl.style.left = left + "px";
+          flyoutEl.style.top = top + "px";
           requestAnimationFrame(function () {
-            sidebar.classList.remove("sidebox-switching");
+            var fh = flyoutEl.offsetHeight;
+            var vh = window.innerHeight;
+            if (top + fh > vh - 8) {
+              flyoutEl.style.top = Math.max(8, vh - fh - 8) + "px";
+            }
           });
         }
-      } else {
-        closeAll({ force: true });
-        renderSharedPanelFromButton(btn);
-        positionSidebox(btn);
-        btn.classList.add("sidebox-active");
-        btn.setAttribute("aria-expanded", "true");
-      }
 
-      setActiveSidebarMenu(btn);
-    }
+        function showFlyout(item, btn) {
+          var subnav = item.querySelector(".sidebar-subnav");
+          if (!subnav) return;
+          var liItems = subnav.querySelectorAll("li");
+          if (!liItems.length) return;
 
-    // Single delegated listener on the nav scroll container
-    const navContainer = document.querySelector("#sidebar nav");
-    if (navContainer) {
-      /*
-       * Hard intercept for submenu anchors (capture phase).
-       *
-       * Why this exists: in some browsers/layout states, anchors nested
-       * inside the absolute `.sidebox` can occasionally navigate before
-       * the bubble-phase delegated handler runs, which looks like a full
-       * page reload (observed on Payroll Dashboard clicks).
-       *
-       * Capture-phase interception guarantees we prevent default first,
-       * then drive navigation ourselves (htmx swap or full fallback).
-       */
-      navContainer.addEventListener("click", function (e) {
-        var link = e.target.closest(".sidebox a[href], .sidebox a[hx-get]");
-        if (!link) return;
-        var isLeftClick = !e.button || e.button === 0;
-        var isModified = e.metaKey || e.ctrlKey || e.shiftKey || e.altKey;
-        if (!isLeftClick || isModified) return;
+          clearTimeout(flyoutCloseTimer);
 
-        e.preventDefault();
-        e.stopPropagation();
-        if (typeof e.stopImmediatePropagation === "function") {
-          e.stopImmediatePropagation();
+          var label = btn.querySelector(".oh-sidebar-label");
+          var titleText = label ? label.textContent.trim() : (btn.getAttribute("aria-label") || "");
+          flyoutTitleEl.textContent = titleText;
+          flyoutTitleEl.style.display = titleText ? "" : "none";
+
+          flyoutListEl.innerHTML = "";
+          liItems.forEach(function (li) { flyoutListEl.appendChild(li.cloneNode(true)); });
+          if (window.htmx) htmx.process(flyoutListEl);
+
+          // Restore active-link highlight in flyout
+          var path = window.location.pathname;
+          flyoutListEl.querySelectorAll("a[href]").forEach(function (a) {
+            var href = a.getAttribute("href");
+            if (href && href !== "/" && path.startsWith(href)) a.classList.add("oh-sidebar-active-link");
+          });
+
+          positionFlyout(item.getBoundingClientRect());
+          flyoutEl.classList.add("is-visible");
+          setActiveSidebarMenu(btn);
         }
 
-        var href = link.getAttribute("href") || link.getAttribute("hx-get") || "/";
-        if (isStandaloneUrl(href)) {
-          window.location.href = href;
-          return;
+        function hideFlyout() {
+          if (flyoutEl) flyoutEl.classList.remove("is-visible");
         }
 
-        var target = document.getElementById("ohMainContent");
-        if (!target || !window.htmx) {
-          window.location.href = href;
-          return;
+        function scheduleFlyoutClose() {
+          clearTimeout(flyoutCloseTimer);
+          flyoutCloseTimer = setTimeout(hideFlyout, 120);
         }
 
-        bumpGrace(1500);
-        window.history.pushState({}, "", href);
-        htmx.ajax("GET", href, {
-          source: link,
-          target: "#ohMainContent",
-          select: "#ohMainContent > *",
-          swap: "innerHTML show:window:top",
-          headers: {"HX-Sidebar-Nav": "true"},
+        function cancelFlyoutClose() {
+          clearTimeout(flyoutCloseTimer);
+        }
+
+        // Attach hover listeners to all sidebar items
+        document.querySelectorAll(".sidebar-item").forEach(function (item) {
+          var btn = item.querySelector(".sideboxmain");
+          if (!btn) return;
+          item.addEventListener("mouseenter", function () {
+            cancelFlyoutClose();
+            showFlyout(item, btn);
+          });
+          item.addEventListener("mouseleave", function () { scheduleFlyoutClose(); });
         });
-      }, true);
 
-      navContainer.addEventListener("click", function (e) {
-        var link = e.target.closest("a");
-        var isLeftClick = !e.button || e.button === 0;
-        var isModified = e.metaKey || e.ctrlKey || e.shiftKey || e.altKey;
-
-        /*
-         * Deterministic sidebar navigation:
-         * - Prevent default browser navigation for normal left-clicks.
-         * - Route through htmx.ajax for layout-extending pages so we
-         *   always swap only #ohMainContent (no full reload race).
-         * - Fall back to full page navigation for standalone pages.
-         */
-        if (link && !isModified && isLeftClick) {
-          var href = link.getAttribute("href") || link.getAttribute("hx-get");
-          var isTopDashboard = link.matches("a.sideboxmain");
-          var isSubmenuLink = !!link.closest(".sidebox");
-
-          if (isTopDashboard || isSubmenuLink) {
+        if (flyoutEl) {
+          flyoutEl.addEventListener("mouseenter", cancelFlyoutClose);
+          flyoutEl.addEventListener("mouseleave", scheduleFlyoutClose);
+          flyoutEl.addEventListener("click", function (e) {
+            var link = e.target.closest("a[href], a[hx-get]");
+            if (!link) return;
+            var isLeftClick = !e.button || e.button === 0;
+            var isModified = e.metaKey || e.ctrlKey || e.shiftKey || e.altKey;
+            if (!isLeftClick || isModified) return;
             e.preventDefault();
             e.stopPropagation();
+            var href = link.getAttribute("href") || link.getAttribute("hx-get") || "/";
+            hideFlyout();
+            if (isStandaloneUrl(href)) { window.location.href = href; return; }
+            var target = document.getElementById("ohMainContent");
+            if (!target || !window.htmx) { window.location.href = href; return; }
+            document.querySelectorAll(".sidebar-subnav-link").forEach(function (l) { l.classList.remove("oh-sidebar-active-link"); });
+            flyoutListEl.querySelectorAll("a").forEach(function (a) { a.classList.remove("oh-sidebar-active-link"); });
+            link.classList.add("oh-sidebar-active-link");
+            // Mark the parent module button as active
+            var matchHref = link.getAttribute("href") || link.getAttribute("hx-get") || "";
+            document.querySelectorAll(".sidebar-item").forEach(function (si) {
+              var match = si.querySelector('.sidebar-subnav a[href="' + matchHref + '"]');
+              if (match) { var b = si.querySelector(".sideboxmain"); if (b) setActiveSidebarMenu(b); }
+            });
+            bumpGrace(1500);
+            window.history.pushState({}, "", href);
+            htmx.ajax("GET", href, {
+              source: link, target: "#ohMainContent",
+              select: "#ohMainContent > *", swap: "innerHTML show:window:top",
+              headers: { "HX-Sidebar-Nav": "true" },
+            });
+          }, true);
+        }
 
-            if (isTopDashboard) {
-              closeAll({ force: true });
-              setActiveSidebarMenu(link);
+        // Highlight active module button based on current URL (no accordion to open)
+        function ohAccordionInit() {
+          var path = window.location.pathname;
+          var matchedBtn = null;
+          document.querySelectorAll(".sidebar-subnav-link").forEach(function (link) {
+            var href = link.getAttribute("href");
+            if (!href || href === "/" || href === "#") return;
+            if (path.startsWith(href)) {
+              link.classList.add("oh-sidebar-active-link");
+              if (!matchedBtn) {
+                var item = link.closest(".sidebar-item");
+                matchedBtn = item && item.querySelector(".sideboxmain");
+              }
             }
+          });
+          if (matchedBtn) {
+            setActiveSidebarMenu(matchedBtn);
+          } else {
+            var lastMenu = null;
+            try { lastMenu = localStorage.getItem("activeSidebarMenu"); } catch (_) {}
+            if (lastMenu) {
+              var btn = document.querySelector('.sideboxmain[data-menu="' + lastMenu.replace(/"/g, '\\"') + '"]');
+              if (btn) setActiveSidebarMenu(btn);
+            }
+          }
+        }
 
-            if (isStandaloneUrl(href)) {
-              window.location.href = href || "/";
-              return;
+        ohAccordionInit();
+
+        // ── Sidebar pin / collapse toggle ────────────────────────────────────
+
+        var sidebarEl = document.getElementById("sidebar");
+
+        var sidebarPinned = true; // default: pinned open
+        try { var _stored = localStorage.getItem("sidebarPinned"); if (_stored !== null) sidebarPinned = _stored === "true"; } catch (_) {}
+
+        function applySidebarPin(pinned, animate) {
+          sidebarPinned = pinned;
+          var content = document.querySelector(".oh-main-content");
+
+          // Suppress transition on initial load to prevent a margin slide on page open
+          if (!animate && content) content.style.transition = "none";
+
+          sidebarEl.classList.toggle("sidebar-pinned", pinned);
+          if (content) content.style.marginLeft = pinned ? "13rem" : "";
+
+          // Keep the lock button's tooltip/aria-label in sync with the state.
+          // (The open vs closed padlock icon itself is swapped via CSS on .sidebar-pinned.)
+          var pinBtnEl = document.getElementById("sidebarPinBtn");
+          if (pinBtnEl) {
+            var lockLabel = pinned ? pinBtnEl.dataset.unpinLabel : pinBtnEl.dataset.pinLabel;
+            if (lockLabel) { pinBtnEl.title = lockLabel; pinBtnEl.setAttribute("aria-label", lockLabel); }
+          }
+
+          if (!animate && content) {
+            requestAnimationFrame(function () {
+              requestAnimationFrame(function () { content.style.transition = ""; });
+            });
+          }
+          try { localStorage.setItem("sidebarPinned", pinned ? "true" : "false"); } catch (_) {}
+        }
+
+        // Apply saved state immediately (no animation) to avoid layout flash
+        applySidebarPin(sidebarPinned, false);
+
+        var pinBtn = document.getElementById("sidebarPinBtn");
+        if (pinBtn) {
+          pinBtn.addEventListener("click", function (e) {
+            e.stopPropagation();
+            applySidebarPin(!sidebarPinned, true);
+          });
+        }
+
+        // When cursor leaves sidebar, close any open flyout
+        if (sidebarEl) {
+          sidebarEl.addEventListener("mouseleave", function () {
+            scheduleFlyoutClose();
+          });
+        }
+
+        // Re-highlight active module + link after any URL change (HTMX or browser back/forward)
+        function syncSidebarToUrl() {
+          document.querySelectorAll(".sidebar-subnav-link").forEach(function (l) {
+            l.classList.remove("oh-sidebar-active-link");
+          });
+          var path = window.location.pathname;
+          var matchedBtn = null;
+          document.querySelectorAll(".sidebar-subnav-link").forEach(function (link) {
+            var href = link.getAttribute("href");
+            if (href && href !== "/" && path.startsWith(href)) {
+              link.classList.add("oh-sidebar-active-link");
+              if (!matchedBtn) {
+                var item = link.closest(".sidebar-item");
+                matchedBtn = item && item.querySelector(".sideboxmain");
+              }
             }
+          });
+          if (matchedBtn) setActiveSidebarMenu(matchedBtn);
+        }
+        document.addEventListener("htmx:pushUrl", syncSidebarToUrl);
+        window.addEventListener("popstate", syncSidebarToUrl);
+
+        // ── Navigation click handlers ────────────────────────────────────────
+
+        var navContainer = document.querySelector("#sidebar nav");
+
+        if (navContainer) {
+
+          /*
+           * Capture phase: hard-intercept submenu link clicks before anything else.
+           * Mirrors the original sidebox-link interception but now targets
+           * .sidebar-subnav links instead of .sidebox links.
+           */
+          navContainer.addEventListener("click", function (e) {
+            var link = e.target.closest(".sidebar-subnav a[href], .sidebar-subnav a[hx-get]");
+            if (!link) return;
+            var isLeftClick = !e.button || e.button === 0;
+            var isModified = e.metaKey || e.ctrlKey || e.shiftKey || e.altKey;
+            if (!isLeftClick || isModified) return;
+
+            e.preventDefault();
+            e.stopPropagation();
+            if (typeof e.stopImmediatePropagation === "function") e.stopImmediatePropagation();
+
+            var href = link.getAttribute("href") || link.getAttribute("hx-get") || "/";
+            if (isStandaloneUrl(href)) { window.location.href = href; return; }
 
             var target = document.getElementById("ohMainContent");
-            if (!target || !window.htmx) {
-              window.location.href = href || "/";
-              return;
-            }
+            if (!target || !window.htmx) { window.location.href = href; return; }
+
+            document.querySelectorAll(".sidebar-subnav-link").forEach(function (l) {
+              l.classList.remove("oh-sidebar-active-link");
+            });
+            link.classList.add("oh-sidebar-active-link");
+            var parentItem = link.closest(".sidebar-item");
+            var parentBtn = parentItem && parentItem.querySelector(".sideboxmain");
+            if (parentBtn) setActiveSidebarMenu(parentBtn);
 
             bumpGrace(1500);
             window.history.pushState({}, "", href);
@@ -593,362 +821,149 @@ function removeId(element, storeKey = "selectedInstances") {
               target: "#ohMainContent",
               select: "#ohMainContent > *",
               swap: "innerHTML show:window:top",
-              headers: {"HX-Sidebar-Nav": "true"},
+              headers: { "HX-Sidebar-Nav": "true" },
             });
-            return;
-          }
+          }, true);
+
+          // Bubble phase: top-level dashboard link + module button accordion toggles
+          navContainer.addEventListener("click", function (e) {
+            var link = e.target.closest("a");
+            var isLeftClick = !e.button || e.button === 0;
+            var isModified = e.metaKey || e.ctrlKey || e.shiftKey || e.altKey;
+
+            if (link && !isModified && isLeftClick) {
+              var href = link.getAttribute("href") || link.getAttribute("hx-get");
+              var isTopDashboard = link.matches("a.sideboxmain");
+
+              if (isTopDashboard) {
+                e.preventDefault();
+                e.stopPropagation();
+                hideFlyout();
+                setActiveSidebarMenu(link);
+                if (isStandaloneUrl(href)) { window.location.href = href || "/"; return; }
+                var target = document.getElementById("ohMainContent");
+                if (!target || !window.htmx) { window.location.href = href || "/"; return; }
+                bumpGrace(1500);
+                window.history.pushState({}, "", href);
+                htmx.ajax("GET", href, {
+                  source: link, target: "#ohMainContent",
+                  select: "#ohMainContent > *", swap: "innerHTML show:window:top",
+                  headers: { "HX-Sidebar-Nav": "true" },
+                });
+                return;
+              }
+            }
+
+            // Clicks inside subnav are already handled in capture phase above
+            if (e.target.closest(".sidebar-subnav")) return;
+            if (e.target.closest("a")) return;
+
+            // Module button click: flyout is already shown by hover; just mark active
+            var btn = e.target.closest(".sideboxmain");
+            if (!btn) return;
+            e.stopPropagation();
+            setActiveSidebarMenu(btn);
+          });
         }
+
+        // ── HTMX lifecycle hooks ──────────────────────────────────────────────
+
+        document.addEventListener("htmx:beforeRequest", function (evt) {
+          try {
+            var trigger = evt && evt.detail && evt.detail.elt;
+            if (!(sidebarEl && trigger && sidebarEl.contains(trigger))) return;
+            var requestPath =
+              (evt.detail.pathInfo && evt.detail.pathInfo.requestPath) ||
+              trigger.getAttribute("href") ||
+              trigger.getAttribute("hx-get");
+            if (isStandaloneUrl(requestPath)) {
+              if (evt.detail) evt.detail.shouldSwap = false;
+              evt.preventDefault();
+              if (evt.detail && evt.detail.xhr && typeof evt.detail.xhr.abort === "function") {
+                try { evt.detail.xhr.abort(); } catch (_) {}
+              }
+              window.location.href = requestPath;
+              return;
+            }
+            bumpGrace(1500);
+          } catch (_) {}
+        });
+
+        document.addEventListener("htmx:afterSettle", function (evt) {
+          bumpGrace(200);
+          var info = evt && evt.detail;
+          if (!info || info._crumbsUpdated) return;
+          var etc = info.etc;
+          if (!etc || !etc.headers || etc.headers["HX-Sidebar-Nav"] !== "true") return;
+          info._crumbsUpdated = true;
+          var xhr = info.xhr;
+          if (!xhr || !xhr.responseText) return;
+          try {
+            var parser = new DOMParser();
+            var doc = parser.parseFromString(xhr.responseText, "text/html");
+            var newCrumbs = doc.getElementById("breadcrumbs-container");
+            var currentCrumbs = document.getElementById("breadcrumbs-container");
+            if (newCrumbs && currentCrumbs) currentCrumbs.innerHTML = newCrumbs.innerHTML;
+          } catch (_) {}
+        });
+
+        document.addEventListener("htmx:beforeSwap", function (evt) {
+          try {
+            var trigger = evt && evt.detail && evt.detail.elt;
+            if (!(sidebarEl && trigger && sidebarEl.contains(trigger))) return;
+            var xhr = evt.detail.xhr;
+            if (!xhr || xhr.status < 200 || xhr.status >= 400) return;
+            if (!shouldFallbackToFullNav(xhr.responseText)) return;
+            if (evt.detail) evt.detail.shouldSwap = false;
+            evt.preventDefault();
+            fullNavigateFromEvent(evt);
+          } catch (_) {}
+        });
+
+        function sidebarNavError(evt) {
+          try {
+            var trigger = evt && evt.detail && evt.detail.elt;
+            if (!(sidebarEl && trigger && sidebarEl.contains(trigger))) return;
+            fullNavigateFromEvent(evt);
+          } catch (_) {}
+        }
+        document.addEventListener("htmx:responseError", sidebarNavError);
+        document.addEventListener("htmx:sendError", sidebarNavError);
+        document.addEventListener("htmx:timeout", sidebarNavError);
+        document.addEventListener("htmx:targetError", sidebarNavError);
 
         /*
-         * The `.sidebox` panel is rendered INSIDE the `.sideboxmain`
-         * <button>, so any click within a panel (links, headers,
-         * padding, gaps) bubbles up here with a `.sideboxmain`
-         * ancestor. Bail out first so nothing we do below accidentally
-         * closes the panel the user is trying to use.
+         * Browser back/forward: remove HTMX's own popstate handler and reload
+         * instead — the sessionStorage cache is stale for programmatic htmx.ajax calls.
          */
-        if (e.target.closest(".sidebox")) return;
+        window.onpopstate = null;
+        window.addEventListener("popstate", function () { window.location.reload(); });
 
-        /*
-         * Top-level sidebar LINKS that have no submenu of their own —
-         * currently just the Dashboard icon (top_menu.html). These are
-         * <a class="sideboxmain"> elements sitting directly in the
-         * sidebar column. Clicking one should:
-         *   • close any submenu panel that was left open from another
-         *     module,
-         *   • update the active highlight,
-         *   • let the normal navigation (htmx or classic) proceed.
-         */
-        var topLink = e.target.closest("a.sideboxmain");
-        if (topLink) {
-          closeAll({ force: true });
-          document.querySelectorAll(".sideboxmain").forEach(el => el.classList.remove("active"));
-          topLink.classList.add("active");
-          if (topLink.dataset.menu) {
-            try { localStorage.setItem("activeSidebarMenu", topLink.dataset.menu); }
-            catch (_) { /* noop */ }
-          }
-          return;
-        }
-
-        /* Other links inside the nav (rare) – let them navigate untouched. */
-        if (e.target.closest("a")) return;
-
-        /* Finally, the standard sideboxmain BUTTON toggle. */
-        const btn = e.target.closest(".sideboxmain");
-        if (!btn) return;
-
-        e.stopPropagation();
-        const isAlreadyOpen = btn.classList.contains("sidebox-active");
-        if (isAlreadyOpen) {
-          closeAll({ force: true });
-          setActiveSidebarMenu(btn);
-          return;
-        }
-        openSidebarMenuButton(btn, { keepCardOpen: true });
+        document.addEventListener("keydown", function (e) {
+          if (e.key === "Escape") hideFlyout();
+        });
       });
+
+    function isChartEmpty(chart) {
+        return chart.data.datasets.every(dataset => {
+            if (Array.isArray(dataset.data)) {
+                return dataset.data.every(value => !value || value === 0);
+            } else if (typeof dataset.data === 'object') {
+                return Object.values(dataset.data).every(value => !value || value === 0);
+            }
+            return true;
+        });
     }
 
-    /*
-     * Whenever a sidebar link fires an htmx request, extend the close
-     * grace-window until the swap has settled. This covers every htmx
-     * phase: beforeRequest sets the floor, afterSettle bumps it a bit
-     * more so any focus/scroll/resize events triggered by the new
-     * content don't synthesise a stray "outside click".
-     */
-    var sidebarEl = document.getElementById("sidebar");
+    function showEmptyState(chart, message = "No records available at the moment") {
+        const $canvas = $(chart.canvas);
+        const chartId = $canvas.attr("id");
 
-    function bumpGrace(ms) {
-      var until = Date.now() + ms;
-      if (until > ignoreCloseUntil) ignoreCloseUntil = until;
-    }
+        // Hide canvas wrapper
+        $canvas.closest(".relative").hide();
 
-    /*
-     * URL patterns whose responses are standalone pages (don't extend
-     * the main index layout). When the user clicks a sidebar link whose
-     * target matches one of these, we bail out of the htmx swap entirely
-     * and do a classic full-page navigation — avoiding the wasted
-     * network request and the brief flash of empty content that would
-     * happen if we let htmx try to swap and then fall back post-response.
-     *
-     * Add new patterns here whenever a view renders a standalone HTML
-     * document that does not extend the main index layout.
-     */
-    var STANDALONE_URL_PATTERNS = [
-      /^\/recruitment\/open-recruitments\/?/i,
-    ];
-    function isStandaloneUrl(url) {
-      if (!url) return false;
-      try {
-        var pathname = new URL(url, window.location.origin).pathname;
-        return STANDALONE_URL_PATTERNS.some(function (rx) { return rx.test(pathname); });
-      } catch (_) {
-        return STANDALONE_URL_PATTERNS.some(function (rx) { return rx.test(url); });
-      }
-    }
-
-    document.addEventListener("htmx:beforeRequest", function (evt) {
-      try {
-        var trigger = evt && evt.detail && evt.detail.elt;
-        if (!(sidebarEl && trigger && sidebarEl.contains(trigger))) return;
-
-        var requestPath =
-          (evt.detail.pathInfo && evt.detail.pathInfo.requestPath) ||
-          trigger.getAttribute("href") ||
-          trigger.getAttribute("hx-get");
-        if (isStandaloneUrl(requestPath)) {
-          /* Cancel the htmx request before it goes out and hand over
-             to the browser's own navigation. */
-          if (evt.detail) evt.detail.shouldSwap = false;
-          evt.preventDefault();
-          if (evt.detail && evt.detail.xhr && typeof evt.detail.xhr.abort === "function") {
-            try { evt.detail.xhr.abort(); } catch (_) { /* ignore */ }
-          }
-          window.location.href = requestPath;
-          return;
-        }
-
-        bumpGrace(1500);
-      } catch (_) { /* no-op */ }
-    });
-    document.addEventListener("htmx:afterSettle", function (evt) {
-      /* tiny extension so the final post-swap click burst (if any) is
-         still absorbed — harmless otherwise since the next user click
-         will have moved past this window. */
-      bumpGrace(200);
-
-      /* Update breadcrumbs in the header from the sidebar navigation response.
-         evt.detail.elt is the settled DOM node (not the sidebar link), so we
-         identify sidebar navigations via the custom header in etc.headers.
-         _crumbsUpdated prevents re-running when multiple elements settle. */
-      var info = evt && evt.detail;
-      if (!info || info._crumbsUpdated) return;
-      var etc = info.etc;
-      if (!etc || !etc.headers || etc.headers["HX-Sidebar-Nav"] !== "true") return;
-      info._crumbsUpdated = true;
-      var xhr = info.xhr;
-      if (!xhr || !xhr.responseText) return;
-      try {
-        var parser = new DOMParser();
-        var doc = parser.parseFromString(xhr.responseText, "text/html");
-        var newCrumbs = doc.getElementById("breadcrumbs-container");
-        var currentCrumbs = document.getElementById("breadcrumbs-container");
-        if (newCrumbs && currentCrumbs) {
-          currentCrumbs.innerHTML = newCrumbs.innerHTML;
-        }
-      } catch (_) { /* noop */ }
-    });
-
-    /*
-     * Fallback to full navigation when a sidebar-initiated response
-     * doesn't contain `#ohMainContent`. This happens when a view renders
-     * a standalone template (e.g., recruitment/open_recruitments.html)
-     * that does not extend the main index layout — in which case the
-     * hx-select would produce an empty swap and the content region
-     * would blank out. We detect that up-front and hand over to a
-     * classic full page load so the user actually sees the page.
-     */
-    function shouldFallbackToFullNav(text) {
-      /* A response is "standalone" (not an index.html extension) when
-         it ships its own <!doctype> or <html> element but does NOT
-         include our content container. In that case swapping would
-         produce empty or garbage content, so we reload. */
-      if (!text) return false;
-      var hasOurContainer =
-        text.indexOf('id="ohMainContent"') !== -1 ||
-        text.indexOf("id='ohMainContent'") !== -1;
-      if (hasOurContainer) return false;
-      /* Any response that carries its own <html>/<body> indicates a
-         full page. Even if it doesn't, the absence of ohMainContent
-         means hx-select would produce nothing — safer to reload. */
-      return true;
-    }
-
-    function fullNavigateFromEvent(evt) {
-      var trigger = evt && evt.detail && evt.detail.elt;
-      var dest =
-        (evt.detail && evt.detail.pathInfo && evt.detail.pathInfo.requestPath) ||
-        (trigger && trigger.getAttribute && trigger.getAttribute("href")) ||
-        "/";
-      window.location.href = dest;
-    }
-
-    document.addEventListener("htmx:beforeSwap", function (evt) {
-      try {
-        var trigger = evt && evt.detail && evt.detail.elt;
-        if (!(sidebarEl && trigger && sidebarEl.contains(trigger))) return;
-        var xhr = evt.detail.xhr;
-        if (!xhr || xhr.status < 200 || xhr.status >= 400) return;
-        if (!shouldFallbackToFullNav(xhr.responseText)) return;
-        /* Belt-and-suspenders: htmx 1.x honours shouldSwap, 2.x uses
-           preventDefault. Do both so the in-flight swap is cancelled
-           regardless of the version shipped with the page. */
-        if (evt.detail) evt.detail.shouldSwap = false;
-        evt.preventDefault();
-        fullNavigateFromEvent(evt);
-      } catch (_) { /* fall through to htmx's default swap */ }
-    });
-
-    /*
-     * Network / server errors on boosted sidebar clicks: fall back to
-     * a full navigation so the user isn't stranded on a silent failure.
-     */
-    function sidebarNavError(evt) {
-      try {
-        var trigger = evt && evt.detail && evt.detail.elt;
-        if (!(sidebarEl && trigger && sidebarEl.contains(trigger))) return;
-        fullNavigateFromEvent(evt);
-      } catch (_) { /* ignore */ }
-    }
-    document.addEventListener("htmx:responseError", sidebarNavError);
-    document.addEventListener("htmx:sendError", sidebarNavError);
-    document.addEventListener("htmx:timeout", sidebarNavError);
-    /* If the swap target is missing on the current page (e.g. the user
-       is currently on a standalone page like Open Jobs, then clicks
-       Payroll Dashboard), htmx aborts silently. Without a fallback,
-       the browser would then honor the link's href and do a full
-       page reload. Redirect explicitly instead so the user lands on
-       the intended destination with the proper layout. */
-    document.addEventListener("htmx:targetError", sidebarNavError);
-
-    /*
-     * Browser back/forward: keep historyEnabled=true so hx-push-url can
-     * update the browser URL, but remove HTMX's own window.onpopstate
-     * handler so it never tries to restore from its sessionStorage cache
-     * (which is stale/missing for programmatic htmx.ajax() calls).
-     * Our plain reload below is always correct instead.
-     */
-    window.onpopstate = null;
-    window.addEventListener("popstate", function () {
-      window.location.reload();
-    });
-
-    /*
-     * Outside-click close handler (capture phase so it runs before any
-     * other listener can detach elements from the DOM). We rely on the
-     * stable `#sidebar` wrapper rather than class-based `closest()`
-     * lookups, which can return null if ancestors get re-parented during
-     * a swap.
-     *
-     * Defense-in-depth — the panel stays open if ANY of these is true:
-     *   1. The synthetic-event filter (e.isTrusted).
-     *   2. The mousedown that started the click landed inside #sidebar.
-     *      This is the most reliable signal because mousedown always
-     *      reflects what the user physically pressed on, before any
-     *      re-rendering.
-     *   3. The click target itself is inside #sidebar.
-     *   4. The ignoreCloseUntil grace window is active (inside closeAll).
-     *
-     * Only when ALL the "inside" signals are false and the grace window
-     * has elapsed do we actually close the panel.
-     */
-    var lastMousedownInSidebar = false;
-    document.addEventListener("mousedown", function (e) {
-      var s = document.getElementById("sidebar");
-      lastMousedownInSidebar = !!(s && s.contains(e.target));
-    }, true);
-
-    document.addEventListener("click", function (e) {
-      if (!e.isTrusted) return;
-      if (lastMousedownInSidebar) return;
-      var s = document.getElementById("sidebar") || sidebarEl;
-      if (s && s.contains(e.target)) return;
-      closeAll();
-    }, true);
-
-    document.addEventListener("keydown", function (e) {
-      if (e.key === "Escape") closeAll({ force: true });
-    });
-
-    /*
-     * Stable behavior: keep panel open once user opens it, and only switch
-     * panel content while hovering other icons. Avoid hover-driven
-     * auto-close/auto-open because that can create close/open flicker.
-     */
-    var sidebarRoot = document.getElementById("sidebar");
-    var hoverCloseTimer = null;
-    var HOVER_CLOSE_DELAY = 180;
-
-    function clearHoverCloseTimer() {
-      if (!hoverCloseTimer) return;
-      clearTimeout(hoverCloseTimer);
-      hoverCloseTimer = null;
-    }
-
-    function scheduleCloseIfPointerLeavesSidebar(e) {
-      if (!document.querySelector(".sideboxmain.sidebox-active")) return;
-      var related = e && e.relatedTarget;
-      if (related && sidebarRoot && sidebarRoot.contains(related)) return;
-      clearHoverCloseTimer();
-      hoverCloseTimer = setTimeout(function () {
-        hoverCloseTimer = null;
-        closeAll({ force: true });
-      }, HOVER_CLOSE_DELAY);
-    }
-
-    function openLastActiveSubmenu() {
-      if (Date.now() < ignoreCloseUntil) return;
-      if (document.querySelector(".sideboxmain.sidebox-active")) return;
-      var lastMenu = null;
-      try { lastMenu = localStorage.getItem("activeSidebarMenu"); }
-      catch (_) { /* noop */ }
-      if (!lastMenu) return;
-      var btn = document.querySelector(
-        '.sideboxmain[data-menu="' + lastMenu.replace(/"/g, '\\"') + '"]'
-      );
-      if (!btn || btn.classList.contains("sidebox-active")) return;
-      positionSidebox(btn);
-      btn.classList.add("sidebox-active");
-      btn.setAttribute("aria-expanded", "true");
-      document
-        .querySelectorAll(".sideboxmain")
-        .forEach(function (el) { el.classList.remove("active"); });
-      btn.classList.add("active");
-    }
-
-    if (sidebarRoot) {
-      /*
-       * If a submenu card is already open, hovering another icon should
-       * replace only the menu list while keeping the card visible.
-       */
-      sidebarRoot.addEventListener("mouseenter", function (e) {
-        var btn = e.target && e.target.closest && e.target.closest(".sideboxmain");
-        if (!btn || !btn.querySelector(".sidebox")) return;
-        var openBtn = document.querySelector(".sideboxmain.sidebox-active");
-        if (!openBtn) {
-          clearHoverCloseTimer();
-          openSidebarMenuButton(btn, { keepCardOpen: false });
-          return;
-        }
-        if (openBtn === btn) return;
-        clearHoverCloseTimer();
-        openSidebarMenuButton(btn, { keepCardOpen: true });
-      }, true);
-
-      sidebarRoot.addEventListener("mousemove", clearHoverCloseTimer, true);
-      sidebarRoot.addEventListener("mouseleave", scheduleCloseIfPointerLeavesSidebar, true);
-    }
-  });
-
-function isChartEmpty(chart) {
-    return chart.data.datasets.every(dataset => {
-        if (Array.isArray(dataset.data)) {
-            return dataset.data.every(value => !value || value === 0);
-        } else if (typeof dataset.data === 'object') {
-            return Object.values(dataset.data).every(value => !value || value === 0);
-        }
-        return true;
-    });
-}
-
-function showEmptyState(chart, message = "No records available at the moment") {
-    const $canvas = $(chart.canvas);
-    const chartId = $canvas.attr("id");
-
-    // Hide canvas wrapper
-    $canvas.closest(".relative").hide();
-
-    if ($("#no-data-" + chartId).length === 0) {
-        const emptyHTML = `
+        if ($("#no-data-" + chartId).length === 0) {
+            const emptyHTML = `
       <div id="no-data-${chartId}" class="h-[350px] flex items-center justify-center">
         <div class="flex flex-col items-center justify-center">
           <img src="/static/horilla_theme/assets/img/no-records.svg" alt="" width="300" class="mb-4">
@@ -956,29 +971,28 @@ function showEmptyState(chart, message = "No records available at the moment") {
         </div>
       </div>
     `;
-        $canvas.closest(".relative").after(emptyHTML);
-    } else {
-        $("#no-data-" + chartId).show();
+            $canvas.closest(".relative").after(emptyHTML);
+        } else {
+            $("#no-data-" + chartId).show();
+        }
     }
-}
 
-function hideEmptyState(chart) {
-    const $canvas = $(chart.canvas);
-    const chartId = $canvas.attr("id");
+    function hideEmptyState(chart) {
+        const $canvas = $(chart.canvas);
+        const chartId = $canvas.attr("id");
 
-    // Show canvas wrapper
-    $canvas.closest(".relative").show();
-    $("#no-data-" + chartId).hide();
-}
-
-function emptyChart(chart) {
-    if (!chart) return;
-
-    if (isChartEmpty(chart)) {
-        showEmptyState(chart);
-    } else {
-        hideEmptyState(chart);
+        // Show canvas wrapper
+        $canvas.closest(".relative").show();
+        $("#no-data-" + chartId).hide();
     }
-}
 
+    function emptyChart(chart) {
+        if (!chart) return;
+
+        if (isChartEmpty(chart)) {
+            showEmptyState(chart);
+        } else {
+            hideEmptyState(chart);
+        }
+    }
 </script>

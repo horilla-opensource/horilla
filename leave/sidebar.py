@@ -61,7 +61,9 @@ SUBMENUS = [
 
 
 def dashboard_accessibility(request, submenu, user_perms, *args, **kwargs):
-    have_perm = request.user.has_perm("leave.view_leaverequest")
+    have_perm = request.user.is_superuser or request.user.has_perm(
+        "leave.delete_leaverequest"
+    )
     if not have_perm:
         submenu["redirect"] = (
             reverse_lazy("leave-employee-dashboard") + "?dashboard=true"
@@ -124,13 +126,10 @@ if apps.is_installed("attendance"):
 # ---------------------------------------------------------------------------
 
 
-def restrictions_accessibility(request, submenu, user_perms, *args, **kwargs):
-    return request.user.has_perm("leave.add_restrictleave")
-
-
-def compensatory_leave_accessibility(request, submenu, user_perms, *args, **kwargs):
-    return apps.is_installed("attendance") and request.user.has_perm(
-        "attendance.view_attendancevalidationcondition"
+def leave_rules_accessibility(request, submenu, user_perms, *args, **kwargs):
+    return request.user.has_perm("leave.add_restrictleave") or (
+        apps.is_installed("attendance")
+        and request.user.has_perm("attendance.view_attendancevalidationcondition")
     )
 
 
@@ -141,13 +140,8 @@ class LeaveSettings:
     condition = lambda self, request: apps.is_installed("leave")
     items = [
         {
-            "label": _("Restrictions"),
-            "url": reverse_lazy("employee-past-leave-restriction"),
-            "accessibility": restrictions_accessibility,
-        },
-        {
-            "label": _("Compensatory Leave"),
-            "url": reverse_lazy("compensatory-leave-settings-view"),
-            "accessibility": compensatory_leave_accessibility,
+            "label": _("Leave Rules"),
+            "url": reverse_lazy("leave-rules-view"),
+            "accessibility": leave_rules_accessibility,
         },
     ]

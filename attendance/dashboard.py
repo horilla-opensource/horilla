@@ -11,6 +11,8 @@ from django.db.models import Count, Q, Sum
 from django.http import JsonResponse
 from django.shortcuts import render
 
+from base.decorators import manager_can_enter
+
 
 def _parse_period(request):
     """Parse from_date and to_date from GET params. Defaults to current month."""
@@ -47,6 +49,7 @@ def _latest_attendance_date(reference_date=None):
 
 
 @login_required
+@manager_can_enter("attendance.view_attendance")
 def attendance_dashboard_view(request):
     """Render the modern attendance dashboard page."""
     return render(request, "attendance/dashboard.html")

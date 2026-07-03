@@ -4,14 +4,23 @@
   htmx boost params used by submenu links so clicking Dashboard swaps
   only the main content region instead of doing a full page reload.
 {% endcomment %}
-<a href="{% url 'dashboard' %}" title="{% trans 'Dashboard' %}"
-   class="sideboxmain group flex items-center gap-3 p-3 rounded-full transition duration-300"
-   data-menu="Dashboard"
-   hx-get="{% url 'dashboard' %}"
-   hx-target="#ohMainContent"
-   hx-select="#ohMainContent > *"
-   hx-swap="innerHTML show:window:top"
-   hx-push-url="true">
-  <img src="{% static 'images/ui/dashboard.svg' %}" alt=""
-       class="w-4.5 h-4.5 transition duration-300 filter brightness-1 invert" />
+<a
+    href="{% url 'dashboard' %}"
+    class="sideboxmain group flex items-center gap-3 px-3 py-2.5 rounded-lg w-full transition duration-300"
+    data-menu="Dashboard"
+    hx-get="{% url 'dashboard' %}"
+    hx-target="#ohMainContent"
+    hx-select="#ohMainContent > *"
+    hx-swap="innerHTML show:window:top"
+    hx-push-url="true"
+>
+    <img
+        src="{% static 'images/ui/dashboard.svg' %}"
+        alt=""
+        class="w-4.5 h-4.5 flex-shrink-0 transition duration-300 filter brightness-1 invert"
+    >
+    <span
+        class="oh-sidebar-label text-sm font-medium truncate flex-1 text-left"
+        aria-hidden="true"
+    >{% trans "Dashboard" %}</span>
 </a>

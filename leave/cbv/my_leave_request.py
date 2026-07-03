@@ -7,12 +7,14 @@ from datetime import datetime
 from typing import Any
 
 from django.contrib import messages
+from django.db.models import Q
 from django.http import HttpResponse
 from django.shortcuts import render
 from django.urls import resolve, reverse, reverse_lazy
 from django.utils.decorators import method_decorator
 from django.utils.translation import gettext_lazy as _
 
+from base.models import CompanyLeaves, Holidays
 from horilla.http.response import HorillaRedirect
 from horilla_views.cbv_methods import login_required
 from horilla_views.generic.cbv.views import (
@@ -29,14 +31,7 @@ from leave.methods import (
     company_leave_dates_list,
     holiday_dates_list,
 )
-from leave.models import (
-    AvailableLeave,
-    CompanyLeave,
-    Holiday,
-    LeaveRequest,
-    LeaveType,
-    leave_requested_dates,
-)
+from leave.models import AvailableLeave, LeaveRequest, LeaveType, leave_requested_dates
 from leave.threading import LeaveMailSendThread
 from notifications.signals import notify
 
@@ -342,9 +337,11 @@ class MyLeaveRequestForm(HorillaFormView):
                     start_date, end_date, start_date_breakdown, end_date_breakdown
                 )
                 requested_dates = leave_requested_dates(start_date, end_date)
-                holidays = Holiday.objects.all()
+                holidays = Holidays.objects.filter(
+                    Q(is_specific=False) | Q(employees=employee)
+                )
                 holiday_dates = holiday_dates_list(holidays)
-                company_leaves = CompanyLeave.objects.all()
+                company_leaves = CompanyLeaves.objects.all()
                 company_leave_dates = company_leave_dates_list(
                     company_leaves, start_date
                 )
@@ -517,9 +514,9 @@ class MyLeaveRequestSingleForm(HorillaFormView):
         )
         requested_dates = leave_requested_dates(start_date, end_date)
         requested_dates = [date.date() for date in requested_dates]
-        holidays = Holiday.objects.all()
+        holidays = Holidays.objects.filter(Q(is_specific=False) | Q(employees=employee))
         holiday_dates = holiday_dates_list(holidays)
-        company_leaves = CompanyLeave.objects.all()
+        company_leaves = CompanyLeaves.objects.all()
         company_leave_dates = company_leave_dates_list(company_leaves, start_date)
         if (
             leave_type.exclude_company_leave == "yes"

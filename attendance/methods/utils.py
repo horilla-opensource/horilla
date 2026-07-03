@@ -372,7 +372,7 @@ def get_employee_last_name(attendance):
     return ""
 
 
-def attendance_day_checking(attendance_date, minimum_hour):
+def attendance_day_checking(attendance_date, minimum_hour, employee=None):
     # Convert the string to a datetime object
     attendance_datetime = datetime.strptime(attendance_date, "%Y-%m-%d")
 
@@ -382,6 +382,10 @@ def attendance_day_checking(attendance_date, minimum_hour):
     # Taking all holidays into a list
     leaves = []
     holidays = Holidays.objects.all()
+    if employee is not None:
+        holidays = holidays.filter(Q(is_specific=False) | Q(employees=employee))
+    else:
+        holidays = holidays.filter(is_specific=False)
     for holi in holidays:
         start_date = holi.start_date
         end_date = holi.end_date

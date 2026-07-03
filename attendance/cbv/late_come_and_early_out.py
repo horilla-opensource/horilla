@@ -11,6 +11,7 @@ from django.utils.translation import gettext_lazy as _
 from attendance.filters import LateComeEarlyOutFilter
 from attendance.forms import LateComeEarlyOutExportForm
 from attendance.models import AttendanceLateComeEarlyOut
+from base.decorators import manager_can_enter
 from base.filters import PenaltyFilter
 from base.methods import filtersubordinates, is_reportingmanager
 from base.models import PenaltyAccounts
@@ -24,6 +25,10 @@ from horilla_views.generic.cbv.views import (
 
 
 @method_decorator(login_required, name="dispatch")
+@method_decorator(
+    manager_can_enter(perm="attendance.view_attendancelatecomeearlyout"),
+    name="dispatch",
+)
 class LateComeAndEarlyOut(TemplateView):
     """
     Late come and early out
@@ -33,6 +38,10 @@ class LateComeAndEarlyOut(TemplateView):
 
 
 @method_decorator(login_required, name="dispatch")
+@method_decorator(
+    manager_can_enter(perm="attendance.view_attendancelatecomeearlyout"),
+    name="dispatch",
+)
 class LateComeAndEarlyOutList(HorillaListView):
     """
     List view
@@ -107,6 +116,10 @@ class LateComeAndEarlyOutList(HorillaListView):
 
 
 @method_decorator(login_required, name="dispatch")
+@method_decorator(
+    manager_can_enter(perm="attendance.view_attendancelatecomeearlyout"),
+    name="dispatch",
+)
 class LateComeAndEarlyOutListNav(HorillaNavView):
     """
     Nav bar

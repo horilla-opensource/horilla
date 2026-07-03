@@ -630,9 +630,13 @@ class Attendance(HorillaModel):
         """
         Set minimum_hour to 00:00 if the attendance date falls on a holiday or company leave.
         """
-        if is_holiday(self.attendance_date) or is_company_leave(self.attendance_date):
+        if is_holiday(self.attendance_date, self.employee_id) or is_company_leave(
+            self.attendance_date
+        ):
             self.minimum_hour = "00:00"
             self.is_holiday = True
+        else:
+            self.is_holiday = False
 
     def update_attendance_overtime(self):
         """

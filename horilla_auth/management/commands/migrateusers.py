@@ -1,8 +1,14 @@
+from django.contrib.auth.models import Group, Permission
 from django.core.management.base import BaseCommand
 from django.db import transaction
 from django.utils import timezone
 
-from horilla_auth.models import HorillaUser, LegacyUser
+from horilla_auth.models import (
+    AuthUserGroups,
+    AuthUserUserPermissions,
+    HorillaUser,
+    LegacyUser,
+)
 
 
 class Command(BaseCommand):
@@ -40,11 +46,17 @@ class Command(BaseCommand):
                     is_new_employee=False,
                 )
 
-                # Copy groups
-                new_user.groups.set(old_user.groups.all())
+                group_ids = AuthUserGroups.objects.filter(
+                    user_id=old_user.id
+                ).values_list("group_id", flat=True)
+                new_user.groups.set(Group.objects.filter(id__in=group_ids))
 
-                # Copy user permissions
-                new_user.user_permissions.set(old_user.user_permissions.all())
+                permission_ids = AuthUserUserPermissions.objects.filter(
+                    user_id=old_user.id
+                ).values_list("permission_id", flat=True)
+                new_user.user_permissions.set(
+                    Permission.objects.filter(id__in=permission_ids)
+                )
 
                 created_count += 1
 

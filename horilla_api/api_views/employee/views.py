@@ -3,6 +3,7 @@ from django.http import Http404
 from django.utils.decorators import method_decorator
 from django_filters.rest_framework import DjangoFilterBackend
 from rest_framework import status
+from rest_framework.exceptions import PermissionDenied
 from rest_framework.pagination import PageNumberPagination
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
@@ -22,7 +23,7 @@ from employee.models import (
     EmployeeWorkInformation,
     Policy,
 )
-from employee.views import work_info_export, work_info_import
+from employee.views import can_access_document, work_info_export, work_info_import
 from horilla.decorators import owner_can_enter
 from horilla_api.api_decorators.base.decorators import permission_required
 from horilla_api.api_methods.employee.methods import get_next_badge_id
@@ -780,19 +781,33 @@ class DocumentAPIView(APIView):
     permission_classes = [IsAuthenticated]
     queryset = Document.objects.none()  # For drf-yasg schema generation
 
-    def get_object(self, pk):
+    def get_object(self, pk, request=None):
         try:
-            return Document.objects.get(pk=pk)
+            document = Document.objects.get(pk=pk)
         except Document.DoesNotExist:
             raise Http404
+        if request is not None and not can_access_document(
+            request, document, "horilla_documents.view_document"
+        ):
+            raise PermissionDenied
+        return document
 
     def get(self, request, pk=None):
         if pk:
-            document = self.get_object(pk)
+            document = self.get_object(pk, request)
             serializer = DocumentSerializer(document)
             return Response(serializer.data)
         else:
-            documents = Document.objects.all()
+            employee = request.user.employee_get
+            if request.user.has_perm("horilla_documents.view_document"):
+                documents = Document.objects.all()
+            else:
+                managed_ids = Employee.objects.filter(
+                    employee_work_info__reporting_manager_id=employee
+                ).values_list("id", flat=True)
+                documents = Document.objects.filter(
+                    employee_id__in=list(managed_ids) + [employee.id]
+                )
             document_requests_filtered = self.filterset_class(
                 request.GET, queryset=documents
             ).qs
@@ -828,7 +843,7 @@ class DocumentAPIView(APIView):
 
     @method_decorator(owner_can_enter("horilla_documents.change_document", Employee))
     def put(self, request, pk):
-        document = self.get_object(pk)
+        document = self.get_object(pk, request)
         serializer = DocumentSerializer(document, data=request.data)
         if serializer.is_valid():
             serializer.save()
