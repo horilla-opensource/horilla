@@ -113,6 +113,7 @@ from base.methods import (
 from base.models import (
     AttendanceAllowedIP,
     EmployeeShiftSchedule,
+    Holidays,
     TrackLateComeEarlyOut,
     WorkType,
 )
@@ -1718,7 +1719,8 @@ def update_fields_based_shift(request):
     else:
         worked_hour = minimum_hour
 
-    minimum_hour = attendance_day_checking(str(attendance_date), minimum_hour)
+    employee = employee_queryset if isinstance(employee_queryset, Employee) else None
+    minimum_hour = attendance_day_checking(str(attendance_date), minimum_hour, employee)
 
     initial_data = {
         "work_type_id": WorkType.find(request.GET.get("work_type_id")),
@@ -2613,9 +2615,21 @@ def work_records_change_month(request):
     paginator = Paginator(paginated_table, 20)
     page = paginator.get_page(request.GET.get("page"))
 
+    specific_employee_holidays = {}
+    specific_dates = set()
+    for h in Holidays.objects.filter(
+        is_specific=True, start_date__month=month, start_date__year=year
+    ).prefetch_related("employees"):
+        specific_dates.add(h.start_date)
+        for emp in h.employees.all():
+            specific_employee_holidays.setdefault(emp.pk, set()).add(h.start_date)
+
     context = {
         "current_month_dates_list": month_dates,
-        "leave_dates": monthly_leave_days(month, year),
+        "leave_dates": [
+            d for d in monthly_leave_days(month, year) if d not in specific_dates
+        ],
+        "specific_employee_holidays": specific_employee_holidays,
         "data": page,
         "pd": previous_data,
         "current_date": date.today(),
@@ -2683,7 +2697,21 @@ def work_record_export(request):
     while current_date <= end_date:
         all_date_objects.append(current_date)
         current_date += timedelta(days=1)
-    leave_dates = set(monthly_leave_days(month, year))
+    _export_specific_dates = set(
+        Holidays.objects.filter(
+            is_specific=True, start_date__month=month, start_date__year=year
+        ).values_list("start_date", flat=True)
+    )
+    leave_dates = {
+        d for d in monthly_leave_days(month, year) if d not in _export_specific_dates
+    }
+
+    specific_employee_holidays = {}
+    for h in Holidays.objects.filter(
+        is_specific=True, start_date__month=month, start_date__year=year
+    ).prefetch_related("employees"):
+        for emp in h.employees.all():
+            specific_employee_holidays.setdefault(emp.pk, set()).add(h.start_date)
 
     record_lookup = defaultdict(lambda: "ABS")
     for record in records:
@@ -2698,8 +2726,10 @@ def work_record_export(request):
 
     for employee in employees:
         row_data = {"Employee": employee}
+        emp_specific_holidays = specific_employee_holidays.get(employee.pk, set())
         for day, formatted_day in zip(all_date_objects, formatted_dates):
-            if not day in leave_dates and day < date.today():
+            is_holiday_day = day in leave_dates or day in emp_specific_holidays
+            if not is_holiday_day and day < date.today():
                 row_data[formatted_day] = record_lookup.get((employee, day), "DFT")
             else:
                 data = record_lookup.get((employee, day), "")
@@ -2828,26 +2858,10 @@ def enable_timerunner(request):
 @permission_required("base.view_tracklatecomeearlyout")
 def track_late_come_early_out(request):
     """
-    Renders the form to track late arrivals and early departures in attendance.
+    This standalone page has been merged into the "Attendance Rule" settings
+    page; direct access now redirects there.
     """
-    selected_company = request.session.get("selected_company")
-    if selected_company == "all":
-        company = None
-    else:
-        from base.models import Company
-
-        company = Company.objects.filter(id=selected_company).first()
-    tracking = TrackLateComeEarlyOut.objects.filter(company_id=company).first()
-    form = TrackLateComeEarlyOutForm(
-        initial=(
-            {"is_enable": tracking.is_enable, "company_id": company}
-            if tracking
-            else {"company_id": company}
-        )
-    )
-    return render(
-        request, "attendance/late_come_early_out/tracking.html", {"form": form}
-    )
+    return redirect("attendance-rule-view")
 
 
 @login_required
@@ -2881,14 +2895,10 @@ def enable_disable_tracking_late_come_early_out(request):
 @login_required
 def check_in_check_out_setting(request):
     """
-    Check in check out setting
+    This standalone page has been merged into the "Attendance Rule" settings
+    page; direct access now redirects there.
     """
-    attendance_settings = AttendanceGeneralSetting.objects.all()
-    return render(
-        request,
-        "attendance/settings/check_in_check_out_enable_form.html",
-        {"attendance_settings": attendance_settings},
-    )
+    return redirect("attendance-rule-view")
 
 
 @login_required
@@ -3013,17 +3023,11 @@ def _get_session_company(request):
 @permission_required("attendance.add_attendance")
 def allowed_ips(request):
     """
-    This function is used to view the allowed ips for the active company.
+    The standalone IP restriction page has been merged into the "Attendance
+    Rule" settings page; direct access now redirects there. (Still used as the
+    landing target after create/edit/delete of allowed IPs.)
     """
-    company = _get_session_company(request)
-    allowed_ip_obj, created = AttendanceAllowedIP.objects.get_or_create(
-        company_id=company
-    )
-    return render(
-        request,
-        "attendance/ip_restriction/ip_restriction.html",
-        {"allowed_ips": allowed_ip_obj},
-    )
+    return redirect("attendance-rule-view")
 
 
 @login_required
@@ -3039,6 +3043,55 @@ def enable_ip_restriction(request):
     obj.is_enabled = is_enabled
     obj.save()
     return HorillaRedirect(request)
+
+
+@login_required
+def attendance_rule_settings_view(request):
+    """
+    Merged "Attendance Rule" settings page that groups four attendance
+    settings under a single header: Track Late Come & Early Out, Check In/Out,
+    Biometric Attendance and IP Restriction. Each section reuses its existing
+    toggle endpoint; this view only gathers the current state of each.
+    """
+    from base.models import BiometricAttendance
+
+    company = _get_session_company(request)
+
+    tracking = TrackLateComeEarlyOut.objects.filter(company_id=company).first()
+
+    if company is None:
+        attendance_general_settings = AttendanceGeneralSetting.objects.all()
+    else:
+        setting, _created = AttendanceGeneralSetting.objects.get_or_create(
+            company_id=company
+        )
+        attendance_general_settings = [setting]
+    show_company = len(attendance_general_settings) > 1
+
+    biometric = BiometricAttendance.objects.filter(company_id=company).first()
+
+    allowed_ips = AttendanceAllowedIP.objects.filter(company_id=company).first()
+
+    facedetection = None
+    from django.apps import apps
+
+    if apps.is_installed("facedetection"):
+        from facedetection.models import FaceDetection
+
+        facedetection = FaceDetection.objects.filter(company_id=company).first()
+
+    return render(
+        request,
+        "attendance/settings/attendance_rule.html",
+        {
+            "tracking": tracking,
+            "attendance_general_settings": attendance_general_settings,
+            "show_company": show_company,
+            "biometric": biometric,
+            "allowed_ips": allowed_ips,
+            "facedetection": facedetection,
+        },
+    )
 
 
 def validate_ip_address(self, value):

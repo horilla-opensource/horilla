@@ -250,3 +250,8 @@ def get_item(list, i):
         return list[i]
     except:
         return None
+
+
+@register.filter
+def get_employee_specific_holidays(specific_holiday_dict, employee_pk):
+    return specific_holiday_dict.get(employee_pk, set())
