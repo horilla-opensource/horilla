@@ -260,23 +260,9 @@
         transform: translateX(0);
         transition: opacity 0.15s ease, transform 0.15s ease;
     }
-    #sidebarFlyout h5 {
-        font-size: 11px;
-        font-weight: 600;
-        color: #6b7280;
-        text-transform: uppercase;
-        letter-spacing: 0.05em;
-        padding: 4px 10px 8px;
-        border-bottom: 1px solid #f3f4f6;
-        margin-bottom: 4px;
-    }
     body.dark #sidebarFlyout {
         background: #1f2937;
         border-color: #374151;
-    }
-    body.dark #sidebarFlyout h5 {
-        color: #9ca3af;
-        border-bottom-color: #374151;
     }
 
     @media (prefers-reduced-motion: reduce) {
@@ -412,7 +398,6 @@
     </div>
     <!-- Flyout panel: populated and positioned by JS on hover -->
     <div id="sidebarFlyout">
-        <h5 id="sidebarFlyoutTitle"></h5>
         <ul id="sidebarFlyoutList" class="space-y-0.5"></ul>
     </div>
 </div>
@@ -533,13 +518,21 @@
         // ── Hover flyout helpers ─────────────────────────────────────────────
 
         var flyoutEl = document.getElementById("sidebarFlyout");
-        var flyoutTitleEl = document.getElementById("sidebarFlyoutTitle");
         var flyoutListEl = document.getElementById("sidebarFlyoutList");
         var flyoutCloseTimer = null;
 
         function positionFlyout(itemRect) {
           var sidebarRect = sidebarEl.getBoundingClientRect();
-          var left = sidebarRect.right + 6;
+          var sidebarRight = sidebarRect.right;
+          // getBoundingClientRect fires at mouseenter while the width transition
+          // (64px→208px, 0.22s) is still mid-flight. Clamp to expanded target
+          // width (13rem) when hovered/pinned so flyout never lands inside the sidebar.
+          if (sidebarEl.matches(':hover') || sidebarEl.classList.contains('sidebar-pinned')) {
+            var rootFontSize = parseFloat(getComputedStyle(document.documentElement).fontSize) || 16;
+            var expandedRight = sidebarRect.left + rootFontSize * 13;
+            if (expandedRight > sidebarRight) sidebarRight = expandedRight;
+          }
+          var left = sidebarRight + 6;
           var top = itemRect.top;
           flyoutEl.style.left = left + "px";
           flyoutEl.style.top = top + "px";
@@ -559,11 +552,6 @@
           if (!liItems.length) return;
 
           clearTimeout(flyoutCloseTimer);
-
-          var label = btn.querySelector(".oh-sidebar-label");
-          var titleText = label ? label.textContent.trim() : (btn.getAttribute("aria-label") || "");
-          flyoutTitleEl.textContent = titleText;
-          flyoutTitleEl.style.display = titleText ? "" : "none";
 
           flyoutListEl.innerHTML = "";
           liItems.forEach(function (li) { flyoutListEl.appendChild(li.cloneNode(true)); });
