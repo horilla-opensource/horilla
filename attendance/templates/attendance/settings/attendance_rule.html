@@ -1,326 +1,349 @@
 {% extends 'settings.html' %}
 {% block settings %}{% load i18n %}{% load horillafilters %}{% load widget_tweaks %}{% load static %}
-<div class="mb-4">
-    <h4 class="text-base font-semibold text-[#333]">{% trans "Attendance Rule" %}</h4>
-    <p class="text-xs text-gray-500 mt-1">
-        {% trans "Configure attendance tracking, check-in/out, biometric and IP restriction rules." %}
-    </p>
-</div>
+    <div class="mb-4">
+        <h4 class="text-base font-semibold text-[#333]">{% trans "Attendance Rule" %}</h4>
+        <p class="text-xs text-gray-500 mt-1">
+            {% trans "Configure attendance tracking, check-in/out, biometric and IP restriction rules." %}
+        </p>
+    </div>
 
-{% if perms.attendance.change_attendancegeneralsetting or perms.attendance.view_attendancegeneralsetting %}
-<div class="border border-[#ebebeb] rounded-md overflow-hidden mb-5 mr-3">
-    <h5 class="text-sm font-semibold bg-[#f3f3f3] px-4 py-3 text-[#333] flex items-center justify-between">
-        {% trans "Check In/Check Out" %}
-    </h5>
-    <div class="p-4">
-        <div class="grid grid-cols-12 gap-4 myform">
-            {% for setting in attendance_general_settings %}
-            <div class="col-span-12">
-                <div class="flex items-center justify-between mb-4">
-                    <div>
-                        <div class="flex space-x-2">
-                            <h3 class="text-sm font-medium">
-                                {% trans "Enable Check In/Check Out" %}
-                                {% if show_company %}
-                                    <span class="text-xs text-gray-400">({{ setting.company_col }})</span>
-                                {% endif %}
-                            </h3>
-                            <span
-                                class="oh-info mr-2"
-                                title="{% trans 'Enabling this feature allows employees to record their attendance using the Check-In/Check-Out button.' %}"
-                            >
-                            </span>
+    {% if perms.attendance.change_attendancegeneralsetting or perms.attendance.view_attendancegeneralsetting %}
+        <div class="border border-[#ebebeb] rounded-md overflow-hidden mb-5 mr-3">
+            <h5 class="text-sm font-semibold bg-[#f3f3f3] px-4 py-3 text-[#333] flex items-center justify-between">
+                {% trans "Check In/Check Out" %}
+            </h5>
+            <div class="p-4">
+                <div class="grid grid-cols-12 gap-4 myform">
+                    {% for setting in attendance_general_settings %}
+                        <div class="col-span-12">
+                            <div class="flex items-center justify-between mb-4">
+                                <div>
+                                    <div class="flex space-x-2">
+                                        <h3 class="text-sm font-medium">
+                                            {% trans "Enable Check In/Check Out" %}
+                                            {% if show_company %}
+                                                <span class="text-xs text-gray-400">({{ setting.company_col }})</span>
+                                            {% endif %}
+                                        </h3>
+                                        <span
+                                            class="oh-info mr-2"
+                                            title="{% trans 'Enabling this feature allows employees to record their attendance using the Check-In/Check-Out button.' %}"
+                                        >
+                                        </span>
+                                    </div>
+                                    <p class="text-xs text-gray-500 mt-1">
+                                        {% trans "Enabling this feature allows employees to record their attendance using the Check-In/Check-Out button." %}
+                                    </p>
+                                </div>
+                                <label class="toggle-label">
+                                    <input
+                                        type="hidden"
+                                        name="setting_Id"
+                                        value="{{ setting.id }}"
+                                        id="companyId{{ setting.id }}"
+                                    >
+                                    <input
+                                        type="checkbox"
+                                        class="toggle-input"
+                                        name="isChecked"
+                                        style="cursor: pointer"
+                                        {% if setting.enable_check_in %}
+                                            checked
+                                        {% endif %}
+                                        {% if perms.attendance.change_attendancegeneralsetting %}
+                                            hx-post="{% url 'enable-disable-check-in' %}"
+                                            hx-target="#objectDetailsModalW25Target"
+                                            hx-swap="none"
+                                            hx-include="#companyId{{ setting.id }}"
+                                            hx-trigger="change"
+                                            hx-on-htmx-after-request="window.location.reload()"
+                                        {% endif %}
+                                    >
+                                    <div class="toggle-switch"></div>
+                                </label>
+                            </div>
                         </div>
-                        <p class="text-xs text-gray-500 mt-1">
-                            {% trans "Enabling this feature allows employees to record their attendance using the Check-In/Check-Out button." %}
-                        </p>
-                    </div>
-                    <label class="toggle-label">
-                        <input type="hidden" name="setting_Id" value="{{ setting.id }}" id="companyId{{ setting.id }}">
-                        <input
-                            type="checkbox"
-                            class="toggle-input"
-                            name="isChecked"
-                            style="cursor:pointer"
-                            {% if setting.enable_check_in %} checked {% endif %}
-                            {% if perms.attendance.change_attendancegeneralsetting %}
-                            hx-post="{% url 'enable-disable-check-in' %}"
-                            hx-target="#objectDetailsModalW25Target"
-                            hx-swap="none"
-                            hx-include="#companyId{{ setting.id }}"
-                            hx-trigger="change"
-                            hx-on-htmx-after-request="window.location.reload()"
-                            {% endif %}
-                        />
-                        <div class="toggle-switch"></div>
-                    </label>
+                    {% endfor %}
                 </div>
             </div>
-            {% endfor %}
         </div>
-    </div>
-</div>
-{% endif %}
+    {% endif %}
 
-<div class="grid grid-cols-1 lg:grid-cols-2 gap-4">
-    {% if perms.attendance.change_attendancegeneralsetting %}
-    <div class="border border-[#ebebeb] rounded-md overflow-hidden mb-5">
-        <h5 class="text-sm font-semibold bg-[#f3f3f3] px-4 py-3 text-[#333] flex items-center justify-between">
-            {% trans "Time Runner" %}
-        </h5>
-        <div class="p-4">
-            <div class="grid grid-cols-12 gap-4 myform">
-                <div class="col-span-12">
-                    <form hx-get="{% url 'enable-timerunner' %}" hx-swap="none">
+    <div class="grid grid-cols-1 lg:grid-cols-2 gap-4">
+        {% if perms.attendance.change_attendancegeneralsetting %}
+            <div class="border border-[#ebebeb] rounded-md overflow-hidden mb-5">
+                <h5 class="text-sm font-semibold bg-[#f3f3f3] px-4 py-3 text-[#333] flex items-center justify-between">
+                    {% trans "Time Runner" %}
+                </h5>
+                <div class="p-4">
+                    <div class="grid grid-cols-12 gap-4 myform">
+                        <div class="col-span-12">
+                            <form hx-get="{% url 'enable-timerunner' %}" hx-swap="none">
+                                <div class="flex items-center justify-between mb-4">
+                                    <div>
+                                        <div class="flex space-x-2">
+                                            <h3 class="text-sm font-medium">{% trans "At-Work Tracker" %}</h3>
+                                            <span
+                                                class="oh-info mr-2"
+                                                title="{% trans "By enabling this feature user's will be able to see their current day worked hours in live on the navbar (inside the check in button)." %}"
+                                            >
+                                            </span>
+                                        </div>
+                                        <p class="text-xs text-gray-500 mt-1">
+                                            {% trans "By enabling this feature user's will be able to see their current day worked hours in live on the navbar (inside the check in button)." %}
+                                        </p>
+                                    </div>
+                                    <label class="toggle-label">
+                                        <input
+                                            type="checkbox"
+                                            class="toggle-input"
+                                            name="time_runner"
+                                            onchange="$(this).closest('form').find('input[type=submit]').click()"
+                                            {% if enabled_timerunner %}
+                                                checked
+                                            {% endif %}
+                                        >
+                                        <div class="toggle-switch"></div>
+                                    </label>
+                                </div>
+                                <input type="submit" hidden>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        {% endif %}
+
+        {% if perms.base.view_tracklatecomeearlyout %}
+            <div class="border border-[#ebebeb] rounded-md overflow-hidden mb-5 mr-3">
+                <h5 class="text-sm font-semibold bg-[#f3f3f3] px-4 py-3 text-[#333] flex items-center justify-between">
+                    {% trans "Track Late Come & Early Out" %}
+                </h5>
+                <div class="p-4">
+                    <div class="grid grid-cols-12 gap-4 myform">
+                        <div class="col-span-12">
+                            <div class="flex items-center justify-between mb-4">
+                                <div>
+                                    <div class="flex space-x-2">
+                                        <h3 class="text-sm font-medium">
+                                            {% trans "Track Late Come & Early Out" %}
+                                        </h3>
+                                        <span
+                                            class="oh-info mr-2"
+                                            title="{% trans 'By enabling this, you track the late comes and early outs of employees in their attendance.' %}"
+                                        >
+                                        </span>
+                                    </div>
+                                    <p class="text-xs text-gray-500 mt-1">
+                                        {% trans "By enabling this, you track the late comes and early outs of employees in their attendance." %}
+                                    </p>
+                                </div>
+                                <label class="toggle-label">
+                                    <input
+                                        type="checkbox"
+                                        class="toggle-input"
+                                        id="is_enable"
+                                        name="is_enable"
+                                        style="cursor: pointer"
+                                        hx-post="{% url 'enable-disable-tracking-late-come-early-out' %}"
+                                        hx-target="#objectDetailsModalW25Target"
+                                        hx-trigger="change"
+                                        hx-on-htmx-after-request="window.location.reload()"
+                                        {% if tracking.is_enable %}
+                                            checked
+                                        {% endif %}
+                                    >
+                                    <div class="toggle-switch"></div>
+                                </label>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        {% endif %}
+    </div>
+
+    {% if perms.attendance.add_attendance %}
+        <div class="border border-[#ebebeb] rounded-md overflow-hidden mb-5 mr-3">
+            <h5 class="text-sm font-semibold bg-[#f3f3f3] px-4 py-3 text-[#333] flex items-center justify-between">
+                {% trans "IP Restriction" %}
+            </h5>
+            <div class="p-4">
+                <div class="grid grid-cols-12 gap-4 myform">
+                    <div class="col-span-12">
                         <div class="flex items-center justify-between mb-4">
                             <div>
                                 <div class="flex space-x-2">
-                                    <h3 class="text-sm font-medium">{% trans "At-Work Tracker" %}</h3>
+                                    <h3 class="text-sm font-medium">
+                                        {% trans "IP Login Restriction" %}
+                                    </h3>
                                     <span
                                         class="oh-info mr-2"
-                                        title="{% trans "By enabling this feature user's will be able to see their current day worked hours in live on the navbar (inside the check in button)." %}"
+                                        title="{% trans 'Enable this feature to restrict attendance marking to specific IP addresses only.' %}"
                                     >
                                     </span>
                                 </div>
                                 <p class="text-xs text-gray-500 mt-1">
-                                    {% trans "By enabling this feature user's will be able to see their current day worked hours in live on the navbar (inside the check in button)." %}
+                                    {% trans "Enable this feature to restrict attendance marking to specific IP addresses only." %}
                                 </p>
                             </div>
                             <label class="toggle-label">
                                 <input
                                     type="checkbox"
+                                    name="is_enabled"
+                                    data-widget="style-widget"
                                     class="toggle-input"
-                                    name="time_runner"
-                                    onchange="$(this).closest('form').find('input[type=submit]').click()"
-                                    {% if enabled_timerunner %} checked{% endif %}
-                                />
+                                    id="is_enabled_ip"
+                                    hx-post="{% url 'enable-ip-restriction' %}"
+                                    hx-target="#objectDetailsModalW25Target"
+                                    hx-trigger="change"
+                                    hx-on-htmx-after-request="window.location.reload()"
+                                    {% if allowed_ips.is_enabled %}
+                                        checked
+                                    {% endif %}
+                                >
                                 <div class="toggle-switch"></div>
                             </label>
                         </div>
-                        <input type="submit" hidden />
-                    </form>
+                    </div>
                 </div>
             </div>
+
+            {% if allowed_ips.is_enabled %}
+                <div class="px-4" hx-get="{% url 'allowed-ips-nav' %}" hx-trigger="load"></div>
+                {% if allowed_ips.additional_data.allowed_ips %}
+                    <div hx-get="{% url 'allowed-ips-list' %}" hx-trigger="load">
+                        <div class="animated-background"></div>
+                    </div>
+                {% endif %}
+            {% endif %}
         </div>
-    </div>
     {% endif %}
 
-    {% if perms.base.view_tracklatecomeearlyout %}
-    <div class="border border-[#ebebeb] rounded-md overflow-hidden mb-5 mr-3">
-        <h5 class="text-sm font-semibold bg-[#f3f3f3] px-4 py-3 text-[#333] flex items-center justify-between">
-            {% trans "Track Late Come & Early Out" %}
-        </h5>
-        <div class="p-4">
-            <div class="grid grid-cols-12 gap-4 myform">
-                <div class="col-span-12">
-                    <div class="flex items-center justify-between mb-4">
-                        <div>
-                            <div class="flex space-x-2">
-                                <h3 class="text-sm font-medium">
-                                    {% trans "Track Late Come & Early Out" %}
-                                </h3>
-                                <span
-                                    class="oh-info mr-2"
-                                    title="{% trans 'By enabling this, you track the late comes and early outs of employees in their attendance.' %}"
-                                >
-                                </span>
+    <div class="grid grid-cols-1 lg:grid-cols-2 gap-4">
+        {% if "biometric"|app_installed and perms.base.view_biometricattendance %}
+            <div class="border border-[#ebebeb] rounded-md overflow-hidden mb-5">
+                <h5 class="text-sm font-semibold bg-[#f3f3f3] px-4 py-3 text-[#333] flex items-center justify-between">
+                    {% trans "Biometric Attendance" %}
+                </h5>
+                <div class="p-4">
+                    <div class="grid grid-cols-12 gap-4 myform">
+                        <div class="col-span-12">
+                            <div class="flex items-center justify-between mb-4">
+                                <div>
+                                    <div class="flex space-x-2">
+                                        <h3 class="text-sm font-medium">
+                                            {% trans "Activate Biometric Attendance" %}
+                                        </h3>
+                                        <span
+                                            class="oh-info mr-2"
+                                            title="{% trans 'Once you enable this option, a new submenu called Biometric Devices will be added under the Attendance menu.' %}"
+                                        >
+                                        </span>
+                                    </div>
+                                    <p class="text-xs text-gray-500 mt-1">
+                                        {% trans "Once you enable this option, a new submenu called Biometric Devices will be added under the Attendance menu." %}
+                                    </p>
+                                </div>
+                                <label class="toggle-label">
+                                    <input
+                                        type="checkbox"
+                                        name="is_installed"
+                                        data-widget="style-widget"
+                                        class="toggle-input"
+                                        {% if biometric.is_installed %}
+                                            checked
+                                            title="{% trans 'Activated' %}"
+                                        {% else %}
+                                            title="{% trans 'Activate' %}"
+                                        {% endif %}
+                                        id="is_installed"
+                                    >
+                                    <div class="toggle-switch"></div>
+                                </label>
                             </div>
-                            <p class="text-xs text-gray-500 mt-1">
-                                {% trans "By enabling this, you track the late comes and early outs of employees in their attendance." %}
-                            </p>
                         </div>
-                        <label class="toggle-label">
-                            <input
-                                type="checkbox"
-                                class="toggle-input"
-                                id="is_enable"
-                                name="is_enable"
-                                style="cursor:pointer"
-                                hx-post="{% url 'enable-disable-tracking-late-come-early-out' %}"
-                                hx-target="#objectDetailsModalW25Target"
-                                hx-trigger="change"
-                                hx-on-htmx-after-request="window.location.reload()"
-                                {% if tracking.is_enable %} checked {% endif %}
-                            />
-                            <div class="toggle-switch"></div>
-                        </label>
                     </div>
                 </div>
             </div>
-        </div>
-    </div>
-    {% endif %}
-</div>
+            <script>
+                $(document).ready(function () {
+                    $('#is_installed').on('change', function () {
+                        var boolean = $(this).is(":checked");
+                        $.ajax({
+                            type: "GET",
+                            url: "{% url 'activate-biometric-attendance' %}",
+                            data: {
+                                is_installed: boolean,
+                            },
+                            success: function (response, textStatus, jqXHR) {
+                                if (jqXHR.status === 200) {
+                                    location.reload();
+                                }
+                            },
+                        });
+                    });
+                });
+            </script>
+        {% endif %}
 
-{% if perms.attendance.add_attendance %}
-<div class="border border-[#ebebeb] rounded-md overflow-hidden mb-5 mr-3">
-    <h5 class="text-sm font-semibold bg-[#f3f3f3] px-4 py-3 text-[#333] flex items-center justify-between">
-        {% trans "IP Restriction" %}
-    </h5>
-    <div class="p-4">
-        <div class="grid grid-cols-12 gap-4 myform">
-            <div class="col-span-12">
-                <div class="flex items-center justify-between mb-4">
-                    <div>
-                        <div class="flex space-x-2">
-                            <h3 class="text-sm font-medium">
-                                {% trans "IP Login Restriction" %}
-                            </h3>
-                            <span
-                                class="oh-info mr-2"
-                                title="{% trans 'Enable this feature to restrict attendance marking to specific IP addresses only.' %}"
-                            >
-                            </span>
+        {% if "facedetection"|app_installed and perms.facedetection.add_facedetection %}
+            <div class="border border-[#ebebeb] rounded-md overflow-hidden mb-5 mr-3">
+                <h5 class="text-sm font-semibold bg-[#f3f3f3] px-4 py-3 text-[#333] flex items-center justify-between">
+                    {% trans "Face Detection" %}
+                </h5>
+                <div class="p-4">
+                    <div class="grid grid-cols-12 gap-4 myform">
+                        <div class="col-span-12">
+                            <div class="flex items-center justify-between mb-4">
+                                <div>
+                                    <div class="flex space-x-2">
+                                        <h3 class="text-sm font-medium">
+                                            {% trans "Enable Face Detection" %}
+                                        </h3>
+                                        <span
+                                            class="oh-info mr-2"
+                                            title="{% trans 'By enabling this, employees can mark their attendance using face detection.' %}"
+                                        >
+                                        </span>
+                                    </div>
+                                    <p class="text-xs text-gray-500 mt-1">
+                                        {% trans "By enabling this, employees can mark their attendance using face detection." %}
+                                    </p>
+                                </div>
+                                <label class="toggle-label">
+                                    <input
+                                        type="checkbox"
+                                        class="toggle-input"
+                                        name="start"
+                                        style="cursor: pointer"
+                                        hx-post="{% url 'face-detection-toggle' %}"
+                                        hx-target="#objectDetailsModalW25Target"
+                                        hx-trigger="change"
+                                        hx-on-htmx-after-request="window.location.reload()"
+                                        {% if facedetection.start %}
+                                            checked
+                                        {% endif %}
+                                    >
+                                    <div class="toggle-switch"></div>
+                                </label>
+                            </div>
                         </div>
-                        <p class="text-xs text-gray-500 mt-1">
-                            {% trans "Enable this feature to restrict attendance marking to specific IP addresses only." %}
-                        </p>
                     </div>
-                    <label class="toggle-label">
-                        <input
-                            type="checkbox"
-                            name="is_enabled"
-                            data-widget="style-widget"
-                            class="toggle-input"
-                            id="is_enabled_ip"
-                            hx-post="{% url 'enable-ip-restriction' %}"
-                            hx-target="#objectDetailsModalW25Target"
-                            hx-trigger="change"
-                            hx-on-htmx-after-request="window.location.reload()"
-                            {% if allowed_ips.is_enabled %} checked {% endif %}
-                        />
-                        <div class="toggle-switch"></div>
-                    </label>
                 </div>
-            </div>
-        </div>
-    </div>
-
-    {% if allowed_ips.is_enabled %}
-        <div class="px-4" hx-get="{% url 'allowed-ips-nav' %}" hx-trigger="load"></div>
-        {% if allowed_ips.additional_data.allowed_ips %}
-            <div hx-get="{% url 'allowed-ips-list' %}" hx-trigger="load">
-                <div class="animated-background"></div>
             </div>
         {% endif %}
+    </div>
+
+    {% if "geofencing"|app_installed and perms.geofencing.add_geofencing %}
+        <div class="border border-[#ebebeb] rounded-md overflow-hidden mb-5 mr-3">
+            <h5 class="text-sm font-semibold bg-[#f3f3f3] px-4 py-3 text-[#333] flex items-center justify-between">
+                {% trans "Geofencing" %}
+            </h5>
+            <div class="p-4">
+                <div hx-get="{% url 'geo-config' %}" hx-trigger="load" hx-target="#geo"></div>
+                <div id="geo"></div>
+            </div>
+        </div>
     {% endif %}
-</div>
-{% endif %}
-
-<div class="grid grid-cols-1 lg:grid-cols-2 gap-4">
-{% if "biometric"|app_installed and perms.base.view_biometricattendance %}
-<div class="border border-[#ebebeb] rounded-md overflow-hidden mb-5">
-    <h5 class="text-sm font-semibold bg-[#f3f3f3] px-4 py-3 text-[#333] flex items-center justify-between">
-        {% trans "Biometric Attendance" %}
-    </h5>
-    <div class="p-4">
-        <div class="grid grid-cols-12 gap-4 myform">
-            <div class="col-span-12">
-                <div class="flex items-center justify-between mb-4">
-                    <div>
-                        <div class="flex space-x-2">
-                            <h3 class="text-sm font-medium">
-                                {% trans "Activate Biometric Attendance" %}
-                            </h3>
-                            <span
-                                class="oh-info mr-2"
-                                title="{% trans 'Once you enable this option, a new submenu called Biometric Devices will be added under the Attendance menu.' %}"
-                            >
-                            </span>
-                        </div>
-                        <p class="text-xs text-gray-500 mt-1">
-                            {% trans "Once you enable this option, a new submenu called Biometric Devices will be added under the Attendance menu." %}
-                        </p>
-                    </div>
-                    <label class="toggle-label">
-                        <input type="checkbox" name="is_installed" data-widget="style-widget" class="toggle-input"
-                            {% if biometric.is_installed %} checked title="{% trans 'Activated' %}" {% else %} title="{% trans 'Activate' %}" {% endif %}
-                            id="is_installed">
-                        <div class="toggle-switch"></div>
-                    </label>
-                </div>
-            </div>
-        </div>
-    </div>
-</div>
-<script>
-    $(document).ready(function () {
-        $('#is_installed').on('change', function () {
-            var boolean = $(this).is(":checked");
-            $.ajax({
-                type: "GET",
-                url: "{% url 'activate-biometric-attendance' %}",
-                data: {
-                    is_installed: boolean,
-                },
-                success: function (response, textStatus, jqXHR) {
-                    if (jqXHR.status === 200) {
-                        location.reload();
-                    }
-                },
-            });
-        });
-    });
-</script>
-{% endif %}
-
-{% if "facedetection"|app_installed and perms.facedetection.add_facedetection %}
-<div class="border border-[#ebebeb] rounded-md overflow-hidden mb-5 mr-3">
-    <h5 class="text-sm font-semibold bg-[#f3f3f3] px-4 py-3 text-[#333] flex items-center justify-between">
-        {% trans "Face Detection" %}
-    </h5>
-    <div class="p-4">
-        <div class="grid grid-cols-12 gap-4 myform">
-            <div class="col-span-12">
-                <div class="flex items-center justify-between mb-4">
-                    <div>
-                        <div class="flex space-x-2">
-                            <h3 class="text-sm font-medium">
-                                {% trans "Enable Face Detection" %}
-                            </h3>
-                            <span
-                                class="oh-info mr-2"
-                                title="{% trans 'By enabling this, employees can mark their attendance using face detection.' %}"
-                            >
-                            </span>
-                        </div>
-                        <p class="text-xs text-gray-500 mt-1">
-                            {% trans "By enabling this, employees can mark their attendance using face detection." %}
-                        </p>
-                    </div>
-                    <label class="toggle-label">
-                        <input
-                            type="checkbox"
-                            class="toggle-input"
-                            name="start"
-                            style="cursor:pointer"
-                            hx-post="{% url 'face-detection-toggle' %}"
-                            hx-target="#objectDetailsModalW25Target"
-                            hx-trigger="change"
-                            hx-on-htmx-after-request="window.location.reload()"
-                            {% if facedetection.start %} checked {% endif %}
-                        />
-                        <div class="toggle-switch"></div>
-                    </label>
-                </div>
-            </div>
-        </div>
-    </div>
-</div>
-{% endif %}
-</div>
-
-{% if "geofencing"|app_installed and perms.geofencing.add_geofencing %}
-<div class="border border-[#ebebeb] rounded-md overflow-hidden mb-5 mr-3">
-    <h5 class="text-sm font-semibold bg-[#f3f3f3] px-4 py-3 text-[#333] flex items-center justify-between">
-        {% trans "Geofencing" %}
-    </h5>
-    <div class="p-4">
-        <div hx-get="{% url 'geo-config' %}" hx-trigger="load" hx-target="#geo"></div>
-        <div id="geo"></div>
-    </div>
-</div>
-{% endif %}
-
-
 {% endblock settings %}

@@ -1,175 +1,199 @@
-{% extends 'index.html' %} {% block content %} {% load i18n %}
-<style>
-  .row-status--purple {
-    border-left: 4px solid rgba(128, 128, 128, 0.482);
-    border-radius: 5px;
-  }
-  .row-status--cyan {
-    border-left: 4px solid cyan;
-    border-radius: 5px;
-  }
-  .row-status--yellow {
-    border-left: 4px solid yellowgreen;
-    border-radius: 5px;
-  }
-  .diff-cell{
-    background: rgba(255, 166, 0, 0.158);
-  }
-</style>
-
-{% include 'requests/attendance/nav.html' %}
-{% load basefilters %}
-{% include 'filter_tags.html' %}
-<div class="d-flex flex-row-reverse mb-1">
-  <span class="me-5" hx-get='{% url "search-attendance-requests" %}?is_bulk_request=True' hx-target="#view-container" style="cursor: pointer">
-    <span class="oh-dot oh-dot--small" style="background-color:rgb(31 122 220 / 48%)"></span>
-    {% trans "Bulk-Requests" %}
-  </span>
-  <span class="me-3" hx-get='{% url "search-attendance-requests" %}?attendance_validated=false' hx-target="#view-container" style="cursor: pointer">
-    <span class="oh-dot oh-dot--small" style="background-color:rgba(128, 128, 128, 0.482)"></span>
-    {% trans "Not-Validated" %}
-  </span>
-  <span class="me-3" hx-get='{% url "search-attendance-requests" %}?attendance_validated=true' hx-target="#view-container" style="cursor: pointer">
-    <span class="oh-dot oh-dot--small" style="background-color:yellowgreen"></span>
-    {% trans "Validated" %}
-  </span>
-</div>
-<div class="oh-wrapper ">
-  <div class="oh-checkpoint-badge text-success mb-2" id="selectAllInstances" style="cursor: pointer;">
-    {% trans "Select All Records" %}
-  </div>
-  <div class="oh-checkpoint-badge text-secondary mb-2" id="unselectAllInstances" style="cursor: pointer;display:none;">
-    {% trans "Unselect All Records" %}
-  </div>
-  <div class="oh-checkpoint-badge mb-2" id="selectedInstances" data-ids="[]" data-clicked="" style="display:none;" >
-  </div>
-  <div class="oh-checkpoint-badge text-danger mb-2" id="selectedShow" >
-  </div>
-  <div class="oh-tabs">
-    <ul class="oh-tabs__tablist">
-      <li class="oh-tabs__tab oh-tabs__tab--active" data-target="#tab_1">
-        {% trans "Requested Attendances" %}
-      </li>
-      <li class="oh-tabs__tab" data-target="#tab_2">
-        {% trans "All Attendances" %}
-      </li>
-    </ul>  {% include "requests/attendance/request_lines.html" %}
-  </div>
-</div>
-
-<button hidden hx-post="{% url "update-title" %}" hx-target="#objectDetailsModalTarget" id="updateTitleSpan"></button>
-<div class="oh-activity-sidebar" id="activitySidebar" style="z-index:1000;">
-  <div class="oh-activity-sidebar__body" id="commentContainer">
-  </div>
-</div>
-
-<script>
-
-  $(document).ready(function () {
-    // Function to handle tab switching
-    $('.oh-tabs__tab').on('click', function (e) {
-        e.preventDefault();
-
-        // Remove active class from all tabs
-        $('.oh-tabs__tab').removeClass('oh-tabs__tab--active');
-        // Add active class to the clicked tab
-        $(this).addClass('oh-tabs__tab--active');
-
-        // Hide all tab content first
-        $('#tab_1, #tab_2').removeClass('oh-tabs__content--active');
-
-        // Show the target content
-        var target = $(this).data('target');
-        $(target).addClass('oh-tabs__content--active');
-
-        // Check which tab is active and toggle buttons
-        if (target === '#tab_1') {
-
-            $('#selectAllInstances').show();
-        } else {
-
-            $('#selectAllInstances').hide();
+{% extends 'index.html' %}
+{% block content %}
+    {% load i18n %}
+    <style>
+        .row-status--purple {
+            border-left: 4px solid rgba(128, 128, 128, 0.482);
+            border-radius: 5px;
         }
-    });
+        .row-status--cyan {
+            border-left: 4px solid cyan;
+            border-radius: 5px;
+        }
+        .row-status--yellow {
+            border-left: 4px solid yellowgreen;
+            border-radius: 5px;
+        }
+        .diff-cell {
+            background: rgba(255, 166, 0, 0.158);
+        }
+    </style>
 
-      // By default, check if tab 1 is active on page load
-      if ($('#tab_1').hasClass('oh-tabs__content--active')) {
-          $('#selectAllInstances').show();
-      } else {
-          $('#selectAllInstances').hide();
-      }
-  });
+    {% include 'requests/attendance/nav.html' %}
+    {% load basefilters %}
+    {% include 'filter_tags.html' %}
+    <div class="d-flex flex-row-reverse mb-1">
+        <span
+            class="me-5"
+            hx-get='{% url "search-attendance-requests" %}?is_bulk_request=True'
+            hx-target="#view-container"
+            style="cursor: pointer"
+        >
+            <span class="oh-dot oh-dot--small" style="background-color: rgb(31 122 220 / 48%)"></span>
+            {% trans "Bulk-Requests" %}
+        </span>
+        <span
+            class="me-3"
+            hx-get='{% url "search-attendance-requests" %}?attendance_validated=false'
+            hx-target="#view-container"
+            style="cursor: pointer"
+        >
+            <span class="oh-dot oh-dot--small" style="background-color: rgba(128, 128, 128, 0.482)"></span>
+            {% trans "Not-Validated" %}
+        </span>
+        <span
+            class="me-3"
+            hx-get='{% url "search-attendance-requests" %}?attendance_validated=true'
+            hx-target="#view-container"
+            style="cursor: pointer"
+        >
+            <span class="oh-dot oh-dot--small" style="background-color: yellowgreen"></span>
+            {% trans "Validated" %}
+        </span>
+    </div>
+    <div class="oh-wrapper">
+        <div class="oh-checkpoint-badge text-success mb-2" id="selectAllInstances" style="cursor: pointer">
+            {% trans "Select All Records" %}
+        </div>
+        <div
+            class="oh-checkpoint-badge text-secondary mb-2"
+            id="unselectAllInstances"
+            style="cursor: pointer; display: none"
+        >
+            {% trans "Unselect All Records" %}
+        </div>
+        <div
+            class="oh-checkpoint-badge mb-2"
+            id="selectedInstances"
+            data-ids="[]"
+            data-clicked=""
+            style="display: none"
+        >
+        </div>
+        <div class="oh-checkpoint-badge text-danger mb-2" id="selectedShow"></div>
+        <div class="oh-tabs">
+            <ul class="oh-tabs__tablist">
+                <li class="oh-tabs__tab oh-tabs__tab--active" data-target="#tab_1">
+                    {% trans "Requested Attendances" %}
+                </li>
+                <li class="oh-tabs__tab" data-target="#tab_2">
+                    {% trans "All Attendances" %}
+                </li>
+            </ul>
+            {% include "requests/attendance/request_lines.html" %}
+        </div>
+    </div>
 
-  function enlargeImage(src,$element) {
-      $(".enlargeImageContainer").empty()
-      var enlargeImageContainer = $element.parents().closest("li").find(".enlargeImageContainer")
-      enlargeImageContainer.empty()
-      style = 'width:100%; height:90%; box-shadow: 0 10px 10px 0 rgba(0, 0, 0, 0.2), 0 6px 20px 0 rgba(0, 0, 0, 0.2); background:white'
-      var enlargedImage = $('<iframe>').attr({ src: src, style: style })
-      var name = $('<span>').text(src.split('/').pop().replace(/_/g, ' '))
-      enlargeImageContainer.append(enlargedImage)
-      enlargeImageContainer.append(name)
-      setTimeout(function () {
-          enlargeImageContainer.show()
+    <button hidden hx-post='{% url "update-title" %}' hx-target="#objectDetailsModalTarget" id="updateTitleSpan">
+    </button>
+    <div class="oh-activity-sidebar" id="activitySidebar" style="z-index: 1000">
+        <div class="oh-activity-sidebar__body" id="commentContainer"></div>
+    </div>
 
-          const iframe = document.querySelector('iframe').contentWindow
-          var iframe_document = iframe.document
-          iframe_image = iframe_document.getElementsByTagName('img')[0]
-          $(iframe_image).attr('style', 'width:100%; height:100%;')
-      }, 100)
-  }
+    <script>
+        $(document).ready(function () {
+          // Function to handle tab switching
+          $('.oh-tabs__tab').on('click', function (e) {
+              e.preventDefault();
 
-  function hideEnlargeImage() {
-      var enlargeImageContainer = $('.enlargeImageContainer')
-      enlargeImageContainer.empty()
-  }
+              // Remove active class from all tabs
+              $('.oh-tabs__tab').removeClass('oh-tabs__tab--active');
+              // Add active class to the clicked tab
+              $(this).addClass('oh-tabs__tab--active');
 
-  $(document).on('click', function (event) {
-      if (!$(event.target).closest('#enlargeImageContainer').length) {
-          hideEnlargeImage()
-      }
-  })
-  function submitForm(elem) {
-    $(elem).siblings(".add_more_submit").click();
-  }
-  $(document).ready(function(){
-    //start of select all //
-    $(".requested-attendances-select-all").change(function () {
-      setTimeout(function() {
-          addingRequestAttendanceIds();
-      }, 500); // Run after 2 seconds
-    });
-    $("#selectAllInstances").click(function () {
-      selectAllReqAttendance();
-    });
-    $("#unselectAllInstances").click(function () {
-      unselectAllReqAttendance();
-    });
-  });
+              // Hide all tab content first
+              $('#tab_1, #tab_2').removeClass('oh-tabs__content--active');
 
-  // Dynamic batch attendance create
-  function dynamicBatchAttendance(element){
-    batch = element.val()
-    if (batch === 'dynamic_create'){
-      var parentForm = element.parents().closest("form");
-      previous_url = parentForm.attr('data-url');
-      // clear hx-vals
-      $('#dynamicCreateBatchAttendanceSpan').attr("hx-vals",`{"previous_url":"${previous_url}"}`)
-      $('#dynamicCreateBatchAttendanceSpan').click();
-      // unselect the choosen value
-      element.val('').change();
+              // Show the target content
+              var target = $(this).data('target');
+              $(target).addClass('oh-tabs__content--active');
 
-    }
-  }
+              // Check which tab is active and toggle buttons
+              if (target === '#tab_1') {
 
-  // Batch title change
-  function batchTitleChange(element){
-    title = $(element).val()
-    batchId = $(element).data('id')
-    $('#updateTitleSpan').attr("hx-vals",`{"batch_id":"${batchId}","title":"${title}"}`)
-    $('#updateTitleSpan').click()
-  }
+                  $('#selectAllInstances').show();
+              } else {
 
-</script>
+                  $('#selectAllInstances').hide();
+              }
+          });
 
+            // By default, check if tab 1 is active on page load
+            if ($('#tab_1').hasClass('oh-tabs__content--active')) {
+                $('#selectAllInstances').show();
+            } else {
+                $('#selectAllInstances').hide();
+            }
+        });
+
+        function enlargeImage(src,$element) {
+            $(".enlargeImageContainer").empty()
+            var enlargeImageContainer = $element.parents().closest("li").find(".enlargeImageContainer")
+            enlargeImageContainer.empty()
+            style = 'width:100%; height:90%; box-shadow: 0 10px 10px 0 rgba(0, 0, 0, 0.2), 0 6px 20px 0 rgba(0, 0, 0, 0.2); background:white'
+            var enlargedImage = $('<iframe>').attr({ src: src, style: style })
+            var name = $('<span>').text(src.split('/').pop().replace(/_/g, ' '))
+            enlargeImageContainer.append(enlargedImage)
+            enlargeImageContainer.append(name)
+            setTimeout(function () {
+                enlargeImageContainer.show()
+
+                const iframe = document.querySelector('iframe').contentWindow
+                var iframe_document = iframe.document
+                iframe_image = iframe_document.getElementsByTagName('img')[0]
+                $(iframe_image).attr('style', 'width:100%; height:100%;')
+            }, 100)
+        }
+
+        function hideEnlargeImage() {
+            var enlargeImageContainer = $('.enlargeImageContainer')
+            enlargeImageContainer.empty()
+        }
+
+        $(document).on('click', function (event) {
+            if (!$(event.target).closest('#enlargeImageContainer').length) {
+                hideEnlargeImage()
+            }
+        })
+        function submitForm(elem) {
+          $(elem).siblings(".add_more_submit").click();
+        }
+        $(document).ready(function(){
+          //start of select all //
+          $(".requested-attendances-select-all").change(function () {
+            setTimeout(function() {
+                addingRequestAttendanceIds();
+            }, 500); // Run after 2 seconds
+          });
+          $("#selectAllInstances").click(function () {
+            selectAllReqAttendance();
+          });
+          $("#unselectAllInstances").click(function () {
+            unselectAllReqAttendance();
+          });
+        });
+
+        // Dynamic batch attendance create
+        function dynamicBatchAttendance(element){
+          batch = element.val()
+          if (batch === 'dynamic_create'){
+            var parentForm = element.parents().closest("form");
+            previous_url = parentForm.attr('data-url');
+            // clear hx-vals
+            $('#dynamicCreateBatchAttendanceSpan').attr("hx-vals",`{"previous_url":"${previous_url}"}`)
+            $('#dynamicCreateBatchAttendanceSpan').click();
+            // unselect the choosen value
+            element.val('').change();
+
+          }
+        }
+
+        // Batch title change
+        function batchTitleChange(element){
+          title = $(element).val()
+          batchId = $(element).data('id')
+          $('#updateTitleSpan').attr("hx-vals",`{"batch_id":"${batchId}","title":"${title}"}`)
+          $('#updateTitleSpan').click()
+        }
+    </script>
 {% endblock content %}

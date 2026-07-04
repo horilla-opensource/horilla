@@ -2,62 +2,59 @@
 {% load i18n horillafilters widget_tweaks %}
 
 {% block settings %}
-<div class="border border-[#ebebeb] rounded-md overflow-hidden mb-5">
-    <h5
-        class="text-sm font-semibold bg-[#f3f3f3] px-4 py-3 text-[#333] flex items-center justify-between"
-    >
-        {% trans "IP Restriction" %}
-    </h5>
+    <div class="border border-[#ebebeb] rounded-md overflow-hidden mb-5">
+        <h5 class="text-sm font-semibold bg-[#f3f3f3] px-4 py-3 text-[#333] flex items-center justify-between">
+            {% trans "IP Restriction" %}
+        </h5>
 
-    <div class="p-4">
-        <div class="grid grid-cols-12 gap-4 myform">
-            <div class="col-span-12 lg:col-span-6">
-                <div class="flex items-center justify-between mb-4">
-                    <div class="flex space-x-2">
-                        <h3 class="text-sm font-medium">
-                            {% trans "IP Login Restriction" %}
-                        </h3>
-                        <span
-                            class="oh-info mr-2"
-                            title="Enable this feature to restrict attendance marking to specific IP addresses only."
-                        >
-                        </span>
+        <div class="p-4">
+            <div class="grid grid-cols-12 gap-4 myform">
+                <div class="col-span-12 lg:col-span-6">
+                    <div class="flex items-center justify-between mb-4">
+                        <div class="flex space-x-2">
+                            <h3 class="text-sm font-medium">
+                                {% trans "IP Login Restriction" %}
+                            </h3>
+                            <span
+                                class="oh-info mr-2"
+                                title="Enable this feature to restrict attendance marking to specific IP addresses only."
+                            >
+                            </span>
+                        </div>
+                        <label class="toggle-label">
+                            <input
+                                type="checkbox"
+                                name="is_enabled"
+                                data-widget="style-widget"
+                                class="toggle-input"
+                                {% if allowed_ips.is_enabled %}
+                                    checked
+                                {% endif %}
+                                id="is_enabled"
+                                hx-post="{% url 'enable-ip-restriction' %}"
+                                hx-target="#objectDetailsModalW25Target"
+                                hx-trigger="change"
+                            >
+                            <div class="toggle-switch"></div>
+                        </label>
                     </div>
-                    <label class="toggle-label">
-                        <input
-                            type="checkbox"
-                            name="is_enabled"
-                            data-widget="style-widget"
-                            class="toggle-input"
-                            {% if allowed_ips.is_enabled %}
-                                checked
-                            {% endif %}
-                            id="is_enabled"
-                            hx-post="{% url 'enable-ip-restriction' %}"
-                            hx-target="#objectDetailsModalW25Target"
-                            hx-trigger="change"
-                        />
-                        <div class="toggle-switch"></div>
-                    </label>
                 </div>
             </div>
         </div>
-    </div>
 
-    {% if allowed_ips.is_enabled %}
-
-        <div
-            class="px-4"
-            hx-get="{% url 'allowed-ips-nav' %}"
-            hx-trigger="load"
-        ></div>
-
-        {% if allowed_ips.additional_data.allowed_ips %}
-            <div hx-get="{% url 'allowed-ips-list' %}" hx-trigger="load">
-                <div class="animated-background"></div>
+        {% if allowed_ips.is_enabled %}
+            <div
+                class="px-4"
+                hx-get="{% url 'allowed-ips-nav' %}"
+                hx-trigger="load"
+            >
             </div>
-        {% endif %}
-    {% endif %}
-</div>
 
+            {% if allowed_ips.additional_data.allowed_ips %}
+                <div hx-get="{% url 'allowed-ips-list' %}" hx-trigger="load">
+                    <div class="animated-background"></div>
+                </div>
+            {% endif %}
+        {% endif %}
+    </div>
 {% endblock settings %}

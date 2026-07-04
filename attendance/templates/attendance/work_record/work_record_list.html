@@ -5,9 +5,7 @@
     <div class="d-flex justify-content-between">
         <button
             class="oh-btn oh-btn--secondary"
-            onclick="
-                window.location.href = `{% url 'work-record-export' %}?{{pd}}`
-            "
+            onclick="window.location.href = `{% url 'work-record-export' %}?{{pd}}`"
         >
             <ion-icon
                 name="download-outline"
@@ -108,8 +106,10 @@
                 </th>
                 {% for day in current_month_dates_list %}
                     <th
-                        class="oh-sticky-table__th
-                        {% if day in leave_dates %}holiday {% else %}header{% endif %}"
+                        class="
+                            oh-sticky-table__th
+                            {% if day in leave_dates %}holiday {% else %}header{% endif %}
+                        "
                     >
                         {{ day.day }}
                     </th>
@@ -130,9 +130,9 @@
 
                 {% for work_record in work_records %}
                     {% with day=current_month_dates_list|get_item:forloop.counter0 %}
-                    <td
-                        class="days {% if work_record and work_record.date in leave_dates or work_record is None and day in leave_dates %}holiday{% endif %}"
-                        style="text-align:center; cursor:default;
+                        <td
+                            class="days {% if work_record and work_record.date in leave_dates or work_record is None and day in leave_dates %}holiday{% endif %}"
+                            style="text-align:center; cursor:default;
                         {% if work_record %}
                             {% if work_record.work_record_type == 'CONF' %}
                                 background-color: #ed4c4c; color: #fff;
@@ -147,17 +147,15 @@
                             {% elif work_record.work_record_type == 'DFT' and work_record.shift_id and not work_record.date in leave_dates %}
                                 background-color: #a8b1ff; color: #fff;
                             {% endif %}
-                        {% endif %}
-                    "
-                    >
-                        {% if work_record %}
-                            <div
-                                {% if work_record.title_message %}
-                                    title="{{work_record.title_message}}"
-                                {% endif %}
-                                class="fw-bold"
-                                onclick="
-                                    {% if work_record.work_record_type == 'ABS' %}
+                        {% endif %}"
+                        >
+                            {% if work_record %}
+                                <div
+                                    {% if work_record.title_message %}
+                                        title="{{work_record.title_message}}"
+                                    {% endif %}
+                                    class="fw-bold"
+                                    onclick="{% if work_record.work_record_type == 'ABS' %}
                                         window.location.href = `{% url 'request-view' %}?employee_id={{work_record.employee_id.id}}&from_date={{work_record.date|date:'Y-m-d'}}&to_date={{work_record.date|date:'Y-m-d'}}`;
                                     {% elif work_record.work_record_type != 'DFT' %}
                                         {% if work_record.work_record_type == 'CONF' %}
@@ -166,21 +164,24 @@
                                             localStorage.setItem('activeTabAttendance', '#tab_2');
                                         {% endif %}
                                         window.location.href = `{% url 'attendance-view' %}?employee_id={{work_record.employee_id.id}}&attendance_date={{work_record.date|date:'Y-m-d'}}`;
-                                    {% endif %}
-                                "
-                            >
-                                <a class="text-decoration-none" role="button">
-                                    {% if work_record.work_record_type == 'CONF' %} !
-                                    {% elif work_record.work_record_type == 'FDP' %} P
-                                    {% elif work_record.work_record_type == 'HDP' %} HP
-                                    {% elif work_record.work_record_type == 'ABS' %} L
-                                    {% elif work_record.work_record_type == 'DFT' and work_record.shift_id and not work_record.date in leave_dates %}
-                                        <span class="fw-light" style="cursor: default">A</span>
-                                    {% endif %}
-                                </a>
-                            </div>
-                        {% endif %}
-                    </td>
+                                    {% endif %}"
+                                >
+                                    <a class="text-decoration-none" role="button">
+                                        {% if work_record.work_record_type == 'CONF' %}
+                                            !
+                                        {% elif work_record.work_record_type == 'FDP' %}
+                                            P
+                                        {% elif work_record.work_record_type == 'HDP' %}
+                                            HP
+                                        {% elif work_record.work_record_type == 'ABS' %}
+                                            L
+                                        {% elif work_record.work_record_type == 'DFT' and work_record.shift_id and not work_record.date in leave_dates %}
+                                            <span class="fw-light" style="cursor: default">A</span>
+                                        {% endif %}
+                                    </a>
+                                </div>
+                            {% endif %}
+                        </td>
                     {% endwith %}
                 {% endfor %}
             </tr>
@@ -204,9 +205,9 @@
                 hx-get="{% url 'work-records-change-month' %}?{{pd}}"
                 hx-target="#workRecordTable"
                 min="1"
-            />
+            >
             <span class="oh-pagination__label">
-                {% trans "of" %} {{data.paginator.num_pages}}
+                {% trans "of" %} {{ data.paginator.num_pages }}
             </span>
         </div>
 

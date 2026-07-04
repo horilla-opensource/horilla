@@ -1,5 +1,7 @@
-{% extends 'settings.html' %} {% load i18n %} {% block settings %}{% load static %}
-<div id="graceTimeContainer">
-	{% include "attendance/grace_time/grace_time_table.html" %}
-</div>
+{% extends 'settings.html' %}
+{% load i18n %}
+{% block settings %}{% load static %}
+    <div id="graceTimeContainer">
+        {% include "attendance/grace_time/grace_time_table.html" %}
+    </div>
 {% endblock %}

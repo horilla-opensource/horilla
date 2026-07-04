@@ -20,15 +20,14 @@
                 {% csrf_token %}
                 <div class="oh-profile-section__card">
                     <div class="row">
-                        <div class="col-12">{{form.errors}}</div>
+                        <div class="col-12">{{ form.errors }}</div>
                         {% for field in form.visible_fields %}
                             {% if field.field.widget|is_select_multiple or field.field.widget|is_text_area %}
                                 <div class="flex oh-label" for="id_{{ field.name }}">
                                     <label
                                         class="{% if field.field.required %} required-star{% endif %}"
                                         for="id_{{ field.name }}"
-                                        >{{ field.label }}</label
-                                    >
+                                    >{{ field.label }}</label>
                                     {% if field.help_text != '' %}
                                         <span
                                             class="oh-info mr-2"
@@ -51,8 +50,7 @@
                                         <label
                                             class="{% if field.field.required %} required-star{% endif %}"
                                             for="id_{{ field.name }}"
-                                            >{{ field.label }}</label
-                                        >
+                                        >{{ field.label }}</label>
                                         {% if field.help_text != '' %}
                                             <span
                                                 class="oh-info mr-2"
@@ -67,7 +65,7 @@
                                     {% else %}
                                         {{ field|add_class:"form-control" }}
                                     {% endif %}
-                                    {{field.errors}}
+                                    {{ field.errors }}
                                 </div>
                             {% endif %}
                         {% endfor %}

@@ -1,31 +1,38 @@
 {% extends 'index.html' %}{% block content %}
-{% load static %}{% load i18n %}
-{% include 'attendance/attendance_account/nav.html' %}
+    {% load static %}{% load i18n %}
+    {% include 'attendance/attendance_account/nav.html' %}
 
-<div class="oh-checkpoint-badge mb-2" id="selectedInstances" data-ids="[]" data-clicked="" style="display:none;" >
-  {% trans "Selected Attendance" %}
-</div>
+    <div class="oh-checkpoint-badge mb-2" id="selectedInstances" data-ids="[]" data-clicked="" style="display: none">
+        {% trans "Selected Attendance" %}
+    </div>
 
-<div class="oh-wrapper">
-  <div class="oh-checkpoint-badge text-success mb-2" id="selectAllInstances" style="cursor: pointer;">
-      {% trans "Select All Records" %}
-  </div>
-  <div class="oh-checkpoint-badge text-secondary mb-2" id="unselectAllInstances" style="cursor: pointer;display:none;">
-    {% trans "Unselect All Records" %}
-  </div>
-  <div class="oh-checkpoint-badge text-info mb-2" id="exportAccounts" style="cursor: pointer;display:none;">
-    {% trans "Export Records" %}
-  </div>
-  <div class="oh-checkpoint-badge text-danger mb-2" id="selectedShow" >
-  </div>
+    <div class="oh-wrapper">
+        <div class="oh-checkpoint-badge text-success mb-2" id="selectAllInstances" style="cursor: pointer">
+            {% trans "Select All Records" %}
+        </div>
+        <div
+            class="oh-checkpoint-badge text-secondary mb-2"
+            id="unselectAllInstances"
+            style="cursor: pointer; display: none"
+        >
+            {% trans "Unselect All Records" %}
+        </div>
+        <div class="oh-checkpoint-badge text-info mb-2" id="exportAccounts" style="cursor: pointer; display: none">
+            {% trans "Export Records" %}
+        </div>
+        <div class="oh-checkpoint-badge text-danger mb-2" id="selectedShow"></div>
 
-  <div id="ot-table" hx-target="#ot-table" hx-get="{% url 'attendance-ot-search' %}?field=month&year={% now 'Y' %}" hx-trigger="load">
-    {% include 'filter_tags.html' %}
+        <div
+            id="ot-table"
+            hx-target="#ot-table"
+            hx-get="{% url 'attendance-ot-search' %}?field=month&year={% now 'Y' %}"
+            hx-trigger="load"
+        >
+            {% include 'filter_tags.html' %}
+        </div>
+    </div>
 
-  </div>
-</div>
-
-<script>
-  $("[name=field]").val("month")
-</script>
+    <script>
+        $("[name=field]").val("month")
+    </script>
 {% endblock %}

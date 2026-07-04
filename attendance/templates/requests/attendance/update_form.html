@@ -1,7 +1,10 @@
-<form hx-post="{% url 'edit-validate-attendance' form.instance.id %}" id="attendanceRequestForm"
-    data-url ="{% url 'edit-validate-attendance' form.instance.id %}"
-    hx-target="{% if hx_target %}#{{hx_target}}{% else %}#updateAttendanceRequestModalBody{% endif %}">
-    {% csrf_token %} {{form.as_p}}
+<form
+    hx-post="{% url 'edit-validate-attendance' form.instance.id %}"
+    id="attendanceRequestForm"
+    data-url="{% url 'edit-validate-attendance' form.instance.id %}"
+    hx-target="{% if hx_target %}#{{hx_target}}{% else %}#updateAttendanceRequestModalBody{% endif %}"
+>
+    {% csrf_token %} {{ form.as_p }}
 </form>
 {% comment %} <script>
     alert($("[name=batch_attendance_id]").val())

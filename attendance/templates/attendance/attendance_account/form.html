@@ -1,7 +1,7 @@
 {% load i18n %}
 <div class="oh-modal__dialog-header">
     <h2 class="oh-modal__dialog-title" id="objectCreateModalLabel">
-        {{form.verbose_name}}
+        {{ form.verbose_name }}
     </h2>
     <button class="oh-modal__close" aria-label="Close">
         <ion-icon name="close-outline"></ion-icon>
@@ -9,8 +9,12 @@
 </div>
 
 <div class="oh-modal__dialog-body">
-    <form id="add-form" hx-post="{% url 'attendance-overtime-create' %}" hx-target="#objectCreateModalTarget"
-        hx-swap="innerHTML">
-        {{form.as_p}}
+    <form
+        id="add-form"
+        hx-post="{% url 'attendance-overtime-create' %}"
+        hx-target="#objectCreateModalTarget"
+        hx-swap="innerHTML"
+    >
+        {{ form.as_p }}
     </form>
 </div>

@@ -1,9 +1,10 @@
-{% load i18n %} {% load horillafilters %}
+{% load i18n %}
+{% load horillafilters %}
 
 {% if messages %}
     <div class="oh-alert-container">
         {% for message in messages %}
-        <div class="oh-alert oh-alert--animated {{message.tags}}">{{ message }}</div>
+            <div class="oh-alert oh-alert--animated {{message.tags}}">{{ message }}</div>
         {% endfor %}
     </div>
     <script>
@@ -19,19 +20,29 @@
           })
     </script>
     {% if late_in_early_out_ids %}
-        <span class="oh-span__class" hx-get="{% url 'late-come-early-out-search' %}?{{pd}}" hx-target="#report-container"></span>
+        <span
+            class="oh-span__class"
+            hx-get="{% url 'late-come-early-out-search' %}?{{pd}}"
+            hx-target="#report-container"
+        ></span>
     {% endif %}
 {% endif %}
 
 <div class="oh-modal__dialog-header">
-    <button type="button" class="oh-modal__close--custom" aria-label="Close"
+    <button
+        type="button"
+        class="oh-modal__close--custom"
+        aria-label="Close"
         onclick="$(this).parents().closest('.oh-modal--show').toggleClass('oh-modal--show')"
         {% if late_in_early_out_ids %}
             hx-get="{% url 'late-in-early-out-single-view' instance.id %}?{{pd}}&instances_ids={{late_in_early_out_ids}}"
-            hx-target="#objectDetailsModalTarget" {% else %} hx-get="{% url 'late-come-early-out-search' %}?{{pd}}"
-            hx-target="#report-container" hx-swap="innerHTML"
+            hx-target="#objectDetailsModalTarget"
+        {% else %}
+            hx-get="{% url 'late-come-early-out-search' %}?{{pd}}"
+            hx-target="#report-container"
+            hx-swap="innerHTML"
         {% endif %}
-        >
+    >
         <ion-icon name="close-outline"></ion-icon>
     </button>
 </div>
@@ -40,7 +51,7 @@
     <div class="oh-timeoff-modal__profile-content">
         <div class="oh-profile mb-2">
             <div class="oh-profile__avatar">
-                <img src="{{ instance.employee_id.get_avatar }}" class="oh-profile__image me-2" alt="Mary Magdalene" />
+                <img src="{{ instance.employee_id.get_avatar }}" class="oh-profile__image me-2" alt="Mary Magdalene">
             </div>
             <div class="oh-timeoff-modal__profile-info">
                 <span class="oh-timeoff-modal__user fw-bold">{{ instance.employee_id.get_full_name }}</span>
@@ -51,7 +62,10 @@
         </div>
     </div>
 
-    <form hx-post="{% url 'cut-penalty' instance.id %}?{{pd}}&instances_ids={{late_in_early_out_ids}}" hx-target="#penaltyModalBody" >
+    <form
+        hx-post="{% url 'cut-penalty' instance.id %}?{{pd}}&instances_ids={{late_in_early_out_ids}}"
+        hx-target="#penaltyModalBody"
+    >
         {{ form.as_p }}
         {% if "leave"|app_installed %}
             <div class="oh-sticky-table__table oh-table--sortable">
@@ -66,11 +80,11 @@
                 </div>
                 <div class="oh-sticky-table__tbody">
                     {% for acc in available %}
-                    <div class="oh-sticky-table__tr">
-                        <div class="oh-sticky-table__th">{{ acc.leave_type_id }}</div>
-                        <div class="oh-sticky-table__th">{{ acc.available_days }}</div>
-                        <div class="oh-sticky-table__th">{{ acc.carryforward_days }}</div>
-                    </div>
+                        <div class="oh-sticky-table__tr">
+                            <div class="oh-sticky-table__th">{{ acc.leave_type_id }}</div>
+                            <div class="oh-sticky-table__th">{{ acc.available_days }}</div>
+                            <div class="oh-sticky-table__th">{{ acc.carryforward_days }}</div>
+                        </div>
                     {% endfor %}
                 </div>
             </div>
@@ -85,7 +99,8 @@
                     <i>{% trans "By default minus leave will cut/deduct from available leaves" %}</i>
                 </li>
                 <li>
-                    <i>{% trans "By enabling 'Deduct from carry forward' leave will cut/deduct from carry forward days" %}</i>
+                    <i
+                    >{% trans "By enabling 'Deduct from carry forward' leave will cut/deduct from carry forward days" %}</i>
                 </li>
             </ol>
         {% endif %}
@@ -95,5 +110,4 @@
             </button>
         </div>
     </form>
-
 </div>

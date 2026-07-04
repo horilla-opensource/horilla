@@ -2,11 +2,10 @@
 
 {% include "filter_tags.html" %}
 <button
-    onclick="
-        window.location.href = `{% url 'work-record-export' %}?{{pd}}`
-    "
+    onclick="window.location.href = `{% url 'work-record-export' %}?{{pd}}`"
     id="workrecordExport"
-    class="hidden">
+    class="hidden"
+>
 </button>
 
 <ul class="date-list flex justify-end flex-wrap gap-2 md:gap-5 mb-4 mr-3">
@@ -18,50 +17,44 @@
     <li>{% trans "Conflict" %}</li>
 </ul>
 
-<div
-    class="overflow-hidden overflow-y-auto overflow-x-auto"
->
+<div class="overflow-hidden overflow-y-auto overflow-x-auto">
     <table class="date-table w-full text-xs">
         <thead class="sticky top-0 z-[2] bg-[white] text-left">
             <tr>
-                <th
-                    class="stickyleft bg-[#F4F4F4] font-semibold p-3"
-                >
+                <th class="stickyleft bg-[#F4F4F4] font-semibold p-3">
                     {% trans "Employee" %}
                 </th>
                 {% for day in current_month_dates_list %}
-                    <th
-                        class=" font-semibold p-3 text-primary-600 {% if day in leave_dates %}holiday {% else %}bg-[#F4F4F4] {% endif %}"
-                    >
-                        {{day.day}}
+                    <th class="font-semibold p-3 text-primary-600 {% if day in leave_dates %}holiday {% else %}bg-[#F4F4F4] {% endif %}">
+                        {{ day.day }}
                     </th>
                 {% endfor %}
             </tr>
         </thead>
         {% for employee, work_records in data %}
             {% with emp_specific_hols=specific_employee_holidays|get_employee_specific_holidays:employee.pk %}
-            <tr>
-                <td class"stickyleft border border-[#ecf3fb] text-left p-3 text-[#666]">
-                    <a
-                        style="text-decoration: none"
-                        href="{% url 'employee-view-individual' employee.id %}"
-                    >
-                        <span class="flex w-max">
-                            {{ employee }}
-                        </span>
-                    </a>
-                </td>
+                <tr>
+                    <td class="stickyleft border-b border-[#ecf3fb] text-left p-3 text-[#666]">
+                        <a
+                            style="text-decoration: none"
+                            href="{% url 'employee-view-individual' employee.id %}"
+                        >
+                            <span class="flex w-max">
+                                {{ employee }}
+                            </span>
+                        </a>
+                    </td>
 
-                {% for work_record in work_records %}
-                    {% with day=current_month_dates_list|get_item:forloop.counter0 %}
-                        <td class="border border-[#ecf3fb] text-center p-1 text-[#666] {% if work_record and work_record.date in leave_dates or work_record is None and day in leave_dates or day in emp_specific_hols %}holiday{% endif %}"
-                            {% if work_record.title_message %}
-                                title="{{work_record.title_message}}"
-                                role="button"
-                            {% endif %}
-                            {% if work_record %}
-                                onclick="
-                                    {% if work_record.work_record_type == 'ABS' %}
+                    {% for work_record in work_records %}
+                        {% with day=current_month_dates_list|get_item:forloop.counter0 %}
+                            <td
+                                class="border border-[#ecf3fb] text-center p-1 text-[#666] {% if work_record and work_record.date in leave_dates or work_record is None and day in leave_dates or day in emp_specific_hols %}holiday{% endif %}"
+                                {% if work_record.title_message %}
+                                    title="{{work_record.title_message}}"
+                                    role="button"
+                                {% endif %}
+                                {% if work_record %}
+                                    onclick="{% if work_record.work_record_type == 'ABS' %}
                                         window.location.href = `{% url 'request-view' %}?employee_id={{work_record.employee_id.id}}&from_date={{work_record.date|date:'Y-m-d'}}&to_date={{work_record.date|date:'Y-m-d'}}`;
                                     {% elif work_record.work_record_type != 'DFT' %}
                                         {% if work_record.work_record_type == 'CONF' %}
@@ -70,50 +63,58 @@
                                             localStorage.setItem('attendances-tab_activeIndex', '2');
                                         {% endif %}
                                         window.location.href = `{% url 'attendance-view' %}?employee_id={{work_record.employee_id.id}}&attendance_date={{work_record.date|date:'Y-m-d'}}`;
-                                    {% endif %}
-                                "
-                            {% endif %}
-                        >
-                            <span class="datebox
-                                {% if work_record %}
-                                    {% if work_record.work_record_type == 'CONF' %}
-                                        conflict
-                                    {% elif work_record.is_leave_record and work_record.work_record_type == 'FDP' %}
-                                        leave-present
-                                    {% elif work_record.work_record_type == 'FDP' %}
-                                        present
-                                    {% elif work_record.work_record_type == 'HDP' %}
-                                        half-day
-                                    {% elif work_record.work_record_type == 'ABS' %}
-                                        leave
-                                    {% elif work_record.work_record_type == 'DFT' and work_record.shift_id and not work_record.date in leave_dates and not work_record.date in emp_specific_hols %}
-                                        absent
-                                    {% endif %}
+                                    {% endif %}"
                                 {% endif %}
-                                "
                             >
-                                {% if work_record.work_record_type == 'CONF' %} !
-                                {% elif work_record.work_record_type == 'FDP' %} P
-                                {% elif work_record.work_record_type == 'HDP' %} HP
-                                {% elif work_record.work_record_type == 'ABS' %} L
-                                {% elif work_record.work_record_type == 'DFT' and work_record.shift_id and not work_record.date in leave_dates and not work_record.date in emp_specific_hols %}
-                                    <span class="font-light" style="cursor: default">A</span>
-                                {% endif %}
-                            </span>
-                        </td>
-                    {% endwith %}
-                {% endfor %}
-            </tr>
+                                <span
+                                    class="
+                                        datebox
+                                        {% if work_record %}
+                                        {% if work_record.work_record_type == 'CONF' %}
+                                        conflict
+                                        {% elif work_record.is_leave_record and work_record.work_record_type == 'FDP' %}
+                                        leave-present
+                                        {% elif work_record.work_record_type == 'FDP' %}
+                                        present
+                                        {% elif work_record.work_record_type == 'HDP' %}
+                                        half-day
+                                        {% elif work_record.work_record_type == 'ABS' %}
+                                        leave
+                                        {% elif work_record.work_record_type == 'DFT' and work_record.shift_id and not work_record.date in leave_dates and not work_record.date in emp_specific_hols %}
+                                        absent
+                                        {% endif %}
+                                        {% endif %}
+                                    "
+                                >
+                                    {% if work_record.work_record_type == 'CONF' %}
+                                        !
+                                    {% elif work_record.work_record_type == 'FDP' %}
+                                        P
+                                    {% elif work_record.work_record_type == 'HDP' %}
+                                        HP
+                                    {% elif work_record.work_record_type == 'ABS' %}
+                                        L
+                                    {% elif work_record.work_record_type == 'DFT' and work_record.shift_id and not work_record.date in leave_dates and not work_record.date in emp_specific_hols %}
+                                        <span class="font-light" style="cursor: default">A</span>
+                                    {% endif %}
+                                </span>
+                            </td>
+                        {% endwith %}
+                    {% endfor %}
+                </tr>
             {% endwith %}
         {% endfor %}
-	</table>
+    </table>
 </div>
 
 {% if data.paginator.count %}
-    <div
-        class="flex justify-between items-center mt-4 w-full inset-0"
-    >
-        <p class="text-xs text-[#666]">{% trans "Page" %} {{ data.number }} {% trans "of" %} {{ data.paginator.num_pages }}</p>
+    <div class="flex justify-between items-center mt-4 w-full inset-0">
+        <p class="text-xs text-[#666]">
+            {% trans "Page" %}
+            {{ data.number }}
+            {% trans "of" %}
+            {{ data.paginator.num_pages }}
+        </p>
         <div class="flex gap-3 text-[#666] items-center">
             {% if data.has_previous %}
                 <button
@@ -133,8 +134,8 @@
                     hx-get="{% url 'work-records-change-month' %}?{{pd}}"
                     hx-target="#workRecordTable"
                     min="1"
-                /> / {{ data.paginator.num_pages }}
-                </div>
+                > / {{ data.paginator.num_pages }}
+            </div>
             {% if data.has_next %}
                 <button
                     class="text-xs hover:text-primary-600 transition duration-300"

@@ -3,16 +3,21 @@
     <h2 class="oh-modal__dialog-title" id="addEmployeeModalLabel">
         {% trans "Attendance Update Request" %}
     </h2>
-     <button type="button"
+    <button
+        type="button"
         class="oh-modal_close--custom"
-        onclick="$(this).parents().closest('.oh-modal--show').toggleClass('oh-modal--show');">
-            <ion-icon name="close-outline"></ion-icon>
+        onclick="$(this).parents().closest('.oh-modal--show').toggleClass('oh-modal--show')"
+    >
+        <ion-icon name="close-outline"></ion-icon>
     </button>
 </div>
 <div class="oh-modal__dialog-body">
-    <form hx-post="{% url 'attendance-change' attendance_id %}" hx-target="#objectUpdateModalTarget" id="attendanceRequestForm"
-    data-url = "{% url 'attendance-change' attendance_id %}"
+    <form
+        hx-post="{% url 'attendance-change' attendance_id %}"
+        hx-target="#objectUpdateModalTarget"
+        id="attendanceRequestForm"
+        data-url="{% url 'attendance-change' attendance_id %}"
     >
-        {% csrf_token %} {{form.as_p}}
+        {% csrf_token %} {{ form.as_p }}
     </form>
 </div>

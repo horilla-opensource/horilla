@@ -2,55 +2,55 @@
 {% load i18n static %}
 
 {% block content %}
-	<style>
-		.validated--dot {
-			background-color: yellowgreen;
-		}
-		.not-validated--dot {
-			background-color: red;
-		}
-		.requested--dot {
-			background-color: orange;
-		}
-		.approved-request--dot {
-			background-color: blue;
-		}
-		.validated-True {
-			border-left: 3.4px solid yellowgreen !important;
-			border-radius: 4px 0 0 4px;
-		}
-		.validated-False {
-			border-left: 3.4px solid red !important;
-			border-radius: 4px 0 0 4px;
-		}
-		.requested-True {
-			border-left: 3.4px solid orange !important;
-			border-radius: 4px 0 0 4px;
-		}
-		.approved-request-True {
-			border-left: 3.4px solid blue !important;
-			border-radius: 4px 0 0 4px;
-		}
-	</style>
+    <style>
+        .validated--dot {
+            background-color: yellowgreen;
+        }
+        .not-validated--dot {
+            background-color: red;
+        }
+        .requested--dot {
+            background-color: orange;
+        }
+        .approved-request--dot {
+            background-color: blue;
+        }
+        .validated-True {
+            border-left: 3.4px solid yellowgreen !important;
+            border-radius: 4px 0 0 4px;
+        }
+        .validated-False {
+            border-left: 3.4px solid red !important;
+            border-radius: 4px 0 0 4px;
+        }
+        .requested-True {
+            border-left: 3.4px solid orange !important;
+            border-radius: 4px 0 0 4px;
+        }
+        .approved-request-True {
+            border-left: 3.4px solid blue !important;
+            border-radius: 4px 0 0 4px;
+        }
+    </style>
 
-	<div hx-get="{% url 'my-attendance-nav' %}" hx-trigger="load"></div>
+    <div hx-get="{% url 'my-attendance-nav' %}" hx-trigger="load"></div>
 
-	{% include "generic/components.html" %}
+    {% include "generic/components.html" %}
 
-	<div
-		class="oh-checkpoint-badge mb-2"
-		id="selectedInstances"
-		data-ids="[]"
-		data-clicked=""
-		style="display: none"
-	></div>
+    <div
+        class="oh-checkpoint-badge mb-2"
+        id="selectedInstances"
+        data-ids="[]"
+        data-clicked=""
+        style="display: none"
+    >
+    </div>
 
-	<div class="oh-wrapper" id="listContainer">
-		<div class="animated-background"></div>
-	</div>
+    <div class="oh-wrapper" id="listContainer">
+        <div class="animated-background"></div>
+    </div>
 
-	<div class="oh-activity-sidebar" id="activitySidebar" style="z-index: 1000">
-		<div class="oh-activity-sidebar__body" id="commentContainer"></div>
-	</div>
-
+    <div class="oh-activity-sidebar" id="activitySidebar" style="z-index: 1000">
+        <div class="oh-activity-sidebar__body" id="commentContainer"></div>
+    </div>
 {% endblock content %}

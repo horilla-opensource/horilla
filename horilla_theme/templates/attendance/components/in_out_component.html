@@ -16,26 +16,32 @@
                     <button
                         class="check checkout"
                         hx-get="{% url 'clock-out' %}"
-                        hx-target='#attendance-activity-container'
-                        hx-swap='innerHTML'
+                        hx-target="#attendance-activity-container"
+                        hx-swap="innerHTML"
                         {% if enabled_timerunner and get_forecasted_at_work.has_attendance %}
-                            onmouseenter="$(this).find('span.hr-Check-In-out-text').show();$(this).find('.time-runner').hide();"
-                            onmouseleave="$(this).find('span.hr-Check-In-out-text').hide();$(this).find('.time-runner').show();"
+                            onmouseenter="$(this).find('span.hr-Check-In-out-text').show();$(this).find('.time-runner').hide()"
+                            onmouseleave="$(this).find('span.hr-Check-In-out-text').hide();$(this).find('.time-runner').show()"
                         {% endif %}
                     >
                         <span class="date">
                             <i class="fa-solid fa-right-from-bracket pe-2"></i>
                             <div class="time-runner">{% trans "Check Out" %}</div>
                         </span>
-                        <span class="con hr-Check-In-out-text" {% if enabled_timerunner and get_forecasted_at_work.has_attendance %} style="display:none;" {% endif %}>
+                        <span
+                            class="con hr-Check-In-out-text"
+                            {% if enabled_timerunner and get_forecasted_at_work.has_attendance %}
+                                style="display: none"
+                            {% endif %}
+                        >
                             {% trans "Check Out" %}
                         </span>
                     </button>
-                    <span class="at_work_seconds"
+                    <span
+                        class="at_work_seconds"
                         data-at-work-seconds="{{ get_forecasted_at_work.forecasted_at_work_seconds|default:0 }}"
-                        data-run="{{ run|default:1 }}">
+                        data-run="{{ run|default:1 }}"
+                    >
                     </span>
-
                 {% else %}
                     {% comment %} <button class="check checkin" hx-get="{% url 'clock-in' %}"  hx-target='#attendance-activity-container' hx-swap='innerHTML'>
                         <span class="date">
@@ -47,24 +53,31 @@
                     <button
                         class="check checkin"
                         hx-get="{% url 'clock-in' %}"
-                        hx-target='#attendance-activity-container'
-                        hx-swap='innerHTML'
+                        hx-target="#attendance-activity-container"
+                        hx-swap="innerHTML"
                         {% if enabled_timerunner %}
-                            onmouseenter="$(this).find('span.hr-Check-In-out-text').show();$(this).find('.at-work-seconds').hide();"
-                            onmouseleave="$(this).find('span.hr-Check-In-out-text').hide();$(this).find('.at-work-seconds').show();"
+                            onmouseenter="$(this).find('span.hr-Check-In-out-text').show();$(this).find('.at-work-seconds').hide()"
+                            onmouseleave="$(this).find('span.hr-Check-In-out-text').hide();$(this).find('.at-work-seconds').show()"
                         {% endif %}
                     >
                         <span class="date">
                             <i class="fa-solid fa-right-to-bracket pe-2"></i>
                             <div class="at-work-seconds">{% trans "Check In" %}</div>
                         </span>
-                        <span class="con hr-Check-In-out-text" {% if enabled_timerunner %} style="display:none;" {% endif %}>
+                        <span
+                            class="con hr-Check-In-out-text"
+                            {% if enabled_timerunner %}
+                                style="display: none"
+                            {% endif %}
+                        >
                             {% trans "Check In" %}
                         </span>
                     </button>
-                    <span class="at_work_seconds"
+                    <span
+                        class="at_work_seconds"
                         data-at-work-seconds="{{ get_forecasted_at_work.forecasted_at_work_seconds|default:0 }}"
-                        data-run="{{ run|default:0 }}">
+                        data-run="{{ run|default:0 }}"
+                    >
                     </span>
 
                     {% if enabled_timerunner %}
@@ -78,45 +91,44 @@
                 {% endif %}
             {% endif %}
         {% endif %}
-
     {% endwith %}
 {% endif %}
 
 {% if enabled_timerunner %}
-<script>
-    var at_work_seconds = $(".at_work_seconds").data("at-work-seconds");
-    var run = $(".at_work_seconds").data("run");
-    var whiteLabelCompany = $("#whiteLabelCompany").data("company");
+    <script>
+        var at_work_seconds = $(".at_work_seconds").data("at-work-seconds");
+        var run = $(".at_work_seconds").data("run");
+        var whiteLabelCompany = $("#whiteLabelCompany").data("company");
 
-    // time-runner
-    function secondsToDuration(seconds) {
-        if (seconds < 0){
-            seconds = 0
+        // time-runner
+        function secondsToDuration(seconds) {
+            if (seconds < 0){
+                seconds = 0
+            }
+            var hours = Math.floor(seconds / 3600);
+            var minutes = Math.floor((seconds % 3600) / 60);
+            var remainingSeconds = Math.floor(seconds % 60);
+
+            var formattedHours = (hours < 10) ? "0" + hours : hours;
+            var formattedMinutes = (minutes < 10) ? "0" + minutes : minutes;
+            var formattedSeconds = (remainingSeconds < 10) ? "0" + remainingSeconds : remainingSeconds;
+
+            return formattedHours + ":" + formattedMinutes + ":" + formattedSeconds;
         }
-        var hours = Math.floor(seconds / 3600);
-        var minutes = Math.floor((seconds % 3600) / 60);
-        var remainingSeconds = Math.floor(seconds % 60);
 
-        var formattedHours = (hours < 10) ? "0" + hours : hours;
-        var formattedMinutes = (minutes < 10) ? "0" + minutes : minutes;
-        var formattedSeconds = (remainingSeconds < 10) ? "0" + remainingSeconds : remainingSeconds;
+        if (window.timeRunnerInterval) {
+            clearInterval(window.timeRunnerInterval);
+        }
 
-        return formattedHours + ":" + formattedMinutes + ":" + formattedSeconds;
-    }
+        $(".time-runner").not("title").html(secondsToDuration(at_work_seconds));
+        $("title.time-runner").html(` ${whiteLabelCompany} | ` + secondsToDuration(at_work_seconds));
 
-    if (window.timeRunnerInterval) {
-        clearInterval(window.timeRunnerInterval);
-    }
-
-    $(".time-runner").not("title").html(secondsToDuration(at_work_seconds));
-    $("title.time-runner").html(` ${whiteLabelCompany} | ` + secondsToDuration(at_work_seconds));
-
-    if (run) {
-        window.timeRunnerInterval = setInterval(() => {
-            at_work_seconds = parseInt(at_work_seconds) + 1;
-            $("div.time-runner").html(secondsToDuration(at_work_seconds));
-            $("title").html(` ${whiteLabelCompany} | ` + secondsToDuration(at_work_seconds));
-        }, 1000);
-    }
-</script>
+        if (run) {
+            window.timeRunnerInterval = setInterval(() => {
+                at_work_seconds = parseInt(at_work_seconds) + 1;
+                $("div.time-runner").html(secondsToDuration(at_work_seconds));
+                $("title").html(` ${whiteLabelCompany} | ` + secondsToDuration(at_work_seconds));
+            }, 1000);
+        }
+    </script>
 {% endif %}

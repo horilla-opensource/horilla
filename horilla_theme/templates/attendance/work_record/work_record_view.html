@@ -2,100 +2,126 @@
 {% load i18n static %}
 
 {% block content %}
-<div class="">
-    <div class="bg-white p-3 rounded-md shadow-card">
-        <div class="flex gap-2 md:gap-0 flex-wrap justify-between items-end mb-2 border-b border-dark-50 pb-3">
-            <h3 class="text-md font-semibold">
-                {% trans "Work Records" %}
-            </h3>
+    <div class="">
+        <div class="bg-white p-3 rounded-md shadow-card">
+            <div class="flex gap-2 md:gap-0 flex-wrap justify-between items-end mb-2 border-b border-dark-50 pb-3">
+                <h3 class="text-md font-semibold">
+                    {% trans "Work Records" %}
+                </h3>
 
-            <div class="flex flex-wrap items-stretch  gap-2">
-
-                <form
-                    hx-get="{% url 'work-records-change-month' %}?{{pd}}"
-                    hx-target="#workRecordTable"
-                >
-                    <div class="flex items-stretch gap-2">
-                        <input
-                            class="text-color-600 border border-primary-500 rounded-md p-2 focus-visible:outline-0 placeholder:text-[#00000041] placeholder:font-medium text-xs [transition:.3s] focus:border-primary-600"
-                            type="month"
-                            id="monthYearField"
-                            value="{{ current_date|date:"Y-m" }}"
-                            name="month"
-                            onchange="$('#startDate').val('');$('#endDate').val('');$('#employeeFilter').click();"
-                        />
-
-                        <div class="relative dropdown-wrapper">
-                            <button
-                                class="px-5 py-2 h-full bg-[white]  rounded-md text-xs border border-primary-500 hover:border-primary-600 transition duration-300"
-                                onclick="event.preventDefault();"
+                <div class="flex flex-wrap items-stretch gap-2">
+                    <form
+                        hx-get="{% url 'work-records-change-month' %}?{{pd}}"
+                        hx-target="#workRecordTable"
+                    >
+                        <div class="flex items-stretch gap-2">
+                            <input
+                                class="text-color-600 border border-primary-500 rounded-md p-2 focus-visible:outline-0 placeholder:text-[#00000041] placeholder:font-medium text-xs [transition:.3s] focus:border-primary-600"
+                                type="month"
+                                id="monthYearField"
+                                value='{{ current_date|date:"Y-m" }}'
+                                name="month"
+                                onchange="$('#startDate').val('');$('#endDate').val('');$('#employeeFilter').click()"
                             >
-                                <div class="flex items-center gap-2 ">
-                                    <img src="{% static 'horilla_theme/assets/img/icons/sort.svg' %}" alt="" width="17">
-                                    {% trans "Filter" %}
-                                </div>
-                            </button>
-                            <div class="dropdown-content absolute z-10 bg-white rounded-lg [box-shadow:0px_0px_20px_0px_rgb(0_0_0_/_8%)] min-w-[400px] p-3 right-0">
-                                <div class="accordion-wrapper space-y-2">
-                                    {% include 'employee_filters.html' %}
-                                    <div class="oh-accordion">
-                                        <div class="oh-accordion-header">{% trans "Date Range" %}</div>
-                                        <div class="oh-accordion-body">
-                                            <div class="row">
-                                                <div class="col-sm-12 col-md-12 col-lg-6">
-                                                    <div class="input-group">
-                                                        <label class="oh-label" for="startDate">{% trans "Start Date" %}:</label>
-                                                        <input type="date" name="start_date" id="startDate" class="oh-input" onchange="$('#monthYearField').val('')">
+
+                            <div class="relative dropdown-wrapper">
+                                <button
+                                    class="px-5 py-2 h-full bg-[white] rounded-md text-xs border border-primary-500 hover:border-primary-600 transition duration-300"
+                                    onclick="event.preventDefault()"
+                                >
+                                    <div class="flex items-center gap-2">
+                                        <img
+                                            src="{% static 'horilla_theme/assets/img/icons/sort.svg' %}"
+                                            alt=""
+                                            width="17"
+                                        >
+                                        {% trans "Filter" %}
+                                    </div>
+                                </button>
+                                <div class="dropdown-content absolute z-10 bg-white rounded-lg [box-shadow:0px_0px_20px_0px_rgb(0_0_0_/_8%)] min-w-[400px] p-3 right-0">
+                                    <div class="accordion-wrapper space-y-2">
+                                        {% include 'employee_filters.html' %}
+                                        <div class="oh-accordion">
+                                            <div class="oh-accordion-header">{% trans "Date Range" %}</div>
+                                            <div class="oh-accordion-body">
+                                                <div class="row">
+                                                    <div class="col-sm-12 col-md-12 col-lg-6">
+                                                        <div class="input-group">
+                                                            <label
+                                                                class="oh-label"
+                                                                for="startDate"
+                                                            >{% trans "Start Date" %}:</label>
+                                                            <input
+                                                                type="date"
+                                                                name="start_date"
+                                                                id="startDate"
+                                                                class="oh-input"
+                                                                onchange="$('#monthYearField').val('')"
+                                                            >
+                                                        </div>
                                                     </div>
-                                                </div>
-                                                <div class="col-sm-12 col-md-12 col-lg-6">
-                                                    <div class="input-group">
-                                                        <label class="oh-label" for="endDate">{% trans "End Date" %}:</label>
-                                                        <input type="date" name="end_date" id="endDate" class="oh-input" max="{{ today|date:'Y-m-d' }}" onchange="$('#monthYearField').val('')">
+                                                    <div class="col-sm-12 col-md-12 col-lg-6">
+                                                        <div class="input-group">
+                                                            <label
+                                                                class="oh-label"
+                                                                for="endDate"
+                                                            >{% trans "End Date" %}:</label>
+                                                            <input
+                                                                type="date"
+                                                                name="end_date"
+                                                                id="endDate"
+                                                                class="oh-input"
+                                                                max="{{ today|date:'Y-m-d' }}"
+                                                                onchange="$('#monthYearField').val('')"
+                                                            >
+                                                        </div>
                                                     </div>
                                                 </div>
                                             </div>
                                         </div>
-                                    </div>
-                                    <div class="oh-dropdown__filter-footer">
-                                        <button
-                                            class="oh-btn oh-btn--secondary oh-btn--small w-100 float-end"
-                                            id="employeeFilter"
-                                        >
-                                            {% trans "Filter" %}
-                                        </button>
+                                        <div class="oh-dropdown__filter-footer">
+                                            <button
+                                                class="oh-btn oh-btn--secondary oh-btn--small w-100 float-end"
+                                                id="employeeFilter"
+                                            >
+                                                {% trans "Filter" %}
+                                            </button>
+                                        </div>
                                     </div>
                                 </div>
                             </div>
                         </div>
-                    </div>
-                </form>
+                    </form>
 
-                <button
-                    onclick="$('#workrecordExport').click();"
-                    class="px-5 py-2 bg-primary-600 text-white rounded-md text-xs hover:bg-primary-800 transition duration-300"
-                >
-                    <div class="flex items-center gap-2 ">
-
-                        <img src="{% static 'horilla_theme/assets/img/icons/export.svg' %}" alt="" width="17"
-                            class="filter brightness-0 invert"
-                        >
-                        {% trans "Export" %}
-                    </div>
-                </button>
+                    <button
+                        onclick="$('#workrecordExport').click()"
+                        class="px-5 py-2 bg-primary-600 text-white rounded-md text-xs hover:bg-primary-800 transition duration-300"
+                    >
+                        <div class="flex items-center gap-2">
+                            <img
+                                src="{% static 'horilla_theme/assets/img/icons/export.svg' %}"
+                                alt=""
+                                width="17"
+                                class="filter brightness-0 invert"
+                            >
+                            {% trans "Export" %}
+                        </div>
+                    </button>
+                </div>
+            </div>
+            <div id="workRecordTable">
+                <div class="animated-background"></div>
+                <script>
+                    $(document).ready(function () { htmx.trigger('#monthYearField', 'change');});
+                </script>
             </div>
         </div>
-        <div id="workRecordTable">
-            <div class="animated-background"></div>
-            <script>$(document).ready(function () { htmx.trigger('#monthYearField', 'change');}); </script>
-        </div>
     </div>
-</div>
-<script>
-    $(document).ready(function () {
-        $(".row").find("select").select2({
-            width: '100%'
+    <script>
+        $(document).ready(function () {
+            $(".row").find("select").select2({
+                width: '100%'
+            });
         });
-    });
-</script>
+    </script>
 {% endblock %}

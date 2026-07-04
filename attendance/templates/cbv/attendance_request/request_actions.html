@@ -1,18 +1,26 @@
-{% load i18n %} {% load basefilters %}
+{% load i18n %}
+{% load basefilters %}
 {% is_manager_of request.user instance as can_manage %}
 <div class="oh-btn-group">
-    <a data-toggle="oh-modal-toggle" data-target="#validateAttendanceRequest"
-        hx-get="{% url 'validate-attendance-request' instance.id %}" hx-trigger="click"
-        hx-target="#validateAttendanceRequestModalBody" class="oh-btn oh-btn--light-bkg w-100"
-        title="{% trans 'View' %}"><ion-icon name="eye-outline" role="img"></ion-icon></a>
+    <a
+        data-toggle="oh-modal-toggle"
+        data-target="#validateAttendanceRequest"
+        hx-get="{% url 'validate-attendance-request' instance.id %}"
+        hx-trigger="click"
+        hx-target="#validateAttendanceRequestModalBody"
+        class="oh-btn oh-btn--light-bkg w-100"
+        title="{% trans 'View' %}"
+    ><ion-icon name="eye-outline" role="img"></ion-icon></a>
     {% if perms.attendance.change_attendance or can_manage %}
-        <a href="#"
+        <a
+            href="#"
             hx-get="{% url 'cancel-validate-attendance-request' instance.id %}"
             hx-target="#validateAttendanceRequestModalBody"
             hx-swap="innerHTML"
             class="oh-btn oh-btn--danger-outline oh-btn--light-bkg w-100"
             title="{% trans 'Cancel / Reject' %}"
-            onclick="event.preventDefault(); event.stopPropagation(); return confirm('{% trans "Are you sure want to cancel the request?" %}');">
+            onclick="event.preventDefault(); event.stopPropagation(); return confirm('{% trans "Are you sure want to cancel the request?" %}')"
+        >
             <ion-icon name="close-circle-outline"></ion-icon>
         </a>
     {% endif %}

@@ -2,61 +2,52 @@
 {% load static %}
 {% load i18n %}
 {% block content %}
-
-<meta name="csrf-token" content="{{ csrf_token }}">
-<style>
-    .canceled--dot{
-        background-color:red;
-      }
-      .approved--dot{
-        background-color:green;
-      }
-      .approved-True{
-        border-left: 3.4px solid yellowgreen !important;
-        border-radius: 4px 0 0 4px;
-
-      }
-      .canceled-True {
-
-        border-left: 3.4px solid red !important;
-        border-radius: 4px 0 0 4px;
-
-      }
+    <meta name="csrf-token" content="{{ csrf_token }}">
+    <style>
+        .canceled--dot {
+            background-color: red;
+        }
+        .approved--dot {
+            background-color: green;
+        }
+        .approved-True {
+            border-left: 3.4px solid yellowgreen !important;
+            border-radius: 4px 0 0 4px;
+        }
+        .canceled-True {
+            border-left: 3.4px solid red !important;
+            border-radius: 4px 0 0 4px;
+        }
     </style>
-<div hx-get="{% url "attendance-nav-view" %}" hx-trigger="load">
-</div>
+    <div hx-get='{% url "attendance-nav-view" %}' hx-trigger="load"></div>
 
-{% include "generic/components.html" %}
-<div
-    class="oh-checkpoint-badge mb-2"
-    id="selectedInstances"
-    data-ids="[]"
-    data-clicked=""
-    style="display: none"
-  ></div>
+    {% include "generic/components.html" %}
+    <div
+        class="oh-checkpoint-badge mb-2"
+        id="selectedInstances"
+        data-ids="[]"
+        data-clicked=""
+        style="display: none"
+    >
+    </div>
 
-<div class="oh-wrapper"
- id="listContainer">
-  <div class="animated-background">
-</div>
-</div>
+    <div class="oh-wrapper" id="listContainer">
+        <div class="animated-background"></div>
+    </div>
 
-<div id="delete-table-data">
-</div>
+    <div id="delete-table-data"></div>
 
+    <div class="oh-activity-sidebar" id="worktypeactivitySidebar" style="z-index: 1000">
+        <div class="oh-activity-sidebar__body" id="commentContainer"></div>
+    </div>
 
+    <div
+        class="oh-modal__dialog-body"
+        id="workTypeRequestUpdateModalBody"
+    >
+    </div>
 
-<div class="oh-activity-sidebar" id="worktypeactivitySidebar" style="z-index:1000;">
-
-    <div class="oh-activity-sidebar__body" id="commentContainer"></div>
-</div>
-
-<div
-class="oh-modal__dialog-body"
-id="workTypeRequestUpdateModalBody"
-></div>
-
-{% comment %} <div class="oh-modal__dialog-header pb-0">
+    {% comment %} <div class="oh-modal__dialog-header pb-0">
   <h2 class="oh-modal__dialog-title" id="activityImportLabel">
       {% trans "Import Attendance Activities" %}
   </h2>
@@ -96,8 +87,8 @@ id="workTypeRequestUpdateModalBody"
   </form>
 </div> {% endcomment %}
 
-<script src="{% static 'cbv/attendance_activity.js' %}"></script>
-{% comment %} <script>
+    <script src="{% static 'cbv/attendance_activity.js' %}"></script>
+    {% comment %} <script>
     $(document).ready(function () {
         Swal.fire({
             text: "{% trans 'Do you want to download the template?' %}",
@@ -134,6 +125,4 @@ id="workTypeRequestUpdateModalBody"
         });
     });
 </script> {% endcomment %}
-
-
 {% endblock content %}
