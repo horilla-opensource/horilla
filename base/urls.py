@@ -1691,6 +1691,11 @@ urlpatterns = [
         name="update-emp-workinfo",
     ),
     path(
+        "settings/multiple-approval-rules-view/",
+        views.multiple_approval_rules_settings_view,
+        name="multiple-approval-rules-view",
+    ),
+    path(
         "configuration/multiple-approval-condition/",
         multiple_approval_condition.MultipleApprovalConditionView.as_view(),
         name="multiple-approval-condition",

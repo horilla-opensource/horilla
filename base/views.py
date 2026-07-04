@@ -6200,6 +6200,16 @@ def audit_tag_update(request, tag_id):
 
 @login_required
 @permission_required("base.view_multipleapprovalcondition")
+def multiple_approval_rules_settings_view(request):
+    """
+    Multiple Approval Rules settings page. Migrated from the Configuration menu
+    into Settings > Approvals; reuses the existing nav/list HTMX endpoints.
+    """
+    return render(request, "base/settings/multiple_approval_rules.html")
+
+
+@login_required
+@permission_required("base.view_multipleapprovalcondition")
 def multiple_approval_condition(request):
     form = MultipleApproveConditionForm()
     selected_company = request.session.get("selected_company")

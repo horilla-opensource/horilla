@@ -7,6 +7,7 @@ from typing import Any
 from django import forms
 from django.contrib import messages
 from django.http import HttpResponse
+from django.shortcuts import redirect
 from django.urls import reverse
 from django.utils.decorators import method_decorator
 from django.utils.translation import gettext_lazy as _
@@ -27,15 +28,16 @@ from horilla_views.generic.cbv.views import (
 
 
 @method_decorator(login_required, name="dispatch")
-@method_decorator(
-    permission_required(perm="base.view_multipleapprovalcondition"), name="dispatch"
-)
 class MultipleApprovalConditionView(TemplateView):
     """
-    for Multiple approval condition page
+    Legacy standalone Multiple Approval page. Migrated into Settings > Approvals;
+    redirect direct visits to the settings page.
     """
 
     template_name = "cbv/multiple_approval_condition/multiple_approval_condition.html"
+
+    def get(self, request, *args, **kwargs):
+        return redirect("multiple-approval-rules-view")
 
 
 @method_decorator(login_required, name="dispatch")
@@ -106,9 +108,10 @@ class MultipleApprovalConditionNav(HorillaNavView):
                                 hx-get="{reverse('multiple-level-approval-create')}"
                                 """
 
-    nav_title = _("Multiple Approval Condition")
+    nav_title = _("Multiple Approval Rules")
     filter_instance = MultipleApprovalConditionFilter()
     search_swap_target = "#listContainer"
+    template_name = "generic/inline_nav.html"
 
 
 @method_decorator(login_required, name="dispatch")
