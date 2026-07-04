@@ -8,7 +8,7 @@ from django.utils.translation import gettext_lazy as _
 
 from horilla.menu import settings_menu
 
-MENU = _("Help Desk")
+MENU = _("Helpdesk")
 IMG_SRC = "images/ui/headset-solid.svg"
 
 SUBMENUS = [
@@ -51,7 +51,7 @@ def helpdesk_tag_accessibility(request, submenu, user_perms, *args, **kwargs):
 
 @settings_menu.register
 class HelpdeskSettings:
-    title = _("Help Desk")
+    title = _("Helpdesk")
     order = 9
     condition = lambda self, request: apps.is_installed("helpdesk")
     items = [
