@@ -41,7 +41,10 @@
             {% if request.session.selected_company == "all" or not request.session.selected_company %}
                 <div class="w-full">
                     <label>{% trans "Company" %}</label>
-                    <select name="company_id" id="id_company_id">
+                    <p class="text-xs text-gray-500 mt-1">
+                        {% trans "Company these currency settings apply to." %}
+                    </p>
+                    <select name="company_id" id="id_company_id" class="oh-select oh-select-2 w-100">
                         {% for company in companies %}
                             <option
                                 value="{{ company.id }}"
@@ -53,9 +56,6 @@
                             </option>
                         {% endfor %}
                     </select>
-                    <p class="text-xs text-gray-500 mt-1">
-                        {% trans "Company these currency settings apply to." %}
-                    </p>
                 </div>
             {% else %}
                 {% for company in companies %}

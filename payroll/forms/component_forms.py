@@ -499,6 +499,9 @@ class PayrollSettingsForm(ModelForm):
 
         model = models.PayrollSettings
         fields = "__all__"
+        widgets = {
+            "position": forms.Select(attrs={"class": "oh-select oh-select-2 w-100"}),
+        }
 
 
 excel_columns = [
