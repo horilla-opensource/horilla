@@ -575,7 +575,16 @@
 
         function positionFlyout(itemRect) {
           var sidebarRect = sidebarEl.getBoundingClientRect();
-          var left = sidebarRect.right + 6;
+          var sidebarRight = sidebarRect.right;
+          // getBoundingClientRect fires at mouseenter while the width transition
+          // (64px→208px, 0.22s) is still mid-flight. Clamp to expanded target
+          // width (13rem) when hovered/pinned so flyout never lands inside the sidebar.
+          if (sidebarEl.matches(':hover') || sidebarEl.classList.contains('sidebar-pinned')) {
+            var rootFontSize = parseFloat(getComputedStyle(document.documentElement).fontSize) || 16;
+            var expandedRight = sidebarRect.left + rootFontSize * 13;
+            if (expandedRight > sidebarRight) sidebarRight = expandedRight;
+          }
+          var left = sidebarRight + 6;
           var top = itemRect.top;
           flyoutEl.style.left = left + "px";
           flyoutEl.style.top = top + "px";
