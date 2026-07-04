@@ -4811,6 +4811,20 @@ def leave_rules_settings_view(request):
 
 
 @login_required
+@permission_required("leave.view_restrictleave")
+def restrict_leaves_settings_view(request):
+    """
+    Restrict Leaves settings page. Migrated from the main Leave navigation into
+    Settings > Leave; reuses the existing nav/list HTMX endpoints.
+    """
+    return render(
+        request,
+        "leave/settings/restrict_leaves.html",
+        {"pd": request.GET.urlencode()},
+    )
+
+
+@login_required
 @hx_request_required
 def delete_leaverequest_comment(request, comment_id):
     """

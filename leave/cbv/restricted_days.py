@@ -6,6 +6,7 @@ from typing import Any
 
 from django.contrib import messages
 from django.http import HttpResponse
+from django.shortcuts import redirect
 from django.urls import reverse
 from django.utils.decorators import method_decorator
 from django.utils.translation import gettext_lazy as _
@@ -26,10 +27,14 @@ from leave.models import RestrictLeave
 @method_decorator(login_required, name="dispatch")
 class RestrictedDaysView(TemplateView):
     """
-    for resticted days page
+    Legacy standalone Restrict Leaves page. Migrated into Settings > Leave;
+    redirect direct visits to the merged settings page.
     """
 
     template_name = "cbv/restricted_days/restricted_days.html"
+
+    def get(self, request, *args, **kwargs):
+        return redirect("restrict-leaves-view")
 
 
 @method_decorator(login_required, name="dispatch")
@@ -104,11 +109,12 @@ class RestrictedDaysNav(HorillaNavView):
                 }
             ]
 
-    nav_title = _("Restricted Days")
+    nav_title = _("Restrict Leaves")
     filter_instance = RestrictLeaveFilter()
     filter_body_template = "cbv/restricted_days/filter.html"
     search_swap_target = "#listContainer"
     filter_form_context_name = "form"
+    template_name = "generic/inline_nav.html"
 
 
 @method_decorator(login_required, name="dispatch")

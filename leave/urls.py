@@ -534,6 +534,11 @@ urlpatterns = [
         name="leave-rules-view",
     ),
     path(
+        "restrict-leaves-view/",
+        views.restrict_leaves_settings_view,
+        name="restrict-leaves-view",
+    ),
+    path(
         "compensatory-leave-settings-view/",
         views.compensatory_leave_settings_view,
         name="compensatory-leave-settings-view",

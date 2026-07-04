@@ -52,11 +52,6 @@ SUBMENUS = [
         "redirect": reverse_lazy("company-leave-view"),
         "accessibility": "leave.sidebar.company_leave_accessibility",
     },
-    {
-        "menu": _("Restrict Leaves"),
-        "redirect": reverse_lazy("restrict-view"),
-        "accessibility": "leave.sidebar.restrict_leave_accessibility",
-    },
 ]
 
 
@@ -133,6 +128,12 @@ def leave_rules_accessibility(request, submenu, user_perms, *args, **kwargs):
     )
 
 
+def restrict_leaves_settings_accessibility(
+    request, submenu, user_perms, *args, **kwargs
+):
+    return request.user.has_perm("leave.view_restrictleave")
+
+
 @settings_menu.register
 class LeaveSettings:
     title = _("Leave")
@@ -143,5 +144,10 @@ class LeaveSettings:
             "label": _("Leave Rules"),
             "url": reverse_lazy("leave-rules-view"),
             "accessibility": leave_rules_accessibility,
+        },
+        {
+            "label": _("Restrict Leaves"),
+            "url": reverse_lazy("restrict-leaves-view"),
+            "accessibility": restrict_leaves_settings_accessibility,
         },
     ]

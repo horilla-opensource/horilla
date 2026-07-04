@@ -1,0 +1,44 @@
+{% extends 'settings.html' %}
+{% load i18n static %}
+
+{% block settings %}
+    <div id="ohMessages"></div>
+
+    {% include "generic/components.html" %}
+
+    <div class="mb-4">
+        <h4 class="text-base font-semibold text-[#333]">{% trans "Restrict Leaves" %}</h4>
+        <p class="text-xs text-gray-500 mt-1">
+            {% trans "Define date ranges during which leave requests are restricted for selected departments or job positions." %}
+        </p>
+    </div>
+
+    <div class="border border-[#ebebeb] rounded-md mb-5">
+        <div hx-get="{% url 'nav-restricted-days' %}" hx-trigger="load"></div>
+
+        <div
+            class="oh-checkpoint-badge mb-2"
+            id="selectedInstances"
+            data-ids="[]"
+            data-clicked=""
+            style="display: none"
+        ></div>
+
+        <div
+            class="oh-wrapper"
+            hx-get="{% url 'restrict-filter' %}?{{ request.GET.urlencode }}"
+            hx-trigger="load"
+            id="listContainer"
+        >
+            <div class="animated-background"></div>
+        </div>
+    </div>
+
+    <script src="{% static '/restrict_days/action.js' %}"></script>
+
+    <span
+        id="bulkDeleteSpan"
+        hx-post="{% url 'restrict-days-bulk-delete' %}?{{ pd }}"
+        hx-target="#restrictday"
+    ></span>
+{% endblock settings %}
