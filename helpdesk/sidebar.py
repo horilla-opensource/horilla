@@ -18,12 +18,12 @@ SUBMENUS = [
         "accessibility": "helpdesk.sidebar.dashboard_accessibility",
     },
     {
-        "menu": _("FAQs"),
-        "redirect": reverse_lazy("faq-category-view"),
-    },
-    {
         "menu": _("Tickets"),
         "redirect": reverse_lazy("ticket-view"),
+    },
+    {
+        "menu": _("FAQs"),
+        "redirect": reverse_lazy("faq-category-view"),
     },
 ]
 

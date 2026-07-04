@@ -19,9 +19,8 @@ SUBMENUS = [
         "accessibility": "payroll.sidebar.dasbhoard_accessibility",
     },
     {
-        "menu": _("Contract"),
-        "redirect": reverse("view-contract"),
-        "accessibility": "payroll.sidebar.dasbhoard_accessibility",
+        "menu": _("Payslips"),
+        "redirect": reverse("view-payslip"),
     },
     {
         "menu": _("Allowances"),
@@ -34,10 +33,6 @@ SUBMENUS = [
         "accessibility": "payroll.sidebar.deduction_accessibility",
     },
     {
-        "menu": _("Payslips"),
-        "redirect": reverse("view-payslip"),
-    },
-    {
         "menu": _("Loan / Advanced Salary"),
         "redirect": reverse("view-loan"),
         "accessibility": "payroll.sidebar.loan_accessibility",
@@ -45,6 +40,11 @@ SUBMENUS = [
     {
         "menu": _("Encashments & Reimbursements"),
         "redirect": reverse("view-reimbursement"),
+    },
+    {
+        "menu": _("Contract"),
+        "redirect": reverse("view-contract"),
+        "accessibility": "payroll.sidebar.dasbhoard_accessibility",
     },
     {
         "menu": _("Federal Tax"),

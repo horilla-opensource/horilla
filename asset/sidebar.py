@@ -15,7 +15,7 @@ SUBMENUS = [
         "accessibility": "asset.sidebar.dashboard_accessibility",
     },
     {
-        "menu": _("Asset View"),
+        "menu": _("Assets"),
         "redirect": reverse("asset-category-view"),
         "accessibility": "asset.sidebar.dashboard_accessibility",
     },
@@ -25,7 +25,7 @@ SUBMENUS = [
         "accessibility": "asset.sidebar.lot_accessibility",
     },
     {
-        "menu": _("Request and Allocation"),
+        "menu": _("Requests & Allocation"),
         "redirect": reverse("asset-request-allocation-view"),
     },
     {

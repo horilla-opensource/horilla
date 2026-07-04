@@ -33,6 +33,10 @@ SUBMENUS = [
         "accessibility": "employee.sidebar.employee_accessibility",
     },
     {
+        "menu": _("Organization Chart"),
+        "redirect": reverse_lazy("organisation-chart"),
+    },
+    {
         "menu": _("Document Requests"),
         "redirect": reverse_lazy("document-request-view"),
         "accessibility": "employee.sidebar.document_accessibility",
@@ -67,10 +71,6 @@ SUBMENUS = [
     {
         "menu": _("Policies"),
         "redirect": reverse_lazy("view-policies"),
-    },
-    {
-        "menu": _("Organization Chart"),
-        "redirect": reverse_lazy("organisation-chart"),
     },
 ]
 

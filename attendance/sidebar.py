@@ -23,6 +23,10 @@ SUBMENUS = [
         "accessibility": "attendance.sidebar.dashboard_accessibility",
     },
     {
+        "menu": _("My Attendances"),
+        "redirect": reverse_lazy("view-my-attendance"),
+    },
+    {
         "menu": _("Attendances"),
         "redirect": reverse_lazy("attendance-view"),
         "accessibility": "attendance.sidebar.attendances_accessibility",
@@ -49,10 +53,6 @@ SUBMENUS = [
         "menu": _("Late Come Early Out"),
         "redirect": reverse_lazy("late-come-early-out-view"),
         "accessibility": "attendance.sidebar.tracking_accessibility",
-    },
-    {
-        "menu": _("My Attendances"),
-        "redirect": reverse_lazy("view-my-attendance"),
     },
 ]
 

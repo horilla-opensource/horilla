@@ -31,9 +31,9 @@ SUBMENUS = [
         "accessibility": "recruitment.sidebar.pipeline_accessibility",
     },
     {
-        "menu": _("Recruitment Survey"),
-        "redirect": reverse("recruitment-survey-question-template-view"),
-        "accessibility": "recruitment.sidebar.survey_accessibility",
+        "menu": _("Open Jobs"),
+        "redirect": reverse("open-recruitments"),
+        "accessibility": "recruitment.sidebar.recruitment_accessibility",
     },
     {
         "menu": _("Candidates"),
@@ -46,14 +46,14 @@ SUBMENUS = [
         "accessibility": "recruitment.sidebar.interview_accessibility",
     },
     {
-        "menu": _("Recruitment"),
+        "menu": _("Job Openings"),
         "redirect": reverse("recruitment-view"),
         "accessibility": "recruitment.sidebar.recruitment_accessibility",
     },
     {
-        "menu": _("Open Jobs"),
-        "redirect": reverse("open-recruitments"),
-        "accessibility": "recruitment.sidebar.recruitment_accessibility",
+        "menu": _("Recruitment Survey"),
+        "redirect": reverse("recruitment-survey-question-template-view"),
+        "accessibility": "recruitment.sidebar.survey_accessibility",
     },
     {
         "menu": _("Stages"),

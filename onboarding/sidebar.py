@@ -20,12 +20,12 @@ SUBMENUS = [
         "redirect": reverse("onboarding-dashboard"),
     },
     {
-        "menu": _("Onboarding view"),
+        "menu": _("Onboarding Tasks"),
         "redirect": reverse("cbv-pipeline-onboarding") + "?closed=false",
         "accessibility": "onboarding.sidebar.onboarding_view_accessibility",
     },
     {
-        "menu": _("Candidates view"),
+        "menu": _("Candidates"),
         "redirect": reverse("candidates-view"),
         "accessibility": "onboarding.sidebar.candidates_view_accessibility",
     },

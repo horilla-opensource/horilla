@@ -24,14 +24,18 @@ SUBMENUS = [
         "redirect": reverse_lazy("user-request-view"),
     },
     {
+        "menu": _("Compensatory Leave Requests"),
+        "redirect": reverse_lazy("view-compensatory-leave"),
+        "accessibility": "leave.sidebar.componstory_accessibility",
+    },
+    {
         "menu": _("Leave Requests"),
         "redirect": reverse_lazy("request-view"),
         "accessibility": "leave.sidebar.leave_request_accessibility",
     },
     {
-        "menu": _("Leave Types"),
-        "redirect": reverse_lazy("type-view"),
-        "accessibility": "leave.sidebar.type_accessibility",
+        "menu": _("Leave Allocation Request"),
+        "redirect": reverse_lazy("leave-allocation-request-view"),
     },
     {
         "menu": _("Assigned Leave"),
@@ -39,8 +43,9 @@ SUBMENUS = [
         "accessibility": "leave.sidebar.assign_accessibility",
     },
     {
-        "menu": _("Leave Allocation Request"),
-        "redirect": reverse_lazy("leave-allocation-request-view"),
+        "menu": _("Leave Types"),
+        "redirect": reverse_lazy("type-view"),
+        "accessibility": "leave.sidebar.type_accessibility",
     },
     {
         "menu": _("Holidays"),
@@ -103,17 +108,8 @@ def restrict_leave_accessibility(request, submenu, user_perms, *args, **kwargs):
     )
 
 
-if apps.is_installed("attendance"):
-    SUBMENUS.append(
-        {
-            "menu": _("Compensatory Leave Requests"),
-            "redirect": reverse_lazy("view-compensatory-leave"),
-            "accessibility": "leave.sidebar.componstory_accessibility",
-        }
-    )
-
-    def componstory_accessibility(request, submenu, user_perms, *args, **kwargs):
-        return is_compensatory(request.user)
+def componstory_accessibility(request, submenu, user_perms, *args, **kwargs):
+    return apps.is_installed("attendance") and is_compensatory(request.user)
 
 
 # ---------------------------------------------------------------------------

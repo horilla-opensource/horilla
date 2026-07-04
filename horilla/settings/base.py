@@ -298,17 +298,17 @@ NESTED_SUBORDINATE_VISIBILITY = False
 TWO_FACTORS_AUTHENTICATION = False
 
 SIDEBARS = [
-    "recruitment",
-    "onboarding",
     "employee",
     "attendance",
     "leave",
     "payroll",
-    "pms",
+    "recruitment",
+    "onboarding",
     "offboarding",
+    "pms",
+    "project",
     "asset",
     "helpdesk",
-    "project",
     "report",
 ]
 
