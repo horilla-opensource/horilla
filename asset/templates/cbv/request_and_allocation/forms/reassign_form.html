@@ -19,9 +19,7 @@
         </div>
     </div>
 
-    <form hx-post="{% url 'asset-reassign' pk=assignment.pk %}"
-          hx-target="#genericModalBody"
-          method="post">
+    <form hx-post="{% url 'asset-reassign' pk=assignment.pk %}" hx-target="#genericModalBody" method="post">
         {% csrf_token %}
         <div class="oh-input-group mb-3">
             <label class="oh-label">{{ form.asset_id.label }}</label>

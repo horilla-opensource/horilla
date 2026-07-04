@@ -1,21 +1,20 @@
 {% extends "index.html" %}
 {% load i18n %}
 {% block content %}
+    <div hx-get="{% url 'asset-renewal-nav' %}" hx-trigger="load"></div>
 
-<div hx-get="{% url 'asset-renewal-nav' %}" hx-trigger="load"></div>
+    {% include "generic/components.html" %}
 
-{% include "generic/components.html" %}
+    <div
+        class="oh-checkpoint-badge mb-2"
+        id="selectedInstances"
+        data-ids="[]"
+        data-clicked=""
+        style="display: none"
+    >
+    </div>
 
-<div
-	class="oh-checkpoint-badge mb-2"
-	id="selectedInstances"
-	data-ids="[]"
-	data-clicked=""
-	style="display: none"
-></div>
-
-<div class="oh-wrapper" id="listContainer">
-	<div class="animated-background"></div>
-</div>
-
+    <div class="oh-wrapper" id="listContainer">
+        <div class="animated-background"></div>
+    </div>
 {% endblock content %}

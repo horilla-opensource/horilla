@@ -1,18 +1,18 @@
 {% load i18n %}
 
 {% if instance.return_images.all %}
-<span class="oh-timeoff-modal__stat-title font-medium text-xs text-[#565E6C]"
-	>{% trans "Return Condition Images" %}</span
->
-<div class="d-flex">
-	{% for doc in instance.return_images.all %}
-	<a href="{{doc.image.url}}" rel="noopener noreferrer" target="_blank">
-		<span
-			class="oh-file-icon oh-file-icon--pdf"
-			onmouseover="enlargeattachment('{{doc.image.url}}')"
-			style="width: 40px; height: 40px"
-		></span>
-	</a>
-	{% endfor %}
-</div>
+    <span
+        class="oh-timeoff-modal__stat-title font-medium text-xs text-[#565E6C]"
+    >{% trans "Return Condition Images" %}</span>
+    <div class="d-flex">
+        {% for doc in instance.return_images.all %}
+            <a href="{{doc.image.url}}" rel="noopener noreferrer" target="_blank">
+                <span
+                    class="oh-file-icon oh-file-icon--pdf"
+                    onmouseover="enlargeattachment('{{doc.image.url}}')"
+                    style="width: 40px; height: 40px"
+                ></span>
+            </a>
+        {% endfor %}
+    </div>
 {% endif %}

@@ -1,6 +1,6 @@
 {% load static i18n %}
 <div class="oh-btn-group w-100">
-	{% if perms.asset.change_assetlot %}
+    {% if perms.asset.change_assetlot %}
         <!-- Start of Edit Button -->
         <button
             data-toggle="oh-modal-toggle"
@@ -38,5 +38,5 @@
             {% trans 'Delete' %}
         </button>
         <!-- End of Delete Form -->
-	{% endif %}
+    {% endif %}
 </div>

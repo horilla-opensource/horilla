@@ -12,17 +12,15 @@
                         <label
                             class="oh-label"
                             for="{{form.assigned_to_employee_id.id_for_label}}"
-                            >{% trans "Allocated User" %}</label
-                        >
-                        {{form.assigned_to_employee_id}}
+                        >{% trans "Allocated User" %}</label>
+                        {{ form.assigned_to_employee_id }}
                     </div>
                     <div class="oh-input-group">
                         <label
                             class="oh-label"
                             for="{{form.asset_id.id_for_label}}"
-                            >{% trans "Asset" %}</label
-                        >
-                        {{form.asset_id}}
+                        >{% trans "Asset" %}</label>
+                        {{ form.asset_id }}
                     </div>
                 </div>
                 <div class="col-sm-12 col-md-12 col-lg-6">
@@ -30,17 +28,15 @@
                         <label
                             class="oh-label"
                             for="{{form.assigned_date.id_for_label}}"
-                            >{% trans "Asset Allocated Date" %}</label
-                        >
+                        >{% trans "Asset Allocated Date" %}</label>
                         {{ form.assigned_date |attr:"type:date" }}
                     </div>
                     <div class="oh-input-group">
                         <label
                             class="oh-label"
                             for="{{form.return_status.id_for_label}}"
-                            >{% trans "Status" %}</label
-                        >
-                        {{form.return_status}}
+                        >{% trans "Status" %}</label>
+                        {{ form.return_status }}
                     </div>
                 </div>
                 <div class="col-sm-12 col-md-12 col-lg-6">
@@ -48,8 +44,7 @@
                         <label
                             class="oh-label"
                             for="{{form.return_date.id_for_label}}"
-                            >{% trans "Return Date" %}</label
-                        >
+                        >{% trans "Return Date" %}</label>
                         {{ form.return_date|attr:"type:date" }}
                     </div>
                 </div>
@@ -58,14 +53,14 @@
                         <label
                             class="oh-label"
                             for="{{form.assigned_by_employee_id.id_for_label}}"
-                            >{% trans "Allocated By" %}</label
-                        >
-                        {{form.assigned_by_employee_id}}
+                        >{% trans "Allocated By" %}</label>
+                        {{ form.assigned_by_employee_id }}
                     </div>
                 </div>
             </div>
         </div>
-    </div><div class="oh-accordion">
+    </div>
+    <div class="oh-accordion">
         <div class="oh-accordion-header">{% trans "Advanced" %}</div>
         <div class="oh-accordion-body">
             <div class="row">
@@ -74,17 +69,15 @@
                         <label
                             class="oh-label"
                             for="{{form.return_date_gte.id_for_label}}"
-                            >{% trans "Return Date Greater Or Equal" %}</label
-                        >
-                        {{form.return_date_gte}}
+                        >{% trans "Return Date Greater Or Equal" %}</label>
+                        {{ form.return_date_gte }}
                     </div>
                     <div class="oh-input-group">
                         <label
                             class="oh-label"
                             for="{{form.return_date_lte.id_for_label}}"
-                            >{% trans "Assign Date Greater Or Equal" %}</label
-                        >
-                        {{form.assigned_date_gte}}
+                        >{% trans "Assign Date Greater Or Equal" %}</label>
+                        {{ form.assigned_date_gte }}
                     </div>
                 </div>
 
@@ -93,17 +86,15 @@
                         <label
                             class="oh-label"
                             for="{{form.return_date_gte.id_for_label}}"
-                            >{% trans "Return Date lesser Or Equal" %}</label
-                        >
-                        {{form.return_date_lte}}
+                        >{% trans "Return Date lesser Or Equal" %}</label>
+                        {{ form.return_date_lte }}
                     </div>
                     <div class="oh-input-group">
                         <label
                             class="oh-label"
                             for="{{form.return_date_lte.id_for_label}}"
-                            >{% trans "Assign Date Lesser Or Equal" %}</label
-                        >
-                        {{form.assigned_date_lte}}
+                        >{% trans "Assign Date Lesser Or Equal" %}</label>
+                        {{ form.assigned_date_lte }}
                     </div>
                 </div>
             </div>

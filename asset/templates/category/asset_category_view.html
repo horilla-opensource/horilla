@@ -83,32 +83,6 @@
                     <div class="oh-dropdown__menu oh-dropdown__menu--right oh-dropdown__filter p-4" x-show="open"
                         @click.outside="open = false" style="display: none;">
                         <div class="oh-dropdown__filter-body">
-                            <!-- <div class="oh-accordion">
-                                <div class="oh-accordion-header">{% trans "Asset Category" %}</div>
-                                <div class="oh-accordion-body">
-                                    <form hx-get="{%url 'asset-category-view-search-filter' %}"
-                                        hx-target="#assetCategoryList" hx-swap="innerHTML" id="filterForm">
-                                        <div class="row">
-                                            <div class="col-sm-12 col-md-12 col-lg-12">
-                                                <div class="oh-input-group">
-                                                    <label class="oh-label" for="{{asset_category_filter_form.asset_category_name.id_for_label}}">{% trans "Category Name" %}</label>
-                                                    {{asset_category_filter_form.asset_category_name}}
-                                                </div>
-                                            </div>
-                                            <div class="col-sm-12 col-md-12 col-lg-12">
-                                                <div class="oh-input-group">
-                                                    <label class="oh-label" for="{{asset_category_filter_form.asset_category_description.id_for_label}}">{% trans "Description" %}</label>
-                                                    {{asset_category_filter_form.asset_category_description}}
-                                                </div>
-                                            </div>
-                                        </div>
-                                    </div>
-                                    <div class="oh-dropdown__filter-footer">
-                                        <button id="filterButton" class="oh-btn oh-btn--secondary oh-btn--small  w-100 filterButton">{% trans "Filter" %}</button>
-                                    </div>
-                                </form>
-                                </div>
-                            </div> -->
                             <div class="oh-accordion">
                                 <div class="oh-accordion-header">{% trans "Asset" %}</div>
                                 <div class="oh-accordion-body">

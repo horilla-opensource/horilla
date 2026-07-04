@@ -2,118 +2,118 @@
 {% load i18n static %}
 
 {% block content %}
-	<style>
-		.oh-modal_close--custom {
-			border: none;
-			background: none;
-			font-size: 1.5rem;
-			opacity: 0.7;
-			position: absolute;
-			top: 25px;
-			right: 15px;
-		}
-	</style>
+    <style>
+        .oh-modal_close--custom {
+            position: absolute;
+            top: 25px;
+            right: 15px;
+            border: none;
+            background: none;
+            font-size: 1.5rem;
+            opacity: 0.7;
+        }
+    </style>
 
+    <div hx-get="{% url 'nav-asset-request-allocation' %}" hx-trigger="load"></div>
 
-	<div hx-get="{% url 'nav-asset-request-allocation' %}" hx-trigger="load"></div>
+    {% include "generic/components.html" %}
 
-	{% include "generic/components.html" %}
+    <div
+        class="oh-checkpoint-badge mb-2"
+        id="selectedInstances"
+        data-ids="[]"
+        data-clicked=""
+        style="display: none"
+    >
+    </div>
+    <div
+        class="oh-checkpoint-badge mb-2"
+        id="assetlistInstances"
+        data-ids="[]"
+        data-clicked=""
+        style="display: none"
+    >
+    </div>
 
-	<div
-		class="oh-checkpoint-badge mb-2"
-		id="selectedInstances"
-		data-ids="[]"
-		data-clicked=""
-		style="display: none"
-	></div>
-	<div
-		class="oh-checkpoint-badge mb-2"
-		id="assetlistInstances"
-		data-ids="[]"
-		data-clicked=""
-		style="display: none"
-	></div>
+    <div class="oh-wrapper" id="listContainer">
+        <div class="animated-background"></div>
+    </div>
 
-	<div class="oh-wrapper" id="listContainer">
-		<div class="animated-background"></div>
-	</div>
+    <div
+        class="oh-modal"
+        id="addAssetReport"
+        role="dialog"
+        aria-labelledby="addAssetReport"
+        aria-hidden="true"
+        style="z-index: 1022"
+    >
+        <div class="oh-modal__dialog">
+            <div class="oh-modal__dialog-header">
+                <h2 class="oh-modal__dialog-title" id="addAssetReportLabel">
+                    {% trans "Add Asset Report" %}
+                </h2>
+                <button
+                    type="button"
+                    class="oh-modal_close--custom"
+                    onclick="$('#addAssetReport').removeClass('oh-modal--show')"
+                >
+                    <ion-icon
+                        name="close-outline"
+                        role="img"
+                        aria-label="close outline"
+                    ></ion-icon>
+                </button>
+            </div>
+            <div class="oh-modal__dialog-body" id="addAssetReportForm"></div>
+        </div>
+    </div>
 
-	<div
-		class="oh-modal"
-		id="addAssetReport"
-		role="dialog"
-		aria-labelledby="addAssetReport"
-		aria-hidden="true"
-		style="z-index: 1022"
-	>
-		<div class="oh-modal__dialog">
-			<div class="oh-modal__dialog-header">
-				<h2 class="oh-modal__dialog-title" id="addAssetReportLabel">
-					{% trans "Add Asset Report" %}
-				</h2>
-				<button
-					type="button"
-					class="oh-modal_close--custom"
-					onclick="$('#addAssetReport').removeClass('oh-modal--show');"
-				>
-					<ion-icon
-						name="close-outline"
-						role="img"
-						aria-label="close outline"
-					></ion-icon>
-				</button>
-			</div>
-			<div class="oh-modal__dialog-body" id="addAssetReportForm"></div>
-		</div>
-	</div>
+    <div
+        class="oh-modal"
+        id="assetFineModal"
+        role="dialog"
+        aria-labelledby="assetFineModal"
+        aria-hidden="true"
+        style="z-index: 1022"
+    >
+        <div class="oh-modal__dialog" id="assetFineModalBody">
+            <!-- Modal content goes here -->
+        </div>
+    </div>
 
-	<div
-		class="oh-modal"
-		id="assetFineModal"
-		role="dialog"
-		aria-labelledby="assetFineModal"
-		aria-hidden="true"
-		style="z-index: 1022"
-	>
-		<div class="oh-modal__dialog" id="assetFineModalBody">
-			<!-- Modal content goes here -->
-		</div>
-	</div>
+    <script>
+        $(document).ready(function () {
+        	$("#assetFineModalBody").on("htmx:afterSwap", function () {
+        		$("[name='installment_amount']").on("change keyup", function () {
+        			var loanAmount = $("[name='loan_amount']").val();
+        			var installmentAmount = $(this).val();
 
-	<script>
-		$(document).ready(function () {
-			$("#assetFineModalBody").on("htmx:afterSwap", function () {
-				$("[name='installment_amount']").on("change keyup", function () {
-					var loanAmount = $("[name='loan_amount']").val();
-					var installmentAmount = $(this).val();
+        			var installments = loanAmount / installmentAmount;
+        			$("[name='installments']").val(installments);
+        			if (Math.round(installments) !== installments) {
+        				installments = Math.round(installments);
+        				$("[name='installments']").val(installments);
+        				$("[name='installments']").trigger("change");
+        			}
+        		});
 
-					var installments = loanAmount / installmentAmount;
-					$("[name='installments']").val(installments);
-					if (Math.round(installments) !== installments) {
-						installments = Math.round(installments);
-						$("[name='installments']").val(installments);
-						$("[name='installments']").trigger("change");
-					}
-				});
+        		$("[name='loan_amount']").on("change keyup", function () {
+        			var loanAmount = $("[name='loan_amount']").val();
+        			if (loanAmount) {
+        				$("[name='installments']").val(1);
+        			} else {
+        				$("[name='installments']").val("");
+        			}
+        			$("[name='installments']").change();
+        		});
 
-				$("[name='loan_amount']").on("change keyup", function () {
-					var loanAmount = $("[name='loan_amount']").val();
-					if (loanAmount) {
-						$("[name='installments']").val(1);
-					} else {
-						$("[name='installments']").val("");
-					}
-					$("[name='installments']").change();
-				});
-
-				$("[name='installments']").on("change keyup", function () {
-					var loanAmount = $("[name='loan_amount']").val();
-					var installments = $(this).val();
-					var installmentAmount = loanAmount / installments;
-					$("[name='installment_amount']").val(installmentAmount);
-				});
-			});
-		});
-	</script>
-
+        		$("[name='installments']").on("change keyup", function () {
+        			var loanAmount = $("[name='loan_amount']").val();
+        			var installments = $(this).val();
+        			var installmentAmount = loanAmount / installments;
+        			$("[name='installment_amount']").val(installmentAmount);
+        		});
+        	});
+        });
+    </script>
 {% endblock %}
