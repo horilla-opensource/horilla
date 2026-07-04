@@ -110,6 +110,7 @@ class MailTemplateNavView(HorillaNavView):
 
     nav_title = _("Mail Templates")
     search_url = None
+    template_name = "generic/inline_nav.html"
 
     def __init__(self, **kwargs):
         super().__init__(**kwargs)

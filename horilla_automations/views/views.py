@@ -5,7 +5,7 @@ horilla_automation/views/views.py
 from django import forms
 from django.contrib import messages
 from django.http import JsonResponse
-from django.shortcuts import redirect
+from django.shortcuts import redirect, render
 from django.urls import reverse
 from django.utils.translation import gettext as _
 
@@ -65,7 +65,20 @@ def delete_automation(request, pk):
     except Exception as e:
         print(e)
         messages.error(request, "Something went wrong")
-    return redirect(reverse("mail-automations"))
+    return redirect(reverse("mail-automations-view"))
+
+
+@login_required
+@permission_required("horilla_automations.view_mailautomation")
+def mail_automations_settings_view(request):
+    """
+    Mail Automation settings page. Migrated from the Configuration menu into
+    Settings > Mail; reuses the existing nav/list HTMX endpoints.
+    """
+    return render(
+        request,
+        "horilla_automations/mail_automations_settings.html",
+    )
 
 
 @login_required

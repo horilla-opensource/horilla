@@ -1,0 +1,54 @@
+{% extends 'settings.html' %}
+{% load i18n static %}
+
+{% block settings %}
+    <div id="ohMessages"></div>
+
+    {% include "generic/components.html" %}
+
+    <div class="mb-4">
+        <h4 class="text-base font-semibold text-[#333]">{% trans "Mail Automation" %}</h4>
+        <p class="text-xs text-gray-500 mt-1">
+            {% trans "Configure automated email triggers based on model events and conditions." %}
+        </p>
+    </div>
+
+    <div class="border border-[#ebebeb] rounded-md mb-5">
+        <div hx-get="{% url 'mail-automations-nav' %}" hx-trigger="load"></div>
+
+        <div
+            class="oh-checkpoint-badge mb-2"
+            id="selectedInstances"
+            data-ids="[]"
+            data-clicked=""
+            style="display: none"
+        ></div>
+
+        <div
+            class="oh-wrapper"
+            hx-get="{% url 'mail-automations-list-view' %}?{{ request.GET.urlencode }}"
+            hx-trigger="load"
+            id="listContainer"
+        >
+            <div class="animated-background"></div>
+        </div>
+    </div>
+
+    <script src="{% static '/automation/automation.js' %}"></script>
+    <script>
+        function confirm(message, url) {
+            Swal.fire({
+                text: message,
+                icon: "question",
+                showCancelButton: true,
+                confirmButtonColor: "#008000",
+                cancelButtonColor: "#d33",
+                confirmButtonText: "Confirm",
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    window.location.href = url;
+                }
+            });
+        }
+    </script>
+{% endblock settings %}

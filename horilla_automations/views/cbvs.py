@@ -10,7 +10,7 @@ from django.conf import settings
 from django.contrib import messages
 from django.core import serializers
 from django.http import HttpResponse
-from django.shortcuts import render
+from django.shortcuts import redirect, render
 from django.urls import reverse, reverse_lazy
 from django.utils.decorators import method_decorator
 from django.utils.translation import gettext_lazy as _
@@ -30,7 +30,8 @@ from horilla_views.generic.cbv import views
 )
 class AutomationSectionView(views.HorillaSectionView):
     """
-    AutomationSectionView
+    Legacy standalone Mail Automations page. Migrated into Settings > Mail;
+    redirect direct visits to the settings page.
     """
 
     nav_url = reverse_lazy("mail-automations-nav")
@@ -42,6 +43,9 @@ class AutomationSectionView(views.HorillaSectionView):
     ]
 
     template_name = "horilla_automations/section_view.html"
+
+    def get(self, request, *args, **kwargs):
+        return redirect("mail-automations-view")
 
 
 @method_decorator(login_required, name="dispatch")
@@ -89,9 +93,10 @@ class AutomationNavView(views.HorillaNavView):
                 }
             )
 
-    nav_title = _("Automations")
+    nav_title = _("Mail Automation")
     search_url = reverse_lazy("mail-automations-list-view")
     search_swap_target = "#listContainer"
+    template_name = "generic/inline_nav.html"
 
 
 @method_decorator(login_required, name="dispatch")

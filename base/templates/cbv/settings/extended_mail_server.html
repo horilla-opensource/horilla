@@ -1,18 +1,10 @@
 {% load i18n static %}
 <div id="mail-server-cont">
     {% if primary_mail_not_exist %}
-  <div class="alert alert-warning" role="alert">
-    {% trans "Primary mail is not configured! " %}<img id="blink" src="{% static 'images/ui/email.png' %}" width="24" height="24">
+  <div class="bg-primary-100 border border-primary-500 rounded-md px-4 py-2 flex items-center gap-2 m-2" role="alert">
+    <span class="text-primary-600">{% trans "Primary mail is not configured!" %}</span>
+    <ion-icon name="mail-outline" class="text-primary-600 text-2xl shrink-0 animate-pulse"></ion-icon>
   </div>
-  <script type="text/javascript">
-    var blink =
-        document.getElementById('blink');
-
-    setInterval(function () {
-        blink.style.opacity =
-        (blink.style.opacity == 0 ? 1 : 0);
-    }, 800);
-  </script>
 {% endif %}
     {% include "generic/horilla_list_table.html" %}
 </div>

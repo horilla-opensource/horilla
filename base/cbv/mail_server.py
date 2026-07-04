@@ -89,6 +89,7 @@ class MailServerNav(HorillaNavView):
     nav_title = _("Mail Servers")
     filter_instance = MailServerFilter()
     search_swap_target = "#listContainer"
+    template_name = "generic/inline_nav.html"
 
 
 @method_decorator(login_required, name="dispatch")
