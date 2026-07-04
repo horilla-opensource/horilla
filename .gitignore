@@ -155,3 +155,10 @@ whoosh_index/
 
 #macOS
 .DS_Store
+
+# Claude Code (never commit AI tooling configs to public repo)
+.claude/
+CLAUDE.md
+.mcp.json
+.mcp.safe.json
+.claudeignore
