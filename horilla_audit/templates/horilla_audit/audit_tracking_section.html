@@ -1,0 +1,103 @@
+{% load i18n %}
+
+<div class="border border-[#ebebeb] rounded-md overflow-hidden mb-5">
+    <h5 class="text-sm font-semibold bg-[#f3f3f3] px-4 py-3 text-[#333]">
+        {% trans "Audit Tracking" %}
+    </h5>
+
+    <div class="p-4">
+        <p class="text-xs text-gray-500 mb-4">
+            {% blocktrans %}
+                Choose which models should record their changes in the audit log.
+                The default models (Employee, Employee Work Information, Employee
+                Bank Details) are always tracked and cannot be removed.
+            {% endblocktrans %}
+        </p>
+
+        <form method="post"
+              action="{% url 'audit-model-settings-save' %}"
+              hx-post="{% url 'audit-model-settings-save' %}"
+              hx-target="#settingsContainer"
+              hx-select="#settingsContainer"
+              hx-swap="outerHTML show:none">
+            {% csrf_token %}
+            <div class="grid grid-cols-12 gap-4 myform">
+                <div class="col-span-12 lg:col-span-11">
+                    <div class="flex space-x-2 pb-2">
+                        <label class="text-sm font-medium">{% trans "Tracked Models" %}</label>
+                    </div>
+                    {{ audit_model_form.model_paths }}
+                </div>
+                {% if perms.horilla_audit.change_auditmodelconfig %}
+                    <div class="col-span-12 lg:col-span-1 flex items-end">
+                        <button class="btn h-[36px] w-50" type="submit">
+                            {% trans "Save" %}
+                        </button>
+                    </div>
+                {% endif %}
+            </div>
+        </form>
+    </div>
+</div>
+
+{% if audit_model_configs %}
+    <div class="border border-[#ebebeb] rounded-md overflow-hidden mb-5">
+        <h5 class="text-sm font-semibold bg-[#f3f3f3] px-4 py-3 text-[#333]">
+            {% trans "Per-model Field Selection" %}
+        </h5>
+        <div class="p-4 overflow-x-auto">
+            <table class="w-full text-sm">
+                <thead class="bg-white text-left">
+                    <tr class="border-b border-[#ebebeb]">
+                        <th class="py-2 px-3 text-xs font-semibold text-[#555] uppercase tracking-wide">
+                            {% trans "Model" %}
+                        </th>
+                        <th class="py-2 px-3 text-xs font-semibold text-[#555] uppercase tracking-wide">
+                            {% trans "Tracked Fields" %}
+                        </th>
+                        <th class="py-2 px-3 text-xs font-semibold text-[#555] uppercase tracking-wide w-[150px]"></th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for cfg in audit_model_configs %}
+                        <tr class="border-b border-[#f0f0f0] hover:bg-[#fafafa]">
+                            <td class="py-3 px-3 align-middle">
+                                <div class="font-medium text-[#333]">{{ cfg.model_name }}</div>
+                                <div class="text-xs text-[#888]">{{ cfg.app_label }}</div>
+                            </td>
+                            <td class="py-3 px-3 align-middle">
+                                {% if cfg.tracked_fields %}
+                                    <div class="flex flex-wrap gap-1">
+                                        {% for f in cfg.tracked_fields %}
+                                            <span class="inline-block px-2 py-[2px] rounded-full bg-primary-100 text-primary-600 text-xs">
+                                                {{ f }}
+                                            </span>
+                                        {% endfor %}
+                                    </div>
+                                {% else %}
+                                    <em class="text-xs text-[#888]">{% trans "All fields" %}</em>
+                                {% endif %}
+                            </td>
+                            <td class="py-3 px-3 align-middle text-right">
+                                {% if perms.horilla_audit.change_auditmodelconfig %}
+                                    <a href="{% url 'audit-model-fields-edit' cfg.pk %}"
+                                       class="btn h-[32px] inline-flex items-center px-3 text-xs">
+                                        {% trans "Edit Fields" %}
+                                    </a>
+                                {% endif %}
+                            </td>
+                        </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+{% endif %}
+
+<script>
+    $(document).ready(function () {
+        $('select[name="model_paths"]')
+            .removeClass('select2-hidden-accessible')
+            .addClass('oh-select oh-select-2');
+    });
+</script>

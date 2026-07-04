@@ -1,0 +1,43 @@
+{% extends 'settings.html' %}
+{% load i18n static %}
+
+{% block settings %}
+    <div id="ohMessages"></div>
+
+    <div class="mb-4">
+        <h4 class="text-base font-semibold text-[#333]">{% trans "Audit & History" %}</h4>
+        <p class="text-xs text-gray-500 mt-1">
+            {% trans "Manage history tags and configure which models and fields are tracked in the audit log." %}
+        </p>
+    </div>
+
+    {% if perms.horilla_audit.view_audittag %}
+        <div class="border border-[#ebebeb] rounded-md mb-5">
+            <div hx-get="{% url 'audit-tag-navbar' %}" hx-trigger="load"></div>
+            <p class="text-xs text-gray-500 mt-1 ml-5">
+                {% trans "Create and manage tags used to categorise records in the audit history log." %}
+            </p>
+            <div
+                class="oh-checkpoint-badge mb-2"
+                id="selectedInstances"
+                data-ids="[]"
+                data-clicked=""
+                style="display: none"
+            >
+            </div>
+            <div
+                class="oh-wrapper"
+                hx-get='{% url "audit-tag-list" %}?{{ request.GET.urlencode }}'
+                hx-trigger="load"
+                id="listContainer"
+            >
+                <div class="animated-background"></div>
+            </div>
+        </div>
+        <script src="{% static 'cbv/deleteFunc.js' %}"></script>
+    {% endif %}
+
+    {% if perms.horilla_audit.view_auditmodelconfig %}
+        {% include "horilla_audit/audit_tracking_section.html" %}
+    {% endif %}
+{% endblock settings %}

@@ -5,7 +5,7 @@ views.py
 from django.contrib import messages
 from django.contrib.auth.decorators import login_required, permission_required
 from django.http import HttpResponse, HttpResponseBadRequest
-from django.shortcuts import render
+from django.shortcuts import redirect, render
 from django.urls import reverse
 from django.utils.translation import gettext as _
 from django.views.decorators.http import require_http_methods
@@ -20,22 +20,36 @@ from horilla_audit.models import AuditModelConfig
 from horilla_audit.registry import DEFAULT_TRACKED_MODELS
 
 
+def _audit_tracking_context():
+    """Shared context for the audit-tracking section on Audit & History."""
+    return {
+        "audit_model_form": AuditModelConfigForm(),
+        "audit_model_configs": AuditModelConfig.objects.all().order_by(
+            "app_label", "model_name"
+        ),
+    }
+
+
+@login_required
+def audit_history_settings_view(request):
+    """
+    Merged "Audit & History" settings page grouping History Tags and Audit
+    Tracking under a single header.
+    """
+    context = {}
+    if request.user.has_perm("horilla_audit.view_auditmodelconfig"):
+        context.update(_audit_tracking_context())
+    return render(request, "base/settings/audit_history.html", context)
+
+
 @login_required
 @permission_required("horilla_audit.view_auditmodelconfig")
 def audit_model_settings(request):
-    """Render the audit-tracking configuration card."""
-
-    form = AuditModelConfigForm()
-    configs = AuditModelConfig.objects.all().order_by("app_label", "model_name")
-    context = {
-        "audit_model_form": form,
-        "audit_model_configs": configs,
-    }
-    return render(
-        request,
-        "horilla_audit/audit_model_settings.html",
-        context,
-    )
+    """
+    Legacy standalone Audit Tracking settings page. Merged into Audit & History;
+    redirect direct visits to the merged page.
+    """
+    return redirect("audit-history-view")
 
 
 @login_required
@@ -79,7 +93,7 @@ def save_audit_models(request):
     if request.headers.get("HX-Request"):
         return HttpResponse(
             status=200,
-            headers={"HX-Redirect": reverse("audit-model-settings")},
+            headers={"HX-Redirect": reverse("audit-history-view")},
         )
     return HorillaRedirect(request)
 
@@ -111,7 +125,7 @@ def edit_audit_model_fields(request, pk):
             if request.headers.get("HX-Request"):
                 return HttpResponse(
                     status=200,
-                    headers={"HX-Redirect": reverse("audit-model-settings")},
+                    headers={"HX-Redirect": reverse("audit-history-view")},
                 )
             return HorillaRedirect(request)
     else:

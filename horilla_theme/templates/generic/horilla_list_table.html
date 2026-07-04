@@ -33,7 +33,7 @@
         {% if bulk_select_option %} {% include "generic/quick_actions.html" %} {% endif %}
         {% if queryset|length %}
 
-            <div class="bg-white p-5 pe-2 pt-3 rounded-md shadow-card relative">
+            <div class="bg-white p-2 rounded-md shadow-card relative">
                 {% if show_toggle_form %}
                 <div class="oh-sticky-dropdown--header absolute right-[30px] top-[25px]" style="z-index: 13;">
                     <div class="oh-dropdown" x-data="{ open: false }">

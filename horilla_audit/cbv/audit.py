@@ -37,6 +37,7 @@ class AudiTagsList(HorillaListView):
     model = AuditTag
     filter_class = AudiTagFilter
     show_toggle_form = False
+    bulk_select_option = False
 
     bulk_update_fields = ["highlight"]
 
@@ -95,6 +96,7 @@ class AuditTagsNavView(HorillaNavView):
     nav_title = _("History Tags")
     search_swap_target = "#listContainer"
     filter_instance = AudiTagFilter()
+    template_name = "generic/inline_nav.html"
 
 
 @method_decorator(login_required, name="dispatch")
