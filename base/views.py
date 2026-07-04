@@ -1798,22 +1798,29 @@ def mail_server_create_or_update(request):
 
 @login_required
 @permission_required("base.view_horillamailtemplate")
-def view_mail_templates(request):
+def mail_templates_settings_view(request):
     """
-    This method will render template to disply the offerletter templates
+    Mail Template settings page. Migrated from the Configuration menu into
+    Settings > Mail.
     """
     templates = HorillaMailTemplate.objects.all()
     form = MailTemplateForm()
-    if templates.exists():
-        template = "mail/view_templates.html"
-    else:
-        template = "mail/empty_mail_template.html"
     searchWords = form.get_template_language()
     return render(
         request,
-        template,
+        "base/settings/mail_templates.html",
         {"templates": templates, "form": form, "searchWords": searchWords},
     )
+
+
+@login_required
+@permission_required("base.view_horillamailtemplate")
+def view_mail_templates(request):
+    """
+    Legacy standalone Mail Templates page. Migrated into Settings > Mail;
+    redirect direct visits to the settings page.
+    """
+    return redirect("mail-templates-view")
 
 
 @login_required
@@ -6077,14 +6084,10 @@ def rotating_work_type_select_filter(request):
 @permission_required("horilla_audit.view_audittag")
 def tag_view(request):
     """
-    This method is used to show Audit tags
+    Legacy standalone History Tags settings page. Merged into Audit & History;
+    redirect direct visits to the merged page.
     """
-    audittags = AuditTag.objects.all()
-    return render(
-        request,
-        "base/tags/tags.html",
-        {"audittags": audittags},
-    )
+    return redirect("audit-history-view")
 
 
 @login_required
@@ -7497,6 +7500,17 @@ def holiday_info_export(request):
 
 
 @login_required
+@permission_required("base.view_holidays")
+def holidays_settings_view(request):
+    """
+    Holidays ("Public Holidays") settings page. Migrated from the Configuration
+    menu into Settings > Organization; reuses the existing nav/list HTMX
+    endpoints.
+    """
+    return render(request, "base/settings/holidays.html")
+
+
+@login_required
 def holiday_view(request):
     """
     function used to view holidays.
@@ -7690,6 +7704,17 @@ def company_leave_creation(request):
     return render(
         request, "company_leave/company_leave_creation_form.html", {"form": form}
     )
+
+
+@login_required
+@permission_required("base.view_companyleaves")
+def company_leaves_settings_view(request):
+    """
+    Company Leaves ("Weekly Off Days") settings page. Migrated from the
+    Configuration menu into Settings > Organization; reuses the existing
+    nav/list HTMX endpoints.
+    """
+    return render(request, "base/settings/company_leaves.html")
 
 
 @login_required

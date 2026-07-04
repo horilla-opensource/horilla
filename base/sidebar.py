@@ -69,10 +69,30 @@ def audit_tracking_accessibility(request, submenu, user_perms, *args, **kwargs):
     return request.user.has_perm("horilla_audit.view_auditmodelconfig")
 
 
+def audit_history_accessibility(request, submenu, user_perms, *args, **kwargs):
+    return any(
+        request.user.has_perm(p)
+        for p in [
+            "horilla_audit.view_audittag",
+            "horilla_audit.view_auditmodelconfig",
+        ]
+    )
+
+
 def mail_server_accessibility(request, submenu, user_perms, *args, **kwargs):
     return request.user.has_perm(
         "base.view_dynamicemailconfiguration"
     ) and not apps.is_installed("outlook_auth")
+
+
+def mail_template_accessibility(request, submenu, user_perms, *args, **kwargs):
+    return request.user.has_perm("base.view_horillamailtemplate")
+
+
+def mail_automation_accessibility(request, submenu, user_perms, *args, **kwargs):
+    return apps.is_installed("horilla_automations") and request.user.has_perm(
+        "horilla_automations.view_mailautomation"
+    )
 
 
 def outlook_mail_accessibility(request, submenu, user_perms, *args, **kwargs):
@@ -95,6 +115,16 @@ def job_role_accessibility(request, submenu, user_perms, *args, **kwargs):
 
 def company_accessibility(request, submenu, user_perms, *args, **kwargs):
     return request.user.has_perm("base.view_company")
+
+
+def holidays_settings_accessibility(request, submenu, user_perms, *args, **kwargs):
+    return request.user.has_perm("base.view_holidays")
+
+
+def company_leaves_settings_accessibility(
+    request, submenu, user_perms, *args, **kwargs
+):
+    return request.user.has_perm("base.view_companyleaves")
 
 
 def color_theme_accessibility(request, submenu, user_perms, *args, **kwargs):
@@ -159,19 +189,9 @@ class GeneralSettings:
             "accessibility": user_group_accessibility,
         },
         {
-            "label": _("History Tags"),
-            "url": reverse_lazy("tag-view"),
-            "accessibility": history_tags_accessibility,
-        },
-        {
-            "label": _("Audit Tracking"),
-            "url": reverse_lazy("audit-model-settings"),
-            "accessibility": audit_tracking_accessibility,
-        },
-        {
-            "label": _("Mail Server"),
-            "url": reverse_lazy("mail-server-conf"),
-            "accessibility": mail_server_accessibility,
+            "label": _("Audit & History"),
+            "url": reverse_lazy("audit-history-view"),
+            "accessibility": audit_history_accessibility,
         },
         {
             "label": _("Outlook Mail"),
@@ -182,15 +202,20 @@ class GeneralSettings:
 
 
 # ---------------------------------------------------------------------------
-# 2. Base section
+# 2. Organization section
 # ---------------------------------------------------------------------------
 
 
 @settings_menu.register
 class BaseSettings:
-    title = _("Base")
+    title = _("Organization")
     order = 2
     items = [
+        {
+            "label": _("Company"),
+            "url": reverse_lazy("company-view"),
+            "accessibility": company_accessibility,
+        },
         {
             "label": _("Department"),
             "url": reverse_lazy("department-view"),
@@ -207,15 +232,48 @@ class BaseSettings:
             "accessibility": job_role_accessibility,
         },
         {
-            "label": _("Company"),
-            "url": reverse_lazy("company-view"),
-            "accessibility": company_accessibility,
+            "label": _("Weekly Off Days"),
+            "url": reverse_lazy("company-leaves-view"),
+            "accessibility": company_leaves_settings_accessibility,
+        },
+        {
+            "label": _("Public Holidays"),
+            "url": reverse_lazy("holidays-view"),
+            "accessibility": holidays_settings_accessibility,
         },
     ]
 
 
 # ---------------------------------------------------------------------------
-# 3. Theme Manager section (only when horilla_theme is installed)
+# 3. Mail section
+# ---------------------------------------------------------------------------
+
+
+@settings_menu.register
+class MailSettings:
+    title = _("Mail")
+    order = 3
+    items = [
+        {
+            "label": _("Mail Server"),
+            "url": reverse_lazy("mail-server-conf"),
+            "accessibility": mail_server_accessibility,
+        },
+        {
+            "label": _("Mail Template"),
+            "url": reverse_lazy("mail-templates-view"),
+            "accessibility": mail_template_accessibility,
+        },
+        {
+            "label": _("Mail Automation"),
+            "url": reverse_lazy("mail-automations-view"),
+            "accessibility": mail_automation_accessibility,
+        },
+    ]
+
+
+# ---------------------------------------------------------------------------
+# 4. Theme Manager section (only when horilla_theme is installed)
 # ---------------------------------------------------------------------------
 
 
@@ -234,7 +292,7 @@ class ThemeManagerSettings:
 
 
 # ---------------------------------------------------------------------------
-# 4. Integrations section
+# 5. Integrations section
 # ---------------------------------------------------------------------------
 
 

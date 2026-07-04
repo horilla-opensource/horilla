@@ -1,0 +1,41 @@
+{% extends 'settings.html' %}
+{% load i18n static %}
+
+{% block settings %}
+    <div id="ohMessages"></div>
+
+    {% include "generic/components.html" %}
+
+    <div class="mb-4">
+        <h4 class="text-base font-semibold text-[#333]">{% trans "Weekly Off Days" %}</h4>
+        <p class="text-xs text-gray-500 mt-1">
+            {% trans "Define recurring company-wide off days based on the week and weekday." %}
+        </p>
+    </div>
+
+    <div class="border border-[#ebebeb] rounded-md mb-5">
+        <div hx-get="{% url 'company-leave-navbar' %}" hx-trigger="load"></div>
+
+        <div
+            class="oh-checkpoint-badge mb-2"
+            id="selectedInstances"
+            data-ids="[]"
+            data-clicked=""
+            style="display: none"
+        >
+        </div>
+
+        <div
+            class="oh-wrapper"
+            hx-get="{% url 'company-leave-filter' %}?{{ request.GET.urlencode }}"
+            hx-trigger="load"
+            id="listContainer"
+        >
+            <div class="animated-background"></div>
+        </div>
+    </div>
+
+    <script>
+        $(".reload-record").click();
+    </script>
+{% endblock settings %}

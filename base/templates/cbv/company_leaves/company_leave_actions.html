@@ -7,12 +7,12 @@
             hx-target="#genericModalBody"><ion-icon name="create-outline"></ion-icon></button>
       {% endif %}
       {% if perms.base.delete_companyleaves %}
-          <a class="oh-btn oh-btn--danger-outline oh-btn--light-bkg w-100"
+          <button class="oh-btn oh-btn--danger-outline oh-btn--light-bkg w-100"
               hx-confirm="{% trans 'Are you sure you want to delete ?' %}"
               hx-post="{% url 'company-leave-delete' instance.id %}"
               hx-target="#listContainer"
               title="{% trans 'Delete' %}"><ion-icon name="trash-outline"></ion-icon>
-          </a>
+          </button>
       {% endif %}
     </div>
   {% endif %}

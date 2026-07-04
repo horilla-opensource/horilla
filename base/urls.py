@@ -421,6 +421,11 @@ urlpatterns = [
         "replace-primary-mail/", views.replace_primary_mail, name="replace-primary-mail"
     ),
     path(
+        "settings/mail-templates-view/",
+        views.mail_templates_settings_view,
+        name="mail-templates-view",
+    ),
+    path(
         "configuration/view-mail-templates/",
         views.view_mail_templates,
         name="view-mail-templates",
@@ -1717,6 +1722,11 @@ urlpatterns = [
         name="holidays-excel-template",
     ),
     path(
+        "settings/holidays-view/",
+        views.holidays_settings_view,
+        name="holidays-view",
+    ),
+    path(
         "configuration/holiday-view/",
         holidays.HolidaysView.as_view(),
         name="holiday-view",
@@ -1781,6 +1791,11 @@ urlpatterns = [
     #     views.company_leave_view,
     #     name="company-leave-view",
     # ),
+    path(
+        "settings/company-leaves-view/",
+        views.company_leaves_settings_view,
+        name="company-leaves-view",
+    ),
     path(
         "configuration/company-leave-view/",
         company_leaves.CompanyLeavesView.as_view(),
