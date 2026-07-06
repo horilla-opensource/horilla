@@ -119,8 +119,13 @@
     .sideboxmain {
         transition: background-color 0.18s ease, box-shadow 0.18s ease;
     }
+    /* sidebox-active = hover-only indicator (cleared on mouseleave). active = current page (persists). */
     .sideboxmain.sidebox-active {
+        background-color: #e54f38 !important;
         box-shadow: 0 4px 14px -4px rgba(227, 78, 56, 0.45);
+    }
+    body.dark .sideboxmain.sidebox-active {
+        background-color: #c73f2a !important;
     }
 
     /* Active submenu link highlight */
@@ -260,9 +265,23 @@
         transform: translateX(0);
         transition: opacity 0.15s ease, transform 0.15s ease;
     }
+    #sidebarFlyout h5 {
+        font-size: 11px;
+        font-weight: 600;
+        color: #6b7280;
+        text-transform: uppercase;
+        letter-spacing: 0.05em;
+        padding: 4px 10px 8px;
+        border-bottom: 1px solid #f3f4f6;
+        margin-bottom: 4px;
+    }
     body.dark #sidebarFlyout {
         background: #1f2937;
         border-color: #374151;
+    }
+    body.dark #sidebarFlyout h5 {
+        color: #9ca3af;
+        border-bottom-color: #374151;
     }
 
     @media (prefers-reduced-motion: reduce) {
@@ -398,6 +417,7 @@
     </div>
     <!-- Flyout panel: populated and positioned by JS on hover -->
     <div id="sidebarFlyout">
+        <h5 id="sidebarFlyoutTitle"></h5>
         <ul id="sidebarFlyoutList" class="space-y-0.5"></ul>
     </div>
 </div>
@@ -518,21 +538,14 @@
         // ── Hover flyout helpers ─────────────────────────────────────────────
 
         var flyoutEl = document.getElementById("sidebarFlyout");
+        var flyoutTitleEl = document.getElementById("sidebarFlyoutTitle");
         var flyoutListEl = document.getElementById("sidebarFlyoutList");
         var flyoutCloseTimer = null;
+        var currentFlyoutBtn = null;
 
         function positionFlyout(itemRect) {
           var sidebarRect = sidebarEl.getBoundingClientRect();
-          var sidebarRight = sidebarRect.right;
-          // getBoundingClientRect fires at mouseenter while the width transition
-          // (64px→208px, 0.22s) is still mid-flight. Clamp to expanded target
-          // width (13rem) when hovered/pinned so flyout never lands inside the sidebar.
-          if (sidebarEl.matches(':hover') || sidebarEl.classList.contains('sidebar-pinned')) {
-            var rootFontSize = parseFloat(getComputedStyle(document.documentElement).fontSize) || 16;
-            var expandedRight = sidebarRect.left + rootFontSize * 13;
-            if (expandedRight > sidebarRight) sidebarRight = expandedRight;
-          }
-          var left = sidebarRight + 6;
+          var left = sidebarRect.right + 6;
           var top = itemRect.top;
           flyoutEl.style.left = left + "px";
           flyoutEl.style.top = top + "px";
@@ -553,6 +566,11 @@
 
           clearTimeout(flyoutCloseTimer);
 
+          var label = btn.querySelector(".oh-sidebar-label");
+          var titleText = label ? label.textContent.trim() : (btn.getAttribute("aria-label") || "");
+          flyoutTitleEl.textContent = titleText;
+          flyoutTitleEl.style.display = titleText ? "" : "none";
+
           flyoutListEl.innerHTML = "";
           liItems.forEach(function (li) { flyoutListEl.appendChild(li.cloneNode(true)); });
           if (window.htmx) htmx.process(flyoutListEl);
@@ -566,11 +584,15 @@
 
           positionFlyout(item.getBoundingClientRect());
           flyoutEl.classList.add("is-visible");
-          setActiveSidebarMenu(btn);
+          // Hover-only indicator — does NOT touch the persisted 'active' class or localStorage
+          if (currentFlyoutBtn && currentFlyoutBtn !== btn) currentFlyoutBtn.classList.remove("sidebox-active");
+          currentFlyoutBtn = btn;
+          btn.classList.add("sidebox-active");
         }
 
         function hideFlyout() {
           if (flyoutEl) flyoutEl.classList.remove("is-visible");
+          if (currentFlyoutBtn) { currentFlyoutBtn.classList.remove("sidebox-active"); currentFlyoutBtn = null; }
         }
 
         function scheduleFlyoutClose() {
@@ -590,7 +612,22 @@
             cancelFlyoutClose();
             showFlyout(item, btn);
           });
-          item.addEventListener("mouseleave", function () { scheduleFlyoutClose(); });
+          item.addEventListener("mouseleave", function (e) {
+            // If the mouse moved directly into the flyout panel, keep the hover indicator alive
+            if (flyoutEl && flyoutEl.contains(e.relatedTarget)) return;
+            // Otherwise clear hover state immediately so it doesn't bleed onto the next item
+            if (currentFlyoutBtn === btn) { btn.classList.remove("sidebox-active"); currentFlyoutBtn = null; }
+            scheduleFlyoutClose();
+          });
+        });
+
+        // Top-menu links (e.g. Dashboard) are direct <a> tags, not inside .sidebar-item.
+        // Clear any leftover hover indicator the moment the mouse enters them.
+        document.querySelectorAll("a.sideboxmain").forEach(function (link) {
+          link.addEventListener("mouseenter", function () {
+            if (currentFlyoutBtn) { currentFlyoutBtn.classList.remove("sidebox-active"); currentFlyoutBtn = null; }
+            scheduleFlyoutClose();
+          });
         });
 
         if (flyoutEl) {
