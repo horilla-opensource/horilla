@@ -55,6 +55,7 @@ class BonusPointSettingNavView(views.HorillaNavView):
         super().__init__(*args, **kwargs)
         if self.request.user.has_perm("pms.add_bonuspointsetting"):
             self.create_attrs = f"""
+                onclick="event.stopPropagation();"
                 hx-get="{reverse_lazy("create-bonus-point-setting")}"
                 hx-target="#genericModalBody"
                 data-toggle="oh-modal-toggle"
@@ -64,6 +65,7 @@ class BonusPointSettingNavView(views.HorillaNavView):
     nav_title = _("Bonus Point Setting")
     search_url = reverse_lazy("bonus-point-setting-list-view")
     search_swap_target = "#listContainer"
+    template_name = "generic/inline_nav.html"
 
 
 @method_decorator(login_required, name="dispatch")
