@@ -839,11 +839,10 @@
             if (e.target.closest(".sidebar-subnav")) return;
             if (e.target.closest("a")) return;
 
-            // Module button click: flyout is already shown by hover; just mark active
+            // Module button click opens flyout via hover; do not mark active without navigation
             var btn = e.target.closest(".sideboxmain");
             if (!btn) return;
             e.stopPropagation();
-            setActiveSidebarMenu(btn);
           });
         }
 
