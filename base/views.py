@@ -43,7 +43,7 @@ from django.utils.http import url_has_allowed_host_and_scheme
 from django.utils.translation import gettext as _
 from django.views import View
 from django.views.decorators.http import require_http_methods
-from django.views.generic import TemplateView
+from django.views.generic import RedirectView, TemplateView
 from rest_framework_simplejwt.authentication import JWTAuthentication
 from rest_framework_simplejwt.exceptions import InvalidToken, TokenError
 from rest_framework_simplejwt.tokens import UntypedToken
@@ -1109,13 +1109,13 @@ def common_settings(request):
     return render(request, "settings.html")
 
 
-class SettingsView(LoginRequiredMixin, TemplateView):
+class SettingsView(LoginRequiredMixin, RedirectView):
     """
-    Settings page — builds the sidebar menu from registered app menu.py
-    entries and passes it directly into the template context.
+    Settings page — has no content of its own ({% block settings %} is
+    always empty), so redirect to System Preferences by default.
     """
 
-    template_name = "settings.html"
+    pattern_name = "system-preferences-view"
 
 
 @login_required
@@ -5554,6 +5554,7 @@ def _system_preferences_context(request):
         "companies": companies,
         "selected_company_id": selected_company_id,
         "announcement_expire_instance": instance,
+        "current_company": companies.first(),
     }
 
 
@@ -5830,7 +5831,25 @@ def history_field_settings(request):
             history_object.save()
 
     if request.headers.get("HX-Request"):
-        return HttpResponse("")
+        history_tracking_instance = HistoryTrackingFields.objects.first()
+        history_fields_form_initial = {}
+        if history_tracking_instance and history_tracking_instance.tracking_fields:
+            history_fields_form_initial = {
+                "tracking_fields": history_tracking_instance.tracking_fields[
+                    "tracking_fields"
+                ]
+            }
+        history_fields_form = HistoryTrackingFieldsForm(
+            initial=history_fields_form_initial
+        )
+        return render(
+            request,
+            "base/audit_tag/history_tracking_fields_content.html",
+            {
+                "history_tracking_instance": history_tracking_instance,
+                "history_fields_form": history_fields_form,
+            },
+        )
     return redirect(general_settings)
 
 

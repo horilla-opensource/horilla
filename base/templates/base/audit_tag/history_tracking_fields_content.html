@@ -1,0 +1,87 @@
+{% load i18n %}
+<style>
+    .select2-selection.select2-selection--multiple {
+        min-height: 48px;
+        overflow-y: auto;
+    }
+    .select2-selection__choice__remove {
+        height: 20px;
+        margin-top: auto;
+    }
+    button {
+        height: 48px;
+    }
+    div[style='display: flex'] {
+        flex-direction: row;
+    }
+    @media (max-width: 768px) {
+        div[style='display: flex'] {
+            flex-direction: column;
+        }
+        button {
+            margin-top: 10px;
+        }
+    }
+</style>
+
+<form
+    action="{% url 'history-field-settings' %}"
+    class="settings-label mb-1"
+    method="post"
+    hx-post="{% url 'history-field-settings' %}"
+    hx-target="#historyTrackingFieldsForm"
+    hx-swap="innerHTML"
+    data-settings-native="true"
+>
+    {% csrf_token %}
+    <div class="oh-inner-sidebar-content__header mt-4">
+        <h2 class="oh-inner-sidebar-content__title">
+            {% trans "Employee History Tracking" %}
+        </h2>
+    </div>
+    {% if history_tracking_instance.work_info_track %}
+        <div class="oh-label__info" for="defatul_expire">
+            <label class="oh-label" for="defatul_expire">{% trans "Tracking Fields" %}</label>
+            <span
+                class="oh-info mr-2"
+                title="{% trans 'Employee history will be stored during updation of the fields that selected here.' %}"
+            ></span>
+        </div>
+        <div style="display: flex">
+            <div style="min-width: 273px">
+                {{ history_fields_form.tracking_fields }}
+            </div>
+            {% if perms.payroll.change_payrollsettings %}
+                <button
+                    style="display: inline; margin-left: 5px"
+                    type="submit"
+                    class="oh-btn oh-btn--secondary mr-0 oh-btn--w-100-resp"
+                >
+                    {% trans "Save Changes" %}
+                </button>
+            {% endif %}
+        </div>
+    {% endif %}
+
+    <div class="oh-label__info mt-3" for="work_info_track">
+        <label class="oh-label" for="work_info_track">{% trans "Work Information Tracking" %}</label>
+        <span
+            class="oh-info mr-2"
+            title='{% trans "By enabling this feature, you can save the history of employee work information during updates." %}'
+        >
+        </span>
+    </div>
+    <div class="oh-switch p-3">
+        <input
+            type="checkbox"
+            class="oh-switch__checkbox"
+            name="work_info_track"
+            onchange="$(this).closest('form').find('input[type=submit]').click()"
+            {% if history_tracking_instance.work_info_track %}
+                checked
+            {% endif %}
+        >
+    </div>
+    <input type="submit" hidden>
+    <div class="oh-inner-sidebar-content__footer"></div>
+</form>

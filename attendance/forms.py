@@ -1022,7 +1022,6 @@ class GraceTimeAssignForm(forms.Form):
     shifts = forms.ModelMultipleChoiceField(
         queryset=EmployeeShift.objects.all(),
     )
-    verbose_name = _("Assign Shifts")
 
     def as_p(self, *args, **kwargs):
         """

@@ -9,9 +9,9 @@
         action="{% url 'payroll-settings' %}"
         method="post"
         hx-post="{% url 'payroll-settings' %}"
-        hx-target="#settingsContainer"
-        hx-select="#settingsContainer"
-        hx-swap="outerHTML show:none"
+        hx-swap="none"
+        data-settings-native="true"
+        hx-on-htmx-after-request="setTimeout(reloadMessage, 70);"
     >
         {% csrf_token %}
 

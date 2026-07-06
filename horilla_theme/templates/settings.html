@@ -167,6 +167,12 @@
 				return hrefPath === currentPath;
 			}).first();
 		}
+		if (!active.length) {
+			// Nothing matched (e.g. fresh session, no stored accordion state) —
+			// default to the first item (System Preferences) instead of leaving
+			// the whole sidebar collapsed and looking empty.
+			active = links.first();
+		}
 		if (active.length) {
 			active.addClass("text-primary-600");
 			const panel = active.closest(".accordion-panel");

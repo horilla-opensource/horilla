@@ -4001,7 +4001,7 @@ staticUrl = $("#statiUrl").attr("data-url");
 
 $(document).ready(function () {
     $(".oh-select").each(function () {
-        if ($(this).hasClass("select2-hidden-accessible")) {
+        if ($(this).hasClass("select2-hidden-accessible") && $(this).data("select2")) {
             $(this).select2("destroy");
         }
         $(this).select2({ width: '100%' });

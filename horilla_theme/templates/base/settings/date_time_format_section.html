@@ -61,31 +61,25 @@
     {% endif %}
 </div>
 <script>
-    $("#dateFormat").val("{{request.user.employee_get.employee_work_info.company_id.date_format}}").change();
-    $("#timeFormat").val("{{request.user.employee_get.employee_work_info.company_id.time_format}}").change();
+    (function () {
+        var dateFormatValue = "{{current_company.date_format|default_if_none:'' }}";
+        var timeFormatValue = "{{current_company.time_format|default_if_none:'' }}";
 
-    const formatMapping = {
-        'DD-MM-YYYY': '{% trans "Day, Month, Year (e.g., 30-12-2023)" %}',
-        'DD.MM.YYYY': '{% trans "Day, Month, Year (e.g., 30.12.2023)" %}',
-        'DD/MM/YYYY': '{% trans "Day, Month, Year (e.g., 30/12/2023)" %}',
-        'MM/DD/YYYY': '{% trans "Month, Day, Year (e.g., 12/30/2023)" %}',
-        'YYYY-MM-DD': '{% trans "Year, Month, Day (e.g., 2023-12-30)" %}',
-        'YYYY/MM/DD': '{% trans "Year, Month, Day (e.g., 2023/12/30)" %}',
-        'MMMM D, YYYY': '{% trans "Full Month Name, Day, Year (e.g., January 1, 2023)" %}',
-        'DD MMMM, YYYY': '{% trans "Day, Full Month Name, Year (e.g., 1 January, 2023)" %}',
-        'MMM. D, YYYY': '{% trans "Abbreviated Month Name, Day, Year (e.g., Jan. 1, 2023)" %}',
-        'D MMM. YYYY': '{% trans "Day, Abbreviated Month Name, Year (e.g., 1 Jan. 2023)" %}',
-        'dddd, MMMM D, YYYY': '{% trans "Full Day Name, Full Month Name, Day, Year (e.g., Monday, January 1, 2023)" %}',
-    };
+        function applySelection($el, value) {
+            $el.val(value);
+            if ($el.hasClass("select2-hidden-accessible")) {
+                $el.trigger("change");
+            } else {
+                $el.select2({ width: "100%" }).trigger("change");
+            }
+        }
 
-    var selectedFormatDescription = formatMapping[storedDateFormat];
-    document.getElementById('dateDisplay').textContent = selectedFormatDescription || '';
+        function setInitialFormatValues() {
+            applySelection($("#dateFormat"), dateFormatValue);
+            applySelection($("#timeFormat"), timeFormatValue);
+        }
 
-    const timeFormatMapping = {
-        'hh:mm A': '{% trans "12 Hr. (e.g., 06:00 AM or 06:00 PM)" %}',
-        'HH:mm': '{% trans "24 Hr. (e.g., 06:00 or 18:00)" %}',
-    };
-
-    var selectedTimeFormatDescription = timeFormatMapping[storedTimeFormat];
-    document.getElementById('timeDisplay').textContent = selectedTimeFormatDescription || '';
+        $(setInitialFormatValues);
+        $(window).on("load", setInitialFormatValues);
+    })();
 </script>
