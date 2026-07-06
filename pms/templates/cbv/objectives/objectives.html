@@ -2,114 +2,115 @@
 {% load i18n static %}
 
 {% block content %}
+    <style>
+        .validated--dot {
+            background-color: yellowgreen;
+        }
+        .not-validated--dot {
+            background-color: red;
+        }
+        .requested--dot {
+            background-color: orange;
+        }
+        .approved-request--dot {
+            background-color: blue;
+        }
+        .validated-True {
+            border-left: 3.4px solid yellowgreen !important;
+            border-radius: 4px 0 0 4px;
+        }
+        .validated-False {
+            border-left: 3.4px solid red !important;
+            border-radius: 4px 0 0 4px;
+        }
+        .requested-True {
+            border-left: 3.4px solid orange !important;
+            border-radius: 4px 0 0 4px;
+        }
+        .approved-request-True {
+            border-left: 3.4px solid blue !important;
+            border-radius: 4px 0 0 4px;
+        }
+    </style>
 
-	<style>
-		.validated--dot {
-			background-color: yellowgreen;
-		}
-		.not-validated--dot {
-			background-color: red;
-		}
-		.requested--dot {
-			background-color: orange;
-		}
-		.approved-request--dot {
-			background-color: blue;
-		}
-		.validated-True {
-			border-left: 3.4px solid yellowgreen !important;
-			border-radius: 4px 0 0 4px;
-		}
-		.validated-False {
-			border-left: 3.4px solid red !important;
-			border-radius: 4px 0 0 4px;
-		}
-		.requested-True {
-			border-left: 3.4px solid orange !important;
-			border-radius: 4px 0 0 4px;
-		}
-		.approved-request-True {
-			border-left: 3.4px solid blue !important;
-			border-radius: 4px 0 0 4px;
-		}
-	</style>
+    <div id="objectivesListNavBar">
+        <div hx-get="{% url 'nav-objectives-view' %}" hx-trigger="load"></div>
+    </div>
 
-	<div id="objectivesListNavBar">
-		<div hx-get="{% url 'nav-objectives-view' %}" hx-trigger="load"></div>
-	</div>
+    {% include "generic/components.html" %}
 
-	{% include "generic/components.html" %}
+    <div
+        class="oh-checkpoint-badge mb-2"
+        id="selectedInstances"
+        data-ids="[]"
+        data-clicked=""
+        style="display: none"
+    >
+    </div>
+    <div
+        class="oh-checkpoint-badge mb-2"
+        id="selectedInastacesAll"
+        data-ids="[]"
+        data-clicked=""
+        style="display: none"
+    >
+    </div>
 
-	<div
-		class="oh-checkpoint-badge mb-2"
-		id="selectedInstances"
-		data-ids="[]"
-		data-clicked=""
-		style="display: none"
-	></div>
-	<div
-		class="oh-checkpoint-badge mb-2"
-		id="selectedInastacesAll"
-		data-ids="[]"
-		data-clicked=""
-		style="display: none"
-	></div>
+    <div class="oh-wrapper" id="listContainer">
+        <div class="animated-background"></div>
+    </div>
 
-	<div class="oh-wrapper" id="listContainer">
-		<div class="animated-background"></div>
-	</div>
+    <div class="oh-activity-sidebar" id="activitySidebar" style="z-index: 1000">
+        <div class="oh-activity-sidebar__body" id="commentContainer"></div>
+    </div>
 
-	<div class="oh-activity-sidebar" id="activitySidebar" style="z-index: 1000">
-		<div class="oh-activity-sidebar__body" id="commentContainer"></div>
-	</div>
+    <script>
+        $(document).on("htmx:afterSettle", function () {
+        	$("[data-toggle-count]")
+        		.off("click")
+        		.on("click", function (e) {
+        			e.stopPropagation();
+        			let recViewContainer = $(this).closest(".oh-sticky-table__tr");
+        			span = recViewContainer.find(".count-span").toggle();
+        			var row = $(this).closest(".oh-sticky-table__tr");
+        			row.toggleClass("oh-permission-table--collapsed");
+        		});
+        });
+    </script>
+    <script>
+        (function () {
+        	function getHtmxSwapTarget(e) {
+        		if (!e || !e.detail) {
+        			return null;
+        		}
+        		return e.detail.target || e.detail.elt || null;
+        	}
 
-	<script>
-		$(document).on("htmx:afterSettle", function () {
-			$("[data-toggle-count]")
-				.off("click")
-				.on("click", function (e) {
-					e.stopPropagation();
-					let recViewContainer = $(this).closest(".oh-sticky-table__tr");
-					span = recViewContainer.find(".count-span").toggle();
-					var row = $(this).closest(".oh-sticky-table__tr");
-					row.toggleClass("oh-permission-table--collapsed");
-				});
-		});
-	</script>
-	<script>
-		(function () {
-			function getHtmxSwapTarget(e) {
-				if (!e || !e.detail) {
-					return null;
-				}
-				return e.detail.target || e.detail.elt || null;
-			}
+        	function syncObjectivesNavVisibility() {
+        		const nav = document.getElementById("objectivesListNavBar");
+        		const listContainer = document.getElementById("listContainer");
+        		if (!nav || !listContainer) {
+        			return;
+        		}
+        		const isDetailOpen = !!listContainer.querySelector("#ObjectiveDetailedViewContainer");
+        		nav.style.display = isDetailOpen ? "none" : "";
+        	}
 
-			function syncObjectivesNavVisibility() {
-				const nav = document.getElementById("objectivesListNavBar");
-				const listContainer = document.getElementById("listContainer");
-				if (!nav || !listContainer) {
-					return;
-				}
-				const isDetailOpen = !!listContainer.querySelector("#ObjectiveDetailedViewContainer");
-				nav.style.display = isDetailOpen ? "none" : "";
-			}
+        	function onListContainerSwap(e) {
+        		const target = getHtmxSwapTarget(e);
+        		if (target && target.id === "listContainer") {
+        			syncObjectivesNavVisibility();
+        			setTimeout(syncObjectivesNavVisibility, 0);
+        			setTimeout(syncObjectivesNavVisibility, 50);
+        		}
+        	}
 
-			function onListContainerSwap(e) {
-				const target = getHtmxSwapTarget(e);
-				if (target && target.id === "listContainer") {
-					syncObjectivesNavVisibility();
-					setTimeout(syncObjectivesNavVisibility, 0);
-					setTimeout(syncObjectivesNavVisibility, 50);
-				}
-			}
-
-			document.addEventListener("DOMContentLoaded", syncObjectivesNavVisibility);
-			document.body.addEventListener("htmx:afterSwap", onListContainerSwap);
-			document.body.addEventListener("htmx:afterSettle", onListContainerSwap);
-			window.addEventListener("popstate", function () {
-				setTimeout(syncObjectivesNavVisibility, 0);
-			});
-		})();
-	</script>
+        	document.addEventListener("DOMContentLoaded", syncObjectivesNavVisibility);
+        	document.body.addEventListener("htmx:afterSwap", onListContainerSwap);
+        	document.body.addEventListener("htmx:afterSettle", onListContainerSwap);
+        	window.addEventListener("popstate", function () {
+        		setTimeout(syncObjectivesNavVisibility, 0);
+        	});
+        })();
+    </script>
 {% endblock content %}

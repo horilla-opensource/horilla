@@ -8,25 +8,25 @@
                     <label
                         class="oh-label"
                         for="{{filter_form.employee_id.id_for_label}}"
-                        >{% trans "Employee" %}
+                    >{% trans "Employee" %}
                     </label>
-                    {{filter_form.employee_id}}
+                    {{ filter_form.employee_id }}
                 </div>
                 <div class="oh-input-group">
                     <label
                         class="oh-label"
                         for="{{filter_form.manager.id_for_label}}"
-                        >{% trans "Manager" %}
+                    >{% trans "Manager" %}
                     </label>
-                    {{filter_form.manager}}
+                    {{ filter_form.manager }}
                 </div>
                 <div class="oh-input-group">
                     <label
                         class="oh-label"
                         for="{{filter_form.manager.id_for_label}}"
-                        >{% trans "Is active" %}
+                    >{% trans "Is active" %}
                     </label>
-                    {{filter_form.is_active}}
+                    {{ filter_form.is_active }}
                 </div>
             </div>
             <div class="col-sm-12 col-md-12 col-lg-6">
@@ -34,17 +34,16 @@
                     <label
                         class="oh-label"
                         for="{{filter_form.date.id_for_label}}"
-                        >{% trans "Date" %}</label
-                    >
-                    {{filter_form.date}}
+                    >{% trans "Date" %}</label>
+                    {{ filter_form.date }}
                 </div>
                 <div class="oh-input-group">
                     <label
                         class="oh-label"
                         for="{{filter_form.question_template.id_for_label}}"
-                        >{% trans "Question Template" %}
+                    >{% trans "Question Template" %}
                     </label>
-                    {{filter_form.question_template}}
+                    {{ filter_form.question_template }}
                 </div>
             </div>
         </div>
@@ -59,25 +58,22 @@
                     <label
                         class="oh-label"
                         for="{{filter_form.employee_id__employee_work_info__department_id.id_for_label}}"
-                        >{% trans "Department" %}</label
-                    >
-                    {{filter_form.employee_id__employee_work_info__department_id}}
+                    >{% trans "Department" %}</label>
+                    {{ filter_form.employee_id__employee_work_info__department_id }}
                 </div>
                 <div class="oh-input-group">
                     <label
                         class="oh-label"
                         for="{{filter_form.employee_id__employee_work_info__company_id.id_for_label}}"
-                        >{% trans "Company" %}</label
-                    >
-                    {{filter_form.employee_id__employee_work_info__company_id}}
+                    >{% trans "Company" %}</label>
+                    {{ filter_form.employee_id__employee_work_info__company_id }}
                 </div>
                 <div class="oh-input-group">
                     <label
                         class="oh-label"
                         for="{{filter_form.employee_id__employee_work_info__shift_id.id_for_label}}"
-                        >{% trans "Shift" %}</label
-                    >
-                    {{filter_form.employee_id__employee_work_info__shift_id}}
+                    >{% trans "Shift" %}</label>
+                    {{ filter_form.employee_id__employee_work_info__shift_id }}
                 </div>
             </div>
 
@@ -86,25 +82,22 @@
                     <label
                         class="oh-label"
                         for="{{filter_form.employee_id__employee_work_info__reporting_manager_id.id_for_label}}"
-                        >{% trans "Reporting Manager" %}</label
-                    >
-                    {{filter_form.employee_id__employee_work_info__reporting_manager_id}}
+                    >{% trans "Reporting Manager" %}</label>
+                    {{ filter_form.employee_id__employee_work_info__reporting_manager_id }}
                 </div>
                 <div class="oh-input-group">
                     <label
                         class="oh-label"
                         for="{{filter_form.employee_id__employee_work_info__job_position_id.id_for_label}}"
-                        >{% trans "Job Position" %}</label
-                    >
-                    {{filter_form.employee_id__employee_work_info__job_position_id}}
+                    >{% trans "Job Position" %}</label>
+                    {{ filter_form.employee_id__employee_work_info__job_position_id }}
                 </div>
                 <div class="oh-input-group">
                     <label
                         class="oh-label"
                         for="{{filter_form.employee_id__employee_work_info__work_type_id.id_for_label}}"
-                        >{% trans "Work Type" %}</label
-                    >
-                    {{filter_form.employee_id__employee_work_info__work_type_id}}
+                    >{% trans "Work Type" %}</label>
+                    {{ filter_form.employee_id__employee_work_info__work_type_id }}
                 </div>
             </div>
         </div>
@@ -119,9 +112,9 @@
                     <label
                         class="oh-label"
                         for="{{filter_form.date_gte.id_for_label}}"
-                        >{% trans "Date greater than or equal" %}
+                    >{% trans "Date greater than or equal" %}
                     </label>
-                    {{filter_form.date_greater}}
+                    {{ filter_form.date_greater }}
                 </div>
             </div>
             <div class="col-sm-12 col-md-12 col-lg-6">
@@ -129,9 +122,9 @@
                     <label
                         class="oh-label"
                         for="{{filter_form.date_lte.id_for_label}}"
-                        >{% trans "Date less than or equal" %}
+                    >{% trans "Date less than or equal" %}
                     </label>
-                    {{filter_form.date_less}}
+                    {{ filter_form.date_less }}
                 </div>
             </div>
         </div>

@@ -2,48 +2,48 @@
 {% load i18n static %}
 
 {% block content %}
+    <div hx-get="{% url 'nav-question-template' %}" hx-trigger="load"></div>
 
-	<div hx-get="{% url 'nav-question-template' %}" hx-trigger="load"></div>
+    {% include "generic/components.html" %}
 
-	{% include "generic/components.html" %}
+    <div
+        class="oh-checkpoint-badge mb-2"
+        id="selectedInstances"
+        data-ids="[]"
+        data-clicked=""
+        style="display: none"
+    >
+    </div>
 
-	<div
-		class="oh-checkpoint-badge mb-2"
-		id="selectedInstances"
-		data-ids="[]"
-		data-clicked=""
-		style="display: none"
-	></div>
+    <div class="oh-wrapper" id="listContainer">
+        <div class="animated-background"></div>
+    </div>
 
-	<div class="oh-wrapper" id="listContainer">
-		<div class="animated-background"></div>
-	</div>
+    <script>
+        var errorElement = $("#id_question_template_error");
+        $(errorElement).hide();
 
-	<script>
-		var errorElement = $("#id_question_template_error");
-		$(errorElement).hide();
+        $("form").on("submit", function (event) {
+        	event.preventDefault();
 
-		$("form").on("submit", function (event) {
-			event.preventDefault();
+        	var fieldValue = $("#id_question_template").val();
 
-			var fieldValue = $("#id_question_template").val();
-
-			if (fieldValue.trim() === "") {
-				$(errorElement).show();
-				errorElement.text("This field is required.");
-				errorElement.insertAfter($("#id_question_template"));
-			} else if (fieldValue.length > 100) {
-				$(errorElement).show();
-				errorElement.text(
-					"The field cannot contain more than 100 characters."
-				);
-				errorElement.insertAfter($("#id_question_template"));
-			} else {
-				errorElement.text("");
-				errorElement.remove();
-				// Submit the form
-				this.submit();
-			}
-		});
-	</script>
+        	if (fieldValue.trim() === "") {
+        		$(errorElement).show();
+        		errorElement.text("This field is required.");
+        		errorElement.insertAfter($("#id_question_template"));
+        	} else if (fieldValue.length > 100) {
+        		$(errorElement).show();
+        		errorElement.text(
+        			"The field cannot contain more than 100 characters."
+        		);
+        		errorElement.insertAfter($("#id_question_template"));
+        	} else {
+        		errorElement.text("");
+        		errorElement.remove();
+        		// Submit the form
+        		this.submit();
+        	}
+        });
+    </script>
 {% endblock %}

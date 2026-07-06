@@ -6,32 +6,28 @@
             <div class="row">
                 <div class="col-sm-12 col-md-12 col-lg-6">
                     <div class="oh-input-group">
-                        <label class="oh-label" for=""
-                            >{% trans "Managers" %}</label
-                        >
-                        {{form.managers}}
+                        <label class="oh-label" for="">{% trans "Managers" %}</label>
+                        {{ form.managers }}
                     </div>
                     <div class="oh-input-group">
                         <label class="oh-label" for="">{% trans "Key Result" %}</label>
-                        {{form.employee_objective__key_result_id}}
+                        {{ form.employee_objective__key_result_id }}
                     </div>
                 </div>
                 <div class="col-sm-12 col-md-12 col-lg-6">
                     <div class="oh-input-group">
                         <label class="oh-label" for="">{% trans "Assignees" %}</label>
-                        {{form.assignees}}
+                        {{ form.assignees }}
                     </div>
                     <div class="oh-input-group">
                         <label class="oh-label" for="">{% trans "Duration" %} </label>
-                        {{form.duration}}
+                        {{ form.duration }}
                     </div>
                 </div>
                 <div class="col-sm-12 col-md-12 col-lg-6">
                     <div class="oh-input-group">
-                        <label class="oh-label" for=""
-                            >{% trans "Is Archived" %}</label
-                        >
-                        {{form.archive}}
+                        <label class="oh-label" for="">{% trans "Is Archived" %}</label>
+                        {{ form.archive }}
                     </div>
                 </div>
             </div>

@@ -1,38 +1,32 @@
-{% load static i18n%}
+{% load static i18n %}
 {% load i18n %}
 
-
 <div class="oh-modal__dialog-header">
-  {% if form.instance.id %}
-    <h2 class="oh-modal__dialog-title" >
-      {% trans "Update Key result" %}
-    </h2>
-  {% else %}
-    <h2 class="oh-modal__dialog-title" >
-      {% trans "Create Key result" %}
-    </h2>
-  {% endif %}
+    {% if form.instance.id %}
+        <h2 class="oh-modal__dialog-title">
+            {% trans "Update Key result" %}
+        </h2>
+    {% else %}
+        <h2 class="oh-modal__dialog-title">
+            {% trans "Create Key result" %}
+        </h2>
+    {% endif %}
 
-  <button type="button" class="oh-modal__close--custom" onclick="$(this).closest('.oh-modal--show').removeClass('oh-modal--show');">
-    <ion-icon name="close-outline" role="img" aria-label="close outline"></ion-icon>
-  </button>
+    <button
+        type="button"
+        class="oh-modal__close--custom"
+        onclick="$(this).closest('.oh-modal--show').removeClass('oh-modal--show')"
+    >
+        <ion-icon name="close-outline" role="img" aria-label="close outline"></ion-icon>
+    </button>
 </div>
 <div class="oh-modal__dialog-body">
-  {% if form.instance.id %}
     <form
-      hx-post="{% url 'update-key-result' form.instance.id %}"
-      hx-target="#objectUpdateModalTarget"
-      id="realKeyResultForm"
+        hx-post="{% if form.instance.id %}{% url 'update-key-result' form.instance.id %}{% else %}{% url 'create-key-result' %}{% endif %}"
+        hx-target="{% if form.instance.id %}#objectUpdateModalTarget{% else %}#objectCreateModalTarget{% endif %}"
+        id="realKeyResultForm"
     >
-  {% else %}
-    <form
-      hx-post="{% url 'create-key-result' %}"
-      hx-target="#objectCreateModalTarget"
-      id="realKeyResultForm"
-    >
-  {% endif %}
-
-    {% csrf_token %}
-    {{form.as_p}}
-  </form>
+        {% csrf_token %}
+        {{ form.as_p }}
+    </form>
 </div>

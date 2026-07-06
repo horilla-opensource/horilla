@@ -1,58 +1,52 @@
-{% load static i18n%}
+{% load static i18n %}
 {% load i18n %}
 
 {% if em %}{% else %}{% endif %}
 {% if objective_form.non_field_errors %}
-<!-- form non field errors  -->
-<div class="oh-wrapper">
-    <div class="oh-alert-container">
-        {% for error in objective_form.non_field_errors %}
-        <div class="oh-alert oh-alert--animated oh-alert--danger">
-            {{ error }}
+    <!-- form non field errors  -->
+    <div class="oh-wrapper">
+        <div class="oh-alert-container">
+            {% for error in objective_form.non_field_errors %}
+                <div class="oh-alert oh-alert--animated oh-alert--danger">
+                    {{ error }}
+                </div>
+            {% endfor %}
         </div>
-        {% endfor %}
     </div>
-</div>
 {% endif %}
 
 <div class="oh-modal__dialog-header">
-  {% if update %}
-    <h2 class="oh-modal__dialog-title" >
-      {% trans "Update Key result" %}
-    </h2>
-  {% else %}
-    <h2 class="oh-modal__dialog-title" >
-      {% trans "Create Key result" %}
-    </h2>
-  {% endif %}
+    {% if update %}
+        <h2 class="oh-modal__dialog-title">
+            {% trans "Update Key result" %}
+        </h2>
+    {% else %}
+        <h2 class="oh-modal__dialog-title">
+            {% trans "Create Key result" %}
+        </h2>
+    {% endif %}
 
-  <button type="button" class="oh-modal__close--custom" onclick="$('#objectCreateModal').removeClass('oh-modal--show');">
-    <ion-icon name="close-outline" role="img" aria-label="close outline"></ion-icon>
-  </button>
+    <button
+        type="button"
+        class="oh-modal__close--custom"
+        onclick="$('#objectCreateModal').removeClass('oh-modal--show')"
+    >
+        <ion-icon name="close-outline" role="img" aria-label="close outline"></ion-icon>
+    </button>
 </div>
 <div class="oh-modal__dialog-body">
-  {% if update %}
     <form
-      hx-post="{%url 'employee-key-result-update' form.instance.id %}"
-      hx-target="#objectCreateModalTarget"
-      id="empKeyrsultForm"
-      data-url="employee-key-result-update/{{form.instance.id}}?"
+        hx-post="{% if update %}{% url 'employee-key-result-update' form.instance.id %}{% else %}{% url 'employee-key-result-creation' emp_objective.id %}{% endif %}"
+        hx-target="#objectCreateModalTarget"
+        id="empKeyrsultForm"
+        data-url="{% if update %}employee-key-result-update/{{ form.instance.id }}?{% else %}employee-key-result-creation/{{ emp_objective.id }}?{% endif %}"
     >
-  {% else %}
-    <form
-      hx-post="{%url 'employee-key-result-creation' emp_objective.id %}"
-      hx-target="#objectCreateModalTarget"
-      id="empKeyrsultForm"
-      data-url="employee-key-result-creation/{{emp_objective.id}}?"
-    >
-  {% endif %}
-
-    {% csrf_token %}
-    {{form.as_p}}
-  </form>
+        {% csrf_token %}
+        {{ form.as_p }}
+    </form>
 </div>
 {% if request.GET.key_result_id %}
-<script>
-  $('#id_key_result_id').val({{request.GET.key_result_id}}).change()
-</script>
+    <script>
+        $('#id_key_result_id').val({{request.GET.key_result_id}}).change()
+    </script>
 {% endif %}

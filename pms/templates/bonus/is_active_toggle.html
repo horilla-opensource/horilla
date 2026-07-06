@@ -1,13 +1,26 @@
-
 <div class="oh-switch p-3">
     {% if perms.pms.change_bonuspointsetting %}
-        <input type="checkbox" name="is_active" id="BPSIsActivate"
-        hx-post="{% url 'update-isactive-bonuspoint-setting' instance.id %}"
-        hx-trigger="change" hx-target="#genericModalBody"
-        class="oh-switch__checkbox"
-        {% if instance.is_active %} checked {% endif %}>
+        <input
+            type="checkbox"
+            name="is_active"
+            id="BPSIsActivate"
+            hx-post="{% url 'update-isactive-bonuspoint-setting' instance.id %}"
+            hx-trigger="change"
+            hx-target="#genericModalBody"
+            class="oh-switch__checkbox"
+            {% if instance.is_active %}
+                checked
+            {% endif %}
+        >
     {% else %}
-        <input type="checkbox" id="BPSIsActivate" class="oh-switch__checkbox"
-        {% if instance.is_active %} checked {% endif %} disabled >
+        <input
+            type="checkbox"
+            id="BPSIsActivate"
+            class="oh-switch__checkbox"
+            {% if instance.is_active %}
+                checked
+            {% endif %}
+            disabled
+        >
     {% endif %}
 </div>

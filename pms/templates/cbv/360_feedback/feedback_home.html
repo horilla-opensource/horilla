@@ -2,193 +2,192 @@
 {% load static %}
 {% load i18n %}
 {% block content %}
-<meta name="csrf-token" content="{{ csrf_token }}">
-<style>
+    <meta name="csrf-token" content="{{ csrf_token }}">
+    <style>
+        .at_risk--dot {
+            background-color: red;
+        }
+        .not_started--dot {
+            background-color: grey;
+        }
+        .behind--dot {
+            background-color: orange;
+        }
+        .closed--dot {
+            background-color: rgb(103, 171, 238);
+        }
+        .on_track--dot {
+            background-color: yellowgreen;
+        }
+        .status-At.Risk {
+            border-left: 3.4px solid red !important;
+            border-radius: 4px 0 0 4px;
+        }
 
-    .at_risk--dot{
-        background-color:red;
-      }
-      .not_started--dot{
-        background-color:grey;
-      }
-      .behind--dot{
-        background-color: orange;
-      }
-      .closed--dot{
-        background-color:rgb(103, 171, 238)
-      }
-      .on_track--dot{
-        background-color:yellowgreen;
-      }
-      .status-At.Risk {
-
-        border-left: 3.4px solid red !important;
-        border-radius: 4px 0 0 4px;
-      }
-
-      .status-Not.Started {
-
-        border-left: 3.4px solid grey !important;
-        border-radius: 4px 0 0 4px;
-      }
-      .status-Behind {
-
-        border-left: 3.4px solid orange !important;
-        border-radius: 4px 0 0 4px;
-      }
-      .status-Closed {
-
-        border-left: 3.4px solid rgb(103, 171, 238) !important;
-        border-radius: 4px 0 0 4px;
-      }
-      .status-On.Track {
-
-        border-left: 3.4px solid yellowgreen !important;
-        border-radius: 4px 0 0 4px;
-      }
+        .status-Not.Started {
+            border-left: 3.4px solid grey !important;
+            border-radius: 4px 0 0 4px;
+        }
+        .status-Behind {
+            border-left: 3.4px solid orange !important;
+            border-radius: 4px 0 0 4px;
+        }
+        .status-Closed {
+            border-left: 3.4px solid rgb(103, 171, 238) !important;
+            border-radius: 4px 0 0 4px;
+        }
+        .status-On.Track {
+            border-left: 3.4px solid yellowgreen !important;
+            border-radius: 4px 0 0 4px;
+        }
     </style>
-<div id="feedbackNavBar">
-  <div hx-get="{% url "feedback-nav-view" %}?{{request.GET.urlencode}}" hx-trigger="load"></div>
-</div>
+    <div id="feedbackNavBar">
+        <div hx-get='{% url "feedback-nav-view" %}?{{request.GET.urlencode}}' hx-trigger="load"></div>
+    </div>
 
+    {% include "generic/components.html" %}
+    <div class="oh-checkpoint-badge mb-2" id="selectedInstances" data-ids="[]" data-clicked="" style="display: none">
+    </div>
+    <div
+        class="oh-checkpoint-badge mb-2"
+        id="anounyselectedInstances"
+        data-ids="[]"
+        data-clicked=""
+        style="display: none"
+    >
+    </div>
 
-{% include "generic/components.html" %}
-<div class="oh-checkpoint-badge mb-2" id="selectedInstances" data-ids="[]" data-clicked="" style="display: none"></div>
-<div class="oh-checkpoint-badge mb-2" id="anounyselectedInstances" data-ids="[]" data-clicked="" style="display: none"></div>
-
-{% comment %} <div class="oh-checkpoint-badge mb-2" id="selectedAnonymous" data-ids="[]" data-clicked=""  data-anounymous = "true" style="display: none">
+    {% comment %} <div class="oh-checkpoint-badge mb-2" id="selectedAnonymous" data-ids="[]" data-clicked=""  data-anounymous = "true" style="display: none">
 </div> {% endcomment %}
-{% comment %} archive=false {% endcomment %}
-<div class="oh-wrapper"
-  id="listContainer">
-  <div class="animated-background">
-</div>
-</div>
+    {% comment %} archive=false {% endcomment %}
+    <div class="oh-wrapper" id="listContainer">
+        <div class="animated-background"></div>
+    </div>
 
+    <div
+        class="oh-modal"
+        id="objectUpdateModal"
+        role="dialog"
+        aria-labelledby="objectUpdateModalLabel"
+        aria-hidden="true"
+    >
+        <div class="oh-modal__dialog" id="objectUpdateModalTarget"></div>
+    </div>
 
-
-
-<div class="oh-modal" id="objectUpdateModal"
-role="dialog" aria-labelledby="objectUpdateModalLabel"
-aria-hidden="true">
-<div class="oh-modal__dialog" id="objectUpdateModalTarget"></div>
-</div>
-
-
-<div
-  class="oh-modal"
-  id="FeedbackModal"
-  role="dialog"
-  aria-labelledby="FeedbackModal"
-  aria-hidden="true"
-  >
-  <div class="oh-modal__dialog">
-    <div class="oh-modal__dialog-body" id="OneFeedbackTarget"></div>
-  </div>
-</div>
-<script src="{% static 'cbv/360_feedback.js' %}"></script>
-{% comment %} <script>
+    <div
+        class="oh-modal"
+        id="FeedbackModal"
+        role="dialog"
+        aria-labelledby="FeedbackModal"
+        aria-hidden="true"
+    >
+        <div class="oh-modal__dialog">
+            <div class="oh-modal__dialog-body" id="OneFeedbackTarget"></div>
+        </div>
+    </div>
+    <script src="{% static 'cbv/360_feedback.js' %}"></script>
+    {% comment %} <script>
   $(document).on('submit', '#deletebtn', function() {
           $('.oh-modal--show').removeClass('oh-modal--show');
   });
 </script> {% endcomment %}
 
-<script>
-  function updateHiddenInput(value) {
-      var hiddenInput = document.querySelector('input[name="created_at_date_range"]');
-      hiddenInput.value = '';
-      hiddenInput.value = value;
-      $("#applyFilter").click();
-  }
-</script>
-<script>
-  (function () {
-    var detailPathPattern = /^\/pms\/feedback-detailed-view\/\d+\/?$/;
-    var createPathPattern = /^\/pms\/feedback-creation\/?$/;
+    <script>
+        function updateHiddenInput(value) {
+            var hiddenInput = document.querySelector('input[name="created_at_date_range"]');
+            hiddenInput.value = '';
+            hiddenInput.value = value;
+            $("#applyFilter").click();
+        }
+    </script>
+    <script>
+        (function () {
+          var detailPathPattern = /^\/pms\/feedback-detailed-view\/\d+\/?$/;
+          var createPathPattern = /^\/pms\/feedback-creation\/?$/;
 
-    function getHtmxSwapTarget(e) {
-      if (!e || !e.detail) {
-        return null;
-      }
-      return e.detail.target || e.detail.elt || null;
-    }
+          function getHtmxSwapTarget(e) {
+            if (!e || !e.detail) {
+              return null;
+            }
+            return e.detail.target || e.detail.elt || null;
+          }
 
-    function isDetailRoute() {
-      return detailPathPattern.test(window.location.pathname);
-    }
+          function isDetailRoute() {
+            return detailPathPattern.test(window.location.pathname);
+          }
 
-    function isCreateRoute() {
-      return createPathPattern.test(window.location.pathname);
-    }
+          function isCreateRoute() {
+            return createPathPattern.test(window.location.pathname);
+          }
 
-    function loadCreationIntoContainerIfNeeded() {
-      var listContainer = document.getElementById("listContainer");
-      if (!listContainer || !isCreateRoute()) {
-        return;
-      }
-      htmx.ajax("GET", window.location.pathname + window.location.search, {
-        target: "#listContainer",
-        swap: "innerHTML",
-      });
-    }
+          function loadCreationIntoContainerIfNeeded() {
+            var listContainer = document.getElementById("listContainer");
+            if (!listContainer || !isCreateRoute()) {
+              return;
+            }
+            htmx.ajax("GET", window.location.pathname + window.location.search, {
+              target: "#listContainer",
+              swap: "innerHTML",
+            });
+          }
 
-    function loadDetailIntoContainerIfNeeded() {
-      var listContainer = document.getElementById("listContainer");
-      if (!listContainer || !isDetailRoute()) {
-        return;
-      }
-      fetch(window.location.pathname + window.location.search, {
-        method: "GET",
-        credentials: "same-origin",
-      })
-        .then(function (response) {
-          return response.text();
-        })
-        .then(function (html) {
-          var doc = new DOMParser().parseFromString(html, "text/html");
-          var detail = doc.querySelector("#feedbackDetailContainer");
-          listContainer.innerHTML = detail ? detail.innerHTML : html;
-          syncFeedbackNavVisibility();
-        });
-    }
+          function loadDetailIntoContainerIfNeeded() {
+            var listContainer = document.getElementById("listContainer");
+            if (!listContainer || !isDetailRoute()) {
+              return;
+            }
+            fetch(window.location.pathname + window.location.search, {
+              method: "GET",
+              credentials: "same-origin",
+            })
+              .then(function (response) {
+                return response.text();
+              })
+              .then(function (html) {
+                var doc = new DOMParser().parseFromString(html, "text/html");
+                var detail = doc.querySelector("#feedbackDetailContainer");
+                listContainer.innerHTML = detail ? detail.innerHTML : html;
+                syncFeedbackNavVisibility();
+              });
+          }
 
-    function syncFeedbackNavVisibility() {
-      var nav = document.getElementById("feedbackNavBar");
-      var listContainer = document.getElementById("listContainer");
-      if (!nav || !listContainer) {
-        return;
-      }
-      var isCreateView = !!listContainer.querySelector("#feedbackCreationForm");
-      var isDetailView = !!listContainer.querySelector("#feedbackDetailContainer");
-      nav.style.display = isCreateView || isDetailView ? "none" : "";
+          function syncFeedbackNavVisibility() {
+            var nav = document.getElementById("feedbackNavBar");
+            var listContainer = document.getElementById("listContainer");
+            if (!nav || !listContainer) {
+              return;
+            }
+            var isCreateView = !!listContainer.querySelector("#feedbackCreationForm");
+            var isDetailView = !!listContainer.querySelector("#feedbackDetailContainer");
+            nav.style.display = isCreateView || isDetailView ? "none" : "";
 
-      // Keep URL aligned with what is currently rendered in the container.
-      if (!isCreateView && !isDetailView && isCreateRoute()) {
-        window.history.replaceState(null, "", "/pms/feedback-view/");
-      }
-    }
+            // Keep URL aligned with what is currently rendered in the container.
+            if (!isCreateView && !isDetailView && isCreateRoute()) {
+              window.history.replaceState(null, "", "/pms/feedback-view/");
+            }
+          }
 
-    function onListContainerSwap(e) {
-      var target = getHtmxSwapTarget(e);
-      if (target && target.id === "listContainer") {
-        syncFeedbackNavVisibility();
-        setTimeout(syncFeedbackNavVisibility, 0);
-        setTimeout(syncFeedbackNavVisibility, 50);
-      }
-    }
+          function onListContainerSwap(e) {
+            var target = getHtmxSwapTarget(e);
+            if (target && target.id === "listContainer") {
+              syncFeedbackNavVisibility();
+              setTimeout(syncFeedbackNavVisibility, 0);
+              setTimeout(syncFeedbackNavVisibility, 50);
+            }
+          }
 
-    document.addEventListener("DOMContentLoaded", function () {
-      loadCreationIntoContainerIfNeeded();
-      loadDetailIntoContainerIfNeeded();
-      syncFeedbackNavVisibility();
-    });
-    document.body.addEventListener("htmx:afterSwap", onListContainerSwap);
-    document.body.addEventListener("htmx:afterSettle", onListContainerSwap);
-    window.addEventListener("popstate", function () {
-      loadCreationIntoContainerIfNeeded();
-      loadDetailIntoContainerIfNeeded();
-      setTimeout(syncFeedbackNavVisibility, 0);
-    });
-  })();
-</script>
+          document.addEventListener("DOMContentLoaded", function () {
+            loadCreationIntoContainerIfNeeded();
+            loadDetailIntoContainerIfNeeded();
+            syncFeedbackNavVisibility();
+          });
+          document.body.addEventListener("htmx:afterSwap", onListContainerSwap);
+          document.body.addEventListener("htmx:afterSettle", onListContainerSwap);
+          window.addEventListener("popstate", function () {
+            loadCreationIntoContainerIfNeeded();
+            loadDetailIntoContainerIfNeeded();
+            setTimeout(syncFeedbackNavVisibility, 0);
+          });
+        })();
+    </script>
 {% endblock content %}

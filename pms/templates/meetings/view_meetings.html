@@ -1,40 +1,40 @@
-{% extends "index.html" %} {% load i18n %} {% load static %} {% block content %}
-
-<style>
-    .diff-cell {
-        background: rgba(255, 166, 0, 0.158);
-    }
-</style>
-<main :class="sidebarOpen ? 'oh-main__sidebar-visible' : ''">
-    {% include "meetings/meetings_nav.html" %}
-    <div class="oh-wrapper">
-        <div id="meeting_list">
-            {% include 'meetings/meetings_list.html' %}
+{% extends "index.html" %}
+{% load i18n %}
+{% load static %}
+{% block content %}
+    <style>
+        .diff-cell {
+            background: rgba(255, 166, 0, 0.158);
+        }
+    </style>
+    <main :class="sidebarOpen ? 'oh-main__sidebar-visible' : ''">
+        {% include "meetings/meetings_nav.html" %}
+        <div class="oh-wrapper">
+            <div id="meeting_list">
+                {% include 'meetings/meetings_list.html' %}
+            </div>
         </div>
-    </div>
-    <div class="oh-activity-sidebar" id="activitySidebar" style="z-index:1000;">
-        <div class="oh-activity-sidebar__body" id="answerContainer">
+        <div class="oh-activity-sidebar" id="activitySidebar" style="z-index: 1000">
+            <div class="oh-activity-sidebar__body" id="answerContainer"></div>
         </div>
-    </div>
-</main>
+    </main>
 
-<script src="{% static 'src/feedback/action.js' %}"></script>
-<script src="{% static '/base/filter.js' %}"></script>
-<script>
-    function updateManagerCount(element) {
-        var parentDiv = $(element).closest('div[data-cell-index="2"]');
-        var count = parentDiv.find('.meeting-manager-panel').length;
-        parentDiv.find('.count-span').text((count - 1) + " {% trans 'Managers' %}");
-    }
-    function updateEmployeeCount(element) {
+    <script src="{% static 'src/feedback/action.js' %}"></script>
+    <script src="{% static '/base/filter.js' %}"></script>
+    <script>
+        function updateManagerCount(element) {
+            var parentDiv = $(element).closest('div[data-cell-index="2"]');
+            var count = parentDiv.find('.meeting-manager-panel').length;
+            parentDiv.find('.count-span').text((count - 1) + " {% trans 'Managers' %}");
+        }
+        function updateEmployeeCount(element) {
 
-        var parentDiv = $(element).closest('div[data-cell-index="1"]');
-        var count = parentDiv.find('.meeting-employee-panel').length;
-        parentDiv.find('.count-span').text((count - 1) + " {% trans 'Employees' %}");
-    }
-    $(".oh-permission-table--toggle").on("click", function () {
-        $(this).siblings(".oh-sticky-table__td").children(".count-span").toggleClass("d-none")
-    })
-</script>
-
+            var parentDiv = $(element).closest('div[data-cell-index="1"]');
+            var count = parentDiv.find('.meeting-employee-panel').length;
+            parentDiv.find('.count-span').text((count - 1) + " {% trans 'Employees' %}");
+        }
+        $(".oh-permission-table--toggle").on("click", function () {
+            $(this).siblings(".oh-sticky-table__td").children(".count-span").toggleClass("d-none")
+        })
+    </script>
 {% endblock content %}

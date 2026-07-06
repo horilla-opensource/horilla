@@ -1,22 +1,26 @@
-{% extends 'index.html' %} {% block content %} {% load i18n %} {% load horillafilters %} {% load static %}
+{% extends 'index.html' %}
+{% block content %}
+    {% load i18n %}
+    {% load horillafilters %}
+    {% load static %}
 
-{% include "okr/key_result/kr_nav.html" %}
+    {% include "okr/key_result/kr_nav.html" %}
 
-<div class="oh-wrapper">
-    <div id="krs-container">
-        {% if krs %}
-            {% if request.GET.view == 'list' %}
-                {% include 'okr/key_result/kr_list.html' %}
+    <div class="oh-wrapper">
+        <div id="krs-container">
+            {% if krs %}
+                {% if request.GET.view == 'list' %}
+                    {% include 'okr/key_result/kr_list.html' %}
+                {% else %}
+                    {% include 'okr/key_result/kr_card.html' %}
+                {% endif %}
             {% else %}
-                {% include 'okr/key_result/kr_card.html' %}
+                <div class="oh-empty">
+                    <img src="{% static 'images/ui/search.svg' %}" class="oh-404__image" alt="Page not found. 404.">
+                    <h1 class="oh-empty__title">{% trans "No Records found." %}</h1>
+                    <p class="oh-empty__subtitle">{% trans "There are currently no key results to consider." %}</p>
+                </div>
             {% endif %}
-        {% else %}
-            <div class="oh-empty">
-                <img src="{% static 'images/ui/search.svg' %}" class="oh-404__image" alt="Page not found. 404." />
-                <h1 class="oh-empty__title">{% trans "No Records found." %}</h1>
-                <p class="oh-empty__subtitle">{% trans "There are currently no key results to consider." %}</p>
-            </div>
-        {% endif %}
+        </div>
     </div>
-</div>
 {% endblock %}

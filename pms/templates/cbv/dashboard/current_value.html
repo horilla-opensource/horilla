@@ -1,11 +1,13 @@
 <input
-                                                    id = {{instance.id}}
-                                                    type="number" class="oh-input p-1"  min="0"
-                                                    max="{{instance.target_value}}"
-                                                    value="{{instance.current_value}}"
-                                                    name="current_value"
-                                                    onchange="progress(this)"
-                                                />
+    id="{{instance.id}}"
+    type="number"
+    class="oh-input p-1"
+    min="0"
+    max="{{instance.target_value}}"
+    value="{{instance.current_value}}"
+    name="current_value"
+    onchange="progress(this)"
+>
 
 <script>
     function progress (element) {
@@ -70,5 +72,4 @@
             });
         }
     }
-
 </script>

@@ -1,27 +1,28 @@
 {% load i18n %}
 {% if messages %}
-<div class="oh-wrapper">
-  {% for message in messages %}
-  <div class="oh-alert-container">
-    <div class="oh-alert oh-alert--animated {{message.tags}}">
-      {{ message }}
+    <div class="oh-wrapper">
+        {% for message in messages %}
+            <div class="oh-alert-container">
+                <div class="oh-alert oh-alert--animated {{message.tags}}">
+                    {{ message }}
+                </div>
+            </div>
+        {% endfor %}
+        <script>
+            setTimeout(function () {
+              $('.oh-modal__close').click()
+            }, 1000);
+        </script>
     </div>
-  </div>
-  {% endfor %}
-  <script>
-    setTimeout(function () {
-        $('.oh-modal__close').click()
-      }, 1000);
-  </script>
-</div>
 {% endif %}
 <span class="oh-modal__dialog-title" id="addEmployeeModalLabel">{% trans "Create Period" %}</span>
 <form hx-post="{% url 'period-create' %}" hx-target="#periodModalTarget">
-  {% csrf_token %}
-<section>
-  <div id="periodContainer">
-    <div class="my-3" id="keyResultCard">
-        {{form.as_p}}
-    </div>
-  </section>
+    {% csrf_token %}
+    <section>
+        <div id="periodContainer">
+            <div class="my-3" id="keyResultCard">
+                {{ form.as_p }}
+            </div>
+        </div>
+    </section>
 </form>

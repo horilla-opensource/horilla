@@ -1,161 +1,157 @@
 {% extends 'index.html' %}
 {% block content %}
-{% load static %}
-{% load i18n %}{% load basefilters %}
-<style>
-  .avatars {
-    display: flex;
-    padding: 8px 10px 8px 10px;
-  }
-
-  .avatars__item {
-    background-color: #596376;
-    border: 2px solid white;
-    border-radius: 100%;
-    color: #ffffff;
-    display: block;
-    font-family: sans-serif;
-    font-size: 12px;
-    font-weight: 100;
-    height: 26px;
-    width: 26px;
-    line-height: 17px;
-    text-align: center;
-    transition: margin 0.1s ease-in-out;
-    overflow: hidden;
-    margin-left: -10px;
-  }
-
-  .avatars__item:first-child {
-    z-index: 5;
-  }
-
-  .avatars__item:nth-child(2) {
-    z-index: 4;
-  }
-
-  .avatars__item:nth-child(3) {
-    z-index: 3;
-  }
-
-  .avatars__item:nth-child(4) {
-    z-index: 2;
-  }
-
-  .avatars__item:nth-child(5) {
-    z-index: 1;
-  }
-
-  .avatars__item:last-child {
-    z-index: 0;
-  }
-
-  .avatars__item img {
-    width: 100%;
-  }
-
-  .avatars:hover .avatars__item {
-    margin-right: 10px;
-  }
-  .select2-container .select2-selection.select2-selection--multiple{
-    padding: 5px !important;
-    max-height: 70px !important;
-    overflow: hidden;
-    overflow-y: scroll;
-  }
-  .search-highlight{
-    background-color: rgba(255, 68, 0, 0.076);
-  }
-  #enlargeImageContainer {
-    position: absolute;
-    left: -300px;
-    top: 100px;
-    height: 200px;
-    width: 200px;
-  }
-</style>
-<!-- For showing m Section -->
-<div class="oh-alert-container messages" >
-
-</div>
-<main :class="sidebarOpen ? 'oh-main__sidebar-visible' : ''">
-	{% include 'okr/okr_nav.html' %}
-  <div class="oh-wrapper" id="objective_list">
-    {% include 'okr/okr_list.html' %}
-  </div>
-</main>
-
-<!-- Modals -->
-<div
-  class="oh-modal"
-  id="objectivesModal"
-  role="dialog"
-  aria-labelledby="objectivesModal"
-  aria-hidden="true"
->
-  <div class="oh-modal__dialog" id="objectivesTarget">
-
-  </div>
-</div>
-
-<script>
-  function switchTab(e) {
-    let parentContainerEl = e.target.closest(".oh-tabs");
-    let tabElement = e.target.closest(".oh-tabs__tab");
-
-
-    let targetSelector = e.target.dataset.target;
-    let targetEl = parentContainerEl
-        ? parentContainerEl.querySelector(targetSelector)
-        : null;
-
-    // Highlight active tabs
-    if (tabElement && !tabElement.classList.contains("oh-tabs__tab--active")) {
-        parentContainerEl
-            .querySelectorAll(".oh-tabs__tab--active")
-            .forEach(function (item) {
-                item.classList.remove("oh-tabs__tab--active");
-            });
-
-        if (!tabElement.classList.contains("oh-tabs__new-tab")) {
-            tabElement.classList.add("oh-tabs__tab--active");
+    {% load static %}
+    {% load i18n %}{% load basefilters %}
+    <style>
+        .avatars {
+            display: flex;
+            padding: 8px 10px 8px 10px;
         }
-    }
 
-    // Switch tabs
-    if (targetEl && !targetEl.classList.contains("oh-tabs__content--active")) {
-        parentContainerEl
-            .querySelectorAll(".oh-tabs__content--active")
-            .forEach(function (item) {
-                item.classList.remove("oh-tabs__content--active");
-            });
-        targetEl.classList.add("oh-tabs__content--active");
-    }
-  }
+        .avatars__item {
+            display: block;
+            width: 26px;
+            height: 26px;
+            margin-left: -10px;
+            overflow: hidden;
+            border: 2px solid white;
+            border-radius: 100%;
+            background-color: #596376;
+            color: #ffffff;
+            font-weight: 100;
+            font-size: 12px;
+            line-height: 17px;
+            font-family: sans-serif;
+            text-align: center;
+            transition: margin 0.1s ease-in-out;
+        }
 
-  //create key result dynamically
-  function keyResultChange(element) {
-    var selectedValue = $(element).val();
-    if(selectedValue.includes("create_new_key_result")){
-      var parentForm = element.parents().closest("form");
-      var view = parentForm.serialize();
-      var dataUrl = parentForm.data('url');
-      let dynamicKeyResult = $("#dynamicKeyResult");
-      if (dataUrl) {
-        dynamicKeyResult.attr("hx-vals", `{"data":"${view}","dataUrl":"${dataUrl}"}`);
-        // Remove 'create_new_key_result' from selected values (for multi-select support)
-        var newSelected = selectedValue.filter(val => val !== "create_new_key_result");
-        $(element).val(newSelected).change();
-      }else{
-        dynamicKeyResult.attr("hx-vals", `{"data":"${view}"}`);
-      }
-      dynamicKeyResult.click();
-    }
-  }
+        .avatars__item:first-child {
+            z-index: 5;
+        }
 
-  function ObjectiveChange(element){
-    var selectedObjective = $(element).val();
+        .avatars__item:nth-child(2) {
+            z-index: 4;
+        }
 
-  };
-</script>
+        .avatars__item:nth-child(3) {
+            z-index: 3;
+        }
+
+        .avatars__item:nth-child(4) {
+            z-index: 2;
+        }
+
+        .avatars__item:nth-child(5) {
+            z-index: 1;
+        }
+
+        .avatars__item:last-child {
+            z-index: 0;
+        }
+
+        .avatars__item img {
+            width: 100%;
+        }
+
+        .avatars:hover .avatars__item {
+            margin-right: 10px;
+        }
+        .select2-container .select2-selection.select2-selection--multiple {
+            max-height: 70px !important;
+            padding: 5px !important;
+            overflow: hidden;
+            overflow-y: scroll;
+        }
+        .search-highlight {
+            background-color: rgba(255, 68, 0, 0.076);
+        }
+        #enlargeImageContainer {
+            position: absolute;
+            top: 100px;
+            left: -300px;
+            width: 200px;
+            height: 200px;
+        }
+    </style>
+    <!-- For showing m Section -->
+    <div class="oh-alert-container messages"></div>
+    <main :class="sidebarOpen ? 'oh-main__sidebar-visible' : ''">
+        {% include 'okr/okr_nav.html' %}
+        <div class="oh-wrapper" id="objective_list">
+            {% include 'okr/okr_list.html' %}
+        </div>
+    </main>
+
+    <!-- Modals -->
+    <div
+        class="oh-modal"
+        id="objectivesModal"
+        role="dialog"
+        aria-labelledby="objectivesModal"
+        aria-hidden="true"
+    >
+        <div class="oh-modal__dialog" id="objectivesTarget"></div>
+    </div>
+
+    <script>
+        function switchTab(e) {
+          let parentContainerEl = e.target.closest(".oh-tabs");
+          let tabElement = e.target.closest(".oh-tabs__tab");
+
+
+          let targetSelector = e.target.dataset.target;
+          let targetEl = parentContainerEl
+              ? parentContainerEl.querySelector(targetSelector)
+              : null;
+
+          // Highlight active tabs
+          if (tabElement && !tabElement.classList.contains("oh-tabs__tab--active")) {
+              parentContainerEl
+                  .querySelectorAll(".oh-tabs__tab--active")
+                  .forEach(function (item) {
+                      item.classList.remove("oh-tabs__tab--active");
+                  });
+
+              if (!tabElement.classList.contains("oh-tabs__new-tab")) {
+                  tabElement.classList.add("oh-tabs__tab--active");
+              }
+          }
+
+          // Switch tabs
+          if (targetEl && !targetEl.classList.contains("oh-tabs__content--active")) {
+              parentContainerEl
+                  .querySelectorAll(".oh-tabs__content--active")
+                  .forEach(function (item) {
+                      item.classList.remove("oh-tabs__content--active");
+                  });
+              targetEl.classList.add("oh-tabs__content--active");
+          }
+        }
+
+        //create key result dynamically
+        function keyResultChange(element) {
+          var selectedValue = $(element).val();
+          if(selectedValue.includes("create_new_key_result")){
+            var parentForm = element.parents().closest("form");
+            var view = parentForm.serialize();
+            var dataUrl = parentForm.data('url');
+            let dynamicKeyResult = $("#dynamicKeyResult");
+            if (dataUrl) {
+              dynamicKeyResult.attr("hx-vals", `{"data":"${view}","dataUrl":"${dataUrl}"}`);
+              // Remove 'create_new_key_result' from selected values (for multi-select support)
+              var newSelected = selectedValue.filter(val => val !== "create_new_key_result");
+              $(element).val(newSelected).change();
+            }else{
+              dynamicKeyResult.attr("hx-vals", `{"data":"${view}"}`);
+            }
+            dynamicKeyResult.click();
+          }
+        }
+
+        function ObjectiveChange(element){
+          var selectedObjective = $(element).val();
+
+        };
+    </script>
 {% endblock content %}

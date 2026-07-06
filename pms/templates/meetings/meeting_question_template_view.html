@@ -3,7 +3,7 @@
     <div class="oh-activity-sidebar__header">
         <a
             style="cursor: pointer"
-            onclick="$('.oh-activity-sidebar--show').removeClass('oh-activity-sidebar--show');"
+            onclick="$('.oh-activity-sidebar--show').removeClass('oh-activity-sidebar--show')"
         >
             <ion-icon
                 name="chevron-forward-outline"
@@ -24,11 +24,12 @@
             {% endif %}
             hx-get="{% url 'meeting-answer-get' meeting.id %}"
             hx-trigger="load"
-        ></div>
+        >
+        </div>
     </div>
-    <hr class="line" />
+    <hr class="line">
     {% if request.user.employee_get in meeting.manager.all and meeting.answer_employees.all %}
-        <div class="mt-3 oh-card" >
+        <div class="mt-3 oh-card">
             {% for employee in meeting.answer_employees.all %}
                 <div class="oh-accordion">
                     <div
@@ -36,12 +37,13 @@
                         hx-get="{% url 'meeting-answer-get' meeting.id %}?emp_id={{employee.id}}"
                         hx-target="#employee_answers{{employee.id}}"
                     >
-                        {{employee.get_full_name}}
+                        {{ employee.get_full_name }}
                     </div>
                     <div
                         class="oh-accordion-body"
                         id="employee_answers{{employee.id}}"
-                    ></div>
+                    >
+                    </div>
                 </div>
             {% endfor %}
         </div>

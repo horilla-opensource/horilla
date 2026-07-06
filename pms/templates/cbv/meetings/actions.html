@@ -8,7 +8,8 @@
     <div class="oh-btn-group" onclick="event.stopPropagation()">
         {% if "horilla_meet"|app_installed and "horilla_meet"|integration_installed %}
             {% if instance.google_meeting.google_meeting.meet_url %}
-                <a class="oh-btn oh-btn--light-bkg w-100"
+                <a
+                    class="oh-btn oh-btn--light-bkg w-100"
                     href="{{instance.google_meeting.google_meeting.meet_url}}"
                     target="_blank"
                     title="{% trans 'Join Meeting' %}"
@@ -16,106 +17,120 @@
                     <ion-icon name="link-outline"></ion-icon>
                 </a>
             {% else %}
-                <a
-                    class="oh-btn oh-btn--light-bkg oh-btn--disabled w-100 text-decoration-none"
-                >
+                <a class="oh-btn oh-btn--light-bkg oh-btn--disabled w-100 text-decoration-none">
                     <ion-icon name="link-outline"></ion-icon>
                 </a>
             {% endif %}
             {% if perms.horilla_meet.add_googlemeeting %}
                 {% if request.user.employee_get in instance.manager.all %}
-                    <a class="oh-btn oh-btn--light-bkg w-100 createMeeting"
+                    <a
+                        class="oh-btn oh-btn--light-bkg w-100 createMeeting"
                         href="#"
                         title="{% trans 'Send Meeting Link' %}"
-                        data-id = "{{instance.id}}"
+                        data-id="{{instance.id}}"
                         data-date="{{instance.date.date}}"
                         data-time="{{ instance.date|time }}"
-                        data-employees = "{{instance.employee_id.all|length}}"
-                        data-manager = "{{instance.manager.all|length}}"
+                        data-employees="{{instance.employee_id.all|length}}"
+                        data-manager="{{instance.manager.all|length}}"
                     >
                         <ion-icon name="share-outline"></ion-icon>
                     </a>
                 {% endif %}
             {% endif %}
         {% endif %}
-        {% if perms.pms.add_meetings or request.user.employee_get in instance.manager.all or request.user.employee_get in instance.answer_employees.all  %}
-
-        <a
-        onclick="event.preventDefault(); event.stopPropagation();"
-        hx-get="{% url 'add-response' instance.id %}"
-        hx-target="#genericModalBody"
-        data-toggle="oh-modal-toggle"
-        data-target="#genericModal"
-        class="oh-btn oh-btn--light-bkg w-100"
-        title="{% trans 'Add MoM' %}"
-     >
-       <ion-icon name="add-outline"></ion-icon>
-     </a>
+        {% if perms.pms.add_meetings or request.user.employee_get in instance.manager.all or request.user.employee_get in instance.answer_employees.all %}
+            <a
+                onclick="event.preventDefault(); event.stopPropagation()"
+                hx-get="{% url 'add-response' instance.id %}"
+                hx-target="#genericModalBody"
+                data-toggle="oh-modal-toggle"
+                data-target="#genericModal"
+                class="oh-btn oh-btn--light-bkg w-100"
+                title="{% trans 'Add MoM' %}"
+            >
+                <ion-icon name="add-outline"></ion-icon>
+            </a>
         {% endif %}
         {% if request.user.employee_get in instance.answer_employees.all or request.user.employee_get in instance.manager.all %}
-        {% if instance.question_template %}
-        <a
-            hx-get="{% url 'meeting-question-template-view' instance.id %}"
-            hx-target="#answerContainer"
-            data-target="#activitySidebar"
-            class="oh-btn oh-btn--light-bkg oh-activity-sidebar__open w-100 text-decoration-none"
-            title="{% trans 'Answer' %}"
-        >
-            <i class="material-symbols-outlined fw-light" data-target="#activitySidebar" style="font-size:14px;">
-                edit_document
-            </i>
-        </a>
+            {% if instance.question_template %}
+                <a
+                    hx-get="{% url 'meeting-question-template-view' instance.id %}"
+                    hx-target="#answerContainer"
+                    data-target="#activitySidebar"
+                    class="oh-btn oh-btn--light-bkg oh-activity-sidebar__open w-100 text-decoration-none"
+                    title="{% trans 'Answer' %}"
+                >
+                    <i
+                        class="material-symbols-outlined fw-light"
+                        data-target="#activitySidebar"
+                        style="font-size: 14px"
+                    >
+                        edit_document
+                    </i>
+                </a>
+            {% else %}
+                <a class="oh-btn oh-btn--light-bkg oh-btn--disabled w-100 text-decoration-none">
+                    <i class="material-symbols-outlined fw-light" style="font-size: 14px">
+                        edit_document
+                    </i>
+                </a>
+            {% endif %}
         {% else %}
-        <a
-            class="oh-btn oh-btn--light-bkg oh-btn--disabled w-100 text-decoration-none"
-        >
-            <i class="material-symbols-outlined fw-light" style="font-size:14px;">
-                edit_document
-            </i>
-        </a>
-        {% endif %}
-        {% else %}
-        <a
-            class="oh-btn oh-btn--light-bkg oh-btn--disabled w-100 text-decoration-none"
-        >
-            <i class="material-symbols-outlined fw-light" style="font-size:14px;">
-                edit_document
-            </i>
-        </a>
+            <a class="oh-btn oh-btn--light-bkg oh-btn--disabled w-100 text-decoration-none">
+                <i class="material-symbols-outlined fw-light" style="font-size: 14px">
+                    edit_document
+                </i>
+            </a>
         {% endif %}
         {% if perms.pms.change_meetings or request.user.employee_get in instance.manager.all %}
             <a
                 onclick="event.preventDefault();event.stopPropagation()"
-                hx-get="{% url 'update-meeting' instance.id %}?instance_ids={{instance.ordered_ids}}" hx-target='#genericModalBody' hx-swap='innerHTML' data-toggle='oh-modal-toggle' data-target='#genericModal'  class="oh-btn oh-btn--light-bkg w-100" title="{% trans 'Edit' %}"
+                hx-get="{% url 'update-meeting' instance.id %}?instance_ids={{instance.ordered_ids}}"
+                hx-target="#genericModalBody"
+                hx-swap="innerHTML"
+                data-toggle="oh-modal-toggle"
+                data-target="#genericModal"
+                class="oh-btn oh-btn--light-bkg w-100"
+                title="{% trans 'Edit' %}"
             ><ion-icon name="create-outline"></ion-icon></a>
         {% endif %}
         {% if perms.pms.delete_meetings %}
             {% if not instance.is_active %}
-                    <form
-                        hx-confirm="{% trans 'Do you want to unarchive this meeting?' %}"
-                        hx-post="{% url 'archive-meeting' instance.id %}"
-                        hx-target="closest tr"
-                        hx-on-htmx-after-request="reloadMessage(this);"
-                        method="post"
-                        style="display: contents;width:100%">
-                        {% csrf_token %}
-                        <button onclick="event.stopPropagation()" class="oh-btn oh-btn--light-bkg w-100" title="{% trans 'Unarchive' %}">
-                            <ion-icon name="archive"></ion-icon>
-                        </button>
-                    </form>
+                <form
+                    hx-confirm="{% trans 'Do you want to unarchive this meeting?' %}"
+                    hx-post="{% url 'archive-meeting' instance.id %}"
+                    hx-target="closest tr"
+                    hx-on-htmx-after-request="reloadMessage(this);"
+                    method="post"
+                    style="display: contents; width: 100%"
+                >
+                    {% csrf_token %}
+                    <button
+                        onclick="event.stopPropagation()"
+                        class="oh-btn oh-btn--light-bkg w-100"
+                        title="{% trans 'Unarchive' %}"
+                    >
+                        <ion-icon name="archive"></ion-icon>
+                    </button>
+                </form>
             {% else %}
-                    <form
-                        hx-confirm="{% trans 'Do you want to archive this meeting?' %}"
-                        hx-post="{% url 'archive-meeting' instance.id %}"
-                        hx-target="closest tr"
-                        hx-on-htmx-after-request="reloadMessage(this);"
-                        method="post"
-                        style="display: contents;width:100%">
-                        {% csrf_token %}
-                        <button onclick="event.stopPropagation()" class="oh-btn oh-btn--light-bkg w-100" title="{% trans 'Archive' %}">
-                            <ion-icon name="archive"></ion-icon>
-                        </button>
-                    </form>
+                <form
+                    hx-confirm="{% trans 'Do you want to archive this meeting?' %}"
+                    hx-post="{% url 'archive-meeting' instance.id %}"
+                    hx-target="closest tr"
+                    hx-on-htmx-after-request="reloadMessage(this);"
+                    method="post"
+                    style="display: contents; width: 100%"
+                >
+                    {% csrf_token %}
+                    <button
+                        onclick="event.stopPropagation()"
+                        class="oh-btn oh-btn--light-bkg w-100"
+                        title="{% trans 'Archive' %}"
+                    >
+                        <ion-icon name="archive"></ion-icon>
+                    </button>
+                </form>
             {% endif %}
         {% endif %}
         {% if perms.pms.delete_meetings %}
@@ -125,10 +140,15 @@
                 hx-target="closest tr"
                 hx-on-htmx-after-request="reloadMessage(this);"
                 method="post"
-                style="display: contents;width:100%">
+                style="display: contents; width: 100%"
+            >
                 {% csrf_token %}
-                <button onclick="event.stopPropagation()" class="oh-btn oh-btn--light-bkg oh-btn--danger-outline  w-100" title="{% trans 'Delete' %}">
-                <ion-icon name="trash-outline" role="img" class="md hydrated" aria-label="trash outline"></ion-icon>
+                <button
+                    onclick="event.stopPropagation()"
+                    class="oh-btn oh-btn--light-bkg oh-btn--danger-outline w-100"
+                    title="{% trans 'Delete' %}"
+                >
+                    <ion-icon name="trash-outline" role="img" class="md hydrated" aria-label="trash outline"></ion-icon>
                 </button>
             </form>
         {% endif %}

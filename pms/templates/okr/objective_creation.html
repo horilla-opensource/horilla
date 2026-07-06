@@ -1,137 +1,131 @@
-{% load static i18n%}
+{% load static i18n %}
 {% load i18n %}
 
 <!-- start of messages -->
 {% if messages %}
-<div class="oh-wrapper">
-  {% for message in messages %}
-  <div class="oh-alert-container">
-    <div class="oh-alert oh-alert--animated {{message.tags}}">
-      {{ message }}
-    </div>
-  </div>
-  {% endfor %}
-  {% comment %} <script>
+    <div class="oh-wrapper">
+        {% for message in messages %}
+            <div class="oh-alert-container">
+                <div class="oh-alert oh-alert--animated {{message.tags}}">
+                    {{ message }}
+                </div>
+            </div>
+        {% endfor %}
+        {% comment %} <script>
     setTimeout(function () {
     $('#kRModal').find(".oh-modal__close--custom").click();
     }, 1000);
   </script> {% endcomment %}
-</div>
+    </div>
 {% endif %}
 <!-- end of messages -->
 
 {% if objective_form.non_field_errors %}
-<!-- form non field errors  -->
-<div class="oh-wrapper">
-    <div class="oh-alert-container">
-        {% for error in objective_form.non_field_errors %}
-        <div class="oh-alert oh-alert--animated oh-alert--danger">
-            {{ error }}
+    <!-- form non field errors  -->
+    <div class="oh-wrapper">
+        <div class="oh-alert-container">
+            {% for error in objective_form.non_field_errors %}
+                <div class="oh-alert oh-alert--animated oh-alert--danger">
+                    {{ error }}
+                </div>
+            {% endfor %}
         </div>
-        {% endfor %}
     </div>
-</div>
 {% endif %}
 
 <div class="oh-modal__dialog-header">
-  {% if update %}
-    <h2 class="oh-modal__dialog-title" >
-      {% trans "Update Objective" %}
-    </h2>
-  {% else %}
-    <h2 class="oh-modal__dialog-title" >
-      {% trans "Create Objective" %}
-    </h2>
-  {% endif %}
+    {% if update %}
+        <h2 class="oh-modal__dialog-title">
+            {% trans "Update Objective" %}
+        </h2>
+    {% else %}
+        <h2 class="oh-modal__dialog-title">
+            {% trans "Create Objective" %}
+        </h2>
+    {% endif %}
 
-  <button type="button" class="oh-modal__close--custom" onclick="$(this).parents().closest('.oh-modal--show').toggleClass('oh-modal--show')">
-    <ion-icon name="close-outline" role="img" aria-label="close outline"></ion-icon>
-  </button>
+    <button
+        type="button"
+        class="oh-modal__close--custom"
+        onclick="$(this).parents().closest('.oh-modal--show').toggleClass('oh-modal--show')"
+    >
+        <ion-icon name="close-outline" role="img" aria-label="close outline"></ion-icon>
+    </button>
 </div>
 <div class="oh-modal__dialog-body">
-  {% if update %}
     <form
-      hx-post="{%url 'objective-update' objective_form.instance.id %}"
-      hx-target="#objectCreateModalTarget"
-      id="objectiveForm"
-      data-url="objective-update/{{objective_form.instance.id}}/?data="
+        hx-post="{% if update %}{% url 'objective-update' objective_form.instance.id %}{% else %}{% url 'objective-creation' %}{% endif %}"
+        hx-target="#objectCreateModalTarget"
+        id="objectiveForm"
+        data-url="{% if update %}objective-update/{{ objective_form.instance.id }}/?data={% else %}objective-creation/?data={% endif %}"
     >
-  {% else %}
-    <form
-      hx-post="{%url 'objective-creation' %}"
-      hx-target="#objectCreateModalTarget"
-      id="objectiveForm"
-      data-url="objective-creation/?data="
-    >
-  {% endif %}
-    {% csrf_token %}
-    {{objective_form.as_p}}
-  </form>
+        {% csrf_token %}
+        {{ objective_form.as_p }}
+    </form>
 </div>
 
 <!-- period modal -->
 <div class="oh-modal" id="PeriodModal" role="dialog" aria-labelledby="editKeyResultModal" aria-hidden="true">
-  <div class="oh-modal__dialog">
-    <!-- for creating period -->
-    <div class="oh-modal__dialog-header">
-      <h2 class="oh-modal__dialog-title" >
-        {% trans "Create Period" %}
-      </h2>
-      <button type="button" class="oh-modal__close--custom" onclick="$('#PeriodModal').hide();">
-        <ion-icon name="close-outline" role="img" aria-label="close outline"></ion-icon>
-      </button>
+    <div class="oh-modal__dialog">
+        <!-- for creating period -->
+        <div class="oh-modal__dialog-header">
+            <h2 class="oh-modal__dialog-title">
+                {% trans "Create Period" %}
+            </h2>
+            <button type="button" class="oh-modal__close--custom" onclick="$('#PeriodModal').hide()">
+                <ion-icon name="close-outline" role="img" aria-label="close outline"></ion-icon>
+            </button>
+        </div>
+        <div class="oh-modal__dialog-body" id="periodModalTarget">
+            <form>
+                {% csrf_token %}
+                {{ p_form.as_p }}
+                <button
+                    type="submit"
+                    class="oh-btn oh-btn--secondary mt-2 mr-0 oh-btn--w-100-resp"
+                >
+                    {% trans "Save" %}
+                </button>
+            </form>
+        </div>
     </div>
-    <div class="oh-modal__dialog-body" id="periodModalTarget">
-       <form>
-          {% csrf_token %}
-          {{p_form.as_p}}
-        <button
-          type="submit"
-          class="oh-btn oh-btn--secondary mt-2 mr-0 oh-btn--w-100-resp"
-        >
-          {% trans "Save" %}
-        </button>
-        </form>
-      </div>
-  </div>
 </div>
 <!-- end of period modal -->
 
 <!-- key result modal -->
 <div class="oh-modal" id="kRModal" role="dialog" aria-labelledby="editKeyResultModal" aria-hidden="true">
-  {% include "okr/key_result/key_result_form.html" %}
+    {% include "okr/key_result/key_result_form.html" %}
 </div>
 <!-- end of key result modal -->
 
 <script src="{% static 'src/period/period.js' %}"></script>
 
-
 <script>
-$(document).ready(function(){
-  {% comment %} $('#id_assignees').next('span').hide()  {% endcomment %}
-  $('[id="id_start_date"]').parent().hide();
-  {% comment %} $('label[for="id_assignees"]').hide();  {% endcomment %}
-  $('#id_assignees').closest('div.col-12').hide();
-  addAssignees()
-})
-$('#id_add_assignees').change(function(){
-  addAssignees()
-})
+    $(document).ready(function(){
+      {% comment %} $('#id_assignees').next('span').hide()  {% endcomment %}
+      $('[id="id_start_date"]').parent().hide();
+      {% comment %} $('label[for="id_assignees"]').hide();  {% endcomment %}
+      $('#id_assignees').closest('div.col-12').hide();
+      addAssignees()
+    })
+    $('#id_add_assignees').change(function(){
+      addAssignees()
+    })
 
-function addAssignees(){
-  if ($('#id_add_assignees').is(":checked")){
-    $('[id="id_start_date"]').parent().show();
-    {% comment %} $('label[for="id_assignees"]').show();
-    $('#id_assignees').next('span').show();  {% endcomment %}
-    $('#id_assignees').closest('div.col-12').show();
+    function addAssignees(){
+      if ($('#id_add_assignees').is(":checked")){
+        $('[id="id_start_date"]').parent().show();
+        {% comment %} $('label[for="id_assignees"]').show();
+        $('#id_assignees').next('span').show();  {% endcomment %}
+        $('#id_assignees').closest('div.col-12').show();
 
-  }
-  else{
-    {% comment %} $('#id_assignees').next('span').css("display", "none");  {% endcomment %}
-    $('[id="id_start_date"]').parent().hide();
-    {% comment %} $('label[for="id_assignees"]').hide();  {% endcomment %}
-    $('#id_assignees').closest('div.col-12').hide();
+      }
+      else{
+        {% comment %} $('#id_assignees').next('span').css("display", "none");  {% endcomment %}
+        $('[id="id_start_date"]').parent().hide();
+        {% comment %} $('label[for="id_assignees"]').hide();  {% endcomment %}
+        $('#id_assignees').closest('div.col-12').hide();
 
-  }
-}
+      }
+    }
 </script>

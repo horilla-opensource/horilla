@@ -5,7 +5,6 @@
 {% include 'filter_tags.html' %}
 <!--start of quick  filter  -->
 
-
 {% comment %} <div class="d-flex flex-row-reverse mb-2">
     <span class="me-3 review_ongoing" onclick="$('[name=status]').val('At Risk');$('[name=status]').first().change();$('.filterButton').click()" style="cursor: pointer">
         <span class="oh-dot oh-dot--small me-1" style="background-color:red"></span>
@@ -28,7 +27,6 @@
       {% trans "On Track" %}
     </span>
 </div> {% endcomment %}
-
 
 <!--end of quick  filter  -->
 
@@ -60,41 +58,53 @@
 {% endif %}
 
 <!-- start of tabs -->
-<div class="oh-tabs" >
-
-    <ul class="oh-tabs__tablist" >
-      <li class="oh-tabs__tab" onclick="switchTab(event)" data-target="#self_objective">
-        {% trans "Self Objective" %}
-        <span class="oh-badge oh-badge--secondary oh-badge--small oh-badge--round ms-2 mr-2" id="" data-category-id="1" title="{{own_objectives.paginator.count}} objectives" onclick="event.stopPropagation()">{{own_objectives.paginator.count}}</span>
-      </li>
-      <!-- normal user can't view all objective  -->
-      {% if perms.pms.view_objective or manager %}
-        <li class="oh-tabs__tab" onclick="switchTab(event)" data-target="#all_objective">
-            {% trans "All Objective" %}
-            <div style="align-items:center;display:flex">
-            <span class="oh-badge oh-badge--secondary oh-badge--small oh-badge--round ms-2 mr-2" id="" data-category-id="1" title="{{objectives.paginator.count}} objectives" onclick="event.stopPropagation()">{{objectives.paginator.count}}</span>
-            {% if perms.pms.add_objectives %}
-                <button onclick="event.stopPropagation()" style="display: inline-block;padding: 0px;
-                    border-radius: 6px;
-                    display: flex;
-                    align-items: center;
-                    justify-content: center;
-                    width: 50px;
-                    height: 28px;"
-                    class="oh-btn oh-btn--secondary-outline float-end ms-3"
-                    data-toggle="oh-modal-toggle"
-                    data-target="#objectCreateModal"
-                    hx-get="{%url 'objective-creation' %}"
-                    hx-target="#objectCreateModalTarget"
-                    onclick="event.preventDefault()"
-                    title="{% trans "Create Objectives" %}"
-                    >
-                    <ion-icon name="add-outline" class="m-0 md hydrated" role="img" aria-label="add outline"></ion-icon>
-                </button>
-            {% endif %}
-            </div>
+<div class="oh-tabs">
+    <ul class="oh-tabs__tablist">
+        <li class="oh-tabs__tab" onclick="switchTab(event)" data-target="#self_objective">
+            {% trans "Self Objective" %}
+            <span
+                class="oh-badge oh-badge--secondary oh-badge--small oh-badge--round ms-2 mr-2"
+                id=""
+                data-category-id="1"
+                title="{{own_objectives.paginator.count}} objectives"
+                onclick="event.stopPropagation()"
+            >{{ own_objectives.paginator.count }}</span>
         </li>
-      {% endif %}
+        <!-- normal user can't view all objective  -->
+        {% if perms.pms.view_objective or manager %}
+            <li class="oh-tabs__tab" onclick="switchTab(event)" data-target="#all_objective">
+                {% trans "All Objective" %}
+                <div style="align-items: center; display: flex">
+                    <span
+                        class="oh-badge oh-badge--secondary oh-badge--small oh-badge--round ms-2 mr-2"
+                        id=""
+                        data-category-id="1"
+                        title="{{objectives.paginator.count}} objectives"
+                        onclick="event.stopPropagation()"
+                    >{{ objectives.paginator.count }}</span>
+                    {% if perms.pms.add_objectives %}
+                        <button
+                            onclick="event.stopPropagation()"
+                            style="display: inline-block; padding: 0px; border-radius: 6px; display: flex; align-items: center; justify-content: center; width: 50px; height: 28px"
+                            class="oh-btn oh-btn--secondary-outline float-end ms-3"
+                            data-toggle="oh-modal-toggle"
+                            data-target="#objectCreateModal"
+                            hx-get="{%url 'objective-creation' %}"
+                            hx-target="#objectCreateModalTarget"
+                            onclick="event.preventDefault()"
+                            title='{% trans "Create Objectives" %}'
+                        >
+                            <ion-icon
+                                name="add-outline"
+                                class="m-0 md hydrated"
+                                role="img"
+                                aria-label="add outline"
+                            ></ion-icon>
+                        </button>
+                    {% endif %}
+                </div>
+            </li>
+        {% endif %}
     </ul>
     <div>
         <div class="oh-tabs__contents">
@@ -109,11 +119,20 @@
                                     <div class="oh-table_sticky--wrapper">
                                         <div class="oh-sticky-dropdown--header">
                                             <div class="oh-dropdown" x-data="{open: false}">
-                                                <button class="oh-sticky-dropdown_btn " @click="open = !open"><ion-icon name="ellipsis-vertical-sharp"
-                                                    role="img" class="md hydrated" aria-label="ellipsis vertical sharp"></ion-icon></button>
-                                                <div class="oh-dropdown__menu oh-sticky-table_dropdown" x-show="open" @click.outside="open = false">
-                                                    <ul class="oh-dropdown__items" id="allObjectiveCells">
-                                                    </ul>
+                                                <button class="oh-sticky-dropdown_btn" @click="open = !open">
+                                                    <ion-icon
+                                                        name="ellipsis-vertical-sharp"
+                                                        role="img"
+                                                        class="md hydrated"
+                                                        aria-label="ellipsis vertical sharp"
+                                                    ></ion-icon>
+                                                </button>
+                                                <div
+                                                    class="oh-dropdown__menu oh-sticky-table_dropdown"
+                                                    x-show="open"
+                                                    @click.outside="open = false"
+                                                >
+                                                    <ul class="oh-dropdown__items" id="allObjectiveCells"></ul>
                                                 </div>
                                             </div>
                                         </div>
@@ -126,201 +145,310 @@
                                                 <div class="oh-sticky-table__thead">
                                                     <div class="oh-sticky-table__tr">
                                                         <div class="oh-sticky-table__th">{% trans "Title" %}</div>
-                                                        <div data-cell-index="1" data-cell-title='{% trans "Managers" %}'
+                                                        <div
+                                                            data-cell-index="1"
+                                                            data-cell-title='{% trans "Managers" %}'
                                                             class="oh-sticky-table__th"
-                                                        >{% trans "Managers" %}</div>
-                                                        <div data-cell-index="2" data-cell-title='{% trans "Key Results" %}'
+                                                        >
+                                                            {% trans "Managers" %}
+                                                        </div>
+                                                        <div
+                                                            data-cell-index="2"
+                                                            data-cell-title='{% trans "Key Results" %}'
                                                             class="oh-sticky-table__th"
-                                                        >{% trans "Key Results" %}</div>
-                                                        <div data-cell-index="3" data-cell-title='{% trans "Assignees" %}'
+                                                        >
+                                                            {% trans "Key Results" %}
+                                                        </div>
+                                                        <div
+                                                            data-cell-index="3"
+                                                            data-cell-title='{% trans "Assignees" %}'
                                                             class="oh-sticky-table__th"
-                                                        >{% trans "Assignees" %}</div>
-                                                        <div data-cell-index="4" data-cell-title='{% trans "Duration" %}'
+                                                        >
+                                                            {% trans "Assignees" %}
+                                                        </div>
+                                                        <div
+                                                            data-cell-index="4"
+                                                            data-cell-title='{% trans "Duration" %}'
                                                             class="oh-sticky-table__th"
-                                                        >{% trans "Duration" %}</div>
-                                                        <div data-cell-index="5" data-cell-title='{% trans "Description" %}'
+                                                        >
+                                                            {% trans "Duration" %}
+                                                        </div>
+                                                        <div
+                                                            data-cell-index="5"
+                                                            data-cell-title='{% trans "Description" %}'
                                                             class="oh-sticky-table__th"
-                                                        >{% trans "Description" %}</div>
+                                                        >
+                                                            {% trans "Description" %}
+                                                        </div>
                                                         {% if  perms.pms.add_employeeobjective or perms.pms.change_objective or perms.pms.delete_objective %}
-                                                            <div class="oh-sticky-table__th oh-sticky-table__right" style="width: 315px;">{% trans "Actions" %}</div>
+                                                            <div
+                                                                class="oh-sticky-table__th oh-sticky-table__right"
+                                                                style="width: 315px"
+                                                            >
+                                                                {% trans "Actions" %}
+                                                            </div>
                                                         {% endif %}
                                                     </div>
                                                 </div>
                                                 <div class="oh-sticky-table__tbody">
                                                     {% for objective in objectives %}
-                                                        <div class="oh-sticky-table__tr oh-permission-table__tr oh-permission-table--collapsed"
+                                                        <div
+                                                            class="oh-sticky-table__tr oh-permission-table__tr oh-permission-table--collapsed"
                                                             onclick="window.location.href = `{% url 'objective-detailed-view' objective.id %}`"
                                                         >
-                                                            <div class="oh-sticky-table__sd oh-permission-table--toggle "
+                                                            <div
+                                                                class="oh-sticky-table__sd oh-permission-table--toggle"
                                                                 data-toggle-count
                                                             >
                                                                 <div class="d-flex align-items-center">
                                                                     <button class="oh-permission-table__collapse me-2">
-                                                                        <span  title="{% trans "Reveal" %}"><ion-icon class="oh-permission-table__collapse-down" name="chevron-down-outline"></ion-icon></span>
-                                                                        <span  title="{% trans "Collapse" %}"><ion-icon class="oh-permission-table__collapse-up" name="chevron-up-outline"></ion-icon></span>
+                                                                        <span title='{% trans "Reveal" %}'><ion-icon
+                                                                                class="oh-permission-table__collapse-down"
+                                                                                name="chevron-down-outline"
+                                                                            ></ion-icon></span>
+                                                                        <span title='{% trans "Collapse" %}'><ion-icon
+                                                                                class="oh-permission-table__collapse-up"
+                                                                                name="chevron-up-outline"
+                                                                            ></ion-icon></span>
                                                                     </button>
-                                                                    <span class="oh-permission-table__user">{{objective}} </span>
+                                                                    <span
+                                                                        class="oh-permission-table__user"
+                                                                    >{{ objective }}
+                                                                    </span>
                                                                 </div>
                                                             </div>
 
                                                             <div data-cell-index="1" class="oh-sticky-table__td">
                                                                 {% for manager in objective.managers.all %}
-                                                                <div id="managerContainer{{manager.id}}">
-                                                                    <span class="oh-user-panel oh-collapse-panel" data-type="user" >
-                                                                        <div class="oh-profile oh-profile--md">
-                                                                            <div class="oh-profile__avatar mr-1">
-                                                                                <img
-                                                                                src="https://ui-avatars.com/api/?name={{manager.get_full_name}}&background=random"
-                                                                                class="oh-profile__image"
-                                                                                alt="Baby C."
-                                                                                />
-                                                                            </div>
-                                                                            <span class="oh-profile__name oh-text--dark" title="{{manager}}"
-                                                                            >{{manager.employee_first_name|truncatechars:15}}</span>
-                                                                        </div>
-                                                                        {% if perms.pms.change_objective %}
-                                                                        <a
-                                                                            hx-confirm="{% trans 'Are you sure want to remove this manager?' %}"
-                                                                            hx-post="{% url 'objective-manager-remove' objective.id manager.id %}"
-                                                                            title="{% trans "Remove" %}" hx-swap="outerHTML"
-                                                                            hx-target="#managerContainer{{manager.id}}" class="oh-user-panel__remove"
-                                                                            onclick="event.stopPropagation()"
+                                                                    <div id="managerContainer{{manager.id}}">
+                                                                        <span
+                                                                            class="oh-user-panel oh-collapse-panel"
+                                                                            data-type="user"
                                                                         >
-                                                                            <ion-icon name="close-outline"></ion-icon>
-                                                                        </a>
-                                                                        {% endif %}
-                                                                    </span>
-                                                                </div>
+                                                                            <div class="oh-profile oh-profile--md">
+                                                                                <div class="oh-profile__avatar mr-1">
+                                                                                    <img
+                                                                                        src="https://ui-avatars.com/api/?name={{manager.get_full_name}}&background=random"
+                                                                                        class="oh-profile__image"
+                                                                                        alt="Baby C."
+                                                                                    >
+                                                                                </div>
+                                                                                <span
+                                                                                    class="oh-profile__name oh-text--dark"
+                                                                                    title="{{manager}}"
+                                                                                >{{ manager.employee_first_name|truncatechars:15 }}</span>
+                                                                            </div>
+                                                                            {% if perms.pms.change_objective %}
+                                                                                <a
+                                                                                    hx-confirm="{% trans 'Are you sure want to remove this manager?' %}"
+                                                                                    hx-post="{% url 'objective-manager-remove' objective.id manager.id %}"
+                                                                                    title='{% trans "Remove" %}'
+                                                                                    hx-swap="outerHTML"
+                                                                                    hx-target="#managerContainer{{manager.id}}"
+                                                                                    class="oh-user-panel__remove"
+                                                                                    onclick="event.stopPropagation()"
+                                                                                >
+                                                                                    <ion-icon
+                                                                                        name="close-outline"
+                                                                                    ></ion-icon>
+                                                                                </a>
+                                                                            {% endif %}
+                                                                        </span>
+                                                                    </div>
                                                                 {% endfor %}
-                                                                <span class="count-span">{{objective.managers.all|length}} {% trans "Managers" %}</span>
-
+                                                                <span
+                                                                    class="count-span"
+                                                                >{{ objective.managers.all|length }}
+                                                                    {% trans "Managers" %}</span>
                                                             </div>
                                                             <div data-cell-index="2" class="oh-sticky-table__td">
                                                                 {% for kr in objective.key_result_id.all %}
-                                                                <div id="keyResultContainer{{kr.id}}">
-                                                                    <span class="oh-user-panel oh-collapse-panel" data-type="user" >
-                                                                        <div class="oh-profile oh-profile--md">
-                                                                            <div class="oh-profile__avatar mr-1">
-                                                                                <img
-                                                                                src="https://ui-avatars.com/api/?name={{kr.key_result_id}}&background=random"
-                                                                                class="oh-profile__image"
-                                                                                alt="Baby C."
-                                                                                />
-                                                                            </div>
-                                                                            <span class="oh-profile__name oh-text--dark" title="{{kr.key_result_id}}"
-                                                                            >{{kr|truncatechars:15}}</span
-                                                                            >
-                                                                        </div>
-                                                                        {% if "perms.pms.delete_keyresult" %}
-                                                                        <a
-                                                                            hx-confirm="{% trans 'Are you sure want to remove this key result?' %}"
-                                                                            hx-post="{% url 'key-result-remove' objective.id kr.id %}"
-                                                                            title="{% trans "Remove" %}" hx-swap="outerHTML"
-                                                                            hx-target="#keyResultContainer{{kr.id}}"
-                                                                            class="oh-user-panel__remove"
-                                                                            onclick="event.stopPropagation()"
+                                                                    <div id="keyResultContainer{{kr.id}}">
+                                                                        <span
+                                                                            class="oh-user-panel oh-collapse-panel"
+                                                                            data-type="user"
                                                                         >
-                                                                            <ion-icon name="close-outline"></ion-icon>
-                                                                        </a>
-                                                                        {% endif %}
-                                                                    </span>
-                                                                </div>
+                                                                            <div class="oh-profile oh-profile--md">
+                                                                                <div class="oh-profile__avatar mr-1">
+                                                                                    <img
+                                                                                        src="https://ui-avatars.com/api/?name={{kr.key_result_id}}&background=random"
+                                                                                        class="oh-profile__image"
+                                                                                        alt="Baby C."
+                                                                                    >
+                                                                                </div>
+                                                                                <span
+                                                                                    class="oh-profile__name oh-text--dark"
+                                                                                    title="{{kr.key_result_id}}"
+                                                                                >{{ kr|truncatechars:15 }}</span>
+                                                                            </div>
+                                                                            {% if "perms.pms.delete_keyresult" %}
+                                                                                <a
+                                                                                    hx-confirm="{% trans 'Are you sure want to remove this key result?' %}"
+                                                                                    hx-post="{% url 'key-result-remove' objective.id kr.id %}"
+                                                                                    title='{% trans "Remove" %}'
+                                                                                    hx-swap="outerHTML"
+                                                                                    hx-target="#keyResultContainer{{kr.id}}"
+                                                                                    class="oh-user-panel__remove"
+                                                                                    onclick="event.stopPropagation()"
+                                                                                >
+                                                                                    <ion-icon
+                                                                                        name="close-outline"
+                                                                                    ></ion-icon>
+                                                                                </a>
+                                                                            {% endif %}
+                                                                        </span>
+                                                                    </div>
                                                                 {% endfor %}
-                                                                <span class="count-span">{{objective.key_result_id.all|length}} {% trans "Key results" %}</span>
+                                                                <span
+                                                                    class="count-span"
+                                                                >{{ objective.key_result_id.all|length }}
+                                                                    {% trans "Key results" %}</span>
                                                             </div>
                                                             <div data-cell-index="3" class="oh-sticky-table__td">
                                                                 {% for emp_objective in objective.employee_objective.all %}
                                                                     <div id="assigneesContainer{{emp_objective.id}}">
-                                                                        <span class="oh-user-panel oh-collapse-panel" data-type="user" >
+                                                                        <span
+                                                                            class="oh-user-panel oh-collapse-panel"
+                                                                            data-type="user"
+                                                                        >
                                                                             <div class="oh-profile oh-profile--md">
                                                                                 <div class="oh-profile__avatar mr-1">
                                                                                     <img
-                                                                                    src="https://ui-avatars.com/api/?name={{emp_objective.employee_id.get_full_name}}&background=random"
-                                                                                    class="oh-profile__image"
-                                                                                    alt="Baby C."
-                                                                                    />
+                                                                                        src="https://ui-avatars.com/api/?name={{emp_objective.employee_id.get_full_name}}&background=random"
+                                                                                        class="oh-profile__image"
+                                                                                        alt="Baby C."
+                                                                                    >
                                                                                 </div>
-                                                                                <span class="oh-profile__name oh-text--dark" title="{{emp_objective.employee_id}}"
-                                                                                >{{emp_objective.employee_id|truncatechars:15}}</span
-                                                                                >
+                                                                                <span
+                                                                                    class="oh-profile__name oh-text--dark"
+                                                                                    title="{{emp_objective.employee_id}}"
+                                                                                >{{ emp_objective.employee_id|truncatechars:15 }}</span>
                                                                             </div>
                                                                             <a
                                                                                 hx-confirm="{% trans 'Are you sure want to remove this assignee?' %}"
                                                                                 hx-post="{% url 'assignees-remove' objective.id emp_objective.employee_id.id %}"
-                                                                                title="{% trans "Remove" %}" hx-swap="delete" hx-target="#assigneesContainer{{emp_objective.id}}"
-                                                                                onclick="event.stopPropagation()" class="oh-user-panel__remove"
+                                                                                title='{% trans "Remove" %}'
+                                                                                hx-swap="delete"
+                                                                                hx-target="#assigneesContainer{{emp_objective.id}}"
+                                                                                onclick="event.stopPropagation()"
+                                                                                class="oh-user-panel__remove"
                                                                             >
-                                                                                <ion-icon name="close-outline"></ion-icon>
+                                                                                <ion-icon
+                                                                                    name="close-outline"
+                                                                                ></ion-icon>
                                                                             </a>
                                                                         </span>
                                                                     </div>
                                                                 {% endfor %}
-                                                                <span class="count-span">{{ objective.employee_objective.all|length}} {% trans "Assignees" %}</span>
+                                                                <span
+                                                                    class="count-span"
+                                                                >{{ objective.employee_objective.all|length }}
+                                                                    {% trans "Assignees" %}</span>
                                                             </div>
-                                                            <div data-cell-index="4" class="oh-sticky-table__td ">
-                                                                {{objective.duration}} {{objective.get_duration_unit_display}}
+                                                            <div data-cell-index="4" class="oh-sticky-table__td">
+                                                                {{ objective.duration }}
+                                                                {{ objective.get_duration_unit_display }}
                                                             </div>
                                                             <div data-cell-index="5" class="oh-sticky-table__td">
-                                                                {{objective.description}}
+                                                                {{ objective.description }}
                                                             </div>
                                                             {% if  perms.pms.add_employeeobjective or perms.pms.change_objective or perms.pms.delete_objective %}
-
-                                                            <div class="oh-sticky-table__td oh-sticky-table__right">
-                                                                <div class="oh-btn-group" onclick="event.stopPropagation()">
-                                                                    {% if perms.pms.add_employeeobjective %}
-                                                                        <a
-                                                                            onclick="event.preventDefault();event.stopPropagation()"
-                                                                            hx-get="{% url 'add-assignees' objective.pk %}" hx-target='#objectDetailsModalTarget' hx-swap='innerHTML' data-toggle='oh-modal-toggle' data-target='#objectDetailsModal'  class="oh-btn oh-btn--light-bkg w-100" title="{% trans 'Add assignees' %}"
-                                                                        ><ion-icon name="add-outline"></ion-icon></a>
-                                                                    {% endif %}
-                                                                    {% if perms.pms.change_objective %}
-                                                                        <a
-                                                                            onclick="event.preventDefault();event.stopPropagation()"
-                                                                            data-toggle='oh-modal-toggle' data-target='#objectCreateModal'
-                                                                            hx-get="{% url 'objective-update' objective.id %}" hx-target='#objectCreateModalTarget'
-                                                                            class="oh-btn oh-btn--light-bkg w-100" title="{% trans 'Edit' %}"
-                                                                        ><ion-icon name="create-outline"></ion-icon></a>
-                                                                    {% endif %}
+                                                                <div class="oh-sticky-table__td oh-sticky-table__right">
+                                                                    <div
+                                                                        class="oh-btn-group"
+                                                                        onclick="event.stopPropagation()"
+                                                                    >
+                                                                        {% if perms.pms.add_employeeobjective %}
+                                                                            <a
+                                                                                onclick="event.preventDefault();event.stopPropagation()"
+                                                                                hx-get="{% url 'add-assignees' objective.pk %}"
+                                                                                hx-target="#objectDetailsModalTarget"
+                                                                                hx-swap="innerHTML"
+                                                                                data-toggle="oh-modal-toggle"
+                                                                                data-target="#objectDetailsModal"
+                                                                                class="oh-btn oh-btn--light-bkg w-100"
+                                                                                title="{% trans 'Add assignees' %}"
+                                                                            ><ion-icon
+                                                                                    name="add-outline"
+                                                                                ></ion-icon></a>
+                                                                        {% endif %}
+                                                                        {% if perms.pms.change_objective %}
+                                                                            <a
+                                                                                onclick="event.preventDefault();event.stopPropagation()"
+                                                                                data-toggle="oh-modal-toggle"
+                                                                                data-target="#objectCreateModal"
+                                                                                hx-get="{% url 'objective-update' objective.id %}"
+                                                                                hx-target="#objectCreateModalTarget"
+                                                                                class="oh-btn oh-btn--light-bkg w-100"
+                                                                                title="{% trans 'Edit' %}"
+                                                                            ><ion-icon
+                                                                                    name="create-outline"
+                                                                                ></ion-icon></a>
+                                                                        {% endif %}
                                                                         {% comment %} <a hx-get="" hx-target='#duplicateFormContainer' hx-swap='innerHTML' data-toggle='oh-modal-toggle' data-target='#duplicateRecruitmentModal'  class="oh-btn oh-btn--light-bkg w-100" title="{% trans 'Duplicate' %}"><ion-icon name="copy-outline"></ion-icon></a> {% endcomment %}
-                                                                    {% if perms.pms.delete_objective %}
-                                                                        {% if objective.archive %}
+                                                                        {% if perms.pms.delete_objective %}
+                                                                            {% if objective.archive %}
                                                                                 <form
                                                                                     action='{% url "objective-archive" objective.id %}'
                                                                                     onsubmit="return confirm('{% trans "Do you want to unarchive this objective?" %}')"
                                                                                     method="post"
-                                                                                    style="display: contents;width:100%">
+                                                                                    style="display: contents; width: 100%"
+                                                                                >
                                                                                     {% csrf_token %}
-                                                                                    <button onclick="event.stopPropagation()" class="oh-btn oh-btn--light-bkg w-100" title="{% trans 'Unarchive' %}">
-                                                                                        <ion-icon name="archive"></ion-icon>
+                                                                                    <button
+                                                                                        onclick="event.stopPropagation()"
+                                                                                        class="oh-btn oh-btn--light-bkg w-100"
+                                                                                        title="{% trans 'Unarchive' %}"
+                                                                                    >
+                                                                                        <ion-icon
+                                                                                            name="archive"
+                                                                                        ></ion-icon>
                                                                                     </button>
                                                                                 </form>
-                                                                        {% else %}
+                                                                            {% else %}
                                                                                 <form
                                                                                     action='{% url "objective-archive" objective.id %}'
                                                                                     onsubmit="return confirm('{% trans "Do you want to archive this objective?" %}')"
                                                                                     method="post"
-                                                                                    style="display: contents;width:100%">
+                                                                                    style="display: contents; width: 100%"
+                                                                                >
                                                                                     {% csrf_token %}
-                                                                                    <button onclick="event.stopPropagation()" class="oh-btn oh-btn--light-bkg w-100" title="{% trans 'Archive' %}">
-                                                                                        <ion-icon name="archive"></ion-icon>
+                                                                                    <button
+                                                                                        onclick="event.stopPropagation()"
+                                                                                        class="oh-btn oh-btn--light-bkg w-100"
+                                                                                        title="{% trans 'Archive' %}"
+                                                                                    >
+                                                                                        <ion-icon
+                                                                                            name="archive"
+                                                                                        ></ion-icon>
                                                                                     </button>
                                                                                 </form>
+                                                                            {% endif %}
                                                                         {% endif %}
-                                                                    {% endif %}
-                                                                    {% if perms.pms.delete_objective %}
-                                                                        <form
-                                                                            action='{% url "objective-delete" objective.id %}'
-                                                                            onsubmit="return confirm('{% trans "Are you sure to delete this objective?" %}')"
-                                                                            method="post"
-                                                                            style="display: contents;width:100%">
-                                                                        {% csrf_token %}
-                                                                        <button onclick="event.stopPropagation()" class="oh-btn oh-btn--light-bkg oh-btn--danger-outline  w-100" title="{% trans 'Delete' %}">
-                                                                        <ion-icon name="trash-outline" role="img" class="md hydrated" aria-label="trash outline"></ion-icon>
-                                                                        </button>
-                                                                    </form>
-                                                                    {% endif %}
+                                                                        {% if perms.pms.delete_objective %}
+                                                                            <form
+                                                                                action='{% url "objective-delete" objective.id %}'
+                                                                                onsubmit="return confirm('{% trans "Are you sure to delete this objective?" %}')"
+                                                                                method="post"
+                                                                                style="display: contents; width: 100%"
+                                                                            >
+                                                                                {% csrf_token %}
+                                                                                <button
+                                                                                    onclick="event.stopPropagation()"
+                                                                                    class="oh-btn oh-btn--light-bkg oh-btn--danger-outline w-100"
+                                                                                    title="{% trans 'Delete' %}"
+                                                                                >
+                                                                                    <ion-icon
+                                                                                        name="trash-outline"
+                                                                                        role="img"
+                                                                                        class="md hydrated"
+                                                                                        aria-label="trash outline"
+                                                                                    ></ion-icon>
+                                                                                </button>
+                                                                            </form>
+                                                                        {% endif %}
+                                                                    </div>
                                                                 </div>
-                                                            </div>
                                                             {% endif %}
                                                         </div>
                                                     {% endfor %}
@@ -336,64 +464,81 @@
                     <!-- start of pagination -->
                     <div class="oh-pagination">
                         <span
-                        class="oh-pagination__page"
-                        data-toggle="modal"
-                        data-target="#addEmployeeModal"
+                            class="oh-pagination__page"
+                            data-toggle="modal"
+                            data-target="#addEmployeeModal"
                         >
-                        {% trans "Page" %} {{ objectives.number }} {% trans "of" %} {{ objectives.paginator.num_pages }}.
-                        </span
-                        >
+                            {% trans "Page" %} {{ objectives.number }} {% trans "of" %}
+                            {{ objectives.paginator.num_pages }}.
+                        </span>
 
                         <nav class="oh-pagination__nav">
-                        <div class="oh-pagination__input-container me-3">
-                            <span class="oh-pagination__label me-1">{% trans "Page" %}</span>
+                            <div class="oh-pagination__input-container me-3">
+                                <span class="oh-pagination__label me-1">{% trans "Page" %}</span>
 
-                            <input
-                            type="number"
-                            name="all_page"
-                            class="oh-pagination__input"
-                            value="{{objectives.number}}"
-                            hx-get="{% url 'objective-list-search' %}?{{pd}}" hx-target="#objective_list"
-                            min="1"
-                            />
-                            <span class="oh-pagination__label">{% trans "of" %} {{objectives.paginator.num_pages}}</span>
-                        </div>
+                                <input
+                                    type="number"
+                                    name="all_page"
+                                    class="oh-pagination__input"
+                                    value="{{objectives.number}}"
+                                    hx-get="{% url 'objective-list-search' %}?{{pd}}"
+                                    hx-target="#objective_list"
+                                    min="1"
+                                >
+                                <span class="oh-pagination__label">{% trans "of" %}
+                                    {{ objectives.paginator.num_pages }}</span>
+                            </div>
 
-                        <ul class="oh-pagination__items">
-                            {% if objectives.has_previous %}
-                            <li class="oh-pagination__item oh-pagination__item--wide">
-                            <a hx-target='#objective_list' hx-get="{% url 'objective-list-search' %}?{{pd}}&all_page=1" class="oh-pagination__link">{% trans "First" %}</a>
-                            </li>
-                            <li class="oh-pagination__item oh-pagination__item--wide">
-                            <a hx-target='#objective_list' hx-get="{% url 'objective-list-search' %}?{{pd}}&all_page={{ objectives.previous_page_number }}" class="oh-pagination__link">{% trans "Previous" %}</a>
-                            </li>
-                            {% endif %}
-                            {% if objectives.has_next %}
-                            <li class="oh-pagination__item oh-pagination__item--wide">
-                            <a hx-target='#objective_list' hx-get="{% url 'objective-list-search' %}?{{pd}}&all_page={{ objectives.next_page_number }}" class="oh-pagination__link">{% trans "Next" %}</a>
-                            </li>
-                            <li class="oh-pagination__item oh-pagination__item--wide">
-                            <a hx-target='#objective_list' hx-get="{% url 'objective-list-search' %}?{{pd}}&all_page={{ objectives.paginator.num_pages }}" class="oh-pagination__link">{% trans "Last" %}</a>
-                            </li>
-                            {% endif %}
-
-                        </ul>
+                            <ul class="oh-pagination__items">
+                                {% if objectives.has_previous %}
+                                    <li class="oh-pagination__item oh-pagination__item--wide">
+                                        <a
+                                            hx-target="#objective_list"
+                                            hx-get="{% url 'objective-list-search' %}?{{pd}}&all_page=1"
+                                            class="oh-pagination__link"
+                                        >{% trans "First" %}</a>
+                                    </li>
+                                    <li class="oh-pagination__item oh-pagination__item--wide">
+                                        <a
+                                            hx-target="#objective_list"
+                                            hx-get="{% url 'objective-list-search' %}?{{pd}}&all_page={{ objectives.previous_page_number }}"
+                                            class="oh-pagination__link"
+                                        >{% trans "Previous" %}</a>
+                                    </li>
+                                {% endif %}
+                                {% if objectives.has_next %}
+                                    <li class="oh-pagination__item oh-pagination__item--wide">
+                                        <a
+                                            hx-target="#objective_list"
+                                            hx-get="{% url 'objective-list-search' %}?{{pd}}&all_page={{ objectives.next_page_number }}"
+                                            class="oh-pagination__link"
+                                        >{% trans "Next" %}</a>
+                                    </li>
+                                    <li class="oh-pagination__item oh-pagination__item--wide">
+                                        <a
+                                            hx-target="#objective_list"
+                                            hx-get="{% url 'objective-list-search' %}?{{pd}}&all_page={{ objectives.paginator.num_pages }}"
+                                            class="oh-pagination__link"
+                                        >{% trans "Last" %}</a>
+                                    </li>
+                                {% endif %}
+                            </ul>
                         </nav>
                     </div>
                     <!-- end of pagination -->
                 {% else %}
-                <div class="oh-wrapper p-5" align="center" style="justify-content: center;">
-                    <div class="" >
-                        <img
-                        style="width: 150px; height: 150px"
-                        src="{% static 'images/ui/no-results.png' %}"
-                        class="oh-404__image mb-4"
-                        />
-                        <h5 class="oh-404__subtitle">
-                        {% trans "No search result found!" %}
-                        </h5>
+                    <div class="oh-wrapper p-5" align="center" style="justify-content: center">
+                        <div class="">
+                            <img
+                                style="width: 150px; height: 150px"
+                                src="{% static 'images/ui/no-results.png' %}"
+                                class="oh-404__image mb-4"
+                            >
+                            <h5 class="oh-404__subtitle">
+                                {% trans "No search result found!" %}
+                            </h5>
+                        </div>
                     </div>
-                </div>
                 {% endif %}
             </div>
             <!-- end of own objective -->
@@ -411,11 +556,20 @@
                                     <div class="oh-table_sticky--wrapper">
                                         <div class="oh-sticky-dropdown--header">
                                             <div class="oh-dropdown" x-data="{open: false}">
-                                                <button class="oh-sticky-dropdown_btn " @click="open = !open"><ion-icon name="ellipsis-vertical-sharp"
-                                                    role="img" class="md hydrated" aria-label="ellipsis vertical sharp"></ion-icon></button>
-                                                <div class="oh-dropdown__menu oh-sticky-table_dropdown" x-show="open" @click.outside="open = false">
-                                                    <ul class="oh-dropdown__items" id="OwnObjectiveCells">
-                                                    </ul>
+                                                <button class="oh-sticky-dropdown_btn" @click="open = !open">
+                                                    <ion-icon
+                                                        name="ellipsis-vertical-sharp"
+                                                        role="img"
+                                                        class="md hydrated"
+                                                        aria-label="ellipsis vertical sharp"
+                                                    ></ion-icon>
+                                                </button>
+                                                <div
+                                                    class="oh-dropdown__menu oh-sticky-table_dropdown"
+                                                    x-show="open"
+                                                    @click.outside="open = false"
+                                                >
+                                                    <ul class="oh-dropdown__items" id="OwnObjectiveCells"></ul>
                                                 </div>
                                             </div>
                                         </div>
@@ -427,137 +581,211 @@
                                             <div class="oh-sticky-table__table">
                                                 <div class="oh-sticky-table__thead">
                                                     <div class="oh-sticky-table__tr">
+                                                        <div class="oh-sticky-table__th">{% trans "Title" %}</div>
                                                         <div
+                                                            data-cell-index="1"
+                                                            data-cell-title='{% trans "Managers" %}'
                                                             class="oh-sticky-table__th"
-                                                        >{% trans "Title" %}</div>
-                                                        <div data-cell-index="1" data-cell-title='{% trans "Managers" %}'
+                                                        >
+                                                            {% trans "Managers" %}
+                                                        </div>
+                                                        <div
+                                                            data-cell-index="2"
+                                                            data-cell-title='{% trans "Key Results" %}'
                                                             class="oh-sticky-table__th"
-                                                        >{% trans "Managers" %}</div>
-                                                        <div data-cell-index="2" data-cell-title='{% trans "Key Results" %}'
+                                                        >
+                                                            {% trans "Key Results" %}
+                                                        </div>
+                                                        <div
+                                                            data-cell-index="3"
+                                                            data-cell-title='{% trans "Duration" %}'
                                                             class="oh-sticky-table__th"
-                                                        >{% trans "Key Results" %}</div>
-                                                        <div data-cell-index="3" data-cell-title='{% trans "Duration" %}'
+                                                        >
+                                                            {% trans "Duration" %}
+                                                        </div>
+                                                        <div
+                                                            data-cell-index="4"
+                                                            data-cell-title='{% trans "Description" %}'
                                                             class="oh-sticky-table__th"
-                                                        >{% trans "Duration" %}</div>
-                                                        <div data-cell-index="4" data-cell-title='{% trans "Description" %}'
-                                                            class="oh-sticky-table__th"
-                                                        >{% trans "Description" %}</div>
+                                                        >
+                                                            {% trans "Description" %}
+                                                        </div>
                                                         {% if perms.pms.change_objective or perms.pms.delete_objective %}
-                                                            <div class="oh-sticky-table__th oh-sticky-table__right" style="width: 150px;">{% trans "Actions" %}</div>
+                                                            <div
+                                                                class="oh-sticky-table__th oh-sticky-table__right"
+                                                                style="width: 150px"
+                                                            >
+                                                                {% trans "Actions" %}
+                                                            </div>
                                                         {% endif %}
                                                     </div>
                                                 </div>
                                                 <div class="oh-sticky-table__tbody">
                                                     {% for objective in own_objectives %}
-                                                        <div class="oh-sticky-table__tr oh-permission-table__tr oh-permission-table--collapsed"
+                                                        <div
+                                                            class="oh-sticky-table__tr oh-permission-table__tr oh-permission-table--collapsed"
                                                             onclick="window.location.href = `{% url 'objective-detailed-view' objective.objective_id.id %}`"
                                                         >
-                                                            <div class="oh-sticky-table__sd oh-permission-table--toggle"
-                                                            >
+                                                            <div class="oh-sticky-table__sd oh-permission-table--toggle">
                                                                 <div class="d-flex align-items-center">
                                                                     <button class="oh-permission-table__collapse me-2">
-                                                                        <span  title="{% trans "Reveal" %}"><ion-icon class="oh-permission-table__collapse-down" name="chevron-down-outline"></ion-icon></span>
-                                                                        <span  title="{% trans "Collapse" %}"><ion-icon class="oh-permission-table__collapse-up" name="chevron-up-outline"></ion-icon></span>
+                                                                        <span title='{% trans "Reveal" %}'><ion-icon
+                                                                                class="oh-permission-table__collapse-down"
+                                                                                name="chevron-down-outline"
+                                                                            ></ion-icon></span>
+                                                                        <span title='{% trans "Collapse" %}'><ion-icon
+                                                                                class="oh-permission-table__collapse-up"
+                                                                                name="chevron-up-outline"
+                                                                            ></ion-icon></span>
                                                                     </button>
-                                                                    <span class="oh-permission-table__user">{{objective.objective_id}} </span>
+                                                                    <span
+                                                                        class="oh-permission-table__user"
+                                                                    >{{ objective.objective_id }}
+                                                                    </span>
                                                                 </div>
                                                             </div>
 
                                                             <div data-cell-index="1" class="oh-sticky-table__td">
                                                                 {% for manager in objective.objective_id.managers.all %}
-                                                                <span class="oh-user-panel oh-collapse-panel" data-type="user">
-                                                                    <div class="oh-profile oh-profile--md">
-                                                                        <div class="oh-profile__avatar mr-1">
-                                                                            <img
-                                                                            src="https://ui-avatars.com/api/?name={{manager.get_full_name}}&background=random"
-                                                                            class="oh-profile__image"
-                                                                            alt="Baby C."
-                                                                            />
+                                                                    <span
+                                                                        class="oh-user-panel oh-collapse-panel"
+                                                                        data-type="user"
+                                                                    >
+                                                                        <div class="oh-profile oh-profile--md">
+                                                                            <div class="oh-profile__avatar mr-1">
+                                                                                <img
+                                                                                    src="https://ui-avatars.com/api/?name={{manager.get_full_name}}&background=random"
+                                                                                    class="oh-profile__image"
+                                                                                    alt="Baby C."
+                                                                                >
+                                                                            </div>
+                                                                            <span
+                                                                                class="oh-profile__name oh-text--dark"
+                                                                                title="{{manager}}"
+                                                                            >{{ manager.employee_first_name|truncatechars:15 }}</span>
                                                                         </div>
-                                                                        <span class="oh-profile__name oh-text--dark" title="{{manager}}"
-                                                                        >{{manager.employee_first_name|truncatechars:15}}</span
-                                                                        >
-                                                                    </div>
-                                                                </span>
+                                                                    </span>
                                                                 {% endfor %}
-                                                                <span class="count-span">{{objective.objective_id.managers.all|length}} {% trans "Managers" %}</span>
-
+                                                                <span
+                                                                    class="count-span"
+                                                                >{{ objective.objective_id.managers.all|length }}
+                                                                    {% trans "Managers" %}</span>
                                                             </div>
                                                             <div data-cell-index="2" class="oh-sticky-table__td">
                                                                 {% for kr in objective.employee_key_result.all %}
-                                                                <span class="oh-user-panel oh-collapse-panel" data-type="user">
-                                                                    <div class="oh-profile oh-profile--md">
-                                                                        <div class="oh-profile__avatar mr-1">
-                                                                            <img
-                                                                            src="https://ui-avatars.com/api/?name={{kr.key_result_id}}&background=random"
-                                                                            class="oh-profile__image"
-                                                                            alt="Baby C."
-                                                                            />
+                                                                    <span
+                                                                        class="oh-user-panel oh-collapse-panel"
+                                                                        data-type="user"
+                                                                    >
+                                                                        <div class="oh-profile oh-profile--md">
+                                                                            <div class="oh-profile__avatar mr-1">
+                                                                                <img
+                                                                                    src="https://ui-avatars.com/api/?name={{kr.key_result_id}}&background=random"
+                                                                                    class="oh-profile__image"
+                                                                                    alt="Baby C."
+                                                                                >
+                                                                            </div>
+                                                                            <span
+                                                                                class="oh-profile__name oh-text--dark"
+                                                                                title="{{kr.key_result_id}}"
+                                                                            >{{ kr|truncatechars:15 }}.</span>
                                                                         </div>
-                                                                        <span class="oh-profile__name oh-text--dark" title="{{kr.key_result_id}}"
-                                                                        >{{kr|truncatechars:15}}.</span
-                                                                        >
-                                                                    </div>
-                                                                </span>
+                                                                    </span>
                                                                 {% endfor %}
-                                                                <span class="count-span">{{objective.employee_key_result.all|length}}{% trans "Key results" %}</span>
-
+                                                                <span
+                                                                    class="count-span"
+                                                                >{{ objective.employee_key_result.all|length }}{% trans "Key results" %}</span>
                                                             </div>
 
-                                                            <div data-cell-index="3" class="oh-sticky-table__td ">
-                                                                {{objective.objective_id.duration}}
+                                                            <div data-cell-index="3" class="oh-sticky-table__td">
+                                                                {{ objective.objective_id.duration }}
                                                             </div>
                                                             <div data-cell-index="4" class="oh-sticky-table__td">
-                                                                {{objective.objective_id.description}}
+                                                                {{ objective.objective_id.description }}
                                                             </div>
                                                             {% if perms.pms.change_objective or perms.pms.delete_objective %}
-                                                            <div class="oh-sticky-table__td oh-sticky-table__right">
-                                                                <div class="oh-btn-group" onclick="event.stopPropagation()">
-                                                                    {% if perms.pms.change_objective %}
-                                                                        <a
-                                                                            onclick="event.preventDefault();event.stopPropagation()"
-                                                                            hx-get="{% url 'update-employee-objective' objective.id %}" hx-target='#objectDetailsModalTarget' hx-swap='innerHTML' data-toggle='oh-modal-toggle' data-target='#objectDetailsModal'  class="oh-btn oh-btn--light-bkg w-100" title="{% trans 'Edit' %}"
-                                                                        ><ion-icon name="create-outline"></ion-icon></a>
-                                                                    {% endif %}
-                                                                    {% if perms.pms.delete_objective %}
-                                                                        {% if objective.archive %}
+                                                                <div class="oh-sticky-table__td oh-sticky-table__right">
+                                                                    <div
+                                                                        class="oh-btn-group"
+                                                                        onclick="event.stopPropagation()"
+                                                                    >
+                                                                        {% if perms.pms.change_objective %}
+                                                                            <a
+                                                                                onclick="event.preventDefault();event.stopPropagation()"
+                                                                                hx-get="{% url 'update-employee-objective' objective.id %}"
+                                                                                hx-target="#objectDetailsModalTarget"
+                                                                                hx-swap="innerHTML"
+                                                                                data-toggle="oh-modal-toggle"
+                                                                                data-target="#objectDetailsModal"
+                                                                                class="oh-btn oh-btn--light-bkg w-100"
+                                                                                title="{% trans 'Edit' %}"
+                                                                            ><ion-icon
+                                                                                    name="create-outline"
+                                                                                ></ion-icon></a>
+                                                                        {% endif %}
+                                                                        {% if perms.pms.delete_objective %}
+                                                                            {% if objective.archive %}
                                                                                 <form
                                                                                     action='{% url "archive-employee-objective" objective.id %}'
                                                                                     onsubmit="return confirm('{% trans "Do you want to unarchive this objective?" %}')"
                                                                                     method="post"
-                                                                                    style="display: contents;width:100%">
+                                                                                    style="display: contents; width: 100%"
+                                                                                >
                                                                                     {% csrf_token %}
-                                                                                    <button onclick="event.stopPropagation()" class="oh-btn oh-btn--light-bkg w-100" title="{% trans 'Unarchive' %}">
-                                                                                        <ion-icon name="archive"></ion-icon>
+                                                                                    <button
+                                                                                        onclick="event.stopPropagation()"
+                                                                                        class="oh-btn oh-btn--light-bkg w-100"
+                                                                                        title="{% trans 'Unarchive' %}"
+                                                                                    >
+                                                                                        <ion-icon
+                                                                                            name="archive"
+                                                                                        ></ion-icon>
                                                                                     </button>
                                                                                 </form>
-                                                                        {% else %}
+                                                                            {% else %}
                                                                                 <form
                                                                                     action='{% url "archive-employee-objective" objective.id %}'
                                                                                     onsubmit="return confirm('{% trans "Do you want to archive this objective?" %}')"
                                                                                     method="post"
-                                                                                    style="display: contents;width:100%">
+                                                                                    style="display: contents; width: 100%"
+                                                                                >
                                                                                     {% csrf_token %}
-                                                                                    <button onclick="event.stopPropagation()" class="oh-btn oh-btn--light-bkg w-100" title="{% trans 'Archive' %}">
-                                                                                        <ion-icon name="archive"></ion-icon>
+                                                                                    <button
+                                                                                        onclick="event.stopPropagation()"
+                                                                                        class="oh-btn oh-btn--light-bkg w-100"
+                                                                                        title="{% trans 'Archive' %}"
+                                                                                    >
+                                                                                        <ion-icon
+                                                                                            name="archive"
+                                                                                        ></ion-icon>
                                                                                     </button>
                                                                                 </form>
+                                                                            {% endif %}
                                                                         {% endif %}
-                                                                    {% endif %}
-                                                                    {% if perms.pms.delete_objective %}
-                                                                        <form
-                                                                            action='{% url "delete-employee-objective" objective.id %}'
-                                                                            onsubmit="return confirm('{% trans "Are you sure to delete this objective?" %}')"
-                                                                            method="post"
-                                                                            style="display: contents;width:100%">
-                                                                        {% csrf_token %}
-                                                                        <button onclick="event.stopPropagation()" class="oh-btn oh-btn--light-bkg oh-btn--danger-outline  w-100" title="{% trans 'Delete' %}">
-                                                                        <ion-icon name="trash-outline" role="img" class="md hydrated" aria-label="trash outline"></ion-icon>
-                                                                        </button>
-                                                                    </form>
-                                                                    {% endif %}
+                                                                        {% if perms.pms.delete_objective %}
+                                                                            <form
+                                                                                action='{% url "delete-employee-objective" objective.id %}'
+                                                                                onsubmit="return confirm('{% trans "Are you sure to delete this objective?" %}')"
+                                                                                method="post"
+                                                                                style="display: contents; width: 100%"
+                                                                            >
+                                                                                {% csrf_token %}
+                                                                                <button
+                                                                                    onclick="event.stopPropagation()"
+                                                                                    class="oh-btn oh-btn--light-bkg oh-btn--danger-outline w-100"
+                                                                                    title="{% trans 'Delete' %}"
+                                                                                >
+                                                                                    <ion-icon
+                                                                                        name="trash-outline"
+                                                                                        role="img"
+                                                                                        class="md hydrated"
+                                                                                        aria-label="trash outline"
+                                                                                    ></ion-icon>
+                                                                                </button>
+                                                                            </form>
+                                                                        {% endif %}
+                                                                    </div>
                                                                 </div>
-                                                            </div>
                                                             {% endif %}
                                                         </div>
                                                     {% endfor %}
@@ -573,62 +801,79 @@
                     <!-- start of pagination -->
                     <div class="oh-pagination">
                         <span
-                        class="oh-pagination__page"
-                        data-toggle="modal"
-                        data-target="#addEmployeeModal"
+                            class="oh-pagination__page"
+                            data-toggle="modal"
+                            data-target="#addEmployeeModal"
                         >
-                        {% trans "Page" %} {{ own_objectives.number }} {% trans "of" %} {{ own_objectives.paginator.num_pages }}.
-                        </span
-                        >
+                            {% trans "Page" %} {{ own_objectives.number }} {% trans "of" %}
+                            {{ own_objectives.paginator.num_pages }}.
+                        </span>
 
                         <nav class="oh-pagination__nav">
-                        <div class="oh-pagination__input-container me-3">
-                            <span class="oh-pagination__label me-1">{% trans "Page" %}</span>
+                            <div class="oh-pagination__input-container me-3">
+                                <span class="oh-pagination__label me-1">{% trans "Page" %}</span>
 
-                            <input
-                            type="number"
-                            name="page"
-                            class="oh-pagination__input"
-                            value="{{own_objectives.number}}"
-                            hx-get="{% url 'objective-list-search' %}?{{pd}}" hx-target="#objective_list"
-                            min="1"
-                            />
-                            <span class="oh-pagination__label">{% trans "of" %} {{own_objectives.paginator.num_pages}}</span>
-                        </div>
+                                <input
+                                    type="number"
+                                    name="page"
+                                    class="oh-pagination__input"
+                                    value="{{own_objectives.number}}"
+                                    hx-get="{% url 'objective-list-search' %}?{{pd}}"
+                                    hx-target="#objective_list"
+                                    min="1"
+                                >
+                                <span class="oh-pagination__label">{% trans "of" %}
+                                    {{ own_objectives.paginator.num_pages }}</span>
+                            </div>
 
-                        <ul class="oh-pagination__items">
-                            {% if own_objectives.has_previous %}
-                            <li class="oh-pagination__item oh-pagination__item--wide">
-                            <a hx-target='#objective_list' hx-get="{% url 'objective-list-search' %}?{{pd}}&page=1" class="oh-pagination__link">{% trans "First" %}</a>
-                            </li>
-                            <li class="oh-pagination__item oh-pagination__item--wide">
-                            <a hx-target='#objective_list' hx-get="{% url 'objective-list-search' %}?{{pd}}&page={{ own_objectives.previous_page_number }}" class="oh-pagination__link">{% trans "Previous" %}</a>
-                            </li>
-                            {% endif %}
-                            {% if own_objectives.has_next %}
-                            <li class="oh-pagination__item oh-pagination__item--wide">
-                            <a hx-target='#objective_list' hx-get="{% url 'objective-list-search' %}?{{pd}}&page={{ own_objectives.next_page_number }}" class="oh-pagination__link">{% trans "Next" %}</a>
-                            </li>
-                            <li class="oh-pagination__item oh-pagination__item--wide">
-                            <a hx-target='#objective_list' hx-get="{% url 'objective-list-search' %}?{{pd}}&page={{ own_objectives.paginator.num_pages }}" class="oh-pagination__link">{% trans "Last" %}</a>
-                            </li>
-                            {% endif %}
-
-                        </ul>
+                            <ul class="oh-pagination__items">
+                                {% if own_objectives.has_previous %}
+                                    <li class="oh-pagination__item oh-pagination__item--wide">
+                                        <a
+                                            hx-target="#objective_list"
+                                            hx-get="{% url 'objective-list-search' %}?{{pd}}&page=1"
+                                            class="oh-pagination__link"
+                                        >{% trans "First" %}</a>
+                                    </li>
+                                    <li class="oh-pagination__item oh-pagination__item--wide">
+                                        <a
+                                            hx-target="#objective_list"
+                                            hx-get="{% url 'objective-list-search' %}?{{pd}}&page={{ own_objectives.previous_page_number }}"
+                                            class="oh-pagination__link"
+                                        >{% trans "Previous" %}</a>
+                                    </li>
+                                {% endif %}
+                                {% if own_objectives.has_next %}
+                                    <li class="oh-pagination__item oh-pagination__item--wide">
+                                        <a
+                                            hx-target="#objective_list"
+                                            hx-get="{% url 'objective-list-search' %}?{{pd}}&page={{ own_objectives.next_page_number }}"
+                                            class="oh-pagination__link"
+                                        >{% trans "Next" %}</a>
+                                    </li>
+                                    <li class="oh-pagination__item oh-pagination__item--wide">
+                                        <a
+                                            hx-target="#objective_list"
+                                            hx-get="{% url 'objective-list-search' %}?{{pd}}&page={{ own_objectives.paginator.num_pages }}"
+                                            class="oh-pagination__link"
+                                        >{% trans "Last" %}</a>
+                                    </li>
+                                {% endif %}
+                            </ul>
                         </nav>
                     </div>
                     <!-- end of pagination -->
                 {% else %}
                     <!-- start of empty page -->
-                    <div class="oh-wrapper p-5" align="center" style="justify-content: center;">
-                        <div class="" >
+                    <div class="oh-wrapper p-5" align="center" style="justify-content: center">
+                        <div class="">
                             <img
-                            style="width: 150px; height: 150px"
-                            src="{% static 'images/ui/no-results.png' %}"
-                            class="oh-404__image mb-4"
-                            />
+                                style="width: 150px; height: 150px"
+                                src="{% static 'images/ui/no-results.png' %}"
+                                class="oh-404__image mb-4"
+                            >
                             <h5 class="oh-404__subtitle">
-                            {% trans "No search result found!" %}
+                                {% trans "No search result found!" %}
                             </h5>
                         </div>
                     </div>
@@ -640,7 +885,6 @@
 </div>
 <!-- end of tabs -->
 <script>
-
     $(document).ready(function () {
         var activeTab = localStorage.getItem("activeTabokr");
         if (activeTab != null) {
@@ -675,6 +919,4 @@
       $("#OwnObjectiveCells").find("[type=checkbox]").prop("checked", true);
     }
     $("[type=checkbox]").change();
-
-
 </script>

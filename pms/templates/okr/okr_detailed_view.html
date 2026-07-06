@@ -1,257 +1,274 @@
-{% extends 'index.html' %} {% load static i18n %}
-{% load widget_tweaks %} {% block content %} {% load basefilters %}
-{% include "generic/components.html" %}
-<main :class="sidebarOpen ? 'oh-main__sidebar-visible' : ''">
-  <div id="ObjectiveDetailedViewContainer">
-    <div class="oh-wrapper" style="margin-top: 5px">
-      <div class="d-flex justify-content-end mb-2">
-        <a
-          href="{% url 'objective-list-view' %}"
-          class="px-3 py-1 text-xs bg-primary-600 text-white rounded-full hover:bg-primary-800 transition duration-300 flex items-center gap-2"
-        >
-          <i class="fa-solid fa-arrow-left"></i>
-          {% trans "Back" %}
-        </a>
-      </div>
-      <div class="oh-card">
-        <div class="oh-helpdesk__header">
-          <div class="d-flex justify-content-between align-items-center">
-            <p class="oh-helpdesk__header-title">{{objective}}</p>
-            <span class="helpdesk__card-value me-3">
-              <div class="oh-btn-group">
-                {% if perms.pms.change_objective %}
-                <a
-                  onclick="event.preventDefault();event.stopPropagation()"
-                  data-toggle="oh-modal-toggle"
-                  data-target="#objectCreateModal"
-                  hx-get="{% url 'objective-update' objective.id %}"
-                  hx-target="#objectCreateModalTarget"
-                  class="oh-btn oh-btn--light-bkg w-100"
-                  title="{% trans 'Edit' %}"
-                  ><ion-icon name="create-outline"></ion-icon
-                ></a>
-                {% endif %} {% if perms.pms.add_employeeobjective or request.user.employee_get in objective.managers.all %}
-                <a
-                  onclick="event.preventDefault();event.stopPropagation()"
-                  hx-get="{% url 'add-assignees' objective.id %}"
-                  hx-target="#objectDetailsModalTarget"
-                  hx-swap="innerHTML"
-                  data-toggle="oh-modal-toggle"
-                  data-target="#objectDetailsModal"
-                  class="oh-btn oh-btn--light-bkg w-100"
-                  title="{% trans 'Add assignees' %}"
-                  ><ion-icon name="add-outline"></ion-icon
-                ></a>
-                {% endif %}
-              </div>
-            </span>
-          </div>
-
-          <ul class="helpdesk__card-items">
-            <li class="helpdesk__card-item">
-              <span class="helpdesk__card-label">{% trans "Managers:" %}</span>
-              <span class="helpdesk__card-value" name="" id="">
-                <div class="d-flex justify-content-between custom-scroll">
-                  <div class="avatars" id="avatarsContainer">
-                    {% for manager in objective.managers.all %}
+{% extends 'index.html' %}
+{% load static i18n %}
+{% load widget_tweaks %}
+{% block content %}
+    {% load basefilters %}
+    {% include "generic/components.html" %}
+    <main :class="sidebarOpen ? 'oh-main__sidebar-visible' : ''">
+        <div id="ObjectiveDetailedViewContainer">
+            <div class="oh-wrapper" style="margin-top: 5px">
+                <div class="d-flex justify-content-end mb-2">
                     <a
-                      href="{% url 'employee-view-individual' manager.id %}"
-                      class="avatars__item"
-                      title="{{manager}}"
-                      ><img class="avatar" src="{{manager.get_avatar}}" alt=""
-                      style="width: 32px; height: 32px; object-fit: cover; border-radius: 50%;"
-                    /></a>
-                    {% endfor %}
-                  </div>
+                        href="{% url 'objective-list-view' %}"
+                        class="px-3 py-1 text-xs bg-primary-600 text-white rounded-full hover:bg-primary-800 transition duration-300 flex items-center gap-2"
+                    >
+                        <i class="fa-solid fa-arrow-left"></i>
+                        {% trans "Back" %}
+                    </a>
                 </div>
-              </span>
-            </li>
-            <li class="helpdesk__card-item">
-              <span class="helpdesk__card-label">{% trans "Duration:" %}</span>
-              <span class="helpdesk__card-value" name="" id=""
-                >{{objective.duration}}
-                {{objective.get_duration_unit_display}}</span
-              >
-            </li>
-            <li class="helpdesk__card-item">
-              <span class="helpdesk__card-label">{% trans "Description:" %}</span>
-              <span class="helpdesk__card-value" name="" id=""
-                >{{objective.description}}</span
-              >
-            </li>
-          </ul>
+                <div class="oh-card">
+                    <div class="oh-helpdesk__header">
+                        <div class="d-flex justify-content-between align-items-center">
+                            <p class="oh-helpdesk__header-title">{{ objective }}</p>
+                            <span class="helpdesk__card-value me-3">
+                                <div class="oh-btn-group">
+                                    {% if perms.pms.change_objective %}
+                                        <a
+                                            onclick="event.preventDefault();event.stopPropagation()"
+                                            data-toggle="oh-modal-toggle"
+                                            data-target="#objectCreateModal"
+                                            hx-get="{% url 'objective-update' objective.id %}"
+                                            hx-target="#objectCreateModalTarget"
+                                            class="oh-btn oh-btn--light-bkg w-100"
+                                            title="{% trans 'Edit' %}"
+                                        >
+                                            <ion-icon name="create-outline"></ion-icon>
+                                        </a>
+                                    {% endif %}
+                                    {% if perms.pms.add_employeeobjective or request.user.employee_get in objective.managers.all %}
+                                        <a
+                                            onclick="event.preventDefault();event.stopPropagation()"
+                                            hx-get="{% url 'add-assignees' objective.id %}"
+                                            hx-target="#objectDetailsModalTarget"
+                                            hx-swap="innerHTML"
+                                            data-toggle="oh-modal-toggle"
+                                            data-target="#objectDetailsModal"
+                                            class="oh-btn oh-btn--light-bkg w-100"
+                                            title="{% trans 'Add assignees' %}"
+                                        >
+                                            <ion-icon name="add-outline"></ion-icon>
+                                        </a>
+                                    {% endif %}
+                                </div>
+                            </span>
+                        </div>
+
+                        <ul class="helpdesk__card-items">
+                            <li class="helpdesk__card-item">
+                                <span class="helpdesk__card-label">{% trans "Managers:" %}</span>
+                                <span class="helpdesk__card-value" name="" id="">
+                                    <div class="d-flex justify-content-between custom-scroll">
+                                        <div class="avatars" id="avatarsContainer">
+                                            {% for manager in objective.managers.all %}
+                                                <a
+                                                    href="{% url 'employee-view-individual' manager.id %}"
+                                                    class="avatars__item"
+                                                    title="{{manager}}"
+                                                ><img
+                                                        class="avatar"
+                                                        src="{{manager.get_avatar}}"
+                                                        alt=""
+                                                        style="width: 32px; height: 32px; object-fit: cover; border-radius: 50%"
+                                                    ></a>
+                                            {% endfor %}
+                                        </div>
+                                    </div>
+                                </span>
+                            </li>
+                            <li class="helpdesk__card-item">
+                                <span class="helpdesk__card-label">{% trans "Duration:" %}</span>
+                                <span class="helpdesk__card-value" name="" id="">
+                                    {{ objective.duration }}
+                                    {{ objective.get_duration_unit_display }}
+                                </span>
+                            </li>
+                            <li class="helpdesk__card-item">
+                                <span class="helpdesk__card-label">{% trans "Description:" %}</span>
+                                <span class="helpdesk__card-value" name="" id="">{{ objective.description }}</span>
+                            </li>
+                        </ul>
+                    </div>
+                </div>
+
+                {% if objective.employee_objective.all %}
+                    <div
+                        class="oh-card"
+                        id="emp_objective_card"
+                        hx-get="{% url 'emp-objective-search' objective.id %}?{{request.GET.urlencode}}"
+                        hx-trigger="load"
+                    >
+                    </div>
+                {% else %}
+                    <!-- start of empty page-->
+                    <div style="display: flex; flex-direction: column; justify-content: center; align-items: center; height: 100%">
+                        <img
+                            style="display: block; width: 15%; margin: 20px auto; filter: opacity(0.5)"
+                            src="{% static 'static/images/ui/target.png' %}"
+                            class=""
+                            alt="Page not found. 404."
+                        >
+                        <h5 class="oh-404__subtitle">
+                            {% trans "There are no assignees for this objective at the moment." %}
+                        </h5>
+                    </div>
+                    <!-- end of empty page-->
+                {% endif %}
+            </div>
+
+            <!-- Modals -->
+
+            <div
+                class="oh-modal"
+                id="objectivesModal"
+                role="dialog"
+                aria-labelledby="objectivesModal"
+                aria-hidden="true"
+            >
+                <div class="oh-modal__dialog" id="objectivesTarget"></div>
+            </div>
+
+            <div class="oh-activity-sidebar" id="OKRactivitySidebar">
+                <div class="oh-activity-sidebar__body" id="activityContainer"></div>
+            </div>
+            <button
+                id="keyresultDataButton"
+                hx-include="#empKeyrsultForm"
+                hx-get='{% url "get-keyresult-data" %}?data-update=target_value'
+                hx-target="#empKeyrsultForm #id_target_value"
+                hx-swap="outerHTML"
+                hidden
+            >
+            </button>
+            <button
+                id="endDateChangeButton"
+                hx-include="#empKeyrsultForm"
+                hx-get='{% url "get-keyresult-data" %}?data-update=end_date'
+                hx-target="#empKeyrsultForm #id_end_date"
+                hx-swap="outerHTML"
+                hidden
+            >
+            </button>
+            <button
+                id="changeObjStatusButton"
+                hx-get="{% url 'change-employee-objective-status' %}"
+                hx-target=""
+                hidden
+            >
+            </button>
         </div>
-      </div>
+        <script>
+            $(document).ready(function () {
+              $(".oh-accordion-meta__header").click(function () {
+                var target = $(this).find(".oh-accordion-meta__body");
+                $(this).toggleClass("oh-accordion-meta__header--show");
+                $(target).toggleClass("d-none");
+              });
+            });
 
-      {% if objective.employee_objective.all %}
-      <div
-        class="oh-card"
-        id="emp_objective_card"
-        hx-get="{% url 'emp-objective-search' objective.id %}?{{request.GET.urlencode}}"
-        hx-trigger="load"
-      ></div>
-      {% else %}
-      <!-- start of empty page-->
-      <div
-        style="
-          display: flex;
-          flex-direction: column;
-          justify-content: center;
-          align-items: center;
-          height: 100%;
-        "
-      >
-        <img
-          style="
-            display: block;
-            width: 15%;
-            margin: 20px auto;
-            filter: opacity(0.5);
-          "
-          src="{% static 'static/images/ui/target.png' %}"
-          class=""
-          alt="Page not found. 404."
-        />
-        <h5 class="oh-404__subtitle">
-          {% trans "There are no assignees for this objective at the moment." %}
-        </h5>
-      </div>
-      <!-- end of empty page-->
-      {% endif %}
-    </div>
+            function enlargeImage(src) {
+              var enlargeImageContainer = $("#enlargeImageContainer");
+              enlargeImageContainer.empty();
+              style =
+                "width:100%; height:90%; box-shadow: 0 10px 10px 0 rgba(0, 0, 0, 0.2), 0 6px 20px 0 rgba(0, 0, 0, 0.2); background:white";
+              var enlargedImage = $("<iframe>").attr({ src: src, style: style });
+              var name = $("<span>").text(src.split("/").pop().replace(/_/g, " "));
+              enlargeImageContainer.append(enlargedImage);
+              enlargeImageContainer.append(name);
+              setTimeout(function () {
+                enlargeImageContainer.show();
 
-    <!-- Modals -->
-
-    <div
-      class="oh-modal"
-      id="objectivesModal"
-      role="dialog"
-      aria-labelledby="objectivesModal"
-      aria-hidden="true"
-    >
-      <div class="oh-modal__dialog" id="objectivesTarget"></div>
-    </div>
-
-    <div class="oh-activity-sidebar" id="OKRactivitySidebar">
-      <div class="oh-activity-sidebar__body" id="activityContainer"></div>
-    </div>
-    <button id="keyresultDataButton" hx-include="#empKeyrsultForm" hx-get="{% url "get-keyresult-data" %}?data-update=target_value" hx-target="#empKeyrsultForm #id_target_value" hx-swap="outerHTML" hidden></button>
-    <button id="endDateChangeButton" hx-include="#empKeyrsultForm" hx-get="{% url "get-keyresult-data" %}?data-update=end_date" hx-target="#empKeyrsultForm #id_end_date" hx-swap="outerHTML" hidden></button>
-    <button id="changeObjStatusButton" hx-get="{% url 'change-employee-objective-status' %}" hx-target="" hidden></button>
-  </div>
-  <script>
-    $(document).ready(function () {
-      $(".oh-accordion-meta__header").click(function () {
-        var target = $(this).find(".oh-accordion-meta__body");
-        $(this).toggleClass("oh-accordion-meta__header--show");
-        $(target).toggleClass("d-none");
-      });
-    });
-
-    function enlargeImage(src) {
-      var enlargeImageContainer = $("#enlargeImageContainer");
-      enlargeImageContainer.empty();
-      style =
-        "width:100%; height:90%; box-shadow: 0 10px 10px 0 rgba(0, 0, 0, 0.2), 0 6px 20px 0 rgba(0, 0, 0, 0.2); background:white";
-      var enlargedImage = $("<iframe>").attr({ src: src, style: style });
-      var name = $("<span>").text(src.split("/").pop().replace(/_/g, " "));
-      enlargeImageContainer.append(enlargedImage);
-      enlargeImageContainer.append(name);
-      setTimeout(function () {
-        enlargeImageContainer.show();
-
-        const iframe = document.querySelector("iframe").contentWindow;
-        var iframe_document = iframe.document;
-        iframe_image = iframe_document.getElementsByTagName("img")[0];
-        $(iframe_image).attr("style", "width:100%; height:100%;");
-      }, 100);
-    }
-
-    function hideEnlargeImage() {
-      var enlargeImageContainer = $("#enlargeImageContainer");
-      enlargeImageContainer.empty();
-    }
-    //create key result dynamically
-    function keyResultChange(element) {
-      var selectedValue = $(element).val();
-      if (selectedValue !== null && selectedValue !== '') {
-        if (selectedValue.includes("create_new_key_result")) {
-          var parentForm = $(element).closest("form");
-          var view = parentForm.serialize();
-          // Get the value of the 'data-url' attribute correctly
-          var dataUrl = $('#empKeyrsultForm').attr('data-url');
-          // Corrected attribute assignment with proper JSON format
-          $('#dynamicKeyResult').attr("hx-vals", `{"data":"${view}", "dataUrl":"${dataUrl}"}`);
-          dynamicKeyResult.click();
-          $(element).val('').change();
-        } else {
-          // selectedValue is not null or empty, this will work
-          $('#keyresultDataButton').click();
-          $('#endDateChangeButton').click()
-        }
-      }
-    }
-    function startDateChange(){
-      var keyResultId = $('#id_key_result_id').val()
-      if (keyResultId !== null && keyResultId !== '' ){
-        $('#endDateChangeButton').click()
-      }
-    }
-
-
-    //change employee objective status
-    function changeObjectiveStatus(element){
-      var status = $(element).val();
-      var empObjId = $(element).attr('data-empObj');
-      $('#changeObjStatusButton').attr("hx-vals", `{"empObjId":"${empObjId}", "status":"${status}"}`).click();
-    }
-    function progress(element) {
-      var currentValue = $(element).val();
-      var keyResultRow = $(element).closest(".oh-employee-okr-row");
-      var empKeyResultId = keyResultRow.data("kr-id");
-      var progressCol = keyResultRow.find(".progressPercentage")
-
-      if (currentValue < 0) {
-        Swal.fire({
-          icon: "error",
-          title: "Oops...",
-          text: "Current Value Cannot be -ve",
-          timer: 3000,
-          timerProgressBar: true,
-          showConfirmButton: false,
-        });
-      } else {
-        $.ajax({
-          type: "post",
-          url: "{% url 'key-result-current-value-update' %}",
-          data: {
-            csrfmiddlewaretoken: getCookie("csrftoken"),
-            current_value: currentValue,
-            emp_key_result_id: empKeyResultId,
-          },
-          success: function (response) {
-            if (response.type != "error") {
-              $(`#kr${response.pk}`).attr("style",`width:${response.progress}% !important;`)
-              $(`#kr${response.pk}Html`).html(`${response.progress}%`)
-              $(progressCol).html(`${response.kr_progress}%`)
-              $("#reloadMessagesButton").click()
+                const iframe = document.querySelector("iframe").contentWindow;
+                var iframe_document = iframe.document;
+                iframe_image = iframe_document.getElementsByTagName("img")[0];
+                $(iframe_image).attr("style", "width:100%; height:100%;");
+              }, 100);
             }
-          },
-        });
-      }
-    }
-    var timer;
-    function delayedProgress(element) {
-      clearTimeout(timer);
-      timer = setTimeout(function () {
-        progress(element);
-      }, 300);
-    }
-    $(document).on("click", function (event) {
-      if (!$(event.target).closest("#enlargeImageContainer").length) {
-        hideEnlargeImage();
-      }
-    });
-  </script>
-  {% endblock %}
-</main>
+
+            function hideEnlargeImage() {
+              var enlargeImageContainer = $("#enlargeImageContainer");
+              enlargeImageContainer.empty();
+            }
+            //create key result dynamically
+            function keyResultChange(element) {
+              var selectedValue = $(element).val();
+              if (selectedValue !== null && selectedValue !== '') {
+                if (selectedValue.includes("create_new_key_result")) {
+                  var parentForm = $(element).closest("form");
+                  var view = parentForm.serialize();
+                  // Get the value of the 'data-url' attribute correctly
+                  var dataUrl = $('#empKeyrsultForm').attr('data-url');
+                  // Corrected attribute assignment with proper JSON format
+                  $('#dynamicKeyResult').attr("hx-vals", `{"data":"${view}", "dataUrl":"${dataUrl}"}`);
+                  dynamicKeyResult.click();
+                  $(element).val('').change();
+                } else {
+                  // selectedValue is not null or empty, this will work
+                  $('#keyresultDataButton').click();
+                  $('#endDateChangeButton').click()
+                }
+              }
+            }
+            function startDateChange(){
+              var keyResultId = $('#id_key_result_id').val()
+              if (keyResultId !== null && keyResultId !== '' ){
+                $('#endDateChangeButton').click()
+              }
+            }
+
+
+            //change employee objective status
+            function changeObjectiveStatus(element){
+              var status = $(element).val();
+              var empObjId = $(element).attr('data-empObj');
+              $('#changeObjStatusButton').attr("hx-vals", `{"empObjId":"${empObjId}", "status":"${status}"}`).click();
+            }
+            function progress(element) {
+              var currentValue = $(element).val();
+              var keyResultRow = $(element).closest(".oh-employee-okr-row");
+              var empKeyResultId = keyResultRow.data("kr-id");
+              var progressCol = keyResultRow.find(".progressPercentage")
+
+              if (currentValue < 0) {
+                Swal.fire({
+                  icon: "error",
+                  title: "Oops...",
+                  text: "Current Value Cannot be -ve",
+                  timer: 3000,
+                  timerProgressBar: true,
+                  showConfirmButton: false,
+                });
+              } else {
+                $.ajax({
+                  type: "post",
+                  url: "{% url 'key-result-current-value-update' %}",
+                  data: {
+                    csrfmiddlewaretoken: getCookie("csrftoken"),
+                    current_value: currentValue,
+                    emp_key_result_id: empKeyResultId,
+                  },
+                  success: function (response) {
+                    if (response.type != "error") {
+                      $(`#kr${response.pk}`).attr("style",`width:${response.progress}% !important;`)
+                      $(`#kr${response.pk}Html`).html(`${response.progress}%`)
+                      $(progressCol).html(`${response.kr_progress}%`)
+                      $("#reloadMessagesButton").click()
+                    }
+                  },
+                });
+              }
+            }
+            var timer;
+            function delayedProgress(element) {
+              clearTimeout(timer);
+              timer = setTimeout(function () {
+                progress(element);
+              }, 300);
+            }
+            $(document).on("click", function (event) {
+              if (!$(event.target).closest("#enlargeImageContainer").length) {
+                hideEnlargeImage();
+              }
+            });
+        </script>
+    </main>
+{% endblock %}

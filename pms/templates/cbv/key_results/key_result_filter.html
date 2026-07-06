@@ -1,49 +1,47 @@
 {% load i18n %}
 <div class="oh-dropdown__filter-body">
     <div class="oh-accordion">
-      <div class="oh-accordion-header">{% trans "Key Result" %}</div>
-      <div class="oh-accordion-body">
-        <div class="row">
-          <div class="col-sm-6">
-            <div class="oh-input-group">
-              <label class="oh-label">{% trans "Progress Type" %}</label>
-              {{ form.progress_type }}
+        <div class="oh-accordion-header">{% trans "Key Result" %}</div>
+        <div class="oh-accordion-body">
+            <div class="row">
+                <div class="col-sm-6">
+                    <div class="oh-input-group">
+                        <label class="oh-label">{% trans "Progress Type" %}</label>
+                        {{ form.progress_type }}
+                    </div>
+                </div>
+                <div class="col-sm-6">
+                    <div class="oh-input-group">
+                        <label class="oh-label">{% trans "Target Value" %}</label>
+                        {{ form.target_value }}
+                    </div>
+                </div>
             </div>
-          </div>
-          <div class="col-sm-6">
-            <div class="oh-input-group">
-              <label class="oh-label">{% trans "Target Value" %}</label>
-              {{ form.target_value }}
+            <div class="row">
+                <div class="col-sm-6">
+                    <div class="oh-input-group">
+                        <label class="oh-label">{% trans "Duration" %}</label>
+                        {{ form.duration }}
+                    </div>
+                </div>
+                <div class="col-sm-6">
+                    <div class="oh-input-group">
+                        <label class="oh-label">{% trans "Company" %}</label>
+                        {{ form.company_id }}
+                    </div>
+                </div>
             </div>
-          </div>
+            <div class="row">
+                <div class="col-sm-6">
+                    <div class="oh-input-group">
+                        <label class="oh-label">{% trans "Is active" %}</label>
+                        {{ form.is_active }}
+                    </div>
+                </div>
+            </div>
         </div>
-        <div class="row">
-          <div class="col-sm-6">
-            <div class="oh-input-group">
-              <label class="oh-label">{% trans "Duration" %}</label>
-              {{ form.duration }}
-            </div>
-          </div>
-          <div class="col-sm-6">
-            <div class="oh-input-group">
-              <label class="oh-label">{% trans "Company" %}</label>
-              {{ form.company_id }}
-            </div>
-          </div>
-        </div>
-        <div class="row">
-          <div class="col-sm-6">
-            <div class="oh-input-group">
-              <label class="oh-label">{% trans "Is active" %}</label>
-              {{ form.is_active }}
-            </div>
-          </div>
-        </div>
-      </div>
     </div>
-  </div>
-
-
+</div>
 
 <script>
     $("#filterForm").submit(function (e) {

@@ -1,60 +1,59 @@
 {% load i18n %}
 <div class="oh-modal__dialog-header">
-  <span class="oh-modal__dialog-title" id="addEmployeeObjectiveModalLabel">
-    <h5 style="margin-bottom: 20px">{% trans "Anonymous Feedback" %}</h5>
-  </span>
-  <button
-    type="button"
-    class="oh-modal__close"
-    data-dismiss="oh-modal"
-    aria-label="Close"
-    data-toggle="oh-modal-toggle"
-  >
-    <ion-icon name="close-outline"></ion-icon>
-  </button>
-  <div class="row">
-    <div class="oh-timeoff-modal__stat">
-      <span class="oh-timeoff-modal__stat-title">{% trans "Subject" %}</span>
-      <span class="oh-timeoff-modal__stat-count"
-        >{{feedback.feedback_subject}}</span
-      >
+    <span class="oh-modal__dialog-title" id="addEmployeeObjectiveModalLabel">
+        <h5 style="margin-bottom: 20px">{% trans "Anonymous Feedback" %}</h5>
+    </span>
+    <button
+        type="button"
+        class="oh-modal__close"
+        data-dismiss="oh-modal"
+        aria-label="Close"
+        data-toggle="oh-modal-toggle"
+    >
+        <ion-icon name="close-outline"></ion-icon>
+    </button>
+    <div class="row">
+        <div class="oh-timeoff-modal__stat">
+            <span class="oh-timeoff-modal__stat-title">{% trans "Subject" %}</span>
+            <span class="oh-timeoff-modal__stat-count">{{ feedback.feedback_subject }}</span>
+        </div>
     </div>
-  </div>
-  <div class="oh-timeoff-modal__stats-container mt-3 mb-3">
-    <div class="oh-timeoff-modal__stat">
-      <span class="oh-timeoff-modal__stat-title"
-        >{% trans "Based on" %}</span
-      >
-      <span class="oh-timeoff-modal__stat-count">
-        {{feedback.get_based_on_display}}
-      </span>
+    <div class="oh-timeoff-modal__stats-container mt-3 mb-3">
+        <div class="oh-timeoff-modal__stat">
+            <span class="oh-timeoff-modal__stat-title">{% trans "Based on" %}</span>
+            <span class="oh-timeoff-modal__stat-count">
+                {{ feedback.get_based_on_display }}
+            </span>
+        </div>
+        {% if not feedback.based_on == "general" %}
+            <div class="oh-timeoff-modal__stat" style="margin-left: 20px">
+                {% if feedback.based_on == "employee" %}
+                    <span class="oh-timeoff-modal__stat-title">{% trans "Employee" %}</span>
+                    <span class="oh-timeoff-modal__stat-count">{{ feedback.employee_id }}</span>
+                {% endif %}
+                {% if feedback.based_on == "department" %}
+                    <span class="oh-timeoff-modal__stat-title">{% trans "Department" %}</span>
+                    <span class="oh-timeoff-modal__stat-count">{{ feedback.department_id }}</span>
+                {% endif %}
+                {% if feedback.based_on == "job_position" %}
+                    <span class="oh-timeoff-modal__stat-title">{% trans "Job Position" %}</span>
+                    <span class="oh-timeoff-modal__stat-count">{{ feedback.job_position_id }}</span>
+                {% endif %}
+            </div>
+        {% endif %}
     </div>
-    {% if not feedback.based_on == "general" %}
-      <div class="oh-timeoff-modal__stat" style="margin-left: 20px">
-        {% if feedback.based_on == "employee" %}
-          <span class="oh-timeoff-modal__stat-title">{% trans "Employee" %}</span>
-          <span class="oh-timeoff-modal__stat-count">{{feedback.employee_id}}</span>
-        {% endif %}
-        {% if feedback.based_on == "department" %}
-          <span class="oh-timeoff-modal__stat-title">{% trans "Department" %}</span>
-          <span class="oh-timeoff-modal__stat-count">{{feedback.department_id}}</span>
-        {% endif %}
-        {% if feedback.based_on == "job_position" %}
-          <span class="oh-timeoff-modal__stat-title">{% trans "Job Position" %}</span>
-          <span class="oh-timeoff-modal__stat-count">{{feedback.job_position_id}}</span>
-        {% endif %}
-      </div>
-    {% endif %}
-  </div>
-  <div class="row">
-    <div class="oh-timeoff-modal__stat">
-      <span class="oh-timeoff-modal__stat-title">
-        {% trans "Description" %}
-      </span>
-      <span class="oh-timeoff-modal__stat-title" style="font-size:1.0rem;color:hsl(0deg 0% 0%);">{{feedback.feedback_description}}</span>
+    <div class="row">
+        <div class="oh-timeoff-modal__stat">
+            <span class="oh-timeoff-modal__stat-title">
+                {% trans "Description" %}
+            </span>
+            <span
+                class="oh-timeoff-modal__stat-title"
+                style="font-size: 1.0rem; color: hsl(0deg 0% 0%)"
+            >{{ feedback.feedback_description }}</span>
+        </div>
     </div>
-  </div>
-  {% comment %} {% if perms.payroll.change_allowance or
+    {% comment %} {% if perms.payroll.change_allowance or
   perms.payroll.delete_allowance %}
   <div class="oh-modal__button-container text-center">
     <div class="oh-btn-group">

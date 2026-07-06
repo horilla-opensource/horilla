@@ -21,25 +21,25 @@
 {% endif %}
 
 {% if perms.pms.delete_meetings %}
-<form
-	action="{% url 'meetings-delete' instance.id %}"
-	onsubmit="return confirm(`{% trans 'Are you sure to delete this meeting?' %}`)"
-	method="post"
-	style="display: contents; width: 100%"
->
-	{% csrf_token %}
-	<button
-		onclick="event.stopPropagation()"
-		class="oh-btn oh-btn-group oh-btn--secondary w-100"
-		title="{% trans 'Delete' %}"
-	>
-		<ion-icon
-			name="trash-outline"
-			role="img"
-			class="md hydrated"
-			aria-label="trash outline"
-		></ion-icon>
-        {% trans 'Delete' %}
-	</button>
-</form>
+    <form
+        action="{% url 'meetings-delete' instance.id %}"
+        onsubmit="return confirm(`{% trans 'Are you sure to delete this meeting?' %}`)"
+        method="post"
+        style="display: contents; width: 100%"
+    >
+        {% csrf_token %}
+        <button
+            onclick="event.stopPropagation()"
+            class="oh-btn oh-btn-group oh-btn--secondary w-100"
+            title="{% trans 'Delete' %}"
+        >
+            <ion-icon
+                name="trash-outline"
+                role="img"
+                class="md hydrated"
+                aria-label="trash outline"
+            ></ion-icon>
+            {% trans 'Delete' %}
+        </button>
+    </form>
 {% endif %}
