@@ -1,25 +1,22 @@
 {% load i18n horillafilters %}
 
 <div class="oh-modal__dialog-header">
-	<span class="text-md font-semibold" id="deleteConfirmationLabel"
-		>{% trans "Asset Return" %}</span
-	>
-	<button
-		class="oh-modal__close--custom"
-		onclick="$(this).closest('.oh-modal--show').removeClass('oh-modal--show')"
-		aria-label="Close"
-	>
-		<ion-icon
-			name="close-outline"
-			role="img"
-			class="md hydrated"
-			aria-label="close outline"
-		></ion-icon>
-	</button>
+    <span class="text-md font-semibold" id="deleteConfirmationLabel">{% trans "Asset Return" %}</span>
+    <button
+        class="oh-modal__close--custom"
+        onclick="$(this).closest('.oh-modal--show').removeClass('oh-modal--show')"
+        aria-label="Close"
+    >
+        <ion-icon
+            name="close-outline"
+            role="img"
+            class="md hydrated"
+            aria-label="close outline"
+        ></ion-icon>
+    </button>
 </div>
 
 <div class="oh-modal__dialog-body">
-
     <form
         hx-post="{% url 'allocation-return-asset' asset_id=asset_id %}"
         hx-target="#genericModalBody"
@@ -28,30 +25,22 @@
         {% csrf_token %}
         <div class="border rounded-lg p-3">
             <div class="oh-input__group mb-2">
-                <label class="text-sm font-medium" for="objective"
-                    >{% trans "Return Status" %}</label
-                >
-                {{asset_return_form.return_status}}
+                <label class="text-sm font-medium" for="objective">{% trans "Return Status" %}</label>
+                {{ asset_return_form.return_status }}
             </div>
             <div class="oh-input__group">
-                <label class="text-sm font-medium" for="objective"
-                    >{% trans "Return Date" %}</label
-                >
-                {{asset_return_form.return_date}}
-                {{asset_return_form.return_date.errors}}
+                <label class="text-sm font-medium" for="objective">{% trans "Return Date" %}</label>
+                {{ asset_return_form.return_date }}
+                {{ asset_return_form.return_date.errors }}
             </div>
             <div class="oh-input__group">
-                <label class="text-sm font-medium" for="objective"
-                    >{% trans "Return Condition" %}</label
-                >
-                {{asset_return_form.return_condition}}
+                <label class="text-sm font-medium" for="objective">{% trans "Return Condition" %}</label>
+                {{ asset_return_form.return_condition }}
             </div>
             <div class="oh-input__group">
-                <label class="text-sm font-medium" for="objective"
-                    >{% trans "Return Condition Images" %}</label
-                >
-                <br />
-                {{asset_return_form.return_images}}
+                <label class="text-sm font-medium" for="objective">{% trans "Return Condition Images" %}</label>
+                <br>
+                {{ asset_return_form.return_images }}
             </div>
             <div class="oh-modal__dialog-footer gap-2">
                 {% if "payroll"|app_installed %}

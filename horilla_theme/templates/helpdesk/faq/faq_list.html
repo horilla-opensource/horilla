@@ -2,13 +2,16 @@
 {% include 'filter_tags.html' %}
 
 <style>
-.oh-faq__tag:hover {
-    filter: brightness(90%);
-}
+    .oh-faq__tag:hover {
+        filter: brightness(90%);
+    }
 </style>
-    {% for faq in faqs %}
-    <div class="accordion-item border border-primary-300 rounded-md" x-data="{open:false, menu:false}" id="faqItem{{faq.id}}">
-
+{% for faq in faqs %}
+    <div
+        class="accordion-item border border-primary-300 rounded-md"
+        x-data="{open:false, menu:false}"
+        id="faqItem{{faq.id}}"
+    >
         <!-- Accordion Header -->
         <button
             class="accordion-btn w-full flex justify-between items-center px-4 py-2 text-sm transition-all bg-primary-100 text-primary-600"
@@ -30,19 +33,19 @@
 
             <div class="flex flex-col gap-1">
                 <!-- Question -->
-                <span class="font-medium" style="text-align: left;">
+                <span class="font-medium" style="text-align: left">
                     {{ faq.question }}
                 </span>
 
                 <!-- Tags under question -->
                 <ul class="flex flex-wrap gap-2">
                     {% for tag in faq.tags.all %}
-                    <li
-                        class="px-2 py-0.5 rounded-full text-xs font-medium text-white"
-                        style="background: {{ tag.color }};"
-                    >
-                        {{ tag|capfirst }}
-                    </li>
+                        <li
+                            class="px-2 py-0.5 rounded-full text-xs font-medium text-white"
+                            style="background: {{ tag.color }}"
+                        >
+                            {{ tag|capfirst }}
+                        </li>
                     {% endfor %}
                 </ul>
             </div>
@@ -74,19 +77,22 @@
                                 </a>
                             </li>
                             <li>
-                                <form id="delete-faq-form-{{ faq.id }}"
+                                <form
+                                    id="delete-faq-form-{{ faq.id }}"
                                     hx-post="{% url 'faq-delete' faq.id %}"
                                     hx-confirm="{% trans 'Are you sure you want to delete this FAQ?' %}"
-                                    style="display: inline;"
+                                    style="display: inline"
                                     hx-target="#faqItem{{ faq.id }}"
                                     hx-swap="outerHTML swap:.5s"
-                                    hx-on-htmx-after-request="setTimeout(() => {reloadMessage(this);}, 100);">
-
+                                    hx-on-htmx-after-request="setTimeout(() => {reloadMessage(this);}, 100);"
+                                >
                                     {% csrf_token %}
 
-                                    <a href="#"
+                                    <a
+                                        href="#"
                                         class="w-full text-dark-600 flex justify-start text-left px-3 py-1 hover:text-primary-600 transition duration-300"
-                                        @click.prevent="submitDeleteFaq({{ faq.id }}); menu=false">
+                                        @click.prevent="submitDeleteFaq({{ faq.id }}); menu=false"
+                                    >
                                         Delete
                                     </a>
                                 </form>
@@ -94,7 +100,6 @@
                         </ul>
                     </div>
                 </div>
-
 
                 <span class="icon text-xl font-bold ps-3">+</span>
             </div>
@@ -113,14 +118,14 @@
             </div>
         </div>
     </div>
-    {% empty %}
+{% empty %}
     <div class="flex justify-center items-center h-[70vh]">
         <div class="oh-404 text-center">
             <img src="{% static 'images/ui/faq.png' %}" class="mb-4 oh-404__image" alt="">
             <h3 class="text-lg">{% trans "There are no FAQs at the moment." %}</h3>
         </div>
     </div>
-    {% endfor %}
+{% endfor %}
 
 <script>
     function submitDeleteFaq(faqId) {

@@ -2,15 +2,24 @@
 
 {% is_manager_of request.user instance as can_manage %}
 {% if perms.attendance.change_attendance or can_manage %}
-	<div class="oh-btn-group w-100" onclick="event.stopPropagation();">
+    <div class="oh-btn-group w-100" onclick="event.stopPropagation()">
         {% if instance.attendance_overtime_approve %}
-            <button type="submit" title="{% trans 'Approve Overtime' %}"
-                class="h-8 w-24 px-4 py-2 bg-primary-600 text-white rounded-md text-xs flex items-center justify-center gap-2 hover:bg-primary-800 transition duration-300 oh-btn--disabled">
-                <img src="{% static 'horilla_theme/assets/img/icons/check.svg' %}" alt="{% trans 'Approve' %}" width="13"
-                    class="filter brightness-0 invert" />
+            <button
+                type="submit"
+                title="{% trans 'Approve Overtime' %}"
+                class="h-8 w-24 px-4 py-2 bg-primary-600 text-white rounded-md text-xs flex items-center justify-center gap-2 hover:bg-primary-800 transition duration-300 oh-btn--disabled"
+            >
+                <img
+                    src="{% static 'horilla_theme/assets/img/icons/check.svg' %}"
+                    alt="{% trans 'Approve' %}"
+                    width="13"
+                    class="filter brightness-0 invert"
+                >
             </button>
         {% elif minot <= instance.overtime_second %}
-            <button href="#" title="{% trans 'Approve Overtime' %}"
+            <button
+                href="#"
+                title="{% trans 'Approve Overtime' %}"
                 class="h-8 w-24 px-4 py-2 bg-primary-600 text-white rounded-md text-xs flex items-center justify-center gap-2 hover:bg-primary-800 transition duration-300"
                 onclick="event.preventDefault(); event.stopPropagation(); (function(pk){
                     Swal.fire({
@@ -28,9 +37,14 @@
                             if (f && f.requestSubmit) f.requestSubmit();
                         }
                     });
-                })({{ instance.id }}); return false;">
-                <img src="{% static 'horilla_theme/assets/img/icons/check.svg' %}" alt="{% trans 'Approve' %}" width="13"
-                    class="filter brightness-0 invert" />
+                })({{ instance.id }}); return false"
+            >
+                <img
+                    src="{% static 'horilla_theme/assets/img/icons/check.svg' %}"
+                    alt="{% trans 'Approve' %}"
+                    width="13"
+                    class="filter brightness-0 invert"
+                >
             </button>
             <form
                 id="ot-approve-confirm-{{ instance.id }}"
@@ -41,7 +55,9 @@
                 {% csrf_token %}
             </form>
         {% elif instance.overtime_second >= 60 %}
-            <button href="#" title="{% trans 'Approve Overtime (OT < min.OT)' %}"
+            <button
+                href="#"
+                title="{% trans 'Approve Overtime (OT < min.OT)' %}"
                 class="h-8 w-24 px-4 py-2 bg-white rounded-md text-xs flex items-center justify-center gap-2 border border-primary-500 hover:border-primary-600 transition duration-300"
                 onclick="event.preventDefault(); event.stopPropagation(); (function(pk){
                     Swal.fire({
@@ -59,8 +75,14 @@
                             if (f && f.requestSubmit) f.requestSubmit();
                         }
                     });
-                })({{ instance.id }}); return false;">
-                <img class="mt-[-1px]" src="{% static 'horilla_theme/assets/img/icons/check.svg' %}" alt="{% trans 'Approve' %}" width="13"/>
+                })({{ instance.id }}); return false"
+            >
+                <img
+                    class="mt-[-1px]"
+                    src="{% static 'horilla_theme/assets/img/icons/check.svg' %}"
+                    alt="{% trans 'Approve' %}"
+                    width="13"
+                >
             </button>
             <form
                 id="ot-approve-confirm-{{ instance.id }}"
@@ -70,6 +92,6 @@
             >
                 {% csrf_token %}
             </form>
-	    {% endif %}
+        {% endif %}
     </div>
 {% endif %}

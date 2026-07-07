@@ -1,71 +1,75 @@
-{% load static %} {% load i18n %} {% block content %}
-<style>
-	.cancelled--dot {
-		background-color: grey;
-	}
-	.approved--dot {
-		background-color: green;
-	}
-	.rejected--dot {
-		background-color: red;
-	}
-	.requested--dot {
-		background-color: orange;
-	}
+{% load static %}
+{% load i18n %}
+{% block content %}
+    <style>
+        .cancelled--dot {
+            background-color: grey;
+        }
+        .approved--dot {
+            background-color: green;
+        }
+        .rejected--dot {
+            background-color: red;
+        }
+        .requested--dot {
+            background-color: orange;
+        }
 
-	.status-rejected {
-		border-left: 4px solid red !important;
-		border-radius: 5px 0 0 4px;
-	}
-	.status-cancelled {
-		border-left: 4px solid grey !important;
-		border-radius: 5px 0 0 4px;
-	}
-	.status-requested {
-		border-left: 4px solid orange !important;
-		border-radius: 5px 0 0 4px;
-	}
-	.status-approved {
-		border-left: 4px solid yellowgreen !important;
-		border-radius: 5px 0 0 4px;
-	}
-</style>
+        .status-rejected {
+            border-left: 4px solid red !important;
+            border-radius: 5px 0 0 4px;
+        }
+        .status-cancelled {
+            border-left: 4px solid grey !important;
+            border-radius: 5px 0 0 4px;
+        }
+        .status-requested {
+            border-left: 4px solid orange !important;
+            border-radius: 5px 0 0 4px;
+        }
+        .status-approved {
+            border-left: 4px solid yellowgreen !important;
+            border-radius: 5px 0 0 4px;
+        }
+    </style>
 
-<div>
-	{% include "leave/user_leave/user_leave.html" %}
-</div>
-
-{% include "generic/components.html" %}
-
-<div
-	class="oh-checkpoint-badge mb-2"
-	id="selectedInstances"
-	data-ids="[]"
-	data-clicked=""
-	style="display: none"
-></div>
-
-{% include "generic/horilla_list_table.html" %}
-
-<div class="oh-modal" id="rejectModal" role="dialog" aria-labelledby="rejectModal" aria-hidden="true">
-    <div class="oh-modal__dialog">
-        <div class="oh-modal__dialog-header">
-            <h2 class="oh-modal__dialog-title">
-                {% trans "Rejection" %}
-                <button class="oh-modal_close--custom"
-                    onclick="$('#rejectModal').removeClass('oh-modal--show');"
-                    aria-label="Close"
-                    style="margin-left:80%; border:none; background:none;">
-                    <ion-icon name="close-outline"></ion-icon>
-                </button>
-            </h2>
-        </div>
-        <div class="oh-modal__dialog-body" id="rejectForm"></div>
+    <div>
+        {% include "leave/user_leave/user_leave.html" %}
     </div>
-</div>
 
-<div class="oh-modal" id="cancelModal" role="dialog" aria-labelledby="cancelModal" aria-hidden="true">
-    <div class="oh-modal__dialog" id="cancelForm"></div>
-</div>
+    {% include "generic/components.html" %}
 
+    <div
+        class="oh-checkpoint-badge mb-2"
+        id="selectedInstances"
+        data-ids="[]"
+        data-clicked=""
+        style="display: none"
+    >
+    </div>
+
+    {% include "generic/horilla_list_table.html" %}
+
+    <div class="oh-modal" id="rejectModal" role="dialog" aria-labelledby="rejectModal" aria-hidden="true">
+        <div class="oh-modal__dialog">
+            <div class="oh-modal__dialog-header">
+                <h2 class="oh-modal__dialog-title">
+                    {% trans "Rejection" %}
+                    <button
+                        class="oh-modal_close--custom"
+                        onclick="$('#rejectModal').removeClass('oh-modal--show')"
+                        aria-label="Close"
+                        style="margin-left: 80%; border: none; background: none"
+                    >
+                        <ion-icon name="close-outline"></ion-icon>
+                    </button>
+                </h2>
+            </div>
+            <div class="oh-modal__dialog-body" id="rejectForm"></div>
+        </div>
+    </div>
+
+    <div class="oh-modal" id="cancelModal" role="dialog" aria-labelledby="cancelModal" aria-hidden="true">
+        <div class="oh-modal__dialog" id="cancelForm"></div>
+    </div>
 {% endblock content %}

@@ -1,30 +1,27 @@
 {% load i18n %}
 {% include "generic/components.html" %}
 
-    <div class="col-span-1 md:col-span-6 mb-2 flex items-center gap-5">
+<div class="col-span-1 md:col-span-6 mb-2 flex items-center gap-5">
+    <!-- Label -->
+    <span class="font-medium text-xs text-[#565E6C] w-32">
+        Activities
+    </span>
 
-        <!-- Label -->
-        <span class="font-medium text-xs text-[#565E6C] w-32">
-            Activities
-        </span>
+    <!-- Count -->
+    <span class="text-xs font-semibold gap-5">
+        : <span class="inline-flex items-center ml-3">{{ instance.activities.count }} {% trans "Activity" %}</span>
+    </span>
 
-
-        <!-- Count -->
-        <span class="text-xs font-semibold gap-5">
-            : <span class="inline-flex items-center ml-3">{{ instance.activities.count }} {% trans "Activity" %}</span>
-        </span>
-
-        <!-- Eye Button -->
-        <button
-            type="button"
-            data-target="#activityViewModal"
-            data-toggle="oh-modal-toggle"
-            hx-get="{% url 'get-attendance-activities' instance.id %}"
-            hx-target="#activityViewModalBody"
-            title="{% trans 'View Activities' %}"
-            class=" px-2 py-1 bg-white rounded-md text-xs flex items-center justify-center gap-2 border border-primary-500 hover:border-primary-600 transition duration-300"
-        >
-            <ion-icon name="eye-outline" class="hydrated w-4 h-4"></ion-icon>
-        </button>
-
-    </div>
+    <!-- Eye Button -->
+    <button
+        type="button"
+        data-target="#activityViewModal"
+        data-toggle="oh-modal-toggle"
+        hx-get="{% url 'get-attendance-activities' instance.id %}"
+        hx-target="#activityViewModalBody"
+        title="{% trans 'View Activities' %}"
+        class="px-2 py-1 bg-white rounded-md text-xs flex items-center justify-center gap-2 border border-primary-500 hover:border-primary-600 transition duration-300"
+    >
+        <ion-icon name="eye-outline" class="hydrated w-4 h-4"></ion-icon>
+    </button>
+</div>

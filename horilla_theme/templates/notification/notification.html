@@ -7,31 +7,39 @@
         <div class="flex gap-1">
             <span
                 class="cursor-pointer text-xs group text-primary-600 w-7 h-7 bg-primary-100 hover:bg-primary-600 hover:text-white rounded-full transition duration-300 flex items-center justify-center"
-                hx-get="{% url 'notification-sound' %}" hx-swap="none" title="Notification Sound" onclick="
-                    event.stopPropagation();
+                hx-get="{% url 'notification-sound' %}"
+                hx-swap="none"
+                title="Notification Sound"
+                onclick="event.stopPropagation();
                     event.preventDefault();
-                    toggleNotificationIcon($(this));
-                ">
+                    toggleNotificationIcon($(this))"
+            >
                 {% if request.user.employee_get.notification_sound.sound_enabled %}
-                <span class="material-symbols-outlined text-lg font-light">
-                    volume_up
-                </span>
+                    <span class="material-symbols-outlined text-lg font-light">
+                        volume_up
+                    </span>
                 {% else %}
-                <span class="material-symbols-outlined text-lg font-light">
-                    volume_off
-                </span>
+                    <span class="material-symbols-outlined text-lg font-light">
+                        volume_off
+                    </span>
                 {% endif %}
             </span>
             <span
                 class="cursor-pointer text-xs group text-primary-600 w-7 h-7 bg-primary-100 hover:bg-primary-600 hover:text-white rounded-full transition duration-300 flex items-center justify-center"
-                onclick="event.stopPropagation();event.preventDefault();" hx-get="{% url 'read-notifications' %}"
-                hx-target="#notificationContainer" title="Mark All as Read">
+                onclick="event.stopPropagation();event.preventDefault()"
+                hx-get="{% url 'read-notifications' %}"
+                hx-target="#notificationContainer"
+                title="Mark All as Read"
+            >
                 <i class="fa-solid fa-check-double"></i>
             </span>
             <span
                 class="cursor-pointer text-xs group text-primary-600 w-7 h-7 bg-primary-100 hover:bg-primary-600 hover:text-white rounded-full transition duration-300 flex items-center justify-center"
-                onclick="event.stopPropagation();event.preventDefault();" hx-get="{% url 'clear-notifications' %}"
-                hx-target="#notificationContainer" title="{% trans 'Clear Notifications' %}">
+                onclick="event.stopPropagation();event.preventDefault()"
+                hx-get="{% url 'clear-notifications' %}"
+                hx-target="#notificationContainer"
+                title="{% trans 'Clear Notifications' %}"
+            >
                 <i class="fa-solid fa-xmark"></i>
             </span>
         </div>
@@ -43,7 +51,10 @@
     <div class="p-3 border-t border-t-dark-50 flex justify-center">
         <button
             class="toggleSidemenu text-primary-600 text-xs flex justify-center font-semibold hover:text-[#ac3b2a] transition duration-300"
-            data-sidebar="sidebarModal3" hx-get="{% url 'all-notifications' %}" hx-target="#sidebarModalBody">
+            data-sidebar="sidebarModal3"
+            hx-get="{% url 'all-notifications' %}"
+            hx-target="#sidebarModalBody"
+        >
             {% trans "View all Notification" %}
         </button>
     </div>
@@ -128,6 +139,5 @@
             },
         });
     }
-
 </script>
 {% register_notify_callbacks callbacks='fill_notification_list,fill_notification_badge' %}

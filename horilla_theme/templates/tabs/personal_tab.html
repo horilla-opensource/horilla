@@ -1,57 +1,56 @@
 {% load static i18n %}
 
 <div class="block lg:grid grid-cols-12 gap-3">
-  <div class="col-span-3 mb-3 lg:mb-0">
-    <div class="border border-dark-50 rounded-md p-3 h-full">
-      <h5 class="mb-1 font-bold">{% trans 'Personal Information' %}</h5>
-      <div class="mb-2">
-        <span class="font-medium text-xs text-[#565E6C]">{% trans 'Date of birth' %}</span>
-        <p class="text-xs font-semibold">{{ employee.get_employee_dob|default:_('None') }}</p>
-      </div>
-      <div class="mb-2">
-        <span class="font-medium text-xs text-[#565E6C]">{% trans 'Gender' %}</span>
-        <p class="text-xs font-semibold">{{ employee.get_gender_display }}</p>
-      </div>
-      {% if perms.employee.view_employee or request.user.employee_get == employee %}
-      <div class="mb-2">
-        <span class="font-medium text-xs text-[#565E6C]">{% trans 'Address' %}</span>
-        <p class="text-xs font-semibold">{{ employee.address|default:_('None') }}</p>
-      </div>
-      {% endif %}
-      <div class="mb-2">
-        <span class="font-medium text-xs text-[#565E6C]">{% trans 'Country' %}</span>
-        <p class="text-xs font-semibold">{{ employee.country|default:_('None') }}</p>
-      </div>
-      <div class="mb-2">
-        <span class="font-medium text-xs text-[#565E6C]">{% trans 'State' %}</span>
-        <p class="text-xs font-semibold">{{ employee.state|default:_('None') }}</p>
-      </div>
-      <div class="mb-2">
-        <span class="font-medium text-xs text-[#565E6C]">{% trans 'City' %}</span>
-        <p class="text-xs font-semibold">{{ employee.city|default:_('None') }}</p>
-      </div>
-      <div class="mb-2">
-        <span class="font-medium text-xs text-[#565E6C]">{% trans 'Qualification' %}</span>
-        <p class="text-xs font-semibold">{{ employee.qualification|default:_('None') }}</p>
-      </div>
-      <div class="mb-2">
-        <span class="font-medium text-xs text-[#565E6C]">{% trans 'Experience' %}</span>
-        <p class="text-xs font-semibold">{{ employee.experience|default:_('None') }}</p>
-      </div>
-      <div class="mb-2">
-        <span class="font-medium text-xs text-[#565E6C]">{% trans 'Emergency Contact' %}</span>
-        <p class="text-xs font-semibold">{{ employee.emergency_contact|default:_('None') }}</p>
-      </div>
-      <div class="mb-2">
-        <span class="font-medium text-xs text-[#565E6C]">{% trans 'Emergency Contact Name' %}</span>
-        <p class="text-xs font-semibold">{{ employee.emergency_contact_name|default:_('None') }}</p>
-      </div>
-      <div class="mb-2">
-        <span class="font-medium text-xs text-[#565E6C]">{% trans 'Emergency Contact Relation' %}</span>
-        <p class="text-xs font-semibold">{{ employee.emergency_contact_relation|default:_('None') }}</p>
-      </div>
+    <div class="col-span-3 mb-3 lg:mb-0">
+        <div class="border border-dark-50 rounded-md p-3 h-full">
+            <h5 class="mb-1 font-bold">{% trans 'Personal Information' %}</h5>
+            <div class="mb-2">
+                <span class="font-medium text-xs text-[#565E6C]">{% trans 'Date of birth' %}</span>
+                <p class="text-xs font-semibold">{{ employee.get_employee_dob|default:_('None') }}</p>
+            </div>
+            <div class="mb-2">
+                <span class="font-medium text-xs text-[#565E6C]">{% trans 'Gender' %}</span>
+                <p class="text-xs font-semibold">{{ employee.get_gender_display }}</p>
+            </div>
+            {% if perms.employee.view_employee or request.user.employee_get == employee %}
+                <div class="mb-2">
+                    <span class="font-medium text-xs text-[#565E6C]">{% trans 'Address' %}</span>
+                    <p class="text-xs font-semibold">{{ employee.address|default:_('None') }}</p>
+                </div>
+            {% endif %}
+            <div class="mb-2">
+                <span class="font-medium text-xs text-[#565E6C]">{% trans 'Country' %}</span>
+                <p class="text-xs font-semibold">{{ employee.country|default:_('None') }}</p>
+            </div>
+            <div class="mb-2">
+                <span class="font-medium text-xs text-[#565E6C]">{% trans 'State' %}</span>
+                <p class="text-xs font-semibold">{{ employee.state|default:_('None') }}</p>
+            </div>
+            <div class="mb-2">
+                <span class="font-medium text-xs text-[#565E6C]">{% trans 'City' %}</span>
+                <p class="text-xs font-semibold">{{ employee.city|default:_('None') }}</p>
+            </div>
+            <div class="mb-2">
+                <span class="font-medium text-xs text-[#565E6C]">{% trans 'Qualification' %}</span>
+                <p class="text-xs font-semibold">{{ employee.qualification|default:_('None') }}</p>
+            </div>
+            <div class="mb-2">
+                <span class="font-medium text-xs text-[#565E6C]">{% trans 'Experience' %}</span>
+                <p class="text-xs font-semibold">{{ employee.experience|default:_('None') }}</p>
+            </div>
+            <div class="mb-2">
+                <span class="font-medium text-xs text-[#565E6C]">{% trans 'Emergency Contact' %}</span>
+                <p class="text-xs font-semibold">{{ employee.emergency_contact|default:_('None') }}</p>
+            </div>
+            <div class="mb-2">
+                <span class="font-medium text-xs text-[#565E6C]">{% trans 'Emergency Contact Name' %}</span>
+                <p class="text-xs font-semibold">{{ employee.emergency_contact_name|default:_('None') }}</p>
+            </div>
+            <div class="mb-2">
+                <span class="font-medium text-xs text-[#565E6C]">{% trans 'Emergency Contact Relation' %}</span>
+                <p class="text-xs font-semibold">{{ employee.emergency_contact_relation|default:_('None') }}</p>
+            </div>
+        </div>
     </div>
-  </div>
-  <div class="col-span-9" hx-get="{% url 'work-tab' %}?pk={{employee.pk}}" hx-trigger="load">
-  </div>
+    <div class="col-span-9" hx-get="{% url 'work-tab' %}?pk={{employee.pk}}" hx-trigger="load"></div>
 </div>

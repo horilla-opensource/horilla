@@ -52,8 +52,8 @@
 
     /* Fixed navbar: align left edge and width with main content area */
     .oh-main-header {
-        left: 4rem;
         right: 0;
+        left: 4rem;
         transition: left 0.22s cubic-bezier(0.4, 0, 0.2, 1);
     }
     #sidebar.sidebar-pinned ~ .oh-main-content .oh-main-header {
@@ -110,10 +110,18 @@
 
     /* Pin button icon: show the OPEN padlock when unpinned (hover-to-expand mode)
        and the CLOSED padlock when pinned (locked open). */
-    #sidebar #sidebarPinBtn .sidebar-lock-closed { display: none; }
-    #sidebar #sidebarPinBtn .sidebar-lock-open { display: block; }
-    #sidebar.sidebar-pinned #sidebarPinBtn .sidebar-lock-open { display: none; }
-    #sidebar.sidebar-pinned #sidebarPinBtn .sidebar-lock-closed { display: block; }
+    #sidebar #sidebarPinBtn .sidebar-lock-closed {
+        display: none;
+    }
+    #sidebar #sidebarPinBtn .sidebar-lock-open {
+        display: block;
+    }
+    #sidebar.sidebar-pinned #sidebarPinBtn .sidebar-lock-open {
+        display: none;
+    }
+    #sidebar.sidebar-pinned #sidebarPinBtn .sidebar-lock-closed {
+        display: block;
+    }
 
     /* Module button transitions */
     .sideboxmain {
@@ -239,49 +247,51 @@
     }
 
     /* Chevron hidden — accordion is replaced by hover flyout */
-    .sidebar-chevron { display: none !important; }
+    .sidebar-chevron {
+        display: none !important;
+    }
 
     /* Flyout submenu panel */
     #sidebarFlyout {
-        position: fixed;
+        visibility: hidden;
         z-index: 10060;
+        position: fixed;
         min-width: 200px;
         max-width: 260px;
-        background: #ffffff;
+        padding: 6px;
+        transform: translateX(-6px);
         border: 1px solid #e5e7eb;
         border-radius: 10px;
+        background: #ffffff;
         box-shadow: 0 8px 24px -4px rgba(15, 23, 42, 0.12), 0 2px 8px -2px rgba(15, 23, 42, 0.06);
-        padding: 6px;
         opacity: 0;
-        visibility: hidden;
         pointer-events: none;
-        transform: translateX(-6px);
         transition: opacity 0.15s ease, transform 0.15s ease, visibility 0s linear 0.15s;
     }
     #sidebarFlyout.is-visible {
-        opacity: 1;
         visibility: visible;
-        pointer-events: auto;
         transform: translateX(0);
+        opacity: 1;
+        pointer-events: auto;
         transition: opacity 0.15s ease, transform 0.15s ease;
     }
     #sidebarFlyout h5 {
-        font-size: 11px;
-        font-weight: 600;
-        color: #6b7280;
-        text-transform: uppercase;
-        letter-spacing: 0.05em;
+        margin-bottom: 4px;
         padding: 4px 10px 8px;
         border-bottom: 1px solid #f3f4f6;
-        margin-bottom: 4px;
+        color: #6b7280;
+        font-weight: 600;
+        font-size: 11px;
+        letter-spacing: 0.05em;
+        text-transform: uppercase;
     }
     body.dark #sidebarFlyout {
-        background: #1f2937;
         border-color: #374151;
+        background: #1f2937;
     }
     body.dark #sidebarFlyout h5 {
-        color: #9ca3af;
         border-bottom-color: #374151;
+        color: #9ca3af;
     }
 
     @media (prefers-reduced-motion: reduce) {
@@ -312,7 +322,11 @@
                     viewBox="0 0 24 24"
                     aria-hidden="true"
                 >
-                    <path stroke-linecap="round" stroke-linejoin="round" d="M13.5 10.5V6.75a4.5 4.5 0 1 1 9 0v3.75M3.75 21.75h10.5a2.25 2.25 0 0 0 2.25-2.25v-6.75a2.25 2.25 0 0 0-2.25-2.25H3.75a2.25 2.25 0 0 0-2.25 2.25v6.75a2.25 2.25 0 0 0 2.25 2.25Z" />
+                    <path
+                        stroke-linecap="round"
+                        stroke-linejoin="round"
+                        d="M13.5 10.5V6.75a4.5 4.5 0 1 1 9 0v3.75M3.75 21.75h10.5a2.25 2.25 0 0 0 2.25-2.25v-6.75a2.25 2.25 0 0 0-2.25-2.25H3.75a2.25 2.25 0 0 0-2.25 2.25v6.75a2.25 2.25 0 0 0 2.25 2.25Z"
+                    />
                 </svg>
                 <!-- Locked padlock: shown when the sidebar IS pinned (locked open) -->
                 <svg
@@ -323,7 +337,11 @@
                     viewBox="0 0 24 24"
                     aria-hidden="true"
                 >
-                    <path stroke-linecap="round" stroke-linejoin="round" d="M16.5 10.5V6.75a4.5 4.5 0 1 0-9 0v3.75m-.75 11.25h10.5a2.25 2.25 0 0 0 2.25-2.25v-6.75a2.25 2.25 0 0 0-2.25-2.25H6.75a2.25 2.25 0 0 0-2.25 2.25v6.75a2.25 2.25 0 0 0 2.25 2.25Z" />
+                    <path
+                        stroke-linecap="round"
+                        stroke-linejoin="round"
+                        d="M16.5 10.5V6.75a4.5 4.5 0 1 0-9 0v3.75m-.75 11.25h10.5a2.25 2.25 0 0 0 2.25-2.25v-6.75a2.25 2.25 0 0 0-2.25-2.25H6.75a2.25 2.25 0 0 0-2.25 2.25v6.75a2.25 2.25 0 0 0 2.25 2.25Z"
+                    />
                 </svg>
             </button>
             <div class="flex items-center gap-2 min-w-0 flex-1">
@@ -642,6 +660,8 @@
             e.preventDefault();
             e.stopPropagation();
             var href = link.getAttribute("href") || link.getAttribute("hx-get") || "/";
+            // Capture owning module button BEFORE hideFlyout() nulls currentFlyoutBtn
+            var activeModuleBtn = currentFlyoutBtn;
             hideFlyout();
             if (isStandaloneUrl(href)) { window.location.href = href; return; }
             var target = document.getElementById("ohMainContent");
@@ -649,6 +669,7 @@
             document.querySelectorAll(".sidebar-subnav-link").forEach(function (l) { l.classList.remove("oh-sidebar-active-link"); });
             flyoutListEl.querySelectorAll("a").forEach(function (a) { a.classList.remove("oh-sidebar-active-link"); });
             link.classList.add("oh-sidebar-active-link");
+            if (activeModuleBtn) setActiveSidebarMenu(activeModuleBtn);
             bumpGrace(1500);
             window.history.pushState({}, "", href);
             htmx.ajax("GET", href, {

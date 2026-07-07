@@ -2,9 +2,7 @@
 {% load basefilters %}
 {% show_section as show_section %}
 
-<div
-    class="oh-main-header flex justify-between items-center bg-white py-3 px-5 border-b border-b-dark-50 fixed z-40"
->
+<div class="oh-main-header flex justify-between items-center bg-white py-3 px-5 border-b border-b-dark-50 fixed z-40">
     <div id="breadcrumbs-container">
         {% if breadcrumbs %}
             {% include "base/navbar_components/breadcrumbs_view.html" %}
@@ -14,7 +12,14 @@
     <div id="reloadMessages">
         {% include "generic/messages.html" %}
     </div>
-    <button id="reloadMessagesButton" hx-get="{% url 'reload-messages' %}" hx-swap="afterend" hidden hx-target="#reloadMessages"></button>
+    <button
+        id="reloadMessagesButton"
+        hx-get="{% url 'reload-messages' %}"
+        hx-swap="afterend"
+        hidden
+        hx-target="#reloadMessages"
+    >
+    </button>
 
     {% if messages %}
         <div class="oh-alert-container">
@@ -30,16 +35,15 @@
         <!-- Action Icons -->
         <div class="flex items-center gap-2">
             {% if "attendance"|app_installed %}
-                    <div id="attendance-activity-container">
-                        {% include "attendance/components/in_out_component.html" %}
-                    </div>
+                <div id="attendance-activity-container">
+                    {% include "attendance/components/in_out_component.html" %}
+                </div>
             {% endif %}
             <button
                 id="themeToggleButton"
                 class="md:block p-2 group text-primary-600 w-12 h-12 bg-primary-100 hover:bg-primary-600 rounded-full transition duration-300 flex items-center justify-center"
             >
-                <a href="#" aria-label="Toggle theme" onclick="return false;">
-
+                <a href="#" aria-label="Toggle theme" onclick="return false">
                     {% if request.session.theme == "dark" %}
                         <i class="fa-solid fa-lightbulb transition duration-300 group-hover:text-white"></i>
                     {% else %}
@@ -48,13 +52,9 @@
                 </a>
             </button>
             {% if show_section %}
-                <button
-                    class="md:block p-2 group text-primary-600 w-12 h-12 bg-primary-100 hover:bg-primary-600 rounded-full transition duration-300 flex items-center justify-center"
-                >
+                <button class="md:block p-2 group text-primary-600 w-12 h-12 bg-primary-100 hover:bg-primary-600 rounded-full transition duration-300 flex items-center justify-center">
                     <a href="{% url 'settings' %}">
-                        <i
-                            class="fas fa-cog transition duration-300 group-hover:text-white"
-                        ></i>
+                        <i class="fas fa-cog transition duration-300 group-hover:text-white"></i>
                     </a>
                 </button>
             {% endif %}
@@ -65,10 +65,10 @@
                     hx-target="#notificationContainer"
                     hx-trigger="load"
                 >
-                    <i
-                        class="fas fa-bell transition duration-300 group-hover:text-white"
-                    ></i>
-                    <span class="absolute bg-[#d7391d] w-7 h-7 rounded-full text-xs text-[white] font-semibold flex items-center justify-center border-2 border-white p-1 [right:-10px] [top:-7px]">
+                    <i class="fas fa-bell transition duration-300 group-hover:text-white"></i>
+                    <span
+                        class="absolute bg-[#d7391d] w-7 h-7 rounded-full text-xs text-[white] font-semibold flex items-center justify-center border-2 border-white p-1 [right:-10px] [top:-7px]"
+                    >
                         {% live_notify_badge %}
                     </span>
                 </button>
@@ -76,24 +76,16 @@
             </div>
 
             <div class="relative dropdown-wrapper">
-                <button
-                    class="hidden md:block p-2 group text-primary-600 w-12 h-12 bg-primary-100 hover:bg-primary-600 rounded-full transition duration-300"
-                >
-                    <i
-                        class="fas fa-globe transition duration-300 group-hover:text-white"
-                    ></i>
+                <button class="hidden md:block p-2 group text-primary-600 w-12 h-12 bg-primary-100 hover:bg-primary-600 rounded-full transition duration-300">
+                    <i class="fas fa-globe transition duration-300 group-hover:text-white"></i>
                 </button>
                 {% include "base/navbar_components/language_settings.html" %}
             </div>
 
             {% if perms.base.change_company %}
                 <div class="relative dropdown-wrapper">
-                    <button
-                        class="hidden md:block p-2 group text-primary-600 w-12 h-12 bg-primary-100 hover:bg-primary-600 rounded-full transition duration-300"
-                    >
-                        <i
-                            class="fa-solid fa-building transition duration-300 group-hover:text-white"
-                        ></i>
+                    <button class="hidden md:block p-2 group text-primary-600 w-12 h-12 bg-primary-100 hover:bg-primary-600 rounded-full transition duration-300">
+                        <i class="fa-solid fa-building transition duration-300 group-hover:text-white"></i>
                     </button>
                     {% include "base/navbar_components/company_selection.html" %}
                 </div>
@@ -117,12 +109,11 @@
                 class="closebtn closeSidemenu cursor-pointer text-xs group text-primary-600 w-6 h-6 bg-primary-100 hover:bg-primary-600 hover:text-white rounded-full transition duration-300 flex items-center justify-center"
                 data-sidebar="sidebarModal3"
             >
-                <i class="fa-solid fa-angle-right"></i></button
-            >{% trans "All Notifications" %}
+                <i class="fa-solid fa-angle-right"></i>
+            </button>
+            {% trans "All Notifications" %}
         </h3>
-        <button
-            class="text-primary-600 text-xs flex justify-center font-semibold hover:text-[#ac3b2a] transition duration-300"
-        >
+        <button class="text-primary-600 text-xs flex justify-center font-semibold hover:text-[#ac3b2a] transition duration-300">
             {% trans "Clear All" %}
         </button>
     </div>

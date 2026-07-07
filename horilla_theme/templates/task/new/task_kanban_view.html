@@ -1,185 +1,105 @@
 {% load i18n static %}
 
 {% if messages %}
-<div class="oh-alert-container">
-    {% for message in messages %}
-    <div class="oh-alert oh-alert--animated {{ message.tags }}">
-        {{ message }}
+    <div class="oh-alert-container">
+        {% for message in messages %}
+            <div class="oh-alert oh-alert--animated {{ message.tags }}">
+                {{ message }}
+            </div>
+        {% endfor %}
     </div>
-    {% endfor %}
-</div>
 {% endif %}
 
 {% include "filter_tags.html" %}
 
 {% if stages %}
-<div id="listView">
-    <!-- Header -->
-    <div class="flex items-center justify-between mb-3">
-        <h3 class="text-sm font-semibold">{% trans "Kanban View" %}</h3>
-        <button
-            class="px-4 py-2 bg-primary-600 text-white rounded-md text-xs flex items-center gap-2 hover:bg-primary-800 transition duration-300"
-            data-toggle="oh-modal-toggle"
-            data-target="#objectCreateModal"
-            hx-get="{% url 'create-project-stage' project_id %}"
-            hx-target="#objectCreateModalTarget"
-        >
-            <img
-                src="/static/horilla_theme/assets/img/icons/more.svg"
-                alt=""
-                width="13"
-                class="filter brightness-0 invert"
-            />
-            {% trans "Stage" %}
-        </button>
-    </div>
-
-    <!-- Scroll Container -->
-    <div class="oh-kanban overflow-x-auto whitespace-nowrap">
-        <!-- Grid of Stages -->
-        <div class="inline-flex gap-4" id="projectStages">
-            {% for stage in stages %}
-            <div
-                class="oh-kanban__section stage kanban-block w-[350px] flex-shrink-0 relative p-2 pt-0 pb-0 bg-[#e9edf0] rounded-lg overflow-hidden overflow-y-auto h-[calc(100vh_-_500px)]"
-                ondrop="drop(event)"
-                ondragover="allowDrop(event)"
-                id="projectStage{{stage.id}}"
-                data-stage-id="{{stage.id}}"
-                data-sequence="{{stage.sequence}}"
-                data-project-id="{{project.id}}"
+    <div id="listView">
+        <!-- Header -->
+        <div class="flex items-center justify-between mb-3">
+            <h3 class="text-sm font-semibold">{% trans "Kanban View" %}</h3>
+            <button
+                class="px-4 py-2 bg-primary-600 text-white rounded-md text-xs flex items-center gap-2 hover:bg-primary-800 transition duration-300"
+                data-toggle="oh-modal-toggle"
+                data-target="#objectCreateModal"
+                hx-get="{% url 'create-project-stage' project_id %}"
+                hx-target="#objectCreateModalTarget"
             >
-                <!-- Stage Header -->
-                <div
-                    class="kanban-head flex items-center justify-between sticky top-0 bg-[#e9edf0] z-10 py-2 cursor-move column-drag-handle"
-                    draggable="true"
-                    ondragstart="columnDragStart(event)"
-                    ondragend="columnDragEnd(event)"
+                <img
+                    src="/static/horilla_theme/assets/img/icons/more.svg"
+                    alt=""
+                    width="13"
+                    class="filter brightness-0 invert"
                 >
-                    <div class="relative">
-                        <h5
-                            class="text-center {% cycle 'bg-[#f39022]' 'bg-[#8b5cf6]' 'bg-[#22c55e]' 'bg-[#3b82f6]' 'bg-[#e11d48]' 'bg-[#f59e0b]' 'bg-[#10b981]' %} px-3 py-1.5 rounded-2xl text-sm font-medium text-white flex items-center gap-2 ps-2"
-                        >
-                            {{ stage.title }}
-                            <span
-                                class="w-6 h-6 bg-white rounded-full text-[#f39022] flex items-center justify-center text-xs task-count"
-                            >
-                                {{ stage.tasks.all|length}}
-                            </span>
-                        </h5>
-                    </div>
-                    <div class="flex items-center gap-4">
-                        <button class="folderBtn">
-                            <i class="fa-regular fa-folder text-lg"></i>
-                        </button>
+                {% trans "Stage" %}
+            </button>
+        </div>
 
-                        <button
-                            class="btn-toggle text-left flex items-center gap-2"
-                            title="{% trans 'Add task' %}"
-                            hx-get="{% url 'quick-create-task' stage.id %}"
-                            data-target="#col{{ stage.id }}"
-                            hx-target="#taskCreateForm{{stage.id}}"
-                        >
-                            <i class="fa-regular fa-square-plus text-lg"></i>
-                        </button>
-
-                        <div class="relative" x-data="{ open: false }">
-                            <!-- Trigger -->
-                            <a @click="open = !open" class="cursor-pointer"
-                                ><i
-                                    class="fa-solid fa-ellipsis-vertical text-black"
-                                ></i
-                            ></a>
-
-                            <!-- Dropdown Menu -->
-                            <div
-                                x-show="open"
-                                @click.away="open = false"
-                                x-transition
-                                class="absolute right-0 min-w-[100px] bg-white rounded-lg shadow-card py-2 z-50"
-                                style="cursor: pointer"
-                            >
-                                <ul class="text-xs">
-                                    <li>
-                                        <a
-                                            hx-get="{% url 'update-project-stage' stage.id %}"
-                                            hx-target="#TaskFormTarget"
-                                            class="w-full text-left px-3 py-1 hover:text-primary-600 block"
-                                            data-toggle="oh-modal-toggle"
-                                            data-target="#TaskModal"
-                                        >
-                                            {% trans "Edit" %}
-                                        </a>
-                                    </li>
-                                    <li>
-                                        <a
-                                            hx-confirm="{% trans 'Are you sure you want to delete this stage?' %}"
-                                            hx-post="{% url 'delete-project-stage' stage.id %}?view=card"
-                                            hx-target="#projectStage{{stage.id}}"
-                                            class="w-full text-left px-3 py-1 hover:text-primary-600 block"
-                                        >
-                                            {% trans "Delete" %}
-                                        </a>
-                                    </li>
-                                </ul>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-
-                <!-- Add Task Form (Initially Collapsed) -->
-                <div
-                    id="col{{ stage.id }}"
-                    class="collapse-content overflow-hidden transition-[max-height] duration-500 ease-in-out max-h-0 myform"
-                >
-                    <div class="p-4 bg-white rounded-md mt-2 shadow-card mb-3">
-                        <div id="taskCreateForm{{stage.id}}"></div>
-                    </div>
-                </div>
-
-                <div>
-                    <!-- Tasks -->
-                    {% for task in stage.tasks.all|dictsort:"sequence" %}
-                        {% if task in tasks %}
+        <!-- Scroll Container -->
+        <div class="oh-kanban overflow-x-auto whitespace-nowrap">
+            <!-- Grid of Stages -->
+            <div class="inline-flex gap-4" id="projectStages">
+                {% for stage in stages %}
+                    <div
+                        class="oh-kanban__section stage kanban-block w-[350px] flex-shrink-0 relative p-2 pt-0 pb-0 bg-[#e9edf0] rounded-lg overflow-hidden overflow-y-auto h-[calc(100vh_-_500px)]"
+                        ondrop="drop(event)"
+                        ondragover="allowDrop(event)"
+                        id="projectStage{{stage.id}}"
+                        data-stage-id="{{stage.id}}"
+                        data-sequence="{{stage.sequence}}"
+                        data-project-id="{{project.id}}"
+                    >
+                        <!-- Stage Header -->
                         <div
-                            class="task-card task"
-                            data-task-id="{{task.id}}"
-                            id="{{task.id}}"
+                            class="kanban-head flex items-center justify-between sticky top-0 bg-[#e9edf0] z-10 py-2 cursor-move column-drag-handle"
                             draggable="true"
-                            ondragstart="drag(event)"
-                            data-target="#genericModal"
-                            data-toggle="oh-modal-toggle"
-                            hx-target="#genericModalBody"
-                            hx-get="{% url 'task-detail-view' task.id %}?view=list"
-                            onclick="event.stopPropagation()"
+                            ondragstart="columnDragStart(event)"
+                            ondragend="columnDragEnd(event)"
                         >
-                            <div
-                                class="p-[20px] rounded-[5px] text-sm relative bg-white mb-2"
-                            >
-                                <!-- Task Options -->
-                                <div
-                                    class="absolute inline-block right-5 top-5"
-                                    x-data="{ open: false }"
-                                    @click.outside="open = false"
-                                    style="cursor: pointer"
-                                    onclick="event.stopPropagation()"
+                            <div class="relative">
+                                <h5 class="text-center {% cycle 'bg-[#f39022]' 'bg-[#8b5cf6]' 'bg-[#22c55e]' 'bg-[#3b82f6]' 'bg-[#e11d48]' 'bg-[#f59e0b]' 'bg-[#10b981]' %} px-3 py-1.5 rounded-2xl text-sm font-medium text-white flex items-center gap-2 ps-2">
+                                    {{ stage.title }}
+                                    <span
+                                        class="w-6 h-6 bg-white rounded-full text-[#f39022] flex items-center justify-center text-xs task-count"
+                                    >
+                                        {{ stage.tasks.all|length }}
+                                    </span>
+                                </h5>
+                            </div>
+                            <div class="flex items-center gap-4">
+                                <button class="folderBtn">
+                                    <i class="fa-regular fa-folder text-lg"></i>
+                                </button>
+
+                                <button
+                                    class="btn-toggle text-left flex items-center gap-2"
+                                    title="{% trans 'Add task' %}"
+                                    hx-get="{% url 'quick-create-task' stage.id %}"
+                                    data-target="#col{{ stage.id }}"
+                                    hx-target="#taskCreateForm{{stage.id}}"
                                 >
-                                    <a @click="open = !open" class="cursor-pointer inline-block px-3">
-                                        <i
+                                    <i class="fa-regular fa-square-plus text-lg"></i>
+                                </button>
+
+                                <div class="relative" x-data="{ open: false }">
+                                    <!-- Trigger -->
+                                    <a @click="open = !open" class="cursor-pointer"><i
                                             class="fa-solid fa-ellipsis-vertical text-black"
-                                        ></i>
-                                    </a>
+                                        ></i></a>
+
+                                    <!-- Dropdown Menu -->
                                     <div
                                         x-show="open"
+                                        @click.away="open = false"
                                         x-transition
-                                        class="absolute right-0 min-w-[100px] bg-white rounded-lg shadow-card py-2 z-50 text-xs"
-                                        style="display: none"
+                                        class="absolute right-0 min-w-[100px] bg-white rounded-lg shadow-card py-2 z-50"
+                                        style="cursor: pointer"
                                     >
-                                        <ul>
-                                            <li class="mb-1">
+                                        <ul class="text-xs">
+                                            <li>
                                                 <a
-                                                    hx-get="{% url 'update-task' task.id %}?project_task=true"
+                                                    hx-get="{% url 'update-project-stage' stage.id %}"
                                                     hx-target="#TaskFormTarget"
-                                                    class="w-full text-left px-3 py-1 hover:text-primary-600"
+                                                    class="w-full text-left px-3 py-1 hover:text-primary-600 block"
                                                     data-toggle="oh-modal-toggle"
                                                     data-target="#TaskModal"
                                                 >
@@ -188,10 +108,10 @@
                                             </li>
                                             <li>
                                                 <a
-                                                    hx-confirm="{% trans 'Do you really want to delete this task?' %}"
-                                                    hx-post="{% url 'delete-task' task.id %}?view=card"
-                                                    hx-target="#taskCreateForm{{stage.id}}"
-                                                    class="w-full text-left px-3 py-1 hover:text-primary-600"
+                                                    hx-confirm="{% trans 'Are you sure you want to delete this stage?' %}"
+                                                    hx-post="{% url 'delete-project-stage' stage.id %}?view=card"
+                                                    hx-target="#projectStage{{stage.id}}"
+                                                    class="w-full text-left px-3 py-1 hover:text-primary-600 block"
                                                 >
                                                     {% trans "Delete" %}
                                                 </a>
@@ -199,111 +119,178 @@
                                         </ul>
                                     </div>
                                 </div>
-
-                                <div
-                                    id="taskCreateForm{{stage.id}}"
-                                    class="oh-dropdown__menu oh-dropdown__menu--highlight oh-dropdown__menu--top-100 oh-dropdown__close-outside-click oh-dropdown__menu--right pt-2 pb-2 list-quick-add d-none"
-                                    style="z-index: 15"
-                                ></div>
-
-                                <!-- Task Content -->
-                                <div
-                                    class="flex items-center gap-5 mb-3 pb-3 border-b border-b-[#565e6c13]"
-                                >
-                                    <img
-                                        src="{{ task.get_avatar }}"
-                                        class="w-6 h-6 rounded-full"
-                                        alt="{{ task }}"
-                                        width="30"
-                                    />
-                                    <p class="mb-1">{{ task }}</p>
-                                </div>
-
-                                <!-- Task Metadata -->
-                                <div class="flex gap-2 items-center relative">
-                                    <span
-                                        class="font-medium text-xs text-[#565E6C] w-14"
-                                        >{% trans "End Date" %}</span
-                                    >
-                                    <p
-                                        class="text-xs font-semibold flex items-center gap-2"
-                                    >
-                                        : <span>{{ task.end_date }}</span>
-                                    </p>
-
-                                    <!-- Dropdown Button -->
-                                    <div
-                                        x-data="{ open: false }"
-                                        class="absolute right-0 -top-1 z-50"
-                                        onclick="event.stopPropagation()"
-                                    >
-                                        <button
-                                            @click="open = !open"
-                                            @click.away="open = false"
-                                            class="text-primary-600 focus:outline-none"
-                                        >
-                                            <i
-                                                class="fa-regular fa-square-caret-down text-primary-600"
-                                            ></i>
-                                        </button>
-
-                                        <!-- Dropdown Content -->
-                                        <div
-                                            x-show="open"
-                                            x-transition
-                                            @click.stop
-                                            class="absolute right-0 p-4 min-w-[200px] bg-white rounded-md shadow-lg z-50"
-                                            style="display: none"
-                                        >
-                                            <ul class="text-sm text-gray-800">
-                                                <li
-                                                    class="mb-3 hover:bg-gray-100"
-                                                >
-                                                    <strong
-                                                        >{% trans "Managers" %}:</strong
-                                                    >
-                                                    <span
-                                                        style="display: inline-flex"
-                                                        >•{{task.task_managers.all|join:"<br />•"}}
-                                                        </span
-                                                    >
-                                                </li>
-                                                <li
-                                                    class="hover:bg-gray-100 flex items-center gap-1"
-                                                >
-                                                    <strong
-                                                        >{% trans "Status"%}:</strong
-                                                    >
-                                                    <span
-                                                        class="bg-gray-100 text-gray-700 block w-full text-xs"
-                                                    >
-                                                        <select class="oh-select"
-                                                            hx-get="{% url 'update-project-task-status' task.id %}?view=list"
-                                                            hx-trigger="change" hx-swap="afterend" tabindex="-1" aria-hidden="true"
-                                                            name="status">
-                                                            {% for option in task.TASK_STATUS %}
-                                                                <option value="{{option.0}}" {% if option.0 == task.status %}selected{% endif %}>
-                                                                    {{option.1}}
-                                                                </option>
-                                                            {% endfor %}
-                                                        </select>
-                                                    </span>
-                                                </li>
-                                                <!-- Add more details if needed -->
-                                            </ul>
-                                        </div>
-                                    </div>
-                                </div>
                             </div>
                         </div>
-                        {% endif %}
-                    {% endfor %}
-                </div>
+
+                        <!-- Add Task Form (Initially Collapsed) -->
+                        <div
+                            id="col{{ stage.id }}"
+                            class="collapse-content overflow-hidden transition-[max-height] duration-500 ease-in-out max-h-0 myform"
+                        >
+                            <div class="p-4 bg-white rounded-md mt-2 shadow-card mb-3">
+                                <div id="taskCreateForm{{stage.id}}"></div>
+                            </div>
+                        </div>
+
+                        <div>
+                            <!-- Tasks -->
+                            {% for task in stage.tasks.all|dictsort:"sequence" %}
+                                {% if task in tasks %}
+                                    <div
+                                        class="task-card task"
+                                        data-task-id="{{task.id}}"
+                                        id="{{task.id}}"
+                                        draggable="true"
+                                        ondragstart="drag(event)"
+                                        data-target="#genericModal"
+                                        data-toggle="oh-modal-toggle"
+                                        hx-target="#genericModalBody"
+                                        hx-get="{% url 'task-detail-view' task.id %}?view=list"
+                                        onclick="event.stopPropagation()"
+                                    >
+                                        <div class="p-[20px] rounded-[5px] text-sm relative bg-white mb-2">
+                                            <!-- Task Options -->
+                                            <div
+                                                class="absolute inline-block right-5 top-5"
+                                                x-data="{ open: false }"
+                                                @click.outside="open = false"
+                                                style="cursor: pointer"
+                                                onclick="event.stopPropagation()"
+                                            >
+                                                <a @click="open = !open" class="cursor-pointer inline-block px-3">
+                                                    <i class="fa-solid fa-ellipsis-vertical text-black"></i>
+                                                </a>
+                                                <div
+                                                    x-show="open"
+                                                    x-transition
+                                                    class="absolute right-0 min-w-[100px] bg-white rounded-lg shadow-card py-2 z-50 text-xs"
+                                                    style="display: none"
+                                                >
+                                                    <ul>
+                                                        <li class="mb-1">
+                                                            <a
+                                                                hx-get="{% url 'update-task' task.id %}?project_task=true"
+                                                                hx-target="#TaskFormTarget"
+                                                                class="w-full text-left px-3 py-1 hover:text-primary-600"
+                                                                data-toggle="oh-modal-toggle"
+                                                                data-target="#TaskModal"
+                                                            >
+                                                                {% trans "Edit" %}
+                                                            </a>
+                                                        </li>
+                                                        <li>
+                                                            <a
+                                                                hx-confirm="{% trans 'Do you really want to delete this task?' %}"
+                                                                hx-post="{% url 'delete-task' task.id %}?view=card"
+                                                                hx-target="#taskCreateForm{{stage.id}}"
+                                                                class="w-full text-left px-3 py-1 hover:text-primary-600"
+                                                            >
+                                                                {% trans "Delete" %}
+                                                            </a>
+                                                        </li>
+                                                    </ul>
+                                                </div>
+                                            </div>
+
+                                            <div
+                                                id="taskCreateForm{{stage.id}}"
+                                                class="oh-dropdown__menu oh-dropdown__menu--highlight oh-dropdown__menu--top-100 oh-dropdown__close-outside-click oh-dropdown__menu--right pt-2 pb-2 list-quick-add d-none"
+                                                style="z-index: 15"
+                                            >
+                                            </div>
+
+                                            <!-- Task Content -->
+                                            <div class="flex items-center gap-5 mb-3 pb-3 border-b border-b-[#565e6c13]">
+                                                <img
+                                                    src="{{ task.get_avatar }}"
+                                                    class="w-6 h-6 rounded-full"
+                                                    alt="{{ task }}"
+                                                    width="30"
+                                                >
+                                                <p class="mb-1">{{ task }}</p>
+                                            </div>
+
+                                            <!-- Task Metadata -->
+                                            <div class="flex gap-2 items-center relative">
+                                                <span
+                                                    class="font-medium text-xs text-[#565E6C] w-14"
+                                                >{% trans "End Date" %}</span>
+                                                <p class="text-xs font-semibold flex items-center gap-2">
+                                                    : <span>{{ task.end_date }}</span>
+                                                </p>
+
+                                                <!-- Dropdown Button -->
+                                                <div
+                                                    x-data="{ open: false }"
+                                                    class="absolute right-0 -top-1 z-50"
+                                                    onclick="event.stopPropagation()"
+                                                >
+                                                    <button
+                                                        @click="open = !open"
+                                                        @click.away="open = false"
+                                                        class="text-primary-600 focus:outline-none"
+                                                    >
+                                                        <i class="fa-regular fa-square-caret-down text-primary-600"></i>
+                                                    </button>
+
+                                                    <!-- Dropdown Content -->
+                                                    <div
+                                                        x-show="open"
+                                                        x-transition
+                                                        @click.stop
+                                                        class="absolute right-0 p-4 min-w-[200px] bg-white rounded-md shadow-lg z-50"
+                                                        style="display: none"
+                                                    >
+                                                        <ul class="text-sm text-gray-800">
+                                                            <li class="mb-3 hover:bg-gray-100">
+                                                                <strong>{% trans "Managers" %}:</strong>
+                                                                <span
+                                                                    style="display: inline-flex"
+                                                                >•{{ task.task_managers.all|join:"<br />•" }}
+                                                                </span>
+                                                            </li>
+                                                            <li class="hover:bg-gray-100 flex items-center gap-1">
+                                                                <strong>{% trans "Status" %}:</strong>
+                                                                <span
+                                                                    class="bg-gray-100 text-gray-700 block w-full text-xs"
+                                                                >
+                                                                    <select
+                                                                        class="oh-select"
+                                                                        hx-get="{% url 'update-project-task-status' task.id %}?view=list"
+                                                                        hx-trigger="change"
+                                                                        hx-swap="afterend"
+                                                                        tabindex="-1"
+                                                                        aria-hidden="true"
+                                                                        name="status"
+                                                                    >
+                                                                        {% for option in task.TASK_STATUS %}
+                                                                            <option
+                                                                                value="{{option.0}}"
+                                                                                {% if option.0 == task.status %}
+                                                                                    selected
+                                                                                {% endif %}
+                                                                            >
+                                                                                {{ option.1 }}
+                                                                            </option>
+                                                                        {% endfor %}
+                                                                    </select>
+                                                                </span>
+                                                            </li>
+                                                            <!-- Add more details if needed -->
+                                                        </ul>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                {% endif %}
+                            {% endfor %}
+                        </div>
+                    </div>
+                {% endfor %}
             </div>
-            {% endfor %}
         </div>
     </div>
-</div>
 {% endif %}
 
 <script>
@@ -585,5 +572,4 @@
             }
         });
     });
-
 </script>

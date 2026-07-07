@@ -1,50 +1,46 @@
 {% load static i18n %}
 <div class="oh-alert-container">
     {% for message in messages %}
-    <div class="oh-alert oh-alert--animated {{ message.tags }}">
-        {{ message }}
-    </div>
+        <div class="oh-alert oh-alert--animated {{ message.tags }}">
+            {{ message }}
+        </div>
     {% endfor %}
 </div>
 <div class="h-screen w-full flex items-center justify-center">
-    <div
-        class="bg-[white] p-[50px] rounded-md [box-shadow:0px_0px_20px_#ebebeb] w-[450px]"
-    >
+    <div class="bg-[white] p-[50px] rounded-md [box-shadow:0px_0px_20px_#ebebeb] w-[450px]">
         <img
             src="{% if white_label_company.icon %}{{white_label_company.icon.url}}{% else %}{% static 'horilla_theme/assets/img/logo.svg' %}{% endif %}"
             alt=""
             class="m-auto mb-4"
             width="80"
-        />
+        >
         <h1 class="text-3xl font-bold my-3 text-center">
             {% trans "Change Username" %}
         </h1>
         <div class="my-3">
-            <form method="post"
-                class="oh-form-group"
-                hx-post="{% url 'change-username' %}"
-                hx-target="#form-container"
-            >
+            <form method="post" class="oh-form-group" hx-post="{% url 'change-username' %}" hx-target="#form-container">
                 {% csrf_token %}
                 <div class="my-3">
-                    <label for="id_old_username" class="font-bold inline-block text-sm text-color-600 my-2"
-                        >{% trans "Old Username" %}</label
-                    >
+                    <label
+                        for="id_old_username"
+                        class="font-bold inline-block text-sm text-color-600 my-2"
+                    >{% trans "Old Username" %}</label>
                     <input
                         type="text"
                         id="id_old_username"
                         name="old_username"
                         readonly
                         autocomplete="false"
-                        value = "{{form.old_username.value}}"
+                        value="{{form.old_username.value}}"
                         class="bg-gray-100 text-gray-700 cursor-not-allowed text-color-600 w-full border-0 rounded-md p-3 mt-1 focus-visible:outline-0 placeholder:text-[#00000041] placeholder:font-medium text-xs [transition:.3s] focus:border-primary-600"
-                    />
+                    >
                 </div>
 
                 <div class="my-3">
-                    <label for="id_username" class="font-bold inline-block text-sm text-color-600 my-2"
-                        >{% trans "New Username" %}</label
-                    >
+                    <label
+                        for="id_username"
+                        class="font-bold inline-block text-sm text-color-600 my-2"
+                    >{% trans "New Username" %}</label>
                     <input
                         type="text"
                         id="id_username"
@@ -52,14 +48,15 @@
                         autocomplete="new-password"
                         placeholder="Enter New Username"
                         class="text-color-600 w-full border border-dark-50 rounded-md p-3 mt-1 focus-visible:outline-0 placeholder:text-[#00000041] placeholder:font-medium text-xs [transition:.3s] focus:border-primary-600"
-                    />
-                    {{form.username.errors}}
+                    >
+                    {{ form.username.errors }}
                 </div>
 
                 <div class="my-3">
-                    <label for="id_password" class="font-bold inline-block text-sm text-color-600 my-2"
-                        >{% trans "Password" %}</label
-                    >
+                    <label
+                        for="id_password"
+                        class="font-bold inline-block text-sm text-color-600 my-2"
+                    >{% trans "Password" %}</label>
                     <div class="relative">
                         <input
                             type="password"
@@ -68,7 +65,7 @@
                             autocomplete="new-password"
                             placeholder="Enter New Password"
                             class="oh-input--password text-color-600 w-full border border-dark-50 rounded-md p-3 mt-1 focus-visible:outline-0 placeholder:text-[#00000041] placeholder:font-medium text-xs [transition:.3s] focus:border-primary-600"
-                        />
+                        >
                         <span
                             type="button"
                             class="oh-btn oh-btn--transparent oh-password-input--toggle"
@@ -85,8 +82,7 @@
                             ></ion-icon>
                         </span>
                     </div>
-                    {{form.password.errors}}
-
+                    {{ form.password.errors }}
                 </div>
 
                 <div class="flex justify-end">
@@ -103,7 +99,7 @@
                         type="submit"
                         class="p-3 bg-primary-600 hover:bg-secondary-600 w-full flex gap-3 justify-center rounded-md text-[white] [transition:.3s]"
                     >
-                        <img src="{% static "horilla_theme/assets/icons/sign.svg" %}" />
+                        <img src='{% static "horilla_theme/assets/icons/sign.svg" %}'>
                         {% trans "Update" %}
                     </button>
                 </div>

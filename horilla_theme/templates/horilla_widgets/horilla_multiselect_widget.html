@@ -2,140 +2,137 @@
 <div id="{{section_id}}">
     <style>
         .oh-modal__close-custom {
-          border: none;
-          background: none;
-          font-size: 1.5rem;
-          opacity: 0.7;
-          position: absolute;
-          top: 25px;
-          right: 15px;
-          cursor: pointer;
+            position: absolute;
+            top: 25px;
+            right: 15px;
+            border: none;
+            background: none;
+            font-size: 1.5rem;
+            cursor: pointer;
+            opacity: 0.7;
         }
         .tag-badge {
-          box-sizing: border-box;
-          display: inline-block;
-          /* background-color: orangered; */
-          color: black;
-
-          border-radius: 3rem;
-          text-align: center;
-
-          font-size: 1.6rem;
-          font-weight: 400;
-          padding: 0.05rem 0.8rem 0.1rem;
-          line-height: inherit;
-          padding: 7px;
-          padding-right: 10px;
-          margin-bottom: 5px;
-          border: solid orangered 2px;
-          cursor: pointer;
+            box-sizing: border-box;
+            display: inline-block;
+            margin-bottom: 5px;
+            padding: 0.05rem 0.8rem 0.1rem;
+            padding: 7px;
+            padding-right: 10px;
+            border: solid orangered 2px;
+            border-radius: 3rem;
+            /* background-color: orangered; */
+            color: black;
+            font-weight: 400;
+            font-size: 1.6rem;
+            line-height: inherit;
+            text-align: center;
+            cursor: pointer;
         }
         .tag-badge--primary {
-          background-color: orangered;
-          color: white;
+            background-color: orangered;
+            color: white;
         }
         .oh-profile__avatar-limit-height {
-          height: 30px !important;
+            height: 30px !important;
         }
         .oh-profile_name_custom {
-          font-size: 13px;
-          padding-left: 4px;
+            padding-left: 4px;
+            font-size: 13px;
         }
         .oh-profile__image_custm {
-          width: 26px;
-          height: 26px;
+            width: 26px;
+            height: 26px;
         }
         .badge-container {
-          height: 30vh;
-          overflow: auto;
+            height: 30vh;
+            overflow: auto;
         }
         .tag-badge--outline {
-          background: white;
-          border: solid orangered 2px;
-          color: black;
+            border: solid orangered 2px;
+            background: white;
+            color: black;
         }
         .oh-sticky-table__th--custom {
-          padding-left: 10px !important;
+            padding-left: 10px !important;
         }
         .oh-sticky-table__tr--selected {
-          background: #ff450017 !important;
+            background: #ff450017 !important;
         }
 
         .avatars {
-          display: flex;
-          padding: 8px 10px 8px 10px;
+            display: flex;
+            padding: 8px 10px 8px 10px;
         }
 
         .avatars__item {
-          background-color: #596376;
-          border: 2px solid white;
-          border-radius: 100%;
-          color: #ffffff;
-          display: block;
-          font-family: sans-serif;
-          font-size: 12px;
-          font-weight: 100;
-          height: 26px;
-          width: 26px;
-          line-height: 17px;
-          text-align: center;
-          transition: margin 0.1s ease-in-out;
-          overflow: hidden;
-          margin-left: -10px;
+            display: block;
+            width: 26px;
+            height: 26px;
+            margin-left: -10px;
+            overflow: hidden;
+            border: 2px solid white;
+            border-radius: 100%;
+            background-color: #596376;
+            color: #ffffff;
+            font-weight: 100;
+            font-size: 12px;
+            line-height: 17px;
+            font-family: sans-serif;
+            text-align: center;
+            transition: margin 0.1s ease-in-out;
         }
 
         .avatars__item:first-child {
-          z-index: 5;
+            z-index: 5;
         }
 
         .avatars__item:nth-child(2) {
-          z-index: 4;
+            z-index: 4;
         }
 
         .avatars__item:nth-child(3) {
-          z-index: 3;
+            z-index: 3;
         }
 
         .avatars__item:nth-child(4) {
-          z-index: 2;
+            z-index: 2;
         }
 
         .avatars__item:nth-child(5) {
-          z-index: 1;
+            z-index: 1;
         }
 
         .avatars__item:last-child {
-          z-index: 0;
+            z-index: 0;
         }
 
         .avatars__item img {
-          width: 100%;
+            width: 100%;
         }
 
         .avatars:hover .avatars__item {
-          margin-right: 10px;
+            margin-right: 10px;
         }
-        .select2{
-          width: 100% !important;
+        .select2 {
+            width: 100% !important;
         }
-        #selectContainer{{self.attrs.id}} .select2-container .select2-selection{
-          padding: 5px !important;
-          max-height: 70px !important;
-          overflow: hidden;
-          overflow-y: auto;
+        #selectContainer{{ self.attrs.id }} .select2-container .select2-selection {
+            max-height: 70px !important;
+            padding: 5px !important;
+            overflow: hidden;
+            overflow-y: auto;
         }
-        .custom-scroll{
-          overflow-x: scroll
+        .custom-scroll {
+            overflow-x: scroll;
         }
-        .custom-scroll::-webkit-scrollbar{
-          background-color: #cacaca;
-          height: 4px;
-          border-radius: 6px;
-
+        .custom-scroll::-webkit-scrollbar {
+            height: 4px;
+            border-radius: 6px;
+            background-color: #cacaca;
         }
-        .custom-scroll::-webkit-scrollbar-thumb{
-          background-color: #888;
-          border-radius: 6px;
+        .custom-scroll::-webkit-scrollbar-thumb {
+            border-radius: 6px;
+            background-color: #888;
         }
     </style>
     <div id="selectContainer{{self.attrs.id}}">
@@ -149,7 +146,7 @@
             multiple
         >
             {% for instance in queryset %}
-                <option value="{{instance.id}}">{{instance}}</option>
+                <option value="{{instance.id}}">{{ instance }}</option>
             {% endfor %}
         </select>
     </div>
@@ -158,25 +155,14 @@
         <div class="avatars" id="avatarsContainer"></div>
     </div>
     <span
-        style="
-            cursor: pointer;
-            padding: 10px;
-            display: flex;
-            justify-content: right;
-        "
+        style="cursor: pointer; padding: 10px; display: flex; justify-content: right"
         class="text-primary-600"
     >
         <span
             data-toggle="oh-modal-toggle"
             data-target="#filterChoose{{section_id}}"
             title="Filter and Choose {{field.label}}"
-            style="
-                justify-content: right;
-                align-items: center;
-                display: flex;
-                width: 50px;
-                font-size: 0.75rem;
-            "
+            style="justify-content: right; align-items: center; display: flex; width: 50px; font-size: 0.75rem"
         >
             <ion-icon name="filter-circle"></ion-icon> {% trans "Filter" %}
         </span>
@@ -193,7 +179,7 @@
                 <button
                     type="button"
                     class="oh-modal__close-custom"
-                    onclick="event.stopPropagation();event.preventDefault;$('#filterChoose{{section_id}}').toggleClass('oh-modal--show');"
+                    onclick="event.stopPropagation();event.preventDefault;$('#filterChoose{{section_id}}').toggleClass('oh-modal--show')"
                 >
                     <ion-icon name="close-outline"></ion-icon>
                 </button>
@@ -214,9 +200,14 @@
                     <div class="d-flex flex-row-reverse">
                         <a
                             class="oh-btn oh-btn--secondary oh-btn--shadow pr-3 pl-3"
-                            onclick="event.stopPropagation();event.preventDefault;$('#filterChoose{{section_id}}').removeClass('oh-modal--show');"
+                            onclick="event.stopPropagation();event.preventDefault;$('#filterChoose{{section_id}}').removeClass('oh-modal--show')"
                         >
-                        <img src="/static/horilla_theme/assets/img/icons/more.svg" alt="Create" width="13" class="filter brightness-0 invert">
+                            <img
+                                src="/static/horilla_theme/assets/img/icons/more.svg"
+                                alt="Create"
+                                width="13"
+                                class="filter brightness-0 invert"
+                            >
                             {% trans "Add" %}
                         </a>
                     </div>

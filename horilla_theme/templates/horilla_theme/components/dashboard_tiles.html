@@ -9,9 +9,12 @@
         >
             <div class="flex justify-between items-center mb-2">
                 <h3 class="text-md font-semibold">{% trans "Gender Chart" %}</h3>
-                <span class="float-end hidden group-hover:block " role="button"
+                <span
+                    class="float-end hidden group-hover:block"
+                    role="button"
                     hx-post="{% url 'dashboard-components-toggle' %}?chart_id=gender_chart"
-                    hx-target="closest .shadow-card" hx-swap="outerHTML"
+                    hx-target="closest .shadow-card"
+                    hx-swap="outerHTML"
                 >
                     <i class="material-icons fw-lighter fs-5">close</i>
                 </span>
@@ -22,7 +25,6 @@
                 </div>
             </div>
         </div>
-
     {% elif chart == "employees_chart" and 'employees_chart'|feature_is_accessible:request and "employees_chart" in charts %}
         <!-- Employees Chart -->
         <div
@@ -32,9 +34,12 @@
             <div class="flex justify-between items-center mb-2">
                 <h3 class="text-md font-semibold">{% trans "Employees Chart" %}</h3>
 
-                <span class="float-end hidden group-hover:block " role="button"
+                <span
+                    class="float-end hidden group-hover:block"
+                    role="button"
                     hx-post="{% url 'dashboard-components-toggle' %}?chart_id=employees_chart"
-                    hx-target="closest .shadow-card" hx-swap="outerHTML"
+                    hx-target="closest .shadow-card"
+                    hx-swap="outerHTML"
                 >
                     <i class="material-icons fw-lighter fs-5">close</i>
                 </span>
@@ -46,10 +51,10 @@
                 <div
                     id="employeeChartLegend"
                     class="mt-4 flex justify-center flex-wrap gap-3 text-xs"
-                ></div>
+                >
+                </div>
             </div>
         </div>
-
     {% elif chart == "shift_request_approve" and "shift_request_approve" in charts %}
         <!-- Shift Request Approve Table -->
         <div
@@ -60,9 +65,12 @@
                 <h3 class="text-md font-semibold">
                     {% trans "Shift Requests to Approve" %}
                 </h3>
-                <span class="float-end hidden group-hover:block " role="button"
+                <span
+                    class="float-end hidden group-hover:block"
+                    role="button"
                     hx-post="{% url 'dashboard-components-toggle' %}?chart_id=shift_request_approve"
-                    hx-target="closest .shadow-card" hx-swap="outerHTML"
+                    hx-target="closest .shadow-card"
+                    hx-swap="outerHTML"
                 >
                     <i class="material-icons fw-lighter fs-5">close</i>
                 </span>
@@ -72,9 +80,9 @@
                 id="shiftRequestApprove"
                 hx-get="{% url 'dashboard-shift-request' %}"
                 hx-trigger="load"
-            ></div>
+            >
+            </div>
         </div>
-
     {% elif chart == "work_type_request_approve" and "work_type_request_approve" in charts %}
         <!-- Work Type Approve Table -->
         <div
@@ -85,9 +93,12 @@
                 <h3 class="text-md font-semibold">
                     {% trans "Work Type Requests to Approve" %}
                 </h3>
-                <span class="float-end hidden group-hover:block " role="button"
+                <span
+                    class="float-end hidden group-hover:block"
+                    role="button"
                     hx-post="{% url 'dashboard-components-toggle' %}?chart_id=work_type_request_approve"
-                    hx-target="closest .shadow-card" hx-swap="outerHTML"
+                    hx-target="closest .shadow-card"
+                    hx-swap="outerHTML"
                 >
                     <i class="material-icons fw-lighter fs-5">close</i>
                 </span>
@@ -97,9 +108,9 @@
                 id="shiftRequestApprove"
                 hx-get="{% url 'dashboard-work-type-request' %}"
                 hx-trigger="load"
-            ></div>
+            >
+            </div>
         </div>
-
     {% elif chart == "employee_work_info" and "employee_work_info" in charts %}
         <!-- Work Info Table -->
         <div
@@ -110,16 +121,17 @@
                 <h3 class="text-md font-semibold">
                     {% trans "Employee Work Information" %}
                 </h3>
-                <span class="float-end hidden group-hover:block " role="button"
+                <span
+                    class="float-end hidden group-hover:block"
+                    role="button"
                     hx-post="{% url 'dashboard-components-toggle' %}?chart_id=employee_work_info"
-                    hx-target="closest .shadow-card" hx-swap="outerHTML"
+                    hx-target="closest .shadow-card"
+                    hx-swap="outerHTML"
                 >
                     <i class="material-icons fw-lighter fs-5">close</i>
                 </span>
             </div>
-            <div
-                class="flex items-center gap-2 w-full mb-3 flex-wrap sm:flex-nowrap"
-            >
+            <div class="flex items-center gap-2 w-full mb-3 flex-wrap sm:flex-nowrap">
                 <div class="relative w-full">
                     <input
                         type="text"
@@ -130,7 +142,7 @@
                         name="search"
                         placeholder="Search Employee"
                         class="text-color-600 ps-10 p-2 placeholder:text-xs w-full border border-dark-50 rounded-md focus-visible:outline-0 placeholder:text-dark-100 text-sm [transition:.3s] focus:border-primary-600"
-                    />
+                    >
                     <i
                         class="fas fa-search absolute left-3 top-0 bottom-0 m-auto flex items-center opacity-50 text-sm"
                     ></i>
@@ -140,9 +152,9 @@
                 class="overflow-hidden overflow-x-auto"
                 hx-get="{% url 'emp-workinfo-complete' %}"
                 hx-trigger="load"
-            ></div>
+            >
+            </div>
         </div>
-
     {% elif chart == "recruitment_analytics" and "recruitment_analytics" in charts %}
         <!-- Recruitment Analytic Chart -->
         <div
@@ -154,9 +166,12 @@
                     {% trans "Recruitment Analytics" %}
                 </h3>
 
-                <span class="float-end hidden group-hover:block " role="button"
+                <span
+                    class="float-end hidden group-hover:block"
+                    role="button"
                     hx-post="{% url 'dashboard-components-toggle' %}?chart_id=recruitment_analytics"
-                    hx-target="closest .shadow-card" hx-swap="outerHTML"
+                    hx-target="closest .shadow-card"
+                    hx-swap="outerHTML"
                 >
                     <i class="material-icons fw-lighter fs-5">close</i>
                 </span>
@@ -168,7 +183,6 @@
                 <canvas id="recruitmentChart1" class="w-full h-96"></canvas>
             </div>
         </div>
-
     {% elif chart == "department_chart" and "department_chart" in charts %}
         <!-- Department Chart -->
         <div
@@ -178,9 +192,12 @@
             <div class="flex justify-between items-center mb-2">
                 <h3 class="text-md font-semibold">{% trans "Department Chart" %}</h3>
 
-                <span class="float-end hidden group-hover:block " role="button"
+                <span
+                    class="float-end hidden group-hover:block"
+                    role="button"
                     hx-post="{% url 'dashboard-components-toggle' %}?chart_id=department_chart"
-                    hx-target="closest .shadow-card" hx-swap="outerHTML"
+                    hx-target="closest .shadow-card"
+                    hx-swap="outerHTML"
                 >
                     <i class="material-icons fw-lighter fs-5">close</i>
                 </span>
@@ -199,7 +216,6 @@
                 </div>
             </div>
         </div>
-
     {% elif chart == "key_result_status" and "key_result_status" in charts %}
         <!-- Key Result Chart -->
         <div
@@ -211,9 +227,12 @@
                     {% trans "Key Result Status" %}
                 </h3>
 
-                <span class="float-end hidden group-hover:block " role="button"
+                <span
+                    class="float-end hidden group-hover:block"
+                    role="button"
                     hx-post="{% url 'dashboard-components-toggle' %}?chart_id=key_result_status"
-                    hx-target="closest .shadow-card" hx-swap="outerHTML"
+                    hx-target="closest .shadow-card"
+                    hx-swap="outerHTML"
                 >
                     <i class="material-icons fw-lighter fs-5">close</i>
                 </span>
@@ -222,21 +241,23 @@
                 <canvas id="keyResultChart" style="cursor: pointer"></canvas>
             </div>
         </div>
-
     {% elif chart == "attendance_validate" and "attendance_validate" in charts %}
         <!-- Validate Attendance Chart -->
         <div
             class="xl:col-span-6 md:col-span-12 col-span-12 bg-white p-6 rounded-md shadow-card group"
-            id = "attendance_validate"
+            id="attendance_validate"
         >
             <div class="flex justify-between items-center mb-2">
                 <h3 class="text-md font-semibold">
                     {% trans "Attendance To Validate" %}
                 </h3>
 
-                <span class="float-end hidden group-hover:block " role="button"
+                <span
+                    class="float-end hidden group-hover:block"
+                    role="button"
                     hx-post="{% url 'dashboard-components-toggle' %}?chart_id=attendance_validate"
-                    hx-target="closest .shadow-card" hx-swap="outerHTML"
+                    hx-target="closest .shadow-card"
+                    hx-swap="outerHTML"
                 >
                     <i class="material-icons fw-lighter fs-5">close</i>
                 </span>
@@ -245,9 +266,9 @@
                 class="overflow-hidden overflow-x-auto"
                 hx-get="{% url 'dashboard-attendance-validate' %}"
                 hx-trigger="load"
-            ></div>
+            >
+            </div>
         </div>
-
     {% elif chart == "onboarding_candidates" and "onboarding_candidates" in charts %}
         <!-- Onboarding Candidates -->
         <div
@@ -259,9 +280,12 @@
                     {% trans "Candidates Started Onboarding" %}
                 </h3>
 
-                <span class="float-end hidden group-hover:block " role="button"
+                <span
+                    class="float-end hidden group-hover:block"
+                    role="button"
                     hx-post="{% url 'dashboard-components-toggle' %}?chart_id=onboarding_candidates"
-                    hx-target="closest .shadow-card" hx-swap="outerHTML"
+                    hx-target="closest .shadow-card"
+                    hx-swap="outerHTML"
                 >
                     <i class="material-icons fw-lighter fs-5">close</i>
                 </span>
@@ -272,9 +296,9 @@
             <div
                 id="onboardCandidateLegend"
                 class="mt-4 flex justify-center flex-wrap gap-3 text-xs"
-            ></div>
+            >
+            </div>
         </div>
-
     {% elif chart == "hired_candidates" and "hired_candidates" in charts %}
         <!-- Hired Chart -->
         <div
@@ -286,9 +310,12 @@
                     {% trans "Hired Candidates" %}
                 </h3>
 
-                <span class="float-end hidden group-hover:block " role="button"
+                <span
+                    class="float-end hidden group-hover:block"
+                    role="button"
                     hx-post="{% url 'dashboard-components-toggle' %}?chart_id=hired_candidates"
-                    hx-target="closest .shadow-card" hx-swap="outerHTML"
+                    hx-target="closest .shadow-card"
+                    hx-swap="outerHTML"
                 >
                     <i class="material-icons fw-lighter fs-5">close</i>
                 </span>
@@ -299,9 +326,9 @@
             <div
                 id="hiredLegend"
                 class="mt-4 flex justify-center flex-wrap gap-3 text-xs"
-            ></div>
+            >
+            </div>
         </div>
-
     {% elif chart == "asset_request_approve" and "asset_request_approve" in charts %}
         <!-- Asset Request Table -->
         <div
@@ -313,9 +340,12 @@
                     {% trans "Asset Requests To Approve" %}
                 </h3>
 
-                <span class="float-end hidden group-hover:block " role="button"
+                <span
+                    class="float-end hidden group-hover:block"
+                    role="button"
                     hx-post="{% url 'dashboard-components-toggle' %}?chart_id=asset_request_approve"
-                    hx-target="closest .shadow-card" hx-swap="outerHTML"
+                    hx-target="closest .shadow-card"
+                    hx-swap="outerHTML"
                 >
                     <i class="material-icons fw-lighter fs-5">close</i>
                 </span>
@@ -327,7 +357,6 @@
             >
             </div>
         </div>
-
     {% elif chart == "online_employees" and "online_employees" in charts %}
         <!-- Online Employees -->
         <div
@@ -339,9 +368,12 @@
                     {% trans "Online Employees" %}
                 </h3>
 
-                <span class="float-end hidden group-hover:block " role="button"
+                <span
+                    class="float-end hidden group-hover:block"
+                    role="button"
                     hx-post="{% url 'dashboard-components-toggle' %}?chart_id=online_employees"
-                    hx-target="closest .shadow-card" hx-swap="outerHTML"
+                    hx-target="closest .shadow-card"
+                    hx-swap="outerHTML"
                 >
                     <i class="material-icons fw-lighter fs-5">close</i>
                 </span>
@@ -350,9 +382,9 @@
                 class="flex-col items-center justify-center h-[400px]"
                 hx-get="{% url 'not-out-yet' %}"
                 hx-trigger="load"
-            ></div>
+            >
+            </div>
         </div>
-
     {% elif chart == "offline_employees" and "offline_employees" in charts %}
         <!-- Offline Employees -->
         <div
@@ -364,9 +396,12 @@
                     {% trans "Offline Employees" %}
                 </h3>
 
-                <span class="float-end hidden group-hover:block " role="button"
+                <span
+                    class="float-end hidden group-hover:block"
+                    role="button"
                     hx-post="{% url 'dashboard-components-toggle' %}?chart_id=offline_employees"
-                    hx-target="closest .shadow-card" hx-swap="outerHTML"
+                    hx-target="closest .shadow-card"
+                    hx-swap="outerHTML"
                 >
                     <i class="material-icons fw-lighter fs-5">close</i>
                 </span>
@@ -375,9 +410,9 @@
                 class="flex-col items-center justify-center"
                 hx-get="{% url 'not-in-yet' %}"
                 hx-trigger="load"
-            ></div>
+            >
+            </div>
         </div>
-
     {% elif chart == "overtime_approve" and "overtime_approve" in charts %}
         <!-- Overtime Chart -->
         <div
@@ -389,9 +424,12 @@
                     {% trans "Overtime To Approve" %}
                 </h3>
 
-                <span class="float-end hidden group-hover:block " role="button"
+                <span
+                    class="float-end hidden group-hover:block"
+                    role="button"
                     hx-post="{% url 'dashboard-components-toggle' %}?chart_id=overtime_approve"
-                    hx-target="closest .shadow-card" hx-swap="outerHTML"
+                    hx-target="closest .shadow-card"
+                    hx-swap="outerHTML"
                 >
                     <i class="material-icons fw-lighter fs-5">close</i>
                 </span>
@@ -400,9 +438,9 @@
                 class="flex-col items-center justify-center"
                 hx-get="{% url 'dashboard-overtime-approve' %}"
                 hx-trigger="load"
-            ></div>
+            >
+            </div>
         </div>
-
     {% elif chart == "attendance_analytic" and "attendance_analytic" in charts %}
         <!-- Attendance Analytic Chart -->
         <div
@@ -414,9 +452,12 @@
                     {% trans "Attendance Analytic" %}
                 </h3>
 
-                <span class="float-end hidden group-hover:block " role="button"
+                <span
+                    class="float-end hidden group-hover:block"
+                    role="button"
                     hx-post="{% url 'dashboard-components-toggle' %}?chart_id=attendance_analytic"
-                    hx-target="closest .shadow-card" hx-swap="outerHTML"
+                    hx-target="closest .shadow-card"
+                    hx-swap="outerHTML"
                 >
                     <i class="material-icons fw-lighter fs-5">close</i>
                 </span>
@@ -434,8 +475,7 @@
                     <option value="date_range">{% trans "Date range" %}</option>
                 </select>
                 <span id="day_input">
-                    <input type="date" class="oh-input w-40"
-                        id="attendance_month" onchange="changeMonth()" />
+                    <input type="date" class="oh-input w-40" id="attendance_month" onchange="changeMonth()">
                 </span>
             </div>
             <div class="w-full">
@@ -444,7 +484,6 @@
                 </div>
             </div>
         </div>
-
     {% elif chart == "hours_chart" and "hours_chart" in charts %}
         <!-- Hours Chart -->
         <div
@@ -459,10 +498,13 @@
                         class="mb-2 float-end pointer oh-input w-40"
                         id="hourAccountMonth"
                         onchange="dynamicMonth($(this))"
-                    />
-                    <span class="float-end hidden group-hover:block " role="button"
+                    >
+                    <span
+                        class="float-end hidden group-hover:block"
+                        role="button"
                         hx-post="{% url 'dashboard-components-toggle' %}?chart_id=hours_chart"
-                        hx-target="closest .shadow-card" hx-swap="outerHTML"
+                        hx-target="closest .shadow-card"
+                        hx-swap="outerHTML"
                     >
                         <i class="material-icons fw-lighter fs-5">close</i>
                     </span>
@@ -474,7 +516,6 @@
                 </div>
             </div>
         </div>
-
     {% elif chart == "overall_leave_chart" and "overall_leave_chart" in charts %}
         <!-- Overall Leave Chart -->
         <div
@@ -495,9 +536,12 @@
                         <option value="year">{% trans "This Year" %}</option>
                     </select>
 
-                    <span class="float-end hidden group-hover:block " role="button"
+                    <span
+                        class="float-end hidden group-hover:block"
+                        role="button"
                         hx-post="{% url 'dashboard-components-toggle' %}?chart_id=overall_leave_chart"
-                        hx-target="closest .shadow-card" hx-swap="outerHTML"
+                        hx-target="closest .shadow-card"
+                        hx-swap="outerHTML"
                     >
                         <i class="material-icons fw-lighter fs-5">close</i>
                     </span>
@@ -509,7 +553,6 @@
                 </div>
             </div>
         </div>
-
     {% elif chart == "leave_request_approve" and "leave_request_approve" in charts %}
         <!-- Leave Approve Chart -->
         <div
@@ -521,9 +564,12 @@
                     {% trans "Leave Requests To Approve" %}
                 </h3>
 
-                <span class="float-end hidden group-hover:block " role="button"
+                <span
+                    class="float-end hidden group-hover:block"
+                    role="button"
                     hx-post="{% url 'dashboard-components-toggle' %}?chart_id=leave_request_approve"
-                    hx-target="closest .shadow-card" hx-swap="outerHTML"
+                    hx-target="closest .shadow-card"
+                    hx-swap="outerHTML"
                 >
                     <i class="material-icons fw-lighter fs-5">close</i>
                 </span>
@@ -532,7 +578,8 @@
                 class="flex-col items-center justify-center"
                 hx-get="{% url 'leave-request-and-approve' %}"
                 hx-trigger="load, reloadLeaveRequestList from:body"
-            ></div>
+            >
+            </div>
             <script>
                 document.body.addEventListener("reloadLeaveRequestList", function () {
                     document.querySelectorAll(".oh-modal--show").forEach(function (el) {
@@ -541,7 +588,6 @@
                 });
             </script>
         </div>
-
     {% elif chart == "leave_allocation_approve" and "leave_allocation_approve" in charts %}
         <!-- Leave Allocation Approve -->
         <div
@@ -553,9 +599,12 @@
                     {% trans "Leave Allocation Request To Approve" %}
                 </h3>
 
-                <span class="float-end hidden group-hover:block " role="button"
+                <span
+                    class="float-end hidden group-hover:block"
+                    role="button"
                     hx-post="{% url 'dashboard-components-toggle' %}?chart_id=leave_allocation_approve"
-                    hx-target="closest .shadow-card" hx-swap="outerHTML"
+                    hx-target="closest .shadow-card"
+                    hx-swap="outerHTML"
                 >
                     <i class="material-icons fw-lighter fs-5">close</i>
                 </span>
@@ -564,9 +613,9 @@
                 class="flex-col items-center justify-center"
                 hx-get="{% url 'leave-allocation-approve' %}"
                 hx-trigger="load"
-            ></div>
+            >
+            </div>
         </div>
-
     {% elif chart == "feedback_answer" and "feedback_answer" in charts %}
         <!-- Feedback Table -->
         <div
@@ -578,9 +627,12 @@
                     {% trans "Feedback To Answers" %}
                 </h3>
 
-                <span class="float-end hidden group-hover:block " role="button"
+                <span
+                    class="float-end hidden group-hover:block"
+                    role="button"
                     hx-post="{% url 'dashboard-components-toggle' %}?chart_id=feedback_answer"
-                    hx-target="closest .shadow-card" hx-swap="outerHTML"
+                    hx-target="closest .shadow-card"
+                    hx-swap="outerHTML"
                 >
                     <i class="material-icons fw-lighter fs-5">close</i>
                 </span>
@@ -589,9 +641,9 @@
                 class="flex-col items-center justify-center"
                 hx-get="{% url 'dashboard-feedback-answer' %}"
                 hx-trigger="load"
-            ></div>
+            >
+            </div>
         </div>
-
     {% elif chart == "feedback_status" and "feedback_status" in charts %}
         <!-- Feedback Chart -->
         <div
@@ -601,9 +653,12 @@
             <div class="flex justify-between items-center mb-2">
                 <h3 class="text-md font-semibold">{% trans "Feedback Status" %}</h3>
 
-                <span class="float-end hidden group-hover:block " role="button"
+                <span
+                    class="float-end hidden group-hover:block"
+                    role="button"
                     hx-post="{% url 'dashboard-components-toggle' %}?chart_id=feedback_status"
-                    hx-target="closest .shadow-card" hx-swap="outerHTML"
+                    hx-target="closest .shadow-card"
+                    hx-swap="outerHTML"
                 >
                     <i class="material-icons fw-lighter fs-5">close</i>
                 </span>
@@ -615,10 +670,10 @@
                 <div
                     id="feedbackChartLegend"
                     class="mt-4 flex justify-center flex-wrap gap-3 text-xs"
-                ></div>
+                >
+                </div>
             </div>
         </div>
-
     {% elif chart == "objective_status" and "objective_status" in charts %}
         <!-- Objective Chart -->
         <div
@@ -630,9 +685,12 @@
                     {% trans "Objective Status" %}
                 </h3>
 
-                <span class="float-end hidden group-hover:block " role="button"
+                <span
+                    class="float-end hidden group-hover:block"
+                    role="button"
                     hx-post="{% url 'dashboard-components-toggle' %}?chart_id=objective_status"
-                    hx-target="closest .shadow-card" hx-swap="outerHTML"
+                    hx-target="closest .shadow-card"
+                    hx-swap="outerHTML"
                 >
                     <i class="material-icons fw-lighter fs-5">close</i>
                 </span>
@@ -644,17 +702,18 @@
                 <div
                     id="feedbackChartLegend"
                     class="mt-4 flex justify-center flex-wrap gap-3 text-xs"
-                ></div>
+                >
+                </div>
             </div>
         </div>
     {% endif %}
 {% empty %}
-        <div class="oh-wrapper col-span-12" align="center" >
-            <div class="bg-white p-6 rounded-md shadow-card h-full">
-                <div class="flex flex-col items-center justify-center h-full">
-                    <img src="/static/horilla_theme/assets/img/no-records.svg" alt="" width="300" class="mb-4">
-                    <p class="text-[#666] mb-5">{% trans "No charts are available at the moment..." %}</p>
-                </div>
+    <div class="oh-wrapper col-span-12" align="center">
+        <div class="bg-white p-6 rounded-md shadow-card h-full">
+            <div class="flex flex-col items-center justify-center h-full">
+                <img src="/static/horilla_theme/assets/img/no-records.svg" alt="" width="300" class="mb-4">
+                <p class="text-[#666] mb-5">{% trans "No charts are available at the moment..." %}</p>
             </div>
         </div>
+    </div>
 {% endfor %}

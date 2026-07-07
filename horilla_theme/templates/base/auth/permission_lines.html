@@ -7,8 +7,10 @@
                 class="accordion-btn-gp w-full flex justify-between gap-5 md:gap-0 items-center flex-wrap px-4 py-2 bg-primary-100 text-primary-600 text-sm transition-all"
             >
                 <div class="flex flex-wrap items-center gap-2">
-                    <span class="w-6 h-6 bg-primary-600 rounded-full text-white flex items-center justify-center text-xs">
-                        <img src="{{ employee.get_avatar }}" class="w-6 h-6 rounded-full" loading="lazy" />
+                    <span
+                        class="w-6 h-6 bg-primary-600 rounded-full text-white flex items-center justify-center text-xs"
+                    >
+                        <img src="{{ employee.get_avatar }}" class="w-6 h-6 rounded-full" loading="lazy">
                     </span>
                     <span class="font-semibold">{{ employee }}</span>
                     <span class="text-xs mt-1 text-dark-300">
@@ -22,7 +24,11 @@
                 </div>
             </button>
 
-            <div class="panel view-employees accordion-panel-gp max-h-0 overflow-hidden transition-all duration-300 bg-white px-4 text-sm text-gray-700" id="panel{{employee.id}}" data-user-id="{{ employee.id }}">
+            <div
+                class="panel view-employees accordion-panel-gp max-h-0 overflow-hidden transition-all duration-300 bg-white px-4 text-sm text-gray-700"
+                id="panel{{employee.id}}"
+                data-user-id="{{ employee.id }}"
+            >
                 <div class="py-3">
                     <script>
                         $(document).ready(function () {
@@ -36,7 +42,7 @@
             </div>
         </div>
     {% empty %}
-        <div class="oh-wrapper h-full" align="center" >
+        <div class="oh-wrapper h-full" align="center">
             <div class="xl:col-span-4 md:col-span-6 col-span-12 bg-white p-6 rounded-md shadow-card h-[70%]">
                 <div class="flex flex-col items-center justify-center h-full">
                     <img src="/static/horilla_theme/assets/img/no-records.svg" alt="" width="300" class="mb-4">
@@ -47,10 +53,13 @@
     {% endfor %}
 
     {% if employees.has_previous or employees.has_next %}
-        <div
-            class="flex justify-between items-center mt-4 w-full inset-0"
-        >
-            <p class="text-xs text-[#666]">{% trans "Page" %} {{ employees.number }} {% trans "of" %} {{ employees.paginator.num_pages }}</p>
+        <div class="flex justify-between items-center mt-4 w-full inset-0">
+            <p class="text-xs text-[#666]">
+                {% trans "Page" %}
+                {{ employees.number }}
+                {% trans "of" %}
+                {{ employees.paginator.num_pages }}
+            </p>
             <div class="flex gap-3 text-[#666] items-center">
                 {% if employees.has_previous %}
                     <button
@@ -70,7 +79,7 @@
                         hx-get="{% url 'permission-search' %}?{{pd}}"
                         hx-target="#permissionContainer"
                         min="1"
-                    /> / {{ employees.paginator.num_pages }}
+                    > / {{ employees.paginator.num_pages }}
                 </div>
                 {% if employees.has_next %}
                     <button
@@ -86,161 +95,158 @@
     {% endif %}
 </div>
 <script>
-  document.body.addEventListener("htmx:afterSwap", function () {
-    updateBadge();
-  });
-
-  var timeout;
-  function selectAllPermissions(source) {
-    const isChecked = $(source).is(':checked');
-    const table = $(source).closest('table'); // or your specific container
-    table.find('tbody input.row-permission').prop('checked', isChecked).trigger('change');
-  }
-
-  function updatePermissions(panelElem) {
-    var userId = panelElem.data("user-id");
-    var permissions = [];
-
-    panelElem.find("[name=permissions]").each(function () {
-      permissions.push({
-        codename: $(this).val(),
-        checked: $(this).is(":checked")
-      });
+    document.body.addEventListener("htmx:afterSwap", function () {
+      updateBadge();
     });
 
-    $.ajax({
-      type: "post",
-      url: '{% url "update-user-permission" %}',
-      contentType: "application/json",
-      data: JSON.stringify({
-        permissions: permissions,
-        employee: userId,
-      }),
-      headers: {
-        "X-CSRFToken": getCookie("csrftoken"),
-      },
-      success: function (response) {
-        reloadMessage()
-      },
-      error: function () {
-        reloadMessage()
-      }
-    });
-  }
-
-  $(document).ready(function () {
-    updateBadge();
     var timeout;
-    $(".view-employees [name=permissions]").on("change", function (e) {
-      e.preventDefault();
-      clearTimeout(timeout);
+    function selectAllPermissions(source) {
+      const isChecked = $(source).is(':checked');
+      const table = $(source).closest('table'); // or your specific container
+      table.find('tbody input.row-permission').prop('checked', isChecked).trigger('change');
+    }
 
-      const panel = $(this).closest(".panel.view-employees");
+    function updatePermissions(panelElem) {
+      var userId = panelElem.data("user-id");
+      var permissions = [];
 
-      timeout = setTimeout(() => {
-        updateBadge();
-        updatePermissions(panel);  // ✅ pass correct panel
-      }, 100);
+      panelElem.find("[name=permissions]").each(function () {
+        permissions.push({
+          codename: $(this).val(),
+          checked: $(this).is(":checked")
+        });
+      });
+
+      $.ajax({
+        type: "post",
+        url: '{% url "update-user-permission" %}',
+        contentType: "application/json",
+        data: JSON.stringify({
+          permissions: permissions,
+          employee: userId,
+        }),
+        headers: {
+          "X-CSRFToken": getCookie("csrftoken"),
+        },
+        success: function (response) {
+          reloadMessage()
+        },
+        error: function () {
+          reloadMessage()
+        }
+      });
+    }
+
+    $(document).ready(function () {
+      updateBadge();
+      var timeout;
+      $(".view-employees [name=permissions]").on("change", function (e) {
+        e.preventDefault();
+        clearTimeout(timeout);
+
+        const panel = $(this).closest(".panel.view-employees");
+
+        timeout = setTimeout(() => {
+          updateBadge();
+          updatePermissions(panel);  // ✅ pass correct panel
+        }, 100);
+      });
     });
-  });
 
 
-  function updateBadge() {
-    // Loop through each employee panel
-    $(".accordion-wrapper").each(function () {
-      const wrapper = $(this);
+    function updateBadge() {
+      // Loop through each employee panel
+      $(".accordion-wrapper").each(function () {
+        const wrapper = $(this);
 
-      // For each permission panel
-      wrapper.find(".panel").each(function () {
-        const panel = $(this);
-        const badge = panel.prev(".inner-accordion-toggle").find(".permission-badge");
-        const checkedCount = panel.find("[name=permissions]:checked").length;
+        // For each permission panel
+        wrapper.find(".panel").each(function () {
+          const panel = $(this);
+          const badge = panel.prev(".inner-accordion-toggle").find(".permission-badge");
+          const checkedCount = panel.find("[name=permissions]:checked").length;
 
-        badge.text(checkedCount);
-        badge.attr("title", checkedCount + " Permissions");
+          badge.text(checkedCount);
+          badge.attr("title", checkedCount + " Permissions");
+        });
+
+        // Update row-permission checkboxes (4 perms = checked)
+        wrapper.find("tbody tr").each(function () {
+          const row = $(this);
+          const rowPermissionCheckbox = row.find(".row-permission");
+          const checkedCount = row.find("[name=permissions]:checked").length;
+
+          rowPermissionCheckbox.prop("checked", checkedCount === 4);
+        });
+
+        // Update "Select All" checkboxes
+        wrapper.find("table").each(function () {
+          const table = $(this);
+          const allCheckboxes = table.find("tbody [name=permissions]");
+          const checkedCheckboxes = table.find("tbody [name=permissions]:checked");
+          const selectAll = table.find(".row-permission__select-all");
+
+          selectAll.prop("checked", allCheckboxes.length === checkedCheckboxes.length);
+        });
       });
-
-      // Update row-permission checkboxes (4 perms = checked)
-      wrapper.find("tbody tr").each(function () {
-        const row = $(this);
-        const rowPermissionCheckbox = row.find(".row-permission");
-        const checkedCount = row.find("[name=permissions]:checked").length;
-
-        rowPermissionCheckbox.prop("checked", checkedCount === 4);
-      });
-
-      // Update "Select All" checkboxes
-      wrapper.find("table").each(function () {
-        const table = $(this);
-        const allCheckboxes = table.find("tbody [name=permissions]");
-        const checkedCheckboxes = table.find("tbody [name=permissions]:checked");
-        const selectAll = table.find(".row-permission__select-all");
-
-        selectAll.prop("checked", allCheckboxes.length === checkedCheckboxes.length);
-      });
-    });
-  }
-
-
-
+    }
 </script>
 
 <!-- ACCORDION -->
 <script>
-  // Outer accordion logic (no change needed)
-  document.querySelectorAll('.accordion-btn-gp').forEach((btn) => {
-      btn.addEventListener('click', () => {
-          const panel = btn.nextElementSibling;
-          const icon = btn.querySelector('.icon');
-          const isOpen = panel.style.maxHeight && panel.style.maxHeight !== "0px";
+    // Outer accordion logic (no change needed)
+    document.querySelectorAll('.accordion-btn-gp').forEach((btn) => {
+        btn.addEventListener('click', () => {
+            const panel = btn.nextElementSibling;
+            const icon = btn.querySelector('.icon');
+            const isOpen = panel.style.maxHeight && panel.style.maxHeight !== "0px";
 
-          document.querySelectorAll('.accordion-panel-gp').forEach(p => {
-              if (p !== panel) {
-                  p.style.maxHeight = null;
-                  const i = p.previousElementSibling.querySelector('.icon');
-                  if (i) i.textContent = '+';
-                  p.previousElementSibling.classList.remove("bg-primary-600", "text-white");
-                  p.previousElementSibling.classList.add("bg-primary-100", "text-primary-600");
-              }
-          });
+            document.querySelectorAll('.accordion-panel-gp').forEach(p => {
+                if (p !== panel) {
+                    p.style.maxHeight = null;
+                    const i = p.previousElementSibling.querySelector('.icon');
+                    if (i) i.textContent = '+';
+                    p.previousElementSibling.classList.remove("bg-primary-600", "text-white");
+                    p.previousElementSibling.classList.add("bg-primary-100", "text-primary-600");
+                }
+            });
 
-          if (!isOpen) {
-              panel.style.maxHeight = panel.scrollHeight + 'px';
-              icon.textContent = '−';
-              btn.classList.add("bg-primary-100", "text-primary-600");
-          } else {
-              panel.style.maxHeight = null;
-              icon.textContent = '+';
-              btn.classList.remove("bg-primary-600", "text-white");
-              btn.classList.add("bg-primary-100", "text-primary-600");
-          }
-      });
-  });
+            if (!isOpen) {
+                panel.style.maxHeight = panel.scrollHeight + 'px';
+                icon.textContent = '−';
+                btn.classList.add("bg-primary-100", "text-primary-600");
+            } else {
+                panel.style.maxHeight = null;
+                icon.textContent = '+';
+                btn.classList.remove("bg-primary-600", "text-white");
+                btn.classList.add("bg-primary-100", "text-primary-600");
+            }
+        });
+    });
 
-  // Inner accordion logic (supports multiple)
-  document.addEventListener("DOMContentLoaded", () => {
-      document.querySelectorAll('.inner-accordion-toggle').forEach((toggle) => {
-          const content = toggle.nextElementSibling;
+    // Inner accordion logic (supports multiple)
+    document.addEventListener("DOMContentLoaded", () => {
+        document.querySelectorAll('.inner-accordion-toggle').forEach((toggle) => {
+            const content = toggle.nextElementSibling;
 
-          toggle.addEventListener("click", () => {
-              const isOpen = content.style.maxHeight && content.style.maxHeight !== "0px";
+            toggle.addEventListener("click", () => {
+                const isOpen = content.style.maxHeight && content.style.maxHeight !== "0px";
 
-              if (isOpen) {
-                  content.style.maxHeight = "0";
-                  content.style.opacity = "0";
-              } else {
-                  content.style.maxHeight = content.scrollHeight + "px";
-                  content.style.opacity = "1";
-              }
+                if (isOpen) {
+                    content.style.maxHeight = "0";
+                    content.style.opacity = "0";
+                } else {
+                    content.style.maxHeight = content.scrollHeight + "px";
+                    content.style.opacity = "1";
+                }
 
-              // Adjust parent height (if inside outer accordion)
-              const outerPanel = toggle.closest('.accordion-panel-gp');
-              if (outerPanel) {
-                  setTimeout(() => {
-                      outerPanel.style.maxHeight = outerPanel.scrollHeight + "px";
-                  }, 250);
-              }
-          });
-      });
-  });
+                // Adjust parent height (if inside outer accordion)
+                const outerPanel = toggle.closest('.accordion-panel-gp');
+                if (outerPanel) {
+                    setTimeout(() => {
+                        outerPanel.style.maxHeight = outerPanel.scrollHeight + "px";
+                    }, 250);
+                }
+            });
+        });
+    });
 </script>

@@ -9,10 +9,12 @@
             data-toggle="oh-modal-toggle"
             data-target="#genericModal"
         {% endif %}
-        class="w-24 px-4 py-2 bg-primary-600 text-white rounded-md text-xs flex items-center justify-center gap-2
-               transition duration-300 {% if is_locked %}opacity-60 pointer-events-none{% else %}hover:bg-primary-800{% endif %}">
-        <img src="{% static 'horilla_theme/assets/img/icons/edit.svg' %}" width="13"
-             class="filter brightness-0 invert" />
+        class="
+            w-24 px-4 py-2 bg-primary-600 text-white rounded-md text-xs flex items-center justify-center gap-2
+            transition duration-300 {% if is_locked %}opacity-60 pointer-events-none{% else %}hover:bg-primary-800{% endif %}
+        "
+    >
+        <img src="{% static 'horilla_theme/assets/img/icons/edit.svg' %}" width="13" class="filter brightness-0 invert">
         {% trans "Edit" %}
     </a>
 
@@ -23,22 +25,24 @@
             hx-post="{% url 'shift-request-delete' instance.id %}?instances_ids={{ request.session.ordered_ids_shiftrequest }}"
             hx-target="#genericModalBody"
         {% endif %}
-        class="w-24 px-4 py-2 bg-white rounded-md text-xs flex items-center justify-center gap-2 border
-               transition duration-300
-               {% if is_locked %}
-                    opacity-60 pointer-events-none border-primary-500
-               {% else %}
-                    border-primary-500 hover:border-primary-600
-               {% endif %}">
-        <img src="{% static 'horilla_theme/assets/img/icons/trash.svg' %}" width="16" class="mt-[-1px]" />
+        class="
+            w-24 px-4 py-2 bg-white rounded-md text-xs flex items-center justify-center gap-2 border
+            transition duration-300
+            {% if is_locked %}
+            opacity-60 pointer-events-none border-primary-500
+            {% else %}
+            border-primary-500 hover:border-primary-600
+            {% endif %}
+        "
+    >
+        <img src="{% static 'horilla_theme/assets/img/icons/trash.svg' %}" width="16" class="mt-[-1px]">
         {% trans "Delete" %}
     </a>
 {% endwith %}
 
-
 {% if request.GET.deleted %}
-<script>
-    $("#reloadMessagesButton").click();
-    $(".reload-record").click();
-</script>
+    <script>
+        $("#reloadMessagesButton").click();
+        $(".reload-record").click();
+    </script>
 {% endif %}

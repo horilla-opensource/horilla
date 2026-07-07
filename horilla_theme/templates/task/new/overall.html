@@ -20,154 +20,156 @@
         </div>
     </div>
 
-<div
-    class="oh-modal"
-    id="TaskModal"
-    role="dialog"
-    aria-labelledby="TaskModal"
-    aria-hidden="true"
->
     <div
-        class="oh-modal__dialog"
-        style="max-width: 550px"
-        id="TaskFormTarget"
-    ></div>
-</div>
-
-<div
-    class="oh-modal"
-    id="TaskUpdateModal"
-    role="dialog"
-    aria-labelledby="TaskUpdateModal"
-    aria-hidden="true"
->
-    <div
-        class="oh-modal__dialog"
-        style="max-width: 550px"
-        id="TaskUpdateTarget"
-    ></div>
-</div>
-
-<div
-    class="oh-modal"
-    id="ProjectStageModal"
-    role="dialog"
-    aria-labelledby="TaskTimesheetModal"
-    aria-hidden="true"
->
-    <div
-        class="oh-modal__dialog"
-        style="max-width: 550px"
-        id="ProjectStageFormTarget"
-    ></div>
-</div>
-
-<div
-    class="oh-modal"
-    id="TaskTimesheetModal"
-    role="dialog"
-    aria-labelledby="TaskTimesheetModal"
-    aria-hidden="true"
->
-    <div
-        class="oh-modal__dialog"
-        style="max-width: 1350px"
-        id="TaskTimesheetTarget"
-    ></div>
-</div>
-
-<div
-    class="oh-modal {{request.GET.active}}"
-    id="TimesheetUpdateModal"
-    role="dialog"
-    aria-labelledby="TaskUpdateModal"
-    aria-hidden="true"
->
-    <div
-        class="oh-modal__dialog"
-        style="max-width: 550px"
-        id="TimesheetUpdateTarget"
-    ></div>
-</div>
-
-<div
-    class="oh-modal"
-    id="addTimesheetModal"
-    role="dialog"
-    aria-labelledby="addTimesheetModal"
-    aria-hidden="true"
-    style="z-index: 1022"
->
-    <div class="oh-modal__dialog" id="addTimesheetModalBody">
-        <!-- Modal hx content goes here -->
+        class="oh-modal"
+        id="TaskModal"
+        role="dialog"
+        aria-labelledby="TaskModal"
+        aria-hidden="true"
+    >
+        <div
+            class="oh-modal__dialog"
+            style="max-width: 550px"
+            id="TaskFormTarget"
+        >
+        </div>
     </div>
-</div>
 
-<script>
+    <div
+        class="oh-modal"
+        id="TaskUpdateModal"
+        role="dialog"
+        aria-labelledby="TaskUpdateModal"
+        aria-hidden="true"
+    >
+        <div
+            class="oh-modal__dialog"
+            style="max-width: 550px"
+            id="TaskUpdateTarget"
+        >
+        </div>
+    </div>
 
-    // list grid show hide
+    <div
+        class="oh-modal"
+        id="ProjectStageModal"
+        role="dialog"
+        aria-labelledby="TaskTimesheetModal"
+        aria-hidden="true"
+    >
+        <div
+            class="oh-modal__dialog"
+            style="max-width: 550px"
+            id="ProjectStageFormTarget"
+        >
+        </div>
+    </div>
 
-    const tabs = document.querySelectorAll(".tab-btn");
-    const views = {
-        listBtn: document.getElementById("listView"),
-        gridBtn: document.getElementById("gridView"),
-    };
+    <div
+        class="oh-modal"
+        id="TaskTimesheetModal"
+        role="dialog"
+        aria-labelledby="TaskTimesheetModal"
+        aria-hidden="true"
+    >
+        <div
+            class="oh-modal__dialog"
+            style="max-width: 1350px"
+            id="TaskTimesheetTarget"
+        >
+        </div>
+    </div>
 
-    tabs.forEach((tab) => {
-        tab.addEventListener("click", () => {
-            // Remove active class from all tabs
-            tabs.forEach((btn) => btn.classList.remove("border-primary-600"));
+    <div
+        class="oh-modal {{request.GET.active}}"
+        id="TimesheetUpdateModal"
+        role="dialog"
+        aria-labelledby="TaskUpdateModal"
+        aria-hidden="true"
+    >
+        <div
+            class="oh-modal__dialog"
+            style="max-width: 550px"
+            id="TimesheetUpdateTarget"
+        >
+        </div>
+    </div>
 
-            // Add active to the clicked one
-            tab.classList.add("border-primary-600");
+    <div
+        class="oh-modal"
+        id="addTimesheetModal"
+        role="dialog"
+        aria-labelledby="addTimesheetModal"
+        aria-hidden="true"
+        style="z-index: 1022"
+    >
+        <div class="oh-modal__dialog" id="addTimesheetModalBody">
+            <!-- Modal hx content goes here -->
+        </div>
+    </div>
 
-            // Show related view
-            for (const key in views) {
-                views[key].classList.add("hidden");
-            }
-            views[tab.id].classList.remove("hidden");
-        });
-    });
+    <script>
+        // list grid show hide
 
-    // ACCORDION
+        const tabs = document.querySelectorAll(".tab-btn");
+        const views = {
+            listBtn: document.getElementById("listView"),
+            gridBtn: document.getElementById("gridView"),
+        };
 
-    document.querySelectorAll(".accordion-btn").forEach((btn) => {
-        btn.addEventListener("click", () => {
-            const panel = btn.nextElementSibling;
-            const icon = btn.querySelector(".icon");
-            const isOpen =
-                panel.style.maxHeight && panel.style.maxHeight !== "0px";
+        tabs.forEach((tab) => {
+            tab.addEventListener("click", () => {
+                // Remove active class from all tabs
+                tabs.forEach((btn) => btn.classList.remove("border-primary-600"));
 
-            // Collapse all others (optional — comment this block if you want multiple open)
-            document.querySelectorAll(".accordion-panel").forEach((p) => {
-                p.style.maxHeight = null;
-                p.previousElementSibling.querySelector(".icon").textContent =
-                    "+";
-                p.previousElementSibling.classList.remove(
-                    "bg-primary-600",
-                    "text-white"
-                );
-                p.previousElementSibling.classList.add(
-                    "bg-primary-100",
-                    "text-primary-600"
-                );
+                // Add active to the clicked one
+                tab.classList.add("border-primary-600");
+
+                // Show related view
+                for (const key in views) {
+                    views[key].classList.add("hidden");
+                }
+                views[tab.id].classList.remove("hidden");
             });
-
-            // Toggle current
-            if (!isOpen) {
-                panel.style.maxHeight = panel.scrollHeight + "px";
-                icon.textContent = "−";
-                btn.classList.remove("bg-primary-100", "text-primary-600");
-                btn.classList.add("bg-primary-100", "text-primary-600");
-            } else {
-                panel.style.maxHeight = null;
-                icon.textContent = "+";
-                btn.classList.remove("bg-primary-600", "text-white");
-                btn.classList.add("bg-primary-100", "text-primary-600");
-            }
         });
-    });
 
-</script>
+        // ACCORDION
 
+        document.querySelectorAll(".accordion-btn").forEach((btn) => {
+            btn.addEventListener("click", () => {
+                const panel = btn.nextElementSibling;
+                const icon = btn.querySelector(".icon");
+                const isOpen =
+                    panel.style.maxHeight && panel.style.maxHeight !== "0px";
+
+                // Collapse all others (optional — comment this block if you want multiple open)
+                document.querySelectorAll(".accordion-panel").forEach((p) => {
+                    p.style.maxHeight = null;
+                    p.previousElementSibling.querySelector(".icon").textContent =
+                        "+";
+                    p.previousElementSibling.classList.remove(
+                        "bg-primary-600",
+                        "text-white"
+                    );
+                    p.previousElementSibling.classList.add(
+                        "bg-primary-100",
+                        "text-primary-600"
+                    );
+                });
+
+                // Toggle current
+                if (!isOpen) {
+                    panel.style.maxHeight = panel.scrollHeight + "px";
+                    icon.textContent = "−";
+                    btn.classList.remove("bg-primary-100", "text-primary-600");
+                    btn.classList.add("bg-primary-100", "text-primary-600");
+                } else {
+                    panel.style.maxHeight = null;
+                    icon.textContent = "+";
+                    btn.classList.remove("bg-primary-600", "text-white");
+                    btn.classList.add("bg-primary-100", "text-primary-600");
+                }
+            });
+        });
+    </script>
 {% endblock content %}

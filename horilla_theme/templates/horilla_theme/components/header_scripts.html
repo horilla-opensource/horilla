@@ -1,4 +1,5 @@
-{% load static %} {% load horillafilters %}
+{% load static %}
+{% load horillafilters %}
 {% get_company as theme_obj %}
 <script>
     document.addEventListener("DOMContentLoaded", function () {
@@ -33,7 +34,6 @@
     });
     });
 </script>
-
 
 <script>
     window.CURRENT_LANGUAGE = "{{ LANGUAGE_CODE }}";

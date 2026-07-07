@@ -1,35 +1,35 @@
 {% load i18n %}
 <div class="oh-btn-group">
-	{% if perms.payroll.change_deduction %}
-		<a
-			class="oh-btn oh-btn--light-bkg"
-			href="#"
-			hx-get="{% url 'update-deduction' instance.id %}"
-			hx-target="#listContainer"
-			hx-swap="innerHTML"
-			title="{% trans 'Edit' %}"
-		>
-			<ion-icon
-				name="create-outline"
-				role="img"
-				class="md hydrated"
-			></ion-icon>
-		</a>
-	{% endif %}
-	{% if perms.payroll.delete_deduction %}
-		<a
-			class="oh-btn oh-btn--light-bkg oh-btn--danger-outline"
-			hx-get="{% url 'generic-delete' %}?model=payroll.Deduction&pk={{instance.id}}"
-			hx-target="#deleteConfirmationBody"
-			data-toggle="oh-modal-toggle"
-			data-target="#deleteConfirmation"
-			title="{% trans 'Delete' %}"
-		>
-			<ion-icon
-				name="trash-outline"
-				role="img"
-				class="md hydrated"
-			></ion-icon>
-		</a>
-	{% endif %}
+    {% if perms.payroll.change_deduction %}
+        <a
+            class="oh-btn oh-btn--light-bkg"
+            href="#"
+            hx-get="{% url 'update-deduction' instance.id %}"
+            hx-target="#listContainer"
+            hx-swap="innerHTML"
+            title="{% trans 'Edit' %}"
+        >
+            <ion-icon
+                name="create-outline"
+                role="img"
+                class="md hydrated"
+            ></ion-icon>
+        </a>
+    {% endif %}
+    {% if perms.payroll.delete_deduction %}
+        <a
+            class="oh-btn oh-btn--light-bkg oh-btn--danger-outline"
+            hx-get="{% url 'generic-delete' %}?model=payroll.Deduction&pk={{instance.id}}"
+            hx-target="#deleteConfirmationBody"
+            data-toggle="oh-modal-toggle"
+            data-target="#deleteConfirmation"
+            title="{% trans 'Delete' %}"
+        >
+            <ion-icon
+                name="trash-outline"
+                role="img"
+                class="md hydrated"
+            ></ion-icon>
+        </a>
+    {% endif %}
 </div>

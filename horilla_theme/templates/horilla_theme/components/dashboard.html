@@ -5,178 +5,183 @@
 <!-- Stats Cards -->
 
 <style>
-	#pending .heightContainer {
-		max-height: 310px;
-	}
-	#offlineEmployees .heightContainer {
-		max-height: 300px;
-	}
-	#onlineEmployees .heightContainer {
-		max-height: 300px;
-	}
-	.oh-empty {
-		height: 300px;
-	}
+    #pending .heightContainer {
+        max-height: 310px;
+    }
+    #offlineEmployees .heightContainer {
+        max-height: 300px;
+    }
+    #onlineEmployees .heightContainer {
+        max-height: 300px;
+    }
+    .oh-empty {
+        height: 300px;
+    }
 </style>
 
 <div class="grid grid-cols-1 xl:grid-cols-4 md:grid-cols-2 gap-4 mb-4">
-	{% if perms.employee.view_employee %}
-		{% if "recruitment"|app_installed %}
-			<div class="bg-white p-6 rounded-md shadow-card group relative">
-				<div class="flex items-center gap-4">
-					<div class="bg-[#1cba5121] p-3 rounded-md">
-						<img
-							src="/static/horilla_theme/assets/img/icons/add-user.svg"
-							width="20"
-						/>
-					</div>
-					<a
-						href="{% url 'candidate-view' %}?joining_date={{current_date}}"
-						style="text-decoration: none"
-					>
-						<div>
-							<p class="text-sm">{% trans "Todays's New Joiners" %}</p>
-							<div class="flex items-center gap-2">
-								<p
-									class="text-xl font-bold text-secondary-900"
-									hx-get="{% url 'joining-today-count' %}"
-									hx-trigger="load"
-								>0</p>
-							</div>
-						</div>
-					</a>
-				</div>
-			</div>
-		{% endif %}
-		{% if "leave"|app_installed %}
-			<div class="bg-white p-6 rounded-md shadow-card group relative">
-				<div class="flex items-center gap-4">
-					<div class="bg-[#b71db01f] p-3 rounded-md">
-						<img
-							src="/static/horilla_theme/assets/img/icons/absent.svg"
-							width="20"
-						/>
-					</div>
-					<a
-						href="{% url 'request-view' %}?from_date={{current_date}}&to_date={{current_date}}"
-						style="text-decoration: none"
-					>
-						<div>
-							<p class="text-sm">{% trans "Leave on today" %}</p>
-							<div class="flex items-center gap-2">
-								<p class="text-xl font-bold text-secondary-900"
-									hx-get="{% url 'leave-today-count' %}"
-									hx-trigger="load"
-								>0</p>
-							</div>
-						</div>
-					</a>
-				</div>
-			</div>
-		{% endif %}
-		{% if "recruitment"|app_installed %}
-			<div class="bg-white p-6 rounded-md shadow-card group relative">
-				<div class="flex items-center gap-4">
-					<div class="bg-[#ea7f2f2e] p-3 rounded-md">
-						<img
-							src="/static/horilla_theme/assets/img/icons/joining.svg"
-							width="20"
-						/>
-					</div>
-					<a
-						href="{% url 'candidate-view' %}?scheduled_from={{first_day_of_week}}&scheduled_till={{last_day_of_week}}"
-						style="text-decoration: none"
-					>
-						<div>
-							<p class="text-sm">{% trans "Joining this week" %}</p>
-							<div class="flex items-center gap-2">
-								<p
-									class="text-xl font-bold text-secondary-900"
-									hx-get="{% url 'joining-week-count' %}"
-									hx-trigger="load"
-								>0</p>
-							</div>
-						</div>
-					</a>
-				</div>
-			</div>
-		{% endif %}
-		<div class="bg-white p-6 rounded-md shadow-card group relative">
-			<div class="flex items-center gap-4">
-				<div class="bg-[#d821491c] p-3 rounded-md">
-					<img
-						src="/static/horilla_theme/assets/img/icons/strenth.svg"
-						width="20"
-					/>
-				</div>
-				<a href="{% url 'employee-view' %}" style="text-decoration: none">
-					<div>
-						<p class="text-sm">{% trans "Total Strength" %}</p>
-						<div class="flex items-center gap-2">
-							<p class="text-xl font-bold text-secondary-900">
-								{{total_employees|default:0}}
-							</p>
-						</div>
-					</div>
-				</a>
-			</div>
-		</div>
-	{% endif %}
+    {% if perms.employee.view_employee %}
+        {% if "recruitment"|app_installed %}
+            <div class="bg-white p-6 rounded-md shadow-card group relative">
+                <div class="flex items-center gap-4">
+                    <div class="bg-[#1cba5121] p-3 rounded-md">
+                        <img
+                            src="/static/horilla_theme/assets/img/icons/add-user.svg"
+                            width="20"
+                        >
+                    </div>
+                    <a
+                        href="{% url 'candidate-view' %}?joining_date={{current_date}}"
+                        style="text-decoration: none"
+                    >
+                        <div>
+                            <p class="text-sm">{% trans "Todays's New Joiners" %}</p>
+                            <div class="flex items-center gap-2">
+                                <p
+                                    class="text-xl font-bold text-secondary-900"
+                                    hx-get="{% url 'joining-today-count' %}"
+                                    hx-trigger="load"
+                                >
+                                    0
+                                </p>
+                            </div>
+                        </div>
+                    </a>
+                </div>
+            </div>
+        {% endif %}
+        {% if "leave"|app_installed %}
+            <div class="bg-white p-6 rounded-md shadow-card group relative">
+                <div class="flex items-center gap-4">
+                    <div class="bg-[#b71db01f] p-3 rounded-md">
+                        <img
+                            src="/static/horilla_theme/assets/img/icons/absent.svg"
+                            width="20"
+                        >
+                    </div>
+                    <a
+                        href="{% url 'request-view' %}?from_date={{current_date}}&to_date={{current_date}}"
+                        style="text-decoration: none"
+                    >
+                        <div>
+                            <p class="text-sm">{% trans "Leave on today" %}</p>
+                            <div class="flex items-center gap-2">
+                                <p
+                                    class="text-xl font-bold text-secondary-900"
+                                    hx-get="{% url 'leave-today-count' %}"
+                                    hx-trigger="load"
+                                >
+                                    0
+                                </p>
+                            </div>
+                        </div>
+                    </a>
+                </div>
+            </div>
+        {% endif %}
+        {% if "recruitment"|app_installed %}
+            <div class="bg-white p-6 rounded-md shadow-card group relative">
+                <div class="flex items-center gap-4">
+                    <div class="bg-[#ea7f2f2e] p-3 rounded-md">
+                        <img
+                            src="/static/horilla_theme/assets/img/icons/joining.svg"
+                            width="20"
+                        >
+                    </div>
+                    <a
+                        href="{% url 'candidate-view' %}?scheduled_from={{first_day_of_week}}&scheduled_till={{last_day_of_week}}"
+                        style="text-decoration: none"
+                    >
+                        <div>
+                            <p class="text-sm">{% trans "Joining this week" %}</p>
+                            <div class="flex items-center gap-2">
+                                <p
+                                    class="text-xl font-bold text-secondary-900"
+                                    hx-get="{% url 'joining-week-count' %}"
+                                    hx-trigger="load"
+                                >
+                                    0
+                                </p>
+                            </div>
+                        </div>
+                    </a>
+                </div>
+            </div>
+        {% endif %}
+        <div class="bg-white p-6 rounded-md shadow-card group relative">
+            <div class="flex items-center gap-4">
+                <div class="bg-[#d821491c] p-3 rounded-md">
+                    <img
+                        src="/static/horilla_theme/assets/img/icons/strenth.svg"
+                        width="20"
+                    >
+                </div>
+                <a href="{% url 'employee-view' %}" style="text-decoration: none">
+                    <div>
+                        <p class="text-sm">{% trans "Total Strength" %}</p>
+                        <div class="flex items-center gap-2">
+                            <p class="text-xl font-bold text-secondary-900">
+                                {{ total_employees|default:0 }}
+                            </p>
+                        </div>
+                    </div>
+                </a>
+            </div>
+        </div>
+    {% endif %}
 </div>
 
 <div class="flex flex-col md:flex-row-reverse gap-4">
-	<div class="w-full md:w-3/12 h-[calc(100vh_-_250px)] overflow-auto">
-		<div
-			class="xl:col-span-3 md:col-span-12 col-span-12 bg-white p-6 rounded-md shadow-card group mb-3"
-		>
-			<div class="flex justify-between items-center mb-3">
-				<h3 class="text-md font-semibold">{% trans "Announcements" %}</h3>
-				{% if perms.base.add_announcement %}
-					<button
-						class="w-4 h-4"
-						id="addAnnouncement"
-						hx-get="{% url 'create-announcement' %}"
-						hx-target="#objectCreateModalTarget"
-						hx-swap="innerHTML"
-						data-toggle="oh-modal-toggle"
-						data-target="#objectCreateModal"
-						title="{% trans 'Create Announcement' %}"
-					>
-						<img
-							src="/static/horilla_theme/assets/img/icons/more.svg"
-							alt=""
-						/>
-					</button>
-				{% endif %}
-			</div>
-			<div
-				class="flex gap-3 items-center text-sm font-medium py-1"
-				hx-get="{% url 'announcement-list' %}"
-				hx-trigger="load"
-			></div>
-		</div>
+    <div class="w-full md:w-3/12 h-[calc(100vh_-_250px)] overflow-auto">
+        <div class="xl:col-span-3 md:col-span-12 col-span-12 bg-white p-6 rounded-md shadow-card group mb-3">
+            <div class="flex justify-between items-center mb-3">
+                <h3 class="text-md font-semibold">{% trans "Announcements" %}</h3>
+                {% if perms.base.add_announcement %}
+                    <button
+                        class="w-4 h-4"
+                        id="addAnnouncement"
+                        hx-get="{% url 'create-announcement' %}"
+                        hx-target="#objectCreateModalTarget"
+                        hx-swap="innerHTML"
+                        data-toggle="oh-modal-toggle"
+                        data-target="#objectCreateModal"
+                        title="{% trans 'Create Announcement' %}"
+                    >
+                        <img
+                            src="/static/horilla_theme/assets/img/icons/more.svg"
+                            alt=""
+                        >
+                    </button>
+                {% endif %}
+            </div>
+            <div
+                class="flex gap-3 items-center text-sm font-medium py-1"
+                hx-get="{% url 'announcement-list' %}"
+                hx-trigger="load"
+            >
+            </div>
+        </div>
 
-		{% if "leave"|app_installed %}
-			{% if perms.leave.view_leaverequest or request.user|is_reportingmanager %}
-				<div
-					class="xl:col-span-6 md:col-span-12 col-span-12 bg-white rounded-md shadow-card group"
-				>
-					<div class="flex justify-between items-center mb-2 p-6 pb-0">
-						<h3 class="text-md font-semibold">{% trans "On Leave" %}</h3>
-					</div>
-					<div
-						class="flex-col items-center justify-center"
-						hx-get="{% url 'employee-leave' %}"
-						hx-trigger="load"
-					></div>
-				</div>
-			{% endif %}
-		{% endif %}
-	</div>
+        {% if "leave"|app_installed %}
+            {% if perms.leave.view_leaverequest or request.user|is_reportingmanager %}
+                <div class="xl:col-span-6 md:col-span-12 col-span-12 bg-white rounded-md shadow-card group">
+                    <div class="flex justify-between items-center mb-2 p-6 pb-0">
+                        <h3 class="text-md font-semibold">{% trans "On Leave" %}</h3>
+                    </div>
+                    <div
+                        class="flex-col items-center justify-center"
+                        hx-get="{% url 'employee-leave' %}"
+                        hx-trigger="load"
+                    >
+                    </div>
+                </div>
+            {% endif %}
+        {% endif %}
+    </div>
 
-	<div class="w-full md:w-9/12 grid grid-cols-12 gap-4 mb-4 h-[calc(100vh_-_250px)] overflow-auto" id="tileContainer">
-		{% include "horilla_theme/components/dashboard_tiles.html" %}
-	</div>
+    <div class="w-full md:w-9/12 grid grid-cols-12 gap-4 mb-4 h-[calc(100vh_-_250px)] overflow-auto" id="tileContainer">
+        {% include "horilla_theme/components/dashboard_tiles.html" %}
+    </div>
 
     <div class="oh-modal" id="sendMailModal" role="dialog" aria-labelledby="sendMailModal" aria-hidden="true">
         <div class="oh-modal__dialog">
@@ -184,7 +189,11 @@
                 <h5 class="oh-modal__dialog-title" id="sendMailModalLabel">
                     {% trans "Send Mail" %}
                 </h5>
-                <button class="oh-modal__close" aria-label="Close" onclick="$(this).closest('.oh-modal--show').removeClass('oh-modal--show')">
+                <button
+                    class="oh-modal__close"
+                    aria-label="Close"
+                    onclick="$(this).closest('.oh-modal--show').removeClass('oh-modal--show')"
+                >
                     <ion-icon name="close-outline"></ion-icon>
                 </button>
             </div>
@@ -192,112 +201,110 @@
         </div>
     </div>
 
+    <div class="oh-modal" id="activityViewModal" role="dialog" aria-hidden="true" style="z-index: 1100">
+        <div class="oh-modal__dialog" style="max-width: 900px">
+            <div class="oh-modal__dialog-header">
+                <h3 class="oh-main__titlebar-title fw-bold">{% trans " Activities" %}</h3>
+                <button
+                    class="oh-modal__close--custom"
+                    aria-label="Close"
+                    onclick="$(this).closest('.oh-modal--show').removeClass('oh-modal--show')"
+                >
+                    <ion-icon name="close-outline"></ion-icon>
+                </button>
+            </div>
+            <div class="oh-modal__dialog-body" id="activityViewModalBody" style="overflow-x: auto"></div>
+        </div>
+    </div>
 
-	<div class="oh-modal" id="activityViewModal" role="dialog" aria-hidden="true" style="z-index:1100;">
-		<div class="oh-modal__dialog" style="max-width: 900px;">
-			<div class="oh-modal__dialog-header">
-				<h3 class="oh-main__titlebar-title fw-bold ">{% trans " Activities" %}</h3>
-				<button class="oh-modal__close--custom" aria-label="Close"
-					onclick="$(this).closest('.oh-modal--show').removeClass('oh-modal--show');"
-				>
-					<ion-icon name="close-outline"></ion-icon>
-				</button>
-			</div>
-			<div class="oh-modal__dialog-body" id="activityViewModalBody" style="overflow-x:auto;"></div>
-		</div>
-	</div>
+    <div
+        class="oh-modal"
+        id="rejectModal"
+        role="dialog"
+        aria-labelledby="rejectDialogModal"
+        aria-hidden="true"
+    >
+        <div class="oh-modal__dialog">
+            <div class="rejectForm">
+                <div class="oh-modal__dialog-header">
+                    <h2 class="oh-modal__dialog-title" id="rejectTitle">
+                        {% trans "Reject" %}
+                    </h2>
+                    <button
+                        class="oh-modal__close"
+                        onclick="$('#rejectModal').removeClass('oh-modal--show')"
+                        aria-label="Close"
+                    >
+                        <ion-icon name="close-outline"></ion-icon>
+                    </button>
+                </div>
+                <div class="oh-modal__dialog-body" id="rejectForm"></div>
+            </div>
 
-	<div
-		class="oh-modal"
-		id="rejectModal"
-		role="dialog"
-		aria-labelledby="rejectDialogModal"
-		aria-hidden="true"
-	>
-		<div class="oh-modal__dialog">
-			<div class="rejectForm">
-				<div class="oh-modal__dialog-header">
-					<h2 class="oh-modal__dialog-title" id="rejectTitle">
-						{% trans "Reject" %}
-					</h2>
-					<button
-						class="oh-modal__close"
-						onclick="$('#rejectModal').removeClass('oh-modal--show');"
-						aria-label="Close"
-					>
-						<ion-icon name="close-outline"></ion-icon>
-					</button>
-				</div>
-				<div class="oh-modal__dialog-body" id="rejectForm"></div>
-			</div>
+            <div id="rejectTarget"></div>
+        </div>
+    </div>
 
-			<div id="rejectTarget">
+    <div class="oh-modal" id="penaltyModal" role="dialog" aria-hidden="true">
+        <div class="oh-modal__dialog" id="penaltyModalBody" style="max-width: 550px"></div>
+    </div>
 
-			</div>
-		</div>
-	</div>
-
-	<div class="oh-modal" id="penaltyModal" role="dialog" aria-hidden="true">
-		<div class="oh-modal__dialog" id="penaltyModalBody" style="max-width: 550px"></div>
-	</div>
-
-
-	<div
-		class="oh-modal"
-		id="TaskModal"
-		role="dialog"
-		aria-labelledby="TaskModal"
-		aria-hidden="true"
-	>
-		<div
-			class="oh-modal__dialog"
-			style="max-width: 550px"
-			id="TaskFormTarget"
-		></div>
-	</div>
-
+    <div
+        class="oh-modal"
+        id="TaskModal"
+        role="dialog"
+        aria-labelledby="TaskModal"
+        aria-hidden="true"
+    >
+        <div
+            class="oh-modal__dialog"
+            style="max-width: 550px"
+            id="TaskFormTarget"
+        >
+        </div>
+    </div>
 </div>
 
 <script>
-	$("#rejectModal").on("htmx:afterSwap", function (event) {
-		const targetEl = event.originalEvent.detail.target;
-		const $rejectForm = $(this).find(".rejectForm");
-		const $rejectTarget = $(this).find("#rejectTarget");
+    $("#rejectModal").on("htmx:afterSwap", function (event) {
+    	const targetEl = event.originalEvent.detail.target;
+    	const $rejectForm = $(this).find(".rejectForm");
+    	const $rejectTarget = $(this).find("#rejectTarget");
 
-		if (targetEl.id === "rejectTarget") {
-			$rejectForm.find("#rejectForm").html("");
-			$rejectForm.hide()
-		} else if (targetEl.id === "rejectForm") {
-			$rejectForm.show()
-			$rejectTarget.html("");
-		}
-	});
+    	if (targetEl.id === "rejectTarget") {
+    		$rejectForm.find("#rejectForm").html("");
+    		$rejectForm.hide()
+    	} else if (targetEl.id === "rejectForm") {
+    		$rejectForm.show()
+    		$rejectTarget.html("");
+    	}
+    });
 </script>
 
 <script src="{% static 'dashboard/employeeChart.js' %}"></script>
 {% if "recruitment"|app_installed %}
-	{% if perms.recruitment.view_recruitment or request.user|is_stagemanager %}
-		<script src="{% static 'dashboard/recruitmentChart.js' %}"></script>
-	{% endif %}
+    {% if perms.recruitment.view_recruitment or request.user|is_stagemanager %}
+        <script src="{% static 'dashboard/recruitmentChart.js' %}"></script>
+    {% endif %}
 {% endif %}
 
 {% if "pms"|app_installed %}
-<!-- PMS chart -->
-<script src="{% static 'src/dashboard/pmsChart.js' %}"></script>
+    <!-- PMS chart -->
+    <script src="{% static 'src/dashboard/pmsChart.js' %}"></script>
 {% endif %}
 
 {% if "onboarding"|app_installed %}
-<!-- onboarding dashboard -->
-<script src="{% static 'dashboard/onboardChart.js' %}"></script>
+    <!-- onboarding dashboard -->
+    <script src="{% static 'dashboard/onboardChart.js' %}"></script>
 {% endif %}
 
 {% if "attendance"|app_installed %}
-	{% if perms.attendance.view_attendance or request.user|is_reportingmanager %}
-	<script src="{% static 'dashboard/attendanceChart.js' %}"></script>
-	{% endif %}
+    {% if perms.attendance.view_attendance or request.user|is_reportingmanager %}
+        <script src="{% static 'dashboard/attendanceChart.js' %}"></script>
+    {% endif %}
 {% endif %}
 
 {% if "leave"|app_installed %}
-<script src="{% static 'dashboard/onLeave.js' %}"></script>
-<script src="{% static 'dashboard/leaveChart.js' %}"></script>
+    <script src="{% static 'dashboard/onLeave.js' %}"></script>
+    <script src="{% static 'dashboard/leaveChart.js' %}"></script>
 {% endif %}

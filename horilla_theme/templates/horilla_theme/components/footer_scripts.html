@@ -5,9 +5,9 @@
 
 <script src="{% static 'htmx/htmx.min.js' %}"></script>
 <script>
-  document.body.addEventListener('htmx:configRequest', (event) => {
-    event.detail.headers['X-CSRFToken'] = '{{ csrf_token }}'
-  })
+    document.body.addEventListener('htmx:configRequest', (event) => {
+      event.detail.headers['X-CSRFToken'] = '{{ csrf_token }}'
+    })
 </script>
 <script src="{% static '/index/index.js' %}"></script>
 <script src="{% static '/index/saveFilters.js' %}"></script>
@@ -29,20 +29,18 @@
 <script src="{% static 'build/js/pivottable_ploty.min.js' %}"></script>
 <script src="{% static 'build/js/pivottable_excel.min.js' %}"></script>
 {% if 'attendance'|app_installed %}
-  <script src="{% static 'attendance/actions.js' %}"></script>
+    <script src="{% static 'attendance/actions.js' %}"></script>
 {% endif %}
 <script type="module" src="{% static 'images/ionicons/ui_icons/ionicons/ionicons.esm.js' %}"></script>
 <script src="{% static '/build/js/sweetAlert.js' %}"></script>
 <script>
-  // Clear all query parameters from the URL
-  function clearQueryParameters() {
-    var urlWithoutQuery = window.location.origin + window.location.pathname
-    window.history.replaceState({}, document.title, urlWithoutQuery)
-  }
+    // Clear all query parameters from the URL
+    function clearQueryParameters() {
+      var urlWithoutQuery = window.location.origin + window.location.pathname
+      window.history.replaceState({}, document.title, urlWithoutQuery)
+    }
 </script>
 <script src="{% static 'horilla_theme/assets/js/footerScripts.js' %}"></script>
 
-
 {% block footer_scripts %}
-
 {% endblock %}

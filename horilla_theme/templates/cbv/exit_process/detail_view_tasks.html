@@ -2,8 +2,8 @@
 
 <style>
     .oh-select-custom {
-        border: 1px solid hsl(213, 22%, 84%);
         padding: 0.3rem 0.8rem 0.3rem 0.3rem;
+        border: 1px solid hsl(213, 22%, 84%);
         border-radius: 0rem;
     }
     .oh-dot--color-completed {
@@ -29,10 +29,8 @@
             {% for task in tasks %}
                 <div class="col-span-1 md:col-span-6 mb-2 task-item">
                     <div class="text-xs font-semibold mb-1">
-                        <span
-                            class="oh-dot oh-dot--small me-1 oh-dot--color-{{task.status}}"
-                        ></span>
-                        {{task.task_id.title|title}}
+                        <span class="oh-dot oh-dot--small me-1 oh-dot--color-{{task.status}}"></span>
+                        {{ task.task_id.title|title }}
                     </div>
                     <div class="" id="task{{task.id}}{{instance.id}}">
                         <select
@@ -60,14 +58,14 @@
 {% endif %}
 
 <script>
-	$(document).on("htmx:afterRequest", function (event, data) {
-		$("select[name='task_status']").on("change", function () {
-			var value = $(this).val();
-			var dot = $(this).closest(".task-item").find("span.oh-dot");
+    $(document).on("htmx:afterRequest", function (event, data) {
+    	$("select[name='task_status']").on("change", function () {
+    		var value = $(this).val();
+    		var dot = $(this).closest(".task-item").find("span.oh-dot");
 
-			dot.removeClass().addClass(
-				"oh-dot oh-dot--small me-1 oh-dot--color-" + value
-			);
-		});
-	});
+    		dot.removeClass().addClass(
+    			"oh-dot oh-dot--small me-1 oh-dot--color-" + value
+    		);
+    	});
+    });
 </script>

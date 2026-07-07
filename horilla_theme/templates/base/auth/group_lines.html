@@ -2,7 +2,6 @@
 
 {% if groups %}
     {% for group in groups %}
-
         <div
             class="accordion-item border border-primary-300 rounded-md"
             id="groupPanel{{group.id}}"
@@ -19,7 +18,7 @@
                             src="https://ui-avatars.com/api/?name={{group}}"
                             class="oh-navbar__user-image w-6 h-6 rounded-full"
                             loading="lazy"
-                        />
+                        >
                     </span>
                     <input
                         type="text"
@@ -29,25 +28,19 @@
                         class="font-semibold text-inherit bg-transparent border-none px-1 -mx-1 m-0 outline-none cursor-pointer focus:cursor-text focus:bg-white focus:ring-1 focus:ring-primary-300 focus:shadow-sm rounded transition-all"
                         style="field-sizing: content"
                         readonly
-                        onclick="
-                            this.removeAttribute('readonly');
-                            event.stopPropagation();
-                        "
+                        onclick="this.removeAttribute('readonly');
+                            event.stopPropagation()"
                         onblur="this.setAttribute('readonly', true)"
-                        onkeydown="
-                            if (event.key === 'Enter') this.blur();
-                            event.stopPropagation();
-                        "
+                        onkeydown="if (event.key === 'Enter') this.blur();
+                            event.stopPropagation()"
                         hx-post="{% url 'update-group-permission' %}"
                         hx-vals='{"name_update": true, "id": {{ group.id }}}'
                         hx-swap="none"
                         hx-trigger="change"
                         hx-on-htmx-after-request="reloadMessage()"
-                    />
-                    <span class="text-xs mt-1 text-dark-300"
-                        >{% trans "Total" %} {{group.user_set.all|length}}
-                        {% trans "users in this group" %}</span
                     >
+                    <span class="text-xs mt-1 text-dark-300">{% trans "Total" %} {{ group.user_set.all|length }}
+                        {% trans "users in this group" %}</span>
                 </div>
 
                 <div class="flex items-center flex-wrap gap-2 md:gap-8">
@@ -73,7 +66,7 @@
                                 hx-target="#settingsContainer"
                                 hx-swap="none"
                                 hx-confirm="{% trans 'Do you want to delete this group permission?' %}"
-                                onclick="event.stopPropagation(); event.preventDefault();"
+                                onclick="event.stopPropagation(); event.preventDefault()"
                             >
                                 <i class="fa-solid fa-trash"></i>
                             </a>
@@ -103,35 +96,33 @@
                 </div>
             </div>
         </div>
-
     {% endfor %}
 {% else %}
-
     <div class="oh-wrapper h-full" align="center">
-        <div
-            class="xl:col-span-4 md:col-span-6 col-span-12 bg-white p-6 rounded-md shadow-card h-[70%]"
-        >
+        <div class="xl:col-span-4 md:col-span-6 col-span-12 bg-white p-6 rounded-md shadow-card h-[70%]">
             <div class="flex flex-col items-center justify-center h-full">
                 <img
                     src="/static/horilla_theme/assets/img/no-records.svg"
                     alt=""
                     width="300"
                     class="mb-4"
-                />
+                >
                 <p class="text-[#666] mb-5">
                     {% trans "There are no employee groups at this moment." %}
                 </p>
             </div>
         </div>
     </div>
-
 {% endif %}
 
 {% if groups %}
     <div class="flex justify-between items-center mt-4 w-full bottom-0 inset-0">
         <!-- Left: Page status -->
         <p class="text-xs text-[#666]">
-            {% trans "Page" %} {{ groups.number }} {% trans "of" %} {{ groups.paginator.num_pages }}
+            {% trans "Page" %}
+            {{ groups.number }}
+            {% trans "of" %}
+            {{ groups.paginator.num_pages }}
         </p>
 
         <!-- Right: Pagination controls -->

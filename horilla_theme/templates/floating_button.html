@@ -3,7 +3,6 @@
 {% include 'generic/components.html' %}
 {% get_company as theme_obj %}
 <style>
-
     .fab-container {
         width: 40px;
         height: 40px;
@@ -123,104 +122,118 @@
     .inner-fab:nth-of-type(7) { background-color: #f97316; }
     .inner-fab:nth-of-type(8) { background-color: #3b82f6; }
     .inner-fab:nth-of-type(9) { background-color: #ec4899; }
-
 </style>
 
 <div class="fab-container" id="fabContainer">
-
     <div class="inner-fabs">
-        <div class="fab inner-fab"
-             title="Dashboard Charts"
-             data-delay="1"
-             data-toggle="oh-modal-toggle"
-             data-target="#objectDetailsModal"
-             hx-get="{% url 'employee-chart-show' %}"
-             hx-target="#objectDetailsModalTarget">
+        <div
+            class="fab inner-fab"
+            title="Dashboard Charts"
+            data-delay="1"
+            data-toggle="oh-modal-toggle"
+            data-target="#objectDetailsModal"
+            hx-get="{% url 'employee-chart-show' %}"
+            hx-target="#objectDetailsModalTarget"
+        >
             <i class="material-icons">leaderboard</i>
         </div>
 
         {% if "helpdesk"|app_installed %}
-        <div class="fab inner-fab"
-             title="Create Ticket"
-             data-delay="2"
-             data-toggle="oh-modal-toggle"
-             data-target="#objectCreateModal"
-             hx-get="{% url 'ticket-create' %}"
-             hx-target="#objectCreateModalTarget">
-            <i class="material-icons">sell</i>
-        </div>
+            <div
+                class="fab inner-fab"
+                title="Create Ticket"
+                data-delay="2"
+                data-toggle="oh-modal-toggle"
+                data-target="#objectCreateModal"
+                hx-get="{% url 'ticket-create' %}"
+                hx-target="#objectCreateModalTarget"
+            >
+                <i class="material-icons">sell</i>
+            </div>
         {% endif %}
 
         {% if "asset"|app_installed %}
-        <div class="fab inner-fab"
-             title="Create Asset Request"
-             data-delay="3"
-             data-toggle="oh-modal-toggle"
-             data-target="#objectCreateModal"
-             hx-get="{% url 'asset-request-creation' %}"
-             hx-target="#objectCreateModalTarget">
-            <i class="material-icons">devices</i>
-        </div>
+            <div
+                class="fab inner-fab"
+                title="Create Asset Request"
+                data-delay="3"
+                data-toggle="oh-modal-toggle"
+                data-target="#objectCreateModal"
+                hx-get="{% url 'asset-request-creation' %}"
+                hx-target="#objectCreateModalTarget"
+            >
+                <i class="material-icons">devices</i>
+            </div>
         {% endif %}
 
         {% if "payroll"|app_installed %}
-        <div class="fab inner-fab"
-             title="Create Reimbursement"
-             data-delay="4"
-             data-toggle="oh-modal-toggle"
-             data-target="#genericModal"
-             hx-get="{% url 'reimbursement-create' %}"
-             hx-target="#genericModalBody">
-            <i class="material-icons">paid</i>
-        </div>
+            <div
+                class="fab inner-fab"
+                title="Create Reimbursement"
+                data-delay="4"
+                data-toggle="oh-modal-toggle"
+                data-target="#genericModal"
+                hx-get="{% url 'reimbursement-create' %}"
+                hx-target="#genericModalBody"
+            >
+                <i class="material-icons">paid</i>
+            </div>
         {% endif %}
 
-        <div class="fab inner-fab"
-             title="Create Work Type Request"
-             data-delay="5"
-             data-toggle="oh-modal-toggle"
-             data-target="#objectCreateModal"
-             hx-get="{% url 'work-type-request' %}"
-             hx-target="#objectCreateModalTarget">
+        <div
+            class="fab inner-fab"
+            title="Create Work Type Request"
+            data-delay="5"
+            data-toggle="oh-modal-toggle"
+            data-target="#objectCreateModal"
+            hx-get="{% url 'work-type-request' %}"
+            hx-target="#objectCreateModalTarget"
+        >
             <i class="material-icons">work</i>
         </div>
 
-        <div class="fab inner-fab"
-             title="Create Shift Request"
-             data-delay="6"
-             data-toggle="oh-modal-toggle"
-             data-target="#objectCreateModal"
-             hx-get="{% url 'shift-request' %}"
-             hx-target="#objectCreateModalTarget">
+        <div
+            class="fab inner-fab"
+            title="Create Shift Request"
+            data-delay="6"
+            data-toggle="oh-modal-toggle"
+            data-target="#objectCreateModal"
+            hx-get="{% url 'shift-request' %}"
+            hx-target="#objectCreateModalTarget"
+        >
             <i class="material-icons">history</i>
         </div>
 
         {% if "leave"|app_installed %}
-        <div class="fab inner-fab"
-             title="Create Leave Request"
-             data-delay="7"
-             data-toggle="oh-modal-toggle"
-             data-target="#genericModal"
-             {% if perms.leave.create_leaverequest %}
-                 hx-get="{% url 'request-creation' %}"
-             {% else %}
-                 hx-get="{% url 'leave-request-create' %}"
-             {% endif %}
-             hx-target="#genericModalBody">
-            <span class="material-symbols-outlined">calendar_add_on</span>
-        </div>
+            <div
+                class="fab inner-fab"
+                title="Create Leave Request"
+                data-delay="7"
+                data-toggle="oh-modal-toggle"
+                data-target="#genericModal"
+                {% if perms.leave.create_leaverequest %}
+                    hx-get="{% url 'request-creation' %}"
+                {% else %}
+                    hx-get="{% url 'leave-request-create' %}"
+                {% endif %}
+                hx-target="#genericModalBody"
+            >
+                <span class="material-symbols-outlined">calendar_add_on</span>
+            </div>
         {% endif %}
 
         {% if "attendance"|app_installed %}
-        <div class="fab inner-fab"
-             title="Create Attendance Request"
-             data-delay="8"
-             data-toggle="oh-modal-toggle"
-             data-target="#genericModal"
-             hx-get="{% url 'request-new-attendance' %}"
-             hx-target="#genericModalBody">
-            <span class="material-symbols-outlined">person_add</span>
-        </div>
+            <div
+                class="fab inner-fab"
+                title="Create Attendance Request"
+                data-delay="8"
+                data-toggle="oh-modal-toggle"
+                data-target="#genericModal"
+                hx-get="{% url 'request-new-attendance' %}"
+                hx-target="#genericModalBody"
+            >
+                <span class="material-symbols-outlined">person_add</span>
+            </div>
         {% endif %}
     </div>
 

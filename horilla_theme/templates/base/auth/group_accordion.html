@@ -25,37 +25,31 @@
                 name="search"
                 class="text-color-600 ps-8 p-1.5 pb-2 placeholder:text-xs w-full border border-dark-50 rounded-md focus-visible:outline-0 placeholder:text-dark-100 text-sm [transition:.3s] focus:border-primary-600"
                 aria-label="Search Input"
-            />
-            <i
-                class="fas fa-search absolute left-3 top-[1px] bottom-0 m-auto flex items-center opacity-50 text-xs"
-            ></i>
+            >
+            <i class="fas fa-search absolute left-3 top-[1px] bottom-0 m-auto flex items-center opacity-50 text-xs"></i>
         </div>
         {% if perms.auth.add_group %}
-        <button
-            class="px-4 py-2 bg-primary-600 text-white rounded-md text-xs flex flex-wrap items-center gap-2 hover:bg-primary-800 transition duration-300"
-            data-toggle="oh-modal-toggle"
-            data-target="#Permissions"
-        >
-            <img
-                src="/static/horilla_theme/assets/img/create.svg"
-                alt=""
-                width="13"
-                class="filter brightness-0 invert"
-            />
-            {% trans "Create" %}
-        </button>
+            <button
+                class="px-4 py-2 bg-primary-600 text-white rounded-md text-xs flex flex-wrap items-center gap-2 hover:bg-primary-800 transition duration-300"
+                data-toggle="oh-modal-toggle"
+                data-target="#Permissions"
+            >
+                <img
+                    src="/static/horilla_theme/assets/img/create.svg"
+                    alt=""
+                    width="13"
+                    class="filter brightness-0 invert"
+                >
+                {% trans "Create" %}
+            </button>
         {% endif %}
     </div>
-    <div
-        class="h-[calc(100vh_-_270px)] overflow-hidden overflow-y-auto overflow-x-auto"
-    >
+    <div class="h-[calc(100vh_-_270px)] overflow-hidden overflow-y-auto overflow-x-auto">
         <div
             id="permissionContainer"
             class="accordion-wrapper space-y-2"
-            onclick="
-                $(this).next().toggle();
-                $(this).toggleClass('perm-accordion-active');
-            "
+            onclick="$(this).next().toggle();
+                $(this).toggleClass('perm-accordion-active')"
         >
             {% include "base/auth/group_lines.html" %}
         </div>
@@ -76,12 +70,10 @@
             </h2>
             <button
                 class="oh-modal__close"
-                onclick="
-                    $(this)
+                onclick="$(this)
                         .closest('.oh-modal--show')
                         .removeClass('oh-modal--show');
-                    event.preventDefault();
-                "
+                    event.preventDefault()"
                 aria-label="Close"
             >
                 <ion-icon name="close-outline"></ion-icon>
@@ -113,12 +105,10 @@
             </h2>
             <button
                 class="oh-modal__close"
-                onclick="
-                    $(this)
+                onclick="$(this)
                         .closest('.oh-modal--show')
                         .removeClass('oh-modal--show');
-                    event.preventDefault;
-                "
+                    event.preventDefault"
                 aria-label="Close"
             >
                 <ion-icon name="close-outline"></ion-icon>

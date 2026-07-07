@@ -1,16 +1,17 @@
 {% load basefilters static i18n %}
 <style>
-	tr span.txt {
-		display:none;
-	}
+    tr span.txt {
+        display: none;
+    }
 </style>
 {% is_manager_of request.user instance as can_manage %}
-	<div class="oh-btn-group w-100">
-		{% if request.user|is_reportingmanager or perms.attendance.change_attendance %}
-            <a href="#"
-                class="h-8 w-24 px-4 py-2 bg-primary-600 text-white rounded-md text-xs flex items-center justify-center gap-2 hover:bg-primary-800 transition duration-300"
-                title="{% trans 'Approve' %}"
-                onclick="event.preventDefault(); event.stopPropagation(); (function(pk){
+<div class="oh-btn-group w-100">
+    {% if request.user|is_reportingmanager or perms.attendance.change_attendance %}
+        <a
+            href="#"
+            class="h-8 w-24 px-4 py-2 bg-primary-600 text-white rounded-md text-xs flex items-center justify-center gap-2 hover:bg-primary-800 transition duration-300"
+            title="{% trans 'Approve' %}"
+            onclick="event.preventDefault(); event.stopPropagation(); (function(pk){
                     Swal.fire({
                         title: '{% trans 'Are you sure?' %}',
                         text: '{% trans 'Do you want to approve this attendance request?' %}',
@@ -25,19 +26,23 @@
                             htmx.ajax('GET', '{% url 'approve-validate-attendance-request' instance.id %}', {target: '#validateAttendanceRequestModalBody', swap: 'innerHTML'});
                         }
                     });
-                })({{ instance.id }}); return false;"
-                >
-                    <img class="brightness-0 invert" src="{% static 'horilla_theme/assets/img/icons/check.svg' %}" alt="{% trans 'Approve' %}" width="13"
-                />
+                })({{ instance.id }}); return false"
+        >
+            <img
+                class="brightness-0 invert"
+                src="{% static 'horilla_theme/assets/img/icons/check.svg' %}"
+                alt="{% trans 'Approve' %}"
+                width="13"
+            >
+        </a>
+    {% endif %}
 
-            </a>
-        {% endif %}
-
-		{% if request.user|is_reportingmanager or perms.attendance.change_attendance %}
-            <a href="#"
-                class="w-24 px-4 py-2 bg-white rounded-md text-xs flex items-center justify-center gap-2 border border-primary-500 hover:border-primary-600 transition duration-300"
-                title="{% trans 'Reject' %}"
-                onclick="event.preventDefault(); event.stopPropagation(); (function(pk){
+    {% if request.user|is_reportingmanager or perms.attendance.change_attendance %}
+        <a
+            href="#"
+            class="w-24 px-4 py-2 bg-white rounded-md text-xs flex items-center justify-center gap-2 border border-primary-500 hover:border-primary-600 transition duration-300"
+            title="{% trans 'Reject' %}"
+            onclick="event.preventDefault(); event.stopPropagation(); (function(pk){
                     Swal.fire({
                         title: '{% trans 'Are you sure?' %}',
                         text: '{% trans 'Do you want to reject this attendance request?' %}',
@@ -52,10 +57,14 @@
                             htmx.ajax('GET', '{% url 'cancel-validate-attendance-request' instance.id %}', {target: '#validateAttendanceRequestModalBody', swap: 'innerHTML'});
                         }
                     });
-                })({{ instance.id }}); return false;"
-                >
-                <img class="mt-[-1px]" src="{% static 'horilla_theme/assets/img/icons/close.svg' %}" alt="{% trans 'Reject' %}" width="13"
-            />
-            </a>
-        {% endif %}
-    </div>
+                })({{ instance.id }}); return false"
+        >
+            <img
+                class="mt-[-1px]"
+                src="{% static 'horilla_theme/assets/img/icons/close.svg' %}"
+                alt="{% trans 'Reject' %}"
+                width="13"
+            >
+        </a>
+    {% endif %}
+</div>

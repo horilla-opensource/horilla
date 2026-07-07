@@ -1,20 +1,28 @@
 {% load i18n basefilters static %}
 {% is_manager_of request.user instance as can_manage %}
 {% if perms.attendance.change_attendance or can_manage %}
-    <div class="oh-btn-group w-100" onclick="event.stopPropagation();">
+    <div class="oh-btn-group w-100" onclick="event.stopPropagation()">
         {% if instance.is_validate_request %}
-        <button type="button" href="#"
-            class="w-24 px-4 py-2 bg-primary-600 text-white rounded-md text-xs flex items-center justify-center gap-2 hover:bg-primary-800 transition duration-300"
-            onclick="event.preventDefault(); event.stopPropagation(); showApproveAlert($(this).data('req'));"
-            data-req="/attendance/request-attendance-view/?id={{ instance.id }}"
-        >
-            <img src="{% static 'horilla_theme/assets/img/icons/check.svg' %}" alt="{% trans 'Approve' %}" width="13"
-            class="filter brightness-0 invert" />
-        </button>
+            <button
+                type="button"
+                href="#"
+                class="w-24 px-4 py-2 bg-primary-600 text-white rounded-md text-xs flex items-center justify-center gap-2 hover:bg-primary-800 transition duration-300"
+                onclick="event.preventDefault(); event.stopPropagation(); showApproveAlert($(this).data('req'))"
+                data-req="/attendance/request-attendance-view/?id={{ instance.id }}"
+            >
+                <img
+                    src="{% static 'horilla_theme/assets/img/icons/check.svg' %}"
+                    alt="{% trans 'Approve' %}"
+                    width="13"
+                    class="filter brightness-0 invert"
+                >
+            </button>
         {% else %}
-        <button type="button" href="#"
-            class="w-24 px-4 py-2 bg-primary-600 text-white rounded-md text-xs flex items-center justify-center gap-2 hover:bg-primary-800 transition duration-300"
-            onclick="event.preventDefault(); event.stopPropagation(); (function(pk){
+            <button
+                type="button"
+                href="#"
+                class="w-24 px-4 py-2 bg-primary-600 text-white rounded-md text-xs flex items-center justify-center gap-2 hover:bg-primary-800 transition duration-300"
+                onclick="event.preventDefault(); event.stopPropagation(); (function(pk){
                 Swal.fire({
                     title: '{% trans 'Are you sure?' %}',
                     text: '{% trans 'Do you want to validate this attendance?' %}',
@@ -29,11 +37,15 @@
                         htmx.ajax('GET', '{% url 'validate-this-attendance' instance.id %}', {swap: 'none'});
                     }
                 });
-            })({{ instance.id }}); return false;"
-        >
-            <img src="{% static 'horilla_theme/assets/img/icons/check.svg' %}" alt="{% trans 'Approve' %}" width="13"
-            class="filter brightness-0 invert" />
-        </button>
+            })({{ instance.id }}); return false"
+            >
+                <img
+                    src="{% static 'horilla_theme/assets/img/icons/check.svg' %}"
+                    alt="{% trans 'Approve' %}"
+                    width="13"
+                    class="filter brightness-0 invert"
+                >
+            </button>
         {% endif %}
     </div>
 {% endif %}

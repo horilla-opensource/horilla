@@ -4,15 +4,23 @@
     <div class="col-12 col-sm-12 col-md-12 col-lg-12">
         <div class="oh-card p-0" x-data="{showQuestions: true}">
             <div class="oh-card__header mb-0 p-4">
-                <a href="#" class="px-4 py-2 bg-primary-600 text-white rounded-md text-xs flex w-28 justify-center items-center gap-2 hover:bg-primary-800 transition duration-300"
-                    x-show="showQuestions" @click="showQuestions = false"
-                    style="width: fit-content;">
+                <a
+                    href="#"
+                    class="px-4 py-2 bg-primary-600 text-white rounded-md text-xs flex w-28 justify-center items-center gap-2 hover:bg-primary-800 transition duration-300"
+                    x-show="showQuestions"
+                    @click="showQuestions = false"
+                    style="width: fit-content"
+                >
                     <ion-icon class="me-2" name="eye-off-outline"></ion-icon>
                     {% trans "Hide Questions" %}
                 </a>
-                <a href="#" class="px-4 py-2 bg-primary-600 text-white rounded-md text-xs flex w-28 justify-center items-center gap-2 hover:bg-primary-800 transition duration-300"
-                    x-show="!showQuestions" @click="showQuestions = true"
-                    style="width: fit-content;">
+                <a
+                    href="#"
+                    class="px-4 py-2 bg-primary-600 text-white rounded-md text-xs flex w-28 justify-center items-center gap-2 hover:bg-primary-800 transition duration-300"
+                    x-show="!showQuestions"
+                    @click="showQuestions = true"
+                    style="width: fit-content"
+                >
                     <ion-icon class="me-2" name="eye-outline"></ion-icon>
                     {% trans "Show Questions" %}
                 </a>
@@ -23,9 +31,13 @@
                     <table class="w-full">
                         <thead class="sticky top-0 bg-[white] z-[1]">
                             <tr class="border-b border-[#ececec]">
-                                <th class="text-sm font-medium text-left p-3" style="width:30%;">{% trans "Question Type" %}</th>
+                                <th class="text-sm font-medium text-left p-3" style="width: 30%">
+                                    {% trans "Question Type" %}
+                                </th>
                                 <th class="text-sm font-medium text-left p-3">{% trans "Question" %}</th>
-                                <th class="stickyright text-sm font-medium text-center p-3 w-10">{% trans "Actions" %}</th>
+                                <th class="stickyright text-sm font-medium text-center p-3 w-10">
+                                    {% trans "Actions" %}
+                                </th>
                             </tr>
                         </thead>
                         <tbody>
@@ -40,14 +52,25 @@
                                     <td class="text-sm text-left p-3 text-[#666]">
                                         <div class="font-medium mb-2">{{ form.instance.question }}</div>
 
-                                        {% if form.instance.question_type == "4" %}  <!-- Multiple choice -->
+                                        {% if form.instance.question_type == "4" %}
+                                            <!-- Multiple choice -->
                                             <div x-data="{showOptions: false}">
-                                                <a href="#" class="px-3 py-1 bg-[white] rounded-md text-xs flex items-center gap-2 border border-primary-500 hover:border-primary-600 transition duration-300 cursor-pointer w-fit"
-                                                    @click="showOptions = !showOptions" x-text="showOptions ? '{% trans "Hide Options" %}' : '{% trans "Show Options" %}'">
-                                                    <ion-icon class="ms-1" x-bind:name="showOptions ? 'caret-up-outline' : 'caret-down-outline'"></ion-icon>
+                                                <a
+                                                    href="#"
+                                                    class="px-3 py-1 bg-[white] rounded-md text-xs flex items-center gap-2 border border-primary-500 hover:border-primary-600 transition duration-300 cursor-pointer w-fit"
+                                                    @click="showOptions = !showOptions"
+                                                    x-text="showOptions ? '{% trans "Hide Options" %}' : '{% trans "Show Options" %}'"
+                                                >
+                                                    <ion-icon
+                                                        class="ms-1"
+                                                        x-bind:name="showOptions ? 'caret-up-outline' : 'caret-down-outline'"
+                                                    ></ion-icon>
                                                 </a>
-                                                <div class="mt-2 grid grid-cols-2 gap-2" x-show="showOptions" x-transition>
-
+                                                <div
+                                                    class="mt-2 grid grid-cols-2 gap-2"
+                                                    x-show="showOptions"
+                                                    x-transition
+                                                >
                                                     <div class="flex items-center gap-2">
                                                         <span class="text-xs text-muted mt-1">1:</span>
                                                         <span>{{ form.option_a.value }}</span>
@@ -67,7 +90,6 @@
                                                         <span class="text-xs text-muted mt-1">4:</span>
                                                         <span>{{ form.option_d.value }}</span>
                                                     </div>
-
                                                 </div>
                                             </div>
                                         {% endif %}
@@ -78,19 +100,22 @@
                                         <div class="flex justify-center gap-1">
                                             {% if perms.pms.change_question or request.user|filtersubordinates %}
                                                 <button
-                                                    data-toggle = "oh-modal-toggle"
-                                                    data-target = "#questionModal{{forloop.counter}}"
+                                                    data-toggle="oh-modal-toggle"
+                                                    data-target="#questionModal{{forloop.counter}}"
                                                     class="oh-btn oh-btn--light-bkg"
-                                                    onclick="event.stopPropagation()">
+                                                    onclick="event.stopPropagation()"
+                                                >
                                                     <ion-icon name="create-outline"></ion-icon>
                                                 </button>
                                             {% endif %}
                                             {% if perms.pms.delete_question or request.user|filtersubordinates %}
-                                                <a hx-confirm="{% trans 'Do you want to delete the question?' %}"
+                                                <a
+                                                    hx-confirm="{% trans 'Do you want to delete the question?' %}"
                                                     hx-post="{% url 'question-delete' id=form.instance.id %}"
                                                     hx-target="#questionParent{{form.instance.id}}"
                                                     hx-swap="outerHTML"
-                                                    class="oh-btn oh-btn--danger-outline">
+                                                    class="oh-btn oh-btn--danger-outline"
+                                                >
                                                     <ion-icon name="trash-outline"></ion-icon>
                                                 </a>
                                             {% endif %}
@@ -104,8 +129,18 @@
                                             <h2 class="text-md font-semibold">
                                                 {% trans "Edit Question" %}
                                             </h2>
-                                            <button type="button" class="oh-modal__close--custom" aria-label="Close" onclick="$(this).closest('.oh-modal--show').removeClass('oh-modal--show')" >
-                                                <ion-icon name="close-outline" role="img" class="md hydrated" aria-label="close outline"></ion-icon>
+                                            <button
+                                                type="button"
+                                                class="oh-modal__close--custom"
+                                                aria-label="Close"
+                                                onclick="$(this).closest('.oh-modal--show').removeClass('oh-modal--show')"
+                                            >
+                                                <ion-icon
+                                                    name="close-outline"
+                                                    role="img"
+                                                    class="md hydrated"
+                                                    aria-label="close outline"
+                                                ></ion-icon>
                                             </button>
                                         </div>
                                         <div class="oh-modal__dialog-body" id="questionModalBody{{forloop.counter}}">
@@ -123,42 +158,40 @@
 </div>
 
 <script>
+    document.addEventListener('DOMContentLoaded', function() {
+        {% for form in form_list %}
+        const questionTypeSelect{{form.instance.id}} = document.querySelector('#pmsQuestion{{form.instance.id}} select[name="question_type"]');
+        if (questionTypeSelect{{form.instance.id}}) {
+            questionTypeSelect{{form.instance.id}}.addEventListener('change', function() {
+                const modal = this.closest('[x-data]');
+                const alpineData = Alpine.$data(modal);
+                alpineData.showOptions = this.value === '4';
+            });
+        }
+        {% endfor %}
+    });
 
-document.addEventListener('DOMContentLoaded', function() {
-    {% for form in form_list %}
-    const questionTypeSelect{{form.instance.id}} = document.querySelector('#pmsQuestion{{form.instance.id}} select[name="question_type"]');
-    if (questionTypeSelect{{form.instance.id}}) {
-        questionTypeSelect{{form.instance.id}}.addEventListener('change', function() {
-            const modal = this.closest('[x-data]');
-            const alpineData = Alpine.$data(modal);
-            alpineData.showOptions = this.value === '4';
-        });
-    }
-    {% endfor %}
-});
-
-$(document).ready(function () {
-    $(".oh-select--qa-change").select2();
-});
-
+    $(document).ready(function () {
+        $(".oh-select--qa-change").select2();
+    });
 </script>
 
 <script>
-// Show/hide options based on question type
-document.addEventListener('DOMContentLoaded', function() {
-    document.querySelectorAll('[id^="questionEditModal"]').forEach(modal => {
-        const questionType = modal.querySelector('select[name="question_type"]');
-        const optionsSection = modal.querySelector('#questionOptionsSection');
+    // Show/hide options based on question type
+    document.addEventListener('DOMContentLoaded', function() {
+        document.querySelectorAll('[id^="questionEditModal"]').forEach(modal => {
+            const questionType = modal.querySelector('select[name="question_type"]');
+            const optionsSection = modal.querySelector('#questionOptionsSection');
 
-        if (questionType && optionsSection) {
-            // Initial state
-            optionsSection.style.display = questionType.value === '4' ? 'block' : 'none';
+            if (questionType && optionsSection) {
+                // Initial state
+                optionsSection.style.display = questionType.value === '4' ? 'block' : 'none';
 
-            // Change handler
-            questionType.addEventListener('change', function() {
-                optionsSection.style.display = this.value === '4' ? 'block' : 'none';
-            });
-        }
+                // Change handler
+                questionType.addEventListener('change', function() {
+                    optionsSection.style.display = this.value === '4' ? 'block' : 'none';
+                });
+            }
+        });
     });
-});
 </script>

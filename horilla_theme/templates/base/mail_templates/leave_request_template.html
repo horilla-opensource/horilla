@@ -1,13 +1,14 @@
-{% load static horillafilters %} {% now "Y" as current_year %}
+{% load static horillafilters %}
+{% now "Y" as current_year %}
 {% get_company as theme_obj %}
 
 <!DOCTYPE html>
 <html lang="en">
     <head>
-        <meta charset="UTF-8" />
-        <meta http-equiv="X-UA-Compatible" content="IE=edge" />
-        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-        <title>{{white_label_company_name}}</title>
+        <meta charset="UTF-8">
+        <meta http-equiv="X-UA-Compatible" content="IE=edge">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <title>{{ white_label_company_name }}</title>
 
         <style>
             body {
@@ -29,26 +30,26 @@
 
             .hr-wrapper {
                 width: 100%;
-                table-layout: fixed;
-                background-color: #e5e5e5;
                 padding-bottom: 60px;
+                background-color: #e5e5e5;
+                table-layout: fixed;
             }
 
             .hr-table-main {
-                background-color: #fff;
-                margin: 0 auto;
                 width: 100%;
                 max-width: 650px;
-                border-spacing: 0;
-                font-family: Arial, "Helvetica Neue", Helvetica, sans-serif;
-                color: #1c1c1c;
+                margin: 0 auto;
                 margin-top: 15px;
+                border-spacing: 0;
+                background-color: #fff;
+                color: #1c1c1c;
+                font-family: Arial, 'Helvetica Neue', Helvetica, sans-serif;
             }
 
             .hr-table-main__header {
-                table-layout: fixed;
-                padding: 15px;
                 width: 100%;
+                padding: 15px;
+                table-layout: fixed;
             }
 
             .hr-link {
@@ -57,10 +58,10 @@
             }
 
             .hr-callout-table {
-                table-layout: fixed;
                 width: 100%;
                 border: 1px solid #f0f0f0;
                 font-size: 14px;
+                table-layout: fixed;
             }
 
             .hr-callout-table td {
@@ -78,12 +79,10 @@
                         <table class="hr-table-main__header">
                             <tr>
                                 <td style="width: 50%">
-                                    <img src="cid:company_logo" height="100" width="100" />
+                                    <img src="cid:company_logo" height="100" width="100">
                                 </td>
                                 <td style="width: 50%; text-align: right">
-                                    <a href="#" class="hr-link"
-                                        >View in browser</a
-                                    >
+                                    <a href="#" class="hr-link">View in browser</a>
                                 </td>
                             </tr>
                         </table>
@@ -94,7 +93,11 @@
                         align="center"
                         style="padding-top: 20px; padding-bottom: 20px"
                     >
-                        <img src="cid:leave_icon" style="display: block; height: auto; border: 0; width: 20%;" width="272" />
+                        <img
+                            src="cid:leave_icon"
+                            style="display: block; height: auto; border: 0; width: 20%"
+                            width="272"
+                        >
                     </td>
                 </tr>
                 <tr>
@@ -102,52 +105,33 @@
                         style="padding: 15px 25px 0 25px; font-size: 24px"
                         align="center"
                     >
-                        <strong
-                            >Hello {{ instance.get_full_name }},
-                            {{subject}}!</strong
-                        >
+                        <strong>Hello {{ instance.get_full_name }},
+                            {{ subject }}!</strong>
                     </td>
                 </tr>
                 <tr>
                     <td align="center" style="padding-top: 0px">
-                        <p style="width: 90%">{{content}}</p>
+                        <p style="width: 90%">{{ content }}</p>
                     </td>
                 </tr>
                 {% if link != "#" %}
-                <tr>
-                    <td style="padding: 15px" align="center">
-                        <a
-                            href="{{protocol}}://{{host}}/leave/request-view/?id={{link}}"
-                            style="
-                                background-color:{{theme_obj.primary_600}};
-                                color: #fff;
-                                border-radius: 10px;
-                                display: inline-block;
-                                padding: 15px 25px;
-                                text-decoration: none;
-                                font-weight: bold;
-                            "
-                            >View Leave Request</a
-                        >
-
-                    </td>
-                </tr>
+                    <tr>
+                        <td style="padding: 15px" align="center">
+                            <a
+                                href="{{protocol}}://{{host}}/leave/request-view/?id={{link}}"
+                                style="background-color: {{ theme_obj.primary_600 }}; color: #fff; border-radius: 10px; display: inline-block; padding: 15px 25px; text-decoration: none; font-weight: bold"
+                            >View Leave Request</a>
+                        </td>
+                    </tr>
                 {% endif %}
 
                 <tr>
                     <td
                         align="center"
-                        style="
-                            padding-left: 15px;
-                            padding-right: 15px;
-                            padding-top: 30px;
-                            padding-bottom: 15px;
-                            color: #5c5c5c;
-                            font-size: 12px;
-                        "
+                        style="padding-left: 15px; padding-right: 15px; padding-top: 30px; padding-bottom: 15px; color: #5c5c5c; font-size: 12px"
                     >
-                        This mail was sent you because your email has been
-                        enrolled as an employee at {{instance.recruitment_id.company_id.company }}.<br />
+                        This mail was sent you because your email has been enrolled as an employee at
+                        {{ instance.recruitment_id.company_id.company }}.<br>
                         Don't want to receive mails like these anymore?
                         <a href="#" style="color: #5c5c5c">Unsubscribe here</a>.
                     </td>
@@ -155,16 +139,9 @@
                 <tr>
                     <td
                         align="center"
-                        style="
-                            padding-left: 15px;
-                            padding-right: 15px;
-                            padding-bottom: 10px;
-                            padding-top: 10px;
-                            color: #5c5c5c;
-                            font-size: 12px;
-                        "
+                        style="padding-left: 15px; padding-right: 15px; padding-bottom: 10px; padding-top: 10px; color: #5c5c5c; font-size: 12px"
                     >
-                        &copy; {{current_year}} {{white_label_company_name}}
+                        &copy; {{ current_year }} {{ white_label_company_name }}
                     </td>
                 </tr>
             </table>

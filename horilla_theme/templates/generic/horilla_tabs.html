@@ -2,217 +2,212 @@
 {% get_company as theme_obj %}
 
 <style>
-	.oh-tabs__tab {
-		padding: 4px 8px; /* py-1 (4px top/bottom), px-2 (8px left/right) */
-		border-radius: 6px; /* rounded-md */
-		font-size: 0.75rem; /* text-xs = 12px (0.75rem) */
-		display: flex; /* flex */
-		align-items: center; /* items-center */
-		gap: 0.5rem; /* gap-2 = 8px */
-		transition-property: all; /* transition */
-		transition-duration: 300ms; /* duration-300 */
-		border: 1px solid #f6f6f6; /* border border-dark-50 */
-		color: #1f2937; /* text-gray-800 = #1f2937 */
-	}
+    .oh-tabs__tab {
+    	padding: 4px 8px; /* py-1 (4px top/bottom), px-2 (8px left/right) */
+    	border-radius: 6px; /* rounded-md */
+    	font-size: 0.75rem; /* text-xs = 12px (0.75rem) */
+    	display: flex; /* flex */
+    	align-items: center; /* items-center */
+    	gap: 0.5rem; /* gap-2 = 8px */
+    	transition-property: all; /* transition */
+    	transition-duration: 300ms; /* duration-300 */
+    	border: 1px solid #f6f6f6; /* border border-dark-50 */
+    	color: #1f2937; /* text-gray-800 = #1f2937 */
+    }
 
-	/* Active tab */
-	.oh-tabs__tab--active {
-		background-color: #fcedeb; /* bg-primary-300 */
-		color: {{ theme_obj.primary_600|default:"#E54F38" }}; /* text-primary-600 */
-		border: 1px solid color: {{ theme_obj.primary_600|default:"#E54F38" }}; /* border-primary-600 */
-	}
-	.oh-tabs__content {
-		display: none;
-	}
-	.oh-tabs__content--active {
-		display: block;
-	}
+    /* Active tab */
+    .oh-tabs__tab--active {
+    	background-color: #fcedeb; /* bg-primary-300 */
+    	color: {{ theme_obj.primary_600|default:"#E54F38" }}; /* text-primary-600 */
+    	border: 1px solid color: {{ theme_obj.primary_600|default:"#E54F38" }}; /* border-primary-600 */
+    }
+    .oh-tabs__content {
+    	display: none;
+    }
+    .oh-tabs__content--active {
+    	display: block;
+    }
 </style>
 
 <div id="{{view_id}}">
-	{% if show_filter_tags %}
-		{% include "generic/filter_tags.html" %}
-	{% endif %}
+    {% if show_filter_tags %}
+        {% include "generic/filter_tags.html" %}
+    {% endif %}
 
-	<div class="bg-white p-3 rounded-md shadow-card oh-tabs">
-		<div class="flex flex-wrap gap-2 justify-between mb-3">
-			<div class="flex gap-1 flex-wrap">
-				{% for tab in tabs %}
-				<div class="relative inline-block dropdown-wrapper-tab">
-					<button
-						class="oh-tabs__tab flex {% if forloop.counter == 1 and not active_target %} oh-tabs__tab--active {% endif %}"
-						data-tab-index="{{ forloop.counter0 }}"
-						data-target="#{{view_id}}{{forloop.counter}}"
-						data-path="{{request.path}}"
-						onclick="
-								switchTab($(this));
+    <div class="bg-white p-3 rounded-md shadow-card oh-tabs">
+        <div class="flex flex-wrap gap-2 justify-between mb-3">
+            <div class="flex gap-1 flex-wrap">
+                {% for tab in tabs %}
+                    <div class="relative inline-block dropdown-wrapper-tab">
+                        <button
+                            class="oh-tabs__tab flex {% if forloop.counter == 1 and not active_target %} oh-tabs__tab--active {% endif %}"
+                            data-tab-index="{{ forloop.counter0 }}"
+                            data-target="#{{view_id}}{{forloop.counter}}"
+                            data-path="{{request.path}}"
+                            onclick="switchTab($(this));
 								if (!$(this).attr('data-loaded')) {
 									htmx.ajax('GET', '{{tab.url}}', {target: '#{{view_id}}{{forloop.counter}}'});
 									this.setAttribute('data-loaded', 'true');
-								}
-							"
-					>
-						<span
-							class="w-6 h-6 bg-primary-600 rounded-full text-white flex items-center justify-center tab-badge"
-							id="badge-{{view_id}}{{forloop.counter}}"
-							{% if tab.badge_label %}
-								data-badge-label="{{tab.badge_label}}"
-								title="{{tab.badge|default:0}} {{tab.badge_label|default:"Items"}}"
-							{% else %}
-								title="{{tab.badge|default:0}} {% trans 'Items' %}"
-							{% endif %}
-							onclick="event.stopPropagation()"
-						>
-							{{ tab.badge|default:0 }}
-						</span>
+								}"
+                        >
+                            <span
+                                class="w-6 h-6 bg-primary-600 rounded-full text-white flex items-center justify-center tab-badge"
+                                id="badge-{{view_id}}{{forloop.counter}}"
+                                {% if tab.badge_label %}
+                                    data-badge-label="{{tab.badge_label}}"
+                                    title='{{tab.badge|default:0}} {{tab.badge_label|default:"Items"}}'
+                                {% else %}
+                                    title="{{tab.badge|default:0}} {% trans 'Items' %}"
+                                {% endif %}
+                                onclick="event.stopPropagation()"
+                            >
+                                {{ tab.badge|default:0 }}
+                            </span>
 
-						{{ tab.title }} {% if tab.actions %}
-						<span
-							class="ps-3 cursor-pointer w-[20px]"
-							onclick="actionClick(event)"
-							title="Actions"
-						>
-							<i
-								class="fa-solid fa-ellipsis-vertical text-black mr-1"
-							></i>
-						</span>
-						{% endif %}
-					</button>
+                            {{ tab.title }} {% if tab.actions %}
+                                <span
+                                    class="ps-3 cursor-pointer w-[20px]"
+                                    onclick="actionClick(event)"
+                                    title="Actions"
+                                >
+                                    <i class="fa-solid fa-ellipsis-vertical text-black mr-1"></i>
+                                </span>
+                            {% endif %}
+                        </button>
 
-					{% if tab.actions %}
-					<div
-						class="dropdown-menu absolute right-0 min-w-[100px] bg-white rounded-lg shadow-card py-2 hidden z-50 transition-all duration-200"
-					>
-						<ul class="text-xs">
-							{% for action in tab.actions %}
-								{% if instance %}
-									{% if action.accessibility|accessibility:instance %}
-										<li>
-											<a
-												{{ action.attrs|safe }}
-												class="block w-full text-left px-3 py-1 hover:text-primary-600 transition duration-300 cursor-pointer"
-											>
-												{{ action.action }}
-											</a>
-										</li>
-									{% endif %}
-								{% else %}
-									<li>
-										<a
-											{{ action.attrs|safe }}
-											class="block w-full text-left px-3 py-1 hover:text-primary-600 transition duration-300 cursor-pointer"
-										>
-											{{ action.action }}
-										</a>
-									</li>
-								{% endif %}
-							{% endfor %}
-						</ul>
-					</div>
-					{% endif %}
-				</div>
-				{% endfor %}
-			</div>
-		</div>
+                        {% if tab.actions %}
+                            <div class="dropdown-menu absolute right-0 min-w-[100px] bg-white rounded-lg shadow-card py-2 hidden z-50 transition-all duration-200">
+                                <ul class="text-xs">
+                                    {% for action in tab.actions %}
+                                        {% if instance %}
+                                            {% if action.accessibility|accessibility:instance %}
+                                                <li>
+                                                    <a
+                                                        {{ action.attrs|safe }}
+                                                        class="block w-full text-left px-3 py-1 hover:text-primary-600 transition duration-300 cursor-pointer"
+                                                    >
+                                                        {{ action.action }}
+                                                    </a>
+                                                </li>
+                                            {% endif %}
+                                        {% else %}
+                                            <li>
+                                                <a
+                                                    {{ action.attrs|safe }}
+                                                    class="block w-full text-left px-3 py-1 hover:text-primary-600 transition duration-300 cursor-pointer"
+                                                >
+                                                    {{ action.action }}
+                                                </a>
+                                            </li>
+                                        {% endif %}
+                                    {% endfor %}
+                                </ul>
+                            </div>
+                        {% endif %}
+                    </div>
+                {% endfor %}
+            </div>
+        </div>
 
-		<div class="oh-tabs__contents">
-			{% for tab in tabs %}
-			<div
-				class="oh-tabs__content {% if forloop.counter == 1 and not active_target %} oh-tabs__content--active {% endif %}"
-				id="{{view_id}}{{forloop.counter}}"
-			></div>
-			{% endfor %}
-		</div>
-	</div>
+        <div class="oh-tabs__contents">
+            {% for tab in tabs %}
+                <div
+                    class="oh-tabs__content {% if forloop.counter == 1 and not active_target %} oh-tabs__content--active {% endif %}"
+                    id="{{view_id}}{{forloop.counter}}"
+                >
+                </div>
+            {% endfor %}
+        </div>
+    </div>
 </div>
 
 <script>
-	function toggleHighlight(checkbox) {
-		if (!checkbox.legth > 0) return;
-		const row = checkbox.closest("tr");
-		if (checkbox.checked) {
-			row.classList.add("highlight");
-		} else {
-			row.classList.remove("highlight");
-		}
-	}
+    function toggleHighlight(checkbox) {
+    	if (!checkbox.legth > 0) return;
+    	const row = checkbox.closest("tr");
+    	if (checkbox.checked) {
+    		row.classList.add("highlight");
+    	} else {
+    		row.classList.remove("highlight");
+    	}
+    }
 
-	function switchTab($elem) {
-		let target = $elem.data("target")
-		let path = $elem.data("path")
+    function switchTab($elem) {
+    	let target = $elem.data("target")
+    	let path = $elem.data("path")
 
-		$(".oh-tabs__tab").removeClass('oh-tabs__tab--active')
-		$elem.addClass("oh-tabs__tab--active")
+    	$(".oh-tabs__tab").removeClass('oh-tabs__tab--active')
+    	$elem.addClass("oh-tabs__tab--active")
 
-		$(".oh-tabs__content").removeClass("oh-tabs__content--active")
-		$(target).addClass("oh-tabs__content--active")
+    	$(".oh-tabs__content").removeClass("oh-tabs__content--active")
+    	$(target).addClass("oh-tabs__content--active")
 
-		let url_target = `[data-target="${target}"]`
-		$.ajax({
-			type: "get",
-			url: "{% url 'active-tab' %}",
-			data: {
-				"path":path,
-				"target":url_target,
-			},
-			success: function (response) {
+    	let url_target = `[data-target="${target}"]`
+    	$.ajax({
+    		type: "get",
+    		url: "{% url 'active-tab' %}",
+    		data: {
+    			"path":path,
+    			"target":url_target,
+    		},
+    		success: function (response) {
 
-			}
-		});
-	}
+    		}
+    	});
+    }
 
-	$(document).ready(function () {
-		function triggerInitialTabLoad() {
-			var $scope = $("#{{view_id}}");
-			if (!$scope.length) return;
-			{% if active_target %}
-				var $preferred = $scope.find(`{{active_target|safe}}`).first();
-				if ($preferred.length) {
-					setTimeout(function () {
-						$preferred[0].click();
-					}, 25);
-				}
-			{% endif %}
+    $(document).ready(function () {
+    	function triggerInitialTabLoad() {
+    		var $scope = $("#{{view_id}}");
+    		if (!$scope.length) return;
+    		{% if active_target %}
+    			var $preferred = $scope.find(`{{active_target|safe}}`).first();
+    			if ($preferred.length) {
+    				setTimeout(function () {
+    					$preferred[0].click();
+    				}, 25);
+    			}
+    		{% endif %}
 
-			setTimeout(function () {
-				var $activeTab = $scope.find(".oh-tabs__tab--active").first();
-				if ($activeTab.length) {
-					$activeTab[0].click();
-				} else {
-					var $firstTab = $scope.find(".oh-tabs__tab").first();
-					if ($firstTab.length) {
-						$firstTab[0].click();
-					}
-				}
-			}, 100);
-		}
+    		setTimeout(function () {
+    			var $activeTab = $scope.find(".oh-tabs__tab--active").first();
+    			if ($activeTab.length) {
+    				$activeTab[0].click();
+    			} else {
+    				var $firstTab = $scope.find(".oh-tabs__tab").first();
+    				if ($firstTab.length) {
+    					$firstTab[0].click();
+    				}
+    			}
+    		}, 100);
+    	}
 
-		triggerInitialTabLoad();
-	});
+    	triggerInitialTabLoad();
+    });
 
-	function actionClick(event) {
-		event.stopPropagation(); // Prevents closing when clicking inside
-		const icon = event.currentTarget;
-		const dropdownMenu = $(icon)
-			.closest(".dropdown-wrapper-tab")
-			.find(".dropdown-menu");
+    function actionClick(event) {
+    	event.stopPropagation(); // Prevents closing when clicking inside
+    	const icon = event.currentTarget;
+    	const dropdownMenu = $(icon)
+    		.closest(".dropdown-wrapper-tab")
+    		.find(".dropdown-menu");
 
-		const isHidden = dropdownMenu.hasClass("hidden");
+    	const isHidden = dropdownMenu.hasClass("hidden");
 
-		// Close all other dropdowns
-		$(".dropdown-menu").not(dropdownMenu).addClass("hidden");
+    	// Close all other dropdowns
+    	$(".dropdown-menu").not(dropdownMenu).addClass("hidden");
 
-		dropdownMenu.toggleClass("hidden", !isHidden);
-	}
+    	dropdownMenu.toggleClass("hidden", !isHidden);
+    }
 
-	document.addEventListener("click", function (e) {
-		const $clickedWrapper = $(e.target).closest(".dropdown-wrapper-tab");
+    document.addEventListener("click", function (e) {
+    	const $clickedWrapper = $(e.target).closest(".dropdown-wrapper-tab");
 
-		$(".dropdown-wrapper-tab").each(function () {
-			const $wrapper = $(this);
-			if (!$wrapper.is($clickedWrapper)) {
-				$wrapper.find(".dropdown-menu").addClass("hidden");
-			}
-		});
-	});
+    	$(".dropdown-wrapper-tab").each(function () {
+    		const $wrapper = $(this);
+    		if (!$wrapper.is($clickedWrapper)) {
+    			$wrapper.find(".dropdown-menu").addClass("hidden");
+    		}
+    	});
+    });
 </script>

@@ -2,18 +2,17 @@
 {% load i18n %}
 
 {% block styles %}
-<style>
-	.select2-container--default {
-		padding-bottom: 0 !important;
-	}
-    .oh-main__topbar {
-        padding-top:0px;
-    }
-</style>
+    <style>
+        .select2-container--default {
+            padding-bottom: 0 !important;
+        }
+        .oh-main__topbar {
+            padding-top: 0px;
+        }
+    </style>
 {% endblock %}
 
 {% block content %}
-
     <div class="oh-wrapper oh-main__topbar">
         <div class="oh-main__titlebar oh-main__titlebar--left">
             <div style="display: flow">
@@ -29,12 +28,7 @@
                         <select
                             id="managerSelect"
                             class="oh-select {% if not reporting_manager_dict %} hidden {% endif %}"
-                            style="
-                                align-items: center;
-                                background-color: #fff;
-                                border: 1px solid #aaa;
-                                border-radius: 2px;
-                            "
+                            style="align-items: center; background-color: #fff; border: 1px solid #aaa; border-radius: 2px"
                             name="manager_id"
                             title="{% trans 'Reporting Managers' %}"
                             hx-post="{% url 'organisation-chart' %}"
@@ -43,7 +37,14 @@
                             hx-trigger="load, change"
                         >
                             {% for manager_id, values in reporting_manager_dict.items %}
-                                <option value="{{ manager_id }}" {% if act_manager_id == manager_id %} selected {% endif %} >{{ values }}</option>
+                                <option
+                                    value="{{ manager_id }}"
+                                    {% if act_manager_id == manager_id %}
+                                        selected
+                                    {% endif %}
+                                >
+                                    {{ values }}
+                                </option>
                             {% endfor %}
                         </select>
                     </div>
@@ -60,10 +61,11 @@
                     autocomplete="false"
                     id="searchInput"
                 >
-                <i class="fas fa-search absolute left-3 top-[1px] bottom-0 m-auto flex items-center opacity-50 text-xs"></i>
+                <i
+                    class="fas fa-search absolute left-3 top-[1px] bottom-0 m-auto flex items-center opacity-50 text-xs"
+                ></i>
             </div>
         </div>
     </div>
     <div class="oh-wrapper" id="chart_target"></div>
-
 {% endblock %}

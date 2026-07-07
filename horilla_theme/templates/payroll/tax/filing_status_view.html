@@ -2,12 +2,11 @@
 {% load static i18n %}
 
 {% block content %}
-{% include "generic/components.html" %}
-<div hx-get="{% url 'filing-status-nav' %}?{{request.GET.urlencode}}" hx-trigger="load">
-    <div class="mt-5 oh-wrapper animated-background" style="height: 80px"></div>
-</div>
-<div id="FilingStatusList" class="oh-wrapper">
-    <div class="mt-5 oh-wrapper animated-background"></div>
-
-</div>
+    {% include "generic/components.html" %}
+    <div hx-get="{% url 'filing-status-nav' %}?{{request.GET.urlencode}}" hx-trigger="load">
+        <div class="mt-5 oh-wrapper animated-background" style="height: 80px"></div>
+    </div>
+    <div id="FilingStatusList" class="oh-wrapper">
+        <div class="mt-5 oh-wrapper animated-background"></div>
+    </div>
 {% endblock %}

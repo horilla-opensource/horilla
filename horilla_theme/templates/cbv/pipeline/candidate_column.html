@@ -1,41 +1,41 @@
 {% load i18n %}
 <style>
-	.tooltip {
-		position: relative;
-		display: inline-block; /* Ensures that the tooltip container doesn't stretch to the full width */
-	}
+    .tooltip {
+        display: inline-block; /* Ensures that the tooltip container doesn't stretch to the full width */
+        position: relative;
+    }
 
-	.tooltip .tooltiptext {
-		visibility: hidden;
-		width: auto; /* Allow the tooltip width to adjust based on content */
-		max-width: auto; /* Limit the maximum width of the tooltip to prevent it from overflowing */
-		background-color: green;
-		color: white;
-		text-align: center;
-		border-radius: 6px;
-		padding: 5px;
-		position: absolute;
-		z-index: 1;
-		bottom: 5%;
-		left: 50%;
-		transform: translateX(5%);
-		opacity: 0;
-		transition: opacity 0.3s;
-		white-space: nowrap; /* Prevents the text from wrapping */
-		overflow: hidden; /* Hides any overflowed content */
-		font-size: 15px;
-	}
+    .tooltip .tooltiptext {
+        visibility: hidden;
+        z-index: 1;
+        position: absolute;
+        bottom: 5%;
+        left: 50%;
+        width: auto; /* Allow the tooltip width to adjust based on content */
+        max-width: auto; /* Limit the maximum width of the tooltip to prevent it from overflowing */
+        padding: 5px;
+        overflow: hidden; /* Hides any overflowed content */
+        transform: translateX(5%);
+        border-radius: 6px;
+        background-color: green;
+        color: white;
+        font-size: 15px;
+        text-align: center;
+        white-space: nowrap; /* Prevents the text from wrapping */
+        opacity: 0;
+        transition: opacity 0.3s;
+    }
 
-	.tooltip:hover .tooltiptext {
-		visibility: visible;
-		opacity: 1;
-	}
+    .tooltip:hover .tooltiptext {
+        visibility: visible;
+        opacity: 1;
+    }
 </style>
 <div
-	class="oh-table-config__td cursor-pointer"
-	style="text-decoration: none; width: 150px !important"
+    class="oh-table-config__td cursor-pointer"
+    style="text-decoration: none; width: 150px !important"
 >
-	{% for interview_schedule in instance.candidate_interview.all %}
+    {% for interview_schedule in instance.candidate_interview.all %}
         {% if interview_schedule.interview_date|date:"Y-m-d" == now|date:"Y-m-d" %}
             <div
                 class="d-flex"
@@ -53,13 +53,13 @@
                         style="width: max-content; margin-top: 100%; font-weight: bold"
                     >
                         {% trans "INTERVIEW : Today at" %}
-                        {{interview_schedule.interview_time}} {% trans "with" %}
-                        {{interview_schedule.employee_id.all|join:", "}}
+                        {{ interview_schedule.interview_time }} {% trans "with" %}
+                        {{ interview_schedule.employee_id.all|join:", " }}
                     </span>
                 </span>
             </div>
         {% endif %}
     {% endfor %}
 
-	<span title="{{instance}}">{{instance|truncatechars:15}} </span>
+    <span title="{{instance}}">{{ instance|truncatechars:15 }} </span>
 </div>
