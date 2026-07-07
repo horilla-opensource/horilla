@@ -1,124 +1,108 @@
-{% extends 'settings.html' %} {% block settings %}
-
-<script>
-
-  function checkSelected(names, target, initial = false) {
-    names = JSON.parse(`${names}`);
-    $.each(names, function (indexInArray, valueOfElement) {
-      if (!initial) {
-        $(target)
-          .find(`[value=${valueOfElement}]`)
-          .prop("checked", true)
-          .change();
-      } else {
-        $(target).find(`[value=${valueOfElement}]`).prop("checked", true);
-      }
-    });
-  }
-  var showSearch = true
-</script>
-
-{% include "base/auth/permission_accordion.html" %}
-
-<script>
-  // Inner accordion logic — rebind after page load or HTMX swap
-
-  $(document).on("click", ".inner-accordion-toggle", function (e) {
-      const $toggle = $(this);
-
-      // Find the correct content (scoped)
-      const $content = $toggle
-          .parent()
-          .find(".inner-accordion-content")
-          .first();
-
-      if (!$content.length) return;
-
-      const isOpen =
-          $content.css("max-height") !== "0px" &&
-          $content.css("max-height") !== "none";
-
-      if (isOpen) {
-          $content.css({
-              "max-height": "0",
-              "opacity": "0",
+{% extends 'settings.html' %}
+{% block settings %}
+    <script>
+        function checkSelected(names, target, initial = false) {
+          names = JSON.parse(`${names}`);
+          $.each(names, function (indexInArray, valueOfElement) {
+            if (!initial) {
+              $(target)
+                .find(`[value=${valueOfElement}]`)
+                .prop("checked", true)
+                .change();
+            } else {
+              $(target).find(`[value=${valueOfElement}]`).prop("checked", true);
+            }
           });
-      } else {
-          $content.css({
-              "max-height": $content[0].scrollHeight + "px",
-              "opacity": "1",
+        }
+        var showSearch = true
+    </script>
+
+    {% include "base/auth/permission_accordion.html" %}
+
+    <script>
+        // Inner accordion logic — rebind after page load or HTMX swap
+
+        $(document).on("click", ".inner-accordion-toggle", function (e) {
+            const $toggle = $(this);
+
+            // Find the correct content (scoped)
+            const $content = $toggle
+                .parent()
+                .find(".inner-accordion-content")
+                .first();
+
+            if (!$content.length) return;
+
+            const isOpen =
+                $content.css("max-height") !== "0px" &&
+                $content.css("max-height") !== "none";
+
+            if (isOpen) {
+                $content.css({
+                    "max-height": "0",
+                    "opacity": "0",
+                });
+            } else {
+                $content.css({
+                    "max-height": $content[0].scrollHeight + "px",
+                    "opacity": "1",
+                });
+            }
+
+            // Resize outer accordion
+            const $outerPanel = $toggle.closest(".accordion-panel-gp");
+            if ($outerPanel.length) {
+                setTimeout(function () {
+                    $outerPanel.css(
+                        "max-height",
+                        $outerPanel[0].scrollHeight + "px"
+                    );
+                }, 250);
+            }
+        });
+
+        function updateBadge() {
+          $(".accordion-wrapper").each(function () {
+            const wrapper = $(this);
+
+            wrapper.find(".panel.view-employees").each(function () {
+              const panel = $(this);
+              const badge = panel.prev(".inner-accordion-toggle").find(".permission-badge");
+              const checkedCount = panel.find("[name=permissions]:checked").length;
+
+              badge.text(checkedCount);
+              badge.attr("title", checkedCount + " Permissions");
+            });
+
+            wrapper.find("table").each(function () {
+              const table = $(this);
+              const allCheckboxes = table.find("tbody [name=permissions]");
+              const checkedCheckboxes = table.find("tbody [name=permissions]:checked");
+              const selectAll = table.find(".row-permission__select-all");
+
+              selectAll.prop("checked", allCheckboxes.length === checkedCheckboxes.length);
+            });
+
+            wrapper.find("tbody tr").each(function () {
+              const row = $(this);
+              const rowPermissionCheckbox = row.find(".row-permission");
+              const rowPermissionCount = row.find("[name=permissions]:checked").length;
+
+              rowPermissionCheckbox.prop("checked", rowPermissionCount === 4);
+            });
           });
-      }
+        }
 
-      // Resize outer accordion
-      const $outerPanel = $toggle.closest(".accordion-panel-gp");
-      if ($outerPanel.length) {
-          setTimeout(function () {
-              $outerPanel.css(
-                  "max-height",
-                  $outerPanel[0].scrollHeight + "px"
-              );
-          }, 250);
-      }
-  });
+        // Select all per table
+        function selectAllPermissions(source) {
+          const isChecked = $(source).is(":checked");
+          const table = $(source).closest("table");
+          table.find("tbody input.row-permission").prop("checked", isChecked).trigger("change");
+        }
 
-  function updateBadge() {
-    $(".accordion-wrapper").each(function () {
-      const wrapper = $(this);
-
-      wrapper.find(".panel.view-employees").each(function () {
-        const panel = $(this);
-        const badge = panel.prev(".inner-accordion-toggle").find(".permission-badge");
-        const checkedCount = panel.find("[name=permissions]:checked").length;
-
-        badge.text(checkedCount);
-        badge.attr("title", checkedCount + " Permissions");
-      });
-
-      wrapper.find("table").each(function () {
-        const table = $(this);
-        const allCheckboxes = table.find("tbody [name=permissions]");
-        const checkedCheckboxes = table.find("tbody [name=permissions]:checked");
-        const selectAll = table.find(".row-permission__select-all");
-
-        selectAll.prop("checked", allCheckboxes.length === checkedCheckboxes.length);
-      });
-
-      wrapper.find("tbody tr").each(function () {
-        const row = $(this);
-        const rowPermissionCheckbox = row.find(".row-permission");
-        const rowPermissionCount = row.find("[name=permissions]:checked").length;
-
-        rowPermissionCheckbox.prop("checked", rowPermissionCount === 4);
-      });
-    });
-  }
-
-  // Debounced permission update + badge refresh
-  let permissionChangeTimeout;
-
-  // $(document).on("change", ".view-employees [name=permissions]", function (e) {
-  //   clearTimeout(permissionChangeTimeout);
-
-  //   const target = $(this);
-  //   permissionChangeTimeout = setTimeout(function () {
-  //     updateBadge();
-  //     updatePermissions(target.closest(".panel.view-employees"));
-  //   }, 150);
-  // });
-
-  // Select all per table
-  function selectAllPermissions(source) {
-    const isChecked = $(source).is(":checked");
-    const table = $(source).closest("table");
-    table.find("tbody input.row-permission").prop("checked", isChecked).trigger("change");
-  }
-
-  // Trigger badge count on load (for already checked states)
-  $(document).ready(() => {
-    updateBadge();
-  });
-  </script>
-
-
+        // Trigger badge count on load (for already checked states)
+        $(document).ready(() => {
+          updateBadge();
+        });
+    </script>
 {% endblock settings %}
