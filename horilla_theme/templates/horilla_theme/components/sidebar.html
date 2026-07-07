@@ -59,6 +59,19 @@
         left: 13rem;
     }
 
+    /* Floating action button: track sidebar width (collapsed / hover / pinned) */
+    #sidebar ~ #floating-buttons .fab-container {
+        left: 4rem;
+        transition:
+            left 0.22s cubic-bezier(0.4, 0, 0.2, 1),
+            transform 0.3s ease,
+            box-shadow 0.3s ease;
+    }
+    #sidebar:hover ~ #floating-buttons .fab-container,
+    #sidebar.sidebar-pinned ~ #floating-buttons .fab-container {
+        left: 13rem;
+    }
+
     /* Company name / link in sidebar header */
     #sidebar .oh-sidebar__company-details {
         display: flex;
@@ -440,7 +453,7 @@
                 </div>
             {% endfor %}
             {% comment %} {{ request.active_company }} {% endcomment %}
-            {% include "horilla_theme/components/sidebar/bottom_menu.html" %}
+            {% comment %} {% include "horilla_theme/components/sidebar/bottom_menu.html" %} {% endcomment %}
         </nav>
     </div>
     <!-- Flyout panel: populated and positioned by JS on hover -->
