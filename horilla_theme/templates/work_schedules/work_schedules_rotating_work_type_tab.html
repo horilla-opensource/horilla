@@ -1,0 +1,25 @@
+{% load i18n static %}
+
+<div class="border border-[#ebebeb] rounded-md mb-5">
+    <div hx-get="{% url 'rotating-navbar-view' %}" hx-trigger="load"></div>
+
+    <div
+        class="oh-checkpoint-badge mb-2"
+        id="selectedInstances"
+        data-ids="[]"
+        data-clicked=""
+        style="display: none"
+    ></div>
+
+    <div class="oh-wrapper" id="listContainer">
+        <div class="animated-background"></div>
+    </div>
+
+    <div class="oh-activity-sidebar" id="activitySidebar" style="z-index: 1000">
+        <div class="oh-activity-sidebar__body" id="commentContainer"></div>
+    </div>
+</div>
+
+<script src="{% static '/base/actions.js' %}"></script>
+<script src="{% static 'basedOn.js' %}"></script>
+<script src="{% static 'cbv/work_type_request/work_request_bulk_action.js' %}"></script>

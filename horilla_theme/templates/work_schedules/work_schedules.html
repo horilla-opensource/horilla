@@ -1,0 +1,128 @@
+{% extends "index.html" %}
+{% load i18n %}
+
+{% block content %}
+    <style>
+        .oh-tabs__tab {
+            padding: 4px 8px;
+            border-radius: 6px;
+            font-size: 0.75rem;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            transition-property: all;
+            transition-duration: 300ms;
+            border: 1px solid #f6f6f6;
+            color: #1f2937;
+        }
+
+        .oh-tabs__tab--active {
+            background-color: #fcedeb;
+            color: #e54f38;
+            border: 1px solid #e54f38;
+        }
+    </style>
+
+    <div class="flex flex-wrap justify-between items-center mb-3">
+        <h3 class="text-lg font-semibold">{% trans "Work Schedules" %}</h3>
+    </div>
+
+    <div class="bg-white p-3 rounded-md shadow-card oh-tabs">
+        <div class="flex gap-1 flex-wrap mb-3">
+            <button
+                type="button"
+                class="oh-tabs__tab work-schedules-tab-btn"
+                data-tab-id="rotating-shift"
+                data-url="{% url 'work-schedules-rotating-shift-tab' %}"
+            >
+                {% trans "Rotating Shift Assign" %}
+            </button>
+            <button
+                type="button"
+                class="oh-tabs__tab work-schedules-tab-btn"
+                data-tab-id="rotating-work-type"
+                data-url="{% url 'work-schedules-rotating-work-type-tab' %}"
+            >
+                {% trans "Rotating Work Type Assign" %}
+            </button>
+            <button
+                type="button"
+                class="oh-tabs__tab work-schedules-tab-btn"
+                data-tab-id="shift-roster"
+                data-url="{% url 'work-schedules-shift-roster-tab' %}"
+            >
+                {% trans "Shift Roster" %}
+            </button>
+        </div>
+
+        <div id="workSchedulesContent" class="oh-wrapper"></div>
+    </div>
+
+    <script>
+        (function () {
+            var STORAGE_KEY = "activeWorkSchedulesTab";
+
+            function loadWorkSchedulesTab(buttonEl, persist) {
+                if (!buttonEl || typeof htmx === "undefined") return;
+                var url = buttonEl.getAttribute("data-url");
+                if (!url) return;
+                var tabId = buttonEl.getAttribute("data-tab-id");
+                document.querySelectorAll(".work-schedules-tab-btn").forEach(function (btn) {
+                    btn.classList.remove("oh-tabs__tab--active");
+                });
+                buttonEl.classList.add("oh-tabs__tab--active");
+                if (persist !== false && tabId) {
+                    try {
+                        localStorage.setItem(STORAGE_KEY, tabId);
+                    } catch (_) {}
+                }
+                htmx.ajax("GET", url, {
+                    target: "#workSchedulesContent",
+                    swap: "innerHTML",
+                });
+            }
+
+            function restoreWorkSchedulesTab() {
+                if (!document.getElementById("workSchedulesContent")) return;
+
+                var savedTabId = null;
+                try {
+                    savedTabId = localStorage.getItem(STORAGE_KEY);
+                } catch (_) {}
+
+                var initialTab = null;
+                if (savedTabId) {
+                    initialTab = document.querySelector(
+                        '.work-schedules-tab-btn[data-tab-id="' + savedTabId.replace(/"/g, '\\"') + '"]'
+                    );
+                }
+                if (!initialTab) {
+                    initialTab = document.querySelector(
+                        '.work-schedules-tab-btn[data-tab-id="rotating-shift"]'
+                    );
+                }
+                loadWorkSchedulesTab(initialTab, false);
+            }
+
+            function runWhenHtmxReady(fn) {
+                if (typeof htmx !== "undefined") {
+                    fn();
+                    return;
+                }
+                document.addEventListener("DOMContentLoaded", fn, { once: true });
+            }
+
+            if (!window._workSchedulesTabsClickBound) {
+                window._workSchedulesTabsClickBound = true;
+                document.addEventListener("click", function (event) {
+                    var buttonEl = event.target.closest(".work-schedules-tab-btn");
+                    if (!buttonEl) return;
+                    event.preventDefault();
+                    loadWorkSchedulesTab(buttonEl);
+                });
+            }
+
+            runWhenHtmxReady(restoreWorkSchedulesTab);
+        })();
+    </script>
+{% endblock content %}

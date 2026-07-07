@@ -1425,10 +1425,16 @@ def object_delete(request, obj_id, **kwargs):
     if (
         redirect_path
         and request.headers.get("HX-Request") == "true"
-        and redirect_path.startswith("/employee/document-request-view")
+        and (
+            redirect_path.startswith("/employee/document-request-view")
+            or redirect_path.startswith("/employee/requests/")
+        )
     ):
         referer = request.META.get("HTTP_REFERER", "")
-        if "/employee/document-request-view" in referer:
+        if (
+            "/employee/document-request-view" in referer
+            or "/employee/requests/" in referer
+        ):
             qs = urlparse(referer).query
             filter_url = reverse("document-request-filter-view")
             if qs:
@@ -2464,7 +2470,10 @@ def rotating_work_individual_view(request, instance_id):
     HTTP_REFERER = request.META.get("HTTP_REFERER", None)
     context["close_hx_url"] = ""
     context["close_hx_target"] = ""
-    if HTTP_REFERER and HTTP_REFERER.endswith("rotating-work-type-assign/"):
+    if HTTP_REFERER and (
+        HTTP_REFERER.endswith("rotating-work-type-assign/")
+        or HTTP_REFERER.endswith("work-schedules/")
+    ):
         context["close_hx_url"] = "/rotating-work-type-assign-view"
         context["close_hx_target"] = "#view-container"
     elif HTTP_REFERER:
@@ -2567,7 +2576,10 @@ def rotating_work_type_assign_redirect(request, obj_id=None, employee_id=None):
         )
 
     elif hx_target and hx_target == "rotating-work-container":
-        if hx_current_path == "employee/rotating-work-type-assign/":
+        if hx_current_path in (
+            "employee/rotating-work-type-assign/",
+            "employee/work-schedules/",
+        ):
             rwork_type_requests = RotatingWorkTypeAssign.objects.all()
             previous_data = request.GET.urlencode()
             if rwork_type_requests.exists():
@@ -3141,7 +3153,10 @@ def rotating_shift_individual_view(request, instance_id):
     HTTP_REFERER = request.META.get("HTTP_REFERER", None)
     context["close_hx_url"] = ""
     context["close_hx_target"] = ""
-    if HTTP_REFERER and HTTP_REFERER.endswith("rotating-shift-assign/"):
+    if HTTP_REFERER and (
+        HTTP_REFERER.endswith("rotating-shift-assign/")
+        or HTTP_REFERER.endswith("work-schedules/")
+    ):
         context["close_hx_url"] = "/rotating-shift-assign-view"
         context["close_hx_target"] = "#view-container"
     elif HTTP_REFERER:
@@ -3441,7 +3456,10 @@ def rotating_shift_assign_redirect(request, obj_id, employee_id):
         path = request.META.get("HTTP_HX_CURRENT_URL", None)
         parsed_url = urlparse(path)
         parsed_path = parsed_url.path.lstrip("/")
-        if parsed_path == "employee/rotating-shift-assign/":
+        if parsed_path in (
+            "employee/rotating-shift-assign/",
+            "employee/work-schedules/",
+        ):
             return redirect(f"/rotating-shift-request-list/?is_active=true")
         return redirect(
             f"/rotating-shift-individual-tab-view/{employee_id}?deleted=true"
@@ -3923,6 +3941,9 @@ def handle_wtr_close_hx_url(request):
     if HTTP_REFERER and "/" + "/".join(HTTP_REFERER.split("/")[3:]) == "/":
         close_hx_url = reverse("dashboard-work-type-request")
         close_hx_target = "#WorkTypeRequestApproveBody"
+    elif HTTP_REFERER and HTTP_REFERER.endswith("requests/"):
+        close_hx_url = f"/work-list-view?{previous_data}"
+        close_hx_target = "#listContainer"
     elif HTTP_REFERER and HTTP_REFERER.endswith("work-type-request-view/"):
         close_hx_url = f"/work-type-request-search?{previous_data}"
         close_hx_target = "#view-container"
@@ -4030,7 +4051,10 @@ def handle_wtr_redirect(request, work_type_request):
     if current_url == "/":
         return redirect(reverse("dashboard-work-type-request"))
 
-    if "/work-type-request-view/" in current_url:
+    if (
+        "/work-type-request-view/" in current_url
+        or "/employee/requests/" in current_url
+    ):
         return redirect(f"/work-type-request-search?{request.GET.urlencode()}")
 
     if "/employee-view/" in current_url:
@@ -4314,7 +4338,10 @@ def work_type_request_delete(request, obj_id):
     #         return HttpResponse("<script>window.location.reload()</script>")
 
     elif hx_target and hx_target == "work-shift":
-        if hx_current_path == "employee/work-type-request-view/":
+        if hx_current_path in (
+            "employee/work-type-request-view/",
+            "employee/requests/",
+        ):
             work_type_requests = WorkTypeRequest.objects.all()
             previous_data = request.GET.urlencode()
             if work_type_requests.exists():
@@ -5283,7 +5310,10 @@ def shift_request_delete(request, id):
     parsed_path = parsed_url.path.lstrip("/")
     if hx_target and hx_target == "shift-container":
         previous_data = request.GET.urlencode()
-        if parsed_path == "employee/shift-request-view/":
+        if parsed_path in (
+            "employee/shift-request-view/",
+            "employee/requests/",
+        ):
             return redirect(f"/list-shift-request/?deleted=true")
         else:
             return redirect(

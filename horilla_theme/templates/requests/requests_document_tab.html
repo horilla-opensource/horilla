@@ -1,0 +1,29 @@
+{% load i18n static %}
+
+<div class="oh-inner-sidebar-content border border-[#ebebeb] rounded-md mb-5">
+    <div hx-get="{% url 'document-request-nav-cbv' %}" hx-trigger="load"></div>
+
+    <p class="text-xs text-gray-500 mt-1 ml-2">
+        {% trans "Review document upload requests and submit required files from HR." %}
+    </p>
+
+    <div id="view-container" class="oh-wrapper p-1">
+        <div class="animated-background"></div>
+    </div>
+
+    <div class="oh-modal" id="viewFileModal" role="dialog" aria-labelledby="viewFileModal" aria-hidden="true">
+        <div class="oh-modal__dialog custom-dialog">
+            <div class="oh-modal__dialog-header">
+                <span class="oh-modal__dialog-title" id="viewFileModalLabel">{% trans "View File" %}</span>
+                <button
+                    class="oh-modal__close"
+                    aria-label="Close"
+                    onclick="$(this).closest('.oh-modal--show').removeClass('oh-modal--show')"
+                >
+                    <ion-icon name="close-outline" role="img" class="md hydrated" aria-label="close outline"></ion-icon>
+                </button>
+            </div>
+            <div class="oh-modal__dialog-body" id="viewFile"></div>
+        </div>
+    </div>
+</div>

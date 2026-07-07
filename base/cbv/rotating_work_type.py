@@ -208,6 +208,7 @@ class RotatingWorkNavView(HorillaNavView):
             """
 
     nav_title = _("Rotating Work Type Assign")
+    template_name = "generic/inline_nav.html"
     filter_body_template = "cbv/rotating_work_type/filter_work_rotate.html"
     filter_instance = RotatingWorkTypeAssignFilter()
     filter_form_context_name = "form"

@@ -311,6 +311,7 @@ class ShitRequestNav(HorillaNavView):
             )
 
     nav_title = _("Shift Requests")
+    template_name = "generic/inline_nav.html"
     filter_body_template = "cbv/shift_request/filter.html"
     filter_instance = ShiftRequestFilter()
     filter_form_context_name = "form"

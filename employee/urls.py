@@ -9,7 +9,7 @@ from django.urls import path
 from base.templatetags.horillafilters import app_installed
 from base.views import object_delete, object_duplicate
 from employee import dashboard as emp_dashboard
-from employee import not_in_out_dashboard, policies, views
+from employee import not_in_out_dashboard, policies, requests, views, work_schedules
 from employee.cbv import (
     action_type,
     allocations,
@@ -19,6 +19,7 @@ from employee.cbv import (
     employee_tags,
     employees,
     policy_cbv,
+    requests_nav,
 )
 from employee.forms import DisciplinaryActionForm
 from employee.models import DisciplinaryAction, Employee, EmployeeTag
@@ -430,6 +431,57 @@ urlpatterns = [
         "policies-discipline/policies-tab/",
         policies.policies_discipline_policies_tab,
         name="policies-discipline-policies-tab",
+    ),
+    path(
+        "work-schedules/",
+        work_schedules.work_schedules_view,
+        name="work-schedules-view",
+    ),
+    path(
+        "work-schedules/rotating-shift-tab/",
+        work_schedules.work_schedules_rotating_shift_tab,
+        name="work-schedules-rotating-shift-tab",
+    ),
+    path(
+        "work-schedules/rotating-work-type-tab/",
+        work_schedules.work_schedules_rotating_work_type_tab,
+        name="work-schedules-rotating-work-type-tab",
+    ),
+    path(
+        "work-schedules/shift-roster-tab/",
+        work_schedules.work_schedules_shift_roster_tab,
+        name="work-schedules-shift-roster-tab",
+    ),
+    path("requests/", requests.requests_view, name="requests-view"),
+    path(
+        "requests/shift-request-tab/",
+        requests.requests_shift_request_tab,
+        name="requests-shift-request-tab",
+    ),
+    path(
+        "requests/shift-inbox-tab/",
+        requests.requests_shift_inbox_tab,
+        name="requests-shift-inbox-tab",
+    ),
+    path(
+        "requests/work-type-tab/",
+        requests.requests_work_type_tab,
+        name="requests-work-type-tab",
+    ),
+    path(
+        "requests/document-tab/",
+        requests.requests_document_tab,
+        name="requests-document-tab",
+    ),
+    path(
+        "requests/shift-nav/",
+        requests_nav.RequestsShiftNav.as_view(),
+        name="requests-shift-nav",
+    ),
+    path(
+        "requests/shift-inbox-nav/",
+        requests_nav.RequestsShiftInboxNav.as_view(),
+        name="requests-shift-inbox-nav",
     ),
     path("search-policies/", policies.search_policies, name="search-policies"),
     # path("create-policy/", policies.create_policy, name="create-policy"),

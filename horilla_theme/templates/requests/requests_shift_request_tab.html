@@ -1,0 +1,34 @@
+{% load i18n static %}
+
+<div class="oh-inner-sidebar-content border border-[#ebebeb] rounded-md mb-5">
+    <div hx-get="{% url 'requests-shift-nav' %}" hx-trigger="load"></div>
+
+    <p class="text-xs text-gray-500 mt-1 ml-2">
+        {% trans "Submit and manage your shift change requests for approval." %}
+    </p>
+
+    <div
+        class="oh-checkpoint-badge mb-2"
+        id="selectedInstances"
+        data-ids="[]"
+        data-clicked=""
+        style="display: none"
+    ></div>
+    <div
+        class="oh-checkpoint-badge mb-2"
+        id="shiftselectedInstances"
+        data-ids="[]"
+        data-clicked=""
+        style="display: none"
+    ></div>
+
+    <div class="oh-wrapper" id="listContainer">
+        <div class="animated-background"></div>
+    </div>
+
+    <div class="oh-activity-sidebar" id="activitySidebar" style="z-index: 1000">
+        <div class="oh-activity-sidebar__body" id="commentContainer"></div>
+    </div>
+</div>
+
+<script src="{% static 'cbv/shift_request/shift_request_bulk_actions.js' %}"></script>

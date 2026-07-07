@@ -55,7 +55,10 @@ def htmx_refresh_document_request_container(request) -> Optional[HttpResponse]:
     if request.headers.get("HX-Request") != "true":
         return None
     referer = request.META.get("HTTP_REFERER", "")
-    if "/employee/document-request-view" not in referer:
+    if (
+        "/employee/document-request-view" not in referer
+        and "/employee/requests/" not in referer
+    ):
         return None
     qs = urlparse(referer).query
     base = reverse("document-request-filter-view")
@@ -328,6 +331,7 @@ class DocumentRequestNav(HorillaNavView):
             self.actions = None
 
     nav_title = _("Document Requests")
+    template_name = "generic/inline_nav.html"
     filter_body_template = "cbv/documents/document_filter.html"
     filter_instance = DocumentRequestFilter()
     filter_form_context_name = "form"

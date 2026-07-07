@@ -228,6 +228,7 @@ class WorkRequestNavView(HorillaNavView):
          """
 
     nav_title = _("Work Type Requests")
+    template_name = "generic/inline_nav.html"
     filter_body_template = "cbv/work_type_request/filter.html"
     filter_instance = WorkTypeRequestFilter()
     filter_form_context_name = "form"

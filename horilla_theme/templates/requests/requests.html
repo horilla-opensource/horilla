@@ -1,0 +1,136 @@
+{% extends "index.html" %}
+{% load i18n %}
+
+{% block content %}
+    <style>
+        .oh-tabs__tab {
+            padding: 4px 8px;
+            border-radius: 6px;
+            font-size: 0.75rem;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            transition-property: all;
+            transition-duration: 300ms;
+            border: 1px solid #f6f6f6;
+            color: #1f2937;
+        }
+
+        .oh-tabs__tab--active {
+            background-color: #fcedeb;
+            color: #e54f38;
+            border: 1px solid #e54f38;
+        }
+    </style>
+
+    <div class="flex flex-wrap justify-between items-center mb-3">
+        <h3 class="text-lg font-semibold">{% trans "Work Requests" %}</h3>
+    </div>
+
+    <div class="bg-white p-3 rounded-md shadow-card oh-tabs">
+        <div class="flex gap-1 flex-wrap mb-3">
+            <button
+                type="button"
+                class="oh-tabs__tab requests-tab-btn"
+                data-tab-id="shift-request"
+                data-url="{% url 'requests-shift-request-tab' %}"
+            >
+                {% trans "Shift Requests" %}
+            </button>
+            <button
+                type="button"
+                class="oh-tabs__tab requests-tab-btn"
+                data-tab-id="shift-inbox"
+                data-url="{% url 'requests-shift-inbox-tab' %}"
+            >
+                {% trans "Shift Inbox" %}
+            </button>
+            <button
+                type="button"
+                class="oh-tabs__tab requests-tab-btn"
+                data-tab-id="work-type"
+                data-url="{% url 'requests-work-type-tab' %}"
+            >
+                {% trans "Work Type Requests" %}
+            </button>
+            <button
+                type="button"
+                class="oh-tabs__tab requests-tab-btn"
+                data-tab-id="document"
+                data-url="{% url 'requests-document-tab' %}"
+            >
+                {% trans "Document Requests" %}
+            </button>
+        </div>
+
+        <div id="requestsContent" class="oh-wrapper"></div>
+    </div>
+
+    <script>
+        (function () {
+            var STORAGE_KEY = "activeRequestsTab";
+
+            function loadRequestsTab(buttonEl, persist) {
+                if (!buttonEl || typeof htmx === "undefined") return;
+                var url = buttonEl.getAttribute("data-url");
+                if (!url) return;
+                var tabId = buttonEl.getAttribute("data-tab-id");
+                document.querySelectorAll(".requests-tab-btn").forEach(function (btn) {
+                    btn.classList.remove("oh-tabs__tab--active");
+                });
+                buttonEl.classList.add("oh-tabs__tab--active");
+                if (persist !== false && tabId) {
+                    try {
+                        localStorage.setItem(STORAGE_KEY, tabId);
+                    } catch (_) {}
+                }
+                htmx.ajax("GET", url, {
+                    target: "#requestsContent",
+                    swap: "innerHTML",
+                });
+            }
+
+            function restoreRequestsTab() {
+                if (!document.getElementById("requestsContent")) return;
+
+                var savedTabId = null;
+                try {
+                    savedTabId = localStorage.getItem(STORAGE_KEY);
+                } catch (_) {}
+
+                var initialTab = null;
+                if (savedTabId) {
+                    initialTab = document.querySelector(
+                        '.requests-tab-btn[data-tab-id="' + savedTabId.replace(/"/g, '\\"') + '"]'
+                    );
+                }
+                if (!initialTab) {
+                    initialTab = document.querySelector(
+                        '.requests-tab-btn[data-tab-id="shift-request"]'
+                    );
+                }
+                loadRequestsTab(initialTab, false);
+            }
+
+            function runWhenHtmxReady(fn) {
+                if (typeof htmx !== "undefined") {
+                    fn();
+                    return;
+                }
+                document.addEventListener("DOMContentLoaded", fn, { once: true });
+            }
+
+            if (!window._requestsTabsClickBound) {
+                window._requestsTabsClickBound = true;
+                document.addEventListener("click", function (event) {
+                    var buttonEl = event.target.closest(".requests-tab-btn");
+                    if (!buttonEl) return;
+                    event.preventDefault();
+                    loadRequestsTab(buttonEl);
+                });
+            }
+
+            runWhenHtmxReady(restoreRequestsTab);
+        })();
+    </script>
+{% endblock content %}

@@ -64,6 +64,7 @@ class RosterHomeView(TemplateView):
 @method_decorator(login_required, name="dispatch")
 class RosterNavView(HorillaNavView):
     nav_title = _("Roster Planner")
+    template_name = "generic/inline_nav.html"
     search_url = reverse_lazy("roster-grid")
     search_swap_target = "#rosterGridContainer"
     filter_body_template = "base/roster/roster_filter.html"
