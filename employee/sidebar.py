@@ -23,11 +23,6 @@ SUBMENUS = [
         "redirect": reverse_lazy("ess-dashboard"),
     },
     {
-        "menu": _("Profile"),
-        "redirect": reverse_lazy("employee-profile"),
-        "accessibility": "employee.sidebar.profile_accessibility",
-    },
-    {
         "menu": _("Employees"),
         "redirect": reverse_lazy("employee-view"),
         "accessibility": "employee.sidebar.employee_accessibility",
@@ -37,32 +32,14 @@ SUBMENUS = [
         "redirect": reverse_lazy("organisation-chart"),
     },
     {
-        "menu": _("Document Requests"),
-        "redirect": reverse_lazy("document-request-view"),
-        "accessibility": "employee.sidebar.document_accessibility",
+        "menu": _("Work Requests"),
+        "redirect": reverse_lazy("requests-view"),
+        "accessibility": "employee.sidebar.requests_accessibility",
     },
     {
-        "menu": _("Shift Requests"),
-        "redirect": reverse_lazy("shift-request-view"),
-    },
-    {
-        "menu": _("Work Type Requests"),
-        "redirect": reverse_lazy("work-type-request-view"),
-    },
-    {
-        "menu": _("Rotating Shift Assign"),
-        "redirect": reverse_lazy("rotating-shift-assign"),
-        "accessibility": "employee.sidebar.rotating_shift_accessibility",
-    },
-    {
-        "menu": _("Rotating Work Type Assign"),
-        "redirect": reverse_lazy("rotating-work-type-assign"),
-        "accessibility": "employee.sidebar.rotating_work_type_accessibility",
-    },
-    {
-        "menu": _("Shift Roster"),
-        "redirect": reverse_lazy("roster-home"),
-        "accessibility": "employee.sidebar.shift_roster_accessibility",
+        "menu": _("Work Schedules"),
+        "redirect": reverse_lazy("work-schedules-view"),
+        "accessibility": "employee.sidebar.work_schedules_accessibility",
     },
     {
         "menu": _("Policies & Discipline"),
@@ -71,26 +48,14 @@ SUBMENUS = [
 ]
 
 
-def profile_accessibility(request, submenu, user_perms, *args, **kwargs):
-    accessible = False
-    try:
-        accessible = request.session["selected_company"] == "all" or str(
-            request.user.employee_get.employee_work_info.company_id.id
-        ) == str(request.session["selected_company"])
-    finally:
-        return accessible
-        # try:
-        #     if accessible:
-        #         submenu["redirect"] = reverse_lazy("employee-profile", kwargs={"obj_id": request.user.employee_get.id})
-        # except Exception:
-        #     # If an exception occurs, do nothing
-        #     pass
-
-
 def document_accessibility(request, submenu, user_perms, *args, **kwargs):
     return request.user.has_perm(
         "horilla_documents.view_documentrequest"
     ) or is_reportingmanager(request.user)
+
+
+def requests_accessibility(request, submenu, user_perms, *args, **kwargs):
+    return True
 
 
 def rotating_shift_accessibility(request, submenu, user_perms, *args, **kwargs):
@@ -108,6 +73,16 @@ def rotating_work_type_accessibility(request, submenu, user_perms, *args, **kwar
 def shift_roster_accessibility(request, submenu, user_perms, *args, **kwargs):
     return request.user.has_perm("base.view_roster") or is_reportingmanager(
         request.user
+    )
+
+
+def work_schedules_accessibility(request, submenu, user_perms, *args, **kwargs):
+    return (
+        rotating_shift_accessibility(request, submenu, user_perms, *args, **kwargs)
+        or rotating_work_type_accessibility(
+            request, submenu, user_perms, *args, **kwargs
+        )
+        or shift_roster_accessibility(request, submenu, user_perms, *args, **kwargs)
     )
 
 
