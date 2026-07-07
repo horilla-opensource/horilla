@@ -35,8 +35,7 @@
     }
 
     /* Active state label / chevron color */
-    .sideboxmain.sidebox-active .oh-sidebar-label,
-    .sideboxmain.active .oh-sidebar-label {
+    .sideboxmain.sidebox-active .oh-sidebar-label {
         color: #fff;
     }
     .sideboxmain.sidebox-active .sidebar-chevron {
@@ -127,7 +126,7 @@
     .sideboxmain {
         transition: background-color 0.18s ease, box-shadow 0.18s ease;
     }
-    /* sidebox-active = hover-only indicator (cleared on mouseleave). active = current page (persists). */
+    /* sidebox-active = hover-only indicator (cleared on mouseleave) */
     .sideboxmain.sidebox-active {
         background-color: #e54f38 !important;
         box-shadow: 0 4px 14px -4px rgba(227, 78, 56, 0.45);
@@ -164,10 +163,8 @@
     }
     #sidebar nav .sideboxmain:hover img,
     #sidebar nav .sideboxmain.sidebox-active img,
-    #sidebar nav .sideboxmain.active img,
     #sidebar nav .sideboxmain:hover svg:not(.sidebar-chevron),
-    #sidebar nav .sideboxmain.sidebox-active svg:not(.sidebar-chevron),
-    #sidebar nav .sideboxmain.active svg:not(.sidebar-chevron) {
+    #sidebar nav .sideboxmain.sidebox-active svg:not(.sidebar-chevron) {
         filter: brightness(0) invert(1) !important;
     }
 
@@ -275,23 +272,34 @@
         pointer-events: auto;
         transition: opacity 0.15s ease, transform 0.15s ease;
     }
-    #sidebarFlyout h5 {
-        margin-bottom: 4px;
-        padding: 4px 10px 8px;
-        border-bottom: 1px solid #f3f4f6;
-        color: #6b7280;
-        font-weight: 600;
-        font-size: 11px;
-        letter-spacing: 0.05em;
-        text-transform: uppercase;
-    }
     body.dark #sidebarFlyout {
         border-color: #374151;
         background: #1f2937;
     }
-    body.dark #sidebarFlyout h5 {
-        border-bottom-color: #374151;
-        color: #9ca3af;
+    body.dark
+
+    /* Flyout link hover highlight */
+    #sidebarFlyout a.sidebar-subnav-link {
+        color: #374151;
+        transition: background-color 0.12s ease, color 0.12s ease;
+    }
+    #sidebarFlyout a.sidebar-subnav-link:hover {
+        background-color: rgba(229, 79, 56, 0.08) !important;
+        color: #e54f38 !important;
+    }
+    #sidebarFlyout a.sidebar-subnav-link.oh-sidebar-active-link {
+        background-color: rgba(229, 79, 56, 0.12) !important;
+        color: #e54f38 !important;
+        font-weight: 600;
+    }
+    body.dark #sidebarFlyout a.sidebar-subnav-link { color: #d1d5db; }
+    body.dark #sidebarFlyout a.sidebar-subnav-link:hover {
+        background-color: rgba(229, 79, 56, 0.15) !important;
+        color: #f87060 !important;
+    }
+    body.dark #sidebarFlyout a.sidebar-subnav-link.oh-sidebar-active-link {
+        background-color: rgba(229, 79, 56, 0.20) !important;
+        color: #f87060 !important;
     }
 
     @media (prefers-reduced-motion: reduce) {
@@ -431,11 +439,12 @@
                     </ul>
                 </div>
             {% endfor %}
+            {% comment %} {{ request.active_company }} {% endcomment %}
+            {% include "horilla_theme/components/sidebar/bottom_menu.html" %}
         </nav>
     </div>
     <!-- Flyout panel: populated and positioned by JS on hover -->
     <div id="sidebarFlyout">
-        <h5 id="sidebarFlyoutTitle"></h5>
         <ul id="sidebarFlyoutList" class="space-y-0.5"></ul>
     </div>
 </div>
@@ -549,21 +558,31 @@
           try {
             if (btn.dataset.menu) localStorage.setItem("activeSidebarMenu", btn.dataset.menu);
           } catch (_) {}
-          document.querySelectorAll(".sideboxmain").forEach(function (el) { el.classList.remove("active"); });
-          btn.classList.add("active");
         }
 
         // ── Hover flyout helpers ─────────────────────────────────────────────
 
         var flyoutEl = document.getElementById("sidebarFlyout");
-        var flyoutTitleEl = document.getElementById("sidebarFlyoutTitle");
         var flyoutListEl = document.getElementById("sidebarFlyoutList");
         var flyoutCloseTimer = null;
         var currentFlyoutBtn = null;
 
         function positionFlyout(itemRect) {
           var sidebarRect = sidebarEl.getBoundingClientRect();
-          var left = sidebarRect.right + 6;
+          var sidebarRight = sidebarRect.right;
+
+          // getBoundingClientRect() fires at mouseenter while the sidebar's
+          // width transition (64px → 208px, 0.22s) is still mid-flight,
+          // so `right` can read as 64px even though the sidebar will expand
+          // to 208px. Clamp to the expanded target width whenever the sidebar
+          // is in hover/pinned state so the flyout never lands inside it.
+          if (sidebarEl.matches(':hover') || sidebarEl.classList.contains('sidebar-pinned')) {
+            var rootFontSize = parseFloat(getComputedStyle(document.documentElement).fontSize) || 16;
+            var expandedRight = sidebarRect.left + rootFontSize * 13; /* 13rem */
+            if (expandedRight > sidebarRight) sidebarRight = expandedRight;
+          }
+
+          var left = sidebarRight + 6;
           var top = itemRect.top;
           flyoutEl.style.left = left + "px";
           flyoutEl.style.top = top + "px";
@@ -585,10 +604,6 @@
           clearTimeout(flyoutCloseTimer);
 
           var label = btn.querySelector(".oh-sidebar-label");
-          var titleText = label ? label.textContent.trim() : (btn.getAttribute("aria-label") || "");
-          flyoutTitleEl.textContent = titleText;
-          flyoutTitleEl.style.display = titleText ? "" : "none";
-
           flyoutListEl.innerHTML = "";
           liItems.forEach(function (li) { flyoutListEl.appendChild(li.cloneNode(true)); });
           if (window.htmx) htmx.process(flyoutListEl);
@@ -660,15 +675,15 @@
             e.preventDefault();
             e.stopPropagation();
             var href = link.getAttribute("href") || link.getAttribute("hx-get") || "/";
-            // Capture owning module button BEFORE hideFlyout() nulls currentFlyoutBtn
+            // Capture the owning module button BEFORE hideFlyout() nulls currentFlyoutBtn
             var activeModuleBtn = currentFlyoutBtn;
             hideFlyout();
             if (isStandaloneUrl(href)) { window.location.href = href; return; }
             var target = document.getElementById("ohMainContent");
             if (!target || !window.htmx) { window.location.href = href; return; }
             document.querySelectorAll(".sidebar-subnav-link").forEach(function (l) { l.classList.remove("oh-sidebar-active-link"); });
-            flyoutListEl.querySelectorAll("a").forEach(function (a) { a.classList.remove("oh-sidebar-active-link"); });
             link.classList.add("oh-sidebar-active-link");
+            // activeModuleBtn is always the correct parent — no href-matching needed
             if (activeModuleBtn) setActiveSidebarMenu(activeModuleBtn);
             bumpGrace(1500);
             window.history.pushState({}, "", href);
@@ -760,8 +775,8 @@
           });
         }
 
-        // Re-highlight active link after HTMX navigation without closing accordion
-        document.addEventListener("htmx:pushUrl", function () {
+        // Re-highlight active module + link after any URL change (HTMX or browser back/forward)
+        function syncSidebarToUrl() {
           document.querySelectorAll(".sidebar-subnav-link").forEach(function (l) {
             l.classList.remove("oh-sidebar-active-link");
           });
@@ -778,7 +793,10 @@
             }
           });
           if (matchedBtn) setActiveSidebarMenu(matchedBtn);
-        });
+        }
+        document.addEventListener("htmx:pushUrl", syncSidebarToUrl);
+        document.addEventListener("htmx:afterSettle", syncSidebarToUrl);
+        window.addEventListener("popstate", syncSidebarToUrl);
 
         // ── Navigation click handlers ────────────────────────────────────────
 
