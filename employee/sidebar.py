@@ -65,12 +65,8 @@ SUBMENUS = [
         "accessibility": "employee.sidebar.shift_roster_accessibility",
     },
     {
-        "menu": _("Disciplinary Actions"),
-        "redirect": reverse_lazy("disciplinary-actions"),
-    },
-    {
-        "menu": _("Policies"),
-        "redirect": reverse_lazy("view-policies"),
+        "menu": _("Policies & Discipline"),
+        "redirect": reverse_lazy("policies-discipline-view"),
     },
 ]
 

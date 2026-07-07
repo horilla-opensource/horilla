@@ -55,6 +55,7 @@ class PoliciesNav(HorillaNavView):
     nav_title = _("Policies")
     search_url = reverse_lazy("search-policies")
     search_swap_target = "#policyContainer"
+    template_name = "generic/inline_nav.html"
 
     def __init__(self, **kwargs):
         super().__init__(**kwargs)

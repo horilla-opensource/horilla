@@ -54,6 +54,30 @@ def view_policies(request):
 
 
 @login_required
+def policies_discipline_view(request):
+    """
+    Policies & Discipline landing page with tabbed disciplinary/policy sections.
+    """
+    return render(request, "policies/policies_discipline.html")
+
+
+@login_required
+def policies_discipline_disciplinary_tab(request):
+    """
+    HTMX tab body for disciplinary actions under policies & discipline.
+    """
+    return render(request, "policies/policies_discipline_disciplinary_tab.html")
+
+
+@login_required
+def policies_discipline_policies_tab(request):
+    """
+    HTMX tab body for policies under policies & discipline.
+    """
+    return render(request, "policies/policies_discipline_policies_tab.html")
+
+
+@login_required
 @hx_request_required
 @permission_required("employee.add_policy")
 def create_policy(request):

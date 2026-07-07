@@ -34,6 +34,7 @@ BREADCRUMB_URL_NAMES = {
     "ess": "Employee",
     "offboarding": "Offboarding",
     "helpdesk": "Helpdesk",
+    "policies-discipline": "Policies & Discipline",
 }
 
 sidebar_urls = [
@@ -195,6 +196,8 @@ sidebar_urls = [
     "company-leaves-view",
     "offboarding-rules-view",
     "time-policies-view",
+    "audit-history",
+    "policies-discipline",
 ]
 remove_urls = [
     "feedback-detailed-view",

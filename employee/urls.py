@@ -416,6 +416,21 @@ urlpatterns = [
         name="get-employee-mail-preview",
     ),
     path("view-policies/", policies.view_policies, name="view-policies"),
+    path(
+        "policies-discipline/",
+        policies.policies_discipline_view,
+        name="policies-discipline-view",
+    ),
+    path(
+        "policies-discipline/disciplinary-tab/",
+        policies.policies_discipline_disciplinary_tab,
+        name="policies-discipline-disciplinary-tab",
+    ),
+    path(
+        "policies-discipline/policies-tab/",
+        policies.policies_discipline_policies_tab,
+        name="policies-discipline-policies-tab",
+    ),
     path("search-policies/", policies.search_policies, name="search-policies"),
     # path("create-policy/", policies.create_policy, name="create-policy"),
     path("create-policy/", policy_cbv.PolicyFormView.as_view(), name="create-policy"),

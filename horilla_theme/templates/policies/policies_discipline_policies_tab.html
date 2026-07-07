@@ -1,0 +1,16 @@
+{% load i18n %}
+
+<div class="border border-[#ebebeb] rounded-md mb-5">
+    <div hx-get="{% url 'policy-nav' %}" hx-trigger="load"></div>
+
+    <button
+        type="button"
+        id="policyContainerReload"
+        hidden
+        hx-get="{% url 'search-policies' %}"
+        hx-target="#policyContainer"
+        hx-swap="innerHTML"
+    ></button>
+
+    <div class="oh-wrapper" id="policyContainer"></div>
+</div>

@@ -120,6 +120,7 @@ class DisciplinaryActionsNav(HorillaNavView):
     filter_instance = DisciplinaryActionFilter()
     filter_form_context_name = "form"
     search_swap_target = "#listContainer"
+    template_name = "generic/inline_nav.html"
 
 
 class DynamicActionTypeFormView(HorillaFormView):
