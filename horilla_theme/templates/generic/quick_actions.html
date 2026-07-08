@@ -6,7 +6,7 @@
     </script>
 {% endif %}
 
-<div class="flex justify-between items-center mb-2 ml-2">
+<div class="flex justify-between items-center mb-2 {{ margin_class|default:'ml-2' }} {{ extra_class|default:'' }}">
     <div class="flex flex-wrap gap-1 items-center">
         <button
             class="quick-bulk-action px-4 py-2 bg-primary-600 text-white rounded-md text-xs hover:bg-primary-800 transition duration-300"

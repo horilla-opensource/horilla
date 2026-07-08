@@ -24,7 +24,9 @@
     </script>
 
     {% if bulk_select_option and queryset|length %}
-        {% include "generic/quick_actions.html" %}
+    <div class="ml-0">
+        {% include "generic/quick_actions.html" with margin_class="ml-0" %}
+    </div>
     {% endif %}
 
     <button
