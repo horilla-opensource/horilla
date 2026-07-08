@@ -89,6 +89,8 @@ class ActionTypeNav(HorillaNavView):
     Navigation bar for Action Type.
     """
 
+    template_name = "generic/inline_nav.html"
+
     def __init__(self, **kwargs: Any) -> None:
         super().__init__(**kwargs)
         self.search_url = reverse("action-type-list")
@@ -101,7 +103,7 @@ class ActionTypeNav(HorillaNavView):
                                 hx-get="{reverse('create-action-type')}"
                                 """
 
-    nav_title = _("Action Type")
+    nav_title = _("Disciplinary Action Type")
     filter_instance = ActionTypeFilter()
     search_swap_target = "#listContainer"
 

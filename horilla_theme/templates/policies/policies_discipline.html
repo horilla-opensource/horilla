@@ -46,6 +46,16 @@
             >
                 {% trans "Disciplinary Actions" %}
             </button>
+            {% if perms.employee.view_actiontype %}
+                <button
+                    type="button"
+                    class="oh-tabs__tab policies-discipline-tab-btn"
+                    data-tab-id="action-type"
+                    data-url="{% url 'policies-discipline-action-type-tab' %}"
+                >
+                    {% trans "Disciplinary Action Type" %}
+                </button>
+            {% endif %}
         </div>
 
         <div id="policiesDisciplineContent" class="oh-wrapper"></div>
@@ -90,7 +100,7 @@
                     );
                 }
                 if (!initialTab) {
-                    initialTab = document.querySelector('.policies-discipline-tab-btn[data-tab-id="policies"]');
+                    initialTab = document.querySelector(".policies-discipline-tab-btn");
                 }
                 loadPoliciesDisciplineTab(initialTab, false);
             }

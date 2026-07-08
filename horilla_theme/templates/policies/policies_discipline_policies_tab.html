@@ -3,6 +3,10 @@
 <div class="border border-[#ebebeb] rounded-md mb-5">
     <div hx-get="{% url 'policy-nav' %}" hx-trigger="load"></div>
 
+    <p class="text-xs text-gray-500 mt-1 ml-2">
+        {% trans "Create and manage company policies shared with employees." %}
+    </p>
+
     <button
         type="button"
         id="policyContainerReload"
