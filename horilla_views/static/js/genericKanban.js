@@ -3,6 +3,7 @@ var appLabel = $("#helperContainer").attr("data-app-label");
 var groupKey = $("#helperContainer").attr("data-group-key");
 var groupOrderBy = $("#helperContainer").attr("data-group-order-by");
 var instanceOrderBy = $("#helperContainer").attr("data-instance-order-by");
+var preMoveCheckUrl = $("#helperContainer").attr("data-pre-move-check-url");
 var model = `${appLabel}.${modelName}`;
 var groupOrder = []
 var stageOrderJson = []
@@ -280,6 +281,7 @@ function initializeKanbanSortable(sectionSelector, stageSelector) {
 		},
 
 		stop: function (event, ui) {
+			var self = this;
 			var row = $(ui.item);
 			var candidateId = row.data("instanceId");
 			var nodeId = row.closest(stageSelector).attr("data-group-id");
@@ -291,44 +293,75 @@ function initializeKanbanSortable(sectionSelector, stageSelector) {
 
 			var originalStageId = window.candidateCurrentStage;
 
-			var parsedStageOrder = stageOrderJson;
-			var preStage = parsedStageOrder.find(stage => stage.id == originalStageId);
-			var currentStage = parsedStageOrder.find(stage => stage.id == targetStageId);
+			function proceedWithMove() {
+				var parsedStageOrder = stageOrderJson;
+				var preStage = parsedStageOrder.find(stage => stage.id == originalStageId);
+				var currentStage = parsedStageOrder.find(stage => stage.id == targetStageId);
 
-			if (!isNextStage(originalStageId, targetStageId, parsedStageOrder)) {
-				if (sessionStorage.getItem(`showKanban${modelName}Confirmation`) !== "false") {
-					Swal.fire({
-						title: "Confirm Stage Change",
-						html: `
-                            <p class="mb-2">The candidate is being moved from ${preStage.stage}
-                            to the ${currentStage.stage} stage. Do you want to proceed?</p>
-                            <label><input type="checkbox" id="doNotShowAgain"> Don't show this again in this session</label>
-                        `,
-						icon: "warning",
-						showCancelButton: true,
-						cancelButtonColor: "#d33",
-						confirmButtonColor: "#008000",
-						confirmButtonText: i18nMessages.confirm,
-						preConfirm: () => {
-							const doNotShowAgain = Swal.getPopup().querySelector("#doNotShowAgain").checked;
-							if (doNotShowAgain) {
-								sessionStorage.setItem(`showKanban${modelName}Confirmation`, "false");
+				if (!isNextStage(originalStageId, targetStageId, parsedStageOrder)) {
+					if (sessionStorage.getItem(`showKanban${modelName}Confirmation`) !== "false") {
+						Swal.fire({
+							title: "Confirm Stage Change",
+							html: `
+                                <p class="mb-2">The candidate is being moved from ${preStage.stage}
+                                to the ${currentStage.stage} stage. Do you want to proceed?</p>
+                                <label><input type="checkbox" id="doNotShowAgain"> Don't show this again in this session</label>
+                            `,
+							icon: "warning",
+							showCancelButton: true,
+							cancelButtonColor: "#d33",
+							confirmButtonColor: "#008000",
+							confirmButtonText: i18nMessages.confirm,
+							preConfirm: () => {
+								const doNotShowAgain = Swal.getPopup().querySelector("#doNotShowAgain").checked;
+								if (doNotShowAgain) {
+									sessionStorage.setItem(`showKanban${modelName}Confirmation`, "false");
+								}
+							},
+						}).then((result) => {
+							if (result.isConfirmed) {
+								handleValidDrop(targetStageId, candidateId, row);
+								handleSortableUpdate(event, ui, $(self));
+							} else {
+								revertItemPosition(ui);
 							}
-						},
-					}).then((result) => {
-						if (result.isConfirmed) {
-							handleValidDrop(targetStageId, candidateId, row);
-							handleSortableUpdate(event, ui, $(this));
-						} else {
-							revertItemPosition(ui);
-						}
-					});
-					return;
+						});
+						return;
+					}
 				}
+
+				handleValidDrop(targetStageId, candidateId, row);
+				handleSortableUpdate(event, ui, $(self));
 			}
 
-			handleValidDrop(targetStageId, candidateId, row);
-			handleSortableUpdate(event, ui, $(this));
+			if (preMoveCheckUrl && targetStageId != originalStageId) {
+				$.ajax({
+					type: "GET",
+					url: preMoveCheckUrl,
+					data: {
+						objectId: candidateId,
+						groupId: targetStageId,
+					},
+					success: function (response) {
+						if (response.blocked) {
+							Swal.fire({
+								icon: "error",
+								title: "Cannot Change Stage",
+								text: response.message || "This move is not allowed.",
+							});
+							revertItemPosition(ui);
+						} else {
+							proceedWithMove();
+						}
+					},
+					error: function () {
+						proceedWithMove();
+					},
+				});
+				return;
+			}
+
+			proceedWithMove();
 		}
 	});
 }
