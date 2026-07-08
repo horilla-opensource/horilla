@@ -141,11 +141,11 @@
     }
     /* sidebox-active = hover-only indicator (cleared on mouseleave) */
     .sideboxmain.sidebox-active {
-        background-color: #e54f38 !important;
-        box-shadow: 0 4px 14px -4px rgba(227, 78, 56, 0.45);
+        background-color: {{ theme_obj.primary_600|default:"#E54F38" }} !important;
+        box-shadow: 0 4px 14px -4px color-mix(in srgb, {{ theme_obj.primary_600|default:"#E54F38" }} 45%, transparent);
     }
     body.dark .sideboxmain.sidebox-active {
-        background-color: #c73f2a !important;
+        background-color: {{ theme_obj.primary_800|default:"#C73F2A" }} !important;
     }
 
     /* Active submenu link highlight */
@@ -297,22 +297,22 @@
         transition: background-color 0.12s ease, color 0.12s ease;
     }
     #sidebarFlyout a.sidebar-subnav-link:hover {
-        background-color: rgba(229, 79, 56, 0.08) !important;
-        color: #e54f38 !important;
+        background-color: color-mix(in srgb, {{ theme_obj.primary_600|default:"#E54F38" }} 8%, transparent) !important;
+        color: {{ theme_obj.primary_600|default:"#E54F38" }} !important;
     }
     #sidebarFlyout a.sidebar-subnav-link.oh-sidebar-active-link {
-        background-color: rgba(229, 79, 56, 0.12) !important;
-        color: #e54f38 !important;
+        background-color: color-mix(in srgb, {{ theme_obj.primary_600|default:"#E54F38" }} 12%, transparent) !important;
+        color: {{ theme_obj.primary_600|default:"#E54F38" }} !important;
         font-weight: 600;
     }
     body.dark #sidebarFlyout a.sidebar-subnav-link { color: #d1d5db; }
     body.dark #sidebarFlyout a.sidebar-subnav-link:hover {
-        background-color: rgba(229, 79, 56, 0.15) !important;
-        color: #f87060 !important;
+        background-color: color-mix(in srgb, {{ theme_obj.primary_600|default:"#E54F38" }} 15%, transparent) !important;
+        color: {{ theme_obj.primary_400|default:"#F87060" }} !important;
     }
     body.dark #sidebarFlyout a.sidebar-subnav-link.oh-sidebar-active-link {
-        background-color: rgba(229, 79, 56, 0.20) !important;
-        color: #f87060 !important;
+        background-color: color-mix(in srgb, {{ theme_obj.primary_600|default:"#E54F38" }} 20%, transparent) !important;
+        color: {{ theme_obj.primary_400|default:"#F87060" }} !important;
     }
 
     @media (prefers-reduced-motion: reduce) {
