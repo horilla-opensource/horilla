@@ -98,6 +98,8 @@ class RotatingShiftTypeNav(HorillaNavView):
     Nav bar
     """
 
+    template_name = "generic/inline_nav.html"
+
     def __init__(self, **kwargs: Any) -> None:
         super().__init__(**kwargs)
         self.search_url = reverse("rotating-shift-list")

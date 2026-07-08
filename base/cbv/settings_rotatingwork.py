@@ -97,6 +97,8 @@ class RotatingWorkTypeNav(HorillaNavView):
     navbar of Rotating worktype
     """
 
+    template_name = "generic/inline_nav.html"
+
     def __init__(self, **kwargs: Any) -> None:
         super().__init__(**kwargs)
         self.search_url = reverse("rotating-list")

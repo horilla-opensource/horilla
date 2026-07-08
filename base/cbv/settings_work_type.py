@@ -79,6 +79,8 @@ class WorkTypeNav(HorillaNavView):
     navbar of worktype
     """
 
+    template_name = "generic/inline_nav.html"
+
     def __init__(self, **kwargs: Any) -> None:
         super().__init__(**kwargs)
         self.search_url = reverse("worktype-list")

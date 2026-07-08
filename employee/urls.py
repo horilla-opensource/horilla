@@ -9,7 +9,14 @@ from django.urls import path
 from base.templatetags.horillafilters import app_installed
 from base.views import object_delete, object_duplicate
 from employee import dashboard as emp_dashboard
-from employee import not_in_out_dashboard, policies, requests, views, work_schedules
+from employee import (
+    not_in_out_dashboard,
+    policies,
+    requests,
+    views,
+    work_schedules,
+    work_structure,
+)
 from employee.cbv import (
     action_type,
     allocations,
@@ -433,6 +440,51 @@ urlpatterns = [
         name="policies-discipline-policies-tab",
     ),
     path(
+        "policies-discipline/action-type-tab/",
+        policies.policies_discipline_action_type_tab,
+        name="policies-discipline-action-type-tab",
+    ),
+    path(
+        "work-structure/",
+        work_structure.work_structure_view,
+        name="work-structure-view",
+    ),
+    path(
+        "work-structure/shift-tab/",
+        work_structure.work_structure_shift_tab,
+        name="work-structure-shift-tab",
+    ),
+    path(
+        "work-structure/shift-schedule-tab/",
+        work_structure.work_structure_shift_schedule_tab,
+        name="work-structure-shift-schedule-tab",
+    ),
+    path(
+        "work-structure/rotating-shift-tab/",
+        work_structure.work_structure_rotating_shift_tab,
+        name="work-structure-rotating-shift-tab",
+    ),
+    path(
+        "work-structure/work-type-tab/",
+        work_structure.work_structure_work_type_tab,
+        name="work-structure-work-type-tab",
+    ),
+    path(
+        "work-structure/rotating-work-type-tab/",
+        work_structure.work_structure_rotating_work_type_tab,
+        name="work-structure-rotating-work-type-tab",
+    ),
+    path(
+        "work-structure/employee-type-tab/",
+        work_structure.work_structure_employee_type_tab,
+        name="work-structure-employee-type-tab",
+    ),
+    path(
+        "work-structure/employee-tags-tab/",
+        work_structure.work_structure_employee_tags_tab,
+        name="work-structure-employee-tags-tab",
+    ),
+    path(
         "work-schedules/",
         work_schedules.work_schedules_view,
         name="work-schedules-view",
@@ -786,9 +838,14 @@ if app_installed("asset"):
         path(
             "allocation-assets/", allocations.Assets.as_view(), name="allocation-assets"
         ),
+        # path(
+        #     "allocation-asset-list/",
+        #     allocations.AssetAllocationList.as_view(),
+        #     name="allocation-asset-list",
+        # ),
         path(
             "allocation-asset-list/",
-            allocations.AssetAllocationList.as_view(),
+            allocations.AssetCategoryAllocationList.as_view(),
             name="allocation-asset-list",
         ),
         path(

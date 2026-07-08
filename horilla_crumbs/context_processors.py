@@ -37,6 +37,7 @@ BREADCRUMB_URL_NAMES = {
     "policies-discipline": "Policies & Discipline",
     "work-schedules": "Work Schedules",
     "requests": "Work Requests",
+    "work-structure": "Work Structure",
 }
 
 sidebar_urls = [
@@ -202,6 +203,7 @@ sidebar_urls = [
     "policies-discipline",
     "work-schedules",
     "requests",
+    "work-structure",
 ]
 remove_urls = [
     "feedback-detailed-view",

@@ -1,0 +1,170 @@
+{% extends "index.html" %}
+{% load i18n %}
+
+{% block content %}
+    <style>
+        .oh-tabs__tab {
+            padding: 4px 8px;
+            border-radius: 6px;
+            font-size: 0.75rem;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            transition-property: all;
+            transition-duration: 300ms;
+            border: 1px solid #f6f6f6;
+            color: #1f2937;
+        }
+
+        .oh-tabs__tab--active {
+            background-color: #fcedeb;
+            color: #e54f38;
+            border: 1px solid #e54f38;
+        }
+    </style>
+
+    <div class="bg-white p-3 rounded-md shadow-card oh-tabs">
+        <div class="flex gap-1 flex-wrap mb-3">
+            {% if perms.base.view_employeeshift %}
+                <button
+                    type="button"
+                    class="oh-tabs__tab work-structure-tab-btn"
+                    data-tab-id="shift"
+                    data-url="{% url 'work-structure-shift-tab' %}"
+                >
+                    {% trans "Shift" %}
+                </button>
+            {% endif %}
+            {% if perms.base.view_employeeshiftschedule %}
+                <button
+                    type="button"
+                    class="oh-tabs__tab work-structure-tab-btn"
+                    data-tab-id="shift-schedule"
+                    data-url="{% url 'work-structure-shift-schedule-tab' %}"
+                >
+                    {% trans "Shift Schedule" %}
+                </button>
+            {% endif %}
+            {% if perms.base.view_rotatingshift %}
+                <button
+                    type="button"
+                    class="oh-tabs__tab work-structure-tab-btn"
+                    data-tab-id="rotating-shift"
+                    data-url="{% url 'work-structure-rotating-shift-tab' %}"
+                >
+                    {% trans "Rotating Shift" %}
+                </button>
+            {% endif %}
+            {% if perms.base.view_worktype %}
+                <button
+                    type="button"
+                    class="oh-tabs__tab work-structure-tab-btn"
+                    data-tab-id="work-type"
+                    data-url="{% url 'work-structure-work-type-tab' %}"
+                >
+                    {% trans "Work Type" %}
+                </button>
+            {% endif %}
+            {% if perms.base.view_rotatingworktype %}
+                <button
+                    type="button"
+                    class="oh-tabs__tab work-structure-tab-btn"
+                    data-tab-id="rotating-work-type"
+                    data-url="{% url 'work-structure-rotating-work-type-tab' %}"
+                >
+                    {% trans "Rotating Work Type" %}
+                </button>
+            {% endif %}
+            {% if perms.base.view_employeetype %}
+                <button
+                    type="button"
+                    class="oh-tabs__tab work-structure-tab-btn"
+                    data-tab-id="employee-type"
+                    data-url="{% url 'work-structure-employee-type-tab' %}"
+                >
+                    {% trans "Employee Type" %}
+                </button>
+            {% endif %}
+            {% if perms.employee.view_employeetag %}
+                <button
+                    type="button"
+                    class="oh-tabs__tab work-structure-tab-btn"
+                    data-tab-id="employee-tags"
+                    data-url="{% url 'work-structure-employee-tags-tab' %}"
+                >
+                    {% trans "Employee Tags" %}
+                </button>
+            {% endif %}
+        </div>
+
+        <div id="workStructureContent" class="oh-wrapper"></div>
+    </div>
+
+    <script>
+        (function () {
+            var STORAGE_KEY = "activeWorkStructureTab";
+
+            function loadWorkStructureTab(buttonEl, persist) {
+                if (!buttonEl || typeof htmx === "undefined") return;
+                var url = buttonEl.getAttribute("data-url");
+                if (!url) return;
+                var tabId = buttonEl.getAttribute("data-tab-id");
+                document.querySelectorAll(".work-structure-tab-btn").forEach(function (btn) {
+                    btn.classList.remove("oh-tabs__tab--active");
+                });
+                buttonEl.classList.add("oh-tabs__tab--active");
+                if (persist !== false && tabId) {
+                    try {
+                        localStorage.setItem(STORAGE_KEY, tabId);
+                    } catch (_) {}
+                }
+                htmx.ajax("GET", url, {
+                    target: "#workStructureContent",
+                    swap: "innerHTML",
+                });
+            }
+
+            function restoreWorkStructureTab() {
+                if (!document.getElementById("workStructureContent")) return;
+
+                var savedTabId = null;
+                try {
+                    savedTabId = localStorage.getItem(STORAGE_KEY);
+                } catch (_) {}
+
+                var initialTab = null;
+                if (savedTabId) {
+                    initialTab = document.querySelector(
+                        '.work-structure-tab-btn[data-tab-id="' +
+                            savedTabId.replace(/"/g, '\\"') +
+                            '"]'
+                    );
+                }
+                if (!initialTab) {
+                    initialTab = document.querySelector(".work-structure-tab-btn");
+                }
+                loadWorkStructureTab(initialTab, false);
+            }
+
+            function runWhenHtmxReady(fn) {
+                if (typeof htmx !== "undefined") {
+                    fn();
+                    return;
+                }
+                document.addEventListener("DOMContentLoaded", fn, { once: true });
+            }
+
+            if (!window._workStructureTabsClickBound) {
+                window._workStructureTabsClickBound = true;
+                document.addEventListener("click", function (event) {
+                    var buttonEl = event.target.closest(".work-structure-tab-btn");
+                    if (!buttonEl) return;
+                    event.preventDefault();
+                    loadWorkStructureTab(buttonEl);
+                });
+            }
+
+            runWhenHtmxReady(restoreWorkStructureTab);
+        })();
+    </script>
+{% endblock content %}

@@ -1,0 +1,39 @@
+{% load i18n static %}
+
+<div class="oh-inner-sidebar-content border border-[#ebebeb] rounded-md mb-5">
+    <div hx-get="{% url 'employee-shift-shedule-navbar' %}?field=shift_id" hx-trigger="load"></div>
+
+    <p class="text-xs text-gray-500 mt-1 ml-4">
+        {% trans "Configure day-wise schedules linked to each shift." %}
+    </p>
+
+    <div
+        class="oh-checkpoint-badge mb-2"
+        id="selectedInstances"
+        data-ids="[]"
+        data-clicked=""
+        style="display: none"
+    ></div>
+
+    <div class="oh-wrapper" id="listContainer">
+        <div class="animated-background"></div>
+    </div>
+</div>
+
+<script>
+    function toggleDivVisibility(element) {
+        var isChecked = $(element).prop("checked");
+        if (isChecked) {
+            $(element)
+                .closest("form")
+                .find("#id_auto_punch_out_time_parent_div", "#id_auto_punch_out_time")
+                .show();
+        } else {
+            $("#id_auto_punch_out_time").val("");
+            $(element)
+                .closest("form")
+                .find("#id_auto_punch_out_time_parent_div", "#id_auto_punch_out_time")
+                .hide();
+        }
+    }
+</script>
