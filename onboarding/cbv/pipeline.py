@@ -2,11 +2,12 @@
 onboarding/cbv/pipeline.py
 """
 
+import json
 import re
 
 from django.contrib import messages
 from django.core.exceptions import ObjectDoesNotExist
-from django.http import HttpResponse
+from django.http import HttpResponse, JsonResponse
 from django.urls import reverse, reverse_lazy
 from django.utils.decorators import method_decorator
 from django.utils.translation import gettext_lazy as _
@@ -592,59 +593,52 @@ class CandidateList(HorillaListView):
             context["columns"].append(
                 (
                     f"""
-                <div class="oh-hover-btn-container">
-                <button class="oh-hover-btn"
-                style="border: none !important;"
-                >
-                {task.task_title}
-                </button>
-                <div class="oh-hover-btn-drawer oh-hover-btn-table-drawer">
-                  <button
-                   hx-get="{reverse("task-update",kwargs={"pk":task.pk})}"
-                   hx-target="#genericModalBody"
-                   data-toggle="oh-modal-toggle"
-                   data-target="#genericModal"
-                   class="oh-hover-btn__small"
-                   style="
-                   border:1px hsl(8,77%,56%) solid;
-                   "
-                   title="{_('Edit')}"
-                   >
-                    <ion-icon name="create-outline"></ion-icon>
-                   </button>
-                  <a
-                    hx-get="{reverse("generic-delete")}?model=onboarding.OnboardingTask&pk={task.id}"
-                    hx-target="#deleteConfirmationBody"
-                    data-target="#deleteConfirmation"
-                    data-toggle="oh-modal-toggle"
-                    class="oh-hover-btn__small"
-                    style="
-                    border:1px hsl(8,77%,56%) solid;
-                    "
-                    title="{_('Delete')}"
-
-                  >
-                  <ion-icon name="trash-outline"></ion-icon>
-                  </a>
-                </div>
-              </div>
-            """,
+                        <div class="group w-full flex items-center justify-between transition duration-300">
+                            <span class="px-2 py-1 text-xs">
+                                {task.task_title}
+                            </span>
+                            <div class="hidden group-hover:flex items-center transition duration-300 gap-1 p-1 rounded z-10 bg-white"
+                                onclick="event.stopPropagation()"
+                            >
+                                <button
+                                    hx-get="{reverse("task-update",kwargs={"pk":task.pk})}"
+                                    hx-target="#genericModalBody"
+                                    data-toggle="oh-modal-toggle"
+                                    data-target="#genericModal"
+                                    class="oh-hover-btn__small"
+                                    title="{_('Edit')}"
+                                >
+                                    <ion-icon name="create-outline"></ion-icon>
+                                </button>
+                                <a
+                                    hx-get="{reverse("generic-delete")}?model=onboarding.OnboardingTask&pk={task.id}"
+                                    hx-target="#deleteConfirmationBody"
+                                    data-target="#deleteConfirmation"
+                                    data-toggle="oh-modal-toggle"
+                                    class="oh-hover-btn__small"
+                                    title="{_('Delete')}"
+                                >
+                                    <ion-icon name="trash-outline"></ion-icon>
+                                </a>
+                            </div>
+                        </div>
+                    """,
                     f"get_{task.pk}_task",
                 )
             )
         context["columns"].append(
             (
                 f"""
-            <button
-                class="oh-checkpoint-badge text-success"
-                data-toggle="oh-modal-toggle"
-                data-target="#genericModal"
-                hx-get="{reverse('task-creation',kwargs={'obj_id':stage_id})}"
-                hx-target="#genericModalBody"
-                >
-                + {_('Task')}
-            </button>
-            """,
+                    <button
+                        class="oh-checkpoint-badge text-success"
+                        data-toggle="oh-modal-toggle"
+                        data-target="#genericModal"
+                        hx-get="{reverse('task-creation',kwargs={'obj_id':stage_id})}"
+                        hx-target="#genericModalBody"
+                        >
+                        + {_('Task')}
+                    </button>
+                """,
                 "",
             )
         )
@@ -669,6 +663,7 @@ class CandidateKanbanView(HorillaKanbanView):
     group_filter_class = onboarding_filters.OnboardingStageFilter
     instance_order_by = "onboarding_stage__sequence"
     group_label_key = "stage_title"
+    pre_move_check_url = reverse_lazy("onboarding-kanban-required-task-check")
 
     details = {
         "image_src": "{get_avatar}",
@@ -784,6 +779,59 @@ class ChangeStage(HorillaFormView):
         messages.info(self.request, _("Stage not updated"))
 
         return self.HttpResponse()
+
+    def form_invalid(self, form):
+        error_message = " ".join(
+            message for field_errors in form.errors.values() for message in field_errors
+        )
+        messages.info(self.request, _("Stage not updated"))
+        return self.HttpResponse(
+            script=(
+                "Swal.fire({"
+                f"icon: 'error', title: {json.dumps(str(_('Cannot Change Stage')))}, "
+                f"text: {json.dumps(error_message)}"
+                "});"
+            )
+        )
+
+
+@method_decorator(login_required, name="dispatch")
+class KanbanRequiredTaskCheck(View):
+    """
+    Pre-move check for the onboarding kanban drag-and-drop: blocks forward
+    stage moves while required tasks in the candidate's current stage are
+    incomplete. Wired up generically via CandidateKanbanView.pre_move_check_url.
+    """
+
+    def get(self, request, *args, **kwargs):
+        candidate_id = request.GET.get("objectId")
+        target_stage_id = request.GET.get("groupId")
+        candidate_stage = onboarding_models.CandidateStage.objects.filter(
+            candidate_id=candidate_id
+        ).first()
+        target_stage = onboarding_models.OnboardingStage.objects.filter(
+            pk=target_stage_id
+        ).first()
+        if not candidate_stage or not target_stage:
+            return JsonResponse({"blocked": False})
+
+        current_stage = candidate_stage.onboarding_stage_id
+        if current_stage.sequence is None or target_stage.sequence is None:
+            return JsonResponse({"blocked": False})
+
+        pending_tasks = candidate_stage.pending_required_tasks(current_stage)
+        if pending_tasks.exists():
+            task_titles = ", ".join(pending_tasks.values_list("task_title", flat=True))
+            message = str(
+                _(
+                    "Complete the following required task(s) before "
+                    "moving to the next stage: %(tasks)s"
+                )
+                % {"tasks": task_titles}
+            )
+            return JsonResponse({"blocked": True, "message": message})
+
+        return JsonResponse({"blocked": False})
 
 
 @method_decorator(login_required, name="dispatch")
