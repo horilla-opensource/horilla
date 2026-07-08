@@ -445,6 +445,46 @@ def delete_stage(request):
     return HorillaRedirect(request)
 
 
+def _blocked_required_tasks_message(employees, stage):
+    """
+    Returns an error message if moving any of ``employees`` forward to
+    ``stage`` is blocked by required tasks that are not yet completed in
+    their current stage. Returns None if the move is allowed.
+    """
+    if stage.sequence is None:
+        return None
+    blocked_lines = []
+    for employee in employees:
+        current_stage = employee.stage_id
+        if not current_stage or current_stage.sequence is None:
+            continue
+        pending_tasks = employee.pending_required_tasks(current_stage)
+        if pending_tasks.exists():
+            task_titles = ", ".join(pending_tasks.values_list("title", flat=True))
+            blocked_lines.append(f"{employee}: {task_titles}")
+    if not blocked_lines:
+        return None
+    return str(
+        _(
+            "Complete the following required task(s) before moving to "
+            "the next stage: %(details)s"
+        )
+        % {"details": "; ".join(blocked_lines)}
+    )
+
+
+def _swal_error_script(message):
+    """
+    A SweetAlert2 error script snippet for the given message.
+    """
+    return (
+        "<script>Swal.fire({"
+        f"icon: 'error', title: {json.dumps(str(_('Cannot Change Stage')))}, "
+        f"text: {json.dumps(message)}"
+        "});</script>"
+    )
+
+
 @login_required
 @hx_request_required
 @any_manager_can_enter("offboarding.change_offboarding")
@@ -456,6 +496,28 @@ def change_stage(request):
     stage_id = request.GET["stage_id"]
     employees = OffboardingEmployee.objects.filter(id__in=employee_ids)
     stage = OffboardingStage.objects.get(id=stage_id)
+
+    blocked_message = _blocked_required_tasks_message(employees, stage)
+    if blocked_message:
+        stage_forms = {}
+        stage_forms[str(stage.offboarding_id.id)] = StageSelectForm(
+            offboarding=stage.offboarding_id
+        )
+        groups = pipeline_grouper({}, [stage.offboarding_id])
+        for item in groups:
+            setattr(item["offboarding"], "stages", item["stages"])
+        response = render(
+            request,
+            "offboarding/stage/offboarding_body.html",
+            {
+                "offboarding": groups[0],
+                "stage_forms": stage_forms,
+                "today": datetime.today().date(),
+            },
+        )
+        response.content += _swal_error_script(blocked_message).encode()
+        return response
+
     # This wont trigger the save method inside the offboarding employee
     # employees.update(stage_id=stage)
     for employee in employees:
@@ -512,6 +574,18 @@ def change_offboarding_stage(request):
     stage_id = request.GET["stage_id"]
     employees = OffboardingEmployee.objects.filter(id__in=employee_ids)
     stage = OffboardingStage.objects.get(id=stage_id)
+
+    blocked_message = _blocked_required_tasks_message(employees, stage)
+    if blocked_message:
+        return HorillaFormView.HttpResponse(
+            script=(
+                "Swal.fire({"
+                f"icon: 'error', title: {json.dumps(str(_('Cannot Change Stage')))}, "
+                f"text: {json.dumps(blocked_message)}"
+                "});"
+            )
+        )
+
     # This wont trigger the save method inside the offboarding employee
     # employees.update(stage_id=stage)
     for employee in employees:

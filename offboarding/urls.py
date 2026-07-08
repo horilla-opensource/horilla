@@ -60,6 +60,11 @@ urlpatterns = [
         name="get-offboarding-kanban-stage",
     ),
     path(
+        "offboarding-kanban-required-task-check/",
+        exit_process.OffboardingKanbanRequiredTaskCheck.as_view(),
+        name="offboarding-kanban-required-task-check",
+    ),
+    path(
         "get-offboarding-employees-cbv/",
         exit_process.OffboardingEmployeeList.as_view(),
         name="get-offboarding-employees-cbv",

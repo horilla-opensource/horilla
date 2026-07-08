@@ -242,6 +242,28 @@ class OffboardingEmployee(HorillaModel):
             },
         )
 
+    def pending_required_tasks(self, stage=None):
+        """
+        Required offboarding tasks assigned to this employee in ``stage``
+        (defaults to the employee's current stage) that are not yet completed.
+        """
+        print(self)
+        stage = stage or self.stage_id
+        completed_task_ids = EmployeeTask.objects.filter(
+            employee_id=self,
+            task_id__stage_id=stage,
+            status="completed",
+        ).values_list("task_id", flat=True)
+        return (
+            OffboardingTask.objects.filter(
+                stage_id=stage,
+                is_required=True,
+                employeetask__employee_id=self,
+            )
+            .exclude(id__in=completed_task_ids)
+            .distinct()
+        )
+
     def get_task_status_col(self):
         """
         This method for get custom column for task status in Pipeline view.
@@ -529,6 +551,7 @@ class OffboardingTask(HorillaModel):
         null=True,
         blank=True,
     )
+    is_required = models.BooleanField(default=False, verbose_name=_("Is Required"))
 
     class Meta:
         unique_together = ["title", "stage_id"]

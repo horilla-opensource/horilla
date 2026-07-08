@@ -10,10 +10,11 @@ from urllib.parse import urlencode, urlparse
 from django import forms
 from django.apps import apps
 from django.contrib import messages
-from django.http import HttpResponse
+from django.http import HttpResponse, JsonResponse
 from django.urls import reverse, reverse_lazy
 from django.utils.decorators import method_decorator
 from django.utils.translation import gettext_lazy as _
+from django.views import View
 
 from base.context_processors import intial_notice_period
 from base.methods import eval_validate
@@ -549,6 +550,7 @@ class OffboardingKanbanView(HorillaKanbanView):
     group_key = "stage_id"
     records_per_page = 10
     show_kanban_confirmation = False
+    pre_move_check_url = reverse_lazy("offboarding-kanban-required-task-check")
 
     kanban_attrs = """
         hx-get='{get_individual_url}'
@@ -679,6 +681,48 @@ class OffboardingKanbanView(HorillaKanbanView):
 
 
 @method_decorator(login_required, name="dispatch")
+class OffboardingKanbanRequiredTaskCheck(View):
+    """
+    Pre-move check for the offboarding kanban drag-and-drop: blocks forward
+    stage moves while required tasks in the employee's current stage are
+    incomplete. Wired up generically via OffboardingKanbanView.pre_move_check_url.
+    """
+
+    def get(self, request, *args, **kwargs):
+        print("/////////////////////////////////")
+        employee_pk = request.GET.get("objectId")
+        target_stage_id = request.GET.get("groupId")
+        offboarding_employee = OffboardingEmployee.objects.filter(
+            pk=employee_pk
+        ).first()
+        target_stage = OffboardingStage.objects.filter(pk=target_stage_id).first()
+        if not offboarding_employee or not target_stage:
+            return JsonResponse({"blocked": False})
+
+        current_stage = offboarding_employee.stage_id
+        if (
+            not current_stage
+            or current_stage.sequence is None
+            or target_stage.sequence is None
+        ):
+            return JsonResponse({"blocked": False})
+
+        pending_tasks = offboarding_employee.pending_required_tasks(current_stage)
+        if pending_tasks.exists():
+            task_titles = ", ".join(pending_tasks.values_list("title", flat=True))
+            message = str(
+                _(
+                    "Complete the following required task(s) before "
+                    "moving to the next stage: %(tasks)s"
+                )
+                % {"tasks": task_titles}
+            )
+            return JsonResponse({"blocked": True, "message": message})
+
+        return JsonResponse({"blocked": False})
+
+
+@method_decorator(login_required, name="dispatch")
 class OffboardingEmployeeList(HorillaListView):
     """
     Offboarding Employee List View
@@ -761,40 +805,33 @@ class OffboardingEmployeeList(HorillaListView):
             context["columns"].append(
                 (
                     f"""
-                        <div class="oh-hover-btn-container position-relative">
-                            <button class="oh-hover-btn fw-bold"
-                                style="border: none !important;"
+                        <div class="group w-full flex items-center justify-between transition duration-300">
+                          <span class="px-2 py-1 text-xs">
+                            {task.title}
+                          </span>
+                          <div class="hidden group-hover:flex items-center transition duration-300 gap-1 p-1 rounded z-10 bg-white"
+                               onclick="event.stopPropagation()">
+                            <button
+                              hx-get="{reverse("offboarding-update-task",kwargs={"pk":task.pk})}"
+                              hx-target="#genericModalBody"
+                              data-toggle="oh-modal-toggle"
+                              data-target="#genericModal"
+                              class="oh-hover-btn__small"
+                              title="{_('Edit')}"
                             >
-                                {task.title}
+                              <ion-icon name="create-outline"></ion-icon>
                             </button>
-                            <div class="oh-hover-btn-drawer oh-hover-btn-table-drawer">
-                                <button
-                                    hx-get="{reverse("offboarding-update-task",kwargs={"pk":task.pk})}"
-                                    hx-target="#genericModalBody"
-                                    data-toggle="oh-modal-toggle"
-                                    data-target="#genericModal"
-                                    class="oh-hover-btn__small"
-                                    style="
-                                        border:1px hsl(8,77%,56%) solid;
-                                    "
-                                    title="{_('Edit')}"
-                                >
-                                    <ion-icon name="create-outline"></ion-icon>
-                                </button>
-                                <a
-                                    hx-get="{reverse("generic-delete")}?model=offboarding.OffboardingTask&pk={task.id}"
-                                    hx-target="#deleteConfirmationBody"
-                                    data-target="#deleteConfirmation"
-                                    data-toggle="oh-modal-toggle"
-                                    class="oh-hover-btn__small"
-                                    style="
-                                        border:1px hsl(8,77%,56%) solid;
-                                    "
-                                    title="{_('Delete')}"
-                                >
-                                    <ion-icon name="trash-outline"></ion-icon>
-                                </a>
-                            </div>
+                            <a
+                              hx-get="{reverse("generic-delete")}?model=offboarding.OffboardingTask&pk={task.id}"
+                              hx-target="#deleteConfirmationBody"
+                              data-target="#deleteConfirmation"
+                              data-toggle="oh-modal-toggle"
+                              class="oh-hover-btn__small"
+                              title="{_('Delete')}"
+                            >
+                              <ion-icon name="trash-outline"></ion-icon>
+                            </a>
+                          </div>
                         </div>
                     """,
                     f"get_{task.pk}_task",
