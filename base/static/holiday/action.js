@@ -3,6 +3,7 @@ var rowMessages = {
   de: " Ausgewählt",
   es: " Seleccionado",
   en: " Selected",
+  uk: " Вибрано",
   fr: " Sélectionné",
 };
 
@@ -11,6 +12,7 @@ var excelMessages = {
   de: "Möchten Sie die Excel-Datei herunterladen?",
   es: "¿Desea descargar el archivo de Excel?",
   en: "Do you want to download the excel file?",
+  uk: "Ви хочете завантажити файл Excel?",
   fr: "Voulez-vous télécharger le fichier Excel?",
 };
 
@@ -19,6 +21,7 @@ var deleteHolidayMessages = {
   de: "Möchten Sie wirklich alle ausgewählten Feiertage löschen?",
   es: "¿Realmente quieres eliminar todas las vacaciones seleccionadas?",
   en: "Do you really want to delete all the selected holidays?",
+  uk: "Ви дійсно хочете видалити всі вибрані свята?",
   fr: "Voulez-vous vraiment supprimer toutes les vacances sélectionnées?",
 };
 
@@ -27,6 +30,7 @@ var no_rows_deleteMessages = {
   de: "Es wurden keine Zeilen zum Löschen von Feiertagen ausgewählt.",
   es: "No se han seleccionado filas para eliminar las vacaciones.",
   en: "No rows are selected for deleting holidays.",
+  uk: "Не вибрано жодного рядка для видалення свят.",
   fr: "Aucune ligne n'a été sélectionnée pour supprimer les vacances.",
 };
 var downloadMessages = {
@@ -34,6 +38,7 @@ var downloadMessages = {
   de: "Möchten Sie die Vorlage herunterladen?",
   es: "¿Quieres descargar la plantilla?",
   en: "Do you want to download the template?",
+  uk: "Ви хочете завантажити шаблон?",
   fr: "Voulez-vous télécharger le modèle ?",
 };
 function makeListUnique(list) {

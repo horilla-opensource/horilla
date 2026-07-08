@@ -287,23 +287,17 @@
     }
 
     var message;
-    var languageCode = "en";
+    var languageCode = "{{ LANGUAGE_CODE|default:'en' }}";
     var emptyMessages = {
         ar: "...لم يتم العثور على بيانات",
         de: "Keine Daten gefunden...",
         es: "No se encontraron datos...",
         en: "No records available at the moment.",
+        uk: "Наразі немає доступних записів.",
         fr: "Aucune donnée trouvée...",
     };
 
-    $.ajax({
-        type: "GET",
-        url: "/employee/get-language-code/",
-        success: function (response) {
-            languageCode = response.language_code;
-            message = emptyMessages[languageCode];
-        },
-    });
+    var message = emptyMessages[languageCode] || emptyMessages.en;
 
     function emptyChart(chart, args, options) {
         // Guard: chart/canvas from HTMX swap / destroy / rerender
@@ -344,9 +338,12 @@
             ? chart.data.emptyImageSrc
             : "{% static '/images/ui/no_records.svg' %}";
 
+        const lc = (document.getElementById("main-section-data")
+                        && document.getElementById("main-section-data").getAttribute("data-lang"))
+                    || languageCode || "en";
         const message = chart?.data?.message
             ? chart.data.message
-            : emptyMessages[languageCode];
+            : (emptyMessages[lc] || emptyMessages.en);
 
         noDataImage.onload = () => {
             // Guard

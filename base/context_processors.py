@@ -34,9 +34,9 @@ class AllCompany:
     class Urls:
         url = "https://ui-avatars.com/api/?name=All+Company&background=random"
 
-    company = "All Company"
+    company = str(_("All Company"))
     icon = Urls()
-    text = "All companies"
+    text = str(_("All companies"))
     id = None
 
 
@@ -60,7 +60,7 @@ def get_companies(request):
     companies = [
         [
             "all",
-            "All Company",
+            str(_("All Company")),
             "https://ui-avatars.com/api/?name=All+Company&background=random",
             False,
         ],
@@ -132,7 +132,7 @@ def update_selected_company(request):
                 )
 
     if company_id == "all":
-        text = "All companies"
+        text = str(_("All companies"))
     elif company_id == user_company:
         text = "My Company"
     else:

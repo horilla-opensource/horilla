@@ -1,4 +1,5 @@
 {% extends "index.html" %}
+{% load i18n %}
 {% block content %}
 <style>
   .card {
@@ -23,13 +24,13 @@
           <div class="card-body">
               <h5 class="card-title">{{ employee.employee_first_name }} {{ employee.employee_last_name }}</h5>
               <p class="card-text">
-                  <strong>DOB:</strong> {{ employee.dob }}<br>
+                  <strong>{% trans "DOB" %}:</strong> {{ employee.dob }}<br>
                   {% if employee.days_until_birthday == 0 %}
-                  <strong>Status:</strong> Today<br>
+                  <strong>{% trans "Status" %}:</strong> {% trans "Today" %}<br>
                   {% elif employee.days_until_birthday == 1 %}
-                  <strong>Status:</strong> Tomorrow<br>
+                  <strong>{% trans "Status" %}:</strong> {% trans "Tomorrow" %}<br>
                   {% else %}
-                  <strong>Status:</strong> In {{ employee.days_until_birthday }} days<br>
+                  <strong>{% trans "Status" %}:</strong> {% blocktrans with d=employee.days_until_birthday %}In {{ d }} days{% endblocktrans %}<br>
                   {% endif %}
               </p>
           </div>

@@ -2869,7 +2869,7 @@ def get_employees_birthday(request):
                 else (
                     _("Tomorrow")
                     if emp.days_until_birthday == 1
-                    else f"In {emp.days_until_birthday} Days"
+                    else _("In %(days)s days") % {"days": emp.days_until_birthday}
                 )
             ),
             "department": (

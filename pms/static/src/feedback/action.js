@@ -3,6 +3,7 @@ var archiveMessages = {
   de: "Möchten Sie wirklich alle ausgewählten Rückmeldungen archivieren?",
   es: "¿Realmente quieres archivar todas las retroalimentaciones seleccionadas?",
   en: "Do you really want to archive all the selected feedbacks?",
+  uk: "Ви дійсно хочете архівувати всі вибрані відгуки?",
   fr: "Voulez-vous vraiment archiver tous les retours sélectionnés?",
 };
 
@@ -11,6 +12,7 @@ var unarchiveMessages = {
   de: "Möchten Sie wirklich alle ausgewählten Rückmeldungen aus der Archivierung nehmen?",
   es: "¿Realmente quieres desarchivar todas las retroalimentaciones seleccionadas?",
   en: "Do you really want to unarchive all the selected feedbacks?",
+  uk: "Ви дійсно хочете розархівувати всі вибрані відгуки?",
   fr: "Voulez-vous vraiment désarchiver tous les retours sélectionnés?",
 };
 
@@ -19,6 +21,7 @@ var deleteFeedbackMessages = {
   de: "Möchten Sie wirklich alle ausgewählten Rückmeldungen löschen?",
   es: "¿Realmente quieres eliminar todas las retroalimentaciones seleccionadas?",
   en: "Do you really want to delete all the selected feedbacks?",
+  uk: "Ви дійсно хочете видалити всі вибрані відгуки?",
   fr: "Voulez-vous vraiment supprimer tous les retours sélectionnés?",
 };
 
@@ -27,6 +30,7 @@ var norowMessages = {
   de: "Es wurden keine Zeilen ausgewählt.",
   es: "No se han seleccionado filas.",
   en: "No rows have been selected.",
+  uk: "Не вибрано жодного рядка.",
   fr: "Aucune ligne n'a été sélectionnée.",
 };
 

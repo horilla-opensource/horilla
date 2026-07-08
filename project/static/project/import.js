@@ -4,6 +4,7 @@ var downloadMessages = {
     de: "Möchten Sie die Vorlage herunterladen?",
     es: "¿Quieres descargar la plantilla?",
     en: "Do you want to download the template?",
+    uk: "Ви хочете завантажити шаблон?",
     fr: "Voulez-vous télécharger le modèle ?",
   };
 
@@ -28,6 +29,7 @@ var downloadMessages = {
     de: "Hochladen...",
     es: "Subiendo...",
     en: "Uploading...",
+    uk: "Завантаження...",
     fr: "Téléchargement en cours...",
   };
 
@@ -36,6 +38,7 @@ var downloadMessages = {
     de: "Bitte laden Sie nur eine Datei mit der Erweiterung .xlsx hoch.",
     es: "Por favor, suba un archivo con la extensión .xlsx solamente.",
     en: "Please upload a file with the .xlsx extension only.",
+    uk: "Будь ласка, завантажте файл лише з розширенням .xlsx.",
     fr: "Veuillez télécharger uniquement un fichier avec l'extension .xlsx.",
   };
 

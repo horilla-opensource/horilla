@@ -3,6 +3,7 @@ var excelMessages = {
   de: "Möchten Sie die Excel-Datei herunterladen?",
   es: "¿Desea descargar el archivo de Excel?",
   en: "Do you want to download the excel file?",
+  uk: "Ви хочете завантажити файл Excel?",
   fr: "Voulez-vous télécharger le fichier Excel?",
 };
 
@@ -11,6 +12,7 @@ var archiveMessages = {
   de: "Möchten Sie wirklich alle ausgewählten Anwesenheiten archivieren?",
   es: "Realmente quieres archivar todas las asistencias seleccionadas?",
   en: "Do you really want to archive all the selected allocations?",
+  uk: "Ви дійсно хочете архівувати всі вибрані призначення?",
   fr: "Voulez-vous vraiment archiver toutes les présences sélectionnées?",
 };
 
@@ -19,6 +21,7 @@ var unarchiveMessages = {
   de: "Möchten Sie wirklich alle ausgewählten archivierten Zuweisungen wiederherstellen?",
   es: "Realmente quieres desarchivar todas las asignaciones seleccionadas?",
   en: "Do you really want to un-archive all the selected allocations?",
+  uk: "Ви дійсно хочете розархівувати всі вибрані призначення?",
   fr: "Voulez-vous vraiment désarchiver toutes les allocations sélectionnées?",
 };
 
@@ -27,6 +30,7 @@ var deleteRequestMessages = {
   de: "Möchten Sie wirklich alle ausgewählten Zuweisungen löschen?",
   es: "Realmente quieres eliminar todas las asignaciones seleccionadas?",
   en: "Do you really want to delete all the selected allocations?",
+  uk: "Ви дійсно хочете видалити всі вибрані призначення?",
   fr: "Voulez-vous vraiment supprimer toutes les allocations sélectionnées?",
 };
 
@@ -35,6 +39,7 @@ var approveMessages = {
   de: "Möchten Sie wirklich alle ausgewählten Anfragen genehmigen?",
   es: "Realmente quieres aprobar todas las solicitudes seleccionadas?",
   en: "Do you really want to approve all the selected requests?",
+  uk: "Ви дійсно хочете затвердити всі вибрані запити?",
   fr: "Voulez-vous vraiment approuver toutes les demandes sélectionnées?",
 };
 var rejectMessages = {
@@ -42,6 +47,7 @@ var rejectMessages = {
   de: "Möchten Sie wirklich alle ausgewählten Anfragen ablehnen?",
   es: "¿Realmente deseas rechazar todas las solicitudes seleccionadas?",
   en: "Do you really want to reject all the selected requests?",
+  uk: "Ви дійсно хочете відхилити всі вибрані запити?",
   fr: "Voulez-vous vraiment rejeter toutes les demandes sélectionnées?",
 };
 var requestDeleteMessages = {
@@ -49,6 +55,7 @@ var requestDeleteMessages = {
   de: "Möchten Sie wirklich alle ausgewählten Anfragen löschen?",
   es: "Realmente quieres eliminar todas las solicitudes seleccionadas?",
   en: "Do you really want to delete all the selected requests?",
+  uk: "Ви дійсно хочете видалити всі вибрані запити?",
   fr: "Voulez-vous vraiment supprimer toutes les demandes sélectionnées?",
 };
 var norowMessages = {
@@ -56,6 +63,7 @@ var norowMessages = {
   de: "Es wurden keine Zeilen ausgewählt.",
   es: "No se han seleccionado filas.",
   en: "No rows have been selected for deleting",
+  uk: "Не вибрано жодного рядка для видалення",
   fr: "Aucune ligne n'a été sélectionnée.",
 };
 var rowMessages = {
@@ -63,6 +71,7 @@ var rowMessages = {
   de: " Ausgewählt",
   es: " Seleccionado",
   en: " Selected",
+  uk: " Вибрано",
   fr: " Sélectionné",
 };
 

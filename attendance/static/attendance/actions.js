@@ -3,6 +3,7 @@ var downloadMessages = {
     de: "Möchten Sie die Vorlage herunterladen?",
     es: "¿Quieres descargar la plantilla?",
     en: "Do you want to download the template?",
+    uk: "Ви хочете завантажити шаблон?",
     fr: "Voulez-vous télécharger le modèle ?",
 };
 var validateMessages = {
@@ -10,6 +11,7 @@ var validateMessages = {
     de: "Möchten Sie wirklich alle ausgewählten Anwesenheiten überprüfen?",
     es: "¿Realmente quieres validar todas las asistencias seleccionadas?",
     en: "Do you really want to validate all the selected attendances?",
+    uk: "Ви дійсно хочете підтвердити всі вибрані відвідування?",
     fr: "Voulez-vous vraiment valider toutes les présences sélectionnées?",
 };
 var overtimeMessages = {
@@ -17,6 +19,7 @@ var overtimeMessages = {
     de: "Möchten Sie wirklich die Überstunden für alle ausgewählten Anwesenheiten genehmigen?",
     es: "¿Realmente quieres aprobar las horas extras para todas las asistencias seleccionadas?",
     en: "Do you really want to approve OT for all the selected attendances?",
+    uk: "Ви дійсно хочете затвердити понаднормові для всіх вибраних відвідувань?",
     fr: "Voulez-vous vraiment approuver les heures supplémentaires pour toutes les présences sélectionnées?",
 };
 var deleteMessages = {
@@ -24,6 +27,7 @@ var deleteMessages = {
     de: "Möchten Sie wirklich alle ausgewählten Anwesenheiten löschen?",
     es: "¿Realmente quieres eliminar todas las asistencias seleccionadas?",
     en: "Do you really want to delete all the selected attendances?",
+    uk: "Ви дійсно хочете видалити всі вибрані відвідування?",
     fr: "Voulez-vous vraiment supprimer toutes les présences sélectionnées?",
 };
 var noRowValidateMessages = {
@@ -31,6 +35,7 @@ var noRowValidateMessages = {
     de: "Im Feld „Anwesenheit validieren“ sind keine Zeilen ausgewählt.",
     es: "No se selecciona ninguna fila de Validar asistencia.",
     en: "No rows are selected from Validate Attendances.",
+    uk: "Не вибрано жодного рядка з відвідувань для підтвердження.",
     fr: "Aucune ligne n'est sélectionnée dans Valider la présence.",
 };
 var norowotMessages = {
@@ -38,6 +43,7 @@ var norowotMessages = {
     de: "In der OT-Anwesenheit sind keine Zeilen ausgewählt.",
     es: "No se seleccionan filas de Asistencias de OT.",
     en: "No rows are selected from OT Attendances.",
+    uk: "Не вибрано жодного рядка з понаднормових відвідувань.",
     fr: "Aucune ligne n'est sélectionnée dans les présences OT.",
 };
 var norowdeleteMessages = {
@@ -45,6 +51,7 @@ var norowdeleteMessages = {
     de: "Es sind keine Zeilen zum Löschen von Anwesenheiten ausgewählt.",
     es: "No se seleccionan filas para eliminar asistencias.",
     en: "No rows are selected for deleting attendances.",
+    uk: "Не вибрано жодного рядка для видалення відвідувань.",
     fr: "Aucune ligne n'est sélectionnée pour la suppression des présences.",
 };
 var norowAddToBatchMessages = {
@@ -52,6 +59,7 @@ var norowAddToBatchMessages = {
     de: "Es wurden keine Zeilen zur Stapelteilnahme hinzugefügt.",
     es: "No se han seleccionado filas para agregar a las asistencias por lotes.",
     en: "No rows are selected to be added to batch attendances.",
+    uk: "Не вибрано жодного рядка для додавання до пакетних відвідувань.",
     fr: "Aucune ligne n'a été sélectionnée pour être ajoutée aux présences en lot.",
 };
 var rowMessages = {
@@ -59,6 +67,7 @@ var rowMessages = {
     de: " Ausgewählt",
     es: " Seleccionado",
     en: " Selected",
+    uk: " Вибрано",
     fr: " Sélectionné",
 };
 var excelMessages = {
@@ -66,6 +75,7 @@ var excelMessages = {
     de: "Möchten Sie die Excel-Datei herunterladen?",
     es: "¿Desea descargar el archivo de Excel?",
     en: "Do you want to download the excel file?",
+    uk: "Ви хочете завантажити файл Excel?",
     fr: "Voulez-vous télécharger le fichier Excel?",
 };
 var reqAttendanceApproveMessages = {
@@ -73,6 +83,7 @@ var reqAttendanceApproveMessages = {
     de: "Möchten Sie wirklich alle ausgewählten Anwesenheitsanfragen genehmigen?",
     es: "¿Realmente quieres aprobar todas las solicitudes de asistencia seleccionadas?",
     en: "Do you really want to approve all the selected attendance requests?",
+    uk: "Ви дійсно хочете затвердити всі вибрані запити на відвідування?",
     fr: "Voulez-vous vraiment approuver toutes les demandes de présence sélectionnées?",
 };
 
@@ -81,6 +92,7 @@ var reqAttendanceRejectMessages = {
     de: "Möchten Sie wirklich alle ausgewählten Anwesenheitsanfragen ablehnen?",
     es: "¿Realmente quieres rechazar todas las solicitudes de asistencia seleccionadas?",
     en: "Do you really want to reject all the selected attendance requests?",
+    uk: "Ви дійсно хочете відхилити всі вибрані запити на відвідування?",
     fr: "Voulez-vous vraiment rejeter toutes les demandes de présence sélectionnées?",
 };
 

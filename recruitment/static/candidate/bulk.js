@@ -3,6 +3,7 @@ var archive_CanMessages = {
   de: "Möchten Sie wirklich alle ausgewählten Kandidaten archivieren?",
   es: "¿Realmente deseas archivar a todos los candidatos seleccionados?",
   en: "Do you really want to archive all the selected candidates?",
+  uk: "Ви дійсно хочете архівувати всіх вибраних кандидатів?",
   fr: "Voulez-vous vraiment archiver tous les candidats sélectionnés?",
 };
 
@@ -11,6 +12,7 @@ var unarchive_CanMessages = {
   de: "Möchten Sie wirklich alle ausgewählten Kandidaten aus der Archivierung nehmen?",
   es: "¿Realmente deseas desarchivar a todos los candidatos seleccionados?",
   en: "Do you really want to unarchive all the selected candidates?",
+  uk: "Ви дійсно хочете розархівувати всіх вибраних кандидатів?",
   fr: "Voulez-vous vraiment désarchiver tous les candidats sélectionnés?",
 };
 
@@ -19,6 +21,7 @@ var delete_CanMessages = {
   de: "Möchten Sie wirklich alle ausgewählten Kandidaten löschen?",
   es: "¿Realmente deseas eliminar a todos los candidatos seleccionados?",
   en: "Do you really want to delete all the selected candidates?",
+  uk: "Ви дійсно хочете видалити всіх вибраних кандидатів?",
   fr: "Voulez-vous vraiment supprimer tous les candidats sélectionnés?",
 };
 
@@ -27,6 +30,7 @@ var noRowMessages = {
   de: "Es wurden keine Zeilen ausgewählt.",
   es: "No se han seleccionado filas.",
   en: "No rows have been selected.",
+  uk: "Не вибрано жодного рядка.",
   fr: "Aucune ligne n'a été sélectionnée.",
 };
 
@@ -35,6 +39,7 @@ var rowMessages = {
   de: " Ausgewählt",
   es: " Seleccionado",
   en: " Selected",
+  uk: " Вибрано",
   fr: " Sélectionné",
 };
 

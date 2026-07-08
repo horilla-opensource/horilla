@@ -3,6 +3,7 @@ var TicketArchiveMessages = {
   de: "",
   es: "",
   en: "Do you really want to archive all the selected tickets?",
+  uk: "Ви дійсно хочете архівувати всі вибрані тікети?",
   fr: "",
 };
 
@@ -11,6 +12,7 @@ var ticketUnarchiveMessages = {
   de: "",
   es: "",
   en: "Do you really want to unarchive all the selected tickets?",
+  uk: "Ви дійсно хочете розархівувати всі вибрані тікети?",
   fr: "",
 };
 
@@ -19,6 +21,7 @@ var ticketDeleteMessages = {
   de: "",
   es: "",
   en: "Do you really want to delete all the selected tickets?",
+  uk: "Ви дійсно хочете видалити всі вибрані тікети?",
   fr: "",
 };
 
@@ -27,6 +30,7 @@ var noRowHelpdeskMessages = {
   de: "Es wurden keine Zeilen ausgewählt.",
   es: "No se han seleccionado filas.",
   en: "No rows have been selected to delete.",
+  uk: "Не вибрано жодного рядка для видалення.",
   fr: "Aucune ligne n'a été sélectionnée.",
 };
 
@@ -35,6 +39,7 @@ var rowMessages = {
   de: " Ausgewählt",
   es: " Seleccionado",
   en: " Selected",
+  uk: " Вибрано",
   fr: " Sélectionné",
 };
 

@@ -3,6 +3,7 @@ var rowMessages = {
     de: " Ausgewählt",
     es: " Seleccionado",
     en: " Selected",
+    uk: " Вибрано",
     fr: " Sélectionné",
 };
 
@@ -11,6 +12,7 @@ var deleteDaysMessages = {
     de: "Möchten Sie wirklich alle ausgewählten Feiertage löschen?",
     es: "¿Realmente quieres eliminar todas las vacaciones seleccionadas?",
     en: "Do you really want to delete all the selected restrict days?",
+    uk: "Ви дійсно хочете видалити всі вибрані заборонені дні?",
     fr: "Voulez-vous vraiment supprimer toutes les vacances sélectionnées?",
 };
 
@@ -19,6 +21,7 @@ var noRowsDeleteMessages = {
     de: "Es wurden keine Zeilen zum Löschen von Feiertagen ausgewählt.",
     es: "No se han seleccionado filas para eliminar las vacaciones.",
     en: "No rows are selected for deleting restrict days.",
+    uk: "Не вибрано жодного рядка для видалення заборонених днів.",
     fr: "Aucune ligne n'a été sélectionnée pour supprimer les vacances.",
 };
 

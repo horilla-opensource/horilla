@@ -3,6 +3,7 @@ var archiveMessage = {
     // de: "Möchten Sie wirklich alle ausgewählten Mitarbeiter archivieren?",
     // es: "¿Realmente quieres archivar a todos los empleados seleccionados?",
     en: "Do you really want to archive all the selected tasks?",
+    uk: "Ви дійсно хочете архівувати всі вибрані завдання?",
     // fr: "Voulez-vous vraiment archiver tous les employés sélectionnés ?",
   };
 
@@ -11,6 +12,7 @@ var archiveMessage = {
     // de: "Möchten Sie wirklich alle ausgewählten Mitarbeiter aus der Archivierung zurückholen?",
     // es: "¿Realmente quieres desarchivar a todos los empleados seleccionados?",
     en: "Do you really want to unarchive all the selected tasks?",
+    uk: "Ви дійсно хочете розархівувати всі вибрані завдання?",
     // fr: "Voulez-vous vraiment désarchiver tous les employés sélectionnés?",
   };
 
@@ -19,6 +21,7 @@ var archiveMessage = {
     // de: "Möchten Sie wirklich alle ausgewählten Mitarbeiter löschen?",
     // es: "¿Realmente quieres eliminar a todos los empleados seleccionados?",
     en: "Do you really want to delete all the selected tasks?",
+    uk: "Ви дійсно хочете видалити всі вибрані завдання?",
     // fr: "Voulez-vous vraiment supprimer tous les employés sélectionnés?",
   };
 
@@ -27,6 +30,7 @@ var archiveMessage = {
     // de: "Es wurden keine Zeilen ausgewählt.",
     // es: "No se han seleccionado filas.",
     en: "No rows have been selected.",
+    uk: "Не вибрано жодного рядка.",
     // fr: "Aucune ligne n'a été sélectionnée.",
   };
 
