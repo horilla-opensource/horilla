@@ -92,6 +92,13 @@ class OnboardingTask(HorillaModel):
     employee_id = models.ManyToManyField(
         Employee, related_name="onboarding_task", verbose_name=_("Task Managers")
     )
+    is_required = models.BooleanField(
+        default=False,
+        verbose_name=_("Is Required"),
+        help_text=_(
+            "Required tasks must be completed by the candidate to move to the next stage."
+        ),
+    )
 
     objects = HorillaCompanyManager("stage_id__recruitment_id__company_id")
 
@@ -165,6 +172,23 @@ class CandidateStage(HorillaModel):
         cans_tasks = self.candidate_id.candidate_task
         completed_tasks = cans_tasks.filter(status="done")
         return f"{completed_tasks.count()}/{cans_tasks.count()}"
+
+    def pending_required_tasks(self, stage=None):
+        """
+        Required onboarding tasks assigned to this candidate in ``stage``
+        (defaults to the candidate's current stage) that are not yet done.
+        """
+        stage = stage or self.onboarding_stage_id
+        completed_task_ids = CandidateTask.objects.filter(
+            candidate_id=self.candidate_id,
+            stage_id=stage,
+            status="done",
+        ).values_list("onboarding_task_id", flat=True)
+        return OnboardingTask.objects.filter(
+            stage_id=stage,
+            is_required=True,
+            candidates=self.candidate_id,
+        ).exclude(id__in=completed_task_ids)
 
     def __getattribute__(self, name):
         if name.startswith("get_") and name.endswith("_task"):

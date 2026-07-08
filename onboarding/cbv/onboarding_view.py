@@ -129,7 +129,10 @@ class TaskCreateForm(HorillaFormView):
             stage_id = self.form.cleaned_data["stage_id"]
             managers = self.request.POST.getlist("managers")
             title = self.form.cleaned_data["task_title"]
-            onboarding_task = OnboardingTask(task_title=title, stage_id=stage_id)
+            is_required = self.form.cleaned_data["is_required"]
+            onboarding_task = OnboardingTask(
+                task_title=title, stage_id=stage_id, is_required=is_required
+            )
             onboarding_task.save()
             onboarding_task.employee_id.set(managers)
             onboarding_task.candidates.set(candidates)

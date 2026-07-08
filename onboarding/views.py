@@ -302,7 +302,10 @@ def task_creation(request):
             stage_id = form_data.cleaned_data["stage_id"]
             managers = form_data.cleaned_data["managers"]
             title = form_data.cleaned_data["task_title"]
-            onboarding_task = OnboardingTask(task_title=title, stage_id=stage_id)
+            is_required = form_data.cleaned_data["is_required"]
+            onboarding_task = OnboardingTask(
+                task_title=title, stage_id=stage_id, is_required=is_required
+            )
             onboarding_task.save()
             onboarding_task.employee_id.set(managers)
             onboarding_task.candidates.set(candidates)

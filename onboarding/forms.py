@@ -169,6 +169,7 @@ class OnboardingViewTaskForm(ModelForm):
         queryset=Employee.objects.all(),
         # widget=forms.SelectMultiple(attrs={"class": "select2-hidden-accessible "})
     )
+    is_required = forms.BooleanField(required=False, label=_("Is Required"))
 
     class Meta:
         """
@@ -420,3 +421,27 @@ class StageChangeForm(forms.ModelForm):
         fields = [
             "onboarding_stage_id",
         ]
+
+    def clean(self):
+        cleaned_data = super().clean()
+        new_stage = cleaned_data.get("onboarding_stage_id")
+        old_stage = self.instance.onboarding_stage_id
+        if (
+            new_stage
+            and old_stage
+            and new_stage.sequence is not None
+            and old_stage.sequence is not None
+        ):
+            pending_tasks = self.instance.pending_required_tasks(old_stage)
+            if pending_tasks.exists():
+                task_titles = ", ".join(
+                    pending_tasks.values_list("task_title", flat=True)
+                )
+                raise forms.ValidationError(
+                    _(
+                        "Complete the following required task(s) before "
+                        "moving to the next stage: %(tasks)s"
+                    )
+                    % {"tasks": task_titles}
+                )
+        return cleaned_data

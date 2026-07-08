@@ -238,6 +238,11 @@ urlpatterns = [
         name="onboarding-cbv-change-stage",
     ),
     path(
+        "kanban-required-task-check/",
+        pipeline.KanbanRequiredTaskCheck.as_view(),
+        name="onboarding-kanban-required-task-check",
+    ),
+    path(
         "onboarding-view/",
         pipeline.PipelineView.as_view(),
         name="cbv-pipeline-onboarding",
