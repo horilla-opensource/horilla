@@ -44,7 +44,7 @@ from horilla_views.generic.cbv.views import (
 if app_installed("asset"):
     from asset.cbv.request_and_allocation import Asset
     from asset.filters import AssetFilter
-    from asset.models import AssetAssignment
+    from asset.models import AssetAssignment, AssetCategory, AssetRequest
     from asset.views import asset_allocate_return
     from asset.forms import AssetReturnForm
 
@@ -742,6 +742,154 @@ if app_installed("asset"):
                 messages.success(self.request, _("Selected Available Assets Allocated"))
             else:
                 messages.info(self.request, _("Select Available Assets to Add"))
+            return HttpResponse(
+                """
+            <script>$("#reloadMessagesButton").click();$(".reload-record").click();</script>
+    """
+            )
+
+    def category_available_count(self):
+        """
+        Number of units currently available to allocate for this asset category
+        """
+        return Asset.available_assets().filter(asset_category_id=self).count()
+
+    def category_request_status(self):
+        """
+        Latest asset request status for this category raised for the employee
+        currently being viewed on the allocation page, or "Available" if none.
+        """
+        request = getattr(_thread_locals, "request", None)
+        employee_id = None
+        if request:
+            employee_id = request.GET.get("instance_id") or request.POST.get(
+                "instance_id"
+            )
+        if employee_id:
+            asset_request = (
+                AssetRequest.objects.filter(
+                    requested_employee_id__id=employee_id,
+                    asset_category_id=self,
+                    asset_request_status__in=["Requested", "Approved"],
+                )
+                .order_by("-id")
+                .first()
+            )
+            if asset_request:
+                return asset_request.asset_request_status
+        return _("Available")
+
+    def category_allocation_metod(self):
+        """
+        Allocation method
+        """
+        return render_template(
+            "cbv/allocations/asset/category_actions.html", {"instance": self}
+        )
+
+    AssetCategory.allocation_asset_get_avatar = allocation_asset_get_avatar
+    AssetCategory.category_available_count = category_available_count
+    AssetCategory.category_request_status = category_request_status
+    AssetCategory.category_allocation_metod = category_allocation_metod
+
+    @method_decorator(login_required, name="dispatch")
+    @method_decorator(
+        all_manager_can_enter(perm="recruitment.view_recruitment"), name="dispatch"
+    )
+    class AssetCategoryAllocationList(HorillaListView):
+        """
+        Lists asset categories for the employee and lets managers raise an
+        AssetRequest for the selected categories instead of allocating an
+        Asset directly. The request then goes through the normal asset
+        request approval flow (asset.cbv.request_and_allocation.AssetApproveFormView).
+        """
+
+        model = AssetCategory
+        template_name = "cbv/allocations/asset/asset_list.html"
+
+        header_attrs = {
+            "asset_category_name": "style='width:160px !important;'",
+            "action": "style='width:105px;'",
+        }
+        row_status_indications = []
+        filter_selected = False
+        show_filter_tags = False
+        row_attrs = """
+            onclick="$(this).find('td:first [type=checkbox]').prop('checked',!$(this).find('td:first [type=checkbox]').is(':checked')).change()"
+        """
+        columns = [
+            (_("Category"), "asset_category_name", "allocation_asset_get_avatar"),
+            (_("Available"), "category_available_count"),
+            (_("Status"), "category_request_status"),
+        ]
+        sortby_mapping = [
+            (_("Category"), "asset_category_name"),
+        ]
+        bulk_update_fields = []
+        records_per_page = 10
+        selected_instances_key_id = "asset_category_allocation_selected_instances"
+
+        def __init__(self, **kwargs):
+            super().__init__(**kwargs)
+            self.search_url = self.request.path
+            self.action_method = "category_allocation_metod"
+
+        def get_queryset(self, queryset=None, filtered=True, *args, **kwargs):
+            if not getattr(self, "queryset", None):
+                self._saved_filters = self.request.GET
+
+                self.queryset = AssetCategory.objects.filter(
+                    asset_category_name__icontains=self.request.GET.get("search", "")
+                )
+                self.queryset = super().get_queryset(
+                    self.queryset, filtered, *args, **kwargs
+                )
+                self.assigned_assets = Asset.objects.filter(
+                    assetassignment__assigned_to_employee_id__id=self.request.GET.get(
+                        "instance_id"
+                    ),
+                    assetassignment__return_status__isnull=True,
+                ).distinct()
+
+            return self.queryset
+
+        def get_context_data(self, **kwargs):
+            context = super().get_context_data(**kwargs)
+            context["assigned_assets"] = self.assigned_assets
+            return context
+
+        def post(self, *args, **kwargs):
+            _response = super().post(*args, **kwargs)
+            ids = ast.literal_eval(self.request.POST["ids"])
+            employee_id = self.request.POST["instance_id"]
+            instance = Employee.objects.get(pk=employee_id)
+            categories = AssetCategory.objects.filter(pk__in=ids)
+
+            requested = []
+            for category in categories:
+                already_requested = AssetRequest.objects.filter(
+                    requested_employee_id=instance,
+                    asset_category_id=category,
+                    asset_request_status__in=["Requested", "Approved"],
+                ).exists()
+                if already_requested:
+                    continue
+                asset_request = AssetRequest()
+                asset_request.requested_employee_id = instance
+                asset_request.asset_category_id = category
+                asset_request.asset_request_status = "Requested"
+                asset_request.save()
+                requested.append(category)
+
+            if requested:
+                messages.success(
+                    self.request, _("Asset request raised for selected categories")
+                )
+            else:
+                messages.info(
+                    self.request,
+                    _("Select categories to request, or requests already exist"),
+                )
             return HttpResponse(
                 """
             <script>$("#reloadMessagesButton").click();$(".reload-record").click();</script>

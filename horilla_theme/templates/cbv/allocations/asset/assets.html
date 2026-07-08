@@ -14,7 +14,7 @@
         <i class="fas fa-search absolute left-3 top-[1px] bottom-0 m-auto flex items-center opacity-50 text-xs"></i>
     </div>
     <div class="mb-3" id="types">
-        <div id="selectedInstances" data-ids="[]" hidden></div>
+        <div id="asset_category_allocation_selected_instances" data-ids="[]" hidden></div>
         <form
             hx-post="{% url 'allocation-asset-list' %}?instance_id={{request.GET.instance_id}}"
             hx-target="#responseContainer"
@@ -39,7 +39,7 @@
     <div class="oh-modal__dialog-footer p-0">
         <button
             type="submit"
-            onclick="ids = $('#selectedInstances').attr('data-ids')
+            onclick="ids = $('#asset_category_allocation_selected_instances').attr('data-ids')
 				$('.oh-inner-sidebar-content [name=ids]').val(ids);
 				$('#idsForm [type=submit]').click()"
             class="oh-btn oh-btn--secondary oh-btn--shadow"

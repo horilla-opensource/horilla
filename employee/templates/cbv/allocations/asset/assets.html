@@ -20,7 +20,7 @@
     </div>
     <div class="oh-inner-sidebar-content__body">
       <div class="oh-general__tab-target mb-4" id="types">
-        <div id="selectedInstances" data-ids="[]" hidden></div>
+        <div id="asset_category_allocation_selected_instances" data-ids="[]" hidden></div>
         <form hx-post="{% url "allocation-asset-list" %}?instance_id={{request.GET.instance_id}}" hx-target="#responseContainer" id="idsForm">
           <input type="text" name="ids" value="[]" hidden>
           <input type="text" name="instance_id" value="{{request.GET.instance_id}}" hidden>
@@ -35,7 +35,7 @@
       <div class="oh-modal__dialog-footer p-0">
         <button type="submit"
         onclick="
-         ids = $('#selectedInstances').attr('data-ids')
+         ids = $('#asset_category_allocation_selected_instances').attr('data-ids')
          $('.oh-inner-sidebar-content [name=ids]').val(ids);
          $('#idsForm [type=submit]').click();
         "
