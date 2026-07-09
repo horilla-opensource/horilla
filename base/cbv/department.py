@@ -4,6 +4,7 @@ this page is handling the cbv methods for department in settings
 
 from typing import Any
 
+from django.apps import apps
 from django.contrib import messages
 from django.http import HttpResponse
 from django.shortcuts import render
@@ -20,6 +21,30 @@ from horilla_views.generic.cbv.views import (
     HorillaListView,
     HorillaNavView,
 )
+
+
+def _attach_department_managers(departments):
+    """
+    Attach a computed `manager_names` attribute to each department instance,
+    sourced from helpdesk.DepartmentManager (helpdesk owns the manager
+    assignment; base.Department itself has no manager field/relation).
+    """
+    departments = list(departments)
+    manager_names_by_department = {}
+    if apps.is_installed("helpdesk") and departments:
+        from helpdesk.models import DepartmentManager
+
+        assignments = DepartmentManager.objects.filter(
+            department_id__in=[department.pk for department in departments]
+        ).select_related("manager")
+        for assignment in assignments:
+            manager_names_by_department.setdefault(assignment.department_id, []).append(
+                assignment.manager.get_full_name()
+            )
+    for department in departments:
+        names = manager_names_by_department.get(department.pk, [])
+        department.manager_names = ", ".join(names) if names else "-"
+    return departments
 
 
 @method_decorator(login_required, name="dispatch")
@@ -71,12 +96,20 @@ class DepartmentListView(HorillaListView):
 
     columns = [
         (_("Department"), "department"),
+        (_("Manager"), "manager_names"),
     ]
     sortby_mapping = [
         (_("Department"), "department"),
     ]
 
     records_per_page = 7
+
+    def get_context_data(self, **kwargs: Any):
+        context = super().get_context_data(**kwargs)
+        page = context.get("queryset")
+        if page is not None:
+            _attach_department_managers(page)
+        return context
 
 
 @method_decorator(login_required, name="dispatch")
