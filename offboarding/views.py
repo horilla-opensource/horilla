@@ -1112,6 +1112,14 @@ def create_resignation_request(request):
     instance = None
     if instance_id:
         instance = ResignationLetter.objects.get(id=instance_id)
+        if instance.status == "rejected":
+            messages.error(
+                request,
+                _(
+                    "A rejected resignation letter cannot be modified. Only deletion is allowed."
+                ),
+            )
+            return HorillaRedirect(request)
         if not (
             request.user.has_perm("offboarding.change_resignationletter")
             or instance.employee_id == request.user.employee_get
@@ -1175,6 +1183,15 @@ def update_status(request):
     # if use update method instead of save then save method will not trigger
     if status in ["approved", "rejected"]:
         for letter in letters:
+            if letter.status == "rejected":
+                messages.error(
+                    request,
+                    _(
+                        "%(name)s's resignation letter is already rejected and cannot be modified."
+                    )
+                    % {"name": letter.employee_id.get_full_name()},
+                )
+                continue
             letter.status = status
             letter.save()
             if status == "approved":

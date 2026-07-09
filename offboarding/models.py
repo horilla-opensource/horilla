@@ -5,6 +5,7 @@ from datetime import date, timedelta
 from urllib.parse import urlencode
 
 from django.apps import apps
+from django.core.exceptions import ValidationError
 from django.db import models
 from django.db.models.signals import post_save
 from django.dispatch import receiver
@@ -471,11 +472,38 @@ class ResignationLetter(HorillaModel):
         )
         return url
 
+    def clean(self):
+        super().clean()
+        if self.pk:
+            original = (
+                ResignationLetter.objects.filter(pk=self.pk)
+                .values_list("status", flat=True)
+                .first()
+            )
+            if original == "rejected":
+                raise ValidationError(
+                    _("A rejected resignation letter cannot be modified.")
+                )
+        if self.employee_id_id:
+            existing = ResignationLetter.objects.filter(
+                employee_id=self.employee_id_id,
+                status__in=["requested", "approved"],
+            )
+            if self.pk:
+                existing = existing.exclude(pk=self.pk)
+            if existing.exists():
+                raise ValidationError(
+                    _(
+                        "A resignation letter for this employee is already in "
+                        "'Requested' or 'Approved' status."
+                    )
+                )
+
     def save(self, *args, **kwargs):
+        self.full_clean()
         super().save(*args, **kwargs)
         if self.status == "approved":
             pass
-
         return
 
     def to_offboarding_employee(
