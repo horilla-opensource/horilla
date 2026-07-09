@@ -279,19 +279,19 @@ class ResignationLetterForm(ModelForm):
             )
 
         request = getattr(horilla_middlewares._thread_locals, "request", None)
-        if request and not request.user.has_perm("offboarding.add_resignation"):
+        if request and not request.user.has_perm("offboarding.add_resignationletter"):
             exclude = exclude + ["status"]
             self.fields["employee_id"].queryset = Employee.objects.filter(
                 employee_user_id=request.user
             )
             self.fields["employee_id"].initial = request.user.employee_get
             self.instance.employee_id = request.user.employee_get
-        if request and request.user.has_perm("offboarding.add_resignation"):
+        if request and request.user.has_perm("offboarding.add_resignationletter"):
             if request.GET.get("emp_id"):
                 emp_id = request.GET.get("emp_id")
                 self.fields["employee_id"].queryset = Employee.objects.filter(id=emp_id)
                 self.fields["employee_id"].initial = emp_id
-
+        print("employee queryset:", self.fields["employee_id"].queryset)
         exclude = list(set(exclude))
         for field in exclude:
             del self.fields[field]
@@ -300,9 +300,9 @@ class ResignationLetterForm(ModelForm):
         request = getattr(horilla_middlewares._thread_locals, "request", None)
         instance = self.instance
         if (
-            not request.user.has_perm("offboarding.add_resignation")
+            not request.user.has_perm("offboarding.add_resignationletter")
             and instance.status == "requested"
-        ) or request.user.has_perm("add_resignation"):
+        ) or request.user.has_perm("add_resignationletter"):
             instance = super().save(commit)
         else:
             messages.info(
@@ -313,7 +313,7 @@ class ResignationLetterForm(ModelForm):
         if (
             instance.status == "requested"
             and request
-            and not request.user.has_perm("offboarding.add_resignation")
+            and not request.user.has_perm("offboarding.add_resignationletter")
         ):
             with contextlib.suppress(Exception):
                 notify.send(
