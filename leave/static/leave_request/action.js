@@ -3,6 +3,7 @@ var closeButtonText = {
     de: "Schließen",
     es: "Cerrar",
     en: "Close",
+    uk: "Закрити",
     fr: "Fermer",
 };
 
@@ -11,6 +12,7 @@ var confirmButtonText = {
     de: "Bestätigen",
     es: "Confirmar",
     en: "Confirm",
+    uk: "Підтвердити",
     fr: "Confirmer",
 };
 
@@ -19,6 +21,7 @@ var deleteLeaveRequestMessages = {
     de: "Möchten Sie wirklich alle ausgewählten Urlaubsanfragen löschen?",
     es: "¿Realmente desea eliminar todas las solicitudes de permiso seleccionadas?",
     en: "Do you really want to delete all the selected leave requests?",
+    uk: "Ви дійсно хочете видалити всі вибрані запити на відпустку?",
     fr: "Voulez-vous vraiment supprimer toutes les demandes de congé sélectionnées?",
 };
 
@@ -27,6 +30,7 @@ var approveLeaveRequests = {
     de: "Möchten Sie die ausgewählten Urlaubsanfragen genehmigen?",
     es: "¿Quieres aprobar las solicitudes de licencia seleccionadas?",
     en: "Do you want to approve the selected leave requests?",
+    uk: "Ви хочете затвердити вибрані запити на відпустку?",
     fr: "Voulez-vous approuver les demandes de congé sélectionnées?",
 };
 
@@ -35,6 +39,7 @@ var rejectLeaveRequests = {
     de: "Möchten Sie die ausgewählten Abwesenheitsanträge ablehnen?",
     es: "¿Quieres rechazar las solicitudes de vacaciones seleccionadas?",
     en: "Do you want to reject the selected leave requests?",
+    uk: "Ви хочете відхилити вибрані запити на відпустку?",
     fr: "Vous souhaitez rejeter les demandes de congés sélectionnées ?",
 };
 
@@ -43,6 +48,7 @@ var noRowLeaveMessages = {
     de: "Es wurden keine Zeilen ausgewählt.",
     es: "No se han seleccionado filas.",
     en: "No rows have been selected to delete",
+    uk: "Не вибрано жодного рядка для видалення",
     fr: "Aucune ligne n'a été sélectionnée.",
 };
 
@@ -51,6 +57,7 @@ var rowMessages = {
     de: " Ausgewählt",
     es: " Seleccionado",
     en: " Selected",
+    uk: " Вибрано",
     fr: " Sélectionné",
 };
 
@@ -59,6 +66,7 @@ var excelMessages = {
     de: "Möchten Sie die Excel-Datei herunterladen?",
     es: "¿Desea descargar el archivo de Excel?",
     en: "Do you want to download the excel file?",
+    uk: "Ви хочете завантажити файл Excel?",
     fr: "Voulez-vous télécharger le fichier Excel?",
 };
 
@@ -67,6 +75,7 @@ var leaveReportCreate = {
     de: "Möchten Sie die PDF-Datei herunterladen?",
     es: "¿Desea descargar el archivo de PDF?",
     en: "Do you wish to create a Leave Report?",
+    uk: "Ви бажаєте створити звіт про відпустки?",
     fr: "Voulez-vous télécharger le fichier PDF?",
 };
 

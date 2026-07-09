@@ -4,6 +4,7 @@ var deleteUsersMessages = {
     de: "Möchten Sie wirklich alle ausgewählten Anwesenheiten löschen?",
     es: "¿Realmente quieres eliminar todas las asistencias seleccionadas?",
     en: "Do you really want to delete all the selected Users?",
+    uk: "Ви дійсно хочете видалити всіх вибраних користувачів?",
     fr: "Voulez-vous vraiment supprimer toutes les présences sélectionnées?",
 };
 var nousersdeleteMessages = {
@@ -11,6 +12,7 @@ var nousersdeleteMessages = {
     de: "Es sind keine Zeilen zum Löschen von Anwesenheiten ausgewählt.",
     es: "No se seleccionan filas para eliminar asistencias.",
     en: "No rows are selected for deleting users from device.",
+    uk: "Не вибрано жодного рядка для видалення користувачів із пристрою.",
     fr: "Aucune ligne n'est sélectionnée pour la suppression des présences.",
 };
 

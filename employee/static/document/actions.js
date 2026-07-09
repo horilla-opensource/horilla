@@ -4,6 +4,7 @@ var confirmMessages = {
         de: "Möchten Sie wirklich alle ausgewählten Anfragen genehmigen?",
         es: "¿Realmente quieres aprobar todas las solicitudes seleccionadas?",
         en: "Do you really want to approve all the selected requests?",
+        uk: "Ви дійсно хочете затвердити всі вибрані запити?",
         fr: "Voulez-vous vraiment approuver toutes les demandes sélectionnées?",
     },
     rejected: {
@@ -11,6 +12,7 @@ var confirmMessages = {
         de: "Möchten Sie wirklich alle ausgewählten Anfragen ablehnen?",
         es: "¿Realmente deseas rechazar todas las solicitudes seleccionadas?",
         en: "Do you really want to reject all the selected requests?",
+        uk: "Ви дійсно хочете відхилити всі вибрані запити?",
         fr: "Voulez-vous vraiment rejeter toutes les demandes sélectionnées?",
     },
 };
@@ -21,6 +23,7 @@ var alreadyActionMessages = {
         de: "Einige ausgewählte Anfragen wurden bereits genehmigt.",
         es: "Algunas solicitudes seleccionadas ya han sido aprobadas.",
         en: "Some selected requests have already been approved.",
+        uk: "Деякі вибрані запити вже затверджено.",
         fr: "Certaines demandes sélectionnées ont déjà été approuvées.",
     },
     rejected: {
@@ -28,6 +31,7 @@ var alreadyActionMessages = {
         de: "Einige ausgewählte Anfragen wurden bereits abgelehnt.",
         es: "Algunas solicitudes seleccionadas ya han sido rechazadas.",
         en: "Some selected requests have already been rejected.",
+        uk: "Деякі вибрані запити вже відхилено.",
         fr: "Certaines demandes sélectionnées ont déjà été rejetées.",
     },
 };
@@ -55,6 +59,7 @@ function validateDocsIds(event) {
                 de: "Es wurden keine Zeilen ausgewählt.",
                 es: "No se han seleccionado filas.",
                 en: "No rows have been selected.",
+                uk: "Не вибрано жодного рядка.",
                 fr: "Aucune ligne n'a été sélectionnée.",
             };
             event.preventDefault();

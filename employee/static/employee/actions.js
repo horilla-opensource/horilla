@@ -3,6 +3,7 @@ var excelMessages = {
     de: "Möchten Sie die Excel-Datei herunterladen?",
     es: "¿Desea descargar el archivo de Excel?",
     en: "Do you want to download the excel file?",
+    uk: "Ви хочете завантажити файл Excel?",
     fr: "Voulez-vous télécharger le fichier Excel?",
 };
 var archiveMessages = {
@@ -10,6 +11,7 @@ var archiveMessages = {
     de: "Möchten Sie wirklich alle ausgewählten Mitarbeiter archivieren?",
     es: "¿Realmente quieres archivar a todos los empleados seleccionados?",
     en: "Do you really want to archive all the selected employees?",
+    uk: "Ви дійсно хочете архівувати всіх вибраних співробітників?",
     fr: "Voulez-vous vraiment archiver tous les employés sélectionnés ?",
 };
 
@@ -18,6 +20,7 @@ var unarchiveMessages = {
     de: "Möchten Sie wirklich alle ausgewählten Mitarbeiter aus der Archivierung zurückholen?",
     es: "¿Realmente quieres desarchivar a todos los empleados seleccionados?",
     en: "Do you really want to unarchive all the selected employees?",
+    uk: "Ви дійсно хочете розархівувати всіх вибраних співробітників?",
     fr: "Voulez-vous vraiment désarchiver tous les employés sélectionnés?",
 };
 
@@ -26,6 +29,7 @@ var deleteMessages = {
     de: "Möchten Sie wirklich alle ausgewählten Mitarbeiter löschen?",
     es: "¿Realmente quieres eliminar a todos los empleados seleccionados?",
     en: "Do you really want to delete all the selected employees?",
+    uk: "Ви дійсно хочете видалити всіх вибраних співробітників?",
     fr: "Voulez-vous vraiment supprimer tous les employés sélectionnés?",
 };
 
@@ -34,6 +38,7 @@ var noRowMessages = {
     de: "Es wurden keine Zeilen ausgewählt, um Mitarbeiter zu löschen.",
     es: "No se han seleccionado filas para eliminar empleados.",
     en: "No rows have been selected to delete employees.",
+    uk: "Не вибрано жодного рядка для видалення співробітників.",
     fr: "Aucune ligne n'a été sélectionnée pour supprimer des employés.",
 };
 
@@ -50,6 +55,7 @@ var rowMessages = {
     de: " Ausgewählt",
     es: " Seleccionado",
     en: " Selected",
+    uk: " Вибрано",
     fr: " Sélectionné",
 };
 

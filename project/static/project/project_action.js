@@ -3,6 +3,7 @@ var exportMessages = {
     // de: "Möchten Sie wirklich alle ausgewählten Mitarbeiter löschen?",
     // es: "¿Realmente quieres eliminar a todos los empleados seleccionados?",
     en: "Do you really want to export all the selected projects?",
+    uk: "Ви дійсно хочете експортувати всі вибрані проєкти?",
     // fr: "Voulez-vous vraiment supprimer tous les employés sélectionnés?",
 };
 
@@ -11,6 +12,7 @@ var downloadMessages = {
     de: "Möchten Sie die Vorlage herunterladen?",
     es: "¿Quieres descargar la plantilla?",
     en: "Do you want to download the template?",
+    uk: "Ви хочете завантажити шаблон?",
     fr: "Voulez-vous télécharger le modèle ?",
 };
 
@@ -19,6 +21,7 @@ var norowMessagesSelected = {
     // de: "Es wurden keine Zeilen ausgewählt.",
     // es: "No se han seleccionado filas.",
     en: "No rows have been selected.",
+    uk: "Не вибрано жодного рядка.",
     // fr: "Aucune ligne n'a été sélectionnée.",
 };
 

@@ -3,6 +3,7 @@ var downloadMessages = {
 	de: "Möchten Sie die Vorlage herunterladen?",
 	es: "¿Quieres descargar la plantilla?",
 	en: "Do you want to download the template?",
+	uk: "Ви хочете завантажити шаблон?",
 	fr: "Voulez-vous télécharger le modèle ?",
 };
 

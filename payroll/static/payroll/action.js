@@ -3,6 +3,7 @@ var excelMessages = {
   de: "Möchten Sie die Excel-Datei herunterladen?",
   es: "¿Desea descargar el archivo de Excel?",
   en: "Do you want to download the excel file?",
+  uk: "Ви хочете завантажити файл Excel?",
   fr: "Voulez-vous télécharger le fichier Excel?",
 };
 
@@ -11,6 +12,7 @@ var deletePayslipMessages = {
   de: "Sind Sie sicher, dass Sie alle ausgewählten Gehaltsabrechnungen löschen möchten?",
   es: "¿Realmente quieres eliminar todas las nóminas seleccionadas?",
   en: "Do you really want to delete all the selected payslips?",
+  uk: "Ви дійсно хочете видалити всі вибрані розрахункові листи?",
   fr: "Voulez-vous vraiment supprimer tous les bulletins de paie sélectionnés?",
 };
 
@@ -19,6 +21,7 @@ var deleteContractMessages = {
   de: "Möchten Sie wirklich alle ausgewählten Verträge löschen?",
   es: "¿Realmente quieres borrar todos los contratos seleccionados?",
   en: "Do you really want to delete all the selected contracts?",
+  uk: "Ви дійсно хочете видалити всі вибрані контракти?",
   fr: "Voulez-vous vraiment supprimer tous les contrats sélectionnés?",
 };
 
@@ -27,6 +30,7 @@ var noRowPayrollMessages = {
   de: "Es wurden keine Zeilen ausgewählt.",
   es: "No se han seleccionado filas.",
   en: "No rows have been selected to delete.",
+  uk: "Не вибрано жодного рядка для видалення.",
   fr: "Aucune ligne n'a été sélectionnée.",
 };
 
@@ -35,6 +39,7 @@ var rowMessages = {
   de: " Ausgewählt",
   es: " Seleccionado",
   en: " Selected",
+  uk: " Вибрано",
   fr: " Sélectionné",
 };
 

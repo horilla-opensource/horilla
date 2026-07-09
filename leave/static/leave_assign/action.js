@@ -3,6 +3,7 @@ var rowMessages = {
   de: " Ausgewählt",
   es: " Seleccionado",
   en: " Selected",
+  uk: " Вибрано",
   fr: " Sélectionné",
 };
 
@@ -11,6 +12,7 @@ var excelMessages = {
   de: "Möchten Sie die Excel-Datei herunterladen?",
   es: "¿Desea descargar el archivo de Excel?",
   en: "Do you want to download the excel file?",
+  uk: "Ви хочете завантажити файл Excel?",
   fr: "Voulez-vous télécharger le fichier Excel?",
 };
 
@@ -19,6 +21,7 @@ var deleteAssignedMessages = {
   de: "Möchten Sie wirklich alle ausgewählten zugewiesenen abwesenheit löschen?",
   es: "¿Realmente desea eliminar todas las hojas asignadas dejar?",
   en: "Do you really want to delete all the selected assigned leaves?",
+  uk: "Ви дійсно хочете видалити всі вибрані призначені відпустки?",
   fr: "Voulez-vous vraiment supprimer tous les sélectionnés congés attribués ?",
 };
 
@@ -27,6 +30,7 @@ var no_rows_deleteMessages = {
   de: "Es gibt keine Zeilen zum Löschen der zugewiesenen abwesenheit.",
   es: "No se ha seleccionado ninguna fila para eliminar la  asignadas dejar",
   en: "No rows are selected for deleting assigned leaves.",
+  uk: "Не вибрано жодного рядка для видалення призначених відпусток.",
   fr: "Aucune ligne n'est sélectionnée pour supprimer les congés attribués.",
 };
 
@@ -35,6 +39,7 @@ var downloadMessages = {
   de: "Möchten Sie die Vorlage herunterladen?",
   es: "¿Quieres descargar la plantilla?",
   en: "Do you want to download the template?",
+  uk: "Ви хочете завантажити шаблон?",
   fr: "Voulez-vous télécharger le modèle ?",
 };
 

@@ -3,6 +3,7 @@ var archiveMessages = {
   de: "Möchten Sie wirklich alle ausgewählten Ziele archivieren?",
   es: "¿Realmente quieres archivar todos los objetivos seleccionados?",
   en: "Do you really want to archive all the selected objectives?",
+  uk: "Ви дійсно хочете архівувати всі вибрані цілі?",
   fr: "Voulez-vous vraiment archiver tous les objectifs sélectionnés?",
 };
 
@@ -11,6 +12,7 @@ var unarchiveMessages = {
   de: "Möchten Sie wirklich alle ausgewählten Ziele aus der Archivierung nehmen?",
   es: "¿Realmente quieres desarchivar todos los objetivos seleccionados?",
   en: "Do you really want to unarchive all the selected objectives?",
+  uk: "Ви дійсно хочете розархівувати всі вибрані цілі?",
   fr: "Voulez-vous vraiment désarchiver tous les objectifs sélectionnés?",
 };
 
@@ -19,6 +21,7 @@ var deleteMessages = {
   de: "Möchten Sie wirklich alle ausgewählten Ziele löschen?",
   es: "¿Realmente quieres eliminar todos los objetivos seleccionados?",
   en: "Do you really want to delete all the selected objectives?",
+  uk: "Ви дійсно хочете видалити всі вибрані цілі?",
   fr: "Voulez-vous vraiment supprimer tous les objectifs sélectionnés?",
 };
 
@@ -27,6 +30,7 @@ var norowMessages = {
   de: "Es wurden keine Zeilen ausgewählt.",
   es: "No se han seleccionado filas.",
   en: "No rows have been selected.",
+  uk: "Не вибрано жодного рядка.",
   fr: "Aucune ligne n'a été sélectionnée.",
 };
 
@@ -35,6 +39,7 @@ var rowMessages = {
   de: " Ausgewählt",
   es: " Seleccionado",
   en: " Selected",
+  uk: " Вибрано",
   fr: " Sélectionné",
 };
 
