@@ -146,10 +146,17 @@
 
 				<div class="form-input-items">
 					<label class="text-xs font-medium"
-						>{% trans "Is paid" %}</label
+						>{{ form.payment_type.label }}</label
 					>
-					{{form.payment}} {{form.payment.errors}}
+					{{ form.payment_type }} {{ form.payment_type.errors }}
 				</div>
+				<div class="form-input-items" id="paymentPercentageContainer" style="display:none;">
+					<label class="text-xs font-medium"
+						>{{ form.payment_percentage.label }}</label
+					>
+					{{ form.payment_percentage }} {{ form.payment_percentage.errors }}
+				</div>
+				<div hidden>{{ form.payment }}</div>
 
 				<!-- Limit Leave days Toggle -->
 				<div class="flex items-center justify-between mb-2">
@@ -850,6 +857,26 @@
 	$(document).ready(function () {
 		$("#mainform").find("select").select2({
 			width: "100%",
+		});
+
+		// Payment type toggle: show percentage only for 'custom'
+		function togglePaymentPercentage() {
+			if ($("#id_payment_type").val() === "custom") {
+				$("#paymentPercentageContainer").show();
+				$("#id_payment_percentage").prop("required", true);
+			} else {
+				$("#paymentPercentageContainer").hide();
+				$("#id_payment_percentage").prop("required", false).val("");
+			}
+		}
+		togglePaymentPercentage();
+		$("#id_payment_type").on("change", togglePaymentPercentage);
+
+		// Sync legacy payment field with payment_type selection
+		$("#id_payment_type").on("change", function () {
+			var val = $(this).val();
+			if (val === "paid") { $("#id_payment").val("paid"); }
+			else { $("#id_payment").val("unpaid"); }
 		});
 	});
 </script>

@@ -406,6 +406,17 @@ class LeaveRequestFormView(HorillaFormView):
         self.form = choosesubordinates(
             self.request, self.form, "leave.add_leaverequest"
         )
+        own_employee = getattr(self.request.user, "employee_get", None)
+        if (
+            own_employee
+            and own_employee not in self.form.fields["employee_id"].queryset
+        ):
+            from employee.models import Employee
+
+            self.form.fields["employee_id"].queryset = (
+                self.form.fields["employee_id"].queryset
+                | Employee.objects.filter(id=own_employee.id)
+            ).distinct()
         if self.form.instance.pk:
             self.form_class.verbose_name = _("Leave Request")
 
