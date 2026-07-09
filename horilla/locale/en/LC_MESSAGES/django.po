@@ -17430,9 +17430,9 @@ msgstr "Stages"
 msgid "view-onboarding-dashboard"
 msgstr "Dashboard"
 
-#: .\base\translator.py:201
+#: .\base\translator.py:201p
 msgid "cbv-pipeline"
-msgstr "Onboarding View"
+msgstr "Recruitment View"
 
 #: .\base\translator.py:202
 msgid "onboarding-view"
