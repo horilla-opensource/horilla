@@ -140,7 +140,7 @@
                         <form action="{% url 'update-letter-status' %}">
                             {% if perms.offboarding.change_resignationletter %}
                             <div class="oh-btn-group">
-                                {% if letter.status != "approved" %}
+                                {% if letter.status == "requested" %}
                                 <button
                                     title="{% trans 'By approving the request employee will added to the offboarding pipeline' %}"
                                     type="button"
