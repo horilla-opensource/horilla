@@ -75,10 +75,10 @@
                                                         hx-target="#objectCreateModalTarget"
                                                         data-toggle="oh-modal-toggle"
                                                         data-target="#objectCreateModal"
-                                                        title="Add Key Result"
+                                                        title="{% trans 'Add Key Result' %}"
                                                         onclick="event.stopPropagation()"
                                                     >
-                                                        <ion-icon name="add-outline" class="m-0 md hydrated" role="img" aria-label="add outline"></ion-icon>
+                                                        <ion-icon name="add-outline" class="m-0 md hydrated" role="img" aria-label="{% trans 'add outline' %}"></ion-icon>
                                                     </button>
                                                 {% endif %}
                                                 {% if request.user|is_reportingmanager or perms.pms.add_employeeobjective %}
@@ -86,7 +86,7 @@
                                                 <div class="" onclick="event.stopPropagation()">
                                                     <div class="oh-dropdown" x-data="{show: false}">
                                                         <button class="oh-btn oh-btn--transparent text-muted p-3" @click="show = !show" title={% trans "Actions" %}>
-                                                            <ion-icon name="ellipsis-vertical-sharp" title="{% trans 'Options' %}" role="img" class="md hydrated" aria-label="ellipsis vertical sharp"></ion-icon>
+                                                            <ion-icon name="ellipsis-vertical-sharp" title="{% trans 'Options' %}" role="img" class="md hydrated" aria-label="{% trans 'ellipsis vertical sharp' %}"></ion-icon>
                                                         </button>
                                                         <div class="oh-dropdown__menu oh-dropdown__menu--dark-border oh-dropdown__menu--right" x-show="show" @click.outside="show = false" style="display: none;">
                                                             <ul class="oh-dropdown__items">

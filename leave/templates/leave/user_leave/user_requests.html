@@ -97,7 +97,7 @@
                         <div class="oh-profile oh-profile--md">
                             <div class="oh-profile__avatar mr-1">
                                 <img src="{{leave_request.leave_type_id.get_avatar}}" class="oh-profile__image"
-                                    alt="Leave Type Icon" />
+                                    alt="{% trans 'Leave Type Icon' %}" />
                             </div>
                             <span class="oh-profile__name oh-text--dark">{{leave_request.leave_type_id|truncatechars:12}}</span>
 
@@ -129,7 +129,7 @@
 
                         <button type="button" hx-get="{% url 'leave-request-view-comment' leave_request.id %}?{{pd}}&target=userRequest" hx-target="#commentContainer"
                         data-target = '#leaveactivitySidebar' title="{% trans 'Add / View Comment' %}"  class="oh-btn oh-btn--light oh-activity-sidebar__open w-100" style="flex: 1 0 auto; width:20px;height: 40.68px; padding: 0;" onclick="event.stopPropagation()">
-                        <ion-icon name="newspaper-outline" role="img" class="md hydrated" aria-label="newspaper outline"></ion-icon>
+                        <ion-icon name="newspaper-outline" role="img" class="md hydrated" aria-label="{% trans 'newspaper outline' %}"></ion-icon>
                         </button>
 
                     </div>
@@ -269,7 +269,7 @@
       >
         {% trans "Details" %}
       </h2>
-      <button class="oh-modal__close" aria-label="Close">
+      <button class="oh-modal__close" aria-label="{% trans 'Close' %}">
         <ion-icon name="close-outline"></ion-icon>
       </button>
     </div>

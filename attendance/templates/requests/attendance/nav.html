@@ -18,7 +18,7 @@
             <h2 class="oh-modal__dialog-title" id="addEmployeeModalLabel">
                 {% trans "Validate Attendances Request" %}
             </h2>
-            <button class="oh-modal__close" aria-label="Close">
+            <button class="oh-modal__close" aria-label="{% trans 'Close' %}">
                 <ion-icon name="close-outline"></ion-icon>
             </button>
         </div>
@@ -48,7 +48,7 @@
         <h1 class="oh-main__titlebar-title fw-bold">
             {% trans "Attendances" %}
         </h1>
-        <a class="oh-main__titlebar-search-toggle" role="button" aria-label="Toggle Search"
+        <a class="oh-main__titlebar-search-toggle" role="button" aria-label="{% trans 'Toggle Search' %}"
             @click="searchShow = !searchShow">
             <ion-icon name="search-outline" class="oh-main__titlebar-serach-icon"></ion-icon>
         </a>
@@ -60,7 +60,7 @@
             <div class="oh-input-group oh-input__search-group"
                 :class="searchShow ? 'oh-input__search-group--show' : ''">
                 <ion-icon name="search-outline" class="oh-input-group__icon oh-input-group__icon--left"></ion-icon>
-                <input type="text" class="oh-input oh-input__icon" aria-label="Search Input"
+                <input type="text" class="oh-input oh-input__icon" aria-label="{% trans 'Search Input' %}"
                     placeholder="{% trans 'Search' %}" name="search" onkeyup="$('.filterButton')[0].click()" />
             </div>
             <div class="oh-main__titlebar-button-container">

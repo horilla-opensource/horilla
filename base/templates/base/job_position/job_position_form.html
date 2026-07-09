@@ -1,29 +1,35 @@
 {% load i18n %}
 <div class="oh-modal__dialog-header pb-0">
     <span class="oh-modal__dialog-title" id="editModal1ModalLabel">
-        {% if job_position.id %} {% trans "Update" %} {% else %} {% trans "Create" %} {% endif %} {{form.verbose_name}}
+        {% if job_position.id %}
+            {% trans "Update" %}
+        {% else %}
+            {% trans "Create" %}
+        {% endif %} {{ form.verbose_name }}
     </span>
-    <button class="oh-modal__close" aria-label="Close">
+    <button class="oh-modal__close" aria-label="{% trans 'Close' %}">
         <ion-icon name="close-outline"></ion-icon>
     </button>
 </div>
 <div class="oh-modal__dialog-body">
-    <form hx-post="{{ request.get_full_path }}"
+    <form
+        hx-post="{{ request.get_full_path }}"
         hx-target="{% if dynamic %}#dynamicCreateModalBody{% else %}#jobPositionForm{% endif %}"
-        class="oh-profile-section">
+        class="oh-profile-section"
+    >
         {% csrf_token %}
         <div class="oh-inner-sidebar-content__body">
             <div class="oh-input-group mb-2">
                 <label class="mb-1" for="id_{{form.department_id.name}}">
                     {{ form.department_id.label }}
                 </label>
-                {{form.department_id}} {{form.department_id.errors}}
+                {{ form.department_id }} {{ form.department_id.errors }}
             </div>
             <div class="oh-input-group mb-2">
                 <label class="mb-1" for="id_{{form.job_position.name}}">
                     {{ form.job_position.label }}
                 </label>
-                {{form.job_position}} {{form.job_position.errors}}
+                {{ form.job_position }} {{ form.job_position.errors }}
             </div>
         </div>
         <div class="oh-modal__dialog-footer p-0 mt-3">

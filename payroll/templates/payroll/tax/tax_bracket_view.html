@@ -37,12 +37,20 @@
                     {% if perms.payroll.change_taxbracket %}
                         <div class="oh-sticky-table__td">
                             <div class="oh-btn-group">
-                                <a class="oh-btn oh-btn--light-bkg w-100" data-toggle="oh-modal-toggle"
+                                <a
+                                    class="oh-btn oh-btn--light-bkg w-100"
+                                    data-toggle="oh-modal-toggle"
                                     data-target="#objectUpdateModal"
                                     hx-get="{% url 'tax-bracket-update' tax_bracket_id=tax_bracket.id %}"
-                                    hx-target="#objectUpdateModalTarget" title="{% trans 'Update' %}">
-                                    <ion-icon name="create-outline" role="img" class="md hydrated"
-                                        aria-label="create outline"></ion-icon>
+                                    hx-target="#objectUpdateModalTarget"
+                                    title="{% trans 'Update' %}"
+                                >
+                                    <ion-icon
+                                        name="create-outline"
+                                        role="img"
+                                        class="md hydrated"
+                                        aria-label="{% trans 'create outline' %}"
+                                    ></ion-icon>
                                 </a>
                             </div>
                         </div>
@@ -50,12 +58,19 @@
                     {% if perms.payroll.delete_taxbracket %}
                         <div class="oh-sticky-table__td">
                             <div class="oh-btn-group">
-                                <button class="oh-btn oh-btn--danger-outline w-100" title="{% trans 'Delete' %}"
+                                <button
+                                    class="oh-btn oh-btn--danger-outline w-100"
+                                    title="{% trans 'Delete' %}"
                                     hx-confirm="{% trans 'Are you sure to delete this Tax bracket ?' %}"
                                     hx-post="{% url 'tax-bracket-delete' tax_bracket_id=tax_bracket.id%}"
-                                    hx-target="#taxbracketList{{tax_bracket.filing_status_id.id}}">
-                                    <ion-icon name="trash-outline" role="img" class="md hydrated"
-                                        aria-label="trash outline"></ion-icon>
+                                    hx-target="#taxbracketList{{tax_bracket.filing_status_id.id}}"
+                                >
+                                    <ion-icon
+                                        name="trash-outline"
+                                        role="img"
+                                        class="md hydrated"
+                                        aria-label="{% trans 'trash outline' %}"
+                                    ></ion-icon>
                                 </button>
                             </div>
                         </div>
@@ -65,72 +80,76 @@
         </div>
     </div>
 {% else %}
-<div class="col-lg-12 d-flex flex-row-reverse p-2 d-none">
-    <button type="submit" class="oh-btn oh-btn--secondary" id="oc-editor-button{{ filing_status.pk }}">
-        {% trans "Save" %}
-    </button>
-</div>
-<iframe frameBorder="0" height="450px" id="oc-editor{{ filing_status.pk }}"
+    <div class="col-lg-12 d-flex flex-row-reverse p-2 d-none">
+        <button type="submit" class="oh-btn oh-btn--secondary" id="oc-editor-button{{ filing_status.pk }}">
+            {% trans "Save" %}
+        </button>
+    </div>
+    <iframe
+        frameBorder="0"
+        height="450px"
+        id="oc-editor{{ filing_status.pk }}"
         src="https://onecompiler.com/embed/python?codeChangeEvent=true&hideNew=true&hideNewFileOption=true&hideStdin=true&hideTitle=true&listenToEvents=true&availableLanguages=false&theme=dark"
-        width="100%">
-</iframe>
-<script>
-    var iFrame = document.getElementById('oc-editor{{ filing_status.pk }}');
-    var saveDiv = document.querySelector('#oc-editor-button{{ filing_status.pk }}').parentElement;
-    var saveBtn = document.getElementById('oc-editor-button{{ filing_status.pk }}');
+        width="100%"
+    >
+    </iframe>
+    <script>
+        var iFrame = document.getElementById('oc-editor{{ filing_status.pk }}');
+        var saveDiv = document.querySelector('#oc-editor-button{{ filing_status.pk }}').parentElement;
+        var saveBtn = document.getElementById('oc-editor-button{{ filing_status.pk }}');
 
-    var initialCode = `{{ filing_status.python_code|escapejs }}`;
-    var latestCode = initialCode;
+        var initialCode = `{{ filing_status.python_code|escapejs }}`;
+        var latestCode = initialCode;
 
-    iFrame.onload = function () {
-        setTimeout(function () {
-            iFrame.contentWindow.postMessage({
-                eventType: 'populateCode',
-                language: 'python',
-                files: [
-                    {
-                        "name": "federal_tax.py",
-                        "content": initialCode
-                    }
-                ]
-            }, "*");
-
-            // Trigger run after injecting code
+        iFrame.onload = function () {
             setTimeout(function () {
                 iFrame.contentWindow.postMessage({
-                    eventType: 'triggerRun'
+                    eventType: 'populateCode',
+                    language: 'python',
+                    files: [
+                        {
+                            "name": "federal_tax.py",
+                            "content": initialCode
+                        }
+                    ]
                 }, "*");
+
+                // Trigger run after injecting code
+                setTimeout(function () {
+                    iFrame.contentWindow.postMessage({
+                        eventType: 'triggerRun'
+                    }, "*");
+                }, 500);
             }, 500);
-        }, 500);
-    };
+        };
 
-    window.onmessage = function (e) {
-        if (e.data && e.data.language) {
-            var code = e.data.files[0].content;
+        window.onmessage = function (e) {
+            if (e.data && e.data.language) {
+                var code = e.data.files[0].content;
 
-            if (code !== latestCode) {
-                latestCode = code;
-                if (latestCode !== initialCode) {
-                    saveDiv.classList.remove("d-none");
+                if (code !== latestCode) {
+                    latestCode = code;
+                    if (latestCode !== initialCode) {
+                        saveDiv.classList.remove("d-none");
+                    }
                 }
             }
-        }
-    };
+        };
 
-    saveBtn.addEventListener("click", function () {
-        $.ajax({
-            type: "post",
-            url: "{% url 'update-py-code' filing_status.pk %}",
-            data: {
-                csrfmiddlewaretoken: getCookie("csrftoken"),
-                code: latestCode,
-            },
-            success: function () {
-                initialCode = latestCode;
-                $('#reloadMessagesButton').click();
-                saveDiv.classList.add("d-none");
-            }
+        saveBtn.addEventListener("click", function () {
+            $.ajax({
+                type: "post",
+                url: "{% url 'update-py-code' filing_status.pk %}",
+                data: {
+                    csrfmiddlewaretoken: getCookie("csrftoken"),
+                    code: latestCode,
+                },
+                success: function () {
+                    initialCode = latestCode;
+                    $('#reloadMessagesButton').click();
+                    saveDiv.classList.add("d-none");
+                }
+            });
         });
-    });
-</script>
+    </script>
 {% endif %}

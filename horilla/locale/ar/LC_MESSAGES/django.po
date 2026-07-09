@@ -2,7 +2,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: horilla-hrms\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2025-10-16 12:01+0530\n"
+"POT-Creation-Date: 2026-07-09 11:44+0530\n"
 "PO-Revision-Date: 2025-10-16 06:41\n"
 "Last-Translator: \n"
 "Language-Team: Arabic\n"
@@ -10,7 +10,8 @@ msgstr ""
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"Plural-Forms: nplurals=6; plural=(n==0 ? 0 : n==1 ? 1 : n==2 ? 2 : n%100>=3 && n%100<=10 ? 3 : n%100>=11 && n%100<=99 ? 4 : 5);\n"
+"Plural-Forms: nplurals=6; plural=(n==0 ? 0 : n==1 ? 1 : n==2 ? 2 : n%100>=3 "
+"&& n%100<=10 ? 3 : n%100>=11 && n%100<=99 ? 4 : 5);\n"
 "X-Crowdin-Project: horilla-hrms\n"
 "X-Crowdin-Project-ID: 838370\n"
 "X-Crowdin-Language: ar\n"
@@ -86,14 +87,22 @@ msgstr "مسح الفلتر"
 msgid "Restrict All"
 msgstr "تقييد الكل"
 
-msgid "Only those normal users/employees with any category mentioned in the form can access the"
-msgstr "ولا يمكن الوصول إلى أي فئة من الفئات المذكورة في الاستمارة إلا للمستخدمين/الموظفين العاديين."
+msgid ""
+"Only those normal users/employees with any category mentioned in the form "
+"can access the"
+msgstr ""
+"ولا يمكن الوصول إلى أي فئة من الفئات المذكورة في الاستمارة إلا للمستخدمين/"
+"الموظفين العاديين."
 
 msgid "feature"
 msgstr "الميزة"
 
-msgid "If skip all the category fields in the form, then all normal users/employees can access the feature"
-msgstr "إذا تخطى جميع حقول الفئات في النموذج، فيمكن لجميع المستخدمين/الموظفين العاديين الوصول إلى الميزة"
+msgid ""
+"If skip all the category fields in the form, then all normal users/employees "
+"can access the feature"
+msgstr ""
+"إذا تخطى جميع حقول الفئات في النموذج، فيمكن لجميع المستخدمين/الموظفين "
+"العاديين الوصول إلى الميزة"
 
 msgid "Accessibility filter saved"
 msgstr "تم حفظ فلتر إمكانية الوصول"
@@ -254,6 +263,9 @@ msgstr "الطلب والتخصيص"
 msgid "Asset History"
 msgstr "تاريخ الأصول"
 
+msgid "Close"
+msgstr "أغلق"
+
 msgid "Create"
 msgstr "إنشاء"
 
@@ -262,6 +274,9 @@ msgstr "حفظ"
 
 msgid "Import Assets"
 msgstr "استيراد الأصول"
+
+msgid "close outline"
+msgstr ""
 
 msgid "Upload a File"
 msgstr "تحميل ملف"
@@ -275,11 +290,29 @@ msgstr "تنزيل قالب"
 msgid "Upload"
 msgstr "تحميل"
 
+#, fuzzy
+#| msgid "create-deduction"
+msgid "chevron back outline"
+msgstr "خصم"
+
+msgid "chevron forward outline"
+msgstr ""
+
 msgid "by "
 msgstr "بواسطة "
 
 msgid "Reports"
 msgstr "التقارير"
+
+#, fuzzy
+#| msgid "Hide Options"
+msgid "Toggle Options"
+msgstr "إخفاء الخيارات"
+
+#, fuzzy
+#| msgid "create-deduction"
+msgid "create outline"
+msgstr "خصم"
 
 msgid "Edit"
 msgstr "تحرير"
@@ -290,6 +323,9 @@ msgstr "هل تريد حذف هذا الأصل؟"
 msgid "Delete"
 msgstr "حذف"
 
+msgid "Mary Magdalene"
+msgstr ""
+
 msgid "Update"
 msgstr "تحديث"
 
@@ -298,6 +334,9 @@ msgstr "Duplicate"
 
 msgid "Asset Report"
 msgstr "تقرير الأصول"
+
+msgid "trash outline"
+msgstr ""
 
 msgid "Page"
 msgstr "الصفحة"
@@ -341,6 +380,11 @@ msgstr "تم إضافة التقرير بنجاح."
 msgid "Assign asset before adding a report"
 msgstr "تعيين أصل قبل إضافة تقرير"
 
+#, fuzzy
+#| msgid "Dead line"
+msgid "arrow-back-outline"
+msgstr "خط ميت"
+
 msgid "Back"
 msgstr "الرجوع"
 
@@ -368,6 +412,11 @@ msgstr "المستخدم المخصص"
 msgid "Assigned Date"
 msgstr "تاريخ التعيين"
 
+#, fuzzy
+#| msgid "Stage not found."
+msgid "Page not found. 404."
+msgstr "المرحلة غير موجودة."
+
 msgid "No Records found."
 msgstr "لا توجد سجلات."
 
@@ -379,6 +428,11 @@ msgstr "طلب مستخدم"
 
 msgid "Request Date"
 msgstr "تاريخ الطلب"
+
+#, fuzzy
+#| msgid "Approved request"
+msgid "Approve request"
+msgstr "الطلب الموافق عليه"
 
 msgid "Do you want to reject this request?"
 msgstr "هل تريد رفض هذا الطلب؟"
@@ -410,6 +464,9 @@ msgstr "تعيين تاريخ أقل أو المساواة"
 msgid "Filter"
 msgstr "تصفية"
 
+msgid "ellipsis vertical sharp"
+msgstr ""
+
 msgid "Returned date"
 msgstr "تاريخ الإرجاع"
 
@@ -418,6 +475,16 @@ msgstr "تاريخ الإرجاع"
 
 msgid "No asset history available."
 msgstr "لا يوجد تاريخ للأصول."
+
+#, fuzzy
+#| msgid "Search"
+msgid "Toggle Search"
+msgstr "البحث"
+
+#, fuzzy
+#| msgid "Search"
+msgid "Search Input"
+msgstr "البحث"
 
 msgid "Search"
 msgstr "البحث"
@@ -532,6 +599,11 @@ msgstr "تاريخ طلب الأصل"
 
 msgid "Create request"
 msgstr "إنشاء طلب"
+
+#, fuzzy
+#| msgid "Dead line"
+msgid "add outline"
+msgstr "خط ميت"
 
 msgid "Create allocation"
 msgstr "إنشاء تخصيص"
@@ -719,8 +791,12 @@ msgstr "الساعات المعلقة"
 msgid "Overtime"
 msgstr "العمل الإضافي"
 
-msgid "<span title='Do not Auto Validate Attendance if an Employee Works More Than this Amount of Duration'>{}</span>"
-msgstr "<span title='Do not Auto Validate Attendance if an Employee Works More Than this Amount of Duration'>{}</span>"
+msgid ""
+"<span title='Do not Auto Validate Attendance if an Employee Works More Than "
+"this Amount of Duration'>{}</span>"
+msgstr ""
+"<span title='Do not Auto Validate Attendance if an Employee Works More Than "
+"this Amount of Duration'>{}</span>"
 
 msgid "Worked Hours(At Work) Auto Approve Till"
 msgstr "ساعات العمل (في العمل) الموافقة التلقائية حتى الآن"
@@ -752,7 +828,8 @@ msgstr "تاريخ"
 msgid "To date should be after from date"
 msgstr "يجب أن يكون تاريخ الانتهاء بعد التاريخ"
 
-msgid "There is no valid date to create attendance request between this date range"
+msgid ""
+"There is no valid date to create attendance request between this date range"
 msgstr "لا يوجد تاريخ صحيح لإنشاء طلب الحضور بين هذا النطاق من التاريخ"
 
 msgid "Create attendance batch"
@@ -860,6 +937,11 @@ msgstr "هو طلب التحقق"
 msgid "Is validate request approved"
 msgstr "الموافقة على طلب التحقق"
 
+#, fuzzy
+#| msgid "Approved"
+msgid "Approved By"
+msgstr "معتمد"
+
 msgid "Attendance"
 msgstr "الحضور"
 
@@ -929,8 +1011,12 @@ msgstr "هناك بالفعل وقت سماح مع هذا الوقت المسم�
 msgid "Enable Check in/Check out"
 msgstr "تمكين تسجيل الدخول/التحقق"
 
-msgid "Enabling this feature allows employees to record their attendance using the Check-In/Check-Out button."
-msgstr "تمكين هذه الميزة يسمح للموظفين بتسجيل حضورهم باستخدام زر تسجيل الدخول/تسجيل الخروج."
+msgid ""
+"Enabling this feature allows employees to record their attendance using the "
+"Check-In/Check-Out button."
+msgstr ""
+"تمكين هذه الميزة يسمح للموظفين بتسجيل حضورهم باستخدام زر تسجيل الدخول/تسجيل "
+"الخروج."
 
 msgid "Present"
 msgstr "حاضر"
@@ -1003,6 +1089,9 @@ msgstr "إضافة إلى الدفعة"
 
 msgid "Batch"
 msgstr "دفعة"
+
+msgid "---Choose Shift---"
+msgstr "---اختر Shift---"
 
 msgid "Dynamic create"
 msgstr "إنشاء ديناميكي"
@@ -1206,7 +1295,8 @@ msgid "No validated attendance to show."
 msgstr "لا يوجد حضور معتمد لإظهاره."
 
 #, python-format
-msgid "The attendances for this employee in %(month_name)s has not been validated."
+msgid ""
+"The attendances for this employee in %(month_name)s has not been validated."
 msgstr "لم يتم التحقق من الحضور لهذا الموظف في %(month_name)s."
 
 msgid "Export Hour Accounts"
@@ -1353,11 +1443,24 @@ msgstr "الجدول الزمني الإضافي للقسم"
 msgid "Send Mail"
 msgstr "إرسال البريد"
 
+msgid "Amy Winehouse"
+msgstr ""
+
 msgid "No employees are currently taking a break."
 msgstr "ولا يوجد حاليا أي موظف يأخذ استراحة."
 
+#, fuzzy
+#| msgid "create-deduction"
+msgid "checkmark outline"
+msgstr "خصم"
+
 msgid "No overtime records pending validation."
 msgstr "لا توجد سجلات للعمل الإضافي في انتظار التحقق."
+
+#, fuzzy
+#| msgid "create-deduction"
+msgid "caret back outline"
+msgstr "خصم"
 
 msgid "No pending attendance to validate."
 msgstr "لا يوجد حضور معلق للتحقق من الصحة."
@@ -1419,6 +1522,11 @@ msgstr "تقييد IP"
 msgid "IP Login Restriction"
 msgstr "تقييد دخول IP"
 
+msgid ""
+"Enable this feature to restrict attendance marking to specific IP addresses "
+"only."
+msgstr ""
+
 msgid "Add IP"
 msgstr "إضافة IP"
 
@@ -1464,6 +1572,11 @@ msgstr "العقوبات "
 msgid "No penalties found."
 msgstr "لم يتم العثور على عقوبات."
 
+#, fuzzy
+#| msgid "create-deduction"
+msgid "information circle outline"
+msgstr "خصم"
+
 msgid "Tracking Enable"
 msgstr "تمكين التتبع"
 
@@ -1500,6 +1613,13 @@ msgstr "مبلغ الجزاء سوف يؤثر على قسيمة الدفع في 
 msgid "By default minus leave will cut/deduct from available leaves"
 msgstr "بشكل افتراضي ناقص الإجازة سوف تقطع/تخصم من الأوراق المتاحة"
 
+msgid ""
+"By enabling 'Deduct from carry forward' leave will cut/deduct from carry "
+"forward days"
+msgstr ""
+"عن طريق تمكين 'خصم من الترحيل إلى المستقبل' تخفض الإجازة / تخصم من أيام "
+"الترحيل إلى الأمام"
+
 msgid "Enable Check In/Check out"
 msgstr "تمكين تسجيل الدخول/التحقق"
 
@@ -1515,11 +1635,20 @@ msgstr "تشغيل الوقت"
 msgid "At-Work Tracker"
 msgstr "تعقب العمل"
 
-msgid "By enabling this feature user's will be able to see their current day worked hours in live on the navbar (inside the check in button)."
-msgstr "بتمكين هذه الميزة سيتمكن المستخدم من رؤية ساعات العمل اليومية الحالية في شريط التنقل (داخل زر التحقق)."
+msgid ""
+"By enabling this feature user's will be able to see their current day worked "
+"hours in live on the navbar (inside the check in button)."
+msgstr ""
+"بتمكين هذه الميزة سيتمكن المستخدم من رؤية ساعات العمل اليومية الحالية في "
+"شريط التنقل (داخل زر التحقق)."
 
 msgid "save"
 msgstr "حفظ"
+
+#, fuzzy
+#| msgid "Download"
+msgid "download"
+msgstr "تنزيل"
 
 msgid "Leave"
 msgstr "المغادرة"
@@ -1535,6 +1664,16 @@ msgstr "التاريخ:"
 
 msgid "Comments"
 msgstr "تعليقات"
+
+#, fuzzy
+#| msgid "Comment"
+msgid "Comment here"
+msgstr "تعليق"
+
+#, fuzzy
+#| msgid "Add Fine"
+msgid "Add Files"
+msgstr "إضافة جيدة"
 
 msgid "by"
 msgstr "بواسطة"
@@ -1574,6 +1713,11 @@ msgstr "طلب تحديث الحضور"
 
 msgid "Add / View Comment"
 msgstr "إضافة / عرض التعليق"
+
+#, fuzzy
+#| msgid "create-deduction"
+msgid "newspaper outline"
+msgstr "خصم"
 
 msgid "View and Edit"
 msgstr "عرض وتحرير"
@@ -1687,7 +1831,9 @@ msgstr "العمل الإضافي الموافق عليه"
 msgid "You cannot mark attendance from this network"
 msgstr "لا يمكنك وضع علامة على الحضور من هذه الشبكة"
 
-msgid "You Don't have work information filled or your employee detail neither entered "
+msgid ""
+"You Don't have work information filled or your employee detail neither "
+"entered "
 msgstr "ليس لديك معلومات عمل مملوءة أو لم يتم إدخال تفاصيل الموظف الخاص بك "
 
 msgid "Check in/Check out feature is not enabled."
@@ -1918,7 +2064,8 @@ msgstr "الوظيفة الوظيفية موجودة بالفعل تحت {}"
 msgid "---Choose Work Type---"
 msgstr "---اختر نوع العمل---"
 
-msgid "Automatic punch out time is required when automatic punch out is enabled."
+msgid ""
+"Automatic punch out time is required when automatic punch out is enabled."
 msgstr "وقت اللمس التلقائي مطلوب عندما يتم تمكين اللمس التلقائي."
 
 msgid "Automatic punch out time cannot be earlier than the end time."
@@ -1927,9 +2074,6 @@ msgstr "لا يمكن أن يكون وقت اللمس التلقائي قبل و
 #, python-brace-format
 msgid "Shift schedule is already exist for {day}"
 msgstr "جدول التحويل موجود بالفعل ل {day}"
-
-msgid "---Choose Shift---"
-msgstr "---اختر Shift---"
 
 msgid "Start date"
 msgstr "تاريخ البدء"
@@ -2024,8 +2168,16 @@ msgstr "مدير الموافقة"
 msgid "Attachments"
 msgstr "المرفقات"
 
-msgid "You must select at least one of: Employees, Department, or Job Position."
-msgstr "يجب عليك اختيار واحد على الأقل من: الموظفين أو القسم أو الوظيفة الوظيفية."
+msgid ""
+"You must select at least one of: Employees, Department, or Job Position."
+msgstr ""
+"يجب عليك اختيار واحد على الأقل من: الموظفين أو القسم أو الوظيفة الوظيفية."
+
+msgid "Allowed IP Addresses or Network Prefixes"
+msgstr ""
+
+msgid "Enter multiple IP addresses or network prefixes, separated by commas."
+msgstr ""
 
 msgid "End date should not be earlier than the start date."
 msgstr "يجب ألا يكون تاريخ النهاية قبل تاريخ البدء."
@@ -2231,7 +2383,9 @@ msgstr "تمكين هذا لتفعيل التحقق التلقائي."
 msgid "Automatic Check Out Time"
 msgstr "وقت التدقيق التلقائي"
 
-msgid "Time at which the horilla will automatically check out the employee attendance if they forget."
+msgid ""
+"Time at which the horilla will automatically check out the employee "
+"attendance if they forget."
 msgstr "الوقت الذي ستتحقق فيه الهرلية تلقائياً من حضور العامل إذا نسيت."
 
 msgid "Employee Shift Schedule"
@@ -2354,8 +2508,12 @@ msgstr "بتمكين هذا الاسم سوف يأخذ اسم العرض من ا
 msgid "Email Send Timeout (seconds)"
 msgstr "مهلة إرسال البريد الإلكتروني (بالثواني)"
 
-msgid "\"Use TLS\" and \"Use SSL\" are mutually exclusive, so only set one of those settings to True."
-msgstr "\"استخدم TLS\" و \"استخدم SSL\" يستبعد بعضهما البعض، لذلك عيّن فقط واحدة من تلك الإعدادات للصواح."
+msgid ""
+"\"Use TLS\" and \"Use SSL\" are mutually exclusive, so only set one of those "
+"settings to True."
+msgstr ""
+"\"استخدم TLS\" و \"استخدم SSL\" يستبعد بعضهما البعض، لذلك عيّن فقط واحدة من "
+"تلك الإعدادات للصواح."
 
 msgid "Email Configuration"
 msgstr "Email Configuration"
@@ -2378,17 +2536,29 @@ msgstr "يوجد بالفعل شرط مع الحقول المقدمة"
 msgid "Please enter a numeric value for condition value"
 msgstr "الرجاء إدخال قيمة رقمية لقيمة الحالة"
 
-msgid "Please enter a valid numeric value for the condition value when the condition field is Leave Requested Days."
-msgstr "الرجاء إدخال قيمة رقمية صحيحة لقيمة الحالة عندما يكون حقل الحالة هو أيام المغادرة المطلوبة."
+msgid ""
+"Please enter a valid numeric value for the condition value when the "
+"condition field is Leave Requested Days."
+msgstr ""
+"الرجاء إدخال قيمة رقمية صحيحة لقيمة الحالة عندما يكون حقل الحالة هو أيام "
+"المغادرة المطلوبة."
 
 msgid "Please specify condition value range"
 msgstr "الرجاء تحديد نطاق قيمة الشرط"
 
-msgid "Please enter a valid numeric value for the starting value when the condition field is Leave Requested Days."
-msgstr "الرجاء إدخال قيمة رقمية صالحة للقيمة المبدئية عندما يكون حقل الحالة هو أيام المغادرة المطلوبة."
+msgid ""
+"Please enter a valid numeric value for the starting value when the condition "
+"field is Leave Requested Days."
+msgstr ""
+"الرجاء إدخال قيمة رقمية صالحة للقيمة المبدئية عندما يكون حقل الحالة هو أيام "
+"المغادرة المطلوبة."
 
-msgid "Please enter a valid numeric value for the ending value when the condition field is Leave Requested Days."
-msgstr "الرجاء إدخال قيمة رقمية صحيحة للقيمة النهائية عندما يكون حقل الحالة هو أيام المغادرة المطلوبة."
+msgid ""
+"Please enter a valid numeric value for the ending value when the condition "
+"field is Leave Requested Days."
+msgstr ""
+"الرجاء إدخال قيمة رقمية صحيحة للقيمة النهائية عندما يكون حقل الحالة هو أيام "
+"المغادرة المطلوبة."
 
 msgid "End value must be different from the start value in a range."
 msgstr "يجب أن تكون قيمة النهاية مختلفة عن قيمة البداية في النطاق."
@@ -2426,7 +2596,9 @@ msgstr "مخططات موظفي لوحة التحكم"
 msgid "Enable"
 msgstr "تمكين"
 
-msgid "By enabling this, you track the late comes and early outs of employees in their attendance."
+msgid ""
+"By enabling this, you track the late comes and early outs of employees in "
+"their attendance."
 msgstr "وبتمكينك من ذلك، فإنك تتتبع تأخيرات الموظفين في حضورهم ونقلهم مبكرا."
 
 msgid "Track Late Come Early Out"
@@ -2466,7 +2638,8 @@ msgid "Specify the leave type to deduct the leave."
 msgstr "حدد نوع الإجازة لخصم الإجازة."
 
 msgid "If a leave type is chosen for a penalty, minus leaves are required."
-msgstr "وإذا وقع الاختيار على نوع الإجازة لفرض عقوبة ما، ناقصا الإجازات المطلوبة."
+msgstr ""
+"وإذا وقع الاختيار على نوع الإجازة لفرض عقوبة ما، ناقصا الإجازات المطلوبة."
 
 msgid "Either minus leaves or a penalty amount is required"
 msgstr "إما ناقصا من الرخص أو يلزم مبلغ غرامة"
@@ -2491,6 +2664,11 @@ msgstr " المشاهدات"
 
 msgid "Posted on"
 msgstr "نشر على"
+
+#, fuzzy
+#| msgid "Attachments"
+msgid "Attachment Image"
+msgstr "المرفقات"
 
 msgid "View Attachment"
 msgstr "عرض المرفقات"
@@ -2570,10 +2748,13 @@ msgstr "بتمكين هذه الميزة، يمكنك حظر أو إلغاء ح�
 msgid "Restrict Profile Edit"
 msgstr "تقييد تحرير الملف الشخصي"
 
-msgid "By enabling this feature, you can restrict an employee from editing their profile."
+msgid ""
+"By enabling this feature, you can restrict an employee from editing their "
+"profile."
 msgstr "بتمكين هذه الميزة، يمكنك تقييد العامل من تحرير ملفه."
 
-msgid "Are you sure you want to restrict all employees from editing their profiles?"
+msgid ""
+"Are you sure you want to restrict all employees from editing their profiles?"
 msgstr "هل أنت متأكد من أنك تريد تقييد جميع الموظفين من تحرير ملفاتهم الشخصية؟"
 
 msgid "Are you sure you want to allow all employees to edit their profiles?"
@@ -2597,17 +2778,45 @@ msgstr "تتبع تاريخ الموظفين"
 msgid "Tracking Fields"
 msgstr "حقول التتبع"
 
-msgid "Employee history will be stored during updation of the fields that selected here."
+msgid ""
+"Employee history will be stored during updation of the fields that selected "
+"here."
 msgstr "سيتم تخزين سجل الموظفين أثناء تحديث الحقول التي تم اختيارها هنا."
 
 msgid "Work Information Tracking"
 msgstr "تتبع معلومات العمل"
 
-msgid "By enabling this feature, you can save the history of employee work information during updates."
+msgid ""
+"By enabling this feature, you can save the history of employee work "
+"information during updates."
 msgstr "بتفعيل هذه الميزة، يمكنك حفظ سجل معلومات عمل الموظف أثناء التحديثات."
+
+msgid "First Name"
+msgstr "الاسم الأول"
+
+#, fuzzy
+#| msgid "Option"
+msgid "Option #1"
+msgstr "خيار"
+
+#, fuzzy
+#| msgid "Option"
+msgid "Option #2"
+msgstr "خيار"
+
+msgid "Last Name"
+msgstr "اسم العائلة"
+
+msgid "Document"
+msgstr "مستند"
 
 msgid "Group Permissions"
 msgstr "أذونات المجموعة"
+
+#, fuzzy
+#| msgid "Dead line"
+msgid "search outline"
+msgstr "خط ميت"
 
 msgid "Group Assign"
 msgstr "تعيين مجموعة"
@@ -2657,11 +2866,19 @@ msgstr "حفظ كلمة المرور"
 msgid "Forgot password"
 msgstr "نسيت كلمة المرور"
 
+#, fuzzy
+#| msgid "horilla-theme"
+msgid "Horilla"
+msgstr "قالب الهرلية"
+
 msgid "Employee Permissions"
 msgstr "أذونات الموظف"
 
 msgid "Assign"
 msgstr "تعيين"
+
+msgid "caret down outline"
+msgstr ""
 
 msgid "Can create"
 msgstr "يمكن إنشاء"
@@ -2704,9 +2921,6 @@ msgstr "اسم المستخدم القديم"
 
 msgid "There is no companies at this moment."
 msgstr "لا توجد شركات في هذه اللحظة."
-
-msgid "Close"
-msgstr "أغلق"
 
 msgid "Is Hq"
 msgstr "هو Hq"
@@ -2757,19 +2971,25 @@ msgid "Year, Month, Day (e.g., 2023/12/30)"
 msgstr "السنة، الشهر، اليوم (على سبيل المثال 2023/12/30)"
 
 msgid "Full Month Name, Day, Year (e.g., January 1, 2023)"
-msgstr "اسم الشهر الكامل، يوم السنة (على سبيل المثال، 1 كانون الثاني/يناير 2023)"
+msgstr ""
+"اسم الشهر الكامل، يوم السنة (على سبيل المثال، 1 كانون الثاني/يناير 2023)"
 
 msgid "Day, Full Month Name, Year (e.g., 1 January, 2023)"
-msgstr "اليوم، اسم الشهر الكامل، السنة (على سبيل المثال، 1 كانون الثاني/يناير 2023)"
+msgstr ""
+"اليوم، اسم الشهر الكامل، السنة (على سبيل المثال، 1 كانون الثاني/يناير 2023)"
 
 msgid "Abbreviated Month Name, Day, Year (e.g., Jan. 1, 2023)"
 msgstr "اسم الشهر المختصر، يوم السنة (على سبيل المثال، يان 1، 2023)"
 
 msgid "Day, Abbreviated Month Name, Year (e.g., 1 Jan. 2023)"
-msgstr "يوم الإسم الشهري المختصر، السنة (على سبيل المثال، 1 كانون الثاني/يناير 2023)"
+msgstr ""
+"يوم الإسم الشهري المختصر، السنة (على سبيل المثال، 1 كانون الثاني/يناير 2023)"
 
-msgid "Full Day Name, Full Month Name, Day, Year (e.g., Monday, January 1, 2023)"
-msgstr "اسم اليوم الكامل, اسم الشهر الكامل, يوم السنة (على سبيل المثال, الاثنين 1, 2023)"
+msgid ""
+"Full Day Name, Full Month Name, Day, Year (e.g., Monday, January 1, 2023)"
+msgstr ""
+"اسم اليوم الكامل, اسم الشهر الكامل, يوم السنة (على سبيل المثال, الاثنين 1, "
+"2023)"
 
 msgid "Save Date Format"
 msgstr "حفظ تنسيق التاريخ"
@@ -2852,6 +3072,9 @@ msgstr "هل أنت متأكد من أنك تريد حذف هذا المنصب �
 msgid "There is no Job roles at this moment."
 msgstr "لا توجد أدوار وظيفية في هذه اللحظة."
 
+msgid "Baby C."
+msgstr ""
+
 msgid "Are you sure you want to delete this job role?"
 msgstr "هل أنت متأكد من أنك تريد حذف هذا الدور الوظيفي؟"
 
@@ -2885,6 +3108,11 @@ msgstr "المضيف"
 msgid "Test email"
 msgstr "Test email"
 
+#, fuzzy
+#| msgid "create-deduction"
+msgid "at-circle-outline"
+msgstr "خصم"
+
 msgid "Do you want to delete this mail server configuration?"
 msgstr "هل تريد حذف تكوين خادم البريد هذا؟"
 
@@ -2896,6 +3124,20 @@ msgstr "اختر البريد"
 
 msgid "Submit"
 msgstr "إرسال"
+
+#, fuzzy
+#| msgid " View Note"
+msgid "View in browser"
+msgstr " عرض الملاحظة"
+
+msgid "View Leave Request"
+msgstr "عرض طلب المغادرة"
+
+msgid "Unsubscribe here"
+msgstr ""
+
+msgid "Languages"
+msgstr ""
 
 msgid "Is Active"
 msgstr "هو نشط"
@@ -2951,6 +3193,11 @@ msgstr "هل أنت متأكد من أنك تريد حذف هذا التناوب
 msgid "Add more shift.."
 msgstr "أضف المزيد من المناوبة.."
 
+#, fuzzy
+#| msgid "Save"
+msgid "Save 321"
+msgstr "حفظ"
+
 msgid "Rotating Shift Assign Update"
 msgstr "تدوير تعيين تحويل التحديث"
 
@@ -2995,6 +3242,11 @@ msgstr "تصدير تعيينات المناوبة"
 
 msgid "Import Rotating Shift"
 msgstr "استيراد الدوران"
+
+#, fuzzy
+#| msgid "File Upload"
+msgid "cloud upload"
+msgstr "تحميل الملف"
 
 msgid "False"
 msgstr "كاذبة"
@@ -3182,6 +3434,11 @@ msgstr "لا مزيد من الأعياد المقررة لهذا الشهر."
 msgid "Mail Templates"
 msgstr "قوالب البريد"
 
+#, fuzzy
+#| msgid "Add"
+msgid "add"
+msgstr "إضافة"
+
 msgid "There are currently no email templates available."
 msgstr "لا توجد حاليا قوالب بريد إلكتروني متوفرة."
 
@@ -3251,6 +3508,11 @@ msgstr "هل تريد الموافقة على طلب المناوبة هذا؟"
 msgid "Do you want to cancel this request?"
 msgstr "هل تريد إلغاء هذا الطلب؟"
 
+#, fuzzy
+#| msgid "Cancel"
+msgid "cancel"
+msgstr "إلغاء"
+
 msgid "Requested Work Type"
 msgstr "نوع العمل المطلوب"
 
@@ -3292,6 +3554,16 @@ msgstr "موظف مخصص"
 
 msgid "Previous/Current Shift"
 msgstr "سابقاً/تحول حالي"
+
+#, fuzzy
+#| msgid "Add / View Comment"
+msgid "View Comment"
+msgstr "إضافة / عرض التعليق"
+
+#, fuzzy
+#| msgid "create-deduction"
+msgid "eye outline"
+msgstr "خصم"
 
 msgid "There are currently no shift requests to consider."
 msgstr "لا توجد حاليا طلبات نقل للنظر فيها."
@@ -3604,9 +3876,6 @@ msgstr "متزوج"
 
 msgid "Divorced"
 msgstr "مطلقة"
-
-msgid "Rotate every weekend"
-msgstr "تدوير كل عطلة نهاية الأسبوع"
 
 msgid "Request description"
 msgstr "طلب وصف"
@@ -4560,6 +4829,11 @@ msgstr "تم حذف تعيين المناوبة"
 msgid "You cannot delete this rotating shift assign."
 msgstr "لا يمكنك حذف هذا الدوران المناوب."
 
+#, fuzzy
+#| msgid "Employee not found"
+msgid "Employee not provided"
+msgstr "الموظف غير موجود"
+
 msgid "Employee permission assigned."
 msgstr "تم تعيين إذن الموظف."
 
@@ -4691,6 +4965,11 @@ msgstr "تم تحديث شرط الموافقة المتعددة بنجاح"
 msgid "Multiple approval condition deleted successfully"
 msgstr "تم حذف شرط الموافقة المتعددة بنجاح"
 
+#, fuzzy
+#| msgid "Invalid request"
+msgid "Invalid Request"
+msgstr "طلب غير صالح"
+
 msgid "Default pagination updated."
 msgstr "تم تحديث تحديد الصفحات الافتراضي."
 
@@ -4700,7 +4979,8 @@ msgstr "تم إنشاء الإجراء بنجاح!"
 msgid "Action has been updated successfully!"
 msgstr "تم تحديث الإجراء بنجاح!"
 
-msgid "This action type is in use in disciplinary actions and cannot be deleted."
+msgid ""
+"This action type is in use in disciplinary actions and cannot be deleted."
 msgstr "هذا النوع من الإجراءات مستخدم في الإجراءات التأديبية ولا يمكن حذفه."
 
 msgid "Action has been deleted successfully!"
@@ -4929,7 +5209,9 @@ msgstr "رقم المنفذ مطلوب لجهاز القياس الحيوي ال
 msgid "The password is required for ZKTeco Biometric Device."
 msgstr "كلمة المرور مطلوبة لجهاز ZKTeco للقياس الحيوي."
 
-msgid "The password must be an integer (numeric) value for                            ZKTeco Biometric Device."
+msgid ""
+"The password must be an integer (numeric) value "
+"for                            ZKTeco Biometric Device."
 msgstr "يجب أن تكون كلمة المرور قيمة (رقمية) صحيحة لجهاز ZKTeco للقياس الحيوي."
 
 msgid "The Username is required for the selected biometric device."
@@ -4950,10 +5232,14 @@ msgstr "مفتاح API مطلوب لجهاز أنفيز للقياس الحيو�
 msgid "The API Secret is required for Anviz Biometric Device."
 msgstr "سرية API مطلوبة لجهاز أنفيز للقياس الحيوي."
 
-msgid "Authentication failed. Please check your API Url                                    , API Key and API Secret."
+msgid ""
+"Authentication failed. Please check your API "
+"Url                                    , API Key and API Secret."
 msgstr "فشلت المصادقة. الرجاء التحقق من API Url و API Key و API السري."
 
-msgid "Authentication failed. Please check your API Url , API Key                                and API Secret."
+msgid ""
+"Authentication failed. Please check your API Url , API "
+"Key                                and API Secret."
 msgstr "فشلت المصادقة. الرجاء التحقق من API Url و API Key و API السري."
 
 msgid "Biometric Device"
@@ -5167,8 +5453,12 @@ msgstr "خطأ في الاتصال"
 msgid "Biometric device not supported."
 msgstr "الجهاز القياسي الحيوي غير مدعوم."
 
-msgid "Bulk log fetching is currently available only for ZKTeco / eSSL devices. Support for other biometric systems will be added soon."
-msgstr "جلب السجل السائب متاح حاليا فقط لأجهزة ZKTeco / eSSL. سيتم إضافة الدعم لأنظمة القياس الحيوي الأخرى قريبا."
+msgid ""
+"Bulk log fetching is currently available only for ZKTeco / eSSL devices. "
+"Support for other biometric systems will be added soon."
+msgstr ""
+"جلب السجل السائب متاح حاليا فقط لأجهزة ZKTeco / eSSL. سيتم إضافة الدعم "
+"لأنظمة القياس الحيوي الأخرى قريبا."
 
 msgid "Logs Fetched Successfully"
 msgstr "تم جلب السجلات بنجاح"
@@ -5179,8 +5469,12 @@ msgstr "فشل الاتصال"
 msgid "Double-check the provided API Url, Username, and Password"
 msgstr "تحقق مزدوج من رابط API المقدم واسم المستخدم وكلمة المرور"
 
-msgid "Failed to establish a connection. Please verify the accuracy of the IP                    Address , Port No. and Password of the device."
-msgstr "فشل إنشاء اتصال. الرجاء التحقق من دقة عنوان IP ورقم المنفذ وكلمة المرور للجهاز."
+msgid ""
+"Failed to establish a connection. Please verify the accuracy of the "
+"IP                    Address , Port No. and Password of the device."
+msgstr ""
+"فشل إنشاء اتصال. الرجاء التحقق من دقة عنوان IP ورقم المنفذ وكلمة المرور "
+"للجهاز."
 
 msgid "Biometric device not found"
 msgstr "لم يتم العثور على الجهاز القياسي الحيوي"
@@ -5200,7 +5494,9 @@ msgstr "الجهاز غير موجود"
 msgid "Biometric user data updated successfully"
 msgstr "تم تحديث بيانات المستخدم الحيوية بنجاح"
 
-msgid "This date cannot be used as the Validity End Date for                                the COSEC Biometric."
+msgid ""
+"This date cannot be used as the Validity End Date "
+"for                                the COSEC Biometric."
 msgstr "لا يمكن استخدام هذا التاريخ كتاريخ نهاية الصلاحية لـ COSEC Biometric."
 
 msgid "Biometric user not found"
@@ -5239,7 +5535,9 @@ msgstr "حدث خطأ: {}"
 msgid "Add Field"
 msgstr "إضافة حقل"
 
-msgid "Name can only contain alphabetic characters,                              and multiple spaces are not allowed."
+msgid ""
+"Name can only contain alphabetic characters,                              "
+"and multiple spaces are not allowed."
 msgstr "يمكن أن يحتوي الاسم على أحرف أبجدية فقط، ولا يسمح بالعديد من المسافات."
 
 msgid "Please enter different name"
@@ -5251,7 +5549,8 @@ msgstr "المتابعة"
 msgid "Success"
 msgstr "نجاح"
 
-msgid "Column will be permently removed from the table on the next service reload"
+msgid ""
+"Column will be permently removed from the table on the next service reload"
 msgstr "سيتم إزالة العمود من الجدول في إعادة تحميل الخدمة التالية"
 
 msgid "New field added"
@@ -5286,12 +5585,6 @@ msgstr "الملف الذي تم تحميله فارغ، لا يحتوي على 
 
 msgid "These required headers are missing in the uploaded file: "
 msgstr "هذه العناوين المطلوبة مفقودة في الملف الذي تم تحميله: "
-
-msgid "First Name"
-msgstr "الاسم الأول"
-
-msgid "Last Name"
-msgstr "اسم العائلة"
 
 msgid "Expected working"
 msgstr "العمل المتوقع"
@@ -5368,14 +5661,29 @@ msgstr "أكبر من أو يساوي"
 msgid "less than or equal"
 msgstr "أقل من أو يساوي"
 
-msgid "Enable login block :"
-msgstr "تمكين كتلة تسجيل الدخول:"
+msgid "Use negative numbers to reduce points."
+msgstr ""
 
 msgid "Action Types"
 msgstr "أنواع الإجراءات"
 
+#, fuzzy
+#| msgid "Policy"
+msgid "Policy saved"
+msgstr "السياسة"
+
 msgid "Policies Not Found"
 msgstr "السياسات غير موجودة"
+
+#, fuzzy
+#| msgid "Note deleted"
+msgid "Policies deleted"
+msgstr "تم حذف الملاحظة"
+
+#, fuzzy
+#| msgid "Attachments"
+msgid "Attachments added"
+msgstr "المرفقات"
 
 msgid "Disciplinary action taken."
 msgstr "تم اتخاذ إجراء تأديبي."
@@ -5397,6 +5705,25 @@ msgstr "تاريخ الميلاد"
 
 msgid "Pending"
 msgstr "معلق"
+
+#, fuzzy
+#| msgid "Upcoming holidays"
+msgid "Upcoming Birthdays"
+msgstr "العطل القادمة"
+
+msgid "DOB:"
+msgstr ""
+
+#, fuzzy
+#| msgid "Status"
+msgid "Status:"
+msgstr "الحالة"
+
+msgid "Today"
+msgstr "اليوم"
+
+msgid "Tomorrow"
+msgstr "غدا"
 
 msgid "Disciplinary Actions"
 msgstr "الإجراءات التأديبية"
@@ -5431,6 +5758,9 @@ msgstr "معلق لـ"
 msgid "hours"
 msgstr "ساعات"
 
+msgid "View File"
+msgstr "عرض الملف"
+
 msgid "No file has been uploaded."
 msgstr "لم يتم تحميل أي ملف."
 
@@ -5464,9 +5794,6 @@ msgstr "طلبات الرفض بالجملة"
 msgid "Selected Documents"
 msgstr "المستندات المختارة"
 
-msgid "View File"
-msgstr "عرض الملف"
-
 msgid "Uploaded / Requested"
 msgstr "تم الرفع / الطلب"
 
@@ -5497,14 +5824,34 @@ msgstr "معرف الشارة"
 msgid "Show"
 msgstr "إظهار"
 
-msgid "Today"
-msgstr "اليوم"
+#, fuzzy
+#| msgid "Archived Employees"
+msgid "Active Employees"
+msgstr "الموظفون المؤرشفون"
 
-msgid "Tomorrow"
-msgstr "غدا"
+#, fuzzy
+#| msgid "Export Employees"
+msgid "Total Employees"
+msgstr "تصدير الموظفين"
+
+#, fuzzy
+#| msgid "Include all active employees"
+msgid "Incactive Employees"
+msgstr "تضمين جميع الموظفين النشطين"
+
+#, fuzzy
+#| msgid "Employees Chart"
+msgid "Employee Chart"
+msgstr "مخطط الموظفين"
 
 msgid "In"
 msgstr "في"
+
+msgid "Candidate on Onboard"
+msgstr "المرشح على اللوحة"
+
+msgid "Aliza B"
+msgstr ""
 
 msgid "Import Employee"
 msgstr "استيراد موظف"
@@ -5629,11 +5976,21 @@ msgstr "عنوان الوظيفة"
 msgid "Shift Information"
 msgstr "معلومات التحويل"
 
+#, fuzzy
+#| msgid "Employee tag"
+msgid "Employee Avatar"
+msgstr "علامة الموظف"
+
 msgid "Also send to"
 msgstr "إرسال أيضا إلى"
 
 msgid "Subject"
 msgstr "الموضوع"
+
+#, fuzzy
+#| msgid "Reminder"
+msgid "Important Reminder"
+msgstr "تذكير"
 
 msgid "Template"
 msgstr "قالب"
@@ -5647,17 +6004,38 @@ msgstr "كتابة"
 msgid "Preview"
 msgstr "معاينة"
 
+msgid "Type something here..."
+msgstr ""
+
+#, fuzzy
+#| msgid "Preview"
+msgid "preview..."
+msgstr "معاينة"
+
 msgid "Template as Attachment"
 msgstr "قالب كمرفق"
 
 msgid "Other Attachments"
 msgstr "مرفقات أخرى"
 
+#, fuzzy
+#| msgid "---Choose Work Type---"
+msgid "---Choose Job Role---"
+msgstr "---اختر نوع العمل---"
+
+#, fuzzy
+#| msgid "settings"
+msgid "settings outline"
+msgstr "الإعدادات"
+
 msgid "Block Account"
 msgstr "حظر الحساب"
 
-msgid " Do you really want to allow this employee to access and log into this webpage?"
-msgstr " هل تريد حقاً السماح لهذا الموظف بالوصول إلى صفحة الويب هذه وتسجيل دخولها؟"
+msgid ""
+" Do you really want to allow this employee to access and log into this "
+"webpage?"
+msgstr ""
+" هل تريد حقاً السماح لهذا الموظف بالوصول إلى صفحة الويب هذه وتسجيل دخولها؟"
 
 msgid "Un-Block Account"
 msgstr "إلغاء حظر الحساب"
@@ -5740,7 +6118,9 @@ msgstr "هل تريد أرشفة هذا الموظف؟"
 msgid "Do you want to un archive this employee?"
 msgstr "هل تريد أرشفة هذا الموظف؟"
 
-msgid "All non-active contracts of the employee will also be deleted. Do you want to continue ?"
+msgid ""
+"All non-active contracts of the employee will also be deleted. Do you want "
+"to continue ?"
 msgstr "سيتم أيضا حذف جميع عقود الموظف غير النشطة. هل تريد المتابعة؟"
 
 msgid "New Employee"
@@ -5773,14 +6153,27 @@ msgstr "تصدير البيانات الفردية"
 msgid "Do you want to un-archive this employee?"
 msgstr "هل تريد إلغاء أرشفة هذا الموظف؟"
 
+msgid "Sample photo"
+msgstr ""
+
 msgid "Info"
 msgstr "معلومات"
 
 msgid "Selected Employees"
 msgstr "الموظفون المختارون"
 
+#, fuzzy
+#| msgid "This employee is not eligible for any deductions."
+msgid "This employee is already related in,"
+msgstr "ولا يحق للموظف الحصول على أي اقتطاعات."
+
 msgid "Are you sure want to delete this employee?"
 msgstr "هل أنت متأكد من أنك تريد حذف هذا الموظف؟"
+
+#, fuzzy
+#| msgid "Leave Unit"
+msgid "Leave Icon"
+msgstr "مغادرة الوحدة"
 
 msgid "Available Leave Days"
 msgstr "أيام الإجازة المتاحة"
@@ -5793,6 +6186,16 @@ msgstr "إجمالي أيام الإجازة"
 
 msgid "Requested days"
 msgstr "الأيام المطلوبة"
+
+#, fuzzy
+#| msgid "Leave Type"
+msgid "Leave Type Icon"
+msgstr "نوع الإجازة"
+
+#, fuzzy
+#| msgid "Leave type"
+msgid "Leave type icon"
+msgstr "نوع الإجازة"
 
 msgid "Leave Request"
 msgstr "طلب المغادرة"
@@ -5851,6 +6254,11 @@ msgstr "الراتب"
 msgid "Bank Information"
 msgstr "معلومات البنك"
 
+#, fuzzy
+#| msgid "Dead line"
+msgid "copy outline"
+msgstr "خط ميت"
+
 msgid "View policy"
 msgstr "عرض السياسة"
 
@@ -5899,6 +6307,11 @@ msgstr "إضافة ملاحظات"
 msgid "Allowances"
 msgstr "البدلات"
 
+#, fuzzy
+#| msgid "Add Bonus Points"
+msgid "Add Bonus"
+msgstr "إضافة نقاط إضافية"
+
 msgid "Deductions"
 msgstr "الخصومات"
 
@@ -5935,7 +6348,9 @@ msgstr "الدفع الأساسي غير مضاف. الرجاء التحديث �
 msgid "This employee is not eligible for any allowances."
 msgstr "ولا يحق للموظف الحصول على أي بدلات."
 
-msgid "This employee doesn't have an active contract. Please check the employee's contract"
+msgid ""
+"This employee doesn't have an active contract. Please check the employee's "
+"contract"
 msgstr "هذا الموظف ليس لديه عقد نشط. يرجى التحقق من عقد الموظف"
 
 msgid "Is Pretax"
@@ -5974,6 +6389,14 @@ msgstr "لا توجد طلبات حضور للتحقق من صحة ذلك."
 msgid "Update Attendances Request"
 msgstr "تحديث طلب الحضور"
 
+#, fuzzy
+#| msgid "points"
+msgid "Add points"
+msgstr "نقاط"
+
+msgid "ellipsis vertical"
+msgstr ""
+
 msgid "Balance points to redeem:"
 msgstr "نقاط الرصيد للإسترداد:"
 
@@ -6010,11 +6433,22 @@ msgstr "هل تريد حذف هذا العقد؟"
 msgid "There are no contracts at the moment."
 msgstr "ولا توجد عقود في الوقت الراهن."
 
+msgid "Uploaded"
+msgstr "تم الرفع"
+
+msgid "Upload File"
+msgstr "تحميل ملف"
+
 msgid "Title needs to be more than 3 letters"
 msgstr "العنوان يجب أن يكون أكثر من 3 حروف"
 
 msgid "Issue Date"
 msgstr "تاريخ الإصدار"
+
+#, fuzzy
+#| msgid "Document"
+msgid "No documents"
+msgstr "مستند"
 
 msgid "No documents have been uploaded yet."
 msgstr "لم يتم تحميل أي مستندات حتى الآن."
@@ -6046,8 +6480,18 @@ msgstr "الحد الأقصى لحجم الملف"
 msgid "Reason"
 msgstr "سبب"
 
+#, fuzzy
+#| msgid "Upload File"
+msgid "Upload file"
+msgstr "تحميل ملف"
+
 msgid "Download"
 msgstr "تنزيل"
+
+#, fuzzy
+#| msgid "Preview"
+msgid "File Preview"
+msgstr "معاينة"
 
 msgid "File format not supported for preview."
 msgstr "تنسيق الملف غير مدعوم للمعاينة."
@@ -6096,6 +6540,9 @@ msgstr "تفاصيل العقد"
 
 msgid "Create asset request"
 msgstr "إنشاء طلب أصول"
+
+msgid "add sharp"
+msgstr ""
 
 msgid "New attendance request"
 msgstr "طلب حضور جديد"
@@ -6208,14 +6655,34 @@ msgstr "تم تحديث عنوان المستند بنجاح"
 msgid "Invalid request"
 msgstr "طلب غير صالح"
 
+#, fuzzy, python-format
+#| msgid "Document request created successfully"
+msgid "Document request %(doc)s for %(employee)s deleted successfully"
+msgstr "تم إنشاء طلب المستند بنجاح"
+
 msgid "Document not found"
 msgstr "لم يتم العثور على المستند"
 
 msgid "You cannot delete this document."
 msgstr "لا يمكنك حذف هذه الوثيقة."
 
+#, fuzzy
+#| msgid "No user found with the username"
+msgid "No Document found matching the query."
+msgstr "لم يتم العثور على مستخدم باسم المستخدم"
+
+#, fuzzy
+#| msgid "You dont have permission to the feature"
+msgid "You do not have permission to update this document."
+msgstr "ليس لديك إذن لهذه الميزة"
+
 msgid "Document uploaded successfully"
 msgstr "تم تحميل المستند بنجاح"
+
+#, fuzzy
+#| msgid "You dont have permission to the feature"
+msgid "You do not have permission to view this document."
+msgstr "ليس لديك إذن لهذه الميزة"
 
 msgid "Document request approved"
 msgstr "تمت الموافقة على طلب المستند"
@@ -6273,8 +6740,10 @@ msgstr "تم تحديث التفاصيل المصرفية للموظف."
 msgid "Profile image updated."
 msgstr "تم تحديث الصورة الشخصية."
 
-msgid "No image chosen."
-msgstr "لم يتم اختيار صورة."
+#, fuzzy
+#| msgid "Upload a File"
+msgid "Upload a valid image."
+msgstr "تحميل ملف"
 
 msgid "No profile image to remove."
 msgstr "لا توجد صورة شخصية لإزالتها."
@@ -6356,7 +6825,8 @@ msgstr "تنسيق ملف غير مدعوم. الرجاء تحميل ملف CSV 
 msgid "Error Occured {}"
 msgstr "حدث خطأ {}"
 
-msgid "Failed to read file. Please ensure it is a valid CSV or Excel file. : {}"
+msgid ""
+"Failed to read file. Please ensure it is a valid CSV or Excel file. : {}"
 msgstr "فشل في قراءة الملف. الرجاء التأكد من أنه ملف CSV أو Excel. {}"
 
 msgid "In-Active"
@@ -6386,11 +6856,85 @@ msgstr "وجهة نظري"
 msgid "Payroll app not installed"
 msgstr "لم يتم تثبيت تطبيق كشوف المرتبات"
 
+#, fuzzy
+#| msgid "Mail server updated successfully."
+msgid "Initial prefix updated successfully."
+msgstr "تم تحديث خادم البريد بنجاح."
+
+#, fuzzy
+#| msgid "Email Configuration"
+msgid "Facedetection Configuration"
+msgstr "Email Configuration"
+
 msgid "facedetection config created successfully."
 msgstr "تم إنشاء إعدادات واجهة الوجه بنجاح."
 
+#, fuzzy
+#| msgid "Configuration"
+msgid "Geofence Configuration"
+msgstr "الإعدادات"
+
 msgid "Geofencing config created successfully."
 msgstr "تم إنشاء تكوين الجغرافيا بنجاح."
+
+msgid "Deadline should be greater than today"
+msgstr "الموعد النهائي يجب أن يكون أكبر من اليوم"
+
+msgid "Low"
+msgstr "منخفض"
+
+msgid "Medium"
+msgstr "متوسط"
+
+msgid "High"
+msgstr "مرتفع"
+
+#, fuzzy
+#| msgid "Export Individual Data"
+msgid "Individual"
+msgstr "تصدير البيانات الفردية"
+
+#, fuzzy
+#| msgid "Question"
+msgid "Suggestion"
+msgstr "سؤال"
+
+#, fuzzy
+#| msgid "Company"
+msgid "Complaint"
+msgstr "الشركة"
+
+#, fuzzy
+#| msgid "Leave Request"
+msgid "Service Request"
+msgstr "طلب المغادرة"
+
+#, fuzzy
+#| msgid "Return Request"
+msgid "Meeting Request"
+msgstr "طلب الإرجاع"
+
+#, fuzzy
+#| msgid "Anonymous"
+msgid "Anonymous Complaint"
+msgstr "مجهول"
+
+#, fuzzy
+#| msgid "Other"
+msgid "Others"
+msgstr "اخرى"
+
+msgid "New"
+msgstr "جديد"
+
+msgid "In Progress"
+msgstr "قيد التقدم"
+
+msgid "On Hold"
+msgstr "قيد الانتظار"
+
+msgid "Resolved"
+msgstr "محلولة"
 
 msgid "Manager"
 msgstr "مدير"
@@ -6404,20 +6948,25 @@ msgstr "مدراء القسم"
 msgid "Ticket Types"
 msgstr "أنواع التذكرة"
 
+msgid "Owner"
+msgstr "المالك"
+
 msgid "Assigning Type"
 msgstr "نوع التعيين"
 
 msgid "Forward To"
 msgstr "إعادة التوجيه إلى"
 
+#, fuzzy
+#| msgid "Dead line"
+msgid "Deadline"
+msgstr "خط ميت"
+
 msgid "Ticket"
 msgstr "التذكرة"
 
 msgid "Tickets"
 msgstr "تذاكر"
-
-msgid "Deadline should be greater than today"
-msgstr "الموعد النهائي يجب أن يكون أكبر من اليوم"
 
 msgid "This field is required."
 msgstr "هذا الحقل مطلوب."
@@ -6449,6 +6998,11 @@ msgstr "عرض الأسئلة الشائعة"
 msgid "There are no FAQs at the moment."
 msgstr "لا توجد أسئلة متكررة في الوقت الراهن."
 
+#, fuzzy
+#| msgid "Search in :Asset"
+msgid "Search in FAQs..."
+msgstr "البحث في :الأصل"
+
 msgid "Load Faqs"
 msgstr "تحميل المقطوعات"
 
@@ -6467,11 +7021,92 @@ msgstr "حدد جميع المقطوعات"
 msgid "Unselect All Faqs"
 msgstr "إلغاء تحديد جميع المقاطع"
 
-msgid "Assignees"
-msgstr "المحال إليهم"
+#, fuzzy
+#| msgid "Ticket"
+msgid "View Ticket"
+msgstr "التذكرة"
+
+#, fuzzy
+#| msgid "helpdesk"
+msgid "Helpdesk"
+msgstr "مكتب المساعدة"
+
+msgid "oh-link--secondary"
+msgstr ""
+
+#, fuzzy
+#| msgid "changed the ticket "
+msgid "Jane assigned ticket to"
+msgstr "غيّر التذكرة "
+
+msgid "Patricia"
+msgstr ""
+
+msgid "26 Mar 2019, 1:32PM"
+msgstr ""
+
+msgid "Open"
+msgstr "فتح"
+
+msgid "26 Mar 2019, 1:33PM"
+msgstr ""
+
+#, fuzzy
+#| msgid "Send Mail"
+msgid "Send Message"
+msgstr "إرسال البريد"
+
+msgid "Type something..."
+msgstr ""
+
+msgid "Ticket Details"
+msgstr "تفاصيل التذكرة"
+
+#, fuzzy
+#| msgid "Ticket Info 123"
+msgid "Ticket Info"
+msgstr "معلومات التذكرة 123"
+
+msgid "Ticket ID:"
+msgstr "معرف التذكرة:"
+
+msgid "Created:"
+msgstr "تم إنشاؤه:"
+
+#, fuzzy
+#| msgid "Last Name"
+msgid "Last message:"
+msgstr "اسم العائلة"
+
+msgid "27 Mar 2019"
+msgstr ""
+
+msgid "Tags:"
+msgstr "العلامات:"
 
 msgid "Responsibility"
 msgstr "المسؤولية"
+
+#, fuzzy
+#| msgid "Based on"
+msgid "Raised on"
+msgstr "استناداً إلى"
+
+#, fuzzy
+#| msgid "Range"
+msgid "Change"
+msgstr "Range"
+
+msgid "Assigned to"
+msgstr "تم تعيينه إلى"
+
+msgid "Assignees"
+msgstr "المحال إليهم"
+
+#, fuzzy
+#| msgid "All Tickets"
+msgid "Add Tickets"
+msgstr "جميع التذاكر"
 
 msgid "Do you want to archive this ticket?"
 msgstr "هل تريد أرشفة هذه التذكرة؟"
@@ -6484,15 +7119,6 @@ msgstr "هل أنت متأكد من أنك تريد حذف هذه التذكرة
 
 msgid "owner"
 msgstr "المالك"
-
-msgid "Low"
-msgstr "منخفض"
-
-msgid "Medium"
-msgstr "متوسط"
-
-msgid "High"
-msgstr "مرتفع"
 
 msgid "Claim Requests"
 msgstr "طلبات المطالبة"
@@ -6521,20 +7147,13 @@ msgstr " من"
 msgid "to"
 msgstr "إلى"
 
-msgid "Ticket Details"
-msgstr "تفاصيل التذكرة"
+#, fuzzy
+#| msgid "Attachments"
+msgid "Attach Files"
+msgstr "المرفقات"
 
 msgid "Ticket Info 123"
 msgstr "معلومات التذكرة 123"
-
-msgid "Ticket ID:"
-msgstr "معرف التذكرة:"
-
-msgid "Owner"
-msgstr "المالك"
-
-msgid "Created:"
-msgstr "تم إنشاؤه:"
 
 msgid "Priority"
 msgstr "الأولوية"
@@ -6542,17 +7161,19 @@ msgstr "الأولوية"
 msgid "Last activity:"
 msgstr "آخر نشاط:"
 
-msgid "Tags:"
-msgstr "العلامات:"
-
 msgid "Forward to"
 msgstr "إعادة التوجيه إلى"
 
-msgid "Assigned to"
-msgstr "تم تعيينه إلى"
-
 msgid " Claim Requests"
 msgstr " طلبات المطالبة"
+
+msgid "File Upload"
+msgstr "تحميل الملف"
+
+#, fuzzy
+#| msgid "Template as Attachment"
+msgid "Delete attachment"
+msgstr "قالب كمرفق"
 
 msgid "Till date"
 msgstr "Till date"
@@ -6569,6 +7190,11 @@ msgstr "خط ميت"
 msgid "Ticket ID"
 msgstr "معرف التذكرة"
 
+#, fuzzy
+#| msgid "archived"
+msgid "archive sharp"
+msgstr "أرشيف"
+
 msgid "Un Archive"
 msgstr "أرشيف"
 
@@ -6580,18 +7206,6 @@ msgstr "تحديث التذكرة"
 
 msgid "Selected Tickets"
 msgstr "التذاكر المحددة"
-
-msgid "Resolved"
-msgstr "محلولة"
-
-msgid "On Hold"
-msgstr "قيد الانتظار"
-
-msgid "In Progress"
-msgstr "قيد التقدم"
-
-msgid "New"
-msgstr "جديد"
 
 msgid "Select All Tickets"
 msgstr "حدد جميع التذاكر"
@@ -6635,6 +7249,10 @@ msgstr "تم حذف الأسئلة المتكررة \"{}\" بنجاح."
 msgid "You cannot delete this FAQ."
 msgstr "لا يمكنك حذف هذه الأسئلة الشائعة."
 
+#, python-format
+msgid "File type(s) %(ext)s are not allowed."
+msgstr ""
+
 msgid "The Ticket created successfully."
 msgstr "تم إنشاء التذكرة بنجاح."
 
@@ -6677,8 +7295,26 @@ msgstr "نجاح"
 msgid "Failed"
 msgstr "فشل"
 
+#, fuzzy
+#| msgid "No user found with the username"
+msgid "No Attachment found matching the query."
+msgstr "لم يتم العثور على مستخدم باسم المستخدم"
+
+#, fuzzy
+#| msgid "You dont have permission to the feature"
+msgid "You do not have permission to view the documents."
+msgstr "ليس لديك إذن لهذه الميزة"
+
+#, fuzzy
+#| msgid "You dont have permission to the feature"
+msgid "You do not have permission to delete the documents."
+msgstr "ليس لديك إذن لهذه الميزة"
+
 msgid "Document has been deleted."
 msgstr "تم حذف المستند."
+
+msgid "Please add a comment or upload at least one file."
+msgstr ""
 
 msgid "A new comment has been created."
 msgstr "تم إنشاء تعليق جديد."
@@ -6722,6 +7358,19 @@ msgstr "تم حذف نوع التذكرة بنجاح!"
 msgid "Ticket type not found"
 msgstr "لم يتم العثور على نوع التذكرة"
 
+#, fuzzy
+#| msgid "You dont have permission to the feature"
+msgid "You don't have permission to delete."
+msgstr "ليس لديك إذن لهذه الميزة"
+
+#, fuzzy
+#| msgid "You dont have permission to the feature"
+msgid "You don't have permission for duplicate action."
+msgstr "ليس لديك إذن لهذه الميزة"
+
+msgid "Sorry, something went wrong!"
+msgstr "عذراً، حدث خطأ ما!"
+
 msgid "Please enable the Track Late Come & Early Out from settings"
 msgstr "الرجاء تمكين المسار المتأخر و الخروج المبكر من الإعدادات"
 
@@ -6761,8 +7410,12 @@ msgstr "لماذا هذا التغيير؟"
 msgid "The employees selected here will receive the email as Cc."
 msgstr "سيتلقى الموظفون المختارون هنا البريد الإلكتروني على شكل Cc."
 
-msgid "Fill mail template details (receiver/instance, `self` will be the person who triggers the automation)"
-msgstr "ملء تفاصيل قالب البريد (المستلم/المثال ، 'ذات' سيكون الشخص الذي يشغل التشغيل التلقائي)"
+msgid ""
+"Fill mail template details (receiver/instance, `self` will be the person who "
+"triggers the automation)"
+msgstr ""
+"ملء تفاصيل قالب البريد (المستلم/المثال ، 'ذات' سيكون الشخص الذي يشغل التشغيل "
+"التلقائي)"
 
 msgid "Load Automations"
 msgstr "تحميل الأتمتة"
@@ -6772,6 +7425,20 @@ msgstr "إشعار"
 
 msgid "Not Added"
 msgstr "غير مضاف"
+
+msgid "Enable to backup database to server."
+msgstr ""
+
+#, fuzzy
+#| msgid "Enable to select all Leave types."
+msgid "Enable to backup all media files to server."
+msgstr "تمكين تحديد جميع أنواع المغادرة."
+
+msgid "Enable to automate the backup in a period of seconds."
+msgstr ""
+
+msgid "Enable to automate the backup in a fixed time."
+msgstr ""
 
 msgid "The directory does not exist."
 msgstr "الدليل غير موجود."
@@ -6785,6 +7452,67 @@ msgstr "أدخل ساعة بين 0 و 24."
 msgid "Enter a minute between 0 to 60."
 msgstr "أدخل دقيقة بين 0 و 60."
 
+msgid "Enable to backup database to Gdrive"
+msgstr ""
+
+msgid "Enable to backup all media files to Gdrive"
+msgstr ""
+
+msgid "Specify the path in the server were the backup files should keep"
+msgstr ""
+
+#, fuzzy
+#| msgid "Check the credentials"
+msgid "OAuth Credentials File"
+msgstr "تحقق من بيانات الاعتماد"
+
+msgid ""
+"Make sure your file is in JSON format and contains your Google OAuth 2.0 "
+"client credentials (web application type)"
+msgstr ""
+
+msgid "Gdrive Folder ID"
+msgstr ""
+
+msgid ""
+"Google Drive folder ID where backups will be stored. The authenticated user "
+"must have write access to this folder."
+msgstr ""
+
+msgid "OAuth access token (automatically managed)"
+msgstr ""
+
+msgid "OAuth refresh token (automatically managed)"
+msgstr ""
+
+msgid "Token expiry time (automatically managed)"
+msgstr ""
+
+msgid "Only work with postgresql database."
+msgstr ""
+
+msgid ""
+"OAuth authorization required. Please click 'Authorize Google Drive' to grant "
+"access."
+msgstr ""
+
+msgid "Authorize"
+msgstr ""
+
+msgid "Authorize Google Drive"
+msgstr ""
+
+msgid "Stop"
+msgstr ""
+
+#, fuzzy
+#| msgid "Star"
+msgid "Start"
+msgstr "نجوم"
+
+msgid "OAuth credentials file uploaded. Please authorize Google Drive access."
+msgstr ""
+
 msgid "gdrive backup automation setup updated."
 msgstr "تم تحديث إعداد التشغيل الآلي لـ gris."
 
@@ -6794,14 +7522,33 @@ msgstr "تم إنشاء نسخة احتياطية من إعداد التشغيل
 msgid "Gdrive Backup Automation Removed Successfully."
 msgstr "تمت إزالة النسخ الاحتياطي للقاعدة بنجاح"
 
+msgid "Please set up Google Drive backup first."
+msgstr ""
+
+#, fuzzy
+#| msgid "Please upload a valid XLSX file."
+msgid "Please upload OAuth credentials file first."
+msgstr "الرجاء تحميل ملف XLSX صالح."
+
+msgid "Google Drive backup not configured."
+msgstr ""
+
+msgid "Authorization code not received."
+msgstr ""
+
+msgid "Session expired. Please try authorizing again."
+msgstr ""
+
+#, fuzzy
+#| msgid "Period creation was Successful "
+msgid "Google Drive authorization successful!"
+msgstr "تم إنشاء الفترة بنجاح "
+
 msgid "Format"
 msgstr "التنسيق"
 
 msgid "Max size (In MB)"
 msgstr "الحد الأقصى للحجم (بالميغابايت)"
-
-msgid "Document"
-msgstr "مستند"
 
 msgid "Reject Reason"
 msgstr "رفض السبب"
@@ -6821,26 +7568,8 @@ msgstr "حجم الملف يتجاوز الحد الأقصى"
 msgid "Please upload {} file only."
 msgstr "الرجاء تحميل ملف {} فقط."
 
-msgid "LDAP to Horilla Employee Field Mapping"
-msgstr "LDAP إلى خرائط حقل موظفي هوريلا"
-
-msgid "Horilla Employee Field"
-msgstr "حقل موظفي الهوريلا"
-
-msgid "LDAP Attribute Name"
-msgstr "اسم سمة LDAP"
-
-msgid "LDAP Object Class"
-msgstr "فئة كائن LDAP"
-
-msgid "e.g., inetOrgPerson"
-msgstr "e.g., inetOrgPerson"
-
 msgid "LDAP Configuration"
 msgstr "تكوين LDAP"
-
-msgid "Import Users"
-msgstr "استيراد المستخدمين"
 
 msgid "Configuration updated successfully."
 msgstr "تم تحديث الإعدادات بنجاح."
@@ -6856,6 +7585,14 @@ msgstr "تم تحديث السجلات المحددة"
 
 msgid "No records selected"
 msgstr "لا توجد سجلات مختارة"
+
+#, fuzzy
+#| msgid "Import"
+msgid "Imported"
+msgstr "استيراد"
+
+msgid "Show Error Details"
+msgstr ""
 
 msgid "Allocation"
 msgstr "تخصيص"
@@ -6893,6 +7630,11 @@ msgstr "الإجراء المطلوب"
 msgid "Select All Columns"
 msgstr "حدد جميع الأعمدة"
 
+#, fuzzy
+#| msgid "Export Data"
+msgid "Exported Data"
+msgstr "تصدير البيانات"
+
 msgid "Filters"
 msgstr "فلاتر"
 
@@ -6911,11 +7653,89 @@ msgstr "لم يتم العثور على سجلات."
 msgid "Select Row"
 msgstr "حدد الصف"
 
+msgid "Restore the previous state"
+msgstr ""
+
+#, fuzzy
+#| msgid "Dead line"
+msgid "library outline"
+msgstr "خط ميت"
+
+msgid "arrow back circle outline"
+msgstr ""
+
+#, fuzzy
+#| msgid "Carryforward Expire in"
+msgid "arrow forward circle outline"
+msgstr "انتهاء صلاحية الكرملين في"
+
 msgid "E-mail"
 msgstr "البريد الإلكتروني"
 
+#, fuzzy
+#| msgid "Export Records"
+msgid "Import Records"
+msgstr "سجلات التصدير"
+
 msgid "Import Help"
 msgstr "إستيراد المساعدة"
+
+msgid "Design Homepage"
+msgstr ""
+
+msgid "Create wireframes and mockups for the new homepage design."
+msgstr ""
+
+#, fuzzy
+#| msgid "Priority"
+msgid "High Priority"
+msgstr "الأولوية"
+
+msgid "May 16"
+msgstr ""
+
+#, fuzzy
+#| msgid "assigned as"
+msgid "Unassigned"
+msgstr "تعيين كـ"
+
+msgid "John Doe"
+msgstr ""
+
+msgid "Alice Smith"
+msgstr ""
+
+msgid "Robert Johnson"
+msgstr ""
+
+#, fuzzy
+#| msgid "Update compensation"
+msgid "Update Documentation"
+msgstr "تحديث التعويض"
+
+msgid "Review and update the API documentation for v2.0 release."
+msgstr ""
+
+#, fuzzy
+#| msgid "Priority"
+msgid "Medium Priority"
+msgstr "الأولوية"
+
+msgid "May 20"
+msgstr ""
+
+#, fuzzy
+#| msgid "Add task"
+msgid "+ Add new task"
+msgstr "إضافة مهمة"
+
+#, fuzzy
+#| msgid " Task"
+msgid "New Task"
+msgstr " مهمة"
+
+msgid "Click to edit this task description."
+msgstr ""
 
 msgid "Unselect"
 msgstr "إلغاء التحديد"
@@ -6935,13 +7755,26 @@ msgstr "إلغاء تحديد الكل"
 msgid "Item"
 msgstr "البند"
 
-msgid "You dont have permission."
-msgstr "ليس لديك إذن."
+#, fuzzy
+#| msgid "Filter"
+msgid "filter"
+msgstr "تصفية"
+
+msgid "Page 1 of 1"
+msgstr ""
+
+msgid "Select all users"
+msgstr "حدد جميع المستخدمين"
+
+msgid "Abigail Lee"
+msgstr ""
 
 msgid "Leave allocation request not found"
 msgstr "لم يتم العثور على طلب تخصيص المغادرة"
 
-msgid "Sorry,Compensatory leave is not enabled."
+#, fuzzy
+#| msgid "Sorry,Compensatory leave is not enabled."
+msgid "Compensatory leave is not enabled."
 msgstr "عذراً، الإجازة التعويضية غير مفعلة."
 
 msgid "Requested Days"
@@ -7076,8 +7909,12 @@ msgstr "اترك طلب التخصيص"
 msgid "Leave Allocation Requests"
 msgstr "طلبات تخصيص الإجازات"
 
-msgid "If no job positions are specifically selected, the system will consider all job positions under the selected department."
-msgstr "وإذا لم يتم اختيار أي وظيفة على وجه التحديد، فإن النظام سينظر في جميع الوظائف في إطار الإدارة المختارة."
+msgid ""
+"If no job positions are specifically selected, the system will consider all "
+"job positions under the selected department."
+msgstr ""
+"وإذا لم يتم اختيار أي وظيفة على وجه التحديد، فإن النظام سينظر في جميع "
+"الوظائف في إطار الإدارة المختارة."
 
 msgid "Enable to select all Leave types."
 msgstr "تمكين تحديد جميع أنواع المغادرة."
@@ -7373,8 +8210,12 @@ msgstr "لا توجد لديك طلبات إجازة لهذا الشهر."
 msgid "Leave type is not assigned for the selected employee."
 msgstr "لم يتم تعيين نوع الإجازة للموظف المحدد."
 
-msgid "Forecasted available days added to this Available Days (Carryforward Max. + Forcasted Days)"
-msgstr "الأيام المتاحة المتوقعة المضافة إلى هذه الأيام المتاحة (الحد الأقصى للكارريكس. + الأيام المنصوبة)"
+msgid ""
+"Forecasted available days added to this Available Days (Carryforward Max. + "
+"Forcasted Days)"
+msgstr ""
+"الأيام المتاحة المتوقعة المضافة إلى هذه الأيام المتاحة (الحد الأقصى "
+"للكارريكس. + الأيام المنصوبة)"
 
 msgid "Pending Leaves Requests"
 msgstr "طلبات الإجازات المعلقة"
@@ -7409,6 +8250,84 @@ msgstr "لا توجد طلبات متضاربة متاحة للإجازات ال
 msgid "No clashed requestes found"
 msgstr "لم يتم العثور على طلبات متضاربة"
 
+#, fuzzy
+#| msgid "Leave request deleted."
+msgid "Leave Request Alert."
+msgstr "تم حذف طلب المغادرة."
+
+#, fuzzy
+#| msgid "Are you sure want to proceed with the request ?"
+msgid "Are you sure you want to proceed with the request?"
+msgstr "هل أنت متأكد من أنك تريد متابعة الطلب؟"
+
+#, fuzzy
+#| msgid "Leave Request Update"
+msgid "Leave Request Report"
+msgstr "ترك طلب التحديث"
+
+#, fuzzy
+#| msgid "Company"
+msgid "Company Logo"
+msgstr "الشركة"
+
+msgid "COMPANY:"
+msgstr ""
+
+msgid "ADDRESS:"
+msgstr ""
+
+msgid "CITY:"
+msgstr ""
+
+msgid "STATE:"
+msgstr ""
+
+msgid "ZIP:"
+msgstr ""
+
+msgid "LEAVE REPORT"
+msgstr ""
+
+#, fuzzy
+#| msgid "Leave"
+msgid "Leaves"
+msgstr "المغادرة"
+
+#, fuzzy
+#| msgid "Create Period"
+msgid "Leave Periods"
+msgstr "إنشاء فترة"
+
+msgid "Used"
+msgstr ""
+
+msgid "Remaining"
+msgstr ""
+
+#, fuzzy
+#| msgid "Period"
+msgid "Period 1"
+msgstr "الفترة"
+
+msgid "End"
+msgstr ""
+
+#, fuzzy
+#| msgid "Period"
+msgid "Period 2"
+msgstr "الفترة"
+
+#, fuzzy
+#| msgid "Period"
+msgid "Period 3"
+msgstr "الفترة"
+
+msgid "* New hire (joined within the last year)"
+msgstr ""
+
+msgid "Human Resources Management"
+msgstr ""
+
 msgid "Leave Clash"
 msgstr "اترك Clash"
 
@@ -7430,9 +8349,6 @@ msgstr "اترك الوصف"
 msgid "Reason for Cancellation"
 msgstr "سبب الإلغاء"
 
-msgid "By enabling 'Deduct from carry forward' leave will cut/deduct from carry forward days"
-msgstr "عن طريق تمكين 'خصم من الترحيل إلى المستقبل' تخفض الإجازة / تخصم من أيام الترحيل إلى الأمام"
-
 msgid "Leave Requests"
 msgstr "طلبات الإجازة"
 
@@ -7453,6 +8369,9 @@ msgstr "سبب الرفض الشامل"
 
 msgid "Clashed Leave Requests"
 msgstr "طلبات الإجازة المتضاربة"
+
+msgid "Would you like to proceed?"
+msgstr ""
 
 msgid "Cancel Request"
 msgstr "إلغاء الطلب"
@@ -7490,8 +8409,12 @@ msgstr "عدد فترة انتهاء صلاحية الترحيل"
 msgid "The time period for the expiration of carryforward leave."
 msgstr "• الفترة الزمنية لانتهاء مدة الإجازة المرحَّلة."
 
-msgid "The date on which carryforward leave resets to 0. After this reset, the date will be updated to the next expiration period."
-msgstr "التاريخ الذي يعاد فيه تعيين الإجازة المرحّلة إلى 0. بعد إعادة التعيين هذه، سيتم تحديث التاريخ إلى فترة الإنتهاء التالية."
+msgid ""
+"The date on which carryforward leave resets to 0. After this reset, the date "
+"will be updated to the next expiration period."
+msgstr ""
+"التاريخ الذي يعاد فيه تعيين الإجازة المرحّلة إلى 0. بعد إعادة التعيين هذه، "
+"سيتم تحديث التاريخ إلى فترة الإنتهاء التالية."
 
 msgid "Do you need approval for leave from the authority?"
 msgstr "هل تحتاج إلى موافقة السلطة على الإجازة؟"
@@ -7616,8 +8539,12 @@ msgstr "تقييد الإجازة السابقة"
 msgid "Restricts Past Date Leave Request Creation"
 msgstr "تقييد إنشاء طلب إجازة تاريخ سابق"
 
-msgid "By enabling this only admins and managers can create leave requests for the past dates"
-msgstr "عن طريق تمكين هذا المدراء والمديرين فقط من إنشاء طلبات للإجازات في التواريخ السابقة"
+msgid ""
+"By enabling this only admins and managers can create leave requests for the "
+"past dates"
+msgstr ""
+"عن طريق تمكين هذا المدراء والمديرين فقط من إنشاء طلبات للإجازات في التواريخ "
+"السابقة"
 
 msgid "Are you sure you want to delete this leave request?"
 msgstr "هل أنت متأكد من أنك تريد حذف طلب الإجازة هذا؟"
@@ -7627,6 +8554,9 @@ msgstr "إنشاء طلب مغادرة"
 
 msgid "has interview in the requested date."
 msgstr "أجرى مقابلة في التاريخ المطلوب."
+
+msgid "&nbsp"
+msgstr ""
 
 msgid "Are you sure want to proceed with the request ?"
 msgstr "هل أنت متأكد من أنك تريد متابعة الطلب؟"
@@ -7639,9 +8569,6 @@ msgstr "طلبات المغادرة الخاصة بي"
 
 msgid "You have an interview in this requested date range."
 msgstr "لديك مقابلة في نطاق التاريخ المطلوب."
-
-msgid "View Leave Request"
-msgstr "عرض طلب المغادرة"
 
 msgid "My Leave"
 msgstr "مغادرتي"
@@ -7875,9 +8802,6 @@ msgstr "الإجازة التعويضية المنشأة."
 msgid "Compensatory leave request deleted."
 msgstr "تم حذف طلب إجازة تعويضية."
 
-msgid "Sorry, something went wrong!"
-msgstr "عذراً، حدث خطأ ما!"
-
 msgid "Compensatory leave request approved."
 msgstr "• الموافقة على طلب إجازة تعويضية."
 
@@ -8004,17 +8928,44 @@ msgstr "وظيفة الوظيفة"
 msgid "Planned To Leave"
 msgstr "مخطط لمغادرة"
 
+msgid ""
+"By approving the request employee will added to the offboarding pipeline"
+msgstr ""
+
 msgid "Do You really want to approve the request"
 msgstr "هل تريد حقا الموافقة على الطلب"
+
+msgid "checkmark"
+msgstr ""
 
 msgid "Do You really want to reject the request?"
 msgstr "هل تريد حقاً رفض الطلب؟"
 
+#, fuzzy
+#| msgid "Close"
+msgid "close"
+msgstr "أغلق"
+
 msgid "Resignations"
 msgstr "الاستقالة"
 
+#, fuzzy
+#| msgid "Dead line"
+msgid "list outline"
+msgstr "خط ميت"
+
+#, fuzzy
+#| msgid "Dead line"
+msgid "grid outline"
+msgstr "خط ميت"
+
 msgid " Send Mail"
 msgstr " إرسال البريد"
+
+#, fuzzy
+#| msgid "create-deduction"
+msgid "mail open outline"
+msgstr "خصم"
 
 msgid "Do you want to delete this record"
 msgstr "هل تريد حذف هذا السجل"
@@ -8028,10 +8979,31 @@ msgstr "هل تريد حذف هذه الحرف"
 msgid "No resignation has been created yet."
 msgstr "لم يتم إنشاء استقالة بعد."
 
+#, fuzzy
+#| msgid "Add MoM"
+msgid "Add to"
+msgstr "إضافة موجه"
+
+#, fuzzy
+#| msgid "offboarding"
+msgid "Add to offboarding"
+msgstr "إلغاء"
+
+#, fuzzy
+#| msgid "Planned To Leave"
+msgid "Planned to leave on"
+msgstr "مخطط لمغادرة"
+
+#, fuzzy
+#| msgid "Notice period ended"
+msgid "Notice period end"
+msgstr "انتهت فترة الإشعار"
+
 msgid "Resignation Request"
 msgstr "طلب الاستقالة"
 
-msgid "By enabling this normal users can request for their resignation progress"
+msgid ""
+"By enabling this normal users can request for their resignation progress"
 msgstr "من خلال تمكين هذا المستخدمين العاديين يمكنهم طلب تقدم استقالتهم"
 
 msgid "Are you sure want to delete this stage?"
@@ -8175,6 +9147,19 @@ msgstr "مرحلة المرشح أونبواردينج"
 msgid "Done"
 msgstr "تم"
 
+msgid "Onboarding"
+msgstr "أونبواردينج"
+
+#, fuzzy
+#| msgid "onboarding-view"
+msgid "Onboarding view"
+msgstr "مشاهدة"
+
+#, fuzzy
+#| msgid "candidates-view"
+msgid "Candidates view"
+msgstr "المرشحون-عرض"
+
 msgid "View candidates"
 msgstr "عرض المرشحين"
 
@@ -8259,11 +9244,13 @@ msgstr "اختياري"
 msgid "Template as Attachments"
 msgstr "قالب كمرفقات"
 
+#, fuzzy
+#| msgid "Send Portal / Start Onboarding"
+msgid "Send portal link / Trigger Onboarding"
+msgstr "إرسال بوابة / بدء أونبواردينج"
+
 msgid "Send Portal Link"
 msgstr "إرسال رابط البوابة"
-
-msgid "Onboarding"
-msgstr "أونبواردينج"
 
 msgid "Total Candidates"
 msgstr "مجموع المرشحين"
@@ -8285,6 +9272,9 @@ msgstr "مهام أونبواردينج الخاصة بي"
 
 msgid "Task"
 msgstr "مهمة"
+
+msgid "Acme, Inc."
+msgstr ""
 
 msgid "Login"
 msgstr "تسجيل الدخول"
@@ -8340,6 +9330,22 @@ msgstr "إضافة مهمة"
 msgid "Create Task"
 msgstr "إنشاء مهمة"
 
+msgid ""
+"Your dedication is valued, and we wish you continued success. If you have "
+"questions or need assistance, feel free to ask. Best wishes for your "
+"journey! Kindly complete your profile when convenient."
+msgstr ""
+
+#, fuzzy
+#| msgid "employee-profile"
+msgid "Complete Profile"
+msgstr "الملف الشخصي للموظف"
+
+#, fuzzy
+#| msgid "Bulk Stage Change"
+msgid "Bulk stage change"
+msgstr "تغيير مرحلة الجملة"
+
 msgid "Bulk Stage Change"
 msgstr "تغيير مرحلة الجملة"
 
@@ -8373,11 +9379,26 @@ msgstr " أغلق"
 msgid "Closed"
 msgstr "مغلق"
 
-msgid "Open"
-msgstr "فتح"
-
 msgid "Candidate Name"
 msgstr "اسم المرشح"
+
+#, fuzzy
+#| msgid "Default Records Per Page"
+msgid "Default select example"
+msgstr "السجلات الافتراضية لكل صفحة"
+
+msgid "Welcome Aboard"
+msgstr ""
+
+#, fuzzy
+#| msgid "Upload Photo"
+msgid "User Photo"
+msgstr "تحميل صورة"
+
+#, fuzzy
+#| msgid "Cancel / Reject"
+msgid "Cancel Rejection"
+msgstr "إلغاء / رفض"
 
 msgid "Send"
 msgstr "إرسال"
@@ -8424,7 +9445,8 @@ msgstr "تم حذف المهمة بنجاح..."
 msgid "Task not found."
 msgstr "المهمة غير موجودة."
 
-msgid "You cannot delete this task because some candidates are associated with it."
+msgid ""
+"You cannot delete this task because some candidates are associated with it."
 msgstr "لا يمكنك حذف هذه المهمة لأن بعض المرشحين مرتبطون بها."
 
 msgid "New candidate created successfully.."
@@ -8612,7 +9634,9 @@ msgstr "خصم مبلغ الإجازة من الأجر الأساسي."
 msgid "Calculate Daily Leave Amount"
 msgstr "حساب مبلغ الإجازة اليومية"
 
-msgid "Leave amount will be calculated by dividing the basic pay by number of working days."
+msgid ""
+"Leave amount will be calculated by dividing the basic pay by number of "
+"working days."
 msgstr "وسيحسب مبلغ الإجازة بقسمة الأجر الأساسي على عدد أيام العمل."
 
 msgid "Deduction For One Leave Amount"
@@ -8645,8 +9669,12 @@ msgstr "تقديم الحد الأقصى للمبلغ"
 msgid "Title of the allowance"
 msgstr "ألف - عنوان البدل"
 
-msgid "The one-time allowance in which the allowance will apply to the payslips             if the date between the payslip period"
-msgstr "البدل الذي يدفع لمرة واحدة والذي ينطبق فيه البدل على أقساط الرواتب إذا كان التاريخ الفاصل بين فترة قسائم الرواتب"
+msgid ""
+"The one-time allowance in which the allowance will apply to the "
+"payslips             if the date between the payslip period"
+msgstr ""
+"البدل الذي يدفع لمرة واحدة والذي ينطبق فيه البدل على أقساط الرواتب إذا كان "
+"التاريخ الفاصل بين فترة قسائم الرواتب"
 
 msgid "Include all active employees"
 msgstr "تضمين جميع الموظفين النشطين"
@@ -8660,14 +9688,20 @@ msgstr "الموظفون المحددون"
 msgid "Target allowance to the specific employees"
 msgstr "البدل المستهدف للموظفين المحددين"
 
-msgid "To ignore the allowance to the employees when target them by all employees             or through condition-based"
+msgid ""
+"To ignore the allowance to the employees when target them by all "
+"employees             or through condition-based"
 msgstr "تجاهل العلاوة للموظفين عندما يستهدفهم جميع الموظفين أو من خلال شروط"
 
 msgid "This field is used to calculate the taxable allowances"
 msgstr "يستخدم هذا الحقل لحساب العلاوات الخاضعة للضريبة"
 
-msgid "This field is used to target allowance         to the specific employees when the condition satisfies with the employee's information"
-msgstr "ويستخدم هذا المجال لاستهداف بدل للموظفين المحددين عندما يكون الشرط مستوفياً لمعلومات الموظف."
+msgid ""
+"This field is used to target allowance         to the specific employees "
+"when the condition satisfies with the employee's information"
+msgstr ""
+"ويستخدم هذا المجال لاستهداف بدل للموظفين المحددين عندما يكون الشرط مستوفياً "
+"لمعلومات الموظف."
 
 msgid "The related field of the employees"
 msgstr "المجال ذو الصلة للموظفين"
@@ -8693,8 +9727,12 @@ msgstr "المبلغ الثابت لكل طفل"
 msgid "The fixed amount for one validated attendance with that shift"
 msgstr "المبلغ الثابت لحضور واحد مصادق عليه مع تلك النوبة."
 
-msgid "The fixed amount for one hour overtime that are validated             and approved the overtime attendance"
-msgstr "المبلغ المحدد لساعة عمل إضافية يتم التحقق من صحتها والموافقة على الحضور للعمل الإضافي"
+msgid ""
+"The fixed amount for one hour overtime that are validated             and "
+"approved the overtime attendance"
+msgstr ""
+"المبلغ المحدد لساعة عمل إضافية يتم التحقق من صحتها والموافقة على الحضور "
+"للعمل الإضافي"
 
 msgid "The fixed amount for one validated attendance with that work type"
 msgstr "المبلغ الثابت لحضور واحد متحقق من صحته بهذا النوع من العمل"
@@ -8710,6 +9748,9 @@ msgstr "الحد الأقصى لمبلغ البدل"
 
 msgid "For working days on month"
 msgstr "لأيام العمل في الشهر"
+
+msgid "The maximum amount for ?"
+msgstr "الحد الأقصى للمبلغ لـ ?"
 
 msgid "The pay head for the if condition"
 msgstr "رأس الراتب للشرط إذا كان"
@@ -8732,10 +9773,13 @@ msgstr "إذا تم تعطيل الحقل 'الثابت'، فإن الحقل 'ا
 msgid "Rate must be specified for allowances based on basic pay."
 msgstr "ويجب تحديد المعدل للعلاوات على أساس الأجر الأساسي."
 
-msgid "If condition based, all fields (field, value, condition) must be filled."
+msgid ""
+"If condition based, all fields (field, value, condition) must be filled."
 msgstr "إذا كانت الحالة قائمة، يجب ملء جميع الحقول (الحقل، القيمة، الشرط)."
 
-msgid "If based on is attendance,                         then per attendance fixed amount must be filled."
+msgid ""
+"If based on is attendance,                         then per attendance fixed "
+"amount must be filled."
 msgstr "وإذا استند ذلك إلى الحضور، فيجب عندئذ ملء المبلغ المحدد لكل حضور."
 
 msgid "If based on is shift, then shift must be filled."
@@ -8756,8 +9800,12 @@ msgstr "استبعاد الخصم"
 msgid "Title of the deduction"
 msgstr "عنوان الخصم"
 
-msgid "The one-time deduction in which the deduction will apply to the payslips             if the date between the payslip period"
-msgstr "الخصم لمرة واحدة الذي ينطبق فيه الخصم على أقساط الرواتب إذا كان التاريخ الفاصل بين فترة قسائم الرواتب"
+msgid ""
+"The one-time deduction in which the deduction will apply to the "
+"payslips             if the date between the payslip period"
+msgstr ""
+"الخصم لمرة واحدة الذي ينطبق فيه الخصم على أقساط الرواتب إذا كان التاريخ "
+"الفاصل بين فترة قسائم الرواتب"
 
 msgid "Target deduction to all active employees in the company"
 msgstr "الخصم المستهدف لجميع الموظفين العاملين في الشركة"
@@ -8765,22 +9813,35 @@ msgstr "الخصم المستهدف لجميع الموظفين العاملين
 msgid "Target deduction to the specific employees"
 msgstr "الخصم المستهدف للموظفين المحددين"
 
-msgid "To ignore the deduction to the employees when target them by all employees             or through condition-based"
-msgstr "تجاهل الخصم على الموظفين عندما يستهدفهم جميع الموظفين أو من خلال شروط محددة"
+msgid ""
+"To ignore the deduction to the employees when target them by all "
+"employees             or through condition-based"
+msgstr ""
+"تجاهل الخصم على الموظفين عندما يستهدفهم جميع الموظفين أو من خلال شروط محددة"
 
 msgid "To specify the deduction is tax or normal deduction"
 msgstr "تحديد الخصم هو خصم ضريبي أو عادي"
 
-msgid "To find taxable gross,             taxable_gross = (basic_pay + taxable_deduction)-pre_tax_deductions "
-msgstr "للعثور على الإجماليات الخاضعة للضريبة، قابلة للضريبة_الإجمالية = (basic_pay + taxable_deduction)-pre_tax_deductions "
+msgid ""
+"To find taxable gross,             taxable_gross = (basic_pay + "
+"taxable_deduction)-pre_tax_deductions "
+msgstr ""
+"للعثور على الإجماليات الخاضعة للضريبة، قابلة للضريبة_الإجمالية = (basic_pay "
+"+ taxable_deduction)-pre_tax_deductions "
 
-msgid "This field is used to target deduction         to the specific employees when the condition satisfies with the employee's information"
-msgstr "ويستخدم هذا المجال لتوجيه الخصم إلى الموظفين المحددين عندما يكون الشرط مستوفياً لمعلومات الموظف."
+msgid ""
+"This field is used to target deduction         to the specific employees "
+"when the condition satisfies with the employee's information"
+msgstr ""
+"ويستخدم هذا المجال لتوجيه الخصم إلى الموظفين المحددين عندما يكون الشرط "
+"مستوفياً لمعلومات الموظف."
 
 msgid "Basic pay"
 msgstr "الأجر الأساسي"
 
-msgid "Update compensation is used to update                    pay-head before any other deduction calculation starts"
+msgid ""
+"Update compensation is used to update                    pay-head before any "
+"other deduction calculation starts"
 msgstr "يستخدم تحديث التعويض لتحديث عنوان الدفع قبل بدء أي حساب خصم آخر"
 
 msgid "To specify, the deduction is fixed or not"
@@ -8804,10 +9865,8 @@ msgstr "الحد من الخصم"
 msgid "The maximum amount for the deduction"
 msgstr "الحد الأقصى للمبلغ المخصص للخصم"
 
-msgid "The maximum amount for ?"
-msgstr "الحد الأقصى للمبلغ لـ ?"
-
-msgid "Employee rate must be specified for deductions that are not fixed amount"
+msgid ""
+"Employee rate must be specified for deductions that are not fixed amount"
 msgstr "يجب تحديد معدل الموظف للاقتطاعات التي ليست محددة المبلغ"
 
 msgid " Don't choose taxable gross pay when pretax is enabled."
@@ -8822,7 +9881,9 @@ msgstr " لا تختار صافي الدفع عند تمكين الضريبة."
 msgid "This fields required"
 msgstr "هذه الحقول مطلوبة"
 
-msgid "If condition based, all fields                             (field, value, condition) must be filled."
+msgid ""
+"If condition based, all fields                             (field, value, "
+"condition) must be filled."
 msgstr "إذا كانت الحالة قائمة، يجب ملء جميع الحقول (الحقل، القيمة، الشرط)."
 
 msgid "Batch name"
@@ -8858,6 +9919,9 @@ msgstr "مبلغ القسط"
 msgid "Total installments"
 msgstr "مجموع الأقساط"
 
+msgid "From the start date deduction will apply"
+msgstr ""
+
 msgid "Reimbursement"
 msgstr "رد"
 
@@ -8885,8 +9949,29 @@ msgstr "نقاط اضافية الى الغش"
 msgid "Bonus points"
 msgstr "نقاط إضافية"
 
-msgid "The employee don't have that much leaves                                         to encash in CFD / Available days"
+msgid ""
+"The employee don't have that much "
+"leaves                                         to encash in CFD / Available "
+"days"
 msgstr "الموظف لا يملك الكثير من الإجازات لتسرب في أيام CFD / الأيام المتاحة"
+
+#, fuzzy
+#| msgid "Notice period in total days."
+msgid "Notice period in days"
+msgstr "فترة الإشعار في مجموع الأيام."
+
+#, fuzzy
+#| msgid "Payslip Auto Generation"
+msgid "Payslip Generate Day"
+msgstr "Payslip Auto Generation"
+
+msgid "On this day of every month,Payslip will auto generate"
+msgstr ""
+
+#, fuzzy
+#| msgid "Generate"
+msgid "Auto generate"
+msgstr "توليد"
 
 msgid "Postfix"
 msgstr "Postfix"
@@ -8908,6 +9993,11 @@ msgstr "هذه الشريط الضريبي موجود بالفعل"
 
 msgid "Maximum income must be greater than minimum income."
 msgstr "يجب أن يكون الحد الأقصى للدخل أكبر من الحد الأدنى للدخل."
+
+#, fuzzy
+#| msgid "Add MoM"
+msgid "Add More"
+msgstr "إضافة موجه"
 
 msgid "Amount Per Attendance"
 msgstr "المبلغ لكل حضور"
@@ -9023,6 +10113,11 @@ msgstr "اختر الشهر والسنة :"
 msgid "Contributions"
 msgstr "المساهمات"
 
+#, fuzzy
+#| msgid "Dead line"
+msgid "download-outline"
+msgstr "خط ميت"
+
 msgid "Employee Payslips"
 msgstr "قسائم دفع الموظف"
 
@@ -9098,6 +10193,16 @@ msgstr "الحواشي"
 msgid "One Time Date"
 msgstr "تاريخ مرة واحدة"
 
+#, fuzzy
+#| msgid "Installment Start Date"
+msgid "Installment paid, Click to view"
+msgstr "تاريخ بدء التثبيت"
+
+#, fuzzy
+#| msgid "Is settled"
+msgid "Loan Settled"
+msgstr "تم تسويته"
+
 msgid "Loan / Advanced Salary"
 msgstr "القرض / المرتب المتقدم"
 
@@ -9118,6 +10223,16 @@ msgstr "مجموع التجهيزات"
 
 msgid "There are currently no loans to consider."
 msgstr "لا توجد حاليا قروض للنظر فيها."
+
+#, fuzzy
+#| msgid "Probation From"
+msgid "donation box"
+msgstr "المراقبة من"
+
+#, fuzzy
+#| msgid "Payslips"
+msgid "View Payslips"
+msgstr "قسائم الدفع"
 
 msgid "Bulk Payslip"
 msgstr "Bulk Payslip"
@@ -9182,9 +10297,6 @@ msgstr "هل أنت متأكد من أنك تريد حذف هذا الدفع؟"
 msgid "payslips"
 msgstr "قسائم الراتب"
 
-msgid "Select all users"
-msgstr "حدد جميع المستخدمين"
-
 msgid "Send via mail "
 msgstr "إرسال عبر البريد الإلكتروني "
 
@@ -9221,14 +10333,25 @@ msgstr "المبلغ الخاضع للضريبة"
 msgid "Add Allowance"
 msgstr "إضافة بدل"
 
-msgid "Some deductions will update basic pay before payslip calculation starts, eg: LOP is Deduducted from basic pay if `Deduct leave from basic pay` field is enabled on the contract, and also with the update compensation deduction through"
-msgstr "بعض الخصومات سوف تقوم بتحديث الدفع الأساسي قبل بدء حساب قسائم المرتبات. مثال: يتم تمكين LOP Deduducted من الأجر الأساسي إذا تم تمكين الحقل 'Dlot leave من الأجر الأساسي' على العقد. وكذلك مع خصم التعويض المستكمل من خلال"
+msgid ""
+"Some deductions will update basic pay before payslip calculation starts, eg: "
+"LOP is Deduducted from basic pay if `Deduct leave from basic pay` field is "
+"enabled on the contract, and also with the update compensation deduction "
+"through"
+msgstr ""
+"بعض الخصومات سوف تقوم بتحديث الدفع الأساسي قبل بدء حساب قسائم المرتبات. "
+"مثال: يتم تمكين LOP Deduducted من الأجر الأساسي إذا تم تمكين الحقل 'Dlot "
+"leave من الأجر الأساسي' على العقد. وكذلك مع خصم التعويض المستكمل من خلال"
 
 msgid "Total Gross Pay"
 msgstr "إجمالي الأجور"
 
-msgid "Some Deduction will update the total gross pay using the deductions that are enabled update compensation"
-msgstr "بعض التخفيضات سوف تستكمل إجمالي الأجر باستخدام الخصومات التي تمكن تحديث التعويض"
+msgid ""
+"Some Deduction will update the total gross pay using the deductions that are "
+"enabled update compensation"
+msgstr ""
+"بعض التخفيضات سوف تستكمل إجمالي الأجر باستخدام الخصومات التي تمكن تحديث "
+"التعويض"
 
 msgid "Add Deduction"
 msgstr "إضافة خصم"
@@ -9251,8 +10374,15 @@ msgstr "خصم صافي الأجور"
 msgid "Total Deductions"
 msgstr "مجموع الخصومات"
 
-msgid "Some deductions are not included in the total deductions because they are given as updated compensations. These deductions may be applied before the main calculation begins, such as from the basic pay or gross pay, while others are deducted after calculating the net pay."
-msgstr "ولا تدرج بعض الخصومات في مجموع الخصومات لأنها تقدم كتعويضات مستكملة. ويمكن تطبيق هذه التخفيضات قبل بدء الحساب الرئيسي، كما هو الحال بالنسبة للمرتب الأساسي أو المرتب الإجمالي، في حين تخصم مبالغ أخرى بعد حساب المرتب الصافي."
+msgid ""
+"Some deductions are not included in the total deductions because they are "
+"given as updated compensations. These deductions may be applied before the "
+"main calculation begins, such as from the basic pay or gross pay, while "
+"others are deducted after calculating the net pay."
+msgstr ""
+"ولا تدرج بعض الخصومات في مجموع الخصومات لأنها تقدم كتعويضات مستكملة. ويمكن "
+"تطبيق هذه التخفيضات قبل بدء الحساب الرئيسي، كما هو الحال بالنسبة للمرتب "
+"الأساسي أو المرتب الإجمالي، في حين تخصم مبالغ أخرى بعد حساب المرتب الصافي."
 
 msgid "Total Net Payable"
 msgstr "إجمالي صافي الدفع"
@@ -9281,8 +10411,15 @@ msgstr "القسم :"
 msgid "Bank Acc./Cheque No. :"
 msgstr "تسريع البنك/الشيك:"
 
-msgid "Some deductions will update basic pay before payslip calculation starts, eg: LOP is Deduducted from basic pay if \"Deduct leave from basic pay\" field is enabled on the contract, and also with the update compensation deduction through"
-msgstr "بعض الخصومات سوف تقوم بتحديث الدفع الأساسي قبل بدء حساب قسائم المرتبات. مثال: يتم تمكين LOP Deduducted من الأجر الأساسي إذا تم تمكين حقل \"Dlot leave من الأجر الأساسي\" على العقد. وكذلك مع خصم التعويض المستكمل من خلال"
+msgid ""
+"Some deductions will update basic pay before payslip calculation starts, eg: "
+"LOP is Deduducted from basic pay if \"Deduct leave from basic pay\" field is "
+"enabled on the contract, and also with the update compensation deduction "
+"through"
+msgstr ""
+"بعض الخصومات سوف تقوم بتحديث الدفع الأساسي قبل بدء حساب قسائم المرتبات. "
+"مثال: يتم تمكين LOP Deduducted من الأجر الأساسي إذا تم تمكين حقل \"Dlot "
+"leave من الأجر الأساسي\" على العقد. وكذلك مع خصم التعويض المستكمل من خلال"
 
 msgid "Total Net Payable "
 msgstr "إجمالي صافي الدفع "
@@ -9292,6 +10429,11 @@ msgstr "تقرير قسيمة الدفع"
 
 msgid "Download report"
 msgstr "تنزيل التقرير"
+
+#, fuzzy
+#| msgid "Logout"
+msgid "Logo"
+msgstr "تسجيل الخروج"
 
 msgid "Employee Netpay :"
 msgstr "شبكة الموظفين :"
@@ -9440,14 +10582,28 @@ msgstr "تم حذف الخصم بنجاح"
 msgid "Deduction not found"
 msgstr "الخصم غير موجود"
 
-msgid "When this payslip is run, the payslip start date will be updated to match the employee contract start date."
-msgstr "عندما يتم تشغيل قسيمة الراتب، سيتم تحديث تاريخ بدء قسيمة الراتب لمطابقة تاريخ بدء عقد الموظف."
+msgid ""
+"When this payslip is run, the payslip start date will be updated to match "
+"the employee contract start date."
+msgstr ""
+"عندما يتم تشغيل قسيمة الراتب، سيتم تحديث تاريخ بدء قسيمة الراتب لمطابقة "
+"تاريخ بدء عقد الموظف."
 
 msgid "Employee Contract Start Date"
 msgstr "تاريخ بدء عقد الموظف"
 
 msgid "Payslip Saved"
 msgstr "تم حفظ قسيمة الدفع"
+
+#, python-format
+msgid ""
+"The %(employee)s's contract start date is smaller than pay period start date"
+msgstr ""
+
+#, fuzzy
+#| msgid "The end date must be greater than or equal to the start date"
+msgid "The end date must be greater than or equal to the start date."
+msgstr "تاريخ الانتهاء يجب أن يكون أكبر من أو يساوي تاريخ البدء"
 
 msgid "Bonus Added"
 msgstr "اضافة اضافية"
@@ -9690,8 +10846,12 @@ msgstr "لم يبدأ"
 msgid "The target value can't be zero."
 msgstr "القيمة المستهدفة لا يمكن أن تكون صفر."
 
-msgid "The key result progress type is in percentage, so the target value cannot exceed 100."
-msgstr "نوع التقدم في النتائج الرئيسية هو نسبة مئوية، لذلك لا يمكن أن تتجاوز القيمة المستهدفة 100."
+msgid ""
+"The key result progress type is in percentage, so the target value cannot "
+"exceed 100."
+msgstr ""
+"نوع التقدم في النتائج الرئيسية هو نسبة مئوية، لذلك لا يمكن أن تتجاوز القيمة "
+"المستهدفة 100."
 
 msgid "The current value can't be greater than target value."
 msgstr "القيمة الحالية لا يمكن أن تكون أكبر من القيمة المستهدفة."
@@ -9747,8 +10907,12 @@ msgstr "عام"
 msgid "Answerable Employees"
 msgstr "الموظفون الذين يمكن الإجابة عليهم"
 
-msgid "Select the employees who can respond to question template in this meeting's, if any are added."
-msgstr "حدد الموظفين الذين يمكنهم الرد على قالب الأسئلة في هذا الاجتماع، إذا تمت إضافة أي منها."
+msgid ""
+"Select the employees who can respond to question template in this meeting's, "
+"if any are added."
+msgstr ""
+"حدد الموظفين الذين يمكنهم الرد على قالب الأسئلة في هذا الاجتماع، إذا تمت "
+"إضافة أي منها."
 
 msgid "Meetings"
 msgstr "الاجتماعات"
@@ -9825,8 +10989,33 @@ msgstr "لا توجد مقادير OKR حاليا مخاطرة."
 msgid "Feedback Answer"
 msgstr "رد الفعل"
 
+#, fuzzy
+#| msgid "Stars"
+msgid "5 Stars"
+msgstr "النجوم"
+
 msgid "Stars"
 msgstr "النجوم"
+
+#, fuzzy
+#| msgid "Stars"
+msgid "4 Stars"
+msgstr "النجوم"
+
+#, fuzzy
+#| msgid "Stars"
+msgid "3 Stars"
+msgstr "النجوم"
+
+#, fuzzy
+#| msgid "Stars"
+msgid "2 Stars"
+msgstr "النجوم"
+
+#, fuzzy
+#| msgid "Star"
+msgid "1 Star"
+msgstr "نجوم"
 
 msgid "Star"
 msgstr "نجوم"
@@ -9860,6 +11049,9 @@ msgstr "سيء"
 
 msgid "Key Results"
 msgstr "نتائج المفتاح"
+
+msgid "= 0 && selectedIndex"
+msgstr ""
 
 msgid "Owner: "
 msgstr "المالك: "
@@ -9990,6 +11182,16 @@ msgstr "هل تريد حذف السؤال؟"
 msgid "Add A Question"
 msgstr "إضافة سؤال"
 
+#, fuzzy
+#| msgid "Option"
+msgid "Option #3"
+msgstr "خيار"
+
+#, fuzzy
+#| msgid "Option"
+msgid "Option #4"
+msgstr "خيار"
+
 msgid "Add Question"
 msgstr "إضافة سؤال"
 
@@ -10080,6 +11282,11 @@ msgstr "Viewxxxxxx"
 msgid "Activites"
 msgstr "Activites"
 
+#, fuzzy
+#| msgid "Add Key Results"
+msgid "Add Key Result"
+msgstr "إضافة نتائج المفتاح"
+
 msgid "Do you want to un-archive this employee objective?"
 msgstr "هل تريد إلغاء أرشفة هدف هذا الموظف؟"
 
@@ -10143,6 +11350,9 @@ msgstr "واجب"
 msgid "Start Value"
 msgstr "قيمة البداية"
 
+msgid "Rosa Luxemburg"
+msgstr ""
+
 msgid "Duration"
 msgstr "المدة"
 
@@ -10196,6 +11406,9 @@ msgstr "هل تريد حذف هذا الهدف؟"
 
 msgid "Add New"
 msgstr "إضافة جديد"
+
+msgid "Albert Camus"
+msgstr ""
 
 msgid "updated"
 msgstr "تم التحديث"
@@ -10251,7 +11464,9 @@ msgstr "هل أنت متأكد من أنك تريد إزالة هذا المدي
 msgid "Are you sure want to remove this key result?"
 msgstr "هل أنت متأكد من أنك تريد إزالة هذه النتيجة الرئيسية؟"
 
-msgid "Are you sure want to remove this assignee?"
+#, fuzzy
+#| msgid "Are you sure want to remove this assignee?"
+msgid "Are you sure you want to remove this assignee?"
 msgstr "هل أنت متأكد من أنك تريد إزالة هذا المحال إليه؟"
 
 msgid "Do you want to unarchive this objective?"
@@ -10303,6 +11518,9 @@ msgstr "لا يمكنك حذف الهدف %(objective)s، المواد ذات ا
 
 msgid "Objective not found."
 msgstr "الهدف غير موجود."
+
+msgid "You dont have permission."
+msgstr "ليس لديك إذن."
 
 #, python-format
 msgid "Objective %(objective)s status updated"
@@ -10715,11 +11933,34 @@ msgstr "لا يوجد حاليا مشاريع متاحة؛ الرجاء إنشا
 msgid "Project Manager"
 msgstr "مدير المشروع"
 
+#, fuzzy
+#| msgid "Document"
+msgid "document"
+msgstr "مستند"
+
+msgid "\\"
+msgstr ""
+
+#, fuzzy
+#| msgid "Create Project Stage"
+msgid "Create a new Stage"
+msgstr "إنشاء مرحلة المشروع"
+
+#, fuzzy
+#| msgid "Add Stage"
+msgid "Old Stage"
+msgstr "إضافة مرحلة"
+
 msgid "Timesheet"
 msgstr "Timesheet"
 
 msgid "Are you sure you want to delete this stage?"
 msgstr "هل أنت متأكد من أنك تريد حذف هذه المرحلة؟"
+
+#, fuzzy
+#| msgid "task-all"
+msgid "task"
+msgstr "المهمة-الكل"
 
 msgid "There are currently no available tasks; please create a new one."
 msgstr "لا توجد حاليا مهام متاحة؛ يرجى إنشاء واحدة جديدة."
@@ -10745,6 +11986,9 @@ msgstr "إضافة مرحلة"
 msgid " Are you sure you want to delete this stage?"
 msgstr " هل أنت متأكد من أنك تريد حذف هذه المرحلة؟"
 
+msgid "Empty"
+msgstr ""
+
 msgid "No tasks found in this stage."
 msgstr "لا توجد مهام في هذه المرحلة."
 
@@ -10756,6 +12000,12 @@ msgstr "الوقت المنفق"
 
 msgid "There are currently no available timesheets; please create a new one."
 msgstr "لا توجد حاليا ورقات زمنية متاحة؛ يرجى إنشاء ورقة جديدة."
+
+msgid "this.$results.outerHeight()||s"
+msgstr ""
+
+msgid "&times;"
+msgstr ""
 
 msgid "Project Name"
 msgstr "اسم المشروع"
@@ -10771,6 +12021,26 @@ msgstr "مانغات"
 
 msgid " Task"
 msgstr " مهمة"
+
+#, fuzzy
+#| msgid " Time sheet"
+msgid "Personal Timesheet of"
+msgstr " ورقة الوقت"
+
+#, fuzzy
+#| msgid "Weekly"
+msgid "Week"
+msgstr "أسبوعيا"
+
+#, fuzzy
+#| msgid "Create task"
+msgid "Create a new task"
+msgstr "إنشاء مهمة"
+
+#, fuzzy
+#| msgid "Ticket Details"
+msgid "Timesheet Details"
+msgstr "تفاصيل التذكرة"
 
 msgid "Project updated"
 msgstr "تم تحديث المشروع"
@@ -10937,15 +12207,22 @@ msgid "To start recruitment for multiple job positions"
 msgstr "بدء التعيين في وظائف متعددة"
 
 msgid "To close the recruitment, If closed then not visible on pipeline view."
-msgstr "لإغلاق عملية التوظيف، إذا أغلقت عندها لم تكن مرئية عند عرض خط الأنابيب."
+msgstr ""
+"لإغلاق عملية التوظيف، إذا أغلقت عندها لم تكن مرئية عند عرض خط الأنابيب."
 
-msgid "To publish a recruitment in website, if false then it             will not appear on open recruitment page."
-msgstr "ولنشر عملية توظيف في موقع على شبكة الإنترنت، إذا كانت زائفة، فلن تظهر في صفحة التوظيف المفتوحة."
+msgid ""
+"To publish a recruitment in website, if false then it             will not "
+"appear on open recruitment page."
+msgstr ""
+"ولنشر عملية توظيف في موقع على شبكة الإنترنت، إذا كانت زائفة، فلن تظهر في "
+"صفحة التوظيف المفتوحة."
 
 msgid "LinkedIn Account"
 msgstr "حساب Linkedin"
 
-msgid "To publish a recruitment in Linkedin, if active is false then it             will not post on LinkedIn."
+msgid ""
+"To publish a recruitment in Linkedin, if active is false then it             "
+"will not post on LinkedIn."
 msgstr "لنشر تعيين في لينكدين، إذا كان نشط خاطئ فلن ينشر على لينكدين."
 
 msgid "Post on LinkedIn"
@@ -11038,9 +12315,6 @@ msgstr "اختيار متعدد"
 msgid "Textarea"
 msgstr "Textarea"
 
-msgid "File Upload"
-msgstr "تحميل الملف"
-
 msgid "Separate choices by ',  '"
 msgstr "خيارات منفصلة بمقدار '، '"
 
@@ -11089,6 +12363,9 @@ msgstr "حذف الصورة"
 msgid "Profile"
 msgstr "الملف الشخصي"
 
+msgid "e.g. Jane Doe"
+msgstr ""
+
 msgid "Open Recruitment"
 msgstr "فتح التجنيد"
 
@@ -11098,11 +12375,35 @@ msgstr "اختيار موقع مفتوح"
 msgid "Choose Job Position"
 msgstr "اختيار وظيفة"
 
+msgid "e.g. janedoe@example.com"
+msgstr ""
+
 msgid "Portfolio"
 msgstr "الحافظة"
 
+msgid "e.g. https://www.linktoportfolio.com/"
+msgstr ""
+
 msgid "Resume"
 msgstr "استئناف"
+
+#, fuzzy
+#| msgid "Currency"
+msgid "Currently:"
+msgstr "العملة"
+
+#, fuzzy
+#| msgid "Range"
+msgid "Change:"
+msgstr "Range"
+
+msgid "e.g. Kerala"
+msgstr ""
+
+#, fuzzy
+#| msgid "Application Form"
+msgid "Registration Form"
+msgstr "نموذج الطلب"
 
 msgid "Are you sure you want to convert this candidate into an employee?"
 msgstr "هل أنت متأكد من أنك تريد تحويل هذا المرشح إلى عامل؟"
@@ -11133,6 +12434,11 @@ msgstr "هل تريد إلغاء أرشفة هذا المرشح؟"
 
 msgid "There are currently no candidates to consider."
 msgstr "ولا يوجد حاليا مرشحون للنظر فيهم."
+
+#, fuzzy
+#| msgid "Range"
+msgid "Changed by"
+msgstr "Range"
 
 msgid "Converted to employee."
 msgstr "تم تحويلها إلى موظف."
@@ -11176,14 +12482,16 @@ msgstr "لم تقم باختيار"
 msgid "Application under review"
 msgstr "الطلب قيد الاستعراض"
 
-msgid "Uploaded"
-msgstr "تم الرفع"
-
 msgid "No document requests found."
 msgstr "لم يتم العثور على طلبات مستند."
 
 msgid "Add Note"
 msgstr "إضافة ملاحظة"
+
+#, fuzzy
+#| msgid "Close"
+msgid "Close note"
+msgstr "أغلق"
 
 msgid "No notes have been added for this candidate."
 msgstr "ولم تُضاف أي ملاحظات بشأن هذا المرشح."
@@ -11196,9 +12504,6 @@ msgstr "غير مقربة"
 
 msgid "Do you want to reject this request"
 msgstr "هل تريد رفض هذا الطلب"
-
-msgid "Upload File"
-msgstr "تحميل ملف"
 
 msgid "Next Candidate"
 msgstr "المرشح التالي"
@@ -11248,6 +12553,29 @@ msgstr "لا توجد مقابلات."
 msgid " There are no ratings to display at the moment."
 msgstr " لا توجد تقييمات لعرضها في الوقت الراهن."
 
+#, fuzzy
+#| msgid "Check the credentials"
+msgid "Enter Credentials"
+msgstr "تحقق من بيانات الاعتماد"
+
+#, fuzzy
+#| msgid "Key Result"
+msgid "Show Result"
+msgstr "نتيجة المفتاح"
+
+msgid "Registration Success - OpenHRMS Dashboard"
+msgstr ""
+
+#, fuzzy
+#| msgid "Connection Successful"
+msgid "Registration Success"
+msgstr "تم الاتصال بنجاح"
+
+#, fuzzy
+#| msgid "Returned"
+msgid "Return home"
+msgstr "إرجاع"
+
 msgid "Total Vacancies"
 msgstr "إجمالي الشواغر"
 
@@ -11271,9 +12599,6 @@ msgstr "حالة حرف المرشح"
 
 msgid "No Candidates available."
 msgstr "لا يوجد مرشحون."
-
-msgid "Candidate on Onboard"
-msgstr "المرشح على اللوحة"
 
 msgid "Joinings Per Month"
 msgstr "الإنضمام في الشهر"
@@ -11338,6 +12663,9 @@ msgstr " طلب مستند"
 msgid " Resume"
 msgstr " استئناف"
 
+msgid "Add Candidate"
+msgstr "إضافة مرشح"
+
 msgid " Actions"
 msgstr " الإجراءات"
 
@@ -11353,7 +12681,9 @@ msgstr "تم إلغاؤه"
 msgid "Add Recruitment"
 msgstr "إضافة تجنيد"
 
-msgid "Add Candidate"
+#, fuzzy
+#| msgid "Add Candidate"
+msgid "Add Candidates"
 msgstr "إضافة مرشح"
 
 msgid "This field is requied"
@@ -11374,6 +12704,9 @@ msgstr "تم إضافة الترشيح"
 msgid "Create Candidate"
 msgstr "إنشاء مرشح"
 
+msgid "Don't show this again in this session"
+msgstr ""
+
 msgid "Sequence updated"
 msgstr "تم تحديث التسلسل"
 
@@ -11388,6 +12721,19 @@ msgstr "إرسال البريد إلى"
 
 msgid "Send Mail to Multiple Candidates"
 msgstr "إرسال البريد للمرشحين المتعددين"
+
+msgid "Congrats..."
+msgstr ""
+
+#, fuzzy
+#| msgid "Candidate view status updated"
+msgid "Candidate can view this note"
+msgstr "تم تحديث حالة عرض المرشح"
+
+#, fuzzy
+#| msgid "Candidate"
+msgid "Candidate can"
+msgstr "المرشح"
 
 msgid "Switch to Ongoing Recruitments"
 msgstr "التبديل إلى التجنيد المستمر"
@@ -11413,14 +12759,66 @@ msgstr "إعادة الفتح"
 msgid "Are you sure you want to delete this recruitment?"
 msgstr "هل أنت متأكد من أنك تريد حذف هذا التوظيف؟"
 
+msgid "Dear&nbsp;"
+msgstr ""
+
+msgid "&nbsp;"
+msgstr ""
+
+#, fuzzy
+#| msgid "Good"
+msgid "Good day!"
+msgstr "جيد"
+
+msgid ""
+"I am pleased to inform you that you have been chosen to work with our "
+"company,&nbsp;"
+msgstr ""
+
+msgid ". For the position of&nbsp;"
+msgstr ""
+
+msgid ""
+". As a part of our employee policy, we provide free accommodation to all our "
+"employees, and hence you as part of your organization are also eligible for "
+"the same."
+msgstr ""
+
+msgid ""
+"Attached hereto is the employment contract with all the required details, "
+"your offer letter, and accommodation details. Should you accept this offer, "
+"we expect you to revert back to this email within two days upon receipt."
+msgstr ""
+
+msgid "Welcome aboard! We look forward to having you on our team.&nbsp;"
+msgstr ""
+
+msgid "Regards,"
+msgstr ""
+
+msgid "Adam Luis"
+msgstr ""
+
+#, fuzzy
+#| msgid "Manager"
+msgid "HR Manager"
+msgstr "مدير"
+
+msgid ",&nbsp;"
+msgstr ""
+
 msgid " - Open Recruitments"
 msgstr " - فتح التجنيد"
 
 msgid "Open Job Listings"
 msgstr "فتح قوائم الوظائف"
 
-msgid "We're hiring! Join our team and be part of a vibrant workplace where your talents make a difference. Here are the open Recruitments...."
-msgstr "نحن نستخدم! انضم إلى فريقنا وكن جزءا من مكان عمل نشط حيث تحدث مواهبك فرقا. إليك التجنيد المفتوح...."
+msgid ""
+"We're hiring! Join our team and be part of a vibrant workplace where your "
+"talents make a difference. Here are the open Recruitments...."
+msgstr ""
+"نحن نستخدم! انضم إلى فريقنا وكن جزءا من مكان عمل نشط حيث تحدث مواهبك فرقا. "
+"إليك التجنيد المفتوح...."
 
 msgid "Apply Now"
 msgstr "تطبيق الآن"
@@ -11470,7 +12868,8 @@ msgstr "تمكين المرشحين من تتبع التقدم المحرز في
 msgid "Rating Visiblity"
 msgstr "تقييم مرئي"
 
-msgid "By enabling the feature candidates can view their recruitment overall rating"
+msgid ""
+"By enabling the feature candidates can view their recruitment overall rating"
 msgstr "تمكين المرشحين من الاطلاع على درجة تعيينهم الإجمالية"
 
 msgid "Are you sure want to delete this reason?"
@@ -11488,6 +12887,11 @@ msgstr "لا توجد مهارات مضافة في هذه اللحظة."
 msgid "There are currently no skill zone to consider."
 msgstr "لا يوجد حاليا منطقة للمهارات للنظر فيها."
 
+#, fuzzy
+#| msgid "Stages"
+msgid "4 Stages"
+msgstr "المراحل"
+
 msgid "Do you want to Archive this Skill zone?"
 msgstr "هل تريد أرشفة منطقة المهارة هذه؟"
 
@@ -11496,6 +12900,11 @@ msgstr "هل تريد إلغاء أرشفة منطقة المهارة هذه؟"
 
 msgid "Do you want to delete this Skill zone?"
 msgstr "هل تريد حذف منطقة المهارة هذه؟"
+
+#, fuzzy
+#| msgid "Add Candidate"
+msgid "Add candidate"
+msgstr "إضافة مرشح"
 
 msgid "Do you want to archive this skill zone ?"
 msgstr "هل تريد أرشفة منطقة المهارة هذه؟"
@@ -11539,6 +12948,15 @@ msgstr "فلتر المسح"
 msgid "Add more options.."
 msgstr "إضافة المزيد من الخيارات.."
 
+msgid "28 Dec 2022"
+msgstr ""
+
+msgid "11:28AM"
+msgstr ""
+
+msgid "12:28PM"
+msgstr ""
+
 msgid "Are you sure want to delete?"
 msgstr "هل أنت متأكد من أنك تريد الحذف؟"
 
@@ -11580,6 +12998,11 @@ msgstr " هل أنت متأكد من أنك تريد الحذف؟"
 
 msgid "Mandatory Question"
 msgstr "سؤال إلزامي"
+
+#, fuzzy
+#| msgid "Failed to add user to biometric device."
+msgid "Failed to update question order."
+msgstr "فشل في إضافة مستخدم إلى جهاز القياس الحيوي."
 
 msgid "Recruitment added."
 msgstr "تمت إضافة التوظيف."
@@ -11861,6 +13284,25 @@ msgstr "مدير المرحلة"
 msgid "Choose Report"
 msgstr "اختر التقرير"
 
+#, fuzzy
+#| msgid "Stage not found"
+msgid "Page not found!"
+msgstr "المرحلة غير موجودة"
+
+#, fuzzy
+#| msgid "The contract could not be found."
+msgid "Oops! The page you are looking for could not be found."
+msgstr "تعذر العثور على العقد."
+
+msgid "Method Not Allowed!"
+msgstr ""
+
+msgid "Oops! The request method is not allowed."
+msgstr ""
+
+msgid "Please make sure you are sending a proper request."
+msgstr ""
+
 msgid "Trying to connect..."
 msgstr "جاري محاولة الاتصال..."
 
@@ -11874,7 +13316,9 @@ msgid "Compensatory Leave"
 msgstr "الإجازة التعويضية"
 
 msgid "By enabling this compensatory leave feature will avilable on Leave."
-msgstr "وبالتمكين من هذه الخاصية التعويضية للإجازة يكون من الممكن إتاحتها أثناء الإجازة."
+msgstr ""
+"وبالتمكين من هذه الخاصية التعويضية للإجازة يكون من الممكن إتاحتها أثناء "
+"الإجازة."
 
 msgid "New Joining Today"
 msgstr "انضمام جديد اليوم"
@@ -11890,6 +13334,11 @@ msgstr "إنشاء إعلان"
 
 msgid "Employee Work Information"
 msgstr "معلومات عمل الموظف"
+
+#, fuzzy
+#| msgid "Search in : Employee"
+msgid "Search Employee"
+msgstr "البحث في: موظف"
 
 msgid "Dashboard Chart Select"
 msgstr "حدد مخطط لوحة التحكم"
@@ -11936,17 +13385,60 @@ msgstr "ليس لديك إذن"
 msgid "You dont have permission to the feature"
 msgstr "ليس لديك إذن لهذه الميزة"
 
+#, fuzzy
+#| msgid "Load Demo Data"
+msgid "Loading Demo Database"
+msgstr "تحميل البيانات التجريبية"
+
 msgid "Database Authentication"
 msgstr "مصادقة قاعدة البيانات"
 
 msgid "Authenticate with your password to load demo database"
 msgstr "المصادقة مع كلمة المرور الخاصة بك لتحميل قاعدة البيانات التجريبية"
 
+#, fuzzy
+#| msgid "Database Authentication Failed"
+msgid "Database authentication password"
+msgstr "فشل مصادقة قاعدة البيانات"
+
+#, fuzzy
+#| msgid "Dashboard Chart Select"
+msgid "Dashboard Charts"
+msgstr "حدد مخطط لوحة التحكم"
+
+#, fuzzy
+#| msgid "Create asset request"
+msgid "Create Asset Request"
+msgstr "إنشاء طلب أصول"
+
+#, fuzzy
+#| msgid "Reimbursement"
+msgid "Create Reimbursement"
+msgstr "رد"
+
+#, fuzzy
+#| msgid "Work Type Request"
+msgid "Create Work Type Request"
+msgstr "طلب نوع العمل"
+
+#, fuzzy
+#| msgid "Update Attendances Request"
+msgid "Create Attendance Request"
+msgstr "تحديث طلب الحضور"
+
+#, fuzzy
+#| msgid " Actions"
+msgid "Quick Action"
+msgstr " الإجراءات"
+
 msgid "Forgot Password"
 msgstr "نسيت كلمة المرور"
 
 msgid "Type in your email to reset the password"
 msgstr "اكتب بريدك الإلكتروني لإعادة تعيين كلمة المرور"
+
+msgid "e.g. jane.doe@acme.com"
+msgstr ""
 
 msgid "Send Link"
 msgstr "إرسال الرابط"
@@ -11966,20 +13458,42 @@ msgstr "جميع الإشعارات"
 msgid "Clear all"
 msgstr "مسح الكل"
 
+msgid "Settings"
+msgstr "الإعدادات"
+
+msgid "Horilla HRMS"
+msgstr ""
+
+msgid "Sign Up"
+msgstr "تسجيل الدخول"
+
 msgid "Hq"
 msgstr "مربع"
 
 msgid "Go To Home"
 msgstr "الذهاب إلى الصفحة الرئيسية"
 
-msgid "Authenticate with your password to initialize the Horilla HRMS database."
+msgid ""
+"Authenticate with your password to initialize the Horilla HRMS database."
 msgstr "المصادقة مع كلمة المرور الخاصة بك لتهيئة قاعدة بيانات HRMS هوريا."
-
-msgid "Sign Up"
-msgstr "تسجيل الدخول"
 
 msgid "Please sign up to access the Horilla HRMS."
 msgstr "الرجاء التسجيل للوصول إلى نظام هوريلا HRMS."
+
+msgid "e.g. Adam"
+msgstr ""
+
+msgid "e.g. Luis"
+msgstr ""
+
+msgid "e.g. adam.luis@horilla.com"
+msgstr ""
+
+msgid "e.g. PEP001"
+msgstr ""
+
+msgid "Use alphanumeric characters"
+msgstr ""
 
 msgid "Secure Sign-up"
 msgstr "التسجيل الآمن"
@@ -11999,8 +13513,35 @@ msgstr "تهيئة قاعدة البيانات"
 msgid "Load Demo Data"
 msgstr "تحميل البيانات التجريبية"
 
-msgid "ago by"
-msgstr "قبل بواسطة"
+#, fuzzy
+#| msgid "All Notifications"
+msgid "Toggle Notifications"
+msgstr "جميع الإشعارات"
+
+msgid "Notifications"
+msgstr "الإشعارات"
+
+msgid "Jan 03, 2023, at 11:13AM"
+msgstr ""
+
+msgid "Jan 01, 2023, at 05:13PM"
+msgstr ""
+
+msgid "Dec 31, 2022, at 02:00PM"
+msgstr ""
+
+msgid "Dec 31, 2022, at 10:27AM"
+msgstr ""
+
+#, fuzzy
+#| msgid "View Attachments"
+msgid "View all comments"
+msgstr "عرض المرفقات"
+
+#, fuzzy
+#| msgid "All caught up!"
+msgid "All caught up"
+msgstr "تم القبض عليه!"
 
 msgid "All caught up!"
 msgstr "تم القبض عليه!"
@@ -12008,8 +13549,27 @@ msgstr "تم القبض عليه!"
 msgid "You have no new notifications at the moment."
 msgstr "ليس لديك إشعارات جديدة في الوقت الراهن."
 
-msgid "Notifications"
-msgstr "الإشعارات"
+msgid "Lizaveta Ivanovna"
+msgstr ""
+
+#, fuzzy
+#| msgid "Bank Information"
+msgid "Company Information"
+msgstr "معلومات البنك"
+
+msgid "Log out"
+msgstr ""
+
+msgid "Access Denied."
+msgstr ""
+
+#, fuzzy
+#| msgid "The contract could not be found."
+msgid "The page you were looking for could not be found."
+msgstr "تعذر العثور على العقد."
+
+msgid "ago by"
+msgstr "قبل بواسطة"
 
 msgid "Mark as read"
 msgstr "وضع علامة كمقروء"
@@ -12038,8 +13598,10 @@ msgstr "تأكيد كلمة المرور الجديدة"
 msgid "Reset my password"
 msgstr "إعادة تعيين كلمة المرور"
 
-msgid "Settings"
-msgstr "الإعدادات"
+#, fuzzy
+#| msgid "Password changed successfully"
+msgid "Forget Password Mail Send Successfully"
+msgstr "تم تغيير كلمة المرور بنجاح"
 
 msgid "All\tSettings"
 msgstr "إعدادات الكل"
@@ -12115,3 +13677,422 @@ msgstr "الرجاء تحميل ملف XLSX صالح."
 
 msgid "Progress"
 msgstr "التقدم"
+
+#, fuzzy
+#| msgid "Previous"
+msgid "Previous Page"
+msgstr "السابق"
+
+#, fuzzy
+#| msgid "Net Pay"
+msgid "Next Page"
+msgstr "صافي الدفع"
+
+#, fuzzy
+#| msgid "Jun"
+msgid "Run"
+msgstr "جون"
+
+msgid "Click here to select the objects across all pages"
+msgstr ""
+
+#, python-format
+msgid "Select all %(total_count)s %(module_name)s"
+msgstr ""
+
+#, fuzzy
+#| msgid "Reason for Rejection"
+msgid "Clear selection"
+msgstr "سبب الرفض"
+
+msgid "Breadcrumbs"
+msgstr ""
+
+msgid "Home"
+msgstr ""
+
+#, python-format
+msgid "Models in the %(name)s application"
+msgstr ""
+
+#, fuzzy
+#| msgid "Asset name"
+msgid "Model name"
+msgstr "اسم الأصل"
+
+#, fuzzy
+#| msgid "Add Fine"
+msgid "Add link"
+msgstr "إضافة جيدة"
+
+msgid "Change or view list link"
+msgstr ""
+
+#, fuzzy
+#| msgid "You dont have permission to the feature"
+msgid "You don’t have permission to view or edit anything."
+msgstr "ليس لديك إذن لهذه الميزة"
+
+msgid "After you’ve created a user, you’ll be able to edit more user options."
+msgstr ""
+
+#, fuzzy
+#| msgid "Error"
+msgid "Error:"
+msgstr "خطأ"
+
+#, fuzzy
+#| msgid "Change Password"
+msgid "Change password"
+msgstr "تغيير كلمة المرور"
+
+#, fuzzy
+#| msgid "New password"
+msgid "Set password"
+msgstr "كلمة مرور جديدة"
+
+msgid "Please correct the error below."
+msgid_plural "Please correct the errors below."
+msgstr[0] ""
+msgstr[1] ""
+msgstr[2] ""
+msgstr[3] ""
+msgstr[4] ""
+msgstr[5] ""
+
+#, python-format
+msgid "Enter a new password for the user <strong>%(username)s</strong>."
+msgstr ""
+
+msgid ""
+"This action will <strong>enable</strong> password-based authentication for "
+"this user."
+msgstr ""
+
+#, fuzzy
+#| msgid "Database Authentication"
+msgid "Disable password-based authentication"
+msgstr "مصادقة قاعدة البيانات"
+
+#, fuzzy
+#| msgid "Database Authentication"
+msgid "Enable password-based authentication"
+msgstr "مصادقة قاعدة البيانات"
+
+msgid "Skip to main content"
+msgstr ""
+
+msgid "Welcome,"
+msgstr ""
+
+#, fuzzy
+#| msgid "View File"
+msgid "View site"
+msgstr "عرض الملف"
+
+#, fuzzy
+#| msgid "Document"
+msgid "Documentation"
+msgstr "مستند"
+
+msgid "Django site admin"
+msgstr ""
+
+msgid "Django administration"
+msgstr ""
+
+#, fuzzy, python-format
+#| msgid "Add notes"
+msgid "Add %(name)s"
+msgstr "إضافة ملاحظات"
+
+#, fuzzy
+#| msgid " View Note"
+msgid "View on site"
+msgstr " عرض الملاحظة"
+
+#, fuzzy
+#| msgid "Hide Options"
+msgid "Hide counts"
+msgstr "إخفاء الخيارات"
+
+#, fuzzy
+#| msgid "Show Options"
+msgid "Show counts"
+msgstr "إظهار الخيارات"
+
+#, fuzzy
+#| msgid "Clear Filter"
+msgid "Clear all filters"
+msgstr "مسح الفلتر"
+
+msgid "Remove from sorting"
+msgstr ""
+
+#, python-format
+msgid "Sorting priority: %(priority_number)s"
+msgstr ""
+
+msgid "Toggle sorting"
+msgstr ""
+
+msgid "Toggle theme (current theme: auto)"
+msgstr ""
+
+msgid "Toggle theme (current theme: light)"
+msgstr ""
+
+msgid "Toggle theme (current theme: dark)"
+msgstr ""
+
+#, python-format
+msgid ""
+"Deleting the %(object_name)s “%(escaped_object)s” would result in deleting "
+"related objects, but your account doesn't have permission to delete the "
+"following types of objects:"
+msgstr ""
+
+#, python-format
+msgid ""
+"Deleting the %(object_name)s “%(escaped_object)s” would require deleting the "
+"following protected related objects:"
+msgstr ""
+
+#, python-format
+msgid ""
+"Are you sure you want to delete the %(object_name)s “%(escaped_object)s”? "
+"All of the following related items will be deleted:"
+msgstr ""
+
+#, fuzzy
+#| msgid "Objectives"
+msgid "Objects"
+msgstr "الأهداف"
+
+msgid "Yes, I’m sure"
+msgstr ""
+
+msgid "No, take me back"
+msgstr ""
+
+#, fuzzy
+#| msgid "Select All Objectives"
+msgid "Delete multiple objects"
+msgstr "حدد جميع الأهداف"
+
+#, python-format
+msgid ""
+"Deleting the selected %(objects_name)s would result in deleting related "
+"objects, but your account doesn't have permission to delete the following "
+"types of objects:"
+msgstr ""
+
+#, fuzzy, python-format
+#| msgid "would require managing the following related objects:"
+msgid ""
+"Deleting the selected %(objects_name)s would require deleting the following "
+"protected related objects:"
+msgstr "سوف يتطلب إدارة العناصر التالية ذات الصلة:"
+
+#, python-format
+msgid ""
+"Are you sure you want to delete the selected %(objects_name)s? All of the "
+"following objects and their related items will be deleted:"
+msgstr ""
+
+#, fuzzy
+#| msgid "Delete"
+msgid "Delete?"
+msgstr "حذف"
+
+#, python-format
+msgid " By %(filter_title)s "
+msgstr ""
+
+#, fuzzy
+#| msgid "Rejection"
+msgid "Recent actions"
+msgstr "رفض"
+
+#, fuzzy
+#| msgid " Actions"
+msgid "My actions"
+msgstr " الإجراءات"
+
+#, fuzzy
+#| msgid "Not available"
+msgid "None available"
+msgstr "غير متوفر"
+
+#, fuzzy
+#| msgid "Added "
+msgid "Added:"
+msgstr "أضيف "
+
+#, fuzzy
+#| msgid "Range"
+msgid "Changed:"
+msgstr "Range"
+
+#, fuzzy
+#| msgid "Delete"
+msgid "Deleted:"
+msgstr "حذف"
+
+#, fuzzy
+#| msgid "Unknown"
+msgid "Unknown content"
+msgstr "غير معروف"
+
+msgid ""
+"Something’s wrong with your database installation. Make sure the appropriate "
+"database tables have been created, and make sure the database is readable by "
+"the appropriate user."
+msgstr ""
+
+#, python-format
+msgid ""
+"You are authenticated as %(username)s, but are not authorized to access this "
+"page. Would you like to login to a different account?"
+msgstr ""
+
+msgid "Forgotten your login credentials?"
+msgstr ""
+
+#, fuzzy
+#| msgid "Tomorrow"
+msgid "Arrow"
+msgstr "غدا"
+
+#, fuzzy
+#| msgid "configuration"
+msgid "Toggle navigation"
+msgstr "التكوين"
+
+msgid "Sidebar"
+msgstr ""
+
+msgid "Start typing to filter…"
+msgstr ""
+
+msgid "Filter navigation items"
+msgstr ""
+
+#, fuzzy
+#| msgid "Date & Time"
+msgid "Date/time"
+msgstr "التاريخ والوقت"
+
+#, python-format
+msgid "Pagination %(name)s entries"
+msgstr ""
+
+#, fuzzy
+#| msgid "Country"
+msgid "entry"
+msgid_plural "entries"
+msgstr[0] "البلد"
+msgstr[1] "البلد"
+msgstr[2] "البلد"
+msgstr[3] "البلد"
+msgstr[4] "البلد"
+msgstr[5] "البلد"
+
+msgid ""
+"This object doesn’t have a change history. It probably wasn’t added via this "
+"admin site."
+msgstr ""
+
+#, fuzzy, python-format
+#| msgid "Pagination"
+msgid "Pagination %(name)s"
+msgstr "ترقيم الصفحات"
+
+#, fuzzy
+#| msgid "Show All"
+msgid "Show all"
+msgstr "إظهار الكل"
+
+msgid "Popup closing…"
+msgstr ""
+
+#, fuzzy, python-format
+#| msgid "Batch name"
+msgid "Search %(name)s"
+msgstr "اسم الدفعة"
+
+#, python-format
+msgid "%(counter)s result"
+msgid_plural "%(counter)s results"
+msgstr[0] ""
+msgstr[1] ""
+msgstr[2] ""
+msgstr[3] ""
+msgstr[4] ""
+msgstr[5] ""
+
+#, python-format
+msgid "%(full_result_count)s total"
+msgstr ""
+
+#, fuzzy
+#| msgid "Save Changes"
+msgid "Save as new"
+msgstr "حفظ التغييرات"
+
+msgid "Save and add another"
+msgstr ""
+
+msgid "Save and continue editing"
+msgstr ""
+
+#, fuzzy
+#| msgid "Can view"
+msgid "Save and view"
+msgstr "يمكن عرض"
+
+#, python-format
+msgid "Change selected %(model)s"
+msgstr ""
+
+#, fuzzy, python-format
+#| msgid "Add notes"
+msgid "Add another %(model)s"
+msgstr "إضافة ملاحظات"
+
+#, python-format
+msgid "Delete selected %(model)s"
+msgstr ""
+
+#, python-format
+msgid "View selected %(model)s"
+msgstr ""
+
+#, fuzzy
+#~| msgid "Hours Chart"
+#~ msgid "bar chart"
+#~ msgstr "الرسم البياني"
+
+#~ msgid "Enable login block :"
+#~ msgstr "تمكين كتلة تسجيل الدخول:"
+
+#~ msgid "No image chosen."
+#~ msgstr "لم يتم اختيار صورة."
+
+#~ msgid "LDAP to Horilla Employee Field Mapping"
+#~ msgstr "LDAP إلى خرائط حقل موظفي هوريلا"
+
+#~ msgid "Horilla Employee Field"
+#~ msgstr "حقل موظفي الهوريلا"
+
+#~ msgid "LDAP Attribute Name"
+#~ msgstr "اسم سمة LDAP"
+
+#~ msgid "LDAP Object Class"
+#~ msgstr "فئة كائن LDAP"
+
+#~ msgid "e.g., inetOrgPerson"
+#~ msgstr "e.g., inetOrgPerson"
+
+#~ msgid "Import Users"
+#~ msgstr "استيراد المستخدمين"

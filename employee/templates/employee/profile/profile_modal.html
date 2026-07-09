@@ -11,7 +11,7 @@ aria-hidden="true"
     <span class="oh-modal__dialog-title" id="uploadPhotoModalLabel"
       >{% trans "Upload Photo" %}</span
     >
-    <button class="oh-modal__close" aria-label="Close">
+    <button class="oh-modal__close" aria-label="{% trans 'Close' %}">
       <ion-icon name="close-outline"></ion-icon>
     </button>
   </div>
@@ -23,7 +23,7 @@ aria-hidden="true"
           <img
           src="{{form.instance.get_avatar}}"
           class="oh-profile-section__modal-image preview"
-          alt="Username"
+          alt="{% trans 'Username' %}"
           />
         </div>
         <input type="file" name='employee_profile' id="id_employee_profile" class="oh-input oh-input--file oh-input--file-sm mt-4" />

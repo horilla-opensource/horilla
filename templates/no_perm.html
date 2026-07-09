@@ -1,42 +1,54 @@
-{% load static %}
+{% load static %} i18n %}
 <!DOCTYPE html>
 <html lang="en">
-  <head>
-    <meta charset="UTF-8" />
-    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Page Not Found - {{white_label_company_name}}</title>
-    <link rel="apple-touch-icon" sizes="180x180" href="{% if white_label_company.icon %}{{white_label_company.icon.url}} {% else %}{% static 'favicons/apple-touch-icon.png' %}{% endif %}">
-    <link rel="icon" type="image/png" sizes="32x32" href="{% if white_label_company.icon %}{{white_label_company.icon.url}} {% else %}{% static 'favicons/favicon-32x32.png' %}{% endif %}">
-    <link rel="icon" type="image/png" sizes="16x16" href="{% if white_label_company.icon %}{{white_label_company.icon.url}} {% else %}{% static 'favicons/favicon-16x16.png' %}{% endif %}">
-    <link rel="stylesheet" href="{% static "/build/css/style.min.css" %}" />
+    <head>
+        <meta charset="UTF-8">
+        <meta http-equiv="X-UA-Compatible" content="IE=edge">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <title>Page Not Found - {{ white_label_company_name }}</title>
+        <link
+            rel="apple-touch-icon"
+            sizes="180x180"
+            href="{% if white_label_company.icon %}{{white_label_company.icon.url}} {% else %}{% static 'favicons/apple-touch-icon.png' %}{% endif %}"
+        >
+        <link
+            rel="icon"
+            type="image/png"
+            sizes="32x32"
+            href="{% if white_label_company.icon %}{{white_label_company.icon.url}} {% else %}{% static 'favicons/favicon-32x32.png' %}{% endif %}"
+        >
+        <link
+            rel="icon"
+            type="image/png"
+            sizes="16x16"
+            href="{% if white_label_company.icon %}{{white_label_company.icon.url}} {% else %}{% static 'favicons/favicon-16x16.png' %}{% endif %}"
+        >
+        <link rel="stylesheet" href='{% static "/build/css/style.min.css" %}'>
+    </head>
 
-  </head>
-
-  <body>
-    <div
-      class="oh-wrapper-main"
-    >
-      <div
-        id="sidebar"
-
-      ></div>
-      <div id="main">
-        <!-- Navigation -->
-        <div id="mainNav"></div>
-        <!-- End of Navigation -->
-        <main :class="sidebarOpen ? 'oh-main__sidebar-visible' : ''">
-
-          <div class="oh-wrapper">
-            <div class="oh-404">
-                <img src="{% static 'images/ui/not-found.svg' %}" class="oh-404__image" alt="Page not found. 404."/>
-                <h1 class="oh-404__title">Access Denied.</h1>
-                <p class="oh-404__subtitle">The page you were looking for could not be found.</p>
+    <body>
+        <div class="oh-wrapper-main">
+            <div id="sidebar"></div>
+            <div id="main">
+                <!-- Navigation -->
+                <div id="mainNav"></div>
+                <!-- End of Navigation -->
+                <main :class="sidebarOpen ? 'oh-main__sidebar-visible' : ''">
+                    <div class="oh-wrapper">
+                        <div class="oh-404">
+                            <img
+                                src="{% static 'images/ui/not-found.svg' %}"
+                                class="oh-404__image"
+                                alt="{% trans 'Page not found. 404.' %}"
+                            >
+                            <h1 class="oh-404__title">{% trans "Access Denied." %}</h1>
+                            <p class="oh-404__subtitle">
+                                {% trans "The page you were looking for could not be found." %}
+                            </p>
+                        </div>
+                    </div>
+                </main>
             </div>
-          </div>
-        </main>
-      </div>
-    </div>
-
-  </body>
+        </div>
+    </body>
 </html>

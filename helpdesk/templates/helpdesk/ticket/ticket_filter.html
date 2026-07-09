@@ -20,22 +20,28 @@
             type="text"
             class="oh-input oh-input__icon"
             id="ticket-search"
-            aria-label="Search Input"
+            aria-label="{% trans 'Search Input' %}"
             placeholder="{% trans 'Search' %}"
             name="search"
             onkeyup="$('.filterButton')[0].click()"
-        />
+        >
     </div>
-    <ul class="oh-view-types ml-2" style="margin-bottom: 0;">
-        <li class="oh-view-type ticket-view-type" data-view='list'>
-            <a hx-get="{% url 'ticket-filter' %}?view=list" hx-target="#ticket_list" class="oh-btn oh-btn--view {% if request.GET.view != 'card' %} oh-btn--view-active {% endif %}"
-                title="{% trans 'List' %}"><ion-icon name="list-outline"></ion-icon
-            ></a>
+    <ul class="oh-view-types ml-2" style="margin-bottom: 0">
+        <li class="oh-view-type ticket-view-type" data-view="list">
+            <a
+                hx-get="{% url 'ticket-filter' %}?view=list"
+                hx-target="#ticket_list"
+                class="oh-btn oh-btn--view {% if request.GET.view != 'card' %} oh-btn--view-active {% endif %}"
+                title="{% trans 'List' %}"
+            ><ion-icon name="list-outline"></ion-icon></a>
         </li>
-        <li class="oh-view-type ticket-view-type" data-view='card'>
-            <a hx-get="{% url 'ticket-filter' %}?view=card" hx-target="#ticket_list" class="oh-btn oh-btn--view {% if request.GET.view == 'card' %} oh-btn--view-active {% endif %}"
-                title="{% trans 'Card' %}"><ion-icon name="grid-outline"></ion-icon
-            ></a>
+        <li class="oh-view-type ticket-view-type" data-view="card">
+            <a
+                hx-get="{% url 'ticket-filter' %}?view=card"
+                hx-target="#ticket_list"
+                class="oh-btn oh-btn--view {% if request.GET.view == 'card' %} oh-btn--view-active {% endif %}"
+                title="{% trans 'Card' %}"
+            ><ion-icon name="grid-outline"></ion-icon></a>
         </li>
     </ul>
     <div class="oh-dropdown" x-data="{open: false}">
@@ -56,68 +62,81 @@
             <input type="hidden" name="view" id="filterView" value="{{request.GET.view}}">
             <div class="oh-dropdown__filter-body">
                 <div class="oh-accordion oh-accordion--show">
-                    <div
-                        class="oh-accordion-header"
-
-                    >
+                    <div class="oh-accordion-header">
                         {% trans "Tickets" %}
                     </div>
                     <div class="oh-accordion-body">
                         <div class="row">
                             <div class="col-sm-12 col-md-12 col-lg-12">
                                 <div class="oh-input-group">
-                                    <label class="oh-label" for="{{f.form.ticket_type.id_for_label}}">{% trans "Ticket Type" %}</label>
-                                    {{f.form.ticket_type}}
+                                    <label
+                                        class="oh-label"
+                                        for="{{f.form.ticket_type.id_for_label}}"
+                                    >{% trans "Ticket Type" %}</label>
+                                    {{ f.form.ticket_type }}
                                 </div>
                             </div>
                             <div class="col-sm-12 col-md-12 col-lg-6">
                                 <div class="oh-input-group">
-                                    <label class="oh-label" for="{{f.form.employee_id.id_for_label}}">{% trans "Owner" %}</label>
-                                    {{f.form.employee_id}}
+                                    <label
+                                        class="oh-label"
+                                        for="{{f.form.employee_id.id_for_label}}"
+                                    >{% trans "Owner" %}</label>
+                                    {{ f.form.employee_id }}
                                 </div>
                             </div>
                             <div class="col-sm-12 col-md-12 col-lg-6">
                                 <div class="oh-input-group">
-                                    <label class="oh-label" for="{{f.form.assigned_to.id_for_label}}">{% trans "Assigned to" %}</label>
-                                    {{f.form.assigned_to}}
+                                    <label
+                                        class="oh-label"
+                                        for="{{f.form.assigned_to.id_for_label}}"
+                                    >{% trans "Assigned to" %}</label>
+                                    {{ f.form.assigned_to }}
                                 </div>
                             </div>
                             <div class="col-sm-12 col-md-12 col-lg-6">
                                 <div class="oh-input-group">
-                                    <label class="oh-label" for="{{f.form.to_date.id_for_label}}"
-                                        >{% trans "Till date" %}</label
-                                    >
-                                    {{f.form.to_date}}
+                                    <label
+                                        class="oh-label"
+                                        for="{{f.form.to_date.id_for_label}}"
+                                    >{% trans "Till date" %}</label>
+                                    {{ f.form.to_date }}
                                 </div>
                             </div>
                             <div class="col-sm-12 col-md-12 col-lg-6">
                                 <div class="oh-input-group">
-                                    <label class="oh-label" for="{{f.form.priority.id_for_label}}"
-                                        >{% trans "Priority" %}</label
-                                    >
-                                    {{f.form.priority}}
+                                    <label
+                                        class="oh-label"
+                                        for="{{f.form.priority.id_for_label}}"
+                                    >{% trans "Priority" %}</label>
+                                    {{ f.form.priority }}
                                 </div>
                             </div>
                             <div class="col-sm-12 col-md-12 col-lg-6">
                                 <div class="oh-input-group">
-                                    <label class="oh-label" for="{{f.form.tags.id_for_label}}"
-                                        >{% trans "Tags" %}</label
-                                    >
-                                    {{f.form.tags}}
+                                    <label
+                                        class="oh-label"
+                                        for="{{f.form.tags.id_for_label}}"
+                                    >{% trans "Tags" %}</label>
+                                    {{ f.form.tags }}
                                 </div>
                             </div>
                             <div class="col-sm-12 col-md-12 col-lg-6">
                                 <div class="oh-input-group">
-                                    <label class="oh-label" for="{{f.form.is_active.id_for_label}}"
-                                        >{% trans "Is Active" %}</label
-                                    >
-                                    {{f.form.is_active}}
+                                    <label
+                                        class="oh-label"
+                                        for="{{f.form.is_active.id_for_label}}"
+                                    >{% trans "Is Active" %}</label>
+                                    {{ f.form.is_active }}
                                 </div>
                             </div>
                             <div class="col-sm-12 col-md-12">
                                 <div class="oh-input-group">
-                                    <label class="oh-label" for="{{f.form.status.id_for_label}}">{% trans "Status" %}</label>
-                                    {{f.form.status}}
+                                    <label
+                                        class="oh-label"
+                                        for="{{f.form.status.id_for_label}}"
+                                    >{% trans "Status" %}</label>
+                                    {{ f.form.status }}
                                 </div>
                             </div>
                         </div>
@@ -177,14 +196,13 @@
             </div>
         </div>
     {% endif %}
-
 </form>
 <!-- end of filter  -->
 <script>
-	{% comment %} $(document).ready(function () { {% endcomment %}
+    {% comment %} $(document).ready(function () { {% endcomment %}
 
-		$("#id_field").on("change", function () {
-			$(".filterButton")[0].click();
-		});
-	{% comment %} }); {% endcomment %}
+    	$("#id_field").on("change", function () {
+    		$(".filterButton")[0].click();
+    	});
+    {% comment %} }); {% endcomment %}
 </script>

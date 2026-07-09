@@ -1,8 +1,17 @@
-{% load static i18n %} {% load i18n %}
+{% load static i18n %}
+{% load i18n %}
 {% if messages %}
-    <span {% if hx_get and hx_target %} hx-get="{{hx_get}}" hx-target="{{hx_target}}" {% else %}
-        hx-get="{% url 'asset-batch-number-search' %}" hx-target="#AssetBatchList" {% endif %} hx-trigger="load delay:1s"
-        hx-on-htmx-after-request="setTimeout(function () { $('.oh-modal__close--custom').click(); }, 1000);"></span>
+    <span
+        {% if hx_get and hx_target %}
+            hx-get="{{hx_get}}"
+            hx-target="{{hx_target}}"
+        {% else %}
+            hx-get="{% url 'asset-batch-number-search' %}"
+            hx-target="#AssetBatchList"
+        {% endif %}
+        hx-trigger="load delay:1s"
+        hx-on-htmx-after-request="setTimeout(function () { $('.oh-modal__close--custom').click(); }, 1000);"
+    ></span>
 
     <script>
         reloadMessage();
@@ -10,28 +19,43 @@
 {% endif %}
 <div class="oh-modal__dialog-header pb-0">
     <h5 class="oh-modal__dialog-title" id="addEmployeeObjectiveModalLabel">
-        {% trans "Create" %} {{asset_batch_form.verbose_name}}
+        {% trans "Create" %} {{ asset_batch_form.verbose_name }}
     </h5>
-    <button type="button" class="oh-modal__close--custom" data-dismiss="oh-modal" aria-label="Close"
-        onclick="$(this).closest('.oh-modal--show').toggleClass('oh-modal--show')">
+    <button
+        type="button"
+        class="oh-modal__close--custom"
+        data-dismiss="oh-modal"
+        aria-label="{% trans 'Close' %}"
+        onclick="$(this).closest('.oh-modal--show').toggleClass('oh-modal--show')"
+    >
         <ion-icon name="close-outline"></ion-icon>
     </button>
 </div>
 <div class="oh-modal__dialog-body">
-    <form hx-post="{%url 'asset-batch-number-creation' %}?{{hx_vals}}" {% if hx_vals %}
-        hx-target="#dynamicCreateModalTarget" {% else %} hx-target="#objectCreateModalTarget" {% endif %}
-        class="oh-profile-section pt-1">
+    <form
+        hx-post="{%url 'asset-batch-number-creation' %}?{{hx_vals}}"
+        {% if hx_vals %}
+            hx-target="#dynamicCreateModalTarget"
+        {% else %}
+            hx-target="#objectCreateModalTarget"
+        {% endif %}
+        class="oh-profile-section pt-1"
+    >
         {% csrf_token %}
         <div class="oh-input__group">
-            <label class="oh-input__label"
-                for="{{asset_batch_form.lot_number.id_for_label}}">{{asset_batch_form.lot_number.label}}</label>
-            {{asset_batch_form.lot_number}} {{asset_batch_form.lot_number.errors}}
+            <label
+                class="oh-input__label"
+                for="{{asset_batch_form.lot_number.id_for_label}}"
+            >{{ asset_batch_form.lot_number.label }}</label>
+            {{ asset_batch_form.lot_number }} {{ asset_batch_form.lot_number.errors }}
         </div>
         <div class="oh-input__group">
-            <label class="oh-input__label"
-                for="{{asset_batch_form.lot_description.id_for_label}}">{{asset_batch_form.lot_description.label}}</label>
-            {{asset_batch_form.lot_description}}
-            {{asset_batch_form.lot_description.errors}}
+            <label
+                class="oh-input__label"
+                for="{{asset_batch_form.lot_description.id_for_label}}"
+            >{{ asset_batch_form.lot_description.label }}</label>
+            {{ asset_batch_form.lot_description }}
+            {{ asset_batch_form.lot_description.errors }}
         </div>
         <div class="oh-modal__dialog-footer p-0 pt-2">
             <button type="submit" class="oh-btn oh-btn--secondary oh-btn--shadow">

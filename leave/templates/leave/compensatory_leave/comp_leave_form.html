@@ -16,14 +16,20 @@
             {% trans "Create Compensatory Leave Request" %}
         {% endif %}
     </span>
-    <button class="oh-modal__close" aria-label="Close">
+    <button class="oh-modal__close" aria-label="{% trans 'Close' %}">
         <ion-icon name="close-outline"></ion-icon>
     </button>
 </div>
 <div class="oh-modal__dialog-body">
-    <form {% if form.instance.id %} hx-post="{% url 'update-compensatory-leave' form.instance.id %}" {% else %}
-        hx-post="{% url 'create-compensatory-leave' %}" {% endif %} hx-target="#objectDetailsModalTarget"
-        hx-encoding="multipart/form-data">
-        {% csrf_token %} {{form.as_p}}
+    <form
+        {% if form.instance.id %}
+            hx-post="{% url 'update-compensatory-leave' form.instance.id %}"
+        {% else %}
+            hx-post="{% url 'create-compensatory-leave' %}"
+        {% endif %}
+        hx-target="#objectDetailsModalTarget"
+        hx-encoding="multipart/form-data"
+    >
+        {% csrf_token %} {{ form.as_p }}
     </form>
 </div>

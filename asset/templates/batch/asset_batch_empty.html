@@ -1,34 +1,45 @@
-{% extends 'index.html' %} {% block content %} {% load static %}
-{% load i18n %} {% load widget_tweaks %}
+{% extends 'index.html' %}
+{% block content %}
+    {% load static %}
+    {% load i18n %}
+    {% load widget_tweaks %}
 
-<section class="oh-wrapper oh-main__topbar">
-    <div class="oh-main__titlebar oh-main__titlebar--left">
-        <h1 class="oh-main__titlebar-title fw-bold">
-            {% trans "Asset Batch Number" %}
-        </h1>
-    </div>
-    <div class="oh-main__titlebar oh-main__titlebar--right">
-        <div class="oh-main__titlebar-button-container">
-            {% if perms.asset.add_assetlot %}
-            <div class="oh-btn-group ml-2">
-                <div>
-                    <a class="oh-btn oh-btn--secondary oh-btn--shadow" data-toggle="oh-modal-toggle"
-                        data-target="#objectCreateModal" hx-get="{% url 'asset-batch-number-creation' %}"
-                        hx-target="#objectCreateModalTarget">
-                        <ion-icon class="me-2" name="add-outline"></ion-icon>{% trans "Create" %}
-                    </a>
-                </div>
+    <section class="oh-wrapper oh-main__topbar">
+        <div class="oh-main__titlebar oh-main__titlebar--left">
+            <h1 class="oh-main__titlebar-title fw-bold">
+                {% trans "Asset Batch Number" %}
+            </h1>
+        </div>
+        <div class="oh-main__titlebar oh-main__titlebar--right">
+            <div class="oh-main__titlebar-button-container">
+                {% if perms.asset.add_assetlot %}
+                    <div class="oh-btn-group ml-2">
+                        <div>
+                            <a
+                                class="oh-btn oh-btn--secondary oh-btn--shadow"
+                                data-toggle="oh-modal-toggle"
+                                data-target="#objectCreateModal"
+                                hx-get="{% url 'asset-batch-number-creation' %}"
+                                hx-target="#objectCreateModalTarget"
+                            >
+                                <ion-icon class="me-2" name="add-outline"></ion-icon>{% trans "Create" %}
+                            </a>
+                        </div>
+                    </div>
+                {% endif %}
             </div>
-            {% endif %}
+        </div>
+    </section>
+
+    <div class="oh-wrapper">
+        <div class="oh-empty">
+            <img
+                src="{% static 'images/ui/search.svg' %}"
+                class="oh-404__image"
+                alt="{% trans 'Page not found. 404.' %}"
+            >
+            <h1 class="oh-empty__title">{% trans "No Records found." %}</h1>
+            <p class="oh-empty__subtitle">{% trans "No Asset Batches have been created." %}</p>
         </div>
     </div>
-</section>
-
-<div class="oh-wrapper">
-    <div class="oh-empty">
-        <img src="{% static 'images/ui/search.svg' %}" class="oh-404__image" alt="Page not found. 404." />
-        <h1 class="oh-empty__title">{% trans "No Records found." %}</h1>
-        <p class="oh-empty__subtitle">{% trans "No Asset Batches have been created." %}</p>
-    </div>
-</div>
 {% endblock %}

@@ -1,5 +1,6 @@
+{% load i18n %}
 <form method="post" hx-post="{% url 'survey-template-question-add' %}" hx-target="#templateModalBody">
-    {{form.as_p}}
+    {{ form.as_p }}
 </form>
 <script>
     $('[hx-target="#templateModalBody"]').find(".col-md-6").removeClass("col-md-6");

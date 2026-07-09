@@ -1,11 +1,20 @@
 {% load i18n %}
 {% if messages %}
-    <script>reloadMessage();</script>
-    <span hx-get="{% url 'announcement-single-view' form.instance.id %}?instance_ids={{instance_ids}}"
-        hx-target="#objectDetailsModalTarget" hx-trigger="load"></span>
+    <script>
+        reloadMessage();
+    </script>
+    <span
+        hx-get="{% url 'announcement-single-view' form.instance.id %}?instance_ids={{instance_ids}}"
+        hx-target="#objectDetailsModalTarget"
+        hx-trigger="load"
+    ></span>
 
-    <span hx-get="{% url 'announcement-list' %}" hx-trigger="load" hx-target="#announcementListCard"
-        hx-on-htmx-after-request="setTimeout(() => {$('.oh-modal_close--custom').click();}, 500);"></span>
+    <span
+        hx-get="{% url 'announcement-list' %}"
+        hx-trigger="load"
+        hx-target="#announcementListCard"
+        hx-on-htmx-after-request="setTimeout(() => {$('.oh-modal_close--custom').click();}, 500);"
+    ></span>
 {% endif %}
 {% if form.errors %}
     <div class="oh-wrapper">
@@ -20,18 +29,25 @@
 {% endif %}
 <div class="oh-modal__dialog-header">
     <h2 class="oh-modal__dialog-title" id="createModalTitle">
-        {% trans "Update" %} {{form.verbose_name}}
+        {% trans "Update" %} {{ form.verbose_name }}
     </h2>
-    <button type="button" class="oh-modal_close--custom"
-        onclick="$(this).closest('.oh-modal--show').removeClass('oh-modal--show');setTimeout(function () { $('#{{hx_target}}').empty(); }, 200);">
-        <ion-icon name="close-outline" role="img" aria-label="close outline"></ion-icon>
+    <button
+        type="button"
+        class="oh-modal_close--custom"
+        onclick="$(this).closest('.oh-modal--show').removeClass('oh-modal--show');setTimeout(function () { $('#{{hx_target}}').empty(); }, 200)"
+    >
+        <ion-icon name="close-outline" role="img" aria-label="{% trans 'close outline' %}"></ion-icon>
     </button>
 </div>
 <div class="oh-modal__dialog-body">
-    <form hx-post="{{request.get_full_path}}" hx-target="#{{hx_target}}" hx-encoding="multipart/form-data"
-        class="oh-profile-section">
+    <form
+        hx-post="{{request.get_full_path}}"
+        hx-target="#{{hx_target}}"
+        hx-encoding="multipart/form-data"
+        class="oh-profile-section"
+    >
         {% csrf_token %}
-        {{form.as_p}}
+        {{ form.as_p }}
         <div class="d-flex flex-row-reverse">
             <button type="submit" class="oh-btn oh-btn--secondary mt-2 mr-0 oh-btn--w-100-resp">
                 {% trans "Save" %}

@@ -5,59 +5,74 @@
             {% trans "Scheduled Interviews" %}
         </h1>
     </div>
-    <form hx-get="{% url 'interview-filter-view' %}" hx-target="#section" id="filterForm" class="d-flex"
-        onsubmit="event.preventDefault()">
+    <form
+        hx-get="{% url 'interview-filter-view' %}"
+        hx-target="#section"
+        id="filterForm"
+        class="d-flex"
+        onsubmit="event.preventDefault()"
+    >
         <div class="oh-main__titlebar oh-main__titlebar--right oh-d-flex-column--resp oh-mb-3--small">
-
             <div class="oh-main__titlebar-button-container">
                 <div class="oh-input-group oh-input__search-group mr-4">
-                    <ion-icon name="search-outline" class="oh-input-group__icon oh-input-group__icon--left md hydrated"
-                        role="img" aria-label="search outline"></ion-icon>
-                    <input name="search" type="text" placeholder="Search" style="margin-right:10px"
-                        class="oh-input oh-input__icon mr-3" autocomplete="false" aria-label="Search Input"
-                        onkeyup="$('.filterButton')[0].click()" />
+                    <ion-icon
+                        name="search-outline"
+                        class="oh-input-group__icon oh-input-group__icon--left md hydrated"
+                        role="img"
+                        aria-label="{% trans 'search outline' %}"
+                    ></ion-icon>
+                    <input
+                        name="search"
+                        type="text"
+                        placeholder="{% trans 'Search' %}"
+                        style="margin-right: 10px"
+                        class="oh-input oh-input__icon mr-3"
+                        autocomplete="false"
+                        aria-label="{% trans 'Search Input' %}"
+                        onkeyup="$('.filterButton')[0].click()"
+                    >
                 </div>
                 <div class="oh-dropdown" x-data="{open: false}">
                     <button class="oh-btn ml-2" @click="open = !open" onclick="event.preventDefault()">
                         <ion-icon name="filter" class="mr-1"></ion-icon>{% trans "Filter" %}
                         <div id="filterCount"></div>
                     </button>
-                    <div class="oh-dropdown__menu oh-dropdown__menu--right oh-dropdown__filter p-4" x-show="open"
-                        @click.outside="open = false" style="display: none">
+                    <div
+                        class="oh-dropdown__menu oh-dropdown__menu--right oh-dropdown__filter p-4"
+                        x-show="open"
+                        @click.outside="open = false"
+                        style="display: none"
+                    >
                         <div class="oh-dropdown__filter-body">
                             <div class="oh-accordion">
                                 <div class="oh-accordion-header">{% trans "Interview" %}</div>
                                 <div class="oh-accordion-body">
                                     <div class="row">
                                         <div class="col-sm-12 col-md-12 col-lg-6">
-
                                             <div class="oh-input-group">
                                                 <label class="oh-label" for="{{f.form.candidate_id.id_for_label}}">
-                                                    {{f.form.candidate_id.label}}</label>
-                                                {{f.form.candidate_id}}
+                                                    {{ f.form.candidate_id.label }}</label>
+                                                {{ f.form.candidate_id }}
                                             </div>
 
                                             <div class="oh-input-group">
                                                 <label class="oh-label" for="{{f.form.scheduled_from.id_for_label}}">
-                                                    {{f.form.scheduled_from.label}}</label>
-                                                {{f.form.scheduled_from}}
+                                                    {{ f.form.scheduled_from.label }}</label>
+                                                {{ f.form.scheduled_from }}
                                             </div>
-
                                         </div>
                                         <div class="col-sm-12 col-md-12 col-lg-6">
-
                                             <div class="oh-input-group">
                                                 <label class="oh-label" for="{{f.form.employee_id.id_for_label}}">
-                                                    {{f.form.employee_id.label}}</label>
-                                                {{f.form.employee_id}}
+                                                    {{ f.form.employee_id.label }}</label>
+                                                {{ f.form.employee_id }}
                                             </div>
 
                                             <div class="oh-input-group">
                                                 <label class="oh-label" for="{{f.form.scheduled_till.id_for_label}}">
-                                                    {{f.form.scheduled_till.label}}</label>
-                                                {{f.form.scheduled_till}}
+                                                    {{ f.form.scheduled_till.label }}</label>
+                                                {{ f.form.scheduled_till }}
                                             </div>
-
                                         </div>
                                     </div>
                                 </div>
@@ -73,10 +88,16 @@
                 <div class="oh-btn-group ml-2">
                     <div class="oh-dropdown">
                         {% if perms.recruitment.add_interviewschedule %}
-                        <a hx-get='{% url "create-interview-schedule" %}' hx-target="#createTarget" hx-swap="innerHTML"
-                            data-target="#createModal" data-toggle="oh-modal-toggle" class='oh-btn oh-btn--secondary'>
-                            <ion-icon name="add-sharp" class="mr-1"></ion-icon>{% trans "Create" %}
-                        </a>
+                            <a
+                                hx-get='{% url "create-interview-schedule" %}'
+                                hx-target="#createTarget"
+                                hx-swap="innerHTML"
+                                data-target="#createModal"
+                                data-toggle="oh-modal-toggle"
+                                class="oh-btn oh-btn--secondary"
+                            >
+                                <ion-icon name="add-sharp" class="mr-1"></ion-icon>{% trans "Create" %}
+                            </a>
                         {% endif %}
                     </div>
                 </div>

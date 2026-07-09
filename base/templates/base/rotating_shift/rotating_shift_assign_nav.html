@@ -1,4 +1,5 @@
-{% load static basefilters %} {% load i18n %}
+{% load static basefilters %}
+{% load i18n %}
 
 <section class="oh-wrapper oh-main__topbar" x-data="{searchShow: false}">
     <div class="oh-main__titlebar oh-main__titlebar--left">
@@ -8,7 +9,7 @@
         <a
             class="oh-main__titlebar-search-toggle"
             role="button"
-            aria-label="Toggle Search"
+            aria-label="{% trans 'Toggle Search' %}"
             @click="searchShow = !searchShow"
         >
             <ion-icon
@@ -25,91 +26,88 @@
     >
         <div class="oh-main__titlebar oh-main__titlebar--right">
             {% if rshift_all %}
-            <div
-                class="oh-input-group oh-input__search-group"
-                :class="searchShow ? 'oh-input__search-group--show' : ''"
-            >
-                <ion-icon
-                    name="search-outline"
-                    class="oh-input-group__icon oh-input-group__icon--left"
-                ></ion-icon>
-                <input
-                    type="text"
-                    name="search"
-                    class="oh-input oh-input__icon"
-                    aria-label="Search Input"
-                    placeholder="{% trans 'Search' %}"
-                    onkeyup="$('.filterButton')[0].click()"
-                />
-            </div>
+                <div
+                    class="oh-input-group oh-input__search-group"
+                    :class="searchShow ? 'oh-input__search-group--show' : ''"
+                >
+                    <ion-icon
+                        name="search-outline"
+                        class="oh-input-group__icon oh-input-group__icon--left"
+                    ></ion-icon>
+                    <input
+                        type="text"
+                        name="search"
+                        class="oh-input oh-input__icon"
+                        aria-label="{% trans 'Search Input' %}"
+                        placeholder="{% trans 'Search' %}"
+                        onkeyup="$('.filterButton')[0].click()"
+                    >
+                </div>
             {% endif %}
             <div class="oh-main__titlebar-button-container">
                 {% if rshift_all %}
-                <div class="oh-dropdown" x-data="{open: false}">
-                    <button
-                        class="oh-btn ml-2"
-                        @click="open = !open"
-                        onclick="event.preventDefault()"
-                    >
-                        <ion-icon name="filter" class="mr-1"></ion-icon>
-                        {% trans "Filter" %}
-                        <div id="filterCount"></div>
-                    </button>
-                    <div
-                        class="oh-dropdown__menu oh-dropdown__menu--right oh-dropdown__filter p-4"
-                        x-show="open"
-                        @click.outside="open = false"
-                        style="display: none"
-                    >
-                        {% include 'base/rotating_shift/filters.html' %}
+                    <div class="oh-dropdown" x-data="{open: false}">
+                        <button
+                            class="oh-btn ml-2"
+                            @click="open = !open"
+                            onclick="event.preventDefault()"
+                        >
+                            <ion-icon name="filter" class="mr-1"></ion-icon>
+                            {% trans "Filter" %}
+                            <div id="filterCount"></div>
+                        </button>
+                        <div
+                            class="oh-dropdown__menu oh-dropdown__menu--right oh-dropdown__filter p-4"
+                            x-show="open"
+                            @click.outside="open = false"
+                            style="display: none"
+                        >
+                            {% include 'base/rotating_shift/filters.html' %}
+                        </div>
                     </div>
-                </div>
-                <div class="oh-dropdown" x-data="{open: false}">
-                    <button
-                        class="oh-btn ml-2"
-                        @click="open = !open"
-                        onclick="event.preventDefault()"
-                    >
-                        <ion-icon name="library-outline" class="mr-1"></ion-icon
-                        >{% trans "Group By" %}
-                        <div id="filterCount"></div>
-                    </button>
-                    <div
-                        class="oh-dropdown__menu oh-dropdown__menu--right oh-dropdown__filter p-4"
-                        x-show="open"
-                        @click.outside="open = false"
-                        style="display: none"
-                    >
-                        <div class="oh-accordion">
-                            <label>{% trans "Group By" %}</label>
-                            <div class="row">
-                                <div class="col-sm-12 col-md-12 col-lg-6">
-                                    <div class="oh-input-group">
-                                        <label class="oh-label"
-                                            >{% trans "Field" %}</label
-                                        >
+                    <div class="oh-dropdown" x-data="{open: false}">
+                        <button
+                            class="oh-btn ml-2"
+                            @click="open = !open"
+                            onclick="event.preventDefault()"
+                        >
+                            <ion-icon name="library-outline" class="mr-1"></ion-icon>{% trans "Group By" %}
+                            <div id="filterCount"></div>
+                        </button>
+                        <div
+                            class="oh-dropdown__menu oh-dropdown__menu--right oh-dropdown__filter p-4"
+                            x-show="open"
+                            @click.outside="open = false"
+                            style="display: none"
+                        >
+                            <div class="oh-accordion">
+                                <label>{% trans "Group By" %}</label>
+                                <div class="row">
+                                    <div class="col-sm-12 col-md-12 col-lg-6">
+                                        <div class="oh-input-group">
+                                            <label class="oh-label">{% trans "Field" %}</label>
+                                        </div>
                                     </div>
-                                </div>
-                                <div class="col-sm-12 col-md-12 col-lg-6">
-                                    <div class="oh-input-group">
-                                        <select
-                                            class="oh-select mt-1 w-100"
-                                            id="id_field"
-                                            name="field"
-                                            class="select2-selection select2-selection--single"
-                                        >
-                                            {% for field in gp_fields %}
-                                            <option value="{{ field.0 }}">
-                                                {% trans field.1 %}
-                                            </option>
-                                            {% endfor %}
-                                        </select>
+                                    <div class="col-sm-12 col-md-12 col-lg-6">
+                                        <div class="oh-input-group">
+                                            <select
+                                                class="oh-select mt-1 w-100"
+                                                id="id_field"
+                                                name="field"
+                                                class="select2-selection select2-selection--single"
+                                            >
+                                                {% for field in gp_fields %}
+                                                    <option value="{{ field.0 }}">
+                                                        {% trans field.1 %}
+                                                    </option>
+                                                {% endfor %}
+                                            </select>
+                                        </div>
                                     </div>
                                 </div>
                             </div>
                         </div>
                     </div>
-                </div>
                 {% endif %}
                 <div class="oh-dropdown" x-data="{open: false}">
                     <button
@@ -133,8 +131,7 @@
                                     data-target="#shiftImport"
                                     class="oh-dropdown__link"
                                     onclick="template_download(event)"
-                                    >{% trans "Import" %}</a
-                                >
+                                >{% trans "Import" %}</a>
                             </li>
                             {% if rshift_all %}
                                 {% if perms.base.change_rotatingshiftassign %}
@@ -146,8 +143,7 @@
                                             data-target="#objectCreateModal"
                                             hx-get="{% url 'rotating-shift-assign-info-export' %}"
                                             hx-target="#objectCreateModalTarget"
-                                            >{% trans "Export" %}</a
-                                        >
+                                        >{% trans "Export" %}</a>
                                     </li>
                                 {% endif %}
                                 {% if perms.base.change_rotatingshiftassign or request.user|is_reportingmanager %}
@@ -156,8 +152,7 @@
                                             href="#"
                                             class="oh-dropdown__link"
                                             id="archiveRotatingShiftAssign"
-                                            >{% trans "Archive" %}</a
-                                        >
+                                        >{% trans "Archive" %}</a>
                                     </li>
                                 {% endif %}
                                 {% if perms.base.change_rotatingshiftassign or request.user|is_reportingmanager %}
@@ -166,8 +161,7 @@
                                             href="#"
                                             class="oh-dropdown__link"
                                             id="unArchiveRotatingShiftAssign"
-                                            >{% trans "Un-Archive" %}</a
-                                        >
+                                        >{% trans "Un-Archive" %}</a>
                                     </li>
                                 {% endif %}
                                 {% if request.user|is_reportingmanager %}
@@ -177,8 +171,7 @@
                                             class="oh-dropdown__link oh-dropdown__link--danger"
                                             data-action="delete"
                                             id="deleteRotatingShiftAssign"
-                                            >{% trans "Delete" %}</a
-                                        >
+                                        >{% trans "Delete" %}</a>
                                     </li>
                                 {% endif %}
                             {% endif %}
@@ -217,7 +210,7 @@
             <h2 class="oh-modal__dialog-title" id="shiftImportLavel">
                 {% trans "Import Rotating Shift" %}
             </h2>
-            <button class="oh-modal__close" aria-label="Close">
+            <button class="oh-modal__close" aria-label="{% trans 'Close' %}">
                 <ion-icon name="close-outline"></ion-icon>
             </button>
             <div
@@ -255,28 +248,21 @@
                                     name="cloud-upload"
                                     class="oh-dropdown__import-form-icon md hydrated"
                                     role="img"
-                                    aria-label="cloud upload"
+                                    aria-label="{% trans 'cloud upload' %}"
                                 ></ion-icon>
-                                <span class="oh-dropdown__import-form-title"
-                                    >{% trans "Upload a File" %}</span
-                                >
-                                <span class="oh-dropdown__import-form-text"
-                                    >{% trans "Drag and drop files here" %}
-                                  </span
-                                >
+                                <span class="oh-dropdown__import-form-title">{% trans "Upload a File" %}</span>
+                                <span class="oh-dropdown__import-form-text">{% trans "Drag and drop files here" %}
+                                </span>
                             </label>
                             <input
                                 type="file"
                                 name="file"
                                 id="shiftImportFile"
-                            />
+                            >
                             <div class="d-inline float-end">
                                 <a
                                     href="#"
-                                    style="
-                                        text-decoration: none;
-                                        display: inline-block;
-                                    "
+                                    style="text-decoration: none; display: inline-block"
                                     class="oh-dropdown__link"
                                     onclick="template_download(event)"
                                     data-toggle="oh-modal-toggle"
@@ -284,10 +270,7 @@
                                 >
                                     <ion-icon
                                         name="cloud-download-outline"
-                                        style="
-                                            font-size: 20px;
-                                            vertical-align: middle;
-                                        "
+                                        style="font-size: 20px; vertical-align: middle"
                                     ></ion-icon>
                                     <span>{% trans "Download Template" %}</span>
                                 </a>
@@ -299,7 +282,7 @@
                             type="submit"
                             class="oh-btn oh-btn--small oh-btn--secondary w-100 mt-3"
                             value="{% trans 'Upload' %}"
-                        />
+                        >
                     </div>
                 </form>
             </div>

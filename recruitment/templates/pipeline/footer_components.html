@@ -9,7 +9,7 @@
         <span class="oh-modal__dialog-title" id="sendMailModalLabel">
           <h5>{% trans "Send Mail" %}</h5>
         </span>
-        <button class="oh-modal__close" aria-label="Close">
+        <button class="oh-modal__close" aria-label="{% trans 'Close' %}">
           <ion-icon name="close-outline"></ion-icon>
         </button>
       </div>
@@ -26,7 +26,7 @@
         <span class="oh-modal__dialog-title" id="addNoteModalLabel">
           <h5>{% trans "Add Note" %}</h5>
         </span>
-        <button class="oh-modal__close" aria-label="Close">
+        <button class="oh-modal__close" aria-label="{% trans 'Close' %}">
           <ion-icon name="close-outline"></ion-icon>
         </button>
       </div>
@@ -40,7 +40,7 @@
       <div class="oh-modal__dialog-header">
         <span class="oh-modal__dialog-title" id="addNoteModalLabel">
         </span>
-        <button class="oh-modal__close" aria-label="Close">
+        <button class="oh-modal__close" aria-label="{% trans 'Close' %}">
           <ion-icon name="close-outline"></ion-icon>
         </button>
       </div>
@@ -53,7 +53,7 @@
 <div class="oh-modal" id="createModal" role="dialog" aria-hidden="true">
   <div class="oh-modal__dialog" style="max-width: 550px">
       <div class="oh-modal__dialog-header">
-      <button onclick="$(this).closest('#createModal').removeClass('oh-modal--show');" type="button" class="oh-modal__close" aria-label="Close"><ion-icon name="close-outline"></ion-icon></button>
+      <button onclick="$(this).closest('#createModal').removeClass('oh-modal--show');" type="button" class="oh-modal__close" aria-label="{% trans 'Close' %}"><ion-icon name="close-outline"></ion-icon></button>
       </div>
 
       <div class="oh-modal__dialog-body" id="createTarget"></div>
@@ -72,7 +72,7 @@
       <h5 class="oh-modal__dialog-title" id="recruitmentCreateModallabel"
         >{% trans "Add Recruitment" %}</span
       >
-      <button class="oh-modal__close" aria-label="Close" >
+      <button class="oh-modal__close" aria-label="{% trans 'Close' %}" >
         <ion-icon name="close-outline"></ion-icon>
       </button>
     </div>

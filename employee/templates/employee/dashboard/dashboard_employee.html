@@ -9,7 +9,7 @@
         <div class="col-12 col-sm-12 col-md-6 col-lg-4">
           <div class="oh-card-dashboard oh-card-dashboard oh-card-dashboard--success">
             <div class="oh-card-dashboard__header">
-              <span class="oh-card-dashboard__title">Active Employees</span>
+              <span class="oh-card-dashboard__title">{% trans "Active Employees" %}</span>
             </div>
             <div class="oh-card-dashboard__body">
               <div class="oh-card-dashboard__counts">
@@ -24,7 +24,7 @@
         <div class="col-12 col-sm-12 col-md-6 col-lg-4">
           <div class="oh-card-dashboard oh-card-dashboard--neutral">
             <div class="oh-card-dashboard__header">
-              <span class="oh-card-dashboard__title">Total Employees</span>
+              <span class="oh-card-dashboard__title">{% trans "Total Employees" %}</span>
             </div>
             <div class="oh-card-dashboard__body">
               <div class="oh-card-dashboard__counts">
@@ -37,7 +37,7 @@
         <div class="col-12 col-sm-12 col-md-6 col-lg-4">
           <div class="oh-card-dashboard oh-card-dashboard--danger">
             <div class="oh-card-dashboard__header">
-              <span class="oh-card-dashboard__title">Incactive Employees</span>
+              <span class="oh-card-dashboard__title">{% trans "Incactive Employees" %}</span>
             </div>
             <div class="oh-card-dashboard__body">
               <div class="oh-card-dashboard__counts">
@@ -56,7 +56,7 @@
         <div class="col-12 col-sm-12 col-md-12 col-lg-6 oh-card-dashboard--moveable">
           <div class="oh-card-dashboard oh-card-dashboard--no-scale oh-card-dashboard--transparent">
             <div class="oh-card-dashboard__header oh-card-dashboard__header--divider">
-              <span class="oh-card-dashboard__title">Employee Chart</span>
+              <span class="oh-card-dashboard__title">{% trans "Employee Chart" %}</span>
             </div>
             <div class="oh-card-dashboard__body">
               <canvas id="totalEmployees"></canvas>
@@ -67,7 +67,7 @@
         <div class="col-12 col-sm-12 col-md-12 col-lg-6 oh-card-dashboard--moveable">
           <div class="oh-card-dashboard oh-card-dashboard--no-scale oh-card-dashboard--transparent">
             <div class="oh-card-dashboard__header oh-card-dashboard__header--divider">
-              <span class="oh-card-dashboard__title">Gender Chart</span>
+              <span class="oh-card-dashboard__title">{% trans "Gender Chart" %}</span>
             </div>
             <div class="oh-card-dashboard__body">
               <canvas id="genderChart"></canvas>
@@ -78,7 +78,7 @@
         <div class="col-12 col-sm-12 col-md-12 col-lg-6 oh-card-dashboard--moveable">
           <div class="oh-card-dashboard oh-card-dashboard--no-scale oh-card-dashboard--transparent">
             <div class="oh-card-dashboard__header oh-card-dashboard__header--divider">
-              <span class="oh-card-dashboard__title">Department Chart</span>
+              <span class="oh-card-dashboard__title">{% trans "Department Chart" %}</span>
             </div>
             <div class="oh-card-dashboard__body">
               <canvas id="departmentChart"></canvas>
@@ -94,7 +94,7 @@
           {% for employee in birthdays %}
           <div class="oh-dashboard__event">
             <div class="oh-dasboard__event-photo">
-              <img src="{{employee.get_avatar}}" class="oh-kanban-card__profile-image" alt="Username" />
+              <img src="{{employee.get_avatar}}" class="oh-kanban-card__profile-image" alt="{% trans 'Username' %}" />
             </div>
             <div class="oh-dasboard__event-details">
               <span class="oh-dashboard__event-title">{% trans "Birthday" %}</span>
@@ -127,7 +127,7 @@
       </div>
       <div class="oh-card-dashboard oh-card-dashboard--no-scale oh-card-dashboard--transparent mt-3">
         <div class="oh-card-dashboard__header oh-card-dashboard__header--divider">
-          <span class="oh-card-dashboard__title">Candidate on Onboard</span>
+          <span class="oh-card-dashboard__title">{% trans "Candidate on Onboard" %}</span>
         </div>
         <div class="oh-card-dashboard__body">
           <ul class="oh-card-dashboard__user-list">
@@ -137,7 +137,7 @@
                   <img src="https://ui-avatars.com/api/?name=A B&background=random" class="oh-profile__image"
                     alt="{{cand}}" />
                 </div>
-                <span class="oh-profile__name oh-text--dark">Aliza B</span>
+                <span class="oh-profile__name oh-text--dark">{% trans "Aliza B" %}</span>
               </div>
             </li>
 

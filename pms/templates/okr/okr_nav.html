@@ -1,6 +1,15 @@
-{% load i18n %}{% load widget_tweaks %} {% load mathfilters %} {% load basefilters %}
-<span name="" id="dynamicKeyResult" style="display: none" data-toggle="oh-modal-toggle"
-    data-target="#dynamicCreateModal" hx-get="{% url 'key-result-creation' %}" hx-target="#dynamicCreateModalBody">
+{% load i18n %}{% load widget_tweaks %}
+{% load mathfilters %}
+{% load basefilters %}
+<span
+    name=""
+    id="dynamicKeyResult"
+    style="display: none"
+    data-toggle="oh-modal-toggle"
+    data-target="#dynamicCreateModal"
+    hx-get="{% url 'key-result-creation' %}"
+    hx-target="#dynamicCreateModalBody"
+>
 </span>
 <div class="oh-modal" id="dynamicCreateModal" role="dialog" aria-hidden="true" style="z-index: 1022">
     <div class="oh-modal__dialog" style="max-width: 550px" id="dynamicCreateModalBody"></div>
@@ -10,19 +19,37 @@
         <h1 class="oh-main__titlebar-title fw-bold">
             {% trans "Objectives" %}
         </h1>
-        <a class="oh-main__titlebar-search-toggle" role="button" aria-label="Toggle Search"
-            @click="searchShow = !searchShow">
+        <a
+            class="oh-main__titlebar-search-toggle"
+            role="button"
+            aria-label="{% trans 'Toggle Search' %}"
+            @click="searchShow = !searchShow"
+        >
             <ion-icon name="search-outline" class="oh-main__titlebar-serach-icon"></ion-icon>
         </a>
     </div>
-    <form hx-get="{% url 'objective-list-search' %}" hx-target="#objective_list" hx-swap="innerHTML" method="get"
-        id="filterForm" onsubmit="event.preventDefault()">
+    <form
+        hx-get="{% url 'objective-list-search' %}"
+        hx-target="#objective_list"
+        hx-swap="innerHTML"
+        method="get"
+        id="filterForm"
+        onsubmit="event.preventDefault()"
+    >
         <div class="oh-main__titlebar oh-main__titlebar--right">
-            <div class="oh-input-group oh-input__search-group"
-                :class="searchShow ? 'oh-input__search-group--show' : ''">
+            <div
+                class="oh-input-group oh-input__search-group"
+                :class="searchShow ? 'oh-input__search-group--show' : ''"
+            >
                 <ion-icon name="search-outline" class="oh-input-group__icon oh-input-group__icon--left"></ion-icon>
-                <input name="search" type="text" class="oh-input oh-input__icon" aria-label="Search Input"
-                    placeholder="{% trans 'Search' %}" onkeyup="$('.filterButton').click()" />
+                <input
+                    name="search"
+                    type="text"
+                    class="oh-input oh-input__icon"
+                    aria-label="{% trans 'Search Input' %}"
+                    placeholder="{% trans 'Search' %}"
+                    onkeyup="$('.filterButton').click()"
+                >
             </div>
             <div class="oh-main__titlebar-button-container">
                 <div class="oh-dropdown" x-data="{open: false}">
@@ -30,8 +57,12 @@
                         <ion-icon name="filter" class="mr-1"></ion-icon>{% trans "Filter" %}
                         <div id="filterCount"></div>
                     </button>
-                    <div class="oh-dropdown__menu oh-dropdown__menu--right oh-dropdown__filter p-4" x-show="open"
-                        @click.outside="open = false" style="display: none">
+                    <div
+                        class="oh-dropdown__menu oh-dropdown__menu--right oh-dropdown__filter p-4"
+                        x-show="open"
+                        @click.outside="open = false"
+                        style="display: none"
+                    >
                         <div class="oh-dropdown__filter-body">
                             <div class="oh-accordion">
                                 <div class="oh-accordion-header">{% trans "Objective" %}</div>
@@ -39,43 +70,53 @@
                                     <div class="row">
                                         <div class="col-sm-12 col-md-12 col-lg-6">
                                             <div class="oh-input-group">
-                                                <label class="oh-label"
-                                                    for="{{objective_filer_form.managers.id_for_label}}">
+                                                <label
+                                                    class="oh-label"
+                                                    for="{{objective_filer_form.managers.id_for_label}}"
+                                                >
                                                     {% trans "Managers" %}
                                                 </label>
-                                                {{objective_filer_form.managers}}
+                                                {{ objective_filer_form.managers }}
                                             </div>
                                             <div class="oh-input-group">
-                                                <label class="oh-label"
-                                                    for="{{objective_filer_form.employee_objective__key_result_id.id_for_label}}">
+                                                <label
+                                                    class="oh-label"
+                                                    for="{{objective_filer_form.employee_objective__key_result_id.id_for_label}}"
+                                                >
                                                     {% trans "Key Result" %}
                                                 </label>
-                                                {{objective_filer_form.employee_objective__key_result_id}}
+                                                {{ objective_filer_form.employee_objective__key_result_id }}
                                             </div>
                                         </div>
                                         <div class="col-sm-12 col-md-12 col-lg-6">
                                             <div class="oh-input-group">
-                                                <label class="oh-label"
-                                                    for="{{objective_filer_form.assignees.id_for_label}}">
+                                                <label
+                                                    class="oh-label"
+                                                    for="{{objective_filer_form.assignees.id_for_label}}"
+                                                >
                                                     {% trans "Assignees" %}
                                                 </label>
-                                                {{objective_filer_form.assignees}}
+                                                {{ objective_filer_form.assignees }}
                                             </div>
                                             <div class="oh-input-group">
-                                                <label class="oh-label"
-                                                    for="{{objective_filer_form.duration.id_for_label}}">
+                                                <label
+                                                    class="oh-label"
+                                                    for="{{objective_filer_form.duration.id_for_label}}"
+                                                >
                                                     {% trans "Duration" %}
                                                 </label>
-                                                {{objective_filer_form.duration}}
+                                                {{ objective_filer_form.duration }}
                                             </div>
                                         </div>
                                         <div class="col-sm-12 col-md-12 col-lg-6">
                                             <div class="oh-input-group">
-                                                <label class="oh-label"
-                                                    for="{{objective_filer_form.archive.id_for_label}}">
+                                                <label
+                                                    class="oh-label"
+                                                    for="{{objective_filer_form.archive.id_for_label}}"
+                                                >
                                                     {% trans "Is Archived" %}
                                                 </label>
-                                                {{objective_filer_form.archive}}
+                                                {{ objective_filer_form.archive }}
                                             </div>
                                         </div>
                                     </div>
@@ -83,8 +124,10 @@
                             </div>
                         </div>
                         <div class="oh-dropdown__filter-footer">
-                            <button class="oh-btn oh-btn--secondary oh-btn--small w-100 filterButton"
-                                id="objective-filter-form-submit">
+                            <button
+                                class="oh-btn oh-btn--secondary oh-btn--small w-100 filterButton"
+                                id="objective-filter-form-submit"
+                            >
                                 {% trans "Filter" %}
                             </button>
                         </div>
@@ -153,11 +196,16 @@
 
                 <!-- checking  user permission for objective creation -->
                 {% if perms.pms.add_employeeobjective or request.user|is_reportingmanager %}
-                <button class="oh-btn oh-btn--secondary ml-2" data-toggle="oh-modal-toggle"
-                    data-target="#objectCreateModal" hx-get="{%url 'create-employee-objective' %}"
-                    hx-target="#objectCreateModalTarget" onclick="event.preventDefault()">
-                    <ion-icon name="add-sharp" class="mr-1"></ion-icon>{% trans "Create" %}
-                </button>
+                    <button
+                        class="oh-btn oh-btn--secondary ml-2"
+                        data-toggle="oh-modal-toggle"
+                        data-target="#objectCreateModal"
+                        hx-get="{%url 'create-employee-objective' %}"
+                        hx-target="#objectCreateModalTarget"
+                        onclick="event.preventDefault()"
+                    >
+                        <ion-icon name="add-sharp" class="mr-1"></ion-icon>{% trans "Create" %}
+                    </button>
                 {% endif %}
             </div>
         </div>

@@ -138,7 +138,7 @@
                         <img
                           src="{{work_type_request.employee_id.get_avatar}}"
                           class="oh-profile__image"
-                          alt="Username"
+                          alt="{% trans 'Username' %}"
                         />
                       </div>
                       <span class="oh-profile__name oh-text--dark"
@@ -174,7 +174,7 @@
                       hx-target="#commentContainer"
                       data-toggle="oh-modal-toggle"
                       data-target="#worktypeactivitySidebar"
-                      title="View Comment"
+                      title="{% trans 'View Comment' %}"
                       class="oh-btn oh-btn--light oh-activity-sidebar__open w-100"
                       style="
                         flex: 1 0 auto;
@@ -187,7 +187,7 @@
                         name="newspaper-outline"
                         role="img"
                         class="md hydrated"
-                        aria-label="newspaper outline"
+                        aria-label="{% trans 'newspaper outline' %}"
                       ></ion-icon>
                     </button>
                   </div>
@@ -464,7 +464,7 @@
       <h2 class="oh-modal__dialog-title" id="createModalTitle">
         {% trans "Add Comment" %}
       </h2>
-      <button class="oh-modal__close" aria-label="Close">
+      <button class="oh-modal__close" aria-label="{% trans 'Close' %}">
         <ion-icon name="close-outline"></ion-icon>
       </button>
     </div>

@@ -60,7 +60,7 @@
                     <div class="oh-sticky-dropdown--header">
                         <div class="oh-dropdown" x-data="{open: false}">
                             <button class="oh-sticky-dropdown_btn " @click="open = !open"><ion-icon name="ellipsis-vertical-sharp"
-                                role="img" class="md hydrated" aria-label="ellipsis vertical sharp"></ion-icon></button>
+                                role="img" class="md hydrated" aria-label="{% trans 'ellipsis vertical sharp' %}"></ion-icon></button>
                             <div class="oh-dropdown__menu oh-sticky-table_dropdown" x-show="open" @click.outside="open = false">
                                 <ul class="oh-dropdown__items" id="ReimbursementCells">
                                 </ul>
@@ -172,8 +172,8 @@
                                         <div class="oh-sticky-table__td" onclick="event.stopPropagation();">
                                             {% if perms.payroll.view_reimbursementrequestcomment or request.user == req.employee_id.employee_user_id %}
                                                 <button type="button" hx-get="{% url 'payroll-request-view-comment' req.id %}" hx-target="#commentContainer"
-                                                        data-target = '#activitySidebar' title="View Comment"  class="oh-btn oh-btn--light oh-activity-sidebar__open w-100" style="flex: 1 0 auto; width:20px;height: 40.68px; padding: 0;" onclick="event.stopPropagation()">
-                                                        <ion-icon name="newspaper-outline" role="img" class="md hydrated" aria-label="newspaper outline"></ion-icon>
+                                                        data-target = '#activitySidebar' title="{% trans 'View Comment' %}"  class="oh-btn oh-btn--light oh-activity-sidebar__open w-100" style="flex: 1 0 auto; width:20px;height: 40.68px; padding: 0;" onclick="event.stopPropagation()">
+                                                        <ion-icon name="newspaper-outline" role="img" class="md hydrated" aria-label="{% trans 'newspaper outline' %}"></ion-icon>
                                                 </button>
                                             {% endif %}
                                         </div>
@@ -380,7 +380,7 @@
                     <div class="oh-sticky-dropdown--header">
                         <div class="oh-dropdown" x-data="{open: false}">
                             <button class="oh-sticky-dropdown_btn " @click="open = !open"><ion-icon name="ellipsis-vertical-sharp"
-                                role="img" class="md hydrated" aria-label="ellipsis vertical sharp"></ion-icon></button>
+                                role="img" class="md hydrated" aria-label="{% trans 'ellipsis vertical sharp' %}"></ion-icon></button>
                             <div class="oh-dropdown__menu oh-sticky-table_dropdown" x-show="open" @click.outside="open = false">
                                 <ul class="oh-dropdown__items" id="LeaveEncashmentCells">
                                 </ul>
@@ -488,7 +488,7 @@
                                             </div>
                                             <div data-cell-index="13" class="oh-sticky-table__td" onclick="event.stopPropagation()">
                                                 <input type="number" required
-                                                default="0" min="0" placeholder="Amount"
+                                                default="0" min="0" placeholder="{% trans 'Amount' %}"
                                                 onchange="inputAmount($(this))"
                                                 onkeyup="inputAmount($(this))"
                                                 name="reqAmount" class="w-75"{% if req.status != "requested" %}disabled{% endif %} {% if req.amount %}
@@ -512,8 +512,8 @@
                                             <div class="oh-sticky-table__td" onclick="event.stopPropagation();">
                                                 {% if perms.payroll.view_reimbursementrequestcomment or request.user == req.employee_id.employee_user_id %}
                                                     <button type="button" hx-get="{% url 'payroll-request-view-comment' req.id %}" hx-target="#commentContainer"
-                                                            data-target = '#activitySidebar' title="View Comment"  class="oh-btn oh-btn--light oh-activity-sidebar__open w-100" style="flex: 1 0 auto; width:20px;height: 40.68px; padding: 0;" onclick="event.stopPropagation()">
-                                                            <ion-icon name="newspaper-outline" role="img" class="md hydrated" aria-label="newspaper outline"></ion-icon>
+                                                            data-target = '#activitySidebar' title="{% trans 'View Comment' %}"  class="oh-btn oh-btn--light oh-activity-sidebar__open w-100" style="flex: 1 0 auto; width:20px;height: 40.68px; padding: 0;" onclick="event.stopPropagation()">
+                                                            <ion-icon name="newspaper-outline" role="img" class="md hydrated" aria-label="{% trans 'newspaper outline' %}"></ion-icon>
                                                     </button>
                                                 {% endif %}
                                             </div>
@@ -715,7 +715,7 @@
                     <div class="oh-sticky-dropdown--header">
                         <div class="oh-dropdown" x-data="{open: false}">
                             <button class="oh-sticky-dropdown_btn " @click="open = !open"><ion-icon name="ellipsis-vertical-sharp"
-                                role="img" class="md hydrated" aria-label="ellipsis vertical sharp"></ion-icon></button>
+                                role="img" class="md hydrated" aria-label="{% trans 'ellipsis vertical sharp' %}"></ion-icon></button>
                             <div class="oh-dropdown__menu oh-sticky-table_dropdown" x-show="open" @click.outside="open = false">
                                 <ul class="oh-dropdown__items" id="BonusEncashmentCells">
                                 </ul>
@@ -821,7 +821,7 @@
                                             </div>
                                             <div onclick="event.stopPropagation()" data-cell-index="23" class="oh-sticky-table__td">
                                                 <input type="number" required
-                                                default="0" min="0" placeholder="Amount"
+                                                default="0" min="0" placeholder="{% trans 'Amount' %}"
                                                 onchange="inputAmount($(this))"
                                                 onkeyup="inputAmount($(this))"
                                                 name="reqAmount" class="w-75"{% if req.status != "requested" %}disabled{% endif %} {% if req.amount %}
@@ -839,8 +839,8 @@
                                             <div class="oh-sticky-table__td" onclick="event.stopPropagation();">
                                                 {% if perms.payroll.view_reimbursementrequestcomment or request.user == req.employee_id.employee_user_id %}
                                                     <button type="button" hx-get="{% url 'payroll-request-view-comment' req.id %}" hx-target="#commentContainer"
-                                                            data-target = '#activitySidebar' title="View Comment"  class="oh-btn oh-btn--light oh-activity-sidebar__open w-100" style="flex: 1 0 auto; width:20px;height: 40.68px; padding: 0;" onclick="event.stopPropagation()">
-                                                            <ion-icon name="newspaper-outline" role="img" class="md hydrated" aria-label="newspaper outline"></ion-icon>
+                                                            data-target = '#activitySidebar' title="{% trans 'View Comment' %}"  class="oh-btn oh-btn--light oh-activity-sidebar__open w-100" style="flex: 1 0 auto; width:20px;height: 40.68px; padding: 0;" onclick="event.stopPropagation()">
+                                                            <ion-icon name="newspaper-outline" role="img" class="md hydrated" aria-label="{% trans 'newspaper outline' %}"></ion-icon>
                                                     </button>
                                                 {% endif %}
                                             </div>

@@ -16,16 +16,22 @@
                         <div class="oh-sticky-table__sd">
                             <div class="oh-profile oh-profile--md">
                                 <div class="oh-profile__avatar mr-1">
-                                    <img src="{{asset_allocation.assigned_to_employee_id.get_avatar}}" class="oh-profile__image" alt="" />
+                                    <img
+                                        src="{{asset_allocation.assigned_to_employee_id.get_avatar}}"
+                                        class="oh-profile__image"
+                                        alt=""
+                                    >
                                 </div>
-                                <span class="oh-profile__name oh-text--dark">{{asset_allocation.assigned_to_employee_id}}</span>
+                                <span
+                                    class="oh-profile__name oh-text--dark"
+                                >{{ asset_allocation.assigned_to_employee_id }}</span>
                             </div>
                         </div>
                         <div class="oh-sticky-table__td">
-                            {{asset_allocation.asset_id}}
+                            {{ asset_allocation.asset_id }}
                         </div>
                         <div class="oh-sticky-table__td dateformat_changer">
-                            {{asset_allocation.assigned_date}}
+                            {{ asset_allocation.assigned_date }}
                         </div>
                     </div>
                 {% endfor %}
@@ -34,7 +40,7 @@
     </div>
 {% else %}
     <div class="oh-empty h-100">
-        <img src="{% static 'images/ui/search.svg' %}" class="oh-404__image" alt="Page not found. 404." />
+        <img src="{% static 'images/ui/search.svg' %}" class="oh-404__image" alt="{% trans 'Page not found. 404.' %}">
         <h1 class="oh-empty__title">{% trans "No Records found." %}</h1>
         <p class="oh-empty__subtitle">{% trans "There is no asset allocation at this moment." %}</p>
     </div>

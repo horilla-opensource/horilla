@@ -1,9 +1,8 @@
+{% load i18n %}
 <div id="formContainer">
     {% include "generic/horilla_form.html" %}
-
 </div>
 <script>
-
     $(document).on('click', '.oh-accordion-header', function (event) {
         $(this).closest('.oh-accordion').toggleClass('oh-accordion--show');
     });

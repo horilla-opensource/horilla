@@ -1,106 +1,128 @@
 {% extends 'index.html' %}
 {% block content %}
-{% load static %}
-{% load i18n %}
-<div id="messages" class="oh-alert-container"></div>
-<div class="oh-modal" id="createModal" role="dialog" aria-hidden="true">
-  <div class="oh-modal__dialog" style="max-width: 550px">
-      <div class="oh-modal__dialog-header">
-      <button type="button" class="oh-modal__close" aria-label="Close"><ion-icon name="close-outline"></ion-icon></button>
-      </div>
+    {% load static %}
+    {% load i18n %}
+    <div id="messages" class="oh-alert-container"></div>
+    <div class="oh-modal" id="createModal" role="dialog" aria-hidden="true">
+        <div class="oh-modal__dialog" style="max-width: 550px">
+            <div class="oh-modal__dialog-header">
+                <button type="button" class="oh-modal__close" aria-label="{% trans 'Close' %}">
+                    <ion-icon name="close-outline"></ion-icon>
+                </button>
+            </div>
 
-      <div class="oh-modal__dialog-body" id="createTarget"></div>
-  </div>
-</div>
+            <div class="oh-modal__dialog-body" id="createTarget"></div>
+        </div>
+    </div>
 
-<style>
-  .to-employee{
-    background: #f1ffd5;
-  }
-  .to-employee:hover{
-    background-color: #f1ffd5 !important;
-  }
-  .oh-rate:not(:checked)>label:hover, .oh-rate:not(:checked)>label:hover~label{
-    color: #ccc
-  }
-  #enlargeImageContainer {
-    position: absolute;
-    left: -300px;
-    top: 100px;
-    height: 200px;
-    width: 200px;
-  }
-</style>
-{% include 'candidate/candidate_nav.html' %}
-<div class="oh-wrapper">
-  <div class="oh-checkpoint-badge mb-2" id="selectedInstances" data-ids="[]" data-clicked="" style="display:none;" >
-  </div>
+    <style>
+        .to-employee {
+            background: #f1ffd5;
+        }
+        .to-employee:hover {
+            background-color: #f1ffd5 !important;
+        }
+        .oh-rate:not(:checked) > label:hover, .oh-rate:not(:checked) > label:hover ~ label {
+            color: #ccc;
+        }
+        #enlargeImageContainer {
+            position: absolute;
+            top: 100px;
+            left: -300px;
+            width: 200px;
+            height: 200px;
+        }
+    </style>
+    {% include 'candidate/candidate_nav.html' %}
+    <div class="oh-wrapper">
+        <div
+            class="oh-checkpoint-badge mb-2"
+            id="selectedInstances"
+            data-ids="[]"
+            data-clicked=""
+            style="display: none"
+        >
+        </div>
 
-  <div class="d-flex flex-row-reverse">
-    <span class="m-1" onclick="$('[name=canceled]').val('true');$('[name=hired]').val('unknown');$('[name=canceled]').first().change(); $('.filterButton').click()" style="cursor: pointer;margin-left: 5px;">
-      <span class="oh-dot oh-dot--small me-1" style="background-color:red"></span>
-      {% trans "Canceled" %}
-    </span>
-    <span class="m-1" onclick="$('[name=hired]').val('false');$('[name=canceled]').val('unknown'); $('[name=hired]').first().change(); $('.filterButton').click()" style="cursor: pointer;margin-left: 5px;">
-      <span class="oh-dot oh-dot--small me-1" style="background-color:rgba(128, 128, 128, 0.482)"></span>
-      {% trans "Not-Hired" %}
-    </span>
-    <span class="m-1" onclick="$('[name=hired]').val('true');$('[name=canceled]').val('unknown'); $('[name=hired]').first().change(); $('.filterButton').click()" style="cursor: pointer;margin-left: 5px;">
-      <span class="oh-dot oh-dot--small me-1" style="background-color:yellowgreen"></span>
-      {% trans "Hired" %}
-    </span>
-    <span class="m-1" onclick="$('[name=converted]').val('true');$('[name=hired]').val('unknown'); $('[name=converted]').first().change(); $('.filterButton').click()" style="cursor: pointer;margin-left: 5px;">
-      <span class="oh-dot oh-dot--small me-1" style="background-color:blue"></span>
-      {% trans "Converted" %}
-    </span>
-  </div>
+        <div class="d-flex flex-row-reverse">
+            <span
+                class="m-1"
+                onclick="$('[name=canceled]').val('true');$('[name=hired]').val('unknown');$('[name=canceled]').first().change(); $('.filterButton').click()"
+                style="cursor: pointer; margin-left: 5px"
+            >
+                <span class="oh-dot oh-dot--small me-1" style="background-color: red"></span>
+                {% trans "Canceled" %}
+            </span>
+            <span
+                class="m-1"
+                onclick="$('[name=hired]').val('false');$('[name=canceled]').val('unknown'); $('[name=hired]').first().change(); $('.filterButton').click()"
+                style="cursor: pointer; margin-left: 5px"
+            >
+                <span class="oh-dot oh-dot--small me-1" style="background-color: rgba(128, 128, 128, 0.482)"></span>
+                {% trans "Not-Hired" %}
+            </span>
+            <span
+                class="m-1"
+                onclick="$('[name=hired]').val('true');$('[name=canceled]').val('unknown'); $('[name=hired]').first().change(); $('.filterButton').click()"
+                style="cursor: pointer; margin-left: 5px"
+            >
+                <span class="oh-dot oh-dot--small me-1" style="background-color: yellowgreen"></span>
+                {% trans "Hired" %}
+            </span>
+            <span
+                class="m-1"
+                onclick="$('[name=converted]').val('true');$('[name=hired]').val('unknown'); $('[name=converted]').first().change(); $('.filterButton').click()"
+                style="cursor: pointer; margin-left: 5px"
+            >
+                <span class="oh-dot oh-dot--small me-1" style="background-color: blue"></span>
+                {% trans "Converted" %}
+            </span>
+        </div>
 
-  <div id="section" hx-target="#section" hx-swap="innerHTML">
-    {% if view_type == 'list' %}
-      {% include 'candidate/candidate_list.html' %}
-    {% else %}
-      {% include 'candidate/candidate_card.html' %}
-    {% endif %}
-  </div>
-</div>
+        <div id="section" hx-target="#section" hx-swap="innerHTML">
+            {% if view_type == 'list' %}
+                {% include 'candidate/candidate_list.html' %}
+            {% else %}
+                {% include 'candidate/candidate_card.html' %}
+            {% endif %}
+        </div>
+    </div>
 
-<script>
-  function submitForm(elem) {
-    $(elem).siblings(".add_more_submit").click();
-  }
+    <script>
+        function submitForm(elem) {
+           $(elem).siblings(".add_more_submit").click();
+         }
 
-	function enlargeImage(src) {
-		var enlargeImageContainer = $('#enlargeImageContainer');
-		enlargeImageContainer.empty();
-    style = "width:100%; height:90%; box-shadow: 0 10px 10px 0 rgba(0, 0, 0, 0.2), 0 6px 20px 0 rgba(0, 0, 0, 0.2); background:white"
-		var enlargedImage = $('<iframe>').attr({'src': src,'style': style,});
-    var name =$('<span>').text(src.split('/').pop().replace(/_/g, " "))
-		enlargeImageContainer.append(enlargedImage);
-		enlargeImageContainer.append(name);
-		setTimeout(function() {
-		  enlargeImageContainer.show();
+        function enlargeImage(src) {
+        	var enlargeImageContainer = $('#enlargeImageContainer');
+        	enlargeImageContainer.empty();
+           style = "width:100%; height:90%; box-shadow: 0 10px 10px 0 rgba(0, 0, 0, 0.2), 0 6px 20px 0 rgba(0, 0, 0, 0.2); background:white"
+        	var enlargedImage = $('<iframe>').attr({'src': src,'style': style,});
+           var name =$('<span>').text(src.split('/').pop().replace(/_/g, " "))
+        	enlargeImageContainer.append(enlargedImage);
+        	enlargeImageContainer.append(name);
+        	setTimeout(function() {
+        	  enlargeImageContainer.show();
 
-      const iframe = document.querySelector("iframe").contentWindow;
-      var iframe_document = iframe.document
-      iframe_image = iframe_document.getElementsByTagName('img')[0]
-      $(iframe_image).attr("style","width:100%; height:100%;")
+             const iframe = document.querySelector("iframe").contentWindow;
+             var iframe_document = iframe.document
+             iframe_image = iframe_document.getElementsByTagName('img')[0]
+             $(iframe_image).attr("style","width:100%; height:100%;")
 
-		}, 100);
-	}
+        	}, 100);
+        }
 
-  function hideEnlargeImage() {
-		var enlargeImageContainer = $('#enlargeImageContainer');
-		enlargeImageContainer.empty();
-  }
+         function hideEnlargeImage() {
+        	var enlargeImageContainer = $('#enlargeImageContainer');
+        	enlargeImageContainer.empty();
+         }
 
-  $(document).on('click', function(event){
-    if (!$(event.target).closest('#enlargeImageContainer').length) {
-        hideEnlargeImage();
-    }
-  });
-</script>
+         $(document).on('click', function(event){
+           if (!$(event.target).closest('#enlargeImageContainer').length) {
+               hideEnlargeImage();
+           }
+         });
+    </script>
 
-<script src="{% static '/candidate/bulk.js' %}"></script>
-
-
+    <script src="{% static '/candidate/bulk.js' %}"></script>
 {% endblock %}

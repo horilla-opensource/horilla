@@ -53,7 +53,7 @@
                                         <button
                                             class="oh-btn oh-btn--small oh-btn--transparent oh-kanban__btn oh-kanban__dropdown-toggle" title="{% trans "Actions" %}">
                                             <ion-icon name="ellipsis-vertical-sharp" role="img" class="md hydrated"
-                                                aria-label="ellipsis vertical sharp"></ion-icon>
+                                                aria-label="{% trans 'ellipsis vertical sharp' %}"></ion-icon>
                                         </button>
                                         <div class="oh-dropdown oh-kanban__dropdown-menu d-none">
                                             <div class="oh-dropdown__menu oh-dropdown__menu--right">
@@ -81,7 +81,7 @@
 
                                             title="{% trans 'Add task' %}">
                                             <ion-icon name="add-sharp" role="img" class="md hydrated"
-                                                aria-label="add sharp"></ion-icon>
+                                                aria-label="{% trans 'add sharp' %}"></ion-icon>
                                         </button>
                                     </div>
                                 {% endif %}
@@ -98,13 +98,13 @@
                                         </div>
                                         <div class="oh-kanban__card-actions oh-kanban__dropdown">
                                             <button class="oh-btn oh-btn--small oh-btn--transparent oh-kanban__btn oh-kanban__dropdown-toggle" title="{% trans "Actions" %}">
-                                                <ion-icon name="ellipsis-vertical-sharp" role="img" class="md hydrated" aria-label="ellipsis vertical sharp"></ion-icon>
+                                                <ion-icon name="ellipsis-vertical-sharp" role="img" class="md hydrated" aria-label="{% trans 'ellipsis vertical sharp' %}"></ion-icon>
                                             </button>
                                             <div class="oh-dropdown oh-kanban__dropdown-menu d-none">
                                                 <div class="oh-dropdown__menu oh-dropdown__menu--right">
                                                     <ul class="oh-dropdown__items">
                                                         {% comment %} <li class="oh-dropdown__item">
-                                                            <a href="#" class="oh-dropdown__link oh-dropdown__link--danger oh-kanban__card-delete">Delete</a>
+                                                            <a href="#" class="oh-dropdown__link oh-dropdown__link--danger oh-kanban__card-delete">{% trans "Delete" %}</a>
                                                         </li> {% endcomment %}
                                                         <li class="oh-dropdown__item">
                                                             <a href="#" data-toggle="oh-modal-toggle" data-target="#objectCreateModal" hx-get="{% url 'onboarding-send-mail' candidate.candidate_id.id %}" hx-target="#objectCreateModalTarget" class="oh-dropdown__link">{% trans "Send Mail" %}</a>
@@ -120,7 +120,7 @@
                                             {{candidate.task_completion_ratio}}
                                         </div> <br/>
                                         <span class="oh-kanban__card-footer-text oh-text--light">{{candidate.candidate_id.email}}</span>
-                                        <button class="oh-kanban__card-body-collapse oh-kanban__card-collapse--down" aria-label="Toggle Options" title="{% trans 'Tasks' %}"></button>
+                                        <button class="oh-kanban__card-body-collapse oh-kanban__card-collapse--down" aria-label="{% trans 'Toggle Options' %}" title="{% trans 'Tasks' %}"></button>
                                         <div class="oh-kanban__card-content oh-kanban__card-content--hide">
                                             {% for task in candidate.onboarding_stage_id.onboarding_task.all %}
                                             <label class="oh-label oh-label--sm d-block">{{task.task_title}}</label>
@@ -206,7 +206,7 @@
 <div class="oh-modal" id="editModal3" role="dialog" aria-hidden="true">
     <div class="oh-modal__dialog" style="max-width:550px;">
         <div class="oh-modal__dialog-header">
-            <button class="oh-modal__close" aria-label="Close" title="{% trans "Close" %}">
+            <button class="oh-modal__close" aria-label="{% trans 'Close' %}" title="{% trans "Close" %}">
                 <ion-icon name="close-outline"></ion-icon>
             </button>
         </div>
@@ -218,8 +218,8 @@
 <div class="oh-modal" id="addStageModal" role="dialog" aria-hidden="true">
     <div class="oh-modal__dialog" style="max-width:550px;">
         <div class="oh-modal__dialog-header">
-            <button class="oh-modal__close" aria-label="Close" title="{% trans "Close" %}">
-                <ion-icon name="close-outline" role="img" class="md hydrated" aria-label="close outline"></ion-icon>
+            <button class="oh-modal__close" aria-label="{% trans 'Close' %}" title="{% trans "Close" %}">
+                <ion-icon name="close-outline" role="img" class="md hydrated" aria-label="{% trans 'close outline' %}"></ion-icon>
             </button>
         </div>
         <div id="stageForm">
@@ -231,8 +231,8 @@
     <div class="oh-modal__dialog oh-modal__dialog--timeoff">
         <div class="oh-modal__dialog-header">
             <span class="oh-modal__dialog-title" id="editDialogDialog">{% trans "Create Task" %}</span>
-            <button class="oh-modal__close" aria-label="Close" title="{% trans "Close" %}">
-                <ion-icon name="close-outline" role="img" class="md hydrated" aria-label="close outline"></ion-icon>
+            <button class="oh-modal__close" aria-label="{% trans 'Close' %}" title="{% trans "Close" %}">
+                <ion-icon name="close-outline" role="img" class="md hydrated" aria-label="{% trans 'close outline' %}"></ion-icon>
             </button>
         </div>
         <div id="taskModalBody" class="">
@@ -245,8 +245,8 @@
     <div class="oh-modal__dialog oh-modal__dialog--timeoff">
         <div class="oh-modal__dialog-header">
             <span class="oh-modal__dialog-title" id="modalTask">{% trans "Send Mail" %}</span>
-            <button class="oh-modal__close" aria-label="Close" title="{% trans "Close" %}">
-                <ion-icon name="close-outline" role="img" class="md hydrated" aria-label="close outline"></ion-icon>
+            <button class="oh-modal__close" aria-label="{% trans 'Close' %}" title="{% trans "Close" %}">
+                <ion-icon name="close-outline" role="img" class="md hydrated" aria-label="{% trans 'close outline' %}"></ion-icon>
             </button>
         </div>
         <div id="sendMailModalBody" class="p-3 ">

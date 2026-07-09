@@ -2,11 +2,11 @@
 {% if messages %}
     <div class="oh-wrapper">
         {% for message in messages %}
-        <div class="oh-alert-container">
-            <div class="oh-alert oh-alert--animated {{ message.tags }}">
-                {{ message }}
+            <div class="oh-alert-container">
+                <div class="oh-alert oh-alert--animated {{ message.tags }}">
+                    {{ message }}
+                </div>
             </div>
-        </div>
         {% endfor %}
         <script>
             setTimeout(function () {
@@ -18,33 +18,47 @@
 {% endif %}
 <div class="oh-modal__dialog-header">
     <span class="oh-modal__dialog-title" id="editDialogDialog">{% trans "Update Restricted Day" %}</span>
-    <button class="oh-modal__close" aria-label="Close">
+    <button class="oh-modal__close" aria-label="{% trans 'Close' %}">
         <ion-icon name="close-outline"></ion-icon>
     </button>
 </div>
 <div class="oh-modal__dialog-body">
-    <form hx-post="{% url 'restrict-update' id %}?{{pd}}" hx-target="#objectUpdateModalTarget" class="oh-profile-section">
+    <form
+        hx-post="{% url 'restrict-update' id %}?{{pd}}"
+        hx-target="#objectUpdateModalTarget"
+        class="oh-profile-section"
+    >
         <label class="oh-label d-block" for="{{ form.title.id_for_label }}">{{ form.title.label }}</label>
-        {{form.title}} {{form.title.errors}}
+        {{ form.title }}
+        {{ form.title.errors }}
         <div class="row">
             <div class="col-12 col-sm-12 col-md-6 col-lg-6">
                 <div class="oh-input__group">
-                    <label class="oh-label d-block" for="{{ form.start_date.id_for_label }}">{{ form.start_date.label }}</label>
-                    {{form.start_date}} {{form.start_date.errors}}
+                    <label
+                        class="oh-label d-block"
+                        for="{{ form.start_date.id_for_label }}"
+                    >{{ form.start_date.label }}</label>
+                    {{ form.start_date }} {{ form.start_date.errors }}
                 </div>
             </div>
             <div class="col-12 col-sm-12 col-md-6 col-lg-6">
                 <div class="oh-input__group">
-                    <label class="oh-label d-block" for="{{ form.end_date.id_for_label }}">{{ form.end_date.label }}</label>
-                    {{form.end_date}} {{form.end_date.errors}}
+                    <label
+                        class="oh-label d-block"
+                        for="{{ form.end_date.id_for_label }}"
+                    >{{ form.end_date.label }}</label>
+                    {{ form.end_date }} {{ form.end_date.errors }}
                 </div>
             </div>
         </div>
         <div class="row">
             <div class="col-12 col-sm-12 col-md-6 col-lg-6">
                 <div class="oh-input__group">
-                    <label class="oh-label d-block" for="{{ form.start_date.id_for_label }}">{{ form.department.label }}</label>
-                    {{form.department}} {{form.department.errors}}
+                    <label
+                        class="oh-label d-block"
+                        for="{{ form.start_date.id_for_label }}"
+                    >{{ form.department.label }}</label>
+                    {{ form.department }} {{ form.department.errors }}
                 </div>
             </div>
             <div class="col-12 col-sm-12 col-md-6 col-lg-6" id="restrictLeaveJobPosition">
@@ -56,7 +70,10 @@
             <!-- Include All Checkbox -->
             <div class="col-12 col-sm-12 col-md-6 col-lg-6">
                 <div class="oh-input__group">
-                    <label class="oh-label d-block" for="{{ form.include_all.id_for_label }}">{{ form.include_all.label }}</label>
+                    <label
+                        class="oh-label d-block"
+                        for="{{ form.include_all.id_for_label }}"
+                    >{{ form.include_all.label }}</label>
                     <div class="oh-switch">
                         {{ form.include_all }} <!-- Checkbox -->
                     </div>
@@ -65,18 +82,24 @@
             </div>
 
             <!-- Spesific Leave Types Field -->
-            <div class="col-12 col-sm-12 col-md-6 col-lg-6" id="specific-leave-group" style="display: none;">
+            <div class="col-12 col-sm-12 col-md-6 col-lg-6" id="specific-leave-group" style="display: none">
                 <div class="oh-input__group">
-                    <label class="oh-label d-flex" for="{{ form.spesific_leave_types.id_for_label }}">{{ form.spesific_leave_types.label }}
+                    <label
+                        class="oh-label d-flex"
+                        for="{{ form.spesific_leave_types.id_for_label }}"
+                    >{{ form.spesific_leave_types.label }}
                         <span class="oh-info ms-2" title="{{ form.spesific_leave_types.help_text }}"></span></label>
                     {{ form.spesific_leave_types }} {{ form.spesific_leave_types.errors }}
                 </div>
             </div>
 
             <!-- Exclude Leave Types Field -->
-            <div class="col-12 col-sm-12 col-md-6 col-lg-6" id="exclude-leave-group" style="display: none;">
+            <div class="col-12 col-sm-12 col-md-6 col-lg-6" id="exclude-leave-group" style="display: none">
                 <div class="oh-input__group">
-                    <label class="oh-label d-flex" for="{{ form.exclued_leave_types.id_for_label }}">{{ form.exclued_leave_types.label }}
+                    <label
+                        class="oh-label d-flex"
+                        for="{{ form.exclued_leave_types.id_for_label }}"
+                    >{{ form.exclued_leave_types.label }}
                         <span class="oh-info ms-2" title="{{ form.exclued_leave_types.help_text }}"></span>
                     </label>
                     {{ form.exclued_leave_types }} {{ form.exclued_leave_types.errors }}
@@ -84,14 +107,17 @@
             </div>
         </div>
 
-
         <label class="oh-label d-block" for="{{ form.description.id_for_label }}">{{ form.description.label }}</label>
-        {{form.description}} {{form.description.errors}}
+        {{ form.description }}
+        {{ form.description.errors }}
         <div class="row">
             <div class="col-12 col-sm-12 col-md-6 col-lg-6">
                 <div class="oh-input__group">
-                    <label class="oh-label d-block" for="{{ form.company_id.id_for_label }}">{{ form.company_id.label }}</label>
-                    {{form.company_id}} {{form.company_id.errors}}
+                    <label
+                        class="oh-label d-block"
+                        for="{{ form.company_id.id_for_label }}"
+                    >{{ form.company_id.label }}</label>
+                    {{ form.company_id }} {{ form.company_id.errors }}
                 </div>
             </div>
         </div>
