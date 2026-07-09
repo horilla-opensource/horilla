@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-07-09 11:44+0530\n"
+"POT-Creation-Date: 2026-07-09 15:16+0530\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -2236,6 +2236,16 @@ msgstr "My Leave Requests"
 
 msgid "You commented a post."
 msgstr ""
+
+#, fuzzy
+#| msgid "company"
+msgid "All Company"
+msgstr "Company"
+
+#, fuzzy
+#| msgid "company"
+msgid "All companies"
+msgstr "Company"
 
 msgid "Employee is not working in the selected company."
 msgstr ""
@@ -6117,19 +6127,17 @@ msgstr ""
 msgid "Pending"
 msgstr ""
 
-msgid "Upcoming Birthdays"
-msgstr ""
-
-msgid "DOB:"
-msgstr ""
-
-msgid "Status:"
+msgid "DOB"
 msgstr ""
 
 msgid "Today"
 msgstr ""
 
 msgid "Tomorrow"
+msgstr ""
+
+#, python-format
+msgid "In %(d)s days"
 msgstr ""
 
 msgid "Disciplinary Actions"
@@ -7312,6 +7320,10 @@ msgid ""
 "Failed to read file. Please ensure it is a valid CSV or Excel file. : {}"
 msgstr ""
 
+#, python-format
+msgid "In %(days)s days"
+msgstr ""
+
 msgid "In-Active"
 msgstr ""
 
@@ -7572,6 +7584,9 @@ msgid "Last message:"
 msgstr ""
 
 msgid "27 Mar 2019"
+msgstr ""
+
+msgid "Status:"
 msgstr ""
 
 msgid "Tags:"
@@ -9908,11 +9923,6 @@ msgstr ""
 msgid "Template as Attachments"
 msgstr "Recruitment"
 
-#, fuzzy
-#| msgid "onboarding"
-msgid "Send portal link / Trigger Onboarding"
-msgstr "Onboarding"
-
 msgid "Send Portal Link"
 msgstr ""
 
@@ -9964,9 +9974,6 @@ msgid "State *"
 msgstr ""
 
 msgid "Finish Onboarding"
-msgstr ""
-
-msgid "DOB"
 msgstr ""
 
 msgid "Next Step"
@@ -15100,6 +15107,11 @@ msgstr ""
 #, python-format
 msgid "View selected %(model)s"
 msgstr ""
+
+#, fuzzy
+#~| msgid "onboarding"
+#~ msgid "Send portal link / Trigger Onboarding"
+#~ msgstr "Onboarding"
 
 #, fuzzy
 #~| msgid "employee"

@@ -71,7 +71,7 @@
     <div class="oh-sticky-dropdown--header">
       <div class="oh-dropdown" x-data="{open: false}">
         <button class="oh-sticky-dropdown_btn " @click="open = !open"><ion-icon name="ellipsis-vertical-sharp"
-          role="img" class="md hydrated" aria-label="{% trans 'ellipsis vertical sharp' %}"></ion-icon></button>
+          role="img" class="md hydrated" aria-label="ellipsis vertical sharp"></ion-icon></button>
         <div class="oh-dropdown__menu oh-sticky-table_dropdown" x-show="open" @click.outside="open = false">
         <ul class="oh-dropdown__items" id="CandidateCells">
         </ul>
@@ -90,7 +90,7 @@
               <div class="centered-div" align="center">
                 <input type="checkbox" class="oh-input oh-input__checkbox group-select"
                 onchange="$(this).closest('.oh-sticky-table').find('.candidate-checkbox').prop('checked',$(this).is(':checked')).change();"
-                 title="{% trans 'Select All' %}"  />
+                 title="Select All"  />
               </div>
             </div>
             <div class="oh-sticky-table__th {% if request.sort_option.order == '-name' %}arrow-up {% elif request.sort_option.order == 'name' %}arrow-down {% else %} arrow-up-down {% endif %}"  hx-target='#section' hx-get="{% url 'search-candidate' %}?{{pd}}&orderby=name&view=list">{% trans "Candidates" %}</div>
@@ -132,7 +132,7 @@
                   <div class="oh-profile__avatar mr-1">
                     <img src="{{cand.get_avatar}}"
                     class="oh-profile__image"
-                    alt="{% trans 'Username' %}" />
+                    alt="Username" />
                   </div>
                   <span class="oh-profile__name oh-text--dark">{{cand}}</span>
                 </a>
@@ -265,19 +265,19 @@
                 <div class="oh-btn-group">
                   {% if perms.recruitment.change_candidate %}
                   <a href="{% url 'rec-candidate-update' cand.id %}" hx-target='#updateFormContainer' hx-swap='innerHTML'
-                    class="oh-btn oh-btn--light-bkg w-100" title="{% trans 'Edit' %}"><ion-icon name="create-outline"></ion-icon></a>
+                    class="oh-btn oh-btn--light-bkg w-100" title="Edit"><ion-icon name="create-outline"></ion-icon></a>
                   {% endif %}
                   {% if perms.recruitment.delete_candidate %}
                   {% if cand.is_active %}
-                  <form action="{% url 'rec-candidate-archive' cand.id  %}" title="{% trans 'Archive' %}" onsubmit="return confirm('{% trans "Do you want to archive this candidate?" %}')" method='post'
+                  <form action="{% url 'rec-candidate-archive' cand.id  %}" title="Archive" onsubmit="return confirm('{% trans "Do you want to archive this candidate?" %}')" method='post'
                     class="w-50">
                   {% csrf_token %}
                   <button type='submit' class="oh-btn oh-btn--danger-outline oh-btn--light-bkg w-100"
-                    ><ion-icon name="archive" title="{% trans 'Archive' %}"></ion-icon></button>
+                    ><ion-icon name="archive" title="Archive"></ion-icon></button>
                   </form>
                   {% else %}
 
-                  <form action="{% url 'rec-candidate-archive' cand.id  %}"  title="{% trans 'Un Archive' %}" onsubmit="return confirm('{% trans "Do you want to un-archive this candidate?" %}')" method='post'
+                  <form action="{% url 'rec-candidate-archive' cand.id  %}"  title="Un Archive" onsubmit="return confirm('{% trans "Do you want to un-archive this candidate?" %}')" method='post'
                     class="w-100">
                     {% csrf_token %}
                     <button type='submit' class="oh-btn oh-btn--danger-outline oh-btn--light-bkg w-100"
@@ -290,7 +290,7 @@
                     onsubmit="Are you sure want to delete this candidate?" class="w-100">
                     {% csrf_token %}
                     <button type='submit' class="oh-btn oh-btn--danger-outline oh-btn--light-bkg w-100"
-                      title="{% trans 'Remove' %}"><ion-icon name="trash-outline"></ion-icon></button>
+                      title="Remove"><ion-icon name="trash-outline"></ion-icon></button>
                   </form>
                   {% endif %}
                 </div>
@@ -372,7 +372,7 @@
       <span class="oh-modal__dialog-title" id="sendMailModalLabel">
         <h5>{% trans "Send Mail" %}</h5>
       </span>
-      <button class="oh-modal__close" aria-label="{% trans 'Close' %}">
+      <button class="oh-modal__close" aria-label="Close">
         <ion-icon name="close-outline"></ion-icon>
       </button>
     </div>

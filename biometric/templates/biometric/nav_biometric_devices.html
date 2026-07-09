@@ -5,7 +5,7 @@
             {% trans "Biometric Devices" %}
         </div>
         <div style="display: ruby">
-            <a class="oh-main__titlebar-search-toggle" role="button" aria-label="Toggle Search"
+            <a class="oh-main__titlebar-search-toggle" role="button" aria-label="{% trans 'Toggle Search' %}"
                 @click="searchShow = !searchShow">
                 <ion-icon name="search-outline" class="oh-main__titlebar-serach-icon"></ion-icon>
             </a>
@@ -20,7 +20,7 @@
     <div class="oh-main__titlebar oh-main__titlebar--right">
         <div class="oh-input-group oh-input__search-group" :class="searchShow ? 'oh-input__search-group--show' : ''">
             <ion-icon name="search-outline" class="oh-input-group__icon oh-input-group__icon--left"></ion-icon>
-            <input type="text" class="oh-input oh-input__icon" aria-label="Search Input" id="devices-search"
+            <input type="text" class="oh-input oh-input__icon" aria-label="{% trans 'Search Input' %}" id="devices-search"
                 name="search" placeholder="{% trans 'Search' %}" hx-get="{% url 'view-biometric-devices' %}"
                 hx-swap="outerHTML" hx-select="#biometricDeviceList" hx-target="#biometricDeviceList"
                 hx-trigger="keyup delay:500ms" />

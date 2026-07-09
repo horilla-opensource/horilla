@@ -2,7 +2,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: horilla-hrms\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-07-09 11:44+0530\n"
+"POT-Creation-Date: 2026-07-09 15:16+0530\n"
 "PO-Revision-Date: 2025-10-16 06:41\n"
 "Last-Translator: \n"
 "Language-Team: Arabic\n"
@@ -2047,6 +2047,16 @@ msgstr "تم حذف الملف بنجاح."
 
 msgid "You commented a post."
 msgstr "لقد علقت على مشاركة."
+
+#, fuzzy
+#| msgid "All company"
+msgid "All Company"
+msgstr "جميع الشركات"
+
+#, fuzzy
+#| msgid "All company"
+msgid "All companies"
+msgstr "جميع الشركات"
 
 msgid "Employee is not working in the selected company."
 msgstr "الموظف لا يعمل في الشركة المختارة."
@@ -5706,24 +5716,18 @@ msgstr "تاريخ الميلاد"
 msgid "Pending"
 msgstr "معلق"
 
-#, fuzzy
-#| msgid "Upcoming holidays"
-msgid "Upcoming Birthdays"
-msgstr "العطل القادمة"
-
-msgid "DOB:"
-msgstr ""
-
-#, fuzzy
-#| msgid "Status"
-msgid "Status:"
-msgstr "الحالة"
+msgid "DOB"
+msgstr "DOB"
 
 msgid "Today"
 msgstr "اليوم"
 
 msgid "Tomorrow"
 msgstr "غدا"
+
+#, python-format
+msgid "In %(d)s days"
+msgstr ""
 
 msgid "Disciplinary Actions"
 msgstr "الإجراءات التأديبية"
@@ -6829,6 +6833,10 @@ msgid ""
 "Failed to read file. Please ensure it is a valid CSV or Excel file. : {}"
 msgstr "فشل في قراءة الملف. الرجاء التأكد من أنه ملف CSV أو Excel. {}"
 
+#, python-format
+msgid "In %(days)s days"
+msgstr ""
+
 msgid "In-Active"
 msgstr "مفعل"
 
@@ -7080,6 +7088,11 @@ msgstr "اسم العائلة"
 
 msgid "27 Mar 2019"
 msgstr ""
+
+#, fuzzy
+#| msgid "Status"
+msgid "Status:"
+msgstr "الحالة"
 
 msgid "Tags:"
 msgstr "العلامات:"
@@ -9244,11 +9257,6 @@ msgstr "اختياري"
 msgid "Template as Attachments"
 msgstr "قالب كمرفقات"
 
-#, fuzzy
-#| msgid "Send Portal / Start Onboarding"
-msgid "Send portal link / Trigger Onboarding"
-msgstr "إرسال بوابة / بدء أونبواردينج"
-
 msgid "Send Portal Link"
 msgstr "إرسال رابط البوابة"
 
@@ -9299,9 +9307,6 @@ msgstr "الحالة *"
 
 msgid "Finish Onboarding"
 msgstr "إنهاء أونبواردينج"
-
-msgid "DOB"
-msgstr "DOB"
 
 msgid "Next Step"
 msgstr "الخطوة التالية"
@@ -14067,6 +14072,16 @@ msgstr ""
 #, python-format
 msgid "View selected %(model)s"
 msgstr ""
+
+#, fuzzy
+#~| msgid "Upcoming holidays"
+#~ msgid "Upcoming Birthdays"
+#~ msgstr "العطل القادمة"
+
+#, fuzzy
+#~| msgid "Send Portal / Start Onboarding"
+#~ msgid "Send portal link / Trigger Onboarding"
+#~ msgstr "إرسال بوابة / بدء أونبواردينج"
 
 #, fuzzy
 #~| msgid "Hours Chart"

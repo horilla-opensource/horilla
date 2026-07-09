@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-07-09 11:44+0530\n"
+"POT-Creation-Date: 2026-07-09 15:16+0530\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -2083,6 +2083,16 @@ msgstr "备注已成功删除"
 
 msgid "You commented a post."
 msgstr "您评论了一条帖子。"
+
+#, fuzzy
+#| msgid "All company"
+msgid "All Company"
+msgstr "全公司"
+
+#, fuzzy
+#| msgid "All company"
+msgid "All companies"
+msgstr "全公司"
 
 msgid "Employee is not working in the selected company."
 msgstr "该员工不在所选公司工作。"
@@ -5903,24 +5913,18 @@ msgstr "生日"
 msgid "Pending"
 msgstr "待处理"
 
-#, fuzzy
-#| msgid "Upcoming holidays"
-msgid "Upcoming Birthdays"
-msgstr "即将到来的假期"
-
-msgid "DOB:"
-msgstr ""
-
-#, fuzzy
-#| msgid "Status"
-msgid "Status:"
-msgstr "狀態"
+msgid "DOB"
+msgstr "出生日期"
 
 msgid "Today"
 msgstr "今天"
 
 msgid "Tomorrow"
 msgstr "明天"
+
+#, python-format
+msgid "In %(d)s days"
+msgstr ""
 
 msgid "Disciplinary Actions"
 msgstr "纪律处分"
@@ -7038,6 +7042,10 @@ msgid ""
 "Failed to read file. Please ensure it is a valid CSV or Excel file. : {}"
 msgstr ""
 
+#, python-format
+msgid "In %(days)s days"
+msgstr ""
+
 msgid "In-Active"
 msgstr "未激活"
 
@@ -7313,6 +7321,11 @@ msgstr "变更信息"
 
 msgid "27 Mar 2019"
 msgstr ""
+
+#, fuzzy
+#| msgid "Status"
+msgid "Status:"
+msgstr "狀態"
 
 msgid "Tags:"
 msgstr "标签："
@@ -9522,11 +9535,6 @@ msgstr "可选"
 msgid "Template as Attachments"
 msgstr "模板作为附件"
 
-#, fuzzy
-#| msgid "Send Portal / Start Onboarding"
-msgid "Send portal link / Trigger Onboarding"
-msgstr "发送门户/开始入职流程"
-
 msgid "Send Portal Link"
 msgstr "发送门户链接"
 
@@ -9577,9 +9585,6 @@ msgstr "州/省 *"
 
 msgid "Finish Onboarding"
 msgstr "完成入职"
-
-msgid "DOB"
-msgstr "出生日期"
 
 msgid "Next Step"
 msgstr "下一步"
@@ -14690,6 +14695,16 @@ msgstr ""
 #, python-format
 msgid "View selected %(model)s"
 msgstr ""
+
+#, fuzzy
+#~| msgid "Upcoming holidays"
+#~ msgid "Upcoming Birthdays"
+#~ msgstr "即将到来的假期"
+
+#, fuzzy
+#~| msgid "Send Portal / Start Onboarding"
+#~ msgid "Send portal link / Trigger Onboarding"
+#~ msgstr "发送门户/开始入职流程"
 
 #, fuzzy
 #~| msgid "Hours Chart"

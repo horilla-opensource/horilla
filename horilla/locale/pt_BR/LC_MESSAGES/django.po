@@ -2,7 +2,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: horilla-hrms\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-07-09 11:44+0530\n"
+"POT-Creation-Date: 2026-07-09 15:16+0530\n"
 "PO-Revision-Date: 2025-10-16 07:27\n"
 "Last-Translator: \n"
 "Language-Team: Portuguese, Brazilian\n"
@@ -2053,6 +2053,16 @@ msgstr "O arquivo foi excluído com sucesso."
 
 msgid "You commented a post."
 msgstr "Você comentou uma publicação."
+
+#, fuzzy
+#| msgid "All company"
+msgid "All Company"
+msgstr "Todas as empresas"
+
+#, fuzzy
+#| msgid "All company"
+msgid "All companies"
+msgstr "Todas as empresas"
 
 msgid "Employee is not working in the selected company."
 msgstr "Funcionário não está trabalhando na empresa selecionada."
@@ -5760,24 +5770,18 @@ msgstr "Aniversário"
 msgid "Pending"
 msgstr "PENDENTE"
 
-#, fuzzy
-#| msgid "Upcoming holidays"
-msgid "Upcoming Birthdays"
-msgstr "Próximos feriados"
-
-msgid "DOB:"
-msgstr ""
-
-#, fuzzy
-#| msgid "Status"
-msgid "Status:"
-msgstr "SItuação"
+msgid "DOB"
+msgstr "DOB"
 
 msgid "Today"
 msgstr "hoje"
 
 msgid "Tomorrow"
 msgstr "Amanhã"
+
+#, python-format
+msgid "In %(d)s days"
+msgstr ""
 
 msgid "Disciplinary Actions"
 msgstr "Ações Disciplinárias"
@@ -6892,6 +6896,10 @@ msgstr ""
 "Falha ao ler arquivo. Certifique-se de que é um arquivo CSV ou Excel "
 "válido. : {}"
 
+#, python-format
+msgid "In %(days)s days"
+msgstr ""
+
 msgid "In-Active"
 msgstr "Ativo"
 
@@ -7143,6 +7151,11 @@ msgstr "Último Nome"
 
 msgid "27 Mar 2019"
 msgstr ""
+
+#, fuzzy
+#| msgid "Status"
+msgid "Status:"
+msgstr "SItuação"
 
 msgid "Tags:"
 msgstr "Marcadores:"
@@ -9318,11 +9331,6 @@ msgstr "Opcional"
 msgid "Template as Attachments"
 msgstr "Modelo como Anexos"
 
-#, fuzzy
-#| msgid "Send Portal / Start Onboarding"
-msgid "Send portal link / Trigger Onboarding"
-msgstr "Enviar Portal / Iniciar Integração"
-
 msgid "Send Portal Link"
 msgstr "Enviar link do Portal"
 
@@ -9373,9 +9381,6 @@ msgstr "Estado *"
 
 msgid "Finish Onboarding"
 msgstr "Finalizar integração"
-
-msgid "DOB"
-msgstr "DOB"
 
 msgid "Next Step"
 msgstr "Próximo Passo"
@@ -14179,6 +14184,16 @@ msgstr ""
 #, python-format
 msgid "View selected %(model)s"
 msgstr ""
+
+#, fuzzy
+#~| msgid "Upcoming holidays"
+#~ msgid "Upcoming Birthdays"
+#~ msgstr "Próximos feriados"
+
+#, fuzzy
+#~| msgid "Send Portal / Start Onboarding"
+#~ msgid "Send portal link / Trigger Onboarding"
+#~ msgstr "Enviar Portal / Iniciar Integração"
 
 #, fuzzy
 #~| msgid "Hours Chart"

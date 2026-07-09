@@ -3,7 +3,7 @@
     <span class="oh-modal__dialog-title" id="biometricEmployeesLavel">
         {% trans "Add Employee" %}
     </span>
-    <button class="oh-modal__close" aria-label="Close">
+    <button class="oh-modal__close" aria-label="{% trans 'Close' %}">
         <ion-icon name="close-outline"></ion-icon>
     </button>
 </div>
@@ -13,7 +13,7 @@
         <div class="col-sm-12 col-md-12 col-lg-12">
             <div class="oh-input-group">
                 <label class="oh-label" for="{{form.employee_ids.id_for_label}}">{% trans "Employees" %}</label>
-                {{form.employee_ids}}
+                {{ form.employee_ids }}
             </div>
         </div>
         <div class="oh-modal__dialog-footer p-0 pt-3">

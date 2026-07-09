@@ -3,7 +3,6 @@ var confirmModal = {
     de: "Bestätigen",
     es: "Confirmar",
     en: "Confirm",
-    uk: "Підтвердити",
     fr: "Confirmer",
 };
 
@@ -12,7 +11,6 @@ var cancelModal = {
     de: "Abbrechen",
     es: "Cancelar",
     en: "Cancel",
-    uk: "Скасувати",
     fr: "Annuler",
 };
 
