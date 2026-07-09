@@ -2,15 +2,15 @@
 {% include 'filter_tags.html' %}
 
 {% if messages %}
-<div class="oh-wrapper">
-    {% for message in messages %}
-    <div class="oh-alert-container">
-        <div class="oh-alert oh-alert--animated {{message.tags}}">
-            {{ message }}
-        </div>
+    <div class="oh-wrapper">
+        {% for message in messages %}
+            <div class="oh-alert-container">
+                <div class="oh-alert oh-alert--animated {{message.tags}}">
+                    {{ message }}
+                </div>
+            </div>
+        {% endfor %}
     </div>
-    {% endfor %}
-</div>
 {% endif %}
 
 {% if data %}
@@ -20,12 +20,20 @@
             <div class="oh-table_sticky--wrapper">
                 <div class="oh-sticky-dropdown--header">
                     <div class="oh-dropdown" x-data="{open: false}">
-                        <button class="oh-sticky-dropdown_btn " @click="open = !open"><ion-icon
-                                name="ellipsis-vertical-sharp" role="img" class="md hydrated"
-                                aria-label="ellipsis vertical sharp"></ion-icon></button>
-                        <div class="oh-dropdown__menu oh-sticky-table_dropdown" x-show="open" @click.outside="open = false">
-                            <ul class="oh-dropdown__items" id="interviewCells">
-                            </ul>
+                        <button class="oh-sticky-dropdown_btn" @click="open = !open">
+                            <ion-icon
+                                name="ellipsis-vertical-sharp"
+                                role="img"
+                                class="md hydrated"
+                                aria-label="{% trans 'ellipsis vertical sharp' %}"
+                            ></ion-icon>
+                        </button>
+                        <div
+                            class="oh-dropdown__menu oh-sticky-table_dropdown"
+                            x-show="open"
+                            @click.outside="open = false"
+                        >
+                            <ul class="oh-dropdown__items" id="interviewCells"></ul>
                         </div>
                     </div>
                 </div>
@@ -38,37 +46,68 @@
                         <div class="oh-sticky-table__thead">
                             <div class="oh-sticky-table__tr">
                                 <div class="oh-sticky-table__th">{% trans "Candidate" %}</div>
-                                <div data-cell-index="1" data-cell-title='{% trans "Interviewer" %}'
-                                    class="oh-sticky-table__th">{% trans "Interviewer" %}</div>
-                                <div data-cell-index="2" data-cell-title='{% trans "Interview Date" %}'
+                                <div
+                                    data-cell-index="1"
+                                    data-cell-title='{% trans "Interviewer" %}'
+                                    class="oh-sticky-table__th"
+                                >
+                                    {% trans "Interviewer" %}
+                                </div>
+                                <div
+                                    data-cell-index="2"
+                                    data-cell-title='{% trans "Interview Date" %}'
                                     class="oh-sticky-table__th {% if request.sort_option.order == '-interview_date' %}arrow-up {% elif request.sort_option.order == 'interview_date' %}arrow-down {% else %}arrow-up-down {% endif %}"
                                     hx-get="{% url 'interview-filter-view' %}?{{pd}}&sortby=interview_date"
-                                    hx-target="#section">{% trans "Interview Date" %}</div>
-                                <div data-cell-index="3" data-cell-title='{% trans "Interview Time" %}'
-                                    class="oh-sticky-table__th">{% trans "Interview Time" %}</div>
-                                <div data-cell-index="4" data-cell-title='{% trans "Description" %}'
-                                    class="oh-sticky-table__th">{% trans "Description" %}</div>
-                                <div data-cell-index="5" data-cell-title='{% trans "Status" %}' class="oh-sticky-table__th">
-                                    {% trans "Status" %}</div>
-                                <div class="oh-sticky-table__th oh-sticky-table__right" align="center"
-                                    style="width: 220px;">{% trans "Actions" %}</div>
+                                    hx-target="#section"
+                                >
+                                    {% trans "Interview Date" %}
+                                </div>
+                                <div
+                                    data-cell-index="3"
+                                    data-cell-title='{% trans "Interview Time" %}'
+                                    class="oh-sticky-table__th"
+                                >
+                                    {% trans "Interview Time" %}
+                                </div>
+                                <div
+                                    data-cell-index="4"
+                                    data-cell-title='{% trans "Description" %}'
+                                    class="oh-sticky-table__th"
+                                >
+                                    {% trans "Description" %}
+                                </div>
+                                <div
+                                    data-cell-index="5"
+                                    data-cell-title='{% trans "Status" %}'
+                                    class="oh-sticky-table__th"
+                                >
+                                    {% trans "Status" %}
+                                </div>
+                                <div
+                                    class="oh-sticky-table__th oh-sticky-table__right"
+                                    align="center"
+                                    style="width: 220px"
+                                >
+                                    {% trans "Actions" %}
+                                </div>
                             </div>
                         </div>
                         <div class="oh-sticky-table__tbody">
                             {% for interview in data %}
-                                <div
-                                    class="oh-sticky-table__tr oh-permission-table__tr oh-permission-table--collapsed {% if request.user.employee_get in interview.employee_id.all %}diff-cell {% endif %}">
-                                    <div class="oh-sticky-table__sd oh-permission-table--toggle " data-toggle-count>
+                                <div class="oh-sticky-table__tr oh-permission-table__tr oh-permission-table--collapsed {% if request.user.employee_get in interview.employee_id.all %}diff-cell {% endif %}">
+                                    <div class="oh-sticky-table__sd oh-permission-table--toggle" data-toggle-count>
                                         <div class="d-flex align-items-center">
                                             <button class="oh-permission-table__collapse me-2">
-                                                <span title="{% trans " Reveal" %}"><ion-icon
+                                                <span title='{% trans " Reveal" %}'><ion-icon
                                                         class="oh-permission-table__collapse-down"
-                                                        name="chevron-down-outline"></ion-icon></span>
-                                                <span title="{% trans " Collapse" %}"><ion-icon
+                                                        name="chevron-down-outline"
+                                                    ></ion-icon></span>
+                                                <span title='{% trans " Collapse" %}'><ion-icon
                                                         class="oh-permission-table__collapse-up"
-                                                        name="chevron-up-outline"></ion-icon></span>
+                                                        name="chevron-up-outline"
+                                                    ></ion-icon></span>
                                             </button>
-                                            <span class="oh-permission-table__user">{{interview.candidate_id}} </span>
+                                            <span class="oh-permission-table__user">{{ interview.candidate_id }} </span>
                                         </div>
                                     </div>
                                     <div data-cell-index="1" class="oh-sticky-table__td">
@@ -77,83 +116,122 @@
                                                 <span class="oh-user-panel oh-collapse-panel" data-type="user">
                                                     <div class="oh-profile oh-profile--md">
                                                         <div class="oh-profile__avatar mr-1">
-                                                            <img src="https://ui-avatars.com/api/?name={{employee.get_full_name}}&background=random"
-                                                                class="oh-profile__image" alt="Baby C." />
+                                                            <img
+                                                                src="https://ui-avatars.com/api/?name={{employee.get_full_name}}&background=random"
+                                                                class="oh-profile__image"
+                                                                alt="{% trans 'Baby C.' %}"
+                                                            >
                                                         </div>
-                                                        <span class="oh-profile__name oh-text--dark"
-                                                            title="{{employee.get_full_name}}">{{employee.get_full_name|truncatechars:15}}</span>
+                                                        <span
+                                                            class="oh-profile__name oh-text--dark"
+                                                            title="{{employee.get_full_name}}"
+                                                        >{{ employee.get_full_name|truncatechars:15 }}</span>
                                                     </div>
                                                     {% if perms.recruitment.change_interviewschedule or request.user.employee_get in interview.employee_id.all %}
-                                                        <a hx-confirm="{% trans 'Are you sure you want to remove this interviewer?' %}"
+                                                        <a
+                                                            hx-confirm="{% trans 'Are you sure you want to remove this interviewer?' %}"
                                                             hx-post="{% url 'interview-employee-remove' interview.id employee.id %}"
-                                                            title="{% trans " Remove" %}" hx-swap="outerHTML"
-                                                            onclick="event.stopPropagation()">
+                                                            title='{% trans " Remove" %}'
+                                                            hx-swap="outerHTML"
+                                                            onclick="event.stopPropagation()"
+                                                        >
                                                             <ion-icon name="close-outline"></ion-icon>
                                                         </a>
                                                     {% endif %}
                                                 </span>
                                             </div>
                                         {% endfor %}
-                                        <span class="count-span">{{interview.employee_id.all|length}} {% trans "Interviewers" %}</span>
-
+                                        <span class="count-span">{{ interview.employee_id.all|length }}
+                                            {% trans "Interviewers" %}</span>
                                     </div>
                                     <div data-cell-index="2" class="oh-sticky-table__td dateformat_changer">
-                                        {{interview.interview_date}}
+                                        {{ interview.interview_date }}
                                     </div>
                                     <div data-cell-index="3" class="oh-sticky-table__td timeformat_changer">
-                                        {{interview.interview_time}}
+                                        {{ interview.interview_time }}
                                     </div>
                                     <div data-cell-index="4" class="oh-sticky-table__td">
                                         {% if interview.description %}
-                                            {{interview.description}}
+                                            {{ interview.description }}
                                         {% else %}
                                             {% trans "None" %}
                                         {% endif %}
                                     </div>
                                     <div data-cell-index="5" class="oh-sticky-table__td">
                                         {% if interview.completed %}
-                                            <div class="d-flex" style="color:green;">
-                                                <i id="fabIcon" style="font-size:18px;" class="material-icons ms-3 mt-2">check_circle</i>
-                                                <span class="oh-activity-sidebar__q mt-2">{% trans "Interview Completed" %}</span>
+                                            <div class="d-flex" style="color: green">
+                                                <i id="fabIcon" style="font-size: 18px" class="material-icons ms-3 mt-2"
+                                                >check_circle</i>
+                                                <span
+                                                    class="oh-activity-sidebar__q mt-2"
+                                                >{% trans "Interview Completed" %}</span>
                                             </div>
                                         {% elif interview.interview_date|date:"Y-m-d" < now|date:"Y-m-d" %}
-                                            <div class="d-flex" style="color:red;">
-                                                <i id="fabIcon" style="font-size:18px" class="material-icons ms-3 mt-2">dangerous</i>
-                                                <span class="oh-activity-sidebar__q mt-2">{% trans "Expired Interview" %}</span>
+                                            <div class="d-flex" style="color: red">
+                                                <i id="fabIcon" style="font-size: 18px" class="material-icons ms-3 mt-2"
+                                                >dangerous</i>
+                                                <span
+                                                    class="oh-activity-sidebar__q mt-2"
+                                                >{% trans "Expired Interview" %}</span>
                                             </div>
                                         {% elif interview.interview_date|date:"Y-m-d" > now|date:"Y-m-d" %}
-                                            <div class="d-flex" style="color:orange;">
-                                                <i id="fabIcon" title="{{interview.interview_date|timeuntil}}" style="font-size:18px;" class="material-icons ms-3 mt-2">schedule</i>
-                                                <span class="oh-activity-sidebar__q mt-2">{% trans "Upcoming Interview" %}</span>
+                                            <div class="d-flex" style="color: orange">
+                                                <i
+                                                    id="fabIcon"
+                                                    title="{{interview.interview_date|timeuntil}}"
+                                                    style="font-size: 18px"
+                                                    class="material-icons ms-3 mt-2"
+                                                >schedule</i>
+                                                <span
+                                                    class="oh-activity-sidebar__q mt-2"
+                                                >{% trans "Upcoming Interview" %}</span>
                                             </div>
                                         {% elif interview.interview_date|date:"Y-m-d" == now|date:"Y-m-d" and not interview.completed %}
-                                            <div class="d-flex" style="color:blue;">
-                                                <i id="fabIcon" style="font-size:18px;" class="material-symbols-outlined ms-3 mt-2">today</i>
-                                                <span class="oh-activity-sidebar__q mt-2">{% trans "Interview Today" %}</span>
+                                            <div class="d-flex" style="color: blue">
+                                                <i
+                                                    id="fabIcon"
+                                                    style="font-size: 18px"
+                                                    class="material-symbols-outlined ms-3 mt-2"
+                                                >today</i>
+                                                <span
+                                                    class="oh-activity-sidebar__q mt-2"
+                                                >{% trans "Interview Today" %}</span>
                                             </div>
                                         {% endif %}
                                     </div>
                                     <div class="oh-sticky-table__td oh-sticky-table__right">
                                         <div class="oh-btn-group" onclick="event.stopPropagation()">
-
                                             {% if perms.recruitment.change_interviewschedule or request.user.employee_get in interview.employee_id.all %}
-                                                <a title="{% trans " Edit" %}"
+                                                <a
+                                                    title='{% trans " Edit" %}'
                                                     hx-get="{% url 'edit-interview' interview.id %}?view=true"
-                                                    data-target="#createModal" hx-swap="innerHTML" hx-target="#createTarget"
-                                                    data-toggle="oh-modal-toggle" class="oh-btn oh-btn--light-bkg w-100"><ion-icon
-                                                        name="create-outline"></ion-icon></a>
+                                                    data-target="#createModal"
+                                                    hx-swap="innerHTML"
+                                                    hx-target="#createTarget"
+                                                    data-toggle="oh-modal-toggle"
+                                                    class="oh-btn oh-btn--light-bkg w-100"
+                                                ><ion-icon name="create-outline"></ion-icon></a>
                                             {% endif %}
 
                                             {% if perms.recruitment.delete_interviewschedule %}
-                                                <form hx-post="{% url 'delete-interview' interview.id %}?view=true"
-                                                    hx-confirm="{% trans " Are you sure you want to delete this interview?" %}"
-                                                    style="display: contents;width:100%">
+                                                <form
+                                                    hx-post="{% url 'delete-interview' interview.id %}?view=true"
+                                                    hx-confirm='{% trans " Are you sure you want to delete this interview?" %}'
+                                                    style="display: contents; width: 100%"
+                                                >
                                                     {% csrf_token %}
-                                                    <button onclick="event.stopPropagation()" type="submit"
-                                                        class="oh-btn oh-btn--light-bkg oh-btn--danger-outline  w-100"
-                                                        title="{% trans 'Delete' %}">
-                                                        <ion-icon name="trash-outline" role="img" class="md hydrated"
-                                                            aria-label="trash outline"></ion-icon>
+                                                    <button
+                                                        onclick="event.stopPropagation()"
+                                                        type="submit"
+                                                        class="oh-btn oh-btn--light-bkg oh-btn--danger-outline w-100"
+                                                        title="{% trans 'Delete' %}"
+                                                    >
+                                                        <ion-icon
+                                                            name="trash-outline"
+                                                            role="img"
+                                                            class="md hydrated"
+                                                            aria-label="{% trans 'trash outline' %}"
+                                                        ></ion-icon>
                                                     </button>
                                                 </form>
                                             {% endif %}
@@ -175,42 +253,62 @@
         <nav class="oh-pagination__nav">
             <div class="oh-pagination__input-container me-3">
                 <span class="oh-pagination__label me-1">{% trans "Page" %}</span>
-                <input type="number" name="page" class="oh-pagination__input" value="{{data.number}}"
-                    hx-get="{% url 'interview-filter-view' %}?{{pd}}" hx-target="#section" min="1" />
-                <span class="oh-pagination__label">{% trans "of" %} {{data.paginator.num_pages}}</span>
+                <input
+                    type="number"
+                    name="page"
+                    class="oh-pagination__input"
+                    value="{{data.number}}"
+                    hx-get="{% url 'interview-filter-view' %}?{{pd}}"
+                    hx-target="#section"
+                    min="1"
+                >
+                <span class="oh-pagination__label">{% trans "of" %} {{ data.paginator.num_pages }}</span>
             </div>
             <ul class="oh-pagination__items">
                 {% if data.has_previous %}
-                <li class="oh-pagination__item oh-pagination__item--wide">
-                    <a hx-target='#section' hx-get="{% url 'interview-filter-view' %}?{{pd}}&page=1"
-                        class="oh-pagination__link" onclick="tickCheckboxes();">{% trans "First" %}</a>
-                </li>
-                <li class="oh-pagination__item oh-pagination__item--wide">
-                    <a hx-target='#section'
-                        hx-get="{% url 'interview-filter-view' %}?{{pd}}&page={{ data.previous_page_number }}"
-                        class="oh-pagination__link" onclick="tickCheckboxes();">{% trans "Previous" %}</a>
-                </li>
+                    <li class="oh-pagination__item oh-pagination__item--wide">
+                        <a
+                            hx-target="#section"
+                            hx-get="{% url 'interview-filter-view' %}?{{pd}}&page=1"
+                            class="oh-pagination__link"
+                            onclick="tickCheckboxes()"
+                        >{% trans "First" %}</a>
+                    </li>
+                    <li class="oh-pagination__item oh-pagination__item--wide">
+                        <a
+                            hx-target="#section"
+                            hx-get="{% url 'interview-filter-view' %}?{{pd}}&page={{ data.previous_page_number }}"
+                            class="oh-pagination__link"
+                            onclick="tickCheckboxes()"
+                        >{% trans "Previous" %}</a>
+                    </li>
                 {% endif %}
                 {% if data.has_next %}
-                <li class="oh-pagination__item oh-pagination__item--wide">
-                    <a hx-target='#section'
-                        hx-get="{% url 'interview-filter-view' %}?{{pd}}&page={{ data.next_page_number }}"
-                        class="oh-pagination__link" onclick="tickCheckboxes();">{% trans "Next" %}</a>
-                </li>
-                <li class="oh-pagination__item oh-pagination__item--wide">
-                    <a hx-target='#section'
-                        hx-get="{% url 'interview-filter-view' %}?{{pd}}&page={{ data.paginator.num_pages }}"
-                        class="oh-pagination__link" onclick="tickCheckboxes();">{% trans "Last" %}</a>
-                </li>
+                    <li class="oh-pagination__item oh-pagination__item--wide">
+                        <a
+                            hx-target="#section"
+                            hx-get="{% url 'interview-filter-view' %}?{{pd}}&page={{ data.next_page_number }}"
+                            class="oh-pagination__link"
+                            onclick="tickCheckboxes()"
+                        >{% trans "Next" %}</a>
+                    </li>
+                    <li class="oh-pagination__item oh-pagination__item--wide">
+                        <a
+                            hx-target="#section"
+                            hx-get="{% url 'interview-filter-view' %}?{{pd}}&page={{ data.paginator.num_pages }}"
+                            class="oh-pagination__link"
+                            onclick="tickCheckboxes()"
+                        >{% trans "Last" %}</a>
+                    </li>
                 {% endif %}
             </ul>
         </nav>
     </div>
 {% else %}
     <div class="oh-empty">
-        <img src="{% static 'images/ui/search.svg' %}" class="oh-404__image" alt="Page not found. 404." />
+        <img src="{% static 'images/ui/search.svg' %}" class="oh-404__image" alt="{% trans 'Page not found. 404.' %}">
         <h1 class="oh-empty__title">{% trans "No Records found." %}</h1>
-        <p class="oh-empty__subtitle">{% trans "No Interviews Found." %} </p>
+        <p class="oh-empty__subtitle">{% trans "No Interviews Found." %}</p>
     </div>
 {% endif %}
 <script>

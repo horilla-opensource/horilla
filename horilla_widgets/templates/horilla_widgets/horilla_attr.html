@@ -1,1 +1,3 @@
-{% for name, value in widget.attrs.items %}{% if value is not False %} {{ name }}{% if value is not True %}="{{ value|stringformat:'s' }}"{% endif %}{% endif %}{% endfor %}
+{% load i18n %}
+{% for name, value in widget.attrs.items %}{% if value is not False %}
+        {{ name }}{% if value is not True %}="{{ value|stringformat:'s' }}"{% endif %}{% endif %}{% endfor %}

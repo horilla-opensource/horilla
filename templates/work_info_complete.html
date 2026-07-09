@@ -53,13 +53,13 @@
         hx-target="#pending"
         hx-get='{% url "emp-workinfo-complete" %}?page={{ employees_with_pending.previous_page_number }}'
         hx-trigger="click delay:0.3s"
-        title="Previous Page"
+        title="{% trans 'Previous Page' %}"
     >
         <ion-icon
             name="caret-back-outline"
             role="img"
             class="md hydrated"
-            aria-label="caret back outline"
+            aria-label="{% trans 'caret back outline' %}"
         ></ion-icon>
     </span>
     {% endif %}
@@ -71,13 +71,13 @@
         hx-target="#pending"
         hx-get='{% url "emp-workinfo-complete" %}?page={{ employees_with_pending.next_page_number }}'
         hx-trigger="click delay:0.3s"
-        title="Next Page"
+        title="{% trans 'Next Page' %}"
     >
         <ion-icon
             name="caret-forward-outline"
             role="img"
             class="md hydrated"
-            aria-label="caret back outline"
+            aria-label="{% trans 'caret back outline' %}"
         ></ion-icon>
     </span>
     {% endif %}

@@ -1,16 +1,21 @@
-{% load static %} {% load i18n %}
+{% load static %}
+{% load i18n %}
 <div class="oh-modal__dialog-header">
     <h2 class="oh-modal__dialog-title" id="candidateExportLavel">
         {% trans "Export Candidates" %}
     </h2>
-    <button class="oh-modal__close" aria-label="Close">
+    <button class="oh-modal__close" aria-label="{% trans 'Close' %}">
         <ion-icon name="close-outline"></ion-icon>
     </button>
 </div>
 <div class="oh-modal__dialog-body">
-    <form action="{%url 'candidate-info-export' %}" method="get" class="oh-profile-section"
-        onsubmit="event.stopPropagation();$(this).parents().find('.oh-modal--show').last().toggleClass('oh-modal--show');"
-        id="candidateExportForm">
+    <form
+        action="{%url 'candidate-info-export' %}"
+        method="get"
+        class="oh-profile-section"
+        onsubmit="event.stopPropagation();$(this).parents().find('.oh-modal--show').last().toggleClass('oh-modal--show')"
+        id="candidateExportForm"
+    >
         {% csrf_token %}
         <div class="oh-dropdown__filter-body" id="">
             <div class="oh-accordion">
@@ -20,7 +25,7 @@
                         <div class="col-sm-12 col-md-12 col-lg-6">
                             <div class="oh-input-group">
                                 <label class="oh-label">
-                                    <input type="checkbox" id="select-all-fields" /> {% trans "Select All" %}
+                                    <input type="checkbox" id="select-all-fields"> {% trans "Select All" %}
                                 </label>
                             </div>
                         </div>
@@ -44,42 +49,52 @@
                             <div class="col-sm-12 col-md-12 col-lg-12">
                                 <div class="oh-input-group">
                                     <label class="oh-label">{% trans "Candidate" %}</label>
-                                    {{export_filter.form.candidate}}
+                                    {{ export_filter.form.candidate }}
                                 </div>
                             </div>
                         </div>
                         <div class="row">
                             <div class="col-sm-12 col-md-12 col-lg-6">
                                 <div class="oh-input-group">
-                                    <label class="oh-label"
-                                        for="{{export_filter.form.mobile.id_for_label}}">{{export_filter.form.mobile.label}}</label>
+                                    <label
+                                        class="oh-label"
+                                        for="{{export_filter.form.mobile.id_for_label}}"
+                                    >{{ export_filter.form.mobile.label }}</label>
                                     {{ export_filter.form.mobile }}
                                 </div>
                                 <div class="oh-input-group">
-                                    <label class="oh-label"
-                                        for="{{export_filter.form.interview_date.id_for_label}}">{{export_filter.form.interview_date.label}}</label>
+                                    <label
+                                        class="oh-label"
+                                        for="{{export_filter.form.interview_date.id_for_label}}"
+                                    >{{ export_filter.form.interview_date.label }}</label>
                                     {{ export_filter.form.interview_date }}
                                 </div>
                                 <div class="oh-input-group">
-                                    <label class="oh-label">{{export_filter.form.country.label}}</label>
-                                    {{export_filter.form.country}}
+                                    <label class="oh-label">{{ export_filter.form.country.label }}</label>
+                                    {{ export_filter.form.country }}
                                 </div>
                                 <div class="oh-input-group">
-                                    <label class="oh-label"
-                                        for="{{export_filter.form.hired.id_for_label}}">{{export_filter.form.hired.label}}
+                                    <label
+                                        class="oh-label"
+                                        for="{{export_filter.form.hired.id_for_label}}"
+                                    >{{ export_filter.form.hired.label }}
                                         ?</label>
                                     {{ export_filter.form.hired }}
                                 </div>
                                 <div class="col-sm-12 col-md-12 col-lg-12 mb-2">
                                     <div class="oh-input-group">
-                                        <label class="oh-label"
-                                            for="{{export_filter.form.rejected_candidate__reject_reason_id.id_for_label}}">{{export_filter.form.rejected_candidate__reject_reason_id.label}}
+                                        <label
+                                            class="oh-label"
+                                            for="{{export_filter.form.rejected_candidate__reject_reason_id.id_for_label}}"
+                                        >{{ export_filter.form.rejected_candidate__reject_reason_id.label }}
                                         </label>
-                                        {{export_filter.form.rejected_candidate__reject_reason_id}}
+                                        {{ export_filter.form.rejected_candidate__reject_reason_id }}
                                     </div>
                                     <div class="oh-input-group">
-                                        <label class="oh-label"
-                                            for="{{export_filter.form.converted.id_for_label}}">{{export_filter.form.converted.label}}
+                                        <label
+                                            class="oh-label"
+                                            for="{{export_filter.form.converted.id_for_label}}"
+                                        >{{ export_filter.form.converted.label }}
                                             ?</label>
                                         {{ export_filter.form.converted }}
                                     </div>
@@ -87,34 +102,42 @@
                             </div>
                             <div class="col-sm-12 col-md-12 col-lg-6">
                                 <div class="oh-input-group">
-                                    <label class="oh-label"
-                                        for="{{export_filter.form.email.id_for_label}}">{{export_filter.form.email.label}}</label>
+                                    <label
+                                        class="oh-label"
+                                        for="{{export_filter.form.email.id_for_label}}"
+                                    >{{ export_filter.form.email.label }}</label>
                                     {{ export_filter.form.email }}
                                 </div>
 
                                 <div class="oh-input-group">
-                                    <label class="oh-label"
-                                        for="{{export_filter.form.gender.id_for_label}}">{{export_filter.form.gender.label}}</label>
+                                    <label
+                                        class="oh-label"
+                                        for="{{export_filter.form.gender.id_for_label}}"
+                                    >{{ export_filter.form.gender.label }}</label>
                                     {{ export_filter.form.gender }}
                                 </div>
 
                                 <div class="oh-input-group">
-                                    <label class="oh-label">{{export_filter.form.state.label}}</label>
-                                    {{export_filter.form.state}}
+                                    <label class="oh-label">{{ export_filter.form.state.label }}</label>
+                                    {{ export_filter.form.state }}
                                 </div>
 
                                 <div class="oh-input-group">
-                                    <label class="oh-label"
-                                        for="{{export_filter.form.canceled.id_for_label}}">{{export_filter.form.canceled.label}}
+                                    <label
+                                        class="oh-label"
+                                        for="{{export_filter.form.canceled.id_for_label}}"
+                                    >{{ export_filter.form.canceled.label }}
                                         ?</label>
                                     {{ export_filter.form.canceled }}
                                 </div>
                                 <div class="col-sm-12 col-md-12 col-lg-12 mb-2">
                                     <div class="oh-input-group">
-                                        <label class="oh-label"
-                                            for="{{export_filter.form.offer_letter_status.id_for_label}}">{{export_filter.form.offer_letter_status.label}}
+                                        <label
+                                            class="oh-label"
+                                            for="{{export_filter.form.offer_letter_status.id_for_label}}"
+                                        >{{ export_filter.form.offer_letter_status.label }}
                                         </label>
-                                        {{export_filter.form.offer_letter_status}}
+                                        {{ export_filter.form.offer_letter_status }}
                                     </div>
                                 </div>
                             </div>
@@ -130,78 +153,102 @@
                         <div class="row">
                             <div class="col-sm-12 col-md-12 col-lg-6">
                                 <div class="oh-input-group">
-                                    <label class="oh-label"
-                                        for="{{export_filter.form.recruitment_id.id_for_label}}">{{export_filter.form.recruitment_id.label}}</label>
+                                    <label
+                                        class="oh-label"
+                                        for="{{export_filter.form.recruitment_id.id_for_label}}"
+                                    >{{ export_filter.form.recruitment_id.label }}</label>
                                     {{ export_filter.form.recruitment_id }}
                                 </div>
 
                                 <div class="oh-input-group">
-                                    <label class="oh-label"
-                                        for="{{export_filter.form.job_position_id__department_id.id_for_label}}">{{export_filter.form.job_position_id__department_id.label}}</label>
+                                    <label
+                                        class="oh-label"
+                                        for="{{export_filter.form.job_position_id__department_id.id_for_label}}"
+                                    >{{ export_filter.form.job_position_id__department_id.label }}</label>
                                     {{ export_filter.form.job_position_id__department_id }}
                                 </div>
                                 <div class="oh-input-group">
-                                    <label class="oh-label"
-                                        for="{{export_filter.form.recruitment_id__recruitment_managers.id_for_label}}">{{export_filter.form.recruitment_id__recruitment_managers.label}}</label>
+                                    <label
+                                        class="oh-label"
+                                        for="{{export_filter.form.recruitment_id__recruitment_managers.id_for_label}}"
+                                    >{{ export_filter.form.recruitment_id__recruitment_managers.label }}</label>
                                     {{ export_filter.form.recruitment_id__recruitment_managers }}
                                 </div>
 
                                 <div class="oh-input-group">
-                                    <label class="oh-label"
-                                        for="{{export_filter.form.stage_id.id_for_label}}">{{export_filter.form.stage_id.label}}
+                                    <label
+                                        class="oh-label"
+                                        for="{{export_filter.form.stage_id.id_for_label}}"
+                                    >{{ export_filter.form.stage_id.label }}
                                     </label>
                                     {{ export_filter.form.stage_id }}
                                 </div>
 
                                 <div class="oh-input-group">
-                                    <label class="oh-label"
-                                        for="{{export_filter.form.stage_id__stage_type.id_for_label}}">{{export_filter.form.stage_id__stage_type.label}}</label>
+                                    <label
+                                        class="oh-label"
+                                        for="{{export_filter.form.stage_id__stage_type.id_for_label}}"
+                                    >{{ export_filter.form.stage_id__stage_type.label }}</label>
                                     {{ export_filter.form.stage_id__stage_type }}
                                 </div>
 
                                 <div class="oh-input-group">
-                                    <label class="oh-label"
-                                        for="{{export_filter.form.start_date.id_for_label}}">{{export_filter.form.start_date.label}}</label>
+                                    <label
+                                        class="oh-label"
+                                        for="{{export_filter.form.start_date.id_for_label}}"
+                                    >{{ export_filter.form.start_date.label }}</label>
                                     {{ export_filter.form.start_date }}
                                 </div>
                             </div>
                             <div class="col-sm-12 col-md-12 col-lg-6">
                                 <div class="oh-input-group">
-                                    <label class="oh-label"
-                                        for="{{export_filter.form.recruitment_id__company_id.id_for_label}}">{{export_filter.form.recruitment_id__company_id.label}}</label>
+                                    <label
+                                        class="oh-label"
+                                        for="{{export_filter.form.recruitment_id__company_id.id_for_label}}"
+                                    >{{ export_filter.form.recruitment_id__company_id.label }}</label>
                                     {{ export_filter.form.recruitment_id__company_id }}
                                 </div>
 
                                 <div class="oh-input-group">
-                                    <label class="oh-label"
-                                        for="{{export_filter.form.job_position_id.id_for_label}}">{{export_filter.form.job_position_id.label}}</label>
+                                    <label
+                                        class="oh-label"
+                                        for="{{export_filter.form.job_position_id.id_for_label}}"
+                                    >{{ export_filter.form.job_position_id.label }}</label>
                                     {{ export_filter.form.job_position_id }}
                                 </div>
 
                                 <div class="oh-input-group">
-                                    <label class="oh-label"
-                                        for="{{export_filter.form.skillzonecandidate_set__skill_zone_id.id_for_label}}">{{export_filter.form.skillzonecandidate_set__skill_zone_id.label}}
+                                    <label
+                                        class="oh-label"
+                                        for="{{export_filter.form.skillzonecandidate_set__skill_zone_id.id_for_label}}"
+                                    >{{ export_filter.form.skillzonecandidate_set__skill_zone_id.label }}
                                     </label>
                                     {{ export_filter.form.skillzonecandidate_set__skill_zone_id }}
                                 </div>
 
                                 <div class="oh-input-group">
-                                    <label class="oh-label"
-                                        for="{{export_filter.form.stage_id__stage_managers.id_for_label}}">{{export_filter.form.stage_id__stage_managers.label}}
+                                    <label
+                                        class="oh-label"
+                                        for="{{export_filter.form.stage_id__stage_managers.id_for_label}}"
+                                    >{{ export_filter.form.stage_id__stage_managers.label }}
                                     </label>
                                     {{ export_filter.form.stage_id__stage_managers }}
                                 </div>
 
                                 <div class="oh-input-group">
-                                    <label class="oh-label"
-                                        for="{{export_filter.form.recruitment_id__closed.id_for_label}}">{{export_filter.form.recruitment_id__closed.label}}
+                                    <label
+                                        class="oh-label"
+                                        for="{{export_filter.form.recruitment_id__closed.id_for_label}}"
+                                    >{{ export_filter.form.recruitment_id__closed.label }}
                                         ?</label>
                                     {{ export_filter.form.recruitment_id__closed }}
                                 </div>
 
                                 <div class="oh-input-group">
-                                    <label class="oh-label"
-                                        for="{{export_filter.form.end_date.id_for_label}}">{{export_filter.form.end_date.label}}</label>
+                                    <label
+                                        class="oh-label"
+                                        for="{{export_filter.form.end_date.id_for_label}}"
+                                    >{{ export_filter.form.end_date.label }}</label>
                                     {{ export_filter.form.end_date }}
                                 </div>
                             </div>
@@ -217,22 +264,28 @@
                         <div class="row">
                             <div class="col-sm-12 col-md-12 col-lg-6">
                                 <div class="oh-input-group">
-                                    <label class="oh-label"
-                                        for="{{export_filter.form.scheduled_from.id_for_label}}">{{export_filter.form.scheduled_from.label}}
+                                    <label
+                                        class="oh-label"
+                                        for="{{export_filter.form.scheduled_from.id_for_label}}"
+                                    >{{ export_filter.form.scheduled_from.label }}
                                     </label>
                                     {{ export_filter.form.scheduled_from }}
                                 </div>
                                 <div class="oh-input-group">
-                                    <label class="oh-label"
-                                        for="{{export_filter.form.is_active.id_for_label}}">{{export_filter.form.is_active.label}}
+                                    <label
+                                        class="oh-label"
+                                        for="{{export_filter.form.is_active.id_for_label}}"
+                                    >{{ export_filter.form.is_active.label }}
                                         ?</label>
                                     {{ export_filter.form.is_active }}
                                 </div>
                             </div>
                             <div class="col-sm-12 col-md-12 col-lg-6">
                                 <div class="oh-input-group">
-                                    <label class="oh-label"
-                                        for="{{export_filter.form.scheduled_till.id_for_label}}">{{export_filter.form.scheduled_till.label}}
+                                    <label
+                                        class="oh-label"
+                                        for="{{export_filter.form.scheduled_till.id_for_label}}"
+                                    >{{ export_filter.form.scheduled_till.label }}
                                     </label>
                                     {{ export_filter.form.scheduled_till }}
                                 </div>

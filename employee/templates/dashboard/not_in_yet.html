@@ -1,62 +1,88 @@
 {% load i18n static %}
 {% if employees %}
-	<div class="oh-sticky-table" style="height: 300px">
-		<div class="oh-sticky-table__table oh-table--sortable">
-			<div class="oh-sticky-table__tbody">
-				{% for emp in employees %}
-					<div class="oh-sticky-table__tr" draggable="true">
-						<div class="oh-sticky-table__sd">
-							<div class="oh-profile oh-profile--md">
-								<div class="oh-profile__avatar mr-1">
-									<img src="{{ emp.get_avatar }}" class="oh-profile__image" />
-								</div>
-								<span class="oh-profile__name oh-text--dark">
-									{{ emp.get_full_name }}
-									<span class="oh-recuritment_tag" style="font-size: 0.5rem">
-										{{ emp.get_leave_status }}
-									</span>
-								</span>
-							</div>
-						</div>
-						<div hx-get="{% url 'send-mail-employee' emp.id %}" class="oh-sticky-table__td"
-							title="{% trans 'Send Mail' %}" hx-target="#mail-content" data-toggle="oh-modal-toggle"
-							data-target="#sendMailModal" align="center" style="width: 50px">
-							<ion-icon name="mail-outline"></ion-icon>
-						</div>
-					</div>
-				{% endfor %}
-			</div>
-		</div>
-	</div>
+    <div class="oh-sticky-table" style="height: 300px">
+        <div class="oh-sticky-table__table oh-table--sortable">
+            <div class="oh-sticky-table__tbody">
+                {% for emp in employees %}
+                    <div class="oh-sticky-table__tr" draggable="true">
+                        <div class="oh-sticky-table__sd">
+                            <div class="oh-profile oh-profile--md">
+                                <div class="oh-profile__avatar mr-1">
+                                    <img src="{{ emp.get_avatar }}" class="oh-profile__image">
+                                </div>
+                                <span class="oh-profile__name oh-text--dark">
+                                    {{ emp.get_full_name }}
+                                    <span class="oh-recuritment_tag" style="font-size: 0.5rem">
+                                        {{ emp.get_leave_status }}
+                                    </span>
+                                </span>
+                            </div>
+                        </div>
+                        <div
+                            hx-get="{% url 'send-mail-employee' emp.id %}"
+                            class="oh-sticky-table__td"
+                            title="{% trans 'Send Mail' %}"
+                            hx-target="#mail-content"
+                            data-toggle="oh-modal-toggle"
+                            data-target="#sendMailModal"
+                            align="center"
+                            style="width: 50px"
+                        >
+                            <ion-icon name="mail-outline"></ion-icon>
+                        </div>
+                    </div>
+                {% endfor %}
+            </div>
+        </div>
+    </div>
 {% else %}
-	<div class="oh-empty h-100">
-        <img src="{% static 'images/ui/search.svg' %}" class="oh-404__image" alt="Page not found. 404." />
+    <div class="oh-empty h-100">
+        <img src="{% static 'images/ui/search.svg' %}" class="oh-404__image" alt="{% trans 'Page not found. 404.' %}">
         <h1 class="oh-empty__title">{% trans "No Records found." %}</h1>
         <p class="oh-empty__subtitle">{% trans "No records available at the moment." %}</p>
     </div>
 {% endif %}
 {% if employees.has_previous or employees.has_next %}
-	<div class="float-end mt-3 mb-3">
-		{% if employees.has_previous %}
-			<span class="oh-card-dashboard__title" id="employee-previous" style="cursor: pointer"
-				hx-target="#notInYetIdCardBody" hx-get="{% url 'not-in-yet' %}?{{pd}}&page={{ employees.previous_page_number }}"
-				hx-trigger="click delay:0.3s">
-				<ion-icon name="caret-back-outline" role="img" class="md hydrated" aria-label="caret back outline"></ion-icon>
-			</span>
-		{% endif %}
-		{% if employees.has_next %}
-			<span class="oh-card-dashboard__title ms-2 float-end" id="employee-previous" style="cursor: pointer"
-				hx-target="#notInYetIdCardBody" hx-get="{% url 'not-in-yet' %}?{{pd}}&page={{ employees.next_page_number }}"
-				hx-trigger="click delay:0.3s">
-				<ion-icon name="caret-forward-outline" role="img" class="md hydrated"
-					aria-label="caret back outline"></ion-icon>
-			</span>
-		{% endif %}
-		{% if employees.has_previous or employees.has_next %}
-			<span class="oh-pagination__page mt-1 fw-bold">
-				{% trans "Page" %} {{ employees.number }} {%trans "of" %}
-				{{employees.paginator.num_pages }}
-			</span>
-		{% endif %}
-	</div>
+    <div class="float-end mt-3 mb-3">
+        {% if employees.has_previous %}
+            <span
+                class="oh-card-dashboard__title"
+                id="employee-previous"
+                style="cursor: pointer"
+                hx-target="#notInYetIdCardBody"
+                hx-get="{% url 'not-in-yet' %}?{{pd}}&page={{ employees.previous_page_number }}"
+                hx-trigger="click delay:0.3s"
+            >
+                <ion-icon
+                    name="caret-back-outline"
+                    role="img"
+                    class="md hydrated"
+                    aria-label="{% trans 'caret back outline' %}"
+                ></ion-icon>
+            </span>
+        {% endif %}
+        {% if employees.has_next %}
+            <span
+                class="oh-card-dashboard__title ms-2 float-end"
+                id="employee-previous"
+                style="cursor: pointer"
+                hx-target="#notInYetIdCardBody"
+                hx-get="{% url 'not-in-yet' %}?{{pd}}&page={{ employees.next_page_number }}"
+                hx-trigger="click delay:0.3s"
+            >
+                <ion-icon
+                    name="caret-forward-outline"
+                    role="img"
+                    class="md hydrated"
+                    aria-label="{% trans 'caret back outline' %}"
+                ></ion-icon>
+            </span>
+        {% endif %}
+        {% if employees.has_previous or employees.has_next %}
+            <span class="oh-pagination__page mt-1 fw-bold">
+                {% trans "Page" %} {{ employees.number }} {% trans "of" %}
+                {{ employees.paginator.num_pages }}
+            </span>
+        {% endif %}
+    </div>
 {% endif %}

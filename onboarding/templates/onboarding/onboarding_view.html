@@ -64,7 +64,7 @@
                                             data-toggle="oh-modal-toggle" data-target="#objectCreateModal"
                                             hx-get="{% url 'stage-creation' recruitment.id %}" hx-target="#objectCreateModalTarget">
                                             <ion-icon class="me-1 md hydrated" name="add-outline" role="img"
-                                                aria-label="add outline"></ion-icon>{% trans "Stage" %}
+                                                aria-label="{% trans 'add outline' %}"></ion-icon>{% trans "Stage" %}
                                         </button>
                                     </div>
                                     {% endif %}
@@ -126,13 +126,13 @@
     {% else %}
         {% if request.GET.closed == 'true' %}
             <div class="oh-empty">
-                <img src="{% static 'images/ui/search.svg' %}" class="oh-404__image" alt="Page not found. 404." />
+                <img src="{% static 'images/ui/search.svg' %}" class="oh-404__image" alt="{% trans 'Page not found. 404.' %}" />
                 <h1 class="oh-empty__title">{% trans "No Records found." %}</h1>
                 <p class="oh-empty__subtitle">{% trans "At present, There are no closed recruitments." %}</p>
             </div>
         {% else %}
             <div class="oh-empty">
-                <img src="{% static 'images/ui/search.svg' %}" class="oh-404__image" alt="Page not found. 404." />
+                <img src="{% static 'images/ui/search.svg' %}" class="oh-404__image" alt="{% trans 'Page not found. 404.' %}" />
                 <h1 class="oh-empty__title">{% trans "No Records found." %}</h1>
                 <p class="oh-empty__subtitle">{% trans "At present, There is no ongoing recruitment." %}</p>
             </div>
@@ -143,7 +143,7 @@
 <div class="oh-modal" id="editModal1" role="dialog" aria-hidden="true">
     <div class="oh-modal__dialog" style="max-width: 550px">
         <div class="oh-modal__dialog-header">
-            <button class="oh-modal__close" aria-label="Close" title="{% trans 'Close' %}">
+            <button class="oh-modal__close" aria-label="{% trans 'Close' %}" title="{% trans 'Close' %}">
                 <ion-icon name="close-outline"></ion-icon>
             </button>
         </div>
@@ -156,7 +156,7 @@
 <div class="oh-modal" id="editModal3" role="dialog" aria-hidden="true">
     <div class="oh-modal__dialog" style="max-width: 550px">
         <div class="oh-modal__dialog-header">
-            <button class="oh-modal__close" aria-label="Close" title="{% trans 'Close' %}">
+            <button class="oh-modal__close" aria-label="{% trans 'Close' %}" title="{% trans 'Close' %}">
                 <ion-icon name="close-outline"></ion-icon>
             </button>
         </div>
@@ -170,7 +170,7 @@
     <div class="oh-modal__dialog oh-modal__dialog--timeoff">
         <div class="oh-modal__dialog-header">
             <span class="oh-modal__dialog-title" id="editDialogDialog">{% trans "Create Task" %}</span>
-            <button class="oh-modal__close" aria-label="Close" title="{% trans 'Close' %}">
+            <button class="oh-modal__close" aria-label="{% trans 'Close' %}" title="{% trans 'Close' %}">
                 <ion-icon name="close-outline"></ion-icon>
             </button>
         </div>
@@ -185,7 +185,7 @@
     <div class="oh-modal__dialog oh-modal__dialog--timeoff">
         <div class="oh-modal__dialog-header">
             <span class="oh-modal__dialog-title" id="editDialogDialog">{% trans "Update Task" %}</span>
-            <button class="oh-modal__close" aria-label="Close" title="{% trans 'Close' %}">
+            <button class="oh-modal__close" aria-label="{% trans 'Close' %}" title="{% trans 'Close' %}">
                 <ion-icon name="close-outline"></ion-icon>
             </button>
         </div>
@@ -199,9 +199,9 @@
 <div class="oh-modal" id="sendMailModal" role="dialog" aria-labelledby="" aria-hidden="true">
     <div class="oh-modal__dialog">
         <div class="oh-modal__dialog-header">
-            <span class="oh-modal__dialog-title" id="modalTask">Send Mail</span>
-            <button class="oh-modal__close" aria-label="Close" title="{% trans " Close" %}">
-                <ion-icon name="close-outline" role="img" class="md hydrated" aria-label="close outline"></ion-icon>
+            <span class="oh-modal__dialog-title" id="modalTask">{% trans "Send Mail" %}</span>
+            <button class="oh-modal__close" aria-label="{% trans 'Close' %}" title="{% trans " Close" %}">
+                <ion-icon name="close-outline" role="img" class="md hydrated" aria-label="{% trans 'close outline' %}"></ion-icon>
             </button>
         </div>
         <div id="sendMailModalBody" class="p-3 ">
@@ -215,7 +215,7 @@
     <div class="oh-modal__dialog ">
         <div class="oh-modal__dialog-header">
 
-            <button class="oh-modal__close" aria-label="Close">
+            <button class="oh-modal__close" aria-label="{% trans 'Close' %}">
                 <ion-icon name="close-outline"></ion-icon>
             </button>
         </div>

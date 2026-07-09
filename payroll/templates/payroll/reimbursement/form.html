@@ -1,6 +1,6 @@
 {% load i18n %}
 <div class="oh-modal__dialog-header">
-    <button type="button" class="oh-modal__close" aria-label="Close">
+    <button type="button" class="oh-modal__close" aria-label="{% trans 'Close' %}">
         <ion-icon name="close-outline"></ion-icon>
     </button>
 </div>
@@ -12,12 +12,13 @@
         hx-target="#objectCreateModalTarget"
         hx-encoding="multipart/form-data"
     >
-        {{form.as_p}}
+        {{ form.as_p }}
     </form>
     <table
-        class="oh-table oh-table--sortable" {% if not form.instance.id or form.instance.type == "reimbursement" or form.instance.type == "bonus_encashment" %}
-        id="availableTable"
-        style="display: none"
+        class="oh-table oh-table--sortable"
+        {% if not form.instance.id or form.instance.type == "reimbursement" or form.instance.type == "bonus_encashment" %}
+            id="availableTable"
+            style="display: none"
         {% endif %}
     >
         <thead>
@@ -27,37 +28,33 @@
                 <th title=" {% trans 'Carry Forward Days' %}">{% trans "CFD" %}</th>
             </tr>
         </thead>
-        <tbody
-            {% if not form.instance.id %}
-            id="availableTableBody"
-            {% endif %}
-        >
+        <tbody {% if not form.instance.id %}id="availableTableBody"{% endif %}>
             {% for available_leave in form.assigned_leaves %}
-            <tr class="toggle-highlight">
-                <td>{{available_leave.leave_type_id}}</td>
-                <td>{{available_leave.available_days}}</td>
-                <td>{{available_leave.carryforward_days}}</td>
-            </tr>
+                <tr class="toggle-highlight">
+                    <td>{{ available_leave.leave_type_id }}</td>
+                    <td>{{ available_leave.available_days }}</td>
+                    <td>{{ available_leave.carryforward_days }}</td>
+                </tr>
             {% endfor %}
         </tbody>
     </table>
-<script>
-    toggleReimbursmentType($("#objectCreateModalTarget [name=type]").first());
-    removeHighlight();
-    var attachemntLabelElement = $(
-        "#objectCreateModalTarget [for=id_attachment]"
-    );
-    var attachemntlElement = $("#objectCreateModalTarget #id_attachment");
-    var attachemntParentlElement = $(
-        "#objectCreateModalTarget [for=id_attachment]"
-    ).parent();
+    <script>
+        toggleReimbursmentType($("#objectCreateModalTarget [name=type]").first());
+        removeHighlight();
+        var attachemntLabelElement = $(
+            "#objectCreateModalTarget [for=id_attachment]"
+        );
+        var attachemntlElement = $("#objectCreateModalTarget #id_attachment");
+        var attachemntParentlElement = $(
+            "#objectCreateModalTarget [for=id_attachment]"
+        ).parent();
 
-    // Detach both elements from the DOM
-    attachemntLabelElement.detach();
-    attachemntlElement.detach();
-    attachemntParentlElement.html("");
-    // Append them in the desired order
-    attachemntParentlElement.append(attachemntLabelElement);
-    attachemntParentlElement.append(attachemntlElement);
-</script>
+        // Detach both elements from the DOM
+        attachemntLabelElement.detach();
+        attachemntlElement.detach();
+        attachemntParentlElement.html("");
+        // Append them in the desired order
+        attachemntParentlElement.append(attachemntLabelElement);
+        attachemntParentlElement.append(attachemntlElement);
+    </script>
 </div>

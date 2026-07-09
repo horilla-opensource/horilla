@@ -5,16 +5,18 @@
 <div class="oh-card">
     <div class="oh-modal__dialog-header">
         <button
-        type="button"
-        class="oh-modal__close"
-        data-dismiss="oh-modal"
-        aria-label="Close"
-        {% if refresh %} onclick="event.stopPropagation(); window.location.reload();" {% endif %}
+            type="button"
+            class="oh-modal__close"
+            data-dismiss="oh-modal"
+            aria-label="{% trans 'Close' %}"
+            {% if refresh %}
+                onclick="event.stopPropagation(); window.location.reload()"
+            {% endif %}
         >
-        <ion-icon name="close-outline"></ion-icon>
+            <ion-icon name="close-outline"></ion-icon>
         </button>
         <span class="oh-modal__dialog-title ml-5">
-        <h5>{% trans "Claim Requests" %}</h5>
+            <h5>{% trans "Claim Requests" %}</h5>
         </span>
     </div>
     {% if claim_requests %}
@@ -23,87 +25,74 @@
                 <div class="oh-sticky-table__table">
                     <div class="oh-sticky-table__thead">
                         <div class="oh-sticky-table__tr">
-                            <div
-                                class="oh-sticky-table__th"
-                            >
+                            <div class="oh-sticky-table__th">
                                 {% trans "Employee" %}
                             </div>
-                            <div
-                                class="oh-sticky-table__th"
-                            >
+                            <div class="oh-sticky-table__th">
                                 {% trans "Action" %}
                             </div>
-
                         </div>
                     </div>
                     <div class="oh-sticky-table__tbody">
                         {% for req in claim_requests %}
-                        <div
-                            class="oh-sticky-table__tr"
-                        >
-                            <div class="oh-sticky-table__sd">
-                                <div class="oh-profile oh-profile--md">
-                                    <div
-                                        class="oh-profile__avatar mr-1"
-                                    >
-                                        <img
-                                            src="{{req.employee_id.get_avatar}}"
-                                            class="oh-profile__image"
-                                            alt=""
-                                        />
-                                    </div>
-                                    <span
-                                        class="oh-profile__name oh-text--dark"
-                                        >{{req.employee_id}}</span
-                                    >
-                                </div>
-                            </div>
-                            <div class="oh-sticky-table__td">
-                                <div class="oh-btn-group">
-                                    {% if not req.is_approved and not req.is_rejected %}
-                                        <button
-                                            class="oh-btn oh-btn--success w-100"
-                                            data-toggle="oh-modal-toggle"
-                                    		data-target="#objectDetailsModal"
-                                            hx-get="{% url 'approve-claim-request' req.id %}?approve=True"
-                                            hx-target="#objectDetailsModalTarget"
-                                            title="Approve request"
-                                        >
-                                            <ion-icon name="checkmark-outline"></ion-icon>
-                                        </button>
-                                    {% else %}
-                                        <button
-                                            class="oh-btn oh-btn--success w-100"
-                                            disabled
-                                            title="Approve request"
-                                        >
-                                            <ion-icon name="checkmark-outline"></ion-icon>
-                                        </button>
-                                    {% endif %}
-                                    {% if not req.is_rejected %}
-                                        <button
-                                            class="oh-btn oh-btn--danger w-100"
-                                            titile = "{% trans 'Reject' %}"
-                                            data-toggle="oh-modal-toggle"
-                                            data-target="#objectDetailsModal"
-                                            hx-get="{% url 'approve-claim-request' req.id %}?approve=False"
-                                            hx-target="#objectDetailsModalTarget"
-                                        >
-                                            <ion-icon name="close-outline"></ion-icon>
-                                        </button>
-                                    {% else %}
-                                        <button
-                                            class="oh-btn oh-btn--danger w-100"
-                                            titile = "{% trans 'Reject' %}"
-                                            disabled
+                            <div class="oh-sticky-table__tr">
+                                <div class="oh-sticky-table__sd">
+                                    <div class="oh-profile oh-profile--md">
+                                        <div class="oh-profile__avatar mr-1">
+                                            <img
+                                                src="{{req.employee_id.get_avatar}}"
+                                                class="oh-profile__image"
+                                                alt=""
                                             >
-                                            <ion-icon name="close-outline"></ion-icon>
-                                        </button>
-                                    {% endif %}
-
+                                        </div>
+                                        <span class="oh-profile__name oh-text--dark">{{ req.employee_id }}</span>
+                                    </div>
+                                </div>
+                                <div class="oh-sticky-table__td">
+                                    <div class="oh-btn-group">
+                                        {% if not req.is_approved and not req.is_rejected %}
+                                            <button
+                                                class="oh-btn oh-btn--success w-100"
+                                                data-toggle="oh-modal-toggle"
+                                                data-target="#objectDetailsModal"
+                                                hx-get="{% url 'approve-claim-request' req.id %}?approve=True"
+                                                hx-target="#objectDetailsModalTarget"
+                                                title="{% trans 'Approve request' %}"
+                                            >
+                                                <ion-icon name="checkmark-outline"></ion-icon>
+                                            </button>
+                                        {% else %}
+                                            <button
+                                                class="oh-btn oh-btn--success w-100"
+                                                disabled
+                                                title="{% trans 'Approve request' %}"
+                                            >
+                                                <ion-icon name="checkmark-outline"></ion-icon>
+                                            </button>
+                                        {% endif %}
+                                        {% if not req.is_rejected %}
+                                            <button
+                                                class="oh-btn oh-btn--danger w-100"
+                                                titile="{% trans 'Reject' %}"
+                                                data-toggle="oh-modal-toggle"
+                                                data-target="#objectDetailsModal"
+                                                hx-get="{% url 'approve-claim-request' req.id %}?approve=False"
+                                                hx-target="#objectDetailsModalTarget"
+                                            >
+                                                <ion-icon name="close-outline"></ion-icon>
+                                            </button>
+                                        {% else %}
+                                            <button
+                                                class="oh-btn oh-btn--danger w-100"
+                                                titile="{% trans 'Reject' %}"
+                                                disabled
+                                            >
+                                                <ion-icon name="close-outline"></ion-icon>
+                                            </button>
+                                        {% endif %}
+                                    </div>
                                 </div>
                             </div>
-                        </div>
                         {% endfor %}
                     </div>
                 </div>
@@ -111,12 +100,7 @@
         </div>
     {% else %}
         <div
-            style="
-                height: 70vh;
-                display: flex;
-                align-items: center;
-                justify-content: center;
-            "
+            style="height: 70vh; display: flex; align-items: center; justify-content: center"
             class=""
         >
             <div style="" class="oh-404">
@@ -125,7 +109,7 @@
                     src="{% static 'images/ui/ticket.png' %}"
                     class="mb-4"
                     alt=""
-                />
+                >
                 <h3 style="font-size: 20px" class="oh-404__subtitle">
                     {% trans "There are no claim requests at the moment." %}
                 </h3>

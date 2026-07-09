@@ -4,7 +4,7 @@
         <span class="oh-modal__dialog-title" id="addPointsModalLabel">
             <h5>{% trans "Add Bonus Points" %}</h5>
         </span>
-        <button class="oh-modal__close" aria-label="Close">
+        <button class="oh-modal__close" aria-label="{% trans 'Close' %}">
             <ion-icon name="close-outline"></ion-icon>
         </button>
     </div>
@@ -21,24 +21,21 @@
                         class="oh-label"
                         for="id_points"
                         title="{{form.points.help_text}}"
-                        >{% trans "Points :" %}</label
-                    >
+                    >{% trans "Points :" %}</label>
                     <div
                         class="w-100 d-flex"
                         style="align-items: center; justify-content: center !important"
                     >
-                        {{form.points}} {{form.points.errors}}
+                        {{ form.points }} {{ form.points.errors }}
                     </div>
                 </div>
                 <div class="col-12 col-sm-12 col-md-12 col-lg-8">
-                    <label class="oh-label" for="id_reason"
-                        >{% trans "Reason :" %}</label
-                    >
+                    <label class="oh-label" for="id_reason">{% trans "Reason :" %}</label>
                     <div
                         class="w-100 d-flex"
                         style="align-items: center; justify-content: center !important"
                     >
-                        {{form.reason}} {{form.reason.errors}}
+                        {{ form.reason }} {{ form.reason.errors }}
                     </div>
                 </div>
             </div>

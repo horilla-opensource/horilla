@@ -16,10 +16,10 @@
     <div class="oh-checkpoint-badge text-success mb-2" id="selectAllRShifts" style="cursor: pointer">
         {% trans "Select All Shifts" %}
     </div>
-    <div class="oh-checkpoint-badge text-secondary mb-2" id="unselectAllRShifts" style="cursor: pointer;display: none;">
+    <div class="oh-checkpoint-badge text-secondary mb-2" id="unselectAllRShifts" style="cursor: pointer; display: none">
         {% trans "Unselect All Shifts" %}
     </div>
-    <div class="oh-checkpoint-badge text-info mb-2" id="exportRShifts" style="cursor: pointer; display: none;">
+    <div class="oh-checkpoint-badge text-info mb-2" id="exportRShifts" style="cursor: pointer; display: none">
         {% trans "Export Shifts" %}
     </div>
     <div class="oh-checkpoint-badge text-danger mb-2" id="selectedShowRShifts" style="display: none"></div>
@@ -30,12 +30,20 @@
             <div class="oh-table_sticky--wrapper">
                 <div class="oh-sticky-dropdown--header">
                     <div class="oh-dropdown" x-data="{open: false}">
-                        <button class="oh-sticky-dropdown_btn " @click="open = !open"><ion-icon
-                                name="ellipsis-vertical-sharp" role="img" class="md hydrated"
-                                aria-label="ellipsis vertical sharp"></ion-icon></button>
-                        <div class="oh-dropdown__menu oh-sticky-table_dropdown" x-show="open" @click.outside="open = false">
-                            <ul class="oh-dropdown__items" id="roratingShiftCells">
-                            </ul>
+                        <button class="oh-sticky-dropdown_btn" @click="open = !open">
+                            <ion-icon
+                                name="ellipsis-vertical-sharp"
+                                role="img"
+                                class="md hydrated"
+                                aria-label="{% trans 'ellipsis vertical sharp' %}"
+                            ></ion-icon>
+                        </button>
+                        <div
+                            class="oh-dropdown__menu oh-sticky-table_dropdown"
+                            x-show="open"
+                            @click.outside="open = false"
+                        >
+                            <ul class="oh-dropdown__items" id="roratingShiftCells"></ul>
                         </div>
                     </div>
                 </div>
@@ -46,114 +54,199 @@
                     <div class="oh-sticky-table__table oh-table--sortable">
                         <div class="oh-sticky-table__thead">
                             <div class="oh-sticky-table__tr">
-                                <div class="oh-sticky-table__th" style="width:10px">
+                                <div class="oh-sticky-table__th" style="width: 10px">
                                     <div class="centered-div">
-                                        <input type="checkbox" class="oh-input oh-input__checkbox all-rshift"
-                                            title="{% trans 'Select All' %}" />
+                                        <input
+                                            type="checkbox"
+                                            class="oh-input oh-input__checkbox all-rshift"
+                                            title="{% trans 'Select All' %}"
+                                        >
                                     </div>
                                 </div>
-                                <div class="oh-sticky-table__th {% if request.sort_option.order == '-employee_id__employee_first_name' %}arrow-up {% elif request.sort_option.order == 'employee_id__employee_first_name' %}arrow-down {% else %} arrow-up-down {% endif %}"
+                                <div
+                                    class="oh-sticky-table__th {% if request.sort_option.order == '-employee_id__employee_first_name' %}arrow-up {% elif request.sort_option.order == 'employee_id__employee_first_name' %}arrow-down {% else %} arrow-up-down {% endif %}"
                                     hx-target="#view-container"
-                                    hx-get="{% url 'rotating-shift-assign-view' %}?{{pd}}&orderby=employee_id__employee_first_name">
+                                    hx-get="{% url 'rotating-shift-assign-view' %}?{{pd}}&orderby=employee_id__employee_first_name"
+                                >
                                     {% trans "Employee" %}
                                 </div>
-                                <div data-cell-index="1" data-cell-title='{% trans "Title" %}' class="oh-sticky-table__th">
-                                    {% trans "Title" %}</div>
-                                <div data-cell-index="2" data-cell-title='{% trans "Based On" %}'
-                                    class="oh-sticky-table__th">{% trans "Based On" %}</div>
-                                <div data-cell-index="3" data-cell-title='{% trans "Rotate" %}' class="oh-sticky-table__th">
-                                    {% trans "Rotate" %}</div>
-                                <div data-cell-index="4" data-cell-title='{% trans "Start Date" %}'
+                                <div
+                                    data-cell-index="1"
+                                    data-cell-title='{% trans "Title" %}'
+                                    class="oh-sticky-table__th"
+                                >
+                                    {% trans "Title" %}
+                                </div>
+                                <div
+                                    data-cell-index="2"
+                                    data-cell-title='{% trans "Based On" %}'
+                                    class="oh-sticky-table__th"
+                                >
+                                    {% trans "Based On" %}
+                                </div>
+                                <div
+                                    data-cell-index="3"
+                                    data-cell-title='{% trans "Rotate" %}'
+                                    class="oh-sticky-table__th"
+                                >
+                                    {% trans "Rotate" %}
+                                </div>
+                                <div
+                                    data-cell-index="4"
+                                    data-cell-title='{% trans "Start Date" %}'
                                     class="oh-sticky-table__th {% if request.sort_option.order == '-start_date' %}arrow-up {% elif request.sort_option.order == 'start_date' %}arrow-down {% else %} arrow-up-down {% endif %}"
                                     hx-target="#view-container"
-                                    hx-get="{% url 'rotating-shift-assign-view' %}?{{pd}}&orderby=start_date">
+                                    hx-get="{% url 'rotating-shift-assign-view' %}?{{pd}}&orderby=start_date"
+                                >
                                     {% trans "Start Date" %}
                                 </div>
-                                <div data-cell-index="5" data-cell-title='{% trans "Current Shift" %}'
-                                    class="oh-sticky-table__th">{% trans "Current Shift" %}</div>
-                                <div data-cell-index="6" data-cell-title='{% trans "Next Switch" %}'
+                                <div
+                                    data-cell-index="5"
+                                    data-cell-title='{% trans "Current Shift" %}'
+                                    class="oh-sticky-table__th"
+                                >
+                                    {% trans "Current Shift" %}
+                                </div>
+                                <div
+                                    data-cell-index="6"
+                                    data-cell-title='{% trans "Next Switch" %}'
                                     class="oh-sticky-table__th {% if request.sort_option.order == '-next_change_date' %}arrow-up {% elif request.sort_option.order == 'next_change_date' %}arrow-down {% else %} arrow-up-down {% endif %}"
                                     hx-target="#view-container"
-                                    hx-get="{% url 'rotating-shift-assign-view' %}?{{pd}}&orderby=next_change_date">
+                                    hx-get="{% url 'rotating-shift-assign-view' %}?{{pd}}&orderby=next_change_date"
+                                >
                                     {% trans "Next Switch" %}
                                 </div>
                                 {% if perms.base.change_rotatingshiftassign or request.user|is_reportingmanager or perms.base.delete_rotatingshiftassign %}
-                                    <div data-cell-index="7" data-cell-title='{% trans "Next Shift" %}'
-                                        class="oh-sticky-table__th">{% trans "Next Shift" %}</div>
-                                    <div class="oh-sticky-table__th oh-sticky-table__right" style="width: 250px;">{% trans "Actions" %}</div>
+                                    <div
+                                        data-cell-index="7"
+                                        data-cell-title='{% trans "Next Shift" %}'
+                                        class="oh-sticky-table__th"
+                                    >
+                                        {% trans "Next Shift" %}
+                                    </div>
+                                    <div class="oh-sticky-table__th oh-sticky-table__right" style="width: 250px">
+                                        {% trans "Actions" %}
+                                    </div>
                                 {% endif %}
                             </div>
                         </div>
                         <div class="oh-sticky-table__tbody">
                             {% for rshift in rshift_assign %}
-                                <div class="oh-sticky-table__tr" draggable="true" hx-get="{% url 'rshift-individual-view' rshift.id %}?{{pd}}&instances_ids={{assign_ids}}" hx-target="#objectDetailsModalTarget"
-                                    data-toggle="oh-modal-toggle" data-target="#objectDetailsModal">
-                                    <div class="oh-sticky-table__sd" onclick="event.stopPropagation();">
+                                <div
+                                    class="oh-sticky-table__tr"
+                                    draggable="true"
+                                    hx-get="{% url 'rshift-individual-view' rshift.id %}?{{pd}}&instances_ids={{assign_ids}}"
+                                    hx-target="#objectDetailsModalTarget"
+                                    data-toggle="oh-modal-toggle"
+                                    data-target="#objectDetailsModal"
+                                >
+                                    <div class="oh-sticky-table__sd" onclick="event.stopPropagation()">
                                         <div class="centered-div">
-                                            <input type="checkbox" id="{{rshift.id}}" onchange="highlightRow($(this))" class="oh-input rshift-checkbox oh-input__checkbox all-rshift-row" />
+                                            <input
+                                                type="checkbox"
+                                                id="{{rshift.id}}"
+                                                onchange="highlightRow($(this))"
+                                                class="oh-input rshift-checkbox oh-input__checkbox all-rshift-row"
+                                            >
                                         </div>
                                     </div>
                                     <div class="oh-sticky-table__td">
                                         <div class="oh-profile oh-profile--md">
                                             <div class="oh-profile__avatar mr-1">
-                                                <img src="{{rshift.employee_id.get_avatar}}" class="oh-profile__image" alt="" />
+                                                <img
+                                                    src="{{rshift.employee_id.get_avatar}}"
+                                                    class="oh-profile__image"
+                                                    alt=""
+                                                >
                                             </div>
-                                            <span class="oh-profile__name oh-text--dark">{{rshift.employee_id}}</span>
+                                            <span class="oh-profile__name oh-text--dark">{{ rshift.employee_id }}</span>
                                         </div>
                                     </div>
-                                    <div data-cell-index="1" class="oh-sticky-table__td">{{rshift.rotating_shift_id}}</div>
-                                    <div data-cell-index="2" class="oh-sticky-table__td">{{rshift.get_based_on_display }}</div>
+                                    <div data-cell-index="1" class="oh-sticky-table__td">
+                                        {{ rshift.rotating_shift_id }}
+                                    </div>
+                                    <div data-cell-index="2" class="oh-sticky-table__td">
+                                        {{ rshift.get_based_on_display }}
+                                    </div>
                                     <div data-cell-index="3" class="oh-sticky-table__td">
                                         {% if rshift.based_on == 'after' %}
-                                            {% trans "Rotate after" %} {{rshift.rotate_after_day}} {% trans "days" %}
+                                            {% trans "Rotate after" %} {{ rshift.rotate_after_day }} {% trans "days" %}
                                         {% elif rshift.based_on == "weekly" %}
-                                            {% trans "Weekly every" %} {{rshift.rotate_every_weekend}}
+                                            {% trans "Weekly every" %} {{ rshift.rotate_every_weekend }}
                                         {% elif rshift.based_on == "monthly" %}
                                             {% if rshift.rotate_every == "1" %}
-                                                {% trans "Rotate every" %} {{rshift.rotate_every}}{% trans "st day of month" %}
+                                                {% trans "Rotate every" %}
+                                                {{ rshift.rotate_every }}{% trans "st day of month" %}
                                             {% elif rshift.rotate_every == "2" %}
-                                                {% trans "Rotate every" %} {{rshift.rotate_every}}{% trans "nd day of month" %}
+                                                {% trans "Rotate every" %}
+                                                {{ rshift.rotate_every }}{% trans "nd day of month" %}
                                             {% elif rshift.rotate_every == "3" %}
-                                                {% trans "Rotate every" %} {{rshift.rotate_every}}{% trans "rd day of month" %}
+                                                {% trans "Rotate every" %}
+                                                {{ rshift.rotate_every }}{% trans "rd day of month" %}
                                             {% elif rshift.rotate_every == "last" %}
                                                 {% trans "Rotate every last day of month" %}
                                             {% else %}
-                                                {% trans "Rotate every" %} {{rshift.rotate_every}}{% trans "th day of month" %}
+                                                {% trans "Rotate every" %}
+                                                {{ rshift.rotate_every }}{% trans "th day of month" %}
                                             {% endif %}
                                         {% endif %}
                                     </div>
                                     <div data-cell-index="4" class="oh-sticky-table__td dateformat_changer">
-                                        {{rshift.start_date}}</div>
-                                    <div data-cell-index="5" class="oh-sticky-table__td">{{rshift.current_shift}}</div>
+                                        {{ rshift.start_date }}
+                                    </div>
+                                    <div data-cell-index="5" class="oh-sticky-table__td">
+                                        {{ rshift.current_shift }}
+                                    </div>
                                     <div data-cell-index="6" class="oh-sticky-table__td dateformat_changer">
-                                        {{rshift.next_change_date}}</div>
-                                    <div data-cell-index="7" class="oh-sticky-table__td">{{rshift.next_shift}}</div>
+                                        {{ rshift.next_change_date }}
+                                    </div>
+                                    <div data-cell-index="7" class="oh-sticky-table__td">{{ rshift.next_shift }}</div>
                                     {% if perms.base.change_rotatingshiftassign or request.user|is_reportingmanager or perms.base.delete_rotatingshiftassign %}
                                         <div class="oh-sticky-table__td oh-sticky-table__right">
                                             <div class="oh-btn-group" onclick="event.stopPropagation()">
                                                 {% if perms.base.change_rotatingshiftassign or request.user|is_reportingmanager %}
-                                                    <a hx-get="{% url 'rotating-shift-assign-update' rshift.id %}"
-                                                        hx-target="#objectUpdateModalTarget" hx-swap="innerHTML"
-                                                        data-target="#objectUpdateModal" data-toggle="oh-modal-toggle" type="button"
-                                                        class="oh-btn oh-btn--light-bkg w-100" title="{% trans 'Update' %}">
+                                                    <a
+                                                        hx-get="{% url 'rotating-shift-assign-update' rshift.id %}"
+                                                        hx-target="#objectUpdateModalTarget"
+                                                        hx-swap="innerHTML"
+                                                        data-target="#objectUpdateModal"
+                                                        data-toggle="oh-modal-toggle"
+                                                        type="button"
+                                                        class="oh-btn oh-btn--light-bkg w-100"
+                                                        title="{% trans 'Update' %}"
+                                                    >
                                                         <ion-icon name="create-outline"></ion-icon>
                                                     </a>
-                                                    <a class="oh-btn oh-btn--light-bkg w-100" data-toggle="oh-modal-toggle"
+                                                    <a
+                                                        class="oh-btn oh-btn--light-bkg w-100"
+                                                        data-toggle="oh-modal-toggle"
                                                         data-target="#objectCreateModal"
                                                         hx-get="{% url 'rotating-shift-assign-duplicate' rshift.id %}?{{pg}}"
-                                                        title="{% trans 'Duplicate' %}" hx-target="#objectCreateModalTarget"
-                                                        style="cursor: pointer;">
+                                                        title="{% trans 'Duplicate' %}"
+                                                        hx-target="#objectCreateModalTarget"
+                                                        style="cursor: pointer"
+                                                    >
                                                         <ion-icon name="copy-outline"></ion-icon>
                                                     </a>
                                                 {% endif %}
                                                 {% if perms.base.change_rotatingshiftassign or request.user|is_reportingmanager %}
                                                     {% if rshift.is_active %}
-                                                        <form hx-confirm="{% trans 'Do you want to archive this rotating shift assign?' %}"
+                                                        <form
+                                                            hx-confirm="{% trans 'Do you want to archive this rotating shift assign?' %}"
                                                             hx-get="{% url 'rotating-shift-assign-archive' rshift.id %}?{{pd}}"
-                                                            hx-target="#view-container" style="width:100%">
-                                                            <input type="hidden" name="is_active" value="{% trans 'False' %}" id="">
-                                                            <button class="oh-btn oh-btn--danger-outline oh-btn--light-bkg w-100"
-                                                                title="{% trans 'Archive' %}">
+                                                            hx-target="#view-container"
+                                                            style="width: 100%"
+                                                        >
+                                                            <input
+                                                                type="hidden"
+                                                                name="is_active"
+                                                                value="{% trans 'False' %}"
+                                                                id=""
+                                                            >
+                                                            <button
+                                                                class="oh-btn oh-btn--danger-outline oh-btn--light-bkg w-100"
+                                                                title="{% trans 'Archive' %}"
+                                                            >
                                                                 <ion-icon name="archive"></ion-icon>
                                                             </button>
                                                         </form>
@@ -161,23 +254,31 @@
                                                         <form
                                                             hx-confirm="{% trans 'Do you Want to un-archive this rotating shift assign?' %}"
                                                             hx-get="{% url 'rotating-shift-assign-archive' rshift.id %}?{{pd}}"
-                                                            hx-target="#view-container" style="width:100%">
-                                                            <button class="oh-btn oh-btn--danger-outline oh-btn--light-bkg w-100"
-                                                                title="{% trans 'Un-Archive' %}">
+                                                            hx-target="#view-container"
+                                                            style="width: 100%"
+                                                        >
+                                                            <button
+                                                                class="oh-btn oh-btn--danger-outline oh-btn--light-bkg w-100"
+                                                                title="{% trans 'Un-Archive' %}"
+                                                            >
                                                                 <ion-icon name="archive"></ion-icon>
                                                             </button>
                                                         </form>
                                                     {% endif %}
                                                 {% endif %}
                                                 {% if perms.base.delete_rotatingshiftassign or request.user|is_reportingmanager %}
-                                                    <form style="width:100%"
+                                                    <form
+                                                        style="width: 100%"
                                                         hx-confirm="{% trans 'Are you sure you want to delete this rotating shift assign?' %}"
                                                         hx-post="{% url 'rotating-shift-assign-delete' rshift.id %}?{{pd}}"
-                                                        hx-target="#view-container">
+                                                        hx-target="#view-container"
+                                                    >
                                                         {% csrf_token %}
-                                                        <button type="submit"
+                                                        <button
+                                                            type="submit"
                                                             class="oh-btn oh-btn--danger-outline oh-btn--light-bkg w-100"
-                                                            title="{% trans 'Remove' %}">
+                                                            title="{% trans 'Remove' %}"
+                                                        >
                                                             <ion-icon name="trash-outline"></ion-icon>
                                                         </button>
                                                     </form>
@@ -195,38 +296,55 @@
                 <!-- start of pagination -->
                 <div class="oh-pagination">
                     <span class="oh-pagination__page">
-                        {% trans "Page" %} {{rshift_assign.number}} {% trans "of" %} {{rshift_assign.paginator.num_pages}}.
+                        {% trans "Page" %} {{ rshift_assign.number }} {% trans "of" %}
+                        {{ rshift_assign.paginator.num_pages }}.
                     </span>
                     <nav class="oh-pagination__nav">
                         <div class="oh-pagination__input-container me-3">
                             <span class="oh-pagination__label me-1">{% trans "Page" %}</span>
-                            <input type="number" name="page" class="oh-pagination__input" value="{{rshift_assign.number}}"
-                                hx-get="{% url 'rotating-shift-assign-view' %}?{{pd}}" hx-target="#view-container"
-                                min="1" />
-                            <span class="oh-pagination__label">{% trans "of" %} {{rshift_assign.paginator.num_pages}}</span>
+                            <input
+                                type="number"
+                                name="page"
+                                class="oh-pagination__input"
+                                value="{{rshift_assign.number}}"
+                                hx-get="{% url 'rotating-shift-assign-view' %}?{{pd}}"
+                                hx-target="#view-container"
+                                min="1"
+                            >
+                            <span class="oh-pagination__label">{% trans "of" %}
+                                {{ rshift_assign.paginator.num_pages }}</span>
                         </div>
                         <ul class="oh-pagination__items">
                             {% if rshift_assign.has_previous %}
                                 <li class="oh-pagination__item oh-pagination__item--wide">
-                                    <a hx-target="#view-container" hx-get="{% url 'rotating-shift-assign-view' %}?{{pd}}&page=1"
-                                        class="oh-pagination__link">{% trans "First" %}</a>
+                                    <a
+                                        hx-target="#view-container"
+                                        hx-get="{% url 'rotating-shift-assign-view' %}?{{pd}}&page=1"
+                                        class="oh-pagination__link"
+                                    >{% trans "First" %}</a>
                                 </li>
                                 <li class="oh-pagination__item oh-pagination__item--wide">
-                                    <a hx-target="#view-container"
+                                    <a
+                                        hx-target="#view-container"
                                         hx-get="{% url 'rotating-shift-assign-view' %}?{{pd}}&page={{ rshift_assign.previous_page_number }}"
-                                        class="oh-pagination__link">{% trans "Previous" %}</a>
+                                        class="oh-pagination__link"
+                                    >{% trans "Previous" %}</a>
                                 </li>
                             {% endif %}
                             {% if rshift_assign.has_next %}
                                 <li class="oh-pagination__item oh-pagination__item--wide">
-                                    <a hx-target="#view-container"
+                                    <a
+                                        hx-target="#view-container"
                                         hx-get="{% url 'rotating-shift-assign-view' %}?{{pd}}&page={{ rshift_assign.next_page_number }}"
-                                        class="oh-pagination__link">{% trans "Next" %}</a>
+                                        class="oh-pagination__link"
+                                    >{% trans "Next" %}</a>
                                 </li>
                                 <li class="oh-pagination__item oh-pagination__item--wide">
-                                    <a hx-target="#view-container"
+                                    <a
+                                        hx-target="#view-container"
                                         hx-get="{% url 'rotating-shift-assign-view' %}?{{pd}}&page={{ rshift_assign.paginator.num_pages }}"
-                                        class="oh-pagination__link">{% trans "Last" %}</a>
+                                        class="oh-pagination__link"
+                                    >{% trans "Last" %}</a>
                                 </li>
                             {% endif %}
                         </ul>
@@ -237,8 +355,11 @@
         {% else %}
             <!-- start of empty page -->
             <div class="oh-404">
-                <img style="width: 150px; height: 150px" src="{% static 'images/ui/no-results.png' %}"
-                    class="oh-404__image mb-4" />
+                <img
+                    style="width: 150px; height: 150px"
+                    src="{% static 'images/ui/no-results.png' %}"
+                    class="oh-404__image mb-4"
+                >
                 <h5 class="oh-404__subtitle">
                     {% trans "No search result found!" %}
                 </h5>

@@ -52,7 +52,7 @@ BREAKDOWN = [
     ("first_half", _("First Half")),
     ("second_half", _("Second Half")),
 ]
-CHOICES = [("yes", "Yes"), ("no", "No")]
+CHOICES = [("yes", _("Yes")), ("no", _("No"))]
 
 RESET_BASED = [
     ("yearly", _("Yearly")),

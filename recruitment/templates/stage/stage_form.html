@@ -1,35 +1,40 @@
 {% load i18n %}
 <div class="oh-modal__dialog-header">
-    <span class="oh-modal__dialog-title" id="objectCreateModalLabel">{% trans "Create" %} {{form.verbose_name}}</span>
-    <button class="oh-modal__close" aria-label="Close">
+    <span class="oh-modal__dialog-title" id="objectCreateModalLabel">{% trans "Create" %} {{ form.verbose_name }}</span>
+    <button class="oh-modal__close" aria-label="{% trans 'Close' %}">
         <ion-icon name="close-outline"></ion-icon>
     </button>
 </div>
 
 <div class="oh-modal__dialog-body" id="objectCreateModalBody">
-    <form hx-post="{% url 'rec-stage-create' %}" class="oh-general__tab-target oh-profile-section"
-        hx-target="#objectCreateModalTarget">
+    <form
+        hx-post="{% url 'rec-stage-create' %}"
+        class="oh-general__tab-target oh-profile-section"
+        hx-target="#objectCreateModalTarget"
+    >
         <div>
             {% csrf_token %}
             <div class="row" id="stageFormCreate">
                 <div class="col-12 col-sm-12 col-md-12 col-lg-6">
-                    <label class="oh-label" for="{{form.stage.id_for_label}}">{{form.stage.label}} *</label>
-                    {{form.stage}} {{form.stage.errors}}
+                    <label class="oh-label" for="{{form.stage.id_for_label}}">{{ form.stage.label }} *</label>
+                    {{ form.stage }} {{ form.stage.errors }}
                 </div>
                 <div class="col-12 col-sm-12 col-md-12 col-lg-6">
-                    <label class="oh-label" for="{{form.recruitment_id.id_for_label}}">{{form.recruitment_id.label}} *</label>
-                    {{form.recruitment_id}} {{form.recruitment_id.errors}}
+                    <label class="oh-label" for="{{form.recruitment_id.id_for_label}}">{{ form.recruitment_id.label }}
+                        *</label>
+                    {{ form.recruitment_id }} {{ form.recruitment_id.errors }}
                 </div>
                 <div class="col-12 col-sm-12 col-md-12 col-lg-6" id="stage_manager">
-                    <label class="oh-label" for="{{form.stage_managers.id_for_label}}">{{form.stage_managers.label}} *</label>
-                    {{form.stage_managers}} {{form.stage_managers.errors}}
+                    <label class="oh-label" for="{{form.stage_managers.id_for_label}}">{{ form.stage_managers.label }}
+                        *</label>
+                    {{ form.stage_managers }} {{ form.stage_managers.errors }}
                     <ul id="error-list" class="errorlist" style="display: none">
                         <li>{% trans "This field is requied" %}</li>
                     </ul>
                 </div>
                 <div class="col-12 col-sm-12 col-md-12 col-lg-6">
-                    <label class="oh-label" for="{{form.stage_type.id_for_label}}">{{form.stage_type.label}} *</label>
-                    {{form.stage_type}} {{form.stage_type.errors}}
+                    <label class="oh-label" for="{{form.stage_type.id_for_label}}">{{ form.stage_type.label }} *</label>
+                    {{ form.stage_type }} {{ form.stage_type.errors }}
                 </div>
             </div>
         </div>

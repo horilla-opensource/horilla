@@ -1,26 +1,32 @@
 {% load static %}{% load i18n %}
 <div id="ohMessages"></div>
 {% if messages %}
-<div class="oh-wrapper">
-    {% for message in messages %}
-    <div class="oh-alert-container">
-        <div class="oh-alert oh-alert--animated {{message.tags}}">
-        {{ message }}
-        </div>
+    <div class="oh-wrapper">
+        {% for message in messages %}
+            <div class="oh-alert-container">
+                <div class="oh-alert oh-alert--animated {{message.tags}}">
+                    {{ message }}
+                </div>
+            </div>
+        {% endfor %}
     </div>
-    {% endfor %}
-</div>
 {% endif %}
 <div class="oh-inner-sidebar-content mt-3">
     <div class="oh-inner-sidebar-content__header d-flex justify-content-between align-items-center pb-3">
         <h2 class="oh-inner-sidebar-content__title">{% trans 'Default Grace Time' %}</h2>
         {% if not default_grace_time and perms.attendance.add_gracetime %}
-        <button class="oh-btn oh-btn--secondary oh-btn--shadow" hx-target="#objectCreateModalTarget" type="button"
-            hx-get="{% url 'create-grace-time' %}?default=True" class="oh-btn oh-btn--info"
-            data-toggle="oh-modal-toggle" data-target="#objectCreateModal">
-            <ion-icon name="add-outline" class="me-1"></ion-icon>
-            {% trans 'Create' %}
-        </button>
+            <button
+                class="oh-btn oh-btn--secondary oh-btn--shadow"
+                hx-target="#objectCreateModalTarget"
+                type="button"
+                hx-get="{% url 'create-grace-time' %}?default=True"
+                class="oh-btn oh-btn--info"
+                data-toggle="oh-modal-toggle"
+                data-target="#objectCreateModal"
+            >
+                <ion-icon name="add-outline" class="me-1"></ion-icon>
+                {% trans 'Create' %}
+            </button>
         {% endif %}
     </div>
     {% if default_grace_time %}
@@ -41,7 +47,7 @@
                             {% trans 'Applicable on clock-out' %}
                         </div>
                         {% if perms.attendance.change_gracetime %}
-                        <div class="oh-sticky-table__th">{% trans 'Actions' %}</div>
+                            <div class="oh-sticky-table__th">{% trans 'Actions' %}</div>
                         {% endif %}
                     </div>
                 </div>
@@ -52,9 +58,26 @@
                             <div class="d-flex">
                                 <div class="oh-switch">
                                     {% if perms.attendance.change_gracetime %}
-                                        <input type="checkbox" id="isActive" data-id ="{{default_grace_time.id}}" class="oh-switch__checkbox" {% if default_grace_time.is_active %} checked {% endif %} onchange="updateGracetimeIsActivate(this)">
+                                        <input
+                                            type="checkbox"
+                                            id="isActive"
+                                            data-id="{{default_grace_time.id}}"
+                                            class="oh-switch__checkbox"
+                                            {% if default_grace_time.is_active %}
+                                                checked
+                                            {% endif %}
+                                            onchange="updateGracetimeIsActivate(this)"
+                                        >
                                     {% else %}
-                                        <input type="checkbox" id="isActive" class="oh-switch__checkbox" {% if default_grace_time.is_active %} checked {% endif %} disabled>
+                                        <input
+                                            type="checkbox"
+                                            id="isActive"
+                                            class="oh-switch__checkbox"
+                                            {% if default_grace_time.is_active %}
+                                                checked
+                                            {% endif %}
+                                            disabled
+                                        >
                                     {% endif %}
                                 </div>
                             </div>
@@ -63,9 +86,27 @@
                             <div class="d-flex">
                                 <div class="oh-switch">
                                     {% if perms.attendance.change_gracetime %}
-                                        <input type="checkbox" id="isAllowedClockIn" data-id ="{{default_grace_time.id}}" data-update ="clock_in" class="oh-switch__checkbox" {% if default_grace_time.allowed_clock_in %} checked {% endif %} onchange="updateAllowedClockInOrOut(this)">
+                                        <input
+                                            type="checkbox"
+                                            id="isAllowedClockIn"
+                                            data-id="{{default_grace_time.id}}"
+                                            data-update="clock_in"
+                                            class="oh-switch__checkbox"
+                                            {% if default_grace_time.allowed_clock_in %}
+                                                checked
+                                            {% endif %}
+                                            onchange="updateAllowedClockInOrOut(this)"
+                                        >
                                     {% else %}
-                                        <input type="checkbox" id="isAllowedClockIn" class="oh-switch__checkbox" {% if default_grace_time.auto_generate %} checked {% endif %} disabled>
+                                        <input
+                                            type="checkbox"
+                                            id="isAllowedClockIn"
+                                            class="oh-switch__checkbox"
+                                            {% if default_grace_time.auto_generate %}
+                                                checked
+                                            {% endif %}
+                                            disabled
+                                        >
                                     {% endif %}
                                 </div>
                             </div>
@@ -74,51 +115,88 @@
                             <div class="d-flex">
                                 <div class="oh-switch">
                                     {% if perms.attendance.change_gracetime %}
-                                        <input type="checkbox" id="isAllowedClockOut" data-id ="{{default_grace_time.id}}" data-update ="clock_out" class="oh-switch__checkbox" {% if default_grace_time.allowed_clock_out %} checked {% endif %} onchange="updateAllowedClockInOrOut(this)">
+                                        <input
+                                            type="checkbox"
+                                            id="isAllowedClockOut"
+                                            data-id="{{default_grace_time.id}}"
+                                            data-update="clock_out"
+                                            class="oh-switch__checkbox"
+                                            {% if default_grace_time.allowed_clock_out %}
+                                                checked
+                                            {% endif %}
+                                            onchange="updateAllowedClockInOrOut(this)"
+                                        >
                                     {% else %}
-                                        <input type="checkbox" id="isAllowedClockOut" class="oh-switch__checkbox" {% if default_grace_time.auto_generate %} checked {% endif %} disabled>
+                                        <input
+                                            type="checkbox"
+                                            id="isAllowedClockOut"
+                                            class="oh-switch__checkbox"
+                                            {% if default_grace_time.auto_generate %}
+                                                checked
+                                            {% endif %}
+                                            disabled
+                                        >
                                     {% endif %}
                                 </div>
                             </div>
                         </div>
-                        {% if perms.attendance.change_gracetime%}
-                        <div class="oh-sticky-table__td">
-                            <div class="oh-btn-group">
-                                {% if perms.base.change_gracetime %}
-                                <a hx-get="{% url 'update-grace-time' default_grace_time.id %}?default=False"
-                                    hx-target="#objectUpdateModalTarget" type="button" data-toggle="oh-modal-toggle"
-                                    data-target="#objectUpdateModal" data-toggle="oh-modal-toggle" type="button"
-                                    class="oh-btn oh-btn--light-bkg w-50" title="{% trans 'Edit' %}">
-                                    <ion-icon name="create-outline"></ion-icon></a>
-                                {% endif %}
-                                {% if perms.base.delete_gracetime %}
-                                <form hx-confirm="{% trans 'Are you sure you want to delete this grace time?' %}" class="w-50"
-                                    hx-post="{% url 'delete-grace-time' default_grace_time.id %}?view=conditon" hx-target="#graceTimeContainer"
-                                    >
-                                    {% csrf_token %}
-                                    <button type="submit" class="oh-btn oh-btn--danger-outline oh-btn--light-bkg w-100"
-                                        title="{% trans 'Delete' %}">
-                                        <ion-icon name="trash-outline"></ion-icon>
-                                    </button>
-                                </form>
-                                {% else %}
-                                <button type="submit"
-                                    class="oh-btn oh-btn--danger-outline oh-btn--light-bkg oh-btn-disabled w-100"
-                                    title="{% trans 'Delete' %}">
-                                    <ion-icon name="trash-outline "></ion-icon>
-                                </button>
-                                {% endif %}
+                        {% if perms.attendance.change_gracetime %}
+                            <div class="oh-sticky-table__td">
+                                <div class="oh-btn-group">
+                                    {% if perms.base.change_gracetime %}
+                                        <a
+                                            hx-get="{% url 'update-grace-time' default_grace_time.id %}?default=False"
+                                            hx-target="#objectUpdateModalTarget"
+                                            type="button"
+                                            data-toggle="oh-modal-toggle"
+                                            data-target="#objectUpdateModal"
+                                            data-toggle="oh-modal-toggle"
+                                            type="button"
+                                            class="oh-btn oh-btn--light-bkg w-50"
+                                            title="{% trans 'Edit' %}"
+                                        >
+                                            <ion-icon name="create-outline"></ion-icon></a>
+                                    {% endif %}
+                                    {% if perms.base.delete_gracetime %}
+                                        <form
+                                            hx-confirm="{% trans 'Are you sure you want to delete this grace time?' %}"
+                                            class="w-50"
+                                            hx-post="{% url 'delete-grace-time' default_grace_time.id %}?view=conditon"
+                                            hx-target="#graceTimeContainer"
+                                        >
+                                            {% csrf_token %}
+                                            <button
+                                                type="submit"
+                                                class="oh-btn oh-btn--danger-outline oh-btn--light-bkg w-100"
+                                                title="{% trans 'Delete' %}"
+                                            >
+                                                <ion-icon name="trash-outline"></ion-icon>
+                                            </button>
+                                        </form>
+                                    {% else %}
+                                        <button
+                                            type="submit"
+                                            class="oh-btn oh-btn--danger-outline oh-btn--light-bkg oh-btn-disabled w-100"
+                                            title="{% trans 'Delete' %}"
+                                        >
+                                            <ion-icon name="trash-outline "></ion-icon>
+                                        </button>
+                                    {% endif %}
+                                </div>
                             </div>
-                        </div>
                         {% endif %}
                     </div>
                 </div>
             </div>
         </div>
     {% else %}
-        <div style="display: flex; flex-direction: column; justify-content: center; align-items: center; height: 100%;">
-            <img style="display: block; width: 15%; margin: 20px auto; filter: opacity(0.5);"
-                src="{% static 'images/ui/Hour_glass.png' %}" class="" alt="Page not found. 404." />
+        <div style="display: flex; flex-direction: column; justify-content: center; align-items: center; height: 100%">
+            <img
+                style="display: block; width: 15%; margin: 20px auto; filter: opacity(0.5)"
+                src="{% static 'images/ui/Hour_glass.png' %}"
+                class=""
+                alt="{% trans 'Page not found. 404.' %}"
+            >
             <h5 class="oh-404__subtitle">{% trans "There is no default grace time at this moment." %}</h5>
         </div>
     {% endif %}
@@ -130,133 +208,219 @@
     <div class="oh-inner-sidebar-content__header d-flex justify-content-between align-items-center">
         <h2 class="oh-inner-sidebar-content__title">{% trans 'Grace Time' %}</h2>
         {% if perms.attendance.add_gracetime %}
-        <button class="oh-btn oh-btn--secondary oh-btn--shadow" hx-target="#objectCreateModalTarget" type="button"
-            hx-get="{% url 'create-grace-time' %}?default=False" class="oh-btn oh-btn--info"
-            data-toggle="oh-modal-toggle" data-target="#objectCreateModal">
-            <ion-icon name="add-outline" class="me-1"></ion-icon>
-            {% trans 'Create' %}
-        </button>
+            <button
+                class="oh-btn oh-btn--secondary oh-btn--shadow"
+                hx-target="#objectCreateModalTarget"
+                type="button"
+                hx-get="{% url 'create-grace-time' %}?default=False"
+                class="oh-btn oh-btn--info"
+                data-toggle="oh-modal-toggle"
+                data-target="#objectCreateModal"
+            >
+                <ion-icon name="add-outline" class="me-1"></ion-icon>
+                {% trans 'Create' %}
+            </button>
         {% endif %}
     </div>
     {% if grace_times %}
-    <div class="oh-sticky-table">
-        <div class="oh-sticky-table__table oh-table--sortable">
-            <div class="oh-sticky-table__thead">
-                <div class="oh-sticky-table__tr">
-                    <div class="oh-sticky-table__sd">
-                        {% trans 'Allowed time' %}
-                    </div>
-                    <div class="oh-sticky-table__th">
-                        {% trans 'Is active' %}
-                    </div>
-                    <div class="oh-sticky-table__th">
-                        {% trans 'Applicable on clock-in' %}
-                    </div>
-                    <div class="oh-sticky-table__th">
-                        {% trans 'Applicable on clock-out' %}
-                    </div>
-                    <div class="oh-sticky-table__th">
-                        {% trans 'Assigned Shifts' %}
-                    </div>
-                    {% if perms.attendance.change_gracetime %}
-                    <div class="oh-sticky-table__th">{% trans 'Actions' %}</div>
-                    {% endif %}
-                </div>
-            </div>
-            <div class="oh-sticky-table__tbody">
-                {% for grace_time in grace_times %}
-                <div class="oh-sticky-table__tr" draggable="true">
-                    <div class="oh-sticky-table__sd">{{ grace_time.allowed_time }} {% trans 'Hours' %}</div>
-                    <div class="oh-sticky-table__td">
-                        <div class="d-flex">
-                            <div class="oh-switch">
-                                {% if perms.attendance.change_gracetime %}
-                                    <input type="checkbox" id="isActive" data-id ="{{grace_time.id}}" class="oh-switch__checkbox" {% if grace_time.is_active %} checked {% endif %} onchange="updateGracetimeIsActivate(this)">
-                                {% else %}
-                                    <input type="checkbox" id="isActive" class="oh-switch__checkbox" {% if grace_time.is_active %} checked {% endif %} disabled>
-                                {% endif %}
-                            </div>
+        <div class="oh-sticky-table">
+            <div class="oh-sticky-table__table oh-table--sortable">
+                <div class="oh-sticky-table__thead">
+                    <div class="oh-sticky-table__tr">
+                        <div class="oh-sticky-table__sd">
+                            {% trans 'Allowed time' %}
                         </div>
-                    </div>
-                    <div class="oh-sticky-table__td">
-                        <div class="d-flex">
-                            <div class="oh-switch">
-                                {% if perms.attendance.change_gracetime %}
-                                    <input type="checkbox" id="isAllowedClockIn" data-id ="{{grace_time.id}}" data-update ="clock_in" class="oh-switch__checkbox" {% if grace_time.allowed_clock_in %} checked {% endif %} onchange="updateAllowedClockInOrOut(this)">
-                                {% else %}
-                                    <input type="checkbox" id="isAllowedClockIn" class="oh-switch__checkbox" {% if grace_time.allowed_clock_in %} checked {% endif %} disabled>
-                                {% endif %}
-                            </div>
+                        <div class="oh-sticky-table__th">
+                            {% trans 'Is active' %}
                         </div>
-                    </div>
-                    <div class="oh-sticky-table__td">
-                        <div class="d-flex">
-                            <div class="oh-switch">
-                                {% if perms.attendance.change_gracetime %}
-                                    <input type="checkbox" id="isAllowedClockOut" data-id ="{{grace_time.id}}" data-update ="clock_out" class="oh-switch__checkbox" {% if grace_time.allowed_clock_out %} checked {% endif %} onchange="updateAllowedClockInOrOut(this)">
-                                {% else %}
-                                    <input type="checkbox" id="isAllowedClockOut" class="oh-switch__checkbox" {% if grace_time.allowed_clock_out %} checked {% endif %} disabled>
-                                {% endif %}
-                            </div>
+                        <div class="oh-sticky-table__th">
+                            {% trans 'Applicable on clock-in' %}
                         </div>
-                    </div>
-                    <div class="oh-sticky-table__td">
-                        {% if grace_time.employee_shift.all %}
-                            {% for shift in grace_time.employee_shift.all %}
-                                {{shift}}<br/>
-                            {% endfor %}
-                        {% else %}
-                            {% trans "Nil" %}
+                        <div class="oh-sticky-table__th">
+                            {% trans 'Applicable on clock-out' %}
+                        </div>
+                        <div class="oh-sticky-table__th">
+                            {% trans 'Assigned Shifts' %}
+                        </div>
+                        {% if perms.attendance.change_gracetime %}
+                            <div class="oh-sticky-table__th">{% trans 'Actions' %}</div>
                         {% endif %}
                     </div>
-                    {% if perms.attendance.change_gracetime%}
-                    <div class="oh-sticky-table__td">
-                        <div class="oh-btn-group">
-                            {% if perms.base.change_employeeshift %}
-                            <a hx-get="{% url "assign-shift" grace_time.id %}"
-                                hx-target="#objectUpdateModalTarget" type="button" data-toggle="oh-modal-toggle"
-                                data-target="#objectUpdateModal" data-toggle="oh-modal-toggle" type="button"
-                                class="oh-btn oh-btn--light-bkg w-50" title="{% trans 'Assign shift' %}">
-                                <ion-icon name="alarm-outline"></ion-icon>
-                            </a>
-                            {% endif %}
-                            {% if perms.base.change_gracetime %}
-                            <a hx-get="{% url 'update-grace-time' grace_time.id %}?default=False"
-                                hx-target="#objectUpdateModalTarget" type="button" data-toggle="oh-modal-toggle"
-                                data-target="#objectUpdateModal" data-toggle="oh-modal-toggle" type="button"
-                                class="oh-btn oh-btn--light-bkg w-50" title="{% trans 'Edit' %}">
-                                <ion-icon name="create-outline"></ion-icon></a>
-                            {% endif %}
-                            {% if perms.base.delete_gracetime %}
-                            <form class="w-50" hx-confirm="{% trans 'Are you sure you want to delete this grace time?' %}"
-                                hx-post="{% url 'delete-grace-time' grace_time.id %}?view=shift" hx-target="#graceTimeContainer">
-                                {% csrf_token %}
-                                <button type="submit" class="oh-btn oh-btn--danger-outline oh-btn--light-bkg w-100"
-                                    title="{% trans 'Delete' %}">
-                                    <ion-icon name="trash-outline"></ion-icon>
-                                </button>
-                            </form>
-                            {% else %}
-                            <button type="submit"
-                                class="oh-btn oh-btn--danger-outline oh-btn--light-bkg oh-btn-disabled w-100"
-                                title="{% trans 'Delete' %}">
-                                <ion-icon name="trash-outline "></ion-icon>
-                            </button>
+                </div>
+                <div class="oh-sticky-table__tbody">
+                    {% for grace_time in grace_times %}
+                        <div class="oh-sticky-table__tr" draggable="true">
+                            <div class="oh-sticky-table__sd">{{ grace_time.allowed_time }} {% trans 'Hours' %}</div>
+                            <div class="oh-sticky-table__td">
+                                <div class="d-flex">
+                                    <div class="oh-switch">
+                                        {% if perms.attendance.change_gracetime %}
+                                            <input
+                                                type="checkbox"
+                                                id="isActive"
+                                                data-id="{{grace_time.id}}"
+                                                class="oh-switch__checkbox"
+                                                {% if grace_time.is_active %}
+                                                    checked
+                                                {% endif %}
+                                                onchange="updateGracetimeIsActivate(this)"
+                                            >
+                                        {% else %}
+                                            <input
+                                                type="checkbox"
+                                                id="isActive"
+                                                class="oh-switch__checkbox"
+                                                {% if grace_time.is_active %}
+                                                    checked
+                                                {% endif %}
+                                                disabled
+                                            >
+                                        {% endif %}
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="oh-sticky-table__td">
+                                <div class="d-flex">
+                                    <div class="oh-switch">
+                                        {% if perms.attendance.change_gracetime %}
+                                            <input
+                                                type="checkbox"
+                                                id="isAllowedClockIn"
+                                                data-id="{{grace_time.id}}"
+                                                data-update="clock_in"
+                                                class="oh-switch__checkbox"
+                                                {% if grace_time.allowed_clock_in %}
+                                                    checked
+                                                {% endif %}
+                                                onchange="updateAllowedClockInOrOut(this)"
+                                            >
+                                        {% else %}
+                                            <input
+                                                type="checkbox"
+                                                id="isAllowedClockIn"
+                                                class="oh-switch__checkbox"
+                                                {% if grace_time.allowed_clock_in %}
+                                                    checked
+                                                {% endif %}
+                                                disabled
+                                            >
+                                        {% endif %}
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="oh-sticky-table__td">
+                                <div class="d-flex">
+                                    <div class="oh-switch">
+                                        {% if perms.attendance.change_gracetime %}
+                                            <input
+                                                type="checkbox"
+                                                id="isAllowedClockOut"
+                                                data-id="{{grace_time.id}}"
+                                                data-update="clock_out"
+                                                class="oh-switch__checkbox"
+                                                {% if grace_time.allowed_clock_out %}
+                                                    checked
+                                                {% endif %}
+                                                onchange="updateAllowedClockInOrOut(this)"
+                                            >
+                                        {% else %}
+                                            <input
+                                                type="checkbox"
+                                                id="isAllowedClockOut"
+                                                class="oh-switch__checkbox"
+                                                {% if grace_time.allowed_clock_out %}
+                                                    checked
+                                                {% endif %}
+                                                disabled
+                                            >
+                                        {% endif %}
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="oh-sticky-table__td">
+                                {% if grace_time.employee_shift.all %}
+                                    {% for shift in grace_time.employee_shift.all %}
+                                        {{ shift }}<br>
+                                    {% endfor %}
+                                {% else %}
+                                    {% trans "Nil" %}
+                                {% endif %}
+                            </div>
+                            {% if perms.attendance.change_gracetime %}
+                                <div class="oh-sticky-table__td">
+                                    <div class="oh-btn-group">
+                                        {% if perms.base.change_employeeshift %}
+                                            <a
+                                                hx-get='{% url "assign-shift" grace_time.id %}'
+                                                hx-target="#objectUpdateModalTarget"
+                                                type="button"
+                                                data-toggle="oh-modal-toggle"
+                                                data-target="#objectUpdateModal"
+                                                data-toggle="oh-modal-toggle"
+                                                type="button"
+                                                class="oh-btn oh-btn--light-bkg w-50"
+                                                title="{% trans 'Assign shift' %}"
+                                            >
+                                                <ion-icon name="alarm-outline"></ion-icon>
+                                            </a>
+                                        {% endif %}
+                                        {% if perms.base.change_gracetime %}
+                                            <a
+                                                hx-get="{% url 'update-grace-time' grace_time.id %}?default=False"
+                                                hx-target="#objectUpdateModalTarget"
+                                                type="button"
+                                                data-toggle="oh-modal-toggle"
+                                                data-target="#objectUpdateModal"
+                                                data-toggle="oh-modal-toggle"
+                                                type="button"
+                                                class="oh-btn oh-btn--light-bkg w-50"
+                                                title="{% trans 'Edit' %}"
+                                            >
+                                                <ion-icon name="create-outline"></ion-icon></a>
+                                        {% endif %}
+                                        {% if perms.base.delete_gracetime %}
+                                            <form
+                                                class="w-50"
+                                                hx-confirm="{% trans 'Are you sure you want to delete this grace time?' %}"
+                                                hx-post="{% url 'delete-grace-time' grace_time.id %}?view=shift"
+                                                hx-target="#graceTimeContainer"
+                                            >
+                                                {% csrf_token %}
+                                                <button
+                                                    type="submit"
+                                                    class="oh-btn oh-btn--danger-outline oh-btn--light-bkg w-100"
+                                                    title="{% trans 'Delete' %}"
+                                                >
+                                                    <ion-icon name="trash-outline"></ion-icon>
+                                                </button>
+                                            </form>
+                                        {% else %}
+                                            <button
+                                                type="submit"
+                                                class="oh-btn oh-btn--danger-outline oh-btn--light-bkg oh-btn-disabled w-100"
+                                                title="{% trans 'Delete' %}"
+                                            >
+                                                <ion-icon name="trash-outline "></ion-icon>
+                                            </button>
+                                        {% endif %}
+                                    </div>
+                                </div>
                             {% endif %}
                         </div>
-                    </div>
-                    {% endif %}
+                    {% endfor %}
                 </div>
-                {% endfor %}
             </div>
         </div>
-    </div>
     {% else %}
-    <div style="display: flex; flex-direction: column; justify-content: center; align-items: center; height: 100%;">
-        <img style="display: block; width: 15%; margin: 20px auto; filter: opacity(0.5);"
-            src="{% static 'images/ui/Hour_glass.png' %}" class="" alt="Page not found. 404." />
-        <h5 class="oh-404__subtitle">{% trans "There is no grace time at this moment." %}</h5>
-    </div>
+        <div style="display: flex; flex-direction: column; justify-content: center; align-items: center; height: 100%">
+            <img
+                style="display: block; width: 15%; margin: 20px auto; filter: opacity(0.5)"
+                src="{% static 'images/ui/Hour_glass.png' %}"
+                class=""
+                alt="{% trans 'Page not found. 404.' %}"
+            >
+            <h5 class="oh-404__subtitle">{% trans "There is no grace time at this moment." %}</h5>
+        </div>
     {% endif %}
 </div>
 <!--end of Grace time  -->

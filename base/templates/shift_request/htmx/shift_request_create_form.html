@@ -1,9 +1,10 @@
-{% load i18n %} {% load static %}
+{% load i18n %}
+{% load static %}
 <div class="oh-modal__dialog-header">
     <h2 class="oh-modal__dialog-title" id="createTitle">
-        {% trans "Create" %} {{form.verbose_name}}
+        {% trans "Create" %} {{ form.verbose_name }}
     </h2>
-    <button type="button" class="oh-modal__close" aria-label="Close">
+    <button type="button" class="oh-modal__close" aria-label="{% trans 'Close' %}">
         <ion-icon name="close-outline"></ion-icon>
     </button>
 </div>
@@ -13,11 +14,11 @@
     {% if messages %}
         <div class="oh-wrapper">
             {% for message in messages %}
-            <div class="oh-alert-container">
-                <div class="oh-alert oh-alert--animated {{message.tags}}">
-                    {{ message }}
+                <div class="oh-alert-container">
+                    <div class="oh-alert oh-alert--animated {{message.tags}}">
+                        {{ message }}
+                    </div>
                 </div>
-            </div>
             {% endfor %}
             <script>
                 setTimeout(function () {
@@ -27,9 +28,9 @@
         </div>
     {% endif %}
 
-    <div class="oh-modal__dialog-body" style="padding: 0;">
+    <div class="oh-modal__dialog-body" style="padding: 0">
         <form hx-post="{% url 'shift-request' %}" hx-target="#objectCreateModalTarget" id="addForm">
-            {{form.as_p}}
+            {{ form.as_p }}
         </form>
     </div>
 </div>

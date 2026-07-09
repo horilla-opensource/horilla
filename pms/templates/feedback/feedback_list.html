@@ -70,7 +70,7 @@
     <div class="oh-feedback-container">
         {% comment %} <span class="oh-badge oh-badge--secondary oh-badge--small oh-badge--round ms-2 mr-2" id="" data-category-id="1" title="{{requested_feedback|length}}" onclick="event.stopPropagation()">{{requested_feedback|length}}</span> {% endcomment %}
         <button class="oh-btn oh-btn--secondary-outline oh-stop-prop oh-accordion-meta__btn p-2" data-toggle="oh-modal-toggle" title="{% trans 'Add' %}" hx-get = '{% url "add-anonymous-feedback" %}' data-target="#anonymousFeedbackModal" hx-target="#anonymousFeedbackFormModal">
-            <ion-icon class="md hydrated" name="add-outline" role="img" aria-label="add outline"></ion-icon>
+            <ion-icon class="md hydrated" name="add-outline" role="img" aria-label="{% trans 'add outline' %}"></ion-icon>
         </button>
     </div>
   </li>
@@ -171,12 +171,12 @@
                       <form action="{% url 'feedback-delete' id=feedback.id %}" method="post" onsubmit="return confirm('{% trans "Do you want Delete this Feedback ?" %}')" style="display: contents">
                         {% csrf_token %}
                         <button  class="oh-btn oh-btn--danger-outline  w-100" title="{% trans 'Delete' %}" >
-                            <ion-icon name="trash-outline" role="img" class="md hydrated" aria-label="trash outline"></ion-icon>
+                            <ion-icon name="trash-outline" role="img" class="md hydrated" aria-label="{% trans 'trash outline' %}"></ion-icon>
                         </button>
                       </form>
                     {% else %}
                       <button  class="oh-btn oh-btn--danger-outline  w-100" disabled title="{% trans "Can't delete the feedback it's already answered." %}">
-                        <ion-icon name="trash-outline" role="img" class="md hydrated" aria-label="trash outline"></ion-icon>
+                        <ion-icon name="trash-outline" role="img" class="md hydrated" aria-label="{% trans 'trash outline' %}"></ion-icon>
                       </button>
                     {% endif %}
                   {%endif%}
@@ -466,12 +466,12 @@
                     <form action="{% url 'feedback-delete' id=feedback.id %}" method="post" onsubmit="return confirm('{% trans "Do you want Delete this Feedback ?" %}')" style="display: contents">
                       {% csrf_token %}
                       <button  class="oh-btn oh-btn--danger-outline  w-100" title="{% trans 'Delete' %}" >
-                          <ion-icon name="trash-outline" role="img" class="md hydrated" aria-label="trash outline"></ion-icon>
+                          <ion-icon name="trash-outline" role="img" class="md hydrated" aria-label="{% trans 'trash outline' %}"></ion-icon>
                       </button>
                     </form>
                   {% else %}
                     <button  class="oh-btn oh-btn--danger-outline  w-100" disabled title="{% trans "Can't delete the feedback it's already answered." %}">
-                      <ion-icon name="trash-outline" role="img" class="md hydrated" aria-label="trash outline"></ion-icon>
+                      <ion-icon name="trash-outline" role="img" class="md hydrated" aria-label="{% trans 'trash outline' %}"></ion-icon>
                     </button>
                   {% endif %}
                 </div>
@@ -624,7 +624,7 @@
                     <form action="{% url 'delete-anonymous-feedback' obj_id=feedback.id %}" method="post" onsubmit="return confirm('{% trans "Do you want Delete this Feedback ?" %}')" style="display: contents">
                       {% csrf_token %}
                       <button  class="oh-btn oh-btn--danger-outline  w-100" title="{% trans 'Delete' %}" >
-                          <ion-icon name="trash-outline" role="img" class="md hydrated" aria-label="trash outline"></ion-icon>
+                          <ion-icon name="trash-outline" role="img" class="md hydrated" aria-label="{% trans 'trash outline' %}"></ion-icon>
                       </button>
                     </form>
                   {% endif %}

@@ -4,20 +4,26 @@
         {% trans "Import Attendance Activities" %}
     </h2>
 
-    <button class="oh-modal__close" aria-label="Close">
+    <button class="oh-modal__close" aria-label="{% trans 'Close' %}">
         <ion-icon name="close-outline"></ion-icon>
     </button>
 </div>
 
 <div class="oh-modal__dialog-body" id="activityImportModalBody">
-    <form hx-post="{% url 'attendance-activity-import' %}" hx-encoding="multipart/form-data"
-        hx-target="#objectCreateModalTarget" hx-swap="outerHTML" class="oh-profile-section" id="activityImportForm">
+    <form
+        hx-post="{% url 'attendance-activity-import' %}"
+        hx-encoding="multipart/form-data"
+        hx-target="#objectCreateModalTarget"
+        hx-swap="outerHTML"
+        class="oh-profile-section"
+        id="activityImportForm"
+    >
         {% csrf_token %}
-        <div id="uploading" class="oh-modal__dialog-body mr-5" style="display: none;">
-            <div class="loader-container" style="margin: auto;">
+        <div id="uploading" class="oh-modal__dialog-body mr-5" style="display: none">
+            <div class="loader-container" style="margin: auto">
                 <div class="loader"></div>
                 <div class="loader-text">{% trans "Uploading..." %}</div>
-                <div class="text-center" style="-webkit-text-stroke: medium;">
+                <div class="text-center" style="-webkit-text-stroke: medium">
                     {% trans "Don't refresh the page" %}
                 </div>
             </div>
@@ -29,7 +35,7 @@
                 <span class="oh-dropdown__import-form-title">{% trans "Upload a File" %}</span>
                 <span class="oh-dropdown__import-form-text">{% trans "Drag and drop files here" %}</span>
             </label>
-            <input type="file" name="activity_import" required />
+            <input type="file" name="activity_import" required>
             <div class="d-flex flex-row-reverse">
                 <button type="submit" class="oh-btn oh-btn--small oh-btn--secondary mt-3">
                     {% trans "Upload" %}

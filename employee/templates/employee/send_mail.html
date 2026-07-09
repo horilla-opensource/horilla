@@ -20,7 +20,7 @@
             <div class="oh-timeoff-modal__profile-content">
                 <div class="oh-profile mb-2">
                     <div class="oh-profile__avatar">
-                        <img src="{{ employee.get_avatar }}" class="oh-profile__image me-2" alt="Employee Avatar">
+                        <img src="{{ employee.get_avatar }}" class="oh-profile__image me-2" alt="{% trans 'Employee Avatar' %}">
                     </div>
                     <div class="oh-timeoff-modal__profile-info">
                         <span class="oh-timeoff-modal__user fw-bold">{{ employee.get_full_name }}</span>
@@ -45,7 +45,7 @@
         <!-- Subject -->
         <div class="form-group mt-2">
             <label for="subject"><h6>{% trans "Subject" %}</h6></label>
-            <input required type="text" name="subject" class="oh-input w-100" id="subject" placeholder="Important Reminder">
+            <input required type="text" name="subject" class="oh-input w-100" id="subject" placeholder="{% trans 'Important Reminder' %}">
         </div>
 
         <!-- Template -->
@@ -69,10 +69,10 @@
                 </div>
                 <div id="write" class="oh-tabs__view active">
                     <textarea id="writeField" data-summernote name="body" required
-                              class="oh-input oh-input--textarea" placeholder="Type something here..."></textarea>
+                              class="oh-input oh-input--textarea" placeholder="{% trans 'Type something here...' %}"></textarea>
                 </div>
                 <div id="preview" class="oh-tabs__view">
-                    <div id="previewField" class="oh-input oh-input--textarea" placeholder="preview..."></div>
+                    <div id="previewField" class="oh-input oh-input--textarea" placeholder="{% trans 'preview...' %}"></div>
                 </div>
             </div>
         </div>

@@ -1,3 +1,8 @@
-<form hx-post="{% url 'add-candidate-to-stage' %}?stage_id={{form.stage_id.initial}}" hx-encoding="multipart/form-data" hx-swap="outerHTML">
-  {{form.as_p}}
+{% load i18n %}
+<form
+    hx-post="{% url 'add-candidate-to-stage' %}?stage_id={{form.stage_id.initial}}"
+    hx-encoding="multipart/form-data"
+    hx-swap="outerHTML"
+>
+    {{ form.as_p }}
 </form>

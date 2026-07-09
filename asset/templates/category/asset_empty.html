@@ -1,62 +1,79 @@
 {% extends 'index.html' %}
 {% block content %}
-{% load static i18n %}
-{% load i18n %}
-{% load widget_tweaks %}
-{% load assets_custom_filter %}
+    {% load static i18n %}
+    {% load i18n %}
+    {% load widget_tweaks %}
+    {% load assets_custom_filter %}
 
-<section class="oh-wrapper oh-main__topbar" x-data="{searchShow: false}">
-    <div class="oh-main__titlebar oh-main__titlebar--left">
-        <h1 class="oh-main__titlebar-title fw-bold">{{ model.get_verbose_name }}</h1>
-    </div>
-    <div class="oh-main__titlebar oh-main__titlebar--right">
-
-        <div class="oh-main__titlebar-button-container">
-            {% if perms.asset.add_asset %}
-            <div class="oh-dropdown ml-2" x-data="{open: false}">
-                <button onclick="event.stopPropagation();event.preventDefault()" class="oh-btn oh-btn--dropdown"
-                    @click="open = !open" @click.outside="open = false">
-                    {% trans "Actions" %}
-                </button>
-                <div class="oh-dropdown__menu oh-dropdown__menu--right" x-show="open" style="display: none">
-                    <ul class="oh-dropdown__items">
-                        <li class="oh-dropdown__item" id="import-button">
-                            <a href="#" class="oh-dropdown__link asset-info-import" data-toggle="oh-modal-toggle"
-                                data-target="#objectCreateModal" hx-get="{%url 'asset-import' %}"
-                                hx-target="#objectCreateModalTarget" class="button-link"
-                                onclick="return confirm('{% trans "Do you want to download template ?" %}')">
-                                {% trans "Import" %}
-                            </a>
-                        </li>
-                    </ul>
-                </div>
-            </div>
-            {% endif %}
-            <!-- import asset end  -->
-            <div class="oh-btn-group ml-2">
-                {% if perms.asset.add_assetcategory %}
-                    <div>
-                        <a href="#" class="oh-btn oh-btn--secondary oh-btn--shadow" data-toggle="oh-modal-toggle"
-                            data-target="#objectCreateModal" hx-get="{%url 'asset-category-creation' %}"
-                            hx-target="#objectCreateModalTarget">
-                            <ion-icon name="add-outline"></ion-icon>
-                            {% trans "Create" %}
-                        </a>
+    <section class="oh-wrapper oh-main__topbar" x-data="{searchShow: false}">
+        <div class="oh-main__titlebar oh-main__titlebar--left">
+            <h1 class="oh-main__titlebar-title fw-bold">{{ model.get_verbose_name }}</h1>
+        </div>
+        <div class="oh-main__titlebar oh-main__titlebar--right">
+            <div class="oh-main__titlebar-button-container">
+                {% if perms.asset.add_asset %}
+                    <div class="oh-dropdown ml-2" x-data="{open: false}">
+                        <button
+                            onclick="event.stopPropagation();event.preventDefault()"
+                            class="oh-btn oh-btn--dropdown"
+                            @click="open = !open"
+                            @click.outside="open = false"
+                        >
+                            {% trans "Actions" %}
+                        </button>
+                        <div class="oh-dropdown__menu oh-dropdown__menu--right" x-show="open" style="display: none">
+                            <ul class="oh-dropdown__items">
+                                <li class="oh-dropdown__item" id="import-button">
+                                    <a
+                                        href="#"
+                                        class="oh-dropdown__link asset-info-import"
+                                        data-toggle="oh-modal-toggle"
+                                        data-target="#objectCreateModal"
+                                        hx-get="{%url 'asset-import' %}"
+                                        hx-target="#objectCreateModalTarget"
+                                        class="button-link"
+                                        onclick="return confirm('{% trans "Do you want to download template ?" %}')"
+                                    >
+                                        {% trans "Import" %}
+                                    </a>
+                                </li>
+                            </ul>
+                        </div>
                     </div>
                 {% endif %}
+                <!-- import asset end  -->
+                <div class="oh-btn-group ml-2">
+                    {% if perms.asset.add_assetcategory %}
+                        <div>
+                            <a
+                                href="#"
+                                class="oh-btn oh-btn--secondary oh-btn--shadow"
+                                data-toggle="oh-modal-toggle"
+                                data-target="#objectCreateModal"
+                                hx-get="{%url 'asset-category-creation' %}"
+                                hx-target="#objectCreateModalTarget"
+                            >
+                                <ion-icon name="add-outline"></ion-icon>
+                                {% trans "Create" %}
+                            </a>
+                        </div>
+                    {% endif %}
+                </div>
             </div>
         </div>
+    </section>
+
+    <div class="oh-wrapper">
+        <div class="oh-empty">
+            <img
+                src="{% static 'images/ui/search.svg' %}"
+                class="oh-404__image"
+                alt="{% trans 'Page not found. 404.' %}"
+            >
+            <h1 class="oh-empty__title">{% trans "No Records found." %}</h1>
+            <p class="oh-empty__subtitle">{% trans "No Asset Categories or Assets have been created." %}</p>
+        </div>
     </div>
-</section>
 
-
-<div class="oh-wrapper">
-    <div class="oh-empty">
-        <img src="{% static 'images/ui/search.svg' %}" class="oh-404__image" alt="Page not found. 404." />
-        <h1 class="oh-empty__title">{% trans "No Records found." %}</h1>
-        <p class="oh-empty__subtitle">{% trans "No Asset Categories or Assets have been created." %}</p>
-    </div>
-</div>
-
-<script src="{% static 'src/asset_category/assetCategoryView.js' %}"></script>
+    <script src="{% static 'src/asset_category/assetCategoryView.js' %}"></script>
 {% endblock %}

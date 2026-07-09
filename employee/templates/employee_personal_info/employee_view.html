@@ -1,49 +1,60 @@
-{% extends "index.html" %} {% load static %} {% load i18n %} {% block content %} {% include 'employee_nav.html' %}
-<div class="oh-wrapper">
-  <div class="oh-checkpoint-badge mb-2" id="selectedInstances" data-ids="[]" data-clicked="" style="display:none;" >
-    {% trans "Selected Employees" %}
-  </div>
-  <div id="view-container">
-
-    {% if error_message %}
-      <script>
-        document.addEventListener('DOMContentLoaded', function() {
-          const errorMessage = '{{ error_message|escapejs }}';
-          const formattedErrorMessage = errorMessage.replace(/,\s*/g, '<br>');
-          const finalErrorMessage = formattedErrorMessage.replace(/-\s*/g, '<span class="material-symbols-outlined me-2" style="font-size: 14px;"">adjust</span>');
-          Swal.fire({
-              icon: 'error',
-              title: 'Error',
-              html: `
+{% extends "index.html" %}
+{% load static %}
+{% load i18n %}
+{% block content %}
+    {% include 'employee_nav.html' %}
+    <div class="oh-wrapper">
+        <div
+            class="oh-checkpoint-badge mb-2"
+            id="selectedInstances"
+            data-ids="[]"
+            data-clicked=""
+            style="display: none"
+        >
+            {% trans "Selected Employees" %}
+        </div>
+        <div id="view-container">
+            {% if error_message %}
+                <script>
+                    document.addEventListener('DOMContentLoaded', function() {
+                      const errorMessage = '{{ error_message|escapejs }}';
+                      const formattedErrorMessage = errorMessage.replace(/,\s*/g, '<br>');
+                      const finalErrorMessage = formattedErrorMessage.replace(/-\s*/g, '<span class="material-symbols-outlined me-2" style="font-size: 14px;"">adjust</span>');
+                      Swal.fire({
+                          icon: 'error',
+                          title: 'Error',
+                          html: `
               <div style='text-align:left;'>
-                  <h5 class='mb-2 fw-bold ms-2'>This employee is already related in,</h5>
+                  <h5 class='mb-2 fw-bold ms-2'>{% trans "This employee is already related in," %}</h5>
                   <p class='ms-2'>${finalErrorMessage}</p>
               </div>
               `,
-          });
-        });
-      </script>
-    {% endif %}
+                      });
+                    });
+                </script>
+            {% endif %}
 
-    {% if data %}
-      {% if view_type == 'list' %}
-        {% include 'employee_personal_info/employee_list.html' %}
-      {% else %}
-        {% include 'employee_personal_info/employee_card.html' %}
-      {% endif %}
-    {% else %}
-      {% include "employee_personal_info/employee_empty_view.html" %}
-    {% endif %}
-  </div>
-</div>
-<div class="oh-modal" id="sendMailModal" role="dialog" aria-labelledby="sendMailModal" aria-hidden="true">
-  <div class="oh-modal__dialog">
-    <div class="oh-modal__dialog-header">
-      <span class="oh-modal__dialog-title" id="sendMailModalLabel"><h5>{% trans 'Send Mail' %}</h5></span>
-      <button class="oh-modal__close" aria-label="Close"><ion-icon name="close-outline"></ion-icon></button>
+            {% if data %}
+                {% if view_type == 'list' %}
+                    {% include 'employee_personal_info/employee_list.html' %}
+                {% else %}
+                    {% include 'employee_personal_info/employee_card.html' %}
+                {% endif %}
+            {% else %}
+                {% include "employee_personal_info/employee_empty_view.html" %}
+            {% endif %}
+        </div>
     </div>
-    <div class="oh-modal__dialog-body" id="mail-content"></div>
-  </div>
-</div>
-<script src="{% static 'employee/actions.js' %}"></script>
+    <div class="oh-modal" id="sendMailModal" role="dialog" aria-labelledby="sendMailModal" aria-hidden="true">
+        <div class="oh-modal__dialog">
+            <div class="oh-modal__dialog-header">
+                <span class="oh-modal__dialog-title" id="sendMailModalLabel"><h5>{% trans 'Send Mail' %}</h5></span>
+                <button class="oh-modal__close" aria-label="{% trans 'Close' %}">
+                    <ion-icon name="close-outline"></ion-icon>
+                </button>
+            </div>
+            <div class="oh-modal__dialog-body" id="mail-content"></div>
+        </div>
+    </div>
+    <script src="{% static 'employee/actions.js' %}"></script>
 {% endblock %}

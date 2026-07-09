@@ -1,33 +1,34 @@
-{% load i18n %} {% load static %}
+{% load i18n %}
+{% load static %}
 <style>
     .note-modal-backdrop {
         z-index: 998 !important;
     }
 
     .tooltip {
-        position: relative;
         display: inline-block; /* Ensures that the tooltip container doesn't stretch to the full width */
+        position: relative;
     }
 
     .tooltip .tooltiptext {
         visibility: hidden;
-        width: auto; /* Allow the tooltip width to adjust based on content */
-        max-width: auto; /* Limit the maximum width of the tooltip to prevent it from overflowing */
-        background-color: green;
-        color: white;
-        text-align: center;
-        border-radius: 6px;
-        padding: 5px;
-        position: absolute;
         z-index: 1;
+        position: absolute;
         bottom: 5%;
         left: 50%;
+        width: auto; /* Allow the tooltip width to adjust based on content */
+        max-width: auto; /* Limit the maximum width of the tooltip to prevent it from overflowing */
+        padding: 5px;
+        overflow: hidden; /* Hides any overflowed content */
         transform: translateX(5%);
+        border-radius: 6px;
+        background-color: green;
+        color: white;
+        font-size: 15px;
+        text-align: center;
+        white-space: nowrap; /* Prevents the text from wrapping */
         opacity: 0;
         transition: opacity 0.3s;
-        white-space: nowrap; /* Prevents the text from wrapping */
-        overflow: hidden; /* Hides any overflowed content */
-        font-size: 15px;
     }
 
     .tooltip:hover .tooltiptext {
@@ -41,10 +42,10 @@
     <div class="oh-wrapper">
         <div class="oh-alert-container">
             {% for field in recruitment_form %}
-            {% if field.errors %}
-                <div class="oh-alert oh-alert--animated oh-alert--danger">
-                    {{ field.label }}: {{ field.errors|join:", " }}
-                </div>
+                {% if field.errors %}
+                    <div class="oh-alert oh-alert--animated oh-alert--danger">
+                        {{ field.label }}: {{ field.errors|join:", " }}
+                    </div>
                 {% endif %}
             {% endfor %}
             {% for error in recruitment_form.non_field_errors %}
@@ -125,8 +126,8 @@
                     value="{{request.GET.candidate_name}}"
                     onkeyup="$(this).closest('form').find('.filterButton').click()"
                     class="oh-input oh-input__icon"
-                    aria-label="Search Input"
-                />
+                    aria-label="{% trans 'Search Input' %}"
+                >
             </div>
 
             <ul
@@ -134,10 +135,10 @@
                 class="oh-view-types ml-2"
                 style="margin-bottom: 0"
             >
-                <input type="hidden" name="view" value="list" />
+                <input type="hidden" name="view" value="list">
                 <li class="oh-view-type candidate-view-type">
                     <div
-                        onclick="$(this).closest('ul').find('[name=view]').val('list');$(this).closest('form').find('.filterButton').click();$('.oh-btn--view-active').removeClass('oh-btn--view-active');$(this).addClass('oh-btn--view-active');"
+                        onclick="$(this).closest('ul').find('[name=view]').val('list');$(this).closest('form').find('.filterButton').click();$('.oh-btn--view-active').removeClass('oh-btn--view-active');$(this).addClass('oh-btn--view-active')"
                         class="oh-btn oh-btn--view oh-btn--view-active"
                         title="{% trans 'List' %}"
                     >
@@ -146,7 +147,7 @@
                 </li>
                 <li class="oh-view-type candidate-view-type">
                     <div
-                        onclick="$(this).closest('ul').find('[name=view]').val('card');$(this).closest('form').find('.filterButton').click();$('.oh-btn--view-active').removeClass('oh-btn--view-active');$(this).addClass('oh-btn--view-active');"
+                        onclick="$(this).closest('ul').find('[name=view]').val('card');$(this).closest('form').find('.filterButton').click();$('.oh-btn--view-active').removeClass('oh-btn--view-active');$(this).addClass('oh-btn--view-active')"
                         class="oh-btn oh-btn--view"
                         title="{% trans 'Card' %}"
                     >
@@ -185,7 +186,7 @@
                     <button
                         id="createNewRecruitment"
                         class="oh-btn oh-btn--secondary"
-                        hx-get="{% url "recruitment-create" %}"
+                        hx-get='{% url "recruitment-create" %}'
                         hx-target="#objectCreateModalTarget"
                         data-toggle="oh-modal-toggle"
                         data-target="#objectCreateModal"
@@ -209,7 +210,8 @@
         class="oh-modal__dialog"
         style="max-width: 550px"
         id="dynamicCreateModalBody"
-    ></div>
+    >
+    </div>
 </div>
 <span
     name=""
@@ -233,7 +235,7 @@
             <h2 class="oh-modal__dialog-title" id="bulkResumeUploadLabel">
                 {% trans "Upload Resumes" %}
             </h2>
-            <button class="oh-modal__close" aria-label="Close">
+            <button class="oh-modal__close" aria-label="{% trans 'Close' %}">
                 <ion-icon name="close-outline"></ion-icon>
             </button>
             <div
@@ -297,9 +299,9 @@
     }
 </script>
 {% if not request.user.driverviewed_set.first or "pipeline" not in request.user.driverviewed_set.first.user_viewed %}
-<script>
-    runDriver();
-</script>
+    <script>
+        runDriver();
+    </script>
 {% endif %}
 
 <script>
@@ -402,7 +404,7 @@
                                         title: "Confirm Stage Change",
                                         html: `
                                             <p>The candidate is being moved from ${preStage.stage} to the ${currentStage.stage} stage. Do you want to proceed?</p>
-                                            <label><input type="checkbox" id="doNotShowAgain"> Don't show this again in this session</label>
+                                            <label><input type="checkbox" id="doNotShowAgain">{% trans "Don't show this again in this session" %}</label>
                                         `,
                                         icon: "warning",
                                         showCancelButton: true,

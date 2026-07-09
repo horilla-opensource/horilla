@@ -1,26 +1,29 @@
-{% load i18n %}{% load widget_tweaks %} {% load mathfilters %} {% load basefilters %}
+{% load i18n %}{% load widget_tweaks %}
+{% load mathfilters %}
+{% load basefilters %}
 <span
-  name=""
-  id="dynamicKeyResult"
-  style="display: none"
-  data-toggle="oh-modal-toggle"
-  data-target="#dynamicCreateModal"
-  hx-get="{% url 'key-result-creation' %}"
-  hx-target="#dynamicCreateModalBody"
+    name=""
+    id="dynamicKeyResult"
+    style="display: none"
+    data-toggle="oh-modal-toggle"
+    data-target="#dynamicCreateModal"
+    hx-get="{% url 'key-result-creation' %}"
+    hx-target="#dynamicCreateModalBody"
 >
 </span>
 <div
-  class="oh-modal"
-  id="dynamicCreateModal"
-  role="dialog"
-  aria-hidden="true"
-  style="z-index: 1022"
-  >
-  <div
-    class="oh-modal__dialog"
-    style="max-width: 550px"
-    id="dynamicCreateModalBody"
-  ></div>
+    class="oh-modal"
+    id="dynamicCreateModal"
+    role="dialog"
+    aria-hidden="true"
+    style="z-index: 1022"
+>
+    <div
+        class="oh-modal__dialog"
+        style="max-width: 550px"
+        id="dynamicCreateModalBody"
+    >
+    </div>
 </div>
 <section class="oh-wrapper oh-main__topbar" x-data="{searchShow: false}">
     <div class="oh-main__titlebar oh-main__titlebar--left">
@@ -30,7 +33,7 @@
         <a
             class="oh-main__titlebar-search-toggle"
             role="button"
-            aria-label="Toggle Search"
+            aria-label="{% trans 'Toggle Search' %}"
             @click="searchShow = !searchShow"
         >
             <ion-icon
@@ -60,10 +63,10 @@
                     name="search"
                     type="text"
                     class="oh-input oh-input__icon"
-                    aria-label="Search Input"
+                    aria-label="{% trans 'Search Input' %}"
                     placeholder="{% trans 'Search' %}"
                     onkeyup="$('.filterButton').click()"
-                />
+                >
             </div>
             <div class="oh-main__titlebar-button-container">
                 <div class="oh-dropdown" x-data="{open: false}">
@@ -88,52 +91,47 @@
                                     <div class="row">
                                         <div class="col-sm-12 col-md-12 col-lg-6">
                                             <div class="oh-input-group">
-                                                <label class="oh-label" for=""
-                                                    >{% trans "Assignees" %}</label
-                                                >
-                                                {{emp_obj_form.form.employee_id}}
+                                                <label class="oh-label" for="">{% trans "Assignees" %}</label>
+                                                {{ emp_obj_form.form.employee_id }}
                                             </div>
                                             <div class="oh-input-group">
                                                 <label class="oh-label" for="">{% trans "Start Date From" %}</label>
-                                                {{emp_obj_form.form.start_date_from}}
+                                                {{ emp_obj_form.form.start_date_from }}
                                             </div>
                                         </div>
                                         <div class="col-sm-12 col-md-12 col-lg-6">
                                             <div class="oh-input-group">
                                                 <label class="oh-label" for="">{% trans "Key Result" %}</label>
-                                                {{emp_obj_form.form.key_result_id}}
+                                                {{ emp_obj_form.form.key_result_id }}
                                             </div>
                                             <div class="oh-input-group">
                                                 <label class="oh-label" for="">{% trans "Start Date Till" %} </label>
-                                                {{emp_obj_form.form.start_date_till}}
+                                                {{ emp_obj_form.form.start_date_till }}
                                             </div>
                                         </div>
                                         <div class="col-sm-12 col-md-12 col-lg-6">
                                             <div class="oh-input-group">
-                                                <label class="oh-label" for=""
-                                                    >{% trans "End Date From" %}</label
-                                                >
-                                                {{emp_obj_form.form.end_date_from}}
+                                                <label class="oh-label" for="">{% trans "End Date From" %}</label>
+                                                {{ emp_obj_form.form.end_date_from }}
                                             </div>
                                             <div class="oh-input-group">
                                                 <label class="oh-label" for="">{% trans "Archive" %}</label>
-                                                {{emp_obj_form.form.archive}}
+                                                {{ emp_obj_form.form.archive }}
                                             </div>
                                         </div>
                                         <div class="col-sm-12 col-md-12 col-lg-6">
                                             <div class="oh-input-group">
                                                 <label class="oh-label" for="">{% trans "End Date Till" %}</label>
-                                                {{emp_obj_form.form.end_date_till}}
+                                                {{ emp_obj_form.form.end_date_till }}
                                             </div>
                                             <div class="oh-input-group">
                                                 <label class="oh-label" for="">{% trans "Status" %}</label>
-                                                {{emp_obj_form.form.status}}
+                                                {{ emp_obj_form.form.status }}
                                             </div>
                                         </div>
                                     </div>
                                 </div>
                             </div>
-
                         </div>
                         <div class="oh-dropdown__filter-footer">
                             <button

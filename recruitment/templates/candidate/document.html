@@ -80,14 +80,14 @@
 								<span
 									class="oh-badge oh-badge--secondary oh-badge--small oh-badge--round ms-2 mr-2 file-upload"
 									onclick="event.stopPropagation()"
-									title="Approved"
+									title="{% trans 'Approved' %}"
 								>
 								<ion-icon name="checkmark"></ion-icon>
 							{% elif document.status == 'rejected' %}
 								<span
 									class="oh-badge oh-badge--secondary oh-badge--small oh-badge--round ms-2 mr-2 file-upload"
 									onclick="event.stopPropagation()"
-									title="Rejected"
+									title="{% trans 'Rejected' %}"
 								>
 									<ion-icon name="alert"></ion-icon>
 								</span>
@@ -95,7 +95,7 @@
 								<span
 										class="oh-badge oh-badge--secondary oh-badge--small oh-badge--round ms-2 mr-2 file-upload"
 										onclick="event.stopPropagation()"
-										title="Uploaded"
+										title="{% trans 'Uploaded' %}"
 									>
 									<ion-icon name="image-outline"></ion-icon>
 								</span>
@@ -109,13 +109,13 @@
 								data-toggle="oh-modal-toggle"
 								data-target="#objectCreateModal"
 								onclick="event.stopPropagation()"
-								title="Upload File"
+								title="{% trans 'Upload File' %}"
 							>
 								<ion-icon
 									class="md hydrated"
 									name="add-outline"
 									role="img"
-									aria-label="add outline"
+									aria-label="{% trans 'add outline' %}"
 								></ion-icon>
 							</span>
 						{% endif %}
@@ -182,7 +182,7 @@
 									class="me-1 md hydrated"
 									name="trash-outline"
 									role="img"
-									aria-label="trash outline"
+									aria-label="{% trans 'trash outline' %}"
 								></ion-icon
 								>
 							</button>
@@ -194,7 +194,7 @@
 	{% empty %}
 		<div class="d-flex justify-content-center align-items-center" style="height: 40vh;">
 			<div class="text-center">
-				<img class="oh-404__image mb-3" style="width: 150px; height: 150px;" src="{% static 'images/ui/no_documents.png' %}" alt="No documents">
+				<img class="oh-404__image mb-3" style="width: 150px; height: 150px;" src="{% static 'images/ui/no_documents.png' %}" alt="{% trans 'No documents' %}">
 				<h5 class="oh-404__subtitle">{% trans "No documents have been uploaded yet." %}</h5>
 			</div>
 		</div>
@@ -213,12 +213,12 @@
 			<span class="oh-modal__dialog-title" id="viewFileModalLabel"
 				>{% trans "View File" %}</span
 			>
-			<button class="oh-modal__close" aria-label="Close">
+			<button class="oh-modal__close" aria-label="{% trans 'Close' %}">
 				<ion-icon
 					name="close-outline"
 					role="img"
 					class="md hydrated"
-					aria-label="close outline"
+					aria-label="{% trans 'close outline' %}"
 				></ion-icon>
 			</button>
 		</div>
@@ -250,13 +250,13 @@
 			<span class="oh-modal__dialog-title" id="rejectFileModalLabel"
 				>{% trans "Reject" %}</span
 			>
-			<button class="oh-modal__close--custom" aria-label="Close"
+			<button class="oh-modal__close--custom" aria-label="{% trans 'Close' %}"
 			onclick="event.stopPropagation();event.preventDefault();$('#rejectFileModal').toggleClass('oh-modal--show');">
 				<ion-icon
 					name="close-outline"
 					role="img"
 					class="md hydrated"
-					aria-label="close outline"
+					aria-label="{% trans 'close outline' %}"
 				></ion-icon>
 			</button>
 		</div>

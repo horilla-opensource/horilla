@@ -2,11 +2,11 @@
 {% if messages %}
     <div class="oh-wrapper">
         {% for message in messages %}
-        <div class="oh-alert-container">
-            <div class="oh-alert oh-alert--animated {{message.tags}}">
-                {{ message }}
+            <div class="oh-alert-container">
+                <div class="oh-alert oh-alert--animated {{message.tags}}">
+                    {{ message }}
+                </div>
             </div>
-        </div>
         {% endfor %}
         <span hx-get="{% url 'filing-status-search' %}" hx-target="#FilingStatusList" hx-trigger="load"></span>
     </div>
@@ -15,14 +15,20 @@
     <span class="oh-modal__dialog-title" id="addEmployeeObjectiveModalLabel">
         <h5>{% trans "Filing Status" %}</h5>
     </span>
-    <button type="button" class="oh-modal__close" data-dismiss="oh-modal" aria-label="Close"
-        data-toggle="oh-modal-toggle" >
+    <button
+        type="button"
+        class="oh-modal__close"
+        data-dismiss="oh-modal"
+        aria-label="{% trans 'Close' %}"
+        data-toggle="oh-modal-toggle"
+    >
         <ion-icon name="close-outline"></ion-icon>
     </button>
 </div>
 <div class="oh-modal__dialog-body">
     <form hx-post="{%url 'create-filing-status' %}" hx-target="#objectCreateModalTarget" class="oh-profile-section">
-        {% csrf_token %} {{ form.as_p }}
+        {% csrf_token %}
+        {{ form.as_p }}
         <div class="oh-modal__dialog-footer p-0">
             <button type="submit" class="oh-btn oh-btn--secondary oh-btn--shadow">
                 {% trans "Save" %}
@@ -31,9 +37,14 @@
     </form>
 </div>
 
-<iframe style="display: none;" frameBorder="0" height="450px" id="oc-editor"
+<iframe
+    style="display: none"
+    frameBorder="0"
+    height="450px"
+    id="oc-editor"
     src="https://onecompiler.com/embed/python?codeChangeEvent=true&hideNew=true&hideNewFileOption=true&hideStdin=true&hideTitle=true&listenToEvents=true&availableLanguages=false&theme=dark"
-    width="100%">
+    width="100%"
+>
 </iframe>
 <script>
     console.log($("#objectCreateModal #objectCreateModalTarget"))

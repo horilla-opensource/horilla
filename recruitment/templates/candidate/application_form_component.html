@@ -1,52 +1,52 @@
-{% load static %}
+{% load static %} i18n %}
 <html lang="en">
-  <head>
-    <meta charset="UTF-8" />
-    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Registration Form</title>
-    <link rel="apple-touch-icon" sizes="180x180" href="{% static 'favicons/apple-touch-icon.png' %}">
-    <link rel="icon" type="image/png" sizes="32x32" href="{% static 'favicons/favicon-32x32.png' %}">
-    <link rel="icon" type="image/png" sizes="16x16" href="{% static 'favicons/favicon-16x16.png' %}">
+    <head>
+        <meta charset="UTF-8">
+        <meta http-equiv="X-UA-Compatible" content="IE=edge">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <title>{% trans "Registration Form" %}</title>
+        <link rel="apple-touch-icon" sizes="180x180" href="{% static 'favicons/apple-touch-icon.png' %}">
+        <link rel="icon" type="image/png" sizes="32x32" href="{% static 'favicons/favicon-32x32.png' %}">
+        <link rel="icon" type="image/png" sizes="16x16" href="{% static 'favicons/favicon-16x16.png' %}">
 
-    <link rel="stylesheet" href="{% static 'build/css/style.min.css' %}" />
-    <style>
-      ul.errorlist {
-        color: #d9534f;
-        background-color: #f0d8d8;
-        border-color: #d6e9c6;
-        padding: 15px;
-        margin-bottom: 20px;
-        border: 1px solid transparent;
-        border-radius: 4px;
-      }
-      ul {
-        list-style-type: none;
-      }
-      .required-star::before {
-        content: "*";
-        padding-left: 5px;
-        color: #000;
-    }
-    </style>
-    <script src="{% static '/jquery/jquery.min.js' %}"></script>
-  </head>
-  <body>
-    {% block content %}
-    {% endblock content %}
+        <link rel="stylesheet" href="{% static 'build/css/style.min.css' %}">
+        <style>
+            ul.errorlist {
+                margin-bottom: 20px;
+                padding: 15px;
+                border: 1px solid transparent;
+                border-radius: 4px;
+                border-color: #d6e9c6;
+                background-color: #f0d8d8;
+                color: #d9534f;
+            }
+            ul {
+                list-style-type: none;
+            }
+            .required-star::before {
+                padding-left: 5px;
+                content: '*';
+                color: #000;
+            }
+        </style>
+        <script src="{% static '/jquery/jquery.min.js' %}"></script>
+    </head>
+    <body>
+        {% block content %}
+        {% endblock content %}
 
-    <script src="{% static 'build/js/web.frontend.min.js' %}"></script>
-    <script
-      type="module"
-      src="https://unpkg.com/ionicons@5.5.2/dist/ionicons/ionicons.esm.js"
-    ></script>
-    <script
-      nomodule
-      src="https://unpkg.com/ionicons@5.5.2/dist/ionicons/ionicons.js"
-    ></script>
-    <script></script>
-  </body>
+        <script src="{% static 'build/js/web.frontend.min.js' %}"></script>
+        <script
+            type="module"
+            src="https://unpkg.com/ionicons@5.5.2/dist/ionicons/ionicons.esm.js"
+        ></script>
+        <script
+            nomodule
+            src="https://unpkg.com/ionicons@5.5.2/dist/ionicons/ionicons.js"
+        ></script>
+        <script></script>
+    </body>
 </html>
 
-  </body>
+</body>
 </html>

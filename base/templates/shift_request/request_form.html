@@ -1,11 +1,8 @@
-
+i18n %}
 {% load static %}
 <div id="htmxParent">
-
-
-  {% csrf_token %}
-  <div id="create-form-container">
-    {{form.as_p}}
-  </div>
-
+    {% csrf_token %}
+    <div id="create-form-container">
+        {{ form.as_p }}
+    </div>
 </div>

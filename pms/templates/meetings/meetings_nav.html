@@ -5,7 +5,7 @@
         <a
             class="oh-main__titlebar-search-toggle"
             role="button"
-            aria-label="Toggle Search"
+            aria-label="{% trans 'Toggle Search' %}"
             @click="searchShow = !searchShow"
         >
             <ion-icon
@@ -37,7 +37,7 @@
                         onkeyup="$('.filterButton').click()"
                         type="text"
                         class="oh-input oh-input__icon"
-                        aria-label="Search Input"
+                        aria-label="{% trans 'Search Input' %}"
                         placeholder="{% trans 'Search' %}"
                     />
                 </div>
@@ -88,7 +88,7 @@
                                 class="md hydrated"
                                 name="add-outline"
                                 role="img"
-                                aria-label="add outline"
+                                aria-label="{% trans 'add outline' %}"
                             ></ion-icon>
                             {% trans "Create" %}</a
                         >

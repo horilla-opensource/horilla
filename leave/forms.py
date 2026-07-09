@@ -739,7 +739,7 @@ class AssignLeaveForm(HorillaForm):
         self.fields["employee_id"].widget.attrs.update(
             {"required": True, "id": uuid.uuid4()}
         ),
-        self.fields["leave_type_id"].label = "Leave Type"
+        self.fields["leave_type_id"].label = _("Leave Type")
 
 
 class LeaverequestcommentForm(BaseModelForm):

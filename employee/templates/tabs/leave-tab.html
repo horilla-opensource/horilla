@@ -90,13 +90,13 @@
                 <img
                   src="{{user_leave.leave_type_id.icon.url }}"
                   class="oh-kanban-card__profile-image"
-                  alt="Leave Icon"
+                  alt="{% trans 'Leave Icon' %}"
                 />
                 {% else %}
                 <img
                   src="https://ui-avatars.com/api/?name={{user_leave.leave_type_id}}&background=random"
                   class="oh-kanban-card__profile-image"
-                  alt="Leave Icon"
+                  alt="{% trans 'Leave Icon' %}"
                 />
                 {% endif %}
               </div>
@@ -146,13 +146,13 @@
                 <img
                   src="{{employee_leave.leave_type_id.icon.url }}"
                   class="oh-kanban-card__profile-image"
-                  alt="Leave Icon"
+                  alt="{% trans 'Leave Icon' %}"
                 />
                 {% else %}
                 <img
                   src="https://ui-avatars.com/api/?name={{employee_leave.leave_type_id}}&background=random"
                   class="oh-kanban-card__profile-image"
-                  alt="Leave Icon"
+                  alt="{% trans 'Leave Icon' %}"
                 />
                 {% endif %}
               </div>
@@ -229,13 +229,13 @@
               <img
                 src="{{leave_request.leave_type_id.icon.url}}"
                 class="oh-profile__image"
-                alt="Leave Type Icon"
+                alt="{% trans 'Leave Type Icon' %}"
               />
               {% else%}
               <img
                 src="https://ui-avatars.com/api/?name={{leave_request.leave_type_id}}&background=random"
                 class="oh-profile__image"
-                alt="Leave type icon"
+                alt="{% trans 'Leave type icon' %}"
               />
               {% endif %}
             </div>
@@ -346,7 +346,7 @@
 			<h2 class="oh-modal__dialog-title" id="rejectTitle">
 				{% trans "Request Rejection" %}
 			</h2>
-			<button class="oh-modal_close--custom" aria-label="Close" onclick="$('#rejectModal').removeClass('oh-modal--show');">
+			<button class="oh-modal_close--custom" aria-label="{% trans 'Close' %}" onclick="$('#rejectModal').removeClass('oh-modal--show');">
 				<ion-icon name="close-outline"></ion-icon>
 			</button>
 		</div>

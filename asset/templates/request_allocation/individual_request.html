@@ -19,7 +19,7 @@
             name="chevron-back-outline"
             class="md hydrated"
             role="img"
-            aria-label="chevron back outline"
+            aria-label="{% trans 'chevron back outline' %}"
         ></ion-icon>
     </button>
 
@@ -33,7 +33,7 @@
             name="chevron-forward-outline"
             class="md hydrated"
             role="img"
-            aria-label="chevron forward outline"
+            aria-label="{% trans 'chevron forward outline' %}"
         ></ion-icon>
     </button>
 </div>
@@ -44,7 +44,7 @@
         >
       {% trans "Details" %}
     </span>
-    <button class="oh-modal__close" aria-label="Close">
+    <button class="oh-modal__close" aria-label="{% trans 'Close' %}">
       <button  class="oh-modal__close"><ion-icon  name="close-outline"></ion-icon></button>
     </button>
 </div>
@@ -56,7 +56,7 @@
             <img
             src="{{asset_request.requested_employee_id.get_avatar}}"
             class="oh-profile__image me-2"
-            alt="Mary Magdalene"
+            alt="{% trans 'Mary Magdalene' %}"
             />
         </div>
         <div class="oh-timeoff-modal__profile-info">

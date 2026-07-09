@@ -1,94 +1,103 @@
 {% load i18n %}
 <div class="oh-btn-group p-2 justify-content-end">
-  <div>
-    <button class="oh-btn oh-btn--secondary" title="{% trans 'New attendance request' %}"
-        data-toggle="oh-modal-toggle" data-target="#objectCreateModal"
-        hx-get="{% url 'request-new-attendance' %}" hx-target="#objectCreateModalTarget"
-      >
-      <ion-icon name="add-sharp" class="mr-2 md hydrated" role="img" aria-label="add sharp"></ion-icon>
-      {% trans "Create" %}
-    </button>
-  </div>
-</div>
-{% if attendances %}
-<div class="oh-sticky-table">
-    <div class="oh-sticky-table__table oh-table--sortable">
-      <div class="oh-sticky-table__thead">
-        <div class="oh-sticky-table__tr">
-          <div class="oh-sticky-table__th" >{% trans "Employee" %}</div>
-          <div class="oh-sticky-table__th" >{% trans "Date" %}</div>
-          <div class="oh-sticky-table__th" >{% trans "Day" %}</div>
-          <div class="oh-sticky-table__th" >{% trans "Check-In" %}</div>
-          <div class="oh-sticky-table__th" >{% trans "In Date" %}</div>
-          <div class="oh-sticky-table__th" >{% trans "Check-Out" %}</div>
-          <div class="oh-sticky-table__th" >{% trans "Out Date" %}</div>
-          <div class="oh-sticky-table__th" >{% trans "Shift" %}</div>
-          <div class="oh-sticky-table__th" >{% trans "Work Type" %}</div>
-          <div class="oh-sticky-table__th" >{% trans "Min Hour" %}</div>
-          <div class="oh-sticky-table__th" >{% trans "At Work" %}</div>
-          <div class="oh-sticky-table__th" >{% trans "Overtime" %}</div>
-        </div>
-      </div>
-      <div class="oh-sticky-table__tbody">
-        {% for attendance in attendances %}
-        <div class="oh-sticky-table__tr" draggable="false"
+    <div>
+        <button
+            class="oh-btn oh-btn--secondary"
+            title="{% trans 'New attendance request' %}"
             data-toggle="oh-modal-toggle"
-            data-target="#objectDetailsModalW25"
-            hx-target="#objectDetailsModalW25Target"
-            hx-get="{% url 'user-request-one-view' attendance.id %}?my_attendance=true&instances_ids={{attendances_ids}}">
-          <div class="oh-sticky-table__sd">
-            <div class="oh-profile oh-profile--md">
-              <div class="oh-profile__avatar mr-1">
-                <img
-                  src="https://ui-avatars.com/api/?name={{attendance.employee_id.employee_first_name}}+{{attendance.employee_id.employee_last_name}}&background=random"
-                  class="oh-profile__image"
-                  alt="Mary Magdalene"
-                />
-              </div>
-              <span class="oh-profile__name oh-text--dark"
-                >{{attendance.employee_id}}</span
-              >
-            </div>
-          </div>
-          <div class="oh-sticky-table__td dateformat_changer">
-            {{attendance.attendance_date}}
-          </div>
-          <div class="oh-sticky-table__td">
-            {{attendance.attendance_day|capfirst}}
-          </div>
-          <div class="oh-sticky-table__td">
-            {{attendance.attendance_clock_in}}
-          </div>
-          <div class="oh-sticky-table__td dateformat_changer">
-            {{attendance.attendance_clock_in_date}}
-          </div>
-          <div class="oh-sticky-table__td">
-            {{attendance.attendance_clock_out}}
-          </div>
-          <div class="oh-sticky-table__td dateformat_changer">
-            {{attendance.attendance_clock_out_date}}
-          </div>
-          <div class="oh-sticky-table__td">{{attendance.shift_id}}</div>
-          <div class="oh-sticky-table__td">
-            {{attendance.work_type_id}}
-          </div>
-          <div class="oh-sticky-table__td">
-            {{attendance.minimum_hour}}
-          </div>
-          <div class="oh-sticky-table__td">
-              {{attendance.attendance_worked_hour}}
-          </div>
-          <div class="oh-sticky-table__td">
-              {{attendance.attendance_overtime}}
-          </div>
-        </div>
-        {% endfor %}
-
-      </div>
+            data-target="#objectCreateModal"
+            hx-get="{% url 'request-new-attendance' %}"
+            hx-target="#objectCreateModalTarget"
+        >
+            <ion-icon
+                name="add-sharp"
+                class="mr-2 md hydrated"
+                role="img"
+                aria-label="{% trans 'add sharp' %}"
+            ></ion-icon>
+            {% trans "Create" %}
+        </button>
     </div>
 </div>
+{% if attendances %}
+    <div class="oh-sticky-table">
+        <div class="oh-sticky-table__table oh-table--sortable">
+            <div class="oh-sticky-table__thead">
+                <div class="oh-sticky-table__tr">
+                    <div class="oh-sticky-table__th">{% trans "Employee" %}</div>
+                    <div class="oh-sticky-table__th">{% trans "Date" %}</div>
+                    <div class="oh-sticky-table__th">{% trans "Day" %}</div>
+                    <div class="oh-sticky-table__th">{% trans "Check-In" %}</div>
+                    <div class="oh-sticky-table__th">{% trans "In Date" %}</div>
+                    <div class="oh-sticky-table__th">{% trans "Check-Out" %}</div>
+                    <div class="oh-sticky-table__th">{% trans "Out Date" %}</div>
+                    <div class="oh-sticky-table__th">{% trans "Shift" %}</div>
+                    <div class="oh-sticky-table__th">{% trans "Work Type" %}</div>
+                    <div class="oh-sticky-table__th">{% trans "Min Hour" %}</div>
+                    <div class="oh-sticky-table__th">{% trans "At Work" %}</div>
+                    <div class="oh-sticky-table__th">{% trans "Overtime" %}</div>
+                </div>
+            </div>
+            <div class="oh-sticky-table__tbody">
+                {% for attendance in attendances %}
+                    <div
+                        class="oh-sticky-table__tr"
+                        draggable="false"
+                        data-toggle="oh-modal-toggle"
+                        data-target="#objectDetailsModalW25"
+                        hx-target="#objectDetailsModalW25Target"
+                        hx-get="{% url 'user-request-one-view' attendance.id %}?my_attendance=true&instances_ids={{attendances_ids}}"
+                    >
+                        <div class="oh-sticky-table__sd">
+                            <div class="oh-profile oh-profile--md">
+                                <div class="oh-profile__avatar mr-1">
+                                    <img
+                                        src="https://ui-avatars.com/api/?name={{attendance.employee_id.employee_first_name}}+{{attendance.employee_id.employee_last_name}}&background=random"
+                                        class="oh-profile__image"
+                                        alt="{% trans 'Mary Magdalene' %}"
+                                    >
+                                </div>
+                                <span class="oh-profile__name oh-text--dark">{{ attendance.employee_id }}</span>
+                            </div>
+                        </div>
+                        <div class="oh-sticky-table__td dateformat_changer">
+                            {{ attendance.attendance_date }}
+                        </div>
+                        <div class="oh-sticky-table__td">
+                            {{ attendance.attendance_day|capfirst }}
+                        </div>
+                        <div class="oh-sticky-table__td">
+                            {{ attendance.attendance_clock_in }}
+                        </div>
+                        <div class="oh-sticky-table__td dateformat_changer">
+                            {{ attendance.attendance_clock_in_date }}
+                        </div>
+                        <div class="oh-sticky-table__td">
+                            {{ attendance.attendance_clock_out }}
+                        </div>
+                        <div class="oh-sticky-table__td dateformat_changer">
+                            {{ attendance.attendance_clock_out_date }}
+                        </div>
+                        <div class="oh-sticky-table__td">{{ attendance.shift_id }}</div>
+                        <div class="oh-sticky-table__td">
+                            {{ attendance.work_type_id }}
+                        </div>
+                        <div class="oh-sticky-table__td">
+                            {{ attendance.minimum_hour }}
+                        </div>
+                        <div class="oh-sticky-table__td">
+                            {{ attendance.attendance_worked_hour }}
+                        </div>
+                        <div class="oh-sticky-table__td">
+                            {{ attendance.attendance_overtime }}
+                        </div>
+                    </div>
+                {% endfor %}
+            </div>
+        </div>
+    </div>
 {% else %}
-<div class="d-flex justify-content-center align-items-center" style="height:40vh">
-  <h5 class="oh-404__subtitle">{% trans "No attendance requests have been generated." %}</h5>
-</div>
+    <div class="d-flex justify-content-center align-items-center" style="height: 40vh">
+        <h5 class="oh-404__subtitle">{% trans "No attendance requests have been generated." %}</h5>
+    </div>
 {% endif %}
