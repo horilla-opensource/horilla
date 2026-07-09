@@ -2,263 +2,317 @@
 {% load static %}
 {% load i18n %}
 {% block content %}
-{% load tz %}
+    {% load tz %}
 
-{% now "Y-m-d" as current_date %}
-<style>
-    .oh-dashboard__right {
-        display: flex;
-        flex-direction: column;
-    }
+    {% now "Y-m-d" as current_date %}
+    <style>
+        .oh-dashboard__right {
+            display: flex;
+            flex-direction: column;
+        }
 
-    .oh-card-dashboard {
-        flex: 1;
-        height: 100%;
-        cursor: default;
-    }
+        .oh-card-dashboard {
+            flex: 1;
+            height: 100%;
+            cursor: default;
+        }
 
-    .pointer {
-        cursor: pointer;
-    }
+        .pointer {
+            cursor: pointer;
+        }
 
-    .dash-card {
-        padding-bottom: 30px;
-    }
-    .tooltip {
-		position: absolute;
-		background-color: #000;
-		color: #fff;
-		padding: 5px;
-		border-radius: 5px;
-		display: block;
-		margin-top:80px;
-	}
-</style>
-<div class="oh-wrapper mb-4">
-    <div class="d-none mt-5" id="back_button" style="width:10%">
-        <a href="" class="oh-btn oh-btn--secondary oh-btn--shadow ms-3">
-            <ion-icon class="me-2 md hydrated" name="arrow-back-outline" role="img"
-                aria-label="arrow-back-outline"></ion-icon>{% trans "Back" %}</a>
-    </div>
-    <div class="oh-dashboard row" id="dashboard">
-        <div class="oh-dashboard__left col-12 col-sm-12 col-md-12 col-lg-9">
-            <div class="oh-dashboard__cards row">
-                <div class="col-12 col-sm-12 col-md-6 col-lg-4">
-                    <div class="oh-card-dashboard oh-card-dashboard oh-card-dashboard--neutral filter pointer dash-card"
-                        id="requestedLeaves">
-                        <div class="oh-card-dashboard__header">
-                            <span class="oh-card-dashboard__title">{% trans "Requests to Approve" %}</span>
-                            <div onmouseover="helptextView(event, 'Leave requests in &quot;Requested&quot; status from today.')" class="d-inline position-relative">
-                                <ion-icon name="help-circle-outline" id="offerhelptext"></ion-icon>
-                                <div id="tooltip" class="tooltip-text d-none"></div>
+        .dash-card {
+            padding-bottom: 30px;
+        }
+        .tooltip {
+            display: block;
+            position: absolute;
+            margin-top: 80px;
+            padding: 5px;
+            border-radius: 5px;
+            background-color: #000;
+            color: #fff;
+        }
+    </style>
+    <div class="oh-wrapper mb-4">
+        <div class="d-none mt-5" id="back_button" style="width: 10%">
+            <a href="" class="oh-btn oh-btn--secondary oh-btn--shadow ms-3">
+                <ion-icon
+                    class="me-2 md hydrated"
+                    name="arrow-back-outline"
+                    role="img"
+                    aria-label="{% trans 'arrow-back-outline' %}"
+                ></ion-icon>{% trans "Back" %}</a>
+        </div>
+        <div class="oh-dashboard row" id="dashboard">
+            <div class="oh-dashboard__left col-12 col-sm-12 col-md-12 col-lg-9">
+                <div class="oh-dashboard__cards row">
+                    <div class="col-12 col-sm-12 col-md-6 col-lg-4">
+                        <div
+                            class="oh-card-dashboard oh-card-dashboard oh-card-dashboard--neutral filter pointer dash-card"
+                            id="requestedLeaves"
+                        >
+                            <div class="oh-card-dashboard__header">
+                                <span class="oh-card-dashboard__title">{% trans "Requests to Approve" %}</span>
+                                <div
+                                    onmouseover="helptextView(event, 'Leave requests in &quot;Requested&quot; status from today.')"
+                                    class="d-inline position-relative"
+                                >
+                                    <ion-icon name="help-circle-outline" id="offerhelptext"></ion-icon>
+                                    <div id="tooltip" class="tooltip-text d-none"></div>
+                                </div>
+                            </div>
+                            <div class="oh-card-dashboard__body">
+                                <div class="oh-card-dashboard__counts">
+                                    <span class="oh-card-dashboard__count">{{ requested|length }}</span>
+                                </div>
                             </div>
                         </div>
-                        <div class="oh-card-dashboard__body">
-                            <div class="oh-card-dashboard__counts">
-                                <span class="oh-card-dashboard__count">{{requested|length}}</span>
+                    </div>
+                    <div class="col-12 col-sm-12 col-md-6 col-lg-4">
+                        <div
+                            class="oh-card-dashboard oh-card-dashboard--success filter pointer dash-card"
+                            id="approvedLeaves"
+                        >
+                            <div class="oh-card-dashboard__header">
+                                <span
+                                    class="oh-card-dashboard__title"
+                                >{% trans "Approved Leaves In This Month" %}</span>
+                            </div>
+                            <div class="oh-card-dashboard__body">
+                                <div class="oh-card-dashboard__counts">
+                                    <span class="oh-card-dashboard__count">{{ approved|length }}</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-12 col-sm-12 col-md-6 col-lg-4">
+                        <div
+                            class="oh-card-dashboard oh-card-dashboard--danger filter pointer dash-card"
+                            id="rejectedLeaves"
+                        >
+                            <div class="oh-card-dashboard__header">
+                                <span
+                                    class="oh-card-dashboard__title"
+                                >{% trans "Rejected Leaves In This Month" %}</span>
+                            </div>
+                            <div class="oh-card-dashboard__body">
+                                <div class="oh-card-dashboard__counts">
+                                    <span class="oh-card-dashboard__count">{{ rejected|length }}</span>
+                                </div>
                             </div>
                         </div>
                     </div>
                 </div>
-                <div class="col-12 col-sm-12 col-md-6 col-lg-4">
-                    <div class="oh-card-dashboard oh-card-dashboard--success filter pointer dash-card"
-                        id="approvedLeaves">
-                        <div class="oh-card-dashboard__header">
-                            <span class="oh-card-dashboard__title">{% trans "Approved Leaves In This Month" %}</span>
-                        </div>
-                        <div class="oh-card-dashboard__body">
-                            <div class="oh-card-dashboard__counts">
-                                <span class="oh-card-dashboard__count">{{approved|length}}</span>
+
+                <div class="oh-dashboard__movable-cards row mt-4">
+                    <div class="col-12 col-sm-12 col-md-12 col-lg-8 mt-2">
+                        <div class="oh-card-dashboard oh-card-dashboard--no-scale oh-card-dashboard--transparent h-100">
+                            <div class="oh-card-dashboard__header oh-card-dashboard__header--divider">
+                                <span
+                                    class="oh-card-dashboard__title pointer"
+                                    id="employee-previous"
+                                    title="{% trans 'Previous' %}"
+                                >
+                                    <ion-icon name="caret-back-outline"></ion-icon>
+                                </span>
+                                <span class="oh-card-dashboard__title">{% trans "Employee Leaves" %}</span>
+                                <span
+                                    class="oh-card-dashboard__title float-end pointer"
+                                    id="employee-next"
+                                    title="{% trans 'next' %}"
+                                >
+                                    <ion-icon name="caret-forward"></ion-icon>
+                                </span>
+                            </div>
+                            <div class="d-flex flex-row-reverse">
+                                <input type="month" class="mb-2 float-end pointer" name="" id="dash_month">
+                            </div>
+                            <div class="oh-card-dashboard__body" id="employee_leave_canvas">
+                                <canvas id="employeeLeave" class="pointer"></canvas>
                             </div>
                         </div>
                     </div>
-                </div>
-                <div class="col-12 col-sm-12 col-md-6 col-lg-4">
-                    <div class="oh-card-dashboard oh-card-dashboard--danger filter pointer dash-card"
-                        id="rejectedLeaves">
-                        <div class="oh-card-dashboard__header">
-                            <span class="oh-card-dashboard__title">{% trans "Rejected Leaves In This Month" %}</span>
-                        </div>
-                        <div class="oh-card-dashboard__body">
-                            <div class="oh-card-dashboard__counts">
-                                <span class="oh-card-dashboard__count">{{rejected|length}}</span>
+                    <div class="col-12 col-sm-12 col-md-12 col-lg-4 mt-2">
+                        <div
+                            class="oh-card-dashboard oh-card-dashboard--no-scale oh-card-dashboard--transparent"
+                            style=""
+                        >
+                            <div class="oh-card-dashboard__header oh-card-dashboard__header--divider">
+                                <span class="oh-card-dashboard__title">{% trans "On Leave" %}</span>
+                            </div>
+                            <div
+                                class="oh-card-dashboard__body"
+                                hx-get="{% url 'employee-leave' %}"
+                                hx-trigger="load"
+                                id="onLeaveListCard"
+                            >
+                                <div class="animated-background"></div>
                             </div>
                         </div>
                     </div>
                 </div>
             </div>
-
-            <div class="oh-dashboard__movable-cards row mt-4">
-                <div class="col-12 col-sm-12 col-md-12 col-lg-8 mt-2">
-                    <div class="oh-card-dashboard oh-card-dashboard--no-scale oh-card-dashboard--transparent h-100">
-                        <div class="oh-card-dashboard__header oh-card-dashboard__header--divider">
-                            <span class="oh-card-dashboard__title pointer" id="employee-previous" title="{% trans 'Previous' %}">
-                                <ion-icon name="caret-back-outline"></ion-icon>
-                            </span>
-                            <span class="oh-card-dashboard__title">{% trans "Employee Leaves" %}</span>
-                            <span class="oh-card-dashboard__title float-end pointer" id="employee-next" title="{% trans 'next' %}">
-                                <ion-icon name="caret-forward"></ion-icon>
-                            </span>
+            <div class="oh-dashboard__right col-12 col-sm-12 col-md-12 col-lg-3">
+                <div class="oh-dashboard__events">
+                    <div class="w-100">
+                        <div class="w-100 mb-1" id="back_button">
+                            <a
+                                href="{% url 'leave-employee-dashboard' %}?dashboard=true"
+                                class="oh-btn oh-btn--secondary oh-btn--shadow"
+                            >{% trans "View Personal Dashboard" %}
+                                <ion-icon
+                                    class="me-2 md hydrated"
+                                    name="arrow-forward-outline"
+                                    role="img"
+                                    aria-label="{% trans 'arrow-back-outline' %}"
+                                ></ion-icon></a>
                         </div>
+
+                        <div
+                            class="oh-dashboard__event oh-dashboard__event--purple mb-2"
+                            style="padding-bottom: 0.75rem"
+                        >
+                            <div class="oh-dasboard__event-photo" style="background-color: white">
+                                <img src="{% static '/images/ui/sunbed.png' %}" class="oh-dashboard__event-userphoto">
+                            </div>
+                            <div class="oh-dasboard__event-details">
+                                <span class="oh-dashboard__event-title">{% trans "Next Holiday" %}</span>
+                                <span class="oh-dashboard__event-main">{{ next_holiday.name }}</span>
+                                <span
+                                    class="dateformat_changer oh-dashboard__event-date"
+                                >{{ next_holiday.start_date }}</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="oh-card-dashboard oh-card-dashboard--no-scale oh-card-dashboard--transparent mt-4" style="">
+                    <div class="oh-card-dashboard__header oh-card-dashboard__header--divider">
+                        <span class="oh-card-dashboard__title">{% trans "Upcoming holidays" %}</span>
+                        <div
+                            onmouseover="helptextView(event, 'Upcoming holidays in this year.')"
+                            class="d-inline position-relative"
+                        >
+                            <ion-icon name="help-circle-outline"></ion-icon>
+                            <div id="tooltip" class="tooltip-text d-none"></div>
+                        </div>
+                    </div>
+                    <div
+                        class="oh-card-dashboard__body"
+                        hx-get="{% url 'get-upcoming-holidays' %}"
+                        hx-trigger="load"
+                        id="upcomingHolidaysList"
+                    >
+                        <div class="animated-background"></div>
+                    </div>
+                </div>
+            </div>
+            <div class="col-12 col-sm-12 col-md-12 col-lg-3 mt-3">
+                <div class="oh-card-dashboard oh-card-dashboard--no-scale oh-card-dashboard--transparent">
+                    <div class="oh-card-dashboard__header oh-card-dashboard__header--divider">
+                        <span class="oh-card-dashboard__title">{% trans "Department Leaves" %}</span>
+                    </div>
+                    <div class="oh-card-dashboard__body">
+                        {% if current_date == next_holiday.start_date|date:"Y-m-d" %}
+                            <div
+                                style="height: 380px; display: flex; align-items: center; justify-content: center"
+                                class=""
+                            >
+                                <div style="" class="">
+                                    <img
+                                        style="display: block; width: 70px; margin: 20px auto"
+                                        src="{% static 'images/ui/sunbed outline.png' %}"
+                                        class=""
+                                        alt=""
+                                    >
+                                    <h3 style="font-size: 16px" class="oh-404__subtitle">
+                                        {% trans "Today is a holiday." %}
+                                    </h3>
+                                </div>
+                            </div>
+                        {% else %}
+                            <div class="d-flex flex-row-reverse">
+                                <input type="month" class="mb-2 pointer" name="" id="dash_department_month">
+                            </div>
+                            <div class="oh-card-dashboard__body" id="department_leave_canvas">
+                                <canvas id="departmentLeave" class="pointer"></canvas>
+                            </div>
+                        {% endif %}
+                    </div>
+                </div>
+            </div>
+            <div class="col-12 col-sm-12 col-md-12 col-lg-3 mt-3">
+                <div class="oh-card-dashboard oh-card-dashboard--no-scale oh-card-dashboard--transparent">
+                    <div class="oh-card-dashboard__header oh-card-dashboard__header--divider">
+                        <span class="oh-card-dashboard__title">{% trans "Leave Type - Count of leaves" %}</span>
+                    </div>
+                    <div class="oh-card-dashboard__body">
                         <div class="d-flex flex-row-reverse">
-                            <input type="month" class="mb-2 float-end pointer" name="" id="dash_month" />
+                            <input type="month" class="mb-2 pointer" name="" id="dash_leave_type_month">
                         </div>
-                        <div class="oh-card-dashboard__body" id="employee_leave_canvas">
-                            <canvas id="employeeLeave" class="pointer"></canvas>
-                        </div>
-                    </div>
-                </div>
-                <div class="col-12 col-sm-12 col-md-12 col-lg-4 mt-2">
-                    <div class="oh-card-dashboard oh-card-dashboard--no-scale oh-card-dashboard--transparent" style="">
-                        <div class="oh-card-dashboard__header oh-card-dashboard__header--divider">
-                            <span class="oh-card-dashboard__title">{% trans "On Leave" %}</span>
-                        </div>
-                        <div class="oh-card-dashboard__body" hx-get="{% url 'employee-leave' %}" hx-trigger="load"
-                            id="onLeaveListCard">
-                            <div class="animated-background"></div>
+                        <div class="oh-card-dashboard__body" id="leave_type_canvas">
+                            <canvas id="leaveType" class="pointer"></canvas>
                         </div>
                     </div>
                 </div>
             </div>
-        </div>
-        <div class="oh-dashboard__right  col-12 col-sm-12 col-md-12 col-lg-3">
-            <div class="oh-dashboard__events">
-                <div class="w-100">
-                    <div class="w-100 mb-1" id="back_button">
-                        <a href="{% url 'leave-employee-dashboard' %}?dashboard=true"
-                            class="oh-btn oh-btn--secondary oh-btn--shadow">{% trans "View Personal Dashboard" %}
-                            <ion-icon class="me-2 md hydrated" name="arrow-forward-outline" role="img"
-                                aria-label="arrow-back-outline"></ion-icon></a>
+            <div class="col-12 col-sm-12 col-md-12 col-lg-6 mt-3">
+                <div class="oh-card-dashboard oh-card-dashboard--no-scale oh-card-dashboard--transparent">
+                    <div class="oh-card-dashboard__header oh-card-dashboard__header--divider">
+                        <span class="oh-card-dashboard__title">{% trans "Weekly Leave Analytics" %}</span>
                     </div>
-
-                    <div class="oh-dashboard__event oh-dashboard__event--purple mb-2" style="padding-bottom:0.75rem">
-                        <div class="oh-dasboard__event-photo" style="background-color:white">
-                            <img src="{% static '/images/ui/sunbed.png' %}" class="oh-dashboard__event-userphoto" />
-                        </div>
-                        <div class="oh-dasboard__event-details">
-                            <span class="oh-dashboard__event-title">{% trans "Next Holiday" %}</span>
-                            <span class="oh-dashboard__event-main">{{next_holiday.name}}</span>
-                            <span class="dateformat_changer oh-dashboard__event-date">{{next_holiday.start_date}}</span>
-                        </div>
+                    <div class="oh-card-dashboard__body">
+                        <canvas id="leavePeriod" class="pointer"></canvas>
                     </div>
-                </div>
-            </div>
-            <div class="oh-card-dashboard oh-card-dashboard--no-scale oh-card-dashboard--transparent mt-4"
-                style="">
-                <div class="oh-card-dashboard__header oh-card-dashboard__header--divider">
-                    <span class="oh-card-dashboard__title">{% trans "Upcoming holidays" %}</span>
-                    <div onmouseover="helptextView(event, 'Upcoming holidays in this year.')" class="d-inline position-relative">
-                        <ion-icon name="help-circle-outline" ></ion-icon>
-                        <div id="tooltip" class="tooltip-text d-none"></div>
-                    </div>
-                </div>
-                <div class="oh-card-dashboard__body" hx-get="{% url 'get-upcoming-holidays' %}" hx-trigger="load"
-                    id="upcomingHolidaysList">
-                    <div class="animated-background"></div>
-                </div>
-            </div>
-        </div>
-        <div class="col-12 col-sm-12 col-md-12 col-lg-3 mt-3">
-            <div class="oh-card-dashboard oh-card-dashboard--no-scale oh-card-dashboard--transparent">
-                <div class="oh-card-dashboard__header oh-card-dashboard__header--divider">
-                    <span class="oh-card-dashboard__title">{% trans "Department Leaves" %}</span>
-                </div>
-                <div class="oh-card-dashboard__body">
-                    {% if current_date == next_holiday.start_date|date:"Y-m-d" %}
-                    <div style="height: 380px; display:flex;align-items: center;justify-content: center;" class="">
-                        <div style="" class="">
-                            <img style="    display: block;width: 70px;margin: 20px auto ;"
-                                src="{% static 'images/ui/sunbed outline.png' %}" class="" alt="" />
-                            <h3 style="font-size:16px" class="oh-404__subtitle">{% trans "Today is a holiday." %}</h3>
-                        </div>
-                    </div>
-                    {% else %}
-                    <div class="d-flex flex-row-reverse">
-                        <input type="month" class="mb-2 pointer" name="" id="dash_department_month" />
-                    </div>
-                    <div class="oh-card-dashboard__body" id="department_leave_canvas">
-                        <canvas id="departmentLeave" class="pointer"></canvas>
-                    </div>
-                    {% endif %}
-                </div>
-            </div>
-        </div>
-        <div class="col-12 col-sm-12 col-md-12 col-lg-3 mt-3">
-            <div class="oh-card-dashboard oh-card-dashboard--no-scale oh-card-dashboard--transparent">
-                <div class="oh-card-dashboard__header oh-card-dashboard__header--divider">
-                    <span class="oh-card-dashboard__title">{% trans "Leave Type - Count of leaves" %}</span>
-                </div>
-                <div class="oh-card-dashboard__body">
-                    <div class="d-flex flex-row-reverse">
-                        <input type="month" class="mb-2 pointer" name="" id="dash_leave_type_month" />
-                    </div>
-                    <div class="oh-card-dashboard__body" id="leave_type_canvas">
-                        <canvas id="leaveType" class="pointer"></canvas>
-                    </div>
-                </div>
-            </div>
-        </div>
-        <div class="col-12 col-sm-12 col-md-12 col-lg-6 mt-3">
-            <div class="oh-card-dashboard oh-card-dashboard--no-scale oh-card-dashboard--transparent">
-                <div class="oh-card-dashboard__header oh-card-dashboard__header--divider">
-                    <span class="oh-card-dashboard__title">{% trans "Weekly Leave Analytics" %}</span>
-                </div>
-                <div class="oh-card-dashboard__body">
-                    <canvas id="leavePeriod" class="pointer"></canvas>
                 </div>
             </div>
         </div>
     </div>
-</div>
-<div class="oh-modal" id="tableTimeOff" role="dialog" aria-labelledby="tableTimeOffModal" aria-hidden="true">
-    <div class="oh-modal__dialog oh-modal__dialog--timeoff oh-timeoff-modal">
-        <div class="oh-modal__dialog-header">
+    <div class="oh-modal" id="tableTimeOff" role="dialog" aria-labelledby="tableTimeOffModal" aria-hidden="true">
+        <div class="oh-modal__dialog oh-modal__dialog--timeoff oh-timeoff-modal">
+            <div class="oh-modal__dialog-header">
+                <button class="oh-modal__close" aria-label="{% trans 'Close' %}">
+                    <ion-icon name="close-outline"></ion-icon>
+                </button>
+            </div>
 
-            <button class="oh-modal__close" aria-label="Close">
-                <ion-icon name="close-outline"></ion-icon>
-            </button>
+            <div id="requestView"></div>
         </div>
-
-        <div id="requestView">
-
-        </div>
-
     </div>
-</div>
-<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-<script src="{% static 'dashboard/dashboard.js' %}"></script>
-<script>
-    $(document).ready(function () {
-        $("#requestedLeaves").on("click", function () {
-            window.location.href = '{% url "request-view" %}?status=requested&from_date={{today}}'
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script src="{% static 'dashboard/dashboard.js' %}"></script>
+    <script>
+        $(document).ready(function () {
+            $("#requestedLeaves").on("click", function () {
+                window.location.href = '{% url "request-view" %}?status=requested&from_date={{today}}'
+            })
+            $("#approvedLeaves").on("click", function () {
+                window.location.href = '{% url "request-view" %}?status=approved&from_date={{first_day}}&to_date={{last_day}}'
+            })
+            $("#rejectedLeaves").on("click", function () {
+                window.location.href = '{% url "request-view" %}?status=rejected&from_date={{first_day}}&to_date={{last_day}}'
+            })
         })
-        $("#approvedLeaves").on("click", function () {
-            window.location.href = '{% url "request-view" %}?status=approved&from_date={{first_day}}&to_date={{last_day}}'
-        })
-        $("#rejectedLeaves").on("click", function () {
-            window.location.href = '{% url "request-view" %}?status=rejected&from_date={{first_day}}&to_date={{last_day}}'
-        })
-    })
 
-    function helptextView(event,text) {
-        event = event || window.event;
-        const icon = event.target || event.srcElement;
-        const tooltip = document.createElement('div');
-        tooltip.className = 'tooltip';
-        tooltip.textContent = text; // Help text
+        function helptextView(event,text) {
+            event = event || window.event;
+            const icon = event.target || event.srcElement;
+            const tooltip = document.createElement('div');
+            tooltip.className = 'tooltip';
+            tooltip.textContent = text; // Help text
 
-        // Position the tooltip relative to the icon
-        const rect = icon.getBoundingClientRect();
-        tooltip.style.top = rect.top + icon.offsetHeight + 'px';
-        tooltip.style.left = rect.left + 'px';
+            // Position the tooltip relative to the icon
+            const rect = icon.getBoundingClientRect();
+            tooltip.style.top = rect.top + icon.offsetHeight + 'px';
+            tooltip.style.left = rect.left + 'px';
 
-        // Append tooltip to the body
-        document.body.appendChild(tooltip);
+            // Append tooltip to the body
+            document.body.appendChild(tooltip);
 
-        // Remove tooltip when mouse is moved away from the icon
-        icon.addEventListener('mouseout', function () {
-            document.body.removeChild(tooltip);
-        });
-    }
-</script>
+            // Remove tooltip when mouse is moved away from the icon
+            icon.addEventListener('mouseout', function () {
+                document.body.removeChild(tooltip);
+            });
+        }
+    </script>
 {% endblock %}

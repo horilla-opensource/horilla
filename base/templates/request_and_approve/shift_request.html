@@ -1,99 +1,110 @@
 {% load i18n static %}
 
 {% if requests %}
-<div class="oh-sticky-table h-100">
-    <div class="oh-sticky-table__table oh-table--sortable">
-        <div class="oh-sticky-table__thead">
-            <div class="oh-sticky-table__tr">
-                <div class="oh-sticky-table__th">{% trans "Employee" %}</div>
-				<div class="oh-sticky-table__th">{% trans "Requested Shift" %}</div>
-				<div class="oh-sticky-table__th">{% trans "Previous/ Current Shift" %}</div>
-                <div class="oh-sticky-table__th" align="center">{% trans "Actions" %}</div>
+    <div class="oh-sticky-table h-100">
+        <div class="oh-sticky-table__table oh-table--sortable">
+            <div class="oh-sticky-table__thead">
+                <div class="oh-sticky-table__tr">
+                    <div class="oh-sticky-table__th">{% trans "Employee" %}</div>
+                    <div class="oh-sticky-table__th">{% trans "Requested Shift" %}</div>
+                    <div class="oh-sticky-table__th">{% trans "Previous/ Current Shift" %}</div>
+                    <div class="oh-sticky-table__th" align="center">{% trans "Actions" %}</div>
+                </div>
             </div>
-        </div>
-        {% for shift_request in requests %}
-        <div class="oh-sticky-table__tbody">
-            <div
-                class="oh-sticky-table__tr"
-                hx-get="{% url 'shift-request-details' shift_request.id %}?instances_ids={{requests_ids}}&dashboard=true"
-                hx-target="#objectDetailsModalTarget"
-                data-toggle="oh-modal-toggle"
-                data-target="#objectDetailsModal"
-            >
-                <div class="oh-sticky-table__sd">
-                    <div class="oh-profile oh-profile--md">
-                        <div class="oh-profile__avatar mr-1">
-                            <img
-                                src="{{shift_request.employee_id.get_avatar}}"
-                                class="oh-profile__image"
-                                alt="Username"
-                            />
+            {% for shift_request in requests %}
+                <div class="oh-sticky-table__tbody">
+                    <div
+                        class="oh-sticky-table__tr"
+                        hx-get="{% url 'shift-request-details' shift_request.id %}?instances_ids={{requests_ids}}&dashboard=true"
+                        hx-target="#objectDetailsModalTarget"
+                        data-toggle="oh-modal-toggle"
+                        data-target="#objectDetailsModal"
+                    >
+                        <div class="oh-sticky-table__sd">
+                            <div class="oh-profile oh-profile--md">
+                                <div class="oh-profile__avatar mr-1">
+                                    <img
+                                        src="{{shift_request.employee_id.get_avatar}}"
+                                        class="oh-profile__image"
+                                        alt="{% trans 'Username' %}"
+                                    >
+                                </div>
+                                <span class="oh-profile__name oh-text--dark">{{ shift_request.employee_id }}</span>
+                            </div>
                         </div>
-                        <span class="oh-profile__name oh-text--dark"
-                            >{{shift_request.employee_id}}</span
+                        <div class="oh-sticky-table__td">{{ shift_request.shift_id }}</div>
+                        <div class="oh-sticky-table__td">{{ shift_request.previous_shift_id }}</div>
+                        <div
+                            class="oh-sticky-table__td"
+                            onclick="event.stopPropagation()"
                         >
-                    </div>
-                </div>
-				<div class="oh-sticky-table__td">{{shift_request.shift_id}}</div>
-				<div class="oh-sticky-table__td">{{shift_request.previous_shift_id}}</div>
-                <div
-                    class="oh-sticky-table__td"
-                    onclick="event.stopPropagation();"
-                >
-                    <div class="oh-btn-group float-end">
-                        <a
-                            href="/shift-request-approve/{{shift_request.id}}/"
-							onclick="return confirm('{% trans "Do you want to approve this shift request?" %}')"
-                            class="oh-btn oh-btn--success"
-                            title="Approve"
-                            ><ion-icon name="checkmark-outline"></ion-icon
-                        ></a>
+                            <div class="oh-btn-group float-end">
+                                <a
+                                    href="/shift-request-approve/{{shift_request.id}}/"
+                                    onclick="return confirm('{% trans "Do you want to approve this shift request?" %}')"
+                                    class="oh-btn oh-btn--success"
+                                    title="{% trans 'Approve' %}"
+                                ><ion-icon name="checkmark-outline"></ion-icon></a>
 
-                        <a
-                            href="/shift-request-cancel/{{shift_request.id}}/"
-							onclick="return confirm('{% trans "Do you want to cancel this request?" %}')"
-                            class="oh-btn oh-btn--danger"
-                            title="cancel"
-                            ><ion-icon name="close-circle-outline"></ion-icon
-                        ></a>
+                                <a
+                                    href="/shift-request-cancel/{{shift_request.id}}/"
+                                    onclick="return confirm('{% trans "Do you want to cancel this request?" %}')"
+                                    class="oh-btn oh-btn--danger"
+                                    title="{% trans 'cancel' %}"
+                                ><ion-icon name="close-circle-outline"></ion-icon></a>
+                            </div>
+                        </div>
                     </div>
                 </div>
-            </div>
+            {% endfor %}
         </div>
-        {% endfor %}
     </div>
-</div>
 {% else %}
     <div class="oh-empty h-100">
-        <img src="{% static 'images/ui/search.svg' %}" class="oh-404__image" alt="Page not found. 404." />
+        <img src="{% static 'images/ui/search.svg' %}" class="oh-404__image" alt="{% trans 'Page not found. 404.' %}">
         <h1 class="oh-empty__title">{% trans "No Records found." %}</h1>
         <p class="oh-empty__subtitle">{% trans "No records available at the moment." %}</p>
     </div>
 {% endif %}
 {% if requests.has_next or requests.has_previous %}
-    <div class=" float-end mt-3 mb-3">
+    <div class="float-end mt-3 mb-3">
         {% if requests.has_previous %}
-            <span class="oh-card-dashboard__title" style="cursor: pointer"
+            <span
+                class="oh-card-dashboard__title"
+                style="cursor: pointer"
                 hx-target="#shiftRequestApproveBody"
                 hx-get="{% url 'dashboard-shift-request' %}?{{pd}}&page={{ requests.previous_page_number }}"
-                hx-trigger="click delay:0.3s">
-                <ion-icon name="caret-back-outline" role="img" class="md hydrated" aria-label="caret back outline"></ion-icon>
+                hx-trigger="click delay:0.3s"
+            >
+                <ion-icon
+                    name="caret-back-outline"
+                    role="img"
+                    class="md hydrated"
+                    aria-label="{% trans 'caret back outline' %}"
+                ></ion-icon>
             </span>
         {% endif %}
 
         {% if requests.has_next %}
-            <span class="oh-card-dashboard__title float-end ms-2" style="cursor: pointer"
+            <span
+                class="oh-card-dashboard__title float-end ms-2"
+                style="cursor: pointer"
                 hx-target="#shiftRequestApproveBody"
                 hx-get="{% url 'dashboard-shift-request' %}?{{pd}}&page={{ requests.next_page_number }}"
-                hx-trigger="click delay:0.3s">
-                <ion-icon name="caret-forward-outline" role="img" class="md hydrated"
-                    aria-label="caret back outline"></ion-icon>
+                hx-trigger="click delay:0.3s"
+            >
+                <ion-icon
+                    name="caret-forward-outline"
+                    role="img"
+                    class="md hydrated"
+                    aria-label="{% trans 'caret back outline' %}"
+                ></ion-icon>
             </span>
         {% endif %}
         {% if requests.has_next or requests.has_previous %}
             <span class="oh-pagination__page float-end fw-bold">
-                {% trans "Page" %} {{ requests.number }} {%trans "of" %}
-                {{requests.paginator.num_pages }}
+                {% trans "Page" %} {{ requests.number }} {% trans "of" %}
+                {{ requests.paginator.num_pages }}
             </span>
         {% endif %}
     </div>

@@ -1293,7 +1293,10 @@ def validate_bulk_attendance(request):
             # Recalculate worked hours from attendance activities before validation
             # to ensure Hours Account reflects actual worked time.
             # Fixes: https://github.com/horilla/horilla-hr/issues/1055
-            if not attendance.attendance_worked_hour or attendance.attendance_worked_hour == "00:00":
+            if (
+                not attendance.attendance_worked_hour
+                or attendance.attendance_worked_hour == "00:00"
+            ):
                 at_work_seconds = attendance.get_at_work_from_activities()
                 if at_work_seconds > 0:
                     attendance.attendance_worked_hour = format_time(at_work_seconds)
@@ -1346,7 +1349,10 @@ def validate_this_attendance(request, obj_id):
         # Recalculate worked hours from attendance activities before validation
         # to ensure Hours Account reflects actual worked time.
         # Fixes: https://github.com/horilla/horilla-hr/issues/1055
-        if not attendance.attendance_worked_hour or attendance.attendance_worked_hour == "00:00":
+        if (
+            not attendance.attendance_worked_hour
+            or attendance.attendance_worked_hour == "00:00"
+        ):
             at_work_seconds = attendance.get_at_work_from_activities()
             if at_work_seconds > 0:
                 attendance.attendance_worked_hour = format_time(at_work_seconds)

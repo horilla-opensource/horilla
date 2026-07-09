@@ -1,5 +1,9 @@
-<form hx-post="{% url 'create-resignation-request' %}?instance_id={{form.instance.id}}" hx-target="#resignationModalBody">
-{{form.as_p}}
+{% load i18n %}
+<form
+    hx-post="{% url 'create-resignation-request' %}?instance_id={{form.instance.id}}"
+    hx-target="#resignationModalBody"
+>
+    {{ form.as_p }}
 </form>
 <script>
     $(".col-md-6").removeClass("col-md-6")

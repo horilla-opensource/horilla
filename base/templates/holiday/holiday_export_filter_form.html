@@ -1,16 +1,20 @@
 {% load i18n %}
 <div class="oh-modal__dialog-header pb-0">
     <h2 class="oh-modal__dialog-title" id="holidayExportLavel">
-        {% trans "Export Holidays" %} {{export_filter.form.verbose_name}}
+        {% trans "Export Holidays" %} {{ export_filter.form.verbose_name }}
     </h2>
-    <button class="oh-modal__close" aria-label="Close">
+    <button class="oh-modal__close" aria-label="{% trans 'Close' %}">
         <ion-icon name="close-outline"></ion-icon>
     </button>
 </div>
 <div class="oh-modal__dialog-body" id="holidayExportModalBody">
-    <form action="{%url 'holiday-info-export' %}" method="get"
-        onsubmit="event.stopPropagation();$(this).parents().find('.oh-modal--show').last().toggleClass('oh-modal--show');"
-        id="holidayExportForm" class="oh-profile-section pt-0">
+    <form
+        action="{%url 'holiday-info-export' %}"
+        method="get"
+        onsubmit="event.stopPropagation();$(this).parents().find('.oh-modal--show').last().toggleClass('oh-modal--show')"
+        id="holidayExportForm"
+        class="oh-profile-section pt-0"
+    >
         {% csrf_token %}
         <div class="oh-dropdown__filter-body">
             <div class="oh-accordion">
@@ -18,11 +22,11 @@
                 <div class="oh-accordion-body">
                     <div class="row">
                         {% for field in export_column.selected_fields %}
-                        <div class="col-sm-12 col-md-12 col-lg-6">
-                            <div class="oh-input-group">
-                                <label class="oh-label"> {{ field }} </label>
+                            <div class="col-sm-12 col-md-12 col-lg-6">
+                                <div class="oh-input-group">
+                                    <label class="oh-label"> {{ field }} </label>
+                                </div>
                             </div>
-                        </div>
                         {% endfor %}
                     </div>
                 </div>
@@ -36,7 +40,7 @@
                                 <label class="oh-label" for="{{ export_filter.form.start_date.id_for_label }}">
                                     {{ export_filter.form.start_date.label }}
                                 </label>
-                                {{export_filter.form.start_date}}
+                                {{ export_filter.form.start_date }}
                             </div>
                         </div>
                         <div class="col-sm-12 col-md-12 col-lg-6">

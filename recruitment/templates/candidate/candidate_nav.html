@@ -19,7 +19,7 @@ x-data="{searchShow: false}"
   <a
     class="oh-main__titlebar-search-toggle "
     role="button"
-    aria-label="Toggle Search"
+    aria-label="{% trans 'Toggle Search' %}"
     @click="searchShow = !searchShow"
     >
     <ion-icon
@@ -52,7 +52,7 @@ x-data="{searchShow: false}"
         id="candidate-search"
         name='name'
         class="oh-input oh-input__icon"
-        aria-label="Search Input"
+        aria-label="{% trans 'Search Input' %}"
         onkeyup="$('.filterButton')[0].click();"
       />
     </div>
@@ -272,7 +272,7 @@ x-data="{searchShow: false}"
             <h2 class="oh-modal__dialog-title" id="bulkResumeUploadLabel">
                 {% trans "Upload Resumes" %}
             </h2>
-            <button class="oh-modal__close" aria-label="Close">
+            <button class="oh-modal__close" aria-label="{% trans 'Close' %}">
                 <ion-icon name="close-outline"></ion-icon>
             </button>
             <div

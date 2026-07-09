@@ -1,6 +1,9 @@
-{% load static %}{% load i18n %} {% load basefilters %}
+{% load static %}{% load i18n %}
+{% load basefilters %}
 {% if messages %}
-    <script>reloadMessage();</script>
+    <script>
+        reloadMessage();
+    </script>
 {% endif %}
 <script>
     function submitForm(elem) {
@@ -38,13 +41,13 @@
 <style>
     .enlarge-image-container {
         display: none;
+        z-index: 9999;
         position: fixed;
         top: 40%;
         left: 40%;
-        transform: translate(-50%, -50%);
         width: 30%;
         height: 50%;
-        z-index: 9999;
+        transform: translate(-50%, -50%);
     }
 </style>
 
@@ -55,14 +58,24 @@
                 {% csrf_token %}
                 <div>
                     <div class="mt-4">
-                        <span class="oh-activity-sidebar__title fw-bold">{{employee}}'s {% trans "Notes" %}</span>
+                        <span class="oh-activity-sidebar__title fw-bold">{{ employee }}'s {% trans "Notes" %}</span>
                         {% if perms.employee.add_employeenote or request.user|is_reportingmanager %}
-                            <input type="text" hx-on:keyup="toggleCommentButton(this);" name="description" id="commentInput"
-                            class="oh-input w-100 mt-2" placeholder="{% trans 'Add notes' %}">
+                            <input
+                                type="text"
+                                hx-on:keyup="toggleCommentButton(this);"
+                                name="description"
+                                id="commentInput"
+                                class="oh-input w-100 mt-2"
+                                placeholder="{% trans 'Add notes' %}"
+                            >
                         {% endif %}
                     </div>
-                    <button type="submit" id="commentButton" class="oh-btn oh-btn--secondary mt-2 mr-0 oh-btn--w-100-resp"
-                        style="display: none;">
+                    <button
+                        type="submit"
+                        id="commentButton"
+                        class="oh-btn oh-btn--secondary mt-2 mr-0 oh-btn--w-100-resp"
+                        style="display: none"
+                    >
                         {% trans "Add" %}
                     </button>
                 </div>
@@ -74,51 +87,88 @@
         {% for note in notes %}
             <div id="employeeNote{{note.id}}">
                 <li class="oh-activity-sidebar__qa-item">
-                    <span class="oh-activity-sidebar__q">{{note.description}}
+                    <span class="oh-activity-sidebar__q">{{ note.description }}
                         {% if perms.employee.delete_employeenote or request.user|is_reportingmanager %}
-                        <span class="float-end" hx-get="{% url 'employee-note-delete' note.id %}"
-                            hx-on:click="setTimeout(() => {reloadMessage(this);},100);" hx-target="#employeeNote{{note.id}}"
-                            hx-swap="delete" id="deleteNote">
-                            <ion-icon name="close-outline" style="font-size: 24px" role="img" class="md hydrated" aria-label="close outline"></ion-icon></span>
-                        </span>
+                            <span
+                                class="float-end"
+                                hx-get="{% url 'employee-note-delete' note.id %}"
+                                hx-on:click="setTimeout(() => {reloadMessage(this);},100);"
+                                hx-target="#employeeNote{{note.id}}"
+                                hx-swap="delete"
+                                id="deleteNote"
+                            >
+                                <ion-icon
+                                    name="close-outline"
+                                    style="font-size: 24px"
+                                    role="img"
+                                    class="md hydrated"
+                                    aria-label="{% trans 'close outline' %}"
+                                ></ion-icon></span>
+                            </span>
                         {% endif %}
                     </span>
                     {% if perms.employee.view_notefiles or request.user|is_reportingmanager %}
                         <div class="d-flex mt-2 mb-2">
                             {% for file in note.note_files.all %}
                                 <a href="{{ file.files.url }}" rel="noopener noreferrer" target="_blank">
-                                    <span class="oh-file-icon oh-file-icon--pdf" id="noteFile{{file.id}}"
-                                        onmouseover="enlargeDoc('{{ file.files.url }}',$(this))" onmouseout="hideEnlargeDoc()"
-                                        style="width: 40px; height: 40px">
+                                    <span
+                                        class="oh-file-icon oh-file-icon--pdf"
+                                        id="noteFile{{file.id}}"
+                                        onmouseover="enlargeDoc('{{ file.files.url }}',$(this))"
+                                        onmouseout="hideEnlargeDoc()"
+                                        style="width: 40px; height: 40px"
+                                    >
                                         {% if perms.employee.delete_notefiles or request.user|is_reportingmanager %}
-                                            <img src="{% static 'images/ui/minus-icon.png' %}"
-                                                style="display: block; width: 50%; height: 50%" hx-swap="delete"
-                                                hx-get="{% url 'delete-employee-note-file' file.id %}" hx-target="#noteFile{{file.id}}"
-                                                onclick="event.stopPropagation();event.preventDefault()" />
+                                            <img
+                                                src="{% static 'images/ui/minus-icon.png' %}"
+                                                style="display: block; width: 50%; height: 50%"
+                                                hx-swap="delete"
+                                                hx-get="{% url 'delete-employee-note-file' file.id %}"
+                                                hx-target="#noteFile{{file.id}}"
+                                                onclick="event.stopPropagation();event.preventDefault()"
+                                            >
                                         {% endif %}
                                     </span>
                                 </a>
                             {% endfor %}
                             {% if perms.employee.add_notefiles or request.user|is_reportingmanager %}
-                                <form hx-post="{% url 'add-more-files-employee' note.id %}" class="add-files-form"
-                                    hx-encoding="multipart/form-data" data-target="#activitySidebar" hx-swap="innerHTML"
-                                    hx-target="#note_target">
+                                <form
+                                    hx-post="{% url 'add-more-files-employee' note.id %}"
+                                    class="add-files-form"
+                                    hx-encoding="multipart/form-data"
+                                    data-target="#activitySidebar"
+                                    hx-swap="innerHTML"
+                                    hx-target="#note_target"
+                                >
                                     {% csrf_token %}
-                                    <label for="addFile_{{note.id}}" title="Add Files"><ion-icon name="add-outline"
-                                            style="font-size: 24px" role="img" class="md hydrated"
-                                            aria-label="add outline"></ion-icon></label>
-                                    <input type="file" name="files" class="d-none" multiple="true" id="addFile_{{note.id}}"
-                                        onchange="submitForm(this)" />
-                                    <input type="submit" class="d-none add_more_submit" value="save" />
+                                    <label for="addFile_{{note.id}}" title="{% trans 'Add Files' %}"><ion-icon
+                                            name="add-outline"
+                                            style="font-size: 24px"
+                                            role="img"
+                                            class="md hydrated"
+                                            aria-label="{% trans 'add outline' %}"
+                                        ></ion-icon></label>
+                                    <input
+                                        type="file"
+                                        name="files"
+                                        class="d-none"
+                                        multiple="true"
+                                        id="addFile_{{note.id}}"
+                                        onchange="submitForm(this)"
+                                    >
+                                    <input type="submit" class="d-none add_more_submit" value="save">
                                 </form>
                             {% endif %}
                         </div>
                     {% endif %}
                     <span class="oh-activity-sidebar__a">
                         {% trans "by" %}
-                        <img src="https://ui-avatars.com/api/?name={{note.updated_by.get_full_name}}&amp;background=random"
-                            style="width: 1.5em; border-radius: 100%" alt="User" />
-                        {{note.updated_by}}
+                        <img
+                            src="https://ui-avatars.com/api/?name={{note.updated_by.get_full_name}}&amp;background=random"
+                            style="width: 1.5em; border-radius: 100%"
+                            alt="{% trans 'User' %}"
+                        >
+                        {{ note.updated_by }}
                     </span>
                     <span class="oh-activity-sidebar__a">
                         {% trans "at" %} &nbsp
@@ -139,14 +189,24 @@
             {% csrf_token %}
             <div>
                 <div class="mt-4">
-                    <span class="oh-activity-sidebar__title fw-bold">{{employee}}'s {% trans "Notes" %}</span>
+                    <span class="oh-activity-sidebar__title fw-bold">{{ employee }}'s {% trans "Notes" %}</span>
                     {% if perms.employee.add_employeenote or request.user|is_reportingmanager %}
-                    <input type="text" hx-on:keyup="toggleCommentButton(this);" name="description" id="commentInput"
-                        class="oh-input w-100 mt-2" placeholder="{% trans 'Add notes' %}">
+                        <input
+                            type="text"
+                            hx-on:keyup="toggleCommentButton(this);"
+                            name="description"
+                            id="commentInput"
+                            class="oh-input w-100 mt-2"
+                            placeholder="{% trans 'Add notes' %}"
+                        >
                     {% endif %}
                 </div>
-                <button type="submit" id="commentButton" class="oh-btn oh-btn--secondary mt-2 mr-0 oh-btn--w-100-resp"
-                    style="display: none;">
+                <button
+                    type="submit"
+                    id="commentButton"
+                    class="oh-btn oh-btn--secondary mt-2 mr-0 oh-btn--w-100-resp"
+                    style="display: none"
+                >
                     {% trans "Add" %}
                 </button>
             </div>
@@ -155,7 +215,7 @@
     </div>
 
     <div class="d-flex mt-5" style="margin-left: 30%">
-        <img style="width: 80px; height: 90px" src="{% static 'images/ui/no_notes.png' %}" />
+        <img style="width: 80px; height: 90px" src="{% static 'images/ui/no_notes.png' %}">
         <h5 class="oh-404__subtitle mt-4 ml-2">
             {% trans "No notes have been added for this employee" %}
         </h5>

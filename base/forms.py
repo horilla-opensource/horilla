@@ -809,7 +809,7 @@ class RotatingWorkTypeAssignForm(ModelForm):
     based_on = forms.ChoiceField(
         choices=BASED_ON, initial="daily", label=_trans("Based on")
     )
-    rotate_after_day = forms.IntegerField(initial=5, label=_trans("Rotate after day"))
+    rotate_after_day = forms.IntegerField(initial=5, label=_trans("Rotate After Day"))
 
     class Meta:
         """
@@ -830,8 +830,8 @@ class RotatingWorkTypeAssignForm(ModelForm):
         }
         labels = {
             "is_active": _trans("Is Active"),
-            "rotate_every_weekend": _trans("Rotate every weekend"),
-            "rotate_every": _trans("Rotate every"),
+            "rotate_every_weekend": _trans("Rotate Every Weekend"),
+            "rotate_every": _trans("Rotate Every Month"),
         }
 
     def __init__(self, *args, **kwargs):
@@ -986,9 +986,9 @@ class RotatingWorkTypeAssignUpdateForm(ModelForm):
         ]
         labels = {
             "start_date": _trans("Start date"),
-            "rotate_after_day": _trans("Rotate after day"),
-            "rotate_every_weekend": _trans("Rotate every weekend"),
-            "rotate_every": _trans("Rotate every"),
+            "rotate_after_day": _trans("Rotate After Day"),
+            "rotate_every_weekend": _trans("Rotate Every Weekend"),
+            "rotate_every": _trans("Rotate Every Month"),
             "based_on": _trans("Based on"),
             "is_active": _trans("Is Active"),
         }
@@ -1430,7 +1430,7 @@ class RotatingShiftAssignForm(ModelForm):
     based_on = forms.ChoiceField(
         choices=BASED_ON, initial="daily", label=_trans("Based on")
     )
-    rotate_after_day = forms.IntegerField(initial=5, label=_trans("Rotate after day"))
+    rotate_after_day = forms.IntegerField(initial=5, label=_trans("Rotate After Day"))
 
     class Meta:
         """
@@ -1450,8 +1450,9 @@ class RotatingShiftAssignForm(ModelForm):
             "rotating_shift_id": _trans("Rotating Shift"),
             "start_date": _("Start date"),
             "is_active": _trans("Is Active"),
-            "rotate_every_weekend": _trans("Rotate every weekend"),
-            "rotate_every": _trans("Rotate every"),
+            "rotate_after_day": _trans("Rotate After Day"),
+            "rotate_every_weekend": _trans("Rotate Every Weekend"),
+            "rotate_every": _trans("Rotate Every Month"),
         }
 
     def __init__(self, *args, **kwargs):
@@ -1604,9 +1605,9 @@ class RotatingShiftAssignUpdateForm(ModelForm):
         ]
         labels = {
             "start_date": _trans("Start date"),
-            "rotate_after_day": _trans("Rotate after day"),
-            "rotate_every_weekend": _trans("Rotate every weekend"),
-            "rotate_every": _trans("Rotate every"),
+            "rotate_after_day": _trans("Rotate After Day"),
+            "rotate_every_weekend": _trans("Rotate Every Weekend"),
+            "rotate_every": _trans("Rotate Every Month"),
             "based_on": _trans("Based on"),
             "is_active": _trans("Is Active"),
         }

@@ -3,36 +3,36 @@
 <html lang="en">
     <!-- Previous head section remains the same -->
     <head>
-        <meta charset="UTF-8" />
-        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
         <title>{% trans "Application Tracking" %}</title>
         <link
             href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.2/css/bootstrap.min.css"
             rel="stylesheet"
-        />
+        >
         <link
             href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css"
             rel="stylesheet"
-        />
-        <link rel="stylesheet" href="{% static 'build/css/style.min.css' %}" />
+        >
+        <link rel="stylesheet" href="{% static 'build/css/style.min.css' %}">
         <link
             rel="stylesheet"
             type="text/css"
             href="{% static 'css/style.css' %}"
-        />
+        >
         <script src="{% static '/jquery/jquery.min.js' %}"></script>
         <style>
             body {
-                background-color: #f8f9fa;
+                min-height: 100vh;
                 margin: 0;
                 padding: 0;
-                min-height: 100vh;
+                background-color: #f8f9fa;
             }
 
             .tracking-container {
-                padding: 1rem;
                 width: 80%;
                 margin: 0 auto;
+                padding: 1rem;
             }
 
             @media (min-width: 768px) {
@@ -42,13 +42,13 @@
             }
 
             .tracking-card {
-                position:relative;
-                padding:1rem;
-                background: white;
-                border-radius: 8px;
-                box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+                position: relative;
                 height: 100%;
                 margin-bottom: 1rem;
+                padding: 1rem;
+                border-radius: 8px;
+                background: white;
+                box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
             }
 
             .profile-image {
@@ -59,12 +59,12 @@
             }
 
             .status-badge {
+                display: inline-block;
+                margin: 0.5rem 0;
                 padding: 0.5rem 1rem;
                 border-radius: 20px;
                 font-size: 0.875rem;
-                display: inline-block;
                 white-space: nowrap;
-                margin: 0.5rem 0;
             }
 
             .status-badge.pending {
@@ -87,8 +87,8 @@
             }
 
             .interview-item {
-                border-bottom: 1px solid #e9ecef;
                 padding: 1rem 0;
+                border-bottom: 1px solid #e9ecef;
             }
 
             .interview-item:last-child {
@@ -98,33 +98,33 @@
             .interview-date,
             .interview-time,
             .interview-interviewer {
-                font-size: 0.875rem;
-                color: #6c757d;
                 margin-bottom: 0.5rem;
+                color: #6c757d;
+                font-size: 0.875rem;
             }
 
             .interview-description {
-                font-size: 0.875rem;
-                color: #6c757d;
                 margin-top: 0.5rem;
                 padding-left: 0.75rem;
                 border-left: 3px solid #e9ecef;
+                color: #6c757d;
+                font-size: 0.875rem;
             }
 
             .interviewer-chip {
                 display: inline-block;
-                padding: 0.25rem 0.5rem;
-                background-color: #e9ecef;
-                border-radius: 12px;
                 margin-right: 0.25rem;
                 margin-bottom: 0.25rem;
+                padding: 0.25rem 0.5rem;
+                border-radius: 12px;
+                background-color: #e9ecef;
                 font-size: 0.8125rem;
                 white-space: nowrap;
             }
 
             .document-card {
-                transition: all 0.3s ease;
                 margin-bottom: 1rem;
+                transition: all 0.3s ease;
             }
 
             .document-card:hover {
@@ -133,28 +133,28 @@
             }
 
             .note-card {
-                border-left: 4px solid #007bff;
-                margin-bottom: 1rem;
                 position: relative;
+                margin-bottom: 1rem;
+                border-left: 4px solid #007bff;
             }
 
             .note-close-btn {
+                display: flex;
                 position: absolute;
                 top: 0.5rem;
                 right: 0.5rem;
-                width: 28px;
-                height: 28px;
-                border-radius: 50%;
-                background-color: #fff;
-                border: none;
-                display: flex;
                 align-items: center;
                 justify-content: center;
+                width: 28px;
+                height: 28px;
+                padding: 0;
+                border: none;
+                border-radius: 50%;
+                background-color: #fff;
+                color: #dc3545;
+                font-size: 14px;
                 cursor: pointer;
                 transition: all 0.2s ease;
-                padding: 0;
-                font-size: 14px;
-                color: #dc3545;
             }
 
             .note-close-btn:hover {
@@ -174,9 +174,9 @@
                 }
             }
 
-            .document-list, .notes-list,.interview-list {
+            .document-list, .notes-list, .interview-list {
                 height: 400px;
-                overflow-y : auto;
+                overflow-y: auto;
             }
 
             .notes-list {
@@ -296,42 +296,42 @@
 
             .oh-not-found {
                 display: flex;
-                justify-content: center;
-                align-items: center;
                 flex-direction: column;
+                align-items: center;
+                justify-content: center;
                 height: 50vh;
                 opacity: 0.5;
             }
 
             .file-validation {
-                color: #4f5bd9;
-                background-color: #d8e7f0;
-                border-color: #d6e9c6;
                 padding: 15px;
                 border: 1px solid transparent;
                 border-radius: 4px;
+                border-color: #d6e9c6;
+                background-color: #d8e7f0;
+                color: #4f5bd9;
             }
 
             .banner-container {
+                z-index: 2;
                 position: absolute;
                 top: 25px;
                 right: -43px;
+                padding: 8px 76px;
                 transform: rotate(34deg);
                 background-color: #40ac40;
                 color: white;
-                padding: 8px 76px;
                 font-size: 12px;
-                z-index: 2;
-                clip-path: polygon(26% 0, 81% 0, 91% 94%, 0 115%);
                 text-align: center;
+                clip-path: polygon(26% 0, 81% 0, 91% 94%, 0 115%);
             }
 
             @media (max-width: 768px) {
                 .banner-container {
                     top: 20px;
                     right: -33px;
-                    font-size: 10px;
                     padding: 6px 56px;
+                    font-size: 10px;
                 }
             }
 
@@ -339,11 +339,10 @@
                 .banner-container {
                     top: 17px;
                     right: -29px;
-                    font-size: 8px;
                     padding: 5px 50px;
+                    font-size: 8px;
                 }
             }
-
         </style>
     </head>
     <body>
@@ -355,7 +354,8 @@
             hx-swap="afterend"
             hidden
             hx-target="#reloadMessages"
-        ></button>
+        >
+        </button>
 
         <div class="tracking-container">
             <div class="row justify-content-center mb-4">
@@ -369,36 +369,34 @@
                         <div class="d-flex align-items-center mb-3 flex-wrap">
                             <img
                                 src="{{ candidate.get_avatar }}"
-                                alt="Profile"
+                                alt="{% trans 'Profile' %}"
                                 width="50px"
                                 class="profile-image me-3 mb-2"
-                            />
+                            >
                             <div>
                                 <h2 class="h4 mb-1">
-                                    {{candidate.get_full_name|title}}
+                                    {{ candidate.get_full_name|title }}
                                 </h2>
                                 {% if check_candidate_self_tracking_rating %}
-                                <div class="d-block mb-0">
-                                    <div
-                                        class="oh-rate"
-                                    >
-                                        {% for i in "54321" %}
-                                        <input
-                                            type="radio"
-                                            id="star{{i}}{{candidate.id}}"
-                                            name="rating" class="rating-radio"
-                                            value="{{i}}" disabled
-                                            {% if candidate.candidate_rating.all|avg_rating:candidate == i %}
-                                            checked
-                                            {% endif %}
-                                        />
-                                        <label for="star{{i}}{{candidate.id}}"
-                                            >5</label
-                                        >
-                                        {% endfor %}
+                                    <div class="d-block mb-0">
+                                        <div class="oh-rate">
+                                            {% for i in "54321" %}
+                                                <input
+                                                    type="radio"
+                                                    id="star{{i}}{{candidate.id}}"
+                                                    name="rating"
+                                                    class="rating-radio"
+                                                    value="{{i}}"
+                                                    disabled
+                                                    {% if candidate.candidate_rating.all|avg_rating:candidate == i %}
+                                                        checked
+                                                    {% endif %}
+                                                >
+                                                <label for="star{{i}}{{candidate.id}}">5</label>
+                                            {% endfor %}
+                                        </div>
+                                        <span id="rating-radio-error"></span>
                                     </div>
-                                    <span id="rating-radio-error"></span>
-                                </div>
                                 {% endif %}
                             </div>
                         </div>
@@ -436,62 +434,61 @@
                     <div class="tracking-card">
                         <h3 class="h5 mb-4 fw-bold">{% trans "Documents" %}</h3>
                         <div class="document-list">
-                        {% for document in candidate.candidatedocument_set.all %}
-                            <div class="document-card card">
-                                <div class="card-body"
-                                    hx-get="{% url 'candidate-view-file' document.id %}"
-                                    hx-target="#viewFile"
-                                    data-toggle="oh-modal-toggle"
-                                    data-target="#viewFileModal"
-                                >
+                            {% for document in candidate.candidatedocument_set.all %}
+                                <div class="document-card card">
                                     <div
-                                        class="d-flex justify-content-between align-items-center flex-wrap gap-2"
+                                        class="card-body"
+                                        hx-get="{% url 'candidate-view-file' document.id %}"
+                                        hx-target="#viewFile"
+                                        data-toggle="oh-modal-toggle"
+                                        data-target="#viewFileModal"
                                     >
-                                        <div>
-                                            <h6 class="mb-1">{{document.title}}</h6>
-                                            <small class="text-muted" title="{{document.document_request_id.description}}"
-                                                >{{document.document_request_id.description|truncatechars:50}}</small
+                                        <div class="d-flex justify-content-between align-items-center flex-wrap gap-2">
+                                            <div>
+                                                <h6 class="mb-1">{{ document.title }}</h6>
+                                                <small
+                                                    class="text-muted"
+                                                    title="{{document.document_request_id.description}}"
+                                                >{{ document.document_request_id.description|truncatechars:50 }}</small>
+                                            </div>
+                                            {% if document.document %}
+                                                {% if document.status == "approved" %}
+                                                    <span class="badge text-success p-2">{% trans "Approved" %}</span>
+                                                {% elif document.status == "rejected" %}
+                                                    <span class="badge text-danger p-2">{% trans "Rejected" %}</span>
+                                                {% else %}
+                                                    <span class="badge text-info p-2">{% trans "Uploaded" %}</span>
+                                                {% endif %}
+                                            {% else %}
+                                                <button
+                                                    class="btn oh-btn--secondary border-0 px-3 py-1 small"
+                                                    hx-get="{% url 'candidate-file-upload' document.id %}"
+                                                    hx-target="#objectCreateModalTarget"
+                                                    data-document-id="{{ document.id }}"
+                                                    data-toggle="oh-modal-toggle"
+                                                    data-target="#objectCreateModal"
+                                                    onclick="event.stopPropagation()"
+                                                >
+                                                    {% trans "Add" %}
+                                                </button>
+                                            {% endif %}
+                                        </div>
+                                    </div>
+                                </div>
+                            {% empty %}
+                                <div class="d-flex justify-content-center align-items-center" style="height: 40vh">
+                                    <div class="text-center">
+                                        <div style="width: 30%; margin: 10% auto">
+                                            <img
+                                                class="oh-404__image mb-3"
+                                                style="width: 100%"
+                                                src="{% static 'images/ui/joiningchart.png' %}"
+                                                alt="{% trans 'No documents' %}"
                                             >
                                         </div>
-                                        {% if document.document %}
-                                            {% if document.status == "approved" %}
-                                                <span class="badge text-success p-2"
-                                                    >{% trans "Approved" %}</span
-                                                >
-                                            {% elif document.status == "rejected" %}
-                                                <span class="badge text-danger p-2"
-                                                    >{% trans "Rejected" %}</span
-                                                >
-                                            {% else %}
-                                                <span class="badge text-info p-2"
-                                                    >{% trans "Uploaded" %}</span
-                                                >
-                                            {% endif %}
-                                        {% else %}
-                                             <button
-                                                class="btn oh-btn--secondary border-0 px-3 py-1 small"
-                                                hx-get="{% url 'candidate-file-upload' document.id %}"
-                                                hx-target="#objectCreateModalTarget"
-                                                data-document-id="{{ document.id }}"
-                                                data-toggle="oh-modal-toggle"
-                                                data-target="#objectCreateModal"
-                                                onclick="event.stopPropagation()"
-                                            >
-                                                {% trans "Add" %}
-                                            </button>
-                                        {% endif %}
+                                        <h5 class="oh-404__subtitle">{% trans "No document requests found." %}</h5>
                                     </div>
                                 </div>
-                            </div>
-                            {% empty %}
-                            <div class="d-flex justify-content-center align-items-center" style="height: 40vh;">
-                                <div class="text-center">
-                                    <div style="width:30%; margin:10% auto;">
-                                        <img class="oh-404__image mb-3" style="width: 100%;" src="{% static 'images/ui/joiningchart.png' %}" alt="No documents">
-                                    </div>
-                                    <h5 class="oh-404__subtitle">{% trans "No document requests found." %}</h5>
-                                </div>
-                            </div>
                             {% endfor %}
                         </div>
                     </div>
@@ -512,9 +509,7 @@
                                         <div class="mt-1">
                                             {% for interviewer in  interview.employee_id.all %}
                                                 <span class="interviewer-chip">
-                                                    <i
-                                                        class="fas fa-user-circle me-1"
-                                                    ></i>
+                                                    <i class="fas fa-user-circle me-1"></i>
                                                     {{ interviewer }}
                                                 </span>
                                             {% endfor %}
@@ -524,52 +519,38 @@
                                         {{ interview.description }}
                                     </div>
                                     {% if interview.completed %}
-                                        <div
-                                            class="d-flex align-items-center mt-2 status-completed"
-                                        >
-                                            <i
-                                                class="fas fa-check-circle interview-status-icon"
-                                            ></i>
+                                        <div class="d-flex align-items-center mt-2 status-completed">
+                                            <i class="fas fa-check-circle interview-status-icon"></i>
                                             {% trans "Interview Completed" %}
                                         </div>
                                     {% elif interview.interview_date|date:"Y-m-d" < now %}
-                                        <div
-                                            class="d-flex align-items-center mt-2 status-completed text-danger"
-                                        >
-                                            <i
-                                                class="fas fa-close interview-status-icon"
-                                            ></i>
+                                        <div class="d-flex align-items-center mt-2 status-completed text-danger">
+                                            <i class="fas fa-close interview-status-icon"></i>
                                             {% trans "Expired Interview" %}
                                         </div>
                                     {% elif interview.interview_date|date:"Y-m-d" > now %}
-                                        <div
-                                            class="d-flex align-items-center mt-2 status-upcoming"
-                                        >
-                                            <i
-                                                class="fas fa-clock interview-status-icon"
-                                            ></i>
+                                        <div class="d-flex align-items-center mt-2 status-upcoming">
+                                            <i class="fas fa-clock interview-status-icon"></i>
                                             {% trans "Upcoming Interview" %}
                                         </div>
                                     {% elif interview.interview_date|date:"Y-m-d" == now and not interview.completed %}
-                                        <div
-                                            class="d-flex align-items-center mt-2 status-today"
-                                        >
-                                            <i
-                                                class="fas fa-calendar-day interview-status-icon"
-                                            ></i>
+                                        <div class="d-flex align-items-center mt-2 status-today">
+                                            <i class="fas fa-calendar-day interview-status-icon"></i>
                                             {% trans "Interview Today" %}
                                         </div>
                                     {% endif %}
                                 </div>
-                                {% empty %}
-                                    <div class="d-flex justify-content-center align-items-center" style="height: 40vh;">
-                                        <div>
-                                            <div style="width:30%; margin:10% auto;" class="oh-tracking-card">
-                                                <img style="width:100% " src="{% static 'images/ui/interview.png' %}"/>
-                                            </div>
-                                            <h5 class="oh-404__subtitle mt-4 ml-2">{% trans "No interviews are scheduled for this candidate" %}</h5>
+                            {% empty %}
+                                <div class="d-flex justify-content-center align-items-center" style="height: 40vh">
+                                    <div>
+                                        <div style="width: 30%; margin: 10% auto" class="oh-tracking-card">
+                                            <img style="width: 100%" src="{% static 'images/ui/interview.png' %}">
                                         </div>
+                                        <h5 class="oh-404__subtitle mt-4 ml-2">
+                                            {% trans "No interviews are scheduled for this candidate" %}
+                                        </h5>
                                     </div>
+                                </div>
                             {% endfor %}
                         </div>
                     </div>
@@ -582,7 +563,7 @@
                                 {% for message in messages %}
                                     <div class="oh-alert-container">
                                         <div class="oh-alert oh-alert--animated {{message.tags}}">
-                                        {{ message }}
+                                            {{ message }}
                                         </div>
                                     </div>
                                 {% endfor %}
@@ -599,20 +580,20 @@
                                 <form
                                     hx-post="{% url 'candidate-add-notes' candidate.id %}"
                                     hx-target="#note"
-                                    hx-select ="#note"
-                                    hx-swap = "outerHTML"
-                                     id="commentForm"
+                                    hx-select="#note"
+                                    hx-swap="outerHTML"
+                                    id="commentForm"
                                 >
                                     {% csrf_token %}
-                                        <input
-                                            type="text"
-                                            name="description"
-                                            class="form-control mb-2"
-                                            placeholder="Add notes"
-                                        />
-                                        <button type="submit" id="commentButton" hidden class="btn btn-primary w-100">
-                                            {% trans "Add Note" %}
-                                        </button>
+                                    <input
+                                        type="text"
+                                        name="description"
+                                        class="form-control mb-2"
+                                        placeholder="{% trans 'Add notes' %}"
+                                    >
+                                    <button type="submit" id="commentButton" hidden class="btn btn-primary w-100">
+                                        {% trans "Add Note" %}
+                                    </button>
                                 </form>
                             </div>
                         </div>
@@ -621,38 +602,51 @@
                                 {% if note.candidate_can_view %}
                                     <div class="note-card card">
                                         {% if request.user.is_authenticated or note.updated_user == candidate %}
-                                            <button class="note-close-btn"
-                                                aria-label="Close note"
+                                            <button
+                                                class="note-close-btn"
+                                                aria-label="{% trans 'Close note' %}"
                                                 hx-get="{% url 'note-delete-individual' note.id %}"
-                                                title="delete" hx-swap="delete"
+                                                title="{% trans 'delete' %}"
+                                                hx-swap="delete"
                                                 hx-target="closest .card"
                                                 hx-on:click="setTimeout(() => {reloadMessage(this);},250);"
                                             >
-                                                <ion-icon name="close-outline" style="font-size: 24px;color:red;" role="img" class="md hydrated" aria-label="close outline"></ion-icon>
+                                                <ion-icon
+                                                    name="close-outline"
+                                                    style="font-size: 24px; color: red"
+                                                    role="img"
+                                                    class="md hydrated"
+                                                    aria-label="{% trans 'close outline' %}"
+                                                ></ion-icon>
                                             </button>
                                         {% endif %}
                                         <div class="card-body">
                                             <p class="mb-1">
                                                 {{ note.description }}
                                             </p>
-                                            <small
-                                                class="text-muted d-flex align-items-center flex-wrap"
-                                            >
+                                            <small class="text-muted d-flex align-items-center flex-wrap">
                                                 <i class="far fa-user me-1"></i>
                                                 {{ note.updated_user }}
                                                 <span>@</span>
-                                                {{note.stage_id }}
+                                                {{ note.stage_id }}
                                             </small>
                                         </div>
                                     </div>
                                 {% endif %}
                             {% empty %}
-                                <div class="d-flex justify-content-center" style="height: 40vh;">
+                                <div class="d-flex justify-content-center" style="height: 40vh">
                                     <div class="text-center">
-                                        <div style="width:25%; margin:10% auto;">
-                                            <img class="oh-404__image mb-3" style="width: 100%;" src="{% static 'images/ui/no_documents.png' %}" alt="No documents">
+                                        <div style="width: 25%; margin: 10% auto">
+                                            <img
+                                                class="oh-404__image mb-3"
+                                                style="width: 100%"
+                                                src="{% static 'images/ui/no_documents.png' %}"
+                                                alt="{% trans 'No documents' %}"
+                                            >
                                         </div>
-                                        <h5 class="oh-404__subtitle">{% trans "No notes have been added for this candidate." %}</h5>
+                                        <h5 class="oh-404__subtitle">
+                                            {% trans "No notes have been added for this candidate." %}
+                                        </h5>
                                     </div>
                                 </div>
                             {% endfor %}
@@ -671,15 +665,13 @@
         >
             <div class="oh-modal__dialog custom-dialog">
                 <div class="oh-modal__dialog-header">
-                    <span class="oh-modal__dialog-title" id="viewFileModalLabel"
-                        >{% trans "View File" %}</span
-                    >
-                    <button class="oh-modal__close" aria-label="Close">
+                    <span class="oh-modal__dialog-title" id="viewFileModalLabel">{% trans "View File" %}</span>
+                    <button class="oh-modal__close" aria-label="{% trans 'Close' %}">
                         <ion-icon
                             name="close-outline"
                             role="img"
                             class="md hydrated"
-                            aria-label="close outline"
+                            aria-label="{% trans 'close outline' %}"
                         ></ion-icon>
                     </button>
                 </div>

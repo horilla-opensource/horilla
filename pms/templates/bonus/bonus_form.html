@@ -10,7 +10,7 @@
     <button
         class="oh-modal__close--custom"
         onclick="$(this).closest('.oh-modal--show').removeClass('oh-modal--show');"
-        aria-label="Close"
+        aria-label="{% trans 'Close' %}"
         {% if close_hx_url and messages %}
 			hx-get="{{close_hx_url}}"
 			hx-target="{{close_hx_target}}"

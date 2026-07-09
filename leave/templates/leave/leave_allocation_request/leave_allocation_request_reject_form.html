@@ -1,39 +1,40 @@
-{% load i18n %} {% if form.errors %}
-<!-- form errors  -->
-<div class="oh-wrapper">
-  <div class="oh-alert-container">
-    {% for error in form.non_field_errors %}
-    <div class="oh-alert oh-alert--animated oh-alert--danger">{{ error }}</div>
-    {% endfor %}
-  </div>
-</div>
+{% load i18n %}
+{% if form.errors %}
+    <!-- form errors  -->
+    <div class="oh-wrapper">
+        <div class="oh-alert-container">
+            {% for error in form.non_field_errors %}
+                <div class="oh-alert oh-alert--animated oh-alert--danger">{{ error }}</div>
+            {% endfor %}
+        </div>
+    </div>
 {% endif %}
 <div class="oh-modal__dialog-header pb-0">
-  <h2 class="oh-modal__dialog-title" id="rejectTitle">
-    {% trans "Reject Leave Allocation Request" %}
-  </h2>
-  <button
-    class="oh-modal_close--custom"
-    aria-label="Close"
-    onclick="$(this).parents().closest('.oh-modal--show').toggleClass('oh-modal--show')"
-  >
-    <ion-icon name="close-outline"></ion-icon>
-  </button>
+    <h2 class="oh-modal__dialog-title" id="rejectTitle">
+        {% trans "Reject Leave Allocation Request" %}
+    </h2>
+    <button
+        class="oh-modal_close--custom"
+        aria-label="{% trans 'Close' %}"
+        onclick="$(this).parents().closest('.oh-modal--show').toggleClass('oh-modal--show')"
+    >
+        <ion-icon name="close-outline"></ion-icon>
+    </button>
 </div>
 <div class="oh-modal__dialog-body">
-  <form
-    hx-post="{% url 'leave-allocation-request-reject' req_id %}"
-    hx-encoding="multipart/form-data"
-    class="oh-profile-section"
-  >
-    <div class="col-sm-12 col-md-12 col-lg-12">
-      <label class="oh-label">{% trans "Reason" %}</label>
-      {{form.reason}} {{form.errors}}
-    </div>
-    <div class="oh-modal__dialog-footer p-0 pt-2">
-      <button type="submit" class="oh-btn oh-btn--secondary oh-btn--shadow">
-        {% trans "Save" %}
-      </button>
-    </div>
-  </form>
+    <form
+        hx-post="{% url 'leave-allocation-request-reject' req_id %}"
+        hx-encoding="multipart/form-data"
+        class="oh-profile-section"
+    >
+        <div class="col-sm-12 col-md-12 col-lg-12">
+            <label class="oh-label">{% trans "Reason" %}</label>
+            {{ form.reason }} {{ form.errors }}
+        </div>
+        <div class="oh-modal__dialog-footer p-0 pt-2">
+            <button type="submit" class="oh-btn oh-btn--secondary oh-btn--shadow">
+                {% trans "Save" %}
+            </button>
+        </div>
+    </form>
 </div>

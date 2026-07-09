@@ -1,30 +1,31 @@
+{% load i18n %}
 <form
-  hx-post="{% url 'recruitment-survey-question-template-create' %}"
-  hx-target="#templateModalBody"
+    hx-post="{% url 'recruitment-survey-question-template-create' %}"
+    hx-target="#templateModalBody"
 >
-  {% csrf_token %} {{form.as_p}}
+    {% csrf_token %} {{ form.as_p }}
 </form>
 
 <script>
-  function toggleOpt() {
-    if ($("#templateModalBody form [name=type]").first().val() == "options" || $("#templateModalBody form [name=type]").first().val() == "multiple") {
-        $("div[id^='optionDiv']").show();
-        $("#addMoreOptions").show();
-    } else {
-        $("div[id^='optionDiv']").hide();
-        $("#addMoreOptions").hide();
+    function toggleOpt() {
+        if ($("#templateModalBody form [name=type]").first().val() == "options" || $("#templateModalBody form [name=type]").first().val() == "multiple") {
+            $("div[id^='optionDiv']").show();
+            $("#addMoreOptions").show();
+        } else {
+            $("div[id^='optionDiv']").hide();
+            $("#addMoreOptions").hide();
+        }
     }
-}
 
 
-$("#templateModalBody form [name=type]").change(function (e) {
-    toggleOpt();
-});
+    $("#templateModalBody form [name=type]").change(function (e) {
+        toggleOpt();
+    });
 
-// Call toggleOpt on page load to set the initial state
-$(document).ready(function() {
-    toggleOpt();
-});
+    // Call toggleOpt on page load to set the initial state
+    $(document).ready(function() {
+        toggleOpt();
+    });
 
-  $("#templateModalBody form [name=template_id]").parent().removeClass("col-md-6").addClass("col-md-12")
+      $("#templateModalBody form [name=template_id]").parent().removeClass("col-md-6").addClass("col-md-12")
 </script>

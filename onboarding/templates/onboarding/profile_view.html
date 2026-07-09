@@ -1,4 +1,4 @@
-{% load static %}
+{% load static %} i18n %}
 <!DOCTYPE html>
 <html lang="en">
 
@@ -35,19 +35,19 @@
                     <ul class="oh-onboarding-card__steps">
                         <li class="oh-onboarding-card__step ">
                             <div class="oh-onboarding-card__count">1</div>
-                            <span class="oh-onboarding-card__text">Login</span>
+                            <span class="oh-onboarding-card__text">{% trans "Login" %}</span>
                         </li>
                         <li class="oh-onboarding-card__step oh-onboarding-card__step--active">
                             <div class="oh-onboarding-card__count">2</div>
-                            <span class="oh-onboarding-card__text">Profile Setup</span>
+                            <span class="oh-onboarding-card__text">{% trans "Profile Setup" %}</span>
                         </li>
                         <li class="oh-onboarding-card__step">
                             <div class="oh-onboarding-card__count">3</div>
-                            <span class="oh-onboarding-card__text">Personal Details</span>
+                            <span class="oh-onboarding-card__text">{% trans "Personal Details" %}</span>
                         </li>
                         <li class="oh-onboarding-card__step">
                             <div class="oh-onboarding-card__count">4</div>
-                            <span class="oh-onboarding-card__text">Bank Details</span>
+                            <span class="oh-onboarding-card__text">{% trans "Bank Details" %}</span>
                         </li>
                     </ul>
                 </div>
@@ -65,7 +65,7 @@
                                 {% endif %}
                             </div>
                         </div>
-                        <h2 class="oh-onboarding-card__greeting text-center">Welcome Aboard</h2>
+                        <h2 class="oh-onboarding-card__greeting text-center">{% trans "Welcome Aboard" %}</h2>
                         <h3 class="oh-onboarding-card__title oh-onboarding-card__title--h1 text-center">
                             {{candidate.name}}</h2>
                             <span class="oh-onboarding-card__subtitle mb-3 text-center">({{candidate.email}})</span>
@@ -85,8 +85,8 @@
                 aria-hidden="true">
                 <div class="oh-modal__dialog">
                     <div class="oh-modal__dialog-header">
-                        <span class="oh-modal__dialog-title" id="uploadPhotoModalLabel">Upload Photo</span>
-                        <button class="oh-modal__close" aria-label="Close">
+                        <span class="oh-modal__dialog-title" id="uploadPhotoModalLabel">{% trans "Upload Photo" %}</span>
+                        <button class="oh-modal__close" aria-label="{% trans 'Close' %}">
                             <ion-icon name="close-outline"></ion-icon>
                         </button>
                     </div>
@@ -96,7 +96,7 @@
                             <div class="oh-profile-section__image-container">
                                 <div class="oh-profile-section__modal-avatar">
                                     <img src="{{candidate.get_avatar}}"
-                                        class="oh-profile-section__modal-image oh-upload-photo" alt="User Photo" />
+                                        class="oh-profile-section__modal-image oh-upload-photo" alt="{% trans 'User Photo' %}" />
                                 </div>
                                 <input type="file"
                                     class="oh-input oh-input--file oh-input--file-sm mt-4 oh-upload-input"

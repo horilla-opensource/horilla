@@ -1,5 +1,6 @@
+{% load i18n %}
 <form hx-post="{% url 'create-reject-reason' %}?instance_id={{form.instance.pk}}">
-    {{form.as_p}}
+    {{ form.as_p }}
 </form>
 
 <script>

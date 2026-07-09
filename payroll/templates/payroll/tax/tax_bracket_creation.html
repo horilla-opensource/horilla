@@ -1,47 +1,49 @@
-{% load i18n %} {% if messages %}
-<div class="oh-alert-container">
-  {% for message in messages %}
-  <div class="oh-alert oh-alert--animated {{message.tags}}">{{ message }}</div>
-  {% endfor %}
-</div>
-<script>
-  setTimeout(function () {
-    $(".oh-span__class").click();
-  }, 1000);
-</script>
-<span
-  class="oh-span__class"
-  data-toggle="oh-modal-toggle"
-  data-target="#filingStatus{{filing_status_id}}"
-  hx-get="{%url 'tax-bracket-list' filing_status_id=filing_status_id %}"
-  hx-target="#taxbracketList{{filing_status_id}}"
-  onclick="$(`[data-target='#filingStatus{{filing_status_id}}']`).addClass('oh-accordion-meta__header--show');$('#filingStatus{{filing_status_id}}').removeClass('d-none')"
-></span>
+{% load i18n %}
+{% if messages %}
+    <div class="oh-alert-container">
+        {% for message in messages %}
+            <div class="oh-alert oh-alert--animated {{message.tags}}">{{ message }}</div>
+        {% endfor %}
+    </div>
+    <script>
+        setTimeout(function () {
+          $(".oh-span__class").click();
+        }, 1000);
+    </script>
+    <span
+        class="oh-span__class"
+        data-toggle="oh-modal-toggle"
+        data-target="#filingStatus{{filing_status_id}}"
+        hx-get="{%url 'tax-bracket-list' filing_status_id=filing_status_id %}"
+        hx-target="#taxbracketList{{filing_status_id}}"
+        onclick="$(`[data-target='#filingStatus{{filing_status_id}}']`).addClass('oh-accordion-meta__header--show');$('#filingStatus{{filing_status_id}}').removeClass('d-none')"
+    ></span>
 {% endif %}
 <div class="oh-modal__dialog-header pb-0">
-  <span class="oh-modal__dialog-title" id="addEmployeeObjectiveModalLabel">
-    <h5>{% trans "Tax Bracket" %}</h5>
-  </span>
-  <button
-    type="button"
-    class="oh-modal__close"
-    data-dismiss="oh-modal"
-    aria-label="Close"
-  >
-    <ion-icon name="close-outline"></ion-icon>
-  </button>
+    <span class="oh-modal__dialog-title" id="addEmployeeObjectiveModalLabel">
+        <h5>{% trans "Tax Bracket" %}</h5>
+    </span>
+    <button
+        type="button"
+        class="oh-modal__close"
+        data-dismiss="oh-modal"
+        aria-label="{% trans 'Close' %}"
+    >
+        <ion-icon name="close-outline"></ion-icon>
+    </button>
 </div>
 <div class="oh-modal__dialog-body">
-  <form
-    hx-post="{%url 'tax-bracket-create' filing_status_id=form.initial.filing_status_id %}"
-    hx-target="#objectCreateModalTarget"
-    class="oh-profile-section"
-  >
-    {% csrf_token %} {{ form.as_p }}
-    <div class="oh-modal__dialog-footer p-0">
-      <button type="submit" class="oh-btn oh-btn--secondary oh-btn--shadow">
-        {% trans "Save" %}
-      </button>
-    </div>
-  </form>
+    <form
+        hx-post="{%url 'tax-bracket-create' filing_status_id=form.initial.filing_status_id %}"
+        hx-target="#objectCreateModalTarget"
+        class="oh-profile-section"
+    >
+        {% csrf_token %}
+        {{ form.as_p }}
+        <div class="oh-modal__dialog-footer p-0">
+            <button type="submit" class="oh-btn oh-btn--secondary oh-btn--shadow">
+                {% trans "Save" %}
+            </button>
+        </div>
+    </form>
 </div>

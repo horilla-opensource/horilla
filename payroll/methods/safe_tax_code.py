@@ -204,7 +204,9 @@ def run_tax_code(code: str, yearly_income):
     local_vars = {}
 
     compiled = compile(code, "<tax_code>", "exec")
-    exec(compiled, sandbox_globals, local_vars)  # noqa: S102 - sandboxed; see module docstring
+    exec(
+        compiled, sandbox_globals, local_vars
+    )  # noqa: S102 - sandboxed; see module docstring
 
     func = local_vars.get(ENTRY_POINT) or sandbox_globals.get(ENTRY_POINT)
     if not callable(func):

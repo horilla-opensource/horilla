@@ -45,7 +45,7 @@
   {% endif %}
 
   <button type="button" class="oh-modal__close--custom" onclick="$(this).parents().closest('.oh-modal--show').toggleClass('oh-modal--show')">
-    <ion-icon name="close-outline" role="img" aria-label="close outline"></ion-icon>
+    <ion-icon name="close-outline" role="img" aria-label="{% trans 'close outline' %}"></ion-icon>
   </button>
 </div>
 <div class="oh-modal__dialog-body">
@@ -78,7 +78,7 @@
         {% trans "Create Period" %}
       </h2>
       <button type="button" class="oh-modal__close--custom" onclick="$('#PeriodModal').hide();">
-        <ion-icon name="close-outline" role="img" aria-label="close outline"></ion-icon>
+        <ion-icon name="close-outline" role="img" aria-label="{% trans 'close outline' %}"></ion-icon>
       </button>
     </div>
     <div class="oh-modal__dialog-body" id="periodModalTarget">

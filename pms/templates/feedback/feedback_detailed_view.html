@@ -82,7 +82,7 @@
       </div>
 
         <div class="align-items-center d-flex justify-content-between">
-          <div class="oh-profile oh-profile--md" title="Owner">
+          <div class="oh-profile oh-profile--md" title="{% trans 'Owner' %}">
             <span class="oh-profile__info-label ">
               <span>{% trans "Owner: " %}</span>
             </span>
@@ -95,7 +95,7 @@
           </div>
             <div class="oh-main__titlebar oh-main__titlebar--right justify-content-end">
               {% if  perms.pms.change_feedback or request.user|is_reportingmanager %}
-                <select id="status" class="oh-select oh-select--sm ms-3" name="feedback_status" title="Status"
+                <select id="status" class="oh-select oh-select--sm ms-3" name="feedback_status" title="{% trans 'Status' %}"
                     hx-post="{%url 'feedback-detailed-view-status'  id=feedback.id %}"
                     hx-trigger="change" hx-swap="afterend" >
                       <option value="{{feedback.status}}" selected>
@@ -108,7 +108,7 @@
                     {% endfor %}
                 </select>
               {% else %}
-                <label id="status" class="oh-select oh-select--sm ms-3" name="feedback_status" title="Status">
+                <label id="status" class="oh-select oh-select--sm ms-3" name="feedback_status" title="{% trans 'Status' %}">
                    {% trans feedback.get_status_display %}
                 </label>
               {% endif %}
@@ -135,7 +135,7 @@
                       data-target="#objectCreateModal"
                       hx-target="#objectCreateModalTarget"
                       class="oh-btn oh-btn--light-bkg w-100" title="{% trans "Request feedback" %}">
-                      <ion-icon name="add-outline" class="m-0 md hydrated" role="img" aria-label="add outline"></ion-icon>
+                      <ion-icon name="add-outline" class="m-0 md hydrated" role="img" aria-label="{% trans 'add outline' %}"></ion-icon>
                     </a>
                   {% endif %}
                   {% if perms.pms.delete_feedback %}
@@ -149,7 +149,7 @@
                       <form action="{% url 'feedback-delete' id=feedback.id %}" method="post" onsubmit="return confirm('{% trans "Do you want Delete this Feedback ?" %}')">
                         {% csrf_token %}
                         <button  class="oh-btn oh-btn--danger-outline  w-100" title="{% trans 'Delete' %}" style="background-color: white;!important">
-                            <ion-icon name="trash-outline" role="img" class="md hydrated" aria-label="trash outline"></ion-icon>
+                            <ion-icon name="trash-outline" role="img" class="md hydrated" aria-label="{% trans 'trash outline' %}"></ion-icon>
                         </button>
                       </form>
                     {% endif %}
@@ -554,7 +554,7 @@
     <div class="oh-modal__dialog" style="max-width:885px;" id="">
       <div class="oh-modal__dialog-header">
         <span class="oh-modal__dialog-title" id="addEmployeeObjectiveModalLabel">{% trans "Update Feedback" %}</span>
-        <button type="button" class="oh-modal__close reloadButton" aria-label="Close">
+        <button type="button" class="oh-modal__close reloadButton" aria-label="{% trans 'Close' %}">
             <ion-icon name="close-outline"></ion-icon>
         </button>
       </div>

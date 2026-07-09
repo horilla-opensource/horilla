@@ -1,317 +1,315 @@
 {% load static i18n horillafilters %}
 <!DOCTYPE html>
 <html lang="en">
-	<head>
-		<meta charset="UTF-8" />
-		<meta name="viewport" content="width=device-width, initial-scale=1.0" />
-		<title>{{employee}} {% trans "'s Payslip" %}</title>
+    <head>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <title>{{ employee }} {% trans "'s Payslip" %}</title>
 
-		<meta name="msapplication-TileColor" content="#da532c" />
-		<meta name="theme-color" content="#ffffff" />
-		<script src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.29.1/moment.min.js"></script>
-		<script src="https://code.jquery.com/jquery-3.6.4.min.js"></script>
+        <meta name="msapplication-TileColor" content="#da532c">
+        <meta name="theme-color" content="#ffffff">
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.29.1/moment.min.js"></script>
+        <script src="https://code.jquery.com/jquery-3.6.4.min.js"></script>
+    </head>
+    <body>
+        <style>
+            @font-face {
+                font-style: normal;
+                font-weight: normal;
+                src: url('{% static "payroll/fonts/Poppins_Regular.ttf" %}') format('truetype');
+                font-family: 'Poppins';
+            }
+            body {
+                font-family: 'Poppins', sans-serif;
+            }
 
-	</head>
-	<body>
-		<style>
-			@font-face {
-				font-family: 'Poppins';
-				src: url('{% static "payroll/fonts/Poppins_Regular.ttf" %}') format('truetype');
-				font-weight: normal;
-				font-style: normal;
-			}
-			body {
-				font-family: "Poppins", sans-serif;
-			}
+            li {
+                font-size: 12px;
+                font-family: 'Poppins';
+            }
+            .oh-payslip__table-th,
+            .oh-payslip__table-tf {
+                font-size: 12px;
+                text-align: left;
+            }
+            .oh-payslip__table-td,
+            .oh-payslip__table-th,
+            .oh-payslip__table-tf,
+            .oh-payslip__table,
+            .oh-payslip__user-detail {
+                padding: 0.5em;
+            }
+            .oh-payslip__net-payable {
+                -webkit-box-orient: vertical;
+                -webkit-box-direction: normal;
+                -ms-flex-direction: column;
+                flex-direction: column;
+                height: auto;
+                text-align: center;
+            }
+            .oh-payslip__table {
+                margin: 20px 0;
+                border: 1px solid #e9edf1;
+            }
+            .oh-payslip {
+                width: 100%;
+                max-width: 1200px;
+            }
+            .oh-payslip__net-payable-right {
+                width: 200px;
+                background-color: #e9edf1;
+            }
+        </style>
+        <div class="oh-payslip">
+            <table class="oh-payslip__table" style="width: 100%; border-collapse: collapse; border: 1px solid white">
+                <tr style="width: 100%">
+                    <td class="oh-payslip__user-detail" style="vertical-align: top; width: 20%">
+                        <img
+                            src="{{protocol}}://{{host}}{{employee.employee_work_info.company_id.icon.url}}"
+                            height="100"
+                            width="100"
+                            alt="{% trans 'Company Logo' %}"
+                        >
+                    </td>
+                    <td style="text-align: left; vertical-align: left; width: 60%">
+                        <span
+                            style="font-size: 25px; font-weight: 500px"
+                        >{{ employee.employee_work_info.company_id }}</span>
+                    </td>
+                </tr>
+            </table>
+            <div style="font-size: 13px">
+                <p>
+                    {{ employee.employee_work_info.company_id }}<br>
+                    {{ employee.employee_work_info.company_id.address }}<br>
+                    {{ employee.employee_work_info.company_id.country }},
+                    {{ employee.employee_work_info.company_id.state }},
+                    {{ employee.employee_work_info.company_id.city }}<br>
+                    {{ employee.employee_work_info.company_id.zip }}
+                </p>
+            </div>
+            <div class="oh-payslip__header">
+                <div class="oh-payslip__header-left">
+                    <h1
+                        class="oh-payslip__title oh-payslip__title--h1"
+                        style="font-size: 22px"
+                    >
+                        {% trans "Payslip" %} - {{ employee }} - {{ month_start_name }} to {{ month_end_name }}.
+                    </h1>
+                    <h2 class="oh-payslip__title oh-payslip__title--h2">
+                        <span class="oh-payslip__netpay-title">{% trans "Payslip Period :" %}</span> &nbsp
+                        <span
+                            class="oh-payslip__title oh-payslip__title--h2 dateformat_changer"
+                        >{{ formatted_start_date }}</span> &nbsp
+                        <span class="oh-payslip__title oh-payslip__title--h2">{% trans "to" %}</span> &nbsp
+                        <span
+                            class="oh-payslip__title oh-payslip__title--h2 dateformat_changer"
+                        >{{ formatted_end_date }}</span> &nbsp , &nbsp
+                        <span class="oh-payslip__netpay-title">{% trans "Employee Net Pay :" %}</span> &nbsp
+                        <span
+                            class="oh-payslip__netpay-amount"
+                        >{{ net_pay|floatformat:2|currency_symbol_position }}</span>
+                    </h2>
+                </div>
+            </div>
+            <div class="oh-payslip__body">
+                <!-- Payslip Summary -->
+                <div class="oh-payslip__summary">
+                    <div class="oh-payslip__user-detail">
+                        <h3 class="oh-payslip__employee-title" style="font-size: 18px">
+                            {% trans "Employee Details" %}
+                        </h3>
+                        <ul class="oh-payslip__employee-details">
+                            <li class="oh-payslip__employee-detail">
+                                <span class="oh-payslip__employee-detail-title">{% trans "Employee ID :" %}</span>
+                                <span class="oh-payslip__employee-detail-value">{{ employee.badge_id }}</span>
+                            </li>
+                            <li class="oh-payslip__employee-detail">
+                                <span class="oh-payslip__employee-detail-title">{% trans "Employee Name :" %}</span>
+                                <span class="oh-payslip__employee-detail-value">{{ employee }}</span>
+                            </li>
+                            <li class="oh-payslip__employee-detail">
+                                <span class="oh-payslip__employee-detail-title">{% trans "Department :" %}</span>
+                                <span
+                                    class="oh-payslip__employee-detail-value"
+                                >{{ employee.employee_work_info.department_id.department }}</span>
+                            </li>
+                            <li class="oh-payslip__employee-detail">
+                                <span
+                                    class="oh-payslip__employee-detail-title"
+                                >{% trans "Bank Acc./Cheque No. :" %}</span>
+                                <span
+                                    class="oh-payslip__employee-detail-value"
+                                >{{ employee.employee_bank_details.account_number }}</span>
+                            </li>
+                        </ul>
+                    </div>
+                </div>
+                <!-- End of Payslip Table -->
 
-			li {
-				font-size: 12px;
-				font-family: "Poppins";
-			}
-			.oh-payslip__table-th,
-			.oh-payslip__table-tf {
-				text-align: left;
-				font-size: 12px;
-			}
-			.oh-payslip__table-td,
-			.oh-payslip__table-th,
-			.oh-payslip__table-tf,
-			.oh-payslip__table,
-			.oh-payslip__user-detail {
-				padding: 0.5em;
-			}
-			.oh-payslip__net-payable {
-				-webkit-box-orient: vertical;
-				-webkit-box-direction: normal;
-				-ms-flex-direction: column;
-				flex-direction: column;
-				height: auto;
-				text-align: center;
-			}
-			.oh-payslip__table {
-				border: 1px solid #e9edf1;
-				margin: 20px 0;
-			}
-			.oh-payslip {
-				max-width: 1200px;
-				width: 100%;
-			}
-			.oh-payslip__net-payable-right {
-				background-color: #e9edf1;
-				width: 200px;
-			}
-		</style>
-		<div class="oh-payslip">
-			<table class="oh-payslip__table" style="width: 100%; border-collapse: collapse;border:1px solid white;">
-				<tr style="width:100%">
-					<td class="oh-payslip__user-detail" style="vertical-align: top; width: 20%;">
-						<img
-							src="{{protocol}}://{{host}}{{employee.employee_work_info.company_id.icon.url}}"
-							height="100"
-							width="100"
-							alt="Company Logo"
-						/>
-					</td>
-					<td style="text-align: left; vertical-align: left; width: 60%;">
-						<span style="font-size:25px;font-weight:500px;">{{employee.employee_work_info.company_id}}</span>
-					</td>
-				</tr>
-			</table>
-			<div style="font-size:13px;">
-				<p>{{employee.employee_work_info.company_id}}<br>
-				{{employee.employee_work_info.company_id.address}}<br>
-				{{employee.employee_work_info.company_id.country}}, {{employee.employee_work_info.company_id.state}}, {{employee.employee_work_info.company_id.city}}<br>
-				{{employee.employee_work_info.company_id.zip}}</p>
-			</div>
-			<div class="oh-payslip__header">
-				<div class="oh-payslip__header-left">
-					<h1
-						class="oh-payslip__title oh-payslip__title--h1"
-						style="font-size: 22px"
-					>
-						{% trans "Payslip" %} - {{employee}} - {{month_start_name}} to {{month_end_name}}.
-					</h1>
-					<h2 class="oh-payslip__title oh-payslip__title--h2">
-						<span class="oh-payslip__netpay-title">{% trans "Payslip Period :" %}</span> &nbsp
-						<span class="oh-payslip__title oh-payslip__title--h2 dateformat_changer">{{formatted_start_date}}</span> &nbsp
-						<span class="oh-payslip__title oh-payslip__title--h2">{% trans "to" %}</span> &nbsp
-						<span class="oh-payslip__title oh-payslip__title--h2 dateformat_changer">{{formatted_end_date}}</span> &nbsp , &nbsp
-						<span class="oh-payslip__netpay-title">{% trans "Employee Net Pay :" %}</span> &nbsp
-						<span class="oh-payslip__netpay-amount">{{net_pay|floatformat:2|currency_symbol_position}}</span>
-					</h2>
-				</div>
-			</div>
-			<div class="oh-payslip__body">
-				<!-- Payslip Summary -->
-				<div class="oh-payslip__summary">
-					<div class="oh-payslip__user-detail">
-						<h3 class="oh-payslip__employee-title" style="font-size:18px;">
-							{% trans "Employee Details" %}
-						</h3>
-						<ul class="oh-payslip__employee-details">
-							<li class="oh-payslip__employee-detail">
-								<span class="oh-payslip__employee-detail-title"
-									>{% trans "Employee ID :" %}</span
-								>
-								<span class="oh-payslip__employee-detail-value"
-									>{{employee.badge_id}}</span
-								>
-							</li>
-							<li class="oh-payslip__employee-detail">
-								<span class="oh-payslip__employee-detail-title"
-									>{% trans "Employee Name :" %}</span
-								>
-								<span class="oh-payslip__employee-detail-value"
-									>{{employee}}</span
-								>
-							</li>
-							<li class="oh-payslip__employee-detail">
-								<span class="oh-payslip__employee-detail-title"
-									>{% trans "Department :" %}</span
-								>
-								<span class="oh-payslip__employee-detail-value"
-									>{{employee.employee_work_info.department_id.department}}</span
-								>
-							</li>
-							<li class="oh-payslip__employee-detail">
-								<span class="oh-payslip__employee-detail-title"
-									>{% trans "Bank Acc./Cheque No. :" %}</span
-								>
-								<span class="oh-payslip__employee-detail-value"
-									>{{employee.employee_bank_details.account_number}}</span
-								>
-							</li>
-						</ul>
-					</div>
-				</div>
-				<!-- End of Payslip Table -->
+                <!-- Payslip Table -->
+                <div class="oh-payslip__table-container">
+                    <table class="oh-payslip__table">
+                        <thead class="oh-payslip__table-thead">
+                            <tr class="oh-payslip__table-row padding">
+                                <th class="oh-payslip__table-th">{% trans "Allowances" %}</th>
+                                <th class="oh-payslip__table-th">{% trans "Amount" %}</th>
+                            </tr>
+                        </thead>
+                        <tbody class="oh-payslip__table-tbody">
+                            <tr class="oh-payslip__table-tr">
+                                <td
+                                    class="oh-payslip__table-td"
+                                    title="{% trans 'Some deductions will update basic pay before payslip calculation starts, eg: LOP is Deduducted from basic pay if "Deduct leave from basic pay" field is enabled on the contract, and also with the update compensation deduction through' %}"
+                                >
+                                    {% trans "Basic Pay" %}
+                                </td>
+                                <td class="oh-payslip__table-td">
+                                    {{ basic_pay|floatformat:2|currency_symbol_position }}
+                                </td>
+                            </tr>
+                            {% for allowance in all_allowances %}
+                                <tr>
+                                    <td class="oh-payslip__table-td">{{ allowance.title }}</td>
+                                    <td class="oh-payslip__table-td">
+                                        {{ allowance.amount|floatformat:2|currency_symbol_position }}
+                                    </td>
+                                </tr>
+                            {% endfor %}
+                        </tbody>
+                        <tfoot class="oh-payslip__table-tfoot">
+                            <tr class="oh-payslip__table-tr">
+                                <th
+                                    class="oh-payslip__table-tf"
+                                    title="{% trans 'Some Deduction will update the total gross pay using the deductions that are enabled update compensation' %}"
+                                >
+                                    {% trans "Total Gross Pay" %}
+                                </th>
+                                <th class="oh-payslip__table-tf">
+                                    {{ gross_pay|floatformat:2|currency_symbol_position }}
+                                </th>
+                            </tr>
+                        </tfoot>
+                    </table>
 
-				<!-- Payslip Table -->
-				<div class="oh-payslip__table-container">
-					<table class="oh-payslip__table">
-						<thead class="oh-payslip__table-thead">
-							<tr class="oh-payslip__table-row padding">
-								<th class="oh-payslip__table-th">{% trans "Allowances" %}</th>
-								<th class="oh-payslip__table-th">{% trans "Amount" %}</th>
-							</tr>
-						</thead>
-						<tbody class="oh-payslip__table-tbody">
-							<tr class="oh-payslip__table-tr">
-								<td
-									class="oh-payslip__table-td"
-									title="{% trans 'Some deductions will update basic pay before payslip calculation starts, eg: LOP is Deduducted from basic pay if "Deduct leave from basic pay" field is enabled on the contract, and also with the update compensation deduction through' %}"
-								>
-									{% trans "Basic Pay" %}
-								</td>
-								<td class="oh-payslip__table-td">
-									{{basic_pay|floatformat:2|currency_symbol_position}}
-								</td>
-							</tr>
-							{% for allowance in all_allowances %}
-								<tr>
-									<td class="oh-payslip__table-td">{{allowance.title}}</td>
-									<td class="oh-payslip__table-td">
-										{{allowance.amount|floatformat:2|currency_symbol_position}}
-									</td>
-								</tr>
-							{% endfor %}
-						</tbody>
-						<tfoot class="oh-payslip__table-tfoot">
-							<tr class="oh-payslip__table-tr">
-								<th
-									class="oh-payslip__table-tf"
-									title="{% trans 'Some Deduction will update the total gross pay using the deductions that are enabled update compensation' %}"
-								>
-									{% trans "Total Gross Pay" %}
-								</th>
-								<th class="oh-payslip__table-tf">
-									{{gross_pay|floatformat:2|currency_symbol_position}}
-								</th>
-							</tr>
-						</tfoot>
-					</table>
+                    <table class="oh-payslip__table">
+                        <thead class="oh-payslip__table-thead">
+                            <tr class="oh-payslip__table-row">
+                                <th class="oh-payslip__table-th">{% trans "Deductions" %}</th>
+                                <th class="oh-payslip__table-th">{% trans "Amount" %}</th>
+                            </tr>
+                        </thead>
+                        <tbody class="oh-payslip__table-tbody">
+                            <tr class="oh-payslip__table-tr">
+                                <td class="oh-payslip__table-td">{% trans "Loss of Pay" %}</td>
+                                <td class="oh-payslip__table-td">
+                                    {{ loss_of_pay|floatformat:2|currency_symbol_position }}
+                                </td>
+                            </tr>
+                            {% for deduction in basic_pay_deductions %}
+                                <tr class="oh-payslip__table-tr">
+                                    <td class="oh-payslip__table-td">{{ deduction.title }}</td>
+                                    <td class="oh-payslip__table-td">
+                                        {{ deduction.amount|floatformat:2|currency_symbol_position }}
+                                    </td>
+                                </tr>
+                            {% endfor %}
+                            {% for deduction in gross_pay_deductions %}
+                                <tr class="oh-payslip__table-tr">
+                                    <td class="oh-payslip__table-td">{{ deduction.title }}</td>
+                                    <td class="oh-payslip__table-td">
+                                        {{ deduction.amount|floatformat:2|currency_symbol_position }}
+                                    </td>
+                                </tr>
+                            {% endfor %}
+                            {% for deduction in pretax_deductions %}
+                                <tr class="oh-payslip__table-tr">
+                                    <td class="oh-payslip__table-td">{{ deduction.title }}</td>
+                                    <td class="oh-payslip__table-td">
+                                        {{ deduction.amount|floatformat:2|currency_symbol_position }}
+                                    </td>
+                                </tr>
+                            {% endfor %}
+                            {% for deduction in post_tax_deductions %}
+                                <tr class="oh-payslip__table-tr">
+                                    <td class="oh-payslip__table-td">{{ deduction.title }}</td>
+                                    <td class="oh-payslip__table-td">
+                                        {{ deduction.amount|floatformat:2|currency_symbol_position }}
+                                    </td>
+                                </tr>
+                            {% endfor %}
 
-					<table class="oh-payslip__table">
-						<thead class="oh-payslip__table-thead">
-							<tr class="oh-payslip__table-row">
-								<th class="oh-payslip__table-th">{% trans "Deductions" %}</th>
-								<th class="oh-payslip__table-th">{% trans "Amount" %}</th>
-							</tr>
-						</thead>
-						<tbody class="oh-payslip__table-tbody">
-							<tr class="oh-payslip__table-tr">
-								<td class="oh-payslip__table-td">{% trans "Loss of Pay" %}</td>
-								<td class="oh-payslip__table-td">
-									{{loss_of_pay|floatformat:2|currency_symbol_position}}
-								</td>
-							</tr>
-							{% for deduction in basic_pay_deductions %}
-								<tr class="oh-payslip__table-tr">
-									<td class="oh-payslip__table-td">{{deduction.title}}</td>
-									<td class="oh-payslip__table-td">
-										{{deduction.amount|floatformat:2|currency_symbol_position}}
-									</td>
-								</tr>
-							{% endfor %}
-							{% for deduction in gross_pay_deductions %}
-							<tr class="oh-payslip__table-tr">
-								<td class="oh-payslip__table-td">{{deduction.title}}</td>
-									<td class="oh-payslip__table-td">
-										{{deduction.amount|floatformat:2|currency_symbol_position}}
-									</td>
-							</tr>
-							{% endfor %}
-							{% for deduction in pretax_deductions %}
-								<tr class="oh-payslip__table-tr">
-									<td class="oh-payslip__table-td">{{deduction.title}}</td>
-									<td class="oh-payslip__table-td">
-										{{deduction.amount|floatformat:2|currency_symbol_position}}
-									</td>
-								</tr>
-							{% endfor %}
-							{% for deduction in post_tax_deductions %}
-								<tr class="oh-payslip__table-tr">
-									<td class="oh-payslip__table-td">{{deduction.title}}</td>
-									<td class="oh-payslip__table-td">
-										{{deduction.amount|floatformat:2|currency_symbol_position}}
-									</td>
+                            <tr class="oh-payslip__table-tr">
+                                <td class="oh-payslip__table-td">{% trans "Federal Tax" %}</td>
+                                <td class="oh-payslip__table-td">
+                                    {{ federal_tax|floatformat:2|currency_symbol_position }}
+                                </td>
+                            </tr>
 
-								</tr>
-							{% endfor %}
+                            {% for deduction in tax_deductions %}
+                                <tr class="oh-payslip__table-tr">
+                                    <td class="oh-payslip__table-td">{{ deduction.title }}</td>
+                                    <td class="oh-payslip__table-td">
+                                        {{ deduction.amount|floatformat:2|currency_symbol_position }}
+                                    </td>
+                                </tr>
+                            {% endfor %}
+                            {% for deduction in net_deductions %}
+                                <tr class="oh-payslip__table-tr">
+                                    <td class="oh-payslip__table-td">{{ deduction.title }}</td>
+                                    <td class="oh-payslip__table-td">
+                                        {{ deduction.amount|floatformat:2|currency_symbol_position }}
+                                    </td>
+                                </tr>
+                            {% endfor %}
+                        </tbody>
+                        <tfoot class="oh-payslip__table-tfoot">
+                            <tr class="oh-payslip__table-tr">
+                                <th class="oh-payslip__table-tf">{% trans "Total Deductions" %}</th>
+                                <th class="oh-payslip__table-tf">
+                                    {{ total_deductions|floatformat:2|currency_symbol_position }}
+                                </th>
+                            </tr>
+                        </tfoot>
+                    </table>
+                </div>
+                <!-- End of Payslip Table -->
 
-							<tr class="oh-payslip__table-tr">
-								<td class="oh-payslip__table-td">{% trans "Federal Tax" %}</td>
-								<td class="oh-payslip__table-td">
-									{{federal_tax|floatformat:2|currency_symbol_position}}
-								</td>
-							</tr>
+                <!-- Payslip Payable -->
 
-							{% for deduction in tax_deductions %}
-								<tr class="oh-payslip__table-tr">
-									<td class="oh-payslip__table-td">{{deduction.title}}</td>
-									<td class="oh-payslip__table-td">
-										{{deduction.amount|floatformat:2|currency_symbol_position}}
-									</td>
-								</tr>
-							{% endfor %}
-							{% for deduction in net_deductions %}
-								<tr class="oh-payslip__table-tr">
-									<td class="oh-payslip__table-td">{{deduction.title}}</td>
-									<td class="oh-payslip__table-td">
-										{{deduction.amount|floatformat:2|currency_symbol_position}}
-									</td>
-								</tr>
-							{% endfor %}
-						</tbody>
-						<tfoot class="oh-payslip__table-tfoot">
-							<tr class="oh-payslip__table-tr">
-								<th class="oh-payslip__table-tf">{% trans "Total Deductions" %}</th>
-								<th class="oh-payslip__table-tf">
-									{{total_deductions|floatformat:2|currency_symbol_position}}
-								</th>
-							</tr>
-						</tfoot>
-					</table>
-				</div>
-				<!-- End of Payslip Table -->
+                <table class="oh-payslip__table">
+                    <thead class="oh-payslip__table-thead">
+                        <tr class="oh-payslip__table-row padding">
+                            <th class="oh-payslip__table-th">
+                                {% trans "Total Net Payable " %}<br>
+                                <span style="font-size: 10px">{% trans "Gross Earnings - Total Deductions" %}</span>
+                            </th>
+                            <th class="oh-payslip__table-th" style="font-size: 14px">
+                                {{ net_pay|floatformat:2|currency_symbol_position }}
+                            </th>
+                        </tr>
+                    </thead>
+                </table>
 
-				<!-- Payslip Payable -->
-
-				<table class="oh-payslip__table">
-					<thead class="oh-payslip__table-thead">
-						<tr class="oh-payslip__table-row padding">
-							<th class="oh-payslip__table-th">
-								{% trans "Total Net Payable " %}<br />
-								<span style="font-size: 10px"
-									>{% trans "Gross Earnings - Total Deductions" %}</span
-								>
-							</th>
-								<th class="oh-payslip__table-th" style="font-size: 14px">
-									{{net_pay|floatformat:2|currency_symbol_position}}
-								</th>
-						</tr>
-					</thead>
-				</table>
-
-				<!-- End of Payslip Payable -->
-			</div>
-		</div>
-	</body>
+                <!-- End of Payslip Payable -->
+            </div>
+        </div>
+    </body>
 </html>
 <script>
-	document.addEventListener("DOMContentLoaded", function () {
-	  // Your date in string format
-	  var dateStr = "2023-12-14";
+    document.addEventListener("DOMContentLoaded", function () {
+      // Your date in string format
+      var dateStr = "2023-12-14";
 
-	  // Your desired date format
-	  var dateFormat = "dddd, MMMM D, YYYY";
+      // Your desired date format
+      var dateFormat = "dddd, MMMM D, YYYY";
 
-	  // Parse the date using Moment.js
-	  var dateObj = moment(dateStr);
+      // Parse the date using Moment.js
+      var dateObj = moment(dateStr);
 
-	  // Format the date
-	  var formattedDate = dateObj.format(dateFormat);
+      // Format the date
+      var formattedDate = dateObj.format(dateFormat);
 
-	  // Log the result
-	});
+      // Log the result
+    });
 </script>

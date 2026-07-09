@@ -5,15 +5,21 @@
             {% trans "Mail Server" %}
         </h2>
     </span>
-    <button type="button" class="oh-modal__close" data-dismiss="oh-modal" aria-label="Close"
-        data-toggle="oh-modal-toggle">
+    <button
+        type="button"
+        class="oh-modal__close"
+        data-dismiss="oh-modal"
+        aria-label="{% trans 'Close' %}"
+        data-toggle="oh-modal-toggle"
+    >
         <ion-icon name="close-outline"></ion-icon>
     </button>
 </div>
 <div class="oh-modal__dialog-body">
-    <form hx-post="{{ request.get_full_path }}"
+    <form
+        hx-post="{{ request.get_full_path }}"
         hx-target="{% if instance.id %} #objectUpdateModalTarget{% else %} #objectCreateModalTarget {% endif %}"
-        >
-        {{form.as_p}}
+    >
+        {{ form.as_p }}
     </form>
 </div>

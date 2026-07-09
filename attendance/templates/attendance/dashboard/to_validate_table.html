@@ -34,52 +34,61 @@
             </div>
             {% for attendance in validate_attendances %}
                 <div class="oh-sticky-table__tbody">
-                    <div class="oh-sticky-table__tr" draggable="false" data-toggle="oh-modal-toggle"
-                        data-target="#objectDetailsModalW25" hx-target="#objectDetailsModalW25Target"
-                        hx-get="{% url 'user-request-one-view' attendance.id %}?validate=true&instances_ids={{validate_attendances_ids}}">
-
+                    <div
+                        class="oh-sticky-table__tr"
+                        draggable="false"
+                        data-toggle="oh-modal-toggle"
+                        data-target="#objectDetailsModalW25"
+                        hx-target="#objectDetailsModalW25Target"
+                        hx-get="{% url 'user-request-one-view' attendance.id %}?validate=true&instances_ids={{validate_attendances_ids}}"
+                    >
                         <div class="oh-sticky-table__sd">
                             <div class="oh-profile oh-profile--md">
                                 <div class="oh-profile__avatar mr-1">
-                                    <img src="{{attendance.employee_id.get_avatar}}" class="oh-profile__image"
-                                        alt="Mary Magdalene" />
+                                    <img
+                                        src="{{attendance.employee_id.get_avatar}}"
+                                        class="oh-profile__image"
+                                        alt="{% trans 'Mary Magdalene' %}"
+                                    >
                                 </div>
-                                <span class="oh-profile__name oh-text--dark">{{attendance.employee_id}}</span>
+                                <span class="oh-profile__name oh-text--dark">{{ attendance.employee_id }}</span>
                             </div>
                         </div>
                         {% if not main_dashboard %}
-                            <div class="oh-sticky-table__td dateformat_changer">{{attendance.attendance_date}}</div>
+                            <div class="oh-sticky-table__td dateformat_changer">{{ attendance.attendance_date }}</div>
                             <div class="oh-sticky-table__td timeformat_changer">
-                                {{attendance.attendance_clock_in}}
+                                {{ attendance.attendance_clock_in }}
                             </div>
                             <div class="oh-sticky-table__td dateformat_changer">
-                                {{attendance.attendance_clock_in_date}}
+                                {{ attendance.attendance_clock_in_date }}
                             </div>
                             <div class="oh-sticky-table__td timeformat_changer">
-                                {{attendance.attendance_clock_out}}
+                                {{ attendance.attendance_clock_out }}
                             </div>
                             <div class="oh-sticky-table__td dateformat_changer">
-                                {{attendance.attendance_clock_out_date}}
+                                {{ attendance.attendance_clock_out_date }}
                             </div>
-                            <div class="oh-sticky-table__td">{{attendance.shift_id}}</div>
-                            <div class="oh-sticky-table__td">{{attendance.work_type_id}}</div>
-                            <div class="oh-sticky-table__td">{{attendance.minimum_hour}}</div>
-                            <div class="oh-sticky-table__td">{{attendance.hours_pending}}</div>
+                            <div class="oh-sticky-table__td">{{ attendance.shift_id }}</div>
+                            <div class="oh-sticky-table__td">{{ attendance.work_type_id }}</div>
+                            <div class="oh-sticky-table__td">{{ attendance.minimum_hour }}</div>
+                            <div class="oh-sticky-table__td">{{ attendance.hours_pending }}</div>
                         {% endif %}
                         <div class="oh-sticky-table__td">
-                            {{attendance.attendance_worked_hour}}
+                            {{ attendance.attendance_worked_hour }}
                         </div>
                         <div class="oh-sticky-table__td oh-sticky-table__right">
                             {% if perms.attendance.change_attendance or request.user|is_reportingmanager %}
-                                <a href='{% url "validate-this-attendance" attendance.id %}' hx-target="#updateAttendanceBody"
+                                <a
+                                    href='{% url "validate-this-attendance" attendance.id %}'
+                                    hx-target="#updateAttendanceBody"
                                     data-req="/attendance/request-attendance-view/?id={{attendance.id}}"
                                     onclick="event.stopPropagation(); {% if attendance.is_validate_request %}  event.preventDefault(); showSweetAlert($(this).data('req')); {% endif %}"
-                                    class="oh-btn oh-btn--info">
+                                    class="oh-btn oh-btn--info"
+                                >
                                     {% trans "Validate" %}
                                 </a>
                             {% endif %}
                         </div>
-
                     </div>
                 </div>
             {% endfor %}
@@ -87,7 +96,7 @@
     </div>
 {% else %}
     <div class="oh-empty h-100">
-        <img src="{% static 'images/ui/search.svg' %}" class="oh-404__image" alt="Page not found. 404." />
+        <img src="{% static 'images/ui/search.svg' %}" class="oh-404__image" alt="{% trans 'Page not found. 404.' %}">
         <h1 class="oh-empty__title">{% trans "No Records found." %}</h1>
         <p class="oh-empty__subtitle">{% trans "No pending attendance to validate." %}</p>
     </div>
@@ -95,26 +104,41 @@
 {% if validate_attendances.has_previous or validate_attendances.has_next %}
     <div class="float-end mt-2">
         {% if validate_attendances.has_previous %}
-            <span class="oh-card-dashboard__title" style="cursor: pointer"
+            <span
+                class="oh-card-dashboard__title"
+                style="cursor: pointer"
                 hx-target="#attendanceValidateCardBody"
                 hx-get="{% url 'dashboard-validate-attendances' %}?page={{ validate_attendances.previous_page_number }}"
-                hx-trigger="click delay:0.3s">
-                <ion-icon name="caret-back-outline" role="img" class="md hydrated" aria-label="caret back outline"></ion-icon>
+                hx-trigger="click delay:0.3s"
+            >
+                <ion-icon
+                    name="caret-back-outline"
+                    role="img"
+                    class="md hydrated"
+                    aria-label="{% trans 'caret back outline' %}"
+                ></ion-icon>
             </span>
         {% endif %}
         {% if validate_attendances.has_next %}
-            <span class="oh-card-dashboard__title ms-2 float-end" style="cursor: pointer"
+            <span
+                class="oh-card-dashboard__title ms-2 float-end"
+                style="cursor: pointer"
                 hx-target="#attendanceValidateCardBody"
                 hx-get="{% url 'dashboard-validate-attendances' %}?page={{ validate_attendances.next_page_number }}"
-                hx-trigger="click delay:0.3s">
-                <ion-icon name="caret-forward-outline" role="img" class="md hydrated"
-                    aria-label="caret back outline"></ion-icon>
+                hx-trigger="click delay:0.3s"
+            >
+                <ion-icon
+                    name="caret-forward-outline"
+                    role="img"
+                    class="md hydrated"
+                    aria-label="{% trans 'caret back outline' %}"
+                ></ion-icon>
             </span>
         {% endif %}
         {% if validate_attendances.has_previous or validate_attendances.has_next %}
             <span class="oh-pagination__page mt-1 fw-bold">
-                {% trans "Page" %} {{ validate_attendances.number }} {%trans "of" %}
-                {{validate_attendances.paginator.num_pages }}
+                {% trans "Page" %} {{ validate_attendances.number }} {% trans "of" %}
+                {{ validate_attendances.paginator.num_pages }}
             </span>
         {% endif %}
     </div>

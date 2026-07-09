@@ -1,34 +1,42 @@
 {% extends 'index.html' %}{% block content %}
-{% load static %}
-{% load i18n %}
-{% load basefilters %}
-<section class="oh-wrapper oh-main__topbar">
-    <div class="oh-main__titlebar oh-main__titlebar--left">
-        <h1 class="oh-main__titlebar-title fw-bold">{% trans "Hour Account" %}</h1>
-    </div>
-    <div class="oh-main__titlebar oh-main__titlebar--right">
-        <div class="oh-main__titlebar-button-container">
-            {% if perms.attendance.add_attendanceovertime or request.user|is_reportingmanager %}
-                <div class="oh-btn-group ml-2">
-                    <div class="oh-dropdown">
-                        <button class="oh-btn oh-btn--secondary" data-toggle="oh-modal-toggle"
-                            data-target="#objectCreateModal" hx-get="{% url 'attendance-overtime-create' %}"
-                            hx-target="#objectCreateModalTarget">
-                            <ion-icon name="add-sharp" class="mr-2"></ion-icon>
-                            {% trans "Create" %}
-                        </button>
+    {% load static %}
+    {% load i18n %}
+    {% load basefilters %}
+    <section class="oh-wrapper oh-main__topbar">
+        <div class="oh-main__titlebar oh-main__titlebar--left">
+            <h1 class="oh-main__titlebar-title fw-bold">{% trans "Hour Account" %}</h1>
+        </div>
+        <div class="oh-main__titlebar oh-main__titlebar--right">
+            <div class="oh-main__titlebar-button-container">
+                {% if perms.attendance.add_attendanceovertime or request.user|is_reportingmanager %}
+                    <div class="oh-btn-group ml-2">
+                        <div class="oh-dropdown">
+                            <button
+                                class="oh-btn oh-btn--secondary"
+                                data-toggle="oh-modal-toggle"
+                                data-target="#objectCreateModal"
+                                hx-get="{% url 'attendance-overtime-create' %}"
+                                hx-target="#objectCreateModalTarget"
+                            >
+                                <ion-icon name="add-sharp" class="mr-2"></ion-icon>
+                                {% trans "Create" %}
+                            </button>
+                        </div>
                     </div>
-                </div>
-            {% endif %}
+                {% endif %}
+            </div>
+        </div>
+    </section>
+
+    <div class="oh-wrapper">
+        <div class="oh-empty">
+            <img
+                src="{% static 'images/ui/search.svg' %}"
+                class="oh-404__image"
+                alt="{% trans 'Page not found. 404.' %}"
+            >
+            <h1 class="oh-empty__title">{% trans "No Records found." %}</h1>
+            <p class="oh-empty__subtitle">{% trans "There are no attendance records to display." %}</p>
         </div>
     </div>
-</section>
-
-<div class="oh-wrapper">
-    <div class="oh-empty">
-        <img src="{% static 'images/ui/search.svg' %}" class="oh-404__image" alt="Page not found. 404." />
-        <h1 class="oh-empty__title">{% trans "No Records found." %}</h1>
-        <p class="oh-empty__subtitle">{% trans "There are no attendance records to display." %}</p>
-    </div>
-</div>
 {% endblock %}

@@ -63,7 +63,7 @@
         <div class="oh-kanban__head-actions oh-kanban__dropdown" >
           <div class="oh-kanban__head-actions oh-kanban__dropdown">
             <button class="oh-btn oh-btn--small oh-btn--transparent oh-kanban__btn oh-kanban__dropdown-toggle" title = {% trans "Actions" %}>
-              <ion-icon name="ellipsis-vertical-sharp" role="img" class="md hydrated" aria-label="ellipsis vertical sharp"></ion-icon>
+              <ion-icon name="ellipsis-vertical-sharp" role="img" class="md hydrated" aria-label="{% trans 'ellipsis vertical sharp' %}"></ion-icon>
             </button>
             <div class="oh-dropdown oh-kanban__dropdown-menu d-none">
               <div class="oh-dropdown__menu oh-dropdown__menu--right">
@@ -89,8 +89,8 @@
               <a class="" hx-get="{% url 'add-candidate-to-stage' %}?stage_id={{stage.grouper.id}}"
               hx-target="#createTarget"
               data-toggle="oh-modal-toggle"
-              data-target="#createModal" @click="open = !open" title="Add Candidates">
-                <ion-icon name="add-sharp" role="img" class="md hydrated mt-1" aria-label="add sharp"></ion-icon>
+              data-target="#createModal" @click="open = !open" title="{% trans 'Add Candidates' %}">
+                <ion-icon name="add-sharp" role="img" class="md hydrated mt-1" aria-label="{% trans 'add sharp' %}"></ion-icon>
               </a>
             </div>
             {% endif %}
@@ -180,7 +180,7 @@
                   name="ellipsis-vertical-sharp"
                   role="img"
                   class="md hydrated"
-                  aria-label="ellipsis vertical sharp"
+                  aria-label="{% trans 'ellipsis vertical sharp' %}"
                 ></ion-icon>
               </button>
 
@@ -360,7 +360,7 @@
     {% if perms.recruitment.add_stage or request.user|recruitment_manages:rec %}
     <div class="oh-kanban__add-container">
       <button class="oh-btn oh-btn--x-small oh-kanban__add-section" data-target="#objectCreateModal" data-toggle="oh-modal-toggle" hx-get="{% url "rec-stage-create" %}?recruitment_id={{rec.id}}" hx-target="#objectCreateModalTarget">
-          <ion-icon class="me-1 md hydrated" name="add-outline" role="img" aria-label="add outline"></ion-icon>
+          <ion-icon class="me-1 md hydrated" name="add-outline" role="img" aria-label="{% trans 'add outline' %}"></ion-icon>
           {% trans "Stage" %}
       </button>
     </div>

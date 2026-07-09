@@ -1,34 +1,48 @@
-{% load static %}
-<form hx-post="{% url 'add-attachment-policy' %}?policy_id={{policy.id}}" hx-target="#attachmentContainer" class="add-files-form d-flex" method="post"
-    hx-encoding="multipart/form-data">
+{% load static %} i18n %}
+<form
+    hx-post="{% url 'add-attachment-policy' %}?policy_id={{policy.id}}"
+    hx-target="#attachmentContainer"
+    class="add-files-form d-flex"
+    method="post"
+    hx-encoding="multipart/form-data"
+>
     {% for attachment in policy.attachments.all %}
         {% if perms.employee.delete_policymultiplefile %}
             <a href="{{ attachment.attachment.url }}" rel="noopener noreferrer" target="_blank"><span
-                class="oh-file-icon oh-file-icon--pdf" onmouseover="enlargeImage('{{ attachment.attachment.url }}')"
-                style="width:40px;height:40px"><img src="{% static '/images/ui/minus-icon.png' %}"
-                    style="display:block;width:50%;height:50%"
-                    hx-get="{% url 'remove-attachment-policy' %}?ids={{ attachment.id }}&policy_id={{ policy.id }}"
-                    hx-target="#attachmentContainer"
-                    onclick="event.stopPropagation();event.preventDefault()" />
+                    class="oh-file-icon oh-file-icon--pdf"
+                    onmouseover="enlargeImage('{{ attachment.attachment.url }}')"
+                    style="width: 40px; height: 40px"
+                ><img
+                        src="{% static '/images/ui/minus-icon.png' %}"
+                        style="display: block; width: 50%; height: 50%"
+                        hx-get="{% url 'remove-attachment-policy' %}?ids={{ attachment.id }}&policy_id={{ policy.id }}"
+                        hx-target="#attachmentContainer"
+                        onclick="event.stopPropagation();event.preventDefault()"
+                    >
                 </span>
             </a>
         {% else %}
             <a href="{{ attachment.attachment.url }}" rel="noopener noreferrer" target="_blank"><span
-                class="oh-file-icon oh-file-icon--pdf" onmouseover="enlargeImage('{{ attachment.attachment.url }}')"
-                style="width:40px;height:40px">
+                    class="oh-file-icon oh-file-icon--pdf"
+                    onmouseover="enlargeImage('{{ attachment.attachment.url }}')"
+                    style="width: 40px; height: 40px"
+                >
                 </span>
             </a>
         {% endif %}
-
     {% endfor %}
     {% if perms.employee.add_policymultiplefile %}
-    {% csrf_token %}
-    <input type="file" name="files" class="d-none" multiple="true" id="addFile_18" onchange="submitForm(this)" />
-    <input type="submit" class="d-none add_more_submit" value="save" />
-    <label for="addFile_18" title="Add Files"
-        style="cursor: pointer;">
-        <ion-icon name="add-outline" style="font-size: 24px" role="img" class="md hydrated"
-            aria-label="add outline"></ion-icon>
-    </label>
+        {% csrf_token %}
+        <input type="file" name="files" class="d-none" multiple="true" id="addFile_18" onchange="submitForm(this)">
+        <input type="submit" class="d-none add_more_submit" value="save">
+        <label for="addFile_18" title="{% trans 'Add Files' %}" style="cursor: pointer">
+            <ion-icon
+                name="add-outline"
+                style="font-size: 24px"
+                role="img"
+                class="md hydrated"
+                aria-label="{% trans 'add outline' %}"
+            ></ion-icon>
+        </label>
     {% endif %}
 </form>

@@ -9,22 +9,29 @@
                         <div class="oh-sticky-table__sd">
                             <div class="oh-profile oh-profile--md">
                                 <div class="oh-profile__avatar mr-1">
-                                    <img src="{{ emp.get_avatar }}" class="oh-profile__image" />
+                                    <img src="{{ emp.get_avatar }}" class="oh-profile__image">
                                 </div>
                                 <span class="oh-profile__name oh-text--dark">
                                     {{ emp.get_full_name }}
-                                    <span class="oh-recuritment_tag" style="font-size: .5rem;">
+                                    <span class="oh-recuritment_tag" style="font-size: 0.5rem">
                                         {% trans "At work" %} {{ emp.get_forecasted_at_work.forecasted_at_work }}
                                     </span>
-                                    <span class="oh-recuritment_tag" style="font-size: .5rem;">
+                                    <span class="oh-recuritment_tag" style="font-size: 0.5rem">
                                         {% trans "Pending" %} {{ emp.get_forecasted_at_work.forecasted_pending_hours }}
                                     </span>
                                 </span>
                             </div>
                         </div>
-                        <div hx-get='{% url "send-mail-employee" emp.id %}' class="oh-sticky-table__td"
-                            title="{% trans 'Send Mail' %}" hx-target="#mail-content" data-toggle="oh-modal-toggle"
-                            data-target="#sendMailModal" align="center" style="width: 50px;">
+                        <div
+                            hx-get='{% url "send-mail-employee" emp.id %}'
+                            class="oh-sticky-table__td"
+                            title="{% trans 'Send Mail' %}"
+                            hx-target="#mail-content"
+                            data-toggle="oh-modal-toggle"
+                            data-target="#sendMailModal"
+                            align="center"
+                            style="width: 50px"
+                        >
                             <ion-icon name="mail-outline"></ion-icon>
                         </div>
                     </div>
@@ -34,7 +41,7 @@
     </div>
 {% else %}
     <div class="oh-empty h-100">
-        <img src="{% static 'images/ui/search.svg' %}" class="oh-404__image" alt="Page not found. 404." />
+        <img src="{% static 'images/ui/search.svg' %}" class="oh-404__image" alt="{% trans 'Page not found. 404.' %}">
         <h1 class="oh-empty__title">{% trans "No Records found." %}</h1>
         <p class="oh-empty__subtitle">{% trans "No records available at the moment." %}</p>
     </div>

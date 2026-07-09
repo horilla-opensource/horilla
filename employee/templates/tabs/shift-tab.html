@@ -16,7 +16,7 @@
     {% if employee.employee_work_info.shift_id %}
         <span class="fw-bold" style="font-size: 17px">
             {% if employee.employee_work_info.shift_id %}
-                {% trans "Current Shift" %} &nbsp : &nbsp {{employee.employee_work_info.shift_id}}
+                {% trans "Current Shift" %} &nbsp : &nbsp {{ employee.employee_work_info.shift_id }}
             {% endif %}
         </span>
         <button
@@ -31,9 +31,8 @@
                 name="add-sharp"
                 class="mr-1 md hydrated"
                 role="img"
-                aria-label="add sharp"
-            ></ion-icon
-            >{% trans "Reallocate Shift." %}
+                aria-label="{% trans 'add sharp' %}"
+            ></ion-icon>{% trans "Reallocate Shift." %}
         </button>
     {% endif %}
 
@@ -48,12 +47,12 @@
                         src="{% static 'images/ui/work-from-home (1).png' %}"
                         alt=""
                         style="width: 25px; height: 25px; margin-right: 3px"
-                    />
+                    >
                     {% trans "Work type request" %}
                 </div>
                 <button
                     class="oh-btn oh-btn--secondary-outline oh-stop-prop oh-accordion-meta__btn p-2"
-                    title="Add"
+                    title="{% trans 'Add' %}"
                     hx-get="{% url 'work-type-request' %}?emp_id={{emp_id}}"
                     hx-target="#objectCreateModalTarget"
                     data-target="#objectCreateModal"
@@ -63,7 +62,7 @@
                         class="md hydrated"
                         name="add-outline"
                         role="img"
-                        aria-label="add outline"
+                        aria-label="{% trans 'add outline' %}"
                     ></ion-icon>
                 </button>
             </li>
@@ -73,7 +72,7 @@
                         src="{% static 'images/ui/work-from-home.png' %}"
                         alt=""
                         style="width: 25px; height: 25px; margin-right: 3px"
-                    />
+                    >
                     {% trans "Rotating work type" %}
                 </div>
                 {% if not request.GET.profile and perms.base.add_rotatingworktypeassign or request.user|is_reportingmanager %}
@@ -89,28 +88,23 @@
                             class="md hydrated"
                             name="add-outline"
                             role="img"
-                            aria-label="add outline"
+                            aria-label="{% trans 'add outline' %}"
                         ></ion-icon>
                     </button>
-                {% endif%}
+                {% endif %}
             </li>
             <li class="oh-tabs__tab" data-target="#shift_tab_4">
                 <div>
                     <img
                         src="{% static 'images/ui/time-management.png' %}"
                         alt=""
-                        style="
-                            width: 25px;
-                            height: 25px;
-                            margin-right: 3px;
-                            opacity: 0.5;
-                        "
-                    />
+                        style="width: 25px; height: 25px; margin-right: 3px; opacity: 0.5"
+                    >
                     {% trans "Shift request" %}
                 </div>
                 <button
                     class="oh-btn oh-btn--secondary-outline oh-stop-prop oh-accordion-meta__btn p-2"
-                    title="Add"
+                    title="{% trans 'Add' %}"
                     hx-get="{% url 'shift-request' %}?emp_id={{emp_id}}"
                     hx-target="#objectCreateModalTarget"
                     data-target="#objectCreateModal"
@@ -120,7 +114,7 @@
                         class="md hydrated"
                         name="add-outline"
                         role="img"
-                        aria-label="add outline"
+                        aria-label="{% trans 'add outline' %}"
                     ></ion-icon>
                 </button>
             </li>
@@ -130,13 +124,13 @@
                         src="{% static 'images/ui/shift.png' %}"
                         alt=""
                         style="width: 25px; height: 25px; margin-right: 3px"
-                    />
+                    >
                     {% trans "Rotating Shift" %}
                 </div>
                 {% if not request.GET.profile and perms.add_rotatingworktypeassign or request.user|is_reportingmanager %}
                     <button
                         class="oh-btn oh-btn--secondary-outline oh-stop-prop oh-accordion-meta__btn p-2"
-                        title="Add"
+                        title="{% trans 'Add' %}"
                         hx-get="{% url 'rotating-shift-assign-add' %}?emp_id={{emp_id}}"
                         hx-target="#objectCreateModalTarget"
                         data-target="#objectCreateModal"
@@ -146,7 +140,7 @@
                             class="md hydrated"
                             name="add-outline"
                             role="img"
-                            aria-label="add outline"
+                            aria-label="{% trans 'add outline' %}"
                         ></ion-icon>
                     </button>
                 {% endif %}
@@ -210,48 +204,41 @@
                                         <div class="oh-sticky-table__td">
                                             <div class="d-flex">
                                                 <div class="oh-profile oh-profile--md">
-                                                    <div
-                                                        class="oh-profile__avatar mr-1"
-                                                    >
+                                                    <div class="oh-profile__avatar mr-1">
                                                         <img
                                                             src="https://ui-avatars.com/api/?name={{work_type_request.employee_id}}&amp;background=random"
                                                             class="oh-profile__image"
-                                                            alt="Username"
-                                                        />
+                                                            alt="{% trans 'Username' %}"
+                                                        >
                                                     </div>
                                                     <span
                                                         class="oh-profile__name oh-text--dark"
-                                                        >{{work_type_request.employee_id}}</span
-                                                    >
+                                                    >{{ work_type_request.employee_id }}</span>
                                                 </div>
                                             </div>
                                         </div>
                                         <div class="oh-sticky-table__td">
-                                            {{work_type_request.work_type_id}}
+                                            {{ work_type_request.work_type_id }}
                                         </div>
                                         <div class="oh-sticky-table__td">
-                                            {{work_type_request.previous_work_type_id}}
+                                            {{ work_type_request.previous_work_type_id }}
                                         </div>
-                                        <div
-                                            class="oh-sticky-table__td dateformat_changer"
-                                        >
-                                            {{work_type_request.requested_date}}
+                                        <div class="oh-sticky-table__td dateformat_changer">
+                                            {{ work_type_request.requested_date }}
                                         </div>
-                                        <div
-                                            class="oh-sticky-table__td dateformat_changer"
-                                        >
-                                            {{work_type_request.requested_till}}
+                                        <div class="oh-sticky-table__td dateformat_changer">
+                                            {{ work_type_request.requested_till }}
                                         </div>
                                         <div class="oh-sticky-table__td">
-                                            {{work_type_request.description}}
+                                            {{ work_type_request.description }}
                                         </div>
                                         <div class="oh-sticky-table__td">
-                                            {{work_type_request.request_status}}
+                                            {{ work_type_request.request_status }}
                                         </div>
                                         <div class="oh-sticky-table__td">
                                             <div
                                                 class="oh-btn-group"
-                                                onclick="event.stopPropagation();"
+                                                onclick="event.stopPropagation()"
                                             >
                                                 {% if work_type_request.approved == False and not work_type_request.canceled %}
                                                     <a
@@ -261,18 +248,13 @@
                                                         data-target="#objectUpdateModal"
                                                         class="oh-btn oh-btn--light-bkg w-50"
                                                         title="{% trans 'Edit' %}"
-                                                        ><ion-icon
-                                                            name="create-outline"
-                                                        ></ion-icon
-                                                    ></a>
+                                                    ><ion-icon name="create-outline"></ion-icon></a>
                                                 {% else %}
                                                     <button
                                                         class="oh-btn oh-btn--light-bkg w-50"
                                                         disabled
                                                     >
-                                                        <ion-icon
-                                                            name="create-outline"
-                                                        ></ion-icon>
+                                                        <ion-icon name="create-outline"></ion-icon>
                                                     </button>
                                                 {% endif %}
                                                 <a
@@ -284,9 +266,7 @@
                                                     hx-target="#objectCreateModalTarget"
                                                     hx-get="{% url 'work-type-request-duplicate' work_type_request.id %}?{{pg}}"
                                                 >
-                                                    <ion-icon
-                                                        name="copy-outline"
-                                                    ></ion-icon>
+                                                    <ion-icon name="copy-outline"></ion-icon>
                                                 </a>
                                                 {% if work_type_request.approved == False %}
                                                     <form
@@ -301,9 +281,7 @@
                                                             class="oh-btn oh-btn--danger-outline oh-btn--light-bkg w-100"
                                                             title="{% trans 'Remove' %}"
                                                         >
-                                                            <ion-icon
-                                                                name="trash-outline"
-                                                            ></ion-icon>
+                                                            <ion-icon name="trash-outline"></ion-icon>
                                                         </button>
                                                     </form>
                                                 {% else %}
@@ -311,9 +289,7 @@
                                                         class="oh-btn oh-btn--light-bkg w-50"
                                                         disabled
                                                     >
-                                                        <ion-icon
-                                                            name="trash-outline"
-                                                        ></ion-icon>
+                                                        <ion-icon name="trash-outline"></ion-icon>
                                                     </button>
                                                 {% endif %}
                                             </div>
@@ -322,7 +298,7 @@
                                             {% if perms.base.change_worktyperequest or request.user|is_reportingmanager %}
                                                 <div
                                                     class="oh-sticky-table__td oh-sticky-table__right"
-                                                    onclick="event.stopPropagation();"
+                                                    onclick="event.stopPropagation()"
                                                 >
                                                     <div class="oh-btn-group">
                                                         {% if work_type_request.approved == False and work_type_request.canceled == False %}
@@ -452,26 +428,25 @@
                                                     <img
                                                         src="https://ui-avatars.com/api/?name={{rshift.employee_id.employee_first_name}}+{{rshift.employee_id.employee_last_name}}&background=random"
                                                         class="oh-profile__image"
-                                                        alt="Username"
-                                                    />
+                                                        alt="{% trans 'Username' %}"
+                                                    >
                                                 </div>
                                                 <span
                                                     class="oh-profile__name oh-text--dark"
-                                                    >{{rshift.employee_id}}</span
-                                                >
+                                                >{{ rshift.employee_id }}</span>
                                             </div>
                                         </div>
                                         <div class="oh-sticky-table__td">
-                                            {{rshift.rotating_shift_id}}
+                                            {{ rshift.rotating_shift_id }}
                                         </div>
                                         <div class="oh-sticky-table__td">
-                                            {{rshift.get_based_on_display }}
+                                            {{ rshift.get_based_on_display }}
                                         </div>
                                         <div class="oh-sticky-table__td">
                                             {% if rshift.based_on == 'after' %}
-                                                {% trans "Rotate after" %}{{rshift.rotate_after_day}}{% trans "days" %}
+                                                {% trans "Rotate after" %}{{ rshift.rotate_after_day }}{% trans "days" %}
                                             {% elif rshift.based_on == "weekly" %}
-                                                {% trans "Weekly every" %}{{rshift.rotate_every_weekend}}
+                                                {% trans "Weekly every" %}{{ rshift.rotate_every_weekend }}
                                             {% elif rshift.based_on == "monthly" %}
                                                 {% if rshift.rotate_every == "1" %}
                                                     {% trans "Rotate every 1st day of month " %}
@@ -482,25 +457,21 @@
                                                 {% elif rshift.rotate_every == "last" %}
                                                     {% trans "Rotate every last day of month" %}
                                                 {% else %}
-                                                    {% trans "Rotate every " %}{{rshift.rotate_every}}{% trans "th day ofmonth " %}
+                                                    {% trans "Rotate every " %}{{ rshift.rotate_every }}{% trans "th day ofmonth " %}
                                                 {% endif %}
                                             {% endif %}
                                         </div>
-                                        <div
-                                            class="oh-sticky-table__td dateformat_changer"
-                                        >
-                                            {{rshift.start_date}}
+                                        <div class="oh-sticky-table__td dateformat_changer">
+                                            {{ rshift.start_date }}
                                         </div>
                                         <div class="oh-sticky-table__td">
-                                            {{rshift.current_shift}}
+                                            {{ rshift.current_shift }}
                                         </div>
-                                        <div
-                                            class="oh-sticky-table__td dateformat_changer"
-                                        >
-                                            {{rshift.next_change_date}}
+                                        <div class="oh-sticky-table__td dateformat_changer">
+                                            {{ rshift.next_change_date }}
                                         </div>
                                         <div class="oh-sticky-table__td">
-                                            {{rshift.next_shift}}
+                                            {{ rshift.next_shift }}
                                         </div>
                                         <div class="oh-sticky-table__td">
                                             {% if rshift.is_active %}
@@ -512,7 +483,7 @@
                                         {% if not request.GET.profile and perms.base.change_rotatingworktypeassign or perms.base.delete_rotatingshiftassign or request.user|check_manager:rshift or request.user|is_reportingmanager %}
                                             <div
                                                 class="oh-sticky-table__td"
-                                                onclick="event.stopPropagation();"
+                                                onclick="event.stopPropagation()"
                                             >
                                                 <div class="oh-btn-group">
                                                     {% if perms.base.change_rotatingshiftassign or request.user|check_manager:rshift or request.user|is_reportingmanager %}
@@ -526,10 +497,7 @@
                                                             class="oh-btn oh-btn--light-bkg w-50"
                                                             title="{% trans 'Update' %}"
                                                         >
-                                                            <ion-icon
-                                                                name="create-outline"
-                                                            ></ion-icon
-                                                        ></a>
+                                                            <ion-icon name="create-outline"></ion-icon></a>
                                                         <a
                                                             class="oh-btn oh-btn--light-bkg w-100"
                                                             style="cursor: pointer"
@@ -539,9 +507,7 @@
                                                             hx-target="#objectCreateModalTarget"
                                                             hx-get="{% url 'rotating-shift-assign-duplicate' rshift.id %}?{{pg}}"
                                                         >
-                                                            <ion-icon
-                                                                name="copy-outline"
-                                                            ></ion-icon>
+                                                            <ion-icon name="copy-outline"></ion-icon>
                                                         </a>
                                                     {% endif %}
                                                     {% if perms.base.change_rotatingshiftassign or request.user|is_reportingmanager %}
@@ -557,14 +523,12 @@
                                                                     name="is_active"
                                                                     value="{% trans 'False' %}"
                                                                     id=""
-                                                                />
+                                                                >
                                                                 <button
                                                                     class="oh-btn oh-btn--danger-outline oh-btn--light-bkg w-100"
                                                                     title="{% trans 'Archive' %}"
                                                                 >
-                                                                    <ion-icon
-                                                                        name="archive"
-                                                                    ></ion-icon>
+                                                                    <ion-icon name="archive"></ion-icon>
                                                                 </button>
                                                             </form>
                                                         {% else %}
@@ -578,9 +542,7 @@
                                                                     class="oh-btn oh-btn--danger-outline oh-btn--light-bkg w-100"
                                                                     title="{% trans 'Un-Archive' %}"
                                                                 >
-                                                                    <ion-icon
-                                                                        name="archive"
-                                                                    ></ion-icon>
+                                                                    <ion-icon name="archive"></ion-icon>
                                                                 </button>
                                                             </form>
                                                         {% endif %}
@@ -598,9 +560,7 @@
                                                                 class="oh-btn oh-btn--danger-outline oh-btn--light-bkg w-100"
                                                                 title="{% trans 'Remove' %}"
                                                             >
-                                                                <ion-icon
-                                                                    name="trash-outline"
-                                                                ></ion-icon>
+                                                                <ion-icon name="trash-outline"></ion-icon>
                                                             </button>
                                                         </form>
                                                     {% endif %}
@@ -671,7 +631,8 @@
                             <div class="oh-sticky-table__tbody">
                                 {% for rwork_type in rwork_type_assign %}
                                     <div
-                                        class="oh-sticky-table__tr" hx-get="{% url "rwork-individual-view" rwork_type.id %}?instances_ids={{rwork_type_assign_ids}}"
+                                        class="oh-sticky-table__tr"
+                                        hx-get='{% url "rwork-individual-view" rwork_type.id %}?instances_ids={{rwork_type_assign_ids}}'
                                         data-toggle="oh-modal-toggle"
                                         data-target="#objectDetailsModal"
                                         hx-target="#objectDetailsModalTarget"
@@ -683,25 +644,25 @@
                                                     <img
                                                         src="https://ui-avatars.com/api/?name={{rwork_type.employee_id.employee_first_name}}+{{rwork_type.employee_id.employee_last_name}}&background=random"
                                                         class="oh-profile__image"
-                                                        alt="Username"
-                                                    />
+                                                        alt="{% trans 'Username' %}"
+                                                    >
                                                 </div>
-                                                <span class="oh-profile__name oh-text--dark"
-                                                    >{{rwork_type.employee_id}}</span
-                                                >
+                                                <span
+                                                    class="oh-profile__name oh-text--dark"
+                                                >{{ rwork_type.employee_id }}</span>
                                             </div>
                                         </div>
                                         <div class="oh-sticky-table__td">
-                                            {{rwork_type.rotating_work_type_id}}
+                                            {{ rwork_type.rotating_work_type_id }}
                                         </div>
                                         <div class="oh-sticky-table__td">
-                                            {{rwork_type.get_based_on_display}}
+                                            {{ rwork_type.get_based_on_display }}
                                         </div>
                                         <div class="oh-sticky-table__td">
                                             {% if rwork_type.based_on == 'after' %}
-                                                {% trans "Rotate after " %}{{rwork_type.rotate_after_day}}{% trans " days" %}
+                                                {% trans "Rotate after " %}{{ rwork_type.rotate_after_day }}{% trans " days" %}
                                             {% elif rwork_type.based_on == "weekly" %}
-                                                {% trans "Weekly every " %}{{rwork_type.rotate_every_weekend}}
+                                                {% trans "Weekly every " %}{{ rwork_type.rotate_every_weekend }}
                                             {% elif rwork_type.based_on == "monthly" %}
                                                 {% if rwork_type.rotate_every == "1" %}
                                                     {% trans "Rotate every 1st day of month " %}
@@ -712,21 +673,21 @@
                                                 {% elif rwork_type.rotate_every == "last" %}
                                                     {% trans "Rotate every last day of month " %}
                                                 {% else %}
-                                                    {% trans "Rotate every " %}{{rwork_type.rotate_every}}{% trans "th day of month " %}
+                                                    {% trans "Rotate every " %}{{ rwork_type.rotate_every }}{% trans "th day of month " %}
                                                 {% endif %}
                                             {% endif %}
                                         </div>
                                         <div class="oh-sticky-table__td dateformat_changer">
-                                            {{rwork_type.start_date}}
+                                            {{ rwork_type.start_date }}
                                         </div>
                                         <div class="oh-sticky-table__td">
-                                            {{rwork_type.current_work_type}}
+                                            {{ rwork_type.current_work_type }}
                                         </div>
                                         <div class="oh-sticky-table__td dateformat_changer">
-                                            {{rwork_type.next_change_date}}
+                                            {{ rwork_type.next_change_date }}
                                         </div>
                                         <div class="oh-sticky-table__td">
-                                            {{rwork_type.next_work_type}}
+                                            {{ rwork_type.next_work_type }}
                                         </div>
                                         <div class="oh-sticky-table__td">
                                             {% if rwork_type.is_active %}
@@ -736,91 +697,85 @@
                                             {% endif %}
                                         </div>
                                         {% if not request.GET.profile and perms.base.change_rotatingworktypeassign or perms.base.delete_rotatingworktypeassign or request.user|check_manager:rwork_type %}
-                                                <div
-                                                    class="oh-sticky-table__td oh-sticky-table__right"
-                                                    onclick="event.stopPropagation();"
-                                                >
-                                                    <div class="oh-btn-group">
-                                                        {% if perms.base.change_rotatingworktypeassign or request.user|is_reportingmanager %}
-                                                            <a
-                                                                hx-get="{% url 'rotating-work-type-assign-update' rwork_type.id %}"
-                                                                hx-target="#objectUpdateModalTarget"
-                                                                data-target="#objectUpdateModal"
-                                                                data-toggle="oh-modal-toggle"
-                                                                type="button"
-                                                                class="oh-btn oh-btn--light-bkg w-50"
-                                                                title="{% trans 'Update' %}"
-                                                            >
-                                                                <ion-icon
-                                                                    name="create-outline"
-                                                                ></ion-icon>
-                                                            </a>
-                                                            <a
-                                                                hx-get="{% url 'rotating-work-type-assign-duplicate' rwork_type.id %}"
-                                                                hx-target="#objectCreateModalTarget"
-                                                                data-target="#objectCreateModal"
-                                                                data-toggle="oh-modal-toggle"
-                                                                type="button"
-                                                                class="oh-btn oh-btn--light-bkg w-50"
-                                                                title="{% trans 'Duplicate' %}"
-                                                            >
-                                                                <ion-icon
-                                                                    name="copy-outline"
-                                                                ></ion-icon>
-                                                            </a>
-                                                        {% endif %}
-                                                        {% if perms.base.change_rotatingworktypeassign or request.user|is_reportingmanager %}
-                                                            {% if rwork_type.is_active %}
-                                                                <form
-                                                                    hx-confirm="{% trans 'Do you want to archive this rotating work type assign?' %}"
-                                                                    hx-get="{% url 'rotating-work-type-assign-archive' rwork_type.id %}?{{pd}}"
-                                                                    hx-target="#shift_target"
-                                                                    style="width: 100%"
-                                                                >
-                                                                    <button
-                                                                        class="oh-btn oh-btn--danger-outline oh-btn--light-bkg w-100"
-                                                                        title="{% trans 'Archive' %}"
-                                                                    >
-                                                                        <ion-icon name="archive"></ion-icon>
-                                                                    </button>
-                                                                </form>
-                                                            {% else %}
-                                                                <form
-                                                                    hx-confirm="{% trans 'Do you want to un-archive this rotating work type assign?' %}"
-                                                                    hx-get="{% url 'rotating-work-type-assign-archive' rwork_type.id %}?{{pd}}"
-                                                                    hx-target="#shift_target"
-                                                                    style="width: 100%"
-                                                                >
-                                                                    <button
-                                                                        class="oh-btn oh-btn--danger-outline oh-btn--light-bkg w-100"
-                                                                        title="{% trans 'Un-Archive' %}"
-                                                                    >
-                                                                        <ion-icon name="archive"></ion-icon>
-                                                                    </button>
-                                                                </form>
-                                                            {% endif %}
-                                                        {% endif %}
-                                                        {% if perms.base.delete_rotatingworktypeassign or request.user|is_reportingmanager %}
+                                            <div
+                                                class="oh-sticky-table__td oh-sticky-table__right"
+                                                onclick="event.stopPropagation()"
+                                            >
+                                                <div class="oh-btn-group">
+                                                    {% if perms.base.change_rotatingworktypeassign or request.user|is_reportingmanager %}
+                                                        <a
+                                                            hx-get="{% url 'rotating-work-type-assign-update' rwork_type.id %}"
+                                                            hx-target="#objectUpdateModalTarget"
+                                                            data-target="#objectUpdateModal"
+                                                            data-toggle="oh-modal-toggle"
+                                                            type="button"
+                                                            class="oh-btn oh-btn--light-bkg w-50"
+                                                            title="{% trans 'Update' %}"
+                                                        >
+                                                            <ion-icon name="create-outline"></ion-icon>
+                                                        </a>
+                                                        <a
+                                                            hx-get="{% url 'rotating-work-type-assign-duplicate' rwork_type.id %}"
+                                                            hx-target="#objectCreateModalTarget"
+                                                            data-target="#objectCreateModal"
+                                                            data-toggle="oh-modal-toggle"
+                                                            type="button"
+                                                            class="oh-btn oh-btn--light-bkg w-50"
+                                                            title="{% trans 'Duplicate' %}"
+                                                        >
+                                                            <ion-icon name="copy-outline"></ion-icon>
+                                                        </a>
+                                                    {% endif %}
+                                                    {% if perms.base.change_rotatingworktypeassign or request.user|is_reportingmanager %}
+                                                        {% if rwork_type.is_active %}
                                                             <form
-                                                                hx-confirm="{% trans 'Are you sure you want to delete this rotating work type assign?' %}"
-                                                                hx-post="{% url 'rotating-work-type-assign-delete' rwork_type.id %}?{{pd}}"
+                                                                hx-confirm="{% trans 'Do you want to archive this rotating work type assign?' %}"
+                                                                hx-get="{% url 'rotating-work-type-assign-archive' rwork_type.id %}?{{pd}}"
                                                                 hx-target="#shift_target"
                                                                 style="width: 100%"
                                                             >
-                                                                {% csrf_token %}
                                                                 <button
-                                                                    type="submit"
                                                                     class="oh-btn oh-btn--danger-outline oh-btn--light-bkg w-100"
-                                                                    title="{% trans 'Remove' %}"
+                                                                    title="{% trans 'Archive' %}"
                                                                 >
-                                                                    <ion-icon
-                                                                        name="trash-outline"
-                                                                    ></ion-icon>
+                                                                    <ion-icon name="archive"></ion-icon>
+                                                                </button>
+                                                            </form>
+                                                        {% else %}
+                                                            <form
+                                                                hx-confirm="{% trans 'Do you want to un-archive this rotating work type assign?' %}"
+                                                                hx-get="{% url 'rotating-work-type-assign-archive' rwork_type.id %}?{{pd}}"
+                                                                hx-target="#shift_target"
+                                                                style="width: 100%"
+                                                            >
+                                                                <button
+                                                                    class="oh-btn oh-btn--danger-outline oh-btn--light-bkg w-100"
+                                                                    title="{% trans 'Un-Archive' %}"
+                                                                >
+                                                                    <ion-icon name="archive"></ion-icon>
                                                                 </button>
                                                             </form>
                                                         {% endif %}
-                                                    </div>
+                                                    {% endif %}
+                                                    {% if perms.base.delete_rotatingworktypeassign or request.user|is_reportingmanager %}
+                                                        <form
+                                                            hx-confirm="{% trans 'Are you sure you want to delete this rotating work type assign?' %}"
+                                                            hx-post="{% url 'rotating-work-type-assign-delete' rwork_type.id %}?{{pd}}"
+                                                            hx-target="#shift_target"
+                                                            style="width: 100%"
+                                                        >
+                                                            {% csrf_token %}
+                                                            <button
+                                                                type="submit"
+                                                                class="oh-btn oh-btn--danger-outline oh-btn--light-bkg w-100"
+                                                                title="{% trans 'Remove' %}"
+                                                            >
+                                                                <ion-icon name="trash-outline"></ion-icon>
+                                                            </button>
+                                                        </form>
+                                                    {% endif %}
                                                 </div>
+                                            </div>
                                         {% endif %}
                                     </div>
                                 {% endfor %}
@@ -895,29 +850,29 @@
                                                         <img
                                                             src="https://ui-avatars.com/api/?name={{shift_request.employee_id}}&amp;background=random"
                                                             class="oh-profile__image"
-                                                            alt="Username"
-                                                        />
+                                                            alt="{% trans 'Username' %}"
+                                                        >
                                                     </div>
-                                                    <span class="oh-profile__name oh-text--dark"
-                                                        >{{shift_request.employee_id}}</span
-                                                    >
+                                                    <span
+                                                        class="oh-profile__name oh-text--dark"
+                                                    >{{ shift_request.employee_id }}</span>
                                                 </div>
                                             </div>
                                         </div>
                                         <div class="oh-sticky-table__td">
-                                            {{shift_request.shift_id}}
+                                            {{ shift_request.shift_id }}
                                         </div>
                                         <div class="oh-sticky-table__td">
-                                            {{shift_request.previous_shift_id}}
+                                            {{ shift_request.previous_shift_id }}
                                         </div>
                                         <div class="oh-sticky-table__td dateformat_changer">
-                                            {{shift_request.requested_date}}
+                                            {{ shift_request.requested_date }}
                                         </div>
                                         <div class="oh-sticky-table__td dateformat_changer">
-                                            {{shift_request.requested_till}}
+                                            {{ shift_request.requested_till }}
                                         </div>
                                         <div class="oh-sticky-table__td">
-                                            {{shift_request.description}}
+                                            {{ shift_request.description }}
                                         </div>
                                         <div class="oh-sticky-table__td">
                                             {% if shift_request.approved %}
@@ -931,7 +886,7 @@
                                         <div class="oh-sticky-table__td">
                                             <div
                                                 class="oh-btn-group"
-                                                onclick="event.stopPropagation();"
+                                                onclick="event.stopPropagation()"
                                             >
                                                 {% if shift_request.approved == False and not shift_request.canceled %}
                                                     <a
@@ -941,8 +896,7 @@
                                                         data-target="#shiftRequestModalUpdate"
                                                         class="oh-btn oh-btn--light-bkg w-50"
                                                         title="{% trans 'Edit' %}"
-                                                        ><ion-icon name="create-outline"></ion-icon
-                                                    ></a>
+                                                    ><ion-icon name="create-outline"></ion-icon></a>
                                                 {% else %}
                                                     <button
                                                         class="oh-btn oh-btn--light-bkg w-50"
@@ -964,7 +918,7 @@
                                                 </a>
                                                 {% if shift_request.approved == False %}
                                                     <form
-                                                        hx-confirm="{% trans "Are you sure you want to delete this shift request?" %}"
+                                                        hx-confirm='{% trans "Are you sure you want to delete this shift request?" %}'
                                                         hx-post="{% url 'shift-request-delete' shift_request.id %}"
                                                         hx-target="#shift_target"
                                                         class="w-50"
@@ -975,7 +929,7 @@
                                                             class="oh-btn oh-btn--danger-outline oh-btn--light-bkg w-100"
                                                             title="{% trans 'Remove' %}"
                                                         >
-                                                        <ion-icon name="trash-outline"></ion-icon>
+                                                            <ion-icon name="trash-outline"></ion-icon>
                                                         </button>
                                                     </form>
                                                 {% else %}
@@ -992,35 +946,44 @@
                                             {% if perms.base.change_shiftrequest or request.user|is_reportingmanager %}
                                                 <div
                                                     class="oh-sticky-table__td oh-sticky-table__right"
-                                                    onclick="event.stopPropagation();"
+                                                    onclick="event.stopPropagation()"
                                                 >
                                                     <div class="oh-btn-group">
                                                         {% if shift_request.approved == False and shift_request.canceled == False %}
-                                                            <a  href="{% url 'shift-request-approve' shift_request.id %}"
+                                                            <a
+                                                                href="{% url 'shift-request-approve' shift_request.id %}"
                                                                 title="{% trans 'Approve' %}"
                                                                 onclick="return confirm('{% trans "Do you want to approve this request?" %}')"
-                                                                class="oh-btn oh-btn--success">
-                                                                <ion-icon class="me-1" name="checkmark-outline"></ion-icon>
+                                                                class="oh-btn oh-btn--success"
+                                                            >
+                                                                <ion-icon
+                                                                    class="me-1"
+                                                                    name="checkmark-outline"
+                                                                ></ion-icon>
                                                             </a>
                                                         {% else %}
-                                                        <a
-                                                            href="#"
-                                                            title="{% trans 'Approve' %}"
-                                                            class="oh-btn oh-btn--success oh-btn--disabled"
-                                                        >
-                                                            <ion-icon
-                                                                class="me-1"
-                                                                name="checkmark-outline"
-                                                            ></ion-icon>
-                                                        </a>
+                                                            <a
+                                                                href="#"
+                                                                title="{% trans 'Approve' %}"
+                                                                class="oh-btn oh-btn--success oh-btn--disabled"
+                                                            >
+                                                                <ion-icon
+                                                                    class="me-1"
+                                                                    name="checkmark-outline"
+                                                                ></ion-icon>
+                                                            </a>
                                                         {% endif %}
                                                         {% if shift_request.canceled == False %}
                                                             <a
                                                                 href="{% url 'shift-request-cancel' shift_request.id %}"
                                                                 title="{% trans 'Reject' %}"
                                                                 onclick="return confirm('{% trans "Do you want to reject this request?" %}')"
-                                                                class="oh-btn oh-btn--danger">
-                                                                <ion-icon class="me-1" name="close-circle-outline"></ion-icon>
+                                                                class="oh-btn oh-btn--danger"
+                                                            >
+                                                                <ion-icon
+                                                                    class="me-1"
+                                                                    name="close-circle-outline"
+                                                                ></ion-icon>
                                                             </a>
                                                         {% else %}
                                                             <a
@@ -1084,7 +1047,7 @@
             >
                 {% trans "Update Shift Request" %}
             </h5>
-            <button class="oh-modal__close" aria-label="Close">
+            <button class="oh-modal__close" aria-label="{% trans 'Close' %}">
                 <ion-icon name="close-outline"></ion-icon>
             </button>
         </div>
@@ -1092,7 +1055,8 @@
         <div
             class="oh-modal__dialog-body"
             id="shiftRequestModalUpdateBody"
-        ></div>
+        >
+        </div>
     </div>
 </div>
 
@@ -1108,7 +1072,7 @@
             <h5 class="oh-modal__dialog-title" id="shiftRequestModalLabel">
                 {% trans "Shift Request" %}
             </h5>
-            <button class="oh-modal__close" aria-label="Close">
+            <button class="oh-modal__close" aria-label="{% trans 'Close' %}">
                 <ion-icon name="close-outline"></ion-icon>
             </button>
         </div>

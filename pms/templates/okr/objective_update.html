@@ -1,25 +1,24 @@
 <!-- form  non field errors  -->
-{% load i18n %} {% if objective_form.errors %}
-<div class="oh-wrapper">
-  <div class="oh-alert-container">
-    {% for error in objective_form.non_field_errors %}
-    <div class="oh-alert oh-alert--animated oh-alert--danger">{{ error }}</div>
-    {% endfor %}
-  </div>
-</div>
+{% load i18n %}
+{% if objective_form.errors %}
+    <div class="oh-wrapper">
+        <div class="oh-alert-container">
+            {% for error in objective_form.non_field_errors %}
+                <div class="oh-alert oh-alert--animated oh-alert--danger">{{ error }}</div>
+            {% endfor %}
+        </div>
+    </div>
 {% endif %}
 
 <div class="oh-modal__dialog-header">
-  <span class="oh-modal__dialog-title" id="addEmployeeObjectiveModalLabel"
-    >{% trans "Update Objectives" %}</span
-  >
-  <button type="button" class="oh-modal__close reloadButton" aria-label="Close">
-    <ion-icon name="close-outline"></ion-icon>
-  </button>
+    <span class="oh-modal__dialog-title" id="addEmployeeObjectiveModalLabel">{% trans "Update Objectives" %}</span>
+    <button type="button" class="oh-modal__close reloadButton" aria-label="{% trans 'Close' %}">
+        <ion-icon name="close-outline"></ion-icon>
+    </button>
 </div>
 <form
-  hx-post="{%url 'objective-update' obj_id=objective_form.instance.id %}"
-  hx-target="#objectCreateModalTarget"
-  >
-  {% csrf_token %} {{objective_form.as_p}}
+    hx-post="{%url 'objective-update' obj_id=objective_form.instance.id %}"
+    hx-target="#objectCreateModalTarget"
+>
+    {% csrf_token %} {{ objective_form.as_p }}
 </form>
