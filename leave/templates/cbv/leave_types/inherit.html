@@ -1,6 +1,68 @@
+{% load i18n %}
 <div>
     {% include "generic/horilla_form.html" %}
 </div>
 <script>
     $("#id_is_active_parent_div").hide();
+
+    (function () {
+        var defaultLeaveDays = parseInt({{ default_leave_days|default:0 }}, 10) || 0;
+        var leaveDaysValues = {};
+
+        function renderLeaveDaysTable() {
+            var selected = $("#id_employee_id").val() || [];
+            var $container = $("#leaveDaysTableContainer");
+
+            $container.find("input.leave-days-input").each(function () {
+                leaveDaysValues[$(this).data("employee-id")] = $(this).val();
+            });
+
+            if (!selected.length) {
+                $container.html("");
+                return;
+            }
+
+            var rows = "";
+            selected.forEach(function (id) {
+                var name = $("#id_employee_id option[value='" + id + "']").text();
+                var value = leaveDaysValues[id] !== undefined ? leaveDaysValues[id] : defaultLeaveDays;
+                rows +=
+                    '<tr>' +
+                    '<td class="p-2">' + name + '</td>' +
+                    '<td class="p-2">' +
+                    '<input type="number" step="1" min="0" inputmode="numeric" pattern="[0-9]*" ' +
+                    'class="oh-input w-100 leave-days-input" ' +
+                    'data-employee-id="' + id + '" name="leave_days_' + id + '" value="' + value + '">' +
+                    '</td>' +
+                    '</tr>';
+            });
+
+            $container.html(
+                '<label class="oh-label d-block mt-3">{% trans "Leave Days" %}</label>' +
+                '<table class="w-100" style="border-collapse: collapse;">' +
+                '<thead><tr>' +
+                '<th class="p-2 text-start">{% trans "Employee" %}</th>' +
+                '<th class="p-2 text-start">{% trans "Leave Days" %}</th>' +
+                '</tr></thead>' +
+                '<tbody>' + rows + '</tbody>' +
+                '</table>'
+            );
+        }
+
+        if (!$("#leaveDaysTableContainer").length) {
+            $("#id_employee_id_parent_div").after('<div id="leaveDaysTableContainer" class="col-12"></div>');
+        }
+
+        $(document).on("change", "#id_employee_id", renderLeaveDaysTable);
+        $(document).on("input", "#leaveDaysTableContainer .leave-days-input", function () {
+            var digitsOnly = $(this).val().replace(/[^0-9]/g, "");
+            $(this).val(digitsOnly);
+        });
+        $(document).on("keydown", "#leaveDaysTableContainer .leave-days-input", function (e) {
+            if (e.key === "." || e.key === "-" || e.key === "e" || e.key === "+") {
+                e.preventDefault();
+            }
+        });
+        setTimeout(renderLeaveDaysTable, 300);
+    })();
 </script>

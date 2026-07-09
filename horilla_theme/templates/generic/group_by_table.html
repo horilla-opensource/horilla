@@ -47,7 +47,7 @@
     <div class="accordion-wrapper space-y-2">
         {% for group in groups %}
             <div class="oh-accordion border border-primary-300 rounded-md overflow-hidden {% if forloop.first %}oh-accordion--show{% endif %}">
-                <button
+                <div
                     class="oh-accordion-header no-after w-full flex justify-between items-center px-4 py-2 bg-primary-100 text-primary-600 text-sm transition-all"
                     data-field="{{saved_filters.field}}"
                     data-path="{{request.path}}"
@@ -59,8 +59,23 @@
                             title="{{group.list.paginator.count}} {% trans 'Records' %}"
                         >{{ group.list.paginator.count }}</span>{{ group.grouper|capfirst }}
                     </div>
-                    <span class="icon text-xl font-bold">+</span>
-                </button>
+                    <div class="flex items-center gap-2">
+                        {% if view_id == "assignedleavedelete" and saved_filters.field == "leave_type_id" and perms.leave.add_availableleave and not group.grouper.is_compensatory_leave %}
+                        <a
+                            data-toggle="oh-modal-toggle"
+                            data-target="#genericModal"
+                            hx-get="{% url 'assign-one' group.grouper.id %}"
+                            hx-target="#genericModalBody"
+                            onclick="event.stopPropagation()"
+                            class="oh-btn oh-btn--secondary oh-btn--small"
+                            title="{% trans 'Add Employee' %}"
+                        >
+                            <ion-icon name="person-add-outline" class="me-1"></ion-icon>{% trans "Add Employee" %}
+                        </a>
+                        {% endif %}
+                        <span class="icon text-xl font-bold">+</span>
+                    </div>
+                </div>
 
                 <div class="oh-accordion-body transition-all duration-300 bg-white px-4 text-sm text-gray-700">
                     <div class="py-3">

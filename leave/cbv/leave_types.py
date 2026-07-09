@@ -338,6 +338,9 @@ class LeaveTypeAssignForm(HorillaFormView):
 
         if self.form.instance.pk:
             self.form_class.verbose_name = _("Assign Leave")
+            context["default_leave_days"] = LeaveType.objects.get(
+                id=self.form.instance.pk
+            ).total_days
 
         return context
 
@@ -375,10 +378,17 @@ class LeaveTypeAssignForm(HorillaFormView):
                                     ),
                                 )
                                 continue
+                            leave_days = self.request.POST.get(
+                                f"leave_days_{employee_id}"
+                            )
+                            try:
+                                leave_days = int(leave_days)
+                            except (TypeError, ValueError):
+                                leave_days = int(leave_type.total_days)
                             AvailableLeave(
                                 leave_type_id=leave_type,
                                 employee_id=employee,
-                                available_days=leave_type.total_days,
+                                available_days=leave_days,
                             ).save()
                             messages.success(
                                 self.request,
@@ -406,8 +416,6 @@ class LeaveTypeAssignForm(HorillaFormView):
                         self.request,
                         _("Compensatory leave type cant assigned manually"),
                     )
-            form.save()
 
-            # messages.success(self.request, _(message))
             return self.HttpResponse()
         return super().form_valid(form)

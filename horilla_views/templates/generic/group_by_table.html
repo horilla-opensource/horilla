@@ -64,6 +64,19 @@
               </div>
             </span>
           </span>
+          {% if view_id == "assignedleavedelete" and saved_filters.field == "leave_type_id" and perms.leave.add_availableleave and not group.grouper.is_compensatory_leave %}
+          <a
+            data-toggle="oh-modal-toggle"
+            data-target="#genericModal"
+            hx-get="{% url 'assign-one' group.grouper.id %}"
+            hx-target="#genericModalBody"
+            onclick="event.stopPropagation()"
+            class="oh-btn oh-btn--secondary oh-btn--small mr-2"
+            title="{% trans 'Add Employee' %}"
+          >
+            <ion-icon name="person-add-outline" class="me-1"></ion-icon>{% trans "Add Employee" %}
+          </a>
+          {% endif %}
         </div>
         <div class="oh-accordion-meta__body d-none">
           <div class="table-wrapper">

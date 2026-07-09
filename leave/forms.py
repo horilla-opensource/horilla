@@ -405,7 +405,7 @@ class LeaveRequestUpdationForm(BaseModelForm):
         leave_type = leave_request.leave_type_id
 
         if employee:
-            available_leaves = employee.available_leave.all()
+            available_leaves = AvailableLeave.objects.filter(employee_id=employee)
             assigned_leave_types = LeaveType.objects.filter(
                 id__in=available_leaves.values_list("leave_type_id", flat=True)
             )
@@ -531,6 +531,13 @@ class LeaveOneAssignForm(HorillaModelForm):
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
         reload_queryset(self.fields)
+        if self.instance and self.instance.pk:
+            assigned_employee_ids = AvailableLeave.objects.filter(
+                leave_type_id=self.instance.pk
+            ).values_list("employee_id", flat=True)
+            self.fields["employee_id"].queryset = self.fields[
+                "employee_id"
+            ].queryset.exclude(id__in=assigned_employee_ids)
 
 
 class AvailableLeaveUpdateForm(BaseModelForm):
@@ -538,7 +545,7 @@ class AvailableLeaveUpdateForm(BaseModelForm):
     Form for updating available leave data.
 
     This form allows users to update available leave data by modifying fields such as
-    available_days, carryforward_days, and is_active.
+    available_days and carryforward_days.
 
     Attributes:
         - Meta: Inner class defining metadata options.
@@ -552,7 +559,7 @@ class AvailableLeaveUpdateForm(BaseModelForm):
         """
 
         model = AvailableLeave
-        fields = ["available_days", "carryforward_days", "is_active"]
+        fields = ["available_days", "carryforward_days"]
 
 
 class CompanyLeaveForm(BaseModelForm):
@@ -592,7 +599,7 @@ class UserLeaveRequestForm(BaseModelForm):
         super(UserLeaveRequestForm, self).__init__(*args, **kwargs)
         self.fields["attachment"].widget.attrs["accept"] = ".jpg, .jpeg, .png, .pdf"
         if employee:
-            available_leaves = employee.available_leave.all()
+            available_leaves = AvailableLeave.objects.filter(employee_id=employee)
             assigned_leave_types = LeaveType.objects.filter(
                 id__in=available_leaves.values_list("leave_type_id", flat=True)
             )
@@ -720,7 +727,7 @@ class UserLeaveRequestCreationForm(BaseModelForm):
         super().__init__(*args, **kwargs)
         self.fields["attachment"].widget.attrs["accept"] = ".jpg, .jpeg, .png, .pdf"
         if employee:
-            available_leaves = employee.available_leave.all()
+            available_leaves = AvailableLeave.objects.filter(employee_id=employee)
             assigned_leave_types = LeaveType.objects.filter(
                 id__in=available_leaves.values_list("leave_type_id", flat=True)
             )
