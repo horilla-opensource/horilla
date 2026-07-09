@@ -51,6 +51,11 @@
             <span class="oh-payslip__netpay-title">{% trans "LOP Days" %}
                 <small style="margin-left:93px ;font-weight:bold;">: {{unpaid_days}}</small>
             </span>
+            {% if partial_pay_days %}
+            <span class="oh-payslip__netpay-title">{% trans "Partially Paid Days" %}
+                <small style="margin-left:38px;font-weight:bold;">: {{partial_pay_days}}{% if custom_leave_breakdown %} ({% for entry in custom_leave_breakdown %}{{ entry.percentage|floatformat:0 }}%{% if not forloop.last %}, {% endif %}{% endfor %}){% endif %}</small>
+            </span>
+            {% endif %}
             <span class="oh-payslip__netpay-title">
                 {% trans "Updated Basic Pay" %}
                 <small style="margin-left:20px;font-weight:bold;">: {{basic_pay|floatformat:2|currency_symbol_position}}<br>
@@ -73,6 +78,36 @@
     </div>
 </div>
 <!-- End of Payslip Table -->
+
+{% if custom_leave_breakdown %}
+<!-- Custom Payment Leave Details -->
+<div class="oh-payslip__table-container" style="margin-top:0.5rem">
+    <table class="oh-payslip__table">
+        <thead class="oh-payslip__table-thead">
+            <tr class="oh-payslip__table-row">
+                <th class="oh-payslip__table-th" colspan="4">{% trans "Custom Payment Leave Details" %}</th>
+            </tr>
+            <tr class="oh-payslip__table-row">
+                <th class="oh-payslip__table-th">{% trans "Leave Type" %}</th>
+                <th class="oh-payslip__table-th">{% trans "Leave Days" %}</th>
+                <th class="oh-payslip__table-th">{% trans "Payment %" %}</th>
+                <th class="oh-payslip__table-th">{% trans "Deduction Amount" %}</th>
+            </tr>
+        </thead>
+        <tbody class="oh-payslip__table-tbody">
+            {% for entry in custom_leave_breakdown %}
+            <tr class="oh-payslip__table-tr">
+                <td class="oh-payslip__table-td">{{entry.leave_type}}</td>
+                <td class="oh-payslip__table-td">{{entry.days}}</td>
+                <td class="oh-payslip__table-td">{{entry.percentage|floatformat:0}}%</td>
+                <td class="oh-payslip__table-td">{{entry.deduction_amount|floatformat:2|currency_symbol_position}}</td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</div>
+<!-- End of Custom Payment Leave Details -->
+{% endif %}
 
 <!-- Payslip Table -->
 <div class="oh-payslip__table-container" style="margin-top:0.5rem">
@@ -157,7 +192,7 @@
                     <ion-icon name="information-circle-outline" style="color:#c47d00; vertical-align:middle;"></ion-icon>
                     {% trans "Leave Payment Reduction" %}
                     <i style="font-size:0.8em; font-style:italic; display:block; margin-left:1.5rem; color:#888;">
-                        {% trans "Partial deduction — leave type pays a reduced percentage" %}
+                        {% blocktrans %}Partial deduction — {{ partial_pay_days }} day(s) on a partially paid leave type{% endblocktrans %}
                     </i>
                 </td>
                 <td class="oh-payslip__table-td">

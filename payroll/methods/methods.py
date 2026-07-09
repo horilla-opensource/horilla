@@ -68,6 +68,8 @@ def get_leaves(employee, start_date, end_date):
     unpaid_leave_dates = []
     # list of (date, payment_percentage) for partial-pay leaves
     custom_leave_dates = []
+    # (leave_type_name, payment_percentage) -> list of dates, for per-leave-type breakdown
+    custom_leave_dates_by_type = {}
     company_leave_dates = get_working_days(start_date, end_date, employee)[
         "company_leave_dates"
     ]
@@ -89,6 +91,9 @@ def get_leaves(employee, start_date, end_date):
             elif ptype == "custom":
                 pct = float(leave_type.payment_percentage or 0)
                 custom_leave_dates += [(d, pct) for d in dates_in_range]
+                type_key = (leave_type.name, pct)
+                custom_leave_dates_by_type.setdefault(type_key, [])
+                custom_leave_dates_by_type[type_key] += dates_in_range
             else:
                 unpaid_leave_dates += dates_in_range
 
@@ -106,9 +111,22 @@ def get_leaves(employee, start_date, end_date):
     paid_leave = len(paid_leave_dates) - paid_half
     unpaid_leave = len(unpaid_leave_dates) - unpaid_half
 
+    # Per custom payment leave type breakdown for payslip display: leave type
+    # name, number of days taken, and the configured payment percentage.
+    custom_leave_breakdown = [
+        {
+            "leave_type": type_name,
+            "days": len([d for d in dates if d not in company_leave_dates]),
+            "percentage": pct,
+        }
+        for (type_name, pct), dates in custom_leave_dates_by_type.items()
+        if [d for d in dates if d not in company_leave_dates]
+    ]
+
     return {
         "paid_leave": paid_leave,
         "unpaid_leaves": unpaid_leave,
+        "partial_pay_days": len(custom_dates_only),
         "total_leaves": paid_leave + unpaid_leave + len(custom_dates_only),
         # List of paid leave date between range
         "paid_leave_dates": paid_leave_dates,
@@ -116,6 +134,8 @@ def get_leaves(employee, start_date, end_date):
         "unpaid_leave_dates": unpaid_leave_dates,
         # List of (date, payment_percentage) for custom partial-pay leaves
         "custom_leave_dates": custom_leave_dates,
+        # Per leave type breakdown of custom partial-pay leaves for display
+        "custom_leave_breakdown": custom_leave_breakdown,
         "leave_dates": unpaid_leave_dates + paid_leave_dates + custom_dates_only,
     }
 
@@ -305,6 +325,19 @@ def daily_computation(employee, wage, start_date, end_date):
             )
     loss_of_pay += custom_leave_deduction
 
+    # Per leave type deduction amount, for payslip display
+    custom_leave_breakdown = leave_data.get("custom_leave_breakdown", [])
+    for entry in custom_leave_breakdown:
+        deductible_fraction = 1.0 - (entry["percentage"] / 100.0)
+        per_day_basis = (
+            wage
+            if contract.calculate_daily_leave_amount
+            else contract.deduction_for_one_leave_amount
+        )
+        entry["deduction_amount"] = round(
+            per_day_basis * deductible_fraction * entry["days"], 2
+        )
+
     if contract.deduct_leave_from_basic_pay:
         basic_pay = basic_pay - loss_of_pay
 
@@ -312,8 +345,10 @@ def daily_computation(employee, wage, start_date, end_date):
         "basic_pay": basic_pay,
         "loss_of_pay": loss_of_pay,
         "custom_leave_deduction": custom_leave_deduction,
+        "custom_leave_breakdown": custom_leave_breakdown,
         "paid_days": total_working_days,
         "unpaid_days": unpaid_leaves,
+        "partial_pay_days": leave_data.get("partial_pay_days", 0),
     }
 
 
@@ -507,7 +542,8 @@ def monthly_computation(employee, wage, start_date, end_date, *args, **kwargs):
         is_active=True, contract_status="active"
     ).first()
     unpaid_leaves = abs(leave_data["unpaid_leaves"] - unpaid_half_leaves)
-    paid_days = month_data[0]["working_days_on_period"] - unpaid_leaves
+    total_working_days = sum(d["working_days_on_period"] for d in month_data)
+    paid_days = total_working_days - unpaid_leaves
     daily_computed_salary = get_daily_salary(wage=wage, wage_date=start_date)[
         "day_wage"
     ]
@@ -530,15 +566,30 @@ def monthly_computation(employee, wage, start_date, end_date, *args, **kwargs):
             )
     loss_of_pay += custom_leave_deduction
 
+    # Per leave type deduction amount, for payslip display
+    custom_leave_breakdown = leave_data.get("custom_leave_breakdown", [])
+    for entry in custom_leave_breakdown:
+        deductible_fraction = 1.0 - (entry["percentage"] / 100.0)
+        per_day_basis = (
+            daily_computed_salary
+            if contract.calculate_daily_leave_amount
+            else contract.deduction_for_one_leave_amount
+        )
+        entry["deduction_amount"] = round(
+            per_day_basis * deductible_fraction * entry["days"], 2
+        )
+
     if contract.deduct_leave_from_basic_pay:
         basic_pay = basic_pay - loss_of_pay
     return {
         "basic_pay": basic_pay,
         "loss_of_pay": loss_of_pay,
         "custom_leave_deduction": custom_leave_deduction,
+        "custom_leave_breakdown": custom_leave_breakdown,
         "month_data": month_data,
         "unpaid_days": unpaid_leaves,
         "paid_days": paid_days,
+        "partial_pay_days": leave_data.get("partial_pay_days", 0),
         "contract": contract,
     }
 

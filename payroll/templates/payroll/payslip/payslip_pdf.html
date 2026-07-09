@@ -248,6 +248,25 @@
                   <span class="oh-payslip-td-value">{{employee.employee_bank_details.account_number}}</span>
                 </td>
               </tr>
+              <tr>
+                <td class="w-50">
+                  <span class="oh-payslip-td-head">{% trans "Paid Days :" %}</span>
+                  <span class="oh-payslip-td-value">{{paid_days}}</span>
+                </td>
+                <td class="w-50">
+                  <span class="oh-payslip-td-head">{% trans "LOP Days :" %}</span>
+                  <span class="oh-payslip-td-value">{{unpaid_days}}</span>
+                </td>
+              </tr>
+              {% if partial_pay_days %}
+              <tr>
+                <td class="w-50">
+                  <span class="oh-payslip-td-head">{% trans "Partially Paid Days :" %}</span>
+                  <span class="oh-payslip-td-value">{{partial_pay_days}}{% if custom_leave_breakdown %} ({% for entry in custom_leave_breakdown %}{{ entry.percentage|floatformat:0 }}%{% if not forloop.last %}, {% endif %}{% endfor %}){% endif %}</span>
+                </td>
+                <td class="w-50"></td>
+              </tr>
+              {% endif %}
             </tbody>
           </table>
 
@@ -307,7 +326,7 @@
               <tr style="color: #c47d00;">
                 <td class="" style="padding-left: 1.2rem; font-size:0.85em;">
                   ↳ {% trans "Leave Payment Reduction" %}
-                  <br><span style="color:#888; font-size:0.85em;">{% trans "Partial deduction — leave type pays reduced %" %}</span>
+                  <br><span style="color:#888; font-size:0.85em;">{% blocktrans %}Partial deduction — {{ partial_pay_days }} day(s) on a partially paid leave type{% endblocktrans %}</span>
                 </td>
                 <td class="oh-allowance-amount">
                   {{custom_leave_deduction|floatformat:2|currency_symbol_position}}

@@ -132,8 +132,10 @@ def payroll_calculation(employee, start_date, end_date):
     basic_pay = basic_pay_details["basic_pay"]
     loss_of_pay = basic_pay_details["loss_of_pay"]
     custom_leave_deduction = basic_pay_details.get("custom_leave_deduction", 0.0)
+    custom_leave_breakdown = basic_pay_details.get("custom_leave_breakdown", [])
     paid_days = basic_pay_details["paid_days"]
     unpaid_days = basic_pay_details["unpaid_days"]
+    partial_pay_days = basic_pay_details.get("partial_pay_days", 0)
 
     working_days_details = basic_pay_details["month_data"]
 
@@ -238,6 +240,7 @@ def payroll_calculation(employee, start_date, end_date):
         "allowances": allowances["allowances"],
         "paid_days": paid_days,
         "unpaid_days": unpaid_days,
+        "partial_pay_days": partial_pay_days,
         "basic_pay_deductions": basic_pay_deductions,
         "gross_pay_deductions": gross_pay_deductions,
         "pretax_deductions": pretax_deductions["pretax_deductions"],
@@ -247,6 +250,7 @@ def payroll_calculation(employee, start_date, end_date):
         "total_deductions": total_deductions,
         "loss_of_pay": loss_of_pay,
         "custom_leave_deduction": custom_leave_deduction,
+        "custom_leave_breakdown": custom_leave_breakdown,
         "federal_tax": federal_tax,
         "start_date": start_date,
         "end_date": end_date,
