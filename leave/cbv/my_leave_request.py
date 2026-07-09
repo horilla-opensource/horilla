@@ -270,7 +270,7 @@ class MyLeaveRequestForm(HorillaFormView):
         context = super().get_context_data(**kwargs)
         self.request.my_leave_request = "my_leave_request"
         emp = self.request.user.employee_get
-        available_leaves = emp.available_leave.all()
+        available_leaves = AvailableLeave.objects.filter(employee_id=emp)
         assigned_leave_types = LeaveType.objects.filter(
             id__in=available_leaves.values_list("leave_type_id", flat=True)
         )
@@ -484,14 +484,13 @@ class MyLeaveRequestSingleForm(HorillaFormView):
         return context
 
     def form_invalid(self, form: Any) -> HttpResponse:
-        form = self.form_class(self.request.POST)
+        employee = self.request.user.employee_get
+        form = self.form_class(self.request.POST, employee=employee)
         self.form_class.verbose_name = _("Leave Request")
-        if not form.is_valid():
-            errors = form.errors.as_data()
-            return render(
-                self.request, self.template_name, {"form": form, "errors": errors}
-            )
-        return super().form_invalid(form)
+        errors = form.errors.as_data()
+        return render(
+            self.request, self.template_name, {"form": form, "errors": errors}
+        )
 
     def form_valid(self, form: UserLeaveRequestCreationForm) -> HttpResponse:
         employee = self.request.user.employee_get
@@ -547,6 +546,7 @@ class MyLeaveRequestSingleForm(HorillaFormView):
             form.add_error(
                 None, _("There is already a leave request for this date range")
             )
+            return self.form_invalid(form)
         elif requested_days <= available_total_leave or form.instance.status not in [
             "approved"
         ]:
@@ -616,8 +616,7 @@ class MyLeaveRequestSingleForm(HorillaFormView):
                         None,
                         _("You dont have enough leave days to make the request"),
                     )
-
-                return HorillaRedirect(self.request)
+                    return self.form_invalid(form)
             else:
                 return self.form_invalid(form)
         return super().form_valid(form)
