@@ -131,6 +131,7 @@
                                         <span
                                             class="oh-info mr-2"
                                             title="{% trans 'By enabling this, you track the late comes and early outs of employees in their attendance.' %}"
+                                            data-doc-url="{{ DOC_BASE_URL }}/blogs/how-horilla-hrms-handles-late-come-and-early-out-tracking/"
                                         >
                                         </span>
                                     </div>
@@ -180,6 +181,7 @@
                                     <span
                                         class="oh-info mr-2"
                                         title="{% trans 'Enable this feature to restrict attendance marking to specific IP addresses only.' %}"
+                                        data-doc-url="{{ DOC_BASE_URL }}/blogs/how-to-configure-ip-restrictions-check-inout-controls-in-horilla-hrms/"
                                     >
                                     </span>
                                 </div>
@@ -238,6 +240,7 @@
                                         <span
                                             class="oh-info mr-2"
                                             title="{% trans 'Once you enable this option, a new submenu called Biometric Devices will be added under the Attendance menu.' %}"
+                                            data-doc-url="{{ DOC_BASE_URL }}/blogs/how-to-integrate-biometric-devices-in-horilla-hrms/"
                                         >
                                         </span>
                                     </div>
@@ -338,7 +341,14 @@
     {% if "geofencing"|app_installed and perms.geofencing.add_geofencing %}
         <div class="border border-[#ebebeb] rounded-md overflow-hidden mb-5 mr-3">
             <h5 class="text-sm font-semibold bg-[#f3f3f3] px-4 py-3 text-[#333] flex items-center justify-between">
-                {% trans "Geofencing" %}
+                <span class="flex items-center space-x-2">
+                    <span>{% trans "Geofencing" %}</span>
+                    <span
+                        class="oh-info mr-2"
+                        title="{% trans 'Configure the location and radius within which employees are allowed to mark their attendance.' %}"
+                        data-doc-url="{{ DOC_BASE_URL }}/blogs/how-to-set-up-geofencing-for-location-based-attendance-in-horilla-hrms/"
+                    ></span>
+                </span>
             </h5>
             <div class="p-4">
                 <div hx-get="{% url 'geo-config' %}" hx-trigger="load" hx-target="#geo"></div>

@@ -10,6 +10,7 @@ from .base import *
 # ALLOWED_HOSTS = ["client.example.com"]
 # WHITE_LABELLING = True
 # TWO_FACTORS_AUTHENTICATION = True
+# DOC_BASE_URL = "https://www.horilla.com"
 
 
 # # --- 2️⃣ Add extra apps ---

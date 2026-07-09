@@ -237,6 +237,11 @@
                 var b = document.getElementById("reloadMessagesButton");
                 if (b) b.click();
             });
+            document.body.addEventListener("click", function (ev) {
+                var infoIcon = ev.target.closest(".oh-info[data-doc-url]");
+                if (!infoIcon) return;
+                window.open(infoIcon.getAttribute("data-doc-url"), "_blank", "noopener");
+            });
         </script>
     </body>
 </html>

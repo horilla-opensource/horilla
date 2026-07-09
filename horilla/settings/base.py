@@ -217,6 +217,7 @@ TEMPLATES = [
                 "horilla.config.get_MENUS",
                 "base.context_processors.get_companies",
                 "base.context_processors.white_labelling_company",
+                "base.context_processors.doc_base_url",
                 "base.context_processors.resignation_request_enabled",
                 "base.context_processors.timerunner_enabled",
                 "base.context_processors.intial_notice_period",

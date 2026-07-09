@@ -8,6 +8,9 @@
     {% csrf_token %}
     <div class="oh-inner-sidebar-content__header mt-4">
       <h2 class="oh-inner-sidebar-content__title">{% trans 'Encashment Redeem Condition' %}</h2>
+      <p class="text-xs text-gray-500 mb-2">
+          {% trans "Define the unit values used when employees redeem bonus points or leave as encashment." %}
+      </p>
     </div>
     <div>
       <div class="row">
@@ -15,9 +18,12 @@
           <div class="oh-input-group">
             <div class="oh-label__info" for="bonus_unit">
                 <label class="oh-label" for="bonus_unit">{% trans "Bonus Unit" %}</label>
-                <span class="oh-info mr-2" title="{% trans "Set the amount for one bonus points encashment (unit)" %}">
+                <span class="oh-info mr-2" title="{% trans "Set the amount for one bonus points encashment (unit)" %}" data-doc-url="{{ DOC_BASE_URL }}/blogs/how-to-implement-and-manage-an-employee-bonus-points-system-in-horilla-hrms/">
                 </span>
               </div>
+            <p class="text-xs text-gray-500 mt-1 pb-1">
+                {% trans "Set the amount credited for each bonus point when redeemed as encashment." %}
+            </p>
             {{ encashment_form.bonus_amount }}
           </div>
         </div>
@@ -28,6 +34,9 @@
                 <span class="oh-info mr-2" title="{% trans "Set the amout for one leave encashment" %}">
                 </span>
               </div>
+            <p class="text-xs text-gray-500 mt-1 pb-1">
+                {% trans "Set the amount credited for each unit of leave when redeemed as encashment." %}
+            </p>
             {{ encashment_form.leave_amount }}
           </div>
         </div>

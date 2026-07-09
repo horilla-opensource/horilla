@@ -7,7 +7,14 @@
     {% include "generic/components.html" %}
 
     <div class="mb-4">
-        <h4 class="text-base font-semibold text-[#333]">{% trans "Mail Server" %}</h4>
+        <div class="flex items-center space-x-2">
+            <h4 class="text-base font-semibold text-[#333]">{% trans "Mail Server" %}</h4>
+            <span
+                class="oh-info mr-2"
+                title="{% trans 'Configure outgoing email servers used for system notifications and automated messages.' %}"
+                data-doc-url="{{ DOC_BASE_URL }}/blogs/how-to-set-up-mail-server-in-horilla-hrms/"
+            ></span>
+        </div>
         <p class="text-xs text-gray-500 mt-1">
             {% trans "Configure outgoing email servers used for system notifications and automated messages." %}
         </p>

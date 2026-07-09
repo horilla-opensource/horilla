@@ -181,6 +181,17 @@ def white_labelling_company(request):
         }
 
 
+def doc_base_url(request):
+    """
+    Base domain for in-app help/doc links. Templates build the full link as
+    "{{ DOC_BASE_URL }}<path>" so only this one setting needs to change for
+    white-labelled deployments.
+    """
+    return {
+        "DOC_BASE_URL": getattr(settings, "DOC_BASE_URL", "https://www.horilla.com")
+    }
+
+
 def resignation_request_enabled(request):
     """
     Check weather resignation_request enabled of not in offboarding

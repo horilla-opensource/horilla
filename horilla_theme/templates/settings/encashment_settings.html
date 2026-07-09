@@ -17,18 +17,24 @@
 
         <div class="flex align-center gap-2">
             <div class="w-full">
-                <div class="flex space-x-2 pb-2">
+                <div class="flex space-x-2 pb-1">
                     <label> {% trans "Bonus Unit" %}</label>
-                    <span class="oh-info" title='{% trans "Set the amount for one bonus points encashment (unit)" %}'>
+                    <span class="oh-info" title='{% trans "Set the amount for one bonus points encashment (unit)" %}' data-doc-url="{{ DOC_BASE_URL }}/blogs/how-to-implement-and-manage-an-employee-bonus-points-system-in-horilla-hrms/">
                     </span>
                 </div>
+                <p class="text-xs text-gray-500 mt-1 pb-2">
+                    {% trans "Set the amount credited for each bonus point when redeemed as encashment." %}
+                </p>
                 {{ encashment_form.bonus_amount }}
             </div>
             <div class="w-full">
-                <div class="flex space-x-2 pb-2">
+                <div class="flex space-x-2 pb-1">
                     <label> {% trans "Leave Unit" %}</label>
                     <span class="oh-info" title='{% trans "Set the amout for one leave encashment" %}'> </span>
                 </div>
+                <p class="text-xs text-gray-500 mt-1 pb-2">
+                    {% trans "Set the amount credited for each unit of leave when redeemed as encashment." %}
+                </p>
                 {{ encashment_form.leave_amount }}
             </div>
             <button class="btn mt-[23px] mb-[12px]" type="submit">

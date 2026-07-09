@@ -8,7 +8,7 @@
 <div class="row d-flex" >
         <div class="oh-label__info" for="application_tracking">
             <label class="oh-label" for="application_tracking">{% trans "Application Tracking" %}</label>
-            <span class="oh-info mr-2" title="{% trans "By enabling the feature candidates can track their recruitment progress" %}">
+            <span class="oh-info mr-2" title="{% trans "By enabling the feature candidates can track their recruitment progress" %}" data-doc-url="{{ DOC_BASE_URL }}/blogs/what-is-candidate-self-tracking-and-how-to-enable-it-in-horilla-hrms/">
             </span>
             <div class="oh-switch p-3">
                 <input type="checkbox" class="oh-switch__checkbox" name="candidate_self_tracking" onchange="selfTrack($(this))" {% if check_candidate_self_tracking %} checked {% endif %} />
