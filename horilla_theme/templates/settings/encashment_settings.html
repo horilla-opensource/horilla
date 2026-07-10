@@ -9,13 +9,13 @@
         action="{% url 'encashment-condition-create' %}"
         method="post"
         hx-post="{% url 'encashment-condition-create' %}"
-        hx-target="#settingsContainer"
-        hx-select="#settingsContainer"
-        hx-swap="outerHTML show:none"
+        hx-swap="none"
+        data-settings-native="true"
+        hx-on-htmx-after-request="setTimeout(reloadMessage, 70);"
     >
         {% csrf_token %}
 
-        <div class="flex align-center gap-2">
+        <div class="flex items-end gap-2">
             <div class="w-full">
                 <div class="flex space-x-2 pb-1">
                     <label> {% trans "Bonus Unit" %}</label>
@@ -37,7 +37,7 @@
                 </p>
                 {{ encashment_form.leave_amount }}
             </div>
-            <button class="btn mt-[23px] mb-[12px]" type="submit">
+            <button class="btn mt-[23px] mb-[13px] h-[33px]" type="submit">
                 {% trans 'Save' %}
             </button>
         </div>
