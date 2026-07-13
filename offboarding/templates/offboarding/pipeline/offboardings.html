@@ -1,253 +1,309 @@
 {% load static i18n offboarding_filter %}
 <!-- start of messages -->
 {% if messages %}
-<div class="oh-wrapper">
-  {% for message in messages %}
-  <div class="oh-alert-container">
-    <div class="oh-alert oh-alert--animated {{message.tags}}">
-      {{ message }}
+    <div class="oh-wrapper">
+        {% for message in messages %}
+            <div class="oh-alert-container">
+                <div class="oh-alert oh-alert--animated {{message.tags}}">
+                    {{ message }}
+                </div>
+            </div>
+        {% endfor %}
     </div>
-  </div>
-  {% endfor %}
-</div>
 {% endif %}
 <!-- end of messages -->
 <style>
-  .oh-select-custom {
-    border: 1px solid hsl(213,22%,84%);
-    padding: 0.3rem 0.8rem 0.3rem 0.3rem;
-    border-radius: 0rem;
-  }
-  .oh-dot--color-completed {
-    background-color: hsl(148deg, 71%, 44%)
-  }
-  .oh-dot--color-stuck {
-    background-color: #ff0400
-  }
-  .oh-dot--color-inprogress {
-    background-color: hsl(204deg, 70%, 53%)
-  }
-  .oh-dot--color-todo {
-    background-color: #e3b75f80
-  }
-
+    .oh-select-custom {
+        padding: 0.3rem 0.8rem 0.3rem 0.3rem;
+        border: 1px solid hsl(213, 22%, 84%);
+        border-radius: 0rem;
+    }
+    .oh-dot--color-completed {
+        background-color: hsl(148deg, 71%, 44%);
+    }
+    .oh-dot--color-stuck {
+        background-color: #ff0400;
+    }
+    .oh-dot--color-inprogress {
+        background-color: hsl(204deg, 70%, 53%);
+    }
+    .oh-dot--color-todo {
+        background-color: #e3b75f80;
+    }
 </style>
 {% include "filter_tags.html" %}
 <script>
-  function switchTab(e) {
-    let parentContainerEl = e.target.closest(".oh-tabs");
-    let tabElement = e.target.closest(".oh-tabs__tab");
+    function switchTab(e) {
+        let parentContainerEl = e.target.closest(".oh-tabs");
+        let tabElement = e.target.closest(".oh-tabs__tab");
 
 
-    let targetSelector = e.target.dataset.target;
-    let targetEl = parentContainerEl
-        ? parentContainerEl.querySelector(targetSelector)
-        : null;
+        let targetSelector = e.target.dataset.target;
+        let targetEl = parentContainerEl
+            ? parentContainerEl.querySelector(targetSelector)
+            : null;
 
-    // Highlight active tabs
-    if (tabElement && !tabElement.classList.contains("oh-tabs__tab--active")) {
-        parentContainerEl.querySelectorAll(".oh-tabs__tab--active").forEach(function (item) {
-                item.classList.remove("oh-tabs__tab--active");
-            });
+        // Highlight active tabs
+        if (tabElement && !tabElement.classList.contains("oh-tabs__tab--active")) {
+            parentContainerEl.querySelectorAll(".oh-tabs__tab--active").forEach(function (item) {
+                    item.classList.remove("oh-tabs__tab--active");
+                });
 
-        if (!tabElement.classList.contains("oh-tabs__new-tab")) {
-            tabElement.classList.add("oh-tabs__tab--active");
+            if (!tabElement.classList.contains("oh-tabs__new-tab")) {
+                tabElement.classList.add("oh-tabs__tab--active");
+            }
+        }
+
+        // Switch tabs
+        if (targetEl && !targetEl.classList.contains("oh-tabs__content--active")) {
+            parentContainerEl.querySelectorAll(".oh-tabs__content--active").forEach(function (item) {
+                    item.classList.remove("oh-tabs__content--active");
+                });
+            targetEl.classList.add("oh-tabs__content--active");
         }
     }
-
-    // Switch tabs
-    if (targetEl && !targetEl.classList.contains("oh-tabs__content--active")) {
-        parentContainerEl.querySelectorAll(".oh-tabs__content--active").forEach(function (item) {
-                item.classList.remove("oh-tabs__content--active");
-            });
-        targetEl.classList.add("oh-tabs__content--active");
-    }
-}
-
 </script>
 <div id="messages" class="oh-alert-container"></div>
 <div class="oh-wrapper">
-  <div class="oh-tabs" onclick="switchTab(event)">
-    {% if offboardings %}
-    <ul class="oh-tabs__tablist">
-      {% for offboarding in offboardings %}
-        {% if perms.offboarding.view_offboarding or request.user.employee_get|is_in_offboarding:offboarding.offboarding %}
-          <li class="oh-tabs__tab" onclick="localStorage.setItem('activeTabOffboarding',$(this).attr('data-target'));" data-target="#Offboarding{{ offboarding.offboarding.id }}">
-            {{ offboarding.offboarding.title }}
-            <div class="d-flex" onclick="event.stopPropagation()">
-              <div class="oh-tabs__input-badge-container">
-                <span class="oh-badge oh-badge--secondary oh-badge--small oh-badge--round ms-2 mr-2" id="recruitmentCandidateCount1" title="{{ offboarding.offboarding.stages|length }} Stages" onclick="event.stopPropagation()">
-                  {{ offboarding.offboarding.stages|length }}
-                  </span>
-              </div>
-              {% if request.user.employee_get|is_any_stage_manager or perms.offboarding.change_offboarding or perms.offboarding.change_offboardingemployee %}
-              <div class="oh-dropdown" x-data="{open: false}">
-                <button class="oh-btn oh-stop-prop oh-btn--transparent oh-accordion-meta__btn" @click="open = !open" @click.outside="open = false" title="{% trans 'Actions' %}">
-                  <ion-icon name="ellipsis-vertical" role="img" class="md hydrated" aria-label="ellipsis vertical"></ion-icon>
-                </button>
-                <div class="oh-dropdown__menu oh-dropdown__menu--right" x-show="open" style="display: none;">
-                  <ul class="oh-dropdown__items">
-                    {% if perms.offboarding.change_offboarding or request.user.employee_get|is_offboarding_manager %}
-                    <li class="oh-dropdown__item">
-                      <a hx-get="{% url "update-offboarding" offboarding.offboarding.id %}" hx-target="#objectDetailsModalTarget" data-toggle="oh-modal-toggle" data-target="#objectDetailsModal" class="oh-dropdown__link">{% trans "Edit" %}</a>
-                    </li>
+    <div class="oh-tabs" onclick="switchTab(event)">
+        {% if offboardings %}
+            <ul class="oh-tabs__tablist">
+                {% for offboarding in offboardings %}
+                    {% if perms.offboarding.view_offboarding or request.user.employee_get|is_in_offboarding:offboarding.offboarding %}
+                        <li
+                            class="oh-tabs__tab"
+                            onclick="localStorage.setItem('activeTabOffboarding',$(this).attr('data-target'))"
+                            data-target="#Offboarding{{ offboarding.offboarding.id }}"
+                        >
+                            {{ offboarding.offboarding.title }}
+                            <div class="d-flex" onclick="event.stopPropagation()">
+                                <div class="oh-tabs__input-badge-container">
+                                    <span
+                                        class="oh-badge oh-badge--secondary oh-badge--small oh-badge--round ms-2 mr-2"
+                                        id="recruitmentCandidateCount1"
+                                        title="{{ offboarding.offboarding.stages|length }} Stages"
+                                        onclick="event.stopPropagation()"
+                                    >
+                                        {{ offboarding.offboarding.stages|length }}
+                                    </span>
+                                </div>
+                                {% if request.user.employee_get|is_any_stage_manager or perms.offboarding.change_offboarding or perms.offboarding.change_offboardingemployee %}
+                                    <div class="oh-dropdown" x-data="{open: false}">
+                                        <button
+                                            class="oh-btn oh-stop-prop oh-btn--transparent oh-accordion-meta__btn"
+                                            @click="open = !open"
+                                            @click.outside="open = false"
+                                            title="{% trans 'Actions' %}"
+                                        >
+                                            <ion-icon
+                                                name="ellipsis-vertical"
+                                                role="img"
+                                                class="md hydrated"
+                                                aria-label="{% trans 'ellipsis vertical' %}"
+                                            ></ion-icon>
+                                        </button>
+                                        <div
+                                            class="oh-dropdown__menu oh-dropdown__menu--right"
+                                            x-show="open"
+                                            style="display: none"
+                                        >
+                                            <ul class="oh-dropdown__items">
+                                                {% if perms.offboarding.change_offboarding or request.user.employee_get|is_offboarding_manager %}
+                                                    <li class="oh-dropdown__item">
+                                                        <a
+                                                            hx-get='{% url "update-offboarding" offboarding.offboarding.id %}'
+                                                            hx-target="#objectDetailsModalTarget"
+                                                            data-toggle="oh-modal-toggle"
+                                                            data-target="#objectDetailsModal"
+                                                            class="oh-dropdown__link"
+                                                        >{% trans "Edit" %}</a>
+                                                    </li>
+                                                {% endif %}
+                                                {% if perms.offboarding.delete_offboarding %}
+                                                    <li class="oh-dropdown__item">
+                                                        <form
+                                                            hx-confirm="{% trans 'Are you sure you want to delete this offboarding?' %}"
+                                                            hx-post='{% url "delete-offboarding" offboarding.offboarding.id %}'
+                                                            hx-target="#offboardingContainer"
+                                                        >
+                                                            {% csrf_token %}
+                                                            <button
+                                                                type="submit"
+                                                                class="oh-dropdown__link oh-dropdown__link--danger"
+                                                            >
+                                                                {% trans "Delete" %}
+                                                            </button>
+                                                        </form>
+                                                    </li>
+                                                {% endif %}
+                                            </ul>
+                                        </div>
+                                    </div>
+                                {% endif %}
+                            </div>
+                        </li>
                     {% endif %}
-                    {% if perms.offboarding.delete_offboarding %}
-                    <li class="oh-dropdown__item">
-                      <form hx-confirm = "{% trans 'Are you sure you want to delete this offboarding?' %}" hx-post="{% url "delete-offboarding" offboarding.offboarding.id %}" hx-target="#offboardingContainer">
-                        {% csrf_token %}
-                        <button type="submit" class="oh-dropdown__link oh-dropdown__link--danger">
-                          {% trans "Delete" %}
-                        </button>
-                      </form>
-                    </li>
+                {% endfor %}
+            </ul>
+            <div class="oh-tabs__contents">
+                {% for offboarding in offboardings %}
+                    {% if perms.offboarding.view_offboarding or request.user.employee_get|is_in_offboarding:offboarding.offboarding or request.user.employee_get|any_manager %}
+                        <div class="oh-tabs__content" id="Offboarding{{ offboarding.offboarding.id }}">
+                            {% if perms.offboarding.add_offboardingstage or request.user.employee_get|is_offboarding_manager %}
+                                <div class="d-flex flex-row-reverse">
+                                    <a
+                                        hx-get="{% url 'create-offboarding-stage' %}?offboarding_id={{offboarding.offboarding.id}}"
+                                        style="width: 100px"
+                                        hx-target="#objectDetailsModalTarget"
+                                        data-toggle="oh-modal-toggle"
+                                        data-target="#objectDetailsModal"
+                                        class="mb-3 oh-btn oh-btn--secondary"
+                                    >
+                                        <ion-icon name="add-outline"></ion-icon>
+                                        {% trans 'Stage' %}
+                                    </a>
+                                </div>
+                            {% endif %}
+                            {% include "offboarding/stage/stages.html" %}
+                        </div>
                     {% endif %}
-                  </ul>
-                </div>
-              </div>
-              {% endif %}
+                {% endfor %}
             </div>
-          </li>
+
+            <div class="oh-wrapper mb-5">
+                <!-- Paginator Section -->
+                <div class="oh-pagination">
+                    <span
+                        class="oh-pagination__page"
+                        data-toggle="modal"
+                        data-target="#addEmployeeModal"
+                    >
+                        {% trans "Page" %} {{ paginated_offboardings.number }} {% trans "of" %}
+                        {{ paginated_offboardings.paginator.num_pages }}.
+                    </span>
+
+                    <nav class="oh-pagination__nav">
+                        <div class="oh-pagination__input-container me-3">
+                            <span class="oh-pagination__label me-1">{% trans "Page" %}</span>
+
+                            <input
+                                type="number"
+                                name="page"
+                                class="oh-pagination__input"
+                                value="{{paginated_offboardings.number}}"
+                                hx-get="{% url 'offboarding-pipeline-filter' %}?{{pd}}"
+                                hx-target="#offboardingContainer"
+                                min="1"
+                            >
+                            <span class="oh-pagination__label">{% trans "of" %}
+                                {{ paginated_offboardings.paginator.num_pages }}</span>
+                        </div>
+
+                        <ul class="oh-pagination__items">
+                            {% if paginated_offboardings.has_previous %}
+                                <li class="oh-pagination__item oh-pagination__item--wide">
+                                    <a
+                                        href="{% url 'offboarding-pipeline' %}?{{pd}}&page=1"
+                                        class="oh-pagination__link"
+                                    >{% trans "First" %}</a>
+                                </li>
+                                <li class="oh-pagination__item oh-pagination__item--wide">
+                                    <a
+                                        href="{% url 'offboarding-pipeline' %}?{{pd}}&page={{ paginated_offboardings.previous_page_number }}"
+                                        class="oh-pagination__link"
+                                    >{% trans "Previous" %}</a>
+                                </li>
+                            {% endif %}
+                            {% if paginated_offboardings.has_next %}
+                                <li class="oh-pagination__item oh-pagination__item--wide">
+                                    <a
+                                        href="{% url 'offboarding-pipeline' %}?{{pd}}&page={{ paginated_offboardings.next_page_number }}"
+                                        class="oh-pagination__link"
+                                    >{% trans "Next" %}</a>
+                                </li>
+                                <li class="oh-pagination__item oh-pagination__item--wide">
+                                    <a
+                                        href="{% url 'offboarding-pipeline' %}?{{pd}}&page={{ paginated_offboardings.paginator.num_pages }}"
+                                        class="oh-pagination__link"
+                                    >{% trans "Last" %}</a>
+                                </li>
+                            {% endif %}
+                        </ul>
+                    </nav>
+                </div>
+            </div>
+        {% else %}
+            <div style="display: flex; flex-direction: column; justify-content: center; align-items: center; height: 100%">
+                <img
+                    style="display: block; width: 15%; margin: 20px auto; filter: opacity(0.5)"
+                    src="{% static 'images/ui/no-results.png' %}"
+                    class=""
+                    alt="{% trans 'Page not found. 404.' %}"
+                >
+                <h5 class="oh-404__subtitle">{% trans "No search result found!" %}</h5>
+            </div>
         {% endif %}
-      {% endfor %}
-    </ul>
-    <div class="oh-tabs__contents">
-      {% for offboarding in offboardings %}
-        {% if perms.offboarding.view_offboarding or request.user.employee_get|is_in_offboarding:offboarding.offboarding or request.user.employee_get|any_manager %}
-          <div class="oh-tabs__content" id="Offboarding{{ offboarding.offboarding.id }}">
-              {% if perms.offboarding.add_offboardingstage or request.user.employee_get|is_offboarding_manager %}
-              <div class="d-flex flex-row-reverse">
-                <a hx-get="{% url 'create-offboarding-stage' %}?offboarding_id={{offboarding.offboarding.id}}" style="width: 100px;" hx-target="#objectDetailsModalTarget" data-toggle="oh-modal-toggle" data-target="#objectDetailsModal" class="mb-3 oh-btn oh-btn--secondary">
-                  <ion-icon name="add-outline"></ion-icon>
-                  {% trans 'Stage' %}
-                </a>
-              </div>
-              {% endif %}
-              {% include "offboarding/stage/stages.html" %}
-          </div>
-        {% endif %}
-      {% endfor %}
     </div>
-
-    <div class="oh-wrapper mb-5">
-    <!-- Paginator Section -->
-      <div class="oh-pagination">
-        <span
-          class="oh-pagination__page"
-          data-toggle="modal"
-          data-target="#addEmployeeModal"
-          >
-          {% trans "Page" %} {{ paginated_offboardings.number }} {% trans "of" %} {{ paginated_offboardings.paginator.num_pages }}.
-          </span
-        >
-
-        <nav class="oh-pagination__nav">
-          <div class="oh-pagination__input-container me-3">
-            <span class="oh-pagination__label me-1">{% trans "Page" %}</span>
-
-            <input
-              type="number"
-              name="page"
-              class="oh-pagination__input"
-              value="{{paginated_offboardings.number}}"
-              hx-get="{% url 'offboarding-pipeline-filter' %}?{{pd}}" hx-target="#offboardingContainer"
-              min="1"
-            />
-            <span class="oh-pagination__label">{% trans "of" %} {{paginated_offboardings.paginator.num_pages}}</span>
-          </div>
-
-          <ul class="oh-pagination__items">
-            {% if paginated_offboardings.has_previous %}
-            <li class="oh-pagination__item oh-pagination__item--wide">
-              <a href="{% url 'offboarding-pipeline' %}?{{pd}}&page=1" class="oh-pagination__link">{% trans "First" %}</a>
-            </li>
-            <li class="oh-pagination__item oh-pagination__item--wide">
-              <a href="{% url 'offboarding-pipeline' %}?{{pd}}&page={{ paginated_offboardings.previous_page_number }}" class="oh-pagination__link">{% trans "Previous" %}</a>
-            </li>
-            {% endif %}
-            {% if paginated_offboardings.has_next %}
-            <li class="oh-pagination__item oh-pagination__item--wide">
-              <a href="{% url 'offboarding-pipeline' %}?{{pd}}&page={{ paginated_offboardings.next_page_number }}" class="oh-pagination__link">{% trans "Next" %}</a>
-            </li>
-            <li class="oh-pagination__item oh-pagination__item--wide">
-              <a href="{% url 'offboarding-pipeline' %}?{{pd}}&page={{ paginated_offboardings.paginator.num_pages }}" class="oh-pagination__link">{% trans "Last" %}</a>
-            </li>
-            {% endif %}
-
-          </ul>
-        </nav>
-      </div>
-    </div>
-
-    {% else %}
-      <div style="display: flex; flex-direction: column; justify-content: center; align-items: center; height: 100%;">
-          <img style="display: block; width: 15%; margin: 20px auto; filter: opacity(0.5);" src="{% static 'images/ui/no-results.png' %}" class="" alt="Page not found. 404." />
-          <h5 class="oh-404__subtitle">{% trans "No search result found!" %}</h5>
-      </div>
-    {% endif %}
-  </div>
 </div>
 
 <script>
+    $(document).ready(function () {
 
-  $(document).ready(function () {
+      // Function to apply the active tab
+      function applyActiveTab() {
+        // Retrieve the active tab from localStorage
+        let activeTab = localStorage.getItem("activeTabOffboarding");
 
-    // Function to apply the active tab
-    function applyActiveTab() {
-      // Retrieve the active tab from localStorage
-      let activeTab = localStorage.getItem("activeTabOffboarding");
+        // Check if the active tab exists in the current DOM
+        if (activeTab && $(`.oh-tabs__tab[data-target="${activeTab}"]`).length > 0) {
+          console.log("Active Tab exists. Activating it.");
+          // Remove active classes from all tabs and content
+          $(".oh-tabs__tab").removeClass("oh-tabs__tab--active fw-bold");
+          $(".oh-tabs__content").removeClass("oh-tabs__content--active fw-bold");
 
-      // Check if the active tab exists in the current DOM
-      if (activeTab && $(`.oh-tabs__tab[data-target="${activeTab}"]`).length > 0) {
-        console.log("Active Tab exists. Activating it.");
+          // Activate the saved tab and its content
+          $(`.oh-tabs__tab[data-target="${activeTab}"]`).addClass("oh-tabs__tab--active fw-bold");
+          $(`${activeTab}`).addClass("oh-tabs__content--active fw-bold");
+        } else {
+          console.log("Active Tab not found. Activating default tab.");
+          // Fallback: Activate the first tab if no valid active tab is found
+          $(".oh-tabs__tab").first().addClass("oh-tabs__tab--active fw-bold");
+          $(".oh-tabs__content").first().addClass("oh-tabs__content--active fw-bold");
+
+          // Save the default tab to localStorage
+          const firstTabTarget = $(".oh-tabs__tab").first().data("target");
+          localStorage.setItem("activeTabOffboarding", firstTabTarget);
+        }
+      }
+
+      // Initial application of the active tab
+      applyActiveTab();
+
+      // Add click event listener to dynamically update the active tab
+      $(".oh-tabs__tab").on("click", function () {
+
         // Remove active classes from all tabs and content
         $(".oh-tabs__tab").removeClass("oh-tabs__tab--active fw-bold");
         $(".oh-tabs__content").removeClass("oh-tabs__content--active fw-bold");
 
-        // Activate the saved tab and its content
-        $(`.oh-tabs__tab[data-target="${activeTab}"]`).addClass("oh-tabs__tab--active fw-bold");
-        $(`${activeTab}`).addClass("oh-tabs__content--active fw-bold");
-      } else {
-        console.log("Active Tab not found. Activating default tab.");
-        // Fallback: Activate the first tab if no valid active tab is found
-        $(".oh-tabs__tab").first().addClass("oh-tabs__tab--active fw-bold");
-        $(".oh-tabs__content").first().addClass("oh-tabs__content--active fw-bold");
+        // Add active class to the clicked tab and corresponding content
+        $(this).addClass("oh-tabs__tab--active fw-bold");
+        const target = $(this).data("target");
+        $(target).addClass("oh-tabs__content--active fw-bold");
 
-        // Save the default tab to localStorage
-        const firstTabTarget = $(".oh-tabs__tab").first().data("target");
-        localStorage.setItem("activeTabOffboarding", firstTabTarget);
-      }
-    }
+        // Update the active tab in localStorage
+        localStorage.setItem("activeTabOffboarding", target);
 
-    // Initial application of the active tab
-    applyActiveTab();
+      });
 
-    // Add click event listener to dynamically update the active tab
-    $(".oh-tabs__tab").on("click", function () {
+      // Reapply active tab after pagination (dynamic content update or reload)
+      $(document).on("htmx:afterSwap", function () {
+        applyActiveTab();
+      });
 
-      // Remove active classes from all tabs and content
-      $(".oh-tabs__tab").removeClass("oh-tabs__tab--active fw-bold");
-      $(".oh-tabs__content").removeClass("oh-tabs__content--active fw-bold");
-
-      // Add active class to the clicked tab and corresponding content
-      $(this).addClass("oh-tabs__tab--active fw-bold");
-      const target = $(this).data("target");
-      $(target).addClass("oh-tabs__content--active fw-bold");
-
-      // Update the active tab in localStorage
-      localStorage.setItem("activeTabOffboarding", target);
-
+      // Fallback for form submission or full page reload
+      $(window).on("load", function () {
+        applyActiveTab();
+      });
     });
-
-    // Reapply active tab after pagination (dynamic content update or reload)
-    $(document).on("htmx:afterSwap", function () {
-      applyActiveTab();
-    });
-
-    // Fallback for form submission or full page reload
-    $(window).on("load", function () {
-      applyActiveTab();
-    });
-  });
-
 </script>

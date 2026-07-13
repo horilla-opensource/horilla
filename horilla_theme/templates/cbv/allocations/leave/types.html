@@ -1,4 +1,4 @@
-{% load static i18n %}
+{% load static i18n i18n %}
 <div class="oh-inner-sidebar-content">
     <div class="relative mb-3">
         <input
@@ -8,7 +8,7 @@
             hx-target="#typesContainer"
             autocomplete="false"
             name="search"
-            placeholder="Search"
+            placeholder="{% trans 'Search' %}"
             class="text-color-600 ps-8 p-1.5 pb-2 placeholder:text-xs w-full border border-dark-50 rounded-md focus-visible:outline-0 placeholder:text-dark-100 text-sm [transition:.3s] focus:border-primary-600"
         >
         <i class="fas fa-search absolute left-3 top-[1px] bottom-0 m-auto flex items-center opacity-50 text-xs"></i>

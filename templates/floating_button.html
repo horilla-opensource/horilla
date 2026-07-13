@@ -1,4 +1,4 @@
-{% load static %}
+{% load static i18n %}
 {% load horillafilters %}
 {% include 'generic/components.html' %}
 <style>
@@ -7,23 +7,22 @@
     }
 
     .fab {
-        transition: all 300ms ease-in-out;
-        width: 56px;
-        height: 56px;
-        background-color: #ff3b38;
         display: flex;
-        align-items: center;
-        justify-content: center;
+        z-index: 10;
         position: fixed;
         right: 10px;
         bottom: 35px;
-        user-select: none;
-        cursor: pointer;
+        align-items: center;
+        justify-content: center;
+        width: 56px;
+        height: 56px;
+        background-color: #ff3b38;
+        box-shadow: 0px 3px 10px rgba(0, 0, 0, 0.16), 0px 3px 10px rgba(0, 0, 0, 0.16);
         color: white;
         font-size: 2em;
-        box-shadow: 0px 3px 10px rgba(0, 0, 0, 0.16),
-            0px 3px 10px rgba(0, 0, 0, 0.16);
-        z-index: 10;
+        cursor: pointer;
+        transition: all 300ms ease-in-out;
+        user-select: none;
     }
 
     .fab i {
@@ -32,10 +31,10 @@
     }
 
     .inner-fabs .fab {
-        width: 40px;
-        height: 40px;
         right: 20px;
         bottom: 40px;
+        width: 40px;
+        height: 40px;
         font-size: 1.5em;
         will-change: bottom;
     }
@@ -77,32 +76,32 @@
     }
 
     .fab:before {
-        content: attr(data-tooltip);
-        transition: opacity 150ms cubic-bezier(0.4, 0, 1, 1);
-        position: absolute;
+        display: inline-block;
         visibility: hidden;
-        opacity: 0;
-        box-shadow: 0 1px 2px rgba(0, 0, 0, 0.15);
-        color: #ececec;
-        right: 50px;
+        position: absolute;
         top: 25%;
+        right: 50px;
+        max-width: 200px;
+        padding: 6px 8px;
+        border-radius: 2px;
         background-color: rgba(70, 70, 70, 0.9);
+        box-shadow: 0 1px 2px rgba(0, 0, 0, 0.15);
+        content: attr(data-tooltip);
+        color: #ececec;
+        font-weight: bold;
         font-size: 0.5em;
         line-height: 1em;
-        display: inline-block;
         text-align: center;
-        white-space: nowrap;
-        border-radius: 2px;
-        padding: 6px 8px;
-        max-width: 200px;
-        font-weight: bold;
         text-overflow: ellipsis;
         vertical-align: middle;
+        white-space: nowrap;
+        opacity: 0;
+        transition: opacity 150ms cubic-bezier(0.4, 0, 1, 1);
     }
 
     .fab:hover:before {
-        content: attr(data-tooltip);
         visibility: visible;
+        content: attr(data-tooltip);
         opacity: 1;
     }
     .inner-fabs a {
@@ -111,7 +110,7 @@
 </style>
 
 <div class="inner-fabs">
-    <div id="fab9" class="fab round" data-tooltip="Dashboard Charts">
+    <div id="fab9" class="fab round" data-tooltip="{% trans 'Dashboard Charts' %}">
         <a
             class="text-light"
             data-toggle="oh-modal-toggle"
@@ -123,45 +122,45 @@
         </a>
     </div>
     {% if "helpdesk"|app_installed %}
-        <div id="fab8" class="fab round" data-tooltip="Create Ticket">
+        <div id="fab8" class="fab round" data-tooltip="{% trans 'Create Ticket' %}">
             <a
                 class="text-light"
                 data-toggle="oh-modal-toggle"
                 data-target="#objectCreateModal"
                 hx-get="{% url 'ticket-create' %}"
                 hx-target="#objectCreateModalTarget"
-                >
+            >
                 <i class="material-icons mt-2">sell</i>
             </a>
         </div>
     {% endif %}
     {% if "asset"|app_installed %}
-    <div id="fab7" class="fab round" data-tooltip="Create Asset Request">
-        <a
-            class="text-light"
-            data-toggle="oh-modal-toggle"
-            data-target="#objectCreateModal"
-            hx-get="{% url 'asset-request-creation' %}"
-            hx-target="#objectCreateModalTarget"
-        >
-            <i class="material-icons mt-2">devices</i>
-        </a>
-    </div>
+        <div id="fab7" class="fab round" data-tooltip="{% trans 'Create Asset Request' %}">
+            <a
+                class="text-light"
+                data-toggle="oh-modal-toggle"
+                data-target="#objectCreateModal"
+                hx-get="{% url 'asset-request-creation' %}"
+                hx-target="#objectCreateModalTarget"
+            >
+                <i class="material-icons mt-2">devices</i>
+            </a>
+        </div>
     {% endif %}
     {% if "payroll"|app_installed %}
-    <div id="fab6" class="fab round" data-tooltip="Create Reimbursement">
-        <a
-            class="text-light"
-            data-toggle="oh-modal-toggle"
-            data-target="#genericModal"
-            hx-get="{% url 'reimbursement-create' %}"
-            hx-target="#genericModalBody"
-        >
-            <i class="material-icons mt-2">paid</i>
-        </a>
-    </div>
+        <div id="fab6" class="fab round" data-tooltip="{% trans 'Create Reimbursement' %}">
+            <a
+                class="text-light"
+                data-toggle="oh-modal-toggle"
+                data-target="#genericModal"
+                hx-get="{% url 'reimbursement-create' %}"
+                hx-target="#genericModalBody"
+            >
+                <i class="material-icons mt-2">paid</i>
+            </a>
+        </div>
     {% endif %}
-    <div id="fab5" class="fab round" data-tooltip="Create Work Type Request">
+    <div id="fab5" class="fab round" data-tooltip="{% trans 'Create Work Type Request' %}">
         <a
             class="text-light"
             data-toggle="oh-modal-toggle"
@@ -172,7 +171,7 @@
             <i class="material-icons mt-2">work</i>
         </a>
     </div>
-    <div id="fab4" class="fab round" data-tooltip="Create Shift Request">
+    <div id="fab4" class="fab round" data-tooltip="{% trans 'Create Shift Request' %}">
         <a
             class="text-light"
             data-toggle="oh-modal-toggle"
@@ -184,7 +183,7 @@
         </a>
     </div>
     {% if "leave"|app_installed %}
-        <div id="fab3" class="fab round" data-tooltip="Create Leave Request">
+        <div id="fab3" class="fab round" data-tooltip="{% trans 'Create Leave Request' %}">
             <a
                 class="text-light"
                 data-toggle="oh-modal-toggle"
@@ -197,28 +196,28 @@
                 hx-target="#genericModalBody"
             >
                 <span class="material-symbols-outlined mt-2">
-                calendar_add_on
+                    calendar_add_on
                 </span>
             </a>
         </div>
     {% endif %}
     {% if "attendance"|app_installed %}
-    <div id="fab2" class="fab round" data-tooltip="Create Attendance Request">
-        <a
-            class="text-light"
-            data-toggle="oh-modal-toggle"
-            data-target="#genericModal"
-            hx-get="{% url 'request-new-attendance' %}"
-            hx-target="#genericModalBody"
-        >
-            <span class="material-symbols-outlined mt-2">
-                person_add
-            </span>
-        </a>
-    </div>
+        <div id="fab2" class="fab round" data-tooltip="{% trans 'Create Attendance Request' %}">
+            <a
+                class="text-light"
+                data-toggle="oh-modal-toggle"
+                data-target="#genericModal"
+                hx-get="{% url 'request-new-attendance' %}"
+                hx-target="#genericModalBody"
+            >
+                <span class="material-symbols-outlined mt-2">
+                    person_add
+                </span>
+            </a>
+        </div>
     {% endif %}
 </div>
-<div id="fab1" class="fab round" data-tooltip="Quick Action">
+<div id="fab1" class="fab round" data-tooltip="{% trans 'Quick Action' %}">
     <i id="fabIcon" class="material-icons">add</i>
 </div>
 

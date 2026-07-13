@@ -33,7 +33,7 @@
                 hx-confirm="{% trans "Do you want Delete this Task ?" %}" style="display: contents">
                 {% csrf_token %}
                 <button class="oh-btn oh-btn--danger-outline oh-btn--light-bkg  w-100" title="{% trans 'Delete' %}">
-                    <ion-icon name="trash-outline" role="img" class="md hydrated" aria-label="trash outline"></ion-icon>
+                    <ion-icon name="trash-outline" role="img" class="md hydrated" aria-label="{% trans 'trash outline' %}"></ion-icon>
                 </button>
             </form>
 
@@ -47,7 +47,7 @@
 
             <button type="button" class="oh-btn oh-btn--danger-outline w-100 oh-btn--disabled" title="{% trans 'Delete' %}"
                 aria-disabled="true" disabled>
-                <ion-icon name="trash-outline" role="img" class="md hydrated" aria-label="trash outline"></ion-icon>
+                <ion-icon name="trash-outline" role="img" class="md hydrated" aria-label="{% trans 'trash outline' %}"></ion-icon>
             </button>
 
             <a href="#" class="oh-btn oh-btn--danger-outline oh-btn--light-bkg small-button oh-btn--disabled"

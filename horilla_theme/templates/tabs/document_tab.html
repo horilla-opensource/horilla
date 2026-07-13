@@ -235,12 +235,12 @@
     <div class="oh-modal__dialog custom-dialog">
         <div class="oh-modal__dialog-header">
             <span class="oh-modal__dialog-title" id="viewFileModalLabel">{% trans "View File" %}</span>
-            <button class="oh-modal__close" aria-label="Close">
+            <button class="oh-modal__close" aria-label="{% trans 'Close' %}">
                 <ion-icon
                     name="close-outline"
                     role="img"
                     class="md hydrated"
-                    aria-label="close outline"
+                    aria-label="{% trans 'close outline' %}"
                 ></ion-icon>
             </button>
         </div>
@@ -270,7 +270,7 @@
     			$wrapper.find('.title-error').remove();
 
     			if (newTitle.length < 3) {
-    				$('<div class="title-error text-red-500 text-sm mt-1">Title must be at least 3 characters.</div>')
+    				$('<div class="title-error text-red-500 text-sm mt-1">{% trans "Title must be at least 3 characters." %}</div>')
     				.insertAfter($(this));
     				$(this).focus();
     				return;

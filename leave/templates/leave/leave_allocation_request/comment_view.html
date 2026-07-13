@@ -32,7 +32,7 @@
                 <div>
                     <span class="oh-timeoff-modal__stat-title fw-bold">{% trans "Comment" %}
                     <a hx-get="{% url 'allocation-request-delete-comment' comment.id %}" hx-target="#shiftRequestDetailTarget" title="{% trans 'Delete Comment' %}">
-                        <ion-icon name="close-circle-outline" class="text-danger ms-3 mt-1" aria-label="close outline"></ion-icon></a>
+                        <ion-icon name="close-circle-outline" class="text-danger ms-3 mt-1" aria-label="{% trans 'close outline' %}"></ion-icon></a>
                     </span>
                     <div>
                         <span class="oh-timeoff-title fw-bold">{{comment.comment}}</span>

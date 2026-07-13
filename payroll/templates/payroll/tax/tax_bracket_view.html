@@ -42,7 +42,7 @@
                                     hx-get="{% url 'tax-bracket-update' tax_bracket.id %}"
                                     hx-target="#objectUpdateModalTarget" title="{% trans 'Update' %}">
                                     <ion-icon name="create-outline" role="img" class="md hydrated"
-                                        aria-label="create outline"></ion-icon>
+                                        aria-label="{% trans 'create outline' %}"></ion-icon>
                                 </a>
                             </div>
                         </div>
@@ -55,7 +55,7 @@
                                     hx-post="{% url 'tax-bracket-delete' tax_bracket_id=tax_bracket.id%}"
                                     hx-target="#taxbracketList{{tax_bracket.filing_status_id.id}}">
                                     <ion-icon name="trash-outline" role="img" class="md hydrated"
-                                        aria-label="trash outline"></ion-icon>
+                                        aria-label="{% trans 'trash outline' %}"></ion-icon>
                                 </button>
                             </div>
                         </div>

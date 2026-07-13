@@ -38,7 +38,7 @@
                             name="ellipsis-vertical-sharp"
                             role="img"
                             class="md hydrated"
-                            aria-label="ellipsis vertical sharp"
+                            aria-label="{% trans 'ellipsis vertical sharp' %}"
                         ></ion-icon>
                     </button>
                     <div class="oh-dropdown__menu oh-sticky-table_dropdown" x-show="open" @click.outside="open = false">
@@ -257,8 +257,7 @@
                                             <form
                                                 action="{% url 'attendance-delete' attendance.id %}"
                                                 onclick="event.stopPropagation()"
-                                                onsubmit="return confirm('{% trans " Are you sure
-                                                want to delete this attendance?" %}')"
+                                                onsubmit="return confirm('{% trans "Are you sure want to delete this attendance?" %}')"
                                                 hx-target="#tab_contents"
                                                 method="post"
                                                 class="w-50"
@@ -373,7 +372,7 @@
                             name="ellipsis-vertical-sharp"
                             role="img"
                             class="md hydrated"
-                            aria-label="ellipsis vertical sharp"
+                            aria-label="{% trans 'ellipsis vertical sharp' %}"
                         ></ion-icon>
                     </button>
                     <div class="oh-dropdown__menu oh-sticky-table_dropdown" x-show="open" @click.outside="open = false">
@@ -723,7 +722,7 @@
                             name="ellipsis-vertical-sharp"
                             role="img"
                             class="md hydrated"
-                            aria-label="ellipsis vertical sharp"
+                            aria-label="{% trans 'ellipsis vertical sharp' %}"
                         ></ion-icon>
                     </button>
                     <div class="oh-dropdown__menu oh-sticky-table_dropdown" x-show="open" @click.outside="open = false">
@@ -1136,7 +1135,7 @@
                     class="oh-modal_close--custom"
                     onclick="$('#updateAttendanceModal').removeClass('oh-modal--show')"
                 >
-                    <ion-icon name="close-outline" role="img" aria-label="close outline"></ion-icon>
+                    <ion-icon name="close-outline" role="img" aria-label="{% trans 'close outline' %}"></ion-icon>
                 </button>
             </div>
             <div class="oh-modal__dialog-body" id="updateAttendanceModalBody"></div>

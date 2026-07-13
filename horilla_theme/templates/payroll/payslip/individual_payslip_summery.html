@@ -20,17 +20,16 @@
             <p class="font-semibold">{{ unpaid_days }}</p>
         </div>
         {% if partial_pay_days %}
-        <div
-            class="grid sm:flex items-center text-sm justify-between mb-2 px-2"
-        >
-            <p class="text-sm">{% trans "Partially Paid Days" %}</p>
-            <p class="font-semibold">
-                {{ partial_pay_days }}
-                {% if custom_leave_breakdown %}
-                    ({% for entry in custom_leave_breakdown %}{{ entry.percentage|floatformat:0 }}%{% if not forloop.last %}, {% endif %}{% endfor %})
-                {% endif %}
-            </p>
-        </div>
+            <div class="grid sm:flex items-center text-sm justify-between mb-2 px-2">
+                <p class="text-sm">{% trans "Partially Paid Days" %}</p>
+                <p class="font-semibold">
+                    {{ partial_pay_days }}
+                    {% if custom_leave_breakdown %}
+                        ({% for entry in custom_leave_breakdown %}{{ entry.percentage|floatformat:0 }}%{% if not forloop.last %},
+                            {% endif %}{% endfor %})
+                    {% endif %}
+                </p>
+            </div>
         {% endif %}
         <div class="grid sm:flex text-sm justify-between mb-2 px-2">
             <p class="text-sm flex items-center gap-3">
@@ -178,15 +177,16 @@
             </p>
         </div>
         {% if custom_leave_deduction %}
-        <div class="flex gap-3 text-sm justify-between mb-2 px-2" style="color:#c47d00;">
-            <p class="w-1/2 text-sm flex flex-col">
-                <span>{% trans "Leave Payment Reduction" %}</span>
-                <span class="text-xs" style="color:#888;">{% blocktrans %}Partial deduction — {{ partial_pay_days }} day(s) on a partially paid leave type{% endblocktrans %}</span>
-            </p>
-            <p class="flex-1 font-medium">
-                {{ custom_leave_deduction|floatformat:2|currency_symbol_position }}
-            </p>
-        </div>
+            <div class="flex gap-3 text-sm justify-between mb-2 px-2" style="color: #c47d00">
+                <p class="w-1/2 text-sm flex flex-col">
+                    <span>{% trans "Leave Payment Reduction" %}</span>
+                    <span class="text-xs" style="color: #888">{% blocktrans %}Partial deduction — {{ partial_pay_days }}
+                            day(s) on a partially paid leave type{% endblocktrans %}</span>
+                </p>
+                <p class="flex-1 font-medium">
+                    {{ custom_leave_deduction|floatformat:2|currency_symbol_position }}
+                </p>
+            </div>
         {% endif %}
         {% for deduction in basic_pay_deductions %}
             <div class="flex gap-3 text-sm justify-between mb-2 px-2">
@@ -284,26 +284,26 @@
         </div>
     </div>
     {% if custom_leave_breakdown %}
-    <div class="bg-[#0000000a] p-3 rounded-md">
-        <div class="flex gap-3 justify-between font-semibold p-3 rounded-md bg-[#0000001a] text-sm mb-2">
-            <p class="w-1/2">{% trans "Custom Payment Leave Details" %}</p>
+        <div class="bg-[#0000000a] p-3 rounded-md">
+            <div class="flex gap-3 justify-between font-semibold p-3 rounded-md bg-[#0000001a] text-sm mb-2">
+                <p class="w-1/2">{% trans "Custom Payment Leave Details" %}</p>
+            </div>
+            <div class="flex gap-3 text-sm justify-between mb-2 px-2 font-semibold">
+                <p class="w-1/4">{% trans "Leave Type" %}</p>
+                <p class="w-1/4">{% trans "Days" %}</p>
+                <p class="w-1/4">{% trans "Payment %" %}</p>
+                <p class="w-1/4 text-right">{% trans "Deduction" %}</p>
+            </div>
+            {% for entry in custom_leave_breakdown %}
+                <div class="flex gap-3 text-sm justify-between mb-2 px-2">
+                    <p class="w-1/4">{{ entry.leave_type }}</p>
+                    <p class="w-1/4">{{ entry.days }}</p>
+                    <p class="w-1/4">{{ entry.percentage|floatformat:0 }}%</p>
+                    <p class="w-1/4 text-right font-medium">
+                        {{ entry.deduction_amount|floatformat:2|currency_symbol_position }}
+                    </p>
+                </div>
+            {% endfor %}
         </div>
-        <div class="flex gap-3 text-sm justify-between mb-2 px-2 font-semibold">
-            <p class="w-1/4">{% trans "Leave Type" %}</p>
-            <p class="w-1/4">{% trans "Days" %}</p>
-            <p class="w-1/4">{% trans "Payment %" %}</p>
-            <p class="w-1/4 text-right">{% trans "Deduction" %}</p>
-        </div>
-        {% for entry in custom_leave_breakdown %}
-        <div class="flex gap-3 text-sm justify-between mb-2 px-2">
-            <p class="w-1/4">{{ entry.leave_type }}</p>
-            <p class="w-1/4">{{ entry.days }}</p>
-            <p class="w-1/4">{{ entry.percentage|floatformat:0 }}%</p>
-            <p class="w-1/4 text-right font-medium">
-                {{ entry.deduction_amount|floatformat:2|currency_symbol_position }}
-            </p>
-        </div>
-        {% endfor %}
-    </div>
     {% endif %}
 </div>

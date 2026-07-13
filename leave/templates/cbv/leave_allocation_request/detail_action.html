@@ -11,7 +11,7 @@
                     hx-get="{% url 'leave-allocation-request-update' instance.id %}"
                     hx-target="#genericModalBody">
                     <ion-icon name="create-outline" role="img"
-                    class="md hydrated" aria-label="create outline">
+                    class="md hydrated" aria-label="{% trans 'create outline' %}">
                     </ion-icon>{% trans "Edit" %}
                 </button>
             {% else %}
@@ -29,7 +29,7 @@
                 title="{% trans 'Delete' %}">
                 <ion-icon name="trash-outline" role="img"
                 class="md hydrated"
-                aria-label="create outline"></ion-icon>
+                aria-label="{% trans 'create outline' %}"></ion-icon>
                 {% trans "Delete" %}
         </button>
             {% else %}

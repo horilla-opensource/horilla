@@ -1,3 +1,4 @@
+{% load i18n %}
 {% load widget_tweaks static i18n basefilters %}
 
 <div class="row">
@@ -132,14 +133,14 @@
                                             <button
                                                 type="button"
                                                 class="oh-modal__close--custom"
-                                                aria-label="Close"
+                                                aria-label="{% trans 'Close' %}"
                                                 onclick="$(this).closest('.oh-modal--show').removeClass('oh-modal--show')"
                                             >
                                                 <ion-icon
                                                     name="close-outline"
                                                     role="img"
                                                     class="md hydrated"
-                                                    aria-label="close outline"
+                                                    aria-label="{% trans 'close outline' %}"
                                                 ></ion-icon>
                                             </button>
                                         </div>

@@ -1,4 +1,4 @@
-{% load static horillafilters %}
+{% load static horillafilters i18n %}
 {% now "Y" as current_year %}
 {% get_company as theme_obj %}
 
@@ -82,7 +82,7 @@
                                     <img src="cid:company_logo" height="100" width="100">
                                 </td>
                                 <td style="width: 50%; text-align: right">
-                                    <a href="#" class="hr-link">View in browser</a>
+                                    <a href="#" class="hr-link">{% trans 'View in browser' %}</a>
                                 </td>
                             </tr>
                         </table>
@@ -120,7 +120,7 @@
                             <a
                                 href="{{protocol}}://{{host}}/leave/request-view/?id={{link}}"
                                 style="background-color: {{ theme_obj.primary_600 }}; color: #fff; border-radius: 10px; display: inline-block; padding: 15px 25px; text-decoration: none; font-weight: bold"
-                            >View Leave Request</a>
+                            >{% trans 'View Leave Request' %}</a>
                         </td>
                     </tr>
                 {% endif %}
@@ -133,7 +133,7 @@
                         This mail was sent you because your email has been enrolled as an employee at
                         {{ instance.recruitment_id.company_id.company }}.<br>
                         Don't want to receive mails like these anymore?
-                        <a href="#" style="color: #5c5c5c">Unsubscribe here</a>.
+                        <a href="#" style="color: #5c5c5c">{% trans 'Unsubscribe here' %}</a>.
                     </td>
                 </tr>
                 <tr>

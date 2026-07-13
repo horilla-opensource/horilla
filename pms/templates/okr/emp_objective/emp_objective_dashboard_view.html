@@ -77,7 +77,7 @@
                                                         title="{% trans 'Add Key Result' %}"
                                                         onclick="event.stopPropagation()"
                                                     >
-                                                        <ion-icon name="add-outline" class="m-0 md hydrated" role="img" aria-label="add outline"></ion-icon>
+                                                        <ion-icon name="add-outline" class="m-0 md hydrated" role="img" aria-label="{% trans 'add outline' %}"></ion-icon>
                                                     </button>
                                                 {% endif %}
                                                 {% if request.user|is_reportingmanager or perms.pms.add_employeeobjective %}

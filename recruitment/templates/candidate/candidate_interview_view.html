@@ -66,7 +66,7 @@
             data-target="#createModal"
             class="oh-btn oh-btn--secondary mt-2 mr-0 oh-btn--w-100-resp"
             data-toggle="oh-modal-toggle">
-            <ion-icon name="add" class="mr-1 md hydrated" role="img" aria-label="add"></ion-icon>
+            <ion-icon name="add" class="mr-1 md hydrated" role="img" aria-label="{% trans 'add' %}"></ion-icon>
             {% trans "Add" %}
         </button>
     </div>
@@ -82,7 +82,7 @@
                                 data-target="#activitySidebar"
                                 hx-swap="innerHTML" hx-target="#interview">
                             <ion-icon name="close-outline" style="font-size: 24px" role="img" class="md hydrated"
-                                aria-label="close outline"></ion-icon>
+                                aria-label="{% trans 'close outline' %}"></ion-icon>
                         </span>
                     {% endif %}
                     {% if perms.recruitment.change_interviewschedule or request.user|stage_manages:candidate.recruitment_id %}
@@ -90,7 +90,7 @@
                                 data-target="#createModal" hx-swap="innerHTML" hx-target="#createTarget"
                                 data-toggle="oh-modal-toggle">
                             <ion-icon name="create-outline" style="font-size: 19px" role="img" class="md hydrated"
-                                aria-label="create outline"></ion-icon>
+                                aria-label="{% trans 'create outline' %}"></ion-icon>
                         </span>
                     {% endif %}
                     <div class="interview-item row">

@@ -1,57 +1,59 @@
-{% load i18n %} {% if messages %}
-<div class="oh-wrapper">
-  {% for message in messages %}
-  <div class="oh-alert-container">
-    <div class="oh-alert oh-alert--animated {{message.tags}}">
-      {{ message }}
+{% load i18n %}
+{% if messages %}
+    <div class="oh-wrapper">
+        {% for message in messages %}
+            <div class="oh-alert-container">
+                <div class="oh-alert oh-alert--animated {{message.tags}}">
+                    {{ message }}
+                </div>
+            </div>
+        {% endfor %}
+        <script>
+            setTimeout(function () {
+              $(".oh-modal__close").click();
+            }, 2000);
+            $(document).ready(function(){
+              $('.reload-record').click();
+            })
+        </script>
     </div>
-  </div>
-  {% endfor %}
-  <script>
-    setTimeout(function () {
-      $(".oh-modal__close").click();
-    }, 2000);
-    $(document).ready(function(){
-      $('.reload-record').click();
-    })
-  </script>
-</div>
-{% endif %} {% if form.errors %}
-<!-- form errors  -->
-<div class="oh-wrapper">
-  <div class="oh-alert-container">
-    {% for error in form.non_field_errors %}
-    <div class="oh-alert oh-alert--animated oh-alert--danger">{{ error }}</div>
-    {% endfor %}
-  </div>
-</div>
+{% endif %}
+{% if form.errors %}
+    <!-- form errors  -->
+    <div class="oh-wrapper">
+        <div class="oh-alert-container">
+            {% for error in form.non_field_errors %}
+                <div class="oh-alert oh-alert--animated oh-alert--danger">{{ error }}</div>
+            {% endfor %}
+        </div>
+    </div>
 {% endif %}
 <div class="oh-modal__dialog-header pb-0">
-  <span class="oh-modal__dialog-title" id="assignLeaveModalLabel">
-    {% trans "Assign Leaves" %}
-  </span>
-  <button
-    class="oh-modal__close"
-    aria-label="Close"
-    {% if messages %}
-      hx-get="{% url 'assign-filter' %}?field=leave_type_id"
-      hx-target="#assignedLeaves"
-    {% endif %}
-  >
-    <ion-icon name="close-outline"></ion-icon>
-  </button>
+    <span class="oh-modal__dialog-title" id="assignLeaveModalLabel">
+        {% trans "Assign Leaves" %}
+    </span>
+    <button
+        class="oh-modal__close"
+        aria-label="{% trans 'Close' %}"
+        {% if messages %}
+            hx-get="{% url 'assign-filter' %}?field=leave_type_id"
+            hx-target="#assignedLeaves"
+        {% endif %}
+    >
+        <ion-icon name="close-outline"></ion-icon>
+    </button>
 </div>
 <div class="oh-modal__dialog-body">
-  <form
-    hx-post="{% url 'assign' %}"
-    hx-target="#objectCreateModalTarget"
-    class="oh-profile-section"
-  >
-    {{assign_form.as_p}}
-    <div class="oh-modal__dialog-footer p-0 mt-3">
-      <button type="submit" class="oh-btn oh-btn--secondary oh-btn--shadow">
-        {% trans "Save" %}
-      </button>
-    </div>
-  </form>
+    <form
+        hx-post="{% url 'assign' %}"
+        hx-target="#objectCreateModalTarget"
+        class="oh-profile-section"
+    >
+        {{ assign_form.as_p }}
+        <div class="oh-modal__dialog-footer p-0 mt-3">
+            <button type="submit" class="oh-btn oh-btn--secondary oh-btn--shadow">
+                {% trans "Save" %}
+            </button>
+        </div>
+    </form>
 </div>

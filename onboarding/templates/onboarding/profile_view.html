@@ -87,7 +87,7 @@
                 <div class="oh-modal__dialog">
                     <div class="oh-modal__dialog-header">
                         <span class="oh-modal__dialog-title" id="uploadPhotoModalLabel">{% trans "Upload Photo" %}</span>
-                        <button class="oh-modal__close" aria-label="Close">
+                        <button class="oh-modal__close" aria-label="{% trans 'Close' %}">
                             <ion-icon name="close-outline"></ion-icon>
                         </button>
                     </div>
@@ -97,7 +97,7 @@
                             <div class="oh-profile-section__image-container">
                                 <div class="oh-profile-section__modal-avatar">
                                     <img src="{{candidate.get_avatar}}"
-                                        class="oh-profile-section__modal-image oh-upload-photo" alt="User Photo" />
+                                        class="oh-profile-section__modal-image oh-upload-photo" alt="{% trans 'User Photo' %}" />
                                 </div>
                                 <input type="file"
                                     class="oh-input oh-input--file oh-input--file-sm mt-4 oh-upload-input"

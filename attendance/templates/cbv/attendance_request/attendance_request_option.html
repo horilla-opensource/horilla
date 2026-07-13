@@ -3,7 +3,7 @@
 {% is_manager_of request.user instance as can_manage %}
 <div class="oh-btn-group">
     <a
-        title="Edit"
+        title="{% trans 'Edit' %}"
         class="oh-btn oh-btn--light-bkg w-100"
         data-toggle="oh-modal-toggle"
         data-target="#genericModal"

@@ -1,134 +1,126 @@
-
-
-
 {% extends "index.html" %}
 {% load i18n %}{% load static %}
 
-
 {% block content %}
+    <meta name="csrf-token" content="{{ csrf_token }}">
 
+    <style>
+        .portal--dot {
+            background-color: yellowgreen;
+        }
+        .not-portal--dot {
+            background-color: rgba(128, 128, 128, 0.482);
+        }
+        .joining--dot {
+            background-color: yellow;
+        }
+        .not-joining--dot {
+            background-color: burlywood;
+        }
 
+        body.onboarding-list-hide-toolbar #onboardingCandidatesNavBar {
+            display: none !important;
+        }
+    </style>
 
-
-
-<meta name="csrf-token" content="{{ csrf_token }}">
-
-
-
-<style>
-.portal--dot{
-  background-color:yellowgreen;
-}
-.not-portal--dot{
-  background-color:rgba(128, 128, 128, 0.482);
-}
-.joining--dot{
-  background-color:yellow;
-}
-.not-joining--dot{
-  background-color:burlywood;
-}
-
-
-
-body.onboarding-list-hide-toolbar #onboardingCandidatesNavBar {
-  display: none !important;
-}
-</style>
-
-<div id="candidateMainContainer">
- <div id="onboardingCandidatesNavBar">
- <div hx-get="{% url "onboarding-candidates-nav" %}" hx-trigger="load">
-</div>
-</div>
-
-
-
-
-{% include "generic/components.html" %}
-<div id="ohMessages"></div>
-<div id="messages"> </div>
-
-<div
-    class="oh-checkpoint-badge mb-2"
-    id="selectedInstances"
-    data-ids="[]"
-    data-clicked=""
-    style="display: none">
-  </div>
-
-
-  <div
-  class="oh-wrapper"
-  hx-get="{% url 'onboarding-candidates-list' %}?{{request.GET.urlencode}}"
-  hx-trigger="load"
-  id="listContainer">
-  <div class="animated-background">
-  </div>
-</div>
-</div>
-
-
-
-<div class="oh-activity-sidebar" id="activitySidebar" style="z-index: 1000">
-    <div class="oh-activity-sidebar__body" id="commentContainer"></div>
-  </div>
-
-  <div class="oh-modal" id="rejectReasonModal" role="dialog" aria-hidden="true">
-    <div class="oh-modal__dialog" style="max-width: 550px">
-      <div class="oh-modal__dialog-header">
-        <button type="button" class="oh-modal__close" aria-label="Close"><ion-icon name="close-outline"></ion-icon></button>
-      </div>
-
-      <div class="oh-modal__dialog-body" id="rejectReasonModalBody"></div>
-    </div>
-  </div>
-
-  <div class="oh-modal" id="addAttachments" role="dialog" aria-labelledby="addAttachments" aria-hidden="true">
-    <div class="oh-modal__dialog">
-      <div class="oh-modal__dialog-header">
-        <span class="oh-modal__dialog-title" id="addEmployeeModalLabel">{% trans "Attachments" %} <span
-            style="color: #80808080;font-size: 14px;">({% trans "Optional" %})</span></span>
-        <button class="oh-modal__close" aria-label="Close">
-          <ion-icon name="close-outline"></ion-icon>
-        </button>
-      </div>
-      <form hx-post="{% url 'email-send' %}"
-      hx-target="#addAttachmentsBody"
-      hx-encoding="multipart/form-data">
-        <div class="oh-modal__dialog-body" id="addAttachmentsBody">
-          <section>
-            <div id="keyResultsContainer">
-              <div class="my-3" id="keyResultCard">
-                <div class="oh-card oh-card--no-shadow oh-card__body">
-
-                  <div class="oh-input__group">
-                    <select name="ids" id="hired_candidates" multiple class="w-100" hidden >
-                      {% for candidate in hired_candidates %}
-                      <option value="{{candidate.id}}">{{candidate.name}}</option>
-                      {% endfor %}
-                    </select>
-                  </div>
-                  <div class="oh-input__group">
-                    <label class="oh-input__label mt-0" for="keyTitle">{% trans "Template as Attachments" %}</label>
-                    <select name="template_attachment_ids" id="template_attachment_ids" multiple
-                      class="oh-select oh-select-2 w-100">
-                      {% for template in mail_templates %}
-                      <option value="{{template.id}}">{{template.title}}</option>
-                      {% endfor %}
-                    </select>
-                  </div>
-                  <div class="oh-input__group">
-                    <label class="oh-input__label" for="keyDesc">{% trans "Other Attachments" %}</label>
-                    <input type="file" multiple name="other_attachments" id="other_attachments">
-                  </div>
-                </div>
-              </div>
-            </div>
-          </section>
+    <div id="candidateMainContainer">
+        <div id="onboardingCandidatesNavBar">
+            <div hx-get='{% url "onboarding-candidates-nav" %}' hx-trigger="load"></div>
         </div>
-        <div class="oh-modal__dialog-footer">
-          <button onclick="$('.oh-modal#addAttachments').removeClass('oh-modal--show');$(`#messages`).html(
+
+        {% include "generic/components.html" %}
+        <div id="ohMessages"></div>
+        <div id="messages"></div>
+
+        <div
+            class="oh-checkpoint-badge mb-2"
+            id="selectedInstances"
+            data-ids="[]"
+            data-clicked=""
+            style="display: none"
+        >
+        </div>
+
+        <div
+            class="oh-wrapper"
+            hx-get="{% url 'onboarding-candidates-list' %}?{{request.GET.urlencode}}"
+            hx-trigger="load"
+            id="listContainer"
+        >
+            <div class="animated-background"></div>
+        </div>
+    </div>
+
+    <div class="oh-activity-sidebar" id="activitySidebar" style="z-index: 1000">
+        <div class="oh-activity-sidebar__body" id="commentContainer"></div>
+    </div>
+
+    <div class="oh-modal" id="rejectReasonModal" role="dialog" aria-hidden="true">
+        <div class="oh-modal__dialog" style="max-width: 550px">
+            <div class="oh-modal__dialog-header">
+                <button type="button" class="oh-modal__close" aria-label="{% trans 'Close' %}">
+                    <ion-icon name="close-outline"></ion-icon>
+                </button>
+            </div>
+
+            <div class="oh-modal__dialog-body" id="rejectReasonModalBody"></div>
+        </div>
+    </div>
+
+    <div class="oh-modal" id="addAttachments" role="dialog" aria-labelledby="addAttachments" aria-hidden="true">
+        <div class="oh-modal__dialog">
+            <div class="oh-modal__dialog-header">
+                <span class="oh-modal__dialog-title" id="addEmployeeModalLabel">{% trans "Attachments" %} <span
+                        style="color: #80808080; font-size: 14px"
+                    >({% trans "Optional" %})</span></span>
+                <button class="oh-modal__close" aria-label="{% trans 'Close' %}">
+                    <ion-icon name="close-outline"></ion-icon>
+                </button>
+            </div>
+            <form hx-post="{% url 'email-send' %}" hx-target="#addAttachmentsBody" hx-encoding="multipart/form-data">
+                <div class="oh-modal__dialog-body" id="addAttachmentsBody">
+                    <section>
+                        <div id="keyResultsContainer">
+                            <div class="my-3" id="keyResultCard">
+                                <div class="oh-card oh-card--no-shadow oh-card__body">
+                                    <div class="oh-input__group">
+                                        <select name="ids" id="hired_candidates" multiple class="w-100" hidden>
+                                            {% for candidate in hired_candidates %}
+                                                <option value="{{candidate.id}}">{{ candidate.name }}</option>
+                                            {% endfor %}
+                                        </select>
+                                    </div>
+                                    <div class="oh-input__group">
+                                        <label
+                                            class="oh-input__label mt-0"
+                                            for="keyTitle"
+                                        >{% trans "Template as Attachments" %}</label>
+                                        <select
+                                            name="template_attachment_ids"
+                                            id="template_attachment_ids"
+                                            multiple
+                                            class="oh-select oh-select-2 w-100"
+                                        >
+                                            {% for template in mail_templates %}
+                                                <option value="{{template.id}}">{{ template.title }}</option>
+                                            {% endfor %}
+                                        </select>
+                                    </div>
+                                    <div class="oh-input__group">
+                                        <label
+                                            class="oh-input__label"
+                                            for="keyDesc"
+                                        >{% trans "Other Attachments" %}</label>
+                                        <input type="file" multiple name="other_attachments" id="other_attachments">
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </section>
+                </div>
+                <div class="oh-modal__dialog-footer">
+                    <button
+                        onclick="$('.oh-modal#addAttachments').removeClass('oh-modal--show');$(`#messages`).html(
             $(`<div class ='oh-alert-container'>
             <div class='oh-alert oh-alert--animated oh-alert--info'>
               Processing...
@@ -136,152 +128,146 @@ body.onboarding-list-hide-toolbar #onboardingCandidatesNavBar {
           </div>
             `)
           )"
-            class="oh-btn oh-btn--secondary oh-btn--shadow" id="trigger-onboarding" title="{% trans 'Send portal link / Trigger Onboarding' %}">
-            {% trans "Send Portal Link" %}
-          </button>
+                        class="oh-btn oh-btn--secondary oh-btn--shadow"
+                        id="trigger-onboarding"
+                        title="{% trans 'Send portal link / Trigger Onboarding' %}"
+                    >
+                        {% trans "Send Portal Link" %}
+                    </button>
+                </div>
+            </form>
         </div>
-      </form>
     </div>
-  </div>
 
-
-  <script>
-
-    $(document).on("click", "#send-port", function () {
-      ids = [];
-      ids.push($("#selectedInstances").attr("data-ids"));
-      ids = JSON.parse($("#selectedInstances").attr("data-ids"));
-      $("#hired_candidates[name=ids]").val(ids);
-      $("select[name=ids]").change();
-  });
-
-    function dateJoining($element){
-        var candId = $element.attr("data-candidate-id");
-        var dateVal = $element.val();
-        $.ajax({
-          type: "POST",
-          url: "{% url 'update-joining' %}",
-          data: {
-            "candId": candId,
-            "date": dateVal,
-            csrfmiddlewaretoken: '{{ csrf_token }}'
-          },
-          success: function (response) {
-            $("#reloadMessagesButton").click()
-          }
+    <script>
+        $(document).on("click", "#send-port", function () {
+            ids = [];
+            ids.push($("#selectedInstances").attr("data-ids"));
+            ids = JSON.parse($("#selectedInstances").attr("data-ids"));
+            $("#hired_candidates[name=ids]").val(ids);
+            $("select[name=ids]").change();
         });
-      }
 
-      function probotionEnd($element){
-        candId = $element.attr("data-candidate-id");
-        dateVal = $element.val()
-        $.ajax({
-          type: "POST",
-          url: "{% url 'update-probation-end' %}",
-          data: {
-            "candidate_id":candId,
-            "probation_end":dateVal,
-            csrfmiddlewaretoken: '{{ csrf_token }}'
-          },
-          success: function (response) {
-            $("#reloadMessagesButton").click()
-          }
-        });
-      }
-
-      function offerLetter(url){
-        $.ajax({
-          type: "get",
-          url: url,
-          success: function (response) {
-            $("#reloadMessagesButton").click()
-          }
-        });
-      }
-
-      (function () {
-        function queryParamTruthy(search, key) {
-          var re = new RegExp("[?&]" + key + "=([^&]*)", "i");
-          var m = search.match(re);
-          if (!m || !m[1]) {
-            return false;
-          }
-          var v = decodeURIComponent(m[1]).toLowerCase();
-          return v === "true" || v === "1" || v === "yes";
-        }
-        function isOnboardingCandidateEditPath() {
-          var path = window.location.pathname.replace(/\/$/, "");
-          if (!/\/recruitment\/candidate-update\/\d+$/.test(path)) {
-            return false;
-          }
-          var q = window.location.search;
-          return queryParamTruthy(q, "onboarding") && queryParamTruthy(q, "container");
-        }
-        function getHtmxSwapTarget(e) {
-          if (!e || !e.detail) {
-            return null;
-          }
-          return e.detail.target || e.detail.elt || null;
-        }
-        function syncOnboardingCandidatesNavBar() {
-          var nav = document.getElementById("onboardingCandidatesNavBar");
-          var list = document.getElementById("listContainer");
-          if (!nav || !list) {
-            return;
-          }
-          var hasProfile = !!list.querySelector(".reload-profile-view");
-          var hasEdit =
-            !!list.querySelector("#onboarding-candidate-update-form-root")
-            || isOnboardingCandidateEditPath();
-          if (hasProfile || hasEdit) {
-            nav.style.display = "none";
-            var tagRow = nav.querySelector("#filterTagContainerSectionNav");
-            if (tagRow) {
-              tagRow.innerHTML = "";
+          function dateJoining($element){
+              var candId = $element.attr("data-candidate-id");
+              var dateVal = $element.val();
+              $.ajax({
+                type: "POST",
+                url: "{% url 'update-joining' %}",
+                data: {
+                  "candId": candId,
+                  "date": dateVal,
+                  csrfmiddlewaretoken: '{{ csrf_token }}'
+                },
+                success: function (response) {
+                  $("#reloadMessagesButton").click()
+                }
+              });
             }
-          } else {
-            nav.style.display = "";
-          }
-        }
-        function onListContainerHtmxEvent(e) {
-          var t = getHtmxSwapTarget(e);
-          if (t && t.id === "listContainer") {
-            syncOnboardingCandidatesNavBar();
-            setTimeout(syncOnboardingCandidatesNavBar, 0);
-            setTimeout(syncOnboardingCandidatesNavBar, 50);
-          }
-        }
-        document.addEventListener("DOMContentLoaded", syncOnboardingCandidatesNavBar);
-        document.body.addEventListener("htmx:afterSwap", onListContainerHtmxEvent);
-        document.body.addEventListener("htmx:afterSettle", onListContainerHtmxEvent);
-        document.body.addEventListener("htmx:afterRequest", function (e) {
-          var url = (e.detail && e.detail.xhr && e.detail.xhr.responseURL) || "";
-          if (url.indexOf("/recruitment/profile/recruitment/candidate-view/") !== -1) {
-            setTimeout(syncOnboardingCandidatesNavBar, 0);
-            setTimeout(syncOnboardingCandidatesNavBar, 50);
-            return;
-          }
-          if (
-            e.detail &&
-            e.detail.successful &&
-            url.indexOf("/recruitment/candidate-update/") !== -1 &&
-            url.toLowerCase().indexOf("onboarding=") !== -1
-          ) {
-            setTimeout(syncOnboardingCandidatesNavBar, 0);
-          }
-        });
-        window.addEventListener("popstate", function () {
-          setTimeout(syncOnboardingCandidatesNavBar, 0);
-        });
-      })();
 
+            function probotionEnd($element){
+              candId = $element.attr("data-candidate-id");
+              dateVal = $element.val()
+              $.ajax({
+                type: "POST",
+                url: "{% url 'update-probation-end' %}",
+                data: {
+                  "candidate_id":candId,
+                  "probation_end":dateVal,
+                  csrfmiddlewaretoken: '{{ csrf_token }}'
+                },
+                success: function (response) {
+                  $("#reloadMessagesButton").click()
+                }
+              });
+            }
 
+            function offerLetter(url){
+              $.ajax({
+                type: "get",
+                url: url,
+                success: function (response) {
+                  $("#reloadMessagesButton").click()
+                }
+              });
+            }
 
+            (function () {
+              function queryParamTruthy(search, key) {
+                var re = new RegExp("[?&]" + key + "=([^&]*)", "i");
+                var m = search.match(re);
+                if (!m || !m[1]) {
+                  return false;
+                }
+                var v = decodeURIComponent(m[1]).toLowerCase();
+                return v === "true" || v === "1" || v === "yes";
+              }
+              function isOnboardingCandidateEditPath() {
+                var path = window.location.pathname.replace(/\/$/, "");
+                if (!/\/recruitment\/candidate-update\/\d+$/.test(path)) {
+                  return false;
+                }
+                var q = window.location.search;
+                return queryParamTruthy(q, "onboarding") && queryParamTruthy(q, "container");
+              }
+              function getHtmxSwapTarget(e) {
+                if (!e || !e.detail) {
+                  return null;
+                }
+                return e.detail.target || e.detail.elt || null;
+              }
+              function syncOnboardingCandidatesNavBar() {
+                var nav = document.getElementById("onboardingCandidatesNavBar");
+                var list = document.getElementById("listContainer");
+                if (!nav || !list) {
+                  return;
+                }
+                var hasProfile = !!list.querySelector(".reload-profile-view");
+                var hasEdit =
+                  !!list.querySelector("#onboarding-candidate-update-form-root")
+                  || isOnboardingCandidateEditPath();
+                if (hasProfile || hasEdit) {
+                  nav.style.display = "none";
+                  var tagRow = nav.querySelector("#filterTagContainerSectionNav");
+                  if (tagRow) {
+                    tagRow.innerHTML = "";
+                  }
+                } else {
+                  nav.style.display = "";
+                }
+              }
+              function onListContainerHtmxEvent(e) {
+                var t = getHtmxSwapTarget(e);
+                if (t && t.id === "listContainer") {
+                  syncOnboardingCandidatesNavBar();
+                  setTimeout(syncOnboardingCandidatesNavBar, 0);
+                  setTimeout(syncOnboardingCandidatesNavBar, 50);
+                }
+              }
+              document.addEventListener("DOMContentLoaded", syncOnboardingCandidatesNavBar);
+              document.body.addEventListener("htmx:afterSwap", onListContainerHtmxEvent);
+              document.body.addEventListener("htmx:afterSettle", onListContainerHtmxEvent);
+              document.body.addEventListener("htmx:afterRequest", function (e) {
+                var url = (e.detail && e.detail.xhr && e.detail.xhr.responseURL) || "";
+                if (url.indexOf("/recruitment/profile/recruitment/candidate-view/") !== -1) {
+                  setTimeout(syncOnboardingCandidatesNavBar, 0);
+                  setTimeout(syncOnboardingCandidatesNavBar, 50);
+                  return;
+                }
+                if (
+                  e.detail &&
+                  e.detail.successful &&
+                  url.indexOf("/recruitment/candidate-update/") !== -1 &&
+                  url.toLowerCase().indexOf("onboarding=") !== -1
+                ) {
+                  setTimeout(syncOnboardingCandidatesNavBar, 0);
+                }
+              });
+              window.addEventListener("popstate", function () {
+                setTimeout(syncOnboardingCandidatesNavBar, 0);
+              });
+            })();
+    </script>
 
-
-</script>
-
-
-<script src="{% static 'cbv/attendance/hour_account.js' %}"></script>
-
+    <script src="{% static 'cbv/attendance/hour_account.js' %}"></script>
 {% endblock content %}

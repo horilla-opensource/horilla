@@ -1,7 +1,8 @@
+{% load i18n %}
 <div class="oh-modal__dialog-header">
     <button type="button" class="oh-modal_close--custom"
         onclick="$(this).parents().closest('.oh-modal--show').toggleClass('oh-modal--show');">
-        <ion-icon name="close-outline" role="img" aria-label="close outline"></ion-icon>
+        <ion-icon name="close-outline" role="img" aria-label="{% trans 'close outline' %}"></ion-icon>
     </button>
 </div>
 <div class="oh-modal__dialog-body" id="assetFineModalBody">

@@ -1,3 +1,4 @@
+{% load i18n %}
 {% load static i18n tz basefilters horillafilters employee_filter accessibility_filters %}
 
 {% now "Y-m-d" as current_date %}
@@ -191,7 +192,7 @@
                 </h5>
                 <button
                     class="oh-modal__close"
-                    aria-label="Close"
+                    aria-label="{% trans 'Close' %}"
                     onclick="$(this).closest('.oh-modal--show').removeClass('oh-modal--show')"
                 >
                     <ion-icon name="close-outline"></ion-icon>
@@ -207,7 +208,7 @@
                 <h3 class="oh-main__titlebar-title fw-bold">{% trans " Activities" %}</h3>
                 <button
                     class="oh-modal__close--custom"
-                    aria-label="Close"
+                    aria-label="{% trans 'Close' %}"
                     onclick="$(this).closest('.oh-modal--show').removeClass('oh-modal--show')"
                 >
                     <ion-icon name="close-outline"></ion-icon>
@@ -233,7 +234,7 @@
                     <button
                         class="oh-modal__close"
                         onclick="$('#rejectModal').removeClass('oh-modal--show')"
-                        aria-label="Close"
+                        aria-label="{% trans 'Close' %}"
                     >
                         <ion-icon name="close-outline"></ion-icon>
                     </button>

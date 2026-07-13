@@ -3,7 +3,7 @@
     <h2 class="oh-modal__dialog-title">
         {% trans "Import Employee" %}
     </h2>
-    <button class="oh-modal__close" aria-label="Close">
+    <button class="oh-modal__close" aria-label="{% trans 'Close' %}">
         <ion-icon name="close-outline"></ion-icon>
     </button>
     <div class="oh-modal__dialog-body p-0 pb-4">
@@ -27,7 +27,7 @@
                     {% endif %}
                     <label class="oh-dropdown__import-label">
                         <ion-icon name="cloud-upload" class="oh-dropdown__import-form-icon md hydrated" role="img"
-                            aria-label="cloud upload"></ion-icon>
+                            aria-label="{% trans 'cloud upload' %}"></ion-icon>
                         <span class="oh-dropdown__import-form-title">{% trans "Upload a File" %}</span>
                         <span class="oh-dropdown__import-form-text">{% trans "Drag and drop files here" %}</span>
                     </label>

@@ -1,3 +1,4 @@
+{% load i18n %}
 <style>
 .oh-sticky-table__th.sl-no,
 .oh-sticky-table__td.sl-no {
@@ -9,10 +10,10 @@
 <div class="oh-sticky-table">
     <div class="oh-sticky-table__thead">
         <div class="oh-sticky-table__tr">
-            <div class="oh-sticky-table__th  sl-no" >Sl No.</div>
-            <div class="oh-sticky-table__th">Date </div>
-            <div class="oh-sticky-table__th">Time </div>
-            <div class="oh-sticky-table__th">Is Completed</div>
+            <div class="oh-sticky-table__th  sl-no" >{% trans "Sl No." %}</div>
+            <div class="oh-sticky-table__th">{% trans "Date" %} </div>
+            <div class="oh-sticky-table__th">{% trans "Time" %} </div>
+            <div class="oh-sticky-table__th">{% trans "Is Completed" %}</div>
         </div>
     </div>
         {% for interview in interviews %}
@@ -21,7 +22,7 @@
             <div class="oh-sticky-table__td sl-no">{{ forloop.counter }}</div>
             <div class="oh-sticky-table__td dateformat_changer">{{ interview.interview_date }}</div>
             <div class="oh-sticky-table__td timeformat_changer">{{ interview.interview_time }}</div>
-            <div class="oh-sticky-table__td">{% if interview.completed %}Yes{% else %}No{% endif %}</div>
+            <div class="oh-sticky-table__td">{% if interview.completed %}{% trans "Yes" %}{% else %}{% trans "No" %}{% endif %}</div>
         </div>
     </div>
         {% endfor %}

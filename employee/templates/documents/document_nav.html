@@ -10,7 +10,7 @@
 			<a
 				class="oh-main__titlebar-search-toggle"
 				role="button"
-				aria-label="Toggle Search"
+				aria-label="{% trans 'Toggle Search' %}"
 				@click="searchShow = !searchShow"
 			>
 				<ion-icon
@@ -40,7 +40,7 @@
 				<input
 					type="text"
 					class="oh-input oh-input__icon"
-					aria-label="Search Input"
+					aria-label="{% trans 'Search Input' %}"
 					placeholder="{% trans 'Search' %}"
 					name="search"
 					onkeyup="$('.filterButton').click()"

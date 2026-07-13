@@ -1,4 +1,4 @@
-{% load i18n generic_template_filters %}
+{% load i18n generic_template_filters i18n %}
 {% if request.actual_ids and request.session.prev_path == request.path %}
     <script>
         var ids =  {{request.session.hlv_selected_ids|safe}}
@@ -83,7 +83,7 @@
                 hx-on:submit="htmxLoadIndicator(this);"
             >
                 <input type="hidden" name="selected_ids" value="{{ request.session.hlv_selected_ids }}">
-                <button hidden type="submit">Submit</button>
+                <button hidden type="submit">{% trans 'Submit' %}</button>
             </form>
         {% endif %}
 

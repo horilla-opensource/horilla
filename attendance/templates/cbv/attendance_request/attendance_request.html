@@ -61,7 +61,7 @@
                 <h2 class="oh-modal__dialog-title" id="addEmployeeModalLabel">
                     {% trans "Validate Attendances Request" %}
                 </h2>
-                <button class="oh-modal__close" aria-label="Close">
+                <button class="oh-modal__close" aria-label="{% trans 'Close' %}">
                     <ion-icon name="close-outline"></ion-icon>
                 </button>
             </div>
@@ -98,7 +98,7 @@
                 </h3>
                 <button
                     class="oh-modal__close--custom"
-                    aria-label="Close"
+                    aria-label="{% trans 'Close' %}"
                     onclick="$(this).closest('.oh-modal--show').removeClass('oh-modal--show')"
                 >
                     <ion-icon name="close-outline"></ion-icon>

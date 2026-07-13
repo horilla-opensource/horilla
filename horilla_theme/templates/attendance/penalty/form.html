@@ -34,7 +34,7 @@
     <button
         type="button"
         class="oh-modal__close--custom"
-        aria-label="Close"
+        aria-label="{% trans 'Close' %}"
         onclick="$(this).parents().closest('.oh-modal--show').toggleClass('oh-modal--show')"
         {% if late_in_early_out_ids %}
             hx-get="{% url 'late-in-early-out-single-view' instance.id %}?{{pd}}&instances_ids={{late_in_early_out_ids}}"

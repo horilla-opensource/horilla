@@ -1,3 +1,4 @@
+{% load i18n %}
 {% load i18n horillafilters %}
 
 <div class="oh-modal__dialog-header">
@@ -5,13 +6,13 @@
     <button
         class="oh-modal__close--custom"
         onclick="$(this).closest('.oh-modal--show').removeClass('oh-modal--show')"
-        aria-label="Close"
+        aria-label="{% trans 'Close' %}"
     >
         <ion-icon
             name="close-outline"
             role="img"
             class="md hydrated"
-            aria-label="close outline"
+            aria-label="{% trans 'close outline' %}"
         ></ion-icon>
     </button>
 </div>

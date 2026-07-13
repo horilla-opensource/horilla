@@ -9,18 +9,18 @@
 
         <div onclick="event.stopPropagation()" class="oh-dropdown" x-data="{open: false}">
           <button class="oh-btn oh-stop-prop oh-btn--transparent oh-accordion-meta__btn" @click="open = !open" @click.outside="open = false" title=" {% trans 'Actions' %}">
-              <ion-icon name="ellipsis-vertical" role="img" class="md hydrated" aria-label="ellipsis vertical"></ion-icon>
+              <ion-icon name="ellipsis-vertical" role="img" class="md hydrated" aria-label="{% trans 'ellipsis vertical' %}"></ion-icon>
             </button>
             <div class="oh-dropdown__menu oh-dropdown__menu--right" x-show="open">
               <ul class="oh-dropdown__items">
                 {% if perms.recruitment.add_candidate or request.user.employee_get in stage.stage_managers.all or request.user.employee_get in rec.recruitment_managers.all %}
                 <li class="oh-dropdown__item" style="cursor: pointer;">
-                  <a hx-target="#objectCreateModalTarget" hx-get="{% url 'add-candidate-to-stage'%}?stage_id={{ stage.id }}" data-toggle="oh-modal-toggle" data-target="#objectCreateModal" class="oh-dropdown__link">Add Candidate</a>
+                  <a hx-target="#objectCreateModalTarget" hx-get="{% url 'add-candidate-to-stage'%}?stage_id={{ stage.id }}" data-toggle="oh-modal-toggle" data-target="#objectCreateModal" class="oh-dropdown__link">{% trans "Add Candidate" %}</a>
                 </li>
                 {% endif %}
                 {% if perms.recruitment.change_stage or request.user|recruitment_manages:rec or request.user.employee_get in stage.stage_managers.all %}
                   <li class="oh-dropdown__item" style="cursor: pointer;">
-                    <a hx-target="#genericModalBody" hx-get="{% url 'stage-update-pipeline' stage.id %}" data-toggle="oh-modal-toggle" data-target="#genericModal" class="oh-dropdown__link">Edit</a>
+                    <a hx-target="#genericModalBody" hx-get="{% url 'stage-update-pipeline' stage.id %}" data-toggle="oh-modal-toggle" data-target="#genericModal" class="oh-dropdown__link">{% trans "Edit" %}</a>
                   </li>
                   <li class="oh-dropdown__item" style="cursor: pointer;">
                     <a hx-target="#objectCreateModalTarget" hx-get="{% url 'send-mail' %}?stage_id={{stage.id}}" data-toggle="oh-modal-toggle" data-target="#objectCreateModal"  class="oh-dropdown__link">
@@ -34,7 +34,7 @@
                     <a data-toggle="oh-modal-toggle"
                     data-target="#deleteConfirmation"
                     hx-get="{% url 'generic-delete' %}?model=recruitment.Stage&pk={{stage.pk}}"
-                    hx-target="#deleteConfirmationBody"> Delete </a>
+                    hx-target="#deleteConfirmationBody"> {% trans "Delete" %} </a>
                   </li>
                   {% endif %}
 

@@ -18,7 +18,7 @@
     <div class="oh-sticky-dropdown--header">
         <div class="oh-dropdown" x-data="{open: false}">
             <button class="oh-sticky-dropdown_btn " @click="open = !open"><ion-icon name="ellipsis-vertical-sharp"
-                    role="img" class="md hydrated" aria-label="ellipsis vertical sharp"></ion-icon></button>
+                    role="img" class="md hydrated" aria-label="{% trans 'ellipsis vertical sharp' %}"></ion-icon></button>
             <div class="oh-dropdown__menu oh-sticky-table_dropdown" x-show="open" @click.outside="open = false">
                 <ul class="oh-dropdown__items" id="allowanceCells">
                 </ul>
@@ -109,7 +109,7 @@
                                     <a onclick="event.stopPropagation();" class="oh-btn oh-btn--light-bkg w-100"
                                         href="{% url 'update-allowance' allowance.id %}" title='{% trans "Update" %}'>
                                         <ion-icon name="create-outline" role="img" class="md hydrated" style="color: blue"
-                                            aria-label="create outline"></ion-icon>
+                                            aria-label="{% trans 'create outline' %}"></ion-icon>
                                     </a>
                                 {% endif %}
                                 {% if perms.payroll.delete_allowance %}
@@ -119,7 +119,7 @@
                                         hx-post="{% url 'delete-allowance' allowance.id %}?{{pd}}&view=list"
                                         hx-target="#payroll-allowance-container" title="{% trans 'Delete' %}">
                                         <ion-icon name="trash-outline" role="img" class="md hydrated"
-                                            aria-label="trash outline"></ion-icon>
+                                            aria-label="{% trans 'trash outline' %}"></ion-icon>
                                     </a>
                                 {% endif %}
                             </div>

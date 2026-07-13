@@ -1,6 +1,6 @@
 {% load i18n %}
 <div class="oh-modal__dialog-header">
-    <button type="button" class="oh-modal__close" aria-label="Close">
+    <button type="button" class="oh-modal__close" aria-label="{% trans 'Close' %}">
         <ion-icon name="close-outline"></ion-icon>
     </button>
 </div>
@@ -18,7 +18,7 @@
                     name="chevron-back-outline"
                     class="md hydrated"
                     role="img"
-                    aria-label="chevron back outline"
+                    aria-label="{% trans 'chevron back outline' %}"
                 ></ion-icon>
             </button>
 
@@ -32,7 +32,7 @@
                     name="chevron-forward-outline"
                     class="md hydrated"
                     role="img"
-                    aria-label="chevron forward outline"
+                    aria-label="{% trans 'chevron forward outline' %}"
                 ></ion-icon>
             </button>
         </div>

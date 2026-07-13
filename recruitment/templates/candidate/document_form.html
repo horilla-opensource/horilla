@@ -1,18 +1,16 @@
 {% load static i18n %}
 <div class="oh-modal__dialog-header pb-0">
-    <span class="oh-modal__dialog-title" id="uploadFileModalLabel"
-        >{% trans "Upload File" %}</span
-    >
+    <span class="oh-modal__dialog-title" id="uploadFileModalLabel">{% trans "Upload File" %}</span>
     <button
         class="oh-modal__close--custom"
-        aria-label="Close"
-        onclick="event.stopPropagation();event.preventDefault();$(this).closest('.oh-modal--show').removeClass('oh-modal--show');"
+        aria-label="{% trans 'Close' %}"
+        onclick="event.stopPropagation();event.preventDefault();$(this).closest('.oh-modal--show').removeClass('oh-modal--show')"
     >
         <ion-icon
             name="close-outline"
             role="img"
             class="md hydrated"
-            aria-label="close outline"
+            aria-label="{% trans 'close outline' %}"
         ></ion-icon>
     </button>
 </div>
@@ -29,32 +27,32 @@
             type="hidden"
             name="candidate_id"
             value="{{form.candidate_id.value}}"
-        />
-        <input type="hidden" name="status" value="requested" />
-        <input type="hidden" name="title" value="{{form.instance.title}}" />
+        >
+        <input type="hidden" name="status" value="requested">
+        <input type="hidden" name="title" value="{{form.instance.title}}">
         <input
             type="hidden"
             name="rejection_reason"
             value="{{form.rejection_reason.value}}"
-        />
+        >
         <input
             type="hidden"
             name="document_request_id"
             value="{{form.document_request_id.value}}"
-        />
-        {{form.non_field_errors}} {{form.document}} {{form.document.errors}}
+        >
+        {{ form.non_field_errors }}
+        {{ form.document }}
+        {{ form.document.errors }}
 
         <div class="file-validation mt-3">
             <ul class="m-0">
                 <li style="list-style: disc">
-                    {% trans "Upload " %}<b
-                        >{{form.instance.document_request_id.format}}</b
-                    >
+                    {% trans "Upload " %}<b>{{ form.instance.document_request_id.format }}</b>
                     {% trans "file" %}
                 </li>
                 <li style="list-style: disc">
                     {% trans "Max size of the file" %}
-                    {{form.instance.document_request_id.max_size}} MB
+                    {{ form.instance.document_request_id.max_size }} MB
                 </li>
             </ul>
         </div>

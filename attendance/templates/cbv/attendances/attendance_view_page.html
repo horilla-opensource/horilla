@@ -53,7 +53,7 @@
                 <h2 class="oh-modal__dialog-title" id="attendanceImportLavel">
                     {% trans "Import Attendances" %}
                 </h2>
-                <button class="oh-modal__close" aria-label="Close">
+                <button class="oh-modal__close" aria-label="{% trans 'Close' %}">
                     <ion-icon name="close-outline"></ion-icon>
                 </button>
                 <div class="oh-modal__dialog-body p-0 pt-2" id="attendanceImportModalBody">
@@ -111,7 +111,7 @@
                 <h3 class="oh-main__titlebar-title fw-bold">{% trans " Activities" %}</h3>
                 <button
                     class="oh-modal__close--custom"
-                    aria-label="Close"
+                    aria-label="{% trans 'Close' %}"
                     onclick="$(this).parents().closest('.oh-modal--show').toggleClass('oh-modal--show')"
                 >
                     <ion-icon name="close-outline"></ion-icon>

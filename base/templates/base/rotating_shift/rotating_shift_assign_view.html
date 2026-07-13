@@ -32,7 +32,7 @@
                     <div class="oh-dropdown" x-data="{open: false}">
                         <button class="oh-sticky-dropdown_btn " @click="open = !open"><ion-icon
                                 name="ellipsis-vertical-sharp" role="img" class="md hydrated"
-                                aria-label="ellipsis vertical sharp"></ion-icon></button>
+                                aria-label="{% trans 'ellipsis vertical sharp' %}"></ion-icon></button>
                         <div class="oh-dropdown__menu oh-sticky-table_dropdown" x-show="open" @click.outside="open = false">
                             <ul class="oh-dropdown__items" id="roratingShiftCells">
                             </ul>

@@ -13,7 +13,7 @@
             type="button"
             class="oh-modal__close absolute top-0 right-0 text-gray-600 hover:text-gray-900"
             data-dismiss="oh-modal"
-            aria-label="Close"
+            aria-label="{% trans 'Close' %}"
             {% if refresh %}
                 onclick="event.stopPropagation(); window.location.reload()"
             {% endif %}
@@ -102,7 +102,7 @@
         <div class="flex flex-col items-center justify-center h-[60vh] text-center rounded-md">
             <img
                 src="{% static 'images/ui/ticket.png' %}"
-                alt="No requests"
+                alt="{% trans 'No requests' %}"
                 class="w-32 h-32 mb-4 opacity-80"
             >
             <h3 class="text-gray-700 text-base font-medium">

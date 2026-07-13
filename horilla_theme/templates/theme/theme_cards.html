@@ -35,7 +35,7 @@
                         <h3 class="font-semibold text-sm text-gray-900 mb-1">
                             {{ theme.name }}
                             {% if active_theme and active_theme.id == theme.id %}
-                                <span class="ml-1 text-primary-600 text-xs">(Active)</span>
+                                <span class="ml-1 text-primary-600 text-xs">{% trans "(Active)" %}</span>
                             {% endif %}
                         </h3>
                         {% if theme.description %}

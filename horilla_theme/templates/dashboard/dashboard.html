@@ -1,5 +1,6 @@
 {% extends 'index.html' %}
-{% load static i18n horillafilters mathfilters recruitmentfilters %}
+{% load i18n %}
+{% load static i18n horillafilters mathfilters recruitmentfilters i18n %}
 {% block content %}
     <style>
         .oh-info {
@@ -99,7 +100,7 @@
                         <p class="text-sm">{% trans "Conversion Rate" %}</p>
                         <span
                             class="oh-info"
-                            title="Conversion Rate = ( Total Hired Candidates / Total Candidates ) * 100"
+                            title="{% trans 'Conversion Rate = ( Total Hired Candidates / Total Candidates ) * 100' %}"
                         ></span>
                     </div>
                     <div class="flex items-center gap-2">
@@ -129,7 +130,7 @@
                             <p class="text-sm">{% trans "Offer Acceptance Rate" %}</p>
                             <span
                                 class="oh-info"
-                                title="Offer Acceptance Rate = ( Onboarding candidates / Total Hired Candidates ) * 100"
+                                title="{% trans 'Offer Acceptance Rate = ( Onboarding candidates / Total Hired Candidates ) * 100' %}"
                             ></span>
                         </div>
                         <div class="flex items-center gap-2">
@@ -295,7 +296,7 @@
                     <button
                         type="button"
                         class="oh-modal__close"
-                        aria-label="Close"
+                        aria-label="{% trans 'Close' %}"
                         onclick="$(this).closest('.oh-modal--show').removeClass('oh-modal--show')"
                     >
                         <ion-icon name="close-outline"></ion-icon>

@@ -1,9 +1,7 @@
 {% load i18n %}
 <div class="oh-modal__dialog-header">
-    <span class="oh-modal__dialog-title"
-        >{{form.instance.title|default:_("Add Template")}}</span
-    >
-    <button class="oh-modal__close" aria-label="Close">
+    <span class="oh-modal__dialog-title">{{ form.instance.title|default:_("Add Template") }}</span>
+    <button class="oh-modal__close" aria-label="{% trans 'Close' %}">
         <ion-icon name="close-outline"></ion-icon>
     </button>
 </div>
@@ -17,15 +15,11 @@
             <div class="my-3" id="keyResultCard">
                 <div class="oh-card oh-card--no-shadow oh-card__body">
                     <div class="oh-input__group">
-                        <label class="oh-input__label mt-0" for="id_title"
-                            >{% trans "Title" %}</label
-                        >
+                        <label class="oh-input__label mt-0" for="id_title">{% trans "Title" %}</label>
                         {{ form.title }}
                     </div>
                     <div class="oh-input__group">
-                        <label class="oh-input__label mt-2" for="id_body"
-                            >{% trans "Body" %}</label
-                        >
+                        <label class="oh-input__label mt-2" for="id_body">{% trans "Body" %}</label>
                         {{ form.body }}
                     </div>
                     <div
@@ -35,38 +29,36 @@
                         {% trans "Hint: Type '{' to get sender or receiver data" %}
                     </div>
                     <div class="oh-input__group">
-                        <label class="oh-input__label mt-2" for="id_company_id"
-                            >{% trans "Company" %}</label
-                        >
+                        <label class="oh-input__label mt-2" for="id_company_id">{% trans "Company" %}</label>
                         {{ form.company_id }}
                     </div>
                 </div>
             </div>
         </div>
         {% if duplicate %}
-        <div class="oh-modal__dialog-footer p-0">
-            <button
-                id="submitFormButton"
-                type="submit"
-                class="oh-btn oh-btn--secondary oh-btn--shadow"
-            >
-                {% trans "Save Duplicate" %}
-            </button>
-        </div>
+            <div class="oh-modal__dialog-footer p-0">
+                <button
+                    id="submitFormButton"
+                    type="submit"
+                    class="oh-btn oh-btn--secondary oh-btn--shadow"
+                >
+                    {% trans "Save Duplicate" %}
+                </button>
+            </div>
         {% else %}
-        <div class="oh-modal__dialog-footer">
-            <button
-                type="submit"
-                class="oh-btn oh-btn--secondary oh-btn--shadow"
-            >
-                {% trans "Save" %}
-            </button>
-        </div>
+            <div class="oh-modal__dialog-footer">
+                <button
+                    type="submit"
+                    class="oh-btn oh-btn--secondary oh-btn--shadow"
+                >
+                    {% trans "Save" %}
+                </button>
+            </div>
         {% endif %}
     </form>
 </div>
 <script>
-        function initializeSummernote() {
+    function initializeSummernote() {
             var searchWords = {{ searchWords|safe }};
             var mentions = Object.keys(searchWords);
             $("#id_body").summernote({

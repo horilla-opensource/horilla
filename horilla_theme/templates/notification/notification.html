@@ -9,7 +9,7 @@
                 class="cursor-pointer text-xs group text-primary-600 w-7 h-7 bg-primary-100 hover:bg-primary-600 hover:text-white rounded-full transition duration-300 flex items-center justify-center"
                 hx-get="{% url 'notification-sound' %}"
                 hx-swap="none"
-                title="Notification Sound"
+                title="{% trans 'Notification Sound' %}"
                 onclick="event.stopPropagation();
                     event.preventDefault();
                     toggleNotificationIcon($(this))"
@@ -29,7 +29,7 @@
                 onclick="event.stopPropagation();event.preventDefault()"
                 hx-get="{% url 'read-notifications' %}"
                 hx-target="#notificationContainer"
-                title="Mark All as Read"
+                title="{% trans 'Mark All as Read' %}"
             >
                 <i class="fa-solid fa-check-double"></i>
             </span>

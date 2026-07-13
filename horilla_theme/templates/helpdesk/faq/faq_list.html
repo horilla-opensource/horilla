@@ -1,4 +1,4 @@
-{% load i18n static %}
+{% load i18n static i18n %}
 {% include 'filter_tags.html' %}
 
 <style>
@@ -92,9 +92,7 @@
                                         href="#"
                                         class="w-full text-dark-600 flex justify-start text-left px-3 py-1 hover:text-primary-600 transition duration-300"
                                         @click.prevent="submitDeleteFaq({{ faq.id }}); menu=false"
-                                    >
-                                        Delete
-                                    </a>
+                                    >{% trans 'Delete' %}</a>
                                 </form>
                             </li>
                         </ul>

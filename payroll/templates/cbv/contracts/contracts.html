@@ -2,124 +2,123 @@
 {% load i18n static %}
 
 {% block content %}
+    <style>
+        .terminated--dot {
+            background-color: black;
+        }
+        .expired--dot {
+            background-color: red;
+        }
+        .draft--dot {
+            background-color: rgba(128, 128, 128, 0.482);
+        }
+        .active--dot {
+            background-color: yellowgreen;
+        }
+        .status-terminated {
+            border-left: 3.4px solid black !important;
+            border-radius: 4px 0 0 4px;
+        }
 
-	<style>
-		.terminated--dot {
-			background-color: black;
-		}
-		.expired--dot {
-			background-color: red;
-		}
-		.draft--dot {
-			background-color: rgba(128, 128, 128, 0.482);
-		}
-		.active--dot {
-			background-color: yellowgreen;
-		}
-		.status-terminated {
-			border-left: 3.4px solid black !important;
-			border-radius: 4px 0 0 4px;
-		}
+        .status-expired {
+            border-left: 3.4px solid red !important;
+            border-radius: 4px 0 0 4px;
+        }
+        .status-draft {
+            border-left: 3.4px solid rgba(128, 128, 128, 0.482) !important;
+            border-radius: 4px 0 0 4px;
+        }
+        .status-active {
+            border-left: 3.4px solid yellowgreen !important;
+            border-radius: 4px 0 0 4px;
+        }
+    </style>
 
-		.status-expired {
-			border-left: 3.4px solid red !important;
-			border-radius: 4px 0 0 4px;
-		}
-		.status-draft {
-			border-left: 3.4px solid rgba(128, 128, 128, 0.482) !important;
-			border-radius: 4px 0 0 4px;
-		}
-		.status-active {
-			border-left: 3.4px solid yellowgreen !important;
-			border-radius: 4px 0 0 4px;
-		}
-	</style>
+    <div id="payrollContractsNavBar">
+        <div hx-get="{% url 'contracts-nav' %}" hx-trigger="load"></div>
+    </div>
 
-	<div id="payrollContractsNavBar">
-		<div hx-get="{% url 'contracts-nav' %}" hx-trigger="load"></div>
-	</div>
+    {% include "generic/components.html" %}
 
-	{% include "generic/components.html" %}
+    <div
+        class="oh-checkpoint-badge mb-2"
+        id="selectedInstances"
+        data-ids="[]"
+        data-clicked=""
+        style="display: none"
+    >
+    </div>
 
-	<div
-		class="oh-checkpoint-badge mb-2"
-		id="selectedInstances"
-		data-ids="[]"
-		data-clicked=""
-		style="display: none"
-	></div>
+    <div class="oh-wrapper" id="listContainer">
+        <div class="animated-background"></div>
+    </div>
 
-	<div class="oh-wrapper" id="listContainer">
-		<div class="animated-background"></div>
-	</div>
+    <script>
+        (function () {
+        	function syncContractsNavVisibility() {
+        		var nav = document.getElementById("payrollContractsNavBar");
+        		var list = document.getElementById("listContainer");
+        		if (!nav || !list) return;
+        		var isForm = !!list.querySelector("#contractFormTarget");
+        		nav.style.display = isForm ? "none" : "";
+        	}
+        	function refreshContractsListContainer() {
+        		if (typeof htmx === "undefined") return;
+        		var query = window.location.search || "";
+        		var url = "{% url 'contract-filter' %}" + query;
+        		htmx.ajax("GET", url, { target: "#listContainer", swap: "innerHTML" });
+        		var $msg = $("#reloadMessagesButton");
+        		if ($msg.length) $msg.click();
+        	}
+        	document.addEventListener("reloadPayrollContracts", function () {
+        		refreshContractsListContainer();
+        	});
+        	document.addEventListener("DOMContentLoaded", syncContractsNavVisibility);
+        	document.body.addEventListener("htmx:afterSwap", function (e) {
+        		if (e.detail && e.detail.target && e.detail.target.id === "listContainer") {
+        			syncContractsNavVisibility();
+        			setTimeout(syncContractsNavVisibility, 0);
+        		}
+        	});
+        	document.body.addEventListener("htmx:afterSettle", function (e) {
+        		if (e.detail && e.detail.target && e.detail.target.id === "listContainer") {
+        			syncContractsNavVisibility();
+        		}
+        	});
+        })();
+    </script>
 
-	<script>
-		(function () {
-			function syncContractsNavVisibility() {
-				var nav = document.getElementById("payrollContractsNavBar");
-				var list = document.getElementById("listContainer");
-				if (!nav || !list) return;
-				var isForm = !!list.querySelector("#contractFormTarget");
-				nav.style.display = isForm ? "none" : "";
-			}
-			function refreshContractsListContainer() {
-				if (typeof htmx === "undefined") return;
-				var query = window.location.search || "";
-				var url = "{% url 'contract-filter' %}" + query;
-				htmx.ajax("GET", url, { target: "#listContainer", swap: "innerHTML" });
-				var $msg = $("#reloadMessagesButton");
-				if ($msg.length) $msg.click();
-			}
-			document.addEventListener("reloadPayrollContracts", function () {
-				refreshContractsListContainer();
-			});
-			document.addEventListener("DOMContentLoaded", syncContractsNavVisibility);
-			document.body.addEventListener("htmx:afterSwap", function (e) {
-				if (e.detail && e.detail.target && e.detail.target.id === "listContainer") {
-					syncContractsNavVisibility();
-					setTimeout(syncContractsNavVisibility, 0);
-				}
-			});
-			document.body.addEventListener("htmx:afterSettle", function (e) {
-				if (e.detail && e.detail.target && e.detail.target.id === "listContainer") {
-					syncContractsNavVisibility();
-				}
-			});
-		})();
-	</script>
+    <div
+        class="oh-modal"
+        id="hxContractExport"
+        role="dialog"
+        aria-labelledby="hxContractExport"
+        aria-hidden="true"
+    >
+        <div class="oh-modal__dialog">
+            <div class="oh-modal__dialog-header">
+                <h2 class="oh-modal__dialog-title" id="hxContractExportLavel">
+                    {% trans "Export Contracts" %}
+                </h2>
+                <button class="oh-modal__close" aria-label="{% trans 'Close' %}">
+                    <ion-icon name="close-outline"></ion-icon>
+                </button>
+                <div
+                    class="oh-modal__dialog-body p-0 pt-2"
+                    id="hxContractExportModalBody"
+                >
+                    <form
+                        action="{%url 'contract-export' %}"
+                        method="get"
+                        onsubmit="event.stopPropagation();$(this).parents().find('.oh-modal--show').last().toggleClass('oh-modal--show')"
+                        id="hxContractExportForm"
+                    >
+                        {% csrf_token %}
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
 
-	<div
-		class="oh-modal"
-		id="hxContractExport"
-		role="dialog"
-		aria-labelledby="hxContractExport"
-		aria-hidden="true"
-	>
-		<div class="oh-modal__dialog">
-			<div class="oh-modal__dialog-header">
-				<h2 class="oh-modal__dialog-title" id="hxContractExportLavel">
-					{% trans "Export Contracts" %}
-				</h2>
-				<button class="oh-modal__close" aria-label="Close">
-					<ion-icon name="close-outline"></ion-icon>
-				</button>
-				<div
-					class="oh-modal__dialog-body p-0 pt-2"
-					id="hxContractExportModalBody"
-				>
-					<form
-						action="{%url 'contract-export' %}"
-						method="get"
-						onsubmit="event.stopPropagation();$(this).parents().find('.oh-modal--show').last().toggleClass('oh-modal--show');"
-						id="hxContractExportForm"
-					>
-						{% csrf_token %}
-					</form>
-				</div>
-			</div>
-		</div>
-	</div>
-
-	<script src="{% static 'cbv/actions.js' %}"></script>
-
+    <script src="{% static 'cbv/actions.js' %}"></script>
 {% endblock content %}

@@ -5,14 +5,14 @@
         <a
             class="oh-main__titlebar-search-toggle"
             role="button"
-            aria-label="Toggle Search"
+            aria-label="{% trans 'Toggle Search' %}"
             @click="searchShow = !searchShow"
         >
             <ion-icon
                 name="search-outline"
                 class="oh-main__titlebar-serach-icon md hydrated"
                 role="img"
-                aria-label="search outline"
+                aria-label="{% trans 'search outline' %}"
             ></ion-icon>
         </a>
     </div>
@@ -36,7 +36,7 @@
                     <input
                         type="text"
                         class="oh-input oh-input__icon"
-                        aria-label="Search Input"
+                        aria-label="{% trans 'Search Input' %}"
                         id="filter-key-result"
                         name="search"
                         placeholder="{% trans 'Search' %}"
@@ -55,7 +55,7 @@
                                     name="list-outline"
                                     role="img"
                                     class="md hydrated"
-                                    aria-label="list outline"
+                                    aria-label="{% trans 'list outline' %}"
                                 ></ion-icon>
                             </a>
                         </li>
@@ -69,7 +69,7 @@
                                     name="grid-outline"
                                     role="img"
                                     class="md hydrated"
-                                    aria-label="grid outline"
+                                    aria-label="{% trans 'grid outline' %}"
                                 ></ion-icon>
                             </a>
                         </li>
@@ -102,7 +102,7 @@
                                         class="md hydrated"
                                         name="add-outline"
                                         role="img"
-                                        aria-label="add outline"
+                                        aria-label="{% trans 'add outline' %}"
                                     ></ion-icon>
                                     {% trans "Create" %}
                                 </a>

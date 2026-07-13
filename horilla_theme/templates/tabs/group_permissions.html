@@ -1,4 +1,4 @@
-{% load i18n static %}
+{% load i18n static i18n %}
 
 {% if perms.auth.view_permission or perms.auth.view_group %}
     <div class="oh-tabs__contents p-3">
@@ -28,7 +28,7 @@
                         data-toggle="oh-modal-toggle"
                         data-target="#groupAssign"
                         onclick="event.stopPropagation()"
-                        title="Assign user groups"
+                        title="{% trans 'Assign user groups' %}"
                     >
                         <ion-icon name="person-add-outline" class="text-light"></ion-icon> Add
                     </button>

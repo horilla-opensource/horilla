@@ -1,104 +1,104 @@
 {% extends "index.html" %}
 {% block content %}
-{% include "generic/components.html" %}
-<style>
-    body.recruitment-candidate-detail #candidateListNavBar {
-        display: none !important;
-    }
-</style>
-<script>
-    function submitForm(elem) {
-        $(elem).siblings(".add_more_submit").click();
-    }
-    function enlargeImage(src, $element) {
-        var enlargeDocContainer = $element
-            .parents()
-            .closest("li")
-            .find("#enlargeDocContainer");
-        enlargeDocContainer.empty();
-        style =
-            "width:100%; height:90%; box-shadow: 0 10px 10px 0 rgba(0, 0, 0, 0.2), 0 6px 20px 0 rgba(0, 0, 0, 0.2); background:white";
-        var enlargedImage = $("<iframe>").attr({ src: src, style: style });
-        var name = $("<span>").text(src.split("/").pop().replace(/_/g, " "));
-        enlargeDocContainer.append(enlargedImage);
-        enlargeDocContainer.append(name);
-        setTimeout(function () {
-            enlargeDocContainer.show();
-
-            const iframe = document.querySelector("iframe").contentWindow;
-            var iframe_document = iframe.document;
-            iframe_image = iframe_document.getElementsByTagName("img")[0];
-            $(iframe_image).attr("style", "width:100%; height:100%;");
-        }, 100);
-    }
-
-    function hideEnlargeImage() {
-        var enlargeDocContainer = $(".enlargeDocContainer");
-        enlargeDocContainer.empty();
-    }
-
-    $(document).on("click", function (event) {
-        if (!$(event.target).closest("#enlargeDocContainer").length) {
-            hideEnlargeImage();
+    {% include "generic/components.html" %}
+    <style>
+        body.recruitment-candidate-detail #candidateListNavBar {
+            display: none !important;
         }
-    });
-
-    function hideCandidateListNav() {
-        var path = window.location.pathname.replace(/\/$/, "");
-        if (/\/recruitment\/candidate-view\/\d+$/.test(path)) {
-            document.body.classList.add("recruitment-candidate-detail");
-            $("#candidateListNavBar").hide();
+    </style>
+    <script>
+        function submitForm(elem) {
+            $(elem).siblings(".add_more_submit").click();
         }
-    }
+        function enlargeImage(src, $element) {
+            var enlargeDocContainer = $element
+                .parents()
+                .closest("li")
+                .find("#enlargeDocContainer");
+            enlargeDocContainer.empty();
+            style =
+                "width:100%; height:90%; box-shadow: 0 10px 10px 0 rgba(0, 0, 0, 0.2), 0 6px 20px 0 rgba(0, 0, 0, 0.2); background:white";
+            var enlargedImage = $("<iframe>").attr({ src: src, style: style });
+            var name = $("<span>").text(src.split("/").pop().replace(/_/g, " "));
+            enlargeDocContainer.append(enlargedImage);
+            enlargeDocContainer.append(name);
+            setTimeout(function () {
+                enlargeDocContainer.show();
 
-    $(document).ready(function () {
-        hideCandidateListNav();
-    });
-    document.body.addEventListener("htmx:afterSwap", hideCandidateListNav);
-</script>
-<style>
-    .enlarge-image-container {
-        display: none;
-        position: fixed;
-        top: 40%;
-        left: 40%;
-        transform: translate(-50%, -50%);
-        width: 30%;
-        height: 50%;
-        z-index: 9999;
-    }
+                const iframe = document.querySelector("iframe").contentWindow;
+                var iframe_document = iframe.document;
+                iframe_image = iframe_document.getElementsByTagName("img")[0];
+                $(iframe_image).attr("style", "width:100%; height:100%;");
+            }, 100);
+        }
 
-    .enlarge-image-container img {
-        max-width: 100%;
-        height: auto;
-        border-radius: 5%;
-    }
+        function hideEnlargeImage() {
+            var enlargeDocContainer = $(".enlargeDocContainer");
+            enlargeDocContainer.empty();
+        }
 
-    .oh-rate:not(:checked)>label {
-        font-size: 40px;
-    }
+        $(document).on("click", function (event) {
+            if (!$(event.target).closest("#enlargeDocContainer").length) {
+                hideEnlargeImage();
+            }
+        });
 
-    .star {
-        font-size: 20px !important;
-    }
+        function hideCandidateListNav() {
+            var path = window.location.pathname.replace(/\/$/, "");
+            if (/\/recruitment\/candidate-view\/\d+$/.test(path)) {
+                document.body.classList.add("recruitment-candidate-detail");
+                $("#candidateListNavBar").hide();
+            }
+        }
 
-    .ul {
-        margin: 0;
-    }
+        $(document).ready(function () {
+            hideCandidateListNav();
+        });
+        document.body.addEventListener("htmx:afterSwap", hideCandidateListNav);
+    </script>
+    <style>
+        .enlarge-image-container {
+            display: none;
+            z-index: 9999;
+            position: fixed;
+            top: 40%;
+            left: 40%;
+            width: 30%;
+            height: 50%;
+            transform: translate(-50%, -50%);
+        }
 
-    body {
-        background-color: #f9f9f9 !important;
-    }
-</style>
-<div class="oh-checkpoint-badge mb-2"
-id="selectedInstances"
-data-ids="[]"
-data-clicked=""
-style="display: none">
-</div>
+        .enlarge-image-container img {
+            max-width: 100%;
+            height: auto;
+            border-radius: 5%;
+        }
 
-<div class="oh-wrapper" hx-get="/recruitment/profile{{request.path}}?{{request.GET.urlencode}}&instance_ids={{request.GET.instance_ids}}" hx-trigger="load">
-</div>
+        .oh-rate:not(:checked) > label {
+            font-size: 40px;
+        }
+
+        .star {
+            font-size: 20px !important;
+        }
+
+        .ul {
+            margin: 0;
+        }
+
+        body {
+            background-color: #f9f9f9 !important;
+        }
+    </style>
+    <div class="oh-checkpoint-badge mb-2" id="selectedInstances" data-ids="[]" data-clicked="" style="display: none">
+    </div>
+
+    <div
+        class="oh-wrapper"
+        hx-get="/recruitment/profile{{request.path}}?{{request.GET.urlencode}}&instance_ids={{request.GET.instance_ids}}"
+        hx-trigger="load"
+    >
+    </div>
 {% endblock content %}
 
 {% comment %} {% extends 'index.html' %} {% load i18n %} {% load horillafilters %} {% load static %} {% block content %} {% load recruitmentfilters %}
@@ -229,7 +229,7 @@ style="display: none">
                                 alt="Username" style="border-radius:10%" onmouseover="showImage(this) $('#showImageContainer').addClass('enlarge-image-container'); " onmouseout="hideshowImage() $('#showImageContainer').removeClass('enlarge-image-container'); " />
                         </div>
                         <span class="oh-profile__active-badge oh-profile__active-badge--secondary"
-                            title="Active"></span>
+                            title="{% trans 'Active' %}"></span>
                     </div>
                     <div class="oh-profile__info-container">
                         <h1 class="oh-profile__info-name">{{candidate}}</h1>
@@ -474,7 +474,7 @@ style="display: none">
                     <div class="oh-modal__dialog" style="max-width: 550px">
                         <div class="oh-modal__dialog-header">
                             <button onclick="$(this).closest('#createModal').removeClass('oh-modal--show');"
-                                type="button" class="oh-modal__close" aria-label="Close"><ion-icon
+                                type="button" class="oh-modal__close" aria-label="{% trans 'Close' %}"><ion-icon
                                     name="close-outline"></ion-icon></button>
                         </div>
 
@@ -533,15 +533,15 @@ style="display: none">
                             {% elif question|slice:"0:7" == "rating_" %}
                             <div class="oh-rate">
                                 <input type="radio" id="star5{{question.id}}" value="5" disabled {% if answer_list.0 == '5' %} checked {% endif %} />
-                                <label for="star5{{question.id}}" title="5 Stars">5 {% trans "Stars" %}</label>
+                                <label for="star5{{question.id}}" title="{% trans '5 Stars' %}">5 {% trans "Stars" %}</label>
                                 <input type="radio" id="star4{{question.id}}" value="4" disabled {% if answer_list.0 == '4' %} checked {% endif %} />
-                                <label for="star4{{question.id}}" title="4 Stars">4 {% trans "Stars" %}</label>
+                                <label for="star4{{question.id}}" title="{% trans '4 Stars' %}">4 {% trans "Stars" %}</label>
                                 <input type="radio" id="star3{{question.id}}" value="3" disabled {% if answer_list.0 == '3' %} checked {% endif %} />
-                                <label for="star3{{question.id}}" title="3 Stars">3 {% trans "Stars" %}</label>
+                                <label for="star3{{question.id}}" title="{% trans '3 Stars' %}">3 {% trans "Stars" %}</label>
                                 <input type="radio" id="star2{{question.id}}" value="2" disabled {% if answer_list.0 == '2' %} checked {% endif %} />
-                                <label for="star2{{question.id}}" title="2 Stars">2 {% trans "Stars" %}</label>
+                                <label for="star2{{question.id}}" title="{% trans '2 Stars' %}">2 {% trans "Stars" %}</label>
                                 <input type="radio" id="star1{{question.id}}" value="1" disabled {% if answer_list.0 == '1' %} checked {% endif %} />
-                                <label for="star1{{question.id}}" title="1 Star">1 {% trans "Star" %}</label>
+                                <label for="star1{{question.id}}" title="{% trans '1 Star' %}">1 {% trans "Star" %}</label>
                             </div>
                             {% else %}
                             {{ answer_list.0 }}

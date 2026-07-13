@@ -11,7 +11,7 @@
                         name="ellipsis-vertical-sharp"
                         role="img"
                         class="md hydrated"
-                        aria-label="ellipsis vertical sharp"
+                        aria-label="{% trans 'ellipsis vertical sharp' %}"
                     ></ion-icon>
                 </button>
                 <div class="oh-dropdown__menu oh-sticky-table_dropdown" x-show="open" @click.outside="open = false">
@@ -165,7 +165,7 @@
 {% else %}
     <!-- start of empty page -->
     <div class="oh-empty">
-        <img src="{% static 'images/ui/search.svg' %}" class="oh-404__image" alt="Page not found. 404.">
+        <img src="{% static 'images/ui/search.svg' %}" class="oh-404__image" alt="{% trans 'Page not found. 404.' %}">
         <h1 class="oh-empty__title">{% trans "No Records found." %}</h1>
         <p class="oh-empty__subtitle">{% trans "No asset history available." %}</p>
     </div>

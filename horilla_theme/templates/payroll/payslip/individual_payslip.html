@@ -1,4 +1,4 @@
-{% extends 'index.html' %} {% block content %} {% load static i18n horillafilters %}
+{% extends 'index.html' %} {% block content %} {% load static i18n horillafilters i18n %}
 <style>
   .sent-to-employee{
     background-color: yellowgreen;
@@ -84,33 +84,23 @@
                         <ul class="text-sm">
                             <li>
                                 <button
-                                    class="px-4 py-1.5 hover:text-primary-600 transition duration-300 text-xs gap-4 items-center flex w-full">
-                                    New
-                                </button>
+                                    class="px-4 py-1.5 hover:text-primary-600 transition duration-300 text-xs gap-4 items-center flex w-full">{% trans 'New' %}</button>
                             </li>
                             <li>
                                 <button
-                                    class="px-4 py-1.5 hover:text-primary-600 transition duration-300 text-xs gap-4 items-center flex w-full">
-                                    in Progress
-                                </button>
+                                    class="px-4 py-1.5 hover:text-primary-600 transition duration-300 text-xs gap-4 items-center flex w-full">{% trans 'in Progress' %}</button>
                             </li>
                             <li>
                                 <button
-                                    class="px-4 py-1.5 hover:text-primary-600 transition duration-300 text-xs gap-4 items-center flex w-full">
-                                    On Hold
-                                </button>
+                                    class="px-4 py-1.5 hover:text-primary-600 transition duration-300 text-xs gap-4 items-center flex w-full">{% trans 'On Hold' %}</button>
                             </li>
                             <li>
                                 <button
-                                    class="px-4 py-1.5 hover:text-primary-600 transition duration-300 text-xs gap-4 items-center flex w-full">
-                                    Resolved
-                                </button>
+                                    class="px-4 py-1.5 hover:text-primary-600 transition duration-300 text-xs gap-4 items-center flex w-full">{% trans 'Resolved' %}</button>
                             </li>
                             <li>
                                 <button
-                                    class="px-4 py-1.5 hover:text-primary-600 transition duration-300 text-xs gap-4 items-center flex w-full">
-                                    Canceled
-                                </button>
+                                    class="px-4 py-1.5 hover:text-primary-600 transition duration-300 text-xs gap-4 items-center flex w-full">{% trans 'Canceled' %}</button>
                             </li>
                         </ul>
                     </div> {% endcomment %}

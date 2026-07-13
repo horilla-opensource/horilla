@@ -9,7 +9,8 @@
         data-ids="[]"
         data-clicked=""
         style="display: none"
-    ></div>
+    >
+    </div>
 
     <div class="oh-wrapper" id="listContainer">
         <div class="animated-background"></div>
@@ -23,7 +24,7 @@
         <div class="oh-modal__dialog">
             <div class="oh-modal__dialog-header">
                 <h2 class="oh-modal__dialog-title" id="shiftImportLavel">{% trans "Import Rotating Shift" %}</h2>
-                <button class="oh-modal__close" aria-label="Close">
+                <button class="oh-modal__close" aria-label="{% trans 'Close' %}">
                     <ion-icon name="close-outline"></ion-icon>
                 </button>
                 <div class="oh-modal__dialog-body p-0 pt-2" id="shiftImportModalBody">
@@ -45,12 +46,14 @@
                                         name="cloud-upload"
                                         class="oh-dropdown__import-form-icon md hydrated"
                                         role="img"
-                                        aria-label="cloud upload"
+                                        aria-label="{% trans 'cloud upload' %}"
                                     ></ion-icon>
                                     <span class="oh-dropdown__import-form-title">{% trans "Upload a File" %}</span>
-                                    <span class="oh-dropdown__import-form-text">{% trans "Drag and drop files here" %}</span>
+                                    <span
+                                        class="oh-dropdown__import-form-text"
+                                    >{% trans "Drag and drop files here" %}</span>
                                 </label>
-                                <input type="file" name="file" id="shiftImportFile" />
+                                <input type="file" name="file" id="shiftImportFile">
                                 <div class="d-inline float-end">
                                     <a
                                         href="#"
@@ -74,7 +77,7 @@
                                 type="submit"
                                 class="oh-btn oh-btn--small oh-btn--secondary w-100 mt-3"
                                 value="{% trans 'Upload' %}"
-                            />
+                            >
                         </div>
                     </form>
                 </div>

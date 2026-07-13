@@ -24,9 +24,9 @@
     </script>
 
     {% if bulk_select_option and queryset|length %}
-    <div class="ml-0">
-        {% include "generic/quick_actions.html" with margin_class="ml-0" %}
-    </div>
+        <div class="ml-0">
+            {% include "generic/quick_actions.html" with margin_class="ml-0" %}
+        </div>
     {% endif %}
 
     <button
@@ -61,17 +61,17 @@
                     </div>
                     <div class="flex items-center gap-2">
                         {% if view_id == "assignedleavedelete" and saved_filters.field == "leave_type_id" and perms.leave.add_availableleave and not group.grouper.is_compensatory_leave %}
-                        <a
-                            data-toggle="oh-modal-toggle"
-                            data-target="#genericModal"
-                            hx-get="{% url 'assign-one' group.grouper.id %}"
-                            hx-target="#genericModalBody"
-                            onclick="event.stopPropagation()"
-                            class="oh-btn oh-btn--secondary oh-btn--small"
-                            title="{% trans 'Add Employee' %}"
-                        >
-                            <ion-icon name="person-add-outline" class="me-1"></ion-icon>{% trans "Add Employee" %}
-                        </a>
+                            <a
+                                data-toggle="oh-modal-toggle"
+                                data-target="#genericModal"
+                                hx-get="{% url 'assign-one' group.grouper.id %}"
+                                hx-target="#genericModalBody"
+                                onclick="event.stopPropagation()"
+                                class="oh-btn oh-btn--secondary oh-btn--small"
+                                title="{% trans 'Add Employee' %}"
+                            >
+                                <ion-icon name="person-add-outline" class="me-1"></ion-icon>{% trans "Add Employee" %}
+                            </a>
                         {% endif %}
                         <span class="icon text-xl font-bold">+</span>
                     </div>

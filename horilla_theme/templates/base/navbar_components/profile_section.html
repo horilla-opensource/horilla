@@ -1,10 +1,10 @@
-{% load static i18n %}
+{% load static i18n i18n %}
 <button>
     <div class="flex gap-3">
         <div class="relative flex items-center cursor-pointer w-max">
             <img
                 src="{{request.user.employee_get.get_avatar}}"
-                alt="user"
+                alt="{% trans 'user' %}"
                 class="w-11 h-11 rounded-full"
                 loading="lazy"
             >

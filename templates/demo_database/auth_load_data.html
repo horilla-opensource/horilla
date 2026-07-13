@@ -1,6 +1,10 @@
 {% load i18n %}
 <div class="oh-modal__dialog-header pb-0">
-    <button class="oh-modal__close" aria-label="Close" onclick="this.closest('.oh-modal--show').classList.remove('oh-modal--show')">
+    <button
+        class="oh-modal__close"
+        aria-label="{% trans 'Close' %}"
+        onclick="this.closest('.oh-modal--show').classList.remove('oh-modal--show')"
+    >
         <ion-icon name="close-outline"></ion-icon>
     </button>
 </div>
@@ -19,22 +23,40 @@
                     <div class="oh-input-group">
                         <label class="oh-label" for="password">{% trans "Password" %}</label>
                         <div class="oh-password-input-container relative">
-                            <input type="password" id="load_data_password" name="load_data_password"
-                                class="oh-input oh-input--password w-100" placeholder="Database authentication password"
-                                required />
-                            <button type="button" class="oh-btn oh-btn--transparent oh-password-input--toggle top-[-7px]">
-                                <ion-icon class="oh-passowrd-input__show-icon" title="{% trans 'Show Password' %}"
-                                    name="eye-outline"></ion-icon>
-                                <ion-icon class="oh-passowrd-input__hide-icon d-none" title="{% trans 'Hide Password' %}"
-                                    name="eye-off-outline"></ion-icon>
+                            <input
+                                type="password"
+                                id="load_data_password"
+                                name="load_data_password"
+                                class="oh-input oh-input--password w-100"
+                                placeholder="{% trans 'Database authentication password' %}"
+                                required
+                            >
+                            <button
+                                type="button"
+                                class="oh-btn oh-btn--transparent oh-password-input--toggle top-[-7px]"
+                            >
+                                <ion-icon
+                                    class="oh-passowrd-input__show-icon"
+                                    title="{% trans 'Show Password' %}"
+                                    name="eye-outline"
+                                ></ion-icon>
+                                <ion-icon
+                                    class="oh-passowrd-input__hide-icon d-none"
+                                    title="{% trans 'Hide Password' %}"
+                                    name="eye-off-outline"
+                                ></ion-icon>
                             </button>
                         </div>
                     </div>
                 </div>
                 <div class="col-12 col-sm-12 col-md-12 col-lg-12">
                     <div class="oh-modal__dialog-footer p-0 pt-2">
-                        <button type="submit" class="oh-btn oh-btn--secondary-outline mt-2" role="button"
-                            onclick="$('#dataLoadAnimation').toggleClass('oh-modal--show')">
+                        <button
+                            type="submit"
+                            class="oh-btn oh-btn--secondary-outline mt-2"
+                            role="button"
+                            onclick="$('#dataLoadAnimation').toggleClass('oh-modal--show')"
+                        >
                             {% trans "Authenticate" %}
                             <ion-icon class="ms-2" name="arrow-forward-outline"></ion-icon>
                         </button>
@@ -44,7 +66,13 @@
         </form>
     </div>
 </div>
-<div class="oh-modal" id="dataLoadAnimation" role="dialog" aria-labelledby="dataLoadAnimationLabel" aria-hidden="true"
-    style="backdrop-filter: blur(8px);">
+<div
+    class="oh-modal"
+    id="dataLoadAnimation"
+    role="dialog"
+    aria-labelledby="dataLoadAnimationLabel"
+    aria-hidden="true"
+    style="backdrop-filter: blur(8px)"
+>
     {% include "demo_database/animation_load_data.html" %}
 </div>

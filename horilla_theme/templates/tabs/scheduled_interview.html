@@ -84,7 +84,7 @@
                             style="font-size: 24px"
                             role="img"
                             class="md hydrated"
-                            aria-label="close outline"
+                            aria-label="{% trans 'close outline' %}"
                         ></ion-icon>
                     </span>
                     {% if perms.recruitment.add_interview or request.user|is_stagemanager %}
@@ -102,7 +102,7 @@
                                 style="font-size: 19px"
                                 role="img"
                                 class="md hydrated"
-                                aria-label="create outline"
+                                aria-label="{% trans 'create outline' %}"
                             ></ion-icon>
                         </span>
                     {% endif %}
@@ -171,7 +171,7 @@
                 onclick="$(this).closest('#createModal').removeClass('oh-modal--show')"
                 type="button"
                 class="oh-modal__close"
-                aria-label="Close"
+                aria-label="{% trans 'Close' %}"
             >
                 <ion-icon name="close-outline"></ion-icon>
             </button>

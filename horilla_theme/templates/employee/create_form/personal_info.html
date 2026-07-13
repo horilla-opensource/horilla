@@ -2,7 +2,7 @@
 <div class="oh-modal" id="badgeModal" role="dialog" aria-hidden="true">
     <div class="oh-modal__dialog" style="max-width: 550px">
         <div class="oh-modal__dialog-header">
-            <button type="button" class="oh-modal__close" aria-label="Close">
+            <button type="button" class="oh-modal__close" aria-label="{% trans 'Close' %}">
                 <ion-icon name="close-outline"></ion-icon>
             </button>
         </div>
@@ -61,7 +61,7 @@
                             <button
                                 class="oh-modal__close"
                                 onclick="$(this).closest('.oh-modal--show').removeClass('oh-modal--show'); event.preventDefault()"
-                                aria-label="Close"
+                                aria-label="{% trans 'Close' %}"
                             >
                                 <ion-icon name="close-outline"></ion-icon>
                             </button>
@@ -73,7 +73,7 @@
                                     <img
                                         src="https://ui-avatars.com/api/?name=N+P&background=random"
                                         class="oh-profile-section__modal-image preview"
-                                        alt="Username"
+                                        alt="{% trans 'Username' %}"
                                     >
                                 </div>
                                 {{ form.employee_profile }}

@@ -1,3 +1,4 @@
+{% load i18n %}
 <nav class="oh-navbar">
   <div class="oh-wrapper oh-navbar__wrapper">
     <div class="oh-navbar__toggle-container">
@@ -47,7 +48,7 @@
                   <p class="oh-navbar__notification-text"
                     :class="markRead ? '': 'oh-navbar__notification-text--unread' ">Item has been deleted from the
                     records.</p>
-                  <span class="oh-navbar__notification-date">Jan 03, 2023, at 11:13AM</span>
+                  <span class="oh-navbar__notification-date">{% trans "Jan 03, 2023, at 11:13AM" %}</span>
                 </div>
                 <div>
                   <div class="oh-navbar__notification-image">
@@ -64,7 +65,7 @@
                   <p class="oh-navbar__notification-text"
                     :class="markRead ? '': 'oh-navbar__notification-text--unread' ">Jane mentioned you in a post.
                   </p>
-                  <span class="oh-navbar__notification-date">Jan 01, 2023, at 05:13PM</span>
+                  <span class="oh-navbar__notification-date">{% trans "Jan 01, 2023, at 05:13PM" %}</span>
                 </div>
                 <div>
                   <div class="oh-navbar__notification-image">
@@ -81,7 +82,7 @@
                   <p class="oh-navbar__notification-text"
                     :class="markRead ? '': 'oh-navbar__notification-text--unread' ">Aloyna share a document with
                     you.</p>
-                  <span class="oh-navbar__notification-date">Dec 31, 2022, at 02:00PM</span>
+                  <span class="oh-navbar__notification-date">{% trans "Dec 31, 2022, at 02:00PM" %}</span>
                 </div>
                 <div>
                   <div class="oh-navbar__notification-image">
@@ -99,7 +100,7 @@
                   <p class="oh-navbar__notification-text"
                     :class="markRead ? '': 'oh-navbar__notification-text--unread' ">New event has been scheduled.
                   </p>
-                  <span class="oh-navbar__notification-date">Dec 31, 2022, at 10:27AM</span>
+                  <span class="oh-navbar__notification-date">{% trans "Dec 31, 2022, at 10:27AM" %}</span>
                 </div>
                 <div>
                   <div class="oh-navbar__notification-image">
@@ -110,7 +111,7 @@
             </ul>
           </div>
           <div class="oh-navbar__notification-footer" x-show="visible">
-            <a href="#" class="oh-navbar__notification-tray-link">View all comments</a>
+            <a href="#" class="oh-navbar__notification-tray-link">{% trans "View all comments" %}</a>
           </div>
           <div class="oh-navbar__notification-empty" x-show="!visible">
             <img src="./static/images/ui/happy.svg" alt="All caught up" width="50" height="50" loading="lazy" />

@@ -1,59 +1,61 @@
 {% extends 'index.html' %}
 {% block content %}
-{% load i18n %}{% load static %}{% load basefilters %}
+    {% load i18n %}{% load static %}{% load basefilters %}
 
-<div class="oh-wrapper">
-    {% include 'skill_zone/skill_zone_nav.html' %}
-    <div id="skill_zone_container">
-      {% if request.GET.get.view == 'card' %}
-        {% include "skill_zone/skill_zone_card.html" %}
-      {% else %}
-        {% include "skill_zone/skill_zone_list.html" %}
-        {% endif %}
-    </div>
-</div>
-
-<div class="oh-modal" id="editCandModal" role="dialog" aria-hidden="true">
-    <div class="oh-modal__dialog" style="max-width: 550px">
-        <div class="oh-modal__dialog-header">
-        <button type="button" class="oh-modal__close" aria-label="Close"><ion-icon name="close-outline"></ion-icon></button>
+    <div class="oh-wrapper">
+        {% include 'skill_zone/skill_zone_nav.html' %}
+        <div id="skill_zone_container">
+            {% if request.GET.get.view == 'card' %}
+                {% include "skill_zone/skill_zone_card.html" %}
+            {% else %}
+                {% include "skill_zone/skill_zone_list.html" %}
+            {% endif %}
         </div>
-        <div class="oh-modal__dialog-body" id="editCandTarget"></div>
     </div>
-</div>
-{% include "generic/components.html" %}
-<div class="oh-modal" id="createModal" role="dialog" aria-hidden="true">
-    <div class="oh-modal__dialog" style="max-width: 550px">
-        <div class="oh-modal__dialog-header">
-        <button type="button" class="oh-modal__close" aria-label="Close"><ion-icon name="close-outline"></ion-icon></button>
+
+    <div class="oh-modal" id="editCandModal" role="dialog" aria-hidden="true">
+        <div class="oh-modal__dialog" style="max-width: 550px">
+            <div class="oh-modal__dialog-header">
+                <button type="button" class="oh-modal__close" aria-label="{% trans 'Close' %}">
+                    <ion-icon name="close-outline"></ion-icon>
+                </button>
+            </div>
+            <div class="oh-modal__dialog-body" id="editCandTarget"></div>
         </div>
-
-        <div class="oh-modal__dialog-body" id="createTarget"></div>
     </div>
-</div>
+    {% include "generic/components.html" %}
+    <div class="oh-modal" id="createModal" role="dialog" aria-hidden="true">
+        <div class="oh-modal__dialog" style="max-width: 550px">
+            <div class="oh-modal__dialog-header">
+                <button type="button" class="oh-modal__close" aria-label="{% trans 'Close' %}">
+                    <ion-icon name="close-outline"></ion-icon>
+                </button>
+            </div>
 
-<script>
-    if (window._skillZoneContainerReloadHandler) {
-        document.body.removeEventListener(
+            <div class="oh-modal__dialog-body" id="createTarget"></div>
+        </div>
+    </div>
+
+    <script>
+        if (window._skillZoneContainerReloadHandler) {
+            document.body.removeEventListener(
+                "skillZoneContainerReload",
+                window._skillZoneContainerReloadHandler
+            );
+        }
+        window._skillZoneContainerReloadHandler = function () {
+            var $filter = $(".filterButton").first();
+            if ($filter.length) {
+                $filter.click();
+            }
+            var $msg = $("#reloadMessagesButton");
+            if ($msg.length) {
+                $msg.click();
+            }
+        };
+        document.body.addEventListener(
             "skillZoneContainerReload",
             window._skillZoneContainerReloadHandler
         );
-    }
-    window._skillZoneContainerReloadHandler = function () {
-        var $filter = $(".filterButton").first();
-        if ($filter.length) {
-            $filter.click();
-        }
-        var $msg = $("#reloadMessagesButton");
-        if ($msg.length) {
-            $msg.click();
-        }
-    };
-    document.body.addEventListener(
-        "skillZoneContainerReload",
-        window._skillZoneContainerReloadHandler
-    );
-</script>
-
-
+    </script>
 {% endblock %}

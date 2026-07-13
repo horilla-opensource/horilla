@@ -4,7 +4,7 @@
     <h2 class="oh-modal__dialog-title m-0" id="objectDetailsModalLabel">
         {% trans "Details" %}
     </h2>
-    <button class="oh-modal__close" aria-label="Close">
+    <button class="oh-modal__close" aria-label="{% trans 'Close' %}">
         <ion-icon name="close-outline"></ion-icon>
     </button>
 </div>
@@ -21,7 +21,7 @@
                 name="chevron-back-outline"
                 class="md hydrated"
                 role="img"
-                aria-label="chevron back outline"
+                aria-label="{% trans 'chevron back outline' %}"
             ></ion-icon>
         </button>
 
@@ -35,7 +35,7 @@
                 name="chevron-forward-outline"
                 class="md hydrated"
                 role="img"
-                aria-label="chevron forward outline"
+                aria-label="{% trans 'chevron forward outline' %}"
             ></ion-icon>
         </button>
     </div>
@@ -155,7 +155,7 @@
                         name="eye-outline"
                         class="md hydrated ml-1 mt-1"
                         role="img"
-                        aria-label="chevron back outline"
+                        aria-label="{% trans 'chevron back outline' %}"
                     ></ion-icon>
                 </span>
             </div>
@@ -170,7 +170,7 @@
                 class="oh-btn oh-btn--info w-100"
                 title="{% trans 'Edit' %}"
             >
-                <ion-icon name="lock-open-outline" role="img" class="md hydrated" aria-label="create outline">
+                <ion-icon name="lock-open-outline" role="img" class="md hydrated" aria-label="{% trans 'create outline' %}">
                 </ion-icon>
             </a>
         {% elif request.GET.ot %}
@@ -187,7 +187,7 @@
                             style="width: 50%"
                             title='{% trans "Edit" %}'
                         >
-                            <ion-icon name="create-outline" role="img" class="md hydrated" aria-label="create outline">
+                            <ion-icon name="create-outline" role="img" class="md hydrated" aria-label="{% trans 'create outline' %}">
                             </ion-icon>
                         </a>
                         {% if attendance_request.attendance_overtime_approve %}
@@ -261,7 +261,7 @@
                                     name="trash-outline"
                                     role="img"
                                     class="md hydrated"
-                                    aria-label="create outline"
+                                    aria-label="{% trans 'create outline' %}"
                                 ></ion-icon>
                             </button>
                         </form>
@@ -282,7 +282,7 @@
                             style="width: 50%"
                             title='{% trans "Edit" %}'
                         >
-                            <ion-icon name="create-outline" role="img" class="md hydrated" aria-label="create outline">
+                            <ion-icon name="create-outline" role="img" class="md hydrated" aria-label="{% trans 'create outline' %}">
                             </ion-icon>
                         </a>
                         <a
@@ -312,7 +312,7 @@
                                     name="trash-outline"
                                     role="img"
                                     class="md hydrated"
-                                    aria-label="create outline"
+                                    aria-label="{% trans 'create outline' %}"
                                 ></ion-icon>
                             </button>
                         </form>
@@ -333,13 +333,12 @@
                             style="width: 50%"
                             title='{% trans "Edit" %}'
                         >
-                            <ion-icon name="create-outline" role="img" class="md hydrated" aria-label="create outline">
+                            <ion-icon name="create-outline" role="img" class="md hydrated" aria-label="{% trans 'create outline' %}">
                             </ion-icon>
                         </a>
                         <form
                             action="{% url 'attendance-delete' attendance_request.id  %}"
-                            onsubmit="return confirm('{% trans "
-                            Are you sure want to delete this attendance?" %}')"
+                            onsubmit="return confirm('{% trans "Are you sure want to delete this attendance?" %}')"
                             hx-target="#tab_contents"
                             method="post"
                             style="width: 50%"
@@ -355,7 +354,7 @@
                                     name="trash-outline"
                                     role="img"
                                     class="md hydrated"
-                                    aria-label="create outline"
+                                    aria-label="{% trans 'create outline' %}"
                                 ></ion-icon>
                             </button>
                         </form>

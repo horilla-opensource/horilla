@@ -1,4 +1,5 @@
-{% load basefilters i18n static %}
+{% load i18n %}
+{% load basefilters i18n static i18n %}
 <style>
     input:focus {
         outline: 0.5px solid #7592aa5c !important;
@@ -21,10 +22,10 @@
                 hx-trigger="keyup changed delay:.2s"
                 type="text"
                 id="permissionSearch"
-                placeholder="Search"
+                placeholder="{% trans 'Search' %}"
                 name="search"
                 class="text-color-600 ps-8 p-1.5 pb-2 placeholder:text-xs w-full border border-dark-50 rounded-md focus-visible:outline-0 placeholder:text-dark-100 text-sm [transition:.3s] focus:border-primary-600"
-                aria-label="Search Input"
+                aria-label="{% trans 'Search Input' %}"
             >
             <i class="fas fa-search absolute left-3 top-[1px] bottom-0 m-auto flex items-center opacity-50 text-xs"></i>
         </div>
@@ -74,7 +75,7 @@
                         .closest('.oh-modal--show')
                         .removeClass('oh-modal--show');
                     event.preventDefault()"
-                aria-label="Close"
+                aria-label="{% trans 'Close' %}"
             >
                 <ion-icon name="close-outline"></ion-icon>
             </button>
@@ -109,7 +110,7 @@
                         .closest('.oh-modal--show')
                         .removeClass('oh-modal--show');
                     event.preventDefault"
-                aria-label="Close"
+                aria-label="{% trans 'Close' %}"
             >
                 <ion-icon name="close-outline"></ion-icon>
             </button>

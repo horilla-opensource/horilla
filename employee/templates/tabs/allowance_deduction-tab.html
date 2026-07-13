@@ -29,7 +29,7 @@
                         class="oh-btn oh-btn--secondary-outline oh-stop-prop oh-accordion-meta__btn p-2" title="{% trans 'Add' %}"
                         hx-get="{% url 'add-bonus' %}?employee_id={{employee.id}}" hx-target="#objectCreateModalTarget"
                         data-target="#objectCreateModal" data-toggle="oh-modal-toggle">
-                        <ion-icon class="md hydrated" name="add-outline" role="img" aria-label="add outline"></ion-icon>
+                        <ion-icon class="md hydrated" name="add-outline" role="img" aria-label="{% trans 'add outline' %}"></ion-icon>
                     </button>
                 {% endif %}
             </li>
@@ -106,7 +106,7 @@
                                                         href="{% url 'update-allowance' allowance.id %}"
                                                         title='{% trans "Update" %}'>
                                                         <ion-icon name="create-outline" role="img" class="md hydrated"
-                                                            style="color: blue" aria-label="create outline"></ion-icon>
+                                                            style="color: blue" aria-label="{% trans 'create outline' %}"></ion-icon>
                                                     </a>
 
                                                     <a class="oh-btn oh-btn--danger-outline oh-btn--light-bkg w-100"
@@ -115,7 +115,7 @@
                                                         hx-post="{% url 'delete-employee-allowance' allowance.id %}"
                                                         hx-target="#AllowanceAndDeduction" title="{% trans 'Delete' %}">
                                                         <ion-icon name="trash-outline" role="img" class="md hydrated"
-                                                            aria-label="trash outline"></ion-icon>
+                                                            aria-label="{% trans 'trash outline' %}"></ion-icon>
                                                     </a>
                                                 </div>
                                             </div>
@@ -207,7 +207,7 @@
                                                         href="{% url 'update-deduction' deduction.id %}"
                                                         title="{% trans 'Update' %}">
                                                         <ion-icon name="create-outline" role="img" class="md hydrated"
-                                                            style="color: blue" aria-label="create outline"></ion-icon>
+                                                            style="color: blue" aria-label="{% trans 'create outline' %}"></ion-icon>
                                                     </a>
                                                     <a class="oh-btn oh-btn--danger-outline oh-btn--light-bkg w-100"
                                                         onclick="event.preventDefault();event.stopPropagation();"
@@ -215,7 +215,7 @@
                                                         hx-post="{% url 'delete-deduction' deduction.id employee.id %}"
                                                         hx-target="#allowance_deduction" title="{% trans 'Delete' %}">
                                                         <ion-icon name="trash-outline" role="img" class="md hydrated"
-                                                            aria-label="trash outline"></ion-icon>
+                                                            aria-label="{% trans 'trash outline' %}"></ion-icon>
                                                     </a>
                                                 </div>
                                             </div>

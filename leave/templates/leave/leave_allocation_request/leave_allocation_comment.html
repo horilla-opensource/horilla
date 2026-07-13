@@ -47,7 +47,7 @@
 					{% if request.user.employee_get == comment.employee_id or perms.leave.delete_leaveallocationrequestcomment or request.user|is_reportingmanager %}
 						<span class="float-end" hx-get="{% url 'allocation-request-delete-comment' comment.id %}"
 							hx-swap="outerHTML" hx-target="#leaveAlloCommentItem{{comment.id}}" hx-on:click="setTimeout(() => {reloadMessage(this);},100);">
-							<ion-icon name="close-outline" style="font-size: 24px" role="img" class="md hydrated" aria-label="close outline"></ion-icon>
+							<ion-icon name="close-outline" style="font-size: 24px" role="img" class="md hydrated" aria-label="{% trans 'close outline' %}"></ion-icon>
 						</span>
 					{% endif %}
 				</span>
@@ -74,7 +74,7 @@
 							{% csrf_token %}
 							<label for="addFile_{{comment.id}}" title="{% trans 'Add Files' %}"><ion-icon name="add-outline"
 									style="font-size: 24px" role="img" class="md hydrated"
-									aria-label="add outline"></ion-icon></label>
+									aria-label="{% trans 'add outline' %}"></ion-icon></label>
 							<input type="file" name="files" class="d-none" multiple="true" accept=".jpg, .jpeg, .png, .pdf"
 								id="addFile_{{comment.id}}" onchange="submitForm(this)" />
 							<input type="submit" class="d-none add_more_submit" value="save" />

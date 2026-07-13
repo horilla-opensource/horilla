@@ -9,7 +9,9 @@
                 {% trans 'Create grace time' %}
             {% endif %}
         </h2>
-        <button class="oh-modal__close" aria-label="Close"><ion-icon name="close-outline"></ion-icon></button>
+        <button class="oh-modal__close" aria-label="{% trans 'Close' %}">
+            <ion-icon name="close-outline"></ion-icon>
+        </button>
     </div>
     <div class="oh-modal__dialog-body" id="">
         {% if form.errors %}

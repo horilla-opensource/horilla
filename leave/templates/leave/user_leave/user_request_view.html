@@ -1,451 +1,451 @@
-{% extends 'index.html' %} {% block content %} {% load static %} {% load i18n %}
-<style>
-	.diff-cell {
-		background: rgba(255, 166, 0, 0.158);
-	}
-    .tooltip {
-        position: relative;
-        display: inline-block; /* Ensures that the tooltip container doesn't stretch to the full width */
-    }
+{% extends 'index.html' %}
+{% block content %}
+    {% load static %}
+    {% load i18n %}
+    <style>
+        .diff-cell {
+            background: rgba(255, 166, 0, 0.158);
+        }
+        .tooltip {
+            display: inline-block; /* Ensures that the tooltip container doesn't stretch to the full width */
+            position: relative;
+        }
 
-    .tooltip .tooltiptext {
-        visibility: hidden;
-        width: auto; /* Allow the tooltip width to adjust based on content */
-        max-width: auto; /* Limit the maximum width of the tooltip to prevent it from overflowing */
-        background-color: hsl(8,77%,56%);
-        color: white;
-        text-align: center;
-        border-radius: 6px;
-        padding: 5px;
-        position: absolute;
-        z-index: 1;
-        bottom: 5%;
-        left: 50%;
-        transform: translateX(5%);
-        opacity: 0;
-        transition: opacity 0.3s;
-        white-space: nowrap; /* Prevents the text from wrapping */
-        overflow: hidden; /* Hides any overflowed content */
-        font-size:15px;
-    }
+        .tooltip .tooltiptext {
+            visibility: hidden;
+            z-index: 1;
+            position: absolute;
+            bottom: 5%;
+            left: 50%;
+            width: auto; /* Allow the tooltip width to adjust based on content */
+            max-width: auto; /* Limit the maximum width of the tooltip to prevent it from overflowing */
+            padding: 5px;
+            overflow: hidden; /* Hides any overflowed content */
+            transform: translateX(5%);
+            border-radius: 6px;
+            background-color: hsl(8, 77%, 56%);
+            color: white;
+            font-size: 15px;
+            text-align: center;
+            white-space: nowrap; /* Prevents the text from wrapping */
+            opacity: 0;
+            transition: opacity 0.3s;
+        }
 
-    .tooltip:hover .tooltiptext {
-        visibility: visible;
-        opacity: 1;
-    }
+        .tooltip:hover .tooltiptext {
+            visibility: visible;
+            opacity: 1;
+        }
+    </style>
 
-</style>
+    <section class="oh-wrapper oh-main__topbar" x-data="{searchShow: false}">
+        <div class="oh-main__titlebar oh-main__titlebar--left">
+            <h1 class="oh-main__titlebar-title fw-bold">
+                {% trans "My Leave Requests" %}
+            </h1>
+            <a
+                class="oh-main__titlebar-search-toggle"
+                role="button"
+                aria-label="{% trans 'Toggle Search' %}"
+                @click="searchShow = !searchShow"
+            >
+                <ion-icon
+                    name="search-outline"
+                    class="oh-main__titlebar-serach-icon"
+                ></ion-icon>
+            </a>
+        </div>
+        <div class="oh-main__titlebar oh-main__titlebar--right">
+            {% if leave_requests %}
+                <form
+                    hx-get="{% url 'user-request-filter' %}"
+                    hx-target="#userRequest"
+                    id="filterForm"
+                    class="d-flex"
+                    onsubmit="event.preventDefault()"
+                >
+                    <div
+                        class="oh-input-group oh-input__search-group"
+                        :class="searchShow ? 'oh-input__search-group--show' : ''"
+                    >
+                        <ion-icon
+                            name="search-outline"
+                            class="oh-input-group__icon oh-input-group__icon--left"
+                        ></ion-icon>
+                        <input
+                            type="text"
+                            class="oh-input oh-input__icon"
+                            aria-label="{% trans 'Search Input' %}"
+                            placeholder="{% trans 'Search' %}"
+                            name="leave_type"
+                            onkeyup="$('.filterButton')[0].click()"
+                        >
+                    </div>
+                    <div class="oh-main__titlebar-button-container">
+                        <div class="oh-dropdown" x-data="{open: false}">
+                            <button
+                                class="oh-btn ml-2"
+                                @click="open = !open"
+                                onclick="event.preventDefault()"
+                            >
+                                <ion-icon name="filter" class="mr-1"></ion-icon>{% trans "Filter" %}
+                                <div id="filterCount"></div>
+                            </button>
+                            <div
+                                class="oh-dropdown__menu oh-dropdown__menu--right oh-dropdown__filter p-4"
+                                x-show="open"
+                                style="display: none"
+                                @click.outside="open = false"
+                            >
+                                <div class="oh-dropdown__filter-body">
+                                    <div class="oh-accordion">
+                                        <div
+                                            class="oh-accordion-header"
+                                            onclick="event.stopImmediatePropagation();$(this).parent().toggleClass('oh-accordion--show')"
+                                        >
+                                            {% trans "Leave Request" %}
+                                        </div>
+                                        <div class="oh-accordion-body">
+                                            <div class="row">
+                                                <div class="col-sm-12 col-md-12 col-lg-12">
+                                                    <div class="oh-input-group">
+                                                        <label class="oh-label">{% trans "Leave Type" %}</label>
+                                                        {{ form.leave_type_id }}
+                                                    </div>
+                                                </div>
+                                                <div class="col-sm-12 col-md-12 col-lg-6">
+                                                    <div class="oh-input-group">
+                                                        <label class="oh-label">{% trans "Start Date" %}</label>
+                                                        {{ form.start_date }}
+                                                    </div>
+                                                </div>
 
-<section class="oh-wrapper oh-main__topbar" x-data="{searchShow: false}">
-	<div class="oh-main__titlebar oh-main__titlebar--left">
-		<h1 class="oh-main__titlebar-title fw-bold">
-			{% trans "My Leave Requests" %}
-		</h1>
-		<a
-			class="oh-main__titlebar-search-toggle"
-			role="button"
-			aria-label="Toggle Search"
-			@click="searchShow = !searchShow"
-		>
-			<ion-icon
-				name="search-outline"
-				class="oh-main__titlebar-serach-icon"
-			></ion-icon>
-		</a>
-	</div>
-	<div class="oh-main__titlebar oh-main__titlebar--right">
-		{% if leave_requests %}
-		<form
-			hx-get="{% url 'user-request-filter' %}"
-			hx-target="#userRequest"
-			id="filterForm"
-			class="d-flex"
-			onsubmit="event.preventDefault()"
-		>
-			<div
-				class="oh-input-group oh-input__search-group"
-				:class="searchShow ? 'oh-input__search-group--show' : ''"
-			>
-				<ion-icon
-					name="search-outline"
-					class="oh-input-group__icon oh-input-group__icon--left"
-				></ion-icon>
-				<input
-					type="text"
-					class="oh-input oh-input__icon"
-					aria-label="Search Input"
-					placeholder="{% trans 'Search' %}"
-					name="leave_type"
-					onkeyup="$('.filterButton')[0].click();"
-				/>
-			</div>
-			<div class="oh-main__titlebar-button-container">
-				<div class="oh-dropdown" x-data="{open: false}">
-					<button
-						class="oh-btn ml-2"
-						@click="open = !open"
-						onclick="event.preventDefault()"
-					>
-						<ion-icon name="filter" class="mr-1"></ion-icon>{% trans "Filter" %}
-						<div id="filterCount"></div>
-					</button>
-					<div
-						class="oh-dropdown__menu oh-dropdown__menu--right oh-dropdown__filter p-4"
-						x-show="open"
-						style="display: none"
-						@click.outside="open = false"
-					>
-						<div class="oh-dropdown__filter-body">
-							<div class="oh-accordion">
-								<div
-									class="oh-accordion-header"
-									onclick="event.stopImmediatePropagation();$(this).parent().toggleClass('oh-accordion--show');"
-								>
-									{% trans "Leave Request" %}
-								</div>
-								<div class="oh-accordion-body">
-									<div class="row">
-										<div class="col-sm-12 col-md-12 col-lg-12">
-											<div class="oh-input-group">
-												<label class="oh-label">{% trans "Leave Type" %}</label>
-												{{form.leave_type_id}}
-											</div>
-										</div>
-										<div class="col-sm-12 col-md-12 col-lg-6">
-											<div class="oh-input-group">
-												<label class="oh-label">{% trans "Start Date" %}</label>
-												{{form.start_date}}
-											</div>
-										</div>
+                                                <div class="col-sm-12 col-md-12 col-lg-6">
+                                                    <div class="oh-input-group">
+                                                        <label class="oh-label">{% trans "End Date" %}</label>
+                                                        {{ form.end_date }}
+                                                    </div>
+                                                </div>
+                                                <div class="col-sm-12 col-md-12">
+                                                    <div class="oh-input-group">
+                                                        <label class="oh-label">{% trans "Status" %}</label>
+                                                        {{ form.status }}
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
 
-										<div class="col-sm-12 col-md-12 col-lg-6">
-											<div class="oh-input-group">
-												<label class="oh-label">{% trans "End Date" %}</label>
-												{{form.end_date}}
-											</div>
-										</div>
-										<div class="col-sm-12 col-md-12">
-											<div class="oh-input-group">
-												<label class="oh-label">{% trans "Status" %}</label>
-												{{form.status}}
-											</div>
-										</div>
-									</div>
-								</div>
-							</div>
+                                    <div class="oh-accordion">
+                                        <div
+                                            class="oh-accordion-header"
+                                            onclick="event.stopImmediatePropagation();$(this).parent().toggleClass('oh-accordion--show')"
+                                        >
+                                            {% trans "Advanced" %}
+                                        </div>
+                                        <div class="oh-accordion-body">
+                                            <div class="row">
+                                                <div class="col-sm-12 col-md-12 col-lg-6">
+                                                    <div class="oh-input-group">
+                                                        <label class="oh-label">{% trans "From Date" %}</label>
+                                                        {{ form.from_date }}
+                                                    </div>
+                                                </div>
 
-							<div class="oh-accordion">
-								<div
-									class="oh-accordion-header"
-									onclick="event.stopImmediatePropagation();$(this).parent().toggleClass('oh-accordion--show');"
-								>
-									{% trans "Advanced" %}
-								</div>
-								<div class="oh-accordion-body">
-									<div class="row">
-										<div class="col-sm-12 col-md-12 col-lg-6">
-											<div class="oh-input-group">
-												<label class="oh-label">{% trans "From Date" %}</label>
-												{{form.from_date}}
-											</div>
-										</div>
+                                                <div class="col-sm-12 col-md-12 col-lg-6">
+                                                    <div class="oh-input-group">
+                                                        <label class="oh-label">{% trans "To Date" %}</label>
+                                                        {{ form.to_date }}
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="oh-dropdown__filter-footer">
+                                    <button
+                                        class="oh-btn oh-btn--secondary oh-btn--small w-100 filterButton"
+                                        type="submit"
+                                    >
+                                        {% trans "Filter" %}
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
 
-										<div class="col-sm-12 col-md-12 col-lg-6">
-											<div class="oh-input-group">
-												<label class="oh-label">{% trans "To Date" %}</label>
-												{{form.to_date}}
-											</div>
-										</div>
-									</div>
-								</div>
-							</div>
-						</div>
-						<div class="oh-dropdown__filter-footer">
-							<button
-								class="oh-btn oh-btn--secondary oh-btn--small w-100 filterButton"
-								type="submit"
-							>
-								{% trans "Filter" %}
-							</button>
-						</div>
-					</div>
-				</div>
+                        <div class="oh-dropdown" x-data="{open: false}">
+                            <button
+                                class="oh-btn ml-2"
+                                @click="open = !open"
+                                onclick="event.preventDefault()"
+                            >
+                                <ion-icon name="library-outline" class="mr-1"></ion-icon>
+                                {% trans "Group By" %}
+                            </button>
+                            <div
+                                class="oh-dropdown__menu oh-dropdown__menu--right oh-dropdown__filter p-4"
+                                x-show="open"
+                                @click.outside="open = false"
+                                style="display: none"
+                            >
+                                <div class="oh-accordion">
+                                    <label>{% trans "Group By" %}</label>
+                                    <div class="row">
+                                        <div class="col-sm-12 col-md-12 col-lg-6">
+                                            <div class="oh-input-group">
+                                                <label class="oh-label">{% trans "Field" %}</label>
+                                            </div>
+                                        </div>
+                                        <div class="col-sm-12 col-md-12 col-lg-6">
+                                            <div class="oh-input-group">
+                                                <select
+                                                    class="oh-select mt-1 w-100"
+                                                    id="id_field"
+                                                    name="field"
+                                                    class="select2-selection select2-selection--single"
+                                                >
+                                                    {% for field in gp_fields %}
+                                                        <option value="{{ field.0 }}">{% trans field.1 %}</option>
+                                                    {% endfor %}
+                                                </select>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </form>
 
-				<div class="oh-dropdown" x-data="{open: false}">
-					<button
-						class="oh-btn ml-2"
-						@click="open = !open"
-						onclick="event.preventDefault()"
-					>
-						<ion-icon name="library-outline" class="mr-1"></ion-icon>
-						{% trans "Group By" %}
-					</button>
-					<div
-						class="oh-dropdown__menu oh-dropdown__menu--right oh-dropdown__filter p-4"
-						x-show="open"
-						@click.outside="open = false"
-						style="display: none"
-					>
-						<div class="oh-accordion">
-							<label>{% trans "Group By" %}</label>
-							<div class="row">
-								<div class="col-sm-12 col-md-12 col-lg-6">
-									<div class="oh-input-group">
-										<label class="oh-label">{% trans "Field" %}</label>
-									</div>
-								</div>
-								<div class="col-sm-12 col-md-12 col-lg-6">
-									<div class="oh-input-group">
-										<select
-											class="oh-select mt-1 w-100"
-											id="id_field"
-											name="field"
-											class="select2-selection select2-selection--single"
-										>
-											{% for field in gp_fields %}
-											<option value="{{ field.0 }}">{% trans field.1 %}</option>
-											{% endfor %}
-										</select>
-									</div>
-								</div>
-							</div>
-						</div>
-					</div>
-				</div>
-			</div>
-		</form>
+                <div class="oh-dropdown ml-2" x-data="{open: false}">
+                    <button
+                        class="oh-btn oh-btn--dropdown"
+                        @click="open = !open"
+                        @click.outside="open = false"
+                    >
+                        {% trans "Actions" %}
+                    </button>
+                    <div
+                        class="oh-dropdown__menu oh-dropdown__menu--right"
+                        x-show="open"
+                        style="display: none"
+                    >
+                        <ul class="oh-dropdown__items">
+                            <li class="oh-dropdown__item">
+                                <a
+                                    href="#"
+                                    id="userrequestbulkDelete"
+                                    data-action="delete"
+                                    class="oh-dropdown__link oh-dropdown__link--danger"
+                                >{% trans "Delete" %}</a>
+                            </li>
+                        </ul>
+                    </div>
+                </div>
+            {% endif %}
+            <div class="oh-btn-group ml-2">
+                <div class="oh-dropdown" x-data="{open: false}">
+                    <button
+                        id="requestCreateButton"
+                        class="oh-btn oh-btn--secondary oh-btn--shadow"
+                        data-toggle="oh-modal-toggle"
+                        data-target="#objectCreateModal"
+                        hx-get="{% url 'leave-request-create' %}?confirm={{confirm}}"
+                        hx-target="#objectCreateModalTarget"
+                    >
+                        <ion-icon
+                            name="add-outline"
+                            class="me-1 md hydrated"
+                            role="img"
+                            aria-label="{% trans 'add outline' %}"
+                        ></ion-icon>
+                        {% trans "Create" %}
+                    </button>
+                </div>
+            </div>
+        </div>
+    </section>
 
-		<div class="oh-dropdown ml-2" x-data="{open: false}">
-			<button
-				class="oh-btn oh-btn--dropdown"
-				@click="open = !open"
-				@click.outside="open = false"
-			>
-				{% trans "Actions" %}
-			</button>
-			<div
-				class="oh-dropdown__menu oh-dropdown__menu--right"
-				x-show="open"
-				style="display: none"
-			>
-				<ul class="oh-dropdown__items">
-					<li class="oh-dropdown__item">
-						<a
-							href="#"
-							id="userrequestbulkDelete"
-							data-action="delete"
-							class="oh-dropdown__link oh-dropdown__link--danger"
-							>{% trans "Delete" %}</a
-						>
-					</li>
-				</ul>
-			</div>
-		</div>
-		{% endif %}
-		<div class="oh-btn-group ml-2">
-			<div class="oh-dropdown" x-data="{open: false}">
-				<button
-					id="requestCreateButton"
-					class="oh-btn oh-btn--secondary oh-btn--shadow"
-					data-toggle="oh-modal-toggle"
-					data-target="#objectCreateModal"
-					hx-get="{% url 'leave-request-create' %}?confirm={{confirm}}"
-					hx-target="#objectCreateModalTarget"
-				>
-					<ion-icon
-						name="add-outline"
-						class="me-1 md hydrated"
-						role="img"
-						aria-label="add outline"
-					></ion-icon>
-					{% trans "Create" %}
-				</button>
-			</div>
-		</div>
-	</div>
-</section>
-
-<div
-	class="oh-checkpoint-badge mb-2"
-	id="selectedUserrequests"
-	data-ids="[]"
-	data-clicked=""
-	style="display: none"
->
-	{% trans "Selected Requests" %}
-</div>
-
-{% include 'leave/user_leave/user_leave.html' %}
-
-<button
-	type="button"
-	id="userRequestReload"
-	hidden
-	hx-get="{% url 'user-request-filter' %}?{{ request.GET.urlencode }}"
-	hx-target="#userRequest"
-	hx-swap="innerHTML"
-></button>
-
-<div class="oh-wrapper" id="userRequest">
-	{% if leave_requests %}
-        {% include 'leave/user_leave/user_requests.html' %}
-    {% else %}
-		<div class="oh-wrapper">
-			<div class="oh-empty">
-				<img src="{% static 'images/ui/search.svg' %}" class="oh-404__image" alt="Page not found. 404." />
-				<h1 class="oh-empty__title">{% trans "No Records found." %}</h1>
-				<p class="oh-empty__subtitle">{% trans "There are no leave requests at the moment." %}</p>
-			</div>
-		</div>
-	{% endif %}
-</div>
-
-<div
-	class="oh-modal"
-	id="editModal"
-	role="dialog"
-	aria-labelledby="editDialogModal"
-	aria-hidden="true"
->
-	<div class="oh-modal__dialog">
-		<div class="oh-modal__dialog-header">
-			<h2 class="oh-modal__dialog-title" id="editDialogDialog">
-				{% trans "Update Request" %}
-			</h2>
-			<button class="oh-modal__close" aria-label="Close">
-				<ion-icon name="close-outline"></ion-icon>
-			</button>
-		</div>
-		<div class="oh-modal__dialog-body" id="updateForm"></div>
-	</div>
-</div>
-
-<div
-	class="oh-modal"
-	id="cancelModal"
-	role="dialog"
-	aria-labelledby="cancelModal"
-	aria-hidden="true"
-	>
-	<div class="oh-modal__dialog" id="cancelForm"></div>
-</div>
-
-
-<!-- Leave creation from leave type card -->
-<div
-  class="oh-modal"
-  id="editDialog"
-  role="dialog"
-  aria-labelledby="editDialogModal"
-  aria-hidden="true"
->
-  <div class="oh-modal__dialog">
-    <div class="oh-modal__dialog-header">
-      <h2 class="oh-modal__dialog-title" id="editDialogDialog">
-        {% trans "Leave Request" %}
-      </h2>
-      <button class="oh-modal__close" aria-label="Close">
-        <ion-icon name="close-outline"></ion-icon>
-      </button>
+    <div
+        class="oh-checkpoint-badge mb-2"
+        id="selectedUserrequests"
+        data-ids="[]"
+        data-clicked=""
+        style="display: none"
+    >
+        {% trans "Selected Requests" %}
     </div>
-    <div class="oh-modal__dialog-body" id="requestForm"></div>
-  </div>
-</div>
-<!-- End  -->
+
+    {% include 'leave/user_leave/user_leave.html' %}
+
+    <button
+        type="button"
+        id="userRequestReload"
+        hidden
+        hx-get="{% url 'user-request-filter' %}?{{ request.GET.urlencode }}"
+        hx-target="#userRequest"
+        hx-swap="innerHTML"
+    >
+    </button>
+
+    <div class="oh-wrapper" id="userRequest">
+        {% if leave_requests %}
+            {% include 'leave/user_leave/user_requests.html' %}
+        {% else %}
+            <div class="oh-wrapper">
+                <div class="oh-empty">
+                    <img
+                        src="{% static 'images/ui/search.svg' %}"
+                        class="oh-404__image"
+                        alt="{% trans 'Page not found. 404.' %}"
+                    >
+                    <h1 class="oh-empty__title">{% trans "No Records found." %}</h1>
+                    <p class="oh-empty__subtitle">{% trans "There are no leave requests at the moment." %}</p>
+                </div>
+            </div>
+        {% endif %}
+    </div>
+
+    <div
+        class="oh-modal"
+        id="editModal"
+        role="dialog"
+        aria-labelledby="editDialogModal"
+        aria-hidden="true"
+    >
+        <div class="oh-modal__dialog">
+            <div class="oh-modal__dialog-header">
+                <h2 class="oh-modal__dialog-title" id="editDialogDialog">
+                    {% trans "Update Request" %}
+                </h2>
+                <button class="oh-modal__close" aria-label="{% trans 'Close' %}">
+                    <ion-icon name="close-outline"></ion-icon>
+                </button>
+            </div>
+            <div class="oh-modal__dialog-body" id="updateForm"></div>
+        </div>
+    </div>
+
+    <div
+        class="oh-modal"
+        id="cancelModal"
+        role="dialog"
+        aria-labelledby="cancelModal"
+        aria-hidden="true"
+    >
+        <div class="oh-modal__dialog" id="cancelForm"></div>
+    </div>
+
+    <!-- Leave creation from leave type card -->
+    <div
+        class="oh-modal"
+        id="editDialog"
+        role="dialog"
+        aria-labelledby="editDialogModal"
+        aria-hidden="true"
+    >
+        <div class="oh-modal__dialog">
+            <div class="oh-modal__dialog-header">
+                <h2 class="oh-modal__dialog-title" id="editDialogDialog">
+                    {% trans "Leave Request" %}
+                </h2>
+                <button class="oh-modal__close" aria-label="{% trans 'Close' %}">
+                    <ion-icon name="close-outline"></ion-icon>
+                </button>
+            </div>
+            <div class="oh-modal__dialog-body" id="requestForm"></div>
+        </div>
+    </div>
+    <!-- End  -->
+
+    <div class="oh-activity-sidebar" id="leaveactivitySidebar" style="z-index: 1000">
+        <div class="oh-activity-sidebar__body" id="commentContainer"></div>
+    </div>
+
+    <script src="{% static '/leave_request/action.js' %}"></script>
+    <script>
+        $(document).on('htmx:load','#userLeaves', function () {
+               // Create a new script element
+               var scriptElement = document.createElement("script");
+               // Set the source URL of the script file to be loaded
+               scriptElement.src = "{% static 'build/js/web.frontend.min.js' %}";
+               // Append the script element to the head of the HTML document
+               document.head.appendChild(scriptElement);
+           });
+
+           $(document).on('htmx:load', '#requestForm', function () {
+        	{% include 'select2.js' %}
+               $('#leaveType #id_leave_type_id').select2();
+               $('#employee #id_employee_id').select2();
+               $('#startDate #id_start_date_breakdown').select2();
+               $('#endDate #id_end_date_breakdown').select2();
+           });
 
 
-<div class="oh-activity-sidebar" id="leaveactivitySidebar" style="z-index:1000;">
-	<div class="oh-activity-sidebar__body" id="commentContainer">
-	</div>
-</div>
+        $(document).on('htmx:load', '#updateForm', function () {
+        	{% include 'select2.js' %}
+        	$('#startDate #id_start_date_breakdown').select2();
+        	$('#endDate #id_end_date_breakdown').select2();
+        });
+
+          $('#delete-link').on('click', function (event) {
+              event.preventDefault();
+
+              const link = $(this);
+              const confirmation = confirm("{% trans 'Are you sure you want to delete?' %}");
+
+              if (confirmation) {
+        		  window.location.href = link.attr('href');
+        		}
+        	});
+        	$(document).ready(function () {
+        		$("#id_field").on("change", function () {
+        			$(".filterButton")[0].click();
+        		});
+        	});
 
 
-<script src="{% static '/leave_request/action.js' %}"></script>
-<script>
+        function enlargeImage(src,$element) {
+        	$(".enlargeImageContainer").empty()
+        	var enlargeImageContainer = $element.parents().closest("li").find(".enlargeImageContainer")
+        	enlargeImageContainer.empty()
+        	style = 'width:100%; height:90%; box-shadow: 0 10px 10px 0 rgba(0, 0, 0, 0.2), 0 6px 20px 0 rgba(0, 0, 0, 0.2); background:white'
+        	var enlargedImage = $('<iframe>').attr({ src: src, style: style })
+        	var name = $('<span>').text(src.split('/').pop().replace(/_/g, ' '))
+        	enlargeImageContainer.append(enlargedImage)
+        	enlargeImageContainer.append(name)
+        	setTimeout(function () {
+        		enlargeImageContainer.show()
 
-	$(document).on('htmx:load','#userLeaves', function () {
-        // Create a new script element
-        var scriptElement = document.createElement("script");
-        // Set the source URL of the script file to be loaded
-        scriptElement.src = "{% static 'build/js/web.frontend.min.js' %}";
-        // Append the script element to the head of the HTML document
-        document.head.appendChild(scriptElement);
-    });
+        		const iframe = document.querySelector('iframe').contentWindow
+        		var iframe_document = iframe.document
+        		iframe_image = iframe_document.getElementsByTagName('img')[0]
+        		$(iframe_image).attr('style', 'width:100%; height:100%;')
+        	}, 100)
+        }
 
-    $(document).on('htmx:load', '#requestForm', function () {
-		{% include 'select2.js' %}
-        $('#leaveType #id_leave_type_id').select2();
-        $('#employee #id_employee_id').select2();
-        $('#startDate #id_start_date_breakdown').select2();
-        $('#endDate #id_end_date_breakdown').select2();
-    });
+        function hideEnlargeImage() {
+        	var enlargeImageContainer = $('.enlargeImageContainer')
+        	enlargeImageContainer.empty()
+        }
 
+        $(document).on('click', function (event) {
+        	if (!$(event.target).closest('#enlargeImageContainer').length) {
+        		hideEnlargeImage()
+        	}
+        })
+        function submitForm(elem) {
+          $(elem).siblings(".add_more_submit").click();
+        }
+    </script>
 
-	$(document).on('htmx:load', '#updateForm', function () {
-		{% include 'select2.js' %}
-		$('#startDate #id_start_date_breakdown').select2();
-		$('#endDate #id_end_date_breakdown').select2();
-	});
-
-	  $('#delete-link').on('click', function (event) {
-	      event.preventDefault();
-
-	      const link = $(this);
-	      const confirmation = confirm("{% trans 'Are you sure you want to delete?' %}");
-
-	      if (confirmation) {
-			  window.location.href = link.attr('href');
-			}
-		});
-		$(document).ready(function () {
-			$("#id_field").on("change", function () {
-				$(".filterButton")[0].click();
-			});
-		});
-
-
-	function enlargeImage(src,$element) {
-		$(".enlargeImageContainer").empty()
-		var enlargeImageContainer = $element.parents().closest("li").find(".enlargeImageContainer")
-		enlargeImageContainer.empty()
-		style = 'width:100%; height:90%; box-shadow: 0 10px 10px 0 rgba(0, 0, 0, 0.2), 0 6px 20px 0 rgba(0, 0, 0, 0.2); background:white'
-		var enlargedImage = $('<iframe>').attr({ src: src, style: style })
-		var name = $('<span>').text(src.split('/').pop().replace(/_/g, ' '))
-		enlargeImageContainer.append(enlargedImage)
-		enlargeImageContainer.append(name)
-		setTimeout(function () {
-			enlargeImageContainer.show()
-
-			const iframe = document.querySelector('iframe').contentWindow
-			var iframe_document = iframe.document
-			iframe_image = iframe_document.getElementsByTagName('img')[0]
-			$(iframe_image).attr('style', 'width:100%; height:100%;')
-		}, 100)
-	}
-
-	function hideEnlargeImage() {
-		var enlargeImageContainer = $('.enlargeImageContainer')
-		enlargeImageContainer.empty()
-	}
-
-	$(document).on('click', function (event) {
-		if (!$(event.target).closest('#enlargeImageContainer').length) {
-			hideEnlargeImage()
-		}
-	})
-	function submitForm(elem) {
-	  $(elem).siblings(".add_more_submit").click();
-	}
-
-</script>
-
-<script src="{% static '/base/filter.js' %}"></script>
-<script
-type="module"
-src="https://unpkg.com/ionicons@5.5.2/dist/ionicons/ionicons.esm.js"
-></script>
-<script
-	nomodule
-	src="https://unpkg.com/ionicons@5.5.2/dist/ionicons/ionicons.js"
-></script>
+    <script src="{% static '/base/filter.js' %}"></script>
+    <script
+        type="module"
+        src="https://unpkg.com/ionicons@5.5.2/dist/ionicons/ionicons.esm.js"
+    ></script>
+    <script
+        nomodule
+        src="https://unpkg.com/ionicons@5.5.2/dist/ionicons/ionicons.js"
+    ></script>
 {% endblock %}

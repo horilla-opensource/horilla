@@ -83,7 +83,7 @@
             <span class="oh-modal__dialog-title" id="uploadPhotoModalLabel"
               >{% trans "Upload Photo" %}</span
             >
-            <a href="#" class="oh-modal__close" aria-label="Close">
+            <a href="#" class="oh-modal__close" aria-label="{% trans 'Close' %}">
               <ion-icon name="close-outline"></ion-icon>
             </a>
           </div>
@@ -101,7 +101,7 @@
                 type="file"
                 accept="image/*"
                 class="oh-input oh-input--file oh-input--file-sm mt-4"
-                placeholder="Profile"
+                placeholder="{% trans 'Profile' %}"
                 id="choose_profile"
               />
               {% if form.instance.id %}

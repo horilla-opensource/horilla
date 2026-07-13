@@ -1,7 +1,7 @@
 {% extends 'index.html' %}
 {% block content %}
     {% include "generic/components.html" %}
-    {% load i18n basefilters static %}
+    {% load i18n basefilters static i18n %}
 
     <style>
         .oh-modal_close--custom {
@@ -20,7 +20,7 @@
                 <h2 class="oh-modal__dialog-title" id="addEmployeeModalLabel">
                     {% trans "Create Survey Template" %}
                 </h2>
-                <button class="oh-modal__close" aria-label="Close">
+                <button class="oh-modal__close" aria-label="{% trans 'Close' %}">
                     <ion-icon name="close-outline"></ion-icon>
                 </button>
             </div>
@@ -39,7 +39,7 @@
                     class="oh-modal_close--custom"
                     onclick="$('#updateSurvey').removeClass('oh-modal--show')"
                 >
-                    <ion-icon name="close-outline" role="img" aria-label="close outline"></ion-icon>
+                    <ion-icon name="close-outline" role="img" aria-label="{% trans 'close outline' %}"></ion-icon>
                 </button>
             </div>
             <div class="oh-modal__dialog-body" id="updateSurveyModalBody"></div>
@@ -63,7 +63,7 @@
                     class="oh-modal_close--custom"
                     onclick="$('#duplicateSurveyModal').removeClass('oh-modal--show')"
                 >
-                    <ion-icon name="close-outline" role="img" aria-label="close outline"></ion-icon>
+                    <ion-icon name="close-outline" role="img" aria-label="{% trans 'close outline' %}"></ion-icon>
                 </button>
             </div>
             <div class="oh-modal__dialog-body" id="duplicateSurveyFormModal"></div>
@@ -78,7 +78,7 @@
                     class="text-color-600 ps-8 p-1.5 pb-2 placeholder:text-xs w-full border border-dark-50 rounded-md focus-visible:outline-0 placeholder:text-dark-100 text-sm [transition:.3s] focus:border-primary-600"
                     type="text"
                     name="question"
-                    aria-label="Search Input"
+                    aria-label="{% trans 'Search Input' %}"
                     placeholder="{% trans 'Search' %}"
                     hx-get="{% url 'rec-filter-survey' %}"
                     hx-target="#view-container"
@@ -240,7 +240,7 @@
     <div class="oh-modal" id="templateModal" role="dialog" aria-hidden="true">
         <div class="oh-modal__dialog" style="max-width: 550px">
             <div class="oh-modal__dialog-header">
-                <button type="button" class="oh-modal__close" aria-label="Close">
+                <button type="button" class="oh-modal__close" aria-label="{% trans 'Close' %}">
                     <ion-icon name="close-outline"></ion-icon>
                 </button>
             </div>

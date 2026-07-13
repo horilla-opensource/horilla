@@ -39,7 +39,7 @@
       >
         {% csrf_token %}
         <button type="submit" class="oh-btn oh-btn--light-bkg oh-btn--danger-outline w-100" title="{% trans 'Delete' %}">
-          <ion-icon name="trash-outline" role="img" class="md hydrated" aria-label="trash outline"></ion-icon>
+          <ion-icon name="trash-outline" role="img" class="md hydrated" aria-label="{% trans 'trash outline' %}"></ion-icon>
         </button>
       </form>
     {% endif %}

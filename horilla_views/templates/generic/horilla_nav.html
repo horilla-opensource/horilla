@@ -5,7 +5,7 @@
     <a
       class="oh-main__titlebar-search-toggle"
       role="button"
-      aria-label="Toggle Search"
+      aria-label="{% trans 'Toggle Search' %}"
       @click="searchShow = !searchShow"
     >
       <ion-icon
@@ -35,7 +35,7 @@
         type="text"
         class="oh-input oh-input__icon"
         name="search"
-        aria-label="Search Input"
+        aria-label="{% trans 'Search Input' %}"
         placeholder="{% trans 'Search' %}"
         autocomplete="false"
         autofocus ="true"
@@ -160,7 +160,7 @@
       {% if group_by_fields %}
       <div class="oh-dropdown" x-data="{open: false}">
         <button class="oh-btn ml-2" @click="open = !open" onclick="event.preventDefault()">
-          <ion-icon name="library-outline" class="mr-1 md hydrated" role="img" aria-label="library outline"></ion-icon>
+          <ion-icon name="library-outline" class="mr-1 md hydrated" role="img" aria-label="{% trans 'library outline' %}"></ion-icon>
           {% trans "Group By" %}
           <div id="filterCount"></div>
         </button>
@@ -225,7 +225,7 @@
         name="add-sharp"
         class="mr-1 md hydrated"
         role="img"
-        aria-label="add sharp"
+        aria-label="{% trans 'add sharp' %}"
       ></ion-icon
       >{% trans "Create" %}
     </a>

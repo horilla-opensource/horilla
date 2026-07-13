@@ -1,4 +1,5 @@
-{% load i18n %} {% load static %}
+{% load i18n %}
+{% load static %}
 <style>
     .oh-kanban-card__title {
         width: 280px;
@@ -10,82 +11,92 @@
     {% include "survey/template_accordion.html" %}
 </div>
 <div class="oh-tabs__content" id="questionTab">
-  {% if questions %}
-  <div>
-    <div class="oh-layout--grid-3">
-      {% for question in questions %}
-      <div
-        class="oh-kanban-card"
-        data-toggle="oh-modal-toggle"
-        data-target="#genericModal"
-        hx-get="{% url 'single-survey-view' question.id %}?instance_ids={{requests_ids}}"
-        hx-target="#genericModalBody"
-      >
-        <div class="oh-kanban-card__details">
-          <span class="oh-kanban-card__title">{{question}}</span>
-          <span class="oh-kanban-card__subtitle">
-            {% for rec in question.recruitment_ids.all %} {{rec}},&nbsp;
-            {% endfor %}
-          </span>
-        </div>
-        {% if perms.recruitment.delete_recruitmentsurvey or perms.recruitment.change_recruitmentsurvey or perms.recruitment.add_recruitmentsurvey %}
-        <div class="oh-kanban-card__dots">
-          <div class="oh-dropdown" x-data="{show: false}" @click.stop>
-            <button class="oh-btn oh-btn--transparent text-muted p-3" @click.stop="show = !show" title="{% trans 'Actions' %}" onclick="event.stopPropagation()" >
-              <ion-icon name="ellipsis-vertical-sharp"></ion-icon>
-            </button>
-            <div
-              class="oh-dropdown__menu oh-dropdown__menu--dark-border oh-dropdown__menu--right"
-              x-show="show"
-              @click.outside="show = false"
-              @click.stop
-            >
-              <ul class="oh-dropdown__items">
-                {% if perms.recruitment.change_recruitmentsurvey %}
-                <li class="oh-dropdown__item">
-                  <a
-                    hx-get="{% url 'recruitment-survey-question-template-edit' question.id %}"
-                    data-toggle="oh-modal-toggle"
-                    data-target="#genericModal"
-                    hx-target="#genericModalBody"
-                    class="oh-dropdown__link"
-                    >{% trans "Edit" %}
-                  </a>
-                </li>
-                {% endif %} {% if perms.recruitment.add_recruitmentsurvey %}
-                <li class="oh-dropdown__item">
-                  <a
-                    hx-get="{% url 'recruitment-survey-question-template-duplicate' question.id %}"
-                    data-toggle="oh-modal-toggle"
-                    data-target="#genericModal"
-                    hx-target="#genericModalBody"
-                    class="oh-dropdown__link"
-                    >{% trans "Duplicate" %}
-                  </a>
-                </li>
-                {% endif %} {% if perms.recruitment.delete_recruitmentsurvey %}
-                <li class="oh-dropdown__item">
-                  <form
-                    hx-post="{% url 'recruitment-survey-question-template-delete' question.id %}"
-                    hx-swap="none"
-                    hx-confirm="{% trans 'Are you sure want to delete?' %}"
-                    onsubmit="event.stopPropagation();"
-                  >
-                    {% csrf_token %}
-                    <button type="submit" class="oh-dropdown__link oh-dropdown__link--danger">
-                      {% trans "Delete" %}
-                    </button>
-                  </form>
-                </li>
-                {% endif %}
-              </ul>
-            </div>
-        </div>
-    </div>
-    {% endif %}
-</div>
-{% endfor %}
-
+    {% if questions %}
+        <div>
+            <div class="oh-layout--grid-3">
+                {% for question in questions %}
+                    <div
+                        class="oh-kanban-card"
+                        data-toggle="oh-modal-toggle"
+                        data-target="#genericModal"
+                        hx-get="{% url 'single-survey-view' question.id %}?instance_ids={{requests_ids}}"
+                        hx-target="#genericModalBody"
+                    >
+                        <div class="oh-kanban-card__details">
+                            <span class="oh-kanban-card__title">{{ question }}</span>
+                            <span class="oh-kanban-card__subtitle">
+                                {% for rec in question.recruitment_ids.all %}
+                                    {{ rec }},&nbsp;
+                                {% endfor %}
+                            </span>
+                        </div>
+                        {% if perms.recruitment.delete_recruitmentsurvey or perms.recruitment.change_recruitmentsurvey or perms.recruitment.add_recruitmentsurvey %}
+                            <div class="oh-kanban-card__dots">
+                                <div class="oh-dropdown" x-data="{show: false}" @click.stop>
+                                    <button
+                                        class="oh-btn oh-btn--transparent text-muted p-3"
+                                        @click.stop="show = !show"
+                                        title="{% trans 'Actions' %}"
+                                        onclick="event.stopPropagation()"
+                                    >
+                                        <ion-icon name="ellipsis-vertical-sharp"></ion-icon>
+                                    </button>
+                                    <div
+                                        class="oh-dropdown__menu oh-dropdown__menu--dark-border oh-dropdown__menu--right"
+                                        x-show="show"
+                                        @click.outside="show = false"
+                                        @click.stop
+                                    >
+                                        <ul class="oh-dropdown__items">
+                                            {% if perms.recruitment.change_recruitmentsurvey %}
+                                                <li class="oh-dropdown__item">
+                                                    <a
+                                                        hx-get="{% url 'recruitment-survey-question-template-edit' question.id %}"
+                                                        data-toggle="oh-modal-toggle"
+                                                        data-target="#genericModal"
+                                                        hx-target="#genericModalBody"
+                                                        class="oh-dropdown__link"
+                                                    >{% trans "Edit" %}
+                                                    </a>
+                                                </li>
+                                            {% endif %}
+                                            {% if perms.recruitment.add_recruitmentsurvey %}
+                                                <li class="oh-dropdown__item">
+                                                    <a
+                                                        hx-get="{% url 'recruitment-survey-question-template-duplicate' question.id %}"
+                                                        data-toggle="oh-modal-toggle"
+                                                        data-target="#genericModal"
+                                                        hx-target="#genericModalBody"
+                                                        class="oh-dropdown__link"
+                                                    >{% trans "Duplicate" %}
+                                                    </a>
+                                                </li>
+                                            {% endif %}
+                                            {% if perms.recruitment.delete_recruitmentsurvey %}
+                                                <li class="oh-dropdown__item">
+                                                    <form
+                                                        hx-post="{% url 'recruitment-survey-question-template-delete' question.id %}"
+                                                        hx-swap="none"
+                                                        hx-confirm="{% trans 'Are you sure want to delete?' %}"
+                                                        onsubmit="event.stopPropagation()"
+                                                    >
+                                                        {% csrf_token %}
+                                                        <button
+                                                            type="submit"
+                                                            class="oh-dropdown__link oh-dropdown__link--danger"
+                                                        >
+                                                            {% trans "Delete" %}
+                                                        </button>
+                                                    </form>
+                                                </li>
+                                            {% endif %}
+                                        </ul>
+                                    </div>
+                                </div>
+                            </div>
+                        {% endif %}
+                    </div>
+                {% endfor %}
             </div>
 
             <div class="oh-pagination">
@@ -95,37 +106,53 @@
                 <nav class="oh-pagination__nav">
                     <div class="oh-pagination__input-container me-3">
                         <span class="oh-pagination__label me-1">{% trans "Page" %}</span>
-                        <input type="number" name="page" class="oh-pagination__input" value="{{questions.number}}"
-                            hx-get="{% url 'rec-filter-survey' %}?{{pd}}" hx-target="#view-container" min="1" />
+                        <input
+                            type="number"
+                            name="page"
+                            class="oh-pagination__input"
+                            value="{{questions.number}}"
+                            hx-get="{% url 'rec-filter-survey' %}?{{pd}}"
+                            hx-target="#view-container"
+                            min="1"
+                        >
                         <span class="oh-pagination__label">
-                            {% trans "of" %} {{questions.paginator.num_pages}}
+                            {% trans "of" %} {{ questions.paginator.num_pages }}
                         </span>
                     </div>
                     <ul class="oh-pagination__items">
                         {% if questions.has_previous %}
                             <li class="oh-pagination__item oh-pagination__item--wide">
-                                <a hx-target="#view-container" hx-get="{% url 'rec-filter-survey' %}?{{pd}}&page=1"
-                                    class="oh-pagination__link">{% trans "First" %}
+                                <a
+                                    hx-target="#view-container"
+                                    hx-get="{% url 'rec-filter-survey' %}?{{pd}}&page=1"
+                                    class="oh-pagination__link"
+                                >{% trans "First" %}
                                 </a>
                             </li>
                             <li class="oh-pagination__item oh-pagination__item--wide">
-                                <a hx-target="#view-container"
+                                <a
+                                    hx-target="#view-container"
                                     hx-get="{% url 'rec-filter-survey' %}?{{pd}}&page={{ questions.previous_page_number }}"
-                                    class="oh-pagination__link">{% trans "Previous" %}
+                                    class="oh-pagination__link"
+                                >{% trans "Previous" %}
                                 </a>
                             </li>
                         {% endif %}
                         {% if questions.has_next %}
                             <li class="oh-pagination__item oh-pagination__item--wide">
-                                <a hx-target="#view-container"
+                                <a
+                                    hx-target="#view-container"
                                     hx-get="{% url 'rec-filter-survey' %}?{{pd}}&page={{ questions.next_page_number }}"
-                                    class="oh-pagination__link">{% trans "Next" %}
+                                    class="oh-pagination__link"
+                                >{% trans "Next" %}
                                 </a>
                             </li>
                             <li class="oh-pagination__item oh-pagination__item--wide">
-                                <a hx-target="#view-container"
+                                <a
+                                    hx-target="#view-container"
                                     hx-get="{% url 'rec-filter-survey' %}?{{pd}}&page={{ questions.paginator.num_pages }}"
-                                    class="oh-pagination__link">{% trans "Last" %}
+                                    class="oh-pagination__link"
+                                >{% trans "Last" %}
                                 </a>
                             </li>
                         {% endif %}
@@ -135,9 +162,13 @@
         </div>
     {% else %}
         <div class="oh-empty">
-            <img src="{% static 'images/ui/search.svg' %}" class="oh-404__image" alt="Page not found. 404." />
+            <img
+                src="{% static 'images/ui/search.svg' %}"
+                class="oh-404__image"
+                alt="{% trans 'Page not found. 404.' %}"
+            >
             <h1 class="oh-empty__title">{% trans "No Records found." %}</h1>
-            <p class="oh-empty__subtitle">{% trans "No questions have been established yet." %} </p>
+            <p class="oh-empty__subtitle">{% trans "No questions have been established yet." %}</p>
         </div>
     {% endif %}
 </div>

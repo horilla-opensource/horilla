@@ -1,3 +1,4 @@
+{% load i18n %}
 {% load static i18n %}
 <div class="oh-modal__dialog-header">
     <span class="oh-modal__dialog-title" id="genericModalLabel">
@@ -6,7 +7,7 @@
     <button
         class="oh-modal__close--custom"
         onclick="$(this).closest('.oh-modal--show').removeClass('oh-modal--show')"
-        aria-label="Close"
+        aria-label="{% trans 'Close' %}"
     >
         <ion-icon
             name="close-outline"

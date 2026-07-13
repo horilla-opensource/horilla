@@ -49,7 +49,7 @@
 							hx-get='{% url "shift-request-delete-comment" comment.id %}' hx-swap="outerHTML"
 							hx-target="#commentCard{{comment.id}}">
 							<ion-icon name="close-outline" style="font-size: 24px" role="img" class="md hydrated"
-								aria-label="close outline"></ion-icon></span>
+								aria-label="{% trans 'close outline' %}"></ion-icon></span>
 					{% endif %}
 				</span>
 
@@ -73,7 +73,7 @@
 							hx-swap="innerHTML" hx-target="#commentContainer">
 							{% csrf_token %}
 							<label for="addFile_{{comment.id}}" \><ion-icon name="add-outline" style="font-size: 24px" role="img"
-									class="md hydrated" aria-label="add outline"></ion-icon></label>
+									class="md hydrated" aria-label="{% trans 'add outline' %}"></ion-icon></label>
 							<input type="file" name="files" class="d-none" multiple="true" accept=".jpg, .jpeg, .png, .pdf"
 								id="addFile_{{comment.id}}" onchange="submitForm(this)" />
 							<input type="submit" class="d-none add_more_submit" value="save" />

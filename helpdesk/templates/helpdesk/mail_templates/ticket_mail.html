@@ -1,4 +1,4 @@
-{% load static %} {% now "Y" as current_year %}
+{% load static i18n %} {% now "Y" as current_year %}
 <!DOCTYPE html>
 <html lang="en">
   <head>
@@ -79,7 +79,7 @@
                   <img src="{{protocol}}://{{host}}{% static '/images/ui/horilla-logo.png' %}" height="30" width="110.4" />
                 </td>
                 <td style="width: 50%; text-align: right">
-                  <a href="#" class="hr-link">View in browser</a>
+                  <a href="#" class="hr-link">{% trans "View in browser" %}</a>
                 </td>
               </tr>
             </table>
@@ -111,7 +111,7 @@
                 padding: 15px 25px;
                 text-decoration: none;
                 font-weight: bold;
-              ">View Ticket</a>
+              ">{% trans "View Ticket" %}</a>
           </td>
         </tr>
         {% endif %}
@@ -127,7 +127,7 @@
             ">
             This mail was sent you because your email has been enrolled as an employee at {{ instance.recruitment_id.company_id.company }}.<br />
             Don't want to receive mails like these anymore?
-            <a href="#" style="color: #5c5c5c">Unsubscribe here</a>.
+            <a href="#" style="color: #5c5c5c">{% trans "Unsubscribe here" %}</a>.
           </td>
         </tr>
         <tr>

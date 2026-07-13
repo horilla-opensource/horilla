@@ -27,7 +27,7 @@
             type="button"
             class="oh-modal__close"
             data-dismiss="oh-modal"
-            aria-label="Close"
+            aria-label="{% trans 'Close' %}"
             hx-get="{%url 'asset-list' cat_id=asset_creation_form.asset_category_id.initial %}?{{request.GET.urlencode}}&category={{asset_creation_form.asset_category_id.initial}}"
             hx-target="#assetCategory{{asset_creation_form.asset_category_id.initial}}"
         >

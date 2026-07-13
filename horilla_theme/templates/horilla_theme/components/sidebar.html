@@ -62,10 +62,7 @@
     /* Floating action button: track sidebar width (collapsed / hover / pinned) */
     #sidebar ~ #floating-buttons .fab-container {
         left: 4rem;
-        transition:
-            left 0.22s cubic-bezier(0.4, 0, 0.2, 1),
-            transform 0.3s ease,
-            box-shadow 0.3s ease;
+        transition: left 0.22s cubic-bezier(0.4, 0, 0.2, 1), transform 0.3s ease, box-shadow 0.3s ease;
     }
     #sidebar:hover ~ #floating-buttons .fab-container,
     #sidebar.sidebar-pinned ~ #floating-buttons .fab-container {
@@ -289,10 +286,7 @@
         border-color: #374151;
         background: #1f2937;
     }
-    body.dark
-
-    /* Flyout link hover highlight */
-    #sidebarFlyout a.sidebar-subnav-link {
+    body.dark /* Flyout link hover highlight */ #sidebarFlyout a.sidebar-subnav-link {
         color: #374151;
         transition: background-color 0.12s ease, color 0.12s ease;
     }
@@ -305,7 +299,9 @@
         color: {{ theme_obj.primary_600|default:"#E54F38" }} !important;
         font-weight: 600;
     }
-    body.dark #sidebarFlyout a.sidebar-subnav-link { color: #d1d5db; }
+    body.dark #sidebarFlyout a.sidebar-subnav-link {
+        color: #d1d5db;
+    }
     body.dark #sidebarFlyout a.sidebar-subnav-link:hover {
         background-color: color-mix(in srgb, {{ theme_obj.primary_600|default:"#E54F38" }} 15%, transparent) !important;
         color: {{ theme_obj.primary_400|default:"#F87060" }} !important;

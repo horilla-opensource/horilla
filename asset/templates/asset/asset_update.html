@@ -46,7 +46,7 @@
             {% if asset_under == 'asset_filter' %}
                 <button
                     class="oh-modal__close"
-                    aria-label="Close"
+                    aria-label="{% trans 'Close' %}"
                     hx-get="{%url 'asset-list' cat_id=0 %}?asset_list=asset_filter&{{pg}}"
                     hx-target="#assetCategoryList"
                 >
@@ -55,7 +55,7 @@
             {% elif requests_ids %}
                 <button
                     class="oh-modal__close--custom"
-                    aria-label="Close"
+                    aria-label="{% trans 'Close' %}"
                     hx-get="{% url 'asset-information' asset_id=asset_form.instance.id %}?requests_ids={{requests_ids}}"
                     hx-target="#objectDetailsModalTarget"
                     onclick="$(this).parents().closest('.oh-modal--show').toggleClass('oh-modal--show')"
@@ -65,7 +65,7 @@
             {% else %}
                 <button
                     class="oh-modal__close"
-                    aria-label="Close"
+                    aria-label="{% trans 'Close' %}"
                     hx-get="{%url 'asset-list' cat_id=asset_cat_id %}?{{pg}}"
                     hx-target="#assetCategory{{asset_cat_id}}"
                 >
@@ -77,7 +77,7 @@
                 type="button"
                 class="oh-modal__close--custom"
                 data-dismiss="oh-modal"
-                aria-label="Close"
+                aria-label="{% trans 'Close' %}"
                 onclick="$(this).parents().closest('.oh-modal--show').toggleClass('oh-modal--show')"
             >
                 <ion-icon name="close-outline"></ion-icon>

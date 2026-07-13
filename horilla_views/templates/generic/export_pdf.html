@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-{% load static horillafilters %}
+{% load static horillafilters i18n %}
 <html>
 <head>
   <meta charset="utf-8" />
@@ -110,7 +110,7 @@
     <div class="header">
       <div class="logo">
         {% if logo_path %}
-          <img src="{{ logo_path }}" alt="Company Logo" / width="100px">
+          <img src="{{ logo_path }}" alt="{% trans 'Company Logo' %}" / width="100px">
         {% endif %}
       </div>
       <div class="header-content">

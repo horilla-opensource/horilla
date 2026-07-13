@@ -14,13 +14,13 @@
               class="oh-btn oh-stop-prop oh-btn--transparent oh-accordion-meta__btn"
               @click="open = !open"
               @click.outside="open = false"
-              title="Actions"
+              title="{% trans 'Actions' %}"
             >
               <ion-icon
                 name="ellipsis-vertical"
                 role="img"
                 class="md hydrated"
-                aria-label="ellipsis vertical"
+                aria-label="{% trans 'ellipsis vertical' %}"
               ></ion-icon>
             </button>
             <div

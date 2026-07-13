@@ -55,7 +55,7 @@
     {% for comment in comments %}
       <div class="oh-activity-list__comment-title">
         <div class="oh-activity-list__photo oh-activity-list__photo--small me-2">
-          <img src="https://ui-avatars.com/api/?name={{ comment.employee_id }}&background=random" class="oh-activity-list__image" alt="Simone de Beauvoir" />
+          <img src="https://ui-avatars.com/api/?name={{ comment.employee_id }}&background=random" class="oh-activity-list__image" alt="{% trans 'Simone de Beauvoir' %}" />
         </div>
         <small class="oh-activity-list__description">
           <span><strong>{{ comment.employee_id }}</strong> {% trans 'added a comment' %}</span>
@@ -82,7 +82,7 @@
                         <img
                             src="https://ui-avatars.com/api/?name={{ activity.updated_by }}&background=random"
                             class="oh-activity-list__image"
-                            alt="Albert Camus"
+                            alt="{% trans 'Albert Camus' %}"
                         >
                     </div>
                     <small class="oh-activity-list__description">
@@ -109,7 +109,7 @@
                             <img
                                 src="https://ui-avatars.com/api/?name={{ activity.key_result.changed_user }}&background=random"
                                 class="oh-activity-list__image"
-                                alt="Albert Camus"
+                                alt="{% trans 'Albert Camus' %}"
                             >
                         </div>
                         <small class="oh-activity-list__description">
@@ -138,7 +138,7 @@
                             <img
                                 src="https://ui-avatars.com/api/?name={{ activity.comment.employee_id }}&background=random"
                                 class="oh-activity-list__image"
-                                alt="Albert Camus"
+                                alt="{% trans 'Albert Camus' %}"
                             >
                         </div>
                         <small class="oh-activity-list__description"><span><strong
@@ -165,7 +165,7 @@
                         <img
                             src="https://ui-avatars.com/api/?name={{ activity.updated_by }}&background=random"
                             class="oh-activity-list__image"
-                            alt="Albert Camus"
+                            alt="{% trans 'Albert Camus' %}"
                         >
                     </div>
                     <small class="oh-activity-list__description">

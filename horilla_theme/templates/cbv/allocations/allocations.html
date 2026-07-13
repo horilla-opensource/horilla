@@ -1,4 +1,4 @@
-{% load static i18n generic_template_filters horillafilters %}
+{% load static i18n generic_template_filters horillafilters i18n %}
 {% get_company as theme_obj %}
 <style>
     .sidebarItemActive {
@@ -21,10 +21,10 @@
                         <span
                             class="absolute bottom-0 right-0 w-3 h-3 bg-[#ee0a0a] rounded-full border-2 border-white"
                             {% if instance.employee_user_id.is_active %}
-                                title="Active"
+                                title="{% trans 'Active' %}"
                                 style="background-color: yellowgreen"
                             {% else %}
-                                title="In-active"
+                                title="{% trans 'In-active' %}"
                             {% endif %}
                         >
                         </span>

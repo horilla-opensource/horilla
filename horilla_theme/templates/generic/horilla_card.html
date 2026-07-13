@@ -1,4 +1,4 @@
-{% load static i18n generic_template_filters %}
+{% load static i18n generic_template_filters i18n %}
 <div id="{{view_id|safe}}">
     <script>
         if (!$(".HTV").length) {
@@ -95,7 +95,7 @@
                                                     src="{{instance|getattribute:details.image_src}}"
                                                     data-src="{{instance|getattribute:details.image_src}}"
                                                     class="w-11 h-11 rounded-full avatar-thumb"
-                                                    alt="Username"
+                                                    alt="{% trans 'Username' %}"
                                                 >
                                             </div>
                                         {% endif %}

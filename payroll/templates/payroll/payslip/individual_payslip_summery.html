@@ -123,7 +123,7 @@
                             hx-get="{% url 'add-bonus' %}?employee_id={{employee.id}}&payslip_id={{instance.id}}"
                             hx-target="#objectCreateModalTarget" data-target="#objectCreateModal"
                             data-toggle="oh-modal-toggle">
-                            <ion-icon class="md hydrated" name="add-outline" role="img" aria-label="add outline"></ion-icon>
+                            <ion-icon class="md hydrated" name="add-outline" role="img" aria-label="{% trans 'add outline' %}"></ion-icon>
                         </button>
                     {% endif %}
                 </th>
@@ -173,7 +173,7 @@
                             class="oh-btn oh-btn--secondary-outline oh-stop-prop oh-accordion-meta__btn p-2"
                             hx-get="{% url 'add-payslip-deduction' %}?employee_id={{employee.id}}&payslip_id={{instance.id}}" hx-target="#objectCreateModalTarget"
                             data-target="#objectCreateModal" data-toggle="oh-modal-toggle">
-                            <ion-icon class="md hydrated" name="add-outline" role="img" aria-label="add outline"></ion-icon>
+                            <ion-icon class="md hydrated" name="add-outline" role="img" aria-label="{% trans 'add outline' %}"></ion-icon>
                         </button>
                     {% endif %}
                 </th>
@@ -206,7 +206,7 @@
                         {{deduction.title}}
                         <i style="font-style: italic; margin-left: 10px; font-weight: normal;"
                         title="{% trans "Basic Pay Deductions" %}">
-                            <ion-icon name="information-circle-outline" style="color:blue;" role="img" class="md hydrated" aria-label="information circle outline"></ion-icon>
+                            <ion-icon name="information-circle-outline" style="color:blue;" role="img" class="md hydrated" aria-label="{% trans 'information circle outline' %}"></ion-icon>
                         </i>
                     </td>
                     <td class="oh-payslip__table-td">
@@ -220,7 +220,7 @@
                         {{deduction.title}}
                         <i style="font-style: italic; margin-left: 10px; font-weight: normal;"
                         title="{% trans "Gross Pay Deductions" %}">
-                            <ion-icon name="information-circle-outline" style="color:blue;" role="img" class="md hydrated" aria-label="information circle outline"></ion-icon>
+                            <ion-icon name="information-circle-outline" style="color:blue;" role="img" class="md hydrated" aria-label="{% trans 'information circle outline' %}"></ion-icon>
                         </i>
                     </td>
                     <td class="oh-payslip__table-td">
@@ -264,7 +264,7 @@
                         {{deduction.title}}
                         <i style="font-style: italic; margin-left: 10px; font-weight: normal;"
                         title="{% trans "Net Pay Deductions" %}">
-                            <ion-icon name="information-circle-outline" style="color:blue;" role="img" class="md hydrated" aria-label="information circle outline"></ion-icon>
+                            <ion-icon name="information-circle-outline" style="color:blue;" role="img" class="md hydrated" aria-label="{% trans 'information circle outline' %}"></ion-icon>
                         </i>
                     </td>
                     <td class="oh-payslip__table-td">

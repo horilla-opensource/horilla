@@ -1,4 +1,4 @@
-{% load static %}
+{% load static i18n %}
 {% load i18n horillafilters %}
 {% get_company as theme_obj %}
 <!DOCTYPE html>
@@ -53,7 +53,7 @@
                             class="oh-onboarding-card__lead-image mb-5"
                             width="300"
                             height="2"
-                            alt="Welcome Aboard"
+                            alt="{% trans 'Welcome Aboard' %}"
                         >
                         <h1 class="oh-onboarding-card__title oh-onboarding-card__title--h1 text-center">
                             {% trans "Welcome Aboard!" %}

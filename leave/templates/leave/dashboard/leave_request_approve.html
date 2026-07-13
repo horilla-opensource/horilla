@@ -64,7 +64,7 @@
                 hx-target="#leaveApproveCardBody"
                 hx-get="{% url 'leave-request-and-approve' %}?{{pd}}&page={{ leave_requests.previous_page_number }}"
                 hx-trigger="click delay:0.3s">
-                <ion-icon name="caret-back-outline" role="img" class="md hydrated" aria-label="caret back outline"></ion-icon>
+                <ion-icon name="caret-back-outline" role="img" class="md hydrated" aria-label="{% trans 'caret back outline' %}"></ion-icon>
             </span>
         {% endif %}
 
@@ -74,7 +74,7 @@
                 hx-get="{% url 'leave-request-and-approve' %}?{{pd}}&page={{ leave_requests.next_page_number }}"
                 hx-trigger="click delay:0.3s">
                 <ion-icon name="caret-forward-outline" role="img" class="md hydrated"
-                    aria-label="caret back outline"></ion-icon>
+                    aria-label="{% trans 'caret back outline' %}"></ion-icon>
             </span>
         {% endif %}
         {% if leave_requests.has_next or leave_requests.has_previous %}

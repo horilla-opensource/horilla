@@ -1,10 +1,10 @@
-{% load static %}{% load i18n %} {% load horillafilters %}
+{% load static %}{% load i18n %}
+{% load horillafilters %}
 
 <style>
-
     .interview-item {
-        border-bottom: 1px solid #e9ecef;
         padding: 1rem 0;
+        border-bottom: 1px solid #e9ecef;
     }
 
     .interview-item:last-child {
@@ -14,26 +14,26 @@
     .interview-date,
     .interview-time,
     .interview-interviewer {
-        font-size: 0.875rem;
-        color: #6c757d;
         margin-bottom: 0.5rem;
+        color: #6c757d;
+        font-size: 0.875rem;
     }
 
     .interview-description {
-        font-size: 0.875rem;
-        color: #6c757d;
         margin-top: 0.5rem;
         padding-left: 0.75rem;
         border-left: 3px solid #e9ecef;
+        color: #6c757d;
+        font-size: 0.875rem;
     }
 
     .interviewer-chip {
         display: inline-block;
-        padding: 0.25rem 0.5rem;
-        background-color: #e9ecef;
-        border-radius: 12px;
         margin-right: 0.25rem;
         margin-bottom: 0.25rem;
+        padding: 0.25rem 0.5rem;
+        border-radius: 12px;
+        background-color: #e9ecef;
         font-size: 0.8125rem;
         white-space: nowrap;
     }
@@ -58,10 +58,8 @@
 {% now "Y-m-d" as now %}
 
 <div class="mt-4">
-    <span class="oh-activity-sidebar__title fw-bold"
-        >{{request.user.employee_get.get_full_name}}'s
-        {% trans "Scheduled Interviews" %}</span
-    >
+    <span class="oh-activity-sidebar__title fw-bold">{{ request.user.employee_get.get_full_name }}'s
+        {% trans "Scheduled Interviews" %}</span>
 </div>
 
 <div class="tracking-card">
@@ -82,7 +80,7 @@
                             style="font-size: 24px"
                             role="img"
                             class="md hydrated"
-                            aria-label="close outline"
+                            aria-label="{% trans 'close outline' %}"
                         ></ion-icon>
                     </span>
                     {% if perms.recruitment.add_interview or request.user|is_stagemanager %}
@@ -100,7 +98,7 @@
                                 style="font-size: 19px"
                                 role="img"
                                 class="md hydrated"
-                                aria-label="create outline"
+                                aria-label="{% trans 'create outline' %}"
                             ></ion-icon>
                         </span>
                     {% endif %}
@@ -115,10 +113,10 @@
                             {% trans "Interviewer" %}:
                             <div class="mt-1">
                                 {% for interviewer in interview.employee_id.all %}
-                                <span class="interviewer-chip">
-                                    <ion-icon name="person-outline"></ion-icon>
-                                    {{ interviewer }}
-                                </span>
+                                    <span class="interviewer-chip">
+                                        <ion-icon name="person-outline"></ion-icon>
+                                        {{ interviewer }}
+                                    </span>
                                 {% endfor %}
                             </div>
                         </div>
@@ -126,52 +124,48 @@
                             {{ interview.description }}
                         </div>
                         {% if interview.completed %}
-                        <div
-                            class="d-flex align-items-center mt-2 status-completed"
-                        >
-                            <ion-icon name="checkmark-outline"></ion-icon>
-                            {% trans "Interview Completed" %}
-                        </div>
+                            <div class="d-flex align-items-center mt-2 status-completed">
+                                <ion-icon name="checkmark-outline"></ion-icon>
+                                {% trans "Interview Completed" %}
+                            </div>
                         {% elif interview.interview_date|date:"Y-m-d" < now %}
-                        <div
-                            class="d-flex align-items-center mt-2 status-completed text-danger"
-                        >
-                            <ion-icon name="close-outline"></ion-icon>
-                            {% trans "Expired Interview" %}
-                        </div>
+                            <div class="d-flex align-items-center mt-2 status-completed text-danger">
+                                <ion-icon name="close-outline"></ion-icon>
+                                {% trans "Expired Interview" %}
+                            </div>
                         {% elif interview.interview_date|date:"Y-m-d" > now %}
-                        <div class="d-flex align-items-center mt-2 status-upcoming">
-                            <ion-icon name="time-outline"></ion-icon>
-                            {% trans "Upcoming Interview" %}
-                        </div>
+                            <div class="d-flex align-items-center mt-2 status-upcoming">
+                                <ion-icon name="time-outline"></ion-icon>
+                                {% trans "Upcoming Interview" %}
+                            </div>
                         {% elif interview.interview_date|date:"Y-m-d" == now and not interview.completed %}
-                        <div class="d-flex align-items-center mt-2 status-today">
-                            <ion-icon name="calendar-outline"></ion-icon>
-                            {% trans "Interview Today" %}
-                        </div>
+                            <div class="d-flex align-items-center mt-2 status-today">
+                                <ion-icon name="calendar-outline"></ion-icon>
+                                {% trans "Interview Today" %}
+                            </div>
                         {% endif %}
                     </div>
                 </li>
             {% empty %}
-            <div
-                class="d-flex justify-content-center align-items-center"
-                style="height: 40vh"
-            >
-                <div>
-                    <div
-                        style="width: 30%; margin: 10% auto"
-                        class="oh-tracking-card"
-                    >
-                        <img
-                            style="width: 100%"
-                            src="{% static 'images/ui/interview.png' %}"
-                        />
+                <div
+                    class="d-flex justify-content-center align-items-center"
+                    style="height: 40vh"
+                >
+                    <div>
+                        <div
+                            style="width: 30%; margin: 10% auto"
+                            class="oh-tracking-card"
+                        >
+                            <img
+                                style="width: 100%"
+                                src="{% static 'images/ui/interview.png' %}"
+                            >
+                        </div>
+                        <h5 class="oh-404__subtitle mt-4 ml-2">
+                            {% trans "No interviews are scheduled for this candidate" %}
+                        </h5>
                     </div>
-                    <h5 class="oh-404__subtitle mt-4 ml-2">
-                        {% trans "No interviews are scheduled for this candidate" %}
-                    </h5>
                 </div>
-            </div>
             {% endfor %}
         </ol>
     </div>
@@ -180,9 +174,16 @@
 <div class="oh-modal" id="createModal" role="dialog" aria-hidden="true">
     <div class="oh-modal__dialog" style="max-width: 550px">
         <div class="oh-modal__dialog-header">
-        <button onclick="$(this).closest('#createModal').removeClass('oh-modal--show');" type="button" class="oh-modal__close" aria-label="Close"><ion-icon name="close-outline"></ion-icon></button>
+            <button
+                onclick="$(this).closest('#createModal').removeClass('oh-modal--show')"
+                type="button"
+                class="oh-modal__close"
+                aria-label="{% trans 'Close' %}"
+            >
+                <ion-icon name="close-outline"></ion-icon>
+            </button>
         </div>
 
         <div class="oh-modal__dialog-body" id="createTarget"></div>
     </div>
-  </div>
+</div>

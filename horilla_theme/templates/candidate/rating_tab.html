@@ -1,4 +1,4 @@
-{% load static audit_filters i18n %}
+{% load static audit_filters i18n i18n %}
 {% if candidate.candidate_rating.all %}
     <div class="row p-4">
         {% for rate in candidate.candidate_rating.all %}
@@ -24,7 +24,7 @@
                                         checked
                                     {% endif %}
                                 >
-                                <label for="star5" title="5 Stars" class="star"></label>
+                                <label for="star5" title="{% trans '5 Stars' %}" class="star"></label>
                                 <input
                                     type="radio"
                                     id="star4"
@@ -34,7 +34,7 @@
                                         checked
                                     {% endif %}
                                 >
-                                <label for="star4" title="4 Stars" class="star"></label>
+                                <label for="star4" title="{% trans '4 Stars' %}" class="star"></label>
                                 <input
                                     type="radio"
                                     id="star3"
@@ -44,7 +44,7 @@
                                         checked
                                     {% endif %}
                                 >
-                                <label for="star3" title="3 Stars" class="star"></label>
+                                <label for="star3" title="{% trans '3 Stars' %}" class="star"></label>
                                 <input
                                     type="radio"
                                     id="star2"
@@ -54,7 +54,7 @@
                                         checked
                                     {% endif %}
                                 >
-                                <label for="star2" title="2 Stars" class="star"></label>
+                                <label for="star2" title="{% trans '2 Stars' %}" class="star"></label>
                                 <input
                                     type="radio"
                                     id="star1"
@@ -64,7 +64,7 @@
                                         checked
                                     {% endif %}
                                 >
-                                <label for="star1" title="1 Star" class="star"></label>
+                                <label for="star1" title="{% trans '1 Star' %}" class="star"></label>
                             </div>
                         </ul>
                     </div>

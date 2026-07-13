@@ -1,65 +1,75 @@
 {% load i18n %}
 {% if messages and not hx_vals %}
-        <script>reloadMessage();</script>
-        <span hx-on-htmx-after-request="setTimeout(() => {$('.oh-modal__close--custom').click();}, 500);" hx-target="#actionTypes" hx-trigger="load" hx-select=".oh-sticky-table"
-            hx-get="{% url 'action-type' %}"></span>
+    <script>
+        reloadMessage();
+    </script>
+    <span
+        hx-on-htmx-after-request="setTimeout(() => {$('.oh-modal__close--custom').click();}, 500);"
+        hx-target="#actionTypes"
+        hx-trigger="load"
+        hx-select=".oh-sticky-table"
+        hx-get="{% url 'action-type' %}"
+    ></span>
 {% endif %}
 <div class="oh-modal__dialog-header pb-0">
-  	<h2 class="oh-modal__dialog-title" id="createModalTitle">
-		{% if act_id %}
-			{% trans "Update Action Type" %}
-		{% else %}
-			{% trans "Create Action Type" %}
-		{% endif %}
-  	</h2>
-  	<button class="oh-modal__close--custom"
-    		aria-label="Close"
-    		onclick="$(this).parents().closest('.oh-modal--show').toggleClass('oh-modal--show')"
-  		>
-    	<ion-icon name="close-outline"></ion-icon>
-  	</button>
+    <h2 class="oh-modal__dialog-title" id="createModalTitle">
+        {% if act_id %}
+            {% trans "Update Action Type" %}
+        {% else %}
+            {% trans "Create Action Type" %}
+        {% endif %}
+    </h2>
+    <button
+        class="oh-modal__close--custom"
+        aria-label="{% trans 'Close' %}"
+        onclick="$(this).parents().closest('.oh-modal--show').toggleClass('oh-modal--show')"
+    >
+        <ion-icon name="close-outline"></ion-icon>
+    </button>
 </div>
 <div class="oh-modal__dialog-body">
-  	<form
-  	  	{% if act_id %}
-  	  		hx-post="{% url 'action-type-update' act_id %}"
-			hx-target="#objectUpdateModalTarget"
-  	  	{% else %}
-  	  		hx-post="{% url 'action-type-create' %}?{{pd}}"
-			hx-target="#objectCreateModalTarget"
-  	  	{% endif %}
-		class="oh-profile-section"
-  		>
-  	  	{% csrf_token %} {{form.non_field_errors}} {{form.as_p}}
-  	  	<div class="oh-modal__dialog-footer p-0 mt-3">
-			<button type="submit" class="oh-btn oh-btn--secondary oh-btn--shadow">
-			  {% trans "Save" %}
-			</button>
-		</div>
-  	</form>
+    <form
+        {% if act_id %}
+            hx-post="{% url 'action-type-update' act_id %}"
+            hx-target="#objectUpdateModalTarget"
+        {% else %}
+            hx-post="{% url 'action-type-create' %}?{{pd}}"
+            hx-target="#objectCreateModalTarget"
+        {% endif %}
+        class="oh-profile-section"
+    >
+        {% csrf_token %}
+        {{ form.non_field_errors }}
+        {{ form.as_p }}
+        <div class="oh-modal__dialog-footer p-0 mt-3">
+            <button type="submit" class="oh-btn oh-btn--secondary oh-btn--shadow">
+                {% trans "Save" %}
+            </button>
+        </div>
+    </form>
 </div>
 
 <script>
-  function actionChange(selectElement) {
-    var selectedActiontype = selectElement.val();
-    var parentForm = selectElement.parents().closest("form");
-    $.ajax({
-      type: "post",
-      url: "{% url 'action-type-name' %}",
-      data: {
-        csrfmiddlewaretoken: getCookie("csrftoken"),
-        action_type: selectedActiontype,
-      },
-      success: function (response) {
-        // Check if the response.action_type is "warning"
-        if (response.action_type === "warning") {
-          // Hide the 'block_option' field
-          parentForm.find("[id=id_block_option]").parent().hide();
-        } else {
-          // Show the 'block_option' field
-          parentForm.find("[id=id_block_option]").parent().show();
-        }
-      },
-    });
-  }
+    function actionChange(selectElement) {
+      var selectedActiontype = selectElement.val();
+      var parentForm = selectElement.parents().closest("form");
+      $.ajax({
+        type: "post",
+        url: "{% url 'action-type-name' %}",
+        data: {
+          csrfmiddlewaretoken: getCookie("csrftoken"),
+          action_type: selectedActiontype,
+        },
+        success: function (response) {
+          // Check if the response.action_type is "warning"
+          if (response.action_type === "warning") {
+            // Hide the 'block_option' field
+            parentForm.find("[id=id_block_option]").parent().hide();
+          } else {
+            // Show the 'block_option' field
+            parentForm.find("[id=id_block_option]").parent().show();
+          }
+        },
+      });
+    }
 </script>

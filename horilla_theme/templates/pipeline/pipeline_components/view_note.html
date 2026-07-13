@@ -1,4 +1,4 @@
-{% load static i18n basefilters recruitmentfilters %}
+{% load static i18n basefilters recruitmentfilters i18n %}
 <script>
     function submitForm(elem) {
     	$(elem).siblings(".add_more_submit").click();
@@ -254,10 +254,10 @@
                                 name="enable_block_account"
                                 onchange="$(this).closest('form').find('input[type=submit]').click()"
                                 {% if note.candidate_can_view %}
-                                    title="Candidate can view this note"
+                                    title="{% trans 'Candidate can view this note' %}"
                                     checked
                                 {% else %}
-                                    title="Candidate can't view this note"
+                                    title="{% trans 'Candidate can\'t view this note' %}"
                                 {% endif %}
                             >
                             <input type="submit" hidden>

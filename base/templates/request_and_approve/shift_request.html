@@ -77,7 +77,7 @@
                 hx-target="#shiftRequestApproveBody"
                 hx-get="{% url 'dashboard-shift-request' %}?{{pd}}&page={{ requests.previous_page_number }}"
                 hx-trigger="click delay:0.3s">
-                <ion-icon name="caret-back-outline" role="img" class="md hydrated" aria-label="caret back outline"></ion-icon>
+                <ion-icon name="caret-back-outline" role="img" class="md hydrated" aria-label="{% trans 'caret back outline' %}"></ion-icon>
             </span>
         {% endif %}
 
@@ -87,7 +87,7 @@
                 hx-get="{% url 'dashboard-shift-request' %}?{{pd}}&page={{ requests.next_page_number }}"
                 hx-trigger="click delay:0.3s">
                 <ion-icon name="caret-forward-outline" role="img" class="md hydrated"
-                    aria-label="caret back outline"></ion-icon>
+                    aria-label="{% trans 'caret back outline' %}"></ion-icon>
             </span>
         {% endif %}
         {% if requests.has_next or requests.has_previous %}

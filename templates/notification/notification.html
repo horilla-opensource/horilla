@@ -1,5 +1,8 @@
-{% load basefilters %} {% load static %} {% load i18n %}
-{% load notifications_tags %} {% notifications_unread as unread_count %}
+{% load basefilters %}
+{% load static %}
+{% load i18n %}
+{% load notifications_tags %}
+{% notifications_unread as unread_count %}
 
 <div
     class="oh-navbar__notifications"
@@ -37,17 +40,15 @@
         <div class="oh-navbar__notification-empty" x-show="!visible">
             <img
                 src="{% static 'images/ui/happy.svg' %}"
-                alt="All caught up"
+                alt="{% trans 'All caught up' %}"
                 width="50"
                 height="50"
                 loading="lazy"
-            />
-            <span class="oh-navbar__notification-empty-title"
-                >{% trans "All caught up!" %}</span
             >
-            <span class="oh-navbar__notification-empty-desc"
-                >{% trans "You have no new notifications at the moment." %}</span
-            >
+            <span class="oh-navbar__notification-empty-title">{% trans "All caught up!" %}</span>
+            <span
+                class="oh-navbar__notification-empty-desc"
+            >{% trans "You have no new notifications at the moment." %}</span>
         </div>
     </div>
 </div>
@@ -77,7 +78,6 @@
         }
         localStorage.setItem('previousUnreadCount', data.unread_count);
     }
-
 </script>
 <script
     src="{% static 'notifications/notify.js' %}"

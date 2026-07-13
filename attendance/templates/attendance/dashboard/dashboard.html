@@ -15,7 +15,7 @@
     <div class="oh-modal__dialog" style="max-width: 900px;">
       <div class="oh-modal__dialog-header">
         <h3 class="oh-main__titlebar-title fw-bold ">{% trans " Activities" %}</h3>
-        <button class="oh-modal__close--custom" aria-label="Close"
+        <button class="oh-modal__close--custom" aria-label="{% trans 'Close' %}"
         onclick="$(this).parents().closest('.oh-modal--show').toggleClass('oh-modal--show');">
         <ion-icon name="close-outline"></ion-icon>
         </button>
@@ -243,7 +243,7 @@
                 <h5 class="oh-modal__dialog-title" id="sendMailModalLabel">
                     {% trans "Send Mail" %}
                 </h5>
-                <button class="oh-modal__close" aria-label="Close">
+                <button class="oh-modal__close" aria-label="{% trans 'Close' %}">
                     <ion-icon name="close-outline"></ion-icon>
                 </button>
             </div>

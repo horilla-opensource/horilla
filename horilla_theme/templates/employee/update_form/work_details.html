@@ -126,13 +126,13 @@
         createText = "Create New Job Position";
         emptyText = "---Choose Job Position---";
         $("#id_job_role_id").html(
-          '<option value="">---Choose Job Role---</option>'
+          '<option value="">{% trans "---Choose Job Role---" %}</option>'
         );
       } else if (id === "#dynamicJobPosition") {
         url = '{% url "get-job-roles" %}';
         dropdownId = "#id_job_role_id";
         createText = "Create New Job Role";
-        emptyText = "---Choose Job Role---";
+        emptyText = "{% trans "---Choose Job Role---" %}";
       }
 
       if (value) {

@@ -1,10 +1,8 @@
 {% load static i18n %}
-<div class="d-flex flex-column justify-content-center align-items-center" style="height: 100vh; padding: 1rem;">
-
+<div class="d-flex flex-column justify-content-center align-items-center" style="height: 100vh; padding: 1rem">
     <div class="hdl-card">
-
         <div class="hdl-logo-wrap">
-            <img src="{% static 'images/ui/auth-logo.png' %}" alt="Horilla" class="hdl-logo-img">
+            <img src="{% static 'images/ui/auth-logo.png' %}" alt="{% trans 'Horilla' %}" class="hdl-logo-img">
         </div>
 
         <div class="hdl-spinner-wrap">
@@ -12,10 +10,14 @@
             <div class="hdl-ring hdl-ring--middle"></div>
             <div class="hdl-ring-core">
                 <svg width="32" height="32" viewBox="0 0 24 24" fill="none">
-                    <circle cx="9"  cy="7" r="3" stroke="#E54F38" stroke-width="2"/>
-                    <circle cx="15" cy="7" r="3" stroke="#E54F38" stroke-width="2"/>
-                    <path d="M3 19c0-3.314 2.686-6 6-6h6c3.314 0 6 2.686 6 6"
-                          stroke="#E54F38" stroke-width="2" stroke-linecap="round"/>
+                    <circle cx="9" cy="7" r="3" stroke="#E54F38" stroke-width="2" />
+                    <circle cx="15" cy="7" r="3" stroke="#E54F38" stroke-width="2" />
+                    <path
+                        d="M3 19c0-3.314 2.686-6 6-6h6c3.314 0 6 2.686 6 6"
+                        stroke="#E54F38"
+                        stroke-width="2"
+                        stroke-linecap="round"
+                    />
                 </svg>
             </div>
             <div class="hdl-pulse-ring"></div>
@@ -23,60 +25,64 @@
 
         <h2 class="hdl-title">{% trans "Setting Up Your Workspace" %}</h2>
         <p class="hdl-subtitle">{% trans "Loading demo database, please wait…" %}</p>
-
     </div>
 </div>
 
 <style>
     .hdl-card {
-        background: #fff;
+        width: 100%;
+        max-width: 420px;
+        padding: 2.75rem 2.5rem;
         border-radius: 24px;
+        background: #fff;
         box-shadow:
             0 0 0 1px rgba(229, 79, 56, 0.08),
             0 8px 32px rgba(229, 79, 56, 0.12),
             0 24px 64px rgba(0, 0, 0, 0.1);
-        padding: 2.75rem 2.5rem;
-        max-width: 420px;
-        width: 100%;
         text-align: center;
     }
 
     .hdl-logo-wrap {
         display: flex;
-        justify-content: center;
         align-items: center;
+        justify-content: center;
         margin-bottom: 1.5rem;
     }
 
-    .hdl-logo-img { height: 42px; object-fit: contain; }
+    .hdl-logo-img {
+        height: 42px;
+        object-fit: contain;
+    }
 
     /* ── Spinner ── */
     .hdl-spinner-wrap {
+        display: flex;
         position: relative;
+        align-items: center;
+        justify-content: center;
         width: 120px;
         height: 120px;
         margin: 0 auto 1.75rem;
-        display: flex;
-        align-items: center;
-        justify-content: center;
     }
 
     .hdl-ring {
         position: absolute;
-        border-radius: 50%;
         border: 3px solid transparent;
+        border-radius: 50%;
         animation: hdl-spin linear infinite;
     }
 
     .hdl-ring--outer {
-        width: 120px; height: 120px;
-        border-top-color: #E54F38;
+        width: 120px;
+        height: 120px;
+        border-top-color: #e54f38;
         border-right-color: rgba(229, 79, 56, 0.22);
         animation-duration: 2.2s;
     }
 
     .hdl-ring--middle {
-        width: 90px; height: 90px;
+        width: 90px;
+        height: 90px;
         border-top-color: rgba(229, 79, 56, 0.55);
         border-left-color: rgba(229, 79, 56, 0.18);
         animation-duration: 1.6s;
@@ -84,42 +90,56 @@
     }
 
     .hdl-ring-core {
-        width: 60px; height: 60px;
+        display: flex;
+        z-index: 2;
+        align-items: center;
+        justify-content: center;
+        width: 60px;
+        height: 60px;
         border-radius: 50%;
         background: linear-gradient(135deg, #fff5f1, #fceded);
-        display: flex; align-items: center; justify-content: center;
-        z-index: 2;
         box-shadow: 0 2px 8px rgba(229, 79, 56, 0.15);
     }
 
     .hdl-pulse-ring {
         position: absolute;
-        width: 120px; height: 120px;
-        border-radius: 50%;
+        width: 120px;
+        height: 120px;
         border: 1.5px solid rgba(229, 79, 56, 0.18);
+        border-radius: 50%;
         animation: hdl-pulse-expand 2.4s ease-out infinite;
     }
 
     @keyframes hdl-spin {
-        from { transform: rotate(0deg); }
-        to   { transform: rotate(360deg); }
+        0% {
+            transform: rotate(0deg);
+        }
+        100% {
+            transform: rotate(360deg);
+        }
     }
 
     @keyframes hdl-pulse-expand {
-        0%   { transform: scale(1); opacity: 0.6; }
-        100% { transform: scale(1.5); opacity: 0; }
+        0% {
+            transform: scale(1);
+            opacity: 0.6;
+        }
+        100% {
+            transform: scale(1.5);
+            opacity: 0;
+        }
     }
 
     .hdl-title {
-        font-size: 1.25rem;
-        font-weight: 700;
-        color: #111827;
         margin: 0 0 0.5rem;
+        color: #111827;
+        font-weight: 700;
+        font-size: 1.25rem;
     }
 
     .hdl-subtitle {
-        font-size: 0.9rem;
-        color: #6b7280;
         margin: 0;
+        color: #6b7280;
+        font-size: 0.9rem;
     }
 </style>

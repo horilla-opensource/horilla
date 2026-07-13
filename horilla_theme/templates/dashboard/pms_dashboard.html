@@ -14,7 +14,7 @@
         <div class="d-none mt-5" id="back_button" style="width: 10%">
             <a href="{% url 'dashboard-view' %}" class="oh-btn oh-btn--secondary oh-btn--shadow ms-3">
                 <ion-icon class="me-2 md hydrated" name="arrow-back-outline" role="img"
-                    aria-label="arrow-back-outline"></ion-icon>{% trans "Back" %}</a>
+                    aria-label="{% trans 'arrow-back-outline' %}"></ion-icon>{% trans "Back" %}</a>
         </div>
 
         <br>
@@ -93,7 +93,7 @@
                                 {% else %}
                                     <div style="height: 430px; display:flex;align-items: center;justify-content: center;" class="">
                                         <div style="" class="">
-                                            <img style="display: block;width: 100px;margin: 20px auto ;" src="{% static 'images/ui/goal.png' %}" class="" alt="Page not found. 404."/>
+                                            <img style="display: block;width: 100px;margin: 20px auto ;" src="{% static 'images/ui/goal.png' %}" class="" alt="{% trans 'Page not found. 404.' %}"/>
                                             <h3 style="font-size:16px" class="oh-404__subtitle">{% trans "No objectives are available." %}</h3>
                                         </div>
                                     </div>

@@ -1,11 +1,12 @@
+{% load i18n %}
 {% load recruitmentfilters %}
 <h1>{{history.0.name}} history</h1>
 <table class='table table-striped'>
     <tr>
-        <th>Stage</th>
-        <th>Scheduled</th>
-        <th>Updated at</th>
-        <th>Changed by</th>
+        <th>{% trans "Stage" %}</th>
+        <th>{% trans "Scheduled" %}</th>
+        <th>{% trans "Updated at" %}</th>
+        <th>{% trans "Changed by" %}</th>
     </tr>
     {% for candidate_history in history %}
     {% if candidate_history.stage_id != None %}

@@ -10,10 +10,10 @@
                 hx-trigger="keyup changed delay:.2s"
                 type="text"
                 id="permissionSearch"
-                placeholder="Search"
+                placeholder="{% trans 'Search' %}"
                 name="search"
                 class="text-color-600 ps-8 p-1.5 pb-2 placeholder:text-xs w-full border border-dark-50 rounded-md focus-visible:outline-0 placeholder:text-dark-100 text-sm [transition:.3s] focus:border-primary-600"
-                aria-label="Search Input"
+                aria-label="{% trans 'Search Input' %}"
             >
             <i class="fas fa-search absolute left-3 top-[1px] bottom-0 m-auto flex items-center opacity-50 text-xs"></i>
         </div>
@@ -57,7 +57,7 @@
             </h2>
             <button
                 class="oh-modal__close"
-                aria-label="Close"
+                aria-label="{% trans 'Close' %}"
                 onclick="$(this).closest('.oh-modal--show').removeClass('oh-modal--show'); event.preventDefault()"
             >
                 <ion-icon name="close-outline"></ion-icon>

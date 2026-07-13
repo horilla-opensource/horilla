@@ -41,7 +41,7 @@
 			<span class="oh-card-dashboard__title" id="employee-previous" style="cursor: pointer"
 				hx-target="#notInYetIdCardBody" hx-get="{% url 'not-in-yet' %}?{{pd}}&page={{ employees.previous_page_number }}"
 				hx-trigger="click delay:0.3s">
-				<ion-icon name="caret-back-outline" role="img" class="md hydrated" aria-label="caret back outline"></ion-icon>
+				<ion-icon name="caret-back-outline" role="img" class="md hydrated" aria-label="{% trans 'caret back outline' %}"></ion-icon>
 			</span>
 		{% endif %}
 		{% if employees.has_next %}
@@ -49,7 +49,7 @@
 				hx-target="#notInYetIdCardBody" hx-get="{% url 'not-in-yet' %}?{{pd}}&page={{ employees.next_page_number }}"
 				hx-trigger="click delay:0.3s">
 				<ion-icon name="caret-forward-outline" role="img" class="md hydrated"
-					aria-label="caret back outline"></ion-icon>
+					aria-label="{% trans 'caret back outline' %}"></ion-icon>
 			</span>
 		{% endif %}
 		{% if employees.has_previous or employees.has_next %}

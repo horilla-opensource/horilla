@@ -10,15 +10,18 @@
 {% endif %}
 <div class="oh-modal__dialog-header">
     <h2 class="oh-modal__dialog-title" id="createTitle">
-        {% trans "Create" %} {{form.verbose_name}}
+        {% trans "Create" %} {{ form.verbose_name }}
     </h2>
-    <button class="oh-modal__close" aria-label="Close">
+    <button class="oh-modal__close" aria-label="{% trans 'Close' %}">
         <ion-icon name="close-outline"></ion-icon>
     </button>
 </div>
 <div class="oh-modal__dialog-body" id="createTarget">
-    <form hx-post="{% url 'leave-allocation-request-create' %}" hx-target="#objectCreateModalTarget"
-        hx-encoding="multipart/form-data">
-        {% csrf_token %} {{form.as_p}}
+    <form
+        hx-post="{% url 'leave-allocation-request-create' %}"
+        hx-target="#objectCreateModalTarget"
+        hx-encoding="multipart/form-data"
+    >
+        {% csrf_token %} {{ form.as_p }}
     </form>
 </div>

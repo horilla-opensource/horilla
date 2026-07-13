@@ -1,4 +1,4 @@
-{% load i18n static basefilters horillafilters %}
+{% load i18n static basefilters horillafilters i18n %}
 
 {% if messages %}
     <div class="oh-wrapper">
@@ -22,7 +22,7 @@
 			hx-get="{% url 'shift-request-reallocate' %}?emp_id={{emp_id}}"
 			hx-target="#genericModalBody"
 		>
-		<ion-icon name="add-sharp" class="mr-1 md hydrated" role="img" aria-label="add sharp"></ion-icon>{% trans "Reallocate Shift." %}
+		<ion-icon name="add-sharp" class="mr-1 md hydrated" role="img" aria-label="{% trans 'add sharp' %}"></ion-icon>{% trans "Reallocate Shift." %}
 	</button>
 	{% endif %}
 
@@ -49,7 +49,7 @@
                 name="add-sharp"
                 class="mr-1 md hydrated"
                 role="img"
-                aria-label="add sharp"
+                aria-label="{% trans 'add sharp' %}"
             ></ion-icon
             >{% trans "Reallocate Shift." %}
         </button>
@@ -81,7 +81,7 @@
                         class="md hydrated"
                         name="add-outline"
                         role="img"
-                        aria-label="add outline"
+                        aria-label="{% trans 'add outline' %}"
                     ></ion-icon>
                 </button>
             </li>
@@ -107,7 +107,7 @@
                             class="md hydrated"
                             name="add-outline"
                             role="img"
-                            aria-label="add outline"
+                            aria-label="{% trans 'add outline' %}"
                         ></ion-icon>
                     </button>
                 {% endif%}
@@ -138,7 +138,7 @@
                         class="md hydrated"
                         name="add-outline"
                         role="img"
-                        aria-label="add outline"
+                        aria-label="{% trans 'add outline' %}"
                     ></ion-icon>
                 </button>
             </li>
@@ -164,7 +164,7 @@
                             class="md hydrated"
                             name="add-outline"
                             role="img"
-                            aria-label="add outline"
+                            aria-label="{% trans 'add outline' %}"
                         ></ion-icon>
                     </button>
                 {% endif %}
@@ -234,7 +234,7 @@
                                                         <img
                                                             src="https://ui-avatars.com/api/?name={{work_type_request.employee_id}}&amp;background=random"
                                                             class="oh-profile__image"
-                                                            alt="Username"
+                                                            alt="{% trans 'Username' %}"
                                                         />
                                                     </div>
                                                     <span
@@ -470,7 +470,7 @@
                                                     <img
                                                         src="https://ui-avatars.com/api/?name={{rshift.employee_id.employee_first_name}}+{{rshift.employee_id.employee_last_name}}&background=random"
                                                         class="oh-profile__image"
-                                                        alt="Username"
+                                                        alt="{% trans 'Username' %}"
                                                     />
                                                 </div>
                                                 <span
@@ -701,7 +701,7 @@
                                                     <img
                                                         src="https://ui-avatars.com/api/?name={{rwork_type.employee_id.employee_first_name}}+{{rwork_type.employee_id.employee_last_name}}&background=random"
                                                         class="oh-profile__image"
-                                                        alt="Username"
+                                                        alt="{% trans 'Username' %}"
                                                     />
                                                 </div>
                                                 <span class="oh-profile__name oh-text--dark"
@@ -913,7 +913,7 @@
                                                         <img
                                                             src="https://ui-avatars.com/api/?name={{shift_request.employee_id}}&amp;background=random"
                                                             class="oh-profile__image"
-                                                            alt="Username"
+                                                            alt="{% trans 'Username' %}"
                                                         />
                                                     </div>
                                                     <span class="oh-profile__name oh-text--dark"
@@ -1102,7 +1102,7 @@
             >
                 {% trans "Update Shift Request" %}
             </h5>
-            <button class="oh-modal__close" aria-label="Close">
+            <button class="oh-modal__close" aria-label="{% trans 'Close' %}">
                 <ion-icon name="close-outline"></ion-icon>
             </button>
         </div>
@@ -1126,7 +1126,7 @@
             <h5 class="oh-modal__dialog-title" id="shiftRequestModalLabel">
                 {% trans "Shift Request" %}
             </h5>
-            <button class="oh-modal__close" aria-label="Close">
+            <button class="oh-modal__close" aria-label="{% trans 'Close' %}">
                 <ion-icon name="close-outline"></ion-icon>
             </button>
         </div>

@@ -1,4 +1,4 @@
-{% load static %}
+{% load static i18n %}
 <!DOCTYPE html>
 <html lang="en">
 
@@ -80,7 +80,7 @@
                 <img src="{{protocol}}://{{ host }}{% static '/images/ui/horilla-logo.png' %}" height="30" width="110.4" />
               </td>
               <td style="width: 50%; text-align: right">
-                <a href="#" class="hr-link">View in browser</a>
+                <a href="#" class="hr-link">{% trans "View in browser" %}</a>
               </td>
             </tr>
           </table>
@@ -90,7 +90,7 @@
         <td align="center" style="padding-top:20px;padding-bottom: 20px ;">
           <img
             src="https://ci3.googleusercontent.com/meips/ADKq_NZzfB2Yeamia3PRl_MPY2l5X-HKt_GdWTuHkHyUh4s8jl9IFTbklpAOA-tF3RxEN2nsK759vl1ak1ZOroD08dPnWxnWvqmXUiB209X05-AMQwPCCzM-yu5L4EfrVOE4435gYyWmY4yo4CEMOi0nA9cvN18Pd9wYHnxxGg=s0-d-e1-ft#https://d1oco4z2z1fhwp.cloudfront.net/templates/default/6506/1882ba7c-c779-44c4-9642-99e296fb98be.png"
-            style="display:block;height:auto;border:0;width:20%" width="272" title="donation box" class="CToWUd"
+            style="display:block;height:auto;border:0;width:20%" width="272" title="{% trans 'donation box' %}" class="CToWUd"
             data-bit="iit">
         </td>
       </tr>
@@ -116,7 +116,7 @@
                 padding: 15px 25px;
                 text-decoration: none;
                 font-weight: bold;
-              ">View Payslips</a>
+              ">{% trans "View Payslips" %}</a>
         </td>
       </tr>
 
@@ -133,7 +133,7 @@
           This mail was sent you because your email has been enrolled as an
           employee at {{record.instances.0.get_company}}.<br />
           Don't want to receive mails like these anymore?
-          <a href="#" style="color: #5c5c5c">Unsubscribe here</a>.
+          <a href="#" style="color: #5c5c5c">{% trans "Unsubscribe here" %}</a>.
         </td>
       </tr>
       <tr>

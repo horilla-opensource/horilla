@@ -1,3 +1,4 @@
+{% load i18n %}
 {% load widget_tweaks i18n generic_template_filters %}
 <style>
     .condition-highlight {
@@ -14,14 +15,14 @@
             type="button"
             class="oh-modal__close--custom"
             onclick="$(this).closest('.oh-modal--show').removeClass('oh-modal--show')"
-            aria-label="Close"
+            aria-label="{% trans 'Close' %}"
             {{form.close_button_attrs|safe}}
         >
             <ion-icon
                 name="close-outline"
                 role="img"
                 class="md hydrated"
-                aria-label="close outline"
+                aria-label="{% trans 'close outline' %}"
             ></ion-icon>
         </button>
     </div>

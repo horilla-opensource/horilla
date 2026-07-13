@@ -1,4 +1,4 @@
-{% load i18n static %}
+{% load i18n static i18n %}
 <div class="bg-white rounded-md shadow-card p-3 mb-5 lg:mb-0">
     <!-- Heading -->
     <div class="flex items-center justify-between mb-3">
@@ -95,7 +95,7 @@
                                 class="add-files-form"
                             >
                                 {% csrf_token %}
-                                <label for="addFile_{{note.id}}" title="Add Files">
+                                <label for="addFile_{{note.id}}" title="{% trans 'Add Files' %}">
                                     <ion-icon
                                         name="add-outline"
                                         style="font-size: 12px; border: 1px solid #818791; border-radius: 5px"

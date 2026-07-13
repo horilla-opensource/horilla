@@ -1,10 +1,11 @@
-{% load i18n %} {% load static %}
+{% load i18n %}
+{% load static %}
 {% get_current_language as LANGUAGE_CODE %}
 
 {% if messages %}
     <div class="oh-alert-container">
         {% for message in messages %}
-        <div class="oh-alert oh-alert--animated {{message.tags}}">{{ message }}</div>
+            <div class="oh-alert oh-alert--animated {{message.tags}}">{{ message }}</div>
         {% endfor %}
     </div>
 {% endif %}
@@ -13,12 +14,20 @@
     <span class="oh-navbar__notification-head-title">{% trans "Notifications" %}</span>
     {% if notifications %}
         <div class="oh-navbar__notification-links" x-show="visible">
-            <a class="oh-navbar__notification-tray-link mr-2" hx-get="{% url 'read-notifications' %}"
-                hx-target="#notificationContainer" x-show="!markRead" @click="markRead = true">
+            <a
+                class="oh-navbar__notification-tray-link mr-2"
+                hx-get="{% url 'read-notifications' %}"
+                hx-target="#notificationContainer"
+                x-show="!markRead"
+                @click="markRead = true"
+            >
                 <ion-icon name="checkmark-done-outline" class="mr-1"></ion-icon> {% trans "Mark as read" %}
             </a>
-            <a class="oh-navbar__notification-tray-link oh-navbar__notification-tray-link--danger"
-                hx-get="{% url 'clear-notifications' %}" hx-target="#notificationContainer">
+            <a
+                class="oh-navbar__notification-tray-link oh-navbar__notification-tray-link--danger"
+                hx-get="{% url 'clear-notifications' %}"
+                hx-target="#notificationContainer"
+            >
                 <ion-icon name="close-outline" class="mr-1"></ion-icon> {% trans "Clear" %}
             </a>
         </div>
@@ -29,39 +38,55 @@
     {% if notifications %}
         <ul class="oh-navbar__nofication-list">
             {% for notification in notifications %}
-                <a class="oh-navbar__notification-item" href="{{notification.data.redirect}}#"
-                    id="notificationItem{{notification.id}}" data-id="{{notification.id}}">
+                <a
+                    class="oh-navbar__notification-item"
+                    href="{{notification.data.redirect}}#"
+                    id="notificationItem{{notification.id}}"
+                    data-id="{{notification.id}}"
+                >
                     <div>
                         {% if notification.unread %}
-                            <span class="oh-navbar__notification-dot oh-navbar__notification-dot--green"
-                                :class="markRead ? '': 'oh-navbar__notification-dot--unread'">
+                            <span
+                                class="oh-navbar__notification-dot oh-navbar__notification-dot--green"
+                                :class="markRead ? '': 'oh-navbar__notification-dot--unread'"
+                            >
                             </span>
                         {% endif %}
                     </div>
                     <div>
                         {% if LANGUAGE_CODE == 'ar' %}
-                            <p class="oh-navbar__notification-text"
-                                :class="markRead ? '' : 'oh-navbar__notification-text--unread' ">
+                            <p
+                                class="oh-navbar__notification-text"
+                                :class="markRead ? '' : 'oh-navbar__notification-text--unread' "
+                            >
                                 {{ notification.data.verb_ar }}
                             </p>
                         {% elif LANGUAGE_CODE == 'de' %}
-                            <p class="oh-navbar__notification-text"
-                                :class="markRead ? '' : 'oh-navbar__notification-text--unread' ">
+                            <p
+                                class="oh-navbar__notification-text"
+                                :class="markRead ? '' : 'oh-navbar__notification-text--unread' "
+                            >
                                 {{ notification.data.verb_de }}
                             </p>
                         {% elif LANGUAGE_CODE == 'fr' %}
-                            <p class="oh-navbar__notification-text"
-                                :class="markRead ? '' : 'oh-navbar__notification-text--unread' ">
+                            <p
+                                class="oh-navbar__notification-text"
+                                :class="markRead ? '' : 'oh-navbar__notification-text--unread' "
+                            >
                                 {{ notification.data.verb_fr }}
                             </p>
                         {% elif LANGUAGE_CODE == 'es' %}
-                            <p class="oh-navbar__notification-text"
-                                :class="markRead ? '' : 'oh-navbar__notification-text--unread' ">
+                            <p
+                                class="oh-navbar__notification-text"
+                                :class="markRead ? '' : 'oh-navbar__notification-text--unread' "
+                            >
                                 {{ notification.data.verb_es }}
                             </p>
                         {% else %}
-                            <p class="oh-navbar__notification-text"
-                                :class="markRead ? '' : 'oh-navbar__notification-text--unread' ">
+                            <p
+                                class="oh-navbar__notification-text"
+                                :class="markRead ? '' : 'oh-navbar__notification-text--unread' "
+                            >
                                 {{ notification.verb }}
                             </p>
                         {% endif %}
@@ -71,9 +96,9 @@
                                 {{ notification.actor.employee_first_name }}
                             {% else %}
                                 {% if notification.data.label %}
-                                    {{notification.data.label}}
+                                    {{ notification.data.label }}
                                 {% else %}
-                                    {% trans "Anonymous"%}
+                                    {% trans "Anonymous" %}
                                 {% endif %}
                             {% endif %}
                         </span>
@@ -85,9 +110,14 @@
                                     <ion-icon name="{{notification.data.icon}}"></ion-icon>
                                 </div>
                             {% endcomment %}
-                            <div class="oh-navbar__notification-image" style="margin-left: 5px"
-                                onclick="event.stopPropagation();event.preventDefault();" hx-target="#notificationItem{{notification.id}}"
-                                hx-post="{% url 'mark-as-read-notification' notification.id %}" hx-swap="outerHTML">
+                            <div
+                                class="oh-navbar__notification-image"
+                                style="margin-left: 5px"
+                                onclick="event.stopPropagation();event.preventDefault()"
+                                hx-target="#notificationItem{{notification.id}}"
+                                hx-post="{% url 'mark-as-read-notification' notification.id %}"
+                                hx-swap="outerHTML"
+                            >
                                 <ion-icon name="checkmark-outline"></ion-icon>
                             </div>
                         </div>
@@ -97,30 +127,44 @@
         </ul>
     {% else %}
         <div class="oh-navbar__notification-empty">
-            <img src="{% static 'images/ui/happy.svg' %}" alt="All caught up" width="50" height="50" loading="lazy" />
+            <img
+                src="{% static 'images/ui/happy.svg' %}"
+                alt="{% trans 'All caught up' %}"
+                width="50"
+                height="50"
+                loading="lazy"
+            >
             <span class="oh-navbar__notification-empty-title">{% trans "All caught up!" %}</span>
-            <span class="oh-navbar__notification-empty-desc">{% trans "You have no new notifications at the moment." %}</span>
+            <span
+                class="oh-navbar__notification-empty-desc"
+            >{% trans "You have no new notifications at the moment." %}</span>
         </div>
     {% endif %}
 </div>
-<div class="oh-navbar__notification-footer" x-show="visible" style="position:relative;">
+<div class="oh-navbar__notification-footer" x-show="visible" style="position: relative">
     <a
         id="viewallnotification"
         data-target="#allNotifications"
         hx-get="{% url 'all-notifications' %}"
         hx-target="#allNotificationBody"
         class="oh-navbar__notification-tray-link oh-activity-sidebar__open"
-        >{% trans "View all notifications" %} </a
+    >{% trans "View all notifications" %}
+    </a>
+    <div
+        class="oh-navbar__volume-icon"
+        title="{% trans 'Notification Sound' %}"
+        style="position: absolute; right: 25px"
+        hx-get="{% url 'notifications:notification-sound' %}"
+        hx-swap="none"
     >
-    <div class="oh-navbar__volume-icon" title="{% trans 'Notification Sound' %}" style="position:absolute; right:25px" hx-get="{% url 'notifications:notification-sound' %}" hx-swap="none">
         {% if request.user.employee_get.notification_sound.sound_enabled %}
-        <span class="material-symbols-outlined text-danger">
-            volume_up
-        </span>
+            <span class="material-symbols-outlined text-danger">
+                volume_up
+            </span>
         {% else %}
-        <span class="material-symbols-outlined text-danger">
-            volume_off
-        </span>
+            <span class="material-symbols-outlined text-danger">
+                volume_off
+            </span>
         {% endif %}
     </div>
 </div>

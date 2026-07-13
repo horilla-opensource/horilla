@@ -39,7 +39,7 @@
                             <img
                                 src="{{form.instance.get_avatar}}"
                                 class="oh-profile-section__avatar preview"
-                                alt="Username"
+                                alt="{% trans 'Username' %}"
                             >
                         </div>
                     </div>
@@ -67,7 +67,7 @@
                 <span class="oh-modal__dialog-title" id="uploadPhotoModalLabel">{% trans "Upload Photo" %}</span>
                 <button
                     class="oh-modal__close"
-                    aria-label="Close"
+                    aria-label="{% trans 'Close' %}"
                     onclick="$(this).closest('.oh-modal--show').removeClass('oh-modal--show')"
                 >
                     <ion-icon name="close-outline"></ion-icon>
@@ -85,7 +85,7 @@
                             <img
                                 src="{{form.instance.get_avatar}}"
                                 class="oh-profile-section__modal-image preview"
-                                alt="Username"
+                                alt="{% trans 'Username' %}"
                             >
                         </div>
                         <input

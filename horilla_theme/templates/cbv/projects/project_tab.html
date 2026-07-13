@@ -1,4 +1,4 @@
-{% load i18n static %}
+{% load i18n static i18n %}
 <style>
     .shadow-card {
         padding-top: 0;
@@ -44,7 +44,7 @@
                 style="display: block; width: 100px; margin: 10px auto"
                 src="{% static 'images/ui/project/project.png' %}"
                 class=""
-                alt="Page not found. 404."
+                alt="{% trans 'Page not found. 404.' %}"
             >
             <h3 style="font-size: 20px" class="oh-404__subtitle">
                 {% trans "No projects assigned to this employee." %}

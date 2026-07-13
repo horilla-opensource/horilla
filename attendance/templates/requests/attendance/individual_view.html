@@ -5,14 +5,14 @@
         hx-target="#validateAttendanceRequestModalBody" class="oh-modal__diaglog-nav oh-modal__nav-prev"
         data-action="previous">
         <ion-icon name="chevron-back-outline" class="md hydrated" role="img"
-            aria-label="chevron back outline"></ion-icon>
+            aria-label="{% trans 'chevron back outline' %}"></ion-icon>
     </button>
 
     <button hx-get="{% url 'validate-attendance-request' next %}?requests_ids={{request.GET.instance_ids}}"
         hx-target="#validateAttendanceRequestModalBody" class="oh-modal__diaglog-nav oh-modal__nav-next"
         data-action="next">
         <ion-icon name="chevron-forward-outline" class="md hydrated" role="img"
-            aria-label="chevron forward outline"></ion-icon>
+            aria-label="{% trans 'chevron forward outline' %}"></ion-icon>
     </button>
 </div> {% endcomment %}
 <a

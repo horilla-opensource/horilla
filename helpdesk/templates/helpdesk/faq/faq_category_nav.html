@@ -7,7 +7,7 @@
         <a
             class="oh-main__titlebar-search-toggle"
             role="button"
-            aria-label="Toggle Search"
+            aria-label="{% trans 'Toggle Search' %}"
             @click="searchShow = !searchShow"
         >
             <ion-icon
@@ -16,9 +16,7 @@
             ></ion-icon>
         </a>
     </div>
-    <div
-        class="oh-main__titlebar oh-main__titlebar--right oh-title_faq__main-header"
-    >
+    <div class="oh-main__titlebar oh-main__titlebar--right oh-title_faq__main-header">
         <div
             class="oh-input-group oh-input__search-group oh-faq__input-search"
             :class="searchShow ? 'oh-input__search-group--show' : ''"
@@ -27,18 +25,18 @@
                 name="search-outline"
                 class="oh-input-group__icon oh-input-group__icon--left md hydrated oh-faq_search--icon"
                 role="img"
-                aria-label="search outline"
+                aria-label="{% trans 'search outline' %}"
             ></ion-icon>
             <input
                 type="text"
                 class="oh-input oh-input__icon oh-search_input"
-                aria-label="Search Input"
+                aria-label="{% trans 'Search Input' %}"
                 name="search"
                 placeholder="{% trans 'Search in FAQs...' %}"
                 hx-get="{% url 'faq-search' %}?category=true"
                 hx-trigger="change"
                 hx-target="#faqCategoryList"
-            />
+            >
         </div>
         {% comment %}
         <select class="oh-select oh-select-faq oh-select--dropdown">
@@ -98,22 +96,22 @@
             </div>
         </form>
         {% if perms.helpdesk.add_faqcategory %}
-        <div class="oh-main__titlebar-button-container">
-            <div class="oh-btn-group m-0">
-                <div class="oh-dropdown" x-data="{open: false}">
-                    <button
-                        class="oh-btn oh-btn--secondary oh-btn--shadow"
-                        data-toggle="oh-modal-toggle"
-                        data-target="#objectCreateModal"
-                        hx-get="{% url 'faq-category-create' %}"
-                        hx-target="#objectCreateModalTarget"
-                    >
-                        <ion-icon name="add-outline" class="me-1"></ion-icon>
-                        {% trans "Create" %}
-                    </button>
+            <div class="oh-main__titlebar-button-container">
+                <div class="oh-btn-group m-0">
+                    <div class="oh-dropdown" x-data="{open: false}">
+                        <button
+                            class="oh-btn oh-btn--secondary oh-btn--shadow"
+                            data-toggle="oh-modal-toggle"
+                            data-target="#objectCreateModal"
+                            hx-get="{% url 'faq-category-create' %}"
+                            hx-target="#objectCreateModalTarget"
+                        >
+                            <ion-icon name="add-outline" class="me-1"></ion-icon>
+                            {% trans "Create" %}
+                        </button>
+                    </div>
                 </div>
             </div>
-        </div>
         {% endif %}
     </div>
 </section>

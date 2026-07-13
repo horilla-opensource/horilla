@@ -1,8 +1,20 @@
+{% load i18n %}
 <div data-cell-index="13" onclick="event.stopPropagation()">
-    <input type="number" required
-    default="0" min="0" placeholder="Amount"
-    onchange="inputAmount($(this))"
-    onkeyup="inputAmount($(this))"
-    name="reqAmount" class="w-75"{% if instance.status != "requested" %}disabled{% endif %} {% if instance.amount %}
-    value="{{instance.amount}}"{% endif %} />
+    <input
+        type="number"
+        required
+        default="0"
+        min="0"
+        placeholder="{% trans 'Amount' %}"
+        onchange="inputAmount($(this))"
+        onkeyup="inputAmount($(this))"
+        name="reqAmount"
+        class="w-75"
+        {% if instance.status != "requested" %}
+            disabled
+        {% endif %}
+        {% if instance.amount %}
+            value="{{instance.amount}}"
+        {% endif %}
+    >
 </div>

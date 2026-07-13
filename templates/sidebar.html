@@ -124,7 +124,12 @@
                     x-bind:class="isOpen ? 'oh-sidebar__menu-link--active' : ''"
                 >
                     <div class="oh-sidebar__menu-icon">
-                        <img src="{% static 'images/ui/dashboard.svg' %}" alt="Dashboard" width="24" height="24">
+                        <img
+                            src="{% static 'images/ui/dashboard.svg' %}"
+                            alt="{% trans 'Dashboard' %}"
+                            width="24"
+                            height="24"
+                        >
                     </div>
                     <span>{% trans "Dashboard" %}</span>
                 </a>
@@ -141,7 +146,7 @@
                         <div class="oh-sidebar__menu-icon">
                             <img
                                 src="{% static menues.img_src %}"
-                                alt="Dashboard"
+                                alt="{% trans 'Dashboard' %}"
                                 style="filter: brightness(0) invert(1)"
                                 width="24"
                                 height="24"

@@ -1730,7 +1730,12 @@ def delete_department_manager(request, dep_id):
         )
 
     count = DepartmentManager.objects.count()
-    department_manager.delete()
+    # Soft delete: this record is also read directly (bypassing the
+    # is_active-filtering manager) by the base Department settings page to
+    # display the assigned manager, so removing it here should only hide it
+    # from Helpdesk's own list, not clear the manager shown there.
+    department_manager.is_active = False
+    department_manager.save()
     messages.success(request, _("The department manager has been deleted successfully"))
     if count == 1:
         return HttpResponse("<script>$('.reload-record').click();</script>")

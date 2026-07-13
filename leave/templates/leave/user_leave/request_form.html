@@ -1,21 +1,29 @@
 {% load i18n %}{% load horillafilters %}
 {% if messages %}
-    <span hx-get="{% url 'user-request-filter' %}?{{pd}}" hx-target="#userRequest" hx-trigger="load"
-        hx-on-htmx-after-request="setTimeout(function () { reloadMessage(this); $('.oh-modal__close').click(); }, 1000);"></span>
+    <span
+        hx-get="{% url 'user-request-filter' %}?{{pd}}"
+        hx-target="#userRequest"
+        hx-trigger="load"
+        hx-on-htmx-after-request="setTimeout(function () { reloadMessage(this); $('.oh-modal__close').click(); }, 1000);"
+    ></span>
 {% endif %}
 
 <div class="oh-modal__dialog-header">
     <h2 class="oh-modal__dialog-title" id="editDialogDialog">
         {% trans "Create Leave Request" %}
     </h2>
-    <button class="oh-modal__close" aria-label="Close">
+    <button class="oh-modal__close" aria-label="{% trans 'Close' %}">
         <ion-icon name="close-outline"></ion-icon>
     </button>
-    <div id="availableLeaveCount" style="height: 40px;display: none;"></div>
+    <div id="availableLeaveCount" style="height: 40px; display: none"></div>
 </div>
 <div class="oh-modal__dialog-body">
-    <form hx-post="{% url 'leave-request-create' %}?{{pd}}" hx-target="#objectCreateModalTarget"
-        hx-encoding="multipart/form-data" id="userLeaveForm">
-        {{form.as_p}}
+    <form
+        hx-post="{% url 'leave-request-create' %}?{{pd}}"
+        hx-target="#objectCreateModalTarget"
+        hx-encoding="multipart/form-data"
+        id="userLeaveForm"
+    >
+        {{ form.as_p }}
     </form>
 </div>

@@ -40,7 +40,7 @@
                             name="ellipsis-vertical-sharp"
                             role="img"
                             class="md hydrated"
-                            aria-label="ellipsis vertical sharp"
+                            aria-label="{% trans 'ellipsis vertical sharp' %}"
                         ></ion-icon>
                     </button>
                     <div
@@ -413,7 +413,11 @@
         {% endif %}
         <div class="oh-wrapper" align="center" style="margin-top: 7vh; margin-bottom: 7vh">
             <div align="center">
-                <img src='{% static "images/ui/search.svg" %}' class="oh-404__image" alt="Page not found. 404.">
+                <img
+                    src='{% static "images/ui/search.svg" %}'
+                    class="oh-404__image"
+                    alt="{% trans 'Page not found. 404.' %}"
+                >
                 <h1 class="oh-404__title">{% trans "No Records found" %}</h1>
                 <p class="oh-404__subtitle">
                     {% trans "No records found." %}
@@ -459,7 +463,7 @@
             name="ellipsis-vertical-sharp"
             role="img"
             class="md hydrated"
-            aria-label="ellipsis vertical sharp"
+            aria-label="{% trans 'ellipsis vertical sharp' %}"
           ></ion-icon>
         </button>
         <div
@@ -499,7 +503,7 @@
                     reloadSelectedCount($('.count_{{view_id|safe}}'));
                   });
                   "
-                  title="Select All"
+                  title="{% trans 'Select All' %}"
                 />
               </div>
             </div>
@@ -824,7 +828,7 @@
     {% endif %}
   <div class="oh-wrapper" align="center" style="margin-top: 7vh; margin-bottom:7vh;">
     <div align="center">
-      <img src="{% static "images/ui/search.svg" %}" class="oh-404__image" alt="Page not found. 404.">
+      <img src="{% static "images/ui/search.svg" %}" class="oh-404__image" alt="{% trans 'Page not found. 404.' %}">
       <h1 class="oh-404__title">{% trans "No Records found" %}</h1>
       <p class="oh-404__subtitle">
         {% trans "No records found." %}

@@ -1,4 +1,5 @@
-{% load i18n widget_tweaks attendancefilters static %}
+{% load i18n %}
+{% load i18n widget_tweaks attendancefilters static i18n %}
 <style>
     .oh-input {
         margin-bottom: 0px;
@@ -100,7 +101,7 @@
                                     required
                                 {% endif %}
                             >
-                            <div class="bg-red-200 w-32 h-8">Test</div>
+                            <div class="bg-red-200 w-32 h-8">{% trans "Test" %}</div>
                         {% elif question.type == "file" %}
                             <input
                                 type="file"
@@ -135,15 +136,15 @@
                         {% elif question.type == "rating" %}
                             <div class="oh-rate">
                                 <input type="radio" id="star5" name="rate" value="5">
-                                <label for="star5" title="5 Stars">5 stars</label>
+                                <label for="star5" title="{% trans '5 Stars' %}">5 stars</label>
                                 <input type="radio" id="star4" name="rate" value="4">
-                                <label for="star4" title="4 Stars">4 stars</label>
+                                <label for="star4" title="{% trans '4 Stars' %}">4 stars</label>
                                 <input type="radio" id="star3" name="rate" value="3">
-                                <label for="star3" title="3 Stars">3 stars</label>
+                                <label for="star3" title="{% trans '3 Stars' %}">3 stars</label>
                                 <input type="radio" id="star2" name="rate" value="2">
-                                <label for="star2" title="2 Stars">2 stars</label>
+                                <label for="star2" title="{% trans '2 Stars' %}">2 stars</label>
                                 <input type="radio" id="star1" name="rate" value="1">
-                                <label for="star1" title="1 Star">1 star</label>
+                                <label for="star1" title="{% trans '1 Star' %}">1 star</label>
                             </div>
                         {% elif question.type == "checkbox" %}
                             <div class="flex flex-wrap gap-4 pt-2">
@@ -388,15 +389,15 @@
                         {% endif %}
                         <div class="oh-rate">
                             <input type="radio" id="star5" name="rate" value="5" />
-                            <label for="star5" title="5 Stars">5 stars</label>
+                            <label for="star5" title="{% trans '5 Stars' %}">5 stars</label>
                             <input type="radio" id="star4" name="rate" value="4" />
-                            <label for="star4" title="4 Stars">4 stars</label>
+                            <label for="star4" title="{% trans '4 Stars' %}">4 stars</label>
                             <input type="radio" id="star3" name="rate" value="3" />
-                            <label for="star3" title="3 Stars">3 stars</label>
+                            <label for="star3" title="{% trans '3 Stars' %}">3 stars</label>
                             <input type="radio" id="star2" name="rate" value="2" />
-                            <label for="star2" title="2 Stars">2 stars</label>
+                            <label for="star2" title="{% trans '2 Stars' %}">2 stars</label>
                             <input type="radio" id="star1" name="rate" value="1" />
-                            <label for="star1" title="1 Star">1 star</label>
+                            <label for="star1" title="{% trans '1 Star' %}">1 star</label>
                         </div>
                     </div>
                 </div>

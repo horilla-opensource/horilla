@@ -6,8 +6,8 @@
 	<div class="oh-modal__dialog custom-dialog">
 		<div class="oh-modal__dialog-header">
 			<span class="oh-modal__dialog-title" id="viewFileModalLabel">{% trans "View File" %}</span>
-			<button class="oh-modal__close" aria-label="Close">
-				<ion-icon name="close-outline" role="img" class="md hydrated" aria-label="close outline"></ion-icon>
+			<button class="oh-modal__close" aria-label="{% trans 'Close' %}">
+				<ion-icon name="close-outline" role="img" class="md hydrated" aria-label="{% trans 'close outline' %}"></ion-icon>
 			</button>
 		</div>
 		<div class="oh-modal__dialog-body" id="viewFile"></div>
@@ -18,9 +18,9 @@
 	<div class="oh-modal__dialog">
 		<div class="oh-modal__dialog-header">
 			<span class="oh-modal__dialog-title" id="rejectFileModalLabel">{% trans "Reject" %}</span>
-			<button class="oh-modal__close--custom" aria-label="Close"
+			<button class="oh-modal__close--custom" aria-label="{% trans 'Close' %}"
 				onclick="event.stopPropagation();event.preventDefault();$('#rejectFileModal').toggleClass('oh-modal--show');">
-				<ion-icon name="close-outline" role="img" class="md hydrated" aria-label="close outline"></ion-icon>
+				<ion-icon name="close-outline" role="img" class="md hydrated" aria-label="{% trans 'close outline' %}"></ion-icon>
 			</button>
 		</div>
 		<div class="oh-modal__dialog-body" id="rejectFileForm"></div>
@@ -52,7 +52,7 @@
 									@click.outside="open = false" title={% trans "Actions" %}>
 									{% trans "Actions" %}
 									<ion-icon class="ms-2 oh-accordion-meta__btn-icon md hydrated" name="caret-down-outline"
-										role="img" aria-label="caret down outline"></ion-icon>
+										role="img" aria-label="{% trans 'caret down outline' %}"></ion-icon>
 								</button>
 								<div class="oh-dropdown__menu oh-dropdown__menu--right" x-show="open" style="display: none;">
 									<ul class="oh-dropdown__items">
@@ -138,7 +138,7 @@
 													class="md hydrated m-0"
 													name="add-outline"
 													role="img"
-													aria-label="add outline"
+													aria-label="{% trans 'add outline' %}"
 												></ion-icon>
 											</span>
 										{% endif %}
@@ -210,7 +210,7 @@
 												class="me-1 md hydrated"
 												name="trash-outline"
 												role="img"
-												aria-label="trash outline"
+												aria-label="{% trans 'trash outline' %}"
 											></ion-icon
 											>
 										</button>
@@ -308,7 +308,7 @@
 {% else %}
 	<!-- start of empty page -->
 	<div class="oh-empty">
-		<img src="{% static 'images/ui/search.svg' %}" class="oh-404__image" alt="Page not found. 404." />
+		<img src="{% static 'images/ui/search.svg' %}" class="oh-404__image" alt="{% trans 'Page not found. 404.' %}" />
 		<h1 class="oh-empty__title">{% trans "No Records found." %}</h1>
 		<p class="oh-empty__subtitle">{% trans "No documents found." %}</p>
 	</div>

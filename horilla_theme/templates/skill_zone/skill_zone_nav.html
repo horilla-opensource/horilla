@@ -1,4 +1,4 @@
-{% load static i18n %}
+{% load static i18n i18n %}
 {% block styles %}
     <style>
         .oh-label {
@@ -38,7 +38,7 @@
                         text-sm [transition:.3s]
                         focus:border-primary-600
                     "
-                    aria-label="Search Input"
+                    aria-label="{% trans 'Search Input' %}"
                     placeholder="{% trans 'Search' %}"
                     name="search"
                     hx-get="{% url 'skill-zone-filter' %}"

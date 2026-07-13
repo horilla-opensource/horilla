@@ -6,7 +6,7 @@
             <button title="{% trans 'Edit' %}" class="oh-btn oh-btn--info w-50" data-toggle="oh-modal-toggle"
                 data-target="#objectUpdateModal" hx-target="#objectUpdateModalTarget"
                 hx-get="{% url 'multiple-level-approval-edit' instance.id %}">
-                <ion-icon name="create-outline" role="img" class="md hydrated" aria-label="create outline"></ion-icon>
+                <ion-icon name="create-outline" role="img" class="md hydrated" aria-label="{% trans 'create outline' %}"></ion-icon>
                 {% trans 'Edit' %}
             </button>
         {% endif %}

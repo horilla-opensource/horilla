@@ -11,7 +11,7 @@
       <h2 class="oh-modal__dialog-title" id="candidateExportLavel">
         {% trans "Export Candidates" %}
       </h2>
-      <button class="oh-modal__close" aria-label="Close">
+      <button class="oh-modal__close" aria-label="{% trans 'Close' %}">
         <ion-icon name="close-outline"></ion-icon>
       </button>
       <div
@@ -45,7 +45,7 @@ x-data="{searchShow: false}"
   <a
     class="oh-main__titlebar-search-toggle "
     role="button"
-    aria-label="Toggle Search"
+    aria-label="{% trans 'Toggle Search' %}"
     @click="searchShow = !searchShow"
   >
     <ion-icon
@@ -75,7 +75,7 @@ x-data="{searchShow: false}"
       hx-target="#section"
       class="oh-input oh-input__icon"
       hx-vals = '{"view":"{{request.GET.view}}"}'
-      aria-label="Search Input"
+      aria-label="{% trans 'Search Input' %}"
     />
   </div>
   <ul class="oh-view-types ml-2" style="margin-bottom: 0;" id="view-type">

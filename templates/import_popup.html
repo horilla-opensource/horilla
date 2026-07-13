@@ -8,11 +8,11 @@
             <div class="swal2-icon-content">!</div>
         </div>
 
-        <h2 class="swal2-title" id="swal2-title">{{model}} {% trans " Import Warning" %}</h2>
+        <h2 class="swal2-title" id="swal2-title">{{ model }} {% trans " Import Warning" %}</h2>
 
         <div class="swal2-html-container" id="swal2-html-container" style="display: block">
-            <p>No {{model}} were imported.</p>
-            <p>There were {{error_count}} errors during the import.</p>
+            <p>No {{ model }} were imported.</p>
+            <p>There were {{ error_count }} errors during the import.</p>
         </div>
         <!-- End of display warning SweetAlert when no records are imported -->
     {% else %}
@@ -20,27 +20,36 @@
             <div class="swal2-icon-content">✔</div>
         </div>
 
-        <h2 class="swal2-title" id="swal2-title">{{model}} {% trans " Import Successful" %}</h2>
+        <h2 class="swal2-title" id="swal2-title">{{ model }} {% trans " Import Successful" %}</h2>
 
         <div class="swal2-html-container" id="swal2-html-container" style="display: block">
             {% if path_info %}
-                <p>{{created_count}} {{model}} were successfully imported.</p>
-                <p>{{error_count}} rows have errors during the import.</p>
+                <p>{{ created_count }} {{ model }} were successfully imported.</p>
+                <p>{{ error_count }} rows have errors during the import.</p>
             {% else %}
-                {{total_count}} {{model}} were successfully imported.
+                {{ total_count }} {{ model }} were successfully imported.
             {% endif %}
         </div>
     {% endif %}
     <div class="swal2-actions pb-4">
         {% if path_info %}
-            <a href="#" class="swal2-deny swal2-styled" aria-label=""
-               style="display: inline-block; background-color: rgb(0, 128, 0);"
-               onclick="handleDownloadAndRefresh(event, '/{{ path_info }}')">
-               {% trans "Download Error File" %}
+            <a
+                href="#"
+                class="swal2-deny swal2-styled"
+                aria-label="{% trans 'Download Error File' %}"
+                style="display: inline-block; background-color: rgb(0, 128, 0)"
+                onclick="handleDownloadAndRefresh(event, '/{{ path_info }}')"
+            >
+                {% trans "Download Error File" %}
             </a>
         {% endif %}
-        <button type="button" class="swal2-cancel swal2-styled" aria-label=""
-            style="display: inline-block; background-color: #d33;" onclick="window.location.reload();">
+        <button
+            type="button"
+            class="swal2-cancel swal2-styled"
+            aria-label="{% trans 'Close' %}"
+            style="display: inline-block; background-color: #d33"
+            onclick="window.location.reload()"
+        >
             {% trans "Close" %}
         </button>
     </div>

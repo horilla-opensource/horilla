@@ -17,13 +17,13 @@
             <button hx-get="{% url 'single-deduction-view' previous %}?{{pd}}&instances_ids={{deduction_ids}}"
                 hx-target="#objectDetailsModalTarget" class="oh-modal__diaglog-nav oh-modal__nav-prev" data-action="previous">
                 <ion-icon name="chevron-back-outline" class="md hydrated" role="img"
-                    aria-label="chevron back outline"></ion-icon>
+                    aria-label="{% trans 'chevron back outline' %}"></ion-icon>
             </button>
 
             <button hx-get="{% url 'single-deduction-view' next  %}?{{pd}}&instances_ids={{deduction_ids}}"
                 hx-target="#objectDetailsModalTarget" class="oh-modal__diaglog-nav oh-modal__nav-next" data-action="next">
                 <ion-icon name="chevron-forward-outline" class="md hydrated" role="img"
-                    aria-label="chevron forward outline"></ion-icon>
+                    aria-label="{% trans 'chevron forward outline' %}"></ion-icon>
             </button>
         </div>
     {% endif %}
@@ -106,7 +106,7 @@
                 <div class="oh-btn-group">
                     {% if perms.payroll.change_deduction %}
                         <a href="{% url 'update-deduction' deduction.id %}" class="oh-btn oh-btn--info" style="width: 100%;">
-                            <ion-icon name="create-outline" role="img" class="md hydrated" aria-label="create outline"></ion-icon>
+                            <ion-icon name="create-outline" role="img" class="md hydrated" aria-label="{% trans 'create outline' %}"></ion-icon>
                             {% trans "Edit" %}
                         </a>
                     {% endif %}
@@ -116,7 +116,7 @@
                             hx-post="{% url 'delete-deduction' deduction.id %}?{{pd}}&instances_ids={{deduction_ids}}"
                             hx-target="#objectDetailsModalTarget" class="oh-btn oh-btn--danger" style="width: 100%;"
                             data-action="delete">
-                            <ion-icon name="trash-outline" role="img" class="md hydrated" aria-label="create outline"></ion-icon>
+                            <ion-icon name="trash-outline" role="img" class="md hydrated" aria-label="{% trans 'create outline' %}"></ion-icon>
                             {% trans "Delete" %}
                         </a>
                     {% endif %}

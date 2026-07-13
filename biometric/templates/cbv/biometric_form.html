@@ -1,3 +1,4 @@
+{% load i18n %}
 <div>{% include "generic/horilla_form.html" %}</div>
 
 <style>
@@ -72,8 +73,8 @@
 
         var button = $(
           '<button type="button" class="oh-password-input--toggle" style="position: absolute; right: 10px; top: 40%; transform: translateY(-50%); background: none; border: none; cursor: pointer;">' +
-            '<ion-icon class="oh-passowrd-input__show-icon" title="Show Password" name="eye-outline"></ion-icon>' +
-            '<ion-icon class="oh-passowrd-input__hide-icon d-none" title="Hide Password" name="eye-off-outline"></ion-icon>' +
+            '<ion-icon class="oh-passowrd-input__show-icon" title="{% trans 'Show Password' %}" name="eye-outline"></ion-icon>' +
+            '<ion-icon class="oh-passowrd-input__hide-icon d-none" title="{% trans 'Hide Password' %}" name="eye-off-outline"></ion-icon>' +
           '</button>'
         );
 

@@ -1,4 +1,4 @@
-{% load static i18n audit_filters %}
+{% load static i18n audit_filters i18n %}
 <div id="generic-history-container">
     <button
         hidden
@@ -46,7 +46,7 @@
                         <div class="absolute top-0 left-1/2 transform -translate-x-1/2 z-10 w-10 h-10 rounded-full bg-white border-2 border-primary-600 flex items-center justify-center overflow-hidden">
                             <img
                                 src="{{ history.updated_by.get_avatar }}"
-                                alt="user"
+                                alt="{% trans 'user' %}"
                                 class="w-full h-full object-cover rounded-full"
                             >
                         </div>
@@ -82,7 +82,7 @@
                                             <span>{{ history.pair.1|fk_history:change }}</span>
                                             <img
                                                 src="{% static '/images/ui/arrow-right-line.svg' %}"
-                                                alt="→"
+                                                alt="{% trans '→' %}"
                                                 class="w-3 h-3 inline-block"
                                             >
                                             <span>{{ history.pair.0|fk_history:change }}</span>
@@ -102,7 +102,7 @@
                                         <a
                                             href="javascript:void(0);"
                                             class="text-primary-600 text-xs"
-                                            title="Restore previous state"
+                                            title="{% trans 'Restore previous state' %}"
                                             onclick="Swal.fire({
                     title: 'Are you sure?',
                     text: 'This will revert the object to a previous state.',
@@ -131,7 +131,12 @@
     {% else %}
         <div class="oh-wrapper h-full text-center my-10">
             <div class="bg-white p-6 rounded-md shadow-md inline-block">
-                <img src="{% static 'images/ui/history.png' %}" alt="No history" width="250" class="mx-auto mb-4">
+                <img
+                    src="{% static 'images/ui/history.png' %}"
+                    alt="{% trans 'No history' %}"
+                    width="250"
+                    class="mx-auto mb-4"
+                >
                 <p class="text-[#666] mb-2">{% trans "No history found." %}</p>
             </div>
         </div>

@@ -30,7 +30,7 @@
             hx-get="{% url 'leave-cut-penalty' instance.id %}"
             type="submit" class="oh-btn oh-btn--info w-100"
             title="{% trans 'Penalty' %}" id="penaltyButton">
-                <ion-icon name="information-circle-outline" role="img" class="md hydrated" aria-label="information circle outline"></ion-icon>
+                <ion-icon name="information-circle-outline" role="img" class="md hydrated" aria-label="{% trans 'information circle outline' %}"></ion-icon>
             </button>
         {% endif %}
         {% if instance.status != 'rejected' and instance.end_date >= current_date and perms.leave.change_leaverequest or can_manage %}

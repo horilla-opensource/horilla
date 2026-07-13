@@ -1,4 +1,4 @@
-{% load i18n static %}
+{% load i18n static i18n %}
 {% if skill_zones %}
     <div class="accordion-wrapper shadow-card p-3">
         {% for skill_zone in skill_zones %}
@@ -43,7 +43,7 @@
                                     data-target="#genericModal"
                                     hx-get="{% url 'skill-zone-cand-create' skill_zone.grouper.id %}"
                                     hx-target="#genericModalBody"
-                                    title="Add candidate"
+                                    title="{% trans 'Add candidate' %}"
                                 >
                                     <ion-icon name="person-add-outline"></ion-icon>
                                 </a>
@@ -199,7 +199,7 @@
                                                                     <button
                                                                         type="submit"
                                                                         class="oh-btn oh-btn--danger-outline oh-btn--light-bkg w-100"
-                                                                        title="Remove"
+                                                                        title="{% trans 'Remove' %}"
                                                                     >
                                                                         <ion-icon name="trash-outline"></ion-icon>
                                                                     </button>

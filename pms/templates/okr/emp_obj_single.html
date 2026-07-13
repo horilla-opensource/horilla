@@ -18,7 +18,7 @@
     >
         {% trans "Details" %}
     </h2>
-    <button class="oh-modal__close" aria-label="Close">
+    <button class="oh-modal__close" aria-label="{% trans 'Close' %}">
         <ion-icon name="close-outline"></ion-icon>
     </button>
 </div>
@@ -27,12 +27,12 @@
         {% comment %} <div class="oh-modal__dialog oh-modal__dialog--navigation m-0 p-0">
     <button hx-get="{% url 'rshift-individual-view' previous %}?instances_ids={{assign_ids}}" hx-target = "#objectDetailsModalTarget" class="oh-modal__diaglog-nav oh-modal__nav-prev">
         <ion-icon name="chevron-back-outline" class="md hydrated" role="img"
-        aria-label="chevron back outline"></ion-icon>
+        aria-label="{% trans 'chevron back outline' %}"></ion-icon>
     </button>
 
     <button hx-get="{% url 'rshift-individual-view' next  %}?instances_ids={{assign_ids}}" hx-target = "#objectDetailsModalTarget" class="oh-modal__diaglog-nav oh-modal__nav-next">
         <ion-icon name="chevron-forward-outline" class="md hydrated" role="img"
-        aria-label="chevron forward outline"></ion-icon>
+        aria-label="{% trans 'chevron forward outline' %}"></ion-icon>
     </button>
 </div> {% endcomment %}
     {% endif %}

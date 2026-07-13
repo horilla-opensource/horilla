@@ -1,4 +1,4 @@
-{% load static %}
+{% load static i18n %}
 <!DOCTYPE html>
 <html lang="en">
   <head>
@@ -80,7 +80,7 @@
                   <img src="cid:company_logo" height="40" width="40">
                 </td>
                 <td style="width: 50%; text-align: right">
-                  <a href="#" class="hr-link">View in browser</a>
+                  <a href="#" class="hr-link">{% trans "View in browser" %}</a>
                 </td>
               </tr>
             </table>
@@ -94,12 +94,12 @@
         </tr>
         <tr>
           <td style="padding:15px 25px 0 25px; font-size: 24px;" align="center">
-            <strong>Hello {{ instance.name }}, Congratulations on your selection!</strong>
+            <strong>{% with instance_name=instance.name %}{% blocktrans %}Hello {{ instance_name }}, Congratulations on your selection!{% endblocktrans %}{% endwith %}</strong>
           </td>
         </tr>
         <tr>
           <td align="center" style="padding-top: 0px;">
-            <p style="width: 90%;">Your dedication is valued, and we wish you continued success. If you have questions or need assistance, feel free to ask. Best wishes for your journey! Kindly complete your profile when convenient.</p>
+            <p style="width: 90%;">{% blocktrans %}Your dedication is valued, and we wish you continued success. If you have questions or need assistance, feel free to ask. Best wishes for your journey! Kindly complete your profile when convenient.{% endblocktrans %}</p>
           </td>
         </tr>
         <tr>
@@ -112,7 +112,7 @@
                 padding: 15px 25px;
                 text-decoration: none;
                 font-weight: bold;
-              ">Complete Profile</a>
+              ">{% trans "Complete Profile" %}</a>
           </td>
         </tr>
 
@@ -127,7 +127,7 @@
             ">
             This mail was sent you because your email has been enrolled as an candidate at {{ instance.recruitment_id.company_id.company }}.<br />
             Don't want to receive mails like these anymore?
-            <a href="#" style="color: #5c5c5c">Unsubscribe here</a>.
+            <a href="#" style="color: #5c5c5c">{% trans "Unsubscribe here" %}</a>.
           </td>
         </tr>
         <tr>

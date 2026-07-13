@@ -1,6 +1,7 @@
+{% load i18n %}
 <div class="oh-modal__dialog-header">
     <span class="font-bold text-xl"> {{ log.subject|title|escapejs }} </span>
-    <button class="oh-modal__close" aria-label="Close">
+    <button class="oh-modal__close" aria-label="{% trans 'Close' %}">
         <ion-icon name="close-outline"></ion-icon>
     </button>
 </div>

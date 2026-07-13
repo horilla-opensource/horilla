@@ -1,4 +1,4 @@
-{% load static i18n horillafilters basefilters accessibility_filters %}
+{% load static i18n horillafilters basefilters accessibility_filters i18n %}
 
 {% for chart in charts %}
     {% if chart == "gender_chart" and 'gender_chart'|feature_is_accessible:request and "gender_chart" in charts %}
@@ -140,7 +140,7 @@
                         hx-trigger="keyup changed delay:0.3s"
                         id="employeeSearch"
                         name="search"
-                        placeholder="Search Employee"
+                        placeholder="{% trans 'Search Employee' %}"
                         class="text-color-600 ps-10 p-2 placeholder:text-xs w-full border border-dark-50 rounded-md focus-visible:outline-0 placeholder:text-dark-100 text-sm [transition:.3s] focus:border-primary-600"
                     >
                     <i

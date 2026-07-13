@@ -1,3 +1,4 @@
+{% load i18n %}
 {% load i18n static %}
 <style>
     .custom-dialog {
@@ -261,12 +262,12 @@
     <div class="oh-modal__dialog custom-dialog">
         <div class="oh-modal__dialog-header">
             <span class="oh-modal__dialog-title" id="viewFileModalLabel">{% trans "View File" %}</span>
-            <button class="oh-modal__close" aria-label="Close">
+            <button class="oh-modal__close" aria-label="{% trans 'Close' %}">
                 <ion-icon
                     name="close-outline"
                     role="img"
                     class="md hydrated"
-                    aria-label="close outline"
+                    aria-label="{% trans 'close outline' %}"
                 ></ion-icon>
             </button>
         </div>
@@ -296,14 +297,14 @@
             <span class="oh-modal__dialog-title" id="rejectFileModalLabel">{% trans "Reject" %}</span>
             <button
                 class="oh-modal__close--custom"
-                aria-label="Close"
+                aria-label="{% trans 'Close' %}"
                 onclick="event.stopPropagation();event.preventDefault();$('#rejectFileModal').toggleClass('oh-modal--show')"
             >
                 <ion-icon
                     name="close-outline"
                     role="img"
                     class="md hydrated"
-                    aria-label="close outline"
+                    aria-label="{% trans 'close outline' %}"
                 ></ion-icon>
             </button>
         </div>

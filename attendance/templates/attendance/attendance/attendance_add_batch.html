@@ -5,7 +5,7 @@
         <h2 class="oh-modal__dialog-title" id="addBatchModalLabel">
             {% trans "Add to batch" %}
         </h2>
-        <button class="oh-modal__close" aria-label="Close">
+        <button class="oh-modal__close" aria-label="{% trans 'Close' %}">
             <ion-icon name="close-outline"></ion-icon>
         </button>
     </div>
@@ -27,7 +27,7 @@
                                 style="height: 50px; border-radius: 0"
                                 required
                             >
-                                <option value="" selected="">---Choose Shift---</option>
+                                <option value="" selected="">{% trans "---Choose Shift---" %}</option>
                                 {% for batch in batches %}
                                     <option value="{{batch.id}}">{{ batch }}</option>
                                 {% endfor %}

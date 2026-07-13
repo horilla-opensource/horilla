@@ -1,4 +1,4 @@
-{% load mathfilters static i18n taskfilters %}
+{% load mathfilters static i18n taskfilters i18n %}
 
 <div class="bg-white p-3 rounded-md shadow-card mb-5">
     <div class="flex gap-2 md:gap-0 flex-wrap justify-between items-end mb-5 border-b border-dark-50 pb-3">
@@ -11,7 +11,7 @@
                         id="status"
                         class="px-5 py-2 h-full bg-[white] rounded-md text-xs flex items-center gap-2 border border-primary-500 hover:border-primary-600 transition duration-300"
                         name="status"
-                        title="Status"
+                        title="{% trans 'Status' %}"
                         hx-post="{%url 'change-project-status' project.id %}"
                         hx-trigger="change"
                         hx-target="#reloadMessages"

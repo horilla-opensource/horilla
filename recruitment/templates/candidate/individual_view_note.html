@@ -40,7 +40,7 @@
                         hx-on:click="setTimeout(() => {reloadMessage(this);},100);" hx-swap="outerHTML swap:1s"
                         hx-target="#candidateNoteItem{{note.id}}">
                         <ion-icon name="close-outline" style="font-size: 24px;" role="img" class="md hydrated"
-                            aria-label="close outline"></ion-icon>
+                            aria-label="{% trans 'close outline' %}"></ion-icon>
                     </span>
                 </span>
 
@@ -65,7 +65,7 @@
                         hx-encoding="multipart/form-data" data-target="#activitySidebar" hx-swap="innerHTML" hx-target="#note">
                         {% csrf_token %}
                         <label for="addFile_{{note.id}}" title="{% trans 'Add Files' %}"><ion-icon name="add-outline" style="font-size: 24px"
-                                role="img" class="md hydrated" aria-label="add outline"></ion-icon></label>
+                                role="img" class="md hydrated" aria-label="{% trans 'add outline' %}"></ion-icon></label>
                         <input type="file" name="files" class="d-none" multiple="true" id="addFile_{{note.id}}"
                             onchange="submitForm(this)" hx-on:change="setTimeout(() => {reloadMessage(this);},100);" />
                         <input type="submit" class="d-none add_more_submit" value="save" />

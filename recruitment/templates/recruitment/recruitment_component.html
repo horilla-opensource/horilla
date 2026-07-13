@@ -50,7 +50,7 @@
                   <div class="oh-sticky-dropdown--header">
                       <div class="oh-dropdown" x-data="{open: false}">
                           <button class="oh-sticky-dropdown_btn " @click="open = !open"><ion-icon name="ellipsis-vertical-sharp"
-                              role="img" class="md hydrated" aria-label="ellipsis vertical sharp"></ion-icon></button>
+                              role="img" class="md hydrated" aria-label="{% trans 'ellipsis vertical sharp' %}"></ion-icon></button>
                           <div class="oh-dropdown__menu oh-sticky-table_dropdown" x-show="open" @click.outside="open = false">
                               <ul class="oh-dropdown__items" id="RecruitmentCells">
                               </ul>
@@ -186,7 +186,7 @@
                                 <ion-icon name="share-social-outline"></ion-icon>
                               </a>
                               {% if perms.recruitment.change_recruitment %}
-                                <a hx-get="{% url 'recruitment-update' rec.id %}" hx-target='#objectUpdateModalTarget' hx-swap='innerHTML' data-toggle='oh-modal-toggle' data-target='#objectUpdateModal'  class="oh-btn oh-btn--light-bkg w-100" title="Edit"><ion-icon name="create-outline"></ion-icon></a>
+                                <a hx-get="{% url 'recruitment-update' rec.id %}" hx-target='#objectUpdateModalTarget' hx-swap='innerHTML' data-toggle='oh-modal-toggle' data-target='#objectUpdateModal'  class="oh-btn oh-btn--light-bkg w-100" title="{% trans 'Edit' %}"><ion-icon name="create-outline"></ion-icon></a>
                               {% endif %}
                               {% if perms.recruitment.add_recruitment %}
                                 <a hx-get="{% url 'recruitment-duplicate' rec.id %}" hx-target='#objectCreateModalTarget' hx-swap='innerHTML' data-toggle='oh-modal-toggle' data-target='#objectCreateModal'  class="oh-btn oh-btn--light-bkg w-100" title="{% trans 'Duplicate' %}"><ion-icon name="copy-outline"></ion-icon></a>
@@ -205,7 +205,7 @@
                                     style="display: contents">
                                     {% csrf_token %}
                                     <button class="oh-btn oh-btn--light-bkg oh-btn--danger-outline  w-100" title="{% trans 'Delete' %}">
-                                      <ion-icon name="trash-outline" role="img" class="md hydrated" aria-label="trash outline"></ion-icon>
+                                      <ion-icon name="trash-outline" role="img" class="md hydrated" aria-label="{% trans 'trash outline' %}"></ion-icon>
                                     </button>
                                   </form>
                                 </span>
@@ -298,7 +298,7 @@
       <h5 class="oh-modal__dialog-title" id="duplicateRecruitmentModalLabel"
         >{% trans "Duplicate Recruitment" %}</span
       >
-      <button class="oh-modal__close" aria-label="Close"title="{% trans "Close" %}" >
+      <button class="oh-modal__close" aria-label="{% trans 'Close' %}"title="{% trans "Close" %}" >
         <ion-icon name="close-outline"></ion-icon>
       </button>
     </div>

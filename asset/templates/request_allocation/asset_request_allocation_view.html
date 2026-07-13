@@ -24,7 +24,7 @@
                 <a
                     class="oh-main__titlebar-search-toggle"
                     role="button"
-                    aria-label="Toggle Search"
+                    aria-label="{% trans 'Toggle Search' %}"
                     @click="searchShow = !searchShow"
                 >
                     <ion-icon name="search-outline" class="oh-main__titlebar-serach-icon"></ion-icon>
@@ -44,7 +44,7 @@
                         hx-trigger="keyup delay:500ms"
                         type="text"
                         class="oh-input oh-input__icon"
-                        aria-label="Search Input"
+                        aria-label="{% trans 'Search Input' %}"
                         placeholder="{% trans 'Search' %}"
                     >
                 </div>
@@ -321,7 +321,7 @@
                                 name="add-outline"
                                 role="img"
                                 class="md hydrated"
-                                aria-label="add outline"
+                                aria-label="{% trans 'add outline' %}"
                             ></ion-icon>
                         </a>
                     </li>
@@ -346,7 +346,7 @@
                                         name="add-outline"
                                         role="img"
                                         class="md hydrated"
-                                        aria-label="add outline"
+                                        aria-label="{% trans 'add outline' %}"
                                     ></ion-icon>
                                 </a>
                             {% endif %}

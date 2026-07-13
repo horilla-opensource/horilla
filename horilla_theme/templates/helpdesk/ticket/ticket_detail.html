@@ -1,5 +1,6 @@
 {% extends 'index.html' %}
-{% load static i18n audit_filters basefilters helpdeskfilters %}
+{% load i18n %}
+{% load static i18n audit_filters basefilters helpdeskfilters i18n %}
 {% block content %}
     <style>
         #ticketComment + .note-editor .note-editable {
@@ -321,7 +322,7 @@
                                             <span
                                                 class="absolute attachmentDelete"
                                                 style="top: -6px; right: 0px; color: red; font-size: 16px; cursor: pointer"
-                                                title="Delete attachment"
+                                                title="{% trans 'Delete attachment' %}"
                                                 hx-delete="{% url 'delete-ticket-document' attachment.id %}"
                                                 hx-confirm="{% trans 'Are you sure you want to delete this file?' %}"
                                                 hx-swap="delete"
@@ -564,7 +565,7 @@
                                     <label
                                         aria-role="button"
                                         for="fileUpload"
-                                        aria-label="Attach Files"
+                                        aria-label="{% trans 'Attach Files' %}"
                                         class="oh-btn oh-btn--chat oh-btn--chat-attachments h-9 cursor-pointer relative flex items-center justify-center"
                                         style="background: transparent"
                                         title="{% trans 'Add attachments' %}"
@@ -581,7 +582,7 @@
                                     <!-- Textarea -->
                                     <textarea
                                         class="w-full p-3 rounded-full text-sm bg-[#f1f1f1] placeholder:text-xs focus:outline-none resize-none"
-                                        placeholder="Write your message here..."
+                                        placeholder="{% trans 'Write your message here...' %}"
                                         name="comment"
                                         id="ticketComment"
                                         rows="1"
@@ -610,10 +611,10 @@
                 <span class="oh-modal__dialog-title" id="viewFileModalLabel">{% trans "View File" %}</span>
                 <button
                     class="oh-modal__close"
-                    aria-label="Close"
+                    aria-label="{% trans 'Close' %}"
                     onclick="$(this).closest('.oh-modal--show').removeClass('oh-modal--show')"
                 >
-                    <ion-icon name="close-outline" role="img" class="md hydrated" aria-label="close outline"></ion-icon>
+                    <ion-icon name="close-outline" role="img" class="md hydrated" aria-label="{% trans 'close outline' %}"></ion-icon>
                 </button>
             </div>
             <div class="oh-modal__dialog-body" id="viewFile"></div>

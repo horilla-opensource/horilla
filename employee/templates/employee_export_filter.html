@@ -1,15 +1,20 @@
-{% load i18n %} {% load static %}
+{% load i18n %}
+{% load static %}
 <div class="oh-modal__dialog-header">
     <h2 class="oh-modal__dialog-title" id="employeeExportLavel">
         {% trans "Export Employees" %}
     </h2>
-    <button class="oh-modal__close" aria-label="Close">
+    <button class="oh-modal__close" aria-label="{% trans 'Close' %}">
         <ion-icon name="close-outline"></ion-icon>
     </button>
     <div class="oh-modal__dialog-body p-0 pt-2 pb-4" id="employeeExportModalBody">
-        <form action="{%url 'work-info-export' %}" method="get" class="oh-profile-section"
-            onsubmit="event.stopPropagation();$(this).parents().find('.oh-modal--show').last().toggleClass('oh-modal--show');"
-            id="employeeExportForm">
+        <form
+            action="{%url 'work-info-export' %}"
+            method="get"
+            class="oh-profile-section"
+            onsubmit="event.stopPropagation();$(this).parents().find('.oh-modal--show').last().toggleClass('oh-modal--show')"
+            id="employeeExportForm"
+        >
             {% csrf_token %}
             <div class="oh-dropdown__filter-body">
                 <div class="oh-accordion">
@@ -19,18 +24,18 @@
                             <div class="col-sm-12 col-md-12 col-lg-6">
                                 <div class="oh-input-group">
                                     <label class="oh-label">
-                                        <input type="checkbox" id="select-all-fields" /> {% trans "Select All" %}
+                                        <input type="checkbox" id="select-all-fields"> {% trans "Select All" %}
                                     </label>
                                 </div>
                             </div>
                         </div>
                         <div class="row">
                             {% for field in export_form.selected_fields %}
-                            <div class="col-sm-12 col-md-12 col-lg-4">
-                                <div class="oh-input-group">
-                                    <label class="oh-label"> {{ field }} </label>
+                                <div class="col-sm-12 col-md-12 col-lg-4">
+                                    <div class="oh-input-group">
+                                        <label class="oh-label"> {{ field }} </label>
+                                    </div>
                                 </div>
-                            </div>
                             {% endfor %}
                         </div>
                     </div>
@@ -41,14 +46,20 @@
                         <div class="row">
                             <div class="col-sm-12 col-md-12 col-lg-6">
                                 <div class="oh-input-group">
-                                    <label class="oh-label" for="{{export_filter.form.country.id_for_label}}">{% trans "Country" %}</label>
-                                    {{export_filter.form.country}}
+                                    <label
+                                        class="oh-label"
+                                        for="{{export_filter.form.country.id_for_label}}"
+                                    >{% trans "Country" %}</label>
+                                    {{ export_filter.form.country }}
                                 </div>
                             </div>
                             <div class="col-sm-12 col-md-12 col-lg-6">
                                 <div class="oh-input-group">
-                                    <label class="oh-label" for="{{export_filter.form.gender.id_for_label}}">{% trans "Gender" %}</label>
-                                    {{export_filter.form.gender}}
+                                    <label
+                                        class="oh-label"
+                                        for="{{export_filter.form.gender.id_for_label}}"
+                                    >{% trans "Gender" %}</label>
+                                    {{ export_filter.form.gender }}
                                 </div>
                             </div>
                         </div>
@@ -60,41 +71,55 @@
                         <div class="row">
                             <div class="col-sm-12 col-md-12 col-lg-6">
                                 <div class="oh-input-group">
-                                    <label class="oh-label"
-                                        for="{{export_filter.form.employee_work_info__company_id.id_for_label}}">{% trans "Company" %}</label>
-                                    {{export_filter.form.employee_work_info__company_id}}
+                                    <label
+                                        class="oh-label"
+                                        for="{{export_filter.form.employee_work_info__company_id.id_for_label}}"
+                                    >{% trans "Company" %}</label>
+                                    {{ export_filter.form.employee_work_info__company_id }}
                                 </div>
                                 <div class="oh-input-group">
-                                    <label class="oh-label"
-                                        for="{{export_filter.form.employee_work_info__department_id.id_for_label}}">{% trans "Department" %}</label>
-                                    {{export_filter.form.employee_work_info__department_id}}
+                                    <label
+                                        class="oh-label"
+                                        for="{{export_filter.form.employee_work_info__department_id.id_for_label}}"
+                                    >{% trans "Department" %}</label>
+                                    {{ export_filter.form.employee_work_info__department_id }}
                                 </div>
                                 <div class="oh-input-group">
-                                    <label class="oh-label"
-                                        for="{{export_filter.form.employee_work_info__shift_id.id_for_label}}">{% trans "Shift" %}</label>
-                                    {{export_filter.form.employee_work_info__shift_id}}
+                                    <label
+                                        class="oh-label"
+                                        for="{{export_filter.form.employee_work_info__shift_id.id_for_label}}"
+                                    >{% trans "Shift" %}</label>
+                                    {{ export_filter.form.employee_work_info__shift_id }}
                                 </div>
                                 <div class="oh-input-group">
-                                    <label class="oh-label"
-                                        for="{{export_filter.form.employee_work_info__tags.id_for_label}}">{% trans "Employee Tag" %}</label>
-                                    {{export_filter.form.employee_work_info__tags}}
+                                    <label
+                                        class="oh-label"
+                                        for="{{export_filter.form.employee_work_info__tags.id_for_label}}"
+                                    >{% trans "Employee Tag" %}</label>
+                                    {{ export_filter.form.employee_work_info__tags }}
                                 </div>
                             </div>
                             <div class="col-sm-12 col-md-12 col-lg-6">
                                 <div class="oh-input-group">
-                                    <label class="oh-label"
-                                        for="{{export_filter.form.employee_work_info__reporting_manager_id.id_for_label}}">{% trans "Reporting Manager" %}</label>
-                                    {{export_filter.form.employee_work_info__reporting_manager_id}}
+                                    <label
+                                        class="oh-label"
+                                        for="{{export_filter.form.employee_work_info__reporting_manager_id.id_for_label}}"
+                                    >{% trans "Reporting Manager" %}</label>
+                                    {{ export_filter.form.employee_work_info__reporting_manager_id }}
                                 </div>
                                 <div class="oh-input-group">
-                                    <label class="oh-label"
-                                        for="{{export_filter.form.employee_work_info__job_position_id.id_for_label}}">{% trans "Job Position" %}</label>
-                                    {{export_filter.form.employee_work_info__job_position_id}}
+                                    <label
+                                        class="oh-label"
+                                        for="{{export_filter.form.employee_work_info__job_position_id.id_for_label}}"
+                                    >{% trans "Job Position" %}</label>
+                                    {{ export_filter.form.employee_work_info__job_position_id }}
                                 </div>
                                 <div class="oh-input-group">
-                                    <label class="oh-label"
-                                        for="{{export_filter.form.employee_work_info__work_type_id.id_for_label}}">{% trans "Work Type" %}</label>
-                                    {{export_filter.form.employee_work_info__work_type_id}}
+                                    <label
+                                        class="oh-label"
+                                        for="{{export_filter.form.employee_work_info__work_type_id.id_for_label}}"
+                                    >{% trans "Work Type" %}</label>
+                                    {{ export_filter.form.employee_work_info__work_type_id }}
                                 </div>
                             </div>
                         </div>

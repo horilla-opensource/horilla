@@ -3,14 +3,18 @@
     <span class="oh-modal__dialog-title" id="biometricEmployeesLavel">
         {% trans "Edit COSEC User" %}
     </span>
-    <button class="oh-modal__close" aria-label="Close">
+    <button class="oh-modal__close" aria-label="{% trans 'Close' %}">
         <ion-icon name="close-outline"></ion-icon>
     </button>
 </div>
 
 <div class="oh-modal__dialog-body" id="biometricEmployeesModalBody">
-    <form hx-post="{%url 'edit-cosec-user' user_id=user_id device_id=device_id%}" hx-target="#objectUpdateModalTarget"
-        id="biometricEmployeesForm" class="oh-profile-section pt-2">
+    <form
+        hx-post="{%url 'edit-cosec-user' user_id=user_id device_id=device_id%}"
+        hx-target="#objectUpdateModalTarget"
+        id="biometricEmployeesForm"
+        class="oh-profile-section pt-2"
+    >
         {% csrf_token %}
         {% if form.errors %}
             {% for error in form.non_field_errors %}
@@ -24,32 +28,41 @@
                 <div class="col-sm-6">
                     <div class="oh-input-group">
                         <label class="oh-label" for="{{form.name.id_for_label}}">{% trans "Name" %}</label>
-                        {{form.name}}
+                        {{ form.name }}
                     </div>
                 </div>
                 <div class="col-sm-6">
                     <label class="oh-label" for="{{form.user_active.id_for_label}}">{% trans "User Active" %}</label>
-                    <div class="oh-switch">{{form.user_active}}</div>
+                    <div class="oh-switch">{{ form.user_active }}</div>
                 </div>
             </div>
             <div class="row">
                 <div class="col-sm-6">
-                    <label class="oh-label" for="{{form.by_pass_finger.id_for_label}}">{% trans "By-Pass-Biometric" %}</label>
-                    <div class="oh-switch">{{form.by_pass_finger}}</div>
+                    <label
+                        class="oh-label"
+                        for="{{form.by_pass_finger.id_for_label}}"
+                    >{% trans "By-Pass-Biometric" %}</label>
+                    <div class="oh-switch">{{ form.by_pass_finger }}</div>
                 </div>
                 <div class="col-sm-6">
                     <label class="oh-label" for="{{form.vip.id_for_label}}">{% trans "VIP" %}</label>
-                    <div class="oh-switch">{{form.vip}}</div>
+                    <div class="oh-switch">{{ form.vip }}</div>
                 </div>
             </div>
             <div class="row">
                 <div class="col-sm-6">
-                    <label class="oh-label" for="{{form.validity_enable.id_for_label}}">{% trans "Validity Enable" %}</label>
-                    <div class="oh-switch">{{form.validity_enable}}</div>
+                    <label
+                        class="oh-label"
+                        for="{{form.validity_enable.id_for_label}}"
+                    >{% trans "Validity Enable" %}</label>
+                    <div class="oh-switch">{{ form.validity_enable }}</div>
                 </div>
                 <div class="col-sm-6">
-                    <label class="oh-label" for="{{form.validity_end_date.id_for_label}}">{% trans "Validity End Date" %}</label>
-                    <div class="oh-input-group">{{form.validity_end_date}}</div>
+                    <label
+                        class="oh-label"
+                        for="{{form.validity_end_date.id_for_label}}"
+                    >{% trans "Validity End Date" %}</label>
+                    <div class="oh-input-group">{{ form.validity_end_date }}</div>
                 </div>
             </div>
         </div>

@@ -1,4 +1,4 @@
-{% load static horillafilters %}
+{% load static horillafilters i18n %}
 {% get_company as theme_obj %}
 <!DOCTYPE html>
 <html lang="en">
@@ -81,7 +81,7 @@
                                     <img src="cid:company_logo" height="40" width="40">
                                 </td>
                                 <td style="width: 50%; text-align: right">
-                                    <a href="#" class="hr-link">View in browser</a>
+                                    <a href="#" class="hr-link">{% trans 'View in browser' %}</a>
                                 </td>
                             </tr>
                         </table>
@@ -112,7 +112,7 @@
                         <a
                             href="{{ portal }}"
                             style="background-color: {{ theme_obj.primary_600 }}; color: #fff; border-radius: 10px; display: inline-block; padding: 15px 25px; text-decoration: none; font-weight: bold"
-                        >Complete Profile</a>
+                        >{% trans 'Complete Profile' %}</a>
                     </td>
                 </tr>
 
@@ -124,7 +124,7 @@
                         This mail was sent you because your email has been enrolled as an candidate at
                         {{ instance.recruitment_id.company_id.company }}.<br>
                         Don't want to receive mails like these anymore?
-                        <a href="#" style="color: #5c5c5c">Unsubscribe here</a>.
+                        <a href="#" style="color: #5c5c5c">{% trans 'Unsubscribe here' %}</a>.
                     </td>
                 </tr>
                 <tr>

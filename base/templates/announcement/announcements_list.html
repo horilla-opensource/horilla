@@ -3,40 +3,39 @@
 {% now "Y-m-d" as current_date %}
 
 {% if not announcements %}
-    <div class="oh-empty h-100" style="padding-top: 50px;">
-        <img src="{% static 'images/ui/search.svg' %}" class="oh-404__image" alt="404" />
+    <div class="oh-empty h-100" style="padding-top: 50px">
+        <img src="{% static 'images/ui/search.svg' %}" class="oh-404__image" alt="{% trans '404' %}">
         <h1 class="oh-empty__title">{% trans "No Records found." %}</h1>
         <p class="oh-empty__subtitle">{% trans "There are no announcements at the moment." %}</p>
     </div>
 {% else %}
-    <div class="oh-sticky-table" style="height:300px; border:none;">
+    <div class="oh-sticky-table" style="height: 300px; border: none">
         <div class="oh-sticky-table__table oh-table--sortable">
             <div class="oh-sticky-table__tbody">
                 {% for announcement in announcements %}
                     <div class="oh-sticky-table__tr" draggable="true">
                         <div class="announcement_title">
-                            <a class="oh-profile oh-profile--md" style="text-decoration:none;"
+                            <a
+                                class="oh-profile oh-profile--md"
+                                style="text-decoration: none"
                                 hx-on:click="$('#objectDetailsModal').addClass('oh-modal--show');"
                                 hx-get="{% url 'announcement-single-view' announcement.id %}?instance_ids={{instance_ids}}"
-                                hx-target="#objectDetailsModalTarget" onclick="closeNew(this)">
+                                hx-target="#objectDetailsModalTarget"
+                                onclick="closeNew(this)"
+                            >
                                 <div class="oh-profile__avatar mr-1">
-                                    <img src="https://ui-avatars.com/api/?name={{announcement.title}}&background=random"
-                                        class="oh-profile__image" />
+                                    <img
+                                        src="https://ui-avatars.com/api/?name={{announcement.title}}&background=random"
+                                        class="oh-profile__image"
+                                    >
                                 </div>
                                 <span class="oh-profile__name oh-text--dark fw-bold">
-                                    {{announcement.title}}
+                                    {{ announcement.title }}
                                 </span>
                                 {% if announcement.created_at|date:"Y-m-d" == current_date and request.user not in announcement.viewed_by %}
-                                    <span class="oh-profile__info-value ms-2 newTag"
-                                        style="
-                                            background-color: hsl(8,77%,56%);
-                                            color:white;
-                                            font-size: 0.7rem;
-                                            padding: 3px 8px;
-                                            border-radius: 15px;
-                                            font-weight: 800;
-                                            width:auto;
-                                        "
+                                    <span
+                                        class="oh-profile__info-value ms-2 newTag"
+                                        style="background-color: hsl(8, 77%, 56%); color: white; font-size: 0.7rem; padding: 3px 8px; border-radius: 15px; font-weight: 800; width: auto"
                                     >
                                         {% trans "NEW" %}
                                     </span>
