@@ -2832,6 +2832,13 @@ class AnnouncementForm(ModelForm):
         self.fields["disable_comments"].widget.attrs.update(
             {"hx-on:click": "togglePublicComments()"}
         )
+        if not self.instance.pk:
+            general_expire_date = (
+                AnnouncementExpire.objects.values_list("days", flat=True).first() or 30
+            )
+            self.fields["expire_date"].initial = date.today() + timedelta(
+                days=general_expire_date
+            )
 
     def save(self, commit: bool = ...) -> Any:
         attachement = []
