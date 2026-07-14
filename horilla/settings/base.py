@@ -88,6 +88,7 @@ INSTALLED_APPS = [
     "whatsapp",
     "horilla_ldap",
     "horilla_dbtemplate",
+    "horilla_tour",
 ]
 
 # ========================================
@@ -227,6 +228,7 @@ TEMPLATES = [
                 "base.context_processors.biometric_app_exists",
                 "base.context_processors.enable_late_come_early_out_tracking",
                 "base.context_processors.enable_profile_edit",
+                "horilla_tour.context_processors.pending_tours_flag",
                 "horilla_crumbs.context_processors.breadcrumbs",
             ],
             "loaders": [

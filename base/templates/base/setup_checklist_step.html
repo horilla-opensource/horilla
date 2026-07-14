@@ -1,0 +1,41 @@
+{% load i18n %}
+{# Included by setup_checklist_banner.html — one step cell with connectors, circle and label. #}
+<div class="hcl-step" role="listitem">
+
+    {# Left connector (from previous step to this one) #}
+    {% if not forloop.first %}
+        <div class="hcl-line-left {% if step.left_line_active %}hcl-line-active{% else %}hcl-line-inactive{% endif %}"
+             aria-hidden="true"></div>
+    {% endif %}
+
+    {# Right connector (from this step to the next one) #}
+    {% if not forloop.last %}
+        <div class="hcl-line-right {% if step.right_line_active %}hcl-line-active{% else %}hcl-line-inactive{% endif %}"
+             aria-hidden="true"></div>
+    {% endif %}
+
+    {# Step circle — links to the setup page #}
+    <a href="{{ step.url }}"
+       class="hcl-circle {{ circle_cls }}"
+       title="{{ step.title }}"
+       aria-label="{{ step.title }}{% if step.done %} ({% trans 'complete' %}){% elif is_active %} ({% trans 'next step' %}){% endif %}"
+       {% if is_active %}aria-current="step"{% endif %}>
+        {% if step.done %}
+            <svg width="14" height="14" fill="none" stroke="white" stroke-width="2.5"
+                 viewBox="0 0 24 24" stroke-linecap="round" stroke-linejoin="round"
+                 aria-hidden="true">
+                <polyline points="20 6 9 17 4 12"/>
+            </svg>
+        {% else %}
+            <span class="hcl-circle-num {% if is_active %}hcl-circle-num-active{% else %}hcl-circle-num-pending{% endif %}"
+                  aria-hidden="true">
+                {{ forloop.counter }}
+            </span>
+        {% endif %}
+    </a>
+
+    {# Step label #}
+    <span class="hcl-label {{ label_cls }}" aria-hidden="true">
+        {{ step.title }}
+    </span>
+</div>

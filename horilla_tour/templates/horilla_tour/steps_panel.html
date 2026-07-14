@@ -1,0 +1,71 @@
+{% load i18n %}
+<div id="tourStepsPanel">
+    <div class="oh-modal__dialog-header">
+        <span class="oh-modal__dialog-title">{% trans "Steps" %} — {{ tour.title }}</span>
+        <button class="oh-modal__close" aria-label="Close"
+            onclick="$(this).closest('.oh-modal--show').removeClass('oh-modal--show')">
+            <ion-icon name="close-outline"></ion-icon>
+        </button>
+    </div>
+    <div class="oh-modal__dialog-body">
+        <div class="overflow-x-auto">
+            <table class="w-full text-sm">
+                <thead>
+                    <tr class="text-left text-gray-500 border-b border-gray-200">
+                        <th class="py-2 pr-3 font-medium" style="width:40px">#</th>
+                        <th class="py-2 pr-3 font-medium">{% trans "Title" %}</th>
+                        <th class="py-2 pr-3 font-medium">{% trans "Element" %}</th>
+                        <th class="py-2 pr-3 font-medium">{% trans "Position" %}</th>
+                        {% if can_edit %}<th class="py-2 text-right font-medium">{% trans "Actions" %}</th>{% endif %}
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for step in steps %}
+                    <tr class="border-b border-gray-100 align-top">
+                        <td class="py-2 pr-3 text-gray-500">{{ step.sequence }}</td>
+                        <td class="py-2 pr-3 font-medium text-gray-800">{{ step.title }}</td>
+                        <td class="py-2 pr-3">
+                            <code class="text-xs bg-gray-100 rounded px-1.5 py-0.5 text-gray-700">{{ step.element_selector|default:"—" }}</code>
+                        </td>
+                        <td class="py-2 pr-3 text-gray-600">{{ step.get_side_display }}</td>
+                        {% if can_edit %}
+                        <td class="py-2 text-right whitespace-nowrap">
+                            <button type="button" title="{% trans 'Edit' %}"
+                                class="inline-flex items-center justify-center w-8 h-8 rounded-md border border-gray-200 text-gray-600 hover:bg-gray-100 transition"
+                                hx-get="{% url 'tour-step-form' %}?tour_id={{ tour.id }}&step_id={{ step.id }}"
+                                hx-target="#tourStepFormSlot">
+                                <ion-icon name="create-outline"></ion-icon>
+                            </button>
+                            <button type="button" title="{% trans 'Delete' %}"
+                                class="inline-flex items-center justify-center w-8 h-8 rounded-md border border-red-200 text-red-500 hover:bg-red-50 transition"
+                                hx-post="{% url 'tour-step-delete' %}" hx-vals='{"step_id": "{{ step.id }}"}'
+                                hx-target="#tourStepsPanel" hx-swap="outerHTML"
+                                hx-confirm="{% trans 'Delete this step?' %}">
+                                <ion-icon name="trash-outline"></ion-icon>
+                            </button>
+                        </td>
+                        {% endif %}
+                    </tr>
+                    {% empty %}
+                    <tr>
+                        <td colspan="5" class="py-8 text-center text-gray-400">
+                            {% trans "No steps yet. Add the first one below." %}
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+
+        {% if can_edit %}
+        <div class="mt-4">
+            <button type="button"
+                class="inline-flex items-center gap-1 px-4 py-2 rounded-md bg-primary-600 text-white text-sm font-medium hover:opacity-90 transition"
+                hx-get="{% url 'tour-step-form' %}?tour_id={{ tour.id }}" hx-target="#tourStepFormSlot">
+                <ion-icon name="add-outline"></ion-icon> {% trans "Add step" %}
+            </button>
+        </div>
+        <div id="tourStepFormSlot" class="mt-4"></div>
+        {% endif %}
+    </div>
+</div>

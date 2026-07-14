@@ -42,5 +42,18 @@
 </script>
 <script src="{% static 'horilla_theme/assets/js/footerScripts.js' %}"></script>
 
+<!-- Product tour engine (horilla_tour) -->
+{% if request.user.is_authenticated %}
+<script>
+  window.HORILLA_TOUR = {
+    page: "{{ request.resolver_match.url_name|default:'' }}",
+    path: "{{ request.path|escapejs }}",
+    activeUrl: "{% url 'tour-active' %}",
+    progressUrl: "{% url 'tour-progress' %}"
+  };
+</script>
+<script src="{% static 'build/js/tourController.js' %}"></script>
+{% endif %}
+
 {% block footer_scripts %}
 {% endblock %}

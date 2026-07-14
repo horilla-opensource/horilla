@@ -1,0 +1,25 @@
+{% extends 'settings.html' %}
+{% block settings %}
+{% load static i18n %}
+
+<div class="border border-[#ebebeb] rounded-md overflow-hidden">
+    <div class="bg-[#f3f3f3] px-4 py-3">
+        <h5 class="text-sm font-semibold text-[#333] m-0">{% trans "Product Tours" %}</h5>
+    </div>
+    <div class="p-4">
+        <p class="text-sm text-gray-500 mb-4">
+            {% trans "Create guided walkthroughs that appear for the right users on the right pages. Drafts stay hidden until published." %}
+        </p>
+
+        {# Nav (search + Create) loads first, then the list into #listContainer #}
+        <div hx-get="{% url 'tour-nav' %}" hx-trigger="load">
+            <div class="animate-pulse bg-gray-100 rounded-md mb-3" style="height:56px"></div>
+        </div>
+
+        <div id="listContainer" hx-get="{% url 'tour-list' %}" hx-trigger="load">
+            <div class="animate-pulse bg-gray-100 rounded-md" style="height:360px"></div>
+        </div>
+    </div>
+</div>
+
+{% endblock settings %}

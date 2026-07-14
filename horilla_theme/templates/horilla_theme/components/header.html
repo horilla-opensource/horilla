@@ -59,6 +59,22 @@
                     </a>
                 </button>
             {% endif %}
+            {% if tour_launcher_enabled %}
+            <div class="relative dropdown-wrapper">
+                <button
+                    id="tourLauncherBtn"
+                    type="button"
+                    title="{% trans 'Take a tour' %}"
+                    onclick="if(window.horillaTour){window.horillaTour.toggle();}"
+                    class="hidden md:block p-2 group text-primary-600 w-12 h-12 bg-primary-100 hover:bg-primary-600 rounded-full transition duration-300 relative"
+                >
+                    <i class="fas fa-circle-question transition duration-300 group-hover:text-white"></i>
+                    {% if tour_has_pending %}
+                    <span class="absolute bg-[#16a34a] w-3 h-3 rounded-full border-2 border-white [right:-2px] [top:-2px]"></span>
+                    {% endif %}
+                </button>
+            </div>
+            {% endif %}
             <div class="relative dropdown-wrapper">
                 <button
                     class="hidden md:block p-2 group text-primary-600 w-12 h-12 bg-primary-100 hover:bg-primary-600 rounded-full transition duration-300 relative"

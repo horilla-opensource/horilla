@@ -1,0 +1,282 @@
+{% load i18n %}
+
+<style>
+/* ── Banner card ────────────────────────────────────────────────────────── */
+.hcl-banner {
+    background: linear-gradient(135deg, #fef4f2 0%, #ffffff 55%);
+    border: 1px solid #f4b8b0;
+    border-radius: 16px;
+    padding: 24px 28px 20px;
+    position: relative;
+    overflow: hidden;
+    margin-bottom: 24px;
+}
+.dark .hcl-banner {
+    background: linear-gradient(135deg, #3d1510 0%, #0f172a 55%);
+    border-color: #6b1a10;
+}
+
+/* ── Decorative blob ────────────────────────────────────────────────────── */
+.hcl-blob {
+    position: absolute; top: -50px; right: -50px;
+    width: 180px; height: 180px; border-radius: 50%;
+    background: radial-gradient(circle, rgba(229,79,56,0.12) 0%, transparent 70%);
+    pointer-events: none;
+}
+
+/* ── Header row ─────────────────────────────────────────────────────────── */
+.hcl-header {
+    display: flex; align-items: flex-start;
+    justify-content: space-between; gap: 12px;
+    margin-bottom: 18px;
+}
+.hcl-icon {
+    width: 40px; height: 40px; border-radius: 10px; flex-shrink: 0;
+    background: linear-gradient(135deg, #e54f38, #e8705e);
+    display: flex; align-items: center; justify-content: center;
+}
+.hcl-title {
+    margin: 0; font-size: 15px; font-weight: 700; color: #1f2937;
+}
+.dark .hcl-title { color: #fde0db; }
+.hcl-subtitle {
+    margin: 3px 0 0; font-size: 12px; color: #6b7280;
+}
+.dark .hcl-subtitle { color: #9ca3af; }
+
+/* ── Dismiss button ─────────────────────────────────────────────────────── */
+.hcl-dismiss {
+    background: none; border: none; cursor: pointer;
+    color: #9ca3af; padding: 4px; line-height: 1;
+    border-radius: 6px; flex-shrink: 0;
+    transition: color 0.15s, background 0.15s;
+}
+.hcl-dismiss:hover { color: #4b5563; background: rgba(0,0,0,0.06); }
+.dark .hcl-dismiss:hover { color: #e5e7eb; background: rgba(255,255,255,0.08); }
+
+/* ── Progress bar ───────────────────────────────────────────────────────── */
+.hcl-progress-track {
+    height: 5px; background: #e5e7eb; border-radius: 9999px;
+    overflow: hidden; margin-bottom: 20px;
+}
+.dark .hcl-progress-track { background: #374151; }
+.hcl-progress-fill {
+    height: 100%;
+    background: linear-gradient(90deg, #e54f38, #e8705e);
+    border-radius: 9999px;
+    transition: width 0.5s ease;
+}
+
+/* ── Steps row ──────────────────────────────────────────────────────────── */
+.hcl-steps {
+    display: flex; align-items: flex-start; gap: 0;
+    overflow-x: auto; padding-bottom: 2px;
+    scrollbar-width: none; -ms-overflow-style: none;
+}
+.hcl-steps::-webkit-scrollbar { display: none; }
+
+.hcl-step {
+    display: flex; flex-direction: column; align-items: center;
+    flex: 1; min-width: 70px; position: relative;
+}
+
+/* Connector lines */
+.hcl-line-left, .hcl-line-right {
+    position: absolute; top: 15px; height: 2px; z-index: 0;
+    transition: background 0.3s;
+}
+.hcl-line-left  { left: 0;   right: 50%; }
+.hcl-line-right { left: 50%; right: 0;   }
+.hcl-line-active   { background: #e54f38; }
+.hcl-line-inactive { background: #e5e7eb; }
+.dark .hcl-line-inactive { background: #374151; }
+
+/* Step circle */
+.hcl-circle {
+    width: 32px; height: 32px; border-radius: 50%;
+    display: flex; align-items: center; justify-content: center;
+    z-index: 1; position: relative; flex-shrink: 0;
+    text-decoration: none;
+    transition: box-shadow 0.2s, border-color 0.2s, background 0.2s;
+}
+.hcl-circle-done {
+    background: #e54f38; border: 2px solid #e54f38;
+}
+.hcl-circle-done:hover { background: #cc3f29; border-color: #cc3f29; }
+.hcl-circle-active {
+    background: #ffffff; border: 2px solid #e54f38;
+    box-shadow: 0 0 0 4px rgba(229,79,56,0.18);
+}
+.dark .hcl-circle-active { background: #3d1510; }
+.hcl-circle-pending {
+    background: #ffffff; border: 2px solid #d1d5db;
+}
+.dark .hcl-circle-pending { background: #1f2937; border-color: #4b5563; }
+.hcl-circle-pending:hover {
+    border-color: #e54f38;
+    box-shadow: 0 0 0 3px rgba(229,79,56,0.12);
+}
+
+/* Step number / checkmark */
+.hcl-circle-num {
+    font-size: 11px; font-weight: 700; user-select: none;
+}
+.hcl-circle-num-active  { color: #e54f38; }
+.hcl-circle-num-pending { color: #9ca3af; }
+.dark .hcl-circle-num-pending { color: #6b7280; }
+
+/* Step label */
+.hcl-label {
+    font-size: 10px; margin-top: 6px; text-align: center;
+    line-height: 1.3; padding: 0 4px; word-break: break-word;
+}
+.hcl-label-done    { color: #e54f38; font-weight: 600; }
+.hcl-label-active  { color: #1f2937; font-weight: 700; }
+.hcl-label-pending { color: #9ca3af; font-weight: 500; }
+.dark .hcl-label-active  { color: #fde0db; }
+.dark .hcl-label-pending { color: #6b7280; }
+
+/* ── Action card ────────────────────────────────────────────────────────── */
+.hcl-action {
+    margin-top: 18px;
+    background: #ffffff;
+    border: 1px solid #f4b8b0;
+    border-left: 4px solid #e54f38;
+    border-radius: 10px;
+    padding: 14px 18px;
+    display: flex; align-items: center;
+    justify-content: space-between; gap: 16px;
+    flex-wrap: wrap;
+}
+.dark .hcl-action {
+    background: #3d1510;
+    border-color: #6b1a10;
+    border-left-color: #ea6e5a;
+}
+.hcl-action-title {
+    margin: 0; font-size: 14px; font-weight: 600; color: #1f2937;
+}
+.dark .hcl-action-title { color: #fde0db; }
+.hcl-action-desc {
+    margin: 4px 0 0; font-size: 13px; color: #6b7280;
+}
+.dark .hcl-action-desc { color: #9ca3af; }
+.hcl-action-btn {
+    display: inline-flex; align-items: center; gap: 6px;
+    padding: 9px 18px; border-radius: 8px;
+    background: linear-gradient(135deg, #e54f38, #e8705e);
+    color: #ffffff; font-size: 13px; font-weight: 600;
+    text-decoration: none; white-space: nowrap; flex-shrink: 0;
+    transition: opacity 0.15s, transform 0.15s;
+}
+.hcl-action-btn:hover { opacity: 0.88; transform: translateY(-1px); color: #ffffff; }
+
+/* ── Mobile adjustments ─────────────────────────────────────────────────── */
+@media (max-width: 480px) {
+    .hcl-banner { padding: 18px 16px 16px; }
+    .hcl-steps  { gap: 0; }
+    .hcl-step   { min-width: 56px; }
+    .hcl-action { flex-direction: column; align-items: flex-start; }
+    .hcl-action-btn { width: 100%; justify-content: center; }
+}
+</style>
+
+<div id="setup-checklist-banner">
+    <div class="hcl-banner" role="region" aria-label="{% trans 'HR setup checklist' %}">
+        <div class="hcl-blob" aria-hidden="true"></div>
+
+        {# ── Header ── #}
+        <div class="hcl-header">
+            <div style="display:flex; align-items:center; gap:12px;">
+                <div class="hcl-icon" aria-hidden="true">
+                    <svg width="20" height="20" fill="none" stroke="white" stroke-width="2"
+                         stroke-linecap="round" stroke-linejoin="round" viewBox="0 0 24 24">
+                        <path d="M13 2L3 14h9l-1 8 10-12h-9l1-8z"/>
+                    </svg>
+                </div>
+                <div>
+                    <h3 class="hcl-title">{% trans "Get started with Horilla HR" %}</h3>
+                    <p class="hcl-subtitle">
+                        {% blocktrans with done=setup_completed total=setup_total %}
+                            {{ done }} of {{ total }} steps complete
+                        {% endblocktrans %}
+                        — {% trans "finish setup to unlock your full HR system" %}
+                    </p>
+                </div>
+            </div>
+
+            {# Dismiss button — HTMX POST, falls back to regular form submit #}
+            <form method="post" action="{{ setup_dismiss_url }}"
+                  hx-post="{{ setup_dismiss_url }}"
+                  hx-target="#setup-checklist-banner"
+                  hx-swap="outerHTML"
+                  style="margin:0; line-height:0;">
+                {% csrf_token %}
+                <button type="submit" class="hcl-dismiss"
+                        title="{% trans 'Dismiss setup checklist' %}"
+                        aria-label="{% trans 'Dismiss setup checklist' %}">
+                    <svg width="18" height="18" fill="none" stroke="currentColor" stroke-width="2"
+                         viewBox="0 0 24 24" stroke-linecap="round" stroke-linejoin="round"
+                         aria-hidden="true">
+                        <line x1="18" y1="6" x2="6" y2="18"/>
+                        <line x1="6" y1="6" x2="18" y2="18"/>
+                    </svg>
+                </button>
+            </form>
+        </div>
+
+        {# ── Progress bar ── #}
+        <div class="hcl-progress-track"
+             role="progressbar"
+             aria-valuenow="{{ setup_completed }}"
+             aria-valuemin="0"
+             aria-valuemax="{{ setup_total }}"
+             aria-label="{% blocktrans with done=setup_completed total=setup_total %}{{ done }} of {{ total }} setup steps complete{% endblocktrans %}">
+            <div class="hcl-progress-fill" style="width:{{ setup_progress_pct }}%;"></div>
+        </div>
+
+        {# ── Step circles ── #}
+        <div class="hcl-steps" role="list" aria-label="{% trans 'Setup steps' %}">
+            {% for step in setup_steps %}
+                {% if step.done %}
+                    {% with circle_cls="hcl-circle-done" label_cls="hcl-label-done" is_active=False %}
+                    {% include "base/setup_checklist_step.html" %}
+                    {% endwith %}
+                {% elif setup_next_step.key == step.key %}
+                    {% with circle_cls="hcl-circle-active" label_cls="hcl-label-active" is_active=True %}
+                    {% include "base/setup_checklist_step.html" %}
+                    {% endwith %}
+                {% else %}
+                    {% with circle_cls="hcl-circle-pending" label_cls="hcl-label-pending" is_active=False %}
+                    {% include "base/setup_checklist_step.html" %}
+                    {% endwith %}
+                {% endif %}
+            {% endfor %}
+        </div>
+
+        {# ── Action card for next incomplete step ── #}
+        {% if setup_next_step %}
+            <div class="hcl-action" role="complementary"
+                 aria-label="{% trans 'Next setup step' %}">
+                <div>
+                    <p class="hcl-action-title">
+                        {% blocktrans with title=setup_next_step.title %}
+                            Next: {{ title }}
+                        {% endblocktrans %}
+                    </p>
+                    <p class="hcl-action-desc">{{ setup_next_step.description }}</p>
+                </div>
+                <a href="{{ setup_next_step.url }}" class="hcl-action-btn"
+                   aria-label="{% blocktrans with title=setup_next_step.title %}Set up {{ title }}{% endblocktrans %}">
+                    {% trans "Set up now" %}
+                    <svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2.5"
+                         viewBox="0 0 24 24" stroke-linecap="round" stroke-linejoin="round"
+                         aria-hidden="true">
+                        <line x1="5" y1="12" x2="19" y2="12"/>
+                        <polyline points="12 5 19 12 12 19"/>
+                    </svg>
+                </a>
+            </div>
+        {% endif %}
+    </div>
+</div>

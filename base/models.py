@@ -3074,4 +3074,34 @@ class IntegrationApps(HorillaModel, NoPermissionModel):
         unique_together = ("app_label", "company")
 
 
+class SetupChecklistDismissal(models.Model):
+    """
+    Per-user, per-company dismissal of the onboarding setup checklist banner.
+    A user who manages multiple companies can dismiss independently for each.
+    """
+
+    user = models.ForeignKey(
+        HorillaUser,
+        on_delete=models.CASCADE,
+        related_name="setup_checklist_dismissals",
+    )
+    company = models.ForeignKey(
+        "base.Company",
+        on_delete=models.CASCADE,
+        null=True,
+        blank=True,
+        related_name="setup_checklist_dismissals",
+    )
+    dismissed_at = models.DateTimeField(auto_now_add=True)
+
+    class Meta:
+        app_label = "base"
+        unique_together = [("user", "company")]
+        verbose_name = "Setup Checklist Dismissal"
+        verbose_name_plural = "Setup Checklist Dismissals"
+
+    def __str__(self):
+        return f"{self.user} — {self.company or 'global'}"
+
+
 # User.add_to_class("is_new_employee", models.BooleanField(default=False))

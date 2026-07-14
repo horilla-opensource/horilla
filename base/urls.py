@@ -147,6 +147,11 @@ urlpatterns = [
         dashboard_module.load_dashboard_prefs,
         name="dashboard-load-prefs",
     ),
+    path(
+        "dashboard/dismiss-setup-checklist/",
+        dashboard_module.dismiss_setup_checklist,
+        name="dashboard-dismiss-setup-checklist",
+    ),
     # ── ESS Dashboard ──────────────────────────────────────────────────────────
     path("ess/", ess_dashboard.ess_dashboard, name="ess-dashboard"),
     path("ess/api/kpi/", ess_dashboard.ess_kpi_data, name="ess-kpi-data"),

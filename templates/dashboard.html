@@ -1234,6 +1234,11 @@
             </div>
         </div>
 
+        <!-- Setup checklist banner (shown to new accounts until all steps complete or dismissed) -->
+        {% if show_setup_checklist %}
+            {% include "base/setup_checklist_banner.html" %}
+        {% endif %}
+
         <!-- KPI Cards -->
         <div class="md-kpi-grid" id="md-kpi-grid">
             <div class="md-skeleton md-skeleton--kpi"></div>
