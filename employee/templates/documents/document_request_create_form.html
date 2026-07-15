@@ -1,8 +1,8 @@
 {% load i18n %}
-<div class="oh-modal__dialog-header pb-0">
-    <h5 class="oh-modal__dialog-title" id="objectCreateModalLabel">
-        {{ form.verbose_name }}
-    </h5>
+<div class="oh-modal__dialog-header">
+    <h2 class="text-md font-semibold mb-3" id="objectCreateModalLabel">
+        {% if form.verbose_name %}{{ form.verbose_name }}{% else %}{% trans "Request Document" %}{% endif %}
+    </h2>
     <button class="oh-modal__close" aria-label="{% trans 'Close' %}">
         <ion-icon name="close-outline"></ion-icon>
     </button>
@@ -20,10 +20,9 @@
             {% endif %}
         {% endif %}
         hx-target="#objectCreateModalTarget"
-        hx-encoding="multipart/form-data"
-        class="oh-profile-section pt-3"
-    >
-        {{ form.errors }}
+        hx-encoding="multipart/form-data" class="oh-profile-section bg-white rounded-md border border-dark-50 w-full pt-3">
+        <div class="oh-profile-section__card">
+        {{form.errors}}
         <div class="row">
             <div class="col-sm-12 col-md-12 col-lg-12">
                 <div class="oh-input-group">
@@ -79,6 +78,7 @@
             <button type="submit" class="oh-btn oh-btn--secondary oh-btn--shadow">
                 {% trans "Save" %}
             </button>
+        </div>
         </div>
     </form>
 </div>

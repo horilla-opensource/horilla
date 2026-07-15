@@ -8,7 +8,8 @@
     </button>
 </div> {% endcomment %}
 <div class="oh-modal__dialog-body p-0" id="bulkPayslipModal">
-    <form action="{% url 'generate-payslip' %}" class="oh-profile-section pt-2" method="post">
+    <form action="{% url 'generate-payslip' %}" class="oh-profile-section bg-white rounded-md border border-dark-50 w-full" method="post">
+        <div class="oh-profile-section__card">
         {% csrf_token %}
         <div class="row">
             <div class="col-12">
@@ -54,6 +55,7 @@
         </div>
         <div class="oh-modal__dialog-footer p-0 pt-4">
             <input type="submit" value="Generate Payslips" class="oh-btn oh-btn--secondary oh-btn--shadow">
+        </div>
         </div>
     </form>
 </div>
