@@ -1,0 +1,106 @@
+{% load i18n static %}
+
+<template id="companyIconTemplate">
+    <div class="row mb-3">
+        <div class="col-12 d-flex align-items-center">
+            <div
+                class="oh-profile-section__edit-photo me-4 mb-3"
+                data-toggle="oh-modal-toggle"
+                data-target="#companyIconModal"
+                style="border: 1px solid hsl(213, 22%, 84%)"
+            >
+                <img
+                    src="{% if form.instance.icon %}{{ form.instance.icon.url }}{% else %}{% static 'images/ui/auth-logo.png' %}{% endif %}"
+                    class="oh-profile-section__avatar preview"
+                    alt="{% trans 'Company logo' %}"
+                >
+            </div>
+        </div>
+    </div>
+</template>
+
+<div class="oh-modal" id="companyIconModal" role="dialog" aria-labelledby="companyIconModal" aria-hidden="true">
+    <div class="oh-modal__dialog">
+        <div class="oh-modal__dialog-header">
+            <span class="oh-modal__dialog-title" id="companyIconModalLabel">{% trans "Upload Logo" %}</span>
+            <button class="oh-modal__close" aria-label="{% trans 'Close' %}">
+                <ion-icon name="close-outline"></ion-icon>
+            </button>
+        </div>
+        <div class="oh-modal__dialog-body">
+            <div class="oh-profile-section__image-container">
+                <div class="oh-profile-section__modal-avatar" style="border: 1px solid hsl(213, 22%, 84%)">
+                    <img
+                        src="{% if form.instance.icon %}{{ form.instance.icon.url }}{% else %}{% static 'images/ui/auth-logo.png' %}{% endif %}"
+                        class="oh-profile-section__modal-image preview"
+                        alt="{% trans 'Company logo' %}"
+                    >
+                </div>
+                <input
+                    type="file"
+                    id="companyIconModalInput"
+                    class="oh-input oh-input--file oh-input--file-sm mt-4"
+                    accept="image/*"
+                >
+            </div>
+        </div>
+    </div>
+</div>
+
+{% include "generic/horilla_form.html" %}
+
+<script>
+    (function () {
+        function updatePreviews(file) {
+            if (!file) {
+                return;
+            }
+            var reader = new FileReader();
+            reader.addEventListener("load", function () {
+                document.querySelectorAll(".preview").forEach(function (img) {
+                    img.src = reader.result;
+                });
+            });
+            reader.readAsDataURL(file);
+        }
+
+        function initCompanyIconField() {
+            var iconInput = document.getElementById("id_icon");
+            var modalInput = document.getElementById("companyIconModalInput");
+            var modal = document.getElementById("companyIconModal");
+            var template = document.getElementById("companyIconTemplate");
+            if (!iconInput || !modalInput || !modal || !template) {
+                return;
+            }
+
+            var formEl = iconInput.closest("form");
+            var card = formEl ? formEl.querySelector(".oh-profile-section__card") : null;
+            if (formEl && modal.parentElement !== formEl) {
+                formEl.appendChild(modal);
+            }
+            if (card && !card.querySelector(".oh-profile-section__edit-photo")) {
+                card.insertBefore(template.content.cloneNode(true), card.firstChild);
+            }
+            iconInput.classList.add("oh-input", "oh-input--file", "oh-input--file-sm", "mt-2");
+
+            // Selecting a file directly on the visible file field updates the previews.
+            iconInput.addEventListener("change", function () {
+                updatePreviews(this.files[0]);
+            });
+
+            // Selecting a file inside the "Upload Logo" popup copies it into the
+            // real file field so both stay in sync and only one file is submitted.
+            modalInput.addEventListener("change", function () {
+                var file = this.files[0];
+                if (!file) {
+                    return;
+                }
+                var dataTransfer = new DataTransfer();
+                dataTransfer.items.add(file);
+                iconInput.files = dataTransfer.files;
+                iconInput.dispatchEvent(new Event("change"));
+            });
+        }
+        initCompanyIconField();
+    })();
+</script>

@@ -161,6 +161,7 @@ class CompanyCreateForm(HorillaFormView):
     model = Company
     form_class = CompanyForm
     new_display_title = _("Create Company")
+    template_name = "cbv/company/company_form.html"
 
     def get_form(self, form_class=None):
         form = super().get_form(form_class)
