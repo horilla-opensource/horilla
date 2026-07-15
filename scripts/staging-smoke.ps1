@@ -34,6 +34,19 @@ function Invoke-SmokeRequest {
     return $response
 }
 
+function Test-ResponseHeader {
+    param([object]$Response, [string]$Name)
+    $headers = $Response.Headers
+    if ($null -eq $headers) {
+        return $false
+    }
+    if ($headers.PSObject.Methods.Name -contains "TryGetValues") {
+        $values = [System.Collections.Generic.IEnumerable[string]]$null
+        return $headers.TryGetValues($Name, [ref]$values)
+    }
+    return -not [string]::IsNullOrWhiteSpace([string]$headers[$Name])
+}
+
 $health = Invoke-SmokeRequest -Path "/health/" -ExpectedStatus @(200)
 if ($health.Content -notmatch '"status"\s*:\s*"ok"') {
     throw "Liveness response is invalid."
@@ -48,7 +61,8 @@ Invoke-SmokeRequest -Path "/initialize-database" -ExpectedStatus @(404) | Out-Nu
 Invoke-SmokeRequest -Path "/load-demo-database" -ExpectedStatus @(404) | Out-Null
 $root = Invoke-SmokeRequest -Path "/" -ExpectedStatus @(200, 301, 302)
 
-if (($BaseUrl.Scheme -eq "https" -or $ForwardedHttps) -and -not $root.Headers["Strict-Transport-Security"]) {
+$hasHsts = Test-ResponseHeader -Response $root -Name "Strict-Transport-Security"
+if (($BaseUrl.Scheme -eq "https" -or $ForwardedHttps) -and -not $hasHsts) {
     throw "HTTPS response is missing Strict-Transport-Security."
 }
 
