@@ -173,16 +173,55 @@ jobs:
           done
           test "$status" = healthy
 
-      - name: Verify isolation and least privilege
+      - name: Verify non-root runtime identity
         shell: bash
         run: |
-          test "$(docker compose --env-file "$STAGING_ENV_FILE" -f "$COMPOSE_FILE" exec -T server id -u)" = 10001
-          docker compose --env-file "$STAGING_ENV_FILE" -f "$COMPOSE_FILE" exec -T server sh -c 'test -z "${POSTGRES_PASSWORD+x}"'
+          runtime_uid="$(docker compose --env-file "$STAGING_ENV_FILE" -f "$COMPOSE_FILE" exec -T server id -u | tr -d '\r\n')"
+          echo "Server runtime UID: ${runtime_uid:-<empty>}"
+          if [ "$runtime_uid" != "10001" ]; then
+            echo "::error::Expected the server container to run as UID 10001, got ${runtime_uid:-<empty>}."
+            exit 1
+          fi
+
+      - name: Verify server secret isolation
+        shell: bash
+        run: |
+          secret_state="$(docker compose --env-file "$STAGING_ENV_FILE" -f "$COMPOSE_FILE" exec -T server \
+            sh -c 'if [ "${POSTGRES_PASSWORD+x}" = x ]; then echo present; else echo absent; fi' | tr -d '\r\n')"
+          echo "Admin database password in server environment: $secret_state"
+          if [ "$secret_state" != "absent" ]; then
+            echo "::error::POSTGRES_PASSWORD must not be present in the server container environment."
+            exit 1
+          fi
+
+      - name: Verify network isolation
+        shell: bash
+        run: |
           db_port="$(docker compose --env-file "$STAGING_ENV_FILE" -f "$COMPOSE_FILE" port db 5432 2>/dev/null || true)"
-          test -z "$db_port"
-          docker compose --env-file "$STAGING_ENV_FILE" -f "$COMPOSE_FILE" port server 8000 | grep -E '^127\.0\.0\.1:'
+          server_port="$(docker compose --env-file "$STAGING_ENV_FILE" -f "$COMPOSE_FILE" port server 8000 | tr -d '\r\n')"
+          echo "Database published port: ${db_port:-<none>}"
+          echo "Server published port: ${server_port:-<none>}"
+          if [ -n "$db_port" ]; then
+            echo "::error::The PostgreSQL service must not publish a host port."
+            exit 1
+          fi
+          case "$server_port" in
+            127.0.0.1:*) ;;
+            *)
+              echo "::error::The server port must bind only to 127.0.0.1."
+              exit 1
+              ;;
+          esac
+
+      - name: Verify application database role
+        shell: bash
+        run: |
           docker compose --env-file "$STAGING_ENV_FILE" -f "$COMPOSE_FILE" exec -T server \
             python manage.py shell -c "from django.db import connection; c=connection.cursor(); c.execute('SELECT rolsuper FROM pg_roles WHERE rolname=current_user'); assert c.fetchone() == (False,)"
+
+      - name: Capture application readiness evidence
+        shell: bash
+        run: |
           docker compose --env-file "$STAGING_ENV_FILE" -f "$COMPOSE_FILE" exec -T server \
             python manage.py hydra_readiness --json | tee artifacts/readiness-before-backup.json
 
