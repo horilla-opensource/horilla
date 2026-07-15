@@ -48,7 +48,7 @@ if [ "$migration_count" -le 0 ]; then
 fi
 
 mkdir -m 0700 "$private_tmp"
-tar -C "$private_tmp" -xzf "$backup_dir/private-media.tar.gz"
+tar --no-same-owner -C "$private_tmp" -xzf "$backup_dir/private-media.tar.gz"
 
 tab="$(printf '\t')"
 psql --no-psqlrc --dbname="$restore_db" --tuples-only --no-align --field-separator="$tab" \
