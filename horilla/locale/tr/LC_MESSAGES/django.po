@@ -2377,8 +2377,8 @@ msgstr "Ev sahibi kullanıcı"
 msgid "Host"
 msgstr "Host"
 
-msgid "Compnay"
-msgstr "Compnay"
+msgid "Company"
+msgstr "Company"
 
 msgid "Mail Servers"
 msgstr "Posta Sunucuları"

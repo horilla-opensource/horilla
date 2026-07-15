@@ -2438,8 +2438,8 @@ msgstr "Usuario Host"
 msgid "Host"
 msgstr "Anfitrión"
 
-msgid "Compnay"
-msgstr "Compnay"
+msgid "Company"
+msgstr "Company"
 
 msgid "Mail Servers"
 msgstr "Servidores de correo"

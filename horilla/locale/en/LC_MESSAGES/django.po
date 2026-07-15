@@ -12668,7 +12668,7 @@ msgid "Host"
 msgstr ""
 
 #: .\base\cbv\mail_server.py:55
-msgid "Compnay"
+msgid "Company"
 msgstr ""
 
 #: .\base\cbv\mail_server.py:89 .\outlook_auth\cbv\views.py:38

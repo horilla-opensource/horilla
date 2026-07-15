@@ -2413,7 +2413,7 @@ msgstr "مستخدم المضيف"
 msgid "Host"
 msgstr "المضيف"
 
-msgid "Compnay"
+msgid "Company"
 msgstr "الشركة"
 
 msgid "Mail Servers"

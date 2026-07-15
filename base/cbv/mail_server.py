@@ -52,7 +52,7 @@ class MailServerListView(HorillaListView):
     columns = [
         (_("Host User"), "username"),
         (_("Host"), "host"),
-        (_("Compnay"), "company_id"),
+        (_("Company"), "company_id"),
     ]
 
     header_attrs = {

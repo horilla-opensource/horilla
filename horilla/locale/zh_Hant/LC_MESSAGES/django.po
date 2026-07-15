@@ -2636,7 +2636,7 @@ msgstr "主持人"
 
 #, fuzzy
 #| msgid "Company"
-msgid "Compnay"
+msgid "Company"
 msgstr "公司"
 
 msgid "Mail Servers"

@@ -2643,7 +2643,7 @@ msgstr "Servidor"
 
 #, fuzzy
 #| msgid "Company"
-msgid "Compnay"
+msgid "Company"
 msgstr "Empresas"
 
 msgid "Mail Servers"

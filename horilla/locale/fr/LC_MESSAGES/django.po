@@ -2444,8 +2444,8 @@ msgstr "Utilisateur hôte"
 msgid "Host"
 msgstr "Hôte"
 
-msgid "Compnay"
-msgstr "Compnay"
+msgid "Company"
+msgstr "Company"
 
 msgid "Mail Servers"
 msgstr "Serveurs de messagerie"
