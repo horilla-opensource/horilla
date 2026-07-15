@@ -585,6 +585,10 @@ class CompanyForm(ModelForm):
         fields = "__all__"
         exclude = ["date_format", "time_format", "is_active"]
 
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.fields["icon"].required = False
+
     def validate_image(self, file):
         max_size = 5 * 1024 * 1024
 
