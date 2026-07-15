@@ -197,11 +197,12 @@ jobs:
       - name: Verify network isolation
         shell: bash
         run: |
-          db_port="$(docker compose --env-file "$STAGING_ENV_FILE" -f "$COMPOSE_FILE" port db 5432 2>/dev/null || true)"
+          db_container_id="$(docker compose --env-file "$STAGING_ENV_FILE" -f "$COMPOSE_FILE" ps -q db)"
+          db_bindings="$(docker inspect --format '{{json (index .NetworkSettings.Ports "5432/tcp")}}' "$db_container_id")"
           server_port="$(docker compose --env-file "$STAGING_ENV_FILE" -f "$COMPOSE_FILE" port server 8000 | tr -d '\r\n')"
-          echo "Database published port: ${db_port:-<none>}"
+          echo "Database host bindings: ${db_bindings:-null}"
           echo "Server published port: ${server_port:-<none>}"
-          if [ -n "$db_port" ]; then
+          if [ -n "$db_bindings" ] && [ "$db_bindings" != "null" ]; then
             echo "::error::The PostgreSQL service must not publish a host port."
             exit 1
           fi
