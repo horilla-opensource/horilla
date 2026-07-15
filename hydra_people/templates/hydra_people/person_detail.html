@@ -1,0 +1,124 @@
+{% extends "hydra_people/base.html" %}
+{% load i18n %}
+
+{% block person_content %}
+<header class="hydra-header">
+  <div>
+    <p class="hydra-muted mb-1">{{ person.hydra_id }}</p>
+    <h1 class="oh-main__titlebar-title">{{ person.passport_name }}</h1>
+  </div>
+  <div class="hydra-actions">
+    <a class="oh-btn" href="{% url 'hydra-person-list' %}">{% trans "Back to people" %}</a>
+    {% if perms.hydra_people.change_person %}<a class="oh-btn oh-btn--secondary" href="{% url 'hydra-person-update' person.uuid %}">{% trans "Edit" %}</a>{% endif %}
+    {% if not person.employee and perms.hydra_people.convert_person_to_employee and perms.hydra_people.change_person and perms.recruitment.view_candidate and perms.recruitment.change_candidate and perms.employee.view_employee and perms.employee.add_employee and perms.employee.add_employeeworkinformation %}<a class="oh-btn oh-btn--secondary" href="{% url 'hydra-person-employee-conversion' person.uuid %}">{% trans "Create employee" %}</a>{% endif %}
+    {% if perms.hydra_coordination.add_personassignment and perms.hydra_coordination.assign_person %}
+      {% if person.employee %}
+        {% if perms.employee.view_employee and perms.employee.change_employeeworkinformation %}<a class="oh-btn oh-btn--secondary" href="{% url 'hydra-person-assign' person.uuid %}">{% trans "Assign employee" %}</a>{% endif %}
+      {% else %}
+        <a class="oh-btn oh-btn--secondary" href="{% url 'hydra-person-assign' person.uuid %}">{% trans "Assign" %}</a>
+      {% endif %}
+    {% endif %}
+    {% if perms.hydra_legalization.add_legalizationcase and perms.hydra_legalization.view_legalizationcase %}<a class="oh-btn oh-btn--secondary" href="{% url 'hydra-legalization-create' person.uuid %}">{% trans "Start legalization" %}</a>{% endif %}
+    {% if perms.hydra_arrivals.add_arrivalplan and perms.hydra_arrivals.view_arrivalplan and perms.hydra_coordination.view_location and perms.recruitment.view_candidate %}<a class="oh-btn oh-btn--secondary" href="{% url 'hydra-arrival-create' person.uuid %}">{% trans "Plan arrival" %}</a>{% endif %}
+  </div>
+</header>
+
+<section class="hydra-card mb-3">
+  <dl class="hydra-detail">
+    <div><dt>{% trans "First name" %}</dt><dd>{{ person.first_name }}</dd></div>
+    <div><dt>{% trans "Last name" %}</dt><dd>{{ person.last_name }}</dd></div>
+    <div><dt>{% trans "Date of birth" %}</dt><dd>{{ person.date_of_birth|date:"Y-m-d" }}</dd></div>
+    <div><dt>{% trans "Gender" %}</dt><dd>{{ person.get_gender_display }}</dd></div>
+    <div><dt>{% trans "Citizenship" %}</dt><dd>{{ person.citizenship }}</dd></div>
+    <div><dt>{% trans "Preferred language" %}</dt><dd>{{ person.get_preferred_language_display }}</dd></div>
+    <div><dt>{% trans "Phone" %}</dt><dd>{{ person.phone|default:"—" }}</dd></div>
+    <div><dt>{% trans "WhatsApp / Viber" %}</dt><dd>{{ person.whatsapp_viber|default:"—" }}</dd></div>
+    <div><dt>{% trans "Email" %}</dt><dd>{{ person.email|default:"—" }}</dd></div>
+    <div><dt>{% trans "Lifecycle" %}</dt><dd><span class="hydra-status">{{ person.get_lifecycle_state_display }}</span></dd></div>
+    <div><dt>{% trans "Employee" %}</dt><dd>{{ person.employee|default:"—" }}</dd></div>
+    <div><dt>{% trans "Active" %}</dt><dd>{% if person.is_active %}{% trans "Yes" %}{% else %}{% trans "No" %}{% endif %}</dd></div>
+  </dl>
+</section>
+
+{% include "hydra_links/_public_links.html" %}
+
+{% if conversion %}
+<section class="hydra-card mb-3" aria-labelledby="employee-conversion-title">
+  <div class="hydra-header">
+    <div>
+      <h2 class="h4 mb-1" id="employee-conversion-title">{% trans "Employee conversion" %}</h2>
+      <p class="hydra-muted mb-0">{% trans "Immutable source and decision record." %}</p>
+    </div>
+  </div>
+  <dl class="hydra-detail">
+    <div><dt>{% trans "Employee" %}</dt><dd>{{ conversion.employee }}</dd></div>
+    <div><dt>{% trans "Application" %}</dt><dd>{{ conversion.candidate }}</dd></div>
+    <div><dt>{% trans "Company" %}</dt><dd>{{ conversion.employee.employee_work_info.company_id|default:"вЂ”" }}</dd></div>
+    <div><dt>{% trans "Joining date" %}</dt><dd>{{ conversion.employee.employee_work_info.date_joining|date:"Y-m-d"|default:"вЂ”" }}</dd></div>
+    <div><dt>{% trans "Source" %}</dt><dd>{{ conversion.get_source_display }}</dd></div>
+    <div><dt>{% trans "Converted at" %}</dt><dd>{{ conversion.occurred_at|date:"Y-m-d H:i" }}</dd></div>
+    <div><dt>{% trans "Actor" %}</dt><dd>{{ conversion.actor }}</dd></div>
+    <div><dt>{% trans "Account active" %}</dt><dd>{% if conversion.employee.employee_user_id.is_active %}{% trans "Yes" %}{% else %}{% trans "No — activation required" %}{% endif %}</dd></div>
+  </dl>
+</section>
+{% endif %}
+
+<section class="hydra-card mb-3">
+  <div class="hydra-header">
+    <div>
+      <h2 class="h4 mb-1">{% trans "Organization assignments" %}</h2>
+      <p class="hydra-muted mb-0">{% trans "Effective-dated assignment history visible in your scope." %}</p>
+    </div>
+  </div>
+  {% if visible_assignments %}
+    <table class="hydra-table">
+      <thead><tr><th>{% trans "Team" %}</th><th>{% trans "Location" %}</th><th>{% trans "Department" %}</th><th>{% trans "Valid from" %}</th><th>{% trans "Valid until" %}</th><th>{% trans "State" %}</th></tr></thead>
+      <tbody>
+        {% for assignment in visible_assignments %}
+          <tr>
+            <td data-label="{% trans 'Team' %}">{{ assignment.team }}</td>
+            <td data-label="{% trans 'Location' %}">{{ assignment.team.section.location }}</td>
+            <td data-label="{% trans 'Department' %}">{{ assignment.department }}</td>
+            <td data-label="{% trans 'Valid from' %}">{{ assignment.valid_from|date:"Y-m-d" }}</td>
+            <td data-label="{% trans 'Valid until' %}">{{ assignment.valid_until|date:"Y-m-d"|default:"—" }}</td>
+            <td data-label="{% trans 'State' %}">{% if assignment.is_current %}<span class="hydra-status">{{ assignment.state_label }}</span>{% else %}{{ assignment.state_label }}{% endif %}</td>
+          </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  {% else %}
+    <p class="hydra-muted mb-0">{% trans "No organization assignment is visible." %}</p>
+  {% endif %}
+</section>
+
+<section class="hydra-card">
+  <div class="hydra-header">
+    <div>
+      <h2 class="h4 mb-1">{% trans "Recruitment applications" %}</h2>
+      <p class="hydra-muted mb-0">{% trans "One person may have multiple applications." %}</p>
+    </div>
+    {% if perms.hydra_people.change_person and perms.hydra_people.link_candidate and perms.recruitment.view_candidate %}
+      <div class="hydra-actions">
+        {% if perms.recruitment.add_candidate and perms.recruitment.view_recruitment %}<a class="oh-btn oh-btn--secondary" href="{% url 'hydra-recruitment-create' person.uuid %}">{% trans "Create application" %}</a>{% endif %}
+        <a class="oh-btn oh-btn--secondary" href="{% url 'hydra-person-candidate-link' person.uuid %}">{% trans "Link existing" %}</a>
+      </div>
+    {% endif %}
+  </div>
+  {% if visible_applications %}
+    <table class="hydra-table">
+      <thead><tr><th>{% trans "Candidate" %}</th><th>{% trans "Recruitment" %}</th><th>{% trans "Stage" %}</th></tr></thead>
+      <tbody>
+        {% for candidate in visible_applications %}
+          <tr>
+            <td data-label="{% trans 'Candidate' %}"><a href="{% url 'hydra-recruitment-detail' candidate.pk %}">{{ candidate }}</a><br><span class="hydra-muted">{{ candidate.email }}</span></td>
+            <td data-label="{% trans 'Recruitment' %}">{{ candidate.recruitment_id|default:"—" }}</td>
+            <td data-label="{% trans 'Stage' %}">{{ candidate.stage_id|default:"—" }}</td>
+          </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  {% else %}
+    <p class="hydra-muted mb-0">{% trans "No recruitment applications are linked." %}</p>
+  {% endif %}
+</section>
+{% endblock person_content %}

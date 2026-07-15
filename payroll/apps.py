@@ -5,6 +5,8 @@ App configuration for the 'payroll' app.
 from django.apps import AppConfig
 from django.db.models.signals import post_migrate
 
+from horilla.scheduling import should_start_schedulers
+
 
 class PayrollConfig(AppConfig):
     """
@@ -27,10 +29,11 @@ class PayrollConfig(AppConfig):
             path("payroll/", include("payroll.urls.urls")),
         )
         try:
-            from payroll.scheduler import auto_payslip_generate
+            if should_start_schedulers():
+                from payroll.scheduler import auto_payslip_generate
 
-            auto_payslip_generate()
-        except:
+                auto_payslip_generate()
+        except Exception:
             """
             Migrations are not affected
             """

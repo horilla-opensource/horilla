@@ -203,16 +203,20 @@ def gdrive_Backup_stop_or_start(request):
     """
     if GoogleDriveBackup.objects.exists():
         gdive_backup = GoogleDriveBackup.objects.first()
+        message_method = messages.success
         if gdive_backup.active == True:
             gdive_backup.active = False
             stop_gdrive_backup_job()
             message = "Gdrive Backup Automation Stopped Successfully."
         else:
-            gdive_backup.active = True
-            start_gdrive_backup_job()
-            message = "Gdrive Backup Automation Started Successfully."
+            gdive_backup.active = start_gdrive_backup_job()
+            if gdive_backup.active:
+                message = "Gdrive Backup Automation Started Successfully."
+            else:
+                message = "Gdrive Backup Automation is disabled in this environment."
+                message_method = messages.warning
         gdive_backup.save()
-        messages.success(request, _(message))
+        message_method(request, _(message))
     return redirect("gdrive")
 
 

@@ -31,9 +31,16 @@ class ThreadLocalMiddleware:
         self.get_response = get_response
 
     def __call__(self, request):
+        missing = object()
+        previous_request = getattr(_thread_locals, "request", missing)
         _thread_locals.request = request
-        response = self.get_response(request)
-        return response
+        try:
+            return self.get_response(request)
+        finally:
+            if previous_request is missing:
+                del _thread_locals.request
+            else:
+                _thread_locals.request = previous_request
 
 
 class MethodNotAllowedMiddleware:

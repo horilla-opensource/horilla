@@ -7,6 +7,8 @@ from django.urls import reverse
 
 from notifications.signals import notify
 
+from horilla.scheduling import should_start_schedulers
+
 
 def update_rotating_work_type_assign(rotating_work_type, new_date):
     """
@@ -435,10 +437,7 @@ def recurring_holiday():
         recurring_holiday.save()
 
 
-if not any(
-    cmd in sys.argv
-    for cmd in ["makemigrations", "migrate", "compilemessages", "flush", "shell"]
-):
+if should_start_schedulers():
     scheduler = BackgroundScheduler()
 
     # Add jobs with next_run_time set to the end of the previous job

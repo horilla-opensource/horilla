@@ -1,0 +1,28 @@
+{% extends "hydra_people/base.html" %}
+{% load i18n %}
+
+{% block person_content %}
+<header class="hydra-header">
+  <div>
+    <p class="hydra-muted mb-1">{{ person.hydra_id }}</p>
+    <h1 class="oh-main__titlebar-title">
+      {% if employee_assignment %}{% blocktrans with name=person.passport_name %}Assign employee {{ name }} to a team{% endblocktrans %}{% else %}{% blocktrans with name=person.passport_name %}Assign {{ name }}{% endblocktrans %}{% endif %}
+    </h1>
+  </div>
+  <div class="hydra-actions"><a class="oh-btn" href="{{ person.get_absolute_url }}">{% trans "Cancel" %}</a></div>
+</header>
+
+<form class="hydra-card" method="post" novalidate>
+  {% csrf_token %}
+  {% if employee_assignment %}
+    <p class="hydra-muted">{% trans "Company, department and work location are derived from the selected team hierarchy. The current Horilla work information will be synchronized." %}</p>
+  {% endif %}
+  {% if form.non_field_errors %}<div class="hydra-errors">{{ form.non_field_errors }}</div>{% endif %}
+  <div class="hydra-grid">
+    {% for field in form %}
+      <div class="hydra-field">{{ field.label_tag }}{{ field }}{{ field.errors }}</div>
+    {% endfor %}
+  </div>
+  <div class="hydra-actions mt-3"><button class="oh-btn oh-btn--secondary" type="submit">{% if employee_assignment %}{% trans "Assign employee" %}{% else %}{% trans "Assign" %}{% endif %}</button></div>
+</form>
+{% endblock person_content %}

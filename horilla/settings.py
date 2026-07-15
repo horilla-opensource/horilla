@@ -34,7 +34,7 @@ env = environ.Env(
     CSRF_TRUSTED_ORIGINS=(list, ["http://localhost:8000"]),
 )
 
-env.read_env(os.path.join(BASE_DIR, ".env"), overwrite=True)
+env.read_env(os.path.join(BASE_DIR, ".env"), overwrite=False)
 
 # SECURITY WARNING: keep the secret key used in production secret!
 SECRET_KEY = env("SECRET_KEY")
@@ -43,6 +43,18 @@ SECRET_KEY = env("SECRET_KEY")
 DEBUG = env("DEBUG")
 
 ALLOWED_HOSTS = env("ALLOWED_HOSTS")
+
+HYDRA_ENVIRONMENT = env("HYDRA_ENVIRONMENT", default="development").strip().lower()
+HYDRA_DISABLE_SCHEDULERS = env.bool("HYDRA_DISABLE_SCHEDULERS", default=False)
+HYDRA_ALLOW_WEB_DATABASE_INITIALIZATION = env.bool(
+    "HYDRA_ALLOW_WEB_DATABASE_INITIALIZATION",
+    default=HYDRA_ENVIRONMENT not in {"staging", "production"},
+)
+HYDRA_REQUIRE_POSTGRES = env.bool(
+    "HYDRA_REQUIRE_POSTGRES",
+    default=HYDRA_ENVIRONMENT in {"staging", "production"},
+)
+HYDRA_DEPLOYMENT_REVISION = env("HYDRA_DEPLOYMENT_REVISION", default="").strip()
 
 # Application definition
 
@@ -77,6 +89,7 @@ APSCHEDULER_RUN_NOW_TIMEOUT = 25  # Seconds
 
 MIDDLEWARE = [
     "django.middleware.security.SecurityMiddleware",
+    "hydra_ops.middleware.DisableDatabaseInitializationMiddleware",
     "whitenoise.middleware.WhiteNoiseMiddleware",
     "django.contrib.sessions.middleware.SessionMiddleware",
     "django.middleware.common.CommonMiddleware",
@@ -139,6 +152,12 @@ else:
         }
     }
 
+DATABASES["default"]["CONN_MAX_AGE"] = env.int(
+    "DB_CONN_MAX_AGE",
+    default=60 if HYDRA_ENVIRONMENT in {"staging", "production"} else 0,
+)
+DATABASES["default"]["CONN_HEALTH_CHECKS"] = True
+
 # DATABASES = {
 #     'default': {
 #         'ENGINE': 'django.db.backends.postgresql',
@@ -174,7 +193,7 @@ AUTH_PASSWORD_VALIDATORS = [
 # https://docs.djangoproject.com/en/4.1/howto/static-files/
 
 STATIC_URL = "static/"
-STATIC_ROOT = BASE_DIR / "staticfiles"
+STATIC_ROOT = Path(env("STATIC_ROOT", default=str(BASE_DIR / "staticfiles")))
 
 STATICFILES_DIRS = [
     BASE_DIR / "static",
@@ -183,7 +202,20 @@ STATICFILES_DIRS = [
 STATICFILES_STORAGE = "whitenoise.storage.CompressedStaticFilesStorage"
 
 MEDIA_URL = "/media/"
-MEDIA_ROOT = os.path.join(BASE_DIR, "media/")
+MEDIA_ROOT = env("MEDIA_ROOT", default=str(BASE_DIR / "media"))
+HYDRA_PRIVATE_MEDIA_ROOT = env(
+    "HYDRA_PRIVATE_MEDIA_ROOT",
+    default=str(BASE_DIR / ".private_media"),
+)
+HYDRA_PRIVATE_DOCUMENT_MAX_BYTES = env.int(
+    "HYDRA_PRIVATE_DOCUMENT_MAX_BYTES",
+    default=10 * 1024 * 1024,
+)
+HYDRA_BACKUP_ROOT = env("HYDRA_BACKUP_ROOT", default=str(BASE_DIR / "backups"))
+HYDRA_READINESS_REQUIRE_STATIC = env.bool(
+    "HYDRA_READINESS_REQUIRE_STATIC",
+    default=HYDRA_ENVIRONMENT in {"staging", "production"},
+)
 # Default primary key field type
 # https://docs.djangoproject.com/en/4.1/ref/settings/#default-auto-field
 
@@ -202,6 +234,11 @@ MESSAGE_TAGS = {
 CSRF_TRUSTED_ORIGINS = env("CSRF_TRUSTED_ORIGINS")
 
 LOGIN_URL = "/login"
+
+HYDRA_PORTAL_URL = env(
+    "HYDRA_PORTAL_URL",
+    default="https://oleksandrkiris.github.io/citronex-hydra-project/",
+)
 
 
 SIMPLE_HISTORY_REVERT_DISABLED = True
@@ -252,11 +289,19 @@ USE_TZ = True
 # Production settings
 if not DEBUG:
     SECURE_BROWSER_XSS_FILTER = True
-    SECURE_SSL_REDIRECT = True
-    SECURE_HSTS_SECONDS = 31536000
-    SECURE_HSTS_INCLUDE_SUBDOMAINS = True
-    SECURE_HSTS_PRELOAD = True
+    SECURE_SSL_REDIRECT = env.bool("SECURE_SSL_REDIRECT", default=True)
+    SECURE_HSTS_SECONDS = env.int("SECURE_HSTS_SECONDS", default=3600)
+    SECURE_HSTS_INCLUDE_SUBDOMAINS = env.bool(
+        "SECURE_HSTS_INCLUDE_SUBDOMAINS", default=False
+    )
+    SECURE_HSTS_PRELOAD = env.bool("SECURE_HSTS_PRELOAD", default=False)
     SECURE_CONTENT_TYPE_NOSNIFF = True
     SESSION_COOKIE_SECURE = True
     CSRF_COOKIE_SECURE = True
     SECURE_PROXY_SSL_HEADER = ("HTTP_X_FORWARDED_PROTO", "https")
+    SECURE_REDIRECT_EXEMPT = [r"^health/"]
+
+SESSION_COOKIE_HTTPONLY = True
+SESSION_COOKIE_SAMESITE = "Lax"
+CSRF_COOKIE_SAMESITE = "Lax"
+FILE_UPLOAD_PERMISSIONS = 0o600

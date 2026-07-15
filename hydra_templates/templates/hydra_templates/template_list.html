@@ -1,0 +1,94 @@
+{% extends "hydra_people/base.html" %}
+{% load i18n %}
+
+{% block person_content %}
+<header class="hydra-header">
+  <div>
+    <h1 class="oh-main__titlebar-title">{% trans "Message templates" %}</h1>
+    <p class="hydra-muted mb-0">{% trans "Scoped plain-text templates and a controlled Szablonizator data boundary." %}</p>
+  </div>
+  {% if perms.hydra_templates.add_messagetemplate %}
+    <div class="hydra-actions">
+      <a class="oh-btn oh-btn--secondary" href="{% url 'hydra-template-create' %}">
+        <ion-icon name="add-outline" class="me-1"></ion-icon>{% trans "Create template" %}
+      </a>
+    </div>
+  {% endif %}
+</header>
+
+<form class="hydra-search" method="get" role="search">
+  <input class="oh-input" type="search" name="q" value="{{ query }}" placeholder="{% trans 'Search by code, name or subject' %}" aria-label="{% trans 'Search templates' %}">
+  <button class="oh-btn" type="submit">{% trans "Search" %}</button>
+</form>
+
+<section class="hydra-card mb-3" aria-labelledby="template-list-title">
+  <h2 class="h4 mb-3" id="template-list-title">{% trans "Templates in active scope" %}</h2>
+  {% if templates %}
+    <table class="hydra-table">
+      <thead>
+        <tr><th>{% trans "Code" %}</th><th>{% trans "Name" %}</th><th>{% trans "Company" %}</th><th>{% trans "Language" %}</th><th>{% trans "State" %}</th><th>{% trans "Action" %}</th></tr>
+      </thead>
+      <tbody>
+        {% for template in templates %}
+          <tr>
+            <td data-label="{% trans 'Code' %}"><strong>{{ template.code }}</strong></td>
+            <td data-label="{% trans 'Name' %}">{{ template.name }}<br><span class="hydra-muted">{{ template.subject }}</span></td>
+            <td data-label="{% trans 'Company' %}">{{ template.company }}</td>
+            <td data-label="{% trans 'Language' %}">{{ template.get_language_display }}</td>
+            <td data-label="{% trans 'State' %}"><span class="hydra-status">{% if template.is_active %}{% trans "Active" %}{% else %}{% trans "Inactive" %}{% endif %}</span></td>
+            <td data-label="{% trans 'Action' %}">{% if perms.hydra_templates.change_messagetemplate %}<a href="{{ template.get_absolute_url }}">{% trans "Edit / preview" %}</a>{% else %}<span class="hydra-muted">—</span>{% endif %}</td>
+          </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  {% else %}
+    <p class="hydra-muted mb-0">{% trans "No templates match the current scope and search." %}</p>
+  {% endif %}
+</section>
+
+{% if perms.hydra_templates.export_template_data and perms.hydra_people.view_person %}
+<section class="hydra-card mb-3" aria-labelledby="template-export-title">
+  <h2 class="h4 mb-2" id="template-export-title">{% trans "Authorized XLSX export" %}</h2>
+  <p class="hydra-muted">{% trans "Creates a point-in-time workbook with visible Dane and Instrukcja sheets. The response is not stored in public media." %}</p>
+  <form method="post" action="{% url 'hydra-template-data-export' %}">
+    {% csrf_token %}
+    <div class="oh-input-group mb-3">
+      <label class="oh-label" for="{{ export_form.company.id_for_label }}">{{ export_form.company.label }}</label>
+      {{ export_form.company }}
+    </div>
+    <button class="oh-btn oh-btn--secondary" type="submit">
+      <ion-icon name="download-outline" class="me-1"></ion-icon>{% trans "Download scoped Dane.xlsx" %}
+    </button>
+  </form>
+</section>
+{% endif %}
+
+<section class="hydra-card mb-3" aria-labelledby="placeholder-registry-title">
+  <h2 class="h4 mb-2" id="placeholder-registry-title">{% trans "Placeholder registry" %}</h2>
+  <p class="hydra-muted">{% trans "Only these stable identifiers are accepted. Spaces immediately inside braces are allowed; malformed or unknown placeholders are rejected." %}</p>
+  <table class="hydra-table">
+    <thead><tr><th>{% trans "Token" %}</th><th>{% trans "Meaning" %}</th><th>{% trans "Preview value" %}</th></tr></thead>
+    <tbody>
+      {% for placeholder in placeholders %}
+        <tr><td data-label="{% trans 'Token' %}"><code>{{ placeholder.token }}</code></td><td data-label="{% trans 'Meaning' %}">{{ placeholder.label }}</td><td data-label="{% trans 'Preview value' %}">{{ placeholder.sample }}</td></tr>
+      {% endfor %}
+    </tbody>
+  </table>
+</section>
+
+{% if perms.hydra_templates.view_templatedataexport %}
+<section class="hydra-card" aria-labelledby="template-audit-title">
+  <h2 class="h4 mb-3" id="template-audit-title">{% trans "Recent export audit" %}</h2>
+  {% if recent_exports %}
+    <table class="hydra-table">
+      <thead><tr><th>{% trans "Time" %}</th><th>{% trans "Actor" %}</th><th>{% trans "Rows" %}</th><th>{% trans "SHA-256" %}</th></tr></thead>
+      <tbody>
+        {% for export in recent_exports %}
+          <tr><td data-label="{% trans 'Time' %}">{{ export.occurred_at|date:"Y-m-d H:i:s" }}</td><td data-label="{% trans 'Actor' %}">{{ export.actor }}</td><td data-label="{% trans 'Rows' %}">{{ export.row_count }}</td><td data-label="{% trans 'SHA-256' %}"><code>{{ export.sha256 }}</code></td></tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  {% else %}<p class="hydra-muted mb-0">{% trans "No exports have been recorded for this view." %}</p>{% endif %}
+</section>
+{% endif %}
+{% endblock person_content %}

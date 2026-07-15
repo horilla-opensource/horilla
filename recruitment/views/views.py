@@ -1682,6 +1682,20 @@ def candidate_conversion(request, cand_id, **kwargs):
         messages.error(request, ("Candidate not found"))
         return HorillaRedirect(request)
 
+    person_link = getattr(candidate_obj, "hydra_person_link", None)
+    if person_link:
+        conversion_url = reverse(
+            "hydra-person-employee-conversion",
+            args=(person_link.person.uuid,),
+        )
+        conversion_url = f"{conversion_url}?candidate={candidate_obj.pk}"
+        if "HTTP_HX_REQUEST" in request.META:
+            return HttpResponse(
+                status=204,
+                headers={"HX-Redirect": conversion_url},
+            )
+        return redirect(conversion_url)
+
     if candidate_obj.converted_employee_id:
         messages.info(request, "This candidate is already converted to an employee.")
         return HorillaRedirect(request)

@@ -1,0 +1,19 @@
+{% load i18n %}
+{% if public_links %}
+<section class="hydra-card mb-3" aria-labelledby="public-hydra-links-title">
+  <div class="hydra-header">
+    <div>
+      <h2 class="h4 mb-1" id="public-hydra-links-title">{% trans "Public guidance" %}</h2>
+      <p class="hydra-muted mb-0">{% trans "External public pages. No personal identifier or authentication token is included." %}</p>
+    </div>
+  </div>
+  <div class="hydra-actions">
+    {% for link in public_links %}
+      <a class="oh-btn oh-btn--secondary" href="{{ link.url }}" target="_blank" rel="noopener noreferrer external">
+        <ion-icon name="open-outline" class="me-1" aria-hidden="true"></ion-icon>{{ link.label }}
+        <span class="hydra-shell__external-label">{% trans "External" %}</span>
+      </a>
+    {% endfor %}
+  </div>
+</section>
+{% endif %}

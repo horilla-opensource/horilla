@@ -103,7 +103,9 @@ celerybeat.pid
 
 # Environments
 .env
+.env.staging
 .venv
+.local/
 env/
 venv/
 ENV/
@@ -132,14 +134,17 @@ dmypy.json
 
 # migration files
 **/migrations/**
-!**/migrations
+!**/migrations/
 !**/migrations/__init__.py
+!**/migrations/[0-9]*.py
 
 # media file
 media/
+.private_media/
 
 #collected static files
 staticfiles/
+backups/
 
 #node_modules
 node_modules/

@@ -1,0 +1,187 @@
+# Hydra staging, recovery, and pilot gate
+
+Task 045 supplies the hardened staging boundary for Hydra. It does not silently authorize a business pilot: deployment readiness and business approval are separate gates, and both must pass.
+
+## Delivered staging boundary
+
+The staging stack uses Python 3.11, PostgreSQL 17, pinned Python dependencies, a non-root application container, a non-superuser application database role, private named volumes, loopback-only HTTP publication, explicit secrets, and a dedicated readiness probe. PostgreSQL is not published on a host port.
+
+The production entrypoint now performs only reviewed operations:
+
+1. `manage.py check --deploy`;
+2. apply committed migrations;
+3. collect static files;
+4. run the fail-closed `hydra_readiness` command;
+5. replace the shell with Gunicorn.
+
+It never runs `makemigrations` and never creates a fixed administrator. The upstream browser database initializer and demo loader are hidden in staging/production. Legacy APScheduler instances are disabled in every web worker through `HYDRA_DISABLE_SCHEDULERS=True`; a future scheduler process must be designed and tested explicitly before those jobs are enabled again.
+
+Relevant files:
+
+- `docker-compose.staging.yaml` — isolated staging services and volumes;
+- `.env.staging.example` — placeholder-only configuration contract;
+- `Dockerfile` and `entrypoint.sh` — pinned, non-root runtime and fail-closed boot;
+- `hydra_ops/` — readiness rules, private public response, and tests;
+- `scripts/staging-deploy.ps1` — pre-deploy recovery point, rollout, and smoke test;
+- `scripts/staging-backup.ps1` — cold application recovery point;
+- `scripts/staging-restore-verify.ps1` — isolated restore and private-object verification;
+- `scripts/staging-rollback.ps1` — code-only rollback with an explicit schema-compatibility acknowledgement;
+- `scripts/staging-smoke.ps1` — external liveness/readiness/security smoke checks.
+- `.github/workflows/hydra-staging-ci.yml` — clean Linux/PostgreSQL regression plus live Compose, recovery, and evidence gate.
+
+## Configuration and secrets
+
+Copy `.env.staging.example` to `.env.staging` on the deployment host. `.env.staging` and backup output are ignored by Git and excluded from the Docker build context. Replace every `REPLACE_*` value with an independently generated secret. Do not reuse the PostgreSQL administrator password as the application password.
+
+Readiness rejects staging when any of these conditions is false:
+
+- `DEBUG=False` and a non-default secret key of at least 50 characters;
+- explicit `ALLOWED_HOSTS`, explicit HTTPS CSRF origins, HTTPS redirect, secure cookies, and HSTS;
+- PostgreSQL with a non-superuser application role;
+- a non-placeholder deployment revision;
+- disabled web database initialization and disabled in-process schedulers;
+- applied migrations and a successful database query;
+- distinct, readable, writable public/private media roots;
+- collected static assets.
+
+The public probes intentionally disclose no internal detail:
+
+```text
+GET /health/        -> 200 {"status":"ok"}
+GET /health/ready/  -> 200 {"status":"ready"} or 503 {"status":"not_ready"}
+```
+
+Operators get the detailed result inside the container:
+
+```powershell
+docker compose --env-file .env.staging -f docker-compose.staging.yaml exec server `
+  python manage.py hydra_readiness --json
+```
+
+## First deployment
+
+The host must provide Docker Compose v2, TLS termination/reverse proxy, encrypted persistent storage, restricted backup storage, monitoring, and a secret-management process. The application port binds only to loopback and is intended to sit behind that reverse proxy.
+
+Validate configuration before starting:
+
+```powershell
+docker compose --env-file .env.staging -f docker-compose.staging.yaml config --quiet
+```
+
+For the first empty environment:
+
+```powershell
+.\scripts\staging-deploy.ps1 `
+  -Revision <reviewed-git-sha> `
+  -BaseUrl https://staging.example.com `
+  -InitialDeployment
+```
+
+Create the first administrator once, interactively, after readiness passes:
+
+```powershell
+docker compose --env-file .env.staging -f docker-compose.staging.yaml exec server `
+  python manage.py createsuperuser
+```
+
+Do not automate an administrator password in Compose, the image, shell history, or source control. Assign only the scoped Hydra permissions required for the pilot role.
+
+For later releases omit `-InitialDeployment`. The deployment script creates a cold recovery point before changing the image and prints its backup id.
+
+## Backup contract
+
+The supported staging backup is the PowerShell wrapper, not a direct call to the container helper. It stops the application service, captures one PostgreSQL custom-format dump plus public/private media archives, hashes every artifact, atomically publishes the backup directory, and restarts the service. Stopping the only database-writing application process makes the database and file archives one recovery point.
+
+```powershell
+.\scripts\staging-backup.ps1 -BackupId before-release-20260715
+.\scripts\staging-restore-verify.ps1 -BackupId before-release-20260715
+```
+
+Each backup contains:
+
+```text
+database.dump
+media.tar.gz
+private-media.tar.gz
+manifest.json
+SHA256SUMS
+```
+
+Verification fails unless all artifact hashes match, a temporary database can be created and restored with `pg_restore --exit-on-error`, migration history exists, every `PrivateDocument.file` object exists in the restored private archive, and its SHA-256 equals database metadata. The temporary database and extracted objects are removed in a trap.
+
+The deployment platform must additionally copy successful, verified backups to encrypted off-host storage with retention and access logging. A backup that has not passed restore verification is not a recovery point.
+
+## Rollback and recovery
+
+Code-only rollback is allowed only when the migration review confirms backward compatibility:
+
+```powershell
+.\scripts\staging-rollback.ps1 `
+  -PreviousRevision <previous-git-sha> `
+  -PreviousImage <immutable-registry-image> `
+  -BaseUrl https://staging.example.com `
+  -SchemaBackwardCompatible
+```
+
+Never reverse a destructive schema change in place and never run `docker compose down --volumes` during rollback. For database recovery use blue/green recovery:
+
+1. remove the environment from traffic and preserve the failed volumes;
+2. provision a separate project name and empty encrypted volumes;
+3. restore the selected verified dump and media archives into the new environment;
+4. run `hydra_readiness`, the automated smoke script, private-object checksum verification, and the manual scoped journeys below;
+5. switch traffic only after approval; retain the previous environment until the recovery window closes.
+
+## Pilot verification
+
+Automated gates:
+
+```powershell
+python manage.py check
+python manage.py makemigrations --check --dry-run
+python manage.py migrate --check
+python manage.py test
+python manage.py hydra_readiness
+.\scripts\staging-smoke.ps1 -BaseUrl https://staging.example.com
+```
+
+Every pull request and push to `main` or `codex/**` also runs **Hydra staging CI**. Its first job installs the pinned set on clean Ubuntu/Python 3.11, installs the reviewed auth compatibility migration, applies the committed baseline to PostgreSQL 17, checks model drift/readiness, and runs the full Django suite. Its second job builds the staging image, starts the real Compose stack, checks the non-root container and non-superuser database role, runs external smoke checks, creates a cold backup, restores it into an isolated database, repeats smoke checks, and uploads redacted operational evidence for 14 days. It never publishes an image or deploys to a shared environment.
+
+Manual acceptance uses non-production test identities and at least two companies/teams:
+
+1. Sign in as coordinator and brigadier roles; confirm each navigation item and action matches the approved permission matrix.
+2. Repeat direct UUID/ID requests across teams for People, applications, arrivals, assignments, private documents, templates, and reports; expect the documented 403/404 behavior and audit events.
+3. Preview and commit a candidate XLSX twice; confirm validation, duplicate handling, idempotency, and all-or-nothing rollback.
+4. Convert one Person to Employee twice; confirm a single Employee and stable Person link.
+5. Assign and reassign an Employee team; confirm current scope and immutable history.
+6. Verify brigadier and coordinator exception views at desktop and 390 px width.
+7. Upload/download one approved inert test document, then confirm denied and cross-scope attempts and the restored SHA-256.
+8. Export a scoped template workbook and operational CSV; confirm excluded-team data and dangerous spreadsheet formulas are absent.
+9. Confirm the Hydra public-link directory exposes no identity data and still points only to allowlisted HTTPS destinations.
+10. Review logs, database/volume monitoring, backup copy, restore evidence, and rollback owner/contact details.
+
+## Go/no-go decision
+
+The code-level staging package and local recovery drill are complete. The current business-pilot decision remains **NO-GO** until the target staging environment records all of the following:
+
+- successful **Hydra staging CI** run plus Linux container build, Compose start, readiness, and external smoke test on the target host;
+- TLS/reverse-proxy validation, encrypted volumes, secret-manager injection, monitoring, and encrypted off-host backup;
+- restore verification using a backup created by the actual staging stack;
+- review and commit of the surfaced upstream baseline migrations and the pinned Django auth compatibility migration;
+- an approved retention/legal-hold policy and malware scanning/quarantine, or a written pilot constraint that prohibits private-document uploads;
+- signed permission matrix, pilot data set, support owner, rollback owner, maintenance window, and acceptance record.
+
+After every item is evidenced, the accountable business and technical owners may record **GO**. Readiness alone is never business approval.
+
+## Verification evidence for task 045
+
+Verified locally on 2026-07-15 with PostgreSQL 17:
+
+- focused `hydra_ops` tests: 10/10 passed;
+- full Django regression: 177/177 passed;
+- `manage.py check`, `migrate --check`, `makemigrations --check --dry-run`, readiness, and Python compilation passed;
+- real custom-format database dump restored into an isolated temporary database;
+- restored database contained 84 migration records and one private-document metadata row;
+- the restored private object SHA-256 was `653893bd4c4d8f6a0a472815d1f88b92e46ada775277c3a973cf7b7a64d22606`, equal to database metadata;
+- PowerShell and Bash scripts passed syntax parsing; Compose passed YAML parsing.
+
+Docker is not installed on the audit workstation, so the workflow definition is locally syntax-validated but its Linux image/Compose jobs must pass in GitHub before they count as evidence. A successful CI run reduces risk but does not replace the target-host and business-owner gates.

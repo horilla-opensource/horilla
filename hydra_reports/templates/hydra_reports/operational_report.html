@@ -1,0 +1,140 @@
+{% extends "hydra_people/base.html" %}
+{% load i18n %}
+
+{% block person_content %}
+<header class="hydra-header">
+  <div>
+    <p class="hydra-muted mb-1">{% trans "Scoped reporting" %}</p>
+    <h1 class="oh-main__titlebar-title">{% trans "Hydra operational report" %}</h1>
+    <p class="hydra-muted mb-0">{% trans "People, current assignments, latest arrivals and latest legalization cases from your active Hydra scope." %}</p>
+  </div>
+  {% if perms.hydra_reports.export_operational_report and filters_valid %}
+    <form method="post" action="{% url 'hydra-operational-report-export' %}">
+      {% csrf_token %}
+      <input type="hidden" name="q" value="{{ form.q.value|default_if_none:'' }}">
+      <input type="hidden" name="lifecycle" value="{{ form.lifecycle.value|default_if_none:'' }}">
+      <input type="hidden" name="location" value="{{ form.location.value|default_if_none:'' }}">
+      <input type="hidden" name="team" value="{{ form.team.value|default_if_none:'' }}">
+      <input type="hidden" name="arrival_status" value="{{ form.arrival_status.value|default_if_none:'' }}">
+      <input type="hidden" name="legalization_status" value="{{ form.legalization_status.value|default_if_none:'' }}">
+      <input type="hidden" name="attention" value="{{ form.attention.value|default_if_none:'' }}">
+      <button class="oh-btn oh-btn--secondary" type="submit">
+        <ion-icon name="download-outline" class="me-1" aria-hidden="true"></ion-icon>{% trans "Download scoped CSV" %}
+      </button>
+    </form>
+  {% endif %}
+</header>
+
+<form class="hydra-card mb-3" method="get" role="search" aria-label="{% trans 'Operational report filters' %}">
+  {% if form.non_field_errors %}<div class="hydra-errors">{{ form.non_field_errors }}</div>{% endif %}
+  <div class="hydra-grid">
+    {% for field in form %}
+      <div class="hydra-field{% if field.name == 'q' %} hydra-field--wide{% endif %}">
+        <label for="{{ field.id_for_label }}">{{ field.label }}</label>
+        {{ field }}
+        {{ field.errors }}
+      </div>
+    {% endfor %}
+    <div class="hydra-actions hydra-field--wide">
+      <button class="oh-btn oh-btn--secondary" type="submit">{% trans "Apply filters" %}</button>
+      <a class="oh-btn" href="{% url 'hydra-operational-report' %}">{% trans "Clear" %}</a>
+    </div>
+  </div>
+</form>
+
+<section class="hydra-kpi-grid mb-3" aria-label="{% trans 'Report summary' %}">
+  <article class="hydra-kpi"><span>{% trans "People" %}</span><strong>{{ summary.total_people }}</strong></article>
+  <article class="hydra-kpi"><span>{% trans "Employees" %}</span><strong>{{ summary.employee_count }}</strong></article>
+  <article class="hydra-kpi"><span>{% trans "Arrival attention" %}</span><strong>{{ summary.arrival_attention_count }}</strong></article>
+  <article class="hydra-kpi"><span>{% trans "Legalization attention" %}</span><strong>{{ summary.legalization_attention_count }}</strong></article>
+</section>
+
+<section class="hydra-card mb-3" aria-labelledby="operational-report-table-title">
+  <div class="hydra-header">
+    <div>
+      <h2 class="h4 mb-1" id="operational-report-table-title">{% trans "Operational records" %}</h2>
+      <p class="hydra-muted mb-0">{% trans "The table shows at most 50 scoped people per page. Export applies the same filters with a 10,000-row safety limit." %}</p>
+    </div>
+    <span class="hydra-status">{{ page_obj.paginator.count }}</span>
+  </div>
+  {% if rows %}
+    <table class="hydra-table">
+      <thead>
+        <tr>
+          <th>{% trans "Person" %}</th>
+          <th>{% trans "Current assignment" %}</th>
+          <th>{% trans "Latest arrival" %}</th>
+          <th>{% trans "Latest legalization" %}</th>
+          <th>{% trans "Attention" %}</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for row in rows %}
+          <tr{% if row.attention_flags %} class="hydra-row--exception"{% endif %}>
+            <td data-label="{% trans 'Person' %}">
+              <a href="{{ row.person.get_absolute_url }}"><strong>{{ row.person.passport_name }}</strong></a><br>
+              <span class="hydra-muted">{{ row.person.hydra_id }} / {{ row.person.get_lifecycle_state_display }}</span>
+            </td>
+            <td data-label="{% trans 'Current assignment' %}">
+              {% if row.assignment %}
+                {{ row.assignment.team.section.location.name }}<br>
+                <span class="hydra-muted">{{ row.assignment.team.section.name }} / {{ row.assignment.team.name }}</span>
+              {% else %}<span class="hydra-muted">&mdash;</span>{% endif %}
+            </td>
+            <td data-label="{% trans 'Latest arrival' %}">
+              {% if row.arrival %}
+                <a href="{{ row.arrival.get_absolute_url }}">{{ row.arrival.get_status_display }}</a><br>
+                <time class="hydra-muted" datetime="{{ row.arrival.planned_at|date:'c' }}">{{ row.arrival.planned_at|date:"Y-m-d H:i" }}</time>
+              {% else %}<span class="hydra-muted">&mdash;</span>{% endif %}
+            </td>
+            <td data-label="{% trans 'Latest legalization' %}">
+              {% if row.legalization %}
+                <a href="{{ row.legalization.get_absolute_url }}">{{ row.legalization.get_case_type_display }}</a><br>
+                <span class="hydra-muted">{{ row.legalization.get_status_display }}{% if row.legalization.deadline %} / {{ row.legalization.deadline|date:"Y-m-d" }}{% endif %}</span>
+              {% else %}<span class="hydra-muted">&mdash;</span>{% endif %}
+            </td>
+            <td data-label="{% trans 'Attention' %}">
+              {% if row.attention_flags %}
+                <div class="hydra-tags">
+                  {% for flag in row.attention_flags %}
+                    {% if flag == "unassigned" %}<span class="hydra-status hydra-status--warning">{% trans "No assignment" %}</span>{% endif %}
+                    {% if flag == "arrival_overdue" %}<span class="hydra-status hydra-status--danger">{% trans "Arrival overdue" %}</span>{% endif %}
+                    {% if flag == "arrival_no_show" %}<span class="hydra-status hydra-status--danger">{% trans "No-show" %}</span>{% endif %}
+                    {% if flag == "legalization_deadline" %}<span class="hydra-status hydra-status--warning">{% trans "Legalization deadline" %}</span>{% endif %}
+                    {% if flag == "legalization_validity" %}<span class="hydra-status hydra-status--danger">{% trans "Legalization validity" %}</span>{% endif %}
+                  {% endfor %}
+                </div>
+              {% else %}<span class="hydra-status hydra-status--ok">{% trans "No current flag" %}</span>{% endif %}
+            </td>
+          </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+    {% if page_obj.has_other_pages %}
+      <nav class="hydra-pagination" aria-label="{% trans 'Report pages' %}">
+        {% if page_obj.has_previous %}<a class="oh-btn" href="?{% if query_parameters %}{{ query_parameters }}&amp;{% endif %}page={{ page_obj.previous_page_number }}">{% trans "Previous" %}</a>{% else %}<span></span>{% endif %}
+        <span>{% blocktrans with current=page_obj.number total=page_obj.paginator.num_pages %}Page {{ current }} of {{ total }}{% endblocktrans %}</span>
+        {% if page_obj.has_next %}<a class="oh-btn" href="?{% if query_parameters %}{{ query_parameters }}&amp;{% endif %}page={{ page_obj.next_page_number }}">{% trans "Next" %}</a>{% else %}<span></span>{% endif %}
+      </nav>
+    {% endif %}
+  {% else %}
+    <p class="hydra-muted mb-0">{% trans "No people match the current authorized scope and filters." %}</p>
+  {% endif %}
+</section>
+
+{% if perms.hydra_reports.view_operationalreportexport %}
+<section class="hydra-card" aria-labelledby="report-export-audit-title">
+  <h2 class="h4 mb-3" id="report-export-audit-title">{% trans "Recent export audit" %}</h2>
+  {% if recent_exports %}
+    <table class="hydra-table">
+      <thead><tr><th>{% trans "Time" %}</th><th>{% trans "Actor" %}</th><th>{% trans "Rows" %}</th><th>{% trans "SHA-256" %}</th></tr></thead>
+      <tbody>
+        {% for export in recent_exports %}
+          <tr><td data-label="{% trans 'Time' %}">{{ export.occurred_at|date:"Y-m-d H:i:s" }}</td><td data-label="{% trans 'Actor' %}">{{ export.actor }}</td><td data-label="{% trans 'Rows' %}">{{ export.row_count }}</td><td data-label="{% trans 'SHA-256' %}"><code>{{ export.sha256 }}</code></td></tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  {% else %}<p class="hydra-muted mb-0">{% trans "No operational report exports have been recorded for this view." %}</p>{% endif %}
+</section>
+{% endif %}
+{% endblock person_content %}

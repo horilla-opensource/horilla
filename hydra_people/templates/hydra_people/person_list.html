@@ -1,0 +1,64 @@
+{% extends "hydra_people/base.html" %}
+{% load i18n %}
+
+{% block person_content %}
+<header class="hydra-header">
+  <div>
+    <h1 class="oh-main__titlebar-title">{% trans "Hydra people" %}</h1>
+    <p class="hydra-muted mb-0">{% trans "Canonical identities before and after hiring." %}</p>
+  </div>
+  {% if perms.hydra_people.add_person %}
+    <div class="hydra-actions">
+      <a class="oh-btn oh-btn--secondary" href="{% url 'hydra-person-create' %}">
+        <ion-icon name="add-outline" class="me-1"></ion-icon>{% trans "Create person" %}
+      </a>
+    </div>
+  {% endif %}
+</header>
+
+<form class="hydra-search" method="get" role="search">
+  <input class="oh-input" type="search" name="q" value="{{ query }}" placeholder="{% trans 'Search by ID, name, email or phone' %}" aria-label="{% trans 'Search people' %}">
+  <button class="oh-btn" type="submit">{% trans "Search" %}</button>
+</form>
+
+<section class="hydra-card" aria-label="{% trans 'People' %}">
+  {% if page_obj.object_list %}
+    <table class="hydra-table">
+      <thead>
+        <tr>
+          <th>{% trans "Hydra ID" %}</th>
+          <th>{% trans "Passport name" %}</th>
+          <th>{% trans "Citizenship" %}</th>
+          <th>{% trans "Lifecycle" %}</th>
+          <th>{% trans "Applications" %}</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for person in page_obj %}
+          <tr>
+            <td data-label="{% trans 'Hydra ID' %}"><a href="{{ person.get_absolute_url }}">{{ person.hydra_id }}</a></td>
+            <td data-label="{% trans 'Passport name' %}"><strong>{{ person.passport_name }}</strong><br><span class="hydra-muted">{{ person.date_of_birth|date:"Y-m-d" }}</span></td>
+            <td data-label="{% trans 'Citizenship' %}">{{ person.citizenship }}</td>
+            <td data-label="{% trans 'Lifecycle' %}"><span class="hydra-status">{{ person.get_lifecycle_state_display }}</span></td>
+            <td data-label="{% trans 'Applications' %}">{{ person.visible_application_links|length }}</td>
+          </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  {% else %}
+    <p class="hydra-muted mb-0">{% trans "No people match the current search." %}</p>
+  {% endif %}
+</section>
+
+{% if page_obj.paginator.num_pages > 1 %}
+  <nav class="hydra-pagination" aria-label="{% trans 'Pagination' %}">
+    <div>
+      {% if page_obj.has_previous %}<a class="oh-btn" href="?q={{ query|urlencode }}&page={{ page_obj.previous_page_number }}">{% trans "Previous" %}</a>{% endif %}
+    </div>
+    <span>{% blocktrans with current=page_obj.number total=page_obj.paginator.num_pages %}Page {{ current }} of {{ total }}{% endblocktrans %}</span>
+    <div>
+      {% if page_obj.has_next %}<a class="oh-btn" href="?q={{ query|urlencode }}&page={{ page_obj.next_page_number }}">{% trans "Next" %}</a>{% endif %}
+    </div>
+  </nav>
+{% endif %}
+{% endblock person_content %}

@@ -1,0 +1,56 @@
+{% extends "hydra_people/base.html" %}
+{% load i18n %}
+
+{% block person_content %}
+<header class="hydra-header">
+  <div>
+    <h1 class="oh-main__titlebar-title">{% trans "Candidate Excel import" %}</h1>
+    <p class="hydra-muted mb-0">{% trans "Validate and review every row before one transactional apply." %}</p>
+  </div>
+  <div class="hydra-actions">
+    <a class="oh-btn" href="{% url 'hydra-candidate-import-template' %}">{% trans "Download template" %}</a>
+    <a class="oh-btn" href="{% url 'hydra-recruitment-list' %}">{% trans "Recruitment" %}</a>
+  </div>
+</header>
+
+<form class="hydra-card mb-3" method="post" enctype="multipart/form-data" novalidate>
+  {% csrf_token %}
+  {% if form.non_field_errors %}<div class="hydra-errors">{{ form.non_field_errors }}</div>{% endif %}
+  <div class="hydra-grid">
+    {% for field in form %}
+      <div class="hydra-field{% if field.name == 'workbook' %} hydra-field--wide{% endif %}">
+        {{ field.label_tag }}{{ field }}
+        {% if field.help_text %}<small class="hydra-muted">{{ field.help_text }}</small>{% endif %}
+        {{ field.errors }}
+      </div>
+    {% endfor %}
+  </div>
+  <div class="hydra-actions mt-3"><button class="oh-btn oh-btn--secondary" type="submit">{% trans "Create preview" %}</button></div>
+</form>
+
+<section class="hydra-card mb-3" aria-labelledby="contract-title">
+  <h2 class="h4" id="contract-title">{% trans "Workbook contract" %}</h2>
+  <p class="hydra-muted">{% trans "Use the Candidates worksheet and keep the template headers unchanged. Dates must be real Excel dates or YYYY-MM-DD." %}</p>
+  <p class="mb-1"><strong>{% trans "Required:" %}</strong> passport_name, first_name, last_name, date_of_birth, gender, citizenship, preferred_language, email</p>
+  <p class="mb-0"><strong>{% trans "Optional:" %}</strong> phone, whatsapp_viber, candidate_mobile</p>
+</section>
+
+{% if recent_sessions %}
+<section class="hydra-card" aria-labelledby="recent-imports-title">
+  <h2 class="h4" id="recent-imports-title">{% trans "Recent previews" %}</h2>
+  <table class="hydra-table">
+    <thead><tr><th>{% trans "File" %}</th><th>{% trans "Target" %}</th><th>{% trans "Rows" %}</th><th>{% trans "Status" %}</th></tr></thead>
+    <tbody>
+      {% for session in recent_sessions %}
+        <tr>
+          <td data-label="{% trans 'File' %}"><a href="{{ session.get_absolute_url }}">{{ session.source_filename }}</a><br><span class="hydra-muted">{{ session.created_at }}</span></td>
+          <td data-label="{% trans 'Target' %}">{{ session.recruitment }}<br><span class="hydra-muted">{{ session.job_position }}</span></td>
+          <td data-label="{% trans 'Rows' %}">{{ session.row_count }}</td>
+          <td data-label="{% trans 'Status' %}"><span class="hydra-status">{{ session.get_status_display }}</span></td>
+        </tr>
+      {% endfor %}
+    </tbody>
+  </table>
+</section>
+{% endif %}
+{% endblock person_content %}

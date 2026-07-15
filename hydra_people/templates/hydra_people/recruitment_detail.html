@@ -1,0 +1,13 @@
+{% extends "hydra_people/base.html" %}
+{% load i18n %}
+
+{% block person_content %}
+<header class="hydra-header">
+  <div><p class="hydra-muted mb-1">{{ person.hydra_id }}</p><h1 class="oh-main__titlebar-title">{{ candidate.name }}</h1></div>
+  <div class="hydra-actions"><a class="oh-btn" href="{% url 'hydra-recruitment-list' %}">{% trans "Back to recruitment" %}</a>{% if perms.hydra_documents.view_privatedocument %}<a class="oh-btn oh-btn--secondary" href="{% url 'hydra-candidate-documents' candidate.pk %}">{% trans "Private documents" %}</a>{% endif %}<a class="oh-btn oh-btn--secondary" href="{{ person.get_absolute_url }}">{% trans "Open person" %}</a></div>
+</header>
+<section class="hydra-card mb-3"><dl class="hydra-detail">
+  <div><dt>{% trans "Recruitment" %}</dt><dd>{{ candidate.recruitment_id }}</dd></div><div><dt>{% trans "Company" %}</dt><dd>{{ candidate.recruitment_id.company_id|default:"—" }}</dd></div><div><dt>{% trans "Position" %}</dt><dd>{{ candidate.job_position_id|default:"—" }}</dd></div><div><dt>{% trans "Stage" %}</dt><dd><span class="hydra-status">{{ candidate.stage_id|default:"—" }}</span></dd></div><div><dt>{% trans "Email" %}</dt><dd>{{ candidate.email }}</dd></div><div><dt>{% trans "Mobile" %}</dt><dd>{{ candidate.mobile|default:"—" }}</dd></div><div><dt>{% trans "Source" %}</dt><dd>{{ candidate.get_source_display|default:"—" }}</dd></div><div><dt>{% trans "Linked by" %}</dt><dd>{{ candidate.hydra_person_link.get_link_source_display }}</dd></div><div><dt>{% trans "Active" %}</dt><dd>{% if candidate.is_active %}{% trans "Yes" %}{% else %}{% trans "No" %}{% endif %}</dd></div>
+</dl></section>
+<section class="hydra-card"><h2 class="h4 mb-2">{% trans "Canonical identity" %}</h2><dl class="hydra-detail"><div><dt>{% trans "Passport name" %}</dt><dd>{{ person.passport_name }}</dd></div><div><dt>{% trans "Date of birth" %}</dt><dd>{{ person.date_of_birth|date:"Y-m-d" }}</dd></div><div><dt>{% trans "Citizenship" %}</dt><dd>{{ person.citizenship }}</dd></div></dl></section>
+{% endblock person_content %}

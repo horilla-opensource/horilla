@@ -19,6 +19,11 @@ class DynamicFieldsConfig(AppConfig):
     name = "dynamic_fields"
 
     def ready(self):
+        # Signal registration belongs to the app lifecycle. Importing it from
+        # migrations/__init__.py made Django's test discovery import models for
+        # this optional app even when it was not installed.
+        from dynamic_fields import signals  # noqa: F401
+
         from django.contrib.contenttypes.models import ContentType
         from simple_history.models import HistoricalRecords
 

@@ -1,0 +1,96 @@
+{% extends "hydra_people/base.html" %}
+{% load i18n %}
+
+{% block person_content %}
+<header class="hydra-header">
+  <div>
+    <p class="hydra-muted mb-1">{% trans "Team operations" %}</p>
+    <h1 class="oh-main__titlebar-title">{% trans "Brigadier panel" %}</h1>
+  </div>
+  {% if selected_team %}<span class="hydra-team-chip">{{ selected_team }}</span>{% endif %}
+</header>
+
+<form class="hydra-card hydra-panel-filter mb-3" method="get">
+  <div class="hydra-field">
+    <label for="brigadier-team">{% trans "Team" %}</label>
+    <select class="oh-select w-100" id="brigadier-team" name="team">
+      {% for team in teams %}
+        <option value="{{ team.pk }}"{% if team == selected_team %} selected{% endif %}>{{ team }}</option>
+      {% endfor %}
+    </select>
+  </div>
+  <div class="hydra-field">
+    <label for="brigadier-date">{% trans "Day" %}</label>
+    <input class="oh-input w-100" id="brigadier-date" name="date" type="date" value="{{ selected_date|date:'Y-m-d' }}" max="{{ today|date:'Y-m-d' }}">
+  </div>
+  <div class="hydra-field">
+    <label for="brigadier-query">{% trans "Find employee" %}</label>
+    <input class="oh-input w-100" id="brigadier-query" name="q" type="search" value="{{ query }}" maxlength="100" placeholder="{% trans 'Name or Hydra ID' %}">
+  </div>
+  <div class="hydra-actions"><button class="oh-btn oh-btn--secondary" type="submit">{% trans "Show" %}</button></div>
+</form>
+
+{% if selected_team %}
+  <section class="hydra-kpi-grid mb-3" aria-label="{% trans 'Team summary' %}">
+    <article class="hydra-kpi"><span>{% trans "Roster" %}</span><strong>{{ summary.roster }}</strong></article>
+    <article class="hydra-kpi"><span>{% trans "No attendance record" %}</span><strong>{{ summary.no_attendance }}</strong></article>
+    <article class="hydra-kpi"><span>{% trans "At work" %}</span><strong>{{ summary.at_work }}</strong></article>
+    <article class="hydra-kpi"><span>{% trans "Needs review" %}</span><strong>{{ summary.needs_review }}</strong></article>
+  </section>
+
+  {% include "hydra_links/_public_links.html" %}
+
+  <section class="hydra-card" aria-labelledby="brigadier-roster-title">
+    <div class="hydra-header">
+      <div>
+        <h2 class="h4 mb-1" id="brigadier-roster-title">{% trans "Employee attendance" %}</h2>
+        <p class="hydra-muted mb-0">{% trans "No record is an exception for review, not a confirmed absence or approved leave." %}</p>
+      </div>
+      <time datetime="{{ selected_date|date:'Y-m-d' }}">{{ selected_date|date:"Y-m-d" }}</time>
+    </div>
+    {% if page_obj.object_list %}
+      <table class="hydra-table">
+        <thead><tr><th>{% trans "Employee" %}</th><th>{% trans "Department" %}</th><th>{% trans "Check-in" %}</th><th>{% trans "Check-out" %}</th><th>{% trans "Status / exceptions" %}</th></tr></thead>
+        <tbody>
+          {% for row in page_obj.object_list %}
+            <tr{% if row.has_exception %} class="hydra-row--exception"{% endif %}>
+              <td data-label="{% trans 'Employee' %}">
+                {% if selected_date == today %}<a href="{{ row.person.get_absolute_url }}">{{ row.person.passport_name }}</a>{% else %}{{ row.person.passport_name }}{% endif %}
+                <br><span class="hydra-muted">{{ row.person.hydra_id }}</span>
+              </td>
+              <td data-label="{% trans 'Department' %}">{{ row.assignment.department }}</td>
+              <td data-label="{% trans 'Check-in' %}">{{ row.attendance.attendance_clock_in|time:"H:i"|default:"—" }}</td>
+              <td data-label="{% trans 'Check-out' %}">{{ row.attendance.attendance_clock_out|time:"H:i"|default:"—" }}</td>
+              <td data-label="{% trans 'Status / exceptions' %}">
+                <div class="hydra-tags">
+                  {% if row.no_attendance %}<span class="hydra-status hydra-status--danger">{% trans "No attendance record" %}</span>{% endif %}
+                  {% if row.missing_clock_in %}<span class="hydra-status hydra-status--danger">{% trans "Missing check-in" %}</span>{% endif %}
+                  {% if row.at_work %}<span class="hydra-status hydra-status--ok">{% trans "At work" %}</span>{% endif %}
+                  {% if row.completed and not row.pending_validation %}<span class="hydra-status hydra-status--ok">{% trans "Complete" %}</span>{% endif %}
+                  {% if row.pending_validation %}<span class="hydra-status hydra-status--warning">{% trans "Pending validation" %}</span>{% endif %}
+                  {% if row.late_come %}<span class="hydra-status hydra-status--warning">{% trans "Late arrival" %}</span>{% endif %}
+                  {% if row.early_out %}<span class="hydra-status hydra-status--warning">{% trans "Early departure" %}</span>{% endif %}
+                </div>
+              </td>
+            </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+      {% if page_obj.has_other_pages %}
+        <nav class="hydra-pagination" aria-label="{% trans 'Pagination' %}">
+          {% if page_obj.has_previous %}<a class="oh-btn" href="?team={{ selected_team.pk }}&date={{ selected_date|date:'Y-m-d' }}&q={{ query|urlencode }}&page={{ page_obj.previous_page_number }}">{% trans "Previous" %}</a>{% endif %}
+          <span>{% blocktrans with current=page_obj.number total=page_obj.paginator.num_pages %}Page {{ current }} of {{ total }}{% endblocktrans %}</span>
+          {% if page_obj.has_next %}<a class="oh-btn" href="?team={{ selected_team.pk }}&date={{ selected_date|date:'Y-m-d' }}&q={{ query|urlencode }}&page={{ page_obj.next_page_number }}">{% trans "Next" %}</a>{% endif %}
+        </nav>
+      {% endif %}
+    {% else %}
+      <p class="hydra-muted mb-0">{% trans "No employees match this team and day." %}</p>
+    {% endif %}
+  </section>
+{% else %}
+  <section class="hydra-card">
+    <h2 class="h4">{% trans "No direct team scope" %}</h2>
+    <p class="hydra-muted mb-0">{% trans "A current direct Team grant is required. Company, location and section grants do not open the brigadier panel." %}</p>
+  </section>
+{% endif %}
+{% endblock person_content %}

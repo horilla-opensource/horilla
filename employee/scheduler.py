@@ -4,6 +4,8 @@ from datetime import timedelta
 
 from apscheduler.schedulers.background import BackgroundScheduler
 
+from horilla.scheduling import should_start_schedulers
+
 
 def update_experience():
     from employee.models import EmployeeWorkInformation
@@ -132,10 +134,7 @@ def block_unblock_disciplinary():
     return
 
 
-if not any(
-    cmd in sys.argv
-    for cmd in ["makemigrations", "migrate", "compilemessages", "flush", "shell"]
-):
+if should_start_schedulers():
     """
     Initializes and starts background tasks using APScheduler when the server is running.
     """

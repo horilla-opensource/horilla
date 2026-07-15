@@ -8,6 +8,8 @@ import sys
 
 from apscheduler.schedulers.background import BackgroundScheduler
 
+from horilla.scheduling import should_start_schedulers
+
 logger = logging.getLogger(__name__)
 
 
@@ -28,10 +30,7 @@ def refresh_outlook_auth_token():
             logger.error(e)
 
 
-if not any(
-    cmd in sys.argv
-    for cmd in ["makemigrations", "migrate", "compilemessages", "flush", "shell"]
-):
+if should_start_schedulers():
     scheduler = BackgroundScheduler()
     scheduler.add_job(
         refresh_outlook_auth_token,

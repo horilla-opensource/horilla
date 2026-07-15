@@ -1,0 +1,61 @@
+{% extends "hydra_people/base.html" %}
+{% load i18n %}
+
+{% block person_content %}
+<header class="hydra-header">
+  <div>
+    <h1 class="oh-main__titlebar-title">{% trans "Organization" %}</h1>
+    <p class="hydra-muted mb-0">{% trans "Companies and departments are reused from Horilla; Hydra adds locations, sections and teams." %}</p>
+  </div>
+  <div class="hydra-actions">
+    {% if perms.hydra_coordination.add_location %}<a class="oh-btn oh-btn--secondary" href="{% url 'hydra-location-create' %}">{% trans "Location" %}</a>{% endif %}
+    {% if perms.hydra_coordination.add_section %}<a class="oh-btn oh-btn--secondary" href="{% url 'hydra-section-create' %}">{% trans "Section" %}</a>{% endif %}
+    {% if perms.hydra_coordination.add_team %}<a class="oh-btn oh-btn--secondary" href="{% url 'hydra-team-create' %}">{% trans "Team" %}</a>{% endif %}
+    {% if perms.hydra_coordination.add_scopegrant %}<a class="oh-btn oh-btn--secondary" href="{% url 'hydra-scope-grant-create' %}">{% trans "Grant scope" %}</a>{% endif %}
+  </div>
+</header>
+
+<section class="hydra-card mb-3">
+  <h2 class="h4 mb-3">{% trans "Visible hierarchy" %}</h2>
+  {% for location in locations %}
+    <article class="hydra-org-node mb-3">
+      <strong>{{ location.company }} · {{ location.name }}</strong>
+      <span class="hydra-status">{{ location.code }}</span>
+      {% if location.address %}<p class="hydra-muted mb-1">{{ location.address }}</p>{% endif %}
+      {% for section in location.visible_sections %}
+        <div class="hydra-org-child">
+          <strong>{{ section.name }}</strong> <span class="hydra-muted">{{ section.code }}{% if section.department %} · {{ section.department }}{% endif %}</span>
+          {% if section.visible_teams %}
+            <div class="hydra-actions mt-1">
+              {% for team in section.visible_teams %}<span class="hydra-team-chip">{{ team.name }} · {{ team.code }}</span>{% endfor %}
+            </div>
+          {% endif %}
+        </div>
+      {% endfor %}
+    </article>
+  {% empty %}
+    <p class="hydra-muted mb-0">{% trans "No location is visible in your active scope." %}</p>
+  {% endfor %}
+</section>
+
+{% if perms.hydra_coordination.view_scopegrant %}
+<section class="hydra-card">
+  <h2 class="h4 mb-3">{% trans "Scope grants" %}</h2>
+  {% if scope_grants %}
+    <table class="hydra-table">
+      <thead><tr><th>{% trans "User" %}</th><th>{% trans "Scope" %}</th><th>{% trans "Validity" %}</th><th>{% trans "Active" %}</th></tr></thead>
+      <tbody>
+        {% for grant in scope_grants %}
+          <tr>
+            <td data-label="{% trans 'User' %}">{{ grant.user }}</td>
+            <td data-label="{% trans 'Scope' %}">{{ grant.scope_type|title }} · {{ grant.target }}</td>
+            <td data-label="{% trans 'Validity' %}">{{ grant.valid_from|date:"Y-m-d" }} — {% if grant.valid_until %}{{ grant.valid_until|date:"Y-m-d" }}{% else %}{% trans "open" %}{% endif %}</td>
+            <td data-label="{% trans 'Active' %}">{% if grant.is_current %}{% trans "Yes" %}{% else %}{% trans "No" %}{% endif %}</td>
+          </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  {% else %}<p class="hydra-muted mb-0">{% trans "No scope grants are visible." %}</p>{% endif %}
+</section>
+{% endif %}
+{% endblock person_content %}

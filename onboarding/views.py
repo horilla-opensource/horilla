@@ -23,9 +23,11 @@ from django import template
 from django.contrib import messages
 from django.contrib.auth import login
 from django.contrib.auth.models import User
+from django.core.exceptions import ValidationError
 from django.core.files.base import ContentFile
 from django.core.mail import EmailMessage, send_mail
 from django.core.paginator import Paginator
+from django.db import transaction
 from django.db.models import ProtectedError
 from django.http import HttpResponse, HttpResponseRedirect, JsonResponse
 from django.shortcuts import redirect, render
@@ -1121,8 +1123,10 @@ def employee_bank_details(request, token):
             instance=bank_info,
         )
         if form.is_valid():
-            return employee_bank_details_save(form, request, onboarding_portal)
-        return redirect(welcome_aboard)
+            try:
+                return employee_bank_details_save(form, request, onboarding_portal)
+            except ValidationError as error:
+                form.add_error(None, error)
     return render(
         request,
         "onboarding/employee_bank_details.html",
@@ -1133,6 +1137,7 @@ def employee_bank_details(request, token):
     )
 
 
+@transaction.atomic
 def employee_bank_details_save(form, request, onboarding_portal):
     """
     function used to save employee bank details.
@@ -1149,9 +1154,19 @@ def employee_bank_details_save(form, request, onboarding_portal):
     employee = Employee.objects.get(employee_user_id=request.user)
     employee_bank_detail.employee_id = employee
     candidate = onboarding_portal.candidate_id
-    candidate.converted_employee_id = employee
-    candidate.save()
     employee_bank_detail.save()
+    if getattr(candidate, "hydra_person_link", None):
+        from hydra_people.services import synchronize_onboarding_employee
+
+        synchronize_onboarding_employee(
+            candidate=candidate,
+            employee=employee,
+            actor=request.user,
+        )
+    else:
+        candidate.converted_employee_id = employee
+        candidate.converted = True
+        candidate.save(update_fields=("converted_employee_id", "converted"))
     onboarding_portal.count = 4
     onboarding_portal.used = True
     onboarding_portal.save()

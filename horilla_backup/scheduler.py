@@ -4,6 +4,7 @@ from apscheduler.schedulers.background import BackgroundScheduler
 from django.core.management import call_command
 
 from horilla import settings
+from horilla.scheduling import should_start_schedulers
 
 from .gdrive import *
 
@@ -228,6 +229,8 @@ def start_gdrive_backup_job():
     """
     Start the backup job based on the LocalBackup configuration.
     """
+    if not should_start_schedulers():
+        return False
     # Check if any Gdrive Backup object exists
     if GoogleDriveBackup.objects.exists():
         gdrive_backup = GoogleDriveBackup.objects.first()
@@ -259,6 +262,7 @@ def start_gdrive_backup_job():
             scheduler.start()
     else:
         stop_gdrive_backup_job()
+    return True
 
 
 def stop_gdrive_backup_job():

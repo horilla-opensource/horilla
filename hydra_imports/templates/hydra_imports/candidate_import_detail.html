@@ -1,0 +1,50 @@
+{% extends "hydra_people/base.html" %}
+{% load i18n %}
+
+{% block person_content %}
+<header class="hydra-header">
+  <div>
+    <h1 class="oh-main__titlebar-title">{% trans "Candidate import preview" %}</h1>
+    <p class="hydra-muted mb-0">{{ session.source_filename }} · {{ session.recruitment }} · {{ session.job_position }}</p>
+  </div>
+  <div class="hydra-actions">
+    <a class="oh-btn" href="{% url 'hydra-candidate-import' %}">{% trans "New preview" %}</a>
+    {% if session.status == "ready" %}
+      <form method="post" action="{% url 'hydra-candidate-import-apply' session.uuid %}">{% csrf_token %}<button class="oh-btn oh-btn--secondary" type="submit">{% blocktrans with count=session.valid_count %}Apply {{ count }} candidates{% endblocktrans %}</button></form>
+    {% endif %}
+  </div>
+</header>
+
+<section class="hydra-card mb-3" aria-label="{% trans 'Preview summary' %}">
+  <dl class="hydra-detail">
+    <div><dt>{% trans "Status" %}</dt><dd><span class="hydra-status">{{ session.get_status_display }}</span></dd></div>
+    <div><dt>{% trans "Rows" %}</dt><dd>{{ session.row_count }}</dd></div>
+    <div><dt>{% trans "Valid" %}</dt><dd>{{ session.valid_count }}</dd></div>
+    <div><dt>{% trans "Duplicates" %}</dt><dd>{{ session.duplicate_count }}</dd></div>
+    <div><dt>{% trans "Errors" %}</dt><dd>{{ session.error_count }}</dd></div>
+    <div><dt>{% trans "SHA-256" %}</dt><dd title="{{ session.file_sha256 }}">{{ session.file_sha256|slice:":16" }}…</dd></div>
+  </dl>
+  {% if session.status == "blocked" %}<p class="hydra-errors mb-0 mt-3">{% trans "Apply is blocked. Correct every invalid or duplicate row in the source workbook and create a new preview." %}</p>{% endif %}
+  {% if session.status == "applied" %}<p class="hydra-muted mb-0 mt-3">{% blocktrans with applied_at=session.applied_at applied_by=session.applied_by %}Applied at {{ applied_at }} by {{ applied_by }}. Reapplying this session is idempotent.{% endblocktrans %}</p>{% endif %}
+</section>
+
+<section class="hydra-card" aria-labelledby="preview-rows-title">
+  <h2 class="h4" id="preview-rows-title">{% trans "Preview rows" %}</h2>
+  <table class="hydra-table">
+    <thead><tr><th>{% trans "Row" %}</th><th>{% trans "Person" %}</th><th>{% trans "Contact" %}</th><th>{% trans "Result" %}</th></tr></thead>
+    <tbody>
+      {% for row in import_rows %}
+        <tr>
+          <td data-label="{% trans 'Row' %}">{{ row.row_number }}</td>
+          <td data-label="{% trans 'Person' %}">
+            {% if row.created_person %}<a href="{{ row.created_person.get_absolute_url }}">{{ row.passport_name }}</a>{% else %}{{ row.passport_name|default:"—" }}{% endif %}
+            <br><span class="hydra-muted">{{ row.date_of_birth|default:"—" }} · {{ row.citizenship|default:"—" }}</span>
+          </td>
+          <td data-label="{% trans 'Contact' %}">{{ row.email|default:"—" }}<br><span class="hydra-muted">{{ row.candidate_mobile|default:row.phone|default:"—" }}</span></td>
+          <td data-label="{% trans 'Result' %}"><span class="hydra-status">{{ row.get_outcome_display }}</span>{% if row.error_message %}<br>{{ row.error_message }}{% endif %}{% if row.duplicate_reason %}<br>{{ row.duplicate_reason }}{% endif %}{% if row.created_candidate %}<br><a href="{% url 'hydra-recruitment-detail' row.created_candidate_id %}">{% trans "Open application" %}</a>{% endif %}</td>
+        </tr>
+      {% endfor %}
+    </tbody>
+  </table>
+</section>
+{% endblock person_content %}

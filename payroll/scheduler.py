@@ -9,6 +9,8 @@ import sys
 from datetime import date, timedelta
 
 from apscheduler.schedulers.background import BackgroundScheduler
+
+from horilla.scheduling import should_start_schedulers
 from dateutil.relativedelta import relativedelta
 
 from payroll.methods.methods import calculate_employer_contribution, save_payslip
@@ -138,10 +140,7 @@ def auto_payslip_generate():
                 generate_payslip(date=date.today(), companies=companies, all=False)
 
 
-if not any(
-    cmd in sys.argv
-    for cmd in ["makemigrations", "migrate", "compilemessages", "flush", "shell"]
-):
+if should_start_schedulers():
     scheduler = BackgroundScheduler()
     scheduler.add_job(expire_contract, "interval", hours=4)
     scheduler.add_job(auto_payslip_generate, "interval", hours=3)

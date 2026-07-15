@@ -6,6 +6,8 @@ from datetime import datetime, timedelta
 from apscheduler.schedulers.background import BackgroundScheduler
 from dateutil.relativedelta import relativedelta
 
+from horilla.scheduling import should_start_schedulers
+
 
 def leave_reset():
     from leave.models import LeaveType
@@ -46,10 +48,7 @@ def leave_reset():
             leave_type.save()
 
 
-if not any(
-    cmd in sys.argv
-    for cmd in ["makemigrations", "migrate", "compilemessages", "flush", "shell"]
-):
+if should_start_schedulers():
     """
     Initializes and starts background tasks using APScheduler when the server is running.
     """

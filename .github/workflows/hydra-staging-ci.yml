@@ -1,0 +1,244 @@
+name: Hydra staging CI
+
+on:
+  pull_request:
+  push:
+    branches:
+      - main
+      - "codex/**"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: hydra-staging-ci-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  django-postgresql:
+    name: Django / PostgreSQL 17
+    runs-on: ubuntu-24.04
+    timeout-minutes: 30
+    services:
+      postgres:
+        image: postgres:17-bookworm
+        env:
+          POSTGRES_DB: hydra_ci
+          POSTGRES_USER: hydra_ci_admin
+          POSTGRES_PASSWORD: ci_admin_database_password_only
+        ports:
+          - 5432:5432
+        options: >-
+          --health-cmd "pg_isready -U hydra_ci_admin -d hydra_ci"
+          --health-interval 5s
+          --health-timeout 5s
+          --health-retries 20
+    env:
+      DATABASE_URL: postgresql://hydra_ci_admin:ci_admin_database_password_only@127.0.0.1:5432/hydra_ci
+      HYDRA_ENVIRONMENT: test
+      HYDRA_DISABLE_SCHEDULERS: "True"
+      HYDRA_ALLOW_WEB_DATABASE_INITIALIZATION: "False"
+      HYDRA_PRIVATE_MEDIA_ROOT: /tmp/hydra-private
+      MEDIA_ROOT: /tmp/hydra-media
+      SECRET_KEY: ci-only-django-key-with-more-than-fifty-characters-000000000000
+      DEBUG: "True"
+      ALLOWED_HOSTS: localhost,127.0.0.1,testserver
+      CSRF_TRUSTED_ORIGINS: https://localhost
+    steps:
+      - name: Check out source
+        uses: actions/checkout@v6.0.2
+
+      - name: Install system libraries
+        run: >-
+          sudo apt-get update && sudo apt-get install -y --no-install-recommends
+          gcc libcairo2-dev libgdk-pixbuf-2.0-0 libpango-1.0-0 libpq-dev
+
+      - name: Set up Python 3.11
+        uses: actions/setup-python@v6.2.0
+        with:
+          python-version: "3.11"
+          cache: pip
+          cache-dependency-path: |
+            requirements.staging.lock
+            requirements.phase0-windows-py311.lock
+
+      - name: Install pinned dependencies
+        run: |
+          python -m pip install -r requirements.staging.lock
+          python -m pip check
+
+      - name: Install pinned Horilla auth migration
+        run: python scripts/install-django-auth-migration.py
+
+      - name: Verify committed migration baseline
+        run: |
+          test -f base/migrations/0001_initial.py
+          test -f deployment/django_auth_migrations/0013_user_is_new_employee.py
+          migration_count="$(find . -path '*/migrations/[0-9]*.py' -not -path './.venv/*' | wc -l)"
+          test "$migration_count" -ge 39
+
+      - name: Prepare runtime directories
+        run: install -d -m 0700 /tmp/hydra-private /tmp/hydra-media
+
+      - name: Validate and migrate schema
+        run: |
+          python manage.py check
+          python manage.py makemigrations --check --dry-run
+          python manage.py migrate --noinput
+          python manage.py migrate --check
+          python manage.py hydra_readiness --json
+
+      - name: Run full regression suite
+        run: python manage.py test --verbosity 1
+
+  staging-compose:
+    name: Staging image / smoke / recovery
+    needs: django-postgresql
+    runs-on: ubuntu-24.04
+    timeout-minutes: 45
+    env:
+      COMPOSE_FILE: docker-compose.staging.yaml
+      STAGING_ENV_FILE: .env.staging
+      BACKUP_ID: ci-${{ github.run_id }}-${{ github.run_attempt }}
+    steps:
+      - name: Check out source
+        uses: actions/checkout@v6.0.2
+
+      - name: Create isolated CI staging configuration
+        shell: bash
+        run: |
+          umask 077
+          cat > .env.staging <<EOF
+          COMPOSE_PROJECT_NAME=hydra-ci-${GITHUB_RUN_ID}-${GITHUB_RUN_ATTEMPT}
+          HYDRA_ENVIRONMENT=staging
+          HYDRA_DEPLOYMENT_REVISION=ci-${GITHUB_SHA}
+          HYDRA_DISABLE_SCHEDULERS=True
+          HYDRA_ALLOW_WEB_DATABASE_INITIALIZATION=False
+          HYDRA_REQUIRE_POSTGRES=True
+          HYDRA_READINESS_REQUIRE_STATIC=True
+          DEBUG=False
+          SECRET_KEY=ci-only-staging-key-with-more-than-fifty-characters-000000000000
+          ALLOWED_HOSTS=127.0.0.1,localhost
+          CSRF_TRUSTED_ORIGINS=https://localhost
+          TIME_ZONE=Europe/Warsaw
+          POSTGRES_DB=hydra_ci
+          POSTGRES_USER=hydra_ci_admin
+          POSTGRES_PASSWORD=ci_admin_database_password_only
+          HYDRA_DB_USER=hydra_ci_app
+          HYDRA_DB_PASSWORD=ci_application_database_password_only
+          DB_CONN_MAX_AGE=0
+          HYDRA_PRIVATE_DOCUMENT_MAX_BYTES=10485760
+          HYDRA_BACKUP_HOST_PATH=./backups
+          HYDRA_PORTAL_URL=https://oleksandrkiris.github.io/citronex-hydra-project/
+          SECURE_SSL_REDIRECT=True
+          SECURE_HSTS_SECONDS=3600
+          SECURE_HSTS_INCLUDE_SUBDOMAINS=False
+          SECURE_HSTS_PRELOAD=False
+          HYDRA_HTTP_PORT=18000
+          HYDRA_IMAGE=hydra-app:ci
+          GUNICORN_WORKERS=2
+          GUNICORN_THREADS=2
+          GUNICORN_TIMEOUT=60
+          GUNICORN_GRACEFUL_TIMEOUT=30
+          EOF
+          ! grep -q REPLACE .env.staging
+          mkdir -p artifacts
+
+      - name: Validate Compose model
+        run: docker compose --env-file "$STAGING_ENV_FILE" -f "$COMPOSE_FILE" config --quiet
+
+      - name: Build staging image
+        run: docker compose --env-file "$STAGING_ENV_FILE" -f "$COMPOSE_FILE" build --pull server
+
+      - name: Start staging stack
+        run: docker compose --env-file "$STAGING_ENV_FILE" -f "$COMPOSE_FILE" up -d db server
+
+      - name: Wait for application readiness
+        shell: bash
+        run: |
+          container_id="$(docker compose --env-file "$STAGING_ENV_FILE" -f "$COMPOSE_FILE" ps -q server)"
+          test -n "$container_id"
+          status="starting"
+          for attempt in $(seq 1 72); do
+            status="$(docker inspect --format '{{.State.Health.Status}}' "$container_id")"
+            if [ "$status" = healthy ]; then
+              break
+            fi
+            if [ "$status" = unhealthy ]; then
+              docker compose --env-file "$STAGING_ENV_FILE" -f "$COMPOSE_FILE" logs --no-color
+              exit 1
+            fi
+            sleep 5
+          done
+          test "$status" = healthy
+
+      - name: Verify isolation and least privilege
+        shell: bash
+        run: |
+          test "$(docker compose --env-file "$STAGING_ENV_FILE" -f "$COMPOSE_FILE" exec -T server id -u)" = 10001
+          docker compose --env-file "$STAGING_ENV_FILE" -f "$COMPOSE_FILE" exec -T server sh -c 'test -z "${POSTGRES_PASSWORD+x}"'
+          db_port="$(docker compose --env-file "$STAGING_ENV_FILE" -f "$COMPOSE_FILE" port db 5432 2>/dev/null || true)"
+          test -z "$db_port"
+          docker compose --env-file "$STAGING_ENV_FILE" -f "$COMPOSE_FILE" port server 8000 | grep -E '^127\.0\.0\.1:'
+          docker compose --env-file "$STAGING_ENV_FILE" -f "$COMPOSE_FILE" exec -T server \
+            python manage.py shell -c "from django.db import connection; c=connection.cursor(); c.execute('SELECT rolsuper FROM pg_roles WHERE rolname=current_user'); assert c.fetchone() == (False,)"
+          docker compose --env-file "$STAGING_ENV_FILE" -f "$COMPOSE_FILE" exec -T server \
+            python manage.py hydra_readiness --json | tee artifacts/readiness-before-backup.json
+
+      - name: Run external smoke checks
+        shell: pwsh
+        run: ./scripts/staging-smoke.ps1 -BaseUrl http://127.0.0.1:18000 -ForwardedHttps
+
+      - name: Create cold recovery point
+        shell: pwsh
+        run: ./scripts/staging-backup.ps1 -ComposeFile $env:COMPOSE_FILE -EnvFile $env:STAGING_ENV_FILE -BackupId $env:BACKUP_ID
+
+      - name: Verify isolated restore
+        shell: pwsh
+        run: ./scripts/staging-restore-verify.ps1 -BackupId $env:BACKUP_ID -ComposeFile $env:COMPOSE_FILE -EnvFile $env:STAGING_ENV_FILE
+
+      - name: Wait after backup restart and smoke again
+        shell: bash
+        run: |
+          for attempt in $(seq 1 36); do
+            if curl --fail --silent --header 'X-Forwarded-Proto: https' http://127.0.0.1:18000/health/ready/ | grep -q '"status": "ready"'; then
+              exit 0
+            fi
+            sleep 5
+          done
+          exit 1
+
+      - name: Final smoke checks
+        shell: pwsh
+        run: ./scripts/staging-smoke.ps1 -BaseUrl http://127.0.0.1:18000 -ForwardedHttps
+
+      - name: Collect CI evidence
+        if: always()
+        shell: bash
+        run: |
+          mkdir -p artifacts
+          docker compose --env-file "$STAGING_ENV_FILE" -f "$COMPOSE_FILE" ps -a > artifacts/compose-ps.txt 2>&1 || true
+          docker compose --env-file "$STAGING_ENV_FILE" -f "$COMPOSE_FILE" logs --no-color > artifacts/compose.log 2>&1 || true
+          if sudo test -f "backups/$BACKUP_ID/manifest.json"; then
+            sudo cp "backups/$BACKUP_ID/manifest.json" artifacts/backup-manifest.json
+            sudo cp "backups/$BACKUP_ID/SHA256SUMS" artifacts/backup-sha256sums.txt
+            sudo chown "$USER":"$(id -gn)" artifacts/backup-manifest.json artifacts/backup-sha256sums.txt
+          fi
+
+      - name: Upload CI evidence
+        if: always()
+        uses: actions/upload-artifact@v7.0.1
+        with:
+          name: hydra-staging-ci-${{ github.run_id }}-${{ github.run_attempt }}
+          path: artifacts/
+          if-no-files-found: warn
+          retention-days: 14
+
+      - name: Remove CI stack and secrets
+        if: always()
+        shell: bash
+        run: |
+          docker compose --env-file "$STAGING_ENV_FILE" -f "$COMPOSE_FILE" down --volumes --remove-orphans || true
+          sudo rm -rf backups
+          rm -f .env.staging

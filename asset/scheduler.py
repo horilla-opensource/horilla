@@ -12,6 +12,8 @@ from django.urls import reverse
 
 from notifications.signals import notify
 
+from horilla.scheduling import should_start_schedulers
+
 
 def notify_expiring_assets():
     """
@@ -92,10 +94,7 @@ def notify_expiring_documents():
                 document.is_active = False
 
 
-if not any(
-    cmd in sys.argv
-    for cmd in ["makemigrations", "migrate", "compilemessages", "flush", "shell"]
-):
+if should_start_schedulers():
     scheduler = BackgroundScheduler()
     scheduler.add_job(notify_expiring_assets, "interval", days=1)
     scheduler.add_job(notify_expiring_documents, "interval", hours=4)

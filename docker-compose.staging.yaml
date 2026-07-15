@@ -1,0 +1,111 @@
+services:
+  server:
+    image: ${HYDRA_IMAGE:-hydra-app:staging}
+    build:
+      context: .
+      dockerfile: Dockerfile
+      args:
+        REQUIREMENTS_FILE: requirements.staging.lock
+    environment:
+      HYDRA_ENVIRONMENT: ${HYDRA_ENVIRONMENT:-staging}
+      HYDRA_DEPLOYMENT_REVISION: ${HYDRA_DEPLOYMENT_REVISION:?HYDRA_DEPLOYMENT_REVISION is required}
+      HYDRA_DISABLE_SCHEDULERS: ${HYDRA_DISABLE_SCHEDULERS:-True}
+      HYDRA_ALLOW_WEB_DATABASE_INITIALIZATION: ${HYDRA_ALLOW_WEB_DATABASE_INITIALIZATION:-False}
+      HYDRA_REQUIRE_POSTGRES: ${HYDRA_REQUIRE_POSTGRES:-True}
+      HYDRA_READINESS_REQUIRE_STATIC: ${HYDRA_READINESS_REQUIRE_STATIC:-True}
+      DEBUG: ${DEBUG:-False}
+      SECRET_KEY: ${SECRET_KEY:?SECRET_KEY is required}
+      ALLOWED_HOSTS: ${ALLOWED_HOSTS:?ALLOWED_HOSTS is required}
+      CSRF_TRUSTED_ORIGINS: ${CSRF_TRUSTED_ORIGINS:?CSRF_TRUSTED_ORIGINS is required}
+      TIME_ZONE: ${TIME_ZONE:-Europe/Warsaw}
+      DB_ENGINE: django.db.backends.postgresql
+      DB_NAME: ${POSTGRES_DB:?POSTGRES_DB is required}
+      DB_USER: ${HYDRA_DB_USER:?HYDRA_DB_USER is required}
+      DB_PASSWORD: ${HYDRA_DB_PASSWORD:?HYDRA_DB_PASSWORD is required}
+      DB_HOST: db
+      DB_PORT: "5432"
+      DB_CONN_MAX_AGE: ${DB_CONN_MAX_AGE:-60}
+      STATIC_ROOT: /app/staticfiles
+      MEDIA_ROOT: /var/lib/hydra/media
+      HYDRA_PRIVATE_MEDIA_ROOT: /var/lib/hydra/private
+      HYDRA_PRIVATE_DOCUMENT_MAX_BYTES: ${HYDRA_PRIVATE_DOCUMENT_MAX_BYTES:-10485760}
+      HYDRA_BACKUP_ROOT: /backups
+      HYDRA_PORTAL_URL: ${HYDRA_PORTAL_URL:?HYDRA_PORTAL_URL is required}
+      SECURE_SSL_REDIRECT: ${SECURE_SSL_REDIRECT:-True}
+      SECURE_HSTS_SECONDS: ${SECURE_HSTS_SECONDS:-3600}
+      SECURE_HSTS_INCLUDE_SUBDOMAINS: ${SECURE_HSTS_INCLUDE_SUBDOMAINS:-False}
+      SECURE_HSTS_PRELOAD: ${SECURE_HSTS_PRELOAD:-False}
+      GUNICORN_WORKERS: ${GUNICORN_WORKERS:-3}
+      GUNICORN_THREADS: ${GUNICORN_THREADS:-2}
+      GUNICORN_TIMEOUT: ${GUNICORN_TIMEOUT:-60}
+      GUNICORN_GRACEFUL_TIMEOUT: ${GUNICORN_GRACEFUL_TIMEOUT:-30}
+    ports:
+      - "127.0.0.1:${HYDRA_HTTP_PORT:-8000}:8000"
+    restart: unless-stopped
+    init: true
+    cap_drop:
+      - ALL
+    security_opt:
+      - no-new-privileges:true
+    tmpfs:
+      - /tmp:rw,noexec,nosuid,size=128m
+    volumes:
+      - hydra-media:/var/lib/hydra/media
+      - hydra-private-media:/var/lib/hydra/private
+    depends_on:
+      db:
+        condition: service_healthy
+    stop_grace_period: 45s
+
+  db:
+    image: postgres:17-bookworm
+    environment:
+      POSTGRES_DB: ${POSTGRES_DB:?POSTGRES_DB is required}
+      POSTGRES_USER: ${POSTGRES_USER:?POSTGRES_USER is required}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:?POSTGRES_PASSWORD is required}
+      HYDRA_DB_USER: ${HYDRA_DB_USER:?HYDRA_DB_USER is required}
+      HYDRA_DB_PASSWORD: ${HYDRA_DB_PASSWORD:?HYDRA_DB_PASSWORD is required}
+      POSTGRES_INITDB_ARGS: --auth-host=scram-sha-256
+      PGDATA: /var/lib/postgresql/data/pgdata
+    restart: unless-stopped
+    volumes:
+      - hydra-db:/var/lib/postgresql/data
+      - ./deployment/postgres/init:/docker-entrypoint-initdb.d:ro
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U \"$${POSTGRES_USER}\" -d \"$${POSTGRES_DB}\""]
+      interval: 10s
+      timeout: 5s
+      retries: 10
+      start_period: 20s
+
+  backup:
+    image: postgres:17-bookworm
+    profiles: ["ops"]
+    user: "0:0"
+    environment:
+      PGHOST: db
+      PGPORT: "5432"
+      PGDATABASE: ${POSTGRES_DB:?POSTGRES_DB is required}
+      PGUSER: ${POSTGRES_USER:?POSTGRES_USER is required}
+      PGPASSWORD: ${POSTGRES_PASSWORD:?POSTGRES_PASSWORD is required}
+    entrypoint: ["/bin/sh"]
+    read_only: true
+    cap_drop:
+      - ALL
+    security_opt:
+      - no-new-privileges:true
+    tmpfs:
+      - /tmp:rw,noexec,nosuid,size=256m
+    volumes:
+      - ./scripts:/ops:ro
+      - ${HYDRA_BACKUP_HOST_PATH:?HYDRA_BACKUP_HOST_PATH is required}:/backups
+      - hydra-media:/data/media:ro
+      - hydra-private-media:/data/private:ro
+    depends_on:
+      db:
+        condition: service_healthy
+
+volumes:
+  hydra-db:
+  hydra-media:
+  hydra-private-media:

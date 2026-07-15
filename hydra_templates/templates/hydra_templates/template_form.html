@@ -1,0 +1,54 @@
+{% extends "hydra_people/base.html" %}
+{% load i18n %}
+
+{% block person_content %}
+<header class="hydra-header">
+  <div>
+    <h1 class="oh-main__titlebar-title">{{ page_title }}</h1>
+    <p class="hydra-muted mb-0">{% trans "Plain text only. Preview uses deterministic sample data and never sends a message." %}</p>
+  </div>
+  <div class="hydra-actions"><a class="oh-btn" href="{% url 'hydra-template-list' %}">{% trans "Back to templates" %}</a></div>
+</header>
+
+<div class="row">
+  <div class="col-lg-7 mb-3">
+    <section class="hydra-card">
+      <form method="post" novalidate>
+        {% csrf_token %}
+        {% if form.non_field_errors %}<div class="oh-alert oh-alert--danger mb-3">{{ form.non_field_errors }}</div>{% endif %}
+        {% for field in form %}
+          <div class="oh-input-group mb-3">
+            {% if field.field.widget.input_type == "checkbox" %}
+              <label class="oh-label">{{ field }} {{ field.label }}</label>
+            {% else %}
+              <label class="oh-label" for="{{ field.id_for_label }}">{{ field.label }}</label>
+              {{ field }}
+            {% endif %}
+            {% if field.help_text %}<small class="hydra-muted">{{ field.help_text }}</small>{% endif %}
+            {% for error in field.errors %}<div class="oh-alert oh-alert--danger mt-1">{{ error }}</div>{% endfor %}
+          </div>
+        {% endfor %}
+        <div class="hydra-actions">
+          <button class="oh-btn oh-btn--secondary" type="submit" name="action" value="preview">{% trans "Preview without saving" %}</button>
+          <button class="oh-btn" type="submit" name="action" value="save">{% trans "Save template" %}</button>
+        </div>
+      </form>
+    </section>
+  </div>
+  <div class="col-lg-5 mb-3">
+    {% if preview %}
+      <section class="hydra-card mb-3" aria-live="polite">
+        <h2 class="h4">{% trans "Safe preview" %}</h2>
+        <p><strong>{% trans "Subject" %}:</strong> {{ preview.subject }}</p>
+        <div class="hydra-muted">{{ preview.body|linebreaksbr }}</div>
+      </section>
+    {% endif %}
+    <section class="hydra-card">
+      <h2 class="h4">{% trans "Allowed placeholders" %}</h2>
+      <ul class="mb-0">
+        {% for placeholder in placeholders %}<li><code>{{ placeholder.token }}</code> — {{ placeholder.label }}</li>{% endfor %}
+      </ul>
+    </section>
+  </div>
+</div>
+{% endblock person_content %}

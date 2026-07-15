@@ -1,0 +1,49 @@
+{% extends "hydra_people/base.html" %}
+{% load i18n %}
+
+{% block person_content %}
+<header class="hydra-header">
+  <div>
+    <p class="hydra-muted mb-1">{{ person.hydra_id }}</p>
+    <h1 class="oh-main__titlebar-title">{% trans "Convert Person to employee" %}</h1>
+  </div>
+  <div class="hydra-actions">
+    <a class="oh-btn" href="{{ person.get_absolute_url }}">{% trans "Cancel" %}</a>
+  </div>
+</header>
+
+<section class="hydra-card mb-3" aria-labelledby="conversion-source-title">
+  <h2 class="h4" id="conversion-source-title">{% trans "Canonical identity source" %}</h2>
+  <dl class="hydra-detail">
+    <div><dt>{% trans "Passport name" %}</dt><dd>{{ person.passport_name }}</dd></div>
+    <div><dt>{% trans "First and last name" %}</dt><dd>{{ person.first_name }} {{ person.last_name }}</dd></div>
+    <div><dt>{% trans "Date of birth" %}</dt><dd>{{ person.date_of_birth|date:"Y-m-d" }}</dd></div>
+    <div><dt>{% trans "Citizenship" %}</dt><dd>{{ person.citizenship }}</dd></div>
+  </dl>
+</section>
+
+<form class="hydra-card" method="post" novalidate>
+  {% csrf_token %}
+  <h2 class="h4">{% trans "Employment decision" %}</h2>
+  <p class="hydra-muted">
+    {% trans "Names, date of birth and gender come from Person. Company, department and job position come from the selected hired application. The submitted email becomes the unique Horilla account name." %}
+  </p>
+  <p class="hydra-muted">
+    {% trans "A new account is inactive and has no usable password. Account activation is a separate controlled step." %}
+  </p>
+  {% if form.non_field_errors %}<div class="hydra-errors">{{ form.non_field_errors }}</div>{% endif %}
+  <div class="hydra-grid">
+    {% for field in form %}
+      <div class="hydra-field{% if field.name == 'confirmation' %} hydra-field--wide{% endif %}">
+        {{ field.label_tag }}
+        {{ field }}
+        {% if field.help_text %}<small class="hydra-muted">{{ field.help_text }}</small>{% endif %}
+        {{ field.errors }}
+      </div>
+    {% endfor %}
+  </div>
+  <div class="hydra-actions mt-3">
+    <button class="oh-btn oh-btn--secondary" type="submit">{% trans "Create and link employee" %}</button>
+  </div>
+</form>
+{% endblock person_content %}

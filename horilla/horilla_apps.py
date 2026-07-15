@@ -20,6 +20,17 @@ INSTALLED_APPS.append("helpdesk")
 INSTALLED_APPS.append("offboarding")
 INSTALLED_APPS.append("horilla_backup")
 INSTALLED_APPS.append("project")
+INSTALLED_APPS.append("hydra_shell.apps.HydraShellConfig")
+INSTALLED_APPS.append("hydra_people.apps.HydraPeopleConfig")
+INSTALLED_APPS.append("hydra_coordination.apps.HydraCoordinationConfig")
+INSTALLED_APPS.append("hydra_documents.apps.HydraDocumentsConfig")
+INSTALLED_APPS.append("hydra_legalization.apps.HydraLegalizationConfig")
+INSTALLED_APPS.append("hydra_imports.apps.HydraImportsConfig")
+INSTALLED_APPS.append("hydra_arrivals.apps.HydraArrivalsConfig")
+INSTALLED_APPS.append("hydra_templates.apps.HydraTemplatesConfig")
+INSTALLED_APPS.append("hydra_links.apps.HydraLinksConfig")
+INSTALLED_APPS.append("hydra_reports.apps.HydraReportsConfig")
+INSTALLED_APPS.append("hydra_ops.apps.HydraOpsConfig")
 if settings.env("AWS_ACCESS_KEY_ID", default=None) and "storages" not in INSTALLED_APPS:
     INSTALLED_APPS.append("storages")
 
@@ -45,6 +56,7 @@ if SETTINGS_EMAIL_BACKEND:
 
 
 SIDEBARS = [
+    "hydra_people",
     "recruitment",
     "onboarding",
     "employee",

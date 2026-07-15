@@ -38,6 +38,7 @@ from horilla.decorators import (
 from horilla.filters import HorillaPaginator
 from horilla.horilla_settings import BIO_DEVICE_THREADS
 from horilla.http.response import HorillaRedirect
+from horilla.scheduling import should_start_schedulers
 from horilla.settings import TIME_ZONE
 
 from .anviz import CrossChexCloudAPI
@@ -398,6 +399,9 @@ def biometric_device_schedule(request, device_id):
     Returns:
     - HttpResponse: HTML response indicating success or failure of the scheduling operation.
     """
+    if request.method == "POST" and not should_start_schedulers():
+        messages.error(request, _("In-process schedulers are disabled in this environment."))
+        return HorillaRedirect(request)
     device = BiometricDevices.objects.get(id=device_id)
     initial_data = {"scheduler_duration": device.scheduler_duration}
     scheduler_form = BiometricDeviceSchedulerForm(initial=initial_data)
@@ -2630,8 +2634,11 @@ def etimeoffice_biometric_attendance_scheduler(device_id):
 
 
 try:
-    devices = BiometricDevices.objects.all().update(is_live=False)
-    for device in BiometricDevices.objects.filter(is_scheduler=True):
+    scheduled_devices = []
+    if should_start_schedulers():
+        BiometricDevices.objects.all().update(is_live=False)
+        scheduled_devices = BiometricDevices.objects.filter(is_scheduler=True)
+    for device in scheduled_devices:
         if device:
             if str_time_seconds(device.scheduler_duration) > 0:
                 if device.machine_type == "anviz":

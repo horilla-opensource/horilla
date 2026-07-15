@@ -1,0 +1,8 @@
+{% extends "hydra_people/base.html" %}
+{% load i18n %}
+
+{% block person_content %}
+<header class="hydra-header"><div><h1 class="oh-main__titlebar-title">{% trans "Review and link application" %}</h1><p class="hydra-muted mb-0">{{ candidate.name }} — {{ candidate.email }}</p></div><div class="hydra-actions"><a class="oh-btn" href="{% url 'hydra-recruitment-list' %}">{% trans "Cancel" %}</a></div></header>
+<section class="hydra-card mb-3"><dl class="hydra-detail"><div><dt>{% trans "Recruitment" %}</dt><dd>{{ candidate.recruitment_id }}</dd></div><div><dt>{% trans "Company" %}</dt><dd>{{ candidate.recruitment_id.company_id }}</dd></div><div><dt>{% trans "Date of birth" %}</dt><dd>{{ candidate.dob|date:"Y-m-d"|default:"—" }}</dd></div></dl></section>
+<form class="hydra-card" method="post" novalidate>{% csrf_token %}{% if form.non_field_errors %}<div class="hydra-errors">{{ form.non_field_errors }}</div>{% endif %}<div class="hydra-field">{{ form.person.label_tag }}{{ form.person }}{{ form.person.errors }}</div><p class="hydra-muted mt-2">{% trans "Only people inside your current scope are available. Verify identity before linking; an application cannot be moved to another Person later." %}</p><div class="hydra-actions mt-3"><button class="oh-btn oh-btn--secondary" type="submit">{% trans "Link application" %}</button></div></form>
+{% endblock person_content %}

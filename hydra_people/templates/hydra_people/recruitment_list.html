@@ -1,0 +1,48 @@
+{% extends "hydra_people/base.html" %}
+{% load i18n %}
+
+{% block person_content %}
+<header class="hydra-header">
+  <div>
+    <h1 class="oh-main__titlebar-title">{% trans "Hydra recruitment" %}</h1>
+    <p class="hydra-muted mb-0">{% trans "Horilla applications linked to canonical Person identities in your scope." %}</p>
+  </div>
+  <div class="hydra-actions">{% if perms.hydra_imports.import_candidate %}<a class="oh-btn oh-btn--secondary" href="{% url 'hydra-candidate-import' %}">{% trans "Import candidates" %}</a>{% endif %}<a class="oh-btn" href="{% url 'hydra-person-list' %}">{% trans "Choose a person" %}</a></div>
+</header>
+
+<form class="hydra-search" method="get" role="search">
+  <input class="oh-input" type="search" name="q" value="{{ query }}" placeholder="{% trans 'Search by person, Hydra ID or email' %}" aria-label="{% trans 'Search recruitment applications' %}">
+  <button class="oh-btn" type="submit">{% trans "Search" %}</button>
+</form>
+
+<section class="hydra-card mb-3" aria-label="{% trans 'Linked applications' %}">
+  <div class="hydra-header"><div><h2 class="h4 mb-1">{% trans "Linked applications" %}</h2><p class="hydra-muted mb-0">{% trans "Both model permissions and current Hydra scope are applied." %}</p></div></div>
+  {% if page_obj.object_list %}
+    <table class="hydra-table">
+      <thead><tr><th>{% trans "Person" %}</th><th>{% trans "Recruitment" %}</th><th>{% trans "Position" %}</th><th>{% trans "Stage" %}</th></tr></thead>
+      <tbody>
+        {% for candidate in page_obj %}
+          <tr>
+            <td data-label="{% trans 'Person' %}"><a href="{% url 'hydra-recruitment-detail' candidate.pk %}">{{ candidate.hydra_person_link.person.passport_name }}</a><br><span class="hydra-muted">{{ candidate.hydra_person_link.person.hydra_id }} · {{ candidate.email }}</span></td>
+            <td data-label="{% trans 'Recruitment' %}">{{ candidate.recruitment_id }}</td>
+            <td data-label="{% trans 'Position' %}">{{ candidate.job_position_id|default:"—" }}</td>
+            <td data-label="{% trans 'Stage' %}"><span class="hydra-status">{{ candidate.stage_id|default:"—" }}</span></td>
+          </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  {% else %}<p class="hydra-muted mb-0">{% trans "No linked applications match the current scope and search." %}</p>{% endif %}
+</section>
+
+{% if unlinked_count %}
+<section class="hydra-card" aria-label="{% trans 'Backfill queue' %}">
+  <div class="hydra-header"><div><h2 class="h4 mb-1">{% trans "Needs Person link" %}</h2><p class="hydra-muted mb-0">{% blocktrans count total=unlinked_count %}{{ total }} existing application requires review.{% plural %}{{ total }} existing applications require review.{% endblocktrans %}</p></div></div>
+  <table class="hydra-table">
+    <thead><tr><th>{% trans "Candidate" %}</th><th>{% trans "Recruitment" %}</th><th>{% trans "Action" %}</th></tr></thead>
+    <tbody>{% for candidate in unlinked_candidates %}<tr><td data-label="{% trans 'Candidate' %}">{{ candidate.name }}<br><span class="hydra-muted">{{ candidate.email }}</span></td><td data-label="{% trans 'Recruitment' %}">{{ candidate.recruitment_id }}</td><td data-label="{% trans 'Action' %}"><a class="oh-btn" href="{% url 'hydra-recruitment-link-person' candidate.pk %}">{% trans "Review and link" %}</a></td></tr>{% endfor %}</tbody>
+  </table>
+</section>
+{% endif %}
+
+{% if page_obj.paginator.num_pages > 1 %}<nav class="hydra-pagination" aria-label="{% trans 'Pagination' %}"><div>{% if page_obj.has_previous %}<a class="oh-btn" href="?q={{ query|urlencode }}&page={{ page_obj.previous_page_number }}">{% trans "Previous" %}</a>{% endif %}</div><span>{% blocktrans with current=page_obj.number total=page_obj.paginator.num_pages %}Page {{ current }} of {{ total }}{% endblocktrans %}</span><div>{% if page_obj.has_next %}<a class="oh-btn" href="?q={{ query|urlencode }}&page={{ page_obj.next_page_number }}">{% trans "Next" %}</a>{% endif %}</div></nav>{% endif %}
+{% endblock person_content %}

@@ -1,0 +1,49 @@
+{% extends "hydra_people/base.html" %}
+{% load i18n %}
+
+{% block person_content %}
+<header class="hydra-header">
+  <div>
+    <h1 class="oh-main__titlebar-title">{% trans "Arrival coordination" %}</h1>
+    <p class="hydra-muted mb-0">{% trans "Location-scoped plans, confirmations and no-shows." %}</p>
+  </div>
+  <div class="hydra-actions"><a class="oh-btn oh-btn--secondary" href="{% url 'hydra-person-list' %}">{% trans "Choose a person" %}</a></div>
+</header>
+
+<section class="hydra-card mb-3" aria-label="{% trans 'Today summary' %}">
+  <dl class="hydra-detail">
+    <div><dt>{% trans "Planned today" %}</dt><dd>{{ today_planned }}</dd></div>
+    <div><dt>{% trans "Confirmed today" %}</dt><dd>{{ today_confirmed }}</dd></div>
+    <div><dt>{% trans "No-show today" %}</dt><dd>{{ today_no_show }}</dd></div>
+  </dl>
+</section>
+
+<form class="hydra-card mb-3" method="get">
+  <div class="hydra-grid">
+    {% for field in filter_form %}<div class="hydra-field">{{ field.label_tag }}{{ field }}{{ field.errors }}</div>{% endfor %}
+  </div>
+  <div class="hydra-actions mt-3"><button class="oh-btn" type="submit">{% trans "Filter" %}</button><a class="oh-btn" href="{% url 'hydra-arrival-list' %}">{% trans "Clear" %}</a></div>
+</form>
+
+<section class="hydra-card" aria-labelledby="arrival-queue-title">
+  <h2 class="h4" id="arrival-queue-title">{% trans "Coordinator queue" %}</h2>
+  {% if page_obj.object_list %}
+  <table class="hydra-table">
+    <thead><tr><th>{% trans "Person" %}</th><th>{% trans "Plan" %}</th><th>{% trans "Destination" %}</th><th>{% trans "Coordinator" %}</th><th>{% trans "Status" %}</th></tr></thead>
+    <tbody>
+      {% for plan in page_obj %}
+      <tr>
+        <td data-label="{% trans 'Person' %}"><a href="{{ plan.get_absolute_url }}">{{ plan.person.passport_name }}</a><br><span class="hydra-muted">{{ plan.person.hydra_id }} · {{ plan.candidate.email }}</span></td>
+        <td data-label="{% trans 'Plan' %}">{{ plan.planned_at|date:"Y-m-d H:i" }}<br><span class="hydra-muted">{{ plan.get_transport_type_display }}{% if plan.transport_reference %} · {{ plan.transport_reference }}{% endif %}</span></td>
+        <td data-label="{% trans 'Destination' %}">{{ plan.destination_location }}</td>
+        <td data-label="{% trans 'Coordinator' %}">{{ plan.coordinator.get_full_name|default:plan.coordinator.username }}</td>
+        <td data-label="{% trans 'Status' %}"><span class="hydra-status">{{ plan.get_status_display }}</span>{% if plan.is_overdue %}<br><span class="text-danger">{% trans "Overdue" %}</span>{% endif %}</td>
+      </tr>
+      {% endfor %}
+    </tbody>
+  </table>
+  {% else %}<p class="hydra-muted mb-0">{% trans "No arrival plans match the current scope and filters." %}</p>{% endif %}
+</section>
+
+{% if page_obj.paginator.num_pages > 1 %}<nav class="hydra-pagination" aria-label="{% trans 'Pagination' %}"><div>{% if page_obj.has_previous %}<a class="oh-btn" href="?page={{ page_obj.previous_page_number }}">{% trans "Previous" %}</a>{% endif %}</div><span>{% blocktrans with current=page_obj.number total=page_obj.paginator.num_pages %}Page {{ current }} of {{ total }}{% endblocktrans %}</span><div>{% if page_obj.has_next %}<a class="oh-btn" href="?page={{ page_obj.next_page_number }}">{% trans "Next" %}</a>{% endif %}</div></nav>{% endif %}
+{% endblock person_content %}

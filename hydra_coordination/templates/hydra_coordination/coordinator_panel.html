@@ -1,0 +1,140 @@
+{% extends "hydra_people/base.html" %}
+{% load i18n %}
+
+{% block person_content %}
+<header class="hydra-header">
+  <div>
+    <p class="hydra-muted mb-1">{% trans "Location operations" %}</p>
+    <h1 class="oh-main__titlebar-title">{% trans "Coordinator panel" %}</h1>
+  </div>
+  {% if selected_location %}<span class="hydra-team-chip">{{ selected_location }}</span>{% endif %}
+</header>
+
+<form class="hydra-card hydra-panel-filter hydra-panel-filter--compact mb-3" method="get">
+  <div class="hydra-field">
+    <label for="coordinator-location">{% trans "Location" %}</label>
+    <select class="oh-select w-100" id="coordinator-location" name="location">
+      {% for location in locations %}
+        <option value="{{ location.pk }}"{% if location == selected_location %} selected{% endif %}>{{ location }}</option>
+      {% endfor %}
+    </select>
+  </div>
+  <div class="hydra-field">
+    <label for="coordinator-date">{% trans "Operational day" %}</label>
+    <input class="oh-input w-100" id="coordinator-date" name="date" type="date" value="{{ selected_date|date:'Y-m-d' }}" max="{{ today|date:'Y-m-d' }}">
+  </div>
+  <div class="hydra-actions"><button class="oh-btn oh-btn--secondary" type="submit">{% trans "Show" %}</button></div>
+</form>
+
+{% if selected_location %}
+  <section class="hydra-kpi-grid mb-3" aria-label="{% trans 'Location summary' %}">
+    <article class="hydra-kpi"><span>{% trans "Arrivals on day" %}</span><strong>{{ snapshot.arrivals_today }}</strong></article>
+    <article class="hydra-kpi"><span>{% trans "Arrival exceptions" %}</span><strong>{{ snapshot.arrival_exception_count }}</strong></article>
+    <article class="hydra-kpi"><span>{% trans "Unassigned after arrival" %}</span><strong>{{ snapshot.assignment_gap_count }}</strong></article>
+    <article class="hydra-kpi"><span>{% trans "Legalization attention" %}</span><strong>{{ snapshot.legalization_exception_count }}</strong></article>
+  </section>
+
+  {% include "hydra_links/_public_links.html" %}
+
+  <section class="hydra-card mb-3" aria-labelledby="coordinator-arrivals-title">
+    <div class="hydra-header">
+      <div>
+        <h2 class="h4 mb-1" id="coordinator-arrivals-title">{% trans "Arrival exceptions" %}</h2>
+        <p class="hydra-muted mb-0">{% trans "Open overdue plans and no-shows scheduled for the selected day." %}</p>
+      </div>
+      <span class="hydra-status hydra-status--danger">{{ snapshot.arrival_exception_count }}</span>
+    </div>
+    {% if snapshot.arrival_exceptions %}
+      <table class="hydra-table">
+        <thead><tr><th>{% trans "Person" %}</th><th>{% trans "Planned" %}</th><th>{% trans "Coordinator" %}</th><th>{% trans "Exception" %}</th></tr></thead>
+        <tbody>
+          {% for row in snapshot.arrival_exceptions %}
+            <tr class="hydra-row--exception">
+              <td data-label="{% trans 'Person' %}"><a href="{{ row.plan.get_absolute_url }}">{{ row.person.passport_name }}</a><br><span class="hydra-muted">{{ row.person.hydra_id }}</span></td>
+              <td data-label="{% trans 'Planned' %}"><time datetime="{{ row.plan.planned_at|date:'c' }}">{{ row.plan.planned_at|date:"Y-m-d H:i" }}</time></td>
+              <td data-label="{% trans 'Coordinator' %}">{{ row.plan.coordinator.get_full_name|default:row.plan.coordinator.username }}</td>
+              <td data-label="{% trans 'Exception' %}">
+                <div class="hydra-tags">
+                  {% if row.overdue %}<span class="hydra-status hydra-status--danger">{% trans "Overdue arrival" %}</span>{% endif %}
+                  {% if row.no_show %}<span class="hydra-status hydra-status--danger">{% trans "No-show" %}</span>{% endif %}
+                </div>
+              </td>
+            </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    {% else %}
+      <p class="hydra-muted mb-0">{% trans "No arrival exceptions for this location and day." %}</p>
+    {% endif %}
+  </section>
+
+  <section class="hydra-card mb-3" aria-labelledby="coordinator-assignment-title">
+    <div class="hydra-header">
+      <div>
+        <h2 class="h4 mb-1" id="coordinator-assignment-title">{% trans "Assignment gaps" %}</h2>
+        <p class="hydra-muted mb-0">{% trans "Confirmed arrivals without any primary team assignment effective on the selected day." %}</p>
+      </div>
+      <span class="hydra-status hydra-status--warning">{{ snapshot.assignment_gap_count }}</span>
+    </div>
+    {% if snapshot.assignment_gaps %}
+      <table class="hydra-table">
+        <thead><tr><th>{% trans "Person" %}</th><th>{% trans "Arrived" %}</th><th>{% trans "Destination" %}</th><th>{% trans "Exception" %}</th></tr></thead>
+        <tbody>
+          {% for plan in snapshot.assignment_gaps %}
+            <tr class="hydra-row--exception">
+              <td data-label="{% trans 'Person' %}">{{ plan.person.passport_name }}<br><span class="hydra-muted">{{ plan.person.hydra_id }}</span></td>
+              <td data-label="{% trans 'Arrived' %}"><time datetime="{{ plan.actual_arrived_at|date:'c' }}">{{ plan.actual_arrived_at|date:"Y-m-d H:i" }}</time></td>
+              <td data-label="{% trans 'Destination' %}">{{ plan.destination_location.name }}</td>
+              <td data-label="{% trans 'Exception' %}"><span class="hydra-status hydra-status--warning">{% trans "No team assignment" %}</span></td>
+            </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    {% else %}
+      <p class="hydra-muted mb-0">{% trans "No confirmed arrivals are waiting for a team assignment." %}</p>
+    {% endif %}
+  </section>
+
+  <section class="hydra-card" aria-labelledby="coordinator-legalization-title">
+    <div class="hydra-header">
+      <div>
+        <h2 class="h4 mb-1" id="coordinator-legalization-title">{% trans "Legalization attention" %}</h2>
+        <p class="hydra-muted mb-0">{% trans "Missing, overdue or upcoming deadlines and validity dates within 30 days." %}</p>
+      </div>
+      <span class="hydra-status hydra-status--warning">{{ snapshot.legalization_exception_count }}</span>
+    </div>
+    {% if snapshot.legalization_exceptions %}
+      <table class="hydra-table">
+        <thead><tr><th>{% trans "Person" %}</th><th>{% trans "Case" %}</th><th>{% trans "Deadline / validity" %}</th><th>{% trans "Exception" %}</th></tr></thead>
+        <tbody>
+          {% for row in snapshot.legalization_exceptions %}
+            <tr class="hydra-row--exception">
+              <td data-label="{% trans 'Person' %}"><a href="{{ row.case.get_absolute_url }}">{{ row.person.passport_name }}</a><br><span class="hydra-muted">{{ row.person.hydra_id }}</span></td>
+              <td data-label="{% trans 'Case' %}">{{ row.case.get_case_type_display }}<br><span class="hydra-muted">{{ row.case.get_status_display }}</span></td>
+              <td data-label="{% trans 'Deadline / validity' %}">{% if row.case.deadline %}{{ row.case.deadline|date:"Y-m-d" }}{% else %}—{% endif %} / {% if row.case.valid_until %}{{ row.case.valid_until|date:"Y-m-d" }}{% else %}—{% endif %}</td>
+              <td data-label="{% trans 'Exception' %}">
+                <div class="hydra-tags">
+                  {% if row.missing_deadline %}<span class="hydra-status hydra-status--danger">{% trans "Missing deadline" %}</span>{% endif %}
+                  {% if row.overdue_deadline %}<span class="hydra-status hydra-status--danger">{% trans "Overdue deadline" %}</span>{% endif %}
+                  {% if row.due_soon %}<span class="hydra-status hydra-status--warning">{% trans "Deadline within 30 days" %}</span>{% endif %}
+                  {% if row.missing_validity %}<span class="hydra-status hydra-status--danger">{% trans "Missing validity" %}</span>{% endif %}
+                  {% if row.expired_validity %}<span class="hydra-status hydra-status--danger">{% trans "Expired validity" %}</span>{% endif %}
+                  {% if row.expiring_validity %}<span class="hydra-status hydra-status--warning">{% trans "Validity within 30 days" %}</span>{% endif %}
+                </div>
+              </td>
+            </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    {% else %}
+      <p class="hydra-muted mb-0">{% trans "No legalization exceptions for currently assigned people." %}</p>
+    {% endif %}
+  </section>
+  <p class="hydra-muted mt-3 mb-0">{% trans "This read-only panel highlights items for operational review; it does not make final HR, absence or legal decisions." %}</p>
+{% else %}
+  <section class="hydra-card">
+    <h2 class="h4">{% trans "No direct location scope" %}</h2>
+    <p class="hydra-muted mb-0">{% trans "A current direct Location grant is required. Company, department, section and team grants do not open the coordinator panel." %}</p>
+  </section>
+{% endif %}
+{% endblock person_content %}

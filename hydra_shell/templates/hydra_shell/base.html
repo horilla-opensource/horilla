@@ -1,0 +1,124 @@
+{% extends "index.html" %}
+{% load static i18n hydra_shell_tags %}
+
+{% block styles %}
+  {{ block.super }}
+  <link rel="stylesheet" href="{% static 'hydra_shell/css/shell.css' %}">
+{% endblock styles %}
+
+{% block content %}
+{% hydra_nav_is_active "people" as people_active %}
+{% hydra_nav_is_active "recruitment" as recruitment_active %}
+{% hydra_nav_is_active "arrivals" as arrivals_active %}
+{% hydra_nav_is_active "coordinator" as coordinator_active %}
+{% hydra_nav_is_active "brigadier" as brigadier_active %}
+{% hydra_nav_is_active "organization" as organization_active %}
+{% hydra_nav_is_active "legalization" as legalization_active %}
+{% hydra_nav_is_active "templates" as templates_active %}
+{% hydra_nav_is_active "public_links" as public_links_active %}
+{% hydra_nav_is_active "reports" as reports_active %}
+{% hydra_public_portal_url as portal_url %}
+<a class="hydra-shell__skip-link" href="#hydra-workspace-content">{% trans "Skip to Hydra content" %}</a>
+<section class="hydra-shell" aria-label="{% trans 'Hydra workspace' %}">
+  <header class="hydra-shell__masthead">
+    <div class="hydra-shell__brand">
+      <span class="hydra-shell__brand-mark" aria-hidden="true">H</span>
+      <div>
+        <p class="hydra-shell__eyebrow">{% trans "Operations workspace" %}</p>
+        <p class="hydra-shell__wordmark">HYDRA</p>
+      </div>
+    </div>
+
+    <nav class="hydra-shell__nav" aria-label="{% trans 'Hydra modules' %}">
+      {% if perms.hydra_people.view_person %}
+        <a class="hydra-shell__nav-link{% if people_active %} hydra-shell__nav-link--active{% endif %}"
+           href="{% url 'hydra-person-list' %}"{% if people_active %} aria-current="page"{% endif %}>
+          <ion-icon name="people-outline" aria-hidden="true"></ion-icon>
+          <span>{% trans "People" %}</span>
+        </a>
+      {% endif %}
+      {% if perms.recruitment.view_candidate and perms.hydra_people.view_person %}
+        <a class="hydra-shell__nav-link{% if recruitment_active %} hydra-shell__nav-link--active{% endif %}"
+           href="{% url 'hydra-recruitment-list' %}"{% if recruitment_active %} aria-current="page"{% endif %}>
+          <ion-icon name="person-add-outline" aria-hidden="true"></ion-icon>
+          <span>{% trans "Recruitment" %}</span>
+        </a>
+      {% endif %}
+      {% if perms.hydra_arrivals.view_arrivalplan and perms.hydra_coordination.view_location and perms.hydra_people.view_person and perms.recruitment.view_candidate %}
+        <a class="hydra-shell__nav-link{% if arrivals_active %} hydra-shell__nav-link--active{% endif %}"
+           href="{% url 'hydra-arrival-list' %}"{% if arrivals_active %} aria-current="page"{% endif %}>
+          <ion-icon name="airplane-outline" aria-hidden="true"></ion-icon>
+          <span>{% trans "Arrivals" %}</span>
+        </a>
+      {% endif %}
+      {% if perms.hydra_coordination.view_coordinator_panel and perms.hydra_coordination.view_location and perms.hydra_people.view_person and perms.hydra_arrivals.view_arrivalplan and perms.hydra_legalization.view_legalizationcase %}
+        <a class="hydra-shell__nav-link{% if coordinator_active %} hydra-shell__nav-link--active{% endif %}"
+           href="{% url 'hydra-coordinator-panel' %}"{% if coordinator_active %} aria-current="page"{% endif %}>
+          <ion-icon name="grid-outline" aria-hidden="true"></ion-icon>
+          <span>{% trans "Coordinator" %}</span>
+        </a>
+      {% endif %}
+      {% if perms.hydra_coordination.view_brigadier_panel and perms.hydra_people.view_person and perms.employee.view_employee and perms.attendance.view_attendance %}
+        <a class="hydra-shell__nav-link{% if brigadier_active %} hydra-shell__nav-link--active{% endif %}"
+           href="{% url 'hydra-brigadier-panel' %}"{% if brigadier_active %} aria-current="page"{% endif %}>
+          <ion-icon name="people-circle-outline" aria-hidden="true"></ion-icon>
+          <span>{% trans "Brigadier" %}</span>
+        </a>
+      {% endif %}
+      {% if perms.hydra_coordination.view_location %}
+        <a class="hydra-shell__nav-link{% if organization_active %} hydra-shell__nav-link--active{% endif %}"
+           href="{% url 'hydra-organization' %}"{% if organization_active %} aria-current="page"{% endif %}>
+          <ion-icon name="git-network-outline" aria-hidden="true"></ion-icon>
+          <span>{% trans "Organization" %}</span>
+        </a>
+      {% endif %}
+      {% if perms.hydra_legalization.view_legalizationcase %}
+        <a class="hydra-shell__nav-link{% if legalization_active %} hydra-shell__nav-link--active{% endif %}"
+           href="{% url 'hydra-legalization-list' %}"{% if legalization_active %} aria-current="page"{% endif %}>
+          <ion-icon name="document-text-outline" aria-hidden="true"></ion-icon>
+          <span>{% trans "Legalization" %}</span>
+        </a>
+      {% endif %}
+      {% if perms.hydra_templates.view_messagetemplate %}
+        <a class="hydra-shell__nav-link{% if templates_active %} hydra-shell__nav-link--active{% endif %}"
+           href="{% url 'hydra-template-list' %}"{% if templates_active %} aria-current="page"{% endif %}>
+          <ion-icon name="copy-outline" aria-hidden="true"></ion-icon>
+          <span>{% trans "Templates" %}</span>
+        </a>
+      {% endif %}
+      {% if perms.hydra_links.view_publichydralink %}
+        <a class="hydra-shell__nav-link{% if public_links_active %} hydra-shell__nav-link--active{% endif %}"
+           href="{% url 'hydra-public-link-list' %}"{% if public_links_active %} aria-current="page"{% endif %}>
+          <ion-icon name="link-outline" aria-hidden="true"></ion-icon>
+          <span>{% trans "Public links" %}</span>
+        </a>
+      {% endif %}
+      {% if perms.hydra_reports.view_operational_report and perms.hydra_people.view_person and perms.hydra_coordination.view_personassignment and perms.hydra_coordination.view_location and perms.hydra_coordination.view_team and perms.hydra_arrivals.view_arrivalplan and perms.recruitment.view_candidate and perms.hydra_legalization.view_legalizationcase %}
+        <a class="hydra-shell__nav-link{% if reports_active %} hydra-shell__nav-link--active{% endif %}"
+           href="{% url 'hydra-operational-report' %}"{% if reports_active %} aria-current="page"{% endif %}>
+          <ion-icon name="bar-chart-outline" aria-hidden="true"></ion-icon>
+          <span>{% trans "Reports" %}</span>
+        </a>
+      {% endif %}
+      <a class="hydra-shell__nav-link hydra-shell__nav-link--external"
+         href="{{ portal_url }}" target="_blank" rel="noopener noreferrer external">
+        <ion-icon name="school-outline" aria-hidden="true"></ion-icon>
+        <span>{% trans "Training / Hydra" %}</span>
+        <span class="hydra-shell__external-label">{% trans "External" %}</span>
+      </a>
+    </nav>
+
+    <div class="hydra-shell__identity">
+      <span class="hydra-shell__identity-label">
+        {% if request.user.is_superuser %}{% trans "System administrator" %}{% else %}{% trans "Scoped workspace" %}{% endif %}
+      </span>
+      <strong>{{ request.user.get_full_name|default:request.user.username }}</strong>
+    </div>
+  </header>
+
+  <main class="hydra-page" id="hydra-workspace-content" tabindex="-1">
+    {% block hydra_content %}{% endblock hydra_content %}
+  </main>
+</section>
+<script src="{% static 'hydra_shell/js/shell.js' %}"></script>
+{% endblock content %}

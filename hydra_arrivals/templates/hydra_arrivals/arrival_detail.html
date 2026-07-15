@@ -1,0 +1,48 @@
+{% extends "hydra_people/base.html" %}
+{% load i18n %}
+
+{% block person_content %}
+<header class="hydra-header">
+  <div><p class="hydra-muted mb-1">{{ plan.person.hydra_id }}</p><h1 class="oh-main__titlebar-title">{{ plan.person.passport_name }}</h1></div>
+  <div class="hydra-actions"><a class="oh-btn" href="{% url 'hydra-arrival-list' %}">{% trans "Arrival queue" %}</a>{% if can_edit %}<a class="oh-btn oh-btn--secondary" href="{% url 'hydra-arrival-update' plan.uuid %}">{% trans "Edit plan" %}</a>{% endif %}</div>
+</header>
+
+<section class="hydra-card mb-3">
+  <dl class="hydra-detail">
+    <div><dt>{% trans "Status" %}</dt><dd><span class="hydra-status">{{ plan.get_status_display }}</span>{% if plan.is_overdue %} <span class="text-danger">{% trans "Overdue" %}</span>{% endif %}</dd></div>
+    <div><dt>{% trans "Planned at" %}</dt><dd>{{ plan.planned_at|date:"Y-m-d H:i" }}</dd></div>
+    <div><dt>{% trans "Actual arrival" %}</dt><dd>{{ plan.actual_arrived_at|date:"Y-m-d H:i"|default:"—" }}</dd></div>
+    <div><dt>{% trans "Destination" %}</dt><dd>{{ plan.destination_location }}</dd></div>
+    <div><dt>{% trans "Coordinator" %}</dt><dd>{{ plan.coordinator.get_full_name|default:plan.coordinator.username }}</dd></div>
+    <div><dt>{% trans "Application" %}</dt><dd>{{ plan.candidate.email }}</dd></div>
+    <div><dt>{% trans "Transport" %}</dt><dd>{{ plan.get_transport_type_display }}</dd></div>
+    <div><dt>{% trans "Reference" %}</dt><dd>{{ plan.transport_reference|default:"—" }}</dd></div>
+    <div><dt>{% trans "Pickup point" %}</dt><dd>{{ plan.pickup_point|default:"—" }}</dd></div>
+  </dl>
+  {% if plan.notes %}<div class="mt-3"><strong>{% trans "Notes" %}</strong><p class="mb-0">{{ plan.notes|linebreaksbr }}</p></div>{% endif %}
+  {% if plan.no_show_reason %}<div class="mt-3"><strong>{% trans "No-show reason" %}</strong><p class="mb-0">{{ plan.no_show_reason }}</p></div>{% endif %}
+</section>
+
+{% include "hydra_links/_public_links.html" %}
+
+{% if can_transition %}
+<section class="hydra-card mb-3" aria-labelledby="arrival-outcome-title">
+  <h2 class="h4" id="arrival-outcome-title">{% trans "Record outcome" %}</h2>
+  <form method="post" action="{% url 'hydra-arrival-transition' plan.uuid %}" novalidate>
+    {% csrf_token %}{% if transition_form.non_field_errors %}<div class="hydra-errors">{{ transition_form.non_field_errors }}</div>{% endif %}
+    <div class="hydra-grid">{% for field in transition_form %}<div class="hydra-field">{{ field.label_tag }}{{ field }}{{ field.errors }}</div>{% endfor %}</div>
+    <div class="hydra-actions mt-3"><button class="oh-btn oh-btn--secondary" type="submit">{% trans "Save outcome" %}</button></div>
+  </form>
+</section>
+{% endif %}
+
+{% if perms.hydra_arrivals.view_arrivalstatushistory %}
+<section class="hydra-card" aria-labelledby="arrival-history-title">
+  <h2 class="h4" id="arrival-history-title">{% trans "Status history" %}</h2>
+  <table class="hydra-table">
+    <thead><tr><th>{% trans "When" %}</th><th>{% trans "Change" %}</th><th>{% trans "Actor" %}</th><th>{% trans "Reason" %}</th></tr></thead>
+    <tbody>{% for event in status_history %}<tr><td data-label="{% trans 'When' %}">{{ event.occurred_at|date:"Y-m-d H:i" }}</td><td data-label="{% trans 'Change' %}">{{ event.get_from_status_display|default:"—" }} → {{ event.get_to_status_display }}</td><td data-label="{% trans 'Actor' %}">{{ event.actor }}</td><td data-label="{% trans 'Reason' %}">{{ event.reason|default:"—" }}</td></tr>{% empty %}<tr><td colspan="4">{% trans "No status events." %}</td></tr>{% endfor %}</tbody>
+  </table>
+</section>
+{% endif %}
+{% endblock person_content %}

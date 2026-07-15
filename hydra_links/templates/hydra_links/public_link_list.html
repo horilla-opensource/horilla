@@ -1,0 +1,34 @@
+{% extends "hydra_people/base.html" %}
+{% load i18n %}
+
+{% block person_content %}
+<header class="hydra-header">
+  <div>
+    <h1 class="oh-main__titlebar-title">{% trans "Public Hydra links" %}</h1>
+    <p class="hydra-muted mb-0">{% trans "Controlled arrival and location-training destinations. Only language and from=hydra are added to external URLs." %}</p>
+  </div>
+  {% if perms.hydra_links.add_publichydralink %}
+    <div class="hydra-actions"><a class="oh-btn oh-btn--secondary" href="{% url 'hydra-public-link-create' %}"><ion-icon name="add-outline" class="me-1"></ion-icon>{% trans "Create link" %}</a></div>
+  {% endif %}
+</header>
+
+<section class="hydra-card" aria-label="{% trans 'Public Hydra links' %}">
+  {% if public_links %}
+    <table class="hydra-table">
+      <thead><tr><th>{% trans "Label" %}</th><th>{% trans "Purpose" %}</th><th>{% trans "Scope" %}</th><th>{% trans "State" %}</th><th>{% trans "Destination" %}</th><th>{% trans "Action" %}</th></tr></thead>
+      <tbody>
+        {% for link in public_links %}
+          <tr>
+            <td data-label="{% trans 'Label' %}"><strong>{{ link.label }}</strong></td>
+            <td data-label="{% trans 'Purpose' %}">{{ link.kind_display }}</td>
+            <td data-label="{% trans 'Scope' %}">{% if link.location %}{{ link.location }}{% else %}{% trans "Global" %}{% endif %}</td>
+            <td data-label="{% trans 'State' %}"><span class="hydra-status">{% if link.record.is_active %}{% trans "Active" %}{% else %}{% trans "Inactive" %}{% endif %}</span></td>
+            <td data-label="{% trans 'Destination' %}"><a href="{{ link.url }}" target="_blank" rel="noopener noreferrer external">{% trans "Open public page" %} <span class="hydra-shell__external-label">{% trans "External" %}</span></a></td>
+            <td data-label="{% trans 'Action' %}">{% if perms.hydra_links.change_publichydralink %}<a href="{{ link.record.get_absolute_url }}">{% trans "Edit" %}</a>{% else %}<span class="hydra-muted">—</span>{% endif %}</td>
+          </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  {% else %}<p class="hydra-muted mb-0">{% trans "No public links are visible in your active scope." %}</p>{% endif %}
+</section>
+{% endblock person_content %}

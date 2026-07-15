@@ -21,6 +21,8 @@ from django.urls import include, path, re_path
 
 import notifications.urls
 
+from hydra_ops.views import readiness_check
+
 from . import settings
 
 
@@ -36,6 +38,16 @@ urlpatterns = [
     path("", include("horilla_automations.urls")),
     path("", include("horilla_views.urls")),
     path("employee/", include("employee.urls")),
+    path("hydra/people/", include("hydra_people.urls")),
+    path("hydra/recruitment/", include("hydra_people.recruitment_urls")),
+    path("hydra/documents/", include("hydra_documents.urls")),
+    path("hydra/legalization/", include("hydra_legalization.urls")),
+    path("hydra/imports/", include("hydra_imports.urls")),
+    path("hydra/arrivals/", include("hydra_arrivals.urls")),
+    path("hydra/coordination/", include("hydra_coordination.urls")),
+    path("hydra/templates/", include("hydra_templates.urls")),
+    path("hydra/links/", include("hydra_links.urls")),
+    path("hydra/reports/", include("hydra_reports.urls")),
     path("horilla-widget/", include("horilla_widgets.urls")),
     path("api/", include("horilla_api.urls")),
     re_path(
@@ -43,6 +55,7 @@ urlpatterns = [
     ),
     path("i18n/", include("django.conf.urls.i18n")),
     path("health/", health_check),
+    path("health/ready/", readiness_check, name="hydra-readiness"),
 ]
 
 # if settings.DEBUG:

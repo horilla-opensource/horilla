@@ -1,5 +1,42 @@
 # **Horilla 🦍** [![LGPL License](https://img.shields.io/badge/license-LGPL-green.svg)](https://www.gnu.org/licenses/lgpl-3.0)  [![Docker](https://img.shields.io/badge/Docker-Horilla-blue?logo=docker)](https://hub.docker.com/r/horilla/horilla)
 
+> **Hydra — Phase 0 audit/bootstrap**
+>
+> Phase 0 deliberately did not implement business modules. Start with
+> [`docs/HORILLA_AUDIT.md`](docs/HORILLA_AUDIT.md), review the decisions in
+> [`docs/IMPLEMENTATION_DECISIONS.md`](docs/IMPLEMENTATION_DECISIONS.md), and use
+> [`scripts/bootstrap-local.ps1`](scripts/bootstrap-local.ps1) for the verified
+> Windows/PostgreSQL development bootstrap. Phase 1 starts only after this audit
+> is accepted.
+>
+> Phase 1 is implemented. The first vertical slice is documented in
+> [`docs/HYDRA_PERSON_IDENTITY.md`](docs/HYDRA_PERSON_IDENTITY.md); organization
+> scope and denial rules are documented in
+> [`docs/HYDRA_ORGANIZATION_SCOPE.md`](docs/HYDRA_ORGANIZATION_SCOPE.md). The
+> responsive shared workspace is documented in
+> [`docs/HYDRA_SHELL.md`](docs/HYDRA_SHELL.md). The TASK-2 Horilla recruitment
+> extension and Person-link workflow are documented in
+> [`docs/HYDRA_RECRUITMENT.md`](docs/HYDRA_RECRUITMENT.md). The private candidate
+> document boundary is documented in
+> [`docs/HYDRA_PRIVATE_DOCUMENTS.md`](docs/HYDRA_PRIVATE_DOCUMENTS.md). The
+> legalization MVP is documented in
+> [`docs/HYDRA_LEGALIZATION.md`](docs/HYDRA_LEGALIZATION.md). Transactional
+> candidate import, arrival planning, Person-to-Employee conversion and
+> employee team assignment, the mobile brigadier panel, the coordinator
+> exception dashboard, the scoped template/Szablonizator export module and the
+> controlled public Hydra link directory and scoped operational report are
+> documented in [`docs/HYDRA_EXCEL_IMPORT.md`](docs/HYDRA_EXCEL_IMPORT.md),
+> [`docs/HYDRA_ARRIVALS.md`](docs/HYDRA_ARRIVALS.md),
+> [`docs/HYDRA_EMPLOYEE_CONVERSION.md`](docs/HYDRA_EMPLOYEE_CONVERSION.md),
+> [`docs/HYDRA_TEAM_ASSIGNMENT.md`](docs/HYDRA_TEAM_ASSIGNMENT.md),
+> [`docs/HYDRA_BRIGADIER_PANEL.md`](docs/HYDRA_BRIGADIER_PANEL.md),
+> [`docs/HYDRA_COORDINATOR_PANEL.md`](docs/HYDRA_COORDINATOR_PANEL.md),
+> [`docs/HYDRA_TEMPLATES.md`](docs/HYDRA_TEMPLATES.md),
+> [`docs/HYDRA_PUBLIC_LINKS.md`](docs/HYDRA_PUBLIC_LINKS.md) and
+> [`docs/HYDRA_REPORTS.md`](docs/HYDRA_REPORTS.md). Hardened staging,
+> backup/restore, rollback, and the pilot go/no-go gate are documented in
+> [`docs/HYDRA_STAGING.md`](docs/HYDRA_STAGING.md).
+
 **Horilla** is a Free and Open Source HRMS (Human Resource Management System) Software designed to streamline HR processes and enhance organizational efficiency.
 
 ![Horilla Screenshot](https://github.com/horilla-opensource/horilla/assets/131998600/1317bd0a-03a8-40be-8fb2-ecb655bb5c13)
