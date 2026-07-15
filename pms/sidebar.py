@@ -99,5 +99,17 @@ class PerformanceSettings:
             "label": _("Bonus Point Setting"),
             "url": reverse_lazy("bonus-point-setting"),
             "accessibility": bonus_point_accessibility,
+            "search_entries": [
+                {
+                    "text": _("Bonus Point Setting"),
+                    "description": _(
+                        "Configure bonus points awarded for objectives tasks and projects"
+                    ),
+                },
+                {
+                    "text": _("Bonus Points"),
+                    "description": _("Points awarded for performance milestones"),
+                },
+            ],
         },
     ]

@@ -168,15 +168,43 @@ class RecruitmentSettings:
             "label": _("Candidate Self Tracking"),
             "url": reverse_lazy("self-tracking-feature"),
             "accessibility": self_tracking_accessibility,
+            "search_entries": [
+                {
+                    "text": _("Application Tracking"),
+                    "description": _(
+                        "Allow candidates to track their recruitment pipeline status"
+                    ),
+                },
+                {
+                    "text": _("Rating Visibility"),
+                    "description": _(
+                        "Allow candidates to view their recruitment rating"
+                    ),
+                },
+            ],
         },
         {
             "label": _("Candidate Reject Reason"),
             "url": reverse_lazy("candidate-reject-reasons"),
             "accessibility": reject_reason_accessibility,
+            "search_entries": [
+                {
+                    "text": _("Candidate Reject Reason"),
+                    "description": _("Define reasons for rejecting a candidate"),
+                },
+            ],
         },
         {
             "label": _("Skills"),
             "url": reverse_lazy("skills-view"),
             "accessibility": skills_accessibility,
+            "search_entries": [
+                {
+                    "text": _("Skills"),
+                    "description": _(
+                        "Manage the list of skills available for candidates and employees"
+                    ),
+                },
+            ],
         },
     ]

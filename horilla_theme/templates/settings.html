@@ -24,39 +24,6 @@
         </div>
     </div>
 
-    <div class="mb-4 pe-2 relative" id="settings-search-wrapper">
-        <div class="relative">
-            <span class="absolute inset-y-0 left-3 flex items-center pointer-events-none text-primary-500">
-                <ion-icon name="search-outline" style="font-size:16px;"></ion-icon>
-            </span>
-            <input
-                type="text"
-                id="settings-content-search"
-                placeholder="{% trans 'Search settings...' %}"
-                autocomplete="off"
-                class="w-full rounded-md border border-primary-200 bg-white pl-9 pr-10 py-2 text-[13px] text-gray-700 placeholder-gray-400 focus:outline-none focus:border-primary-500 focus:ring-2 focus:ring-primary-100 shadow-sm transition-all"
-            />
-            <button
-                id="settings-search-clear"
-                class="absolute inset-y-0 right-3 flex items-center text-gray-400 hover:text-primary-500 transition-colors hidden"
-                type="button"
-            >
-                <ion-icon name="close-circle" style="font-size:16px;"></ion-icon>
-            </button>
-        </div>
-        <div
-            id="settings-search-dropdown"
-            class="absolute left-0 right-0 top-full mt-1 z-50 bg-white border border-primary-200 rounded-md shadow-card hidden overflow-hidden"
-            style="max-height:420px;overflow-y:auto;"
-        >
-            <div id="settings-search-results"></div>
-            <div id="settings-search-empty" class="hidden px-4 py-8 text-center">
-                <ion-icon name="search-outline" style="font-size:28px;" class="text-gray-300 mb-2 block mx-auto"></ion-icon>
-                <p class="text-[13px] text-gray-400">{% trans "No settings found" %}</p>
-            </div>
-        </div>
-    </div>
-
     <div class="grid grid-cols-12 gap-4 h-full pe-2">
         <!-- Left Column: 3/12 -->
         <div
@@ -70,6 +37,43 @@
             hx-headers='{"HX-Sidebar-Nav": "true"}'
         >
             <div class="bg-white rounded-md shadow-card p-3 h-full">
+
+                {# ── Settings search — lives in the sidebar so filtering feels natural ── #}
+                <div class="mb-3 relative" id="settings-search-wrapper">
+                    <span class="absolute inset-y-0 left-2.5 flex items-center pointer-events-none text-gray-400" style="z-index:1;">
+                        <ion-icon name="search-outline" style="font-size:13px;"></ion-icon>
+                    </span>
+                    <input
+                        type="text"
+                        id="settings-content-search"
+                        placeholder="{% trans 'Search settings…' %}"
+                        autocomplete="off"
+                        class="w-full rounded border border-gray-200 bg-gray-50 pl-7 pr-7 py-1.5 text-[12.5px] text-gray-600 placeholder-gray-400 focus:outline-none focus:border-primary-400 focus:bg-white focus:ring-1 focus:ring-primary-100 transition-all"
+                    />
+                    <button
+                        id="settings-search-clear"
+                        class="absolute inset-y-0 right-2 flex items-center text-gray-300 hover:text-gray-500 transition-colors hidden"
+                        type="button"
+                        tabindex="-1"
+                    >
+                        <ion-icon name="close-circle" style="font-size:13px;"></ion-icon>
+                    </button>
+
+                    {# Suggestions dropdown — wider than sidebar, anchored left #}
+                    <div
+                        id="settings-search-dropdown"
+                        class="hidden absolute top-full mt-1 left-0 bg-white border border-gray-200 rounded-md shadow-lg overflow-hidden"
+                        style="z-index:9999; width:340px; max-height:400px; overflow-y:auto;"
+                    >
+                        <div id="settings-search-results"></div>
+                        <div id="settings-search-dropdown-empty" class="hidden px-4 py-6 text-center">
+                            <ion-icon name="search-outline" style="font-size:24px;" class="text-gray-300 mb-1 block mx-auto"></ion-icon>
+                            <p class="text-[12px] text-gray-400">{% trans "No settings found" %}</p>
+                        </div>
+                    </div>
+                </div>
+                <p id="settings-search-empty" class="hidden text-[11.5px] text-gray-400 text-center py-4">{% trans "No settings found" %}</p>
+
                 <div class="accordion-wrapper space-y-2">
                     {% for section in settings_menu %}
                         <div class="accordion-item border border-primary-300 rounded-md overflow-hidden">
@@ -268,20 +272,131 @@
             {% settings_search_index as settingsIndex %}
             const SETTINGS_INDEX = {{ settingsIndex|safe }};
 
-            const $input = $("#settings-content-search");
-            const $clear = $("#settings-search-clear");
+            const $input    = $("#settings-content-search");
+            const $clear    = $("#settings-search-clear");
+            const $empty    = $("#settings-search-empty");
             const $dropdown = $("#settings-search-dropdown");
-            const $results = $("#settings-search-results");
-            const $empty = $("#settings-search-empty");
+            const $results  = $("#settings-search-results");
+            const $dropEmpty= $("#settings-search-dropdown-empty");
 
-            function navigateToSetting(url) {
+            // ── Restore accordion to saved state ──────────────────────────────
+            function restoreAccordion() {
+                $(".accordion-item").show();
+                $(".accordion-panel li").show();
+                $empty.addClass("hidden");
+                $(".accordion-panel").addClass("max-h-0").removeClass("max-h-[9999px]");
+                $(".accordion-btn-stng .icon").text("+");
+                const saved = localStorage.getItem("openAccordion");
+                if (saved) {
+                    const $btn = $(`.accordion-btn-stng[data-id="${saved}"]`);
+                    $btn.next(".accordion-panel").removeClass("max-h-0").addClass("max-h-[9999px]");
+                    $btn.find(".icon").text("-");
+                }
+            }
+
+            // ── Filter accordion items inline ─────────────────────────────────
+            function filterAccordion(query) {
+                let anyVisible = false;
+                $(".accordion-item").each(function () {
+                    const $section    = $(this);
+                    const $items      = $section.find(".accordion-panel li");
+                    const sectionText = $section.find(".accordion-btn-stng").text().toLowerCase();
+                    const sectionHit  = sectionText.includes(query);
+                    let itemHit       = false;
+
+                    $items.each(function () {
+                        const matches = $(this).find("a").text().toLowerCase().includes(query) || sectionHit;
+                        $(this).toggle(matches);
+                        if (matches) itemHit = true;
+                    });
+
+                    if (itemHit) {
+                        $section.show();
+                        $section.find(".accordion-panel").removeClass("max-h-0").addClass("max-h-[9999px]");
+                        $section.find(".accordion-btn-stng .icon").text("-");
+                        anyVisible = true;
+                    } else {
+                        $section.hide();
+                    }
+                });
+                $empty.toggleClass("hidden", anyVisible);
+            }
+
+            // ── Highlight matched text ────────────────────────────────────────
+            function hl(text, q) {
+                if (!q) return $("<span>").text(text).html();
+                const esc = q.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
+                return text.replace(new RegExp("(" + esc + ")", "gi"),
+                    "<mark style='background:var(--color-primary-200,#fde8e4);color:var(--color-primary-700,#b91c1c);font-weight:600;border-radius:2px;padding:0 2px;font-style:normal;'>$1</mark>");
+            }
+
+            // ── Build dropdown results ────────────────────────────────────────
+            function renderDropdown(query) {
+                const q       = query.toLowerCase();
+                const matched = SETTINGS_INDEX.filter(function (item) {
+                    return item.text.toLowerCase().includes(q)
+                        || item.description.toLowerCase().includes(q)
+                        || item.section.toLowerCase().includes(q)
+                        || item.page.toLowerCase().includes(q);
+                });
+
+                $results.empty();
+                if (!matched.length) {
+                    $dropEmpty.removeClass("hidden");
+                    return;
+                }
+                $dropEmpty.addClass("hidden");
+
+                // Group by section
+                const groups = {}, order = [];
+                matched.forEach(function (item) {
+                    if (!groups[item.section]) { groups[item.section] = []; order.push(item.section); }
+                    groups[item.section].push(item);
+                });
+
+                order.forEach(function (section, si) {
+                    const $group = $("<div" + (si < order.length - 1 ? " class='border-b border-gray-100'" : "") + ">");
+
+                    $("<div class='px-3 py-1.5 text-[10px] font-bold uppercase tracking-wider text-primary-600 bg-primary-50 border-b border-primary-100'>")
+                        .text(section)
+                        .appendTo($group);
+
+                    groups[section].forEach(function (item) {
+                        const $row = $("<button type='button' class='w-full text-left flex items-center gap-2.5 px-3 py-2 hover:bg-primary-50 transition-colors group'>")
+                            .on("click", function () { navigateTo(item.url); });
+
+                        $("<span class='flex-shrink-0 w-6 h-6 flex items-center justify-center rounded bg-primary-100 text-primary-500 group-hover:bg-primary-200'>")
+                            .html('<ion-icon name="options-outline" style="font-size:12px;"></ion-icon>')
+                            .appendTo($row);
+
+                        const $body = $("<span class='flex flex-col min-w-0 flex-1'>").appendTo($row);
+                        $("<span class='text-[12.5px] font-medium text-gray-800 leading-tight truncate'>")
+                            .html(hl(item.text, query))
+                            .appendTo($body);
+                        $("<span class='text-[11px] text-gray-400 mt-0.5'>")
+                            .html(hl(item.section, query) + " › " + hl(item.page, query))
+                            .appendTo($body);
+
+                        $("<span class='flex-shrink-0 text-primary-300 group-hover:text-primary-500'>")
+                            .html('<ion-icon name="arrow-forward-outline" style="font-size:12px;"></ion-icon>')
+                            .appendTo($row);
+
+                        $group.append($row);
+                    });
+
+                    $results.append($group);
+                });
+            }
+
+            // ── Navigate and clean up ─────────────────────────────────────────
+            function navigateTo(url) {
                 $dropdown.addClass("hidden");
                 $input.val("");
                 $clear.addClass("hidden");
-                // Pre-set the accordion state so the correct section opens on load.
-                const normalized = url.replace(/\/+$/, "");
+                restoreAccordion();
+                const norm  = url.replace(/\/+$/, "");
                 const $link = $(".accordion-panel a[href]").filter(function () {
-                    return ($(this).attr("href") || "").replace(/\/+$/, "") === normalized;
+                    return ($(this).attr("href") || "").replace(/\/+$/, "") === norm;
                 }).first();
                 if ($link.length) {
                     const panelId = $link.closest(".accordion-panel").prev(".accordion-btn-stng").data("id");
@@ -292,102 +407,32 @@
                 window.location.href = url;
             }
 
-            function highlight(text, query) {
-                if (!query) return $("<span>").text(text).html();
-                const escaped = query.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
-                return text.replace(new RegExp("(" + escaped + ")", "gi"), "<mark class='bg-primary-200 text-primary-700 font-semibold rounded-sm px-0.5' style='font-style:normal;'>$1</mark>");
-            }
-
-            function renderResults(query) {
-                const q = query.toLowerCase();
-                const matched = SETTINGS_INDEX.filter(function (item) {
-                    return item.text.toLowerCase().includes(q) || item.description.toLowerCase().includes(q) || item.section.toLowerCase().includes(q) || item.page.toLowerCase().includes(q);
-                });
-
-                $results.empty();
-                if (!matched.length) {
-                    $empty.removeClass("hidden");
-                    return;
-                }
-                $empty.addClass("hidden");
-
-                // Group by section, preserve insertion order
-                const groups = {}, order = [];
-                matched.forEach(function (item) {
-                    if (!groups[item.section]) { groups[item.section] = []; order.push(item.section); }
-                    groups[item.section].push(item);
-                });
-
-                order.forEach(function (section, si) {
-                    const borderClass = si < order.length - 1 ? "border-b border-primary-100" : "";
-                    const $group = $("<div class='" + borderClass + "'>");
-
-                    // Section header — matches sidebar accordion button style
-                    const $header = $("<div class='px-4 py-1.5 bg-primary-200 text-primary-600 text-[10.5px] font-bold uppercase tracking-widest border-b border-primary-300'>")
-                        .text(section);
-                    $group.append($header);
-
-                    groups[section].forEach(function (item) {
-                        // border-l-[3px] keeps layout stable; color toggles on hover via JS
-                        const $row = $("<button type='button' class='w-full text-left flex items-center gap-2.5 px-4 py-2.5 cursor-pointer border-l-[3px] border-l-transparent transition-colors'>")
-                            .on("mouseenter", function () { $(this).addClass("bg-primary-50 !border-l-primary-600"); })
-                            .on("mouseleave", function () { $(this).removeClass("bg-primary-50 !border-l-primary-600"); })
-                            .on("click", function () { navigateToSetting(item.url); });
-
-                        // Icon badge
-                        const $icon = $("<span class='flex-shrink-0 w-7 h-7 flex items-center justify-center rounded-md bg-primary-100 text-primary-600'>")
-                            .html('<ion-icon name="options-outline" style="font-size:13px;"></ion-icon>');
-
-                        // Text block
-                        const $body = $("<span class='flex flex-col min-w-0 flex-1'>");
-
-                        const $label = $("<span class='text-[13px] font-medium text-gray-800 leading-tight truncate'>")
-                            .html(highlight(item.text, query));
-
-                        // Section › Page breadcrumb
-                        const $crumb = $("<span class='flex items-center gap-0.5 text-[11px] text-gray-400 mt-0.5'>");
-                        $crumb.append(
-                            $("<span>").html(highlight(item.section, query)),
-                            $("<ion-icon name='chevron-forward-outline' style='font-size:9px;flex-shrink:0;'>"),
-                            $("<span>").html(highlight(item.page, query))
-                        );
-                        $body.append($label, $crumb);
-
-                        // Right arrow
-                        const $arrow = $("<span class='flex-shrink-0 text-primary-400'>")
-                            .html('<ion-icon name="arrow-forward-outline" style="font-size:14px;"></ion-icon>');
-
-                        $row.append($icon, $body, $arrow);
-                        $group.append($row);
-                    });
-
-                    $results.append($group);
-                });
-            }
-
+            // ── Main input handler ────────────────────────────────────────────
             $input.on("input", function () {
                 const query = $(this).val().trim();
                 if (!query) {
-                    $dropdown.addClass("hidden");
                     $clear.addClass("hidden");
+                    $dropdown.addClass("hidden");
+                    restoreAccordion();
                     return;
                 }
                 $clear.removeClass("hidden");
-                renderResults(query);
+                filterAccordion(query.toLowerCase());
+                renderDropdown(query);
                 $dropdown.removeClass("hidden");
             });
 
             $clear.on("click", function () {
-                $input.val("").trigger("input").trigger("focus");
+                $input.val("").trigger("input").focus();
             });
 
             $(document).on("keydown", function (e) {
-                if (e.key === "Escape") {
-                    $input.val("").trigger("input");
-                    $input.trigger("blur");
+                if (e.key === "Escape" && $input.val()) {
+                    $input.val("").trigger("input").focus();
                 }
             });
 
+            // Close dropdown on outside click
             $(document).on("click", function (e) {
                 if (!$(e.target).closest("#settings-search-wrapper").length) {
                     $dropdown.addClass("hidden");

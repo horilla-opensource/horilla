@@ -87,5 +87,17 @@ class OffboardingSettings:
             "label": _("Offboarding Rules"),
             "url": reverse_lazy("offboarding-rules-view"),
             "accessibility": offboarding_rules_accessibility,
+            "search_entries": [
+                {
+                    "text": _("Allow Resignation Request"),
+                    "description": _("Allow employees to submit resignation requests"),
+                },
+                {
+                    "text": _("Default Notice Period"),
+                    "description": _(
+                        "Default days between resignation and last working day"
+                    ),
+                },
+            ],
         },
     ]

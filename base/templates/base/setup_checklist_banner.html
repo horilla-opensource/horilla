@@ -54,20 +54,10 @@
 .hcl-dismiss:hover { color: #4b5563; background: rgba(0,0,0,0.06); }
 .dark .hcl-dismiss:hover { color: #e5e7eb; background: rgba(255,255,255,0.08); }
 
-/* ── Progress bar ───────────────────────────────────────────────────────── */
-.hcl-progress-track {
-    height: 5px; background: #e5e7eb; border-radius: 9999px;
-    overflow: hidden; margin-bottom: 20px;
-}
-.dark .hcl-progress-track { background: #374151; }
-.hcl-progress-fill {
-    height: 100%;
-    background: linear-gradient(90deg, #e54f38, #e8705e);
-    border-radius: 9999px;
-    transition: width 0.5s ease;
-}
-
 /* ── Steps row ──────────────────────────────────────────────────────────── */
+.hcl-step:first-child,
+.hcl-step:last-child { flex: 0.5; min-width: 35px; }
+
 .hcl-steps {
     display: flex; align-items: flex-start; gap: 0;
     overflow-x: auto; padding-bottom: 2px;
@@ -223,16 +213,6 @@
                     </svg>
                 </button>
             </form>
-        </div>
-
-        {# ── Progress bar ── #}
-        <div class="hcl-progress-track"
-             role="progressbar"
-             aria-valuenow="{{ setup_completed }}"
-             aria-valuemin="0"
-             aria-valuemax="{{ setup_total }}"
-             aria-label="{% blocktrans with done=setup_completed total=setup_total %}{{ done }} of {{ total }} setup steps complete{% endblocktrans %}">
-            <div class="hcl-progress-fill" style="width:{{ setup_progress_pct }}%;"></div>
         </div>
 
         {# ── Step circles ── #}

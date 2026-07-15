@@ -170,10 +170,78 @@ class AttendanceSettings:
             "label": _("Attendance Rule"),
             "url": reverse_lazy("attendance-rule-view"),
             "accessibility": attendance_rule_accessibility,
+            "search_entries": [
+                {
+                    "text": _("Enable Check In / Check Out"),
+                    "description": _(
+                        "Employees record attendance using the Check-In/Out button"
+                    ),
+                },
+                {
+                    "text": _("At-Work Tracker"),
+                    "description": _(
+                        "Show live at-work hours in the navbar inside the check-in button"
+                    ),
+                },
+                {
+                    "text": _("Track Late Come & Early Out"),
+                    "description": _(
+                        "Track late arrivals and early departures of employees"
+                    ),
+                },
+                {
+                    "text": _("IP Login Restriction"),
+                    "description": _(
+                        "Restrict attendance marking to specific IP addresses only"
+                    ),
+                },
+                {
+                    "text": _("Biometric Attendance"),
+                    "description": _("Enable biometric devices for attendance marking"),
+                },
+                {
+                    "text": _("Face Detection"),
+                    "description": _(
+                        "Allow employees to mark attendance using face detection"
+                    ),
+                },
+                {
+                    "text": _("Geofencing"),
+                    "description": _(
+                        "Restrict attendance marking to a geographic area"
+                    ),
+                },
+            ],
         },
         {
             "label": _("Time Policies"),
             "url": reverse_lazy("time-policies-view"),
             "accessibility": validation_condition_accessibility,
+            "search_entries": [
+                {
+                    "text": _("Worked Hours Auto Approve"),
+                    "description": _(
+                        "At-work hours threshold before attendance is auto-validated"
+                    ),
+                },
+                {
+                    "text": _("Minimum Overtime to Approve"),
+                    "description": _("Minimum overtime hours required for approval"),
+                },
+                {
+                    "text": _("Maximum Overtime Per Day"),
+                    "description": _("Cap on overtime hours per day"),
+                },
+                {
+                    "text": _("Grace Time"),
+                    "description": _(
+                        "Buffer time allowed for late arrivals before marking as late"
+                    ),
+                },
+                {
+                    "text": _("Grace Time Allowed"),
+                    "description": _("Duration of the grace period in minutes"),
+                },
+            ],
         },
     ]

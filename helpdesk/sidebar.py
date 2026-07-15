@@ -59,15 +59,39 @@ class HelpdeskSettings:
             "label": _("Department Managers"),
             "url": reverse_lazy("department-manager-view"),
             "accessibility": department_manager_accessibility,
+            "search_entries": [
+                {
+                    "text": _("Helpdesk Department Manager"),
+                    "description": _(
+                        "Assign managers responsible for helpdesk tickets per department"
+                    ),
+                },
+            ],
         },
         {
             "label": _("Ticket Type"),
             "url": reverse_lazy("ticket-type-view"),
             "accessibility": ticket_type_accessibility,
+            "search_entries": [
+                {
+                    "text": _("Ticket Type"),
+                    "description": _("Define categories of helpdesk tickets"),
+                },
+                {
+                    "text": _("Ticket Prefix"),
+                    "description": _("Short prefix used in ticket IDs"),
+                },
+            ],
         },
         {
             "label": _("Helpdesk Tags"),
             "url": reverse_lazy("helpdesk-tag-view"),
             "accessibility": helpdesk_tag_accessibility,
+            "search_entries": [
+                {
+                    "text": _("Helpdesk Tag"),
+                    "description": _("Create tags for classifying helpdesk tickets"),
+                },
+            ],
         },
     ]

@@ -140,10 +140,42 @@ class LeaveSettings:
             "label": _("Leave Rules"),
             "url": reverse_lazy("leave-rules-view"),
             "accessibility": leave_rules_accessibility,
+            "search_entries": [
+                {
+                    "text": _("Compensatory Leave"),
+                    "description": _("Enable compensatory leave requests"),
+                },
+                {
+                    "text": _("Restrict Past Date Leave"),
+                    "description": _(
+                        "Only admins can create leave requests for past dates"
+                    ),
+                },
+            ],
         },
         {
             "label": _("Restrict Leaves"),
             "url": reverse_lazy("restrict-leaves-view"),
             "accessibility": restrict_leaves_settings_accessibility,
+            "search_entries": [
+                {
+                    "text": _("Restrict Leaves"),
+                    "description": _(
+                        "Create blackout periods when leave cannot be taken"
+                    ),
+                },
+                {
+                    "text": _("Blackout Period Title"),
+                    "description": _("Name of the leave restriction period"),
+                },
+                {
+                    "text": _("Blackout Start Date"),
+                    "description": _("Start date of the leave restriction"),
+                },
+                {
+                    "text": _("Blackout End Date"),
+                    "description": _("End date of the leave restriction"),
+                },
+            ],
         },
     ]

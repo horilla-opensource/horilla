@@ -99,10 +99,40 @@ class PayrollSettings:
             "label": _("Payslip Auto Generation"),
             "url": reverse_lazy("auto-payslip-settings-view"),
             "accessibility": payslip_auto_generation_accessibility,
+            "search_entries": [
+                {
+                    "text": _("Auto Generate Payslip"),
+                    "description": _(
+                        "Automatically generate payslips on a set day each month"
+                    ),
+                },
+                {
+                    "text": _("Payslip Generate Day"),
+                    "description": _("Day of the month payslips are auto-generated"),
+                },
+            ],
         },
         {
             "label": _("Encashment Settings"),
             "url": reverse_lazy("encashment-settings-view"),
             "accessibility": encashment_settings_accessibility,
+            "search_entries": [
+                {
+                    "text": _("Encashment"),
+                    "description": _(
+                        "Configure leave and bonus point encashment rules"
+                    ),
+                },
+                {
+                    "text": _("Bonus Unit"),
+                    "description": _(
+                        "Monetary value credited per bonus point redeemed"
+                    ),
+                },
+                {
+                    "text": _("Leave Unit Amount"),
+                    "description": _("Monetary value credited per leave day encashed"),
+                },
+            ],
         },
     ]

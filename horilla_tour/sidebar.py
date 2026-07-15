@@ -28,5 +28,31 @@ class TourSettings:
             "label": _("Manage Tours"),
             "url": reverse_lazy("tour-section"),
             "accessibility": tour_settings_accessibility,
+            "search_entries": [
+                {
+                    "text": _("Manage Tours"),
+                    "description": _(
+                        "Create and manage guided product tours for users"
+                    ),
+                },
+                {
+                    "text": _("Product Tours"),
+                    "description": _(
+                        "Step-by-step interactive tours to onboard users to features"
+                    ),
+                },
+                {
+                    "text": _("Tour Steps"),
+                    "description": _(
+                        "Configure individual steps within a product tour"
+                    ),
+                },
+                {
+                    "text": _("Auto Start Tour"),
+                    "description": _(
+                        "Automatically launch a tour when a user visits a page"
+                    ),
+                },
+            ],
         },
     ]

@@ -180,31 +180,151 @@ class GeneralSettings:
             "label": _("System Preferences"),
             "url": reverse_lazy("system-preferences-view"),
             "accessibility": system_preferences_accessibility,
+            "search_entries": [
+                {
+                    "text": _("Default Expire Days"),
+                    "description": _("Auto-expiry days for announcements"),
+                },
+                {
+                    "text": _("Default Records Per Page"),
+                    "description": _("Rows shown per page"),
+                },
+                {
+                    "text": _("Badge ID Prefix"),
+                    "description": _("Prefix added to employee badge IDs e.g. EMP0001"),
+                },
+                {
+                    "text": _("Currency Symbol"),
+                    "description": _("Symbol shown for monetary values e.g. $ €"),
+                },
+                {
+                    "text": _("Currency Position"),
+                    "description": _(
+                        "Whether symbol appears before or after the amount"
+                    ),
+                },
+                {
+                    "text": _("Date Format"),
+                    "description": _("How dates are displayed across the system"),
+                },
+                {
+                    "text": _("Time Format"),
+                    "description": _("12-hour or 24-hour display format"),
+                },
+                {
+                    "text": _("Restrict Login Account"),
+                    "description": _("Allow admins to block or unblock employee login"),
+                },
+                {
+                    "text": _("Restrict Profile Edit"),
+                    "description": _(
+                        "Prevent employees from editing their own profile"
+                    ),
+                },
+                {
+                    "text": _("Work Information Tracking"),
+                    "description": _(
+                        "Enable tracking of changes to employee work information fields"
+                    ),
+                },
+                {
+                    "text": _("Tracking Fields"),
+                    "description": _(
+                        "Select which work information fields are recorded in change history"
+                    ),
+                },
+            ],
         },
         {
             "label": _("Employee Permission"),
             "url": reverse_lazy("employee-permission-assign"),
             "accessibility": employee_permission_accessibility,
+            "search_entries": [
+                {
+                    "text": _("Employee Permission"),
+                    "description": _(
+                        "Assign individual Django permissions to employees"
+                    ),
+                },
+                {
+                    "text": _("Assign Permission"),
+                    "description": _(
+                        "Grant or revoke specific access rights per employee"
+                    ),
+                },
+            ],
         },
         {
             "label": _("Accessibility Restriction"),
             "url": reverse_lazy("user-accessibility"),
             "accessibility": employee_permission_accessibility,
+            "search_entries": [
+                {
+                    "text": _("Accessibility Restriction"),
+                    "description": _(
+                        "Control which user roles can see which menu items"
+                    ),
+                },
+            ],
         },
         {
             "label": _("User Group"),
             "url": reverse_lazy("user-group-view"),
             "accessibility": user_group_accessibility,
+            "search_entries": [
+                {
+                    "text": _("User Group"),
+                    "description": _("Create and manage Django permission groups"),
+                },
+                {
+                    "text": _("Group Permissions"),
+                    "description": _("Assign permissions to a user group"),
+                },
+            ],
         },
         {
             "label": _("Audit & History"),
             "url": reverse_lazy("audit-history-view"),
             "accessibility": audit_history_accessibility,
+            "search_entries": [
+                {
+                    "text": _("Audit & History"),
+                    "description": _(
+                        "View and configure audit logs and change history"
+                    ),
+                },
+                {
+                    "text": _("Audit Tags"),
+                    "description": _("Create tags to categorise audit log records"),
+                },
+                {
+                    "text": _("Audit Tracking"),
+                    "description": _(
+                        "Choose which models are recorded in the audit log"
+                    ),
+                },
+                {
+                    "text": _("Tracked Models"),
+                    "description": _(
+                        "Model paths whose changes are tracked in audit history"
+                    ),
+                },
+            ],
         },
         {
             "label": _("Outlook Mail"),
             "url": reverse_lazy("outlook_view_records"),
             "accessibility": outlook_mail_accessibility,
+            "search_entries": [
+                {
+                    "text": _("Outlook Mail"),
+                    "description": _("Configure Microsoft 365 or Outlook email server"),
+                },
+                {
+                    "text": _("Outlook Mail Server"),
+                    "description": _("Microsoft Exchange or Outlook SMTP integration"),
+                },
+            ],
         },
     ]
 
@@ -223,31 +343,91 @@ class BaseSettings:
             "label": _("Company"),
             "url": reverse_lazy("company-view"),
             "accessibility": company_accessibility,
+            "search_entries": [
+                {
+                    "text": _("Company Name"),
+                    "description": _("Legal name of the company"),
+                },
+                {"text": _("Company Address"), "description": _("Street address")},
+                {
+                    "text": _("Company Country"),
+                    "description": _("Country where the company is registered"),
+                },
+                {"text": _("Company State"), "description": _("State or province")},
+                {"text": _("Company City"), "description": _("City")},
+                {"text": _("Company Zip"), "description": _("Postal or ZIP code")},
+                {
+                    "text": _("Company Logo"),
+                    "description": _("Logo or icon for the company"),
+                },
+            ],
         },
         {
             "label": _("Department"),
             "url": reverse_lazy("department-view"),
             "accessibility": department_accessibility,
+            "search_entries": [
+                {"text": _("Department"), "description": _("Name of the department")},
+                {
+                    "text": _("Department Manager"),
+                    "description": _("Manager assigned to the department"),
+                },
+            ],
         },
         {
             "label": _("Job Positions"),
             "url": reverse_lazy("job-position-view"),
             "accessibility": job_position_accessibility,
+            "search_entries": [
+                {
+                    "text": _("Job Position"),
+                    "description": _("Name of the job position"),
+                },
+            ],
         },
         {
             "label": _("Job Role"),
             "url": reverse_lazy("job-role-view"),
             "accessibility": job_role_accessibility,
+            "search_entries": [
+                {"text": _("Job Role"), "description": _("Name of the job role")},
+            ],
         },
         {
             "label": _("Weekly Off Days"),
             "url": reverse_lazy("company-leaves-view"),
             "accessibility": company_leaves_settings_accessibility,
+            "search_entries": [
+                {
+                    "text": _("Weekly Off Days"),
+                    "description": _("Configure recurring weekly off days"),
+                },
+                {
+                    "text": _("Based On Week"),
+                    "description": _("Which week of the month the off day applies"),
+                },
+                {
+                    "text": _("Based On Week Day"),
+                    "description": _("Which day of the week is the off day"),
+                },
+            ],
         },
         {
             "label": _("Public Holidays"),
             "url": reverse_lazy("holidays-view"),
             "accessibility": holidays_settings_accessibility,
+            "search_entries": [
+                {
+                    "text": _("Public Holiday"),
+                    "description": _("Name of the public holiday"),
+                },
+                {"text": _("Holiday Start Date"), "description": _("Start date")},
+                {"text": _("Holiday End Date"), "description": _("End date")},
+                {
+                    "text": _("Recurring Holiday"),
+                    "description": _("Whether this holiday repeats every year"),
+                },
+            ],
         },
     ]
 
@@ -266,16 +446,93 @@ class MailSettings:
             "label": _("Mail Server"),
             "url": reverse_lazy("mail-server-conf"),
             "accessibility": mail_server_accessibility,
+            "search_entries": [
+                {"text": _("Email Host"), "description": _("SMTP server hostname")},
+                {"text": _("Email Port"), "description": _("SMTP server port number")},
+                {
+                    "text": _("Default From Email"),
+                    "description": _("Sender email address for outgoing mail"),
+                },
+                {
+                    "text": _("Email Host Username"),
+                    "description": _("Username for SMTP authentication"),
+                },
+                {
+                    "text": _("Display Name"),
+                    "description": _("Name shown in From field of outgoing emails"),
+                },
+                {
+                    "text": _("Email Authentication Password"),
+                    "description": _("Password for SMTP authentication"),
+                },
+                {
+                    "text": _("Use TLS"),
+                    "description": _("Enable TLS encryption for SMTP"),
+                },
+                {
+                    "text": _("Use SSL"),
+                    "description": _("Enable SSL encryption for SMTP"),
+                },
+                {
+                    "text": _("Fail Silently"),
+                    "description": _("Suppress errors when email sending fails"),
+                },
+                {
+                    "text": _("Primary Mail Server"),
+                    "description": _("Mark as the primary outgoing mail server"),
+                },
+                {
+                    "text": _("Email Send Timeout"),
+                    "description": _("Timeout in seconds for SMTP connections"),
+                },
+                {
+                    "text": _("Use Dynamic Display Name"),
+                    "description": _(
+                        "Use the triggering user's name as the sender display name"
+                    ),
+                },
+            ],
         },
         {
             "label": _("Mail Template"),
             "url": reverse_lazy("mail-templates-view"),
             "accessibility": mail_template_accessibility,
+            "search_entries": [
+                {
+                    "text": _("Mail Template"),
+                    "description": _("Create reusable email body templates"),
+                },
+                {"text": _("Template Title"), "description": _("Name of the template")},
+                {
+                    "text": _("Template Body"),
+                    "description": _("Rich-text body content of the template"),
+                },
+            ],
         },
         {
             "label": _("Mail Automation"),
             "url": reverse_lazy("mail-automations-view"),
             "accessibility": mail_automation_accessibility,
+            "search_entries": [
+                {
+                    "text": _("Mail Automation"),
+                    "description": _("Trigger automated emails on model events"),
+                },
+                {
+                    "text": _("Automation Title"),
+                    "description": _("Name of the automation rule"),
+                },
+                {
+                    "text": _("Trigger Condition"),
+                    "description": _(
+                        "When the automation fires: On Create Update or Delete"
+                    ),
+                },
+                {
+                    "text": _("Delivery Channel"),
+                    "description": _("Send via Email Notification or Both"),
+                },
+            ],
         },
     ]
 
@@ -295,6 +552,28 @@ class ApprovalsSettings:
             "label": _("Multiple Approval Rules"),
             "url": reverse_lazy("multiple-approval-rules-view"),
             "accessibility": multiple_approval_rules_accessibility,
+            "search_entries": [
+                {
+                    "text": _("Multiple Approval"),
+                    "description": _(
+                        "Configure multi-level approval rules by condition"
+                    ),
+                },
+                {
+                    "text": _("Approval Condition Field"),
+                    "description": _(
+                        "Which field is evaluated for the approval condition"
+                    ),
+                },
+                {
+                    "text": _("Approval Condition Operator"),
+                    "description": _("Comparison operator for the approval condition"),
+                },
+                {
+                    "text": _("Approval Manager"),
+                    "description": _("Who approves when the condition is met"),
+                },
+            ],
         },
     ]
 
@@ -314,6 +593,20 @@ class ThemeManagerSettings:
             "label": _("Color Theme"),
             "url": reverse_lazy("horilla_theme:color_theme_view"),
             "accessibility": color_theme_accessibility,
+            "search_entries": [
+                {
+                    "text": _("Color Theme"),
+                    "description": _(
+                        "Select and apply a visual color theme for the application"
+                    ),
+                },
+                {
+                    "text": _("Theme Management"),
+                    "description": _(
+                        "Customise the UI appearance with preset color palettes"
+                    ),
+                },
+            ],
         },
     ]
 
@@ -332,25 +625,155 @@ class IntegrationsSettings:
             "label": _("Gdrive Backup"),
             "url": reverse_lazy("gdrive"),
             "accessibility": gdrive_accessibility,
+            "search_entries": [
+                {
+                    "text": _("Google Drive Backup"),
+                    "description": _("Back up the database and media to Google Drive"),
+                },
+                {
+                    "text": _("OAuth Credentials File"),
+                    "description": _("Google OAuth 2.0 credentials JSON"),
+                },
+                {
+                    "text": _("Gdrive Folder ID"),
+                    "description": _("Google Drive folder where backups are stored"),
+                },
+                {
+                    "text": _("Backup DB"),
+                    "description": _("Include the database in the backup"),
+                },
+                {
+                    "text": _("Backup Media"),
+                    "description": _("Include media files in the backup"),
+                },
+                {
+                    "text": _("Interval Backup"),
+                    "description": _(
+                        "Enable automatic backup at regular time intervals"
+                    ),
+                },
+                {
+                    "text": _("Fixed Time Backup"),
+                    "description": _(
+                        "Schedule an automatic backup at a fixed time each day"
+                    ),
+                },
+            ],
         },
         {
             "label": _("Linkedin"),
             "url": reverse_lazy("linkedin-integration-setting"),
             "accessibility": linkedin_accessibility,
+            "search_entries": [
+                {
+                    "text": _("LinkedIn Integration"),
+                    "description": _("Connect LinkedIn for job posting"),
+                },
+                {
+                    "text": _("LinkedIn API Token"),
+                    "description": _("API token for LinkedIn integration"),
+                },
+                {
+                    "text": _("Enable LinkedIn"),
+                    "description": _("Activate LinkedIn integration for job posting"),
+                },
+                {
+                    "text": _("Post on LinkedIn"),
+                    "description": _("Automatically post job openings to LinkedIn"),
+                },
+            ],
         },
         {
             "label": _("LDAP"),
             "url": reverse_lazy("ldap-settings"),
             "accessibility": ldap_accessibility,
+            "search_entries": [
+                {
+                    "text": _("LDAP"),
+                    "description": _("Connect to LDAP for employee authentication"),
+                },
+                {
+                    "text": _("LDAP Server"),
+                    "description": _("LDAP server address e.g. ldap://127.0.0.1:389"),
+                },
+                {
+                    "text": _("Bind DN"),
+                    "description": _("LDAP bind distinguished name"),
+                },
+                {
+                    "text": _("Base DN"),
+                    "description": _("LDAP base distinguished name for user search"),
+                },
+            ],
         },
         {
             "label": _("Google Meet"),
             "url": reverse_lazy("gmeet-setting"),
             "accessibility": google_meet_accessibility,
+            "search_entries": [
+                {
+                    "text": _("Google Meet"),
+                    "description": _("Configure Google Meet for interviews"),
+                },
+                {
+                    "text": _("Google Cloud Project ID"),
+                    "description": _("Google Cloud project ID"),
+                },
+                {
+                    "text": _("Google Client ID"),
+                    "description": _("OAuth client ID for Google Meet"),
+                },
+                {
+                    "text": _("Google Client Secret"),
+                    "description": _("OAuth client secret for Google Meet"),
+                },
+                {
+                    "text": _("Enable Google Meet"),
+                    "description": _(
+                        "Activate Google Meet integration for video interviews"
+                    ),
+                },
+                {
+                    "text": _("Redirect URIs"),
+                    "description": _("Authorised OAuth redirect URIs for Google Meet"),
+                },
+            ],
         },
         {
             "label": _("Whatsapp"),
             "url": reverse_lazy("whatsapp-credential-view"),
             "accessibility": whatsapp_accessibility,
+            "search_entries": [
+                {
+                    "text": _("WhatsApp"),
+                    "description": _(
+                        "Configure WhatsApp Business API for notifications"
+                    ),
+                },
+                {
+                    "text": _("Meta Token"),
+                    "description": _("WhatsApp Business API access token"),
+                },
+                {
+                    "text": _("Meta Business ID"),
+                    "description": _("WhatsApp Meta business account ID"),
+                },
+                {
+                    "text": _("Meta Phone Number"),
+                    "description": _("WhatsApp business phone number"),
+                },
+                {
+                    "text": _("Webhook Token"),
+                    "description": _("Token for verifying WhatsApp webhook callbacks"),
+                },
+                {
+                    "text": _("Enable WhatsApp"),
+                    "description": _("Activate WhatsApp Business API integration"),
+                },
+                {
+                    "text": _("Meta Phone Number ID"),
+                    "description": _("WhatsApp Meta phone number identifier"),
+                },
+            ],
         },
     ]
