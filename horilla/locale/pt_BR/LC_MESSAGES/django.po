@@ -2641,11 +2641,6 @@ msgstr "Usuário do Host"
 msgid "Host"
 msgstr "Servidor"
 
-#, fuzzy
-#| msgid "Company"
-msgid "Company"
-msgstr "Empresas"
-
 msgid "Mail Servers"
 msgstr "Servidores de Correio"
 

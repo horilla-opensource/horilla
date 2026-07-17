@@ -2442,9 +2442,6 @@ msgstr "Hostbenutzer"
 msgid "Host"
 msgstr "Host"
 
-msgid "Company"
-msgstr "Company"
-
 msgid "Mail Servers"
 msgstr "Mail-Server"
 

@@ -2634,11 +2634,6 @@ msgstr "主機使用者"
 msgid "Host"
 msgstr "主持人"
 
-#, fuzzy
-#| msgid "Company"
-msgid "Company"
-msgstr "公司"
-
 msgid "Mail Servers"
 msgstr "郵件伺服器"
 

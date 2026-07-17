@@ -2628,11 +2628,6 @@ msgstr "主机用户"
 msgid "Host"
 msgstr "主机"
 
-#, fuzzy
-#| msgid "Company"
-msgid "Company"
-msgstr "公司"
-
 msgid "Mail Servers"
 msgstr "邮件服务器"
 

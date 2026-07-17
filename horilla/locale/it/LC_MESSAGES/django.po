@@ -2448,9 +2448,6 @@ msgstr "Utente Host"
 msgid "Host"
 msgstr "Host"
 
-msgid "Company"
-msgstr "Company"
-
 msgid "Mail Servers"
 msgstr "Server Posta"
 

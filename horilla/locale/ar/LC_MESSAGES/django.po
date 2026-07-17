@@ -2413,9 +2413,6 @@ msgstr "مستخدم المضيف"
 msgid "Host"
 msgstr "المضيف"
 
-msgid "Company"
-msgstr "الشركة"
-
 msgid "Mail Servers"
 msgstr "خوادم البريد"
 
