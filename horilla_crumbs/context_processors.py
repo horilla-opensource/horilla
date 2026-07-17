@@ -38,6 +38,8 @@ BREADCRUMB_URL_NAMES = {
     "work-schedules": "Work Schedules",
     "requests": "Work Requests",
     "work-structure": "Work Structure",
+    "recruitment-settings-view": "Settings",
+    "helpdesk-settings-view": "Settings",
 }
 
 sidebar_urls = [
@@ -195,12 +197,14 @@ sidebar_urls = [
     "holidays-view",
     "company-leaves-view",
     "offboarding-rules-view",
-    "time-policies-view",
+    "grace-time-view",
     "audit-history",
     "policies-discipline",
     "work-schedules",
     "requests",
     "work-structure",
+    "recruitment-settings-view",
+    "helpdesk-settings-view",
     "tours",
     "templates-periods",
 ]

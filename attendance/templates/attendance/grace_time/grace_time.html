@@ -1,7 +1,116 @@
-{% extends 'settings.html' %}
+{% extends "index.html" %}
 {% load i18n %}
-{% block settings %}{% load static %}
-    <div id="graceTimeContainer">
-        {% include "attendance/grace_time/grace_time_table.html" %}
+
+{% block content %}
+    <style>
+        .oh-tabs__tab {
+            display: flex;
+            align-items: center;
+            padding: 4px 8px;
+            gap: 0.5rem;
+            border: 1px solid #f6f6f6;
+            border-radius: 6px;
+            color: #1f2937;
+            font-size: 0.75rem;
+            transition-duration: 300ms;
+            transition-property: all;
+        }
+
+        .oh-tabs__tab--active {
+            border: 1px solid #e54f38;
+            background-color: #fcedeb;
+            color: #e54f38;
+        }
+    </style>
+
+    <div class="bg-white p-3 rounded-md shadow-card oh-tabs">
+        <div class="flex gap-1 flex-wrap mb-3">
+            <button
+                type="button"
+                class="oh-tabs__tab time-policies-tab-btn"
+                data-tab-id="grace-time"
+                data-url="{% url 'grace-time-list-tab' %}"
+            >
+                {% trans "Grace Time" %}
+            </button>
+            <button
+                type="button"
+                class="oh-tabs__tab time-policies-tab-btn"
+                data-tab-id="validation-condition"
+                data-url="{% url 'grace-time-validation-condition-tab' %}"
+            >
+                {% trans "Validation Condition" %}
+            </button>
+        </div>
+
+        <div id="timePoliciesTabContent" class="oh-wrapper"></div>
     </div>
-{% endblock %}
+
+    <script>
+        (function () {
+            var STORAGE_KEY = "activeTimePoliciesTab";
+
+            function loadTimePoliciesTab(buttonEl, persist) {
+                if (!buttonEl || typeof htmx === "undefined") return;
+                var url = buttonEl.getAttribute("data-url");
+                if (!url) return;
+                var tabId = buttonEl.getAttribute("data-tab-id");
+                document.querySelectorAll(".time-policies-tab-btn").forEach(function (btn) {
+                    btn.classList.remove("oh-tabs__tab--active");
+                });
+                buttonEl.classList.add("oh-tabs__tab--active");
+                if (persist !== false && tabId) {
+                    try {
+                        localStorage.setItem(STORAGE_KEY, tabId);
+                    } catch (_) {}
+                }
+                htmx.ajax("GET", url, {
+                    target: "#timePoliciesTabContent",
+                    swap: "innerHTML",
+                });
+            }
+
+            function restoreTimePoliciesTab() {
+                if (!document.getElementById("timePoliciesTabContent")) return;
+
+                var savedTabId = null;
+                try {
+                    savedTabId = localStorage.getItem(STORAGE_KEY);
+                } catch (_) {}
+
+                var initialTab = null;
+                if (savedTabId) {
+                    initialTab = document.querySelector(
+                        '.time-policies-tab-btn[data-tab-id="' + savedTabId.replace(/"/g, '\\"') + '"]'
+                    );
+                }
+                if (!initialTab) {
+                    initialTab = document.querySelector(
+                        '.time-policies-tab-btn[data-tab-id="grace-time"]'
+                    );
+                }
+                loadTimePoliciesTab(initialTab, false);
+            }
+
+            function runWhenHtmxReady(fn) {
+                if (typeof htmx !== "undefined") {
+                    fn();
+                    return;
+                }
+                document.addEventListener("DOMContentLoaded", fn, { once: true });
+            }
+
+            if (!window._timePoliciesTabsClickBound) {
+                window._timePoliciesTabsClickBound = true;
+                document.addEventListener("click", function (event) {
+                    var buttonEl = event.target.closest(".time-policies-tab-btn");
+                    if (!buttonEl) return;
+                    event.preventDefault();
+                    loadTimePoliciesTab(buttonEl);
+                });
+            }
+
+            runWhenHtmxReady(restoreTimePoliciesTab);
+        })();
+    </script>
+{% endblock content %}

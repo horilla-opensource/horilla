@@ -722,6 +722,11 @@ class Attendance(HorillaModel):
         is_new = self.pk is None
         old = None
 
+        if not self.attendance_day:
+            self.attendance_day = EmployeeShiftDay.objects.get(
+                day=self.attendance_date.strftime("%A").lower()
+            )
+
         if not is_new:
             old = Attendance.objects.only(
                 "at_work_second",

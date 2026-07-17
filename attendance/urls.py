@@ -790,6 +790,21 @@ urlpatterns = [
         name="grace-settings-view",
     ),
     path(
+        "grace-time-view/",
+        views.grace_time_page_view,
+        name="grace-time-view",
+    ),
+    path(
+        "grace-time-list-tab/",
+        views.grace_time_list_tab,
+        name="grace-time-list-tab",
+    ),
+    path(
+        "grace-time-validation-condition-tab/",
+        views.grace_time_validation_condition_tab,
+        name="grace-time-validation-condition-tab",
+    ),
+    path(
         "settings/attendance-settings-create/",
         views.validation_condition_create,
         name="attendance-settings-create",

@@ -1,0 +1,25 @@
+{% load i18n %}
+<div id="ohMessages"></div>
+
+<div class="border border-[#ebebeb] rounded-md">
+    <div hx-get="{% url 'break-point-navbar' %}" hx-trigger="load"></div>
+    <p class="text-xs text-gray-500 mt-1 ml-5">
+        {% trans "Define the thresholds used to auto-validate attendance and approve overtime." %}
+    </p>
+    <div
+        class="oh-checkpoint-badge mb-2"
+        id="selectedInstances"
+        data-ids="[]"
+        data-clicked=""
+        style="display: none"
+    >
+    </div>
+    <div
+        class="oh-wrapper"
+        hx-get='{% url "break-point-list" %}?{{ request.GET.urlencode }}'
+        hx-trigger="load"
+        id="listContainer"
+    >
+        <div class="animated-background"></div>
+    </div>
+</div>

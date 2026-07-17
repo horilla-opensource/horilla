@@ -54,6 +54,11 @@ SUBMENUS = [
         "redirect": reverse_lazy("late-come-early-out-view"),
         "accessibility": "attendance.sidebar.tracking_accessibility",
     },
+    {
+        "menu": _("Time Policies"),
+        "redirect": reverse_lazy("grace-time-view"),
+        "accessibility": "attendance.sidebar.validation_condition_accessibility",
+    },
 ]
 
 
@@ -210,37 +215,6 @@ class AttendanceSettings:
                     "description": _(
                         "Restrict attendance marking to a geographic area"
                     ),
-                },
-            ],
-        },
-        {
-            "label": _("Time Policies"),
-            "url": reverse_lazy("time-policies-view"),
-            "accessibility": validation_condition_accessibility,
-            "search_entries": [
-                {
-                    "text": _("Worked Hours Auto Approve"),
-                    "description": _(
-                        "At-work hours threshold before attendance is auto-validated"
-                    ),
-                },
-                {
-                    "text": _("Minimum Overtime to Approve"),
-                    "description": _("Minimum overtime hours required for approval"),
-                },
-                {
-                    "text": _("Maximum Overtime Per Day"),
-                    "description": _("Cap on overtime hours per day"),
-                },
-                {
-                    "text": _("Grace Time"),
-                    "description": _(
-                        "Buffer time allowed for late arrivals before marking as late"
-                    ),
-                },
-                {
-                    "text": _("Grace Time Allowed"),
-                    "description": _("Duration of the grace period in minutes"),
                 },
             ],
         },

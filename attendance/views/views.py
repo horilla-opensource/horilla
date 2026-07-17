@@ -2932,43 +2932,62 @@ def enable_disable_check_in(request):
 @permission_required("attendance.view_attendancevalidationcondition")
 def time_policies_settings_view(request):
     """
-    Merged "Time Policies" settings page that groups the Attendance Break Point
-    condition and Grace Time settings under a single header. Each section reuses
-    its existing nav/list HTMX endpoints; this view only gathers the current
-    state used by the embedded templates.
+    Legacy "Time Policies" settings page. Moved to the Attendance sidebar as
+    its own tabbed page; redirect direct visits there.
     """
-    condition = AttendanceValidationCondition.objects.first()
-    default_grace_time = GraceTime.objects.filter(is_default=True).first()
-    grace_times = GraceTime.objects.entire().exclude(is_default=True)
-    return render(
-        request,
-        "attendance/settings/time_policies.html",
-        {
-            "condition": condition,
-            "default_grace_time": default_grace_time,
-            "grace_times": grace_times,
-        },
-    )
+    return redirect("grace-time-view")
 
 
 @login_required
 @permission_required("attendance.view_attendancevalidationcondition")
 def grace_time_view(request):
     """
-    Legacy standalone Grace Time settings page. Merged into Time Policies;
-    redirect direct visits to the merged page.
+    Legacy standalone Grace Time settings page. Moved to the Attendance
+    sidebar as its own tabbed page; redirect direct visits there.
     """
-    return redirect("time-policies-view")
+    return redirect("grace-time-view")
+
+
+@login_required
+@permission_required("attendance.view_attendancevalidationcondition")
+def grace_time_page_view(request):
+    """
+    Time Policies sidebar page with Grace Time and Validation Condition tabs.
+    """
+    return render(request, "attendance/grace_time/grace_time.html")
+
+
+@login_required
+@permission_required("attendance.view_attendancevalidationcondition")
+def grace_time_list_tab(request):
+    """
+    HTMX tab body for the Grace Time tab.
+    """
+    return render(request, "attendance/grace_time/grace_time_table.html")
+
+
+@login_required
+@permission_required("attendance.view_attendancevalidationcondition")
+def grace_time_validation_condition_tab(request):
+    """
+    HTMX tab body for the Validation Condition tab.
+    """
+    condition = AttendanceValidationCondition.objects.first()
+    return render(
+        request,
+        "attendance/grace_time/validation_condition_tab.html",
+        {"condition": condition},
+    )
 
 
 @login_required
 @permission_required("attendance.view_attendancevalidationcondition")
 def validation_condition_view(request):
     """
-    Legacy standalone Attendance Break Point settings page. Merged into Time
-    Policies; redirect direct visits to the merged page.
+    Legacy standalone Attendance Break Point settings page. Moved to the
+    Attendance sidebar as its own tabbed page; redirect direct visits there.
     """
-    return redirect("time-policies-view")
+    return redirect("grace-time-view")
 
 
 @login_required
