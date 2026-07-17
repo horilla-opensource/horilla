@@ -21,6 +21,7 @@ from horilla_views.cbv_methods import (
 )
 from horilla_views.generic.cbv.pipeline import Pipeline
 from horilla_views.generic.cbv.views import (
+    HorillaDetailedView,
     HorillaFormView,
     HorillaListView,
     HorillaNavView,
@@ -61,6 +62,35 @@ class FederalTaxFormView(HorillaFormView):
             messages.success(self.request, _(message))
             return self.HttpResponse("<script>location.reload();</script>")
         return super().form_valid(form)
+
+
+@method_decorator(login_required, name="dispatch")
+@method_decorator(permission_required("payroll.view_filingstatus"), name="dispatch")
+class FilingStatusDetailView(HorillaDetailedView):
+    """
+    detail view for filing status, also registered as the related-object-link
+    target for FilingStatus via detail_view_url_name
+    """
+
+    model = FilingStatus
+    detail_view_url_name = "filing-status-detail-view"
+    detail_view_permission = "payroll.view_filingstatus"
+    title = _("Filing Status")
+
+    header = {
+        "title": "filing_status",
+        "subtitle": "",
+        "avatar": "",
+    }
+
+    cols = {"tax_brackets_col": 12}
+
+    body = [
+        (_("Filing Status"), "filing_status"),
+        (_("Based On"), "get_based_on_display"),
+        (_("Description"), "description"),
+        (_("Tax Brackets"), "tax_brackets_col", True),
+    ]
 
 
 @method_decorator(login_required, name="dispatch")

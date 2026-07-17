@@ -1,0 +1,38 @@
+{% load i18n horillafilters %}
+<div style="width: 100%">
+    <span class="font-medium text-xs text-[#565E6C]">{% trans "Tax Brackets" %}</span>
+    {% if tax_brackets %}
+        <div class="rounded-lg border border-dark-50 overflow-hidden mt-2">
+            <div class="overflow-auto max-h-[400px] overflow-x-auto">
+                <table class="fixed-table w-full border-collapse">
+                    <thead class="sticky top-0 bg-primary-50 text-left z-[1]">
+                        <tr class="border-b border-dark-50">
+                            <th class="text-xs font-semibold uppercase tracking-wide text-primary-700 text-left p-3">{% trans "Tax Rate (%)" %}</th>
+                            <th class="text-xs font-semibold uppercase tracking-wide text-primary-700 text-left p-3">{% trans "Min. Income" %}</th>
+                            <th class="text-xs font-semibold uppercase tracking-wide text-primary-700 text-left p-3">{% trans "Max. Income" %}</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for tax_bracket in tax_brackets %}
+                            <tr class="border-b border-dark-50 last:border-b-0 {% cycle 'bg-white' 'bg-dark-50/20' %}">
+                                <td class="text-sm text-left p-3">
+                                    <span class="inline-flex items-center px-2.5 py-1 rounded-full text-xs font-semibold bg-brand-50 text-brand-700">
+                                        {{ tax_bracket.tax_rate|stringformat:".2f" }}%
+                                    </span>
+                                </td>
+                                <td class="text-sm text-left p-3 text-dark-600 font-medium">
+                                    {{ tax_bracket.min_income|stringformat:".2f"|currency_symbol_position }}
+                                </td>
+                                <td class="text-sm text-left p-3 text-dark-600 font-medium">
+                                    {{ tax_bracket.get_display_max_income|stringformat:".2f"|currency_symbol_position }}
+                                </td>
+                            </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    {% else %}
+        <span class="text-xs font-semibold">{% trans "No tax brackets added" %}</span>
+    {% endif %}
+</div>

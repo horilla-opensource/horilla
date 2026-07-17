@@ -134,6 +134,18 @@ class FilingStatus(HorillaModel):
         """
         return f"{reverse('generic-delete')}?model=payroll.FilingStatus&pk={self.pk}"
 
+    def tax_brackets_col(self):
+        """
+        Renders the tax brackets belonging to this filing status as a table.
+        """
+        return render_template(
+            path="cbv/federal_tax/tax_brackets_col.html",
+            context={
+                "instance": self,
+                "tax_brackets": self.taxbracket_set.all().order_by("min_income"),
+            },
+        )
+
     class Meta:
         ordering = ["-id"]
         verbose_name = _("Filing Status")
