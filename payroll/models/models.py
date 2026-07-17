@@ -31,7 +31,7 @@ from employee.methods.duration_methods import strtime_seconds
 from employee.models import BonusPoint, Employee, EmployeeWorkInformation
 from hydra import hydra_middlewares
 from hydra.models import HorillaModel, upload_path
-from horilla_audit.models import HorillaAuditInfo, HorillaAuditLog
+from hydra_audit.models import HorillaAuditInfo, HorillaAuditLog
 
 logger = logging.getLogger(__name__)
 

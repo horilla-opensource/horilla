@@ -55,6 +55,29 @@ Measured result:
 - test runtime: 370.761 seconds;
 - result: `OK (skipped=1)`.
 
+### Owned application packages
+
+- renamed `horilla_api`, `horilla_audit`, `horilla_automations`,
+  `horilla_backup`, `horilla_crumbs`, `horilla_ldap`, `horilla_views`, and
+  `horilla_widgets` to `hydra_*` packages;
+- renamed the legacy document-request package to `hydra_legacy_documents` to
+  avoid collision with Hydra's private-document application;
+- renamed the corresponding template directories, template filenames, widget
+  module, imports, URL includes, middleware/auth paths, and AppConfig classes;
+- retained six historical Django app labels only where existing database table
+  names, migration dependencies, content types, and permission codenames require
+  them; no stale executable import or include path uses the old packages;
+- `manage.py check`: PASS;
+- `makemigrations --check --dry-run`: PASS, no schema drift;
+- reviewed migration manifest: PASS, 74 source files;
+- tests discovered/passed: 448/448;
+- skipped: 1;
+- test execution time: 307.697 seconds (528.333 seconds total process time);
+- result: `OK (skipped=1)`;
+- current old-brand scan: 2,358 matches in 411 files. Remaining work is owned
+  identifiers/UI/fixtures/translations plus an explicit technical/legal
+  allowlist, so the complete-rebranding requirement remains failed.
+
 The baseline emitted a missing `staticfiles` directory warning and one expected
 test-path log message (`Onboarding portal queue validation failed`). Neither
 caused a failed test. They remain candidates for deployment/smoke validation.
@@ -108,7 +131,7 @@ accepted as evidence for this objective.
 
 | Requirement | Status | Current evidence |
 |---|---|---|
-| Complete Horilla -> Hydra rebranding | FAIL | 6,761 old-brand matches remain; allowlist not yet produced |
+| Complete Horilla -> Hydra rebranding | FAIL | 2,358 matches in 411 files remain; allowlist not yet produced |
 | 200 authenticated active users for 2 hours | FAIL | Not run |
 | Warm error rate below 1% | FAIL | Not measured |
 | Login/read p95 below 2 s | FAIL | Not measured |
@@ -126,6 +149,7 @@ accepted as evidence for this objective.
 Commits created so far:
 
 - `e9e6bcc4` - `feat: preserve completed Hydra business workflows`.
+- `a973d09b` - `refactor: rename Django project package to Hydra`.
 
 Push is intentionally pending until the remaining implementation, regression
 tests and final secret scan are complete. This section will also list the final

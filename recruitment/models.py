@@ -25,9 +25,9 @@ from base.horilla_company_manager import HorillaCompanyManager
 from base.models import Company, JobPosition
 from employee.models import Employee
 from hydra.models import HorillaModel, upload_path
-from horilla_audit.methods import get_diff
-from horilla_audit.models import HorillaAuditInfo, HorillaAuditLog
-from horilla_views.cbv_methods import render_template
+from hydra_audit.methods import get_diff
+from hydra_audit.models import HorillaAuditInfo, HorillaAuditLog
+from hydra_views.cbv_methods import render_template
 
 # Create your models here.
 

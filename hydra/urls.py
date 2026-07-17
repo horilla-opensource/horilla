@@ -35,8 +35,8 @@ urlpatterns = [
     path("accounts/", include("django.contrib.auth.urls")),
     path("accounts/", include("django.contrib.auth.urls")),
     path("", include("base.urls")),
-    path("", include("horilla_automations.urls")),
-    path("", include("horilla_views.urls")),
+    path("", include("hydra_automations.urls")),
+    path("", include("hydra_views.urls")),
     path("employee/", include("employee.urls")),
     path("hydra/people/", include("hydra_people.urls")),
     path("hydra/recruitment/", include("hydra_people.recruitment_urls")),
@@ -52,8 +52,8 @@ urlpatterns = [
     path("hydra/templates/", include("hydra_templates.urls")),
     path("hydra/links/", include("hydra_links.urls")),
     path("hydra/reports/", include("hydra_reports.urls")),
-    path("horilla-widget/", include("horilla_widgets.urls")),
-    path("api/", include("horilla_api.urls")),
+    path("horilla-widget/", include("hydra_widgets.urls")),
+    path("api/", include("hydra_api.urls")),
     re_path(
         "^inbox/notifications/", include(notifications.urls, namespace="notifications")
     ),

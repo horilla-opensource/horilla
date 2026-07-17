@@ -9,8 +9,8 @@ from django.urls import reverse_lazy
 from django.utils.decorators import method_decorator
 from django.utils.translation import gettext_lazy as _
 
-from horilla_views.cbv_methods import login_required, permission_required
-from horilla_views.generic.cbv import views
+from hydra_views.cbv_methods import login_required, permission_required
+from hydra_views.generic.cbv import views
 from outlook_auth import filters, forms, models
 
 

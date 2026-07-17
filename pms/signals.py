@@ -27,7 +27,7 @@ def start_automation():
     """
     Automation signals
     """
-    from horilla_automations.methods.methods import get_model_class, split_query_string
+    from hydra_automations.methods.methods import get_model_class, split_query_string
 
     @receiver(post_delete, sender=BonusPointSetting)
     @receiver(post_save, sender=BonusPointSetting)

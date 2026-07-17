@@ -36,8 +36,8 @@ from base.forms import ModelForm
 from base.methods import reload_queryset
 from employee.filters import EmployeeFilter
 from employee.models import Employee, EmployeeBankDetails
-from horilla_widgets.widgets.horilla_multi_select_field import HorillaMultiSelectField
-from horilla_widgets.widgets.select_widgets import HorillaMultiSelectWidget
+from hydra_widgets.widgets.hydra_multi_select_field import HorillaMultiSelectField
+from hydra_widgets.widgets.select_widgets import HorillaMultiSelectWidget
 from onboarding.models import CandidateTask, OnboardingStage, OnboardingTask
 from recruitment.models import Candidate
 
@@ -307,7 +307,7 @@ class OnboardingViewStageForm(ModelForm):
         Render the form fields as HTML table rows with Bootstrap styling.
         """
         context = {"form": self}
-        table_html = render_to_string("horilla_form.html", context)
+        table_html = render_to_string("hydra_form.html", context)
         return table_html
 
     def clean(self):

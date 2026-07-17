@@ -23,7 +23,7 @@ from employee.models import Employee
 from hydra import hydra_middlewares
 from hydra.hydra_middlewares import _thread_locals
 from hydra.models import HorillaModel, upload_path
-from horilla_views.cbv_methods import render_template
+from hydra_views.cbv_methods import render_template
 
 # Create your models here.
 

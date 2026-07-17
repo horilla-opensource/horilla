@@ -12,8 +12,8 @@ from base.models import Company, Department, JobPosition, Tags
 from employee.models import Employee
 from hydra import hydra_middlewares
 from hydra.models import HorillaModel, upload_path
-from horilla_audit.methods import get_diff
-from horilla_audit.models import HorillaAuditInfo, HorillaAuditLog
+from hydra_audit.methods import get_diff
+from hydra_audit.models import HorillaAuditInfo, HorillaAuditLog
 
 PRIORITY = [
     ("low", _("Low")),

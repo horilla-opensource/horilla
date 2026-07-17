@@ -32,7 +32,7 @@ from base.models import (
     WorkType,
     WorkTypeRequest,
 )
-from horilla_audit.models import AuditTag
+from hydra_audit.models import AuditTag
 
 urlpatterns = [
     path("", views.home, name="home-page"),

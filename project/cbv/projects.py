@@ -16,8 +16,8 @@ from django.views.generic import ListView
 from employee.models import Employee
 from hydra.hydra_middlewares import _thread_locals
 from hydra.http import HorillaRedirect
-from horilla_views.cbv_methods import login_required, permission_required
-from horilla_views.generic.cbv.views import (
+from hydra_views.cbv_methods import login_required, permission_required
+from hydra_views.generic.cbv.views import (
     HorillaCardView,
     HorillaFormView,
     HorillaListView,

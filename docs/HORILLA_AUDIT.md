@@ -169,7 +169,7 @@ Decision: reuse both where they already operate, but define one convention per H
 
 ### Existing components
 
-- `horilla_documents.DocumentRequest` and `Document` support employee document requests, upload status, issue/expiry dates and file-size/extension checks.
+- `hydra_legacy_documents.DocumentRequest` and `Document` support employee document requests, upload status, issue/expiry dates and file-size/extension checks.
 - recruitment has parallel `CandidateDocumentRequest` and `CandidateDocument` models.
 - local files are served through `/media/<path>` by `base.views.protected_media`.
 - optional GCP storage uses private ACLs; S3 support is configurable.

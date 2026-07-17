@@ -12,7 +12,7 @@ from dynamic_fields import forms, models
 from dynamic_fields.methods import structured
 from hydra.decorators import login_required, permission_required
 from hydra.http.response import HorillaRedirect
-from horilla_views.generic.cbv.views import HorillaFormView
+from hydra_views.generic.cbv.views import HorillaFormView
 
 
 @method_decorator(login_required, name="dispatch")

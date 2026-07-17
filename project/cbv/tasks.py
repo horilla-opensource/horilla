@@ -18,8 +18,8 @@ from django.utils.translation import gettext_lazy as _
 from base.methods import get_subordinates
 from hydra.http import HorillaRedirect
 from hydra.methods import handle_no_permission
-from horilla_views.cbv_methods import login_required
-from horilla_views.generic.cbv.views import (
+from hydra_views.cbv_methods import login_required
+from hydra_views.generic.cbv.views import (
     HorillaCardView,
     HorillaDetailedView,
     HorillaFormView,

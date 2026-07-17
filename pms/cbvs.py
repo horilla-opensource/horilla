@@ -13,7 +13,7 @@ from employee.models import Employee
 from hydra import hydra_middlewares
 from hydra.decorators import login_required, owner_can_enter, permission_required
 from hydra.http.response import HorillaRedirect
-from horilla_views.generic.cbv import views
+from hydra_views.generic.cbv import views
 from pms import models
 from pms.filters import BonusPointSettingFilter, EmployeeBonusPointFilter
 from pms.forms import (

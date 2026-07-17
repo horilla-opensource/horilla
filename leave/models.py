@@ -27,8 +27,8 @@ from base.models import (
 from employee.models import Employee, EmployeeWorkInformation
 from hydra import hydra_middlewares
 from hydra.models import HorillaModel, upload_path
-from horilla_audit.methods import get_diff
-from horilla_audit.models import HorillaAuditInfo, HorillaAuditLog
+from hydra_audit.methods import get_diff
+from hydra_audit.models import HorillaAuditInfo, HorillaAuditLog
 from leave.methods import (
     calculate_requested_days,
     company_leave_dates_list,

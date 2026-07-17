@@ -13,7 +13,7 @@ from django_filters.filterset import FILTER_FOR_DBFIELD_DEFAULTS
 
 from base.methods import reload_queryset
 from hydra.hydra_middlewares import _thread_locals
-from horilla_views.templatetags.generic_template_filters import getattribute
+from hydra_views.templatetags.generic_template_filters import getattribute
 
 FILTER_FOR_DBFIELD_DEFAULTS[models.ForeignKey][
     "filter_class"

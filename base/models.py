@@ -20,7 +20,7 @@ from base.horilla_company_manager import HorillaCompanyManager
 from hydra import hydra_middlewares
 from hydra.hydra_middlewares import _thread_locals
 from hydra.models import HorillaModel, upload_path
-from horilla_audit.models import HorillaAuditInfo, HorillaAuditLog
+from hydra_audit.models import HorillaAuditInfo, HorillaAuditLog
 
 # Create your models here.
 WEEKS = [

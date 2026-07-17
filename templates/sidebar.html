@@ -180,7 +180,7 @@
                                         class="oh-sidebar__submenu-link">{% trans "Mail Templates" %}</a>
                                 </li>
                             {% endif %}
-                            {% if "horilla_automations"|app_installed and perms.horilla_automations.view_mailautomation %}
+                            {% if "hydra_automations"|app_installed and perms.horilla_automations.view_mailautomation %}
                                 <li class="oh-sidebar__submenu-item">
                                     <a class="oh-sidebar__submenu-link" href="{% url 'mail-automations' %}"
                                         class="oh-sidebar__submenu-link">{% trans "Mail Automations" %}</a>

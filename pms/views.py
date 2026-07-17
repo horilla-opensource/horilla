@@ -48,8 +48,8 @@ from hydra.decorators import (
 from hydra.group_by import group_by_queryset
 from hydra.http.response import HorillaRedirect
 from hydra.methods import handle_no_permission
-from horilla_automations.methods.methods import generate_choices
-from horilla_automations.methods.serialize import serialize_form
+from hydra_automations.methods.methods import generate_choices
+from hydra_automations.methods.serialize import serialize_form
 from notifications.signals import notify
 from pms.filters import (
     ActualKeyResultFilter,

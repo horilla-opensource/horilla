@@ -17,7 +17,7 @@ from django.conf import settings
 from django.http import HttpResponse, JsonResponse
 from django.utils.translation import gettext_lazy as _
 
-from horilla_views.cbv_methods import login_required, permission_required
+from hydra_views.cbv_methods import login_required, permission_required
 from recruitment.models import LinkedInAccount, Recruitment
 
 

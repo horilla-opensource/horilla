@@ -21,9 +21,9 @@ from employee.filters import EmployeeFilter
 from employee.models import BonusPoint, Employee
 from hydra import hydra_middlewares
 from hydra.methods import get_horilla_model_class
-from horilla_widgets.forms import HorillaForm, default_select_option_template
-from horilla_widgets.widgets.horilla_multi_select_field import HorillaMultiSelectField
-from horilla_widgets.widgets.select_widgets import HorillaMultiSelectWidget
+from hydra_widgets.forms import HorillaForm, default_select_option_template
+from hydra_widgets.widgets.hydra_multi_select_field import HorillaMultiSelectField
+from hydra_widgets.widgets.select_widgets import HorillaMultiSelectWidget
 from notifications.signals import notify
 from payroll.models import tax_models as models
 from payroll.models.models import (

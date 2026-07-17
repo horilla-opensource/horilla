@@ -121,14 +121,14 @@ from hydra.group_by import group_by_queryset
 from hydra.hydra_settings import HORILLA_DATE_FORMATS
 from hydra.http import HorillaRedirect
 from hydra.methods import get_horilla_model_class
-from horilla_audit.models import AccountBlockUnblock, HistoryTrackingFields
-from horilla_documents.forms import (
+from hydra_audit.models import AccountBlockUnblock, HistoryTrackingFields
+from hydra_legacy_documents.forms import (
     DocumentForm,
     DocumentRejectForm,
     DocumentRequestForm,
     DocumentUpdateForm,
 )
-from horilla_documents.models import Document, DocumentRequest
+from hydra_legacy_documents.models import Document, DocumentRequest
 from notifications.signals import notify
 
 

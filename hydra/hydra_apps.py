@@ -1,24 +1,26 @@
 """
 hydra_apps
 
-This module is used to register horilla addons
+This module registers Hydra add-ons.
 """
 
 from hydra import settings
 from hydra.settings import INSTALLED_APPS
 
 INSTALLED_APPS.append("accessibility")
-INSTALLED_APPS.append("horilla_audit")
-INSTALLED_APPS.append("horilla_widgets")
-INSTALLED_APPS.append("horilla_crumbs")
-INSTALLED_APPS.append("horilla_documents")
-INSTALLED_APPS.append("horilla_views")
-INSTALLED_APPS.append("horilla_automations")
+INSTALLED_APPS.append("hydra_audit.apps.HydraAuditConfig")
+INSTALLED_APPS.append("hydra_widgets.apps.HydraWidgetsConfig")
+INSTALLED_APPS.append("hydra_crumbs.apps.HydraCrumbsConfig")
+INSTALLED_APPS.append(
+    "hydra_legacy_documents.apps.HydraLegacyDocumentsConfig"
+)
+INSTALLED_APPS.append("hydra_views.apps.HydraViewsConfig")
+INSTALLED_APPS.append("hydra_automations.apps.HydraAutomationConfig")
 INSTALLED_APPS.append("auditlog")
 INSTALLED_APPS.append("biometric")
 INSTALLED_APPS.append("helpdesk")
 INSTALLED_APPS.append("offboarding")
-INSTALLED_APPS.append("horilla_backup")
+INSTALLED_APPS.append("hydra_backup.apps.HydraBackupConfig")
 INSTALLED_APPS.append("project")
 INSTALLED_APPS.append("hydra_shell.apps.HydraShellConfig")
 INSTALLED_APPS.append("hydra_people.apps.HydraPeopleConfig")

@@ -9,7 +9,7 @@ from django.utils.translation import gettext_lazy as _
 
 from dynamic_fields.df_not_allowed_models import DF_NOT_ALLOWED_MODELS
 from hydra.hydra_middlewares import _thread_locals
-from horilla_automations.methods.methods import get_model_class
+from hydra_automations.methods.methods import get_model_class
 
 logger = logging.getLogger(__name__)
 

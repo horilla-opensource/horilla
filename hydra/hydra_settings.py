@@ -48,6 +48,7 @@ APP_URLS = [
 APPS = [
     "base",
     "employee",
+    # Historical Django labels retained for database/permission compatibility.
     "horilla_documents",
     "horilla_automations",
 ]
@@ -144,7 +145,7 @@ def load_ldap_settings():
     try:
         from django.db import connection
 
-        from horilla_ldap.models import LDAPSettings
+        from hydra_ldap.models import LDAPSettings
 
         # Ensure DB is ready before querying
         if not connection.introspection.table_names():

@@ -1,0 +1,10 @@
+{% load i18n %}
+<option
+    value="{{ widget.value|stringformat:'s' }}"
+    {% include "hydra_widgets/attr.html" %}
+    {% if widget.selected %}
+        selected="selected"
+    {% endif %}
+>
+    {{ widget.label }}
+</option>

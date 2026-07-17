@@ -23,9 +23,9 @@ from employee.filters import EmployeeFilter
 from employee.forms import MultipleFileField
 from employee.models import Employee
 from hydra import hydra_middlewares
-from horilla_widgets.forms import HorillaForm, HorillaModelForm
-from horilla_widgets.widgets.horilla_multi_select_field import HorillaMultiSelectField
-from horilla_widgets.widgets.select_widgets import HorillaMultiSelectWidget
+from hydra_widgets.forms import HorillaForm, HorillaModelForm
+from hydra_widgets.widgets.hydra_multi_select_field import HorillaMultiSelectField
+from hydra_widgets.widgets.select_widgets import HorillaMultiSelectWidget
 from leave.methods import get_leave_day_attendance
 from leave.models import (
     AvailableLeave,
@@ -102,7 +102,7 @@ class LeaveTypeAdminForm(forms.ModelForm):
         super().__init__(*args, **kwargs)
 
         if f := self.fields.get("company_id"):
-            from horilla_widgets.forms import default_select_option_template
+            from hydra_widgets.forms import default_select_option_template
 
             w = getattr(f.widget, "widget", f.widget)
             if isinstance(w, forms.Select):
@@ -253,7 +253,7 @@ class LeaveRequestCreationForm(BaseModelForm):
         Render the form fields as HTML table rows with Bootstrap styling.
         """
         context = {"form": self}
-        table_html = render_to_string("horilla_form.html", context)
+        table_html = render_to_string("hydra_form.html", context)
         return table_html
 
     class Meta:
@@ -325,7 +325,7 @@ class LeaveRequestUpdationForm(BaseModelForm):
         Render the form fields as HTML table rows with Bootstrap styling.
         """
         context = {"form": self}
-        table_html = render_to_string("horilla_form.html", context)
+        table_html = render_to_string("hydra_form.html", context)
         return table_html
 
     class Meta:
@@ -454,7 +454,7 @@ class UserLeaveRequestForm(BaseModelForm):
         Render the form fields as HTML table rows with Bootstrap styling.
         """
         context = {"form": self}
-        table_html = render_to_string("horilla_form.html", context)
+        table_html = render_to_string("hydra_form.html", context)
         return table_html
 
     class Meta:
@@ -554,7 +554,7 @@ class UserLeaveRequestCreationForm(BaseModelForm):
         Render the form fields as HTML table rows with Bootstrap styling.
         """
         context = {"form": self}
-        table_html = render_to_string("horilla_form.html", context)
+        table_html = render_to_string("hydra_form.html", context)
         return table_html
 
     def __init__(self, *args, **kwargs):
@@ -617,7 +617,7 @@ class LeaveAllocationRequestForm(BaseModelForm):
         Render the form fields as HTML table rows with Bootstrap styling.
         """
         context = {"form": self}
-        table_html = render_to_string("horilla_form.html", context)
+        table_html = render_to_string("hydra_form.html", context)
         return table_html
 
     class Meta:
@@ -965,7 +965,7 @@ if apps.is_installed("attendance"):
             Render the form fields as HTML table rows with Bootstrap styling.
             """
             context = {"form": self}
-            table_html = render_to_string("horilla_form.html", context)
+            table_html = render_to_string("hydra_form.html", context)
             return table_html
 
         def clean(self):

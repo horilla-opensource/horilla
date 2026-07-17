@@ -1,6 +1,6 @@
 {% load i18n %}
 <div id="stage-container">
-    {% include "generic/horilla_nav.html" %}
+    {% include "generic/hydra_nav.html" %}
     <span hx-post="{% url 'project-bulk-archive' %}?is_active=false"
         hx-confirm="{% trans 'Do you really want to archive all the selected projects?' %}" id="bulkArchiveProject">
     </span>

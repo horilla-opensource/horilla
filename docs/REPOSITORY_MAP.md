@@ -21,8 +21,8 @@ The two reference repositories are not vendored or added as submodules. Their ru
 | `onboarding/` | Candidate onboarding stages/tasks, locked creation service and token portal | Reused through the scoped Hydra arrival handoff; legacy Hydra-task mutation routes are blocked |
 | `attendance/` | Attendance, work records and late/early exceptions | Reuse for employees and operational exception views |
 | `notifications/` | Database notifications and localized verbs | Reuse as the compatibility transport behind Hydra recipient/scope/state policy |
-| `horilla_audit/` | Simple-history customization and diff UI | Reuse selectively |
-| `horilla_documents/` | Employee document request metadata | Extend metadata where useful; replace private delivery |
+| `hydra_audit/` | Simple-history customization and diff UI | Reuse selectively |
+| `hydra_legacy_documents/` | Employee document request metadata | Extend metadata where useful; replace private delivery |
 | `report/` | Pivot reports and browser Excel exports | Extend with scope-aware Hydra selectors |
 | `Dockerfile`, `entrypoint.sh`, `docker-compose.staging.yaml` | Hardened application image, fail-closed boot, and isolated staging stack | Task 045 staging boundary; image construction also verifies the exact reviewed migration source manifest; upstream `docker-compose.yaml` remains development-only |
 | `scripts/` | Local bootstrap plus migration-manifest verification, staging deploy, smoke, backup, archive validation, restore verification, and rollback helpers | Operational tooling with exact normalized migration hashes, an empty-schema initial-deploy proof, cold-writer stop, hostile-member rejection and explicit rollback gates |

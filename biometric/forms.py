@@ -14,7 +14,7 @@ from base.forms import Form, ModelForm
 from base.methods import reload_queryset
 from employee.models import Employee
 from hydra.hydra_middlewares import _thread_locals
-from horilla_widgets.forms import default_select_option_template
+from hydra_widgets.forms import default_select_option_template
 
 from .models import BiometricDevices, BiometricEmployees
 

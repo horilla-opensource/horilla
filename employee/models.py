@@ -38,8 +38,8 @@ from employee.methods.duration_methods import format_time, strtime_seconds
 from hydra import hydra_middlewares
 from hydra.methods import get_horilla_model_class
 from hydra.models import HorillaModel, has_xss, upload_path
-from horilla_audit.methods import get_diff
-from horilla_audit.models import HorillaAuditInfo, HorillaAuditLog
+from hydra_audit.methods import get_diff
+from hydra_audit.models import HorillaAuditInfo, HorillaAuditLog
 
 # create your model
 

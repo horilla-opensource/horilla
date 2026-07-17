@@ -55,7 +55,7 @@ from hydra.decorators import (
 )
 from hydra.group_by import group_by_queryset as general_group_by
 from hydra.http.response import HorillaRedirect
-from horilla_documents.models import Document
+from hydra_legacy_documents.models import Document
 from hydra_arrivals.portal_email import (
     PORTAL_EMAIL_QUEUE_PERMISSIONS,
     prepare_generated_portal_attachment,

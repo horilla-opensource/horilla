@@ -15,7 +15,7 @@ from hydra import hydra_middlewares
 from hydra.hydra_middlewares import _thread_locals
 from hydra.methods import get_horilla_model_class
 from hydra.models import HorillaModel, upload_path
-from horilla_audit.models import HorillaAuditInfo, HorillaAuditLog
+from hydra_audit.models import HorillaAuditInfo, HorillaAuditLog
 from notifications.signals import notify
 
 # Create your models here.

@@ -74,9 +74,9 @@ from employee.models import Employee
 from hydra import hydra_middlewares
 from hydra.hydra_middlewares import _thread_locals
 from hydra.methods import get_horilla_model_class
-from horilla_audit.models import AuditTag
-from horilla_widgets.widgets.horilla_multi_select_field import HorillaMultiSelectField
-from horilla_widgets.widgets.select_widgets import HorillaMultiSelectWidget
+from hydra_audit.models import AuditTag
+from hydra_widgets.widgets.hydra_multi_select_field import HorillaMultiSelectField
+from hydra_widgets.widgets.select_widgets import HorillaMultiSelectWidget
 
 # your form here
 
@@ -1160,7 +1160,7 @@ class EmployeeShiftScheduleUpdateForm(ModelForm):
         """
 
         context = {"form": self}
-        table_html = render_to_string("horilla_form.html", context)
+        table_html = render_to_string("hydra_form.html", context)
         return table_html
 
     def clean(self):
@@ -1246,7 +1246,7 @@ class EmployeeShiftScheduleForm(ModelForm):
         """
 
         context = {"form": self}
-        table_html = render_to_string("horilla_form.html", context)
+        table_html = render_to_string("hydra_form.html", context)
         return table_html
 
     def clean(self):
@@ -1721,7 +1721,7 @@ class ShiftRequestForm(ModelForm):
         Render the form fields as HTML table rows with Bootstrap styling.
         """
         context = {"form": self}
-        table_html = render_to_string("horilla_form.html", context)
+        table_html = render_to_string("hydra_form.html", context)
         return table_html
 
     def save(self, commit: bool = ...):
@@ -1782,7 +1782,7 @@ class ShiftAllocationForm(ModelForm):
         Render the form fields as HTML table rows with Bootstrap styling.
         """
         context = {"form": self}
-        table_html = render_to_string("horilla_form.html", context)
+        table_html = render_to_string("hydra_form.html", context)
         return table_html
 
     def save(self, commit: bool = ...):
@@ -1827,7 +1827,7 @@ class WorkTypeRequestForm(ModelForm):
         Render the form fields as HTML table rows with Bootstrap styling.
         """
         context = {"form": self}
-        table_html = render_to_string("horilla_form.html", context)
+        table_html = render_to_string("hydra_form.html", context)
         return table_html
 
     def save(self, commit: bool = ...):
@@ -2129,7 +2129,7 @@ class TagsForm(ModelForm):
         Render the form fields as HTML table rows with Bootstrap styling.
         """
         context = {"form": self}
-        table_html = render_to_string("horilla_form.html", context)
+        table_html = render_to_string("hydra_form.html", context)
         return table_html
 
 
@@ -2193,7 +2193,7 @@ class DynamicMailConfForm(ModelForm):
         Render the form fields as HTML table rows with Bootstrap styling.
         """
         context = {"form": self}
-        table_html = render_to_string("horilla_form.html", context)
+        table_html = render_to_string("hydra_form.html", context)
         return table_html
 
 
@@ -2814,7 +2814,7 @@ class CompanyLeaveForm(ModelForm):
         choices = [("", "All")] + list(self.fields["based_on_week"].choices[1:])
         self.fields["based_on_week"].choices = choices
         self.fields["based_on_week"].widget.option_template_name = (
-            "horilla_widgets/select_option.html"
+            "hydra_widgets/select_option.html"
         )
 
 

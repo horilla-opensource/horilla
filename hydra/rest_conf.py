@@ -9,7 +9,7 @@ from hydra.settings import INSTALLED_APPS
 
 # Injecting installed apps to settings
 
-REST_APPS = ["rest_framework", "rest_framework_simplejwt", "drf_yasg", "horilla_api"]
+REST_APPS = ["rest_framework", "rest_framework_simplejwt", "drf_yasg", "hydra_api"]
 
 INSTALLED_APPS.extend(REST_APPS)
 
@@ -17,7 +17,7 @@ REST_FRAMEWORK_SETTINGS = {
     "DEFAULT_FILTER_BACKENDS": ["django_filters.rest_framework.DjangoFilterBackend"],
     "DEFAULT_PAGINATION_CLASS": "rest_framework.pagination.PageNumberPagination",
     "DEFAULT_AUTHENTICATION_CLASSES": (
-        "horilla_api.auth.RejectBasicAuthentication",
+        "hydra_api.auth.RejectBasicAuthentication",
         "rest_framework_simplejwt.authentication.JWTAuthentication",
     ),
     "DEFAULT_PERMISSION_CLASSES": [

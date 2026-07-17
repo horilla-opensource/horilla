@@ -180,8 +180,8 @@ from hydra.hydra_settings import (
 )
 from hydra.http.response import HorillaRedirect
 from hydra.methods import get_horilla_model_class, remove_dynamic_url
-from horilla_audit.forms import HistoryTrackingFieldsForm
-from horilla_audit.models import AccountBlockUnblock, AuditTag, HistoryTrackingFields
+from hydra_audit.forms import HistoryTrackingFieldsForm
+from hydra_audit.models import AccountBlockUnblock, AuditTag, HistoryTrackingFields
 from notifications.models import Notification
 from notifications.signals import notify
 

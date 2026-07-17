@@ -66,7 +66,7 @@ from hydra.decorators import (
 )
 from hydra.group_by import group_by_queryset
 from hydra.http import HorillaRedirect
-from horilla_documents.models import Document
+from hydra_legacy_documents.models import Document
 from notifications.signals import notify
 from recruitment.auth import CandidateAuthenticationBackend
 from recruitment.decorators import (

@@ -15,7 +15,7 @@ from django.utils.translation import gettext_lazy as _
 from base.horilla_company_manager import HorillaCompanyManager
 from employee.models import Employee
 from hydra.models import HorillaModel
-from horilla_audit.models import HorillaAuditInfo, HorillaAuditLog
+from hydra_audit.models import HorillaAuditInfo, HorillaAuditLog
 from recruitment.models import Candidate, Recruitment
 
 

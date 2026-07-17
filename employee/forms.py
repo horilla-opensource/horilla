@@ -50,7 +50,7 @@ from employee.models import (
     PolicyMultipleFile,
 )
 from hydra import hydra_middlewares
-from horilla_audit.models import AccountBlockUnblock
+from hydra_audit.models import AccountBlockUnblock
 
 logger = logging.getLogger(__name__)
 
