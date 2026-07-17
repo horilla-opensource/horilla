@@ -424,10 +424,14 @@ class CandidateList(HorillaListView):
 
     def get_queryset(self, *args, **kwargs):
         if self.queryset is None:
-            queryset = CACHE.get(self.request.session.session_key + "pipeline")[
-                "candidates"
-            ].filter(stage_id=self.kwargs["stage_id"])
-            queryset = queryset.filter(stage_id=self.kwargs["stage_id"])
+            cache_key = self.request.session.session_key + "pipeline"
+            cache = CACHE.get(cache_key) or {}
+            if not cache.get("candidates"):
+                cache["candidates"] = self.filter_class(self.request.GET).qs.filter(
+                    is_active=True
+                )
+                CACHE.set(cache_key, cache, timeout=600)
+            queryset = cache["candidates"].filter(stage_id=self.kwargs["stage_id"])
             super().get_queryset(queryset=queryset, filtered=True)
 
         return self.queryset

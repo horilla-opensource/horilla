@@ -13,12 +13,16 @@ import types
 from django import template
 from django.conf import settings
 from django.contrib.auth.context_processors import PermWrapper
+from django.db.models import Model, QuerySet
 from django.db.models.utils import AltersData
 from django.template.defaultfilters import register
+from django.utils.html import format_html, format_html_join
+from django.utils.safestring import mark_safe
 from django.utils.translation import gettext_lazy as _
 
 from horilla.config import import_method
 from horilla.horilla_middlewares import _thread_locals
+from horilla_views.related_link_registry import resolve_detail_link
 
 register = template.Library()
 
@@ -92,6 +96,57 @@ def getattribute(value, attr: str):
     #     return _("Yes") if result else _("No")
 
     return result
+
+
+@register.filter(name="linkify")
+def linkify(value, user=None):
+    """
+    Wrap a resolved related-object value in a link that opens its detail view in
+    a dedicated secondary modal (#relatedObjectModal, stacked above #genericModal
+    via a higher z-index), when one is registered and the given user has
+    permission to view it. Falls back to the value unchanged otherwise.
+
+    A separate modal (rather than reusing #genericModalBody) means opening a
+    related object's detail from inside an already-open detail modal doesn't
+    replace that modal's content — closing the related-object modal leaves the
+    original one still open underneath.
+
+    Detail-view use only — do not wire this into list-view templates, where
+    related values must stay plain text.
+
+    Styling uses the app's own primary-color utility classes (text-primary-600),
+    not hardcoded colors: the text stays default-colored until hover, when it
+    and the arrow both take the primary color and the text underlines.
+
+    A QuerySet (or list/tuple) of Model instances — e.g. a many-to-many field
+    such as Recruitment.recruitment_managers — is linkified item by item, each
+    as its own clickable link, joined with line breaks.
+    """
+    if isinstance(value, Model):
+        url = resolve_detail_link(value, user)
+        if url:
+            return format_html(
+                '<a href="javascript:void(0)" hx-get="{}" hx-target="#relatedObjectModalBody" '
+                'data-target="#relatedObjectModal" data-toggle="oh-modal-toggle" '
+                'onclick="event.stopPropagation()" '
+                'class="oh-related-link hover:text-primary-600 cursor-pointer">{}'
+                '<span class="text-primary-600" style="font-size:0.95em; margin-left:2px;">↗</span></a>',
+                url,
+                str(value),
+            )
+        return value
+
+    if isinstance(value, QuerySet) or (
+        isinstance(value, (list, tuple)) and value and isinstance(value[0], Model)
+    ):
+        items = list(value)
+        if not items:
+            return ""
+        return format_html_join(
+            mark_safe("<br>"), "{}", ((linkify(item, user),) for item in items)
+        )
+
+    return value
 
 
 @register.filter(name="format")

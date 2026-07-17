@@ -348,15 +348,12 @@ class Recruitment(HorillaModel):
     def managers_detail(self):
         """
         manager in detail view
+
+        Returns the Employee queryset (rather than pre-rendered HTML) so the
+        detail-view template's `linkify` filter can turn each manager into a
+        related-object link to the Employee Related Detail View.
         """
-        employees = self.recruitment_managers.all()
-        if employees:
-            employee_names_string = "<br>".join(
-                [str(employee) for employee in employees]
-            )
-            return f'<span class="oh-timeoff-modal__stat-count">{employee_names_string}</span>'
-        else:
-            return ""
+        return self.recruitment_managers.all()
 
     def managers(self):
         manager_list = self.recruitment_managers.all()
