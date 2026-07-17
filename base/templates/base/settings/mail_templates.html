@@ -24,24 +24,24 @@
                             <div class="flex justify-between mb-4">
                                 <h3 class="text-md font-semibold">{{ template.title }}</h3>
                                 {% if perms.base.delete_horillamailtemplate %}
-                                    <div class="flex gap-3 items-center">
+                                    <div class="flex items-center justify-center gap-1">
                                         <a
-                                            class="cursor-pointer"
+                                            class="oh-btn oh-btn--light-bkg oh-btn--sq-sm"
                                             hx-get="{% url 'duplicate-mail-template' template.id %}"
                                             hx-target="#objectCreateModalTarget"
                                             data-toggle="oh-modal-toggle"
                                             data-target="#objectCreateModal"
                                             title="{% trans 'Duplicate' %}"
                                         >
-                                            <i class="fa-solid fa-clone text-sm text-[black] hover:text-[#504d4d] transition-all duration-300"></i>
+                                            <ion-icon name="copy-outline"></ion-icon>
                                         </a>
                                         <a
-                                            class="cursor-pointer text-[red] text-sm hover:text-[#d10b0b] transition-all duration-300"
+                                            class="oh-btn oh-btn--danger oh-btn--sq-sm"
                                             href="{% url 'delete-mail-template' %}?ids={{ template.id }}"
                                             onclick="return confirm('{% trans "Do you want to delete this template?" %}')"
                                             title="{% trans 'Delete' %}"
                                         >
-                                            <i class="fa-solid fa-trash"></i>
+                                            <ion-icon name="trash-outline"></ion-icon>
                                         </a>
                                     </div>
                                 {% endif %}
@@ -52,7 +52,7 @@
                             </div>
 
                             <button
-                                class="px-5 py-2 group text-primary-600 text-xs font-medium bg-primary-100 rounded-md w-full hover:bg-primary-600 hover:text-white transition duration-300 flex items-center justify-center"
+                                class="px-5 py-2 group text-info-600 text-xs font-medium bg-info-100 rounded-md w-full hover:bg-info-600 hover:text-white transition duration-300 flex items-center justify-center"
                                 hx-get="{% url 'mail-template-edit-form' template.id %}"
                                 hx-target="#objectCreateModalTarget"
                                 data-toggle="oh-modal-toggle"

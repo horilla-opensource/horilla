@@ -5,11 +5,11 @@
     }
 </style>
 {% is_manager_of request.user instance as can_manage %}
-<div class="oh-btn-group w-100">
+<div class="flex items-center justify-center gap-1">
     {% if request.user|is_reportingmanager or perms.attendance.change_attendance %}
         <a
             href="#"
-            class="h-8 w-24 px-4 py-2 bg-primary-600 text-white rounded-md text-xs flex items-center justify-center gap-2 hover:bg-primary-800 transition duration-300"
+            class="h-8 w-24 px-4 py-2 bg-success text-white rounded-md text-xs flex items-center justify-center gap-2 hover:bg-success-dark transition duration-300"
             title="{% trans 'Approve' %}"
             onclick="event.preventDefault(); event.stopPropagation(); (function(pk){
                     Swal.fire({
@@ -17,8 +17,8 @@
                         text: '{% trans 'Do you want to approve this attendance request?' %}',
                         icon: 'question',
                         showCancelButton: true,
-                        confirmButtonColor: '#3085d6',
-                        cancelButtonColor: '#d33',
+                        confirmButtonColor: '#008000',
+                        cancelButtonColor: '#6c757d',
                         confirmButtonText: '{% trans 'Confirm' %}',
                         cancelButtonText: '{% trans 'Cancel' %}'
                     }).then(function(result) {
@@ -29,7 +29,7 @@
                 })({{ instance.id }}); return false"
         >
             <img
-                class="brightness-0 invert"
+                class="filter brightness-0 invert"
                 src="{% static 'horilla_theme/assets/img/icons/check.svg' %}"
                 alt="{% trans 'Approve' %}"
                 width="13"
@@ -40,7 +40,7 @@
     {% if request.user|is_reportingmanager or perms.attendance.change_attendance %}
         <a
             href="#"
-            class="w-24 px-4 py-2 bg-white rounded-md text-xs flex items-center justify-center gap-2 border border-primary-500 hover:border-primary-600 transition duration-300"
+            class="h-8 w-24 px-4 py-2 bg-danger text-white rounded-md text-xs flex items-center justify-center gap-2 hover:bg-danger-dark transition duration-300"
             title="{% trans 'Reject' %}"
             onclick="event.preventDefault(); event.stopPropagation(); (function(pk){
                     Swal.fire({
@@ -49,7 +49,7 @@
                         icon: 'warning',
                         showCancelButton: true,
                         confirmButtonColor: '#d33',
-                        cancelButtonColor: '#3085d6',
+                        cancelButtonColor: '#6c757d',
                         confirmButtonText: '{% trans 'Confirm' %}',
                         cancelButtonText: '{% trans 'Cancel' %}'
                     }).then(function(result) {
@@ -60,7 +60,7 @@
                 })({{ instance.id }}); return false"
         >
             <img
-                class="mt-[-1px]"
+                class="filter brightness-0 invert"
                 src="{% static 'horilla_theme/assets/img/icons/close.svg' %}"
                 alt="{% trans 'Reject' %}"
                 width="13"

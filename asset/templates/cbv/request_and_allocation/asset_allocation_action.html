@@ -1,6 +1,6 @@
 {% load i18n %}
 {% if not instance.return_status %}
-    <div onclick="event.stopPropagation()">
+    <div class="flex items-center justify-center" onclick="event.stopPropagation()">
         <button
             href="#"
             class="oh-btn oh-btn--secondary"
@@ -14,7 +14,7 @@
         </button>
     </div>
 {% else %}
-    <div>
+    <div class="flex items-center justify-center">
         <div class="d-flex align-items-center">
             <span class="oh-dot oh-dot--small me-1 oh-dot--color oh-dot--info"></span>
             <span class="link-primary"> {% trans "Returned" %} </span>

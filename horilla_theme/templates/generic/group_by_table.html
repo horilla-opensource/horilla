@@ -145,7 +145,7 @@
                                         {% endfor %}
                                         {% if options or option_method %}
                                             <th class="text-sm font-medium min-w-[150px]" {{header_attrs.option|safe}}>
-                                                <div class="p-3" {{header_attrs.option|safe}}>
+                                                <div class="p-3 text-center" {{header_attrs.option|safe}}>
                                                     {% trans "Options" %}
                                                 </div>
                                             </th>
@@ -155,7 +155,7 @@
                                                 class="stickyright text-sm font-medium min-w-[150px]"
                                                 {{header_attrs.action|safe}}
                                             >
-                                                <div class="p-3" {{header_attrs.action|safe}}>
+                                                <div class="p-3 text-center" {{header_attrs.action|safe}}>
                                                     {% trans "Actions" %}
                                                 </div>
                                             </th>

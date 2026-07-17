@@ -251,7 +251,7 @@ class AttendanceListTab(AttendancesRequestListView):
             "icon": "create-outline",
             "accessibility": "attendance.cbv.attendance_request.change_accessibility",
             "attrs": """
-                class="oh-btn oh-btn--light-bkg w-100"
+                class="oh-btn oh-btn--light-bkg oh-btn--sq-sm"
                 data-toggle="oh-modal-toggle"
                 data-target="#genericModal"
                 hx-get="{change_attendance}"
@@ -260,6 +260,10 @@ class AttendanceListTab(AttendancesRequestListView):
                 """,
         }
     ]
+
+    header_attrs = {
+        "action": """ style="width:70px !important" """,
+    }
 
     row_attrs = """
                 {diff_cell}

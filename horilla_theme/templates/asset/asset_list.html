@@ -64,7 +64,7 @@
                             <div class="flex gap-1">
                                 {% if perms.asset.change_asset %}
                                     <button
-                                        class="cursor-pointer px-2 py-1 text-sm bg-primary-300 text-primary-600 rounded-sm w-7 h-7 flex items-center justify-center hover:bg-primary-600 hover:text-white transition duration-300"
+                                        class="cursor-pointer px-2 py-1 text-sm bg-info-300 text-info-600 rounded-sm w-7 h-7 flex items-center justify-center hover:bg-info-600 hover:text-white transition duration-300"
                                         data-toggle="oh-modal-toggle"
                                         data-target="#genericModal"
                                         hx-get="{% url 'asset-update' pk=asset.id %}?{% if asset_under == 'asset_filter' %}asset_under=asset_filter&{% endif %}{{ pg }}"
@@ -76,7 +76,7 @@
                                 {% endif %}
                                 {% if perms.asset.add_asset %}
                                     <button
-                                        class="cursor-pointer px-2 py-1 text-sm bg-primary-300 text-primary-600 rounded-sm w-7 h-7 flex items-center justify-center hover:bg-primary-600 hover:text-white transition duration-300"
+                                        class="cursor-pointer px-2 py-1 text-sm bg-brand-300 text-brand-600 rounded-sm w-7 h-7 flex items-center justify-center hover:bg-brand-600 hover:text-white transition duration-300"
                                         data-toggle="oh-modal-toggle"
                                         data-target="#genericModal"
                                         hx-get="{% url 'duplicate-asset' asset.id %}?{{pg}}"
@@ -88,7 +88,7 @@
                                 {% endif %}
                                 {% if asset.assetassignment_set.all %}
                                     <button
-                                        class="cursor-pointer px-2 py-1 text-sm bg-primary-300 text-primary-600 rounded-sm w-7 h-7 flex items-center justify-center hover:bg-primary-600 hover:text-white transition duration-300"
+                                        class="cursor-pointer px-2 py-1 text-sm bg-brand-300 text-brand-600 rounded-sm w-7 h-7 flex items-center justify-center hover:bg-brand-600 hover:text-white transition duration-300"
                                         data-toggle="oh-modal-toggle"
                                         data-target="#dynamicCreateModal"
                                         hx-get="{% url 'add-asset-report' asset.id %}?asset_list=true"
@@ -101,7 +101,7 @@
                                 {% else %}
                                     <button
                                         disabled
-                                        class="cursor-not-allowed px-2 py-1 text-sm bg-primary-300 text-primary-600 rounded-sm w-7 h-7 flex items-center justify-center hover:bg-primary-600 hover:text-white transition duration-300"
+                                        class="cursor-not-allowed px-2 py-1 text-sm bg-brand-300 text-brand-600 rounded-sm w-7 h-7 flex items-center justify-center hover:bg-brand-600 hover:text-white transition duration-300"
                                         id="oh-btn-asset-update-modal"
                                         title="{% trans 'Report' %}"
                                     >
@@ -118,7 +118,7 @@
                                     >
                                         {% csrf_token %}
                                         <button
-                                            class="cursor-pointer px-2 py-1 text-sm bg-primary-300 text-primary-600 rounded-sm w-7 h-7 flex items-center justify-center hover:bg-primary-600 hover:text-white transition duration-300"
+                                            class="cursor-pointer px-2 py-1 text-sm bg-danger text-white rounded-sm w-7 h-7 flex items-center justify-center hover:bg-danger-dark transition duration-300"
                                             title="{% trans 'Delete' %}"
                                         >
                                             <i class="fa-solid fa-trash"></i>

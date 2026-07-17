@@ -110,7 +110,7 @@
             </button>
             {% endif %} {% if perms.leave.delete_holiday %}
             <a
-              class="oh-btn oh-btn--danger-outline oh-btn--light-bkg w-100"
+              class="oh-btn oh-btn--danger w-100"
               id="delete-link"
               hx-confirm="{% trans 'Are you sure you want to delete?' %}"
               hx-post="{% url 'holiday-delete' holiday.id %}?{{pd}}"

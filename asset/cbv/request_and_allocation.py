@@ -76,8 +76,8 @@ class AllocationList(HorillaListView):
     ]
 
     header_attrs = {
-        "action": """ style = "width:180px !important" """,
-        "asset_id__asset_name": """ style = "width:250px !important" """,
+        "action": """ style = "width:140px !important" """,
+        "asset_id": """ style = "width:250px !important" """,
         "asset_id__asset_category_id": """ style = "width:250px !important" """,
         "asset_id__expiry_date": """ style = "width:250px !important" """,
     }
@@ -139,6 +139,11 @@ class AssetAllocationList(AllocationList):
         ):
             self.action_method = "allocation_action"
             self.option_method = "allocation_option"
+
+    header_attrs = {
+        "option": """ style = "width:110px !important" """,
+        "action": """ style = "width:140px !important" """,
+    }
 
     columns = [
         (

@@ -1,11 +1,6 @@
 {% load i18n %}
-<style>
-    .oh-btn-group button {
-        border-right: 1px solid hsl(213, 22%, 93%);
-    }
-</style>
 {% if  perms.pms.add_employeeobjective or perms.pms.change_objective or perms.pms.delete_objective %}
-    <div class="oh-btn-group" onclick="event.stopPropagation()">
+    <div class="flex items-center justify-center gap-1" onclick="event.stopPropagation()">
         {% if perms.pms.add_employeeobjective %}
             <button
                 onclick="event.preventDefault();event.stopPropagation()"
@@ -14,7 +9,7 @@
                 hx-swap="innerHTML"
                 data-toggle="oh-modal-toggle"
                 data-target="#genericModal"
-                class="oh-btn oh-btn--light-bkg w-100"
+                class="oh-btn oh-btn--light-bkg oh-btn--sq-sm"
                 title="{% trans 'Add assignees' %}"
             ><ion-icon name="add-outline"></ion-icon></button>
         {% endif %}
@@ -25,7 +20,7 @@
                 data-target="#genericModal"
                 hx-get="{% url 'objective-update' instance.id %}"
                 hx-target="#genericModalBody"
-                class="oh-btn oh-btn--light-bkg w-100"
+                class="oh-btn oh-btn--light-bkg oh-btn--sq-sm"
                 title="{% trans 'Edit' %}"
                 ><ion-icon name="create-outline"></ion-icon>
             </button>
@@ -37,12 +32,11 @@
                     hx-confirm='{% trans "Do you want to unarchive this objective?" %}'
                     hx-swap="innerHTML"
                     hx-target="#tr{{ instance.id }}"
-                    style="display: contents; width: 100%"
                 >
                     {% csrf_token %}
                     <button
                         onclick="event.stopPropagation()"
-                        class="oh-btn oh-btn--light-bkg w-100"
+                        class="oh-btn oh-btn--light-bkg oh-btn--sq-sm"
                         title="{% trans 'Unarchive' %}"
                     >
                         <ion-icon name="archive"></ion-icon>
@@ -54,12 +48,11 @@
                     hx-confirm='{% trans "Do you want to archive this objective?" %}'
                     hx-swap="innerHTML"
                     hx-target="#tr{{ instance.id }}"
-                    style="display: contents; width: 100%"
                 >
                     {% csrf_token %}
                     <button
                         onclick="event.stopPropagation()"
-                        class="oh-btn oh-btn--light-bkg w-100"
+                        class="oh-btn oh-btn--light-bkg oh-btn--sq-sm"
                         title="{% trans 'Archive' %}"
                     >
                         <ion-icon name="archive"></ion-icon>
@@ -73,11 +66,10 @@
                 hx-confirm="{% trans 'Are you sure to delete this objective?' %}"
                 hx-swap="innerHTML"
                 hx-target="#tr{{ instance.id }}"
-                style="display: contents; width: 100%"
             >
                 {% csrf_token %}
-                <button class="oh-btn oh-btn--light-bkg oh-btn--danger-outline w-100" title="{% trans 'Delete' %}">
-                    <ion-icon name="trash-outline" role="img" class="md hydrated" aria-label="{% trans 'trash outline' %}"></ion-icon>
+                <button class="oh-btn oh-btn--danger oh-btn--sq-sm" title="{% trans 'Delete' %}">
+                    <ion-icon name="trash-outline" role="img" class="md hydrated" aria-label="trash outline"></ion-icon>
                 </button>
             </form>
         {% endif %}

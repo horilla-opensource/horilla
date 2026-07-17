@@ -19,7 +19,7 @@
         <button
           type="button"
           title="{% trans 'Back' %}"
-          class="px-3 py-1 text-xs bg-primary-600 text-white rounded-full hover:bg-primary-800 transition duration-300 flex items-center gap-2"
+          class="px-3 py-1 text-xs bg-white border border-dark-50 text-dark-200 rounded-full transition duration-300 flex items-center gap-2"
           onclick="
             var navBar = document.getElementById('onboardingCandidatesNavBar');
             var list = document.getElementById('listContainer');
@@ -51,7 +51,7 @@
         <button
           type="button"
           title="{% trans 'Back' %}"
-          class="px-3 py-1 text-xs bg-primary-600 text-white rounded-full hover:bg-primary-800 transition duration-300 flex items-center gap-2"
+          class="px-3 py-1 text-xs bg-white border border-dark-50 text-dark-200 rounded-full transition duration-300 flex items-center gap-2"
           onclick="
             if (window.history && history.pushState) {
               history.pushState({}, '', '{% url 'candidate-view' %}');
@@ -75,7 +75,7 @@
         <button
           type="button"
           title="{% trans 'Back' %}"
-          class="px-3 py-1 text-xs bg-primary-600 text-white rounded-full hover:bg-primary-800 transition duration-300 flex items-center gap-2"
+          class="px-3 py-1 text-xs bg-white border border-dark-50 text-dark-200 rounded-full transition duration-300 flex items-center gap-2"
           onclick="$(this).closest('.oh-modal--show').removeClass('oh-modal--show')"
         >
           <i class="fa-solid fa-arrow-left"></i>

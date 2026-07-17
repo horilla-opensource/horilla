@@ -99,7 +99,7 @@
 													hx-post="{% url 'attendance-overtime-delete' ot.id  %}?{{pd}}"
 													hx-target="#ot-table" class='w-50'>
 													{% csrf_token %}
-													<button type='submit' class="oh-btn oh-btn--danger-outline oh-btn--light-bkg w-100"   title="{% trans 'Remove' %}"><ion-icon name="trash-outline"></ion-icon></button>
+													<button type='submit' class="oh-btn oh-btn--danger w-100"   title="{% trans 'Remove' %}"><ion-icon name="trash-outline"></ion-icon></button>
 												</form>
 											{% endif %}
 										</div>

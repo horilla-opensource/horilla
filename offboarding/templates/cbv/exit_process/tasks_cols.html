@@ -29,7 +29,7 @@
             </select>
         {% else %}
             <button
-                class="px-4 py-2 bg-primary-600 text-white rounded-lg text-xs hover:bg-primary-800"
+                class="px-4 py-2 bg-brand-600 text-white rounded-lg text-xs hover:bg-brand-800"
                 data-toggle="oh-modal-toggle"
                 hx-get="{% url 'offboarding-assign-task' %}?employee_ids={{instance.id}}&task_id={{task_id}}"
                 hx-swap="none"

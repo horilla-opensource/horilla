@@ -17,7 +17,7 @@
             hx-get="{% url 'cancel-validate-attendance-request' instance.id %}"
             hx-target="#validateAttendanceRequestModalBody"
             hx-swap="innerHTML"
-            class="oh-btn oh-btn--danger-outline oh-btn--light-bkg w-100"
+            class="oh-btn oh-btn--danger w-100"
             title="{% trans 'Cancel / Reject' %}"
             onclick="event.preventDefault(); event.stopPropagation(); return confirm('{% trans "Are you sure want to cancel the request?" %}')"
         >

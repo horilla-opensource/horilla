@@ -46,6 +46,11 @@ SUBMENUS = [
         "menu": _("Leave Types"),
         "redirect": reverse_lazy("type-view"),
         "accessibility": "leave.sidebar.type_accessibility",
+        # type-creation/ and type-update/<id>/ are sibling URLs (reached via a
+        # plain link/form from type-view/, not a sub-path of it), so they need
+        # explicit prefixes for the sidebar's path-based active-link highlighting
+        # to match them.
+        "match_prefixes": ["/leave/type-creation/", "/leave/type-update/"],
     },
     {
         "menu": _("Holidays"),

@@ -120,12 +120,12 @@
                                 {% endwith %}
                             {% endfor %}
                             {% if options or option_method %}
-                                <th class="text-sm font-medium p-3" {{header_attrs.option|safe}}>
+                                <th class="text-sm font-medium p-3 text-center" {{header_attrs.option|safe}}>
                                     {% trans "Options" %}
                                 </th>
                             {% endif %}
                             {% if actions or action_method %}
-                                <th class="stickyright text-sm font-medium p-3 flex" {{header_attrs.action|safe}}>
+                                <th class="stickyright text-sm font-medium p-3 text-center" {{header_attrs.action|safe}}>
                                     {% trans "Actions" %}
                                 </th>
                             {% endif %}
@@ -267,11 +267,11 @@
 
                                 {% if actions or action_method %}
                                     <td
-                                        class="stickyright text-sm text-center p-3 text-[#666] flex"
+                                        class="stickyright text-sm text-center p-3 text-[#666]"
                                         onclick="event.stopPropagation()"
                                     >
                                         {% if not action_method %}
-                                            <div class="flex justify-center gap-1">
+                                            <div class="flex items-center justify-center gap-1">
                                                 {% for action in actions %}
                                                     {% if action.accessibility|accessibility:instance %}
                                                         <a

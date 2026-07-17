@@ -1,6 +1,7 @@
 {% load i18n %}
 {% load basefilters %}
 {% load horillafilters %}
+{% get_company as theme_obj %}
 <div id="leave-tab">
     {% comment %} {% include "leave/user_leave/user_leave.html" %} {% endcomment %}
 
@@ -87,7 +88,7 @@
             visibility: hidden;
             width: auto; /* Allow the tooltip width to adjust based on content */
             max-width: auto; /* Limit the maximum width of the tooltip to prevent it from overflowing */
-            background-color: hsl(8,77%,56%);
+            background-color: {{ theme_obj.primary_600|default:'hsl(8,77%,56%)' }};
             color: white;
             text-align: center;
             border-radius: 6px;
@@ -288,7 +289,7 @@
                                 html: content,
                                 showCancelButton: true,
                                 confirmButtonColor: "#008000",
-                                cancelButtonColor: "#d33",
+                                cancelButtonColor: "#6c757d",
                                 confirmButtonText: "Confirm",
                             }).then(function (result) {
                                 if (result.isConfirmed) {
@@ -315,7 +316,7 @@
               icon: 'question',
               showCancelButton: true,
               confirmButtonColor: '#008000',
-              cancelButtonColor: '#d33',
+              cancelButtonColor: '#6c757d',
               confirmButtonText: "Confirm",
               cancelButtonText: "Close"
             }).then((result) => {

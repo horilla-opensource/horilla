@@ -34,7 +34,7 @@
 									hx-post="{% url 'action-type-delete' act.id %}" hx-target="#actionType{{act.id}}"
 									hx-swap="outerHTML" class="w-100">
 									{% csrf_token %}
-									<button type="submit" class="oh-btn oh-btn--danger-outline oh-btn--light-bkg w-100"
+									<button type="submit" class="oh-btn oh-btn--danger w-100"
 										title="{% trans 'Remove' %}">
 										<ion-icon name="trash-outline"></ion-icon>
 									</button>

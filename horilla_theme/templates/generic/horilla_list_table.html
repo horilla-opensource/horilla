@@ -126,14 +126,14 @@
                                 {% endfor %}
                                 {% if options or option_method %}
                                     <th class="option-col-header text-sm font-medium min-w-[150px]" {{header_attrs.option|safe}}>
-                                        <div class="p-3" {{header_attrs.option|safe}}>
+                                        <div class="p-3 text-center" {{header_attrs.option|safe}}>
                                             {% trans "Options" %}
                                         </div>
                                     </th>
                                 {% endif %}
                                 {% if actions or action_method %}
                                     <th class="stickyright action-col-header text-sm font-medium min-w-[150px]" {{header_attrs.action|safe}} >
-                                        <div class="p-3" {{header_attrs.action|safe}}>
+                                        <div class="p-3 text-center" {{header_attrs.action|safe}}>
                                             {% trans "Actions" %}
                                         </div>
                                     </th>
@@ -176,7 +176,7 @@
                                         {% with attribute=cell.1 index=forloop.counter %}
                                             <td class="text-sm text-left p-3 text-[#666] h-[45px] max-w-0">
                                                 {% if not cell.2 %}
-                                                    <div class="truncate">
+                                                    <div class="truncate" title="{{instance|getattribute:attribute|selected_format:request.user.employee_get.employee_work_info.company_id|striptags}}">
                                                         {{instance|getattribute:attribute|selected_format:request.user.employee_get.employee_work_info.company_id|safe}}
                                                     </div>
                                                 {% else %}

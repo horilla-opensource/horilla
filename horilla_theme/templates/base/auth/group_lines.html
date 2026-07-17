@@ -47,7 +47,7 @@
                     <div class="flex gap-1 items-center">
                         {% if perms.auth.change_group %}
                             <a
-                                class="cursor-pointer px-2 py-1 text-sm bg-white shadow-card text-primary-600 rounded-sm w-7 h-7 flex items-center justify-center hover:bg-primary-600 hover:text-white transition duration-300"
+                                class="cursor-pointer px-2 py-1 text-sm bg-white shadow-card text-brand-600 rounded-sm w-7 h-7 flex items-center justify-center hover:bg-brand-600 hover:text-white transition duration-300"
                                 hx-get="{% url 'user-group-assign' %}"
                                 hx-vals='{"group":"{{group.id}}"}'
                                 hx-target="#groupAssignBody"
@@ -61,7 +61,7 @@
                         {% if perms.auth.delete_group %}
                             <a
                                 href="#"
-                                class="cursor-pointer px-2 py-1 text-sm bg-white shadow-card text-primary-600 rounded-sm w-7 h-7 flex items-center justify-center hover:bg-primary-600 hover:text-white transition duration-300"
+                                class="cursor-pointer px-2 py-1 text-sm bg-danger shadow-card text-white rounded-sm w-7 h-7 flex items-center justify-center hover:bg-danger-dark transition duration-300"
                                 hx-post="{% url 'user-group-delete' group.id %}"
                                 hx-target="#settingsContainer"
                                 hx-swap="none"

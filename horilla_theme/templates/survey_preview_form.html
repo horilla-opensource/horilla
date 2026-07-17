@@ -1,5 +1,5 @@
-{% load i18n %}
-{% load i18n widget_tweaks attendancefilters static i18n %}
+{% load i18n widget_tweaks attendancefilters static horillafilters %}
+{% get_company as theme_obj %}
 <style>
     .oh-input {
         margin-bottom: 0px;
@@ -511,7 +511,7 @@
     	$(".sort-container").sortable({
     		start: function (event, ui) {
     			ui.item.css({
-    				border: "1px solid hsl(8, 77%, 56%)",
+    				border: "1px solid {{ theme_obj.primary_600|default:'hsl(8, 77%, 56%)' }}",
     				transform: "scale(1.01)",
     				cursor: "grabbing",
     			});

@@ -42,8 +42,8 @@ $("#deleteBioUsers").click(function (e) {
             text: i18nMessages.confirmBulkDelete,
             icon: "error",
             showCancelButton: true,
-            confirmButtonColor: "#008000",
-            cancelButtonColor: "#d33",
+            confirmButtonColor: "#d33",
+            cancelButtonColor: "#6c757d",
             confirmButtonText: "Confirm",
         }).then(function (result) {
             if (result.isConfirmed) {
@@ -88,8 +88,8 @@ $("#deleteCosecUsers").click(function (e) {
             text: i18nMessages.confirmBulkDelete,
             icon: "error",
             showCancelButton: true,
-            confirmButtonColor: "#008000",
-            cancelButtonColor: "#d33",
+            confirmButtonColor: "#d33",
+            cancelButtonColor: "#6c757d",
             confirmButtonText: "Confirm",
         }).then(function (result) {
             if (result.isConfirmed) {
@@ -132,8 +132,8 @@ function deleteDahuaUsers(e) {
             text: i18nMessages.confirmBulkDelete,
             icon: "error",
             showCancelButton: true,
-            confirmButtonColor: "#008000",
-            cancelButtonColor: "#d33",
+            confirmButtonColor: "#d33",
+            cancelButtonColor: "#6c757d",
             confirmButtonText: "Confirm",
         }).then(function (result) {
             if (result.isConfirmed) {
@@ -163,8 +163,8 @@ function deleteETimeOfficeUsers(e) {
             text: i18nMessages.confirmBulkDelete,
             icon: "error",
             showCancelButton: true,
-            confirmButtonColor: "#008000",
-            cancelButtonColor: "#d33",
+            confirmButtonColor: "#d33",
+            cancelButtonColor: "#6c757d",
             confirmButtonText: "Confirm",
         }).then(function (result) {
             if (result.isConfirmed) {

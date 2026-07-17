@@ -77,7 +77,7 @@ class RotatingShiftListParent(HorillaListView):
 
     header_attrs = {
         "action": """
-                   style="width:250px !important;"
+                   style="width:130px !important;"
                    """
     }
 

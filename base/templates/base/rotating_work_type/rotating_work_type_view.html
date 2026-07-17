@@ -31,7 +31,7 @@
 										hx-post="{% url 'rotating-work-type-delete' rwork.id %}" hx-swap="outerHTML" class="w-50"
 										hx-target="#rotatingWorkTypeTr{{rwork.id}}" hx-on-htmx-after-request="reloadMessage(this);" >
 										{% csrf_token %}
-										<button type="submit" class="oh-btn oh-btn--danger-outline oh-btn--light-bkg w-100"
+										<button type="submit" class="oh-btn oh-btn--danger w-100"
 											title="{% trans 'Remove' %}">
 											<ion-icon name="trash-outline"></ion-icon>
 										</button>

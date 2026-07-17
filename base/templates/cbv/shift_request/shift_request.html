@@ -46,6 +46,86 @@
     .employee {
         background-color: yellowgreen;
     }
+
+    /* dark.css has "body.dark .fixed-table td { border-color: #444 !important }",
+       which — because it includes the "td" element selector — outranks a
+       class-only override here and flattens these status-indicator borders to
+       gray in dark mode. Match its specificity (class + element) to win. */
+    body.dark td.approved-True {
+        border-left-color: yellowgreen !important;
+    }
+
+    body.dark td.canceled-True {
+        border-left-color: red !important;
+    }
+
+    body.dark td.requested-False-False {
+        border-left-color: orange !important;
+    }
+
+    /* ---------------------------------------------------------------
+       Page-scoped refinement of the shared list table.
+       Everything below is namespaced to #shift-container (this view's
+       unique view_id), so sibling list views using the same generic
+       table component are unaffected.
+       --------------------------------------------------------------- */
+    #shift-container .fixed-table {
+        border-collapse: separate;
+        border-spacing: 0;
+    }
+
+    /* Drop the boxy per-cell grid; keep only clean horizontal row dividers. */
+    #shift-container .fixed-table td {
+        border: none;
+        border-bottom: 1px solid #eef0f3;
+    }
+
+    #shift-container .fixed-table thead th {
+        border: none;
+        border-bottom: 1px solid #e8e9ec;
+        background-color: #fafafa;
+        color: #8a8f98;
+    }
+
+    /* Soft row hover — also lifts the sticky (frozen) columns so the
+       highlight reads across the full row. */
+    #shift-container tbody tr:hover td {
+        background-color: #fafafa;
+    }
+
+    #shift-container tbody tr:hover td.stickyleft,
+    #shift-container tbody tr:hover td.stickyleft-second,
+    #shift-container tbody tr:hover td.stickyright {
+        background-color: #fafafa;
+    }
+
+    /* Slightly rounder, softer status accent bar. */
+    #shift-container .approved-True,
+    #shift-container .canceled-True,
+    #shift-container .requested-False-False {
+        border-radius: 6px 0 0 6px;
+    }
+
+    /* ---- Dark mode parity (scoped) ---- */
+    body.dark #shift-container .fixed-table td {
+        border-bottom-color: #34353c !important;
+    }
+
+    body.dark #shift-container .fixed-table thead th {
+        border-bottom-color: #34353c !important;
+        background-color: #1c1c20 !important;
+        color: #9a9ba3 !important;
+    }
+
+    body.dark #shift-container tbody tr:hover td {
+        background-color: #2b2c32 !important;
+    }
+
+    body.dark #shift-container tbody tr:hover td.stickyleft,
+    body.dark #shift-container tbody tr:hover td.stickyleft-second,
+    body.dark #shift-container tbody tr:hover td.stickyright {
+        background-color: #2b2c32 !important;
+    }
 </style>
 
 <div hx-get="{% url 'shift-request-nav' %}" hx-trigger="load"></div>

@@ -373,9 +373,12 @@ def verbose_name(instance, field_name):
 
 @register.simple_tag(takes_context=True)
 def get_company(context):
-    request = context["request"]
-    company_id = request.session.get("selected_company")
-    if company_id != "all":
+    # Some fragments are rendered without a request in context; fall back to the
+    # default theme instead of raising so this tag is safe to use anywhere.
+    request = context.get("request")
+    session = getattr(request, "session", None) if request is not None else None
+    company_id = session.get("selected_company") if session is not None else None
+    if company_id is not None and company_id != "all":
         company = Company.objects.filter(id=company_id).first()
         theme = CompanyTheme.objects.filter(company=company).first()
         if theme:

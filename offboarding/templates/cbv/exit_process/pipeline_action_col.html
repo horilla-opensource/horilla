@@ -1,12 +1,12 @@
 {% load static i18n offboarding_filter %}
-<div class="oh-btn-group" >
+<div class="flex items-center justify-center gap-1" onclick="event.stopPropagation()">
     {% if request.user.employee_get|is_any_stage_manager or perms.offboarding.change_offboarding or	perms.offboarding.change_offboardingemployee %}
         <button
             type="button"
             hx-get="{% url 'send-mail-employee' employee.employee_id.id %}"
             title="{% trans 'Send Mail' %}"
             hx-target="#mail-content"
-            class="oh-btn oh-btn--light w-100"
+            class="oh-btn oh-btn--light-bkg oh-btn--sq-sm"
             data-toggle="oh-modal-toggle"
             data-target="#sendMailModal"
         >
@@ -15,7 +15,7 @@
         <button
             type="button"
             title="{% trans 'Notes' %}"
-            class="oh-btn oh-btn--light w-100 oh-activity-sidebar__open"
+            class="oh-btn oh-btn--light-bkg oh-btn--sq-sm oh-activity-sidebar__open"
             data-target="#genericSidebar"
             hx-get="{% url 'view-offboarding-note' employee.id %}"
             hx-target="#genericOffCanvas"
@@ -31,7 +31,7 @@
             data-toggle="oh-modal-toggle"
             data-target="#objectDetailsModal"
             title="{% if not employee.employee_id.is_active %}{% trans 'Un Archive' %} {% else %} {% trans 'Archive' %}{% endif %}"
-            class="oh-btn oh-btn--light w-100"
+            class="oh-btn oh-btn--light-bkg oh-btn--sq-sm"
             ><ion-icon name="archive"></ion-icon
         ></a>
         {% else %}
@@ -42,7 +42,7 @@
             data-toggle="oh-modal-toggle"
             data-target="#objectDetailsModal"
             title="{% trans 'Edit' %}"
-            class="oh-btn oh-btn--light w-100"
+            class="oh-btn oh-btn--light-bkg oh-btn--sq-sm"
             ><ion-icon name="create-outline"></ion-icon
         ></a>
         {% endif %}
@@ -54,7 +54,7 @@
             hx-target="#objectDetailsModalTarget"
             data-toggle="oh-modal-toggle"
             data-target="#objectDetailsModal"
-            class="oh-btn oh-btn--light w-100"
+            class="oh-btn oh-btn--light-bkg oh-btn--sq-sm"
             ><ion-icon name="people-outline"></ion-icon
         ></a>
         {% endif %}
@@ -66,7 +66,7 @@
             hx-swap="none"
             hx-on-htmx-after-request = "$(`#offboardingStageContainer{{stage.pk}}`).find('.reload-record').click()"
             title="{% trans 'Delete' %}"
-            class="oh-btn oh-btn--light w-100"
+            class="oh-btn oh-btn--danger oh-btn--sq-sm"
             ><ion-icon name="trash-outline"></ion-icon>
         </a>
         {% endif %}
@@ -74,7 +74,7 @@
     <button
         type="button"
         title="{% trans 'Notes' %}"
-        class="oh-btn oh-btn--light w-100 oh-activity-sidebar__open"
+        class="oh-btn oh-btn--light-bkg oh-btn--sq-sm oh-activity-sidebar__open"
         data-target="#genericSidebar"
         hx-get="{% url 'view-offboarding-note' employee.id %}"
         hx-target="#genericOffCanvas"

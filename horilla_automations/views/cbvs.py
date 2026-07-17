@@ -159,7 +159,7 @@ class AutomationListView(views.HorillaListView):
             "action": "Edit",
             "icon": "create-outline",
             "attrs": """
-                class="oh-btn oh-btn--light-bkg w-100"
+                class="oh-btn oh-btn--light-bkg oh-btn--sq-sm"
                 hx-get="{edit_url}?instance_ids={ordered_ids}"
                 hx-target="#genericModalBody"
                 data-target="#genericModal"
@@ -170,7 +170,7 @@ class AutomationListView(views.HorillaListView):
             "action": "Delete",
             "icon": "trash-outline",
             "attrs": """
-            class="oh-btn oh-btn--light-bkg w-100 tex-danger"
+            class="oh-btn oh-btn--danger oh-btn--sq-sm"
             onclick="
                 event.stopPropagation();
                 confirm('Do you want to delete the automation?','{delete_url}')

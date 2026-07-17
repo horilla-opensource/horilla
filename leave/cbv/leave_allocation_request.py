@@ -118,6 +118,16 @@ class LeaveAllocationRequestList(HorillaListView):
     row_status_class = "status-{status}"
 
 
+def _leave_allocation_tab_badge_count(request, view_cls):
+    """Same queryset rules as the tab's HorillaListView (filters, subordinates)."""
+    view = view_cls()
+    view.request = request
+    view.args = ()
+    view.kwargs = {}
+    view.queryset = None
+    return view.get_queryset().count()
+
+
 @method_decorator(login_required, name="dispatch")
 class LeaveAllocationRequestTab(HorillaTabView):
     """
@@ -143,6 +153,19 @@ class LeaveAllocationRequestTab(HorillaTabView):
                     "url": f"{reverse('leave-allocation-requests-tab-view')}",
                 },
             )
+
+    def get_context_data(self, **kwargs):
+        """
+        Populate tab badges with list counts so they show before each tab loads.
+        """
+        context = super().get_context_data(**kwargs)
+        view_classes = [MyLeaveAllocationRequest, LeaveAllocationRequests]
+        for idx, tab in enumerate(self.tabs):
+            if idx < len(view_classes):
+                tab["badge"] = _leave_allocation_tab_badge_count(
+                    self.request, view_classes[idx]
+                )
+        return context
 
 
 @method_decorator(login_required, name="dispatch")

@@ -103,7 +103,7 @@ function workTypeRequestRowApprove(url, confirmText) {
         icon: "question",
         showCancelButton: true,
         confirmButtonColor: "#008000",
-        cancelButtonColor: "#d33",
+        cancelButtonColor: "#6c757d",
         confirmButtonText: i18nMessages.confirm,
         cancelButtonText: i18nMessages.cancel,
     }).then(function (result) {
@@ -144,7 +144,7 @@ function handleApproveRequestsClick() {
             icon: "success",
             showCancelButton: true,
             confirmButtonColor: "#008000",
-            cancelButtonColor: "#d33",
+            cancelButtonColor: "#6c757d",
             confirmButtonText: i18nMessages.confirm,
             cancelButtonText: i18nMessages.cancel,
         }).then(function (result) {
@@ -184,8 +184,8 @@ function handleRejectRequestsClick() {
             text: i18nMessages.confirmBulkReject,
             icon: "warning",
             showCancelButton: true,
-            confirmButtonColor: "#008000",
-            cancelButtonColor: "#d33",
+            confirmButtonColor: "#d33",
+            cancelButtonColor: "#6c757d",
             confirmButtonText: i18nMessages.confirm,
             cancelButtonText: i18nMessages.cancel,
         }).then(function (result) {
@@ -224,8 +224,8 @@ function handleDeleteRequestsClick() {
             text: i18nMessages.confirmBulkDelete,
             icon: "error",
             showCancelButton: true,
-            confirmButtonColor: "#008000",
-            cancelButtonColor: "#d33",
+            confirmButtonColor: "#d33",
+            cancelButtonColor: "#6c757d",
             confirmButtonText: i18nMessages.confirm,
             cancelButtonText: i18nMessages.cancel,
         }).then(function (result) {
@@ -267,8 +267,8 @@ $(document).on('click', '#archiveWorkRotateNav', function (e) {
             text: i18nMessages.confirmBulkArchive,
             icon: "info",
             showCancelButton: true,
-            confirmButtonColor: "#008000",
-            cancelButtonColor: "#d33",
+            confirmButtonColor: "#d33",
+            cancelButtonColor: "#6c757d",
             confirmButtonText: i18nMessages.confirm,
             cancelButtonText: i18nMessages.cancel,
         }).then(function (result) {
@@ -313,7 +313,7 @@ function UnarchiveWorkRotateNav() {
             icon: "info",
             showCancelButton: true,
             confirmButtonColor: "#008000",
-            cancelButtonColor: "#d33",
+            cancelButtonColor: "#6c757d",
             confirmButtonText: i18nMessages.confirm,
             cancelButtonText: i18nMessages.cancel,
         }).then(function (result) {
@@ -356,8 +356,8 @@ function deleteWorkRotateNav() {
             text: i18nMessages.confirmBulkDelete,
             icon: "error",
             showCancelButton: true,
-            confirmButtonColor: "#008000",
-            cancelButtonColor: "#d33",
+            confirmButtonColor: "#d33",
+            cancelButtonColor: "#6c757d",
             confirmButtonText: i18nMessages.confirm,
             cancelButtonText: i18nMessages.cancel,
         }).then(function (result) {

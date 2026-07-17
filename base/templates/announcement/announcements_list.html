@@ -1,4 +1,6 @@
-{% load static i18n %}
+{% load static i18n horillafilters %}
+
+{% get_company as theme_obj %}
 
 {% now "Y-m-d" as current_date %}
 
@@ -33,9 +35,16 @@
                                     {{ announcement.title }}
                                 </span>
                                 {% if announcement.created_at|date:"Y-m-d" == current_date and request.user not in announcement.viewed_by %}
-                                    <span
-                                        class="oh-profile__info-value ms-2 newTag"
-                                        style="background-color: hsl(8, 77%, 56%); color: white; font-size: 0.7rem; padding: 3px 8px; border-radius: 15px; font-weight: 800; width: auto"
+                                    <span class="oh-profile__info-value ms-2 newTag"
+                                        style="
+                                            background-color: {{ theme_obj.primary_600|default:'hsl(8,77%,56%)' }};
+                                            color:white;
+                                            font-size: 0.7rem;
+                                            padding: 3px 8px;
+                                            border-radius: 15px;
+                                            font-weight: 800;
+                                            width:auto;
+                                        "
                                     >
                                         {% trans "NEW" %}
                                     </span>

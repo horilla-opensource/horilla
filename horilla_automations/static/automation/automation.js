@@ -62,9 +62,9 @@ function getToMail(element) {
         </select>
         </td>
         <td>
-        <div class="oh-btn-group">
+        <div class="flex items-center justify-center gap-1">
           <button
-           class="oh-btn oh-btn oh-btn--light p-2 w-50"
+           class="oh-btn oh-btn--light-bkg oh-btn--sq-sm"
            onclick="
             event.preventDefault();
             var clonedElement = $(this).closest('tr').clone();
@@ -80,7 +80,7 @@ function getToMail(element) {
             <ion-icon name="copy-outline"></ion-icon>
           </button>
           <button
-           class="oh-btn oh-btn oh-btn--light p-2 w-50"
+           class="oh-btn oh-btn--danger oh-btn--sq-sm"
            onclick="
             event.preventDefault();
             $(this).closest('tr').remove();

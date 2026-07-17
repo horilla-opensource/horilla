@@ -6,7 +6,7 @@
     <div hx-get="{% url 'filing-status-nav' %}?{{request.GET.urlencode}}" hx-trigger="load">
         <div class="mt-5 oh-wrapper animated-background" style="height: 80px"></div>
     </div>
-    <div id="FilingStatusList" class="oh-wrapper">
+    <div id="FilingStatusList" class="bg-white p-3 rounded-md shadow-card overflow-hidden overflow-y-auto">
         <div class="mt-5 oh-wrapper animated-background"></div>
     </div>
 {% endblock %}

@@ -108,33 +108,32 @@
         </div>
       </div>
       ` + "</div>" }
-          Swal.fire({
-            html: html,
-            icon: 'question',
-            showCancelButton: true,
-            confirmButtonColor: '#008000',
-            cancelButtonColor: '#d33',
-            confirmButtonText: "Confirm",
-            cancelButtonText: "Close"
-          }).then((result) => {
-            if (result.isConfirmed) {
-              if (approve) {
-                var offboardingSelectEl = document.getElementById("offboardingSelect");
-                if (offboardingSelectEl) {
-                  target.siblings("input[name=offboarding_id]").val(offboardingSelectEl.value);
-                }
-              }
-              var formEl = target.closest("form").get(0);
-              if (formEl && typeof htmx !== "undefined") {
-                htmx.trigger(formEl, "submit");
-              } else if (formEl && formEl.requestSubmit) {
-                formEl.requestSubmit();
-              } else if (formEl) {
-                formEl.submit();
-              }
-            }
-          });
+    Swal.fire({
+      html: html,
+      icon: 'question',
+      showCancelButton: true,
+      confirmButtonColor: '#008000',
+      cancelButtonColor: '#6c757d',
+      confirmButtonText: "Confirm",
+      cancelButtonText: "Close"
+    }).then((result) => {
+      if (result.isConfirmed) {
+        if (approve) {
+          var offboardingSelectEl = document.getElementById("offboardingSelect");
+          if (offboardingSelectEl) {
+            target.siblings("input[name=offboarding_id]").val(offboardingSelectEl.value);
+          }
         }
+        var formEl = target.closest("form").get(0);
+        if (formEl && typeof htmx !== "undefined") {
+          htmx.trigger(formEl, "submit");
+        } else if (formEl && formEl.requestSubmit) {
+          formEl.requestSubmit();
+        } else if (formEl) {
+          formEl.submit();
+        }
+      }
+    });
 
         /* Delete / approve / reject swap #listContainer from the server; refresh flash messages after. */
         document.body.addEventListener("htmx:afterSwap", function (ev) {

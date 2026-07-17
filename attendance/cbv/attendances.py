@@ -629,7 +629,7 @@ class PenaltyAccountListView(HorillaListView):
             "action": _("Delete"),
             "icon": "trash-outline",
             "attrs": f"""
-                        class="oh-btn oh-btn--light-bkg w-100 text-danger"
+                        class="oh-btn oh-btn--danger oh-btn--sq-sm"
                         hx-confirm="{confirm_text}"
                         hx-post="{{get_delete_url}}"
                         hx-target="#penaltyTr{{get_delete_instance}}"
@@ -641,6 +641,10 @@ class PenaltyAccountListView(HorillaListView):
     row_attrs = """
                 id = "penaltyTr{get_delete_instance}"
                 """
+
+    header_attrs = {
+        "action": """ style="width:180px !important" """,
+    }
 
     def __init__(self, **kwargs: Any) -> None:
         super().__init__(**kwargs)

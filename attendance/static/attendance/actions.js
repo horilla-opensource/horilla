@@ -552,7 +552,7 @@ $(".attendance-info-import").click(function (e) {
         icon: "question",
         showCancelButton: true,
         confirmButtonColor: "#008000",
-        cancelButtonColor: "#d33",
+        cancelButtonColor: "#6c757d",
         confirmButtonText: i18nMessages.confirm,
         cancelButtonText: i18nMessages.cancel,
     }).then(function (result) {
@@ -772,7 +772,7 @@ $("#validateAttendances").click(function (e) {
             icon: "info",
             showCancelButton: true,
             confirmButtonColor: "#008000",
-            cancelButtonColor: "#d33",
+            cancelButtonColor: "#6c757d",
             confirmButtonText: i18nMessages.confirm,
             cancelButtonText: i18nMessages.cancel,
         }).then(function (result) {
@@ -819,7 +819,7 @@ $("#approveOt").click(function (e) {
             icon: "success",
             showCancelButton: true,
             confirmButtonColor: "#008000",
-            cancelButtonColor: "#d33",
+            cancelButtonColor: "#6c757d",
             confirmButtonText: i18nMessages.confirm,
             cancelButtonText: i18nMessages.cancel,
         }).then(function (result) {
@@ -861,7 +861,7 @@ $("#exportAccounts").click(function (e) {
         icon: "question",
         showCancelButton: true,
         confirmButtonColor: "#008000",
-        cancelButtonColor: "#d33",
+        cancelButtonColor: "#6c757d",
         confirmButtonText: i18nMessages.confirm,
         cancelButtonText: i18nMessages.cancel,
     }).then(function (result) {
@@ -906,7 +906,7 @@ $("#exportActivity").click(function (e) {
         icon: "question",
         showCancelButton: true,
         confirmButtonColor: "#008000",
-        cancelButtonColor: "#d33",
+        cancelButtonColor: "#6c757d",
         confirmButtonText: i18nMessages.confirm,
         cancelButtonText: i18nMessages.cancel,
     }).then(function (result) {
@@ -952,7 +952,7 @@ $("#exportLatecome").click(function (e) {
         icon: "question",
         showCancelButton: true,
         confirmButtonColor: "#008000",
-        cancelButtonColor: "#d33",
+        cancelButtonColor: "#6c757d",
         confirmButtonText: i18nMessages.confirm,
         cancelButtonText: i18nMessages.cancel,
     }).then(function (result) {
@@ -1004,8 +1004,8 @@ $("#bulkDelete").click(function (e) {
             text: i18nMessages.confirmBulkDelete,
             icon: "error",
             showCancelButton: true,
-            confirmButtonColor: "#008000",
-            cancelButtonColor: "#d33",
+            confirmButtonColor: "#d33",
+            cancelButtonColor: "#6c757d",
             confirmButtonText: i18nMessages.confirm,
             cancelButtonText: i18nMessages.cancel,
         }).then(function (result) {
@@ -1058,8 +1058,8 @@ $("#hourAccountbulkDelete").click(function (e) {
             text: i18nMessages.confirmBulkDelete,
             icon: "error",
             showCancelButton: true,
-            confirmButtonColor: "#008000",
-            cancelButtonColor: "#d33",
+            confirmButtonColor: "#d33",
+            cancelButtonColor: "#6c757d",
             confirmButtonText: i18nMessages.confirm,
             cancelButtonText: i18nMessages.cancel,
         }).then(function (result) {
@@ -1149,8 +1149,8 @@ cancelButtonText: i18nMessages.cancel,
                 text: i18nMessages.confirmBulkDelete,
                 icon: "error",
                 showCancelButton: true,
-                confirmButtonColor: "#008000",
-                cancelButtonColor: "#d33",
+                confirmButtonColor: "#d33",
+                cancelButtonColor: "#6c757d",
                 confirmButtonText: i18nMessages.confirm,
                 cancelButtonText: i18nMessages.cancel,
             }).then(function (result) {
@@ -1354,7 +1354,7 @@ $("#reqAttendanceBulkApprove").click(function (e) {
             icon: "info",
             showCancelButton: true,
             confirmButtonColor: "#008000",
-            cancelButtonColor: "#d33",
+            cancelButtonColor: "#6c757d",
             confirmButtonText: i18nMessages.confirm,
             cancelButtonText: i18nMessages.cancel,
         }).then(function (result) {
@@ -1392,8 +1392,8 @@ $("#reqAttendanceBulkReject").click(function (e) {
             text: i18nMessages.confirmBulkReject,
             icon: "info",
             showCancelButton: true,
-            confirmButtonColor: "#008000",
-            cancelButtonColor: "#d33",
+            confirmButtonColor: "#d33",
+            cancelButtonColor: "#6c757d",
             confirmButtonText: i18nMessages.confirm,
             cancelButtonText: i18nMessages.cancel,
         }).then(function (result) {

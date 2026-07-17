@@ -98,7 +98,7 @@
                     {% if perms.base.view_announcement %}
                         <button
                             type="button"
-                            class="inline-flex items-center gap-1 bg-primary-100 text-primary-600 px-2.5 py-1 rounded-full text-xs font-medium hover:bg-primary-200 transition"
+                            class="inline-flex items-center gap-1 bg-info-100 text-info-600 px-2.5 py-1 rounded-full text-xs font-medium hover:bg-info-200 transition"
                             hx-get="{% url 'announcement-viewed-by' %}?announcement_id={{ announcement.id }}"
                             title="{{ announcement.get_views|length }} {% trans 'Views' %}"
                             data-toggle="oh-modal-toggle"

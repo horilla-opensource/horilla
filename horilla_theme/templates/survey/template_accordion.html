@@ -1,4 +1,5 @@
-{% load i18n %}{% load static %}
+{% load i18n %}{% load static %}{% load horillafilters %}
+{% get_company as theme_obj %}
 {% if templates %}
     <div class="p-2 mt-5 shadow-card bg-white">
         {% for grouper in templates %}
@@ -18,6 +19,8 @@
                                 </span>
                             </div>
                         </span>
+                        <div class="flex items-center gap-3">
+                            <span class="icon text-xl font-bold">+</span>
                         <div class="oh-accordion-meta__actions" onclick="event.stopPropagation()">
                             <div class="oh-dropdown" x-data="{open: false}">
                                 {% if grouper.grouper %}
@@ -81,8 +84,7 @@
                                                     <a
                                                         href="{% url 'survey-template-delete' %}?title={{grouper.grouper}}"
                                                         onclick="return confirm('{% trans "Do you want to delete this template" %}')"
-                                                        class="oh-dropdown__link tex-danger"
-                                                        style="color: #dc3545 !important"
+                                                        class="oh-dropdown__link text-danger"
                                                     >
                                                         {% trans "Delete" %}
                                                     </a>
@@ -92,6 +94,7 @@
                                     </div>
                                 {% endif %}
                             </div>
+                        </div>
                         </div>
                     </div>
                     <div class="oh-accordion-body d-none">
@@ -143,14 +146,14 @@
                                             </td>
                                             {% if perms.recruitment.change_recruitmentsurvey or perms.recruitment.delete_recruitmentsurvey %}
                                                 <td class="text-sm text-left p-3 text-[#666]">
-                                                    <div class="oh-btn-group">
+                                                    <div class="flex items-center justify-center gap-1" onclick="event.stopPropagation()">
                                                         {% if perms.recruitment.change_recruitmentsurvey %}
                                                             <button
                                                                 hx-get="{% url 'recruitment-survey-question-template-edit' question.id %}"
                                                                 data-toggle="oh-modal-toggle"
                                                                 data-target="#genericModal"
                                                                 hx-target="#genericModalBody"
-                                                                class="oh-btn oh-btn--light-bkg w-100"
+                                                                class="oh-btn oh-btn--light-bkg oh-btn--sq-sm"
                                                                 title="{% trans 'Edit' %}"
                                                             >
                                                                 <ion-icon name="create-outline"></ion-icon>
@@ -164,13 +167,11 @@
                                                                 hx-confirm="{% trans 'Do you want to delete this record?' %}"
                                                                 hx-on-htmx-after-request="$('#reloadMessagesButton').click();"
                                                                 onsubmit="event.stopPropagation()"
-                                                                class="w-100"
                                                             >
                                                                 {% csrf_token %}
                                                                 <button
                                                                     type="submit"
-                                                                    class="oh-btn oh-btn--light-bkg w-100 tex-danger"
-                                                                    style="color: hsl(8, 77%, 56%)"
+                                                                    class="oh-btn oh-btn--danger oh-btn--sq-sm"
                                                                     title="{% trans 'delete' %}"
                                                                 >
                                                                     <ion-icon name="trash-outline"></ion-icon>

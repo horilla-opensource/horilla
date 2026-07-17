@@ -153,7 +153,7 @@
                                         {% endif %}
                                         {% if leave_allocation_request.status !=  'approved' %}
                                             <a
-                                                class="oh-btn oh-btn--danger-outline oh-btn--light-bkg w-50"
+                                                class="oh-btn oh-btn--danger w-50"
                                                 id="delete-link"
                                                 hx-confirm="{% trans 'Are you sure you want to delete ?' %}"
                                                 hx-post="{% url 'leave-allocation-request-delete' leave_allocation_request.id %}?{{pd}}"
@@ -394,7 +394,7 @@
                                                 {% if request.user|is_reportingmanager or perms.leave.delete_leaveallocationrequest or request.user.employee_get == leave_allocation_request.employee_id %}
                                                     {% if leave_allocation_request.status ==  'requested' %}
                                                         <a
-                                                            class="oh-btn oh-btn--danger-outline oh-btn--light-bkg w-100"
+                                                            class="oh-btn oh-btn--danger w-100"
                                                             id="delete-link"
                                                             hx-confirm="{% trans 'Are you sure you want to delete ?' %}"
                                                             hx-post="{% url 'leave-allocation-request-delete' leave_allocation_request.id %}?{{pd}}"

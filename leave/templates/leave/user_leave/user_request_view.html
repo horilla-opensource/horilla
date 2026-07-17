@@ -2,6 +2,8 @@
 {% block content %}
     {% load static %}
     {% load i18n %}
+    {% load horillafilters %}
+    {% get_company as theme_obj %}
     <style>
         .diff-cell {
             background: rgba(255, 166, 0, 0.158);
@@ -23,7 +25,7 @@
             overflow: hidden; /* Hides any overflowed content */
             transform: translateX(5%);
             border-radius: 6px;
-            background-color: hsl(8, 77%, 56%);
+            background-color: {{ theme_obj.primary_600|default:'hsl(8,77%,56%)' }};
             color: white;
             font-size: 15px;
             text-align: center;

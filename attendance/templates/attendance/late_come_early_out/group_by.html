@@ -2,6 +2,8 @@
 {% load static %}
 {% load attendancefilters %}
 {% load basefilters %}
+{% load horillafilters %}
+{% get_company as theme_obj %}
 {% include 'filter_tags.html' %}
 {% if messages %}
 <div class="oh-wrapper">
@@ -98,7 +100,7 @@
                 <div class='oh-sticky-table__td'>{{late_in_early_out.attendance_id.attendance_worked_hour}}</div>
                 <div class='oh-sticky-table__td' onclick="event.stopPropagation();">
                   {% if late_in_early_out.get_penalties_count %}
-                  <div class="" data-target="#penaltyViewModal" data-toggle="oh-modal-toggle" hx-get="{% url "view-penalties" %}?late_early_id={{late_in_early_out.id}}" hx-target="#penaltyViewModalBody" align="center" style="background-color: rgba(229, 79, 56, 0.036); border: 2px solid rgb(229, 79, 56); border-radius: 18px; padding: 10px; font-weight: bold; width: 85%;">Penalties :{{late_in_early_out.get_penalties_count}}</div>
+                  <div class="" data-target="#penaltyViewModal" data-toggle="oh-modal-toggle" hx-get="{% url "view-penalties" %}?late_early_id={{late_in_early_out.id}}" hx-target="#penaltyViewModalBody" align="center" style="background-color: {{ theme_obj.primary_600|default:'rgba(229, 79, 56, 0.036)' }}; border: 2px solid {{ theme_obj.primary_600|default:'rgb(229, 79, 56)' }}; border-radius: 18px; padding: 10px; font-weight: bold; width: 85%;">Penalties :{{late_in_early_out.get_penalties_count}}</div>
                   {% endif %}
                 </div>
                 {% if request.user|is_reportingmanager or perms.attendance.change_penaltyaccounts or perms.attendance.delete_attendancelatecomeearlyout %}
@@ -111,7 +113,7 @@
                           hx-target="#penaltyModalBody"
                           hx-get="{% url "cut-penalty" late_in_early_out.id %}?{{pd}}"
                           type='submit'
-                          class="oh-btn oh-btn--danger-outline oh-btn--light-bkg w-50"
+                          class="oh-btn oh-btn--danger w-50"
                           title="{% trans 'Penalty' %}">
                           <ion-icon name="information-circle-outline"></ion-icon>
                         </button>
@@ -124,7 +126,7 @@
                               class="w-50"
                             >
                           {% csrf_token %}
-                          <button type='submit' class="oh-btn oh-btn--danger-outline oh-btn--light-bkg w-100" title="{% trans 'Remove' %}">
+                          <button type='submit' class="oh-btn oh-btn--danger w-100" title="{% trans 'Remove' %}">
                             <ion-icon name="trash-outline"></ion-icon>
                           </button>
                         </form>

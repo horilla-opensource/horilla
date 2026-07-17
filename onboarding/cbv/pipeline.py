@@ -388,8 +388,9 @@ class CandidateList(HorillaListView):
     filter_keys_to_remove = ["onboarding_stage_id", "rec_id", "recruitment_id"]
     custom_empty_template = "cbv/pipeline/empty.html"
     header_attrs = {
-        "action": "style='width:300px;'",
+        "action": "style='width:120px;'",
         "stage_drop_down": "style='width:100px;'",
+        "add_task_action": "style='width:110px;'",
     }
     columns = [
         (_("Name"), "candidate_id__candidate_name", "candidate_id__get_avatar"),
@@ -422,7 +423,7 @@ class CandidateList(HorillaListView):
             "action": _("Allocations"),
             "icon": "clipboard-outline",
             "attrs": """
-                    class="oh-btn oh-btn--danger-outline oh-btn--light-bkg w-100"
+                    class="oh-btn oh-btn--light-bkg oh-btn--sq-sm"
                     hx-get = "{allocation_path}"
                     data-toggle="oh-modal-toggle"
                     data-target="#allocationModal"
@@ -433,7 +434,7 @@ class CandidateList(HorillaListView):
             "action": _("Send Mail"),
             "icon": "mail-open-outline",
             "attrs": """
-                    class="oh-btn oh-btn--danger-outline oh-btn--light-bkg w-100"
+                    class="oh-btn oh-btn--light-bkg oh-btn--sq-sm"
                     hx-get = "{candidate_id__get_send_mail}"
                     data-toggle="oh-modal-toggle"
                     data-target="#objectDetailsModal"
@@ -444,7 +445,7 @@ class CandidateList(HorillaListView):
             "action": _("View Note"),
             "icon": "newspaper-outline",
             "attrs": """
-                    class="oh-btn oh-btn--danger-outline oh-btn--light-bkg w-100 oh-activity-sidebar__open"
+                    class="oh-btn oh-btn--light-bkg oh-btn--sq-sm oh-activity-sidebar__open"
                     hx-get="{candidate_id__get_view_note_url}"
                     data-target="#activitySidebar"
                     hx-target="#activitySidebar"
@@ -630,16 +631,26 @@ class CandidateList(HorillaListView):
             (
                 f"""
                     <button
-                        class="oh-checkpoint-badge text-success"
+                        class="px-3 py-1.5 bg-primary-100 text-primary-600 text-xs font-medium rounded-md inline-flex items-center gap-1 hover:bg-primary-600 hover:text-white transition duration-300"
                         data-toggle="oh-modal-toggle"
                         data-target="#genericModal"
                         hx-get="{reverse('task-creation',kwargs={'obj_id':stage_id})}"
                         hx-target="#genericModalBody"
                         >
-                        + {_('Task')}
+                        <ion-icon name="add-outline"></ion-icon>
+                        {_('Task')}
                     </button>
+                    <script>
+                        (function() {{
+                            var span = document.currentScript.closest('span.w-max');
+                            if (span) {{
+                                span.style.width = '100%';
+                                span.style.justifyContent = 'center';
+                            }}
+                        }})();
+                    </script>
                 """,
-                "",
+                "add_task_action",
             )
         )
         self.request.session[self.ordered_ids_key] = list(

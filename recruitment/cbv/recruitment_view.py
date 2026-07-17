@@ -81,7 +81,7 @@ class RecruitmentList(HorillaListView):
 
     header_attrs = {
         "recruitment_column": 'style="width : 200px !important"',
-        "action": 'style="width : 300px !important"',
+        "action": 'style="width : 180px !important"',
     }
 
     row_status_indications = [

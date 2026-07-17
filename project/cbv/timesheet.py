@@ -156,6 +156,10 @@ class TimeSheetList(HorillaListView):
         self.search_url = reverse("time-sheet-list")
         self.action_method = "actions"
 
+    header_attrs = {
+        "action": """style="width:110px !important;" """,
+    }
+
     columns = [
         (_("Employee"), "employee_id", "employee_id__get_avatar"),
         "project_id",

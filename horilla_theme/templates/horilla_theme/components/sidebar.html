@@ -1,5 +1,12 @@
-{% load static i18n %}
+{% load static i18n horillafilters %}
+{% get_company as theme_obj %}
 <style>
+    #sidebar,
+    #sidebarFlyout {
+        --sidebar-accent: {{ theme_obj.primary_600|default:'#E54F38' }};
+        --sidebar-accent-dark: {{ theme_obj.primary_700|default:'#c73f2a' }};
+        --sidebar-accent-soft: {{ theme_obj.primary_100|default:'#FEF6F5' }};
+    }
     /* === Sidebar collapse / expand === */
     #sidebar {
         width: 4rem !important; /* 64 px — collapsed default */
@@ -34,13 +41,29 @@
         display: none !important;
     }
 
-    /* Active state label / chevron color */
-    .sideboxmain.sidebox-active .oh-sidebar-label {
+    /* Current-page label / chevron: solid fill → white text */
+    .sideboxmain.sidebox-current .oh-sidebar-label {
         color: #fff;
     }
-    .sideboxmain.sidebox-active .sidebar-chevron {
+    .sideboxmain.sidebox-current .sidebar-chevron {
         transform: rotate(180deg);
         color: #fff;
+    }
+    /* Hover label: soft tint → accent text (distinct from the solid current page) */
+    .sideboxmain.sidebox-active:not(.sidebox-current) .oh-sidebar-label {
+        color: var(--sidebar-accent);
+    }
+    body.dark .sideboxmain.sidebox-active:not(.sidebox-current) .oh-sidebar-label {
+        color: #e5e7eb;
+    }
+    /* Same label treatment for plain-hover items (e.g. Dashboard) that have no
+       JS-managed 'sidebox-active' class — keeps hover styling consistent
+       across every sidebar entry. */
+    .sideboxmain:hover:not(.sidebox-current) .oh-sidebar-label {
+        color: var(--sidebar-accent);
+    }
+    body.dark .sideboxmain:hover:not(.sidebox-current) .oh-sidebar-label {
+        color: #e5e7eb;
     }
 
     /* Main content margin: tracks sidebar pin state */
@@ -136,13 +159,40 @@
     .sideboxmain {
         transition: background-color 0.18s ease, box-shadow 0.18s ease;
     }
-    /* sidebox-active = hover-only indicator (cleared on mouseleave) */
-    .sideboxmain.sidebox-active {
-        background-color: {{ theme_obj.primary_600|default:"#E54F38" }} !important;
-        box-shadow: 0 4px 14px -4px color-mix(in srgb, {{ theme_obj.primary_600|default:"#E54F38" }} 45%, transparent);
+    /* sidebox-active = hover-only indicator (cleared on mouseleave) → soft accent tint + accent text.
+       sidebox-current = current page (persists) → solid accent fill + white text/icon.
+       Both derive from the selected company theme color via the --sidebar-accent vars. */
+    /* Hover indicator (temporary): soft tint, no elevation.
+       :not(.sidebox-current) so the current page keeps its solid fill even while hovered. */
+    .sideboxmain.sidebox-active:not(.sidebox-current) {
+        background-color: var(--sidebar-accent-soft) !important;
+        box-shadow: none;
     }
-    body.dark .sideboxmain.sidebox-active {
-        background-color: {{ theme_obj.primary_800|default:"#C73F2A" }} !important;
+    body.dark .sideboxmain.sidebox-active:not(.sidebox-current) {
+        background-color: rgba(255, 255, 255, 0.08) !important;
+    }
+    /* Plain-hover (top-level links like Dashboard with no JS-managed
+       'sidebox-active' class) — mirrors the soft-tint hover above. */
+    body.dark .sideboxmain:hover:not(.sidebox-current) {
+        background-color: rgba(255, 255, 255, 0.08) !important;
+    }
+    /* Current page (persistent): solid accent fill + subtle elevation. */
+    .sideboxmain.sidebox-current {
+        background-color: var(--sidebar-accent) !important;
+        box-shadow: 0 4px 14px -4px rgba(20, 20, 30, 0.25);
+    }
+    body.dark .sideboxmain.sidebox-current {
+        background-color: var(--sidebar-accent-dark) !important;
+    }
+
+    /* Submenu link hover (flyout + expanded accordion) — theme-tinted so it's
+       clearly visible instead of the near-white Tailwind hover:bg-gray-50.
+       No !important: id-scoped specificity beats the utility class in light
+       mode, while the dark rule below still wins under body.dark. */
+    #sidebarFlyout .sidebar-subnav-link:hover,
+    #sidebar .sidebar-subnav-link:hover {
+        background-color: var(--sidebar-accent-soft);
+        color: var(--sidebar-accent) !important;
     }
 
     /* Active submenu link highlight */
@@ -163,19 +213,30 @@
         font-weight: 500;
     }
 
-    /* Make icons visible: dark-gray by default, white on hover/active red bg.
-       Overrides the hardcoded fill="#ffffff" and Tailwind group-hover utilities
-       that would otherwise leave icons invisible on the white sidebar. */
+    /* Make icons visible: dark-gray by default (also on hover, where the soft
+       tint background keeps them readable), white only on the current page's
+       solid accent fill. Overrides the hardcoded fill="#ffffff" and Tailwind
+       group-hover utilities that would otherwise leave icons invisible. */
     #sidebar nav .sideboxmain img,
     #sidebar nav .sideboxmain svg:not(.sidebar-chevron) {
         filter: brightness(0) opacity(0.55) !important;
         transition: filter 0.18s ease !important;
     }
-    #sidebar nav .sideboxmain:hover img,
-    #sidebar nav .sideboxmain.sidebox-active img,
-    #sidebar nav .sideboxmain:hover svg:not(.sidebar-chevron),
-    #sidebar nav .sideboxmain.sidebox-active svg:not(.sidebar-chevron) {
+    #sidebar nav .sideboxmain.sidebox-current img,
+    #sidebar nav .sideboxmain.sidebox-current svg:not(.sidebar-chevron) {
         filter: brightness(0) invert(1) !important;
+    }
+
+    /* Dark mode: the resting `brightness(0)` (pure black) icons are invisible on
+       the dark sidebar. Invert to a muted light glyph at rest (also on hover, over
+       the subtle white-overlay tint), full white on the current page's solid fill. */
+    body.dark #sidebar nav .sideboxmain img,
+    body.dark #sidebar nav .sideboxmain svg:not(.sidebar-chevron) {
+        filter: brightness(0) invert(1) opacity(0.65) !important;
+    }
+    body.dark #sidebar nav .sideboxmain.sidebox-current img,
+    body.dark #sidebar nav .sideboxmain.sidebox-current svg:not(.sidebar-chevron) {
+        filter: brightness(0) invert(1) opacity(1) !important;
     }
 
     /* Collapsed: minimal horizontal padding → 56 px inner width for icon circles.
@@ -286,7 +347,8 @@
         border-color: #374151;
         background: #1f2937;
     }
-    body.dark /* Flyout link hover highlight */ #sidebarFlyout a.sidebar-subnav-link {
+    /* Flyout link hover highlight */
+    #sidebarFlyout a.sidebar-subnav-link {
         color: #374151;
         transition: background-color 0.12s ease, color 0.12s ease;
     }
@@ -295,9 +357,11 @@
         color: {{ theme_obj.primary_600|default:"#E54F38" }} !important;
     }
     #sidebarFlyout a.sidebar-subnav-link.oh-sidebar-active-link {
-        background-color: color-mix(in srgb, {{ theme_obj.primary_600|default:"#E54F38" }} 12%, transparent) !important;
+        background-color: color-mix(in srgb, {{ theme_obj.primary_600|default:"#E54F38" }} 16%, transparent) !important;
         color: {{ theme_obj.primary_600|default:"#E54F38" }} !important;
         font-weight: 600;
+        border-left: 3px solid {{ theme_obj.primary_600|default:"#E54F38" }};
+        padding-left: calc(0.75rem - 3px) !important;
     }
     body.dark #sidebarFlyout a.sidebar-subnav-link {
         color: #d1d5db;
@@ -307,8 +371,10 @@
         color: {{ theme_obj.primary_400|default:"#F87060" }} !important;
     }
     body.dark #sidebarFlyout a.sidebar-subnav-link.oh-sidebar-active-link {
-        background-color: color-mix(in srgb, {{ theme_obj.primary_600|default:"#E54F38" }} 20%, transparent) !important;
+        background-color: color-mix(in srgb, {{ theme_obj.primary_600|default:"#E54F38" }} 25%, transparent) !important;
         color: {{ theme_obj.primary_400|default:"#F87060" }} !important;
+        border-left: 3px solid {{ theme_obj.primary_400|default:"#F87060" }};
+        padding-left: calc(0.75rem - 3px) !important;
     }
 
     @media (prefers-reduced-motion: reduce) {
@@ -436,6 +502,7 @@
                             <li>
                                 <a
                                     href="{{ submenu.redirect }}"
+                                    {% if submenu.match_prefixes %}data-match-prefixes="{{ submenu.match_prefixes|join:',' }}"{% endif %}
                                     class="sidebar-subnav-link block text-[13px] text-gray-600 px-3 py-1.5 rounded-md hover:bg-gray-50 hover:text-gray-900 transition-colors duration-150 truncate"
                                     hx-get="{{ submenu.redirect }}"
                                     hx-target="#ohMainContent"
@@ -564,6 +631,15 @@
 
         function setActiveSidebarMenu(btn) {
           if (!btn) return;
+          // Persistent current-page highlight: clear from every module button, then
+          // apply to the active one. Distinct from the hover-only 'sidebox-active'
+          // class so it survives mouseleave.
+          try {
+            document.querySelectorAll(".sideboxmain.sidebox-current").forEach(function (b) {
+              if (b !== btn) b.classList.remove("sidebox-current");
+            });
+            btn.classList.add("sidebox-current");
+          } catch (_) {}
           try {
             if (btn.dataset.menu) localStorage.setItem("activeSidebarMenu", btn.dataset.menu);
           } catch (_) {}
@@ -620,8 +696,15 @@
           // Restore active-link highlight in flyout
           var path = window.location.pathname;
           flyoutListEl.querySelectorAll("a[href]").forEach(function (a) {
-            var href = a.getAttribute("href");
-            if (href && href !== "/" && path.startsWith(href)) a.classList.add("oh-sidebar-active-link");
+            // Some submenu links (e.g. Hour Account) have a query string baked
+            // into their href (?year=2026) by a server-side accessibility
+            // hook. location.pathname never includes the query string, so
+            // strip it from href before comparing or it can never match.
+            var href = (a.getAttribute("href") || "").split("?")[0];
+            var extraPrefixes = (a.dataset.matchPrefixes || "").split(",").filter(Boolean);
+            var matches = (href && href !== "/" && path.startsWith(href)) ||
+              extraPrefixes.some(function (p) { return path.startsWith(p); });
+            if (matches) a.classList.add("oh-sidebar-active-link");
           });
 
           positionFlyout(item.getBoundingClientRect());
@@ -657,8 +740,12 @@
           item.addEventListener("mouseleave", function (e) {
             // If the mouse moved directly into the flyout panel, keep the hover indicator alive
             if (flyoutEl && flyoutEl.contains(e.relatedTarget)) return;
-            // Otherwise clear hover state immediately so it doesn't bleed onto the next item
-            if (currentFlyoutBtn === btn) { btn.classList.remove("sidebox-active"); currentFlyoutBtn = null; }
+            // Don't strip the highlight synchronously: there's a 6px gap between the
+            // module rail and the flyout, so crossing into the flyout reports a
+            // relatedTarget outside it — clearing here would leave the flyout open
+            // with its owning button un-highlighted. Let scheduleFlyoutClose()/
+            // hideFlyout() clear the hover state when the flyout actually closes;
+            // moving straight to another item clears it via showFlyout() instead.
             scheduleFlyoutClose();
           });
         });
@@ -709,9 +796,13 @@
           var path = window.location.pathname;
           var matchedBtn = null;
           document.querySelectorAll(".sidebar-subnav-link").forEach(function (link) {
-            var href = link.getAttribute("href");
-            if (!href || href === "/" || href === "#") return;
-            if (path.startsWith(href)) {
+            // Strip any query string (e.g. Hour Account's ?year=2026) before
+            // comparing — location.pathname never includes one.
+            var href = (link.getAttribute("href") || "").split("?")[0];
+            var extraPrefixes = (link.dataset.matchPrefixes || "").split(",").filter(Boolean);
+            var matches = (href && href !== "/" && href !== "#" && path.startsWith(href)) ||
+              extraPrefixes.some(function (p) { return path.startsWith(p); });
+            if (matches) {
               link.classList.add("oh-sidebar-active-link");
               if (!matchedBtn) {
                 var item = link.closest(".sidebar-item");
@@ -719,6 +810,17 @@
               }
             }
           });
+          // Top-level links with no submenu (e.g. Dashboard) aren't covered by
+          // the subnav-link scan above — check them directly against the URL
+          // so a fresh load on /dashboard/ highlights Dashboard, not whatever
+          // module was last active in localStorage.
+          if (!matchedBtn) {
+            document.querySelectorAll("a.sideboxmain[href]").forEach(function (link) {
+              if (matchedBtn) return;
+              var href = (link.getAttribute("href") || "").split("?")[0];
+              if (href && href !== "/" && href !== "#" && path.startsWith(href)) matchedBtn = link;
+            });
+          }
           if (matchedBtn) {
             setActiveSidebarMenu(matchedBtn);
           } else {
@@ -792,7 +894,9 @@
           var path = window.location.pathname;
           var matchedBtn = null;
           document.querySelectorAll(".sidebar-subnav-link").forEach(function (link) {
-            var href = link.getAttribute("href");
+            // Strip any query string (e.g. Hour Account's ?year=2026) before
+            // comparing — location.pathname never includes one.
+            var href = (link.getAttribute("href") || "").split("?")[0];
             if (href && href !== "/" && path.startsWith(href)) {
               link.classList.add("oh-sidebar-active-link");
               if (!matchedBtn) {
@@ -801,6 +905,13 @@
               }
             }
           });
+          if (!matchedBtn) {
+            document.querySelectorAll("a.sideboxmain[href]").forEach(function (link) {
+              if (matchedBtn) return;
+              var href = (link.getAttribute("href") || "").split("?")[0];
+              if (href && href !== "/" && href !== "#" && path.startsWith(href)) matchedBtn = link;
+            });
+          }
           if (matchedBtn) setActiveSidebarMenu(matchedBtn);
         }
         document.addEventListener("htmx:pushUrl", syncSidebarToUrl);

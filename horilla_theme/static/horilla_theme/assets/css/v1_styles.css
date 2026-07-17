@@ -1413,11 +1413,17 @@ input[type="file"] {
 }
 
 table .oh-btn-group {
+  display: inline-flex;
   margin: 0 5px;
 }
 table .oh-btn-group a {
   flex: 1 0 auto;
   width: max-content !important;
+}
+
+.option-col-cell,
+.action-col-cell {
+  text-align: center;
 }
 
 .oh-btn-group > * {
@@ -1441,6 +1447,36 @@ table .oh-btn-group a {
 
 .oh-btn--light-bkg:hover {
   background-color: hsl(0, 0%, 95%) !important;
+}
+
+/* .oh-btn--light-bkg forces a near-white background; color modifiers like
+   .oh-btn--danger/.oh-btn--success/.oh-btn--secondary set the icon color to
+   white (assuming a solid background). Combined, the icon becomes invisible
+   (white-on-white). When both are used together, keep the light background
+   but tint the icon with the modifier's color instead of white. */
+.oh-btn--light-bkg.oh-btn--danger {
+  color: hsl(1, 100%, 61%) !important;
+}
+.oh-btn--light-bkg.oh-btn--danger:hover,
+.oh-btn--light-bkg.oh-btn--danger:focus,
+.oh-btn--light-bkg.oh-btn--danger:focus-visible {
+  color: hsl(1, 100%, 55%) !important;
+}
+.oh-btn--light-bkg.oh-btn--success {
+  color: hsl(148, 71%, 44%) !important;
+}
+.oh-btn--light-bkg.oh-btn--success:hover,
+.oh-btn--light-bkg.oh-btn--success:focus,
+.oh-btn--light-bkg.oh-btn--success:focus-visible {
+  color: hsl(148, 71%, 38%) !important;
+}
+.oh-btn--light-bkg.oh-btn--secondary {
+  color: hsl(8, 77%, 56%) !important;
+}
+.oh-btn--light-bkg.oh-btn--secondary:hover,
+.oh-btn--light-bkg.oh-btn--secondary:focus,
+.oh-btn--light-bkg.oh-btn--secondary:focus-visible {
+  color: hsl(8, 77%, 48%) !important;
 }
 
 .oh-btn--disabled {
@@ -1770,6 +1806,19 @@ table .oh-btn-group a {
   display: none;
 }
 
+/* Plus/close indicator on the newer (no-after) accordion header used by
+   group_by_table.html — rotate the "+" glyph 45deg into an "x" so the
+   open/closed state is visually distinct, since this design has no
+   background-image chevron like the legacy accordion header does. */
+.oh-accordion-header .icon {
+  display: inline-block;
+  transition: transform 200ms ease;
+}
+
+.oh-accordion--show .oh-accordion-header .icon {
+  transform: rotate(45deg);
+}
+
 .oh-accordion--show .oh-accordion-body {
   display: block;
   opacity: 1;
@@ -2037,11 +2086,6 @@ table .oh-btn-group a {
   margin-bottom: 0;
 }
 
-.oh-tabs__movable:hover .oh-tabs__movable-header {
-  /* background-color: hsl(0, 0%, 97.5%); */
-  background-color: rgba(252, 237, 235, 1);
-}
-
 .oh-tabs__movable-header {
   padding: 0.3rem 0.75rem;
   /* border-bottom: 1px solid hsl(213, 22%, 84%); */
@@ -2049,10 +2093,9 @@ table .oh-btn-group a {
   align-items: center;
   justify-content: space-between;
   cursor: move;
-  background-color: rgba(255, 245, 241, 1);
   border-radius: inherit;
-  color: rgba(229, 79, 56, 1);
-  font-size: 0.9rem;
+  font-size: 0.875rem;
+  font-weight: 500;
 }
 
 .oh-tabs__movable-header--w-80 {
@@ -2205,8 +2248,8 @@ table .oh-btn-group a {
 }
 
 .oh-tabs__movable-title {
-  font-weight: bold;
-  font-size: 1.25rem;
+  font-weight: 500;
+  font-size: 0.875rem;
 }
 
 /* @media (max-width: 767.98px) {
@@ -2407,12 +2450,12 @@ ul.errorlist ul.errorlist li {
   transition: 0.3s;
 }
 
-.sideboxmain:hover {
-  background-color: #e34e38;
+.sideboxmain:hover:not(.sidebox-current) {
+  background-color: var(--sidebar-accent-soft, #fef6f5);
 }
 
-.sideboxmain:hover img {
-  filter: brightness(0) invert(1);
+.sideboxmain:hover:not(.sidebox-current) img {
+  filter: brightness(0) opacity(0.55);
 }
 
 .sideboxmain.active {

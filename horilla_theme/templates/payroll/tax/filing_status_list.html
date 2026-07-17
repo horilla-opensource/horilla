@@ -3,26 +3,22 @@
     <div class="accordion-wrapper space-y-2">
         <!-- Accordion Item -->
         {% for obj in object_list %}
-            <div class="accordion-item border border-primary-300 rounded-md overflow-hidden">
-                <button
-                    class="accordion-btn w-full flex justify-between items-center px-4 py-2 text-sm transition-all bg-primary-100 text-primary-600"
+            <div class="oh-accordion border border-primary-300 rounded-md overflow-hidden {% if forloop.first %}oh-accordion--show{% endif %}">
+                <div
+                    class="oh-accordion-header no-after w-full flex justify-between items-center px-4 py-2 bg-primary-100 text-primary-600 text-sm transition-all"
                     {% if obj.get_panel_hx_url %}
                         hx-get="{{ obj.get_panel_hx_url }}"
                         hx-target="#accordionPanel{{ obj.id }}"
-                        hx-trigger="doRequest"
-                        _="on click if isElementVisible(me) trigger doRequest"
-                        hx-on:click="toggleAccordion(this)"
+                        hx-trigger="click once"
                     {% endif %}
                 >
                     <div class="flex items-center gap-2">
-                        {% if obj.get_panel_count %}
-                            <span
-                                class="w-6 h-6 bg-primary-600 rounded-full text-white flex items-center justify-center text-xs"
-                                title="{{ obj.get_panel_count }}"
-                            >
-                                {{ obj.get_panel_count }}
-                            </span>
-                        {% endif %}
+                        <span
+                            class="w-6 h-6 bg-primary-600 rounded-full text-white flex items-center justify-center text-xs"
+                            title="{{ obj.get_panel_count }}"
+                        >
+                            {{ obj.get_panel_count|default:0 }}
+                        </span>
                         {{ obj }}
                     </div>
 
@@ -41,12 +37,12 @@
                         </span>
                         <span class="icon text-xl font-bold">+</span>
                     </div>
-                </button>
+                </div>
                 <div
-                    class="accordion-panel max-h-0 overflow-hidden transition-all duration-300 bg-white px-4 text-sm text-gray-700"
+                    class="oh-accordion-body transition-all duration-300 bg-white px-4 text-sm text-gray-700"
                     id="accordionPanel{{ obj.id }}"
-                    style="max-height: 0px"
                 >
+                    <div class="py-3"></div>
                 </div>
             </div>
         {% endfor %}
@@ -80,15 +76,6 @@
             </div>
         {% endif %}
     </div>
-    <script>
-        function isElementVisible(element) {
-            const $targetSelector = $(element).attr("hx-target");
-            const $targetEl = $($targetSelector);
-            const isOpen = $targetEl.css("max-height") && $targetEl.css("max-height") !== "0px";
-
-            return !isOpen;
-        }
-    </script>
 {% else %}
     <div class="oh-empty">
         <img src="{% static 'images/ui/search.svg' %}" class="oh-404__image" alt="{% trans 'Page not found. 404.' %}">

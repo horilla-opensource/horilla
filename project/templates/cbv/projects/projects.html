@@ -1,7 +1,8 @@
 {% extends "index.html" %}
-{% load i18n static %}
+{% load i18n static horillafilters %}
 
 {% block content %}
+{% get_company as theme_obj %}
     <style>
         .expired--dot{
             background-color:gray;
@@ -81,7 +82,7 @@
         }
 
         .oh-badge--secondary {
-            background-color: hsl(8, 77%, 56%);
+            background-color: {{ theme_obj.primary_600|default:'hsl(8, 77%, 56%)' }};
             color: hsl(0, 0%, 100%);
         }
     </style>

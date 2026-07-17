@@ -9,7 +9,7 @@
   {{ field }}
   <a
     hx-get="{% url 'add-remove-shift-fields' %}"
-    class="oh-btn oh-btn--danger-outline oh-btn--light-bkg"
+    class="oh-btn oh-btn--danger"
     hx-target="#moreShiftContainer_{{ forloop.counter }}"
     hx-swap="outerHTML"
     id="delete-link"

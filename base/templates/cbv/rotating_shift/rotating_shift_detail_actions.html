@@ -26,7 +26,7 @@
     </form>
 {% endif %}
 {% if perms.base.delete_rotatingshiftassign or can_manage %}
-    <form class="oh-btn  oh-btn-group oh-btn--secondary" style="width: 50%;"
+    <form class="oh-btn  oh-btn-group oh-btn--danger" style="width: 50%;"
         hx-confirm="{% trans 'Are you sure you want to delete this rotating shift assign?' %}"
         hx-post="{% url 'rotating-shift-assign-delete' instance.id %}?instances_ids={{ request.GET.instance_ids }}"
         hx-target="#genericModalBody">

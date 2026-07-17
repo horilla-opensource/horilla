@@ -1,4 +1,5 @@
 {% load static i18n horillafilters recruitmentfilters generic_template_filters %}
+{% get_company as theme_obj %}
 {% for instance in group.page_obj %}
     <div class="task-card"
         data-instance-id = "{{instance.id}}"
@@ -109,7 +110,7 @@
             >
                 <div class="htmx-indicator" >
                     <div class="flex justify-center items-center p-4">
-                        <div class="animate-spin rounded-full h-8 w-8 border-t-2 border-b-2 border-[#e54f38]"></div>
+                        <div class="animate-spin rounded-full h-8 w-8 border-t-2 border-b-2" style="border-color: {{ theme_obj.primary_600|default:'#e54f38' }}"></div>
                     </div>
                 </div>
             </div>

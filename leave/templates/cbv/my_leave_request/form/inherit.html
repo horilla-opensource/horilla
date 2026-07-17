@@ -49,27 +49,27 @@
                             <p style="font-weight:700">{% trans "Are you sure you want to proceed with the request?" %}</p>
                         </div>`;
 
-                            if (interviews.length != 0) {
-                                Swal.fire({
-                                    title: title,
-                                    icon: "info",
-                                    html: content,
-                                    showCancelButton: true,
-                                    confirmButtonColor: "#008000",
-                                    cancelButtonColor: "#d33",
-                                    confirmButtonText: "Confirm",
-                                }).then(function (result) {
-                                    if (result.isConfirmed) {
-                                        test.find("[type=submit]").show();
-                                        $("#buttonID").hide();
-                                    test.find("[type=submit]").click();
-                                }
-                            });
-                        } else {
-                            test.find("[type=submit]").click();
-                        }
-                    },
-                });
+                        if (interviews.length != 0) {
+                            Swal.fire({
+                                title: title,
+                                icon: "info",
+                                html: content,
+                                showCancelButton: true,
+                                confirmButtonColor: "#008000",
+                                cancelButtonColor: "#6c757d",
+                                confirmButtonText: "Confirm",
+                            }).then(function (result) {
+                                if (result.isConfirmed) {
+                                    test.find("[type=submit]").show();
+                                    $("#buttonID").hide();
+                                test.find("[type=submit]").click();
+                            }
+                        });
+                    } else {
+                        test.find("[type=submit]").click();
+                    }
+                },
+            });
             });
         });
         {% endif %}

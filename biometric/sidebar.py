@@ -13,6 +13,9 @@ biometric_submenu = {
     "menu": _("Biometric Devices"),
     "redirect": reverse_lazy("view-biometric-devices"),
     "accessibility": "biometric.sidebar.biometric_device_accessibility",
+    # The "Employee" link on a device card navigates to a standalone employees
+    # page that is a sibling URL, not nested under view-biometric-devices/.
+    "match_prefixes": ["/biometric/biometric-device-employees/"],
 }
 
 SUBMENUS.insert(1, biometric_submenu)

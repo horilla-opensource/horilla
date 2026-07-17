@@ -1,4 +1,5 @@
-{% load static i18n basefilters recruitmentfilters i18n %}
+{% load static i18n basefilters recruitmentfilters horillafilters %}
+{% get_company as theme_obj %}
 <script>
     function submitForm(elem) {
     	$(elem).siblings(".add_more_submit").click();
@@ -161,7 +162,7 @@
                             >
                                 <ion-icon
                                     name="trash-outline"
-                                    style="color: #e54f38"
+                                    style="color: {{ theme_obj.primary_600|default:'#e54f38' }}"
                                 ></ion-icon>
                             </button>
                         </form>

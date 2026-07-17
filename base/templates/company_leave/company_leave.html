@@ -58,7 +58,7 @@
                                 </button>
                             {% endif %}
                             {% if perms.base.delete_companyleaves %}
-                                <a class="oh-btn oh-btn--danger-outline oh-btn--light-bkg w-100"
+                                <a class="oh-btn oh-btn--danger w-100"
                                     hx-confirm="{% trans 'Are you sure you want to delete ?' %}"
                                     hx-post="{% url 'company-leave-delete' company_leave.id %}?{{pd}}" hx-target="#companyLeave"
                                     title="{% trans 'Delete' %}">

@@ -84,7 +84,7 @@
                         </button>
                     {% endif %}
                     {% if request.user|is_reportingmanager or perms.leave.delete_availableleave %}
-                    <a class="oh-btn oh-btn--danger-outline oh-btn--light-bkg w-100" hx-confirm="{% trans 'Are you sure you want to delete ?' %}"
+                    <a class="oh-btn oh-btn--danger w-100" hx-confirm="{% trans 'Are you sure you want to delete ?' %}"
                         id="delete-link" hx-post="{% url 'assign-delete' available_leave.id %}?{{pd}}" hx-target="#assignedLeaves" title="{% trans 'Delete' %}">
                         <ion-icon name="trash-outline"></ion-icon></a>
                     {% endif %}

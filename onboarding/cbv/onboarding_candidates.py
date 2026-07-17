@@ -90,7 +90,9 @@ class OnboardingCandidatesList(HorillaListView):
         (_("Offer letter"), "offer_letter"),
     ]
     header_attrs = {
-        "action": "style='width: 350px;'",
+        "date_of_joining": "style='width: 190px;'",
+        "probation_date": "style='width: 190px;'",
+        "action": "style='width: 260px;'",
     }
 
     action_method = "actions"

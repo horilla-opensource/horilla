@@ -180,13 +180,13 @@ def get_ordered_badge_ids():
         list(group) for _, group in groupby(sorted_data, key=dynamic_prefix_sort)
     ]
 
-    # Sort each subgroup alphabetically and numerically
-    for group in grouped_data:
-        group.sort()
-        filtered_group = [
-            item for item in group if any(char.isdigit() for char in item)
-        ]
-        filtered_group.sort(key=lambda x: int("".join(filter(str.isdigit, x))))
+    # Sort each subgroup numerically by the digits in the badge id, so e.g.
+    # "PEP100" correctly sorts after "PEP99" instead of before it as a string
+    for index, group in enumerate(grouped_data):
+        numeric_items = [item for item in group if any(char.isdigit() for char in item)]
+        non_numeric_items = [item for item in group if item not in numeric_items]
+        numeric_items.sort(key=lambda x: int("".join(filter(str.isdigit, x))))
+        grouped_data[index] = non_numeric_items + numeric_items
 
     # Create a list containing the first and last items from each group
     result = [[group[0], group[-1]] for group in grouped_data]

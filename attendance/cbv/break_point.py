@@ -46,6 +46,7 @@ class BreakPointList(HorillaListView):
     ]
     header_attrs = {
         "validation_at_work": """ style="width:200px !important" """,
+        "break_point_actions": """ style="width:130px !important" """,
     }
 
 

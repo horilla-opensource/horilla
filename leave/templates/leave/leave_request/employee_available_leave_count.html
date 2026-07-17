@@ -1,4 +1,5 @@
-{% load i18n %} {% load static %}
+{% load i18n %} {% load static %} {% load horillafilters %}
+{% get_company as theme_obj %}
 <div
     id="{{hx_target}}"
     class="d-flex available-leave-count"
@@ -10,8 +11,8 @@
         <div
             id="messageDiv"
             style="
-                background-color: rgba(229, 79, 56, 0.17);
-                border: 2px solid hsl(8, 77%, 56%);
+                background-color: {{ theme_obj.primary_600|default:'rgba(229, 79, 56, 0.17)' }};
+                border: 2px solid {{ theme_obj.primary_600|default:'hsl(8, 77%, 56%)' }};
                 border-radius: 18px;
                 padding: 10px;
                 font-weight: bold;
@@ -24,8 +25,8 @@
         <div
             id="messageDiv"
             style="
-                background-color: rgba(229, 79, 56, 0.17);
-                border: 2px solid hsl(8, 77%, 56%);
+                background-color: {{ theme_obj.primary_600|default:'rgba(229, 79, 56, 0.17)' }};
+                border: 2px solid {{ theme_obj.primary_600|default:'hsl(8, 77%, 56%)' }};
                 border-radius: 18px;
                 padding: 10px;
                 font-weight: bold;
@@ -63,8 +64,8 @@
             id="pendingDiv"
             class="ms-2"
             style="
-                background-color: rgba(229, 79, 56, 0.17);
-                border: 2px solid hsl(8, 77%, 56%);
+                background-color: {{ theme_obj.primary_600|default:'rgba(229, 79, 56, 0.17)' }};
+                border: 2px solid {{ theme_obj.primary_600|default:'hsl(8, 77%, 56%)' }};
                 border-radius: 18px;
                 padding: 10px;
                 font-weight: bold;

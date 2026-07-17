@@ -2,14 +2,15 @@
 {% load i18n %}
 {% load static i18n horillafilters mathfilters %}
 {% block content %}
+    {% get_company as theme_obj %}
     <style>
         .oh-info {
             top: 2px !important;
         }
 
         .oh-checkpoint-badge--primary {
-            border-color: hsl(8, 77%, 56%);
-            color: hsl(8, 77%, 56%);
+            border-color: {{ theme_obj.primary_600|default:'hsl(8, 77%, 56%)' }};
+            color: {{ theme_obj.primary_600|default:'hsl(8, 77%, 56%)' }};
         }
 
         .oh-checkpoint-badge {

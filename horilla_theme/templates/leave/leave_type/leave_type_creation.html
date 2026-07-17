@@ -118,7 +118,7 @@
         .oh-btn.oh-btn--secondary {
             border: 0;
             background-color: {{ theme_obj.primary_600|default:"#E54F38" }};
-            box-shadow: 0 6px 18px rgba(229, 79, 56, 0.12);
+            box-shadow: 0 6px 18px rgba(20, 20, 30, 0.12);
             color: #fff;
         }
 
@@ -151,9 +151,9 @@
         .form-input-items input:focus,
         .form-input-items select:focus,
         .form-input-items textarea:focus {
-            border-color: rgba(229, 79, 56, 0.8);
+            border-color: {{ theme_obj.primary_600|default:'rgba(229, 79, 56, 0.8)' }};
             outline: none;
-            box-shadow: 0 6px 18px rgba(229, 79, 56, 0.06);
+            box-shadow: 0 6px 18px rgba(20, 20, 30, 0.06);
         }
     </style>
 

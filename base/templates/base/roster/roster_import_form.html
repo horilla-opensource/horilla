@@ -69,49 +69,49 @@
     var _rosterDefaultStart = '{{ default_start }}';
     var _rosterDefaultEnd   = '{{ default_end }}';
 
-    function rosterAskDownload() {
-      Swal.fire({
-        title: '{% trans "Download Roster Template" %}',
-        html:
-          '<div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;text-align:left;">' +
-            '<div>' +
-              '<label style="font-size:12px;font-weight:600;color:#4a5173;display:block;margin-bottom:4px;">{% trans "Start Date" %}</label>' +
-              '<input type="date" id="swal_start" value="' + _rosterDefaultStart + '"' +
-                ' style="width:100%;height:38px;padding:6px 10px;border:1px solid #d6dae8;border-radius:6px;font-size:13px;color:#333;outline:none;box-sizing:border-box;">' +
-            '</div>' +
-            '<div>' +
-              '<label style="font-size:12px;font-weight:600;color:#4a5173;display:block;margin-bottom:4px;">{% trans "End Date" %}</label>' +
-              '<input type="date" id="swal_end" value="' + _rosterDefaultEnd + '"' +
-                ' style="width:100%;height:38px;padding:6px 10px;border:1px solid #d6dae8;border-radius:6px;font-size:13px;color:#333;outline:none;box-sizing:border-box;">' +
-            '</div>' +
-          '</div>',
-        icon: 'info',
-        showCancelButton: true,
-        confirmButtonText: '<ion-icon name="cloud-download-outline" style="vertical-align:middle;margin-right:4px;"></ion-icon> {% trans "Download" %}',
-        cancelButtonText: '{% trans "Cancel" %}',
-        confirmButtonColor: '#5c6bc0',
-        cancelButtonColor: '#aaa',
-        preConfirm: function () {
-          var start = document.getElementById('swal_start').value;
-          var end   = document.getElementById('swal_end').value;
-          if (!start || !end) {
-            Swal.showValidationMessage('{% trans "Please select both dates." %}');
-            return false;
-          }
-          if (end < start) {
-            Swal.showValidationMessage('{% trans "End date cannot be before start date." %}');
-            return false;
-          }
-          return { start: start, end: end };
-        }
-      }).then(function (result) {
-        if (result.isConfirmed) {
-          window.location.href =
-            '{% url "roster-template-download" %}?start_date=' +
-            result.value.start + '&end_date=' + result.value.end;
-        }
-      });
+function rosterAskDownload() {
+  Swal.fire({
+    title: '{% trans "Download Roster Template" %}',
+    html:
+      '<div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;text-align:left;">' +
+        '<div>' +
+          '<label style="font-size:12px;font-weight:600;color:#4a5173;display:block;margin-bottom:4px;">{% trans "Start Date" %}</label>' +
+          '<input type="date" id="swal_start" value="' + _rosterDefaultStart + '"' +
+            ' style="width:100%;height:38px;padding:6px 10px;border:1px solid #d6dae8;border-radius:6px;font-size:13px;color:#333;outline:none;box-sizing:border-box;">' +
+        '</div>' +
+        '<div>' +
+          '<label style="font-size:12px;font-weight:600;color:#4a5173;display:block;margin-bottom:4px;">{% trans "End Date" %}</label>' +
+          '<input type="date" id="swal_end" value="' + _rosterDefaultEnd + '"' +
+            ' style="width:100%;height:38px;padding:6px 10px;border:1px solid #d6dae8;border-radius:6px;font-size:13px;color:#333;outline:none;box-sizing:border-box;">' +
+        '</div>' +
+      '</div>',
+    icon: 'info',
+    showCancelButton: true,
+    confirmButtonText: '<ion-icon name="cloud-download-outline" style="vertical-align:middle;margin-right:4px;"></ion-icon> {% trans "Download" %}',
+    cancelButtonText: '{% trans "Cancel" %}',
+    confirmButtonColor: '#008000',
+    cancelButtonColor: '#6c757d',
+    preConfirm: function () {
+      var start = document.getElementById('swal_start').value;
+      var end   = document.getElementById('swal_end').value;
+      if (!start || !end) {
+        Swal.showValidationMessage('{% trans "Please select both dates." %}');
+        return false;
+      }
+      if (end < start) {
+        Swal.showValidationMessage('{% trans "End date cannot be before start date." %}');
+        return false;
+      }
+      return { start: start, end: end };
     }
+  }).then(function (result) {
+    if (result.isConfirmed) {
+      window.location.href =
+        '{% url "roster-template-download" %}?start_date=' +
+        result.value.start + '&end_date=' + result.value.end;
+    }
+  });
+}
 
     rosterAskDownload();
 </script>

@@ -1,4 +1,5 @@
-{% load static i18n recruitmentfilters %}
+{% load static i18n recruitmentfilters horillafilters %}
+{% get_company as theme_obj %}
 <!DOCTYPE html>
 <html lang="en">
     <!-- Previous head section remains the same -->
@@ -247,7 +248,7 @@
             }
 
             .bg-orange {
-                background-color: #e54f38;
+                background-color: {{ theme_obj.primary_600|default:'#e54f38' }};
             }
 
             @media (max-width: 576px) {

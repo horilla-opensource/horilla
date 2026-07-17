@@ -195,6 +195,7 @@ class TourNav(HorillaNavView):
     nav_title = _("Product Tours")
     search_swap_target = "#listContainer"
     filter_instance = TourFilter()
+    template_name = "generic/inline_nav.html"
 
     def __init__(self, **kwargs: Any) -> None:
         super().__init__(**kwargs)
@@ -226,7 +227,7 @@ class TourList(HorillaListView):
                 "action": _("Steps"),
                 "icon": "list-outline",
                 "attrs": f"""
-                    class="oh-btn oh-btn--light-bkg w-100"
+                    class="oh-btn oh-btn--light-bkg oh-btn--sq-sm"
                     hx-get="{steps_url}?tour_id={{pk}}"
                     hx-target="#genericModalBody"
                     data-toggle="oh-modal-toggle"
@@ -241,7 +242,7 @@ class TourList(HorillaListView):
                     "action": _("Edit"),
                     "icon": "create-outline",
                     "attrs": """
-                        class="oh-btn oh-btn--light-bkg w-100"
+                        class="oh-btn oh-btn--light-bkg oh-btn--sq-sm"
                         hx-get="{get_update_url}"
                         hx-target="#genericModalBody"
                         data-toggle="oh-modal-toggle"
@@ -255,7 +256,7 @@ class TourList(HorillaListView):
                     "action": _("Delete"),
                     "icon": "trash-outline",
                     "attrs": """
-                        class="oh-btn oh-btn--danger-outline oh-btn--light-bkg w-100"
+                        class="oh-btn oh-btn--danger oh-btn--sq-sm"
                         hx-get="{get_delete_url}?model=horilla_tour.tour&pk={pk}"
                         data-toggle="oh-modal-toggle"
                         data-target="#deleteConfirmation"
@@ -265,6 +266,10 @@ class TourList(HorillaListView):
             )
 
     row_attrs = """ id="tourTr{get_delete_instance}" """
+
+    header_attrs = {
+        "action": """ style="width:180px !important" """,
+    }
 
     columns = [
         (_("Title"), "title"),

@@ -55,17 +55,15 @@
                                 <span class="oh-timeoff-modal__user fw-bold">
                                     {{ object|getattribute:header.title|selected_format:request.user.employee_get.employee_work_info.company_id }}
                                 </span>
-                                <span class="oh-timeoff-modal__user m-0" style="font-size: 18px; color: #4d4a4a">
-                                    {{ object|getattribute:header.subtitle|selected_format:request.user.employee_get.employee_work_info.company_id }}
+                                <span class="oh-timeoff-modal__user m-0" style="font-size: 18px; color: var(--text-muted, #4d4a4a)">
+                                    {{object|getattribute:header.subtitle|selected_format:request.user.employee_get.employee_work_info.company_id}}
                                 </span>
                             </div>
                         </div>
                     </a>
                 {% endif %}
-                <div
-                    class="oh-modal__dialog-header {% if header %} oh-card__footer--border-top{% endif %} pb-0"
-                    style="padding-top: 5px; padding-rigth: 0px; padding-left: 0px"
-                >
+                <div class="oh-modal__dialog-header {% if header %} oh-card__footer--border-top{% endif %} pb-0"
+                    style="padding-top: 5px; padding-right: 0px; padding-left: 0px">
                     <div class="row">
                         {% for col in body %}
                             <div class="col-{% if cols|get_item:col.1 %}{{cols|get_item:col.1}}{% else %}6{% endif %} mt-3">

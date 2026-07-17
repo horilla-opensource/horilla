@@ -919,6 +919,16 @@ class Candidate(HorillaModel):
             context={"instance": self, "emp_list": emp_list},
         )
 
+    def actions_col(self):
+        """
+        This method for get custom column for actions.
+        """
+
+        return render_template(
+            path="cbv/candidates/actions.html",
+            context={"instance": self},
+        )
+
     def get_profile_url(self):
         """
         This method to get profile url

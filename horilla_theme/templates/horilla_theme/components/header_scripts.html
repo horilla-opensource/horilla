@@ -1,6 +1,78 @@
 {% load static %}
 {% load horillafilters %}
 {% get_company as theme_obj %}
+<style>
+    /* Legacy (non-Tailwind) primary CTA button — used by most Save/Create
+       forms across the app. Recolor it to follow the selected company
+       theme, same as the Tailwind 'brand'/'primary' color below. */
+    .oh-btn--secondary,
+    .oh-btn--secondary:disabled {
+        background-color: {{ theme_obj.primary_600|default:"#E54F38" }} !important;
+    }
+    .oh-btn--secondary:hover,
+    .oh-btn--secondary:focus,
+    .oh-btn--secondary:focus-visible {
+        background-color: {{ theme_obj.primary_700|default:"#ce4732" }} !important;
+    }
+    .oh-btn--secondary-outline,
+    .oh-btn--secondary-link {
+        color: {{ theme_obj.primary_600|default:"#E54F38" }} !important;
+    }
+    .oh-btn--secondary-outline:hover,
+    .oh-btn--secondary-outline:focus,
+    .oh-btn--secondary-outline:focus-visible,
+    .oh-btn--secondary-link:hover,
+    .oh-btn--secondary-link:focus,
+    .oh-btn--secondary-link:focus-visible {
+        color: {{ theme_obj.primary_700|default:"#ce4732" }} !important;
+    }
+
+    /* Active-filter chip bar ("Filters:" label + each filter's remove-X,
+       e.g. "Is active: Yes"). Follow the selected company theme too. */
+    .oh-titlebar__tag--custom {
+        background-color: {{ theme_obj.primary_600|default:"#E54F38" }} !important;
+    }
+    .oh-titlebar__tag-close {
+        background-color: {{ theme_obj.primary_600|default:"#E54F38" }} !important;
+    }
+    .oh-titlebar__tag-close:hover {
+        background-color: {{ theme_obj.primary_700|default:"#ce4732" }} !important;
+    }
+    .oh-titlebar__tag.filter-field {
+        border-color: {{ theme_obj.primary_600|default:"#E54F38" }} !important;
+    }
+
+    /* "Save And Add Another" — secondary CTA next to Save on create forms.
+       Uses a lighter tint of the theme color so it stays visually distinct
+       from the solid "Save" button while still following the theme. */
+    .oh-btn--add-another {
+        background-color: {{ theme_obj.primary_500|default:"#F7C8C1" }} !important;
+        color: #ffffff !important;
+        border: 1px solid {{ theme_obj.primary_500|default:"#F7C8C1" }} !important;
+    }
+    .oh-btn--add-another:hover,
+    .oh-btn--add-another:focus,
+    .oh-btn--add-another:focus-visible {
+        background-color: {{ theme_obj.primary_600|default:"#E54F38" }} !important;
+        border-color: {{ theme_obj.primary_600|default:"#E54F38" }} !important;
+    }
+
+    /* Checkmark bullet on "Changes" list items (e.g. Employee > History tab). */
+    .list-checked li:before {
+        color: {{ theme_obj.primary_600|default:"#E54F38" }} !important;
+    }
+
+    /* Legacy light icon button (e.g. the "View Comment" icon on Shift/Work
+       Type/Document request lists). Icon color follows the theme too. */
+    .oh-btn--light {
+        color: {{ theme_obj.primary_600|default:"#E54F38" }} !important;
+    }
+    .oh-btn--light:hover,
+    .oh-btn--light:focus,
+    .oh-btn--light:focus-visible {
+        color: {{ theme_obj.primary_700|default:"#ce4732" }} !important;
+    }
+</style>
 <script>
     document.addEventListener("DOMContentLoaded", function () {
     var btn = document.getElementById("themeToggleButton");
@@ -58,6 +130,27 @@
                     700: '{{ theme_obj.primary_700 | default:"#ce4732" }}',
                     800: '{{ theme_obj.primary_800 | default:"#AC3B2A" }}',
                     900: '{{ theme_obj.primary_900 | default:"#672419" }}',
+                },
+
+                /* 'brand' = primary CTA color (Create/Save/Submit). Mirrors the
+                   company's selected theme color so CTAs follow the theme, same
+                   as 'primary'. 'info' = fixed blue for Edit/View/Details. */
+                brand: {
+                    50:  '{{ theme_obj.primary_50  | default:"#f6f6f6" }}',
+                    100: '{{ theme_obj.primary_100 | default:"#FFF5F1" }}',
+                    200: '{{ theme_obj.primary_200 | default:"#FEF6F5" }}',
+                    300: '{{ theme_obj.primary_300 | default:"#FCEDEB" }}',
+                    400: '{{ theme_obj.primary_400 | default:"#FBE5E1" }}',
+                    500: '{{ theme_obj.primary_500 | default:"#F7C8C1" }}',
+                    600: '{{ theme_obj.primary_600 | default:"#E54F38" }}',
+                    700: '{{ theme_obj.primary_700 | default:"#ce4732" }}',
+                    800: '{{ theme_obj.primary_800 | default:"#AC3B2A" }}',
+                    900: '{{ theme_obj.primary_900 | default:"#672419" }}',
+                },
+                info: {
+                    50:  '#eaf6fc', 100: '#c9e8f7', 200: '#95d0ec', 300: '#5eb8e2',
+                    400: '#3aa6da', 500: '#2E9BD6', 600: '#2E9BD6', 700: '#2585b8',
+                    800: '#1f6d97', 900: '#184f6f',
                 },
 
                 dark: {

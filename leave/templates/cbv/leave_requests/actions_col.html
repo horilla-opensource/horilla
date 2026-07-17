@@ -4,20 +4,20 @@
 {% with can_change=perms.leave.change_leaverequest can_delete=perms.leave.delete_leaverequest can_penalty=perms.base.chanage_penaltyaccounts leave_manager=request.user|is_leave_approval_manager %}
 {% if can_change or can_delete or can_penalty or can_manage or leave_manager %}
     <div onclick="event.stopPropagation()">
-        <div class="oh-btn-group">
+        <div class="flex items-center justify-center gap-1">
 
             {# Penalty Button #}
             {% if can_manage or can_penalty or leave_manager %}
                 <button data-toggle="oh-modal-toggle" data-target="#penaltyModal" hx-target="#penaltyModalBody"
                     hx-get="{% url 'leave-cut-penalty' instance.id %}" type="button"
-                    class="oh-btn oh-btn--danger-outline oh-btn--light-bkg w-100" title="{% trans 'Penalty' %}">
+                    class="oh-btn oh-btn--danger oh-btn--sq-sm" title="{% trans 'Penalty' %}">
                     <ion-icon name="information-circle-outline"></ion-icon>
                 </button>
             {% endif %}
 
             {# Edit Button #}
             {% if can_manage or can_change or leave_manager %}
-                <button class="oh-btn oh-btn--light-bkg w-100" {% if instance.end_date < current_date %} disabled {% endif %}
+                <button class="oh-btn oh-btn--light-bkg oh-btn--sq-sm" {% if instance.end_date < current_date %} disabled {% endif %}
                     title="{% trans 'Edit' %}" data-toggle="oh-modal-toggle" data-target="#genericModal"
                     {% if instance.end_date >= current_date %}
                         hx-get="{% url 'request-update' instance.id %}?instance_ids={{ instance.ordered_ids }}"
@@ -31,7 +31,7 @@
             {# Delete Button #}
             {% if can_manage or can_delete or leave_manager %}
                 <button
-                    class="oh-btn oh-btn--danger-outline oh-btn--light-bkg w-100" {% if instance.status != 'requested' %}disabled{% endif %}
+                    class="oh-btn oh-btn--danger oh-btn--sq-sm" {% if instance.status != 'requested' %}disabled{% endif %}
                     title="{% trans 'Delete' %}"
                     id="delete-link"
                     {% if instance.status == 'requested' %}

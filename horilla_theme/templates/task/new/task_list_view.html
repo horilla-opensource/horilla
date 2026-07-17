@@ -16,7 +16,7 @@
 
         {% if request.user|is_project_manager:stages.first.project %}
             <button
-                class="px-4 py-2 bg-primary-600 text-white rounded-md text-xs flex items-center gap-2 hover:bg-primary-800 transition duration-300"
+                class="px-4 py-2 bg-brand-600 text-white rounded-md text-xs flex items-center gap-2 hover:bg-brand-800 transition duration-300"
                 data-toggle="oh-modal-toggle"
                 data-target="#objectCreateModal"
                 hx-get="{% url 'create-project-stage' project_id %}"
@@ -47,7 +47,7 @@
                     <div class="flex items-center gap-5">
                         {% if request.user|is_project_manager:stage.project %}
                             <span
-                                class="ml-2 px-4 py-2 bg-white rounded-md text-xs flex items-center gap-2 border border-primary-500 hover:border-primary-600 transition duration-300"
+                                class="ml-2 px-4 py-2 bg-white rounded-md text-xs flex items-center gap-2 border border-brand-500 hover:border-brand-600 transition duration-300"
                                 data-toggle="oh-modal-toggle"
                                 data-target="#genericModal"
                                 hx-get="{% url 'create-stage-task' stage.id %}"
@@ -67,7 +67,7 @@
                                     <ul class="text-xs">
                                         <li>
                                             <a
-                                                class="w-full flex text-left px-3 py-1 text-dark-600 hover:text-primary-600 transition duration-300"
+                                                class="w-full flex text-left px-3 py-1 text-dark-600 hover:text-info-600 transition duration-300"
                                                 data-toggle="oh-modal-toggle"
                                                 data-target="#TaskModal"
                                                 hx-get="{% url 'update-project-stage' stage.id %}"
@@ -80,7 +80,7 @@
                                                 hx-confirm="{% trans 'Are you sure you want to delete this stage?' %}"
                                                 hx-post="{% url 'delete-project-stage' stage.id %}?view=list"
                                                 hx-target="#deletemodal"
-                                                class="w-full flex text-left px-3 py-1 text-dark-600 hover:text-primary-600 transition duration-300"
+                                                class="w-full flex text-left px-3 py-1 text-dark-600 hover:text-danger transition duration-300"
                                             >
                                                 {% trans "Delete" %}
                                             </a>
@@ -168,7 +168,7 @@
                                                             <a
                                                                 href="{{ task.document.url }}"
                                                                 target="_blank"
-                                                                class="text-primary-600 oh-btn oh-btn--light"
+                                                                class="text-info-600 oh-btn oh-btn--light"
                                                             >
                                                                 <span class="oh-file-icon oh-file-icon--pdf"></span>
                                                                 {% trans "View" %}
@@ -201,7 +201,7 @@
                                                                 </button>
 
                                                                 <a
-                                                                    class="oh-btn oh-btn--danger-outline oh-btn--light-bkg"
+                                                                    class="oh-btn oh-btn--danger"
                                                                     hx-confirm="{% trans 'Do you really want to delete this task?' %}"
                                                                     hx-post="{% url 'delete-task' task.id %}?view=list"
                                                                     hx-target="#taskCreateForm{{stage.id}}"

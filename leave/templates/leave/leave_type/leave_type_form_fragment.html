@@ -1,4 +1,5 @@
 {% load i18n static widget_tweaks horillafilters %}
+{% get_company as theme_obj %}
 
 <style>
     .bg-white.p-5.pe-2.pt-3.rounded-md.shadow-card.w-full {
@@ -134,7 +135,7 @@
     .form-input-items input:focus,
     .form-input-items select:focus,
     .form-input-items textarea:focus {
-        border-color: rgba(229, 79, 56, 0.8);
+        border-color: {{ theme_obj.primary_600|default:'rgba(229,79,56,0.8)' }};
         outline: none;
         box-shadow: 0 6px 18px rgba(229, 79, 56, 0.06);
     }

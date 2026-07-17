@@ -377,6 +377,8 @@
 }
 
 .oh-btn-group > * {
+  flex: 1 1 0%;
+  min-width: 0;
   border-right: 1px solid $border-light-color;
 
   &:last-child {

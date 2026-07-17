@@ -44,7 +44,7 @@ class TagsListView(HorillaListView):
                 "action": _("Edit"),
                 "icon": "create-outline",
                 "attrs": """
-                        class="oh-btn oh-btn--light-bkg w-100"
+                        class="oh-btn oh-btn--light-bkg oh-btn--sq-sm"
                         hx-get='{get_update_url}?instance_ids={ordered_ids}'
 								hx-target="#genericModalBody"
 								data-toggle="oh-modal-toggle"
@@ -55,7 +55,7 @@ class TagsListView(HorillaListView):
                 "action": _("Delete"),
                 "icon": "trash-outline",
                 "attrs": f"""
-                        class="oh-btn oh-btn--light-bkg w-100 text-danger"
+                        class="oh-btn oh-btn--danger oh-btn--sq-sm"
                         hx-confirm="{delete_confirm}"
                         hx-post="{{get_delete_url}}"
                         hx-target="#tagTr{{get_instance_id}}"
@@ -70,6 +70,7 @@ class TagsListView(HorillaListView):
         "title": """
                    style = "width:200px !important"
                    """,
+        "action": """ style="width:180px !important" """,
     }
 
     sortby_mapping = [(_("Title"), "title")]

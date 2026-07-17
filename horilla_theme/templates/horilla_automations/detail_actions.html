@@ -6,7 +6,7 @@
         data-target="#genericModal"
         hx-get="{{ instance.edit_url }}?instance_ids={{ instance.ordered_ids }}"
         hx-target="#genericModalBody"
-        class="w-24 px-4 py-2 bg-primary-600 text-white rounded-md text-xs flex items-center justify-center gap-2 hover:bg-primary-800 transition duration-300"
+        class="w-24 px-4 py-2 bg-info-600 text-white rounded-md text-xs flex items-center justify-center gap-2 hover:bg-info-800 transition duration-300"
     >
         <img
             src="{% static 'horilla_theme/assets/img/icons/edit.svg' %}"
@@ -22,14 +22,14 @@
 {% if perms.horilla_automations.delete_mailautomation %}
     <!-- Start of Delete a href Tag -->
     <a
-        class="w-24 px-4 py-2 bg-white rounded-md text-xs flex items-center justify-center gap-2 border border-primary-500 hover:border-primary-600 transition duration-300"
+        class="w-24 px-4 py-2 bg-danger text-white rounded-md text-xs flex items-center justify-center gap-2 hover:bg-danger-dark transition duration-300"
         onclick="confirm('Do you want to delete the automation?','{{instance.delete_url}}')"
     >
         <img
             src="{% static 'horilla_theme/assets/img/icons/trash.svg' %}"
             alt="{% trans 'Delete' %}"
             width="16"
-            class="mt-[-1px]"
+            class="mt-[-1px] filter brightness-0 invert"
         >
         {% trans 'Delete' %}
     </a>

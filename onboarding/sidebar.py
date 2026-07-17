@@ -28,6 +28,11 @@ SUBMENUS = [
         "menu": _("Candidates"),
         "redirect": reverse("candidates-view"),
         "accessibility": "onboarding.sidebar.candidates_view_accessibility",
+        # The "Create" button on this page links to recruitment's standalone
+        # candidate-create/ page (a sibling URL under a different app prefix,
+        # not a sub-path of candidates-view/), so it needs an explicit prefix
+        # here for the sidebar's path-based active-link highlighting to match it.
+        "match_prefixes": ["/recruitment/candidate-create/"],
     },
 ]
 

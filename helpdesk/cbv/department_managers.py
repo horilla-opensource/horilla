@@ -48,12 +48,7 @@ class DepartmentManagersListView(HorillaListView):
     ]
 
     header_attrs = {
-        "department": """
-                   style = "width:200px !important"
-                   """,
-        "manager": """
-                   style = "width:200px !important"
-                   """,
+        "action": """ style="width:150px !important" """,
     }
 
     sortby_mapping = [
@@ -66,7 +61,7 @@ class DepartmentManagersListView(HorillaListView):
             "action": _("Edit"),
             "icon": "create-outline",
             "attrs": """
-                    class="oh-btn oh-btn--light-bkg w-50"
+                    class="oh-btn oh-btn--light-bkg oh-btn--sq-sm"
                     hx-get="{get_update_url}?instance_ids={ordered_ids}"
                     hx-target="#genericModalBody"
                     data-toggle="oh-modal-toggle"
@@ -77,7 +72,7 @@ class DepartmentManagersListView(HorillaListView):
             "action": _("Delete"),
             "icon": "trash-outline",
             "attrs": f"""
-                    class="oh-btn oh-btn--danger-outline oh-btn--light-bkg w-50"
+                    class="oh-btn oh-btn--danger oh-btn--sq-sm"
                     hx-confirm="{delete_confirm}"
                     hx-target="#dapartmentManagerTr{{get_instance_id}}"
                     hx-post="{{get_delete_url}}"

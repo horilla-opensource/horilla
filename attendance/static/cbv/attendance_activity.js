@@ -50,8 +50,8 @@ function deleteAttendanceNav() {
             text: i18nMessages.confirmBulkDelete,
             icon: "error",
             showCancelButton: true,
-            confirmButtonColor: "#008000",
-            cancelButtonColor: "#d33",
+            confirmButtonColor: "#d33",
+            cancelButtonColor: "#6c757d",
             confirmButtonText: i18nMessages.confirm,
             cancelButtonText: i18nMessages.cancel,
         }).then(function (result) {
@@ -82,7 +82,7 @@ function importAttendanceNav() {
         icon: "question",
         showCancelButton: true,
         confirmButtonColor: "#008000",
-        cancelButtonColor: "#d33",
+        cancelButtonColor: "#6c757d",
         confirmButtonText: i18nMessages.confirm,
         cancelButtonText: i18nMessages.cancel,
     }).then(function (result) {
@@ -121,7 +121,7 @@ function importAttendanceActivity() {
         icon: "question",
         showCancelButton: true,
         confirmButtonColor: "#008000",
-        cancelButtonColor: "#d33",
+        cancelButtonColor: "#6c757d",
         confirmButtonText: i18nMessages.confirm,
         cancelButtonText: i18nMessages.cancel,
     }).then(function (result) {
@@ -190,8 +190,8 @@ function bulkDeleteAttendanceNav() {
         text: i18nMessages.confirmBulkDelete,
         icon: "error",
         showCancelButton: true,
-        confirmButtonColor: "#008000",
-        cancelButtonColor: "#d33",
+        confirmButtonColor: "#d33",
+        cancelButtonColor: "#6c757d",
         confirmButtonText: i18nMessages.confirm,
         cancelButtonText: i18nMessages.cancel,
     }).then(function (result) {
@@ -247,7 +247,7 @@ function bulkValidateTabAttendance(dataReqValue) {
             icon: "info",
             showCancelButton: true,
             confirmButtonColor: "#008000",
-            cancelButtonColor: "#d33",
+            cancelButtonColor: "#6c757d",
             confirmButtonText: i18nMessages.confirm,
             cancelButtonText: i18nMessages.cancel,
         }).then(function (result) {
@@ -287,7 +287,7 @@ function otBulkValidateTabAttendance(dataReqValue) {
             icon: "success",
             showCancelButton: true,
             confirmButtonColor: "#008000",
-            cancelButtonColor: "#d33",
+            cancelButtonColor: "#6c757d",
             confirmButtonText: i18nMessages.confirm,
             cancelButtonText: i18nMessages.cancel,
         }).then(function (result) {

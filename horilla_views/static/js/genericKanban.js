@@ -309,7 +309,7 @@ function initializeKanbanSortable(sectionSelector, stageSelector) {
                             `,
 							icon: "warning",
 							showCancelButton: true,
-							cancelButtonColor: "#d33",
+							cancelButtonColor: "#6c757d",
 							confirmButtonColor: "#008000",
 							confirmButtonText: i18nMessages.confirm,
 							preConfirm: () => {

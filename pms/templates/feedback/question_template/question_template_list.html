@@ -81,7 +81,7 @@
                                     {% endif %}
                                     {% if perms.pms.delete_questiontemplate or request.user|filtersubordinates %}
                                         <a
-                                            class="oh-btn oh-btn--danger-outline w-100"
+                                            class="oh-btn oh-btn--danger w-100"
                                             title="{% trans 'Delete' %}"
                                             hx-confirm="{% trans 'Do you want to delete this question template?' %}"
                                             hx-get="{% url 'question-template-delete' template_id=question_template.id %}"

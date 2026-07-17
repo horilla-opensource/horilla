@@ -2037,7 +2037,7 @@ class DynamicEmailConfiguration(HorillaModel):
 
     def highlight_cell(self):
         if self.is_primary:
-            return f'style="background-color: rgba(255, 68, 0, 0.134);" '
+            return 'class="bg-primary-50"'
 
     def action_col(self):
         """

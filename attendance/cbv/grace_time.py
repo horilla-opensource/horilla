@@ -52,6 +52,7 @@ class GenericGraceTimeListView(HorillaListView):
 
     header_attrs = {
         "allowed_time_col": """ style = "width:200px !important" """,
+        "action": """ style = "width:150px !important" """,
     }
 
     row_attrs = """ id = "graceTimeTr{get_instance_id}" """

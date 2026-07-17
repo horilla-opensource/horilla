@@ -1,3 +1,17 @@
+// Shared by permission/group tab fragments (base/templates/base/auth/*, employee/templates/cbv/allocations/auth/*).
+// Defined globally so it's available regardless of which htmx fragment loads first, since several of
+// those fragments call checkSelected() without defining it themselves.
+function checkSelected(names, target, initial = false) {
+  names = JSON.parse(`${names}`);
+  $.each(names, function (indexInArray, valueOfElement) {
+    if (!initial) {
+      $(target).find(`[value=${valueOfElement}]`).prop("checked", true).change();
+    } else {
+      $(target).find(`[value=${valueOfElement}]`).prop("checked", true);
+    }
+  });
+}
+
 // CUSTOM MODAL
 document.addEventListener("DOMContentLoaded", () => {
   // Open modal

@@ -1,4 +1,5 @@
-{% load static i18n generic_template_filters %}
+{% load static i18n generic_template_filters horillafilters %}
+{% get_company as theme_obj %}
 <div class="oh-card mt-4 mb-5" id="{{view_id|safe}}">
     <style>
         .oh-general__tab-link--active {

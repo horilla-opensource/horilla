@@ -13,6 +13,11 @@ SUBMENUS = [
         "menu": _("Dashboard"),
         "redirect": reverse("asset-dashboard"),
         "accessibility": "asset.sidebar.dashboard_accessibility",
+        # The dashboard's "Expiring Soon" widget links straight to an asset's
+        # detail page (a plain <a href>, not a modal), which is a sibling URL
+        # rather than a sub-path of asset-dashboard/, so it needs an explicit
+        # prefix for the sidebar's path-based active-link highlighting to match it.
+        "match_prefixes": ["/asset/asset-information/"],
     },
     {
         "menu": _("Assets"),
@@ -27,6 +32,11 @@ SUBMENUS = [
     {
         "menu": _("Requests & Allocation"),
         "redirect": reverse("asset-request-allocation-view"),
+        # The "Asset Renewal" action on this page is a plain <a href> full-page
+        # link (not a modal), and asset-renewal/ is a sibling URL rather than a
+        # sub-path of asset-request-allocation-view/, so it needs an explicit
+        # prefix for the sidebar's path-based active-link highlighting to match it.
+        "match_prefixes": ["/asset/asset-renewal/"],
     },
     {
         "menu": _("Asset History"),

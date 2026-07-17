@@ -24,6 +24,10 @@ SUBMENUS = [
     {
         "menu": _("FAQs"),
         "redirect": reverse_lazy("faq-category-view"),
+        # The individual FAQ list page (faq-view/<id>/) is a sibling URL, not a
+        # sub-path of faq-category-view/, so it needs an explicit prefix here
+        # for the sidebar's path-based active-link highlighting to match it.
+        "match_prefixes": ["/helpdesk/faq-view/"],
     },
 ]
 

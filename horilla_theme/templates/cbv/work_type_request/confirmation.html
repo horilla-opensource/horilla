@@ -6,13 +6,13 @@
 </style>
 {% is_manager_of request.user instance as can_manage %}
 {% if perms.base.change_worktyperequest or can_manage %}
-    <div class="oh-btn-group w-100" onclick="event.stopPropagation()">
+    <div class="flex items-center justify-center gap-1" onclick="event.stopPropagation()">
         {% if instance.approved or instance.canceled %}
             <a
                 type="submit"
                 href="#"
                 title="{% trans 'Approve' %}"
-                class="w-24 px-4 py-2 bg-primary-600 text-white rounded-md text-xs flex items-center justify-center gap-2 hover:bg-primary-800 transition duration-300 oh-btn--disabled"
+                class="h-8 w-24 px-4 py-2 bg-success text-white rounded-md text-xs flex items-center justify-center gap-2 hover:bg-success-dark transition duration-300 oh-btn--disabled"
             >
                 <img
                     src="{% static 'horilla_theme/assets/img/icons/check.svg' %}"
@@ -26,7 +26,7 @@
                 href="#"
                 title="{% trans 'Approve' %}"
                 onclick="event.preventDefault(); event.stopPropagation(); workTypeRequestRowApprove('{% url 'work-type-request-approve' instance.id %}', '{% trans 'Do you want to approve this request?' %}')"
-                class="w-24 px-4 py-2 bg-primary-600 text-white rounded-md text-xs flex items-center justify-center gap-2 hover:bg-primary-800 transition duration-300"
+                class="h-8 w-24 px-4 py-2 bg-success text-white rounded-md text-xs flex items-center justify-center gap-2 hover:bg-success-dark transition duration-300"
                 style="cursor: pointer"
             >
                 <img
@@ -43,10 +43,10 @@
                 type="submit"
                 href="#"
                 title="{% trans 'Reject' %}"
-                class="w-24 px-4 py-2 bg-white rounded-md text-xs flex items-center justify-center gap-2 border border-primary-500 hover:border-primary-600 transition duration-300 oh-btn--disabled"
+                class="h-8 w-24 px-4 py-2 bg-danger text-white rounded-md text-xs flex items-center justify-center gap-2 hover:bg-danger-dark transition duration-300 oh-btn--disabled"
             >
                 <img
-                    class="mt-[-1px]"
+                    class="filter brightness-0 invert"
                     src="{% static 'horilla_theme/assets/img/icons/close.svg' %}"
                     alt="{% trans 'Reject' %}"
                     width="13"
@@ -57,11 +57,11 @@
                 href="#"
                 title="{% trans 'Reject' %}"
                 onclick="event.preventDefault(); event.stopPropagation(); workTypeRequestRowApprove('{% url 'work-type-request-cancel' instance.id %}', '{% trans 'Do you want to reject this request?' %}')"
-                class="w-24 px-4 py-2 bg-white rounded-md text-xs flex items-center justify-center gap-2 border border-primary-500 hover:border-primary-600 transition duration-300"
+                class="h-8 w-24 px-4 py-2 bg-danger text-white rounded-md text-xs flex items-center justify-center gap-2 hover:bg-danger-dark transition duration-300"
                 style="cursor: pointer"
             >
                 <img
-                    class="mt-[-1px]"
+                    class="filter brightness-0 invert"
                     src="{% static 'horilla_theme/assets/img/icons/close.svg' %}"
                     alt="{% trans 'Reject' %}"
                     width="13"

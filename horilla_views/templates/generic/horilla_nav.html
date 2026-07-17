@@ -288,7 +288,13 @@
 <script>
   filterCountUpdate("filterForm")
   $(document).ready(function () {
-    $("#filterForm select").parent().find("span").remove()
-    $("#filterForm select").select2()
+    // Only initialize filter selects that the global initializer (htmxSelect2.js)
+    // hasn't already handled — avoids double-init and the stray-widget cleanup it
+    // previously required.
+    $("#filterForm select").each(function () {
+      if (!$(this).hasClass("select2-hidden-accessible")) {
+        $(this).select2({ width: '100%' });
+      }
+    });
   });
 </script>

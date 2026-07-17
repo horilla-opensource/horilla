@@ -1,4 +1,5 @@
-{% load i18n %}{% load static %}
+{% load i18n %}{% load static %}{% load horillafilters %}
+{% get_company as theme_obj %}
 {% if templates %}
     <div class="oh-card">
         {% for grouper in templates %}
@@ -165,7 +166,7 @@
                                                                 <button
                                                                     type="submit"
                                                                     class="oh-btn oh-btn--light-bkg w-100 tex-danger"
-                                                                    style="color: hsl(8, 77%, 56%)"
+                                                                    style="color: {{ theme_obj.primary_600|default:'hsl(8, 77%, 56%)' }}"
                                                                     title="{% trans 'delete' %}"
                                                                 >
                                                                     <ion-icon name="trash-outline"></ion-icon>

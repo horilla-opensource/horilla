@@ -3,6 +3,20 @@ body.dark {
   background-color: #000000 !important;
   color: white;
 }
+/* primary-600 is calibrated as text on light backgrounds (e.g. the
+   Settings sidebar's active-item indicator) — against the dark panels
+   it can end up too close to the theme's own base hue to read clearly.
+   Use the theme's own 300 (light tint) shade instead so it's still the
+   theme color, just a shade that stays legible on dark backgrounds. */
+body.dark .text-primary-600 {
+  color: var(--primary-300, #fcedeb) !important;
+}
+/* .accordion-panel ul li a below is more specific than .text-primary-600
+   above, so it wins the cascade and flattens the active Settings sub-menu
+   item to gray. Re-assert the theme color with matching specificity. */
+body.dark .accordion-panel ul li a.text-primary-600 {
+  color: var(--primary-300, #fcedeb) !important;
+}
 body.dark .bg-white,
 body.dark .bg-primary-200,
 body.dark
@@ -212,6 +226,7 @@ body.dark .text-gray-700 {
 }
 body.dark p,
 body.dark .accordion-panel ul li a,
+body.dark .breadcrumb,
 body.dark .breadcrumb li a,
 body.dark .breadcrumb li:not(:last-child):before,
 body.dark .fixed-table td,

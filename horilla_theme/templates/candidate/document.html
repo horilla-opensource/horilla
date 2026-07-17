@@ -146,7 +146,7 @@
                                         <ion-icon class="me-1" name="checkmark-outline"></ion-icon>
                                     </button>
                                     <button
-                                        class="oh-btn flex-1 text-base bg-primary-300 text-dark-700 hover:bg-danger hover:text-white hover:scale-105 transition"
+                                        class="oh-btn flex-1 text-base bg-danger text-white hover:bg-danger-dark hover:scale-105 transition"
                                         hx-get="{% url 'candidate-document-reject' document.id %}"
                                         hx-target="#rejectFileForm"
                                         title="{% trans 'Reject' %}"
@@ -165,7 +165,7 @@
                                     </button>
 
                                     <button
-                                        class="oh-btn flex-1 text-base bg-primary-300 text-dark-700 hover:bg-danger hover:text-white hover:scale-105 transition"
+                                        class="oh-btn flex-1 text-base bg-danger text-white hover:bg-danger-dark hover:scale-105 transition"
                                         hx-get="{% url 'candidate-document-reject' document.id %}"
                                         hx-target="#rejectFileForm"
                                         title="{% trans 'Reject' %}"
@@ -184,7 +184,7 @@
                                         <ion-icon class="me-1" name="checkmark-outline"></ion-icon>
                                     </button>
                                     <button
-                                        class="oh-btn flex-1 text-base bg-primary-300 text-dark-700 hover:bg-danger hover:text-white hover:scale-105 transition opacity-50 cursor-not-allowed"
+                                        class="oh-btn flex-1 text-base bg-danger text-white hover:bg-danger-dark hover:scale-105 transition opacity-50 cursor-not-allowed"
                                         title="{% trans 'Reject' %}"
                                         onclick="event.stopPropagation()"
                                     >
@@ -194,7 +194,7 @@
                             {% endif %}
                         {% else %}
                             <button
-                                class="oh-btn flex-1 text-base bg-primary-300 text-primary-600 hover:bg-primary-600 hover:text-white hover:scale-105 transition"
+                                class="oh-btn flex-1 text-base bg-brand-300 text-brand-600 hover:bg-brand-600 hover:text-white hover:scale-105 transition"
                                 title="{% trans 'Upload Document' %}"
                                 hx-get="{% url 'candidate-file-upload' document.id %}"
                                 hx-target="#objectCreateModalTarget"
@@ -222,7 +222,7 @@
                                 {% csrf_token %}
                                 <button
                                     type="submit"
-                                    class="oh-btn text-base bg-primary-300 text-dark-600 hover:scale-105 hover:text-white hover:bg-danger transition"
+                                    class="oh-btn text-base bg-danger text-white hover:bg-danger-dark hover:scale-105 transition"
                                     title="{% trans 'Delete' %}"
                                 >
                                     <ion-icon class="me-1" name="trash-outline"></ion-icon>

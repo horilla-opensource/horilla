@@ -90,7 +90,7 @@
                         <!-- Actions -->
                         <div class="flex gap-1">
                             <a
-                                class="cursor-pointer px-2 py-1 text-sm bg-primary-300 text-primary-600 rounded-sm w-7 h-7 flex items-center justify-center hover:bg-primary-600 hover:text-white transition"
+                                class="cursor-pointer px-2 py-1 text-sm bg-info-300 text-info-600 rounded-sm w-7 h-7 flex items-center justify-center hover:bg-info-600 hover:text-white transition"
                                 hx-get='{% url "view-employee-objective" emp_objective.id %}'
                                 hx-target="#genericModalBody"
                                 data-toggle="oh-modal-toggle"
@@ -118,7 +118,7 @@
 
                             {% if request.user.employee_get in emp_objective.objective_id.managers.all or perms.pms.add_employeekeyresult %}
                                 <a
-                                    class="cursor-pointer px-2 py-1 text-sm bg-primary-300 text-primary-600 rounded-sm w-7 h-7 flex items-center justify-center hover:bg-primary-600 hover:text-white transition"
+                                    class="cursor-pointer px-2 py-1 text-sm bg-brand-300 text-brand-600 rounded-sm w-7 h-7 flex items-center justify-center hover:bg-brand-600 hover:text-white transition"
                                     hx-get='{% url "employee-key-result-creation" emp_objective.id %}'
                                     hx-target="#genericModalBody"
                                     data-toggle="oh-modal-toggle"

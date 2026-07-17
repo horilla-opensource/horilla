@@ -34,7 +34,7 @@ class CustomModelChoiceWidget(forms.Select):
         <div class="pt-2" id="{name}">
             <div class="oh-input__group" style="display: flex">
                 {original_html}
-                {f'<button hx-get="{delete_url}" class="oh-btn oh-btn--danger-outline oh-btn--light-bkg" hx-target="#{name}" hx-swap="outerHTML" id="delete-link"><ion-icon name="trash-outline"></ion-icon></button>' if delete_url else ''}
+                {f'<button hx-get="{delete_url}" class="oh-btn oh-btn--danger oh-btn--sq-sm" hx-target="#{name}" hx-swap="outerHTML" id="delete-link"><ion-icon name="trash-outline"></ion-icon></button>' if delete_url else ''}
             </div>
         </div>
         """
@@ -78,7 +78,7 @@ class CustomTextInputWidget(forms.TextInput):
         <div class="pt-2" id="{name}">
             <div class="oh-input__group" style="display: flex">
                 {original_html}
-                {f'<button hx-get="{delete_url}" class="oh-btn oh-btn--danger-outline oh-btn--light-bkg" hx-target="#{name}" hx-swap="outerHTML" id="delete-link"><ion-icon name="trash-outline"></ion-icon></button>' if delete_url else ''}
+                {f'<button hx-get="{delete_url}" class="oh-btn oh-btn--danger oh-btn--sq-sm" hx-target="#{name}" hx-swap="outerHTML" id="delete-link"><ion-icon name="trash-outline"></ion-icon></button>' if delete_url else ''}
             </div>
         </div>
         """

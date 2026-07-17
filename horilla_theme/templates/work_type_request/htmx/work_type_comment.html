@@ -1,4 +1,5 @@
-{% load tz static i18n basefilters %}
+{% load tz static i18n basefilters horillafilters %}
+{% get_company as theme_obj %}
 
 <style>
 	.enlarge-image-container {
@@ -130,7 +131,7 @@
 							>
 								<ion-icon
 									name="trash-outline"
-									style="color: #e54f38"
+									class="text-danger"
 								></ion-icon>
 							</button>
 						</form>

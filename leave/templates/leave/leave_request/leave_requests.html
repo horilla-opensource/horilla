@@ -2,6 +2,7 @@
 {% load static %}
 {% load basefilters %}
 {% load horillafilters %}
+{% get_company as theme_obj %}
 {% include 'filter_tags.html' %}
 {% if not request.GET.dashboard %}
     {% if messages %}
@@ -261,7 +262,7 @@
                                                 hx-target="#penaltyModalBody"
                                                 hx-get="{% url 'leave-cut-penalty' leave_request.id %}?{{pd}}"
                                                 type="submit"
-                                                class="oh-btn oh-btn--danger-outline oh-btn--light-bkg w-100"
+                                                class="oh-btn oh-btn--danger w-100"
                                                 title="{% trans 'Penalty' %}"
                                             >
                                                 <ion-icon name="information-circle-outline"></ion-icon>
@@ -283,7 +284,7 @@
                                             {% if leave_request.status == 'requested' %}
                                                 {% if request.user|is_reportingmanager or perms.leave.delete_leaverequest or request.user|is_leave_approval_manager %}
                                                     <a
-                                                        class="oh-btn oh-btn--danger-outline oh-btn--light-bkg w-100"
+                                                        class="oh-btn oh-btn--danger w-100"
                                                         id="delete-link"
                                                         hx-confirm='{% trans " Are you sure you want to delete ?" %}'
                                                         hx-get="{% url 'request-delete' leave_request.id %}?{{pd}}"
@@ -311,7 +312,7 @@
                                     hx-get="{% url 'view-penalties' %}?leave_request_id={{leave_request.id}}"
                                     hx-target="#penaltyViewModalBody"
                                     align="center"
-                                    style="background-color: rgba(229, 79, 56, 0.036); border: 2px solid rgb(229, 79, 56); border-radius: 18px; padding: 10px; font-weight: bold; width: 85%"
+                                    style="background-color: {{ theme_obj.primary_100|default:'rgba(229, 79, 56, 0.036)' }}; border: 2px solid {{ theme_obj.primary_600|default:'rgb(229, 79, 56)' }}; border-radius: 18px; padding: 10px; font-weight: bold; width: 85%"
                                 >
                                     {% trans "Penalties" %} :{{ leave_request.get_penalties_count }}
                                 </div>

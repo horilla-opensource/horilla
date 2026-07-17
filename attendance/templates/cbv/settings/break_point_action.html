@@ -4,7 +4,7 @@
     {% if perms.attendance.change_attendancevalidationcondition %}
         <a
             title="{% trans 'Edit' %}"
-            class="oh-btn oh-btn--light-bkg w-100"
+            class="oh-btn oh-btn--light-bkg oh-btn--sq-sm"
             hx-get="{% url 'break-point-update-form' instance.id %}?instance_ids={{ instance.ordered_ids }}"
             hx-target="#genericModalBody"
             data-toggle="oh-modal-toggle"

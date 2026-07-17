@@ -53,7 +53,7 @@ class AssetBatchNoListView(HorillaListView):
         self.search_url = reverse("asset-batch-list")
         self.view_id = "AssetBatchList"
 
-    header_attrs = {"action": """ style = "width:180px !important" """}
+    header_attrs = {"action": """ style = "width:110px !important" """}
 
     action_method = "actions"
 

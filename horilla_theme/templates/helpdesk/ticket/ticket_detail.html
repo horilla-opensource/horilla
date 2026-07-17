@@ -177,7 +177,7 @@
                             {% if perms.helpdesk.change_ticket or request.user.employee_get == ticket.employee_id %}
                                 <p>{% trans "Forwarded to" %}</p>
                                 <button
-                                    class="w-6 h-6 rounded-md bg-primary-600 flex items-center justify-center text-white text-xs transition duration-300 hover:bg-primary-700"
+                                    class="w-6 h-6 rounded-md bg-info-600 flex items-center justify-center text-white text-xs transition duration-300 hover:bg-info-700"
                                     hx-get="{% url 'ticket-change-raised-on' ticket.id %}"
                                     data-target="#objectDetailsModalW25"
                                     data-toggle="oh-modal-toggle"
@@ -197,7 +197,7 @@
                             <div class="flex gap-1">
                                 {% if perms.helpdesk.change_claimrequest or perms.helpdesk.change_ticket or request.user.employee_get|is_department_manager:ticket %}
                                     <button
-                                        class="w-6 h-6 rounded-md bg-primary-600 flex items-center justify-center text-white text-xs transition duration-300 hover:bg-primary-700"
+                                        class="w-6 h-6 rounded-md bg-info-600 flex items-center justify-center text-white text-xs transition duration-300 hover:bg-info-700"
                                         data-toggle="oh-modal-toggle"
                                         data-target="#objectDetailsModal"
                                         hx-get="{% url 'view-ticket-claim-request' ticket.id %}"
@@ -210,7 +210,7 @@
 
                                 {% if perms.helpdesk.change_ticket or request.user.employee_get|is_department_manager:ticket %}
                                     <button
-                                        class="w-6 h-6 rounded-md bg-primary-600 flex items-center justify-center text-white text-xs transition duration-300 hover:bg-primary-700"
+                                        class="w-6 h-6 rounded-md bg-info-600 flex items-center justify-center text-white text-xs transition duration-300 hover:bg-info-700"
                                         hx-get="{% url 'ticket-change-assignees' ticket.id %}"
                                         data-toggle="oh-modal-toggle"
                                         data-target="#objectDetailsModalW25"
@@ -364,7 +364,7 @@
                 <div class="flex justify-end">
                     {% if perms.helpdesk.change_ticket or request.user.employee_get|is_department_manager:ticket %}
                         <button
-                            class="p-3 h-6 mb-2 rounded-md bg-primary-600 flex items-center justify-center text-white text-xs transition duration-300 hover:bg-primary-700"
+                            class="p-3 h-6 mb-2 rounded-md bg-info-600 flex items-center justify-center text-white text-xs transition duration-300 hover:bg-info-700"
                             title="{% trans 'Edit Ticket' %}"
                             data-toggle="oh-modal-toggle"
                             data-target="#objectCreateModal"
@@ -591,7 +591,7 @@
                                     <button
                                         type="submit"
                                         onclick="validateComment(event)"
-                                        class="h-9 w-9 flex justify-center items-center cursor-pointer bg-white text-primary-600 rounded-full hover:bg-primary-200 transition duration-300"
+                                        class="h-9 w-9 flex justify-center items-center cursor-pointer bg-white text-brand-600 rounded-full hover:bg-brand-200 transition duration-300"
                                         title="{% trans 'Send' %}"
                                     >
                                         <i class="fa-solid fa-paper-plane"></i>

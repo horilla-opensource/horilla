@@ -89,7 +89,7 @@
                                     </a>
                                 {% endif %}
                                 {% if perms.base.delete_holidays %}
-                                    <a class="oh-btn oh-btn--danger-outline oh-btn--light-bkg w-100" id="delete-link"
+                                    <a class="oh-btn oh-btn--danger w-100" id="delete-link"
                                         hx-confirm="{% trans 'Are you sure you want to delete this holiday?' %}"
                                         hx-post="{% url 'holiday-delete' holiday.id %}?{{pd}}" hx-target="#holidays">
                                         <ion-icon name="trash-outline"></ion-icon>

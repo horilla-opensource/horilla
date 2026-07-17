@@ -3,7 +3,7 @@
   <a style="font-size: 15px;color: darkseagreen;" title="{% trans 'Allocate Deduction' %}" onclick="
   $(this).closest('tr').find('td:first [type=checkbox]').prop('checked',!$(this).find('td:first [type=checkbox]').is(':checked')).change();
   $('#addDeductionButton').click();
-  " class="oh-btn oh-btn--danger-outline oh-btn--light-bkg w-100"><ion-icon name="checkmark-done-circle-outline"></ion-icon></a>
+  " class="oh-btn oh-btn--danger w-100"><ion-icon name="checkmark-done-circle-outline"></ion-icon></a>
 {% else %}
-  <a style="font-size: 15px;" title="{% trans 'Exclude from deduction' %}" hx-post="{% url "allocation-deduction-list"%}?exclude=True" hx-vals='{"instance_id":"{{request.GET.instance_id}}","deduction_id":"{{instance.pk}}"}'  class="oh-btn oh-btn--danger-outline oh-btn--light-bkg w-100"><ion-icon name="close-circle-outline"></ion-icon></a>
+  <a style="font-size: 15px;" title="{% trans 'Exclude from deduction' %}" hx-post="{% url "allocation-deduction-list"%}?exclude=True" hx-vals='{"instance_id":"{{request.GET.instance_id}}","deduction_id":"{{instance.pk}}"}'  class="oh-btn oh-btn--danger w-100"><ion-icon name="close-circle-outline"></ion-icon></a>
 {% endif %}

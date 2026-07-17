@@ -71,6 +71,7 @@ class MultipleApprovalConditionList(HorillaListView):
     header_attrs = {
         "department": """ style="width:180px !important" """,
         "approval_managers_col": """ style="width:200px !important" """,
+        "action": """ style="width:180px !important" """,
     }
 
     sortby_mapping = [

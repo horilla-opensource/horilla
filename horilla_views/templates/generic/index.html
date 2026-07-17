@@ -2,18 +2,18 @@
 {% block content %}
 <style>
   .male--custom{
-    border-left: 3.4px solid rgb(32, 128, 218) !important;
+    border-left: 3.4px solid var(--gender-male, rgb(32, 128, 218)) !important;
     border-radius: 4px 0 0 4px;
   }
   .female--custom{
-    border-left: 3.4px solid pink !important;
+    border-left: 3.4px solid var(--gender-female, pink) !important;
     border-radius: 4px 0 0 4px;
   }
   .male--dot{
-    background-color:blue;
+    background-color: var(--gender-male, rgb(32, 128, 218));
   }
   .female--dot{
-    background-color:pink;
+    background-color: var(--gender-female, pink);
   }
 
   .oh-tabs__tab--active{

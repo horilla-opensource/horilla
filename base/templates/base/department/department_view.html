@@ -26,7 +26,7 @@
 									<form hx-confirm="{% trans 'Are you sure you want to delete this department?' %}" hx-swap="outerHTML"
 										hx-post="{% url 'department-delete' dep.id %}" hx-target="#departmentTr{{dep.id}}" class="w-50" hx-on-htmx-after-request="reloadMessage(this);">
 										{% csrf_token %}
-										<button type="submit" class="oh-btn oh-btn--danger-outline oh-btn--light-bkg w-100"
+										<button type="submit" class="oh-btn oh-btn--danger w-100"
 											title="{% trans 'Remove' %}">
 											<ion-icon name="trash-outline"></ion-icon>
 										</button>

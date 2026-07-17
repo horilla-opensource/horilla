@@ -1,5 +1,12 @@
 {% load i18n %}
+{% load horillafilters %}
+{% get_company as theme_obj %}
 {% include 'filter_tags.html' %}
+<style>
+    .oh-accordion-meta__header--custom:hover {
+        background-color: {{ theme_obj.primary_100|default:"#FFF5F1" }} !important;
+    }
+</style>
 {% for message in messages %}
   <div class="oh-alert-container">
     <div class="oh-alert oh-alert--animated {{message.tags}}">
@@ -7,101 +14,105 @@
     </div>
   </div>
   {% endfor %}
-<div class="oh-card" id="">
-  <div class="oh-accordion-meta {% if request %}{% endif %}">
-    <div class="">
-      {% for filing_status in status %}
-      <div
-        class="oh-accordion-meta__header oh-accordion-meta__header--custom"
-        {% if perms.payroll.view_taxbracket %}
-        data-target="#filingStatus{{filing_status.id}}"
-        hx-get="{%url 'tax-bracket-list' filing_status_id=filing_status.id %}"
-        hx-target="#taxbracketList{{filing_status.id}}"
-        {% endif %}
-      >
-        <div class="d-flex">
-          <span class="oh-accordion-meta__title" style="padding: 0.8rem 1.25rem;">{{filing_status}}</span>
-        </div>
+<div class="flex flex-col gap-3">
+  {% for filing_status in status %}
+  <div class="rounded-xl border border-dark-50 bg-white shadow-sm hover:shadow-md transition-shadow duration-200 overflow-hidden">
+    <div
+      class="oh-accordion-meta__header oh-accordion-meta__header--custom flex items-center justify-between gap-3 px-5 py-3.5 cursor-pointer select-none bg-white transition-colors duration-150"
+      {% if perms.payroll.view_taxbracket %}
+      data-target="#filingStatus{{filing_status.id}}"
+      hx-get="{%url 'tax-bracket-list' filing_status_id=filing_status.id %}"
+      hx-target="#taxbracketList{{filing_status.id}}"
+      {% endif %}
+    >
+      <div class="flex items-center gap-3">
+        <span class="flex items-center justify-center w-9 h-9 rounded-lg bg-primary-50 text-primary-600 shrink-0">
+          <ion-icon name="document-text-outline" class="text-lg"></ion-icon>
+        </span>
+        <span class="text-sm font-semibold text-dark-600">{{filing_status}}</span>
+      </div>
 
+      <div class="flex items-center gap-2">
         {% if perms.payroll.change_filingstatus or perms.payroll.delete_filingstatus or perms.payroll.add_taxbracket %}
-          <div class="oh-accordion-meta__actions" id="">
-            <div class="oh-dropdown" x-data="{open: false}">
-              <button
-                class="oh-btn oh-stop-prop oh-accordion-meta__btn"
-                @click="open = !open"
-                @click.outside="open = false"
-                onclick=event.stopPropagation()
-              >
-                {% trans "Actions" %}
-                <ion-icon
-                  class="ms-2 oh-accordion-meta__btn-icon"
-                  name="caret-down-outline"
-                ></ion-icon>
-              </button>
-              <div
-                class="oh-dropdown__menu oh-dropdown__menu--right"
-                x-show="open"
-                style="display: none"
-              >
-                <ul class="oh-dropdown__items">
-                  {% if perms.payroll.add_taxbracket and not filing_status.use_py %}
-                  <li class="oh-dropdown__item">
-                    <a
-                      class="oh-dropdown__link oh-dropdown__link"
-                      data-toggle="oh-modal-toggle"
-                      data-target="#objectCreateModal"
-                      hx-get="{% url 'tax-bracket-create' filing_status_id=filing_status.id %}"
-                      onclick="event.stopPropagation()"
-                      hx-target="#objectCreateModalTarget"
-                      >{% trans "Create" %}
-                    </a>
-                  </li>
-                  {% endif %}
-                  {% if perms.payroll.change_filingstatus %}
-                  <li class="oh-dropdown__item">
-                    <a
-                      class="oh-dropdown__link oh-dropdown__link"
-                      data-toggle="oh-modal-toggle"
-                      data-target="#objectUpdateModal"
-                      hx-get="{% url 'filing-status-update' pk=filing_status.id %}"
-                      onclick="event.stopPropagation()"
-                      hx-target="#objectUpdateModalTarget"
-                    >
-                      {% trans "Update" %}</a
-                    >
-                  </li>
-                  {% endif %}
-                  {% if perms.payroll.delete_filingstatus %}
-                  <li class="oh-dropdown__item">
-                    <a
-                      hx-get="{% url 'generic-delete' %}?model=payroll.FilingStatus&pk={{filing_status.id}}"
-                      hx-target="#deleteConfirmationBody" data-toggle="oh-modal-toggle"
-                      data-target="#deleteConfirmation"
-                      style="display: contents">
-                      {% csrf_token %}
-                      <button class="oh-dropdown__link oh-dropdown__link--danger">
-                        {% trans 'Delete' %}
-                      </button>
-                    </a>
-                  </li>
-                  {% endif %}
-                </ul>
-              </div>
+          <div class="oh-dropdown" x-data="{open: false}">
+            <button
+              class="oh-btn oh-stop-prop flex items-center gap-1.5 px-3 py-1.5 text-xs font-medium rounded-md border border-dark-50 hover:bg-dark-50 transition-colors"
+              @click="open = !open"
+              @click.outside="open = false"
+              onclick=event.stopPropagation()
+            >
+              {% trans "Actions" %}
+              <ion-icon
+                class="text-sm"
+                name="caret-down-outline"
+              ></ion-icon>
+            </button>
+            <div
+              class="oh-dropdown__menu oh-dropdown__menu--right"
+              x-show="open"
+              style="display: none"
+            >
+              <ul class="oh-dropdown__items">
+                {% if perms.payroll.add_taxbracket and not filing_status.use_py %}
+                <li class="oh-dropdown__item">
+                  <a
+                    class="oh-dropdown__link oh-dropdown__link"
+                    data-toggle="oh-modal-toggle"
+                    data-target="#objectCreateModal"
+                    hx-get="{% url 'tax-bracket-create' filing_status_id=filing_status.id %}"
+                    onclick="event.stopPropagation()"
+                    hx-target="#objectCreateModalTarget"
+                    >{% trans "Create" %}
+                  </a>
+                </li>
+                {% endif %}
+                {% if perms.payroll.change_filingstatus %}
+                <li class="oh-dropdown__item">
+                  <a
+                    class="oh-dropdown__link oh-dropdown__link"
+                    data-toggle="oh-modal-toggle"
+                    data-target="#objectUpdateModal"
+                    hx-get="{% url 'filing-status-update' pk=filing_status.id %}"
+                    onclick="event.stopPropagation()"
+                    hx-target="#objectUpdateModalTarget"
+                  >
+                    {% trans "Update" %}</a
+                  >
+                </li>
+                {% endif %}
+                {% if perms.payroll.delete_filingstatus %}
+                <li class="oh-dropdown__item">
+                  <a
+                    hx-get="{% url 'generic-delete' %}?model=payroll.FilingStatus&pk={{filing_status.id}}"
+                    hx-target="#deleteConfirmationBody" data-toggle="oh-modal-toggle"
+                    data-target="#deleteConfirmation"
+                    style="display: contents">
+                    {% csrf_token %}
+                    <button class="oh-dropdown__link oh-dropdown__link--danger">
+                      {% trans 'Delete' %}
+                    </button>
+                  </a>
+                </li>
+                {% endif %}
+              </ul>
             </div>
           </div>
         {% endif %}
+        <ion-icon
+          name="chevron-down-outline"
+          class="accordion-chevron text-dark-100 text-base transition-transform duration-200"
+        ></ion-icon>
       </div>
+    </div>
+    <div
+      class="oh-accordion-meta__body d-none border-t border-dark-50 bg-dark-50/30 px-2 py-2"
+      id="filingStatus{{filing_status.id}}"
+    >
+      <!-- htmx tax bracket loading here -->
       <div
-        class="oh-accordion-meta__body d-none"
-        id="filingStatus{{filing_status.id}}"
-      >
-        <!-- htmx tax bracket loading here -->
-        <div
-          class="oh-sticky-table oh-sticky-table--no-overflow mb-5"
-          id="taxbracketList{{filing_status.id}}"
-        ></div>
-      </div>
-      {% endfor %}
+        id="taxbracketList{{filing_status.id}}"
+      ></div>
     </div>
   </div>
+  {% endfor %}
 </div>

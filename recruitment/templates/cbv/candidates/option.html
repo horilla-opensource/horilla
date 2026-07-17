@@ -2,60 +2,56 @@
 {% load i18n %}
 {% load recruitmentfilters %}
 {% if perms.recruitment.change_candidate %}
-              <div class="oh-btn-group" hx-disinherit="hx-push-url" onclick="event.stopPropagation();">
+              <div class="flex items-center justify-center gap-1" hx-disinherit="hx-push-url" onclick="event.stopPropagation();">
                 {% if not instance.email in emp_list and not instance.start_onboard %}
                   <a href="#"
                     onclick="event.preventDefault(); event.stopPropagation(); toEmployee('{% url 'candidate-conversion' instance.id %}?container=true');"
-                    class="oh-btn oh-btn--light-bkg w-100"
+                    class="oh-btn oh-btn--light-bkg oh-btn--sq-sm"
                     title='{% trans "To employee " %}'
-                    style="padding:0.8rem 1rem"
                   >
                     <ion-icon name="person-circle-outline"></ion-icon></a>
               {% else %}
-                <button class="oh-btn oh-btn--light-bkg w-100"  title='{% trans "Converted " %}' style="opacity: 30%; padding:0.8rem 1rem" disabled>
+                <button class="oh-btn oh-btn--light-bkg oh-btn--sq-sm"  title='{% trans "Converted " %}' style="opacity: 30%;" disabled>
                   <ion-icon name="person-circle-outline"></ion-icon></button>
               {% endif %}
               {% if instance.email in emp_list %}
-                <button class="oh-btn oh-btn--light-bkg w-100"  title='{% trans "Candidate is Converted " %}' style="opacity: 30%; padding:0.8rem 1rem">
+                <button class="oh-btn oh-btn--light-bkg oh-btn--sq-sm"  title='{% trans "Candidate is Converted " %}' style="opacity: 30%;">
                   <ion-icon name="heart-circle-outline"></ion-icon></button>
               {% else %}
-                <button class="oh-btn oh-btn--light-bkg w-100" title="{% trans 'To Skill zone' %}"
+                <button class="oh-btn oh-btn--light-bkg oh-btn--sq-sm" title="{% trans 'To Skill zone' %}"
                     data-toggle="oh-modal-toggle"
                     data-target="#genericModal"
                     hx-get="{% url 'to-skill-zone' instance.id %}"
                     hx-target="#genericModalBody"
-                    style="padding:0.8rem 1rem"
                   >
                   <ion-icon name="heart-circle-outline"></ion-icon>
                 </button>
               {% endif %}
               {% if check_candidate_self_tracking %}
                   {% if perms.recruitment.view_candidate or request.user|is_stagemanager %}
-                    <a class="oh-btn oh-btn--light-bkg w-100" title="{% trans "View candidate self tracking" %}"
+                    <a class="oh-btn oh-btn--light-bkg oh-btn--sq-sm" title="{% trans "View candidate self tracking" %}"
                       href="{% url 'candidate-self-status-tracking' instance.id %}"
-                        style="padding:0.8rem 1rem"
                       >
                       <ion-icon name="pulse-outline"></ion-icon>
                     </a>
                   {% endif %}
               {% endif %}
               {% if instance.email in emp_list %}
-                <button class="oh-btn oh-btn--light-bkg w-100"  title='{% trans "Candidate is Converted " %}' style="opacity: 30%; padding:0.8rem 1rem">
+                <button class="oh-btn oh-btn--light-bkg oh-btn--sq-sm"  title='{% trans "Candidate is Converted " %}' style="opacity: 30%;">
                   <ion-icon name="thumbs-down-outline"></ion-icon></button>
               {% else %}
                 {% if perms.recruitment.add_rejectedcandidate or request.user|is_stagemanager %}
                 <button
                   type="button"
-                  class="oh-btn oh-btn--light-bkg w-100 d-flex justify-content-center align-items-center"
+                  class="oh-btn oh-btn--light-bkg oh-btn--sq-sm"
                   hx-get="{% url 'add-to-rejected-candidates' %}?candidate_id={{instance.id}}"
                   hx-target="#genericModalBody"
                   data-toggle="oh-modal-toggle"
                   data-target="#genericModal"
                   {% if instance.is_offer_rejected %}
-                  style="background: #ff4500a3 !important; color: white; padding: 0.8rem 1rem;"
+                  style="background: #ff4500a3 !important; color: white;"
                   title="{% trans "Added In Rejected Candidates" %}"
                   {% else %}
-                  style="padding: 0.8rem 1rem;"
                   title="{% trans "Add To Rejected Candidates" %}"
                   {% endif %}>
                 <ion-icon name="thumbs-down-outline"></ion-icon>
@@ -67,10 +63,9 @@
                 hx-get='{% url "send-mail" instance.id %}'
                 title="{% trans "Send Mail" %}"
                 hx-target="#objectDetailsModalTarget"
-                class="oh-btn oh-btn--light-bkg w-100"
+                class="oh-btn oh-btn--light-bkg oh-btn--sq-sm"
                 data-toggle="oh-modal-toggle"
                 data-target="#objectDetailsModal"
-                style="padding:0.8rem 1rem"
               >
                 <ion-icon name="mail-open-outline"></ion-icon>
               </button>

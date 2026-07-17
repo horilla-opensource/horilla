@@ -1,7 +1,7 @@
 {% load i18n %}
-<div onclick="event.stopPropagation();" class="oh-btn-group">
+<div onclick="event.stopPropagation();" class="flex items-center justify-center gap-1">
     <button
-      class="oh-btn oh-btn--light-bkg w-100"
+      class="oh-btn oh-btn--light-bkg oh-btn--sq-sm"
       title="{% trans 'Check Connection' %}"
       hx-get="{% url 'val-linkedin' instance.id %}?{{pd}}"
       hx-target="#genericModalBody"
@@ -10,7 +10,7 @@
     </button>
     {% if perms.recruitment.change_linkedinaccount %}
     <button
-      class="oh-btn oh-btn--light-bkg w-100"
+      class="oh-btn oh-btn--light-bkg oh-btn--sq-sm"
       title="{% trans 'Edit' %}"
       data-toggle="oh-modal-toggle"
       data-target="#genericModal"
@@ -22,7 +22,7 @@
     {% endif %}
     {% if perms.recruitment.delete_linkedinaccount %}
     <a
-      class="oh-btn oh-btn--danger-outline oh-btn--light-bkg w-100"
+      class="oh-btn oh-btn--danger oh-btn--sq-sm"
       id="delete-link"
       hx-confirm="{% trans 'Do you want to delete the linkedin account?' %}"
       hx-post="{% url 'delete-linkedin-account' instance.id %}"

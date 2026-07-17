@@ -213,12 +213,15 @@ class TaxBracketListView(HorillaListView):
     ]
 
     filter_keys_to_remove = ["filing_status_id"]
+    header_attrs = {
+        "action": """ style="width:90px !important;" """,
+    }
     actions = [
         {
             "action": _("Edit"),
             "icon": "create-outline",
             "attrs": """
-                class="oh-btn oh-btn--light-bkg w-100"
+                class="oh-btn oh-btn--light-bkg oh-btn--sq-sm"
                 data-toggle="oh-modal-toggle"
                 data-target="#objectCreateModal"
                 hx-get="{get_update_url}"
@@ -229,7 +232,7 @@ class TaxBracketListView(HorillaListView):
             "action": _("delete"),
             "icon": "trash-outline",
             "attrs": """
-                class="oh-btn oh-btn--danger-outline w-100"
+                class="oh-btn oh-btn--danger oh-btn--sq-sm"
                 data-toggle="oh-modal-toggle"
                 data-target="#objectCreateModal"
                 hx-get="{get_delete_url}"

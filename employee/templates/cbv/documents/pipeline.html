@@ -1,44 +1,59 @@
-{% load i18n generic_template_filters %}
+{% load i18n generic_template_filters horillafilters %}
+{% get_company as theme_obj %}
 
-<div id="{{view_id}}">
+<div id="{{view_id}}" style="
+  --doc-accent: {{ theme_obj.primary_600|default:'#E54F38' }};
+  --doc-accent-strong: {{ theme_obj.primary_800|default:'#AC3B2A' }};
+  --doc-accent-soft: {{ theme_obj.primary_300|default:'#FCEDEB' }};
+  --doc-accent-softer: {{ theme_obj.primary_100|default:'#FEF6F5' }};
+">
   {% for group in groups %}
   <div id="{{selected_instances_key_name}}{{ group.id }}" data-ids="[]"></div>
-  <div class="oh-tabs__movable-area mb-2">
+  <div class="oh-tabs__movable-area doc-request-card mb-3">
     <div class="oh-tabs__movable">
-      <div class="oh-tabs__movable-header"  style="cursor:pointer;" onclick="$(this).parent().find('.oh-tabs__movable-body').toggleClass('d-none');">
-        <span class"oh-tabs__movable-title">{{group}}</span>
+      <div class="oh-tabs__movable-header doc-request-header"  style="cursor:pointer;" onclick="$(this).closest('.doc-request-card').toggleClass('doc-request-card--open'); $(this).parent().find('.oh-tabs__movable-body').toggleClass('d-none'); $(this).find('.doc-request-chevron').toggleClass('doc-request-chevron--open');">
+        <div class="doc-request-title-group">
+          <span class="doc-request-icon"><i class="fa-solid fa-file-lines" aria-hidden="true"></i></span>
+          <span class="doc-request-title-text">
+            <span class="oh-tabs__movable-title doc-request-title">{{group}}</span>
+            <span class="doc-request-subtitle">{% trans "Document request" %}</span>
+          </span>
+        </div>
 
-        <div onclick="event.stopPropagation()" class="oh-dropdown" x-data="{open: false}">
-          <div style="cursor: pointer;" onclick="event.stopPropagation()" class="oh-dropdown" x-data="{open: false}">
-            <button
-              class="oh-btn oh-stop-prop oh-btn--transparent oh-accordion-meta__btn"
-              @click="open = !open"
-              @click.outside="open = false"
-              title="{% trans 'Actions' %}"
-            >
-              <ion-icon
-                name="ellipsis-vertical"
-                role="img"
-                class="md hydrated"
-                aria-label="{% trans 'ellipsis vertical' %}"
-              ></ion-icon>
-            </button>
-            <div
-              class="oh-dropdown__menu oh-dropdown__menu--right mwidth"
-              x-show="open"
-              style="display: none; min-width:135px !important;"
-            >
-              <ul class="oh-dropdown__items">
-                {% for action in actions %}
-                {% if action.accessibility|accessibility:group %}
-                <li class="oh-dropdown__item">
-                  <a {{action.attrs|format:group|safe}}>{{action.action}}</a>
-                </li>
-                {% endif %}
-                {% endfor %}
-              </ul>
+        <div class="doc-request-header-right">
+          <div onclick="event.stopPropagation()" class="oh-dropdown" x-data="{open: false}">
+            <div style="cursor: pointer;" onclick="event.stopPropagation()" class="oh-dropdown" x-data="{open: false}">
+              <button
+                class="oh-btn oh-stop-prop oh-btn--transparent oh-accordion-meta__btn"
+                @click="open = !open"
+                @click.outside="open = false"
+                title="{% trans 'Actions' %}"
+              >
+                <ion-icon
+                  name="ellipsis-vertical"
+                  role="img"
+                  class="md hydrated"
+                  aria-label="{% trans 'ellipsis vertical' %}"
+                ></ion-icon>
+              </button>
+              <div
+                class="oh-dropdown__menu oh-dropdown__menu--right mwidth"
+                x-show="open"
+                style="display: none; min-width:135px !important;"
+              >
+                <ul class="oh-dropdown__items">
+                  {% for action in actions %}
+                  {% if action.accessibility|accessibility:group %}
+                  <li class="oh-dropdown__item">
+                    <a {{action.attrs|format:group|safe}}>{{action.action}}</a>
+                  </li>
+                  {% endif %}
+                  {% endfor %}
+                </ul>
+              </div>
             </div>
           </div>
+          <span class="doc-request-chevron"><i class="fa-solid fa-chevron-down" aria-hidden="true"></i></span>
         </div>
       </div>
       <div
@@ -52,6 +67,182 @@
   </div>
   {% endfor %}
 </div>
+
+<style>
+    .doc-request-card {
+        /* Keep visible so the action (⋮) dropdown menu isn't clipped when the
+           card is collapsed. The header/body backgrounds match the card, so no
+           corner clipping is needed for the rounded-corner look. */
+        position: relative;
+        overflow: visible;
+        border: 1px solid #ebecef;
+        border-radius: 14px;
+        background: #fff;
+        box-shadow: 0 1px 2px rgba(20, 20, 30, 0.04);
+        transition: box-shadow 0.2s ease, border-color 0.2s ease, transform 0.2s ease;
+    }
+
+    /* Left accent bar — draws the eye and reinforces the brand color without
+       repainting the whole card. Grows on hover / when expanded. */
+    .doc-request-card::before {
+        content: "";
+        position: absolute;
+        top: 14px;
+        bottom: 14px;
+        left: 0;
+        width: 3px;
+        border-radius: 0 3px 3px 0;
+        background: linear-gradient(180deg, var(--doc-accent), var(--doc-accent-strong));
+        opacity: 0;
+        transition: opacity 0.2s ease;
+    }
+
+    .doc-request-card:hover {
+        border-color: var(--doc-accent-soft);
+        box-shadow: 0 8px 22px rgba(20, 20, 30, 0.1);
+        transform: translateY(-1px);
+    }
+
+    .doc-request-card:hover::before,
+    .doc-request-card--open::before {
+        opacity: 1;
+    }
+
+    .doc-request-card--open {
+        border-color: var(--doc-accent-soft);
+        box-shadow: 0 8px 22px rgba(20, 20, 30, 0.08);
+    }
+
+    .doc-request-header {
+        display: flex !important;
+        align-items: center;
+        justify-content: space-between;
+        padding: 16px 20px !important;
+        background: transparent !important;
+        color: inherit !important;
+    }
+
+    .doc-request-title-group {
+        display: flex;
+        align-items: center;
+        gap: 14px;
+        min-width: 0;
+    }
+
+    .doc-request-icon {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        width: 40px;
+        height: 40px;
+        border-radius: 11px;
+        background: linear-gradient(135deg, var(--doc-accent-softer), var(--doc-accent-soft));
+        color: var(--doc-accent);
+        font-size: 16px;
+        flex: none;
+        box-shadow: inset 0 0 0 1px rgba(20, 20, 30, 0.05);
+        transition: transform 0.2s ease;
+    }
+
+    .doc-request-card:hover .doc-request-icon {
+        transform: scale(1.05);
+    }
+
+    .doc-request-title-text {
+        display: flex;
+        flex-direction: column;
+        gap: 2px;
+        min-width: 0;
+    }
+
+    .doc-request-title {
+        color: #21252b;
+        font-weight: 600;
+        font-size: 15px;
+        line-height: 1.2;
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+    }
+
+    .doc-request-subtitle {
+        color: #9aa0a9;
+        font-size: 11.5px;
+        font-weight: 500;
+        letter-spacing: 0.2px;
+    }
+
+    .doc-request-header-right {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+    }
+
+    .doc-request-chevron {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        width: 28px;
+        height: 28px;
+        border-radius: 8px;
+        color: #9aa0a9;
+        font-size: 12px;
+        transition: transform 0.25s ease, background-color 0.2s ease, color 0.2s ease;
+    }
+
+    .doc-request-header:hover .doc-request-chevron {
+        background: #f4f5f7;
+        color: #6b7280;
+    }
+
+    .doc-request-chevron--open {
+        transform: rotate(180deg);
+        color: var(--doc-accent);
+    }
+
+    .dark .doc-request-card {
+        border-color: #34353c;
+        background: #242429;
+        box-shadow: 0 1px 2px rgba(0, 0, 0, 0.25);
+    }
+
+    .dark .doc-request-card:hover,
+    .dark .doc-request-card--open {
+        border-color: var(--doc-accent);
+        box-shadow: 0 8px 22px rgba(0, 0, 0, 0.35);
+    }
+
+    .dark .doc-request-header {
+        background: transparent !important;
+    }
+
+    .dark .doc-request-icon {
+        background: linear-gradient(135deg, #33343b, #3c3d45);
+        color: var(--doc-accent);
+        box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.06);
+    }
+
+    .dark .doc-request-title {
+        color: #f2f1ef;
+    }
+
+    .dark .doc-request-subtitle {
+        color: #8b8d95;
+    }
+
+    .dark .doc-request-header:hover .doc-request-chevron {
+        background: #33343b;
+        color: #c9cbd1;
+    }
+
+    .dark .doc-request-chevron {
+        color: #9a9ba3;
+    }
+
+    .dark .doc-request-chevron--open {
+        color: var(--doc-accent);
+    }
+</style>
 <script>
     var tabId = $("#{{view_id}}").closest(".oh-tabs__content").attr("id");
     var badge = $(`#badge-${tabId}`);

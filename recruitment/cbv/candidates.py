@@ -155,6 +155,7 @@ class ListCandidates(HorillaListView):
             self.option_method = "options"
         else:
             self.option_method = None
+        self.action_method = "actions_col"
 
         unique_questions = RecruitmentSurvey.objects.values("question").annotate(
             pk=Min("pk")
@@ -194,10 +195,10 @@ class ListCandidates(HorillaListView):
 
     header_attrs = {
         "option": """
-                   style ="width : 230px !important;"
+                   style ="width : 180px !important;"
                    """,
         "action": """
-                   style ="width : 200px !important;"
+                   style ="width : 150px !important;"
                    """,
         "email": """
                    style ="width : 200px !important;"
@@ -206,54 +207,6 @@ class ListCandidates(HorillaListView):
                    style ="width : 170px !important;"
                    """,
     }
-
-    actions = [
-        {
-            "action": _("Edit"),
-            "icon": "create-outline",
-            "attrs": """class="oh-btn oh-btn--light-bkg w-100"
-            hx-get="{get_update_url}?container=true"
-            hx-target="#candidateMainContainer"
-            hx-swap="innerHTML"
-            hx-push-url="false"
-             """,
-        },
-        {
-            "action": _("Archive"),
-            "accessibility": "recruitment.cbv.accessibility.archive_status",
-            "icon": "archive",
-            "attrs": """
-                class="oh-btn oh-btn--danger-outline oh-btn--light-bkg w-100"
-                hx-post="{get_archive_action_url}"
-                hx-swap="none"
-                hx-confirm="Do you want to archive this candidate?"
-                onclick="event.stopPropagation();"
-            """,
-        },
-        {
-            "action": _("Un-archive"),
-            "accessibility": "recruitment.cbv.accessibility.unarchive_status",
-            "icon": "archive",
-            "attrs": """
-                class="oh-btn oh-btn--danger-outline oh-btn--light-bkg w-100"
-                hx-post="{get_archive_action_url}"
-                hx-swap="none"
-                hx-confirm="Do you want to un-archive this candidate?"
-                onclick="event.stopPropagation();"
-            """,
-        },
-        {
-            "action": _("Delete"),
-            "icon": "trash-outline",
-            "attrs": """
-                    class="oh-btn oh-btn--danger-outline oh-btn--light-bkg w-100"
-                    hx-post="{get_delete_url}"
-                    hx-swap="none"
-                    hx-confirm="Are you sure you want to delete this candidate?"
-                    onclick="event.stopPropagation();"
-                """,
-        },
-    ]
 
     sortby_mapping = [
         (_("Candidates"), "name", "get_avatar"),

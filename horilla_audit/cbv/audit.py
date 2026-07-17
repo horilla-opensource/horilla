@@ -49,12 +49,16 @@ class AudiTagsList(HorillaListView):
     row_attrs = """ id="auditTagTr{get_delete_instance}" """
     delete_confirm = _("Are you sure you want to delete this history tag ?")
 
+    header_attrs = {
+        "action": """ style="width:180px !important" """,
+    }
+
     actions = [
         {
             "action": _("Edit"),
             "icon": "create-outline",
             "attrs": """
-                class="oh-btn oh-btn--light-bkg w-100"
+                class="oh-btn oh-btn--light-bkg oh-btn--sq-sm"
                 hx-get='{get_update_url}?instance_ids={ordered_ids}'
                 hx-target="#genericModalBody"
                 data-toggle="oh-modal-toggle"
@@ -65,7 +69,7 @@ class AudiTagsList(HorillaListView):
             "action": _("Delete"),
             "icon": "trash-outline",
             "attrs": f"""
-                class="oh-btn oh-btn--light-bkg w-100 text-danger"
+                class="oh-btn oh-btn--danger oh-btn--sq-sm"
                 hx-confirm="{delete_confirm}"
                 hx-post="{{get_delete_url}}"
                 hx-target="#auditTagTr{{get_delete_instance}}"

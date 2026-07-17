@@ -69,6 +69,10 @@ class AttendanceActivityListView(HorillaListView):
         (_("Duration (HH:MM:SS)"), "duration_format"),
     ]
 
+    header_attrs = {
+        "action": """ style="width:100px !important; min-width:100px !important;" """,
+    }
+
     row_attrs = """
                 {diff_cell}
                 hx-get='{attendance_detail_view}?instance_ids={ordered_ids}'

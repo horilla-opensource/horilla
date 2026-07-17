@@ -60,7 +60,7 @@ class PeriodList(HorillaListView):
 
     header_attrs = {
         "action": """
-                   style = "width:180px !important"
+                   style = "width:110px !important"
                    """,
         "period_name": """
                    style = "width:180px !important"

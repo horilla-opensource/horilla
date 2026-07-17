@@ -1,5 +1,7 @@
 {% load i18n %}
 {%load static %}
+{% load horillafilters %}
+{% get_company as theme_obj %}
 
 <div class="announcement_title">
     <a class="oh-profile oh-profile--md" data-toggle="oh-modal-toggle"
@@ -15,7 +17,7 @@
         </span>
         {% if instance.created_at|date:"Y-m-d" == current_date and request.user not in instance.viewed_by %}
         <span class="oh-profile__info-value ms-2" id="newTab"
-            style="background-color: hsl(8,77%,56%); color:white;
+            style="background-color: {{ theme_obj.primary_600|default:'hsl(8,77%,56%)' }}; color:white;
             font-size: 0.7rem; padding: 3px 8px; border-radius: 15px; font-weight: 800; width:auto;">{% trans "NEW" %}
         </span>
         {% endif %}

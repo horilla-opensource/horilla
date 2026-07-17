@@ -66,7 +66,7 @@ class WhatsappCredientials(HorillaModel):
 
     def get_primary(self):
         if self.is_primary:
-            return "style='background:#ffa60028'"
+            return "class='bg-primary-50'"
 
     def get_instance(self):
         """

@@ -1,4 +1,5 @@
-{% extends 'index.html' %} {% block content %} {% load static %} {% load i18n %} {% load basefilters %}
+{% extends 'index.html' %} {% block content %} {% load static %} {% load i18n %} {% load basefilters %} {% load horillafilters %}
+{% get_company as theme_obj %}
 <style>
     .diff-cell {
         background: #d7d7d7 !important;
@@ -30,7 +31,7 @@
         /* Allow the tooltip width to adjust based on content */
         max-width: auto;
         /* Limit the maximum width of the tooltip to prevent it from overflowing */
-        background-color: hsl(8, 77%, 56%);
+        background-color: {{ theme_obj.primary_600|default:'hsl(8, 77%, 56%)' }};
         color: white;
         text-align: center;
         border-radius: 6px;
@@ -359,7 +360,7 @@
             icon: 'question',
             showCancelButton: true,
             confirmButtonColor: '#008000',
-            cancelButtonColor: '#d33',
+            cancelButtonColor: '#6c757d',
             confirmButtonText: "Confirm",
             cancelButtonText: "Close"
         }).then((result) => {

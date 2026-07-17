@@ -31,6 +31,10 @@ SUBMENUS = [
     {
         "menu": _("360 Feedback"),
         "redirect": reverse_lazy("feedback-view"),
+        # feedback-creation/ is a sibling URL (not a sub-path of feedback-view/),
+        # so it needs an explicit prefix for the sidebar's path-based active-link
+        # highlighting to match it.
+        "match_prefixes": ["/pms/feedback-creation/"],
     },
     {
         "menu": _("Meetings"),

@@ -1,5 +1,6 @@
 {% load static i18n %}
-{% load widget_tweaks %} {% load basefilters %} {% load pmsfilters %}
+{% load widget_tweaks %} {% load basefilters %} {% load pmsfilters %} {% load horillafilters %}
+{% get_company as theme_obj %}
 {% comment %} <section class="oh-wrapper oh-main__topbar" x-data="{searchShow: false}"> {% endcomment %}
     <div class="oh-main__titlebar oh-main__titlebar--left">
         <h1 class="oh-main__titlebar-title fw-bold">
@@ -68,7 +69,7 @@
                                                     </a>
                                                 {% endif %}
                                                 {% if request.user|is_reportingmanager or perms.pms.add_employeekeyresult %}
-                                                    <button  style="border-right:1px solid hsl(8, 77%, 56%)"
+                                                    <button  style="border-right:1px solid {{ theme_obj.primary_600|default:'hsl(8, 77%, 56%)' }}"
                                                         class="oh-btn oh-btn--secondary-outline float-end"
                                                         hx-get='{% url "employee-key-result-creation" emp_objective.id %}'
                                                         hx-target="#genericModalBody"

@@ -32,7 +32,7 @@ class WorkTypeList(HorillaListView):
                     "action": _("Edit"),
                     "icon": "create-outline",
                     "attrs": """
-                            class="oh-btn oh-btn--light-bkg w-100"
+                            class="oh-btn oh-btn--light-bkg oh-btn--sq-sm"
                             hx-get='{get_update_url}?instance_ids={ordered_ids}'
                                     hx-target="#genericModalBody"
                                     data-toggle="oh-modal-toggle"
@@ -46,7 +46,7 @@ class WorkTypeList(HorillaListView):
                     "action": _("Delete"),
                     "icon": "trash-outline",
                     "attrs": """
-                            class="oh-btn oh-btn--danger-outline oh-btn--light-bkg w-100"
+                            class="oh-btn oh-btn--danger oh-btn--sq-sm"
                             hx-get="{get_delete_url}?model=base.worktype&pk={pk}"
                             data-toggle="oh-modal-toggle"
                             data-target="#deleteConfirmation"

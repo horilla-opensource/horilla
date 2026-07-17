@@ -7,7 +7,7 @@
                 <!-- "CHEKING WETHER ITS IS THE CURRENT EMPLOYEES COMPANY OR ALL COMPANY, THEN ONLY SHOWS THE CHECK-IN, CHECK-OUT BUTTON" -->
                 {% if request.user|is_clocked_in and get_forecasted_at_work.has_attendance %}
                     <button
-                        class="oh-btn oh-btn--warning-outline mr-2"
+                        class="oh-btn oh-btn--warning mr-2"
                         {% if enabled_timerunner and get_forecasted_at_work.has_attendance %}
                             onmouseenter="$(this).find('span').show();$(this).find('.time-runner').hide()"
                             onmouseleave="$(this).find('span').hide();$(this).find('.time-runner').show()"
@@ -16,7 +16,7 @@
                         hx-target="#attendance-activity-container"
                         hx-swap="innerHTML"
                     >
-                        <ion-icon class="oh-navbar__clock-icon mr-2 text-warning" name="exit-outline"></ion-icon>
+                        <ion-icon class="oh-navbar__clock-icon mr-2 text-white" name="exit-outline"></ion-icon>
                         <span
                             class="hr-Check-In-out-text"
                             {% if enabled_timerunner and get_forecasted_at_work.has_attendance %}
@@ -36,12 +36,12 @@
                             onmouseenter="$(this).find('span').show();$(this).find('.at-work-seconds').hide()"
                             onmouseleave="$(this).find('span').hide();$(this).find('.at-work-seconds').show()"
                         {% endif %}
-                        class="oh-btn oh-btn--success-outline mr-2"
+                        class="oh-btn oh-btn--success mr-2"
                         hx-get="{% url 'clock-in' %}"
                         hx-target="#attendance-activity-container"
                         hx-swap="innerHTML"
                     >
-                        <ion-icon class="oh-navbar__clock-icon mr-2 text-success" name="enter-outline"></ion-icon>
+                        <ion-icon class="oh-navbar__clock-icon mr-2 text-white" name="enter-outline"></ion-icon>
                         <span
                             class="hr-Check-In-out-text"
                             {% if enabled_timerunner %}

@@ -32,11 +32,11 @@
                 <div class="inner-accordion-toggle w-full text-xs font-semibold bg-[#f3f3f3] px-4 py-3 text-[#333] flex items-center gap-2 perm-accordion justify-between cursor-pointer">
                     <span>{{ display }}</span>
                     <button
-                        class="btn-square btn-square2 w-14 h-8 cursor-pointer bg-[#ff000024] text-xs text-[red] disabled:cursor-not-allowed"
+                        class="oh-btn oh-btn--danger oh-btn--sq-sm btn-square2 cursor-pointer disabled:cursor-not-allowed"
                         data-feature-id="{{item}}_body"
                         title="{% trans 'Clear Filters' %}"
                     >
-                        <i class="fa-solid fa-xmark"></i>
+                        <ion-icon name="close-outline"></ion-icon>
                     </button>
                 </div>
 
@@ -65,8 +65,8 @@
                            text: '{% trans "This will clear all filters you have applied." %}',
                            icon: "warning",
                            showCancelButton: true,
-                           confirmButtonColor: "#3085d6",
-                           cancelButtonColor: "#d33",
+                           confirmButtonColor: "#008000",
+                           cancelButtonColor: "#6c757d",
                            confirmButtonText: `{% trans 'Yes' %}, {% trans 'Clear it' %}!`,
                        }).then((result) => {
                            if (result.isConfirmed) {

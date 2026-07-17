@@ -1,5 +1,5 @@
 {% load i18n %}
-<div class="oh-btn-group">
+<div class="flex items-center justify-center gap-1">
 	{% if perms.base.change_dynamicemailconfiguration %}
 		<a
 			hx-get="{% url 'update-mail-server' instance.id %}?instance_ids={{instance.ordered_ids}}"
@@ -7,7 +7,7 @@
 			hx-target="#genericModalBody"
 			data-toggle="oh-modal-toggle"
 			data-target="#genericModal"
-			class="oh-btn oh-btn--light-bkg w-100"
+			class="oh-btn oh-btn--light-bkg oh-btn--sq-sm"
 			title="{% trans 'Edit' %}"
 			><ion-icon
 				name="create-outline"
@@ -24,7 +24,7 @@
 		hx-target="#mailServerModalBody"
 		data-toggle="oh-modal-toggle"
 		data-target="#mailServerModal"
-		class="oh-btn oh-btn--light-bkg w-100"
+		class="oh-btn oh-btn--light-bkg oh-btn--sq-sm"
 		title="{% trans 'Test email' %}"
 		><ion-icon
 			name="mail-unread-outline"
@@ -43,7 +43,7 @@
 			data-target="#objectDetailsModal"
 			hx-target="#objectDetailsModalTarget"
 			type="submit"
-			class="oh-btn oh-btn--danger-outline oh-btn--light-bkg w-100"
+			class="oh-btn oh-btn--danger oh-btn--sq-sm"
 			title="{% trans 'Remove' %}"
 			><ion-icon
 				name="trash-outline"

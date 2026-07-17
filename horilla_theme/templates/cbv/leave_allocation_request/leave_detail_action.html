@@ -5,7 +5,7 @@
     {% if instance.status == 'requested' %}
         <a
             href="{% url 'leave-allocation-request-approve' instance.id %}"
-            class="w-24 px-4 py-2 bg-primary-600 text-white rounded-md text-xs flex items-center justify-center gap-2 hover:bg-primary-800 transition duration-300"
+            class="w-24 px-4 py-2 bg-success text-white rounded-md text-xs flex items-center justify-center gap-2 hover:bg-success-dark transition duration-300"
             title="{% trans 'Approve' %}"
         >
             <img
@@ -19,7 +19,7 @@
     {% else %}
         <a
             href=""
-            class="w-24 px-4 py-2 bg-primary-600 text-white rounded-md text-xs flex items-center justify-center gap-2 hover:bg-primary-800 transition duration-300 oh-btn--disabled"
+            class="w-24 px-4 py-2 bg-success text-white rounded-md text-xs flex items-center justify-center gap-2 hover:bg-success-dark transition duration-300 oh-btn--disabled"
             title="{% trans 'Approved' %}"
             onclick="event.preventDefault()"
         >
@@ -37,7 +37,7 @@
             hx-get="{% url 'leave-allocation-request-reject' instance.id %}"
             data-target="{% if dashboard == 'true' %}#bigModal {% else %}#rejectModal {% endif %}"
             hx-target="{% if dashboard == 'true' %}#bigModalTarget {% else %}#rejectTarget{% endif %}"
-            class="w-24 px-4 py-2 bg-white rounded-md text-xs flex items-center justify-center gap-2 border border-primary-500 hover:border-primary-600 transition duration-300"
+            class="w-24 px-4 py-2 bg-danger text-white rounded-md text-xs flex items-center justify-center gap-2 hover:bg-danger-dark transition duration-300"
             data-toggle="oh-modal-toggle"
             title="{% trans 'Reject' %}"
         >
@@ -45,14 +45,14 @@
                 src="{% static 'horilla_theme/assets/img/icons/close-circle-icon-original.svg' %}"
                 alt="{% trans 'Reject' %}"
                 width="13"
-                class="mt-[-1px]"
+                class="mt-[-1px] filter brightness-0 invert"
             >
             {% trans "Reject" %}
         </a>
     {% else %}
         <a
             href=""
-            class="w-24 px-4 py-2 bg-white rounded-md text-xs flex items-center justify-center gap-2 border border-primary-500 hover:border-primary-600 transition duration-300 oh-btn--disabled"
+            class="w-24 px-4 py-2 bg-danger text-white rounded-md text-xs flex items-center justify-center gap-2 hover:bg-danger-dark transition duration-300 oh-btn--disabled"
             title="{% trans 'Rejected' %}"
             onclick="event.preventDefault()"
         >
@@ -60,7 +60,7 @@
                 src="{% static 'horilla_theme/assets/img/icons/close-circle-icon-original.svg' %}"
                 alt="{% trans 'Reject' %}"
                 width="13"
-                class="mt-[-1px]"
+                class="mt-[-1px] filter brightness-0 invert"
             >
             {% trans "Reject" %}
         </a>

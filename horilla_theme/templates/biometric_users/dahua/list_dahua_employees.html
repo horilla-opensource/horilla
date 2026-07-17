@@ -64,7 +64,7 @@
                             <div class="oh-btn-group">
                                 {% if perms.biometric.delete_biometricemployees %}
                                     <a
-                                        class="oh-btn oh-btn--danger-outline oh-btn--light-bkg w-100"
+                                        class="oh-btn oh-btn--danger w-100"
                                         hx-confirm="{% trans 'Are you sure you want to delete this user?' %}"
                                         hx-post="{% url 'delete-dahua-user' employee.id %}"
                                         hx-target="#dahuaUser{{employee.id}}"

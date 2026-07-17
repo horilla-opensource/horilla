@@ -340,15 +340,6 @@
     <script src="{% static 'employee/search.js' %}"></script>
     <script src="{% static 'basedOn.js' %}"></script>
     <script>
-        $(document).ready(function () {
-        	var exits = $("#view-container").find(
-        		".oh-general__tab-link--active",
-        	).length;
-        	if (!exits) {
-        		$("#view-container").find(".oh-general__tab-link")[0].click();
-        	}
-        });
-
         toggleColumns("employee-tab", "fieldContainerTable");
         if (!localStorage.getItem("employee_tab")) {
         	$("#fieldContainerTable")

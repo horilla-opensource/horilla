@@ -29,8 +29,8 @@ function hourAccountbulkDelete() {
             text: i18nMessages.confirmBulkDelete,
             icon: "error",
             showCancelButton: true,
-            confirmButtonColor: "#008000",
-            cancelButtonColor: "#d33",
+            confirmButtonColor: "#d33",
+            cancelButtonColor: "#6c757d",
             confirmButtonText: i18nMessages.confirm,
             cancelButtonText: i18nMessages.cancel,
         }).then(function (result) {
@@ -72,8 +72,8 @@ function lateComeBulkDelete() {
             text: i18nMessages.confirmBulkDelete,
             icon: "error",
             showCancelButton: true,
-            confirmButtonColor: "#008000",
-            cancelButtonColor: "#d33",
+            confirmButtonColor: "#d33",
+            cancelButtonColor: "#6c757d",
             confirmButtonText: i18nMessages.confirm,
             cancelButtonText: i18nMessages.cancel,
         }).then(function (result) {
@@ -116,7 +116,7 @@ function reqAttendanceBulkApprove() {
             icon: "info",
             showCancelButton: true,
             confirmButtonColor: "#008000",
-            cancelButtonColor: "#d33",
+            cancelButtonColor: "#6c757d",
             confirmButtonText: i18nMessages.confirm,
             cancelButtonText: i18nMessages.cancel,
         }).then(function (result) {
@@ -157,8 +157,8 @@ function reqAttendanceBulkReject() {
             text: gettext("Do you really want to reject all the selected attendance requests?"),
             icon: "info",
             showCancelButton: true,
-            confirmButtonColor: "#008000",
-            cancelButtonColor: "#d33",
+            confirmButtonColor: "#d33",
+            cancelButtonColor: "#6c757d",
             confirmButtonText: i18nMessages.confirm,
             cancelButtonText: i18nMessages.cancel,
         }).then(function (result) {

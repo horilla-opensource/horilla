@@ -1,6 +1,10 @@
-{% load static i18n generic_template_filters %}
+{% load static i18n generic_template_filters horillafilters %}
+{% get_company as theme_obj %}
 
-<div id="{{view_id}}" class="hlv-container">
+<div id="{{view_id}}" class="hlv-container" style="
+    --doc-accent: {{ theme_obj.primary_600|default:'#E54F38' }};
+    --doc-accent-soft: {{ theme_obj.primary_300|default:'#FCEDEB' }};
+">
     <script>
         if (!$(".HTV").length) {
         	reloadMessage(null);
@@ -22,15 +26,15 @@
     {% endif %}
 
     {% if queryset|length %}
-        <div class="bg-white p-5 pe-2 pt-3 rounded-md shadow-card relative">
+        <div class="bg-white p-5 pe-2 pt-3 rounded-md shadow-card relative doc-list">
             <div class="max-h-[600px] overflow-hidden overflow-y-auto overflow-x-auto heightContainer">
-                <div class="bg-white rounded-xl shadow-sm overflow-hidden">
-                    <div class="hidden md:grid grid-cols-[60px_1fr_120px_120px_180px] gap-4 px-6 py-4 bg-primary-50 border-b border-primary-300 text-xs font-semibold uppercase tracking-wider text-dark-400 items-center">
+                <div class="bg-white rounded-xl shadow-sm overflow-hidden doc-list-table">
+                    <div class="hidden md:grid grid-cols-[60px_1fr_120px_120px_180px] gap-4 px-6 py-4 doc-list-head text-xs font-semibold uppercase tracking-wider items-center">
                         <div></div>
                         <div>{% trans "Document" %}</div>
                         <div>{% trans "Status" %}</div>
                         <div>{% trans "Date" %}</div>
-                        <div>{% trans "Actions" %}</div>
+                        <div class="text-center">{% trans "Actions" %}</div>
                     </div>
 
                     {% for document in queryset %}
@@ -65,8 +69,8 @@
                                     </div>
                                 {% endif %}
                             {% else %}
-                                <div class="w-8 h-8 rounded-md bg-primary-300 text-primary-700 flex items-center justify-center shrink-0">
-                                    <ion-icon name="cloud-upload-outline"></ion-icon>
+                                <div class="doc-avatar {% cycle 'doc-avatar--a' 'doc-avatar--b' 'doc-avatar--c' 'doc-avatar--d' 'doc-avatar--e' %} rounded-full flex items-center justify-center shrink-0" title="{{ document.employee_id.get_full_name }}">
+                                    {{ document.employee_id.employee_first_name|first }}{{ document.employee_id.employee_last_name|first }}
                                 </div>
                             {% endif %}
 
@@ -91,7 +95,8 @@
                             </div>
 
                             <div>
-                                <div class="text-sm font-medium px-3 py-1 rounded-xl text-center {% if document.document %} {% if document.status == 'approved' %}bg-success text-white {% elif document.status == 'rejected' %}bg-danger text-white{% elif document.status == 'requested' %}bg-warning text-white {% endif %} {% else %} bg-primary-300 text-primary-700 {% endif %}">
+                                <div class="doc-status-pill text-sm font-medium px-3 py-1 rounded-xl text-center {% if document.document %} {% if document.status == 'approved' %}bg-success text-white {% elif document.status == 'rejected' %}bg-danger text-white{% elif document.status == 'requested' %}bg-warning text-white {% endif %} {% else %} doc-status-pill--neutral {% endif %}">
+                                    <span class="doc-status-dot"></span>
                                     {% if document.document %}
                                         {{ document.get_status_display }}
                                     {% else %}
@@ -107,12 +112,12 @@
                                 {% endif %}
                             </div>
 
-                            <div class="flex gap-1 w-full">
+                            <div class="flex gap-1 items-center justify-center">
                                 {% if document.document %}
                                     {% if perms.horilla_document.change_documentrequest %}
                                         {% if document.status == "requested" %}
                                             <button
-                                                class="oh-btn flex-1 text-base bg-primary-300 text-dark-700 hover:bg-success hover:text-white hover:scale-105"
+                                                class="oh-btn text-base bg-primary-300 text-dark-700 hover:bg-success hover:text-white hover:scale-105"
                                                 hx-get="{% url 'document-approve' document.id %}"
                                                 title="{% trans 'Approve' %}"
                                                 onclick="event.stopPropagation()"
@@ -120,7 +125,7 @@
                                                 <ion-icon class="me-1" name="checkmark-outline"></ion-icon>
                                             </button>
                                             <button
-                                                class="oh-btn flex-1 text-base bg-primary-300 text-dark-700 hover:bg-danger hover:text-white hover:scale-105 transition"
+                                                class="oh-btn text-base bg-danger text-white hover:bg-danger-dark hover:scale-105 transition"
                                                 hx-get="{% url 'document-reject' document.id %}"
                                                 hx-target="#genericModalBody"
                                                 data-toggle="oh-modal-toggle"
@@ -132,7 +137,7 @@
                                             </button>
                                         {% elif document.status == "approved" %}
                                             <button
-                                                class="oh-btn flex-1 text-base bg-primary-300 text-dark-700 hover:bg-success hover:text-white hover:scale-105 opacity-50 cursor-not-allowed"
+                                                class="oh-btn text-base bg-primary-300 text-dark-700 hover:bg-success hover:text-white hover:scale-105 opacity-50 cursor-not-allowed"
                                                 title="{% trans 'Approve' %}"
                                                 onclick="event.stopPropagation()"
                                             >
@@ -140,7 +145,7 @@
                                             </button>
 
                                             <button
-                                                class="oh-btn flex-1 text-base bg-primary-300 text-dark-700 hover:bg-danger hover:text-white hover:scale-105 transition"
+                                                class="oh-btn text-base bg-danger text-white hover:bg-danger-dark hover:scale-105 transition"
                                                 hx-get="{% url 'document-reject' document.id %}"
                                                 hx-target="#genericModalBody"
                                                 data-toggle="oh-modal-toggle"
@@ -152,7 +157,7 @@
                                             </button>
                                         {% else %}
                                             <button
-                                                class="oh-btn flex-1 text-base bg-primary-300 text-dark-700 hover:bg-success hover:text-white hover:scale-105"
+                                                class="oh-btn text-base bg-primary-300 text-dark-700 hover:bg-success hover:text-white hover:scale-105"
                                                 hx-get="{% url 'document-approve' document.id %}"
                                                 title="{% trans 'Approve' %}"
                                                 onclick="event.stopPropagation()"
@@ -160,7 +165,7 @@
                                                 <ion-icon class="me-1" name="checkmark-outline"></ion-icon>
                                             </button>
                                             <button
-                                                class="oh-btn flex-1 text-base bg-primary-300 text-dark-700 hover:bg-danger hover:text-white hover:scale-105 transition opacity-50 cursor-not-allowed"
+                                                class="oh-btn text-base bg-danger text-white hover:bg-danger-dark hover:scale-105 transition opacity-50 cursor-not-allowed"
                                                 title="{% trans 'Reject' %}"
                                                 onclick="event.stopPropagation()"
                                             >
@@ -170,7 +175,7 @@
                                     {% endif %}
                                 {% else %}
                                     <button
-                                        class="oh-btn flex-1 text-base bg-primary-300 text-primary-600 hover:bg-primary-600 hover:text-white hover:scale-105 transition"
+                                        class="oh-btn text-base bg-primary-300 text-brand-600 hover:bg-brand-600 hover:text-white hover:scale-105 transition"
                                         title="{% trans 'Upload Document' %}"
                                         hx-get="{% url 'file-upload' document.id %}"
                                         hx-target="#genericModalBody"
@@ -198,7 +203,7 @@
                                         {% csrf_token %}
                                         <button
                                             type="submit"
-                                            class="oh-btn text-base bg-primary-300 text-dark-600 hover:scale-105 hover:text-white hover:bg-danger transition"
+                                            class="oh-btn text-base bg-danger text-white hover:scale-105 hover:bg-danger-dark transition"
                                             title="{% trans 'Delete' %}"
                                         >
                                             <ion-icon class="me-1" name="trash-outline"></ion-icon>
@@ -292,3 +297,187 @@
 
     });
 </script>
+
+<style>
+    /* Card container that wraps the whole document list — softer corners and a
+       gentle elevation so the expanded list feels like a distinct surface. */
+    .doc-list {
+        border: 1px solid #ebecef;
+        border-radius: 16px !important;
+        box-shadow: 0 4px 18px rgba(20, 20, 30, 0.05) !important;
+    }
+
+    .doc-list-table {
+        border: 1px solid #f0f1f3;
+    }
+
+    /* "No document yet" is a neutral, not-yet-actioned state — it shouldn't
+       share the brand accent color with real calls to action, or it reads as
+       equally urgent/colorful as an actual approve/reject/upload action. */
+    .doc-list .bg-primary-300 {
+        background-color: #eef0f3 !important;
+    }
+
+    .doc-list .text-primary-600 {
+        color: #6b7280 !important;
+    }
+
+    /* Rotating cool-toned avatar colors for "not yet uploaded" rows — gives each
+       person a visual identity while staying clearly distinct from the warm
+       green/amber/red used for real approve/reject/pending statuses. */
+    .doc-avatar {
+        display: flex;
+        width: 36px;
+        height: 36px;
+        align-items: center;
+        justify-content: center;
+        font-size: 12px;
+        font-weight: 700;
+        color: #fff;
+        letter-spacing: 0.2px;
+        box-shadow: 0 2px 6px rgba(20, 20, 30, 0.12);
+        transition: transform 0.15s ease;
+    }
+
+    .doc-list-table > div[id^="document"]:hover .doc-avatar {
+        transform: scale(1.06);
+    }
+
+    .doc-avatar--a { background: linear-gradient(135deg, #818cf8, #6366f1); }
+    .doc-avatar--b { background: linear-gradient(135deg, #38bdf8, #0ea5e9); }
+    .doc-avatar--c { background: linear-gradient(135deg, #a78bfa, #8b5cf6); }
+    .doc-avatar--d { background: linear-gradient(135deg, #2dd4bf, #14b8a6); }
+    .doc-avatar--e { background: linear-gradient(135deg, #94a3b8, #64748b); }
+
+    /* Status icon chips (approved / rejected / requested) get a soft glow that
+       matches their meaning. */
+    .doc-list-table .bg-success { box-shadow: 0 2px 8px rgba(34, 197, 94, 0.28); }
+    .doc-list-table .bg-danger { box-shadow: 0 2px 8px rgba(239, 68, 68, 0.28); }
+    .doc-list-table .bg-warning { box-shadow: 0 2px 8px rgba(245, 158, 11, 0.28); }
+
+    .doc-status-pill {
+        display: inline-flex;
+        align-items: center;
+        gap: 6px;
+        white-space: nowrap;
+        box-shadow: 0 1px 3px rgba(20, 20, 30, 0.08);
+        letter-spacing: 0.2px;
+    }
+
+    .doc-status-dot {
+        width: 6px;
+        height: 6px;
+        border-radius: 50%;
+        background: currentColor;
+        opacity: 0.7;
+        flex: none;
+    }
+
+    .doc-status-pill--neutral {
+        background-color: #f4f5f7;
+        color: #7a808a;
+        box-shadow: none;
+        border: 1px dashed #d9dce1;
+    }
+
+    .doc-list-head {
+        background-color: #fafafb;
+        border-bottom: 1px solid #ececef;
+        color: #8a8f98;
+    }
+
+    .doc-list-table > div[id^="document"] {
+        border-color: #f0f1f3 !important;
+        transition: background-color 0.15s ease, box-shadow 0.15s ease;
+    }
+
+    .doc-list-table > div[id^="document"]:hover {
+        background-color: #fafafb !important;
+        box-shadow: inset 3px 0 0 var(--doc-accent);
+    }
+
+    .doc-list-table .oh-btn {
+        min-width: 40px;
+        height: 38px;
+        border-radius: 10px;
+        border: 1px solid #e4e6ea;
+        transition: transform 0.15s ease, background-color 0.15s ease, color 0.15s ease, box-shadow 0.15s ease, border-color 0.15s ease;
+    }
+
+    .doc-list-table .oh-btn:hover {
+        box-shadow: 0 4px 12px rgba(20, 20, 30, 0.16);
+        border-color: transparent;
+    }
+
+    /* The `.doc-list .bg-primary-300 { ...!important }` neutral-resting override
+       above outranks Tailwind's un-!important `hover:bg-*` utilities, so the
+       button hover backgrounds never applied (white icon on a still-grey button
+       read as an empty button). Re-assert each hover color with !important.
+       Upload is a primary CTA in fixed brand orange; approve/reject stay semantic. */
+    .doc-list-table .oh-btn.hover\:bg-brand-600:hover {
+        background-color: #E5502F !important;
+        color: #fff !important;
+    }
+
+    .doc-list-table .oh-btn.hover\:bg-success:hover {
+        background-color: #22c55e !important;
+        color: #fff !important;
+    }
+
+    .dark .doc-list,
+    .dark .doc-list-table {
+        background-color: #242429 !important;
+    }
+
+    .dark .doc-list {
+        border-color: #34353c;
+        box-shadow: 0 4px 18px rgba(0, 0, 0, 0.35) !important;
+    }
+
+    .dark .doc-list-table {
+        border-color: #34353c;
+    }
+
+    .dark .doc-list-head {
+        background-color: #1c1c20;
+        border-color: #34353c;
+        color: #9a9ba3;
+    }
+
+    .dark .doc-list-table > div[id^="document"] {
+        border-color: #34353c !important;
+    }
+
+    .dark .doc-list-table > div[id^="document"]:hover {
+        background-color: #2b2c32 !important;
+        box-shadow: inset 3px 0 0 var(--doc-accent);
+    }
+
+    .dark .doc-list .bg-primary-300 {
+        background-color: #34353c !important;
+    }
+
+    .dark .doc-list .text-primary-600 {
+        color: #b7bac1 !important;
+    }
+
+    .dark .doc-status-pill--neutral {
+        background-color: #2b2c32;
+        color: #b7bac1;
+        border: 1px dashed #45464e;
+    }
+
+    .dark .doc-list-table .oh-btn {
+        border-color: #3a3b43;
+    }
+
+    .dark .doc-list-table .oh-btn:hover {
+        border-color: transparent;
+        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.4);
+    }
+
+    .dark .doc-list .text-dark-600,
+    .dark .doc-list .text-dark-400 {
+        color: #d5d6da !important;
+    }
+</style>

@@ -127,3 +127,7 @@ class LinkedInSettingListView(views.HorillaListView):
         "company_id",
         ("Is Active", "is_active_toggle"),
     ]
+
+    header_attrs = {
+        "action": """ style="width:180px !important" """,
+    }

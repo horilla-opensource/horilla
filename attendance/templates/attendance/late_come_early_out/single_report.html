@@ -2,6 +2,7 @@
 {% load i18n %}
 {% load basefilters %}
 {% load horillafilters %}
+{% get_company as theme_obj %}
 {% if messages %}
     <div class="oh-wrapper">
         {% for message in messages %}
@@ -161,7 +162,7 @@
                         view-penalties" %}?late_early_id={{late_in_early_out.id}}'
                             hx-target="#penaltyViewModalBody"
                             align="center"
-                            style="background-color: rgba(229, 79, 56, 0.036); border: 2px solid rgb(229, 79, 56); border-radius: 18px; padding: 10px; font-weight: bold; width: 85%; cursor: pointer"
+                            style="background-color: {{ theme_obj.primary_600|default:'rgba(229, 79, 56, 0.036)' }}; border: 2px solid {{ theme_obj.primary_600|default:'rgb(229, 79, 56)' }}; border-radius: 18px; padding: 10px; font-weight: bold; width: 85%; cursor: pointer"
                         >
                             {% trans "Penalties " %} : {{ late_in_early_out.get_penalties_count }}
                         </div>

@@ -1,12 +1,15 @@
-{% load i18n recruitmentfilters %}
+{% load i18n recruitmentfilters horillafilters %}
 {% load generic_template_filters %}
-<div id="{{view_id}}">
+{% get_company as theme_obj %}
+<div id="{{view_id}}" class="accordion-wrapper space-y-2">
   {% for group in groups %}
   <div id="{{selected_instances_key_name}}{{ group.id }}" data-ids="[]"></div>
-  <div class="oh-tabs__movable-area mb-2">
-    <div class="oh-tabs__movable">
-      <div class="oh-tabs__movable-header"  style="cursor:pointer;" onclick="$(this).parent().find('.oh-tabs__movable-body').toggleClass('d-none');">
-        <span class"oh-tabs__movable-title">{{group}}</span>
+  <div class="accordion-item border border-primary-300 rounded-md overflow-hidden">
+    <div class="accordion-btn w-full flex justify-between items-center px-4 py-2 text-sm transition-all bg-primary-100 text-primary-600 hover:bg-primary-200"  style="cursor:pointer;" onclick="var i=$(this).find('.movable-toggle-icon'); i.text(i.text()=='+' ? '−' : '+'); $(this).parent().find('.oh-tabs__movable-body').toggleClass('d-none');">
+      <span class="oh-tabs__movable-title">{{group}}</span>
+
+      <div class="flex items-center gap-4">
+        <span class="movable-toggle-icon text-lg font-bold w-4 text-center">−</span>
 
         <div onclick="event.stopPropagation()" class="oh-dropdown" x-data="{open: false}">
           <div style="cursor: pointer;" onclick="event.stopPropagation()" class="oh-dropdown" x-data="{open: false}">
@@ -15,7 +18,7 @@
               @click="open = !open"
               @click.outside="open = false"
               title="{% trans 'Actions' %}"
-              style="color: #e54f38;"
+              class="text-primary-600"
             >
               <ion-icon
                 name="ellipsis-vertical"
@@ -42,14 +45,14 @@
           </div>
         </div>
       </div>
-      <div
-      class="oh-tabs__movable-body position-relative"
-      hx-get="{{url}}?{% for parameter in parameters %}{{parameter|format:group}}&{% endfor %}{{request.GET.urlencode}}"
-      hx-trigger="load" id="taxbracketList{{group.id}}"
+    </div>
+    <div
+    class="oh-tabs__movable-body position-relative bg-white px-4 text-sm text-gray-700"
+    hx-get="{{url}}?{% for parameter in parameters %}{{parameter|format:group}}&{% endfor %}{{request.GET.urlencode}}"
+    hx-trigger="load" id="taxbracketList{{group.id}}"
 
-      >
-    </div>
-    </div>
+    >
+  </div>
   </div>
   {% endfor %}
 </div>

@@ -311,7 +311,7 @@ class CandidateList(HorillaListView):
             "action": _("Schedule Interview"),
             "icon": "time-outline",
             "attrs": """
-                class="oh-btn oh-btn--danger-outline oh-btn--light-bkg w-100"
+                class="oh-btn oh-btn--light-bkg hover:text-primary-600 w-100"
                 hx-get = "{get_schedule_interview}"
                 data-toggle="oh-modal-toggle"
                 data-target="#genericModal"
@@ -322,7 +322,7 @@ class CandidateList(HorillaListView):
             "action": _("Send Mail"),
             "icon": "mail-open-outline",
             "attrs": """
-                class="oh-btn oh-btn--danger-outline oh-btn--light-bkg w-100"
+                class="oh-btn oh-btn--light-bkg hover:text-primary-600 w-100"
                 hx-get = "{get_send_mail}"
                 data-toggle="oh-modal-toggle"
                 data-target="#objectDetailsModal"
@@ -333,7 +333,7 @@ class CandidateList(HorillaListView):
             "action": _("Add to Skill Zone"),
             "icon": "heart-circle-outline",
             "attrs": """
-                class="oh-btn oh-btn--danger-outline oh-btn--light-bkg w-100 disabled"
+                class="oh-btn oh-btn--light-bkg hover:text-primary-600 w-100 disabled"
                 data-toggle="oh-modal-toggle"
                 hx-get="{get_skill_zone_url}"
                 data-target="#genericModal"
@@ -344,7 +344,7 @@ class CandidateList(HorillaListView):
             "action": _("Reject Candidate"),
             "icon": "thumbs-down-outline",
             "attrs": """
-                class="oh-btn oh-btn--danger-outline oh-btn--light-bkg w-100"
+                class="oh-btn oh-btn--light-bkg hover:text-primary-600 w-100"
                 data-toggle="oh-modal-toggle"
                 hx-get="{get_rejected_candidate_url}"
                 {rejected_candidate_class}
@@ -356,7 +356,7 @@ class CandidateList(HorillaListView):
             "action": _("View Note"),
             "icon": "newspaper-outline",
             "attrs": """
-                class="oh-btn oh-btn--danger-outline oh-btn--light-bkg w-100 oh-activity-sidebar__open"
+                class="oh-btn oh-btn--light-bkg hover:text-primary-600 w-100 oh-activity-sidebar__open"
                 hx-get="{get_view_note_url}"
                 data-target="#activitySidebar"
                 hx-target="#activitySidebar"
@@ -370,7 +370,7 @@ class CandidateList(HorillaListView):
                 hx-get="{get_document_request}"
                 data-target="#genericModal"
                 hx-target="#genericModalBody"
-                class="oh-btn oh-btn--danger-outline oh-btn--light-bkg w-100"
+                class="oh-btn oh-btn--light-bkg hover:text-primary-600 w-100"
                 data-toggle="oh-modal-toggle"
             """,
         },
@@ -378,7 +378,7 @@ class CandidateList(HorillaListView):
             "action": _("Resume"),
             "icon": "document-outline",
             "attrs": """
-                class="oh-btn oh-btn--danger-outline oh-btn--light-bkg w-100"
+                class="oh-btn oh-btn--light-bkg hover:text-primary-600 w-100"
                 href="{get_resume_url}" target="_blank"
             """,
         },

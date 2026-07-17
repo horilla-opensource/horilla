@@ -28,7 +28,7 @@
             {% else %}
             <a class="oh-btn oh-btn--success mr-2" href="{% url 'start_stop' %}" title="Start">Start</a>
             {% endif %}
-            <a class="oh-btn oh-btn--danger-outline" href="{% url 'backup_delete' %}" title="Remove">
+            <a class="oh-btn oh-btn--danger" href="{% url 'backup_delete' %}" title="Remove">
                 <ion-icon name="trash-outline" role="img" class="md hydrated" aria-label="{% trans 'trash outline' %}"></ion-icon>
             </a>
             {% endif %}

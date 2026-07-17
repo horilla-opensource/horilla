@@ -45,6 +45,9 @@ class CredentialListView(HorillaListView):
     # sortby_mapping = [("Bussiness ID", "meta_business_id")]
     row_attrs = """ id = "credential{get_instance}" """
     option_method = "get_publish_button"
+    header_attrs = {
+        "action": """ style="width:180px !important" """,
+    }
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
@@ -56,7 +59,7 @@ class CredentialListView(HorillaListView):
                 "action": _("Edit"),
                 "icon": "create-outline",
                 "attrs": """
-                    class="oh-btn oh-btn--light-bkg w-100"
+                    class="oh-btn oh-btn--light-bkg oh-btn--sq-sm"
                     data-toggle="oh-modal-toggle"
                     data-target = "#genericModal"
                     hx-target = "#genericModalBody"
@@ -67,7 +70,7 @@ class CredentialListView(HorillaListView):
                 "action": _("Send Test Message"),
                 "icon": "link-outline",
                 "attrs": """
-                    class="oh-btn oh-btn--light-bkg w-100"
+                    class="oh-btn oh-btn--light-bkg oh-btn--sq-sm"
                     data-toggle="oh-modal-toggle"
                     data-target = "#genericModal"
                     hx-target = "#genericModalBody"
@@ -78,7 +81,7 @@ class CredentialListView(HorillaListView):
                 "action": _("Delete"),
                 "icon": "trash-outline",
                 "attrs": f"""
-                    class="oh-btn oh-btn--danger-outline w-100"
+                    class="oh-btn oh-btn--danger oh-btn--sq-sm"
                     hx-confirm = "{delete_confirm}"
                     hx-post = "{{get_delete_url}}"
                     hx-target = "#credential{{get_instance}}"

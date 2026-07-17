@@ -57,7 +57,7 @@ class TicketsListView(HorillaListView):
                     "action": _("Edit"),
                     "icon": "create-outline",
                     "attrs": """
-                                class="oh-btn oh-btn--light-bkg w-100"
+                                class="oh-btn oh-btn--light-bkg oh-btn--sq-sm"
                                 hx-get='{get_update_url}?instance_ids={ordered_ids}'
                                         hx-target="#genericModalBody"
                                         data-toggle="oh-modal-toggle"
@@ -71,7 +71,7 @@ class TicketsListView(HorillaListView):
                     "action": _("Delete"),
                     "icon": "trash-outline",
                     "attrs": """
-                        class="oh-btn oh-btn--danger-outline oh-btn--light-bkg w-100"
+                        class="oh-btn oh-btn--danger oh-btn--sq-sm"
                         hx-get="{get_delete_url}?model=helpdesk.tickettype&pk={pk}"
                         data-toggle="oh-modal-toggle"
                         data-target="#deleteConfirmation"
@@ -90,7 +90,10 @@ class TicketsListView(HorillaListView):
         (_("Prefix"), "prefix"),
     ]
 
-    header_attrs = {"title": """ style = "width:200px !important" """}
+    header_attrs = {
+        "title": """ style = "width:200px !important" """,
+        "action": """ style="width:180px !important" """,
+    }
 
     sortby_mapping = [
         (_("Ticket Type"), "title"),

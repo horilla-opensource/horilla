@@ -34,10 +34,10 @@
                     </div>
 
                     {% if perms.recruitment.add_skillzonecandidate or perms.recruitment.change_skillzone or perms.recruitment.delete_skillzone %}
-                        <div class="oh-btn-group">
+                        <div class="flex items-center justify-center gap-1">
                             {% if perms.recruitment.add_skillzonecandidate %}
                                 <a
-                                    class="oh-btn oh-btn--light-bkg w-100"
+                                    class="oh-btn oh-btn--light-bkg oh-btn--sq-sm"
                                     onclick="event.stopPropagation()"
                                     data-toggle="oh-modal-toggle"
                                     data-target="#genericModal"
@@ -56,7 +56,7 @@
                                     hx-target="#objectUpdateModalTarget"
                                     data-toggle="oh-modal-toggle"
                                     data-target="#objectUpdateModal"
-                                    class="oh-btn oh-btn--light-bkg w-100"
+                                    class="oh-btn oh-btn--light-bkg oh-btn--sq-sm"
                                     title="{% trans 'Edit' %}"
                                 ><ion-icon name="create-outline"></ion-icon></a>
 
@@ -70,7 +70,7 @@
                                         <button
                                             onclick="event.stopPropagation()"
                                             type="submit"
-                                            class="oh-btn oh-btn--danger-outline oh-btn--light-bkg w-100"
+                                            class="oh-btn oh-btn--danger oh-btn--sq-sm"
                                             title="{% trans 'Archive' %}"
                                         >
                                             <ion-icon name="archive"></ion-icon>
@@ -86,7 +86,7 @@
                                         <button
                                             onclick="event.stopPropagation()"
                                             type="submit"
-                                            class="oh-btn oh-btn--danger-outline oh-btn--light-bkg w-100"
+                                            class="oh-btn oh-btn--danger oh-btn--sq-sm"
                                             title="{% trans 'Un-Archive' %}"
                                         >
                                             <ion-icon name="archive"></ion-icon>
@@ -104,7 +104,7 @@
                                     <button
                                         onclick="event.stopPropagation()"
                                         type="submit"
-                                        class="oh-btn oh-btn--danger-outline oh-btn--light-bkg w-100"
+                                        class="oh-btn oh-btn--danger oh-btn--sq-sm"
                                         title="{% trans 'Remove' %}"
                                     >
                                         <ion-icon name="trash-outline"></ion-icon>
@@ -174,10 +174,10 @@
                                                 </td>
                                                 {% if perms.recruitment.change_skillzonecandidate or perms.recruitment.delete_skillzonecandidate %}
                                                     <td onclick="event.stopPropagation()">
-                                                        <div class="oh-btn-group">
+                                                        <div class="flex items-center justify-center gap-1">
                                                             {% if perms.recruitment.change_skillzonecandidate %}
                                                                 <button
-                                                                    class="oh-btn oh-btn--light-bkg w-100"
+                                                                    class="oh-btn oh-btn--light-bkg oh-btn--sq-sm"
                                                                     title="{% trans 'Edit' %}"
                                                                     data-toggle="oh-modal-toggle"
                                                                     data-target="#genericModal"
@@ -192,14 +192,12 @@
                                                                     action="{% url 'skill-zone-cand-delete' sz_candidate.id  %}"
                                                                     onsubmit="return confirm(`{% trans 'Do you want to remove this candidate' %}`)"
                                                                     method="post"
-                                                                    onsubmit="Are you sure want to delete this candidate?"
-                                                                    class="w-100"
                                                                 >
                                                                     {% csrf_token %}
                                                                     <button
                                                                         type="submit"
-                                                                        class="oh-btn oh-btn--danger-outline oh-btn--light-bkg w-100"
-                                                                        title="{% trans 'Remove' %}"
+                                                                        class="oh-btn oh-btn--danger oh-btn--sq-sm"
+                                                                        title="Remove"
                                                                     >
                                                                         <ion-icon name="trash-outline"></ion-icon>
                                                                     </button>

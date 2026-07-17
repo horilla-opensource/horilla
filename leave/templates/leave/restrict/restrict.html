@@ -136,7 +136,7 @@
                                         </a>
                                     {% endif %}
                                     {% if perms.leave.delete_restrictleave %}
-                                        <a class="oh-btn oh-btn--danger-outline oh-btn--light-bkg w-100" id="delete-link"
+                                        <a class="oh-btn oh-btn--danger w-100" id="delete-link"
                                             hx-confirm="{% trans 'Are you sure you want to delete?' %}"
                                             hx-post="{% url 'restrict-delete' day.id %}?{{pd}}" hx-target="#restrictDays"
                                             >

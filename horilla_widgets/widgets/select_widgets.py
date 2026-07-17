@@ -54,6 +54,11 @@ class HorillaMultiSelectWidget(forms.Widget):
     def get_context(self, name, value, attrs):
         # Get the default context from the parent class
         context = super().get_context(name, value, attrs)
+        # Django form widget templates don't receive `request` in their
+        # context by default, which breaks the {% get_company %} templatetag
+        # (theme lookup) used inside horilla_multiselect_widget.html. Pull it
+        # from the thread-local set by ThreadLocalMiddleware instead.
+        context["request"] = horilla_middlewares._thread_locals.request
         # Add your custom data to the context
         queryset = self.choices.queryset
         field = self.choices.field

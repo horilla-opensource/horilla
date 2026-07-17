@@ -260,8 +260,8 @@ $("#archiveObjectives").click(function (e) {
             text: i18nMessages.confirmBulkArchive,
             icon: "info",
             showCancelButton: true,
-            confirmButtonColor: "#008000",
-            cancelButtonColor: "#d33",
+            confirmButtonColor: "#d33",
+            cancelButtonColor: "#6c757d",
             confirmButtonText: i18nMessages.confirm,
             cancelButtonText: i18nMessages.cancel,
         }).then(function (result) {
@@ -309,7 +309,7 @@ $("#unArchiveObjectives").click(function (e) {
             icon: "info",
             showCancelButton: true,
             confirmButtonColor: "#008000",
-            cancelButtonColor: "#d33",
+            cancelButtonColor: "#6c757d",
             confirmButtonText: i18nMessages.confirm,
             cancelButtonText: i18nMessages.cancel,
         }).then(function (result) {
@@ -356,8 +356,8 @@ $("#deleteObjectives").click(function (e) {
             text: i18nMessages.confirmBulkDelete,
             icon: "error",
             showCancelButton: true,
-            confirmButtonColor: "#008000",
-            cancelButtonColor: "#d33",
+            confirmButtonColor: "#d33",
+            cancelButtonColor: "#6c757d",
             confirmButtonText: i18nMessages.confirm,
             cancelButtonText: i18nMessages.cancel,
         }).then(function (result) {

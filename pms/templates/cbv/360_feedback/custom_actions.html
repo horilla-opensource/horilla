@@ -1,29 +1,29 @@
 {% load i18n %}
 {% load static %}
 {% load pmsfilters %}
-<div class="oh-btn-group" onclick="event.stopPropagation()">
+<div class="flex items-center justify-center gap-1" onclick="event.stopPropagation()">
     {% if request.dashboard_feedback %}
         {% if instance|has_user_answered:request.user %}
-            <button class="oh-btn w-100" disabled title="{% trans 'Already Answered' %}">
+            <button class="oh-btn oh-btn--sq-sm" disabled title="{% trans 'Already Answered' %}">
                 <img style="width: 20px; height: 20px" src="{% static 'images/ui/writing.png' %}">
             </button>
         {% else %}
-            <a class="oh-btn w-100" href="{% url 'feedback-answer-get' id=instance.id %}" title="{% trans 'Answer' %}">
+            <a class="oh-btn oh-btn--sq-sm" href="{% url 'feedback-answer-get' id=instance.id %}" title="{% trans 'Answer' %}">
                 <img style="width: 20px; height: 20px" src="{% static 'images/ui/writing.png' %}">
             </a>
         {% endif %}
     {% elif request.request_feedback %}
         {% if instance|has_user_answered:request.user %}
-            <button class="oh-btn w-100" disabled title="{% trans 'Already Answered' %}">
+            <button class="oh-btn oh-btn--sq-sm" disabled title="{% trans 'Already Answered' %}">
                 <img style="width: 20px; height: 20px" src="{% static 'images/ui/writing.png' %}">
             </button>
         {% else %}
-            <a class="oh-btn w-100" href="{% url 'feedback-answer-get' id=instance.id %}" title="{% trans 'Answer' %}">
+            <a class="oh-btn oh-btn--sq-sm" href="{% url 'feedback-answer-get' id=instance.id %}" title="{% trans 'Answer' %}">
                 <img style="width: 20px; height: 20px" src="{% static 'images/ui/writing.png' %}">
             </a>
         {% endif %}
         <button
-            class="oh-btn w-100"
+            class="oh-btn oh-btn--sq-sm"
             href="{% url 'feedback-answer-view' id=instance.id %}"
             title="{% trans 'Answer view' %}"
         >
@@ -41,7 +41,7 @@
             >
                 {% csrf_token %}
                 <button
-                    class="oh-btn oh-btn--danger-outline w-100"
+                    class="oh-btn oh-btn--danger oh-btn--sq-sm"
                     title="{% if instance.archive %}{% trans 'Un-archive' %}{% else %}{% trans 'Archive' %}{% endif %}"
                     type="submit"
                 >
@@ -58,7 +58,7 @@
                     style="display: contents"
                 >
                     {% csrf_token %}
-                    <button class="oh-btn oh-btn--danger-outline w-100" title="{% trans 'Delete' %}">
+                    <button class="oh-btn oh-btn--danger oh-btn--sq-sm" title="{% trans 'Delete' %}">
                         <ion-icon
                             name="trash-outline"
                             role="img"
@@ -69,7 +69,7 @@
                 </form>
             {% else %}
                 <button
-                    class="oh-btn oh-btn--danger-outline w-100"
+                    class="oh-btn oh-btn--danger oh-btn--sq-sm"
                     disabled
                     title="{% trans "Can't delete the feedback it's already answered." %}"
                 >
@@ -79,16 +79,16 @@
         {% endif %}
     {% else %}
         {% if instance|has_user_answered:request.user %}
-            <button class="oh-btn w-100" disabled title="{% trans 'Already Answered' %}">
+            <button class="oh-btn oh-btn--sq-sm" disabled title="{% trans 'Already Answered' %}">
                 <img style="width: 20px; height: 20px" src="{% static 'images/ui/writing.png' %}">
             </button>
         {% else %}
-            <a class="oh-btn w-100" href="{% url 'feedback-answer-get' id=instance.id %}" title="{% trans 'Answer' %}">
+            <a class="oh-btn oh-btn--sq-sm" href="{% url 'feedback-answer-get' id=instance.id %}" title="{% trans 'Answer' %}">
                 <img style="width: 20px; height: 20px" src="{% static 'images/ui/writing.png' %}">
             </a>
         {% endif %}
         <a
-            class="oh-btn w-100"
+            class="oh-btn oh-btn--sq-sm"
             href="{% url 'feedback-answer-view' id=instance.id %}"
             title="{% trans 'Answer view' %}"
         ><ion-icon name="eye"></ion-icon></a>
@@ -103,7 +103,7 @@
             >
                 {% csrf_token %}
                 <button
-                    class="oh-btn oh-btn--danger-outline w-100"
+                    class="oh-btn oh-btn--danger oh-btn--sq-sm"
                     title="{% if instance.archive %}{% trans 'Un-archive' %}{% else %}{% trans 'Archive' %}{% endif %}"
                     type="submit"
                 >
@@ -120,7 +120,7 @@
                     style="display: contents"
                 >
                     {% csrf_token %}
-                    <button class="oh-btn oh-btn--danger-outline w-100" title="{% trans 'Delete' %}">
+                    <button class="oh-btn oh-btn--danger oh-btn--sq-sm" title="{% trans 'Delete' %}">
                         <ion-icon
                             name="trash-outline"
                             role="img"
@@ -131,7 +131,7 @@
                 </form>
             {% elif request.self_feedback %}
                 <button
-                    class="oh-btn oh-btn--danger-outline w-100"
+                    class="oh-btn oh-btn--danger oh-btn--sq-sm"
                     disabled
                     title="{% trans "Can't delete the feedback it's already answered." %}"
                 >

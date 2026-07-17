@@ -1,9 +1,9 @@
 {% load i18n %}
 {% load taskfilters %}
-<div class="oh-btn-group">
+<div class="flex items-center justify-center gap-1" onclick="event.stopPropagation()">
     {% if perms.project.change_project or request.user|is_project_manager:instance %}
         <a
-            class="oh-btn oh-btn--light-bkg w-100"
+            class="oh-btn oh-btn--light-bkg oh-btn--sq-sm"
             data-toggle="oh-modal-toggle"
             data-target="#genericModal"
             hx-get="{% url 'update-project' instance.id %}"
@@ -19,7 +19,7 @@
         </a>
     {% else %}
         <button
-            class="oh-btn oh-btn--light-bkg w-100"
+            class="oh-btn oh-btn--light-bkg oh-btn--sq-sm"
             disabled
         >
             <ion-icon
@@ -33,7 +33,7 @@
     {% if perms.project.delete_project or request.user|is_project_manager:instance %}
         {% if instance.is_active %}
             <a
-                class="oh-btn oh-btn--light-bkg w-100"
+                class="oh-btn oh-btn--light-bkg oh-btn--sq-sm"
                 href="{{instance.get_archive_url}}"
                 onclick="return confirm('Do you want to {{instance.archive_status}} this project?')"
                 title="{% trans 'Archive' %}"
@@ -42,7 +42,7 @@
             </a>
         {% else %}
             <a
-                class="oh-btn oh-btn--light-bkg w-100"
+                class="oh-btn oh-btn--light-bkg oh-btn--sq-sm"
                 href="{{instance.get_archive_url}}"
                 onclick="return confirm('Do you want to {{instance.archive_status}} this project?')"
                 title="{% trans 'Un-Archive' %}"
@@ -53,7 +53,7 @@
     {% endif %}
     {% if perms.project.delete_project %}
         <a
-            class="oh-btn oh-btn--danger-outline oh-btn--light-bkg w-100"
+            class="oh-btn oh-btn--danger oh-btn--sq-sm"
             href="{% url 'delete-project' instance.id %}?view=list"
             onclick="event.preventDefault();event.stopPropagation(); confirm(`{% trans 'Do you want to delete this project?' %}`)"
         >

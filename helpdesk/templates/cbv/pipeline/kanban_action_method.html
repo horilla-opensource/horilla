@@ -80,7 +80,7 @@
     {% if ticket.status == 'new' %}
         <li>
             <p
-                class="w-full text-left px-3 py-1 hover:text-primary-600 font-semibold"
+                class="w-full text-left px-3 py-1 hover:text-danger font-semibold"
             >
                 <a
                     href = "{% url 'ticket-delete' ticket.id %}"

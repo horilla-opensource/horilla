@@ -65,7 +65,10 @@ class RestrictedDaysList(HorillaListView):
         (_("Description"), "description"),
     ]
 
-    header_attrs = {"title": """ style="width:180px !important" """}
+    header_attrs = {
+        "title": """ style="width:180px !important" """,
+        "action": """ style="width:150px !important" """,
+    }
 
     sortby_mapping = [
         (_("Start Date"), "start_date"),

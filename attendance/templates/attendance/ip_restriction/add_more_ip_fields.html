@@ -7,7 +7,7 @@
     {{ field_html }}
     <a
         hx-get="{% url 'add-remove-ip-fields' %}"
-        class="oh-btn oh-btn--danger-outline oh-btn--light-bkg"
+        class="oh-btn oh-btn--danger"
         hx-target="#{{ current_hx_target }}"
         hx-swap="outerHTML"
         id="delete-link"

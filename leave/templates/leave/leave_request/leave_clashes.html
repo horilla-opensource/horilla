@@ -1,5 +1,7 @@
 {% load static %}
 {% load i18n %}
+{% load horillafilters %}
+{% get_company as theme_obj %}
 {% if records %}
     <div class="oh-sticky-table__table mt-3">
         <div class="oh-sticky-table__thead">
@@ -36,21 +38,21 @@
                         {% if leave in clashed_due_to_department and leave in clashed_due_to_job_position %}
                             <div
                                 align="center"
-                                style="background-color: rgba(229, 79, 56, 0.13); border: 2px solid rgb(229, 79, 56); border-radius: 18px; padding: 10px; font-weight: bold; width: 102%"
+                                style="background-color: {{ theme_obj.primary_300|default:'rgba(229, 79, 56, 0.13)' }}; border: 2px solid {{ theme_obj.primary_600|default:'rgb(229, 79, 56)' }}; border-radius: 18px; padding: 10px; font-weight: bold; width: 102%"
                             >
                                 {% trans "Same Department & Job Position" %}
                             </div>
                         {% elif leave in clashed_due_to_department %}
                             <div
                                 align="center"
-                                style="background-color: rgb(229 56 226 / 13%); border: 2px solid rgb(229, 79, 56); border-radius: 18px; padding: 10px; font-weight: bold; width: 102%"
+                                style="background-color: rgb(229 56 226 / 13%); border: 2px solid {{ theme_obj.primary_600|default:'rgb(229, 79, 56)' }}; border-radius: 18px; padding: 10px; font-weight: bold; width: 102%"
                             >
                                 {% trans "Same Department" %}
                             </div>
                         {% elif leave in clashed_due_to_job_position %}
                             <div
                                 align="center"
-                                style="background-color: rgb(56 89 229 / 13%); border: 2px solid rgb(229, 79, 56); border-radius: 18px; padding: 10px; font-weight: bold; width: 102%"
+                                style="background-color: rgb(56 89 229 / 13%); border: 2px solid {{ theme_obj.primary_600|default:'rgb(229, 79, 56)' }}; border-radius: 18px; padding: 10px; font-weight: bold; width: 102%"
                             >
                                 {% trans "Same Job Position" %}
                             </div>

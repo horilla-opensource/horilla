@@ -23,6 +23,7 @@
                     {{ asset_category }}
                 </div>
                 <div class="flex items-center gap-5">
+                    <span class="icon text-lg font-bold w-4 text-center">+</span>
                     <span onclick="event.stopPropagation()">
                         <div class="inline-block dropdown-wrapper text-md">
                             <a class="cursor-pointer dropdown-toggle block w-4" title="{% trans 'Actions' %}">
@@ -74,7 +75,7 @@
                                     {% if perms.asset.delete_assetcategory %}
                                         <li>
                                             <a
-                                                class="w-full flex text-left px-3 py-1 text-dark-600 hover:text-primary-600 transition duration-300"
+                                                class="w-full flex text-left px-3 py-1 text-danger hover:text-danger-dark transition duration-300"
                                                 hx-get="{% url 'generic-delete-asset-category' %}?model=asset.AssetCategory&pk={{asset_category.id}}"
                                                 hx-target="#deleteConfirmationBody"
                                                 data-target="#deleteConfirmation"

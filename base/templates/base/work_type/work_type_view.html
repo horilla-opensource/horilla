@@ -27,7 +27,7 @@
 										hx-post="{% url 'work-type-delete' type.id %}" hx-target="#workTypeTr{{type.id}}"
 										hx-swap="outerHTML" hx-on-htmx-after-request="reloadMessage(this);" class="w-50">
 										{% csrf_token %}
-										<button type="submit" class="oh-btn oh-btn--danger-outline oh-btn--light-bkg w-100"
+										<button type="submit" class="oh-btn oh-btn--danger w-100"
 											title="{% trans 'Remove' %}">
 											<ion-icon name="trash-outline"></ion-icon>
 										</button>

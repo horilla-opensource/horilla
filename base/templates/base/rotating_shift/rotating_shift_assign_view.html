@@ -152,7 +152,7 @@
                                                             hx-get="{% url 'rotating-shift-assign-archive' rshift.id %}?{{pd}}"
                                                             hx-target="#view-container" style="width:100%">
                                                             <input type="hidden" name="is_active" value="{% trans 'False' %}" id="">
-                                                            <button class="oh-btn oh-btn--danger-outline oh-btn--light-bkg w-100"
+                                                            <button class="oh-btn oh-btn--danger w-100"
                                                                 title="{% trans 'Archive' %}">
                                                                 <ion-icon name="archive"></ion-icon>
                                                             </button>
@@ -162,7 +162,7 @@
                                                             hx-confirm="{% trans 'Do you Want to un-archive this rotating shift assign?' %}"
                                                             hx-get="{% url 'rotating-shift-assign-archive' rshift.id %}?{{pd}}"
                                                             hx-target="#view-container" style="width:100%">
-                                                            <button class="oh-btn oh-btn--danger-outline oh-btn--light-bkg w-100"
+                                                            <button class="oh-btn oh-btn--danger w-100"
                                                                 title="{% trans 'Un-Archive' %}">
                                                                 <ion-icon name="archive"></ion-icon>
                                                             </button>
@@ -176,7 +176,7 @@
                                                         hx-target="#view-container">
                                                         {% csrf_token %}
                                                         <button type="submit"
-                                                            class="oh-btn oh-btn--danger-outline oh-btn--light-bkg w-100"
+                                                            class="oh-btn oh-btn--danger w-100"
                                                             title="{% trans 'Remove' %}">
                                                             <ion-icon name="trash-outline"></ion-icon>
                                                         </button>

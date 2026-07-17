@@ -1,6 +1,7 @@
 {% extends 'index.html' %}
 {% block content %}
-    {% load i18n %}
+    {% load i18n horillafilters %}
+    {% get_company as theme_obj %}
 
     <style>
         .date-filter-form {
@@ -42,7 +43,7 @@
             padding: 0.5rem 1.25rem;
             border: none;
             border-radius: 5px;
-            background-color: hsl(8, 77%, 56%);
+            background-color: {{ theme_obj.primary_600|default:'hsl(8, 77%, 56%)' }};
             color: white;
             font-size: 0.95rem;
             cursor: pointer;
@@ -50,7 +51,7 @@
         }
 
         .oh-btn-filter:hover {
-            background-color: hsl(8, 77%, 56%);
+            background-color: {{ theme_obj.primary_600|default:'hsl(8, 77%, 56%)' }};
         }
 
         /* Label style */

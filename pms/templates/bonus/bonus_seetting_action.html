@@ -1,8 +1,8 @@
 {% load i18n %}
-<div onclick="event.stopPropagation()" class="oh-btn-group">
+<div onclick="event.stopPropagation()" class="flex items-center justify-center gap-1">
     {% if perms.pms.change_bonuspointsetting %}
         <button
-            class="oh-btn oh-btn--light-bkg w-100"
+            class="oh-btn oh-btn--light-bkg oh-btn--sq-sm"
             title="{% trans 'Edit' %}"
             data-toggle="oh-modal-toggle"
             data-target="#genericModal"
@@ -14,7 +14,7 @@
     {% endif %}
     {% if perms.pms.delete_bonuspointsetting %}
         <button
-            class="oh-btn oh-btn--danger-outline oh-btn--light-bkg w-100"
+            class="oh-btn oh-btn--danger oh-btn--sq-sm"
             id="delete-link"
             hx-confirm="{% trans 'Do you want to delete the bonus point setting?' %}"
             hx-post="{% url 'delete-bonus-point-setting' instance.id %}"

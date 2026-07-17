@@ -2,11 +2,11 @@
 {% is_manager_of request.user instance as can_manage %}
 
 <div  onclick="event.stopPropagation()">
-    <div class="oh-btn-group">
+    <div class="flex items-center justify-center gap-1">
         {% if  perms.leave.change_leaveallocationrequest or request.user.employee_get == instance.employee_id or can_manage %}
             {% if instance.status ==  'requested' %}
                 <button
-                    class="oh-btn oh-btn--light-bkg w-50"
+                    class="oh-btn oh-btn--light-bkg oh-btn--sq-sm"
                 title="{% trans 'Edit' %}"
                     data-toggle="oh-modal-toggle"
                     data-target="#genericModal"
@@ -16,19 +16,19 @@
                 </button>
             {% else %}
                 <button
-                    class="oh-btn oh-btn--light-bkg w-50" disabled>
+                    class="oh-btn oh-btn--light-bkg oh-btn--sq-sm" disabled>
                     <ion-icon name="create-outline" ></ion-icon>
                 </button>
             {% endif %}
         {% else %}
             <button
-                class="oh-btn oh-btn--light-bkg w-50" disabled>
+                class="oh-btn oh-btn--light-bkg oh-btn--sq-sm" disabled>
                 <ion-icon name="create-outline" ></ion-icon>
             </button>
         {% endif %}
         {% if perms.leave.delete_leaveallocationrequest or request.user.employee_get == instance.employee_id or can_manage %}
             {% if instance.status ==  'requested' %}
-                <button class="oh-btn oh-btn--danger-outline oh-btn--light-bkg w-50" id="delete-link"
+                <button class="oh-btn oh-btn--danger oh-btn--sq-sm" id="delete-link"
                     hx-confirm="{% trans 'Are you sure you want to delete ?' %}"
                     hx-post="{% url 'leave-allocation-request-delete' instance.id %}?{{pd}}"
                     hx-target="#leave-allocation"
@@ -36,12 +36,12 @@
                     <ion-icon name="trash-outline"></ion-icon>
             </button>
             {% else %}
-                <button class="oh-btn oh-btn--light-bkg w-50" disabled>
+                <button class="oh-btn oh-btn--light-bkg oh-btn--sq-sm" disabled>
                     <ion-icon name="trash-outline"></ion-icon>
                 </button>
             {% endif %}
         {% else %}
-            <button class="oh-btn oh-btn--light-bkg w-50" disabled>
+            <button class="oh-btn oh-btn--light-bkg oh-btn--sq-sm" disabled>
                 <ion-icon name="trash-outline"></ion-icon>
             </button>
         {% endif %}

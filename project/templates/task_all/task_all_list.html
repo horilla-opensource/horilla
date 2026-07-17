@@ -112,7 +112,7 @@
                 <form action="{% url 'delete-task' task.id  %}?task_all=true" method='post'
                   onsubmit="Are you sure want to delete this candidate?">
                   {% csrf_token %}
-                  <button type='submit' class="oh-btn oh-btn--danger-outline oh-btn--light-bkg w-100"
+                  <button type='submit' class="oh-btn oh-btn--danger w-100"
                     title="{% trans 'Remove' %}"><ion-icon name="trash-outline"></ion-icon></button>
                 </form>
                 {% comment %} {% endif %} {% endcomment %}

@@ -3,21 +3,21 @@
     <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-3 p-2">
         {% for policy in policies %}
             <div class="shadow-card p-5 bg-white rounded-md border border-dark-50">
-                <div class="flex justify-between mb-4">
-                    <h3 class="text-md font-semibold">
+                <div class="flex justify-between items-center mb-4">
+                    <h3 class="text-md font-semibold flex items-center">
                         {% if policy.is_visible_to_all %}
-                            <span class="inline-block w-2 h-2 rounded-full bg-green-500 m-[2px]"></span>
+                            <span class="inline-block w-2 h-2 rounded-full bg-success m-[2px]"></span>
                         {% else %}
-                            <span class="inline-block w-2 h-2 rounded-full bg-red-500 m-[2px]"></span>
+                            <span class="inline-block w-2 h-2 rounded-full bg-danger m-[2px]"></span>
                         {% endif %}
 
                         {{ policy.title }}
                     </h3>
                     {% if perms.employee.change_policy or perms.employee.delete_policy %}
-                        <div class="flex gap-3 items-center">
+                        <div class="flex gap-1 items-center justify-center">
                             {% if perms.employee.change_policy %}
                                 <a
-                                    class="cursor-pointer"
+                                    class="oh-btn oh-btn--light-bkg oh-btn--sq-sm"
                                     hx-get="{% url 'create-policy' policy.id %}"
                                     hx-target="#genericModalBody"
                                     data-toggle="oh-modal-toggle"
@@ -34,7 +34,7 @@
                             {% endif %}
                             {% if perms.employee.delete_policy %}
                                 <a
-                                    class="cursor-pointer text-[red] text-sm hover:text-[#d10b0b] transition-all duration-300"
+                                    class="oh-btn oh-btn--danger oh-btn--sq-sm"
                                     hx-get="{% url 'delete-policies' %}?ids={{ policy.id }}"
                                     hx-target="#policyContainer"
                                     hx-swap="innerHTML"
@@ -58,7 +58,7 @@
                 </div>
 
                 <button
-                    class="px-5 py-2 group text-primary-600 text-xs font-medium bg-primary-100 rounded-md w-full hover:bg-primary-600 hover:text-white transition duration-300 flex items-center justify-center"
+                    class="px-5 py-2 group text-info-600 text-xs font-medium bg-info-100 rounded-md w-full hover:bg-info-600 hover:text-white transition duration-300 flex items-center justify-center"
                     hx-get="{% url 'view-policy' %}?instance_id={{ policy.id }}"
                     hx-target="#objectDetailsModalTarget"
                     data-toggle="oh-modal-toggle"

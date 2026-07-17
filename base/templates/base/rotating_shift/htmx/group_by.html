@@ -162,7 +162,7 @@
                               <form hx-target="{% trans 'Do you want to archive this rotating shift assign?' %}" hx-get="{% url 'rotating-shift-assign-archive' rshift.id %}?{{pd}}"
                                     hx-target="#view-container" style="width:100%"
                                 >
-                                  <button class="oh-btn oh-btn--danger-outline oh-btn--light-bkg w-100" title="{% trans 'Archive' %}">
+                                  <button class="oh-btn oh-btn--danger w-100" title="{% trans 'Archive' %}">
                                   <ion-icon name="archive"></ion-icon>
                                   </button>
                               </form>
@@ -170,7 +170,7 @@
                               <form hx-confirm="{% trans 'Do you Want to un-archive this rotating shift assign?' %}" hx-get="{% url 'rotating-shift-assign-archive' rshift.id %}?{{pd}}"
                                     hx-target="#view-container" style="width:100%"
                                 >
-                                  <button class="oh-btn oh-btn--danger-outline oh-btn--light-bkg w-100" title="{% trans 'Un-Archive' %}">
+                                  <button class="oh-btn oh-btn--danger w-100" title="{% trans 'Un-Archive' %}">
                                   <ion-icon name="archive"></ion-icon>
                                   </button>
                               </form>
@@ -186,7 +186,7 @@
                                 {% csrf_token %}
                                 <button
                                 type="submit"
-                                class="oh-btn oh-btn--danger-outline oh-btn--light-bkg w-100"
+                                class="oh-btn oh-btn--danger w-100"
                                 title="{% trans 'Remove' %}"
                                 >
                                 <ion-icon name="trash-outline"></ion-icon>

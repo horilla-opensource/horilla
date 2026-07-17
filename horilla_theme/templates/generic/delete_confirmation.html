@@ -3,7 +3,7 @@
 {% get_company as theme_obj %}
 <style>
     .sidebarItemActive {
-        background: #fff5f1;
+        background: {{ theme_obj.primary_100|default:'#fff5f1' }};
         color: {{ theme_obj.primary_600|default:"#E54F38" }};
     }
 </style>
@@ -162,7 +162,7 @@
                                     <div class="flex gap-1 justify-end">
                                         <button
                                             id="deleteConfirmBtn"
-                                            class="px-4 py-2 bg-primary-600 text-white rounded-md text-xs flex items-center gap-2 hover:bg-primary-800 transition duration-300 disabled:opacity-50 disabled:cursor-not-allowed"
+                                            class="px-4 py-2 bg-danger text-white rounded-md text-xs flex items-center gap-2 hover:bg-danger-dark transition duration-300 disabled:opacity-50 disabled:cursor-not-allowed"
                                             type="submit"
                                             disabled
                                         >
@@ -213,7 +213,7 @@
                                 <div class="col-span-12 md:col-span-9 border rounded-md border-[#ececec] p-3 min-h-[20vh]">
                                     <span class="text-base font-medium text-[#666]">{% trans "Action Required" %}
                                         ⚠️</span>
-                                    <div class="col-sm-12 col-md-12 col lg-12" id="dynamicRelatedLists{{key}}"></div>
+                                    <div class="col-sm-12 col-md-12 col-lg-12" id="dynamicRelatedLists{{key}}"></div>
                                 </div>
                             </div>
                         </div>

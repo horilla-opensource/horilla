@@ -73,6 +73,7 @@ class HolidayListView(HorillaListView):
 
     header_attrs = {
         "name": """ style="width:200px !important;" """,
+        "action": """ style="width:180px !important;" """,
     }
 
     sortby_mapping = [

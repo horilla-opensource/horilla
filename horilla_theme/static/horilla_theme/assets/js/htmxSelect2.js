@@ -4013,6 +4013,21 @@ $(document).ready(function () {
 });
 
 
+// Reliable, delegated modal opener.
+// The only other place that opens `oh-modal-toggle` modals is inside an
+// `htmx:afterSettle` handler (further down this file), which is fragile:
+// it re-binds per-swap, only reaches elements whose swap target has an id,
+// and is skipped entirely if an earlier afterSettle handler throws. A single
+// document-level delegated handler guarantees the modal opens for any current
+// or htmx-loaded toggle (e.g. the document-request pipeline edit action).
+$(document).on("click", "[data-toggle='oh-modal-toggle']", function () {
+    var modalId = $(this).attr("data-target");
+    if (modalId) {
+        $(modalId).addClass("oh-modal--show");
+    }
+});
+
+
 $(document).on("htmx:afterSettle", function (event) {
     var target = $(event.target);
     target.find(".oh-select").select2({ width: '100%' });

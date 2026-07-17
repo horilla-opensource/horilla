@@ -7,8 +7,8 @@ function deleteItem(url, message) {
         text: message,
         icon: "question",
         showCancelButton: true,
-        confirmButtonColor: "green",
-        cancelButtonColor: "#d33",
+        confirmButtonColor: "#d33",
+        cancelButtonColor: "#6c757d",
         confirmButtonText: "Confirm"
     }).then((result) => {
         if (result.isConfirmed) {

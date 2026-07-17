@@ -1,4 +1,5 @@
-{% load i18n static i18n %}
+{% load i18n static horillafilters %}
+{% get_company as theme_obj %}
 {% include 'filter_tags.html' %}
 
 <style>
@@ -90,7 +91,7 @@
 
                                     <a
                                         href="#"
-                                        class="w-full text-dark-600 flex justify-start text-left px-3 py-1 hover:text-primary-600 transition duration-300"
+                                        class="w-full text-danger flex justify-start text-left px-3 py-1 hover:text-danger-dark transition duration-300"
                                         @click.prevent="submitDeleteFaq({{ faq.id }}); menu=false"
                                     >{% trans 'Delete' %}</a>
                                 </form>

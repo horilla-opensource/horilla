@@ -60,6 +60,10 @@ class TaskListView(HorillaListView):
     filter_class = TaskAllFilter
     action_method = "actions"
 
+    header_attrs = {
+        "action": """style="width:150px !important;" """,
+    }
+
     def __init__(self, **kwargs: Any) -> None:
         super().__init__(**kwargs)
         self.view_id = "task-list-container"

@@ -23,7 +23,7 @@
                 <div>{% trans "Document" %}</div>
                 <div>{% trans "Status" %}</div>
                 <div>{% trans "Date" %}</div>
-                <div>{% trans "Actions" %}</div>
+                <div class="text-center">{% trans "Actions" %}</div>
             </div>
 
             {% for document in documents %}
@@ -104,12 +104,12 @@
                         {% endif %}
                     </div>
 
-                    <div class="flex gap-1 w-full">
+                    <div class="flex gap-1 items-center justify-center">
                         {% if document.document %}
                             {% if perms.horilla_document.change_documentrequest %}
                                 {% if document.status == "requested" %}
                                     <button
-                                        class="oh-btn flex-1 text-base bg-primary-300 text-dark-700 hover:bg-success hover:text-white hover:scale-105"
+                                        class="oh-btn oh-btn--sq-sm bg-primary-300 text-dark-700 hover:bg-success hover:text-white"
                                         hx-get="{% url 'document-approve' document.id %}"
                                         title="{% trans 'Approve' %}"
                                         onclick="event.stopPropagation()"
@@ -117,7 +117,7 @@
                                         <ion-icon class="me-1" name="checkmark-outline"></ion-icon>
                                     </button>
                                     <button
-                                        class="oh-btn flex-1 text-base bg-primary-300 text-dark-700 hover:bg-danger hover:text-white hover:scale-105 transition"
+                                        class="oh-btn oh-btn--sq-sm bg-danger text-white hover:bg-danger-dark transition"
                                         hx-get="{% url 'document-reject' document.id %}"
                                         hx-target="#genericModalBody"
                                         data-toggle="oh-modal-toggle"
@@ -129,7 +129,7 @@
                                     </button>
                                 {% elif document.status == "approved" %}
                                     <button
-                                        class="oh-btn flex-1 text-base bg-primary-300 text-dark-700 hover:bg-success hover:text-white hover:scale-105 opacity-50 cursor-not-allowed"
+                                        class="oh-btn oh-btn--sq-sm bg-primary-300 text-dark-700 hover:bg-success hover:text-white opacity-50 cursor-not-allowed"
                                         title="{% trans 'Approve' %}"
                                         onclick="event.stopPropagation()"
                                     >
@@ -137,7 +137,7 @@
                                     </button>
 
                                     <button
-                                        class="oh-btn flex-1 text-base bg-primary-300 text-dark-700 hover:bg-danger hover:text-white hover:scale-105 transition"
+                                        class="oh-btn oh-btn--sq-sm bg-danger text-white hover:bg-danger-dark transition"
                                         hx-get="{% url 'document-reject' document.id %}"
                                         hx-target="#genericModalBody"
                                         data-toggle="oh-modal-toggle"
@@ -149,7 +149,7 @@
                                     </button>
                                 {% else %}
                                     <button
-                                        class="oh-btn flex-1 text-base bg-primary-300 text-dark-700 hover:bg-success hover:text-white hover:scale-105"
+                                        class="oh-btn oh-btn--sq-sm bg-primary-300 text-dark-700 hover:bg-success hover:text-white"
                                         hx-get="{% url 'document-approve' document.id %}"
                                         title="{% trans 'Approve' %}"
                                         onclick="event.stopPropagation()"
@@ -157,7 +157,7 @@
                                         <ion-icon class="me-1" name="checkmark-outline"></ion-icon>
                                     </button>
                                     <button
-                                        class="oh-btn flex-1 text-base bg-primary-300 text-dark-700 hover:bg-danger hover:text-white hover:scale-105 transition opacity-50 cursor-not-allowed"
+                                        class="oh-btn oh-btn--sq-sm bg-danger text-white hover:bg-danger-dark transition opacity-50 cursor-not-allowed"
                                         title="{% trans 'Reject' %}"
                                         onclick="event.stopPropagation()"
                                     >
@@ -167,7 +167,7 @@
                             {% endif %}
                         {% else %}
                             <button
-                                class="oh-btn flex-1 text-base bg-primary-300 text-primary-600 hover:bg-primary-600 hover:text-white hover:scale-105 transition"
+                                class="oh-btn oh-btn--sq-sm bg-primary-300 text-brand-600 hover:bg-brand-600 hover:text-white transition"
                                 title="{% trans 'Upload Document' %}"
                                 hx-get="{% url 'file-upload' document.id %}"
                                 hx-target="#genericModalBody"
@@ -195,7 +195,7 @@
                                 {% csrf_token %}
                                 <button
                                     type="submit"
-                                    class="oh-btn text-base bg-primary-300 text-dark-500 hover:scale-105 hover:text-white hover:bg-danger transition"
+                                    class="oh-btn oh-btn--sq-sm bg-danger text-white hover:bg-danger-dark transition"
                                     title="{% trans 'Delete' %}"
                                 >
                                     <ion-icon class="me-1" name="trash-outline"></ion-icon>

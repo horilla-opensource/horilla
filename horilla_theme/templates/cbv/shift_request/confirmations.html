@@ -6,12 +6,12 @@
 </style>
 {% is_manager_of request.user instance as can_manage %}
 {% if perms.base.change_shiftrequest or can_manage %}
-    <div class="oh-btn-group w-100">
+    <div class="flex items-center justify-center gap-1">
         {% if instance.approved or instance.canceled %}
             <a
                 href="#"
                 title="{% trans 'Approve' %}"
-                class="w-24 px-4 py-2 bg-primary-600 text-white rounded-md text-xs flex items-center justify-center gap-2 hover:bg-primary-800 transition duration-300 oh-btn--disabled"
+                class="h-8 w-24 px-4 py-2 bg-success text-white rounded-md text-xs flex items-center justify-center gap-2 hover:bg-success-dark transition duration-300 oh-btn--disabled"
             >
                 <img
                     src="{% static 'horilla_theme/assets/img/icons/check.svg' %}"
@@ -25,7 +25,7 @@
                 href="#"
                 title="{% trans 'Approve' %}"
                 onclick="event.preventDefault(); event.stopPropagation(); shiftRequestRowApprove('{% url 'shift-request-approve' instance.id %}', '{% trans 'Do you want to approve this request?' %}')"
-                class="w-24 px-4 py-2 bg-primary-600 text-white rounded-md text-xs flex items-center justify-center gap-2 hover:bg-primary-800 transition duration-300"
+                class="h-8 w-24 px-4 py-2 bg-success text-white rounded-md text-xs flex items-center justify-center gap-2 hover:bg-success-dark transition duration-300"
                 style="cursor: pointer"
             >
                 <img
@@ -42,13 +42,13 @@
                 type="submit"
                 href="#"
                 title="{% trans 'Reject' %}"
-                class="w-24 px-4 py-2 bg-white rounded-md text-xs flex items-center justify-center gap-2 border border-primary-500 hover:border-primary-600 transition duration-300 oh-btn--disabled"
+                class="h-8 w-24 px-4 py-2 bg-danger text-white rounded-md text-xs flex items-center justify-center gap-2 hover:bg-danger-dark transition duration-300 oh-btn--disabled"
             >
                 <img
                     src="{% static 'horilla_theme/assets/img/icons/close-circle-icon-original.svg' %}"
                     alt="{% trans 'Reject' %}"
                     width="13"
-                    class="mt-[-1px]"
+                    class="filter brightness-0 invert"
                 >
             </a>
         {% else %}
@@ -56,14 +56,14 @@
                 href="#"
                 title="{% trans 'Reject' %}"
                 onclick="event.preventDefault(); event.stopPropagation(); shiftRequestRowApprove('{% url 'shift-request-cancel' instance.id %}', '{% trans 'Do you want to reject this request?' %}')"
-                class="w-24 px-4 py-2 bg-white rounded-md text-xs flex items-center justify-center gap-2 border border-primary-500 hover:border-primary-600 transition duration-300"
+                class="h-8 w-24 px-4 py-2 bg-danger text-white rounded-md text-xs flex items-center justify-center gap-2 hover:bg-danger-dark transition duration-300"
                 style="cursor: pointer"
             >
                 <img
                     src="{% static 'horilla_theme/assets/img/icons/close-circle-icon-original.svg' %}"
                     alt="{% trans 'Reject' %}"
                     width="13"
-                    class="mt-[-1px]"
+                    class="filter brightness-0 invert"
                 >
             </a>
         {% endif %}

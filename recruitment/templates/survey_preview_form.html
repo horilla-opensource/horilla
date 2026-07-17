@@ -1,6 +1,6 @@
-{% load i18n %}{% load widget_tweaks %}
-{% load attendancefilters %}
+{% load i18n %}{% load widget_tweaks %} {% load attendancefilters %} {% load horillafilters %}
 {% load static %}
+{% get_company as theme_obj %}
 <style>
     .question-container {
         padding: 0px;
@@ -296,7 +296,7 @@
         $('.pb-5').sortable({
             start: function (event, ui) {
                 ui.item.css({
-                    "border": "1px solid hsl(8, 77%, 56%)",
+                    "border": "1px solid {{ theme_obj.primary_600|default:'hsl(8, 77%, 56%)' }}",
                     "transform": "scale(1.01)",
                     "cursor": "grabbing"
                 });

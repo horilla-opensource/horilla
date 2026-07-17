@@ -114,7 +114,7 @@ class GmeetCredentialListView(views.HorillaListView):
             "action": _trans("Edit"),
             "icon": "create-outline",
             "attrs": """
-                class="oh-btn oh-btn--light-bkg w-50"
+                class="oh-btn oh-btn--light-bkg oh-btn--sq-sm"
                 data-toggle="oh-modal-toggle"
                 data-target="#genericModal"
                 hx-get="{get_update_url}"
@@ -125,7 +125,7 @@ class GmeetCredentialListView(views.HorillaListView):
             "action": _trans("Delete"),
             "icon": "trash",
             "attrs": """
-                class="oh-btn oh-btn--light-bkg w-50 text-danger"
+                class="oh-btn oh-btn--danger oh-btn--sq-sm"
                 hx-confirm="Are you sure you want to delete this credential?"
                 hx-post="{get_delete_url}"
                 hx-swap="outerHTML swap:0.5s"
@@ -139,7 +139,7 @@ class GmeetCredentialListView(views.HorillaListView):
         data-column = ""
     """
     header_attrs = {
-        "action": "style='width:100px;'",
+        "action": "style='width:150px !important;'",
         "get_redirect_url": "style='width:300px !important;'",
     }
 

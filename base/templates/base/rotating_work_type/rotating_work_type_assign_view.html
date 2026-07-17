@@ -151,7 +151,7 @@
                                             <form hx-confirm="{% trans 'Do you want to archive this rotating work type assign?' %}"
                                                 hx-get="{% url 'rotating-work-type-assign-archive' rwork_type.id %}?{{pd}}"
                                                 hx-target="#view-container" style="width:100%">
-                                                <button class="oh-btn oh-btn--danger-outline oh-btn--light-bkg w-100"
+                                                <button class="oh-btn oh-btn--danger w-100"
                                                     title="{% trans 'Archive' %}">
                                                     <ion-icon name="archive"></ion-icon>
                                                 </button>
@@ -160,7 +160,7 @@
                                             <form hx-confirm="{% trans 'Do you want to un-archive this rotating work type assign?' %}"
                                                 hx-get="{% url 'rotating-work-type-assign-archive' rwork_type.id %}?{{pd}}"
                                                 hx-target="#view-container" style="width:100%">
-                                                <button class="oh-btn oh-btn--danger-outline oh-btn--light-bkg w-100"
+                                                <button class="oh-btn oh-btn--danger w-100"
                                                     title="{% trans 'Un-Archive' %}">
                                                     <ion-icon name="archive"></ion-icon>
                                                 </button>
@@ -173,7 +173,7 @@
                                             hx-post="{% url 'rotating-work-type-assign-delete' rwork_type.id %}?{{pd}}"
                                             hx-target="#view-container" style="width:100%">
                                             {% csrf_token %}
-                                            <button type="submit" class="oh-btn oh-btn--danger-outline oh-btn--light-bkg w-100"
+                                            <button type="submit" class="oh-btn oh-btn--danger w-100"
                                                 title="{% trans 'Remove' %}">
                                                 <ion-icon name="trash-outline"></ion-icon>
                                             </button>

@@ -1,6 +1,7 @@
 {% extends "index.html" %}
-{% load static %}
+{% load static horillafilters %}
 {% block content %}
+{% get_company as theme_obj %}
 <meta name="csrf-token" content="{{ csrf_token }}">
 <style>
     .cancelled--dot{
@@ -51,7 +52,7 @@
             visibility: hidden;
             width: auto; /* Allow the tooltip width to adjust based on content */
             max-width: auto; /* Limit the maximum width of the tooltip to prevent it from overflowing */
-            background-color: hsl(8,77%,56%);
+            background-color: {{ theme_obj.primary_600|default:'hsl(8,77%,56%)' }};
             color: white;
             text-align: center;
             border-radius: 6px;

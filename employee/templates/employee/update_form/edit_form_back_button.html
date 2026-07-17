@@ -4,7 +4,7 @@
     <button
         type="button"
         title="{% trans 'Back' %}"
-        class="px-3 py-1 text-xs bg-primary-600 text-white rounded-full hover:bg-primary-800 transition duration-300 inline-flex items-center gap-2"
+        class="px-3 py-1 text-xs bg-white border border-dark-50 text-dark-200 rounded-full transition duration-300 inline-flex items-center gap-2"
         onclick="
             var navBar = document.getElementById('employeeListNavBar');
             var list = document.getElementById('listContainer');
@@ -32,7 +32,7 @@
     <a
         href="{% url 'employee-view' %}"
         title="{% trans 'Back' %}"
-        class="px-3 py-1 text-xs bg-primary-600 text-white rounded-full hover:bg-primary-800 transition duration-300 inline-flex items-center gap-2 text-decoration-none"
+        class="px-3 py-1 text-xs bg-white border border-dark-50 text-dark-200 rounded-full transition duration-300 inline-flex items-center gap-2 text-decoration-none"
     >
         <i class="fa-solid fa-arrow-left"></i>
         {% trans "Back" %}

@@ -2,7 +2,7 @@
 
 {% is_manager_of request.user instance as can_manage %}
 {% if perms.leave.change_leaverequest or can_manage or request.user|is_leave_approval_manager %}
-    <div class="oh-btn-group" onclick="event.stopPropagation()">
+    <div class="flex items-center justify-center gap-1" onclick="event.stopPropagation()">
         {% if instance.status == 'cancelled' %}
             {% if instance.end_date >= current_date %}
                 <button
@@ -12,7 +12,7 @@
                     hx-get="{% url 'request-cancel' instance.id %}"
                     hx-target="#rejectForm"
                     title="{% trans 'Approve cancellation request' %}"
-                    class="w-24 px-4 py-2 bg-primary-600 text-white rounded-md text-xs flex items-center justify-center gap-2 hover:bg-primary-800 transition duration-300"
+                    class="h-8 w-24 px-4 py-2 bg-success text-white rounded-md text-xs flex items-center justify-center gap-2 hover:bg-success-dark transition duration-300"
                 >
                     <img
                         src="{% static 'horilla_theme/assets/img/icons/check.svg' %}"
@@ -26,7 +26,7 @@
                     type="button"
                     href="#"
                     title="{% trans 'Approve cancellation request' %}"
-                    class="w-24 px-4 py-2 bg-primary-600 text-white rounded-md text-xs flex items-center justify-center gap-2 hover:bg-primary-800 transition duration-300 oh-btn--disabled"
+                    class="h-8 w-24 px-4 py-2 bg-success text-white rounded-md text-xs flex items-center justify-center gap-2 hover:bg-success-dark transition duration-300 oh-btn--disabled"
                 >
                     <img
                         src="{% static 'horilla_theme/assets/img/icons/check.svg' %}"
@@ -48,7 +48,7 @@
                         hx-confirm='{% trans "Do you really want to approve this request?" %}'
                     {% endif %}
                     title="{% trans 'Approve' %}"
-                    class="w-24 px-4 py-2 bg-primary-600 text-white rounded-md text-xs flex items-center justify-center gap-2 hover:bg-primary-800 transition duration-300"
+                    class="h-8 w-24 px-4 py-2 bg-success text-white rounded-md text-xs flex items-center justify-center gap-2 hover:bg-success-dark transition duration-300"
                 >
                     <img
                         src="{% static 'horilla_theme/assets/img/icons/check.svg' %}"
@@ -63,7 +63,7 @@
                     href="#"
                     onclick="event.preventDefault()"
                     title="{% trans 'Approve' %}"
-                    class="w-24 px-4 py-2 bg-primary-600 text-white rounded-md text-xs flex items-center justify-center gap-2 hover:bg-primary-800 transition duration-300 oh-btn--disabled"
+                    class="h-8 w-24 px-4 py-2 bg-success text-white rounded-md text-xs flex items-center justify-center gap-2 hover:bg-success-dark transition duration-300 oh-btn--disabled"
                 >
                     <img
                         src="{% static 'horilla_theme/assets/img/icons/check.svg' %}"
@@ -74,7 +74,7 @@
                 </a>
             {% endif %}
 
-            {% if instance.status != 'rejected' and instance.end_date >= current_date %}
+            {% if instance.status == 'requested' or instance.status != 'rejected' and instance.end_date >= current_date %}
                 <a
                     type="button"
                     data-toggle="oh-modal-toggle"
@@ -82,13 +82,13 @@
                     hx-get="{% url 'request-cancel' instance.id %}"
                     hx-target="#rejectForm"
                     title="{% trans 'Reject' %}"
-                    class="w-24 px-4 py-2 bg-primary-600 text-white rounded-md text-xs flex items-center justify-center gap-2 hover:bg-primary-800 transition duration-300"
+                    class="h-8 w-24 px-4 py-2 bg-danger text-white rounded-md text-xs flex items-center justify-center gap-2 hover:bg-danger-dark transition duration-300"
                 >
                     <img
                         src="{% static 'horilla_theme/assets/img/icons/close-circle-icon-original.svg' %}"
                         alt="{% trans 'Reject' %}"
                         width="13"
-                        class="mt-[-1px]"
+                        class="filter brightness-0 invert"
                     >
                 </a>
             {% else %}
@@ -97,13 +97,13 @@
                     href="#"
                     onclick="event.preventDefault()"
                     title="{% trans 'Reject' %}"
-                    class="w-24 px-4 py-2 bg-primary-600 text-white rounded-md text-xs flex items-center justify-center gap-2 hover:bg-primary-800 transition duration-300 oh-btn--disabled"
+                    class="h-8 w-24 px-4 py-2 bg-danger text-white rounded-md text-xs flex items-center justify-center gap-2 hover:bg-danger-dark transition duration-300 oh-btn--disabled"
                 >
                     <img
                         src="{% static 'horilla_theme/assets/img/icons/close-circle-icon-original.svg' %}"
                         alt="{% trans 'Reject' %}"
                         width="13"
-                        class="mt-[-1px]"
+                        class="filter brightness-0 invert"
                     >
                 </a>
             {% endif %}

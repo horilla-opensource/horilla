@@ -39,6 +39,10 @@ SUBMENUS = [
         "menu": _("Candidates"),
         "redirect": reverse("candidate-view"),
         "accessibility": "recruitment.sidebar.candidates_accessibility",
+        # The candidate edit page (candidate-update/<id>/) is a sibling URL, not a
+        # sub-path of candidate-view/, so it needs an explicit prefix here for the
+        # sidebar's path-based active-link highlighting to match it.
+        "match_prefixes": ["/recruitment/candidate-update/"],
     },
     {
         "menu": _("Interview"),

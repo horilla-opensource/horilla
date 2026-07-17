@@ -19,17 +19,19 @@
                 hx-target="#projectTaskList{{project.id}}"
                 class="relative"
             >
-                <button
-                    onclick="event.stopPropagation()"
-                    class="oh-btn bg-gray-200 absolute right-16 top-3 z-50"
-                    title="{% trans 'View Project' %}"
-                    hx-target="#genericModalBody"
-                    data-target="#genericModal"
-                    data-toggle="oh-modal-toggle"
-                    hx-get="{% url 'project-detailed-view' project.id %}"
-                >
-                    <ion-icon name="eye-outline" role="img"></ion-icon>
-                </button>
+                <div class="absolute top-0 right-16 h-11 flex items-center z-50">
+                    <button
+                        onclick="event.stopPropagation()"
+                        class="oh-btn oh-btn--sq-sm bg-white border border-[#e6e6e6]"
+                        title="{% trans 'View Project' %}"
+                        hx-target="#genericModalBody"
+                        data-target="#genericModal"
+                        data-toggle="oh-modal-toggle"
+                        hx-get="{% url 'project-detailed-view' project.id %}"
+                    >
+                        <ion-icon name="eye-outline" role="img"></ion-icon>
+                    </button>
+                </div>
                 <div id="projectTaskList{{project.id}}"></div>
             </div>
         {% endfor %}

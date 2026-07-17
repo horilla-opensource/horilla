@@ -734,7 +734,7 @@ urlpatterns = [
     path(
         "employee-dashboard/api/kpi/",
         leave_dashboard.employee_kpi_data,
-        name="employee-dashboard-kpi",
+        name="leave-employee-dashboard-kpi",
     ),
     path(
         "employee-dashboard/api/balance/",

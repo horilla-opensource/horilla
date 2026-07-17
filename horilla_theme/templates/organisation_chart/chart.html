@@ -1,4 +1,5 @@
-{% load static i18n %}
+{% load static i18n horillafilters %}
+{% get_company as theme_obj %}
 
 <style>
     .genealogy-tree ul {
@@ -6,13 +7,13 @@
         position: relative;
         align-items: stretch;
         justify-content: center;
-        padding-top: 20px;
+        padding-top: 36px;
         padding-left: 0px;
     }
 
     .genealogy-tree li {
         position: relative;
-        padding: 20px 5px 0 5px;
+        padding: 36px 14px 0 14px;
         list-style-type: none;
         text-align: center;
     }
@@ -23,15 +24,20 @@
         top: 0;
         right: 50%;
         width: 50%;
-        height: 18px;
-        border-top: 2px solid #ccc;
+        height: 24px;
+        border-top: 2px solid #dfe2e8;
         content: '';
+    }
+
+    .dark .genealogy-tree li::before,
+    .dark .genealogy-tree li::after {
+        border-color: #3a3b42;
     }
 
     .genealogy-tree li::after {
         right: auto;
         left: 50%;
-        border-left: 2px solid #ccc;
+        border-left: 2px solid #dfe2e8;
     }
 
     .genealogy-tree li:only-child::after,
@@ -49,16 +55,12 @@
     }
 
     .genealogy-tree li:last-child::before {
-        border-right: 2px solid #ccc;
-        border-radius: 0 5px 0 0;
-        -webkit-border-radius: 0 5px 0 0;
-        -moz-border-radius: 0 5px 0 0;
+        border-right: 2px solid #dfe2e8;
+        border-radius: 0 8px 0 0;
     }
 
     .genealogy-tree li:first-child::after {
-        border-radius: 5px 0 0 0;
-        -webkit-border-radius: 5px 0 0 0;
-        -moz-border-radius: 5px 0 0 0;
+        border-radius: 8px 0 0 0;
     }
 
     .genealogy-tree ul ul::before {
@@ -66,110 +68,189 @@
         top: 0;
         left: 50%;
         width: 0;
-        height: 20px;
-        border-left: 2px solid #ccc;
+        height: 36px;
+        border-left: 2px solid #dfe2e8;
         content: '';
     }
 
     .genealogy-tree li a {
         display: inline-block;
-        min-width: 180px;
-        min-height: 120px;
-        border-radius: 10px;
-        color: #666;
-        font-size: 13px;
         text-decoration: none;
-        transition: 0.3s;
     }
 
+    /* --- Card --- */
     .member-view-box {
         display: flex;
         position: relative;
         flex-flow: column;
         align-items: center;
-        justify-content: center;
-        padding: 10px 10px;
-        border: 1px;
-        border-style: solid;
-        border-radius: 10px;
-        border-color: #ffb6ab;
-        background-color: #fff6e0;
-        text-align: center;
-    }
-
-    .genealogy-tree li > a .member-view-box span {
-        display: none;
-    }
-
-    .genealogy-tree li.has-children > a .member-view-box span {
-        display: block;
-    }
-
-    .has-children > a .member-view-box {
-        background-color: #ffe4e0;
-    }
-
-    .member-image {
-        position: relative;
-        width: 120px;
-        padding: 10px;
-    }
-
-    .member-image img {
-        z-index: 1;
-        width: 100px;
-        height: 100px;
-        border-radius: 6px;
+        justify-content: flex-start;
+        gap: 2px;
+        width: 176px;
+        padding: 18px 14px 20px;
+        border: 1px solid #e8e9ec;
+        border-radius: 14px;
         background-color: #fff;
+        box-shadow: 0 1px 2px rgba(20, 20, 30, 0.04);
+        text-align: center;
+        cursor: pointer;
+        transition: border-color 0.15s ease, box-shadow 0.15s ease;
+    }
+
+    .genealogy-tree li a:hover .member-view-box {
+        border-color: {{ theme_obj.primary_500|default:'#f3cfc4' }};
+        box-shadow: 0 10px 24px rgba(20, 20, 30, 0.12);
+    }
+
+    .genealogy-tree > ul > li > a .member-view-box {
+        border-color: {{ theme_obj.primary_500|default:'#f2b7a6' }};
+        box-shadow: 0 6px 18px rgba(20, 20, 30, 0.14);
+    }
+
+    .member-avatar {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        width: 48px;
+        height: 48px;
+        margin-bottom: 10px;
+        border-radius: 50%;
+        color: #fff;
+        font-size: 15px;
+        font-weight: 600;
+        letter-spacing: 0.2px;
+    }
+
+    .genealogy-tree > ul > li .member-avatar {
+        box-shadow: 0 0 0 3px {{ theme_obj.primary_400|default:'#fde3da' }};
     }
 
     .member-header {
-        color: #333;
+        overflow: hidden;
+        width: 100%;
+        color: #21252b;
         font-weight: 600;
-        font-size: 16px;
+        font-size: 14px;
+        text-overflow: ellipsis;
+        white-space: nowrap;
     }
 
     .member-footer {
+        width: 100%;
         text-align: center;
     }
 
     .member-footer div.name {
-        margin-bottom: 15px;
-        color: #666;
+        overflow: hidden;
+        margin-top: 2px;
+        color: #8a8f98;
         font-weight: 500;
-        font-size: 13px;
+        font-size: 12px;
+        text-overflow: ellipsis;
+        white-space: nowrap;
+    }
+
+    /* --- Expand / collapse control --- */
+    .genealogy-tree li > a .expand-toggle {
+        display: none;
+    }
+
+    .genealogy-tree li.has-children > a .expand-toggle {
+        display: flex;
+    }
+
+    .expand-toggle {
+        position: absolute;
+        bottom: -14px;
+        left: 50%;
+        z-index: 2;
+        align-items: center;
+        justify-content: center;
+        width: 26px;
+        height: 26px;
+        transform: translateX(-50%);
+        transition: background-color 0.15s ease, color 0.15s ease, transform 0.15s ease;
+        border: 1px solid #e8e9ec;
+        border-radius: 50%;
+        background: #fff;
+        box-shadow: 0 2px 6px rgba(20, 20, 30, 0.08);
+        color: #9aa0a9;
+        font-size: 15px;
+    }
+
+    .genealogy-tree li a:hover .expand-toggle {
+        border-color: {{ theme_obj.primary_500|default:'#f2b7a6' }};
+        color: {{ theme_obj.primary_600|default:'#e54f38' }};
+    }
+
+    .expand-toggle.upArrow {
+        transform: translateX(-50%) rotate(180deg);
+    }
+
+    /* Counter-rotate the badge so it stays upright when its rotated parent flips */
+    .expand-toggle.upArrow .report-count {
+        transform: rotate(-180deg);
+    }
+
+    .report-count {
+        position: absolute;
+        top: -8px;
+        right: -6px;
+        min-width: 17px;
+        height: 17px;
+        padding: 0 4px;
+        border-radius: 999px;
+        background: {{ theme_obj.primary_600|default:'#e54f38' }};
+        color: #fff;
+        font-size: 10px;
+        transition: transform 0.15s ease;
+        font-weight: 700;
+        line-height: 17px;
+        text-align: center;
+    }
+
+    /* --- Search highlighting --- */
+    .genealogy-tree li.hidden {
+        display: none !important;
+    }
+
+    .genealogy-tree li.matched > a .member-view-box {
+        border-color: {{ theme_obj.primary_600|default:'#e54f38' }};
+        box-shadow: 0 0 0 3px {{ theme_obj.primary_400|default:'#fbe0d8' }};
+    }
+
+    .genealogy-tree li.retained:not(.matched) > a .member-view-box {
+        opacity: 0.55;
+    }
+
+    /* --- Canvas / viewport --- */
+    .chart-shell {
+        position: relative;
     }
 
     .canvas-wrap {
         display: flex;
         position: relative;
         align-items: flex-start;
-        justify-content: center;
+        justify-content: flex-start;
         height: calc(100vh - 230px);
         overflow-x: auto;
         overflow-y: auto;
-        border-radius: 10px;
-        background: #f7f7f7;
+        border: 1px solid #ececef;
+        border-radius: 14px;
+        background-color: #fbfbfc;
+        background-image: radial-gradient(circle, #e3e5e9 1px, transparent 1px);
+        background-position: -10px -10px;
+        background-size: 24px 24px;
     }
 
     .canvas {
         position: relative;
+        min-width: 100%;
+        padding: 40px 60px 60px;
         transform: translate(var(--tx), var(--ty)) scale(var(--scale));
         transform-origin: 0 0;
         transition: transform 0s;
-    }
-
-    .node {
-        position: absolute;
-        min-width: 140px;
-        min-height: 72px;
-        padding: 12px 14px;
-        border: 1px solid #e5e7eb;
-        border-radius: 10px;
-        background: #fff;
-        box-shadow: 0 4px 14px rgba(0, 0, 0, 0.06);
-        cursor: move;
-        user-select: none;
     }
 
     .canvas-wrap.hand {
@@ -180,33 +261,63 @@
         cursor: grabbing;
     }
 
-    .upArrow {
-        transform: rotate(180deg);
-    }
-    .buttons {
-        position: absolute;
-        top: 210px;
-        right: 2%;
+    .org-empty-state {
+        display: flex;
+        flex-flow: column;
+        align-items: center;
+        justify-content: center;
+        gap: 6px;
+        padding: 80px 20px;
+        color: #9aa0a9;
+        font-size: 13px;
     }
 
-    .buttons .zoomIn, .buttons .zoomOut {
-        margin-bottom: 5px;
-        padding: 7px;
-        border: 1px solid #000;
-        border-style: none;
-        border-radius: 8px;
-        background-color: #444;
+    .org-empty-state ion-icon {
+        margin-bottom: 4px;
+        font-size: 28px;
+    }
+
+    /* --- Floating controls --- */
+    .buttons {
+        position: absolute;
+        top: 16px;
+        right: 20px;
+        display: flex;
+        flex-flow: column;
+        align-items: center;
+        gap: 8px;
+        z-index: 3;
+    }
+
+    .buttons .zoomIn,
+    .buttons .zoomOut {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        width: 34px;
+        height: 34px;
+        border: 1px solid #2c2c33;
+        border-radius: 9px;
+        background-color: #26262b;
         color: #fff;
+        font-size: 13px;
+        transition: background-color 0.15s ease;
+    }
+
+    .buttons .zoomIn:hover,
+    .buttons .zoomOut:hover {
+        background-color: {{ theme_obj.primary_600|default:'#e54f38' }};
+        border-color: {{ theme_obj.primary_600|default:'#e54f38' }};
     }
 
     .direction-controls {
         position: relative;
-        width: 74px;
-        height: 74px;
+        width: 76px;
+        height: 76px;
         overflow: hidden;
-        border: 1px solid #dee2e6;
-        border-radius: 8px;
-        background: #444;
+        border: 1px solid #2c2c33;
+        border-radius: 12px;
+        background: #26262b;
     }
 
     .dir-btn {
@@ -216,69 +327,132 @@
         justify-content: center;
         border: none;
         background: transparent;
-        color: #495057;
-        color: #fff;
-        font-weight: bold;
-        font-family: monospace;
+        color: #d8d9dc;
+        font-size: 15px;
         cursor: pointer;
-        transition: all 0.15s ease;
+        transition: background-color 0.15s ease, color 0.15s ease;
     }
 
     .dir-btn:hover {
-        background: rgba(233, 236, 239, 0.7);
-        color: #212529;
+        background: {{ theme_obj.primary_600|default:'#e54f38' }};
+        color: #fff;
     }
 
     .dir-btn:active {
-        background: rgba(222, 226, 230, 0.8);
+        background: {{ theme_obj.primary_600|default:'#e54f38' }};
     }
 
     .dir-btn.up {
-        top: 0;
-        left: 25px;
+        top: 1px;
+        left: 26px;
         width: 24px;
         height: 25px;
+        border-radius: 6px 6px 0 0;
     }
 
     .dir-btn.left {
-        top: 25px;
-        left: 0;
+        top: 26px;
+        left: 1px;
         width: 25px;
         height: 24px;
+        border-radius: 6px 0 0 6px;
     }
 
     .dir-btn.right {
-        top: 25px;
-        right: 0;
+        top: 26px;
+        right: 1px;
         width: 25px;
         height: 24px;
+        border-radius: 0 6px 6px 0;
     }
 
     .dir-btn.down {
-        bottom: 0;
-        left: 25px;
+        bottom: 1px;
+        left: 26px;
         width: 24px;
         height: 25px;
+        border-radius: 0 0 6px 6px;
+    }
+
+    /* --- Dark mode --- */
+    .dark .genealogy-tree ul ul::before {
+        border-color: #3a3b42;
+    }
+
+    .dark .canvas-wrap {
+        border-color: #2c2d33;
+        background-color: #1c1c20;
+        background-image: radial-gradient(circle, #2f3037 1px, transparent 1px);
+    }
+
+    .dark .member-view-box {
+        border-color: #34353c;
+        background-color: #242429;
+        box-shadow: 0 1px 2px rgba(0, 0, 0, 0.25);
+    }
+
+    .dark .genealogy-tree li a:hover .member-view-box {
+        border-color: #6b3327;
+        box-shadow: 0 10px 24px rgba(0, 0, 0, 0.35);
+    }
+
+    .dark .genealogy-tree > ul > li > a .member-view-box {
+        border-color: #7a3b2c;
+        box-shadow: 0 6px 18px rgba(0, 0, 0, 0.4);
+    }
+
+    .dark .genealogy-tree > ul > li .member-avatar {
+        box-shadow: 0 0 0 3px #402620;
+    }
+
+    .dark .member-header {
+        color: #f2f1ef;
+    }
+
+    .dark .member-footer div.name {
+        color: #9a9ba3;
+    }
+
+    .dark .expand-toggle {
+        border-color: #3a3b42;
+        background: #2b2c32;
+        color: #9a9ba3;
+    }
+
+    .dark .genealogy-tree li a:hover .expand-toggle {
+        border-color: #7a3b2c;
+        color: #ff8a65;
+    }
+
+    .dark .genealogy-tree li.matched > a .member-view-box {
+        border-color: #ff8a65;
+        box-shadow: 0 0 0 3px #4a2c22;
+    }
+
+    .dark .org-empty-state {
+        color: #7d7e86;
     }
 </style>
 
-<div class="canvas-wrap" id="viewport">
-    <div class="canvas" id="canvas" style="--tx: 0px; --ty: 0px; --scale: 1">
-        <div class="genealogy-body genealogjy-scroll">
-            <div class="genealogy-tree" id="org-tree"></div>
+<div class="chart-shell">
+    <div class="canvas-wrap" id="viewport">
+        <div class="canvas" id="canvas" style="--tx: 0px; --ty: 0px; --scale: 1">
+            <div class="genealogy-body genealogjy-scroll">
+                <div class="genealogy-tree" id="org-tree"></div>
+            </div>
         </div>
     </div>
-</div>
 
-<div class="buttons">
-    <button class="zoomOut cursor-zoom-out"><i class="fa fa-search-minus" aria-hidden="true"></i></button>
-    <button class="zoomIn cursor-zoom-in"><i class="fa fa-search-plus" aria-hidden="true"></i></button>
+    <div class="buttons">
+        <button class="zoomIn cursor-zoom-in" title="{% trans 'Zoom in' %}"><i class="fa fa-search-plus" aria-hidden="true"></i></button>
+        <button class="zoomOut cursor-zoom-out" title="{% trans 'Zoom out' %}"><i class="fa fa-search-minus" aria-hidden="true"></i></button>
 
-    <div class="direction-controls text-2xl">
-        <button class="dir-btn up"><ion-icon name="chevron-up-outline"></ion-icon></button>
-        <button class="dir-btn left"><ion-icon name="chevron-back-outline"></ion-icon></button>
-        <button class="dir-btn right"><ion-icon name="chevron-forward-outline"></ion-icon></button>
-        <button class="dir-btn down"><ion-icon name="chevron-down-outline"></ion-icon></button>
+        <div class="direction-controls">
+            <button class="dir-btn up" title="{% trans 'Pan up' %}"><i class="fa fa-chevron-up" aria-hidden="true"></i></button>
+            <button class="dir-btn left" title="{% trans 'Pan left' %}"><i class="fa fa-chevron-left" aria-hidden="true"></i></button>
+            <button class="dir-btn right" title="{% trans 'Pan right' %}"><i class="fa fa-chevron-right" aria-hidden="true"></i></button>
+            <button class="dir-btn down" title="{% trans 'Pan down' %}"><i class="fa fa-chevron-down" aria-hidden="true"></i></button>
+        </div>
     </div>
 </div>
 
@@ -287,21 +461,49 @@
 <script>
     var orgData = JSON.parse($("#chart-data").text());
 
+    // Deterministic, name-based avatar color so the same person always gets the same color
+    // without depending on an external avatar service.
+    var AVATAR_PALETTE = [
+    	"#6366f1", "#0ea5e9", "#14b8a6", "#22c55e", "#a855f7",
+    	"#ec4899", "#f59e0b", "#84cc16", "#06b6d4", "#8b5cf6",
+    ];
+
+    function colorForName(name) {
+    	let hash = 0;
+    	for (let i = 0; i < name.length; i++) {
+    		hash = (hash << 5) - hash + name.charCodeAt(i);
+    		hash |= 0;
+    	}
+    	return AVATAR_PALETTE[Math.abs(hash) % AVATAR_PALETTE.length];
+    }
+
+    function initialsForName(name) {
+    	const parts = name.trim().split(/\s+/);
+    	const first = parts[0] ? parts[0][0] : "";
+    	const last = parts.length > 1 ? parts[parts.length - 1][0] : "";
+    	return (first + last).toUpperCase();
+    }
+
     // Function to create a tree node
     function createNode(person) {
     	const hasChildren = person.children && person.children.length > 0;
+    	const reportCount = hasChildren ? person.children.length : 0;
 
     	return `
                 <li class="flex-1 flex flex-col items-center justify-start ${
     				hasChildren ? "has-children" : ""
     			}">
-                    <a class="block" href="#" onclick="event.preventDefault()">
+                    <a class="block" href="#">
                         <div class="member-view-box relative h-full">
+                            <div class="member-avatar" style="background-color:${colorForName(person.name)}">${initialsForName(person.name)}</div>
                             <div class="member-header">${person.name}</div>
                             <div class="member-footer">
                                 <div class="name">${person.title}</div>
                             </div>
-							<span class="absolute bottom-[-10px] left-0 right-0 text-xl"><ion-icon name="chevron-down-outline"></ion-icon></span>
+							<span class="expand-toggle">
+								<ion-icon name="chevron-down-outline"></ion-icon>
+								${reportCount > 1 ? `<span class="report-count">${reportCount}</span>` : ""}
+							</span>
                         </div>
                     </a>
                     ${hasChildren ? createChildrenList(person.children) : ""}
@@ -332,8 +534,31 @@
     // Initialize the tree
     function initializeTree() {
     	const treeContainer = document.getElementById("org-tree");
+    	if (!orgData || !orgData.name) {
+    		treeContainer.innerHTML = `
+                <div class="org-empty-state">
+                    <ion-icon name="people-outline"></ion-icon>
+                    <div>{% trans "No organization data available" %}</div>
+                </div>
+            `;
+    		return;
+    	}
     	treeContainer.innerHTML = buildOrgTree(orgData);
     	setupTreeBehavior();
+    	centerTree();
+    }
+
+    // Horizontally center the rendered tree inside the viewport on first load,
+    // while keeping it fully pannable/scrollable in both directions.
+    function centerTree() {
+    	const wrap = document.getElementById("viewport");
+    	const canvas = document.getElementById("canvas");
+    	requestAnimationFrame(() => {
+    		const overflowX = canvas.scrollWidth - wrap.clientWidth;
+    		if (overflowX > 0) {
+    			wrap.scrollLeft = overflowX / 2;
+    		}
+    	});
     }
 
     // Setup tree expand/collapse behavior
@@ -351,8 +576,9 @@
     	$(".genealogy-tree li .member-view-box")
     		.off("click")
     		.on("click", function (e) {
+    			e.preventDefault();
     			const $children = $(this).closest("li").children("ul");
-    			$(this).find("span").toggleClass("upArrow");
+    			$(this).find(".expand-toggle").toggleClass("upArrow");
 
     			if ($children.length) {
     				if ($children.is(":visible")) {
@@ -537,20 +763,20 @@
     		);
     	});
 
-    	$matched.addClass("matched");
+    	$matched.closest("li").addClass("matched");
 
     	$matched
+    		.closest("li")
+    		.addClass("retained")
     		.parents("li")
     		.addClass("retained")
     		.each(function () {
-    			$(this).parents("ul").addClass("active");
-    			$(this).parents("ul").slideDown("fast").addClass("active");
+    			$(this).children("ul").addClass("active").show();
     		});
 
     	$tree
     		.find("li")
     		.not(".retained")
-    		.not($matched.closest("li"))
     		.addClass("hidden");
     }
 

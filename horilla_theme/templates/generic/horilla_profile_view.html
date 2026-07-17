@@ -53,7 +53,7 @@
                                             id="candidateBackButton"
                                             type="button"
                                             title="{% trans 'Back' %}"
-                                            class="px-3 py-1 text-xs bg-primary-600 text-white rounded-full hover:bg-primary-800 transition duration-300 flex items-center gap-2"
+                                            class="px-3 py-1 text-xs bg-white border border-dark-50 text-dark-200 rounded-full transition duration-300 flex items-center gap-2"
                                             onclick="candidateProfileGoBack()"
                                             style="display: none"
                                         >
@@ -115,7 +115,7 @@
                                         <button
                                             type="button"
                                             title="{% trans 'Back' %}"
-                                            class="px-3 py-1 text-xs bg-primary-600 text-white rounded-full hover:bg-primary-800 transition duration-300 flex items-center gap-2"
+                                            class="px-3 py-1 text-xs bg-white border border-dark-50 text-dark-200 rounded-full transition duration-300 flex items-center gap-2"
                                             onclick="var navBar = document.getElementById('employeeListNavBar');
 											var list = document.getElementById('listContainer');
 											if (navBar && list) {
@@ -243,11 +243,38 @@
                         </div>
                     </div>
                 </div>
-                {% if request.resolver_match.url_name != "candidate-view" and request.resolver_match.url_name != "candidate-view-individual" %}
-                    <div class="relative">
-                        <div class="oh-sticky-dropdown--header absolute right-[15px] top-[5px]" style="z-index: 13">
-                            <div class="oh-dropdown" x-data="{open: false}">
-                                <button class="oh-sticky-dropdown_btn" @click="open = !open">
+                <div class="flex items-start gap-2">
+                    <ul class="usertablist flex-1">
+                        {% for tab in visible_tabs %}
+                            {% if not tab.accessibility or tab.accessibility|accessibility:instance %}
+                                <li>
+                                    <button
+                                        onclick="$('#{{view_id}} li button.active').removeClass('active'); $(this).addClass('active')"
+                                        data-url="{{tab.url|format:instance}}"
+                                        hx-get="{{tab.url|format:instance}}"
+                                        hx-target="#{{view_id}}profileTab"
+                                        data-tab="{{tab.title}}"
+                                        class="{% if forloop.counter == 1 and not active_target %} active {% endif %}"
+                                    >
+                                        {{ tab.title }}
+                                    </button>
+                                    <span
+                                        hx-get="{{tab.url|format:instance}}"
+                                        hx-target="#{{view_id}}profileTab"
+                                    >
+                                    </span>
+                                </li>
+                            {% endif %}
+                        {% endfor %}
+                    </ul>
+                    {% if request.resolver_match.url_name != "candidate-view" and request.resolver_match.url_name != "candidate-view-individual" %}
+                        <div class="oh-dropdown shrink-0" x-data="{open: false}" style="z-index: 13">
+                            <button
+                                type="button"
+                                class="w-8 h-8 flex items-center justify-center rounded-full bg-white text-primary-600 shadow-card hover:bg-primary-600 hover:text-white transition duration-300"
+                                title="{% trans 'Manage Tabs' %}"
+                                @click="open = !open"
+                            >
                                     <ion-icon
                                         name="ellipsis-vertical-sharp"
                                         role="img"
@@ -265,33 +292,9 @@
                                 >
                                     {{ toggle_form.as_list }}
                                 </div>
-                            </div>
                         </div>
-                    </div>
-                {% endif %}
-                <ul class="usertablist">
-                    {% for tab in visible_tabs %}
-                        {% if not tab.accessibility or tab.accessibility|accessibility:instance %}
-                            <li>
-                                <button
-                                    onclick="$('#{{view_id}} li button.active').removeClass('active'); $(this).addClass('active')"
-                                    data-url="{{tab.url|format:instance}}"
-                                    hx-get="{{tab.url|format:instance}}"
-                                    hx-target="#{{view_id}}profileTab"
-                                    data-tab="{{tab.title}}"
-                                    class="{% if forloop.counter == 1 and not active_target %} active {% endif %}"
-                                >
-                                    {{ tab.title }}
-                                </button>
-                                <span
-                                    hx-get="{{tab.url|format:instance}}"
-                                    hx-target="#{{view_id}}profileTab"
-                                >
-                                </span>
-                            </li>
-                        {% endif %}
-                    {% endfor %}
-                </ul>
+                    {% endif %}
+                </div>
             </div>
 
             <div class="bg-white rounded-md shadow-card p-3 mb-5 lg:mb-0">

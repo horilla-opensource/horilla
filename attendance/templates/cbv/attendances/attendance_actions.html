@@ -4,7 +4,7 @@
 {% is_manager_of request.user instance as can_manage %}
 {% with can_change=perms.attendance.change_attendance  can_delete=perms.attendance.delete_attendance %}
     {% if can_change or can_delete or can_manage %}
-        <div class="oh-btn-group">
+        <div class="flex items-center justify-center gap-1">
             {% if can_change or can_manage %}
                 <a
                     hx-get="{% url 'attendance-update' instance.id %}?instance_ids={{instance.ordered_ids}}"
@@ -13,7 +13,7 @@
                     hx-swap="innerHTML"
                     data-toggle="oh-modal-toggle"
                     data-target="#genericModal"
-                    class="oh-btn oh-btn--light-bkg w-50"
+                    class="oh-btn oh-btn--light-bkg oh-btn--sq-sm"
                     title="{% trans 'Edit' %}"
                 >
                     <ion-icon name="create-outline"></ion-icon>
@@ -24,12 +24,11 @@
                     hx-post="{% url 'attendance-delete' instance.id %}"
                     onclick="event.stopPropagation()"
                     hx-swap="none"
-                    class="w-50"
                 >
                     {% csrf_token %}
                     <button
                         type="submit"
-                        class="oh-btn oh-btn--danger-outline oh-btn--light-bkg w-100"
+                        class="oh-btn oh-btn--danger oh-btn--sq-sm"
                         title="{% trans 'Remove' %}"
                         onclick="return confirm('{% trans "Are you sure want to delete this attendance?" %}')"
                     >

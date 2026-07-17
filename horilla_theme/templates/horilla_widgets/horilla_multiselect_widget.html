@@ -1,4 +1,5 @@
-{% load i18n %}
+{% load i18n horillafilters %}
+{% get_company as theme_obj %}
 <div id="{{section_id}}">
     <style>
         .oh-modal__close-custom {
@@ -56,7 +57,7 @@
             padding-left: 10px !important;
         }
         .oh-sticky-table__tr--selected {
-            background: #ff450017 !important;
+            background: {{ theme_obj.primary_600|default:"#ff4500" }}17 !important;
         }
 
         .avatars {

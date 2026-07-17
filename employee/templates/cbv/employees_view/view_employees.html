@@ -156,7 +156,7 @@
       </button>
       <div class="oh-modal__dialog-body p-0 pt-2" id="employeeExportModalBody">
         <form
-          action="{%url 'work-info-export' %}"
+          action="{%url 'employee-export' %}"
           method="get"
           onsubmit="event.stopPropagation();$(this).parents().find('.oh-modal--show').last().toggleClass('oh-modal--show');"
           id="employeeExportForm"
@@ -303,8 +303,8 @@
         text: "All non-active contracts of the employee will also be deleted. Do you want to continue ?",
         icon: "question",
         showCancelButton: true,
-        confirmButtonColor: "green",
-        cancelButtonColor: "#d33",
+        confirmButtonColor: "#d33",
+        cancelButtonColor: "#6c757d",
         confirmButtonText: "Confirm"
     }).then((result) => {
         if (result.isConfirmed) {

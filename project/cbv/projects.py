@@ -175,6 +175,10 @@ class ProjectsList(HorillaListView):
         if self.request.user.is_superuser:
             self.action_method = "actions"
 
+    header_attrs = {
+        "action": """style="width:150px !important;" """,
+    }
+
     @cached_property
     def columns(self):
         get_field = self.model()._meta.get_field

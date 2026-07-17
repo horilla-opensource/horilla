@@ -2,7 +2,7 @@
 {% get_company as theme_obj %}
 <style>
     .sidebarItemActive {
-        background: #fff5f1;
+        background: {{ theme_obj.primary_100|default:'#fff5f1' }};
         color: {{ theme_obj.primary_600|default:"#E54F38" }};
     }
 </style>

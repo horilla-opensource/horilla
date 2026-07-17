@@ -27,18 +27,18 @@
 			>
 				<div class="bg-white rounded-xl shadow-sm overflow-hidden">
 					<div
-						class="hidden md:grid grid-cols-[60px_1fr_120px_120px_180px] gap-4 px-6 py-4 bg-slate-50 border-b border-slate-200 text-xs font-semibold uppercase tracking-wider text-slate-500 items-center"
+						class="hidden md:grid grid-cols-[60px_1fr_120px_120px_180px] gap-4 px-6 py-4 bg-secondary-50 border-b border-secondary-200 text-xs font-semibold uppercase tracking-wider text-secondary-500 items-center"
 					>
 						<div></div>
 						<div>{% trans "Document" %}</div>
 						<div>{% trans "Status" %}</div>
 						<div>{% trans "Date" %}</div>
-						<div>{% trans "Actions" %}</div>
+						<div class="text-center">{% trans "Actions" %}</div>
 					</div>
 
 					{% for document in queryset %}
 						<div
-							class="grid md:grid-cols-[60px_1fr_120px_120px_180px] gap-4 px-6 py-4 border-b border-slate-100 items-center hover:bg-slate-50 cursor-pointer
+							class="grid md:grid-cols-[60px_1fr_120px_120px_180px] gap-4 px-6 py-4 border-b border-secondary-100 items-center hover:bg-secondary-50 cursor-pointer
 								{% if document.document %}
 									{% if document.status == "approved" %}row-status--yellow
 									{% elif document.status == 'rejected' %}row-status--red
@@ -55,26 +55,26 @@
 							{% if document.document %}
 								{% if document.status == "approved" %}
 									<div
-										class="w-8 h-8 rounded-md bg-green-100 text-green-700 flex items-center justify-center shrink-0"
+										class="w-8 h-8 rounded-md bg-success-light text-success-dark flex items-center justify-center shrink-0"
 									>
 										<ion-icon name="checkmark-outline"></ion-icon>
 									</div>
 								{% elif document.status == 'rejected' %}
 									<div
-										class="w-8 h-8 rounded-md bg-red-100 text-red-600 flex items-center justify-center shrink-0"
+										class="w-8 h-8 rounded-md bg-danger-light text-danger-dark flex items-center justify-center shrink-0"
 									>
 										<ion-icon name="warning-outline"></ion-icon>
 									</div>
 								{% else %}
 									<div
-										class="w-8 h-8 rounded-md bg-blue-100 text-blue-600 flex items-center justify-center shrink-0"
+										class="w-8 h-8 rounded-md bg-info-100 text-info-600 flex items-center justify-center shrink-0"
 									>
 										<ion-icon name="document-text-outline"></ion-icon>
 									</div>
 								{% endif %}
 							{% else %}
 								<div
-									class="w-8 h-8 rounded-md bg-amber-100 text-amber-700 flex items-center justify-center shrink-0"
+									class="w-8 h-8 rounded-md bg-warning-light text-warning-dark flex items-center justify-center shrink-0"
 								>
 									<ion-icon name="cloud-upload-outline"></ion-icon>
 								</div>
@@ -84,14 +84,14 @@
 								<div class="title-wrapper">
 									<div
 										onclick="event.stopPropagation()"
-										class="font-semibold text-slate-900 mb-1 hover:bg-slate-100 px-1 rounded inline-block {% if document.document_request_id %} cursor-pointer {% else %} cursor-text title-display {% endif %}">
+										class="font-semibold text-secondary-900 mb-1 hover:bg-secondary-100 px-1 rounded inline-block {% if document.document_request_id %} cursor-pointer {% else %} cursor-text title-display {% endif %}">
 										{{ document.title }} -- {{document.employee_id.get_full_name}}
 									</div>
 
 									<input type="text"
 										name="title"
 										data-id="{{document.id}}"
-										class="hidden font-semibold text-slate-900 mb-1 cursor-text border border-slate-300 rounded px-2 py-1 focus:outline-none focus:ring focus:ring-blue-300 w-full title-input"
+										class="hidden font-semibold text-secondary-900 mb-1 cursor-text border border-secondary-300 rounded px-2 py-1 focus:outline-none focus:ring focus:ring-info-300 w-full title-input"
 										value="{{ document.title }}"
 										onclick="event.stopPropagation();"
 									>
@@ -100,7 +100,7 @@
 
 							<div>
 								<div
-									class="text-sm font-medium px-3 py-1 rounded-xl text-center {% if document.document %} {% if document.status == 'approved' %}bg-green-100 text-green-700 {% elif document.status == 'rejected' %}bg-red-100 text-red-700 {% elif document.status == 'requested' %}bg-blue-100 text-blue-700 {% endif %} {% else %} bg-amber-100 text-amber-700 {% endif %}"
+									class="text-sm font-medium px-3 py-1 rounded-xl text-center {% if document.document %} {% if document.status == 'approved' %}bg-success-light text-success-dark {% elif document.status == 'rejected' %}bg-danger-light text-danger-dark {% elif document.status == 'requested' %}bg-info-100 text-info-700 {% endif %} {% else %} bg-warning-light text-warning-dark {% endif %}"
 								>
 									{% if document.document %} {{document.get_status_display}}
 									{% else %} {% trans "No Document" %}
@@ -108,24 +108,24 @@
 								</div>
 							</div>
 
-							<div class="text-sm text-slate-500 font-medium">
+							<div class="text-sm text-secondary-500 font-medium">
 								{% if document.issue_date %}<span class="dateformat_changer"> {{document.issue_date}}</span>{% else %} - {% endif %}
 							</div>
 
-							<div class="flex gap-1 w-full">
+							<div class="flex gap-1 items-center justify-center">
 								{% if document.document %}
 									{% if perms.horilla_document.change_documentrequest %}
 										{% if document.status == "requested" %}
 											<button
-												class="oh-btn flex-1 text-base bg-green-100 text-green-700 hover:bg-green-200 hover:scale-105"
+												class="oh-btn oh-btn--light-bkg oh-btn--sq-sm bg-success-light text-success-dark hover:bg-success"
 												hx-get="{% url 'document-approve' document.id %}"
 												title="{% trans 'Approve' %}"
 												onclick="event.stopPropagation()"
 											>
-												<ion-icon class="me-1" name="checkmark-outline"></ion-icon>
+												<ion-icon name="checkmark-outline"></ion-icon>
 											</button>
 											<button
-												class="oh-btn flex-1 text-base bg-red-100 text-red-600 hover:bg-red-200 hover:scale-105 transition"
+												class="oh-btn oh-btn--light-bkg oh-btn--sq-sm bg-danger-light text-danger-dark hover:bg-danger transition"
 												hx-get="{% url 'document-reject' document.id %}"
 												hx-target="#genericModalBody"
 												data-toggle="oh-modal-toggle"
@@ -133,19 +133,19 @@
 												title="{% trans 'Reject' %}"
 												onclick="event.stopPropagation()"
 											>
-												<ion-icon class="me-1" name="close-outline"></ion-icon>
+												<ion-icon name="close-outline"></ion-icon>
 											</button>
 										{% elif document.status == "approved" %}
 											<button
-												class="oh-btn flex-1 text-base bg-green-100 text-green-700 hover:bg-green-200 hover:scale-105 opacity-50 cursor-not-allowed"
+												class="oh-btn oh-btn--light-bkg oh-btn--sq-sm bg-success-light text-success-dark hover:bg-success opacity-50 cursor-not-allowed"
 												title="{% trans 'Approve' %}"
 												onclick="event.stopPropagation()"
 											>
-												<ion-icon class="me-1" name="checkmark-outline"></ion-icon>
+												<ion-icon name="checkmark-outline"></ion-icon>
 											</button>
 
 											<button
-												class="oh-btn flex-1 text-base bg-red-100 text-red-600 hover:bg-red-200 hover:scale-105 transition"
+												class="oh-btn oh-btn--light-bkg oh-btn--sq-sm bg-danger-light text-danger-dark hover:bg-danger transition"
 												hx-get="{% url 'document-reject' document.id %}"
 												hx-target="#genericModalBody"
 												data-toggle="oh-modal-toggle"
@@ -153,29 +153,29 @@
 												title="{% trans 'Reject' %}"
 												onclick="event.stopPropagation()"
 											>
-												<ion-icon class="me-1" name="close-outline"></ion-icon>
+												<ion-icon name="close-outline"></ion-icon>
 											</button>
 										{% else %}
 											<button
-												class="oh-btn flex-1 text-base bg-green-100 text-green-700 hover:bg-green-200 hover:scale-105"
+												class="oh-btn oh-btn--light-bkg oh-btn--sq-sm bg-success-light text-success-dark hover:bg-success"
 												hx-get="{% url 'document-approve' document.id %}"
 												title="{% trans 'Approve' %}"
 												onclick="event.stopPropagation()"
 											>
-												<ion-icon class="me-1" name="checkmark-outline"></ion-icon>
+												<ion-icon name="checkmark-outline"></ion-icon>
 											</button>
 											<button
-												class="oh-btn flex-1 text-base bg-red-100 text-red-600 hover:bg-red-200 hover:scale-105 transition opacity-50 cursor-not-allowed"
+												class="oh-btn oh-btn--light-bkg oh-btn--sq-sm bg-danger-light text-danger-dark hover:bg-danger transition opacity-50 cursor-not-allowed"
 												title="{% trans 'Reject' %}"
 												onclick="event.stopPropagation()"
 											>
-												<ion-icon class="me-1" name="close-outline"></ion-icon>
+												<ion-icon name="close-outline"></ion-icon>
 											</button>
 										{% endif %}
 									{% endif %}
 								{% else %}
 									<button
-										class="oh-btn flex-1 text-base bg-amber-100 text-amber-600 hover:bg-amber-200 hover:scale-105 transition"
+										class="oh-btn oh-btn--light-bkg oh-btn--sq-sm bg-warning-light text-warning-dark hover:bg-warning transition"
 										title="{% trans 'Upload Document' %}"
 										hx-get="{% url 'file-upload' document.id %}"
 										hx-target="#genericModalBody"
@@ -184,10 +184,7 @@
 										data-target="#genericModal"
 										onclick="event.stopPropagation()"
 									>
-										<ion-icon
-											class="me-1"
-											name="cloud-upload-outline"
-										></ion-icon>
+										<ion-icon name="cloud-upload-outline"></ion-icon>
 									</button>
 								{% endif %}
 
@@ -203,10 +200,10 @@
 										{% csrf_token %}
 										<button
 											type="submit"
-											class="oh-btn text-base bg-slate-100 text-slate-500 hover:scale-105 hover:text-red-500 transition"
+											class="oh-btn oh-btn--light-bkg oh-btn--sq-sm oh-btn--danger transition"
 											title="{% trans 'Delete' %}"
 										>
-											<ion-icon class="me-1" name="trash-outline"></ion-icon>
+											<ion-icon name="trash-outline"></ion-icon>
 										</button>
 									</form>
 								{% endif %}

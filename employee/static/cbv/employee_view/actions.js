@@ -96,8 +96,8 @@ form.addEventListener("submit", function (event) {
                     confirmButtonText: "Download error list & Skip Import",
                     denyButtonText: "Downlod error list & Continue Import",
                     cancelButtonText: i18nMessages.cancel,
-                    confirmButtonColor: "#d33",
-                    denyButtonColor: "#008000",
+                    confirmButtonColor: "#008000",
+                    denyButtonColor: "#6c757d",
                     customClass: {
                         container: 'custom-swal-container'
                     }
@@ -178,7 +178,7 @@ $(document).on("click", "#work-info-import", function (e) {
         icon: "question",
         showCancelButton: true,
         confirmButtonColor: "#008000",
-        cancelButtonColor: "#d33",
+        cancelButtonColor: "#6c757d",
         confirmButtonText: i18nMessages.confirm,
         cancelButtonText: i18nMessages.cancel,
     }).then(function (result) {
@@ -288,8 +288,8 @@ $(document).on("click", "#archiveEmployees", function (e) {
             text: i18nMessages.confirmBulkArchive,
             icon: "info",
             showCancelButton: true,
-            confirmButtonColor: "#008000",
-            cancelButtonColor: "#d33",
+            confirmButtonColor: "#d33",
+            cancelButtonColor: "#6c757d",
             confirmButtonText: i18nMessages.confirm,
             cancelButtonText: i18nMessages.cancel,
         }).then(function (result) {
@@ -337,7 +337,7 @@ $(document).on("click", "#unArchiveEmployees", function (e) {
             icon: "info",
             showCancelButton: true,
             confirmButtonColor: "#008000",
-            cancelButtonColor: "#d33",
+            cancelButtonColor: "#6c757d",
             confirmButtonText: i18nMessages.confirm,
             cancelButtonText: i18nMessages.cancel,
         }).then(function (result) {
@@ -403,8 +403,8 @@ $(document).on("click", "#deleteEmployees", function (e) {
             text: i18nMessages.confirmBulkDelete,
             icon: "error",
             showCancelButton: true,
-            confirmButtonColor: "#008000",
-            cancelButtonColor: "#d33",
+            confirmButtonColor: "#d33",
+            cancelButtonColor: "#6c757d",
             confirmButtonText: i18nMessages.confirm,
             cancelButtonText: i18nMessages.cancel,
         }).then(function (result) {

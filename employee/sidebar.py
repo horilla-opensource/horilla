@@ -25,6 +25,11 @@ SUBMENUS = [
         "menu": _("Employees"),
         "redirect": reverse_lazy("employee-view"),
         "accessibility": "employee.sidebar.employee_accessibility",
+        # The "Create" button on the employee list navigates to the standalone
+        # employee creation wizard (employee-view-new/), a sibling URL rather
+        # than a sub-path of employee-view/, so it needs an explicit prefix
+        # for the sidebar's path-based active-link highlighting to match it.
+        "match_prefixes": ["/employee/employee-view-new/"],
     },
     {
         "menu": _("Organization Chart"),

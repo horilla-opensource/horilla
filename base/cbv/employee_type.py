@@ -39,7 +39,7 @@ class EmployeeTypeListView(HorillaListView):
                     "action": "Edit",
                     "icon": "create-outline",
                     "attrs": """
-                    class="oh-btn oh-btn--light-bkg w-100"
+                    class="oh-btn oh-btn--light-bkg oh-btn--sq-sm"
                     hx-get="{get_update_url}?instance_ids={ordered_ids}"
                     hx-target="#genericModalBody"
                     data-toggle="oh-modal-toggle"
@@ -53,7 +53,7 @@ class EmployeeTypeListView(HorillaListView):
                     "action": "Delete",
                     "icon": "trash-outline",
                     "attrs": """
-                            class="oh-btn oh-btn--danger-outline oh-btn--light-bkg w-100"
+                            class="oh-btn oh-btn--danger oh-btn--sq-sm"
                             hx-get="{get_delete_url}?model=base.employeetype&pk={pk}"
                             data-toggle="oh-modal-toggle"
                             data-target="#deleteConfirmation"

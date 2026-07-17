@@ -43,13 +43,17 @@ class SkillsListView(HorillaListView):
 
     row_attrs = """ id="skillsTr{get_delete_instance}" """
 
+    header_attrs = {
+        "action": """ style="width:180px !important" """,
+    }
+
     delete_confirm = _("Are you sure want to delete this skill?")
     actions = [
         {
             "action": _("Edit"),
             "icon": "create-outline",
             "attrs": """
-                        class="oh-btn oh-btn--light-bkg w-100"
+                        class="oh-btn oh-btn--light-bkg oh-btn--sq-sm"
                         hx-get='{get_update_url}?instance_ids={ordered_ids}'
 								hx-target="#genericModalBody"
 								data-toggle="oh-modal-toggle"
@@ -60,7 +64,7 @@ class SkillsListView(HorillaListView):
             "action": _("Delete"),
             "icon": "trash-outline",
             "attrs": f"""
-                        class="oh-btn oh-btn--light-bkg w-100 text-danger"
+                        class="oh-btn oh-btn--danger oh-btn--sq-sm"
                         hx-post="{{get_delete_url}}"
                         hx-swap="delete"
                         hx-confirm="{delete_confirm}"

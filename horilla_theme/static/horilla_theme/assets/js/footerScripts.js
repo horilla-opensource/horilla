@@ -1,8 +1,8 @@
 $(function () {
     $(document).tooltip({
         position: {
-            my: "center top+8",
-            at: "center bottom",
+            my: "right top+8",
+            at: "right bottom",
             collision: "flipfit"
         }
     });
@@ -558,23 +558,39 @@ function toggleAccordion(btn) {
         const prevBtn = p.previousElementSibling;
         const prevIcon = prevBtn.querySelector(".icon");
         if (prevIcon) prevIcon.textContent = "+";
-        prevBtn.classList.remove("bg-bg-primary-600", "text-white");
-        prevBtn.classList.add("bg-[#fff5f1]", "text-bg-primary-600");
+        prevBtn.classList.remove("bg-primary-600", "text-white");
+        prevBtn.classList.add("bg-primary-100", "text-primary-600");
     });
 
     // Toggle current panel
     if (!isOpen) {
-        panel.style.maxHeight = "500px";
+        // Content for this panel arrives async via htmx (hx-get/hx-target),
+        // so the real height isn't known yet. Grow to the existing (likely
+        // empty) scrollHeight now for an instant response, then the
+        // htmx:afterSwap listener below re-measures once content lands —
+        // avoids animating to/from an arbitrary fixed height that doesn't
+        // match the content, which read as janky/laggy.
+        panel.style.maxHeight = panel.scrollHeight + "px";
         if (icon) icon.textContent = "−";
-        // btn.classList.remove("bg-[#fff5f1]", "text-bg-primary-600");
-        // btn.classList.add("bg-bg-primary-600", "text-white");
+        // btn.classList.remove("bg-primary-100", "text-primary-600");
+        // btn.classList.add("bg-primary-600", "text-white");
     } else {
         panel.style.maxHeight = null;
         if (icon) icon.textContent = "+";
-        // btn.classList.remove("bg-bg-primary-600", "text-white");
-        // btn.classList.add("bg-[#fff5f1]", "text-bg-primary-600");
+        // btn.classList.remove("bg-primary-600", "text-white");
+        // btn.classList.add("bg-primary-100", "text-primary-600");
     }
 }
+
+// Re-measure an accordion panel once its async content has actually
+// landed, so the open transition smoothly grows to the real content
+// height instead of a stale/guessed one.
+document.body.addEventListener("htmx:afterSwap", function (evt) {
+    const panel = evt.target;
+    if (panel && panel.classList && panel.classList.contains("accordion-panel")) {
+        panel.style.maxHeight = panel.scrollHeight + "px";
+    }
+});
 
 document.querySelectorAll('.accordion-btn').forEach((btn) => {
     btn.addEventListener('click', () => {
@@ -586,21 +602,21 @@ document.querySelectorAll('.accordion-btn').forEach((btn) => {
         document.querySelectorAll('.accordion-panel').forEach(p => {
             p.style.maxHeight = null;
             p.previousElementSibling.querySelector('.icon').textContent = '+';
-            p.previousElementSibling.classList.remove("bg-bg-primary-600", "text-white");
-            p.previousElementSibling.classList.add("bg-[#fff5f1]", "text-bg-primary-600");
+            p.previousElementSibling.classList.remove("bg-primary-600", "text-white");
+            p.previousElementSibling.classList.add("bg-primary-100", "text-primary-600");
         });
 
         // Toggle current
         if (!isOpen) {
             panel.style.maxHeight = panel.scrollHeight + 'px';
             icon.textContent = '-';
-            // btn.classList.remove("bg-[#fff5f1]", "text-bg-primary-600");
-            // btn.classList.add("bg-bg-primary-600", "text-white");
+            // btn.classList.remove("bg-primary-100", "text-primary-600");
+            // btn.classList.add("bg-primary-600", "text-white");
         } else {
             panel.style.maxHeight = null;
             icon.textContent = '+';
-            // btn.classList.remove("bg-bg-primary-600", "text-white");
-            // btn.classList.add("bg-[#fff5f1]", "text-bg-primary-600");
+            // btn.classList.remove("bg-primary-600", "text-white");
+            // btn.classList.add("bg-primary-100", "text-primary-600");
         }
     });
 });

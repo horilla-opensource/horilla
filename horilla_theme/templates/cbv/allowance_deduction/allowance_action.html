@@ -1,8 +1,8 @@
 {% load i18n %}
-<div class="oh-btn-group">
+<div class="flex items-center justify-center gap-1">
     {% if perms.payroll.change_allowance %}
         <a
-            class="oh-btn oh-btn--light-bkg"
+            class="oh-btn oh-btn--light-bkg oh-btn--sq-sm"
             href="#"
             hx-get="{% url 'update-allowance' instance.id %}"
             hx-target="#listContainer"
@@ -19,7 +19,7 @@
 
     {% if perms.payroll.delete_allowance %}
         <a
-            class="oh-btn oh-btn--light-bkg oh-btn--danger-outline"
+            class="oh-btn oh-btn--danger oh-btn--sq-sm"
             hx-get="{% url 'generic-delete' %}?model=payroll.Allowance&pk={{instance.id}}"
             hx-target="#deleteConfirmationBody"
             data-toggle="oh-modal-toggle"

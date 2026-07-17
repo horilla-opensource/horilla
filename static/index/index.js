@@ -128,6 +128,32 @@ function getAssignedLeave(employeeElement) {
         },
     });
 }
+// Keeps the header "select all" checkbox (.bulk-list-table-row) in sync with
+// the individual row checkboxes (.list-table-row) for the given table/view.
+// Used everywhere the "Select"/"Select All" quick action and per-row
+// checkboxes exist, so this fixes the header checkbox not reflecting bulk
+// selection across every module's list view, not just one page.
+function syncBulkSelectAllCheckbox(viewId) {
+    if (!viewId) return;
+    // A view can contain multiple grouped tables (one .fixed-table per group),
+    // each with its own "select all" checkbox — sync each table independently
+    // instead of treating every group's rows as one combined set, otherwise a
+    // fully-selected group gets marked indeterminate just because some other
+    // group in the same view has a partial selection.
+    $(`${viewId} .fixed-table, ${viewId} .oh-sticky-table`).each(function () {
+        var $table = $(this);
+        var rows = $table.find(".list-table-row");
+        var bulkCheckbox = $table.find(".bulk-list-table-row");
+        if (!rows.length || !bulkCheckbox.length) return;
+        var checkedCount = rows.filter(":checked").length;
+        bulkCheckbox.prop("checked", checkedCount > 0 && checkedCount === rows.length);
+        bulkCheckbox.prop(
+            "indeterminate",
+            checkedCount > 0 && checkedCount < rows.length
+        );
+    });
+}
+
 function selectSelected(viewId, storeKey = "selectedInstances") {
     ids = JSON.parse($(`#${storeKey}`).attr("data-ids") || "[]");
     $.each(ids, function (indexInArray, valueOfElement) {
@@ -140,6 +166,11 @@ function selectSelected(viewId, storeKey = "selectedInstances") {
             .prop("checked", true)
             .change();
     });
+
+    // Reflect the row selection on the header "select all" checkbox: checked
+    // when every row on this page is selected, otherwise unchecked (or
+    // indeterminate when some, but not all, rows are selected).
+    syncBulkSelectAllCheckbox(viewId);
 
     $(
         `${viewId} .oh-sticky-table__tbody .list-table-row,${viewId} tbody .list-table-row`
@@ -172,6 +203,8 @@ function selectSelected(viewId, storeKey = "selectedInstances") {
             reloadSelectedCount($(`#count_${cleanViewId}`), storeKey);
             reloadSelectedCount($(`.count_${cleanViewId}`), storeKey);
         }
+
+        syncBulkSelectAllCheckbox(viewId);
     });
 
     if (viewId) {
@@ -320,11 +353,10 @@ function removeHighlight() {
 
 function removeId(element, storeKey = "selectedInstances") {
     id = element.val();
-    viewId = element.attr("data-view-id");
     ids = JSON.parse($(`#${storeKey}`).attr("data-ids") || "[]");
-    let elementToRemove = 5;
-    if (ids[ids.length - 1] === id) {
-        ids.pop();
+    var index = ids.indexOf(id);
+    if (index > -1) {
+        ids.splice(index, 1);
     }
     ids = JSON.stringify(ids);
     $(`#${storeKey}`).attr("data-ids", ids);
@@ -404,7 +436,7 @@ function checkSequence(element) {
             icon: "info",
             showCancelButton: true,
             confirmButtonColor: "#008000",
-            cancelButtonColor: "#d33",
+            cancelButtonColor: "#6c757d",
             confirmButtonText: "Confirm",
         }).then(function (result) {
             if (result.isConfirmed) {
@@ -447,7 +479,7 @@ function hxConfirm(element, messageText) {
         icon: "question",
         showCancelButton: true,
         confirmButtonColor: "#008000",
-        cancelButtonColor: "#d33",
+        cancelButtonColor: "#6c757d",
         confirmButtonText: "Confirm",
         cancelButtonText: "Cancel",
         reverseButtons: true,
@@ -710,7 +742,7 @@ window.confirm = function (message) {
         icon: "question",
         showCancelButton: true,
         confirmButtonColor: "#008000",
-        cancelButtonColor: "#d33",
+        cancelButtonColor: "#6c757d",
         confirmButtonText: i18nMessages.confirm,
         cancelButtonText: i18nMessages.cancel,
     }).then((result) => {

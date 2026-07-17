@@ -44,13 +44,6 @@
     </div>
 
     <script>
-        $(document).ready(function () {
-            var exists = $("#view-container").find(".oh-general__tab-link--active").length;
-            if (!exists) {
-                $("#view-container").find(".oh-general__tab-link")[0].click();
-            }
-        });
-
         toggleColumns("employee-tab", "fieldContainerTable");
 
         if (!localStorage.getItem("employee_tab")) {

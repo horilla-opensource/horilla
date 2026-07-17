@@ -61,7 +61,7 @@
   {% endif %}
   {% if perms.project.delete_project %}
     <a
-      class="oh-btn oh-btn--danger-outline oh-btn--light-bkg w-100"
+      class="oh-btn oh-btn--danger w-100"
       hx-get="{% url 'delete-project' instance.id %}?view=list"
       hx-target="#listContainer"
       hx-swap="innerHTML"

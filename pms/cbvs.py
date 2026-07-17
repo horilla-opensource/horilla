@@ -133,6 +133,10 @@ class BonusPointSettingListView(views.HorillaListView):
         ("Is Active", "is_active_toggle"),
     ]
 
+    header_attrs = {
+        "action": """ style="width:150px !important" """,
+    }
+
 
 # ================Models for EmployeeBonusPoint==============
 
@@ -266,6 +270,10 @@ class EmployeeBonusPointListView(views.HorillaListView):
         ("Bonus Point", "bonus_point"),
         ("Based On", "based_on"),
     ]
+
+    header_attrs = {
+        "action": 'style="width: 110px;"',
+    }
 
     def get_queryset(self):
         queryset = super().get_queryset()

@@ -10,8 +10,8 @@
             data-target="#genericModal"
         {% endif %}
         class="
-            w-24 px-4 py-2 bg-primary-600 text-white rounded-md text-xs flex items-center justify-center gap-2
-            transition duration-300 {% if is_locked %}opacity-60 pointer-events-none{% else %}hover:bg-primary-800{% endif %}
+            w-24 px-4 py-2 bg-info-600 text-white rounded-md text-xs flex items-center justify-center gap-2
+            transition duration-300 {% if is_locked %}opacity-60 pointer-events-none{% else %}hover:bg-info-800{% endif %}
         "
     >
         <img src="{% static 'horilla_theme/assets/img/icons/edit.svg' %}" width="13" class="filter brightness-0 invert">
@@ -26,16 +26,16 @@
             hx-target="#genericModalBody"
         {% endif %}
         class="
-            w-24 px-4 py-2 bg-white rounded-md text-xs flex items-center justify-center gap-2 border
+            w-24 px-4 py-2 bg-danger text-white rounded-md text-xs flex items-center justify-center gap-2
             transition duration-300
             {% if is_locked %}
-            opacity-60 pointer-events-none border-primary-500
+            opacity-60 pointer-events-none
             {% else %}
-            border-primary-500 hover:border-primary-600
+            hover:bg-danger-dark
             {% endif %}
         "
     >
-        <img src="{% static 'horilla_theme/assets/img/icons/trash.svg' %}" width="16" class="mt-[-1px]">
+        <img src="{% static 'horilla_theme/assets/img/icons/trash.svg' %}" width="16" class="mt-[-1px] filter brightness-0 invert">
         {% trans "Delete" %}
     </a>
 {% endwith %}

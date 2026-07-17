@@ -302,7 +302,7 @@ class EmployeesList(HorillaListView):
 
     header_attrs = {
         "action": """
-                   style="width:300px !important;"
+                   style="width:180px !important;"
                    """
     }
 

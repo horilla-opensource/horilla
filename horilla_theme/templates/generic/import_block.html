@@ -3,7 +3,7 @@
 {% if import_fields and import_accessibility %}
     <button
         id="import_{{ view_id }}"
-        class="px-4 py-2 bg-[#129192] text-white rounded-md text-xs hover:bg-primary-800 transition duration-300"
+        class="px-4 py-2 bg-brand-600 text-white rounded-md text-xs hover:bg-brand-800 transition duration-300"
         data-toggle="oh-modal-toggle"
         data-target="#importModal{{ view_id }}"
         onclick="ids = $('#{{ selected_instances_key_id }}').attr('data-ids');
@@ -95,7 +95,7 @@
                         <div class="flex gap-1 justify-between pt-5 mt-5 border-t border-[#00000027]">
                             <a
                                 onclick="$('#submitGetImportSheet{{ view_id }}').click()"
-                                class="px-4 py-2 border border-primary-600 text-primary-600 rounded-md text-xs flex items-center gap-2 hover:text-white hover:bg-primary-800 transition duration-300"
+                                class="px-4 py-2 border border-brand-600 text-brand-600 rounded-md text-xs flex items-center gap-2 hover:text-white hover:bg-brand-800 transition duration-300"
                             ><i class="fa-solid fa-cloud-arrow-down pe-1"></i>{% trans "Download Template" %}</a>
                             <button
                                 onclick="if($('#resumeUpload{{ view_id }}').val()){
@@ -106,7 +106,7 @@
                   }, 100);
                  }"
                                 type="submit"
-                                class="px-4 py-2 bg-primary-600 text-white rounded-md text-xs flex items-center gap-2 hover:bg-primary-800 transition duration-300"
+                                class="px-4 py-2 bg-brand-600 text-white rounded-md text-xs flex items-center gap-2 hover:bg-brand-800 transition duration-300"
                             >
                                 Upload
                             </button>

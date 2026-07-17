@@ -748,6 +748,11 @@ class OffboardingEmployeeList(HorillaListView):
 
     action_method = """get_action_col"""
 
+    header_attrs = {
+        "action": """ style="width:180px !important;" """,
+        "add_task_action": """ style="width:110px !important;" """,
+    }
+
     row_attrs = """
         class = "fw-bold"
         hx-get='{get_individual_url}'
@@ -844,16 +849,26 @@ class OffboardingEmployeeList(HorillaListView):
                 (
                     f"""
                         <button
-                            class="oh-checkpoint-badge text-success"
+                            class="px-3 py-1.5 bg-primary-100 text-primary-600 text-xs font-medium rounded-md inline-flex items-center gap-1 hover:bg-primary-600 hover:text-white transition duration-300"
                             data-toggle="oh-modal-toggle"
                             data-target="#genericModal"
                             hx-get="{reverse('offboarding-add-task')}?stage_id={stage_id}"
                             hx-target="#genericModalBody"
                             >
-                            + {_('Task')}
+                            <ion-icon name="add-outline"></ion-icon>
+                            {_('Task')}
                         </button>
+                        <script>
+                            (function() {{
+                                var span = document.currentScript.closest('span.w-max');
+                                if (span) {{
+                                    span.style.width = '100%';
+                                    span.style.justifyContent = 'center';
+                                }}
+                            }})();
+                        </script>
                         """,
-                    "",
+                    "add_task_action",
                 )
             )
         return context
