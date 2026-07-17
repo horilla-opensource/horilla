@@ -89,6 +89,7 @@
                                 </div>
                             </div>
                         {% endif %}
+                        <span class="icon w-4 text-center font-semibold">+</span>
                     </div>
                     <div
                         id="taskCreateForm{{stage.id}}"
@@ -184,9 +185,10 @@
                                                     </td>
                                                     {% if request.user|is_project_manager:stage.project %}
                                                         <td class="p-3" onclick="event.stopPropagation()">
-                                                            <div class="oh-btn-group">
+                                                            <div class="flex items-center justify-center gap-1">
                                                                 <button
-                                                                    class="oh-btn oh-btn--light-bkg"
+                                                                    class="oh-btn oh-btn--light-bkg oh-btn--sq-sm"
+                                                                    title="{% trans 'Edit' %}"
                                                                     data-toggle="oh-modal-toggle"
                                                                     data-target="#TaskModal"
                                                                     hx-get="{% url 'update-task' task.id %}?project_task=true"
@@ -201,7 +203,8 @@
                                                                 </button>
 
                                                                 <a
-                                                                    class="oh-btn oh-btn--danger"
+                                                                    class="oh-btn oh-btn--danger oh-btn--sq-sm"
+                                                                    title="{% trans 'Delete' %}"
                                                                     hx-confirm="{% trans 'Do you really want to delete this task?' %}"
                                                                     hx-post="{% url 'delete-task' task.id %}?view=list"
                                                                     hx-target="#taskCreateForm{{stage.id}}"
@@ -251,6 +254,8 @@
                 p.style.maxHeight = null;
                 p.previousElementSibling.classList.remove("bg-primary-600", "text-white");
                 p.previousElementSibling.classList.add("bg-primary-100", "text-primary-600");
+                const otherIcon = p.previousElementSibling.querySelector('.icon');
+                if (otherIcon) otherIcon.textContent = '+';
             });
 
             // Toggle current

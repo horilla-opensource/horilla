@@ -33,8 +33,8 @@
                         </span>
                     </div>
 
-                    {% if perms.recruitment.add_skillzonecandidate or perms.recruitment.change_skillzone or perms.recruitment.delete_skillzone %}
-                        <div class="flex items-center justify-center gap-1">
+                    <div class="flex items-center justify-center gap-1">
+                        {% if perms.recruitment.add_skillzonecandidate or perms.recruitment.change_skillzone or perms.recruitment.delete_skillzone %}
                             {% if perms.recruitment.add_skillzonecandidate %}
                                 <a
                                     class="oh-btn oh-btn--light-bkg oh-btn--sq-sm"
@@ -111,8 +111,9 @@
                                     </button>
                                 </form>
                             {% endif %}
-                        </div>
-                    {% endif %}
+                        {% endif %}
+                        <span class="icon text-xl font-bold">+</span>
+                    </div>
                 </div>
                 <div class="oh-accordion-body transition-all duration-300 bg-white px-4 text-sm text-gray-700">
                     <div class="py-3">

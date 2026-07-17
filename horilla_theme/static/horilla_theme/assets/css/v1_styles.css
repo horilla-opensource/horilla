@@ -3137,6 +3137,7 @@ ul.errorlist ul.errorlist li {
   box-shadow: rgba(0, 0, 0, 0.1) -4px 9px 25px -6px;
   padding: 1rem;
   display: none;
+  overflow: hidden;
   z-index: 15;
 }
 
@@ -3175,7 +3176,7 @@ ul.errorlist ul.errorlist li {
 
 .oh-activity-sidebar__body {
   overflow-y: auto;
-  min-height: calc(100% - 90px);
+  height: calc(100% - 90px);
 }
 
 .oh-activity-sidebar__qa-list {
