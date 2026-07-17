@@ -43,18 +43,20 @@
   <h2 class="h4 mb-3">{% trans "Scope grants" %}</h2>
   {% if scope_grants %}
     <table class="hydra-table">
-      <thead><tr><th>{% trans "User" %}</th><th>{% trans "Scope" %}</th><th>{% trans "Validity" %}</th><th>{% trans "Active" %}</th></tr></thead>
+      <thead><tr><th>{% trans "User" %}</th><th>{% trans "Scope" %}</th><th>{% trans "Validity" %}</th><th>{% trans "State" %}</th><th>{% trans "Action" %}</th></tr></thead>
       <tbody>
         {% for grant in scope_grants %}
           <tr>
             <td data-label="{% trans 'User' %}">{{ grant.user }}</td>
             <td data-label="{% trans 'Scope' %}">{{ grant.scope_type|title }} · {{ grant.target }}</td>
             <td data-label="{% trans 'Validity' %}">{{ grant.valid_from|date:"Y-m-d" }} — {% if grant.valid_until %}{{ grant.valid_until|date:"Y-m-d" }}{% else %}{% trans "open" %}{% endif %}</td>
-            <td data-label="{% trans 'Active' %}">{% if grant.is_current %}{% trans "Yes" %}{% else %}{% trans "No" %}{% endif %}</td>
+            <td data-label="{% trans 'State' %}">{% if grant.is_current %}<span class="hydra-status">{{ grant.state_label }}</span>{% else %}{{ grant.state_label }}{% endif %}{% if grant.termination_reason %}<br><small class="hydra-muted">{{ grant.termination_reason }}</small>{% endif %}</td>
+            <td data-label="{% trans 'Action' %}">{% if grant.can_terminate and perms.hydra_coordination.change_scopegrant %}<a class="oh-btn" href="{% url 'hydra-scope-grant-end' grant.pk %}">{% trans "End access" %}</a>{% else %}<span class="hydra-muted">—</span>{% endif %}</td>
           </tr>
         {% endfor %}
       </tbody>
     </table>
+    {% if scope_grants.paginator.num_pages > 1 %}<nav class="hydra-actions mt-3" aria-label="{% trans 'Scope grant pages' %}">{% if scope_grants.has_previous %}<a class="oh-btn" href="?grant_page={{ scope_grants.previous_page_number }}">{% trans "Previous" %}</a>{% endif %}<span class="hydra-muted">{% blocktrans with current=scope_grants.number total=scope_grants.paginator.num_pages %}Page {{ current }} of {{ total }}{% endblocktrans %}</span>{% if scope_grants.has_next %}<a class="oh-btn" href="?grant_page={{ scope_grants.next_page_number }}">{% trans "Next" %}</a>{% endif %}</nav>{% endif %}
   {% else %}<p class="hydra-muted mb-0">{% trans "No scope grants are visible." %}</p>{% endif %}
 </section>
 {% endif %}

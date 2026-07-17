@@ -43,10 +43,10 @@
     <tbody>
       {% for session in recent_sessions %}
         <tr>
-          <td data-label="{% trans 'File' %}"><a href="{{ session.get_absolute_url }}">{{ session.source_filename }}</a><br><span class="hydra-muted">{{ session.created_at }}</span></td>
+          <td data-label="{% trans 'File' %}"><a href="{{ session.get_absolute_url }}">{{ session.source_filename_for_display }}</a><br><span class="hydra-muted">{{ session.created_at }}</span></td>
           <td data-label="{% trans 'Target' %}">{{ session.recruitment }}<br><span class="hydra-muted">{{ session.job_position }}</span></td>
           <td data-label="{% trans 'Rows' %}">{{ session.row_count }}</td>
-          <td data-label="{% trans 'Status' %}"><span class="hydra-status">{{ session.get_status_display }}</span></td>
+          <td data-label="{% trans 'Status' %}"><span class="hydra-status">{{ session.lifecycle_status_display }}</span></td>
         </tr>
       {% endfor %}
     </tbody>

@@ -38,7 +38,7 @@ def operational_report(request):
         summary = operational_report_summary(user=request.user, people=people)
     else:
         people = Person.objects.none()
-        summary = OperationalReportSummary(0, 0, 0, 0)
+        summary = OperationalReportSummary(0, 0, 0, 0, 0)
 
     page_obj = Paginator(people, REPORT_PAGE_SIZE).get_page(request.GET.get("page"))
     rows = operational_report_rows(

@@ -1,0 +1,41 @@
+{% extends "hydra_people/base.html" %}
+{% load i18n %}
+
+{% block person_content %}
+<header class="hydra-header">
+  <div>
+    <h1 class="oh-main__titlebar-title">{% trans "Duplicate review" %}</h1>
+    <p class="hydra-muted mb-0">{% trans "Deterministic suggestions only. Hydra never merges people automatically." %}</p>
+  </div>
+  <a class="oh-btn" href="{% url 'hydra-person-list' %}">{% trans "Back to people" %}</a>
+</header>
+
+<section class="hydra-card" aria-label="{% trans 'Open duplicate suggestions' %}">
+  {% if page_obj.object_list %}
+  <table class="hydra-table">
+    <thead><tr><th>{% trans "Score" %}</th><th>{% trans "First record" %}</th><th>{% trans "Second record" %}</th><th>{% trans "Last evaluated" %}</th><th>{% trans "Action" %}</th></tr></thead>
+    <tbody>
+      {% for suggestion in page_obj %}
+      <tr>
+        <td data-label="{% trans 'Score' %}"><span class="hydra-status">{{ suggestion.score }}/100</span></td>
+        <td data-label="{% trans 'First record' %}"><strong>{{ suggestion.person_low.hydra_id }}</strong><br>{{ suggestion.person_low.passport_name }}<br><span class="hydra-muted">{{ suggestion.person_low.date_of_birth|date:"Y-m-d" }}</span></td>
+        <td data-label="{% trans 'Second record' %}"><strong>{{ suggestion.person_high.hydra_id }}</strong><br>{{ suggestion.person_high.passport_name }}<br><span class="hydra-muted">{{ suggestion.person_high.date_of_birth|date:"Y-m-d" }}</span></td>
+        <td data-label="{% trans 'Last evaluated' %}">{{ suggestion.last_evaluated_at|date:"Y-m-d H:i" }}</td>
+        <td data-label="{% trans 'Action' %}"><a class="oh-btn oh-btn--secondary" href="{% url 'hydra-duplicate-detail' suggestion.uuid %}">{% trans "Compare" %}</a></td>
+      </tr>
+      {% endfor %}
+    </tbody>
+  </table>
+  {% else %}
+  <p class="hydra-muted mb-0">{% trans "No open duplicate suggestions are visible in your scope." %}</p>
+  {% endif %}
+</section>
+
+{% if page_obj.paginator.num_pages > 1 %}
+<nav class="hydra-pagination" aria-label="{% trans 'Pagination' %}">
+  <div>{% if page_obj.has_previous %}<a class="oh-btn" href="?page={{ page_obj.previous_page_number }}">{% trans "Previous" %}</a>{% endif %}</div>
+  <span>{% blocktrans with current=page_obj.number total=page_obj.paginator.num_pages %}Page {{ current }} of {{ total }}{% endblocktrans %}</span>
+  <div>{% if page_obj.has_next %}<a class="oh-btn" href="?page={{ page_obj.next_page_number }}">{% trans "Next" %}</a>{% endif %}</div>
+</nav>
+{% endif %}
+{% endblock person_content %}

@@ -50,7 +50,7 @@ class MethodNotAllowedMiddleware:
     def __call__(self, request):
         response = self.get_response(request)
         if isinstance(response, HttpResponseNotAllowed):
-            return render(request, "405.html")
+            return render(request, "405.html", status=405)
         return response
 
 

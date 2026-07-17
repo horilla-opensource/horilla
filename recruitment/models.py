@@ -562,6 +562,12 @@ class Candidate(HorillaModel):
             .first()
         )
 
+    def get_last_portal_delivery(self):
+        """Return the durable Hydra portal-delivery state without exposing payload."""
+        if "hydra_portal_deliveries" in getattr(self, "_prefetched_objects_cache", {}):
+            return next(iter(self.hydra_portal_deliveries.all()), None)
+        return self.hydra_portal_deliveries.order_by("-requested_at", "-pk").first()
+
     def get_interview(self):
         """
         This method is used to get the interview dates and times
@@ -600,7 +606,12 @@ class Candidate(HorillaModel):
             raise ValidationError({"job_position_id": _("This field is required.")})
         if self.stage_id and self.stage_id.stage_type == "cancelled":
             self.canceled = True
-        if self.canceled:
+        controlled_cancel_stage = (
+            getattr(self, "_hydra_stage_transition_authorized", False)
+            and self.stage_id
+            and self.stage_id.stage_type == "cancelled"
+        )
+        if self.canceled and not controlled_cancel_stage:
             cancelled_stage = Stage.objects.filter(
                 recruitment_id=self.recruitment_id, stage_type="cancelled"
             ).first()
@@ -625,6 +636,24 @@ class Candidate(HorillaModel):
         if self.converted:
             self.hired = False
             self.canceled = False
+
+        if self.pk and not getattr(self, "_hydra_stage_transition_authorized", False):
+            previous_stage_id = (
+                Candidate._base_manager.filter(pk=self.pk)
+                .values_list("stage_id_id", flat=True)
+                .first()
+            )
+            if previous_stage_id != self.stage_id_id:
+                from hydra_people.models import PersonApplication
+
+                if PersonApplication.objects.filter(candidate_id=self.pk).exists():
+                    raise ValidationError(
+                        {
+                            "stage_id": _(
+                                "Use the controlled Hydra recruitment transition."
+                            )
+                        }
+                    )
 
         super().save(*args, **kwargs)
 

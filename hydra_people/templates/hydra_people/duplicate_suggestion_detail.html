@@ -1,0 +1,84 @@
+{% extends "hydra_people/base.html" %}
+{% load i18n %}
+
+{% block person_content %}
+<header class="hydra-header">
+  <div>
+    <p class="hydra-muted mb-1">{% trans "Duplicate score" %}: {{ suggestion.score }}/100</p>
+    <h1 class="oh-main__titlebar-title">{% trans "Compare Person records" %}</h1>
+    <p class="hydra-muted mb-0">{% trans "Comparison is scope-restricted. No action happens until a fresh preview is explicitly confirmed." %}</p>
+  </div>
+  <a class="oh-btn" href="{% url 'hydra-duplicate-list' %}">{% trans "Back to suggestions" %}</a>
+</header>
+
+<section class="hydra-card mb-3">
+  <h2 class="h4">{% trans "Why this pair was suggested" %}</h2>
+  <ul class="mb-0">
+    {% for label in plan.match_reason_labels %}<li>{{ label }}</li>{% empty %}<li>{% trans "The records no longer match." %}</li>{% endfor %}
+  </ul>
+</section>
+
+<section class="hydra-card mb-3">
+  <div class="hydra-table-wrap">
+    <table class="hydra-table">
+      <thead><tr><th>{% trans "Field" %}</th><th>{{ plan.person_a.hydra_id }}</th><th>{{ plan.person_b.hydra_id }}</th><th>{% trans "Result" %}</th></tr></thead>
+      <tbody>
+        {% for row in plan.comparison_rows %}
+        <tr>
+          <th scope="row" data-label="{% trans 'Field' %}">{{ row.label }}</th>
+          <td data-label="{{ plan.person_a.hydra_id }}">{{ row.person_a }}</td>
+          <td data-label="{{ plan.person_b.hydra_id }}">{{ row.person_b }}</td>
+          <td data-label="{% trans 'Result' %}">{% if row.equal %}<span class="hydra-status">{% trans "Same" %}</span>{% else %}<strong>{% trans "Different" %}</strong>{% endif %}</td>
+        </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+</section>
+
+{% if can_merge %}
+<section class="hydra-card mb-3">
+  <h2 class="h4">{% trans "Dependent records on the proposed duplicate" %}</h2>
+  <dl class="hydra-detail mb-3">
+    {% for item in visible_reference_counts %}<div><dt>{{ item.label }}</dt><dd>{{ item.count }}</dd></div>{% endfor %}
+  </dl>
+  {% if visible_conflicts %}
+  <div class="hydra-errors" role="alert">
+    <strong>{% trans "Merge is blocked" %}</strong>
+    <ul class="mb-0">{% for conflict in visible_conflicts %}<li>{{ conflict.message }}</li>{% endfor %}</ul>
+  </div>
+  {% endif %}
+</section>
+
+<section class="hydra-card mb-3">
+  <h2 class="h4">{% trans "Prepare merge preview" %}</h2>
+  <form method="post" action="{% url 'hydra-duplicate-preview' suggestion.uuid %}">
+    {% csrf_token %}
+    {{ selection_form.non_field_errors }}
+    <div class="hydra-form-grid mb-3">
+      <div class="hydra-field hydra-field--full"><label>{{ selection_form.canonical_person.label }}</label>{{ selection_form.canonical_person }}{{ selection_form.canonical_person.errors }}</div>
+      {% for field in selection_form %}
+        {% if field.name != "canonical_person" and field.name != "reason" %}<div class="hydra-field"><label for="{{ field.id_for_label }}">{{ field.label }}</label>{{ field }}{{ field.errors }}</div>{% endif %}
+      {% endfor %}
+      <div class="hydra-field hydra-field--full"><label for="{{ selection_form.reason.id_for_label }}">{{ selection_form.reason.label }}</label>{{ selection_form.reason }}{{ selection_form.reason.help_text }}{{ selection_form.reason.errors }}</div>
+    </div>
+    <button class="oh-btn oh-btn--secondary" type="submit"{% if visible_conflicts %} disabled{% endif %}>{% trans "Create conflict-checked preview" %}</button>
+  </form>
+</section>
+{% else %}
+<section class="hydra-card mb-3"><p class="hydra-muted mb-0">{% trans "You may compare this pair, but merging requires the dedicated merge permission plus access to every dependent domain record." %}</p></section>
+{% endif %}
+
+{% if can_dismiss %}
+<section class="hydra-card">
+  <h2 class="h4">{% trans "Not a duplicate" %}</h2>
+  <form method="post" action="{% url 'hydra-duplicate-dismiss' suggestion.uuid %}">
+    {% csrf_token %}
+    {{ dismiss_form.non_field_errors }}
+    <div class="hydra-field mb-3"><label for="{{ dismiss_form.reason.id_for_label }}">{{ dismiss_form.reason.label }}</label>{{ dismiss_form.reason }}{{ dismiss_form.reason.errors }}</div>
+    <label class="d-flex gap-2 align-items-start mb-3">{{ dismiss_form.confirmation }} <span>{{ dismiss_form.confirmation.label }}</span></label>{{ dismiss_form.confirmation.errors }}
+    <button class="oh-btn" type="submit">{% trans "Dismiss with reason" %}</button>
+  </form>
+</section>
+{% endif %}
+{% endblock person_content %}

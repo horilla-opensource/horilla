@@ -13,6 +13,8 @@ docker-compose.yaml
 backups
 media
 .private_media
+.document_quarantine
+.portal_email_outbox
 staticfiles
 __pycache__
 *.pyc

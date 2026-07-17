@@ -35,17 +35,19 @@ pg_dump \
 
 tar -C /data/media -czf "$partial/media.tar.gz" .
 tar -C /data/private -czf "$partial/private-media.tar.gz" .
+tar -C /data/outbox -czf "$partial/portal-email-outbox.tar.gz" .
 
 migration_count="$(psql --no-psqlrc --tuples-only --no-align -c 'SELECT COUNT(*) FROM django_migrations')"
 private_document_count="$(psql --no-psqlrc --tuples-only --no-align -c 'SELECT COUNT(*) FROM hydra_documents_privatedocument')"
+portal_delivery_count="$(psql --no-psqlrc --tuples-only --no-align -c 'SELECT COUNT(*) FROM hydra_arrivals_onboardingportaldelivery')"
 
 cat > "$partial/manifest.json" <<EOF
-{"format_version":1,"backup_id":"$backup_id","created_at_utc":"$(date -u +%Y-%m-%dT%H:%M:%SZ)","database":"$PGDATABASE","migration_count":$migration_count,"private_document_count":$private_document_count}
+{"format_version":2,"backup_id":"$backup_id","created_at_utc":"$(date -u +%Y-%m-%dT%H:%M:%SZ)","database":"$PGDATABASE","migration_count":$migration_count,"private_document_count":$private_document_count,"portal_delivery_count":$portal_delivery_count}
 EOF
 
 (
     cd "$partial"
-    sha256sum database.dump media.tar.gz private-media.tar.gz manifest.json > SHA256SUMS
+    sha256sum database.dump media.tar.gz private-media.tar.gz portal-email-outbox.tar.gz manifest.json > SHA256SUMS
 )
 
 mv "$partial" "$final"

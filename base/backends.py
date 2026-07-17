@@ -31,9 +31,14 @@ class DefaultHorillaMailBackend(EmailBackend):
         timeout=None,
         ssl_keyfile=None,
         ssl_certfile=None,
+        configuration_id=None,
         **kwargs,
     ):
-        self.configuration = self.get_dynamic_email_config()
+        self.configuration = (
+            DynamicEmailConfiguration.objects.filter(pk=configuration_id).first()
+            if configuration_id is not None
+            else self.get_dynamic_email_config()
+        )
         ssl_keyfile = (
             getattr(self.configuration, "ssl_keyfile", None)
             if self.configuration
@@ -199,11 +204,23 @@ class ConfiguredEmailBackend(BACKEND_CLASS):
     def send_messages(self, email_messages):
         response = super(BACKEND_CLASS, self).send_messages(email_messages)
         for message in email_messages:
+            sensitive = bool(getattr(message, "hydra_sensitive", False))
+            audit_reference = str(
+                getattr(message, "hydra_audit_reference", "unavailable")
+            )[:80]
             email_log = EmailLog(
-                subject=message.subject,
-                from_email=self.dynamic_from_email_with_display_name,
-                to=message.to,
-                body=message.body,
+                subject=("Sensitive Hydra email" if sensitive else message.subject),
+                from_email=(
+                    "redacted@invalid.local"
+                    if sensitive
+                    else self.dynamic_from_email_with_display_name
+                ),
+                to=("redacted@invalid.local" if sensitive else message.to),
+                body=(
+                    f"Sensitive payload redacted; Hydra reference {audit_reference}."
+                    if sensitive
+                    else message.body
+                ),
                 status="sent" if response else "failed",
             )
             email_log.save()

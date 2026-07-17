@@ -6,7 +6,13 @@ from django.urls import reverse
 from django.utils import timezone
 
 from attendance.models import Attendance, AttendanceLateComeEarlyOut
-from base.models import Company, Department, EmployeeShiftDay
+from base.models import (
+    Company,
+    Department,
+    EmployeeShift,
+    EmployeeShiftDay,
+    EmployeeShiftSchedule,
+)
 from employee.models import Employee
 from hydra_coordination.brigadier_selectors import (
     brigadier_roster_for_team,
@@ -15,6 +21,7 @@ from hydra_coordination.brigadier_selectors import (
 from hydra_coordination.models import Location, PersonAssignment, ScopeGrant, Section, Team
 from hydra_coordination.services import assign_person, save_scope_grant
 from hydra_people.models import Person
+from leave.models import LeaveRequest, LeaveType
 
 
 class BrigadierPanelTestCase(TestCase):
@@ -23,12 +30,15 @@ class BrigadierPanelTestCase(TestCase):
         ("hydra_people", "view_person"),
         ("employee", "view_employee"),
         ("attendance", "view_attendance"),
+        ("leave", "view_leaverequest"),
     )
 
     @classmethod
     def setUpTestData(cls):
         cls.today = timezone.localdate()
-        EmployeeShiftDay.objects.create(day=cls.today.strftime("%A").lower())
+        cls.shift_day = EmployeeShiftDay.objects.create(
+            day=cls.today.strftime("%A").lower()
+        )
         cls.admin = User.objects.create_superuser(
             username="brigadier-admin",
             email="brigadier-admin@example.test",
@@ -41,6 +51,30 @@ class BrigadierPanelTestCase(TestCase):
 
         cls.company_a = cls.make_company("Brigadier Company A")
         cls.company_b = cls.make_company("Brigadier Company B")
+        EmployeeShift._base_manager.bulk_create(
+            [EmployeeShift(employee_shift="Hydra day shift")]
+        )
+        cls.shift = EmployeeShift._base_manager.get(
+            employee_shift="Hydra day shift"
+        )
+        cls.shift.company_id.add(cls.company_a, cls.company_b)
+        EmployeeShiftSchedule.objects.create(
+            day=cls.shift_day,
+            shift_id=cls.shift,
+            start_time=time(6, 0),
+            end_time=time(14, 0),
+            minimum_working_hour="08:00",
+        )
+        LeaveType._base_manager.bulk_create(
+            [
+                LeaveType(
+                    name="Annual leave",
+                    color="#336699",
+                    company_id=cls.company_a,
+                )
+            ]
+        )
+        cls.leave_type = LeaveType._base_manager.get(name="Annual leave")
         cls.department_a = cls.make_department("Production A", cls.company_a)
         cls.department_b = cls.make_department("Production B", cls.company_b)
         cls.location_a = Location.objects.create(
@@ -203,6 +237,7 @@ class BrigadierPanelTestCase(TestCase):
         work_info = employee.employee_work_info
         work_info.company_id = company
         work_info.department_id = department
+        work_info.shift_id = cls.shift
         work_info.date_joining = cls.today - timedelta(days=30)
         work_info.save()
         person = Person.objects.create(
@@ -251,6 +286,29 @@ class BrigadierPanelTestCase(TestCase):
         session["selected_company"] = "all"
         session.save()
 
+    def make_approved_leave(
+        self,
+        *,
+        person,
+        day=None,
+        start_breakdown="full_day",
+        end_breakdown="full_day",
+    ):
+        day = day or self.today
+        request = LeaveRequest(
+            employee_id=person.employee,
+            leave_type_id=self.leave_type,
+            start_date=day,
+            end_date=day,
+            start_date_breakdown=start_breakdown,
+            end_date_breakdown=end_breakdown,
+            requested_days=1,
+            description="Approved test leave",
+            status="approved",
+        )
+        LeaveRequest._base_manager.bulk_create([request])
+        return request
+
 
 class BrigadierSelectorTests(BrigadierPanelTestCase):
     def test_only_current_direct_team_grants_open_panel(self):
@@ -277,6 +335,132 @@ class BrigadierSelectorTests(BrigadierPanelTestCase):
         self.assertTrue(by_name[self.completed_person.passport_name].pending_validation)
         self.assertTrue(by_name[self.completed_person.passport_name].early_out)
 
+    def test_full_day_approved_leave_is_expected_absence(self):
+        self.make_approved_leave(person=self.no_record_person)
+
+        rows = brigadier_roster_for_team(
+            user=self.brigadier, team=self.team_a, day=self.today
+        )
+        row = next(row for row in rows if row.person == self.no_record_person)
+
+        self.assertTrue(row.scheduled)
+        self.assertTrue(row.approved_leave_full_day)
+        self.assertFalse(row.expected_to_work)
+        self.assertFalse(row.no_attendance)
+        self.assertFalse(row.has_exception)
+
+    def test_attendance_during_full_day_leave_is_a_conflict(self):
+        self.make_approved_leave(person=self.at_work_person)
+
+        rows = brigadier_roster_for_team(
+            user=self.brigadier, team=self.team_a, day=self.today
+        )
+        row = next(row for row in rows if row.person == self.at_work_person)
+
+        self.assertTrue(row.attendance_on_approved_leave)
+        self.assertTrue(row.has_exception)
+        self.assertFalse(row.late_come)
+
+    def test_first_half_leave_suppresses_expected_late_marker(self):
+        self.make_approved_leave(
+            person=self.at_work_person,
+            start_breakdown="first_half",
+            end_breakdown="first_half",
+        )
+
+        rows = brigadier_roster_for_team(
+            user=self.brigadier, team=self.team_a, day=self.today
+        )
+        row = next(row for row in rows if row.person == self.at_work_person)
+
+        self.assertTrue(row.approved_leave_partial_day)
+        self.assertTrue(row.expected_to_work)
+        self.assertFalse(row.late_come)
+
+    def test_second_half_leave_suppresses_expected_early_marker(self):
+        self.make_approved_leave(
+            person=self.completed_person,
+            start_breakdown="second_half",
+            end_breakdown="second_half",
+        )
+
+        rows = brigadier_roster_for_team(
+            user=self.brigadier, team=self.team_a, day=self.today
+        )
+        row = next(row for row in rows if row.person == self.completed_person)
+
+        self.assertTrue(row.approved_leave_partial_day)
+        self.assertTrue(row.expected_to_work)
+        self.assertFalse(row.early_out)
+
+    def test_partial_leave_without_attendance_remains_an_exception(self):
+        self.make_approved_leave(
+            person=self.no_record_person,
+            start_breakdown="first_half",
+            end_breakdown="first_half",
+        )
+
+        rows = brigadier_roster_for_team(
+            user=self.brigadier, team=self.team_a, day=self.today
+        )
+        row = next(row for row in rows if row.person == self.no_record_person)
+
+        self.assertTrue(row.approved_leave_partial_day)
+        self.assertTrue(row.no_attendance)
+        self.assertTrue(row.has_exception)
+
+    def test_unscheduled_day_without_attendance_is_not_an_absence(self):
+        unscheduled_day = self.today - timedelta(days=1)
+
+        rows = brigadier_roster_for_team(
+            user=self.brigadier, team=self.team_a, day=unscheduled_day
+        )
+        row = next(row for row in rows if row.person == self.no_record_person)
+
+        self.assertFalse(row.scheduled)
+        self.assertFalse(row.schedule_missing)
+        self.assertFalse(row.no_attendance)
+        self.assertFalse(row.has_exception)
+
+    def test_attendance_on_unscheduled_day_is_a_conflict(self):
+        unscheduled_day = self.today - timedelta(days=1)
+        EmployeeShiftDay.objects.get_or_create(
+            day=unscheduled_day.strftime("%A").lower()
+        )
+        Attendance.objects.create(
+            employee_id=self.no_record_person.employee,
+            attendance_date=unscheduled_day,
+            attendance_clock_in_date=unscheduled_day,
+            attendance_clock_in=time(6, 0),
+            attendance_clock_out_date=unscheduled_day,
+            attendance_clock_out=time(14, 0),
+            attendance_worked_hour="08:00",
+            minimum_hour="08:00",
+            attendance_validated=True,
+        )
+
+        rows = brigadier_roster_for_team(
+            user=self.brigadier, team=self.team_a, day=unscheduled_day
+        )
+        row = next(row for row in rows if row.person == self.no_record_person)
+
+        self.assertTrue(row.attendance_on_unscheduled_day)
+        self.assertTrue(row.has_exception)
+
+    def test_missing_shift_assignment_is_configuration_exception(self):
+        work_info = self.no_record_person.employee.employee_work_info
+        work_info.shift_id = None
+        work_info.save()
+
+        rows = brigadier_roster_for_team(
+            user=self.brigadier, team=self.team_a, day=self.today
+        )
+        row = next(row for row in rows if row.person == self.no_record_person)
+
+        self.assertTrue(row.schedule_missing)
+        self.assertFalse(row.no_attendance)
+        self.assertTrue(row.has_exception)
+
 
 class BrigadierPanelViewTests(BrigadierPanelTestCase):
     def test_panel_shows_only_direct_team_roster_and_exceptions(self):
@@ -291,7 +475,7 @@ class BrigadierPanelViewTests(BrigadierPanelTestCase):
         self.assertContains(response, self.at_work_person.passport_name)
         self.assertContains(response, self.completed_person.passport_name)
         self.assertNotContains(response, self.outside_person.passport_name)
-        self.assertContains(response, "No attendance record")
+        self.assertContains(response, "Missing expected attendance")
         self.assertContains(response, "Late arrival")
         self.assertContains(response, "Early departure")
         self.assertContains(response, "Pending validation")
@@ -328,6 +512,20 @@ class BrigadierPanelViewTests(BrigadierPanelTestCase):
 
     def test_missing_dedicated_permission_returns_403(self):
         self.login(self.limited)
+
+        response = self.client.get(reverse("hydra-brigadier-panel"))
+
+        self.assertEqual(response.status_code, 403)
+
+    def test_leave_permission_is_required_for_reconciled_panel(self):
+        permission = Permission.objects.get(
+            content_type__app_label="leave",
+            codename="view_leaverequest",
+        )
+        self.brigadier.user_permissions.remove(permission)
+        for name in ("_perm_cache", "_user_perm_cache", "_group_perm_cache"):
+            self.brigadier.__dict__.pop(name, None)
+        self.login(self.brigadier)
 
         response = self.client.get(reverse("hydra-brigadier-panel"))
 

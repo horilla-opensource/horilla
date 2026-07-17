@@ -1,6 +1,7 @@
 {% load i18n %}
-{% load static %}
+{% load static hydra_notification_tags %}
 {% get_current_language as LANGUAGE_CODE %}
+{% hydra_notification_preferences as hydra_notification_preference %}
 
 {% if messages %}
     <div class="oh-alert-container">
@@ -16,7 +17,7 @@
         <div class="oh-navbar__notification-links" x-show="visible">
             <a
                 class="oh-navbar__notification-tray-link mr-2"
-                hx-get="{% url 'read-notifications' %}"
+                hx-post="{% url 'read-notifications' %}"
                 hx-target="#notificationContainer"
                 x-show="!markRead"
                 @click="markRead = true"
@@ -25,7 +26,7 @@
             </a>
             <a
                 class="oh-navbar__notification-tray-link oh-navbar__notification-tray-link--danger"
-                hx-get="{% url 'clear-notifications' %}"
+                hx-post="{% url 'clear-notifications' %}"
                 hx-target="#notificationContainer"
             >
                 <ion-icon name="close-outline" class="mr-1"></ion-icon> {% trans "Clear" %}
@@ -145,20 +146,18 @@
 <div class="oh-navbar__notification-footer" x-show="visible" style="position: relative">
     <a
         id="viewallnotification"
-        data-target="#allNotifications"
-        hx-get="{% url 'all-notifications' %}"
-        hx-target="#allNotificationBody"
-        class="oh-navbar__notification-tray-link oh-activity-sidebar__open"
+        href="{% url 'hydra-notification-center' %}"
+        class="oh-navbar__notification-tray-link"
     >{% trans "View all notifications" %}
     </a>
     <div
         class="oh-navbar__volume-icon"
         title="{% trans 'Notification Sound' %}"
         style="position: absolute; right: 25px"
-        hx-get="{% url 'notifications:notification-sound' %}"
+        hx-post="{% url 'notifications:notification-sound' %}"
         hx-swap="none"
     >
-        {% if request.user.employee_get.notification_sound.sound_enabled %}
+        {% if hydra_notification_preference.browser_sound_enabled %}
             <span class="material-symbols-outlined text-danger">
                 volume_up
             </span>

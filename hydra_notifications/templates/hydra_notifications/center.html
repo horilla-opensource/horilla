@@ -1,0 +1,130 @@
+{% extends "hydra_shell/base.html" %}
+{% load i18n %}
+
+{% block hydra_content %}
+<header class="hydra-header">
+  <div>
+    <p class="hydra-muted mb-1">{% trans "Private recipient workspace" %}</p>
+    <h1 class="oh-main__titlebar-title">{% trans "Notification center" %}</h1>
+  </div>
+  <form method="post" action="{% url 'hydra-notification-read-all' %}">
+    {% csrf_token %}
+    <button class="oh-btn oh-btn--secondary" type="submit">{% trans "Mark visible as read" %}</button>
+  </form>
+</header>
+
+<section class="hydra-card mb-3" aria-labelledby="notification-filter-title">
+  <h2 class="h4" id="notification-filter-title">{% trans "Filters" %}</h2>
+  <form method="get" class="hydra-filter-grid">
+    <div>
+      <label for="notification-state">{% trans "State" %}</label>
+      <select class="oh-select w-100" id="notification-state" name="state">
+        {% for value, label in filter_form.fields.state.choices %}<option value="{{ value }}"{% if filters.state == value %} selected{% endif %}>{{ label }}</option>{% endfor %}
+      </select>
+    </div>
+    <div>
+      <label for="notification-category">{% trans "Category" %}</label>
+      <select class="oh-select w-100" id="notification-category" name="category">
+        <option value="">{% trans "All categories" %}</option>
+        {% for value, label in category_choices %}<option value="{{ value }}"{% if filters.category == value %} selected{% endif %}>{{ label }}</option>{% endfor %}
+      </select>
+    </div>
+    <div>
+      <label for="notification-severity">{% trans "Severity" %}</label>
+      <select class="oh-select w-100" id="notification-severity" name="severity">
+        <option value="">{% trans "All severities" %}</option>
+        {% for value, label in severity_choices %}<option value="{{ value }}"{% if filters.severity == value %} selected{% endif %}>{{ label }}</option>{% endfor %}
+      </select>
+    </div>
+    <div class="hydra-actions hydra-filter-grid__actions">
+      <button class="oh-btn oh-btn--secondary" type="submit">{% trans "Apply" %}</button>
+      <a class="oh-btn" href="{% url 'hydra-notification-center' %}">{% trans "Clear" %}</a>
+    </div>
+  </form>
+</section>
+
+<section class="hydra-card mb-3" aria-labelledby="notification-list-title">
+  <div class="hydra-header">
+    <div>
+      <h2 class="h4 mb-1" id="notification-list-title">{% trans "Your notifications" %}</h2>
+      <p class="hydra-muted mb-0">{% trans "Only notifications still visible in your current permissions and organization scope are shown." %}</p>
+    </div>
+  </div>
+  {% if envelopes %}
+    <div class="hydra-notification-list">
+      {% for envelope in envelopes %}
+        <article class="hydra-notification{% if not envelope.read_at %} hydra-notification--unread{% endif %}" aria-labelledby="notification-{{ envelope.uuid }}">
+          <div class="hydra-notification__body">
+            <div class="hydra-actions mb-2">
+              <span class="hydra-status">{{ envelope.get_category_display }}</span>
+              <span class="hydra-status">{{ envelope.get_severity_display }}</span>
+              {% if not envelope.read_at %}<span class="hydra-status">{% trans "Unread" %}</span>{% endif %}
+            </div>
+            <h3 class="h5 mb-1" id="notification-{{ envelope.uuid }}">{{ envelope.notification.verb }}</h3>
+            <p class="hydra-muted mb-0"><time datetime="{{ envelope.occurred_at|date:'c' }}">{{ envelope.occurred_at|date:"Y-m-d H:i" }}</time></p>
+          </div>
+          <div class="hydra-actions hydra-notification__actions">
+            {% if envelope.archived_at %}
+              <form method="post" action="{% url 'hydra-notification-restore' envelope.uuid %}">
+                {% csrf_token %}<input type="hidden" name="version" value="{{ envelope.version }}">
+                <button class="oh-btn" type="submit">{% trans "Restore" %}</button>
+              </form>
+            {% else %}
+              <form method="post" action="{% url 'hydra-notification-open' envelope.uuid %}">
+                {% csrf_token %}<input type="hidden" name="version" value="{{ envelope.version }}">
+                <button class="oh-btn oh-btn--secondary" type="submit">{% trans "Open" %}</button>
+              </form>
+              {% if envelope.read_at %}
+                <form method="post" action="{% url 'hydra-notification-unread' envelope.uuid %}">
+                  {% csrf_token %}<input type="hidden" name="version" value="{{ envelope.version }}">
+                  <button class="oh-btn" type="submit">{% trans "Mark unread" %}</button>
+                </form>
+              {% else %}
+                <form method="post" action="{% url 'hydra-notification-read' envelope.uuid %}">
+                  {% csrf_token %}<input type="hidden" name="version" value="{{ envelope.version }}">
+                  <button class="oh-btn" type="submit">{% trans "Mark read" %}</button>
+                </form>
+              {% endif %}
+              <form method="post" action="{% url 'hydra-notification-archive' envelope.uuid %}">
+                {% csrf_token %}<input type="hidden" name="version" value="{{ envelope.version }}">
+                <button class="oh-btn oh-btn--danger-outline" type="submit">{% trans "Archive" %}</button>
+              </form>
+            {% endif %}
+          </div>
+        </article>
+      {% endfor %}
+    </div>
+    {% if page_obj.has_other_pages %}
+      <nav class="hydra-actions mt-3" aria-label="{% trans 'Notification pages' %}">
+        {% if page_obj.has_previous %}<a class="oh-btn" href="?{% if filter_query %}{{ filter_query }}&amp;{% endif %}page={{ page_obj.previous_page_number }}">{% trans "Previous" %}</a>{% endif %}
+        <span class="hydra-muted">{% blocktrans with current=page_obj.number total=page_obj.paginator.num_pages %}Page {{ current }} of {{ total }}{% endblocktrans %}</span>
+        {% if page_obj.has_next %}<a class="oh-btn" href="?{% if filter_query %}{{ filter_query }}&amp;{% endif %}page={{ page_obj.next_page_number }}">{% trans "Next" %}</a>{% endif %}
+      </nav>
+    {% endif %}
+  {% else %}
+    <p class="hydra-muted mb-0">{% trans "No notifications match the current filters." %}</p>
+  {% endif %}
+</section>
+
+<section class="hydra-card" aria-labelledby="notification-preferences-title">
+  <h2 class="h4" id="notification-preferences-title">{% trans "Delivery preferences" %}</h2>
+  <p class="hydra-muted">{% trans "In-app notifications are always enabled. Email contains only a generic sign-in prompt; personal and case data never leave the authenticated center. Native browser push is disabled by policy." %}</p>
+  <form method="post" action="{% url 'hydra-notification-preferences' %}" class="hydra-form-grid">
+    {% csrf_token %}
+    {{ preference_form.version }}
+    <div class="hydra-checkbox-row">
+      {{ preference_form.email_enabled }}
+      <label for="{{ preference_form.email_enabled.id_for_label }}">{{ preference_form.email_enabled.label }}</label>
+    </div>
+    <div>
+      <label for="{{ preference_form.email_min_severity.id_for_label }}">{{ preference_form.email_min_severity.label }}</label>
+      {{ preference_form.email_min_severity }}
+    </div>
+    <div class="hydra-checkbox-row">
+      {{ preference_form.browser_sound_enabled }}
+      <label for="{{ preference_form.browser_sound_enabled.id_for_label }}">{{ preference_form.browser_sound_enabled.label }}</label>
+    </div>
+    <div class="hydra-actions"><button class="oh-btn oh-btn--secondary" type="submit">{% trans "Save preferences" %}</button></div>
+  </form>
+</section>
+{% endblock hydra_content %}

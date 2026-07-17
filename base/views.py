@@ -190,7 +190,7 @@ def custom404(request):
     """
     Custom 404 method
     """
-    return render(request, "404.html")
+    return render(request, "404.html", status=404)
 
 
 # Create your views here.
@@ -5039,7 +5039,9 @@ def notifications(request):
     """
     This method will render notification items
     """
-    all_notifications = request.user.notifications.unread()
+    from hydra_notifications.selectors import notification_records_for_tray
+
+    all_notifications = notification_records_for_tray(user=request.user)
     return render(
         request,
         "notification/notification_items.html",
@@ -5048,16 +5050,24 @@ def notifications(request):
 
 
 @login_required
+@require_http_methods(["POST"])
 def clear_notification(request):
     """
     This method is used to clear notification
     """
     try:
-        request.user.notifications.unread().delete()
-        messages.success(request, _("Unread notifications removed."))
-    except Exception as e:
-        messages.error(request, e)
-    notifications = request.user.notifications.unread()
+        from hydra_notifications.services import archive_all_visible
+
+        count = archive_all_visible(actor=request.user, unread_only=True)
+        messages.success(
+            request,
+            _("Archived %(count)s unread notification(s).") % {"count": count},
+        )
+    except Exception:
+        messages.error(request, _("Notifications could not be archived."))
+    from hydra_notifications.selectors import notification_records_for_tray
+
+    notifications = notification_records_for_tray(user=request.user)
     return render(
         request,
         "notification/notification_items.html",
@@ -5066,68 +5076,115 @@ def clear_notification(request):
 
 
 @login_required
+@require_http_methods(["POST"])
 def delete_all_notifications(request):
     try:
-        request.user.notifications.read().delete()
-        request.user.notifications.unread().delete()
-        messages.success(request, _("All notifications removed."))
-    except Exception as e:
-        messages.error(request, e)
-    notifications = request.user.notifications.all()
+        from hydra_notifications.services import archive_all_visible
+
+        count = archive_all_visible(actor=request.user)
+        messages.success(
+            request,
+            _("Archived %(count)s notification(s).") % {"count": count},
+        )
+    except Exception:
+        messages.error(request, _("Notifications could not be archived."))
+    from hydra_notifications.selectors import visible_envelopes_for_user
+
+    notification_ids = visible_envelopes_for_user(user=request.user).values(
+        "notification_id"
+    )
+    notifications = Notification.objects.filter(pk__in=notification_ids)
     return render(
         request, "notification/all_notifications.html", {"notifications": notifications}
     )
 
 
 @login_required
+@require_http_methods(["POST"])
 def delete_notification(request, id):
     """
     This method is used to delete notification
     """
     script = ""
     try:
-        request.user.notifications.get(id=id).delete()
-        messages.success(request, _("Notification deleted."))
-    except Exception as e:
-        messages.error(request, e)
-    if not request.user.notifications.all():
+        from hydra_notifications.services import archive_envelope, wrap_legacy_notification
+
+        notification = get_object_or_404(Notification, id=id, recipient=request.user)
+        envelope = wrap_legacy_notification(notification=notification)
+        archive_envelope(actor=request.user, envelope_uuid=envelope.uuid)
+        messages.success(request, _("Notification archived."))
+    except Http404:
+        raise
+    except Exception:
+        messages.error(request, _("The notification could not be archived."))
+    from hydra_notifications.selectors import visible_envelopes_for_user
+
+    if not visible_envelopes_for_user(user=request.user).exists():
         script = """<span hx-get='/all-notifications' hx-target='#allNotificationBody' hx-trigger='load'></span>"""
     return HttpResponse(script)
 
 
 @login_required
+@require_http_methods(["POST"])
 def mark_as_read_notification(request, notification_id):
     script = ""
-    notification = Notification.objects.get(id=notification_id)
-    notification.mark_as_read()
-    if not request.user.notifications.unread():
+    from hydra_notifications.services import mark_envelope_read, wrap_legacy_notification
+
+    notification = get_object_or_404(
+        Notification,
+        id=notification_id,
+        recipient=request.user,
+    )
+    envelope = wrap_legacy_notification(notification=notification)
+    mark_envelope_read(actor=request.user, envelope_uuid=envelope.uuid)
+    from hydra_notifications.selectors import unread_notification_count
+
+    if unread_notification_count(user=request.user) == 0:
         script = """<span hx-get='/notifications' hx-target='#notificationContainer' hx-trigger='load'></span>"""
     return HttpResponse(script)
 
 
 @login_required
+@require_http_methods(["POST"])
 def mark_as_read_notification_json(request):
     try:
         notification_id = request.POST["notification_id"]
         notification_id = int(notification_id)
-        notification = Notification.objects.get(id=notification_id)
-        notification.mark_as_read()
+        notification = get_object_or_404(
+            Notification,
+            id=notification_id,
+            recipient=request.user,
+        )
+        from hydra_notifications.services import mark_envelope_read, wrap_legacy_notification
+
+        envelope = wrap_legacy_notification(notification=notification)
+        mark_envelope_read(actor=request.user, envelope_uuid=envelope.uuid)
         return JsonResponse({"success": True})
-    except:
+    except Http404:
+        return JsonResponse({"success": False, "error": "Not found"}, status=404)
+    except (TypeError, ValueError):
         return JsonResponse({"success": False, "error": "Invalid request"})
 
 
 @login_required
+@require_http_methods(["POST"])
 def read_notifications(request):
     """
     This method is to mark as read the notification
     """
     try:
-        request.user.notifications.all().mark_all_as_read()
-        messages.info(request, _("Notifications marked as read"))
-    except Exception as e:
-        messages.error(request, e)
-    notifications = request.user.notifications.unread()
+        from hydra_notifications.services import mark_all_visible_read
+
+        count = mark_all_visible_read(actor=request.user)
+        messages.info(
+            request,
+            _("Marked %(count)s notification(s) as read.") % {"count": count},
+        )
+    except Exception:
+        messages.error(request, _("Notifications could not be marked as read."))
+    from hydra_notifications.selectors import notification_records_for_tray
+
+    notifications = notification_records_for_tray(user=request.user)
 
     return render(
         request,
@@ -5141,10 +5198,16 @@ def all_notifications(request):
     """
     This method to render all notifications to template
     """
+    from hydra_notifications.selectors import visible_envelopes_for_user
+
+    notification_ids = visible_envelopes_for_user(
+        user=request.user,
+        include_archived=True,
+    ).values("notification_id")
     return render(
         request,
         "notification/all_notifications.html",
-        {"notifications": request.user.notifications.all()},
+        {"notifications": Notification.objects.filter(pk__in=notification_ids)},
     )
 
 

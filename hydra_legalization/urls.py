@@ -6,6 +6,46 @@ from hydra_legalization import views
 urlpatterns = [
     path("", views.legalization_list, name="hydra-legalization-list"),
     path(
+        "configuration/",
+        views.legalization_configuration,
+        name="hydra-legalization-configuration",
+    ),
+    path(
+        "configuration/procedures/create/",
+        views.legalization_procedure_form,
+        name="hydra-legalization-procedure-create",
+    ),
+    path(
+        "configuration/procedures/<uuid:procedure_uuid>/edit/",
+        views.legalization_procedure_form,
+        name="hydra-legalization-procedure-update",
+    ),
+    path(
+        "configuration/authorities/create/",
+        views.legalization_authority_form,
+        name="hydra-legalization-authority-create",
+    ),
+    path(
+        "configuration/authorities/<uuid:authority_uuid>/edit/",
+        views.legalization_authority_form,
+        name="hydra-legalization-authority-update",
+    ),
+    path(
+        "configuration/procedures/<uuid:procedure_uuid>/requirements/create/",
+        views.legalization_requirement_form,
+        name="hydra-legalization-requirement-create",
+    ),
+    path(
+        "configuration/requirements/<uuid:requirement_uuid>/edit/",
+        views.legalization_requirement_form,
+        name="hydra-legalization-requirement-update",
+    ),
+    path(
+        "workload/",
+        views.legalization_workload,
+        name="hydra-legalization-workload",
+    ),
+    path(
         "people/<uuid:person_uuid>/create/",
         views.legalization_create,
         name="hydra-legalization-create",
@@ -21,6 +61,21 @@ urlpatterns = [
         name="hydra-legalization-update",
     ),
     path(
+        "<uuid:case_uuid>/reassign/",
+        views.legalization_reassign,
+        name="hydra-legalization-reassign",
+    ),
+    path(
+        "<uuid:case_uuid>/delegations/create/",
+        views.legalization_delegate,
+        name="hydra-legalization-delegate",
+    ),
+    path(
+        "<uuid:case_uuid>/delegations/<uuid:delegation_uuid>/revoke/",
+        views.legalization_revoke_delegation,
+        name="hydra-legalization-revoke-delegation",
+    ),
+    path(
         "<uuid:case_uuid>/transition/",
         views.legalization_transition,
         name="hydra-legalization-transition",
@@ -29,5 +84,20 @@ urlpatterns = [
         "<uuid:case_uuid>/documents/attach/",
         views.legalization_attach_document,
         name="hydra-legalization-attach-document",
+    ),
+    path(
+        "<uuid:case_uuid>/authority-events/record/",
+        views.legalization_record_authority_event,
+        name="hydra-legalization-record-authority-event",
+    ),
+    path(
+        "<uuid:case_uuid>/renew/",
+        views.legalization_start_renewal,
+        name="hydra-legalization-start-renewal",
+    ),
+    path(
+        "<uuid:case_uuid>/renewal-link/",
+        views.legalization_link_renewal,
+        name="hydra-legalization-link-renewal",
     ),
 ]

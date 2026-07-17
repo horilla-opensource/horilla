@@ -6,7 +6,8 @@ services:
       dockerfile: Dockerfile
       args:
         REQUIREMENTS_FILE: requirements.staging.lock
-    environment:
+    environment: &hydra-environment
+      HYDRA_PROCESS_ROLE: web
       HYDRA_ENVIRONMENT: ${HYDRA_ENVIRONMENT:-staging}
       HYDRA_DEPLOYMENT_REVISION: ${HYDRA_DEPLOYMENT_REVISION:?HYDRA_DEPLOYMENT_REVISION is required}
       HYDRA_DISABLE_SCHEDULERS: ${HYDRA_DISABLE_SCHEDULERS:-True}
@@ -28,7 +29,52 @@ services:
       STATIC_ROOT: /app/staticfiles
       MEDIA_ROOT: /var/lib/hydra/media
       HYDRA_PRIVATE_MEDIA_ROOT: /var/lib/hydra/private
+      HYDRA_PORTAL_EMAIL_MEDIA_ROOT: /var/lib/hydra/outbox
       HYDRA_PRIVATE_DOCUMENT_MAX_BYTES: ${HYDRA_PRIVATE_DOCUMENT_MAX_BYTES:-10485760}
+      HYDRA_DOCUMENT_QUARANTINE_ROOT: /var/lib/hydra/quarantine
+      HYDRA_DOCUMENT_QUARANTINE_HOURS: ${HYDRA_DOCUMENT_QUARANTINE_HOURS:-72}
+      HYDRA_PRIVATE_DOCUMENT_RETENTION_DAYS: ${HYDRA_PRIVATE_DOCUMENT_RETENTION_DAYS:-365}
+      HYDRA_DOCUMENT_SCANNER: ${HYDRA_DOCUMENT_SCANNER:-clamd}
+      HYDRA_CLAMD_HOST: clamav
+      HYDRA_CLAMD_PORT: "3310"
+      HYDRA_CLAMD_TIMEOUT_SECONDS: ${HYDRA_CLAMD_TIMEOUT_SECONDS:-30}
+      HYDRA_NOTIFICATION_MAX_ATTEMPTS: ${HYDRA_NOTIFICATION_MAX_ATTEMPTS:-10}
+      HYDRA_NOTIFICATION_BASE_URL: ${HYDRA_NOTIFICATION_BASE_URL:?HYDRA_NOTIFICATION_BASE_URL is required}
+      HYDRA_NOTIFICATION_EMAIL_RETRY_BASE_SECONDS: ${HYDRA_NOTIFICATION_EMAIL_RETRY_BASE_SECONDS:-60}
+      HYDRA_NOTIFICATION_EMAIL_RETRY_MAX_SECONDS: ${HYDRA_NOTIFICATION_EMAIL_RETRY_MAX_SECONDS:-3600}
+      HYDRA_NOTIFICATION_EMAIL_LEASE_SECONDS: ${HYDRA_NOTIFICATION_EMAIL_LEASE_SECONDS:-120}
+      HYDRA_ONBOARDING_PORTAL_BASE_URL: ${HYDRA_ONBOARDING_PORTAL_BASE_URL:?HYDRA_ONBOARDING_PORTAL_BASE_URL is required}
+      EMAIL_HOST: ${EMAIL_HOST:?EMAIL_HOST is required}
+      EMAIL_PORT: ${EMAIL_PORT:-587}
+      EMAIL_HOST_USER: ${EMAIL_HOST_USER:?EMAIL_HOST_USER is required}
+      EMAIL_HOST_PASSWORD: ${EMAIL_HOST_PASSWORD:?EMAIL_HOST_PASSWORD is required}
+      DEFAULT_FROM_EMAIL: ${DEFAULT_FROM_EMAIL:?DEFAULT_FROM_EMAIL is required}
+      EMAIL_USE_TLS: ${EMAIL_USE_TLS:-True}
+      EMAIL_USE_SSL: ${EMAIL_USE_SSL:-False}
+      EMAIL_FAIL_SILENTLY: ${EMAIL_FAIL_SILENTLY:-False}
+      EMAIL_TIMEOUT: ${EMAIL_TIMEOUT:-30}
+      HYDRA_PORTAL_EMAIL_MAX_ATTEMPTS: ${HYDRA_PORTAL_EMAIL_MAX_ATTEMPTS:-8}
+      HYDRA_PORTAL_EMAIL_RETRY_BASE_SECONDS: ${HYDRA_PORTAL_EMAIL_RETRY_BASE_SECONDS:-60}
+      HYDRA_PORTAL_EMAIL_RETRY_MAX_SECONDS: ${HYDRA_PORTAL_EMAIL_RETRY_MAX_SECONDS:-3600}
+      HYDRA_PORTAL_EMAIL_LEASE_SECONDS: ${HYDRA_PORTAL_EMAIL_LEASE_SECONDS:-120}
+      HYDRA_PORTAL_EMAIL_DEAD_RETENTION_HOURS: ${HYDRA_PORTAL_EMAIL_DEAD_RETENTION_HOURS:-72}
+      HYDRA_PORTAL_EMAIL_MAX_ATTACHMENTS: ${HYDRA_PORTAL_EMAIL_MAX_ATTACHMENTS:-8}
+      HYDRA_PORTAL_EMAIL_ATTACHMENT_MAX_BYTES: ${HYDRA_PORTAL_EMAIL_ATTACHMENT_MAX_BYTES:-10485760}
+      HYDRA_PORTAL_EMAIL_ATTACHMENTS_TOTAL_BYTES: ${HYDRA_PORTAL_EMAIL_ATTACHMENTS_TOTAL_BYTES:-26214400}
+      HYDRA_MAINTENANCE_INTERVAL_SECONDS: ${HYDRA_MAINTENANCE_INTERVAL_SECONDS:-30}
+      HYDRA_MAINTENANCE_STALE_SECONDS: ${HYDRA_MAINTENANCE_STALE_SECONDS:-120}
+      HYDRA_MAINTENANCE_PURGE_INTERVAL_SECONDS: ${HYDRA_MAINTENANCE_PURGE_INTERVAL_SECONDS:-3600}
+      HYDRA_MAINTENANCE_NOTIFICATION_BATCH_SIZE: ${HYDRA_MAINTENANCE_NOTIFICATION_BATCH_SIZE:-100}
+      HYDRA_MAINTENANCE_NOTIFICATION_EMAIL_BATCH_SIZE: ${HYDRA_MAINTENANCE_NOTIFICATION_EMAIL_BATCH_SIZE:-25}
+      HYDRA_MAINTENANCE_DOCUMENT_BATCH_SIZE: ${HYDRA_MAINTENANCE_DOCUMENT_BATCH_SIZE:-100}
+      HYDRA_MAINTENANCE_LEGALIZATION_BATCH_SIZE: ${HYDRA_MAINTENANCE_LEGALIZATION_BATCH_SIZE:-100}
+      HYDRA_MAINTENANCE_ARRIVAL_BATCH_SIZE: ${HYDRA_MAINTENANCE_ARRIVAL_BATCH_SIZE:-100}
+      HYDRA_MAINTENANCE_ONBOARDING_BATCH_SIZE: ${HYDRA_MAINTENANCE_ONBOARDING_BATCH_SIZE:-100}
+      HYDRA_MAINTENANCE_PORTAL_EMAIL_BATCH_SIZE: ${HYDRA_MAINTENANCE_PORTAL_EMAIL_BATCH_SIZE:-25}
+      HYDRA_MAINTENANCE_MAX_FAILURES: ${HYDRA_MAINTENANCE_MAX_FAILURES:-5}
+      HYDRA_LEGALIZATION_DEADLINE_REMINDER_DAYS: ${HYDRA_LEGALIZATION_DEADLINE_REMINDER_DAYS:-30,7,1}
+      HYDRA_LEGALIZATION_VALIDITY_REMINDER_DAYS: ${HYDRA_LEGALIZATION_VALIDITY_REMINDER_DAYS:-90,30,7}
+      HYDRA_ARRIVAL_REMINDER_MINUTES: ${HYDRA_ARRIVAL_REMINDER_MINUTES:-1440,120}
       HYDRA_BACKUP_ROOT: /backups
       HYDRA_PORTAL_URL: ${HYDRA_PORTAL_URL:?HYDRA_PORTAL_URL is required}
       SECURE_SSL_REDIRECT: ${SECURE_SSL_REDIRECT:-True}
@@ -52,10 +98,51 @@ services:
     volumes:
       - hydra-media:/var/lib/hydra/media
       - hydra-private-media:/var/lib/hydra/private
+      - hydra-portal-email-outbox:/var/lib/hydra/outbox
+      - hydra-document-quarantine:/var/lib/hydra/quarantine
     depends_on:
       db:
         condition: service_healthy
+      clamav:
+        condition: service_healthy
     stop_grace_period: 45s
+
+  maintenance:
+    image: ${HYDRA_IMAGE:-hydra-app:staging}
+    environment:
+      <<: *hydra-environment
+      HYDRA_PROCESS_ROLE: maintenance
+    restart: unless-stopped
+    init: true
+    cap_drop:
+      - ALL
+    security_opt:
+      - no-new-privileges:true
+    tmpfs:
+      - /tmp:rw,noexec,nosuid,size=64m
+    volumes:
+      - hydra-private-media:/var/lib/hydra/private
+      - hydra-portal-email-outbox:/var/lib/hydra/outbox
+      - hydra-document-quarantine:/var/lib/hydra/quarantine
+    depends_on:
+      server:
+        condition: service_healthy
+    healthcheck:
+      test: ["CMD", "python", "manage.py", "hydra_maintenance_health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 90s
+    stop_grace_period: 45s
+
+  clamav:
+    image: ${HYDRA_CLAMAV_IMAGE:-clamav/clamav:1.4_base}
+    restart: unless-stopped
+    init: true
+    volumes:
+      - hydra-clamav-db:/var/lib/clamav
+    expose:
+      - "3310"
 
   db:
     image: postgres:17-bookworm
@@ -103,6 +190,7 @@ services:
       - ${HYDRA_BACKUP_HOST_PATH:?HYDRA_BACKUP_HOST_PATH is required}:/backups
       - hydra-media:/data/media:ro
       - hydra-private-media:/data/private:ro
+      - hydra-portal-email-outbox:/data/outbox:ro
     depends_on:
       db:
         condition: service_healthy
@@ -111,3 +199,6 @@ volumes:
   hydra-db:
   hydra-media:
   hydra-private-media:
+  hydra-portal-email-outbox:
+  hydra-document-quarantine:
+  hydra-clamav-db:

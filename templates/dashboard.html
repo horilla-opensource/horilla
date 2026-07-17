@@ -432,9 +432,12 @@
         $(anchorElement).parent().find('#newTab').hide();
     }
 
-    var w = c.width = window.innerWidth,
-        h = c.height = window.innerHeight,
-        ctx = c.getContext('2d'),
+    const birthdayCanvas = document.getElementById('c');
+
+    if (birthdayCanvas) {
+        var w = birthdayCanvas.width = window.innerWidth,
+        h = birthdayCanvas.height = window.innerHeight,
+        ctx = birthdayCanvas.getContext('2d'),
 
         hw = w / 2, // half-width
         hh = h / 2,
@@ -798,14 +801,15 @@
     anim();
 
     window.addEventListener('resize', function () {
-        w = c.width = window.innerWidth;
-        h = c.height = window.innerHeight;
+        w = birthdayCanvas.width = window.innerWidth;
+        h = birthdayCanvas.height = window.innerHeight;
 
         hw = w / 2;
         hh = h / 2;
 
         ctx.font = opts.charSize + 'px Verdana';
-    })
+        });
+    }
 
 </script>
 <script src="{% static 'build/js/dashboardDriver.js' %}"></script>

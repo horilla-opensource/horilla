@@ -1,0 +1,16 @@
+{% extends "hydra_shell/base.html" %}
+{% load i18n %}
+
+{% block hydra_content %}
+<header class="hydra-header">
+  <h1 class="oh-main__titlebar-title">{{ page_title }}</h1>
+  {% if cancel_url %}<a class="oh-btn" href="{{ cancel_url }}">{% trans "Cancel" %}</a>{% else %}<a class="oh-btn" href="{% url 'hydra-onboarding-dashboard' %}">{% trans "Cancel" %}</a>{% endif %}
+</header>
+<section class="hydra-card">
+  <form method="post">
+    {% csrf_token %}
+    {{ form.as_p }}
+    <button class="oh-btn oh-btn--secondary" type="submit">{% trans "Save" %}</button>
+  </form>
+</section>
+{% endblock hydra_content %}

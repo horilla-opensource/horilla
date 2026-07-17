@@ -36,9 +36,11 @@ COPY deployment/django_auth_migrations/0013_user_is_new_employee.py \
     /usr/local/lib/python3.11/site-packages/django/contrib/auth/migrations/0013_user_is_new_employee.py
 COPY --chown=hydra:hydra . .
 
-RUN chmod 0555 /app/entrypoint.sh \
+RUN python scripts/verify-migration-manifest.py \
+    && chmod 0555 /app/entrypoint.sh \
     && install -d -o hydra -g hydra -m 0750 \
-        /app/staticfiles /var/lib/hydra/media /var/lib/hydra/private
+        /app/staticfiles /var/lib/hydra/media /var/lib/hydra/private \
+        /var/lib/hydra/quarantine
 
 USER hydra
 

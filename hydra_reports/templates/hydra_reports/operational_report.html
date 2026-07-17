@@ -47,6 +47,7 @@
   <article class="hydra-kpi"><span>{% trans "Employees" %}</span><strong>{{ summary.employee_count }}</strong></article>
   <article class="hydra-kpi"><span>{% trans "Arrival attention" %}</span><strong>{{ summary.arrival_attention_count }}</strong></article>
   <article class="hydra-kpi"><span>{% trans "Legalization attention" %}</span><strong>{{ summary.legalization_attention_count }}</strong></article>
+  <article class="hydra-kpi"><span>{% trans "Housing attention" %}</span><strong>{{ summary.housing_attention_count }}</strong></article>
 </section>
 
 <section class="hydra-card mb-3" aria-labelledby="operational-report-table-title">
@@ -65,6 +66,7 @@
           <th>{% trans "Current assignment" %}</th>
           <th>{% trans "Latest arrival" %}</th>
           <th>{% trans "Latest legalization" %}</th>
+          <th>{% trans "Current housing" %}</th>
           <th>{% trans "Attention" %}</th>
         </tr>
       </thead>
@@ -93,6 +95,12 @@
                 <span class="hydra-muted">{{ row.legalization.get_status_display }}{% if row.legalization.deadline %} / {{ row.legalization.deadline|date:"Y-m-d" }}{% endif %}</span>
               {% else %}<span class="hydra-muted">&mdash;</span>{% endif %}
             </td>
+            <td data-label="{% trans 'Current housing' %}">
+              {% if row.housing %}
+                <a href="{{ row.housing.bed.room.facility.get_absolute_url }}">{{ row.housing.bed.room.facility.name }}</a><br>
+                <span class="hydra-muted">{{ row.housing.bed.room.name }} / {{ row.housing.bed.label }}</span>
+              {% else %}<span class="hydra-muted">&mdash;</span>{% endif %}
+            </td>
             <td data-label="{% trans 'Attention' %}">
               {% if row.attention_flags %}
                 <div class="hydra-tags">
@@ -102,6 +110,7 @@
                     {% if flag == "arrival_no_show" %}<span class="hydra-status hydra-status--danger">{% trans "No-show" %}</span>{% endif %}
                     {% if flag == "legalization_deadline" %}<span class="hydra-status hydra-status--warning">{% trans "Legalization deadline" %}</span>{% endif %}
                     {% if flag == "legalization_validity" %}<span class="hydra-status hydra-status--danger">{% trans "Legalization validity" %}</span>{% endif %}
+                    {% if flag == "housing_missing" %}<span class="hydra-status hydra-status--warning">{% trans "No housing after arrival" %}</span>{% endif %}
                   {% endfor %}
                 </div>
               {% else %}<span class="hydra-status hydra-status--ok">{% trans "No current flag" %}</span>{% endif %}

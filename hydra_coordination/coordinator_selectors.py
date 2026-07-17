@@ -9,6 +9,9 @@ from hydra_arrivals.models import ArrivalPlan
 from hydra_coordination.models import Location, PersonAssignment
 from hydra_coordination.selectors import active_grants_for_user
 from hydra_legalization.models import LegalizationCase
+from hydra_housing.models import HousingAssignment
+from hydra_tasks.models import HydraTask
+from hydra_tasks.selectors import tasks_for_user
 
 
 COORDINATOR_PERMISSIONS = (
@@ -17,6 +20,10 @@ COORDINATOR_PERMISSIONS = (
     "hydra_people.view_person",
     "hydra_arrivals.view_arrivalplan",
     "hydra_legalization.view_legalizationcase",
+    "hydra_housing.view_housingfacility",
+    "hydra_housing.view_housingroom",
+    "hydra_housing.view_housingbed",
+    "hydra_housing.view_housingassignment",
 )
 PANEL_ROW_LIMIT = 25
 
@@ -52,10 +59,14 @@ class CoordinatorPanelSnapshot:
     arrivals_today: int
     arrival_exception_count: int
     assignment_gap_count: int
+    housing_gap_count: int
     legalization_exception_count: int
+    overdue_task_count: int
     arrival_exceptions: list[CoordinatorArrivalRow]
     assignment_gaps: list[ArrivalPlan]
+    housing_gaps: list[ArrivalPlan]
     legalization_exceptions: list[CoordinatorLegalizationRow]
+    overdue_tasks: list[HydraTask]
 
 
 def coordinator_locations_for_user(*, user) -> QuerySet[Location]:
@@ -124,6 +135,24 @@ def coordinator_snapshot_for_location(*, user, location, day):
     )
     assignment_gap_count = assignment_gap_queryset.count()
     assignment_gaps = list(assignment_gap_queryset[:PANEL_ROW_LIMIT])
+
+    housed_person_ids = HousingAssignment._base_manager.filter(
+        is_active=True,
+        valid_from__lte=day,
+        bed__room__facility__location=location,
+    ).filter(
+        Q(valid_until__isnull=True) | Q(valid_until__gte=day)
+    ).values_list("person_id", flat=True)
+    housing_gap_queryset = (
+        arrival_queryset.filter(
+            status=ArrivalPlan.Status.CONFIRMED,
+            actual_arrived_at__date__lte=day,
+        )
+        .exclude(person_id__in=housed_person_ids)
+        .order_by("-actual_arrived_at", "person__passport_name", "pk")
+    )
+    housing_gap_count = housing_gap_queryset.count()
+    housing_gaps = list(housing_gap_queryset[:PANEL_ROW_LIMIT])
 
     location_person_ids = PersonAssignment._base_manager.filter(
         is_active=True,
@@ -207,12 +236,29 @@ def coordinator_snapshot_for_location(*, user, location, day):
             )
         )
 
+    overdue_task_queryset = (
+        tasks_for_user(user=user)
+        .filter(
+            person_id__in=location_person_ids,
+            company=location.company,
+            status__in=(HydraTask.Status.OPEN, HydraTask.Status.IN_PROGRESS),
+            due_at__lt=cutoff,
+        )
+        .order_by("due_at", "priority", "pk")
+    )
+    overdue_task_count = overdue_task_queryset.count()
+    overdue_tasks = list(overdue_task_queryset[:PANEL_ROW_LIMIT])
+
     return CoordinatorPanelSnapshot(
         arrivals_today=arrivals_today,
         arrival_exception_count=arrival_exception_count,
         assignment_gap_count=assignment_gap_count,
+        housing_gap_count=housing_gap_count,
         legalization_exception_count=legalization_exception_count,
+        overdue_task_count=overdue_task_count,
         arrival_exceptions=arrival_exceptions,
         assignment_gaps=assignment_gaps,
+        housing_gaps=housing_gaps,
         legalization_exceptions=legalization_exceptions,
+        overdue_tasks=overdue_tasks,
     )

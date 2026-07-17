@@ -1,0 +1,75 @@
+{% extends "hydra_shell/base.html" %}
+{% load i18n %}
+
+{% block hydra_content %}
+<header class="hydra-header">
+  <div>
+    <p class="hydra-muted mb-1">{% trans "Versioned internal learning" %}</p>
+    <h1 class="oh-main__titlebar-title">{% trans "Onboarding content" %}</h1>
+  </div>
+  <div class="hydra-actions">
+    {% if perms.hydra_onboarding.add_course %}<a class="oh-btn oh-btn--secondary" href="{% url 'hydra-onboarding-course-create' %}">{% trans "Create course" %}</a>{% endif %}
+    {% if perms.hydra_onboarding.add_courseassignmentrule and perms.hydra_onboarding.view_courseassignmentrule %}<a class="oh-btn" href="{% url 'hydra-onboarding-rule-create' %}">{% trans "Create rule" %}</a>{% endif %}
+  </div>
+</header>
+
+<section class="hydra-metrics" aria-label="{% trans 'Onboarding summary' %}">
+  <article class="hydra-metric"><span>{% trans "Courses" %}</span><strong>{{ course_count }}</strong></article>
+  <article class="hydra-metric"><span>{% trans "Active rules" %}</span><strong>{{ rule_count }}</strong></article>
+  <article class="hydra-metric"><span>{% trans "Open assignments" %}</span><strong>{{ open_assignment_count }}</strong></article>
+</section>
+
+<section class="hydra-card mb-3">
+  <form method="get" class="hydra-filter-grid">
+    <div><label for="id_q">{% trans "Search" %}</label><input class="oh-input w-100" id="id_q" name="q" value="{{ query }}"></div>
+    <div class="hydra-actions"><button class="oh-btn" type="submit">{% trans "Filter" %}</button></div>
+  </form>
+</section>
+
+<section class="hydra-card mb-3" aria-labelledby="courses-title">
+  <div class="hydra-header"><h2 class="h4 mb-0" id="courses-title">{% trans "Courses" %}</h2></div>
+  {% if courses %}
+  <table class="hydra-table">
+    <thead><tr><th>{% trans "Code" %}</th><th>{% trans "Course" %}</th><th>{% trans "Company" %}</th><th>{% trans "Versions" %}</th></tr></thead>
+    <tbody>{% for course in courses %}<tr>
+      <td data-label="{% trans 'Code' %}"><a href="{{ course.get_absolute_url }}"><strong>{{ course.code }}</strong></a></td>
+      <td data-label="{% trans 'Course' %}">{{ course.name }}</td>
+      <td data-label="{% trans 'Company' %}">{{ course.company }}</td>
+      <td data-label="{% trans 'Versions' %}">{{ course.versions.count }}</td>
+    </tr>{% endfor %}</tbody>
+  </table>
+  {% else %}<p class="hydra-muted mb-0">{% trans "No course is visible." %}</p>{% endif %}
+</section>
+
+{% if perms.hydra_onboarding.view_courseassignmentrule %}
+<section class="hydra-card mb-3" aria-labelledby="rules-title">
+  <div class="hydra-header"><h2 class="h4 mb-0" id="rules-title">{% trans "Automatic assignment rules" %}</h2></div>
+  {% if rules %}<table class="hydra-table">
+    <thead><tr><th>{% trans "Course" %}</th><th>{% trans "Priority" %}</th><th>{% trans "Location / department / team" %}</th><th>{% trans "Language" %}</th><th>{% trans "Worker type" %}</th></tr></thead>
+    <tbody>{% for rule in rules %}<tr>
+      <td data-label="{% trans 'Course' %}">{{ rule.course.code }}</td>
+      <td data-label="{% trans 'Priority' %}">{{ rule.priority }}</td>
+      <td data-label="{% trans 'Location / department / team' %}">{{ rule.location|default:"—" }} / {{ rule.department|default:"—" }} / {{ rule.team|default:"—" }}</td>
+      <td data-label="{% trans 'Language' %}">{{ rule.get_language_display|default:_('Any') }}</td>
+      <td data-label="{% trans 'Worker type' %}">{{ rule.employee_type|default:_('Any') }}</td>
+    </tr>{% endfor %}</tbody>
+  </table>{% else %}<p class="hydra-muted mb-0">{% trans "No automatic rule is visible." %}</p>{% endif %}
+</section>
+{% endif %}
+
+{% if perms.hydra_onboarding.view_courseassignment %}
+<section class="hydra-card" aria-labelledby="assignments-title">
+  <div class="hydra-header"><h2 class="h4 mb-0" id="assignments-title">{% trans "Course assignments" %}</h2></div>
+  {% if assignments %}<table class="hydra-table">
+    <thead><tr><th>{% trans "Person" %}</th><th>{% trans "Course / version" %}</th><th>{% trans "Source" %}</th><th>{% trans "Due" %}</th><th>{% trans "Status" %}</th></tr></thead>
+    <tbody>{% for assignment in assignments %}<tr>
+      <td data-label="{% trans 'Person' %}"><a href="{{ assignment.person.get_absolute_url }}">{{ assignment.person.hydra_id }}</a><br>{{ assignment.person.passport_name }}</td>
+      <td data-label="{% trans 'Course / version' %}"><a href="{{ assignment.get_absolute_url }}"><strong>{{ assignment.course.name }}</strong></a><br>{{ assignment.course_version.language }} / v{{ assignment.course_version.version_number }}</td>
+      <td data-label="{% trans 'Source' %}">{{ assignment.get_source_display }}</td>
+      <td data-label="{% trans 'Due' %}">{{ assignment.due_at|date:"Y-m-d"|default:"—" }}</td>
+      <td data-label="{% trans 'Status' %}"><span class="hydra-status">{{ assignment.get_status_display }}</span></td>
+    </tr>{% endfor %}</tbody>
+  </table>{% else %}<p class="hydra-muted mb-0">{% trans "No course assignment is visible." %}</p>{% endif %}
+</section>
+{% endif %}
+{% endblock hydra_content %}

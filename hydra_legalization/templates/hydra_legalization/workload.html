@@ -1,0 +1,26 @@
+{% extends "hydra_people/base.html" %}
+{% load i18n %}
+
+{% block person_content %}
+<header class="hydra-header">
+  <div><h1 class="oh-main__titlebar-title">{% trans "Legalization workload" %}</h1><p class="hydra-muted mb-0">{% trans "Active scoped cases, owners, deputies and attention deadlines." %}</p></div>
+  <div class="hydra-actions"><a class="oh-btn oh-btn--secondary" href="{% url 'hydra-legalization-list' %}">{% trans "All cases" %}</a></div>
+</header>
+
+<form class="hydra-card hydra-search mb-3" method="get" role="search">
+  <label class="sr-only" for="workload-search">{% trans "Search workload" %}</label>
+  <input class="oh-input" id="workload-search" name="q" value="{{ query }}" placeholder="{% trans 'Hydra ID, person or reference' %}">
+  <select class="oh-select" name="owner" aria-label="{% trans 'Responsible' %}"><option value="">{% trans "All responsible users" %}</option>{% for user_id, label in owner_choices %}<option value="{{ user_id }}"{% if selected_owner == user_id|stringformat:"s" %} selected{% endif %}>{{ label }}</option>{% endfor %}</select>
+  <select class="oh-select" name="status" aria-label="{% trans 'Status' %}"><option value="">{% trans "All active statuses" %}</option>{% for value, label in status_choices %}<option value="{{ value }}"{% if selected_status == value %} selected{% endif %}>{{ label }}</option>{% endfor %}</select>
+  <select class="oh-select" name="attention" aria-label="{% trans 'Attention' %}"><option value="">{% trans "All attention states" %}</option><option value="overdue"{% if selected_attention == "overdue" %} selected{% endif %}>{% trans "Overdue" %}</option><option value="due_14"{% if selected_attention == "due_14" %} selected{% endif %}>{% trans "Due within 14 days" %}</option><option value="no_deadline"{% if selected_attention == "no_deadline" %} selected{% endif %}>{% trans "No deadline" %}</option></select>
+  <button class="oh-btn oh-btn--secondary" type="submit">{% trans "Filter" %}</button>
+</form>
+
+<section class="hydra-card" aria-label="{% trans 'Legalization workload queue' %}">
+  {% if page_obj.object_list %}<div class="table-responsive"><table class="hydra-table"><thead><tr><th>{% trans "Person / case" %}</th><th>{% trans "Status" %}</th><th>{% trans "Responsible / deputy" %}</th><th>{% trans "Deadline" %}</th><th>{% trans "Action" %}</th></tr></thead><tbody>
+  {% for case in page_obj %}<tr><td data-label="{% trans 'Person / case' %}">{{ case.person.passport_name }}<br><small class="hydra-muted">{{ case.person.hydra_id }} · {{ case.procedure_name }} · {{ case.company }}</small></td><td data-label="{% trans 'Status' %}"><span class="hydra-status">{{ case.configured_status_label }}</span></td><td data-label="{% trans 'Responsible / deputy' %}">{{ case.responsible.get_full_name|default:case.responsible.username }}{% with delegation=case.current_delegations.0 %}{% if delegation %}<br><small>{% trans "Deputy" %}: {{ delegation.deputy.get_full_name|default:delegation.deputy.username }} · {{ delegation.valid_until|date:"Y-m-d" }}</small>{% endif %}{% endwith %}</td><td data-label="{% trans 'Deadline' %}">{% if case.deadline %}{{ case.deadline|date:"Y-m-d" }}{% if case.is_overdue %}<br><small class="text-danger">{% trans "Overdue" %}</small>{% endif %}{% else %}—{% endif %}</td><td data-label="{% trans 'Action' %}"><a class="oh-btn oh-btn--secondary" href="{{ case.get_absolute_url }}">{% trans "Open" %}</a></td></tr>{% endfor %}
+  </tbody></table></div>{% else %}<p class="hydra-muted mb-0">{% trans "No active cases match these workload filters." %}</p>{% endif %}
+</section>
+
+{% if page_obj.has_other_pages %}<nav class="hydra-actions mt-3" aria-label="{% trans 'Pagination' %}">{% if page_obj.has_previous %}<a class="oh-btn oh-btn--secondary" href="?q={{ query|urlencode }}&status={{ selected_status|urlencode }}&owner={{ selected_owner|urlencode }}&attention={{ selected_attention|urlencode }}&page={{ page_obj.previous_page_number }}">{% trans "Previous" %}</a>{% endif %}<span class="hydra-muted">{{ page_obj.number }} / {{ page_obj.paginator.num_pages }}</span>{% if page_obj.has_next %}<a class="oh-btn oh-btn--secondary" href="?q={{ query|urlencode }}&status={{ selected_status|urlencode }}&owner={{ selected_owner|urlencode }}&attention={{ selected_attention|urlencode }}&page={{ page_obj.next_page_number }}">{% trans "Next" %}</a>{% endif %}</nav>{% endif %}
+{% endblock person_content %}

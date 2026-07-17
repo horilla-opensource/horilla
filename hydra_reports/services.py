@@ -33,6 +33,11 @@ CSV_HEADERS = (
     "LEGALIZATION_STATUS",
     "LEGALIZATION_DEADLINE",
     "LEGALIZATION_VALID_UNTIL",
+    "HOUSING_FACILITY",
+    "HOUSING_ROOM",
+    "HOUSING_BED",
+    "HOUSING_VALID_FROM",
+    "HOUSING_VALID_UNTIL",
     "ATTENTION_FLAGS",
 )
 
@@ -82,6 +87,7 @@ def _report_row_values(row):
     assignment = row.assignment
     arrival = row.arrival
     legalization = row.legalization
+    housing = row.housing
     if assignment:
         team = assignment.team
         section = team.section
@@ -107,6 +113,11 @@ def _report_row_values(row):
         legalization.valid_until.isoformat()
         if legalization and legalization.valid_until
         else "",
+        housing.bed.room.facility.name if housing else "",
+        housing.bed.room.name if housing else "",
+        housing.bed.label if housing else "",
+        housing.valid_from.isoformat() if housing else "",
+        housing.valid_until.isoformat() if housing and housing.valid_until else "",
         ";".join(row.attention_flags),
     )
 

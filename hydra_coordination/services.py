@@ -2,23 +2,33 @@ from datetime import timedelta
 
 from django.core.exceptions import PermissionDenied, ValidationError
 from django.db import transaction
+from django.db.models import F
 from django.db.models import Q
+from django.urls import reverse
 from django.utils import timezone
 
 from employee.models import EmployeeWorkInformation
 
 from hydra_coordination.models import (
     Location,
+    OrganizationAccessEvent,
     PersonAssignment,
     ScopeGrant,
     Section,
     Team,
+    TerminationMode,
 )
 from hydra_coordination.selectors import (
     grant_covers_target,
     grants_covering_target,
 )
 from hydra_people.models import Person
+from hydra_people.identity import ensure_canonical_person
+from hydra_notifications.models import (
+    NotificationKind,
+    NotificationTargetKind,
+)
+from hydra_notifications.services import send_hydra_notification
 
 
 def _require_permissions(actor, *permissions):
@@ -38,6 +48,284 @@ def _target_kwargs(grant):
         for name in ("company", "department", "location", "section", "team")
         if getattr(grant, f"{name}_id")
     }
+
+
+def _notification_kind(event):
+    return {
+        OrganizationAccessEvent.Action.SCOPE_REVOKED: (
+            NotificationKind.ORGANIZATION_SCOPE_REVOKED
+        ),
+        OrganizationAccessEvent.Action.SCOPE_END_SCHEDULED: (
+            NotificationKind.ORGANIZATION_SCOPE_END
+        ),
+        OrganizationAccessEvent.Action.ASSIGNMENT_ENDED: (
+            NotificationKind.ORGANIZATION_ASSIGNMENT_ENDED
+        ),
+        OrganizationAccessEvent.Action.ASSIGNMENT_END_SCHEDULED: (
+            NotificationKind.ORGANIZATION_ASSIGNMENT_END
+        ),
+    }[event.action]
+
+
+def dispatch_organization_access_event(event_id):
+    """Deliver one durable organization event to Horilla notifications."""
+
+    try:
+        with transaction.atomic():
+            event = OrganizationAccessEvent.objects.select_for_update(
+                of=("self",)
+            ).select_related(
+                "actor",
+                "subject_user",
+                "scope_grant",
+                "person_assignment__person",
+            ).get(pk=event_id)
+            if event.notification_status in (
+                OrganizationAccessEvent.NotificationStatus.SENT,
+                OrganizationAccessEvent.NotificationStatus.NOT_APPLICABLE,
+            ):
+                return True
+            if event.subject_user_id is None:
+                event.notification_status = (
+                    OrganizationAccessEvent.NotificationStatus.NOT_APPLICABLE
+                )
+                event.notification_last_attempt_at = timezone.now()
+                event.notification_error_code = ""
+                event.save(
+                    update_fields=(
+                        "notification_status",
+                        "notification_last_attempt_at",
+                        "notification_error_code",
+                    )
+                )
+                return True
+
+            notification = send_hydra_notification(
+                actor=event.actor,
+                recipient=event.subject_user,
+                kind=_notification_kind(event),
+                target_kind=NotificationTargetKind.ORGANIZATION,
+                redirect_path=reverse("hydra-organization"),
+                idempotency_key=f"organization-access:{event.uuid}",
+            )
+            event.notification = notification
+            event.notification_status = OrganizationAccessEvent.NotificationStatus.SENT
+            event.notification_attempts += 1
+            event.notification_last_attempt_at = timezone.now()
+            event.notification_error_code = ""
+            event.save(
+                update_fields=(
+                    "notification",
+                    "notification_status",
+                    "notification_attempts",
+                    "notification_last_attempt_at",
+                    "notification_error_code",
+                )
+            )
+            return True
+    except Exception as error:
+        OrganizationAccessEvent.objects.filter(pk=event_id).update(
+            notification_status=OrganizationAccessEvent.NotificationStatus.FAILED,
+            notification_attempts=F("notification_attempts") + 1,
+            notification_last_attempt_at=timezone.now(),
+            notification_error_code=type(error).__name__[:80],
+        )
+        return False
+
+
+def dispatch_pending_organization_notifications(*, limit=100):
+    if limit <= 0 or limit > 1000:
+        raise ValueError("limit must be between 1 and 1000")
+    from django.conf import settings
+
+    event_ids = list(
+        OrganizationAccessEvent.objects.filter(
+            notification_status__in=(
+                OrganizationAccessEvent.NotificationStatus.PENDING,
+                OrganizationAccessEvent.NotificationStatus.FAILED,
+            ),
+            notification_attempts__lt=settings.HYDRA_NOTIFICATION_MAX_ATTEMPTS,
+        )
+        .order_by("occurred_at", "pk")
+        .values_list("pk", flat=True)[:limit]
+    )
+    sent = failed = 0
+    for event_id in event_ids:
+        if dispatch_organization_access_event(event_id):
+            sent += 1
+        else:
+            failed += 1
+    return sent, failed, len(event_ids)
+
+
+def _create_access_event(
+    *, actor, scope_grant=None, person_assignment=None, action, reason, last_day
+):
+    subject_user = None
+    if scope_grant is not None:
+        subject_user = scope_grant.user
+    elif (
+        person_assignment.person.employee_id
+        and person_assignment.person.employee.employee_user_id_id
+    ):
+        subject_user = person_assignment.person.employee.employee_user_id
+    event = OrganizationAccessEvent(
+        scope_grant=scope_grant,
+        person_assignment=person_assignment,
+        action=action,
+        actor=actor,
+        subject_user=subject_user,
+        reason=reason,
+        effective_until=last_day,
+        notification_status=(
+            OrganizationAccessEvent.NotificationStatus.PENDING
+            if subject_user is not None
+            else OrganizationAccessEvent.NotificationStatus.NOT_APPLICABLE
+        ),
+    )
+    event.full_clean()
+    event.save()
+    if subject_user is not None:
+        transaction.on_commit(lambda: dispatch_organization_access_event(event.pk))
+    return event
+
+
+def _apply_termination(*, instance, action, last_day, reason, actor):
+    reason = " ".join(reason.split())
+    if not reason:
+        raise ValidationError({"reason": "A termination reason is required."})
+    today = timezone.localdate()
+
+    if (
+        action == "schedule"
+        and instance.termination_mode == TerminationMode.SCHEDULED
+        and instance.valid_until == last_day
+        and instance.termination_reason == reason
+    ):
+        return False
+    if (
+        action == "immediate"
+        and instance.termination_mode == TerminationMode.IMMEDIATE
+        and not instance.is_active
+        and instance.termination_reason == reason
+    ):
+        return False
+    if not instance.can_terminate:
+        raise ValidationError("This access record has already ended.")
+
+    if action == "schedule":
+        if last_day is None:
+            raise ValidationError({"last_day": "Choose the last day of access."})
+        if last_day < today:
+            raise ValidationError({"last_day": "The last day cannot be in the past."})
+        if last_day < instance.valid_from:
+            raise ValidationError(
+                {"last_day": "The last day cannot precede the start date."}
+            )
+        if instance.valid_until is not None and last_day > instance.valid_until:
+            raise ValidationError(
+                {"last_day": "This end action cannot extend existing access."}
+            )
+        instance.valid_until = last_day
+        instance.termination_mode = TerminationMode.SCHEDULED
+    elif action == "immediate":
+        instance.is_active = False
+        instance.termination_mode = TerminationMode.IMMEDIATE
+        last_day = None
+    else:
+        raise ValidationError({"action": "Choose a valid end action."})
+
+    instance.termination_reason = reason[:255]
+    instance.termination_recorded_at = timezone.now()
+    instance.termination_recorded_by = actor
+    _stamp(instance, actor)
+    instance.full_clean()
+    instance.save()
+    return last_day
+
+
+@transaction.atomic
+def end_scope_grant(*, grant_id, action, last_day, reason, actor) -> ScopeGrant:
+    _require_permissions(
+        actor,
+        "hydra_coordination.view_scopegrant",
+        "hydra_coordination.change_scopegrant",
+    )
+    grant = ScopeGrant.objects.select_for_update(of=("self",)).select_related(
+        "user", "company", "department", "location", "section", "team"
+    ).get(pk=grant_id)
+    if not actor.is_superuser and not grant_covers_target(
+        user=actor, **_target_kwargs(grant)
+    ):
+        raise PermissionDenied
+    applied_last_day = _apply_termination(
+        instance=grant,
+        action=action,
+        last_day=last_day,
+        reason=reason,
+        actor=actor,
+    )
+    if applied_last_day is False:
+        return grant
+    _create_access_event(
+        actor=actor,
+        scope_grant=grant,
+        action=(
+            OrganizationAccessEvent.Action.SCOPE_END_SCHEDULED
+            if action == "schedule"
+            else OrganizationAccessEvent.Action.SCOPE_REVOKED
+        ),
+        reason=grant.termination_reason,
+        last_day=applied_last_day,
+    )
+    return grant
+
+
+@transaction.atomic
+def end_person_assignment(
+    *, assignment_id, action, last_day, reason, actor
+) -> PersonAssignment:
+    _require_permissions(
+        actor,
+        "hydra_people.view_person",
+        "hydra_coordination.change_personassignment",
+        "hydra_coordination.assign_person",
+    )
+    assignment = PersonAssignment.objects.select_for_update(of=("self",)).select_related(
+        "person__employee__employee_user_id",
+        "team__section__location__company",
+        "department",
+    ).get(pk=assignment_id)
+
+    from hydra_people.selectors import people_for_user
+
+    if not actor.is_superuser and not people_for_user(user=actor).filter(
+        pk=assignment.person_id
+    ).exists():
+        raise PermissionDenied
+    if not grant_covers_target(user=actor, team=assignment.team):
+        raise PermissionDenied
+    applied_last_day = _apply_termination(
+        instance=assignment,
+        action=action,
+        last_day=last_day,
+        reason=reason,
+        actor=actor,
+    )
+    if applied_last_day is False:
+        return assignment
+    _create_access_event(
+        actor=actor,
+        person_assignment=assignment,
+        action=(
+            OrganizationAccessEvent.Action.ASSIGNMENT_END_SCHEDULED
+            if action == "schedule"
+            else OrganizationAccessEvent.Action.ASSIGNMENT_ENDED
+        ),
+        reason=assignment.termination_reason,
+        last_day=applied_last_day,
+    )
+    return assignment
 
 
 @transaction.atomic
@@ -117,6 +405,7 @@ def assign_person(*, assignment: PersonAssignment, actor) -> PersonAssignment:
     from hydra_people.selectors import people_for_user
 
     locked_person = Person.objects.select_for_update().get(pk=assignment.person_id)
+    ensure_canonical_person(locked_person)
     if not actor.is_superuser and not people_for_user(user=actor).filter(
         pk=locked_person.pk
     ).exists():
@@ -195,6 +484,7 @@ def assign_employee_to_team(
     from hydra_people.selectors import people_for_user
 
     locked_person = Person.objects.select_for_update().get(pk=person.pk)
+    ensure_canonical_person(locked_person)
     if not actor.is_superuser and not people_for_user(user=actor).filter(
         pk=locked_person.pk
     ).exists():
@@ -247,6 +537,9 @@ def assign_employee_to_team(
             department=department,
             actor=actor,
         )
+        from hydra_arrivals.onboarding import reconcile_person_onboarding_handoff
+
+        reconcile_person_onboarding_handoff(person=locked_person, actor=actor)
         return same_current
 
     for previous in overlaps:
@@ -275,4 +568,7 @@ def assign_employee_to_team(
         department=department,
         actor=actor,
     )
+    from hydra_arrivals.onboarding import reconcile_person_onboarding_handoff
+
+    reconcile_person_onboarding_handoff(person=locked_person, actor=actor)
     return assignment

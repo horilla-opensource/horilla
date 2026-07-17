@@ -1,0 +1,54 @@
+{% extends "hydra_people/base.html" %}
+{% load i18n %}
+
+{% block person_content %}
+<header class="hydra-header">
+  <div>
+    <h1 class="oh-main__titlebar-title">{{ facility.name }}</h1>
+    <p class="hydra-muted mb-0">{{ facility.location }} · {{ facility.address }}</p>
+  </div>
+  <div class="hydra-actions">
+    <a class="oh-btn" href="{% url 'hydra-housing-dashboard' %}">{% trans "Back to housing" %}</a>
+    {% if perms.hydra_housing.add_housingbuilding %}<a class="oh-btn" href="{% url 'hydra-housing-building-create' facility.uuid %}">{% trans "Add building" %}</a>{% endif %}
+    {% if perms.hydra_housing.add_housingroom %}<a class="oh-btn oh-btn--secondary" href="{% url 'hydra-housing-room-create' facility.uuid %}">{% trans "Create room" %}</a>{% endif %}
+  </div>
+</header>
+
+{% if facility.notes %}<section class="hydra-card mb-3"><p class="mb-0">{{ facility.notes }}</p></section>{% endif %}
+
+{% if buildings %}
+<section class="hydra-card mb-3" aria-labelledby="housing-buildings-title">
+  <h2 class="h4" id="housing-buildings-title">{% trans "Buildings and floors" %}</h2>
+  <div class="hydra-grid">
+    {% for building in buildings %}<div><strong>{{ building.name }}</strong><div class="hydra-actions mt-2">{% for floor in building.floors.all %}<span class="hydra-status">{{ floor.name }}</span>{% empty %}<span class="hydra-muted">{% trans "No floors" %}</span>{% endfor %}{% if perms.hydra_housing.add_housingfloor %}<a class="oh-btn" href="{% url 'hydra-housing-floor-create' building.uuid %}">{% trans "Add floor" %}</a>{% endif %}</div></div>{% endfor %}
+  </div>
+</section>
+{% endif %}
+
+{% for row in room_rows %}
+<section class="hydra-card mb-3" aria-labelledby="room-{{ row.room.uuid }}">
+  <div class="hydra-header">
+    <div><h2 class="h4 mb-1" id="room-{{ row.room.uuid }}">{{ row.room.name }}</h2>{% if row.room.hierarchy_label %}<p class="hydra-muted mb-0">{% trans "Building / floor" %}: {{ row.room.hierarchy_label }}</p>{% endif %}</div>
+    {% if perms.hydra_housing.add_housingbed %}<div class="hydra-actions"><a class="oh-btn" href="{% url 'hydra-housing-bed-create' row.room.uuid %}">{% trans "Add bed" %}</a></div>{% endif %}
+  </div>
+  {% if row.beds %}
+  <table class="hydra-table">
+    <thead><tr><th>{% trans "Bed" %}</th><th>{% trans "State" %}</th><th>{% trans "Occupant" %}</th><th>{% trans "Since" %}</th><th>{% trans "Next reservation" %}</th></tr></thead>
+    <tbody>
+      {% for item in row.beds %}
+      <tr>
+        <td data-label="{% trans 'Bed' %}">{{ item.bed.label }}</td>
+        <td data-label="{% trans 'State' %}">{% if item.assignment %}<span class="hydra-status">{% trans "Occupied" %}</span>{% else %}{% trans "Available" %}{% endif %}</td>
+        <td data-label="{% trans 'Occupant' %}">{% if item.assignment %}<a href="{{ item.assignment.person.get_absolute_url }}">{{ item.assignment.person.passport_name }}</a>{% else %}—{% endif %}</td>
+        <td data-label="{% trans 'Since' %}">{% if item.assignment %}{{ item.assignment.valid_from|date:"Y-m-d" }}{% else %}—{% endif %}</td>
+        <td data-label="{% trans 'Next reservation' %}">{% if item.reservation %}<a href="{{ item.reservation.person.get_absolute_url }}">{{ item.reservation.person.passport_name }}</a><br><span class="hydra-muted">{{ item.reservation.valid_from|date:"Y-m-d" }}{% if item.reservation.reservation_expires_at %} &middot; {% trans "hold until" %} {{ item.reservation.reservation_expires_at|date:"Y-m-d H:i" }}{% endif %}</span>{% else %}&mdash;{% endif %}</td>
+      </tr>
+      {% endfor %}
+    </tbody>
+  </table>
+  {% else %}<p class="hydra-muted mb-0">{% trans "No beds have been created in this room." %}</p>{% endif %}
+</section>
+{% empty %}
+<section class="hydra-card"><p class="hydra-muted mb-0">{% trans "No rooms have been created in this facility." %}</p></section>
+{% endfor %}
+{% endblock person_content %}

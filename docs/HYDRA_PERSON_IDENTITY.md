@@ -24,6 +24,12 @@ Implemented after Phase 0 approval on 2026-07-14.
 - lifecycle state and active flag;
 - optional one-to-one Employee link.
 
+TASK-012 extends the same canonical row with privacy-minimising deterministic
+fingerprints and an immutable logical source-alias state. Suggestions,
+comparison, conflict-checked preview, canonical merge and preserved identifier
+resolution are documented in `docs/HYDRA_DUPLICATE_REVIEW.md`; no second Person
+or Candidate profile model was introduced.
+
 `PersonApplication` owns the explicit Person-to-Candidate link. The link service is transactional, row-locking and idempotent. It rejects a Candidate already linked to another Person and rejects conflicting Employee references. Linking the first application advances a prospect to candidate state. Django admin registrations are read-only so writes cannot bypass the service layer.
 
 The server-rendered slice provides list/search, detail, create, edit and application-link screens at `/hydra/people/`. All record reads go through `hydra_people.selectors`; all writes go through `hydra_people.services`.
@@ -41,7 +47,7 @@ Anonymous requests are redirected to login. Authenticated users missing an actio
 
 ## Migration
 
-`hydra_people/migrations/0001_initial.py` is versioned even though upstream Horilla ignores most migration files. It depends on locally generated upstream `employee.0001_initial` and `recruitment.0001_initial`, matching the Phase 0 bootstrap strategy. TASK-2 adds `0002_personapplication_link_source.py`; no upstream schema was modified.
+`hydra_people/migrations/0001_initial.py` is versioned even though upstream Horilla ignores most migration files. It depends on locally generated upstream `employee.0001_initial` and `recruitment.0001_initial`, matching the Phase 0 bootstrap strategy. TASK-2 adds `0002_personapplication_link_source.py`; TASK-012 adds `0005_person_duplicate_merge.py` with fingerprint/suggestion backfill. No upstream schema was modified.
 
 ## Manual verification
 
@@ -68,10 +74,11 @@ Verified on PostgreSQL 17.2 and CPython 3.11.9:
 - `pip check`, Python compilation and `git diff --check` succeeded;
 - the local server returned HTTP 200 from `/health/`.
 
-## Known limitations and next task
+## Known boundaries
 
 - Person visibility is organization-scoped. A newly created, never-assigned Person remains visible only to its creator until its first assignment.
-- Duplicate detection and merge policy are not part of this smallest slice.
+- Duplicate handling is deterministic and human-reviewed; fuzzy/transliterated
+  data-quality suggestions and merge undo are intentionally outside TASK-012.
 - Employee linking is stored but intentionally not exposed as a manual UI action; the later idempotent conversion service will own it.
 - Existing Candidate records are not automatically backfilled. Operators may link them explicitly after the scope model is available.
 - User-facing strings are translation-ready, but locale catalogs have not yet been populated.

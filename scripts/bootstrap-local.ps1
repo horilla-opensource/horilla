@@ -4,7 +4,8 @@ param(
     [string]$PostgresBin = "",
     [string]$DataDirectory = "",
     [int]$Port = 55432,
-    [string]$Database = "hydra_phase0"
+    [string]$Database = "hydra_phase0",
+    [switch]$RecreateVenv
 )
 
 $ErrorActionPreference = "Stop"
@@ -40,6 +41,28 @@ function Test-PostgresRunning {
     return ($statusExitCode -eq 0)
 }
 
+function Get-PythonMajorMinor {
+    param([string]$Executable)
+
+    $previousPreference = $ErrorActionPreference
+    try {
+        $ErrorActionPreference = "Continue"
+        $version = & $Executable -c "import sys; print(f'{sys.version_info.major}.{sys.version_info.minor}')" 2>$null
+        $versionExitCode = $LASTEXITCODE
+    }
+    catch {
+        return $null
+    }
+    finally {
+        $ErrorActionPreference = $previousPreference
+    }
+
+    if ($versionExitCode -ne 0) {
+        return $null
+    }
+    return ($version | Out-String).Trim()
+}
+
 function Resolve-PostgresBin {
     param([string]$RequestedPath)
 
@@ -53,7 +76,13 @@ function Resolve-PostgresBin {
 
     $root = "C:\Program Files\PostgreSQL"
     $candidate = Get-ChildItem $root -Directory -ErrorAction SilentlyContinue |
-        Sort-Object { [version]$_.Name } -Descending |
+        Sort-Object {
+            $versionText = $_.Name
+            if ($versionText -notmatch "\.") {
+                $versionText = "$versionText.0"
+            }
+            [version]$versionText
+        } -Descending |
         ForEach-Object { Join-Path $_.FullName "bin" } |
         Where-Object { Test-Path (Join-Path $_ "initdb.exe") } |
         Select-Object -First 1
@@ -70,11 +99,29 @@ if (-not $DataDirectory) {
 }
 $DataDirectory = [System.IO.Path]::GetFullPath($DataDirectory)
 $secretPath = Join-Path $localRoot "django-secret.txt"
-$venvPython = Join-Path $repoRoot ".venv\Scripts\python.exe"
+$venvDirectory = Join-Path $repoRoot ".venv"
+$venvPython = Join-Path $venvDirectory "Scripts\python.exe"
+
+$bootstrapPythonVersion = Get-PythonMajorMinor $Python
+if ($bootstrapPythonVersion -ne "3.11") {
+    throw "Hydra local bootstrap requires CPython 3.11; '$Python' reported '$bootstrapPythonVersion'. Pass -Python with an absolute CPython 3.11 path."
+}
 
 New-Item -ItemType Directory -Force -Path $localRoot | Out-Null
-if (-not (Test-Path $venvPython)) {
-    & $Python -m venv (Join-Path $repoRoot ".venv")
+$venvVersion = Get-PythonMajorMinor $venvPython
+if ((Test-Path $venvDirectory) -and $venvVersion -ne "3.11") {
+    if (-not $RecreateVenv) {
+        throw "The existing .venv is unusable or is not CPython 3.11. Re-run with -RecreateVenv to replace only this derived environment."
+    }
+    $resolvedParent = (Resolve-Path (Split-Path $venvDirectory -Parent)).Path
+    if ($resolvedParent -ne $repoRoot -or (Split-Path $venvDirectory -Leaf) -ne ".venv") {
+        throw "Refusing to remove an unexpected virtual-environment path: $venvDirectory"
+    }
+    Remove-Item -LiteralPath $venvDirectory -Recurse -Force
+    $venvVersion = $null
+}
+if ($venvVersion -ne "3.11") {
+    & $Python -m venv $venvDirectory
     Assert-NativeSuccess "Creating Python virtual environment"
 }
 & $venvPython -m pip install --upgrade pip

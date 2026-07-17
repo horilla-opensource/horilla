@@ -1,0 +1,66 @@
+{% extends "hydra_shell/base.html" %}
+{% load i18n %}
+
+{% block hydra_content %}
+<header class="hydra-header">
+  <div>
+    <p class="hydra-muted mb-1">{{ task.person.hydra_id }} · {{ task.company }}</p>
+    <h1 class="oh-main__titlebar-title">{{ task.title }}</h1>
+  </div>
+  <div class="hydra-actions">
+    <a class="oh-btn" href="{% url 'hydra-task-list' %}">{% trans "Back to tasks" %}</a>
+    {% if target_url %}<a class="oh-btn" href="{{ target_url }}">{% trans "Open linked record" %}</a>{% endif %}
+    {% if task.status == "open" or task.status == "in_progress" %}
+      {% if perms.hydra_tasks.change_hydratask %}<a class="oh-btn oh-btn--secondary" href="{% url 'hydra-task-update' task.uuid %}">{% trans "Edit" %}</a>{% endif %}
+      {% if perms.hydra_tasks.assign_hydratask %}<a class="oh-btn oh-btn--secondary" href="{% url 'hydra-task-reassign' task.uuid %}">{% trans "Reassign" %}</a>{% endif %}
+    {% endif %}
+    {% if allowed_statuses and perms.hydra_tasks.transition_hydratask %}<a class="oh-btn oh-btn--secondary" href="{% url 'hydra-task-transition' task.uuid %}">{% trans "Change status" %}</a>{% endif %}
+  </div>
+</header>
+
+<section class="hydra-card mb-3" aria-labelledby="task-detail-title">
+  <h2 class="h4" id="task-detail-title">{% trans "Task details" %}</h2>
+  <dl class="hydra-detail">
+    <div><dt>{% trans "Status" %}</dt><dd><span class="hydra-status">{{ task.get_status_display }}</span></dd></div>
+    <div><dt>{% trans "Priority" %}</dt><dd>{{ task.get_priority_display }}</dd></div>
+    <div><dt>{% trans "Assignee" %}</dt><dd>{{ task.assignee }}</dd></div>
+    <div><dt>{% trans "Created by" %}</dt><dd>{{ task.created_by|default:_('System') }}</dd></div>
+    <div><dt>{% trans "Person" %}</dt><dd><a href="{{ task.person.get_absolute_url }}">{{ task.person.hydra_id }}</a></dd></div>
+    <div><dt>{% trans "Linked record" %}</dt><dd>{{ task.target_label }}</dd></div>
+    <div><dt>{% trans "Deadline" %}</dt><dd>{% if task.due_at %}{{ task.due_at|date:"Y-m-d H:i" }}{% if task.is_overdue %} · <strong>{% trans "Overdue" %}</strong>{% endif %}{% else %}—{% endif %}</dd></div>
+    <div><dt>{% trans "Version" %}</dt><dd>{{ task.version }}</dd></div>
+  </dl>
+  {% if task.description %}<h3 class="h5 mt-3">{% trans "Description" %}</h3><p class="mb-0">{{ task.description|linebreaksbr }}</p>{% endif %}
+  {% if task.resolution_reason %}<h3 class="h5 mt-3">{% trans "Resolution reason" %}</h3><p class="mb-0">{{ task.resolution_reason }}</p>{% endif %}
+</section>
+
+<section class="hydra-card" aria-labelledby="task-history-title">
+  <div class="hydra-header">
+    <div>
+      <h2 class="h4 mb-1" id="task-history-title">{% trans "Immutable task history" %}</h2>
+      <p class="hydra-muted mb-0">{% trans "Every material change is recorded in sequence." %}</p>
+    </div>
+  </div>
+  {% if events %}
+    <table class="hydra-table">
+      <thead><tr><th>#</th><th>{% trans "Event" %}</th><th>{% trans "When" %}</th><th>{% trans "Actor" %}</th><th>{% trans "Change" %}</th><th>{% trans "Reason" %}</th></tr></thead>
+      <tbody>
+        {% for event in events %}
+          <tr>
+            <td data-label="#">{{ event.sequence }}</td>
+            <td data-label="{% trans 'Event' %}">{{ event.get_action_display }}</td>
+            <td data-label="{% trans 'When' %}">{{ event.occurred_at|date:"Y-m-d H:i" }}</td>
+            <td data-label="{% trans 'Actor' %}">{{ event.actor|default:_('System') }}</td>
+            <td data-label="{% trans 'Change' %}">
+              {% if event.from_status or event.to_status %}{{ event.from_status|default:"—" }} → {{ event.to_status|default:"—" }}{% endif %}
+              {% if event.from_assignee_id != event.to_assignee_id %}<br>{{ event.from_assignee|default:"—" }} → {{ event.to_assignee|default:"—" }}{% endif %}
+              {% if event.changed_fields %}<br><span class="hydra-muted">{{ event.changed_fields|join:", " }}</span>{% endif %}
+            </td>
+            <td data-label="{% trans 'Reason' %}">{{ event.reason|default:"—" }}</td>
+          </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  {% else %}<p class="hydra-muted mb-0">{% trans "Task history is not available in your permissions." %}</p>{% endif %}
+</section>
+{% endblock hydra_content %}

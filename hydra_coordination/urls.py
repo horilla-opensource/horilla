@@ -11,5 +11,15 @@ urlpatterns = [
     path("sections/create/", views.section_create, name="hydra-section-create"),
     path("teams/create/", views.team_create, name="hydra-team-create"),
     path("scope-grants/create/", views.scope_grant_create, name="hydra-scope-grant-create"),
+    path(
+        "scope-grants/<int:grant_id>/end/",
+        views.scope_grant_end,
+        name="hydra-scope-grant-end",
+    ),
     path("people/<uuid:person_uuid>/assign/", views.person_assign, name="hydra-person-assign"),
+    path(
+        "assignments/<int:assignment_id>/end/",
+        views.person_assignment_end,
+        name="hydra-person-assignment-end",
+    ),
 ]

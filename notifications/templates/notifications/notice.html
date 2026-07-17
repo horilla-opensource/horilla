@@ -1,24 +1,16 @@
 <div class="alert alert-block alert-{{ notice.level }}">
-  <a class="close pull-right" href="{% url 'notifications:mark_as_read' notice.slug %}">
-    <i class="icon-close"></i>
-  </a>
+  <form method="post" action="{% url 'notifications:mark_as_read' notice.slug %}" class="pull-right">
+    {% csrf_token %}
+    <button class="close" type="submit" aria-label="Mark notification as read">
+      <i class="icon-close"></i>
+    </button>
+  </form>
 
   <h4>
     <i class="icon-mail{% if notice.unread %}-alt{% endif %}"></i>
-    {{ notice.actor }}
     {{ notice.verb }}
-    {% if notice.target %}
-      of {{ notice.target }}
-    {% endif %}
   </h4>
 
   <p>{{ notice.timesince }} ago</p>
 
-  <p>{{ notice.description|linebreaksbr }}</p>
-
-  <div class="notice-actions">
-    {% for action in notice.data.actions %}
-      <a class="btn" href="{{ action.href }}">{{ action.title }}</a>
-    {% endfor %}
-  </div>
 </div>

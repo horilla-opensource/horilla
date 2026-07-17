@@ -31,7 +31,9 @@
     <article class="hydra-kpi"><span>{% trans "Arrivals on day" %}</span><strong>{{ snapshot.arrivals_today }}</strong></article>
     <article class="hydra-kpi"><span>{% trans "Arrival exceptions" %}</span><strong>{{ snapshot.arrival_exception_count }}</strong></article>
     <article class="hydra-kpi"><span>{% trans "Unassigned after arrival" %}</span><strong>{{ snapshot.assignment_gap_count }}</strong></article>
+    <article class="hydra-kpi"><span>{% trans "Without housing" %}</span><strong>{{ snapshot.housing_gap_count }}</strong></article>
     <article class="hydra-kpi"><span>{% trans "Legalization attention" %}</span><strong>{{ snapshot.legalization_exception_count }}</strong></article>
+    {% if perms.hydra_tasks.view_hydratask %}<article class="hydra-kpi"><span>{% trans "Overdue tasks" %}</span><strong>{{ snapshot.overdue_task_count }}</strong></article>{% endif %}
   </section>
 
   {% include "hydra_links/_public_links.html" %}
@@ -68,6 +70,33 @@
     {% endif %}
   </section>
 
+  {% if perms.hydra_tasks.view_hydratask %}
+  <section class="hydra-card mb-3" aria-labelledby="coordinator-task-title">
+    <div class="hydra-header">
+      <div>
+        <h2 class="h4 mb-1" id="coordinator-task-title">{% trans "Overdue tasks" %}</h2>
+        <p class="hydra-muted mb-0">{% trans "Open scoped tasks whose deadline passed before the selected operational cutoff." %}</p>
+      </div>
+      <span class="hydra-status hydra-status--danger">{{ snapshot.overdue_task_count }}</span>
+    </div>
+    {% if snapshot.overdue_tasks %}
+      <table class="hydra-table">
+        <thead><tr><th>{% trans "Task" %}</th><th>{% trans "Person" %}</th><th>{% trans "Assignee" %}</th><th>{% trans "Deadline" %}</th></tr></thead>
+        <tbody>
+          {% for task in snapshot.overdue_tasks %}
+            <tr class="hydra-row--exception">
+              <td data-label="{% trans 'Task' %}"><a href="{{ task.get_absolute_url }}"><strong>{{ task.title }}</strong></a></td>
+              <td data-label="{% trans 'Person' %}"><a href="{{ task.person.get_absolute_url }}">{{ task.person.hydra_id }}</a></td>
+              <td data-label="{% trans 'Assignee' %}">{{ task.assignee }}</td>
+              <td data-label="{% trans 'Deadline' %}"><time datetime="{{ task.due_at|date:'c' }}">{{ task.due_at|date:"Y-m-d H:i" }}</time></td>
+            </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    {% else %}<p class="hydra-muted mb-0">{% trans "No overdue scoped tasks." %}</p>{% endif %}
+  </section>
+  {% endif %}
+
   <section class="hydra-card mb-3" aria-labelledby="coordinator-assignment-title">
     <div class="hydra-header">
       <div>
@@ -92,6 +121,33 @@
       </table>
     {% else %}
       <p class="hydra-muted mb-0">{% trans "No confirmed arrivals are waiting for a team assignment." %}</p>
+    {% endif %}
+  </section>
+
+  <section class="hydra-card mb-3" aria-labelledby="coordinator-housing-title">
+    <div class="hydra-header">
+      <div>
+        <h2 class="h4 mb-1" id="coordinator-housing-title">{% trans "Housing gaps" %}</h2>
+        <p class="hydra-muted mb-0">{% trans "Confirmed arrivals without housing at the destination effective on the selected day." %}</p>
+      </div>
+      <span class="hydra-status hydra-status--warning">{{ snapshot.housing_gap_count }}</span>
+    </div>
+    {% if snapshot.housing_gaps %}
+      <table class="hydra-table">
+        <thead><tr><th>{% trans "Person" %}</th><th>{% trans "Arrived" %}</th><th>{% trans "Destination" %}</th><th>{% trans "Action" %}</th></tr></thead>
+        <tbody>
+          {% for plan in snapshot.housing_gaps %}
+            <tr class="hydra-row--exception">
+              <td data-label="{% trans 'Person' %}"><a href="{{ plan.person.get_absolute_url }}">{{ plan.person.passport_name }}</a><br><span class="hydra-muted">{{ plan.person.hydra_id }}</span></td>
+              <td data-label="{% trans 'Arrived' %}"><time datetime="{{ plan.actual_arrived_at|date:'c' }}">{{ plan.actual_arrived_at|date:"Y-m-d H:i" }}</time></td>
+              <td data-label="{% trans 'Destination' %}">{{ plan.destination_location.name }}</td>
+              <td data-label="{% trans 'Action' %}">{% if perms.hydra_housing.add_housingassignment %}<a class="oh-btn" href="{% url 'hydra-housing-assign' plan.person.uuid %}">{% trans "Assign housing" %}</a>{% else %}<span class="hydra-status hydra-status--warning">{% trans "No housing" %}</span>{% endif %}</td>
+            </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    {% else %}
+      <p class="hydra-muted mb-0">{% trans "No confirmed arrivals are waiting for housing." %}</p>
     {% endif %}
   </section>
 

@@ -511,6 +511,14 @@ class CandidateCreationForm(BaseModelForm):
                 not in self.instance.recruitment_id.open_positions.all()
             ):
                 errors["job_position_id"] = _("Choose valid choice")
+        if self.instance.pk and hasattr(self.instance, "hydra_person_link"):
+            previous_canceled = Candidate._base_manager.filter(
+                pk=self.instance.pk
+            ).values_list("canceled", flat=True).first()
+            if self.cleaned_data.get("canceled") != previous_canceled:
+                errors["canceled"] = _(
+                    "Use the controlled Hydra recruitment transition."
+                )
         if errors:
             raise ValidationError(errors)
         return super().clean()

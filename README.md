@@ -19,14 +19,18 @@
 > [`docs/HYDRA_RECRUITMENT.md`](docs/HYDRA_RECRUITMENT.md). The private candidate
 > document boundary is documented in
 > [`docs/HYDRA_PRIVATE_DOCUMENTS.md`](docs/HYDRA_PRIVATE_DOCUMENTS.md). The
-> legalization MVP is documented in
+> legalization policy dictionaries, immutable case snapshots, scoped workflow,
+> workload, deputies and audited responsibility are documented in
 > [`docs/HYDRA_LEGALIZATION.md`](docs/HYDRA_LEGALIZATION.md). Transactional
-> candidate import, arrival planning, Person-to-Employee conversion and
+> candidate import, arrival planning, Housing reservations/atomic moves, Person-to-Employee conversion and
 > employee team assignment, the mobile brigadier panel, the coordinator
 > exception dashboard, the scoped template/Szablonizator export module and the
 > controlled public Hydra link directory and scoped operational report are
 > documented in [`docs/HYDRA_EXCEL_IMPORT.md`](docs/HYDRA_EXCEL_IMPORT.md),
 > [`docs/HYDRA_ARRIVALS.md`](docs/HYDRA_ARRIVALS.md),
+> [`docs/HYDRA_ONBOARDING.md`](docs/HYDRA_ONBOARDING.md),
+> [`docs/HYDRA_PORTAL_EMAIL.md`](docs/HYDRA_PORTAL_EMAIL.md),
+> [`docs/HYDRA_HOUSING.md`](docs/HYDRA_HOUSING.md),
 > [`docs/HYDRA_EMPLOYEE_CONVERSION.md`](docs/HYDRA_EMPLOYEE_CONVERSION.md),
 > [`docs/HYDRA_TEAM_ASSIGNMENT.md`](docs/HYDRA_TEAM_ASSIGNMENT.md),
 > [`docs/HYDRA_BRIGADIER_PANEL.md`](docs/HYDRA_BRIGADIER_PANEL.md),
@@ -35,7 +39,14 @@
 > [`docs/HYDRA_PUBLIC_LINKS.md`](docs/HYDRA_PUBLIC_LINKS.md) and
 > [`docs/HYDRA_REPORTS.md`](docs/HYDRA_REPORTS.md). Hardened staging,
 > backup/restore, rollback, and the pilot go/no-go gate are documented in
-> [`docs/HYDRA_STAGING.md`](docs/HYDRA_STAGING.md).
+> [`docs/HYDRA_STAGING.md`](docs/HYDRA_STAGING.md). The single-owner production
+> maintenance worker is documented in
+> [`docs/HYDRA_MAINTENANCE.md`](docs/HYDRA_MAINTENANCE.md).
+> Universal Person/domain tasks, append-only lifecycle evidence and durable
+> privacy-safe assignment notifications are documented in
+> [`docs/HYDRA_TASKS.md`](docs/HYDRA_TASKS.md). The scoped in-app notification
+> center, append-only read/archive state and opt-in generic email policy are
+> documented in [`docs/HYDRA_NOTIFICATIONS.md`](docs/HYDRA_NOTIFICATIONS.md).
 
 **Horilla** is a Free and Open Source HRMS (Human Resource Management System) Software designed to streamline HR processes and enhance organizational efficiency.
 
@@ -120,8 +131,9 @@ Horilla can be installed on your system by following the steps below. Ensure you
      ```
    - Create a new role and database:
      ```sql
-     CREATE ROLE horilla LOGIN PASSWORD 'horilla';
-     CREATE DATABASE horilla_main OWNER horilla;
+     \prompt 'Hydra database password: ' hydra_db_password
+     CREATE ROLE hydra LOGIN PASSWORD :'hydra_db_password';
+     CREATE DATABASE hydra_main OWNER hydra;
      \q
      ```
    - Exit the `postgres` user:
@@ -150,8 +162,9 @@ Horilla can be installed on your system by following the steps below. Ensure you
      ```
    - Create a new role and database:
      ```sql
-     CREATE ROLE horilla LOGIN PASSWORD 'horilla';
-     CREATE DATABASE horilla_main OWNER horilla;
+     \prompt 'Hydra database password: ' hydra_db_password
+     CREATE ROLE hydra LOGIN PASSWORD :'hydra_db_password';
+     CREATE DATABASE hydra_main OWNER hydra;
      \q
      ```
 
@@ -176,16 +189,15 @@ Horilla can be installed on your system by following the steps below. Ensure you
 4. **Configure PostgreSQL Database and User**:
    - Create a database and user:
      ```bash
-     createdb horilla_main
-     createuser horilla
-     psql -c "ALTER USER horilla WITH PASSWORD 'horilla';"
+     createuser --pwprompt hydra
+     createdb --owner=hydra hydra_main
      ```
 
 ---
 
-## **Install Horilla**
+## **Install Hydra**
 
-Follow the steps below to install **Horilla** on your system. Horilla is compatible with **Ubuntu**, **Windows**, and **macOS**.
+Follow the steps below to install **Hydra** on your system. Hydra is compatible with **Ubuntu**, **Windows**, and **macOS**.
 
 ---
 

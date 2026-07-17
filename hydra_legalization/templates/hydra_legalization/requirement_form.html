@@ -1,0 +1,6 @@
+{% extends "hydra_people/base.html" %}
+{% load i18n %}
+{% block person_content %}
+<header class="hydra-header"><div><p class="hydra-muted mb-1">{% trans "Legalization policy" %}</p><h1 class="oh-main__titlebar-title">{% if requirement %}{% trans "Edit document requirement" %}{% else %}{% trans "Create document requirement" %}{% endif %}</h1>{% if procedure %}<p class="hydra-muted mb-0">{{ procedure.name }}</p>{% endif %}</div><a class="oh-btn" href="{% url 'hydra-legalization-configuration' %}">{% trans "Back to configuration" %}</a></header>
+<form class="hydra-card" method="post" novalidate>{% csrf_token %}<p class="hydra-muted">{% trans "The required document must be linked and downloadable before the configured status can be entered." %}</p>{% if form.non_field_errors %}<div class="hydra-errors">{{ form.non_field_errors }}</div>{% endif %}<div class="hydra-grid">{% for field in form %}<div class="hydra-field">{{ field.label_tag }}{{ field }}{{ field.errors }}</div>{% endfor %}</div><div class="hydra-actions mt-3"><button class="oh-btn oh-btn--secondary" type="submit">{% trans "Save requirement" %}</button></div></form>
+{% endblock person_content %}

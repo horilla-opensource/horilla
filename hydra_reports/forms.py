@@ -15,6 +15,7 @@ class OperationalReportFilterForm(forms.Form):
         ("any", _("Any attention item")),
         ("arrival", _("Arrival attention")),
         ("legalization", _("Legalization attention")),
+        ("housing", _("Missing housing after arrival")),
         ("unassigned", _("No current team assignment")),
     )
 

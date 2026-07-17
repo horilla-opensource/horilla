@@ -18,17 +18,22 @@ The two reference repositories are not vendored or added as submodules. Their ru
 | `base/` | Company, department, job/shift/work types, common views and company middleware | Reuse organization core; do not treat session filtering as authorization |
 | `employee/` | Employee, work information, employee documents, permissions/imports | Reuse after hiring and link from Person |
 | `recruitment/` | Recruitment campaigns, stages, candidates, surveys, interviews and candidate documents | Extend application records to point to Person |
-| `onboarding/` | Candidate onboarding stages/tasks and token portal | Extend after Person/private-document work |
+| `onboarding/` | Candidate onboarding stages/tasks, locked creation service and token portal | Reused through the scoped Hydra arrival handoff; legacy Hydra-task mutation routes are blocked |
 | `attendance/` | Attendance, work records and late/early exceptions | Reuse for employees and operational exception views |
-| `notifications/` | Database notifications and localized verbs | Reuse through domain services |
+| `notifications/` | Database notifications and localized verbs | Reuse as the compatibility transport behind Hydra recipient/scope/state policy |
 | `horilla_audit/` | Simple-history customization and diff UI | Reuse selectively |
 | `horilla_documents/` | Employee document request metadata | Extend metadata where useful; replace private delivery |
 | `report/` | Pivot reports and browser Excel exports | Extend with scope-aware Hydra selectors |
-| `Dockerfile`, `entrypoint.sh`, `docker-compose.staging.yaml` | Hardened application image, fail-closed boot, and isolated staging stack | Task 045 staging boundary; upstream `docker-compose.yaml` remains development-only |
-| `scripts/` | Local bootstrap plus staging deploy, smoke, backup, restore verification, and rollback helpers | Operational tooling with explicit safety gates |
+| `Dockerfile`, `entrypoint.sh`, `docker-compose.staging.yaml` | Hardened application image, fail-closed boot, and isolated staging stack | Task 045 staging boundary; image construction also verifies the exact reviewed migration source manifest; upstream `docker-compose.yaml` remains development-only |
+| `scripts/` | Local bootstrap plus migration-manifest verification, staging deploy, smoke, backup, archive validation, restore verification, and rollback helpers | Operational tooling with exact normalized migration hashes, an empty-schema initial-deploy proof, cold-writer stop, hostile-member rejection and explicit rollback gates |
+| `deployment/` | Pinned Django auth compatibility source and exact first-party migration SHA-256 manifest | Reviewed schema-source boundary shared by CI and image construction |
 | `docs/` | Audit and architecture decisions | Phase 0 deliverables |
-| `hydra_documents/` | Private candidate-document storage, metadata, download authorization and access events | New shared security boundary; never served by generic `/media/` |
-| `hydra_ops/` | Deployment readiness, public ready probe, and web-initializer containment | New staging operations boundary |
+| `hydra_documents/` | Private candidate-document quarantine/scanning, storage, lifecycle policy, scoped delivery and access events | Shared security boundary; never served by generic `/media/`; fail-closed without ClamAV |
+| `hydra_housing/` | Location-scoped facilities, optional buildings/floors, rooms, beds, expiring/confirmed reservations, stays, atomic moves and append-only lifecycle facts | New workforce-accommodation boundary; deterministic Person/bed locking, maintenance expiry and readiness prevent overlap, silent hold promotion or partial moves |
+| `hydra_tasks/` | Person/Company-scoped universal tasks, approved domain-target resolution, append-only lifecycle and durable delivery evidence | New focused task boundary wrapping Horilla notifications; not a generic workflow engine or replacement for domain-owned task concepts |
+| `hydra_notifications/` | Scoped notification envelopes, reviewed PII-free kinds, append-only state, preferences, center and durable generic-email outbox | Reuse/wrap Horilla rows; current target visibility and recipient ownership remain mandatory at list, mutation, open and email send |
+| `hydra_onboarding/` | Company-scoped immutable published courses/lessons/quizzes, deterministic fixed-field assignment rules and append-only attempt/confirmation evidence | New internal-learning boundary extending the reused Horilla onboarding/handoff; exact version fingerprints, Person scope and idempotent assignment prevent drift or parallel onboarding workflows |
+| `hydra_ops/` | Deployment readiness, public ready probe, single-owner maintenance worker, portal-email dispatch and lifecycle recovery | New staging/production operations boundary |
 
 ## Current Hydra portal map
 
@@ -65,13 +70,16 @@ hydra_people/          canonical Person plus scoped Horilla recruitment extensio
 hydra_coordination/    Location, Section/Stage, Team, scope and assignments (TASK-1 implemented)
 hydra_shell/           shared branding, responsive navigation and public portal boundary (TASK-1 implemented)
 hydra_documents/       private candidate documents and access logging (TASK-2 implemented)
-hydra_legalization/    legalization cases/status/responsibility/validity (TASK-2 implemented)
-hydra_arrivals/        arrival plans and confirmations
-hydra_housing/         facilities, rooms, beds and assignments
-hydra_imports/         previewed, transactional imports
+hydra_legalization/    cases, scoped workload/deputies, audited responsibility, validity, reminders, authority evidence and renewal lineage (TASK-2 extended)
+hydra_arrivals/        arrivals, controlled Horilla onboarding handoff and durable portal-email outbox
+hydra_housing/         scoped Facility/Building/Floor/Room/Bed and effective/temporary assignments (TASK-020/021/022 implemented)
+hydra_imports/         previewed transactional imports with bounded audited source-data redaction
 hydra_templates/       message templates and Szablonizator-compatible exports
 hydra_links/           controlled public arrival and Location training links
 hydra_reports/         scoped operational reports and audited CSV exports
+hydra_tasks/           scoped Person/domain tasks, lifecycle events and durable notification delivery
+hydra_notifications/   scoped in-app center, state history, preferences and generic email delivery
+hydra_onboarding/      immutable learning content, deterministic assignment rules and completion evidence
 ```
 
 No universal workflow/plugin/rule framework is planned. Apps should contain models, services, selectors, thin views/templates and focused tests.

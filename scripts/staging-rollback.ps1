@@ -29,8 +29,14 @@ $compose = @("compose", "--env-file", $EnvFile, "-f", $ComposeFile)
 
 & docker @compose pull server
 if ($LASTEXITCODE -ne 0) { throw "Could not pull the previous image." }
-& docker @compose up -d --no-deps server
+& docker @compose stop maintenance
+if ($LASTEXITCODE -ne 0) { throw "Could not stop the maintenance writer." }
+& docker @compose up -d --no-deps --wait --wait-timeout 300 server
 if ($LASTEXITCODE -ne 0) { throw "Code rollback failed." }
+& docker @compose up -d --no-deps --wait --wait-timeout 300 maintenance
+if ($LASTEXITCODE -ne 0) { throw "Maintenance rollback failed." }
 
 & "$PSScriptRoot\staging-smoke.ps1" -BaseUrl $BaseUrl
+& docker @compose exec -T maintenance python manage.py hydra_maintenance_health
+if ($LASTEXITCODE -ne 0) { throw "Maintenance worker health check failed." }
 Write-Host "Rollback to $PreviousRevision passed smoke checks."

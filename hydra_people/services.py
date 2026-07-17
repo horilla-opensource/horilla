@@ -4,6 +4,7 @@ from django.db import transaction
 from django.db.models import Q
 
 from employee.models import Employee, EmployeeWorkInformation
+from hydra_people.identity import ensure_canonical_person
 from hydra_people.models import EmployeeConversion, Person, PersonApplication
 from recruitment.models import Candidate, Recruitment, Stage
 
@@ -26,6 +27,7 @@ def _require_permissions(actor, *permissions: str) -> None:
 
 
 def _persist_candidate_link(*, person, candidate, actor, source):
+    ensure_canonical_person(person)
     existing = (
         PersonApplication.objects.select_for_update()
         .filter(candidate=candidate)
@@ -77,6 +79,8 @@ def _persist_candidate_link(*, person, candidate, actor, source):
 def save_person(*, person: Person, actor) -> Person:
     permission = "hydra_people.add_person" if person._state.adding else "hydra_people.change_person"
     _require_permissions(actor, permission)
+    if not person._state.adding:
+        ensure_canonical_person(person)
 
     if not person._state.adding and not actor.is_superuser:
         from hydra_people.selectors import people_for_user
@@ -91,6 +95,11 @@ def save_person(*, person: Person, actor) -> Person:
     person.modified_by = actor
     person.full_clean()
     person.save()
+    from hydra_people.duplicate_services import (
+        refresh_duplicate_suggestions_for_person,
+    )
+
+    refresh_duplicate_suggestions_for_person(person_id=person.pk, actor=actor)
     return person
 
 
@@ -130,6 +139,7 @@ def link_candidate(
             raise PermissionDenied
 
     locked_person = Person.objects.select_for_update().get(pk=person.pk)
+    ensure_canonical_person(locked_person)
     locked_candidate = Candidate._base_manager.select_for_update().get(pk=candidate.pk)
     return _persist_candidate_link(
         person=locked_person,
@@ -159,6 +169,7 @@ def create_candidate_application(*, person: Person, candidate: Candidate, actor)
     from hydra_people.recruitment_selectors import recruitments_for_user
 
     locked_person = Person.objects.select_for_update().get(pk=person.pk)
+    ensure_canonical_person(locked_person)
     if not actor.is_superuser and not people_for_user(
         user=actor, permission="change_person"
     ).filter(pk=locked_person.pk).exists():
@@ -523,6 +534,7 @@ def convert_person_to_employee(
         raise PermissionDenied
 
     locked_person = Person.objects.select_for_update().get(pk=person.pk)
+    ensure_canonical_person(locked_person)
     locked_candidate = Candidate._base_manager.select_for_update().get(
         pk=candidate.pk
     )
@@ -579,6 +591,9 @@ def convert_person_to_employee(
         pre_conversion=pre_conversion,
         existing_employee=not employee_created,
     )
+    from hydra_arrivals.onboarding import reconcile_person_onboarding_handoff
+
+    reconcile_person_onboarding_handoff(person=locked_person, actor=actor)
     return employee, conversion, employee_created
 
 
@@ -594,6 +609,7 @@ def synchronize_onboarding_employee(*, candidate, employee, actor):
     except PersonApplication.DoesNotExist:
         return None
     locked_person = Person.objects.select_for_update().get(pk=person.pk)
+    ensure_canonical_person(locked_person)
     locked_employee = Employee._base_manager.select_for_update().get(pk=employee.pk)
     _validate_conversion_candidate(person=locked_person, candidate=locked_candidate)
     pre_conversion = {
@@ -616,7 +632,7 @@ def synchronize_onboarding_employee(*, candidate, employee, actor):
         employee=locked_employee,
         actor=actor,
     )
-    return _create_conversion_record(
+    conversion = _create_conversion_record(
         person=locked_person,
         candidate=locked_candidate,
         employee=locked_employee,
@@ -627,3 +643,7 @@ def synchronize_onboarding_employee(*, candidate, employee, actor):
         pre_conversion=pre_conversion,
         existing_employee=True,
     )
+    from hydra_arrivals.onboarding import reconcile_person_onboarding_handoff
+
+    reconcile_person_onboarding_handoff(person=locked_person, actor=actor)
+    return conversion

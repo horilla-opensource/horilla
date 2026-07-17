@@ -249,8 +249,13 @@ class ContextualPublicLinkTests(PublicHydraLinkTestCase):
             ("hydra_people", "view_person"),
             ("employee", "view_employee"),
             ("attendance", "view_attendance"),
+            ("leave", "view_leaverequest"),
             ("hydra_arrivals", "view_arrivalplan"),
             ("hydra_legalization", "view_legalizationcase"),
+            ("hydra_housing", "view_housingfacility"),
+            ("hydra_housing", "view_housingroom"),
+            ("hydra_housing", "view_housingbed"),
+            ("hydra_housing", "view_housingassignment"),
         )
         ScopeGrant.objects.create(user=self.user, location=self.location_a)
         self.login()

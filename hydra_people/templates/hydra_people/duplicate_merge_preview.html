@@ -1,0 +1,46 @@
+{% extends "hydra_people/base.html" %}
+{% load i18n %}
+
+{% block person_content %}
+<header class="hydra-header">
+  <div>
+    <p class="hydra-muted mb-1">{% trans "Final review" %}</p>
+    <h1 class="oh-main__titlebar-title">{% trans "Canonical merge preview" %}</h1>
+    <p class="hydra-muted mb-0">{% trans "This preview expires after 30 minutes and becomes invalid if either record or a dependent reference changes." %}</p>
+  </div>
+  <a class="oh-btn" href="{% url 'hydra-duplicate-detail' suggestion.uuid %}">{% trans "Change decisions" %}</a>
+</header>
+
+<section class="hydra-card mb-3">
+  <dl class="hydra-detail">
+    <div><dt>{% trans "Canonical Person" %}</dt><dd><strong>{{ plan.survivor.hydra_id }}</strong><br>{{ plan.survivor.passport_name }}</dd></div>
+    <div><dt>{% trans "Source alias retained" %}</dt><dd><strong>{{ plan.duplicate.hydra_id }}</strong><br>{{ plan.duplicate.uuid }}</dd></div>
+    <div><dt>{% trans "Reason" %}</dt><dd>{{ reason }}</dd></div>
+  </dl>
+</section>
+
+<section class="hydra-card mb-3">
+  <h2 class="h4">{% trans "Selected canonical values" %}</h2>
+  <table class="hydra-table">
+    <thead><tr><th>{% trans "Field" %}</th><th>{% trans "Value" %}</th><th>{% trans "Source" %}</th></tr></thead>
+    <tbody>{% for row in selected_values %}<tr><td data-label="{% trans 'Field' %}">{{ row.label }}</td><td data-label="{% trans 'Value' %}">{{ row.value }}</td><td data-label="{% trans 'Source' %}">{{ row.source }}</td></tr>{% endfor %}</tbody>
+  </table>
+</section>
+
+<section class="hydra-card mb-3">
+  <h2 class="h4">{% trans "References that will move" %}</h2>
+  <dl class="hydra-detail">{% for item in plan.reference_counts %}<div><dt>{{ item.label }}</dt><dd>{{ item.count }}</dd></div>{% endfor %}</dl>
+  <p class="hydra-muted mb-0">{% trans "The source Person row and identifiers are never deleted. Each moved reference receives append-only merge evidence." %}</p>
+</section>
+
+<section class="hydra-card">
+  <div class="hydra-errors mb-3" role="alert"><strong>{% trans "Irreversible operation" %}</strong><br>{% trans "After confirmation, the source record becomes an immutable inactive alias. Any failed validation rolls back the complete transaction." %}</div>
+  <form method="post" action="{% url 'hydra-duplicate-commit' suggestion.uuid %}">
+    {% csrf_token %}
+    {{ commit_form.payload }}
+    <label class="d-flex gap-2 align-items-start mb-3">{{ commit_form.confirmation }} <span>{{ commit_form.confirmation.label }}</span></label>
+    {{ commit_form.confirmation.errors }}
+    <button class="oh-btn oh-btn--secondary" type="submit">{% trans "Confirm canonical merge" %}</button>
+  </form>
+</section>
+{% endblock person_content %}

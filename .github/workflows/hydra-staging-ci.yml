@@ -40,6 +40,7 @@ jobs:
       HYDRA_DISABLE_SCHEDULERS: "True"
       HYDRA_ALLOW_WEB_DATABASE_INITIALIZATION: "False"
       HYDRA_PRIVATE_MEDIA_ROOT: /tmp/hydra-private
+      HYDRA_PORTAL_EMAIL_MEDIA_ROOT: /tmp/hydra-outbox
       MEDIA_ROOT: /tmp/hydra-media
       SECRET_KEY: ci-only-django-key-with-more-than-fifty-characters-000000000000
       DEBUG: "True"
@@ -75,11 +76,11 @@ jobs:
         run: |
           test -f base/migrations/0001_initial.py
           test -f deployment/django_auth_migrations/0013_user_is_new_employee.py
-          migration_count="$(find . -path '*/migrations/[0-9]*.py' -not -path './.venv/*' | wc -l)"
-          test "$migration_count" -ge 39
+          test -f deployment/migration-manifest.sha256
+          python scripts/verify-migration-manifest.py
 
       - name: Prepare runtime directories
-        run: install -d -m 0700 /tmp/hydra-private /tmp/hydra-media
+        run: install -d -m 0700 /tmp/hydra-private /tmp/hydra-media /tmp/hydra-outbox
 
       - name: Validate and migrate schema
         run: |
@@ -131,6 +132,15 @@ jobs:
           HYDRA_PRIVATE_DOCUMENT_MAX_BYTES=10485760
           HYDRA_BACKUP_HOST_PATH=./backups
           HYDRA_PORTAL_URL=https://oleksandrkiris.github.io/citronex-hydra-project/
+          HYDRA_ONBOARDING_PORTAL_BASE_URL=https://localhost/
+          EMAIL_HOST=smtp.example.invalid
+          EMAIL_PORT=587
+          EMAIL_HOST_USER=hydra-ci
+          EMAIL_HOST_PASSWORD=ci-only-smtp-password
+          DEFAULT_FROM_EMAIL=noreply@example.test
+          EMAIL_USE_TLS=True
+          EMAIL_USE_SSL=False
+          EMAIL_FAIL_SILENTLY=False
           SECURE_SSL_REDIRECT=True
           SECURE_HSTS_SECONDS=3600
           SECURE_HSTS_INCLUDE_SUBDOMAINS=False
@@ -152,26 +162,28 @@ jobs:
         run: docker compose --env-file "$STAGING_ENV_FILE" -f "$COMPOSE_FILE" build --pull server
 
       - name: Start staging stack
-        run: docker compose --env-file "$STAGING_ENV_FILE" -f "$COMPOSE_FILE" up -d db server
+        run: docker compose --env-file "$STAGING_ENV_FILE" -f "$COMPOSE_FILE" up -d db clamav server maintenance
 
       - name: Wait for application readiness
         shell: bash
         run: |
-          container_id="$(docker compose --env-file "$STAGING_ENV_FILE" -f "$COMPOSE_FILE" ps -q server)"
-          test -n "$container_id"
-          status="starting"
-          for attempt in $(seq 1 72); do
-            status="$(docker inspect --format '{{.State.Health.Status}}' "$container_id")"
-            if [ "$status" = healthy ]; then
-              break
-            fi
-            if [ "$status" = unhealthy ]; then
-              docker compose --env-file "$STAGING_ENV_FILE" -f "$COMPOSE_FILE" logs --no-color
-              exit 1
-            fi
-            sleep 5
+          for service in server maintenance; do
+            container_id="$(docker compose --env-file "$STAGING_ENV_FILE" -f "$COMPOSE_FILE" ps -q "$service")"
+            test -n "$container_id"
+            status="starting"
+            for attempt in $(seq 1 180); do
+              status="$(docker inspect --format '{{.State.Health.Status}}' "$container_id")"
+              if [ "$status" = healthy ]; then
+                break
+              fi
+              if [ "$status" = unhealthy ]; then
+                docker compose --env-file "$STAGING_ENV_FILE" -f "$COMPOSE_FILE" logs --no-color
+                exit 1
+              fi
+              sleep 5
+            done
+            test "$status" = healthy
           done
-          test "$status" = healthy
 
       - name: Verify non-root runtime identity
         shell: bash
@@ -182,6 +194,9 @@ jobs:
             echo "::error::Expected the server container to run as UID 10001, got ${runtime_uid:-<empty>}."
             exit 1
           fi
+          maintenance_uid="$(docker compose --env-file "$STAGING_ENV_FILE" -f "$COMPOSE_FILE" exec -T maintenance id -u | tr -d '\r\n')"
+          echo "Maintenance runtime UID: ${maintenance_uid:-<empty>}"
+          test "$maintenance_uid" = "10001"
 
       - name: Verify server secret isolation
         shell: bash
@@ -198,12 +213,18 @@ jobs:
         shell: bash
         run: |
           db_container_id="$(docker compose --env-file "$STAGING_ENV_FILE" -f "$COMPOSE_FILE" ps -q db)"
+          clamav_container_id="$(docker compose --env-file "$STAGING_ENV_FILE" -f "$COMPOSE_FILE" ps -q clamav)"
           db_bindings="$(docker inspect --format '{{json (index .NetworkSettings.Ports "5432/tcp")}}' "$db_container_id")"
+          clamav_bindings="$(docker inspect --format '{{json (index .NetworkSettings.Ports "3310/tcp")}}' "$clamav_container_id")"
           server_port="$(docker compose --env-file "$STAGING_ENV_FILE" -f "$COMPOSE_FILE" port server 8000 | tr -d '\r\n')"
           echo "Database host bindings: ${db_bindings:-null}"
           echo "Server published port: ${server_port:-<none>}"
           if [ -n "$db_bindings" ] && [ "$db_bindings" != "null" ]; then
             echo "::error::The PostgreSQL service must not publish a host port."
+            exit 1
+          fi
+          if [ -n "$clamav_bindings" ] && [ "$clamav_bindings" != "null" ]; then
+            echo "::error::The ClamAV service must not publish a host port."
             exit 1
           fi
           case "$server_port" in
@@ -225,6 +246,8 @@ jobs:
         run: |
           docker compose --env-file "$STAGING_ENV_FILE" -f "$COMPOSE_FILE" exec -T server \
             python manage.py hydra_readiness --json | tee artifacts/readiness-before-backup.json
+          docker compose --env-file "$STAGING_ENV_FILE" -f "$COMPOSE_FILE" exec -T maintenance \
+            python manage.py hydra_maintenance_health --json | tee artifacts/maintenance-before-backup.json
 
       - name: Run external smoke checks
         shell: pwsh
@@ -242,7 +265,8 @@ jobs:
         shell: bash
         run: |
           for attempt in $(seq 1 36); do
-            if curl --fail --silent --header 'X-Forwarded-Proto: https' http://127.0.0.1:18000/health/ready/ | grep -q '"status": "ready"'; then
+            if curl --fail --silent --header 'X-Forwarded-Proto: https' http://127.0.0.1:18000/health/ready/ | grep -q '"status": "ready"' && \
+               docker compose --env-file "$STAGING_ENV_FILE" -f "$COMPOSE_FILE" exec -T maintenance python manage.py hydra_maintenance_health; then
               exit 0
             fi
             sleep 5

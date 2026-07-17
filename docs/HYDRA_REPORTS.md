@@ -2,7 +2,7 @@
 
 ## Status
 
-Task `044-reports.md` is implemented as the `hydra_reports` Django app. It provides one complete operational reporting slice across scoped Hydra people, current assignments, arrivals and legalization cases, with server-generated CSV and append-only export audit.
+Task `044-reports.md` is implemented as the `hydra_reports` Django app. It provides one complete operational reporting slice across scoped Hydra people, current assignments, arrivals, housing and legalization cases, with server-generated CSV and append-only export audit.
 
 The supplied 044 brief duplicated the earlier housing task. The implemented scope follows the numerical architecture, `HORILLA_AUDIT.md`, `REUSE_MATRIX.md`, `IMPLEMENTATION_DECISIONS.md` and the completed coordinator/report dependencies.
 
@@ -29,6 +29,7 @@ The report requires all of the following permissions:
 - `hydra_arrivals.view_arrivalplan`;
 - `recruitment.view_candidate`;
 - `hydra_legalization.view_legalizationcase`.
+- `hydra_housing.view_housingfacility`, `view_housingroom`, `view_housingbed` and `view_housingassignment`.
 
 CSV additionally requires `hydra_reports.export_operational_report`. Audit visibility requires `hydra_reports.view_operationalreportexport`; ordinary users see only their own ten latest entries, while superuser is the explicit all-actor view.
 
@@ -43,10 +44,10 @@ The route `/hydra/reports/` provides:
 - search by Hydra ID or name;
 - lifecycle, Location and Team filters;
 - arrival and legalization status filters;
-- attention filters for overdue/no-show arrivals, legalization attention and missing current assignment;
-- four full-query summary counts;
+- attention filters for overdue/no-show arrivals, missing housing after a confirmed arrival, legalization attention and missing current assignment;
+- five full-query summary counts;
 - a 50-row responsive page with links to already-authorized source records;
-- the latest relevant assignment, arrival and legalization record for each Person.
+- the latest relevant assignment, arrival and legalization record plus current Housing assignment for each Person.
 
 When a domain status or attention filter is active, the displayed and exported domain record is the newest record satisfying that filter, not an unrelated later record belonging to the same Person.
 
@@ -68,6 +69,11 @@ LEGALIZATION_TYPE
 LEGALIZATION_STATUS
 LEGALIZATION_DEADLINE
 LEGALIZATION_VALID_UNTIL
+HOUSING_FACILITY
+HOUSING_ROOM
+HOUSING_BED
+HOUSING_VALID_FROM
+HOUSING_VALID_UNTIL
 ATTENTION_FLAGS
 ```
 
@@ -77,12 +83,12 @@ Every successful response creates one `OperationalReportExport` row containing a
 
 ## Verification
 
-Focused PostgreSQL coverage contains 13 tests for report and domain permissions, Team scope, forged Location filters, the Company `all` denial rule, attention filtering, missing export permission, exact scoped CSV rows, formula neutralization, private response headers, service-level scope rechecks, append-only audit, actor-only audit visibility and an existing Horilla employee view.
+Focused PostgreSQL coverage contains 14 tests for report and domain permissions, Team scope, forged Location filters, the Company `all` denial rule, arrival and Housing attention filtering, missing export permission, exact scoped CSV rows, formula neutralization, private response headers, service-level scope rechecks, append-only audit, actor-only audit visibility and an existing Horilla employee view.
 
 The complete implemented regression passes:
 
 ```text
-Ran 167 tests - OK
+Ran 190 tests - OK
 ```
 
 `manage.py check`, `makemigrations --check --dry-run hydra_reports` and migration `hydra_reports.0001_initial` pass on PostgreSQL.
@@ -95,6 +101,6 @@ Browser verification used the real PostgreSQL schema and `hydra-qa`. At 390 x 84
 - CSV is the authorized interchange format; browser-generated XLSX and arbitrary pivot configuration are not security boundaries.
 - Large asynchronous exports, scheduled reports and email delivery are deferred.
 - Report rows use current assignments and the latest record relevant to active filters; they are not historical time-series analytics.
-- Housing data is absent because the housing module remains deferred.
+- Historical time-series housing analytics and occupancy forecasting remain outside this single current-state report.
 
 Task 045 hardened staging, recovery, and pilot gates are implemented in `HYDRA_STAGING.md`.

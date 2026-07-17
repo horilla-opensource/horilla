@@ -118,6 +118,22 @@ class HydraRecruitmentTestCase(TestCase):
         )
         link_candidate(person=cls.person_a, candidate=cls.candidate_a, actor=cls.admin)
         link_candidate(person=cls.person_b, candidate=cls.candidate_b, actor=cls.admin)
+        from hydra_legalization.models import (
+            LegalizationAuthority,
+            LegalizationAuthorityEvent,
+            LegalizationProcedureType,
+        )
+
+        cls.legalization_authority = LegalizationAuthority.objects.create(
+            code="test-competent-authority",
+            name="Lower Silesian Office",
+            jurisdiction="Test jurisdiction",
+            allowed_channels=list(LegalizationAuthorityEvent.Channel.values),
+            created_by=cls.admin,
+            modified_by=cls.admin,
+        )
+        for procedure in LegalizationProcedureType.objects.all():
+            procedure.authorities.add(cls.legalization_authority)
         cls.unlinked_a = cls.make_candidate(
             "Legacy A",
             "legacy-a@example.test",
@@ -237,6 +253,20 @@ class HydraRecruitmentTestCase(TestCase):
             ("recruitment", "add_candidate"),
             ("recruitment", "view_recruitment"),
         )
+
+    @classmethod
+    def legalization_case_configuration(cls, *, company, case_type="work_permit"):
+        from hydra_legalization.models import LegalizationProcedureType
+
+        procedure = LegalizationProcedureType.objects.get(
+            company__isnull=True,
+            case_type=case_type,
+        )
+        return {
+            "company": company,
+            "procedure_type": procedure,
+            "procedure_snapshot": procedure.rules_snapshot(company_id=company.pk),
+        }
 
 
 class RecruitmentScopeAndPermissionTests(HydraRecruitmentTestCase):

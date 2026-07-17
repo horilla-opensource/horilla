@@ -16,22 +16,20 @@ import json
 import logging
 import os
 import random
-import secrets
 from urllib.parse import parse_qs
 
 from django import template
 from django.contrib import messages
 from django.contrib.auth import login
 from django.contrib.auth.models import User
-from django.core.exceptions import ValidationError
+from django.core.exceptions import PermissionDenied, ValidationError
 from django.core.files.base import ContentFile
-from django.core.mail import EmailMessage, send_mail
+from django.core.mail import send_mail
 from django.core.paginator import Paginator
 from django.db import transaction
-from django.db.models import ProtectedError
+from django.db.models import ProtectedError, Q
 from django.http import HttpResponse, HttpResponseRedirect, JsonResponse
 from django.shortcuts import redirect, render
-from django.template.loader import render_to_string
 from django.urls import reverse
 from django.utils.translation import gettext as __
 from django.utils.translation import gettext_lazy as _
@@ -58,6 +56,14 @@ from horilla.decorators import (
 from horilla.group_by import group_by_queryset as general_group_by
 from horilla.http.response import HorillaRedirect
 from horilla_documents.models import Document
+from hydra_arrivals.portal_email import (
+    PORTAL_EMAIL_QUEUE_PERMISSIONS,
+    prepare_generated_portal_attachment,
+    prepare_uploaded_portal_attachments,
+    queue_onboarding_portal_email,
+)
+from hydra_coordination.selectors import company_ids_for_user
+from hydra_people.recruitment_selectors import linked_candidates_for_user
 from notifications.signals import notify
 from onboarding.decorators import (
     all_manager_can_enter,
@@ -81,6 +87,7 @@ from onboarding.models import (
     OnboardingStage,
     OnboardingTask,
 )
+from onboarding.services import ensure_candidate_onboarding
 from recruitment.filters import CandidateFilter, CandidateReGroup, RecruitmentFilter
 from recruitment.forms import RejectedCandidateForm
 from recruitment.models import Candidate, Recruitment, RejectedCandidate
@@ -461,30 +468,6 @@ def candidates_single_view(request, id, **kwargs):
     Candidate individual view for the onboarding candidates
     """
     candidate = Candidate.objects.get(id=id)
-    if not CandidateStage.objects.filter(candidate_id=candidate).exists():
-        try:
-            onboarding_stage = OnboardingStage.objects.filter(
-                recruitment_id=candidate.recruitment_id
-            ).order_by("sequence")[0]
-            CandidateStage(
-                candidate_id=candidate, onboarding_stage_id=onboarding_stage
-            ).save()
-        except Exception:
-            messages.error(
-                request,
-                _("%(recruitment)s has no stage..")
-                % {"recruitment": candidate.recruitment_id},
-            )
-        if tasks := OnboardingTask.objects.filter(
-            recruitment_id=candidate.recruitment_id
-        ):
-            for task in tasks:
-                if not CandidateTask.objects.filter(
-                    candidate_id=candidate, onboarding_task_id=task
-                ).exists():
-                    CandidateTask(
-                        candidate_id=candidate, onboarding_task_id=task
-                    ).save()
 
     recruitment = candidate.recruitment_id
     choices = CandidateTask.choice
@@ -530,16 +513,23 @@ def candidates_view(request):
     Returns:
     GET : return candidate view  template
     """
-    queryset = Candidate.objects.filter(
+    if not request.user.has_perms(
+        ("recruitment.view_candidate", "hydra_people.view_person")
+    ):
+        raise PermissionDenied
+    queryset = linked_candidates_for_user(user=request.user).filter(
         is_active=True,
         hired=True,
         recruitment_id__closed=False,
-    )
+    ).prefetch_related("hydra_portal_deliveries")
     candidate_filter_obj = CandidateFilter(request.GET, queryset)
     previous_data = request.GET.urlencode()
     page_number = request.GET.get("page")
     page_obj = paginator_qry(candidate_filter_obj.qs, page_number)
-    mail_templates = HorillaMailTemplate.objects.all()
+    mail_templates = HorillaMailTemplate._base_manager.filter(
+        Q(company_id__isnull=True)
+        | Q(company_id__in=company_ids_for_user(user=request.user))
+    )
     data_dict = parse_qs(previous_data)
     get_key_instances(Candidate, data_dict)
     return render(
@@ -561,10 +551,10 @@ def candidates_view(request):
 @permission_required(perm="recruitment.view_candidate")
 def hired_candidate_view(request):
     previous_data = request.GET.urlencode()
-    candidates = Candidate.objects.filter(
+    candidates = linked_candidates_for_user(user=request.user).filter(
         hired=True,
         recruitment_id__closed=False,
-    )
+    ).prefetch_related("hydra_portal_deliveries")
     if request.GET.get("is_active") is None:
         candidates = candidates.filter(is_active=True)
     candidates = CandidateFilter(request.GET, queryset=candidates).qs
@@ -591,11 +581,15 @@ def candidate_filter(request):
     Returns:
     GET : return candidate view template
     """
-    queryset = Candidate.objects.filter(
+    if not request.user.has_perms(
+        ("recruitment.view_candidate", "hydra_people.view_person")
+    ):
+        raise PermissionDenied
+    queryset = linked_candidates_for_user(user=request.user).filter(
         is_active=True,
         hired=True,
         recruitment_id__closed=False,
-    )
+    ).prefetch_related("hydra_portal_deliveries")
     candidates = CandidateFilter(request.GET, queryset).qs
     previous_data = request.GET.urlencode()
     page_number = request.GET.get("page")
@@ -618,6 +612,7 @@ def candidate_filter(request):
 
 
 @login_required
+@require_http_methods(["POST"])
 @all_manager_can_enter("recruitment.view_recruitment")
 def email_send(request):
     """
@@ -629,98 +624,98 @@ def email_send(request):
     Returns:
     GET : return json response
     """
-    host = request.get_host()
-    protocol = "https" if request.is_secure() else "http"
     candidates = request.POST.getlist("ids")
     other_attachments = request.FILES.getlist("other_attachments")
     template_attachment_ids = request.POST.getlist("template_attachment_ids")
-    email_backend = ConfiguredEmailBackend()
     if not candidates:
         messages.info(request, "Please choose candidates")
         return HorillaRedirect(request)
+    if not request.user.has_perms(PORTAL_EMAIL_QUEUE_PERMISSIONS):
+        raise PermissionDenied
 
-    bodys = list(
-        HorillaMailTemplate.objects.filter(id__in=template_attachment_ids).values_list(
-            "body", flat=True
-        )
-    )
+    try:
+        uploaded_attachments = prepare_uploaded_portal_attachments(other_attachments)
+    except ValidationError as error:
+        messages.error(request, error.messages[0])
+        return HorillaRedirect(request)
 
-    attachments_other = []
-    for file in other_attachments:
-        attachments_other.append((file.name, file.read(), file.content_type))
-        file.close()
+    try:
+        selected_template_ids = {
+            int(template_id) for template_id in template_attachment_ids
+        }
+    except (TypeError, ValueError):
+        messages.error(request, _("An attachment template selection is invalid."))
+        return HorillaRedirect(request)
+    if (
+        len(uploaded_attachments) + len(selected_template_ids)
+        > settings.HYDRA_PORTAL_EMAIL_MAX_ATTACHMENTS
+    ):
+        messages.error(request, _("Too many portal-email attachments were selected."))
+        return HorillaRedirect(request)
+
     for cand_id in candidates:
-        attachments = list(set(attachments_other) | set([]))
-        candidate = Candidate.objects.get(id=cand_id)
-        if not request.GET.get("no_portal"):
-            if candidate.converted_employee_id:
-                messages.info(
-                    request, _(f"{candidate} has already been converted to employee.")
+        candidate = linked_candidates_for_user(user=request.user).filter(pk=cand_id).first()
+        if candidate is None:
+            messages.error(request, _("A selected candidate is outside your access scope."))
+            continue
+        if candidate.recruitment_id_id is None:
+            messages.error(request, _("The selected candidate has no recruitment."))
+            continue
+
+        if request.GET.get("no_portal"):
+            try:
+                ensure_candidate_onboarding(candidate=candidate, actor=request.user)
+                messages.success(request, "Candidate Added to Onboarding Stage")
+            except ValidationError as error:
+                logger.warning("Onboarding start validation failed")
+                messages.error(request, error.messages[0])
+            continue
+
+        try:
+            attachments = list(uploaded_attachments)
+            candidate_templates = list(
+                HorillaMailTemplate._base_manager.filter(
+                    id__in=selected_template_ids,
                 )
-                continue
-            for html in bodys:
-                # due to not having solid template we first need to pass the context
-                template_bdy = template.Template(html)
+                .filter(
+                    Q(company_id__isnull=True)
+                    | Q(company_id=candidate.recruitment_id.company_id)
+                )
+                .order_by("pk")
+            )
+            if len(candidate_templates) != len(selected_template_ids):
+                raise ValidationError(
+                    _("An attachment template is outside the candidate company.")
+                )
+            for index, mail_template in enumerate(candidate_templates, start=1):
+                template_bdy = template.Template(mail_template.body)
                 context = template.Context(
                     {"instance": candidate, "self": request.user.employee_get}
                 )
                 render_bdy = template_bdy.render(context)
                 attachments.append(
-                    (
-                        "Document",
-                        generate_pdf(
+                    prepare_generated_portal_attachment(
+                        filename=f"Document-{index}.pdf",
+                        content=generate_pdf(
                             render_bdy, {}, path=False, title="Document"
                         ).content,
-                        "application/pdf",
                     )
                 )
-            token = secrets.token_hex(15)
-            existing_portal = OnboardingPortal.objects.filter(candidate_id=candidate)
-            if existing_portal.exists():
-                new_portal = existing_portal.first()
-                new_portal.token = token
-                new_portal.used = False
-                new_portal.count = 0
-                new_portal.profile = None
-                new_portal.save()
-            else:
-                OnboardingPortal(candidate_id=candidate, token=token).save()
-            html_message = render_to_string(
-                "onboarding/mail_templates/default.html",
-                {
-                    "portal": f"{protocol}://{host}/onboarding/user-creation/{token}",
-                    "instance": candidate,
-                    "host": host,
-                    "protocol": protocol,
-                },
-                request=request,
+            delivery, created = queue_onboarding_portal_email(
+                candidate_id=candidate.pk,
+                actor=request.user,
+                attachments=attachments,
             )
-            email = EmailMessage(
-                subject=f"Hello {candidate.name}, Congratulations on your selection!",
-                body=html_message,
-                to=[candidate.email],
-            )
-            email.content_subtype = "html"
-            email.attachments = attachments
-            try:
-                email.send()
-                # to check ajax or not
-                messages.success(request, "Portal link sent to the candidate")
-            except Exception as e:
-                logger.error(e)
-                messages.error(request, f"Mail not send to {candidate.name}")
-            candidate.start_onboard = True
-            candidate.save()
-        try:
-            onboarding_candidate = CandidateStage()
-            onboarding_candidate.onboarding_stage_id = (
-                candidate.recruitment_id.onboarding_stage.first()
-            )
-            onboarding_candidate.candidate_id = candidate
-            onboarding_candidate.save()
-            messages.success(request, "Candidate Added to Onboarding Stage")
-        except Exception as e:
-            logger.error(e)
+        except ValidationError as error:
+            logger.warning("Onboarding portal queue validation failed")
+            messages.error(request, error.messages[0])
+            continue
+        messages.success(
+            request,
+            _("Portal email queued for delivery.")
+            if created
+            else _("This portal email is already queued."),
+        )
 
     return HorillaRedirect(request)
 
@@ -1212,6 +1207,29 @@ def candidate_task_update(request, taskId):
         candidate_task = CandidateTask.objects.filter(
             candidate_id=candidate, onboarding_task_id=onboarding_task
         ).first()
+    from hydra_arrivals.models import OnboardingHandoff
+
+    handoff = OnboardingHandoff.objects.filter(
+        candidate_id=candidate_task.candidate_id_id
+    ).first()
+    if handoff is not None:
+        from hydra_arrivals.onboarding import update_onboarding_task_status
+
+        try:
+            update_onboarding_task_status(
+                handoff=handoff,
+                candidate_task_id=candidate_task.pk,
+                status=status,
+                actor=request.user,
+            )
+        except ValidationError as error:
+            return JsonResponse(
+                {"message": error.messages[0], "type": "danger"},
+                status=400,
+            )
+        return JsonResponse(
+            {"message": _("Candidate onboarding task updated"), "type": "success"}
+        )
     candidate_task.status = status
     candidate_task.save()
     users = [
@@ -1417,9 +1435,22 @@ def candidate_task_bulk_update(request):
     task = request.POST["task"]
     status = request.POST["status"]
 
-    count = CandidateTask.objects.filter(
+    tasks = CandidateTask.objects.filter(
         candidate_id__id__in=candidate_id_list, onboarding_task_id=task
-    ).update(status=status)
+    )
+    if tasks.filter(
+        candidate_id__hydra_onboarding_handoff__isnull=False
+    ).exists():
+        return JsonResponse(
+            {
+                "message": _(
+                    "Update Hydra handoff tasks from the scoped arrival detail."
+                ),
+                "type": "danger",
+            },
+            status=409,
+        )
+    count = tasks.update(status=status)
     # messages.success(request,f"{count} candidate's task status updated successfully")
 
     return JsonResponse(
@@ -1740,6 +1771,15 @@ def change_task_status(request):
     """
     task_id = request.GET["task_id"]
     candidate_task = CandidateTask.objects.get(id=task_id)
+    from hydra_arrivals.models import OnboardingHandoff
+
+    if OnboardingHandoff.objects.filter(
+        candidate_id=candidate_task.candidate_id_id
+    ).exists():
+        return HttpResponse(
+            _("Use the scoped Hydra arrival detail to update this task."),
+            status=405,
+        )
     status = request.GET["status"]
     if status in [
         "todo",

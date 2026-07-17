@@ -15,16 +15,31 @@ from hydra_imports.selectors import (
 )
 from hydra_imports.services import (
     IMPORT_PERMISSIONS,
+    PURGE_PERMISSIONS,
     apply_candidate_import,
+    discard_candidate_import_data,
     preview_candidate_import,
 )
 
 
-def _detail_context(*, session):
+def _detail_context(*, request, session):
+    sensitive_data_available = session.sensitive_data_available
+    rows = session.rows.select_related("created_person", "created_candidate")
+    if not sensitive_data_available:
+        rows = rows.only(
+            "row_number",
+            "outcome",
+            "created_person",
+            "created_candidate",
+        )
     return {
         "session": session,
-        "import_rows": session.rows.select_related(
-            "created_person", "created_candidate"
+        "import_rows": rows,
+        "sensitive_data_available": sensitive_data_available,
+        "can_discard": request.user.has_perms(PURGE_PERMISSIONS)
+        and (
+            request.user.is_superuser
+            or session.created_by_id == request.user.pk
         ),
     }
 
@@ -94,7 +109,7 @@ def candidate_import_detail(request, session_uuid):
     return render(
         request,
         "hydra_imports/candidate_import_detail.html",
-        _detail_context(session=session),
+        _detail_context(request=request, session=session),
     )
 
 
@@ -119,6 +134,28 @@ def candidate_import_apply(request, session_uuid):
             _("Candidate import applied: %(count)s applications created.")
             % {"count": session.valid_count},
         )
+    return redirect(session)
+
+
+@login_required
+@require_POST
+@permission_required(PURGE_PERMISSIONS, raise_exception=True)
+def candidate_import_discard(request, session_uuid):
+    session = candidate_import_session_for_user(
+        user=request.user,
+        session_uuid=session_uuid,
+    )
+    session, created = discard_candidate_import_data(
+        session_uuid=session.uuid,
+        actor=request.user,
+    )
+    if created:
+        messages.success(
+            request,
+            _("Candidate import source data was redacted; its audit record was retained."),
+        )
+    else:
+        messages.info(request, _("Candidate import source data was already redacted."))
     return redirect(session)
 
 

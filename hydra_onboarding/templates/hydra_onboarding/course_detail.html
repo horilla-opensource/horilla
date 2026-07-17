@@ -1,0 +1,17 @@
+{% extends "hydra_shell/base.html" %}
+{% load i18n %}
+
+{% block hydra_content %}
+<header class="hydra-header">
+  <div><p class="hydra-muted mb-1">{{ course.code }} · {{ course.company }}</p><h1 class="oh-main__titlebar-title">{{ course.name }}</h1></div>
+  <div class="hydra-actions"><a class="oh-btn" href="{% url 'hydra-onboarding-dashboard' %}">{% trans "Back to onboarding" %}</a>{% if perms.hydra_onboarding.add_courseversion %}<a class="oh-btn oh-btn--secondary" href="{% url 'hydra-onboarding-version-create' course.uuid %}">{% trans "Create version" %}</a>{% endif %}</div>
+</header>
+<section class="hydra-card mb-3"><p>{{ course.description|default:_('No description.') }}</p><p class="hydra-muted mb-0">{% trans "Default language" %}: {{ course.get_default_language_display }}</p></section>
+<section class="hydra-card mb-3">
+  <div class="hydra-header"><h2 class="h4 mb-0">{% trans "Versions" %}</h2></div>
+  {% if versions %}<table class="hydra-table"><thead><tr><th>{% trans "Version" %}</th><th>{% trans "Language" %}</th><th>{% trans "Title" %}</th><th>{% trans "State" %}</th><th>{% trans "Published" %}</th></tr></thead><tbody>
+  {% for version in versions %}<tr><td data-label="{% trans 'Version' %}"><a href="{{ version.get_absolute_url }}">v{{ version.version_number }}</a></td><td data-label="{% trans 'Language' %}">{{ version.get_language_display }}</td><td data-label="{% trans 'Title' %}">{{ version.title }}</td><td data-label="{% trans 'State' %}"><span class="hydra-status">{{ version.get_status_display }}</span></td><td data-label="{% trans 'Published' %}">{{ version.published_at|date:"Y-m-d H:i"|default:"—" }}</td></tr>{% endfor %}
+  </tbody></table>{% else %}<p class="hydra-muted mb-0">{% trans "No versions yet." %}</p>{% endif %}
+</section>
+{% if perms.hydra_onboarding.view_courseassignmentrule %}<section class="hydra-card"><h2 class="h4">{% trans "Rules for this course" %}</h2><p class="hydra-muted mb-0">{% blocktrans count count=rules.count %}{{ count }} scoped rule{% plural %}{{ count }} scoped rules{% endblocktrans %}</p></section>{% endif %}
+{% endblock hydra_content %}

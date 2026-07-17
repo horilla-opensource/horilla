@@ -25,6 +25,57 @@
 
 {% include "hydra_links/_public_links.html" %}
 
+{% if can_start_onboarding %}
+<section class="hydra-card mb-3" aria-labelledby="onboarding-start-title">
+  <h2 class="h4" id="onboarding-start-title">{% trans "Onboarding handoff" %}</h2>
+  <p>{% trans "Create the reused Horilla onboarding stage and tasks for this confirmed arrival. The action is idempotent and audited." %}</p>
+  <form method="post" action="{% url 'hydra-onboarding-handoff-start' plan.uuid %}">
+    {% csrf_token %}
+    <button class="oh-btn oh-btn--secondary" type="submit">{% trans "Start onboarding" %}</button>
+  </form>
+</section>
+{% endif %}
+
+{% if onboarding_handoff %}
+<section class="hydra-card mb-3" aria-labelledby="onboarding-handoff-title">
+  <header class="hydra-header">
+    <div>
+      <h2 class="h4" id="onboarding-handoff-title">{% trans "Onboarding handoff" %}</h2>
+      <p class="hydra-muted mb-0">{% trans "Confirmed arrival, Horilla onboarding, employee conversion and destination team assignment." %}</p>
+    </div>
+    {% if can_reconcile_onboarding %}
+    <form method="post" action="{% url 'hydra-onboarding-handoff-reconcile' plan.uuid %}">
+      {% csrf_token %}<button class="oh-btn" type="submit">{% trans "Refresh milestones" %}</button>
+    </form>
+    {% endif %}
+  </header>
+  <dl class="hydra-detail">
+    <div><dt>{% trans "Handoff status" %}</dt><dd><span class="hydra-status">{{ onboarding_handoff.get_status_display }}</span></dd></div>
+    <div><dt>{% trans "Started" %}</dt><dd>{{ onboarding_handoff.initiated_at|date:"Y-m-d H:i" }}</dd></div>
+    <div><dt>{% trans "Onboarding stage" %}</dt><dd>{{ onboarding_handoff.candidate_stage.onboarding_stage_id }}</dd></div>
+    <div><dt>{% trans "Employee conversion" %}</dt><dd>{% if onboarding_handoff.employee_conversion_id %}{% trans "Recorded" %}{% else %}{% trans "Pending" %}{% endif %}</dd></div>
+    <div><dt>{% trans "Destination team" %}</dt><dd>{% if onboarding_handoff.person_assignment_id %}{{ onboarding_handoff.person_assignment.team }}{% else %}{% trans "Pending" %}{% endif %}</dd></div>
+    <div><dt>{% trans "Completed" %}</dt><dd>{{ onboarding_handoff.completed_at|date:"Y-m-d H:i"|default:"—" }}</dd></div>
+  </dl>
+
+  {% if perms.onboarding.view_candidatetask %}
+  <h3 class="h5 mt-3">{% trans "Assigned tasks" %}</h3>
+  <table class="hydra-table">
+    <thead><tr><th>{% trans "Stage" %}</th><th>{% trans "Task" %}</th><th>{% trans "Status" %}</th>{% if can_update_onboarding_tasks %}<th>{% trans "Action" %}</th>{% endif %}</tr></thead>
+    <tbody>{% for task in onboarding_tasks %}<tr><td data-label="{% trans 'Stage' %}">{{ task.stage_id|default:"—" }}</td><td data-label="{% trans 'Task' %}">{{ task.onboarding_task_id }}</td><td data-label="{% trans 'Status' %}">{{ task.get_status_display }}</td>{% if can_update_onboarding_tasks %}<td data-label="{% trans 'Action' %}"><form class="hydra-actions" method="post" action="{% url 'hydra-onboarding-task-update' plan.uuid task.pk %}">{% csrf_token %}<label class="sr-only" for="task-status-{{ task.pk }}">{% trans "Task status" %}</label><select id="task-status-{{ task.pk }}" name="status">{% for value, label in onboarding_task_status_choices %}<option value="{{ value }}"{% if value == task.status %} selected{% endif %}>{{ label }}</option>{% endfor %}</select><button class="oh-btn" type="submit">{% trans "Save" %}</button></form></td>{% endif %}</tr>{% empty %}<tr><td colspan="4">{% trans "No onboarding tasks are configured for this recruitment." %}</td></tr>{% endfor %}</tbody>
+  </table>
+  {% endif %}
+
+  {% if perms.hydra_arrivals.view_onboardinghandoffevent %}
+  <h3 class="h5 mt-3">{% trans "Milestone history" %}</h3>
+  <table class="hydra-table">
+    <thead><tr><th>{% trans "When" %}</th><th>{% trans "Milestone" %}</th><th>{% trans "Source" %}</th><th>{% trans "Actor" %}</th></tr></thead>
+    <tbody>{% for event in onboarding_handoff_events %}<tr><td data-label="{% trans 'When' %}">{{ event.occurred_at|date:"Y-m-d H:i" }}</td><td data-label="{% trans 'Milestone' %}">{{ event.get_event_type_display }}</td><td data-label="{% trans 'Source' %}">{{ event.get_source_display }}</td><td data-label="{% trans 'Actor' %}">{{ event.actor|default:"—" }}</td></tr>{% empty %}<tr><td colspan="4">{% trans "No handoff events." %}</td></tr>{% endfor %}</tbody>
+  </table>
+  {% endif %}
+</section>
+{% endif %}
+
 {% if can_transition %}
 <section class="hydra-card mb-3" aria-labelledby="arrival-outcome-title">
   <h2 class="h4" id="arrival-outcome-title">{% trans "Record outcome" %}</h2>

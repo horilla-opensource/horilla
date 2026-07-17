@@ -198,3 +198,45 @@ class EmployeeTeamAssignmentForm(forms.Form):
                 _("Employee team assignment cannot start in the future.")
             )
         return valid_from
+
+
+class OrganizationAccessEndForm(forms.Form):
+    action = forms.ChoiceField(
+        label=_("End mode"),
+        choices=(
+            ("schedule", _("Schedule a last day")),
+            ("immediate", _("Revoke immediately")),
+        ),
+    )
+    last_day = forms.DateField(
+        label=_("Last day of access"),
+        required=False,
+        widget=forms.DateInput(attrs={"type": "date"}),
+        help_text=_("Required for a scheduled end; the date is inclusive."),
+    )
+    reason = forms.CharField(
+        label=_("Reason"),
+        max_length=255,
+        widget=forms.Textarea(attrs={"rows": 3}),
+    )
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.fields["action"].widget.attrs["class"] = "oh-select oh-select-2 w-100"
+        self.fields["last_day"].widget.attrs.update(
+            {"class": "oh-input w-100", "min": timezone.localdate().isoformat()}
+        )
+        self.fields["reason"].widget.attrs["class"] = "oh-input w-100"
+
+    def clean(self):
+        cleaned_data = super().clean()
+        action = cleaned_data.get("action")
+        last_day = cleaned_data.get("last_day")
+        if action == "schedule" and last_day is None:
+            self.add_error("last_day", _("Choose the last day of access."))
+        if last_day is not None and last_day < timezone.localdate():
+            self.add_error("last_day", _("The last day cannot be in the past."))
+        if action == "immediate":
+            cleaned_data["last_day"] = None
+        cleaned_data["reason"] = " ".join(cleaned_data.get("reason", "").split())
+        return cleaned_data

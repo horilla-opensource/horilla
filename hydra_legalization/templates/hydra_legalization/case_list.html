@@ -4,7 +4,7 @@
 {% block person_content %}
 <header class="hydra-header">
   <div><h1 class="oh-main__titlebar-title">{% trans "Legalization" %}</h1><p class="hydra-muted mb-0">{% trans "Scoped cases, deadlines, validity and private documents." %}</p></div>
-  <div class="hydra-actions"><a class="oh-btn oh-btn--secondary" href="{% url 'hydra-person-list' %}">{% trans "Choose a person" %}</a></div>
+  <div class="hydra-actions">{% if perms.hydra_legalization.view_legalizationproceduretype and perms.hydra_legalization.view_legalizationauthority and perms.hydra_legalization.view_legalizationprocedurerequirement %}<a class="oh-btn" href="{% url 'hydra-legalization-configuration' %}">{% trans "Configuration" %}</a>{% endif %}{% if perms.hydra_legalization.view_legalizationworkload %}<a class="oh-btn" href="{% url 'hydra-legalization-workload' %}">{% trans "Workload queue" %}</a>{% endif %}<a class="oh-btn oh-btn--secondary" href="{% url 'hydra-person-list' %}">{% trans "Choose a person" %}</a></div>
 </header>
 
 <form class="hydra-card hydra-search mb-3" method="get" role="search">
@@ -16,7 +16,7 @@
 
 <section class="hydra-card" aria-label="{% trans 'Legalization cases' %}">
   {% if page_obj.object_list %}<div class="table-responsive"><table class="hydra-table"><thead><tr><th>{% trans "Person" %}</th><th>{% trans "Case" %}</th><th>{% trans "Status" %}</th><th>{% trans "Responsible" %}</th><th>{% trans "Deadline / validity" %}</th></tr></thead><tbody>
-  {% for case in page_obj %}<tr><td data-label="{% trans 'Person' %}"><a href="{{ case.get_absolute_url }}">{{ case.person.passport_name }}</a><br><small class="hydra-muted">{{ case.person.hydra_id }}</small></td><td data-label="{% trans 'Case' %}">{{ case.get_case_type_display }}{% if case.reference_number %}<br><small>{{ case.reference_number }}</small>{% endif %}</td><td data-label="{% trans 'Status' %}"><span class="hydra-status">{{ case.get_status_display }}</span>{% if case.is_overdue %}<br><small class="text-danger">{% trans "Overdue" %}</small>{% endif %}</td><td data-label="{% trans 'Responsible' %}">{{ case.responsible.get_full_name|default:case.responsible.username }}</td><td data-label="{% trans 'Deadline / validity' %}">{% if case.deadline %}{{ case.deadline|date:"Y-m-d" }}{% else %}—{% endif %}{% if case.valid_until %}<br><small>{% trans "valid until" %} {{ case.valid_until|date:"Y-m-d" }}</small>{% endif %}</td></tr>{% endfor %}
+  {% for case in page_obj %}<tr><td data-label="{% trans 'Person' %}"><a href="{{ case.get_absolute_url }}">{{ case.person.passport_name }}</a><br><small class="hydra-muted">{{ case.person.hydra_id }}</small></td><td data-label="{% trans 'Case' %}">{{ case.procedure_name }}<br><small>{{ case.company }}{% if case.reference_number %} · {{ case.reference_number }}{% endif %}</small></td><td data-label="{% trans 'Status' %}"><span class="hydra-status">{{ case.configured_status_label }}</span>{% if case.is_overdue %}<br><small class="text-danger">{% trans "Overdue" %}</small>{% endif %}</td><td data-label="{% trans 'Responsible' %}">{{ case.responsible.get_full_name|default:case.responsible.username }}</td><td data-label="{% trans 'Deadline / validity' %}">{% if case.deadline %}{{ case.deadline|date:"Y-m-d" }}{% else %}—{% endif %}{% if case.valid_until %}<br><small>{% trans "valid until" %} {{ case.valid_until|date:"Y-m-d" }}</small>{% endif %}</td></tr>{% endfor %}
   </tbody></table></div>{% else %}<p class="hydra-muted mb-0">{% trans "No legalization cases in your scope." %}</p>{% endif %}
 </section>
 {% endblock person_content %}

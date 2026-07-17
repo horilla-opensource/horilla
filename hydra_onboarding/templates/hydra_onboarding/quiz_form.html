@@ -1,0 +1,4 @@
+{% extends "hydra_shell/base.html" %}
+{% load i18n %}
+
+{% block hydra_content %}<header class="hydra-header"><div><p class="hydra-muted mb-1">{{ assignment.course_version.title }}</p><h1 class="oh-main__titlebar-title">{{ quiz.title }}</h1></div><a class="oh-btn" href="{{ assignment.get_absolute_url }}">{% trans "Cancel" %}</a></header><section class="hydra-card"><p class="hydra-muted">{% trans "Pass score" %}: {{ quiz.passing_score }}% · {% trans "Maximum attempts" %}: {{ quiz.max_attempts }}</p><form method="post">{% csrf_token %}{{ form.as_p }}<button class="oh-btn oh-btn--secondary" type="submit">{% trans "Submit quiz" %}</button></form></section>{% endblock hydra_content %}

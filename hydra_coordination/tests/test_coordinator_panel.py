@@ -1,4 +1,6 @@
 from datetime import datetime, time, timedelta
+from unittest.mock import patch
+from uuid import uuid4
 
 from django.contrib.auth.models import Permission, User
 from django.core.exceptions import PermissionDenied
@@ -17,6 +19,7 @@ from hydra_legalization.models import LegalizationCase
 from hydra_people.models import Person
 from hydra_people.services import link_candidate
 from hydra_people.tests.test_recruitment import HydraRecruitmentTestCase
+from hydra_tasks.services import create_task
 
 
 class CoordinatorPanelTestCase(HydraRecruitmentTestCase):
@@ -112,6 +115,7 @@ class CoordinatorPanelTestCase(HydraRecruitmentTestCase):
             reference="MISSING-A",
             status=LegalizationCase.Status.DRAFT,
             deadline=None,
+            case_type=LegalizationCase.CaseType.VISA,
         )
         cls.expiring_case = cls.make_case(
             person=cls.person_c,
@@ -198,12 +202,17 @@ class CoordinatorPanelTestCase(HydraRecruitmentTestCase):
         reference,
         status,
         deadline,
+        case_type=LegalizationCase.CaseType.WORK_PERMIT,
         valid_from=None,
         valid_until=None,
     ):
+        company = cls.company_b if person.pk == cls.person_b.pk else cls.company_a
         return LegalizationCase.objects.create(
             person=person,
-            case_type=LegalizationCase.CaseType.WORK_PERMIT,
+            case_type=case_type,
+            **cls.legalization_case_configuration(
+                company=company, case_type=case_type
+            ),
             status=status,
             responsible=cls.admin,
             reference_number=reference,
@@ -247,12 +256,14 @@ class CoordinatorSelectorTests(CoordinatorPanelTestCase):
         self.assertEqual(snapshot.arrivals_today, 2)
         self.assertEqual(snapshot.arrival_exception_count, 2)
         self.assertEqual(snapshot.assignment_gap_count, 1)
+        self.assertEqual(snapshot.housing_gap_count, 1)
         self.assertEqual(snapshot.legalization_exception_count, 3)
         self.assertEqual(
             {row.person for row in snapshot.arrival_exceptions},
             {self.person_a, self.person_c},
         )
         self.assertEqual(snapshot.assignment_gaps[0].person, self.gap_person)
+        self.assertEqual(snapshot.housing_gaps[0].person, self.gap_person)
         legalization_references = {
             row.case.reference_number for row in snapshot.legalization_exceptions
         }
@@ -270,6 +281,50 @@ class CoordinatorSelectorTests(CoordinatorPanelTestCase):
                 location=self.location_b,
                 day=self.today,
             )
+
+    def test_snapshot_adds_only_overdue_tasks_from_location_scope(self):
+        self.grant_permissions(
+            self.user,
+            "hydra_tasks.view_hydratask",
+            "hydra_tasks.view_all_hydratask",
+            "hydra_tasks.transition_hydratask",
+        )
+        for cache_name in ("_perm_cache", "_user_perm_cache", "_group_perm_cache"):
+            self.user.__dict__.pop(cache_name, None)
+        due_at = timezone.now() + timedelta(hours=1)
+        visible = create_task(
+            actor=self.admin,
+            person_uuid=self.person_a.uuid,
+            company=self.company_a,
+            assignee=self.user,
+            title="Resolve scoped operational exception",
+            due_at=due_at,
+            target_reference=f"person:{self.person_a.uuid}",
+            request_key=uuid4(),
+        )
+        create_task(
+            actor=self.admin,
+            person_uuid=self.person_b.uuid,
+            company=self.company_b,
+            assignee=self.admin,
+            title="Outside task",
+            due_at=due_at,
+            target_reference=f"person:{self.person_b.uuid}",
+            request_key=uuid4(),
+        )
+
+        with patch(
+            "hydra_tasks.selectors.timezone.now",
+            return_value=due_at + timedelta(minutes=1),
+        ):
+            snapshot = coordinator_snapshot_for_location(
+                user=self.user,
+                location=self.location_a,
+                day=self.today,
+            )
+
+        self.assertEqual(snapshot.overdue_task_count, 1)
+        self.assertEqual(snapshot.overdue_tasks, [visible])
 
 
 class CoordinatorPanelViewTests(CoordinatorPanelTestCase):

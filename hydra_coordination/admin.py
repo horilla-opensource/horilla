@@ -2,6 +2,7 @@ from django.contrib import admin
 
 from hydra_coordination.models import (
     Location,
+    OrganizationAccessEvent,
     PersonAssignment,
     ScopeGrant,
     Section,
@@ -43,11 +44,51 @@ class TeamAdmin(ReadOnlyHydraAdmin):
 
 @admin.register(ScopeGrant)
 class ScopeGrantAdmin(ReadOnlyHydraAdmin):
-    list_display = ("user", "scope_type", "target", "valid_from", "valid_until", "is_active")
-    list_filter = ("is_active", "valid_from")
+    list_display = (
+        "user",
+        "scope_type",
+        "target",
+        "valid_from",
+        "valid_until",
+        "termination_mode",
+        "is_active",
+    )
+    list_filter = ("termination_mode", "is_active", "valid_from")
 
 
 @admin.register(PersonAssignment)
 class PersonAssignmentAdmin(ReadOnlyHydraAdmin):
-    list_display = ("person", "team", "department", "valid_from", "valid_until", "is_primary", "is_active")
-    list_filter = ("is_primary", "is_active", "department")
+    list_display = (
+        "person",
+        "team",
+        "department",
+        "valid_from",
+        "valid_until",
+        "termination_mode",
+        "is_primary",
+        "is_active",
+    )
+    list_filter = ("termination_mode", "is_primary", "is_active", "department")
+
+
+@admin.register(OrganizationAccessEvent)
+class OrganizationAccessEventAdmin(admin.ModelAdmin):
+    list_display = (
+        "occurred_at",
+        "action",
+        "actor",
+        "subject_user",
+        "effective_until",
+        "notification_status",
+    )
+    list_filter = ("action", "notification_status", "occurred_at")
+    search_fields = ("uuid", "actor__username", "subject_user__username", "reason")
+
+    def has_add_permission(self, request):
+        return False
+
+    def has_change_permission(self, request, obj=None):
+        return False
+
+    def has_delete_permission(self, request, obj=None):
+        return False

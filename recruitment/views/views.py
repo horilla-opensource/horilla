@@ -28,6 +28,7 @@ from django.conf import settings
 from django.contrib import messages
 from django.contrib.auth.models import User
 from django.core import serializers
+from django.core.exceptions import ValidationError
 from django.core.cache import cache as CACHE
 from django.core.mail import EmailMessage
 from django.core.paginator import Paginator
@@ -37,6 +38,7 @@ from django.http import HttpResponse, JsonResponse
 from django.shortcuts import get_object_or_404, redirect, render
 from django.urls import reverse
 from django.utils import timezone
+from django.utils.dateparse import parse_date, parse_datetime
 from django.utils.translation import gettext_lazy as _
 from django.views.decorators.http import require_http_methods
 
@@ -124,6 +126,49 @@ from recruitment.views.linkedin import delete_post, post_recruitment_in_linkedin
 from recruitment.views.paginator_qry import paginator_qry
 
 
+def _transition_error_message(error):
+    if hasattr(error, "message_dict"):
+        return " ".join(
+            str(message)
+            for messages_for_field in error.message_dict.values()
+            for message in messages_for_field
+        )
+    return " ".join(error.messages)
+
+
+def _controlled_transition_if_linked(
+    *, candidate, stage, request, schedule_date=None
+):
+    """Route linked applications through Hydra; leave unlinked Horilla rows intact."""
+
+    if not hasattr(candidate, "hydra_person_link"):
+        return False
+
+    from hydra_people.models import CandidateStageTransition
+    from hydra_people.recruitment_workflow import transition_candidate
+
+    requested_schedule = request.POST.get("schedule_date") or request.GET.get(
+        "schedule_date"
+    )
+    requested_joining = request.POST.get("joining_date") or request.GET.get(
+        "joining_date"
+    )
+    parsed_schedule = parse_datetime(requested_schedule) if requested_schedule else None
+    parsed_joining = parse_date(requested_joining) if requested_joining else None
+    override_value = request.POST.get("override") or request.GET.get("override", "")
+    transition_candidate(
+        candidate=candidate,
+        target_stage=stage,
+        actor=request.user,
+        reason=request.POST.get("reason") or request.GET.get("reason", ""),
+        schedule_date=schedule_date or parsed_schedule,
+        joining_date=parsed_joining,
+        override=str(override_value).lower() in {"1", "true", "on", "yes"},
+        source=CandidateStageTransition.Source.HORILLA_PIPELINE,
+    )
+    return True
+
+
 def is_stagemanager(request, stage_id=False):
     """
     This method is used to identify the employee is a stage manager or
@@ -143,7 +188,10 @@ def is_stagemanager(request, stage_id=False):
             employee.stage_set.exists() or user.is_superuser,
             employee.stage_set.all(),
         )
-    stage_obj = Stage.objects.get(id=stage_id)
+    stage_obj = Stage.objects.get(
+        id=stage_id,
+        recruitment_id=candidate_obj.recruitment_id,
+    )
     return (
         employee in stage_obj.stage_managers.all()
         or user.is_superuser
@@ -567,10 +615,28 @@ def update_candidate_stage_and_sequence(request):
     )
     context = {}
     for index, cand_id in enumerate(order_list):
-        candidate = CACHE.get(request.session.session_key + "pipeline")[
+        candidate_queryset = CACHE.get(request.session.session_key + "pipeline")[
             "candidates"
         ].filter(id=cand_id)
-        candidate.update(sequence=index, stage_id=stage)
+        candidate = candidate_queryset.select_related("stage_id").first()
+        if candidate is None:
+            continue
+        if candidate.stage_id_id != stage.pk:
+            try:
+                controlled = _controlled_transition_if_linked(
+                    candidate=candidate,
+                    stage=stage,
+                    request=request,
+                )
+            except ValidationError as error:
+                context.update(
+                    type="error",
+                    message=_transition_error_message(error),
+                )
+                continue
+            if not controlled:
+                candidate_queryset.update(stage_id=stage)
+        candidate_queryset.update(sequence=index)
     if stage.stage_type == "hired":
         if stage.recruitment_id.is_vacancy_filled():
             context["message"] = _("Vaccancy is filled")
@@ -594,12 +660,28 @@ def update_candidate_sequence(request):
     data = {}
 
     for index, cand_id in enumerate(order_list):
-        candidate = CACHE.get(request.session.session_key + "pipeline")[
+        candidate_queryset = CACHE.get(request.session.session_key + "pipeline")[
             "candidates"
         ].filter(id=cand_id)
-        candidate.update(
-            sequence=index, stage_id=stage, hired=(stage.stage_type == "hired")
-        )
+        candidate = candidate_queryset.select_related("stage_id").first()
+        if candidate is None:
+            continue
+        if candidate.stage_id_id != stage.pk:
+            try:
+                controlled = _controlled_transition_if_linked(
+                    candidate=candidate,
+                    stage=stage,
+                    request=request,
+                )
+            except ValidationError as error:
+                data.update(type="error", message=_transition_error_message(error))
+                continue
+            if not controlled:
+                candidate_queryset.update(
+                    stage_id=stage,
+                    hired=(stage.stage_type == "hired"),
+                )
+        candidate_queryset.update(sequence=index)
 
     return JsonResponse(data)
 
@@ -653,6 +735,19 @@ def change_candidate_stage(request):
     """
     This method is used to update candidates stage
     """
+    def apply_stage(candidate, stage):
+        if stage is None or candidate.stage_id_id == stage.pk:
+            return False
+        controlled = _controlled_transition_if_linked(
+            candidate=candidate,
+            stage=stage,
+            request=request,
+        )
+        if not controlled:
+            candidate.stage_id = stage
+            candidate.save()
+        return True
+
     if request.method == "POST":
         canIds = request.POST["canIds"]
         stage_id = request.POST["stageId"]
@@ -665,9 +760,7 @@ def change_candidate_stage(request):
                     stage = Stage.objects.filter(
                         recruitment_id=candidate.recruitment_id, id=stage_id
                     ).first()
-                    if stage:
-                        candidate.stage_id = stage
-                        candidate.save()
+                    if apply_stage(candidate, stage):
                         if stage.stage_type == "hired":
                             if stage.recruitment_id.is_vacancy_filled():
                                 context["message"] = _("Vaccancy is filled")
@@ -675,24 +768,27 @@ def change_candidate_stage(request):
                         messages.success(request, _("Candidate stage updated"))
                 except Candidate.DoesNotExist:
                     messages.error(request, _("Candidate not found."))
+                except ValidationError as error:
+                    context.update(
+                        type="error",
+                        message=_transition_error_message(error),
+                    )
         else:
             try:
                 candidate = Candidate.objects.get(id=canIds)
                 stage = Stage.objects.filter(
                     recruitment_id=candidate.recruitment_id, id=stage_id
                 ).first()
-                if stage:
-                    candidate.stage_id = stage
-                    candidate.save()
+                if apply_stage(candidate, stage):
                     if stage.stage_type == "hired":
                         if stage.recruitment_id.is_vacancy_filled():
                             context["message"] = _("Vaccancy is filled")
                             context["vacancy"] = stage.recruitment_id.vacancy
-                    candidate.stage_id = stage
-                    candidate.save()
                     messages.success(request, _("Candidate stage updated"))
             except Candidate.DoesNotExist:
                 messages.error(request, _("Candidate not found."))
+            except ValidationError as error:
+                context.update(type="error", message=_transition_error_message(error))
         return JsonResponse(context)
     candidate_id = request.GET["candidate_id"]
     stage_id = request.GET["stage_id"]
@@ -700,10 +796,11 @@ def change_candidate_stage(request):
     stage = Stage.objects.filter(
         recruitment_id=candidate.recruitment_id, id=stage_id
     ).first()
-    if stage:
-        candidate.stage_id = stage
-        candidate.save()
-        messages.success(request, _("Candidate stage updated"))
+    try:
+        if apply_stage(candidate, stage):
+            messages.success(request, _("Candidate stage updated"))
+    except ValidationError as error:
+        messages.error(request, _transition_error_message(error))
     return stage_component(request)
 
 
@@ -884,12 +981,25 @@ def candidate_stage_update(request, cand_id):
         or request.user.is_superuser
         or is_recruitmentmanager(rec_id=stage_obj.recruitment_id.id)[0]
     ):
-        candidate_obj.stage_id = stage_obj
-        candidate_obj.hired = stage_obj.stage_type == "hired"
-        candidate_obj.canceled = stage_obj.stage_type == "cancelled"
-        candidate_obj.schedule_date = schedule_date
-        candidate_obj.start_onboard = False
-        candidate_obj.save()
+        try:
+            controlled = _controlled_transition_if_linked(
+                candidate=candidate_obj,
+                stage=stage_obj,
+                request=request,
+                schedule_date=schedule_date,
+            )
+        except ValidationError as error:
+            return JsonResponse(
+                {"type": "danger", "message": _transition_error_message(error)},
+                status=400,
+            )
+        if not controlled:
+            candidate_obj.stage_id = stage_obj
+            candidate_obj.hired = stage_obj.stage_type == "hired"
+            candidate_obj.canceled = stage_obj.stage_type == "cancelled"
+            candidate_obj.schedule_date = schedule_date
+            candidate_obj.start_onboard = False
+            candidate_obj.save()
         with contextlib.suppress(Exception):
             managers = stage_obj.stage_managers.select_related("employee_user_id")
             users = [employee.employee_user_id for employee in managers]

@@ -79,3 +79,23 @@ class ShellNavigationTagTests(SimpleTestCase):
                 self.context_for("hydra-recruitment-detail"), "people"
             )
         )
+        for url_name in (
+            "hydra-private-document-type-list",
+            "hydra-private-document-type-create",
+            "hydra-private-document-type-update",
+        ):
+            with self.subTest(url_name=url_name):
+                self.assertTrue(
+                    hydra_nav_is_active(self.context_for(url_name), "recruitment")
+                )
+        for url_name in (
+            "hydra-duplicate-list",
+            "hydra-duplicate-detail",
+            "hydra-duplicate-preview",
+            "hydra-duplicate-commit",
+            "hydra-duplicate-dismiss",
+        ):
+            with self.subTest(url_name=url_name):
+                self.assertTrue(
+                    hydra_nav_is_active(self.context_for(url_name), "people")
+                )

@@ -9,6 +9,7 @@
   </div>
   <div class="hydra-actions">
     <a class="oh-btn" href="{% url 'hydra-person-list' %}">{% trans "Back to people" %}</a>
+    {% if perms.hydra_people.review_person_duplicates %}<a class="oh-btn" href="{% url 'hydra-duplicate-list' %}">{% trans "Review duplicates" %}</a>{% endif %}
     {% if perms.hydra_people.change_person %}<a class="oh-btn oh-btn--secondary" href="{% url 'hydra-person-update' person.uuid %}">{% trans "Edit" %}</a>{% endif %}
     {% if not person.employee and perms.hydra_people.convert_person_to_employee and perms.hydra_people.change_person and perms.recruitment.view_candidate and perms.recruitment.change_candidate and perms.employee.view_employee and perms.employee.add_employee and perms.employee.add_employeeworkinformation %}<a class="oh-btn oh-btn--secondary" href="{% url 'hydra-person-employee-conversion' person.uuid %}">{% trans "Create employee" %}</a>{% endif %}
     {% if perms.hydra_coordination.add_personassignment and perms.hydra_coordination.assign_person %}
@@ -20,6 +21,9 @@
     {% endif %}
     {% if perms.hydra_legalization.add_legalizationcase and perms.hydra_legalization.view_legalizationcase %}<a class="oh-btn oh-btn--secondary" href="{% url 'hydra-legalization-create' person.uuid %}">{% trans "Start legalization" %}</a>{% endif %}
     {% if perms.hydra_arrivals.add_arrivalplan and perms.hydra_arrivals.view_arrivalplan and perms.hydra_coordination.view_location and perms.recruitment.view_candidate %}<a class="oh-btn oh-btn--secondary" href="{% url 'hydra-arrival-create' person.uuid %}">{% trans "Plan arrival" %}</a>{% endif %}
+    {% if perms.hydra_housing.add_housingassignment and perms.hydra_housing.view_housingfacility and perms.hydra_housing.view_housingroom and perms.hydra_housing.view_housingbed and perms.hydra_housing.view_housingassignment and perms.hydra_coordination.view_location %}<a class="oh-btn oh-btn--secondary" href="{% url 'hydra-housing-assign' person.uuid %}">{% trans "Assign housing" %}</a>{% endif %}
+    {% if perms.hydra_tasks.add_hydratask and perms.hydra_tasks.view_hydratask %}<a class="oh-btn oh-btn--secondary" href="{% url 'hydra-task-create' person.uuid %}">{% trans "Create task" %}</a>{% endif %}
+    {% if perms.hydra_onboarding.assign_course and perms.hydra_onboarding.view_course and perms.hydra_onboarding.view_courseversion %}<a class="oh-btn oh-btn--secondary" href="{% url 'hydra-onboarding-person-assign' person.uuid %}">{% trans "Assign course" %}</a><form method="post" action="{% url 'hydra-onboarding-person-apply-rules' person.uuid %}">{% csrf_token %}<button class="oh-btn" type="submit">{% trans "Apply course rules" %}</button></form>{% endif %}
   </div>
 </header>
 
@@ -39,6 +43,150 @@
     <div><dt>{% trans "Active" %}</dt><dd>{% if person.is_active %}{% trans "Yes" %}{% else %}{% trans "No" %}{% endif %}</dd></div>
   </dl>
 </section>
+
+<section class="hydra-card mb-3" aria-labelledby="person-open-tasks-title">
+  <div class="hydra-header">
+    <div>
+      <h2 class="h4 mb-1" id="person-open-tasks-title">{% trans "Open tasks" %}</h2>
+      <p class="hydra-muted mb-0">{% trans "Current work items visible in your Person and Company scope." %}</p>
+    </div>
+    {% if perms.hydra_tasks.view_hydratask %}<a class="oh-btn" href="{% url 'hydra-task-list' %}">{% trans "Task queue" %}</a>{% endif %}
+  </div>
+  {% if visible_tasks %}
+    <table class="hydra-table">
+      <thead><tr><th>{% trans "Task" %}</th><th>{% trans "Linked record" %}</th><th>{% trans "Assignee" %}</th><th>{% trans "Deadline" %}</th><th>{% trans "Status" %}</th></tr></thead>
+      <tbody>
+        {% for task in visible_tasks %}
+          <tr>
+            <td data-label="{% trans 'Task' %}"><a href="{{ task.get_absolute_url }}"><strong>{{ task.title }}</strong></a></td>
+            <td data-label="{% trans 'Linked record' %}">{{ task.target_label }}</td>
+            <td data-label="{% trans 'Assignee' %}">{{ task.assignee }}</td>
+            <td data-label="{% trans 'Deadline' %}">{{ task.due_at|date:"Y-m-d H:i"|default:"—" }}</td>
+            <td data-label="{% trans 'Status' %}"><span class="hydra-status">{{ task.get_status_display }}</span></td>
+          </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  {% else %}<p class="hydra-muted mb-0">{% trans "No open tasks are visible." %}</p>{% endif %}
+</section>
+
+{% if perms.hydra_onboarding.view_courseassignment %}
+<section class="hydra-card mb-3" aria-labelledby="person-course-assignments-title">
+  <div class="hydra-header"><div><h2 class="h4 mb-1" id="person-course-assignments-title">{% trans "Onboarding courses" %}</h2><p class="hydra-muted mb-0">{% trans "Immutable published versions assigned manually or by scoped rules." %}</p></div></div>
+  {% if visible_course_assignments %}<table class="hydra-table"><thead><tr><th>{% trans "Course" %}</th><th>{% trans "Version" %}</th><th>{% trans "Source" %}</th><th>{% trans "Due" %}</th><th>{% trans "Status" %}</th></tr></thead><tbody>{% for assignment in visible_course_assignments %}<tr><td data-label="{% trans 'Course' %}"><a href="{{ assignment.get_absolute_url }}"><strong>{{ assignment.course.name }}</strong></a></td><td data-label="{% trans 'Version' %}">{{ assignment.course_version.get_language_display }} / v{{ assignment.course_version.version_number }}</td><td data-label="{% trans 'Source' %}">{{ assignment.get_source_display }}</td><td data-label="{% trans 'Due' %}">{{ assignment.due_at|date:"Y-m-d"|default:"—" }}</td><td data-label="{% trans 'Status' %}"><span class="hydra-status">{{ assignment.get_status_display }}</span></td></tr>{% endfor %}</tbody></table>{% else %}<p class="hydra-muted mb-0">{% trans "No onboarding course is assigned." %}</p>{% endif %}
+</section>
+{% endif %}
+
+{% if merge_events %}
+<section class="hydra-card mb-3" aria-labelledby="person-merge-history-title">
+  <div class="hydra-header">
+    <div>
+      <h2 class="h4 mb-1" id="person-merge-history-title">{% trans "Canonical identity history" %}</h2>
+      <p class="hydra-muted mb-0">{% trans "Preserved source identifiers and immutable merge decisions." %}</p>
+    </div>
+  </div>
+  <table class="hydra-table">
+    <thead><tr><th>{% trans "Source Hydra ID" %}</th><th>{% trans "Source UUID" %}</th><th>{% trans "Merged at" %}</th><th>{% trans "Actor" %}</th><th>{% trans "Reason" %}</th></tr></thead>
+    <tbody>
+      {% for event in merge_events %}
+      <tr>
+        <td data-label="{% trans 'Source Hydra ID' %}"><strong>{{ event.duplicate.hydra_id }}</strong></td>
+        <td data-label="{% trans 'Source UUID' %}">{{ event.duplicate.uuid }}</td>
+        <td data-label="{% trans 'Merged at' %}">{{ event.occurred_at|date:"Y-m-d H:i" }}</td>
+        <td data-label="{% trans 'Actor' %}">{{ event.actor }}</td>
+        <td data-label="{% trans 'Reason' %}">{{ event.reason }}</td>
+      </tr>
+      {% endfor %}
+    </tbody>
+  </table>
+</section>
+{% endif %}
+
+<section class="hydra-card mb-3" aria-labelledby="person-timeline-title">
+  <div class="hydra-header">
+    <div>
+      <h2 class="h4 mb-1" id="person-timeline-title">{% trans "Timeline" %}</h2>
+      <p class="hydra-muted mb-0">{% trans "Scope-checked facts from immutable domain histories. Sensitive field values are not copied into this view." %}</p>
+    </div>
+  </div>
+  {% if visible_timeline %}
+    <ol class="hydra-timeline">
+      {% for item in visible_timeline %}
+        <li class="hydra-timeline__item">
+          <div class="hydra-timeline__heading">
+            <span class="hydra-status">{{ item.category_label }}</span>
+            <time datetime="{{ item.occurred_at|date:'c' }}">{{ item.occurred_at|date:"Y-m-d H:i" }}</time>
+          </div>
+          <strong>{{ item.label }}</strong>
+          {% if item.detail %}<span class="hydra-timeline__detail">{{ item.detail }}</span>{% endif %}
+          <small class="hydra-muted">{% trans "Actor" %}: {{ item.actor|default:_('System') }}</small>
+        </li>
+      {% endfor %}
+    </ol>
+  {% else %}
+    <p class="hydra-muted mb-0">{% trans "No timeline facts are visible in your permissions and scope." %}</p>
+  {% endif %}
+</section>
+
+<section class="hydra-card mb-3">
+  <div class="hydra-header">
+    <div>
+      <h2 class="h4 mb-1">{% trans "Housing assignments" %}</h2>
+      <p class="hydra-muted mb-0">{% trans "Effective-dated accommodation history visible in your scope." %}</p>
+    </div>
+  </div>
+  {% if visible_housing_assignments %}
+    <table class="hydra-table">
+      <thead><tr><th>{% trans "Facility" %}</th><th>{% trans "Building / floor / room / bed" %}</th><th>{% trans "Valid from" %}</th><th>{% trans "Valid until" %}</th><th>{% trans "State" %}</th><th>{% trans "Action" %}</th></tr></thead>
+      <tbody>
+        {% for assignment in visible_housing_assignments %}
+          <tr>
+            <td data-label="{% trans 'Facility' %}"><a href="{{ assignment.bed.room.facility.get_absolute_url }}">{{ assignment.bed.room.facility.name }}</a><br><span class="hydra-muted">{{ assignment.bed.room.facility.location.name }}</span></td>
+            <td data-label="{% trans 'Building / floor / room / bed' %}">{% if assignment.bed.room.hierarchy_label %}{{ assignment.bed.room.hierarchy_label }} / {% endif %}{{ assignment.bed.room.name }} / {{ assignment.bed.label }}</td>
+            <td data-label="{% trans 'Valid from' %}">{{ assignment.valid_from|date:"Y-m-d" }}</td>
+            <td data-label="{% trans 'Valid until' %}">{{ assignment.valid_until|date:"Y-m-d"|default:"—" }}</td>
+            <td data-label="{% trans 'State' %}">{% if assignment.is_current %}<span class="hydra-status">{{ assignment.state_label }}</span>{% else %}{{ assignment.state_label }}{% endif %}</td>
+            <td data-label="{% trans 'Action' %}">
+              <div class="hydra-actions">
+                {% if assignment.can_move and perms.hydra_housing.move_housingassignment and perms.hydra_housing.add_housingassignment and perms.hydra_housing.change_housingassignment %}<a class="oh-btn" href="{% url 'hydra-housing-assignment-move' assignment.uuid %}">{% trans "Move" %}</a>{% endif %}
+                {% if assignment.is_temporary_reservation and perms.hydra_housing.confirm_housingreservation and perms.hydra_housing.reserve_housingassignment and perms.hydra_housing.change_housingassignment %}<a class="oh-btn" href="{% url 'hydra-housing-reservation-confirm' assignment.uuid %}">{% trans "Confirm" %}</a>{% endif %}
+                {% if assignment.is_temporary_reservation and perms.hydra_housing.renew_housingreservation and perms.hydra_housing.reserve_housingassignment and perms.hydra_housing.change_housingassignment %}<a class="oh-btn" href="{% url 'hydra-housing-reservation-renew' assignment.uuid %}">{% trans "Renew" %}</a>{% endif %}
+                {% if assignment.is_current and perms.hydra_housing.change_housingassignment %}<a class="oh-btn" href="{% url 'hydra-housing-assignment-end' assignment.uuid %}">{% trans "End stay" %}</a>{% endif %}
+                {% if assignment.can_cancel_reservation and perms.hydra_housing.cancel_housingreservation and perms.hydra_housing.change_housingassignment %}<a class="oh-btn" href="{% url 'hydra-housing-reservation-cancel' assignment.uuid %}">{% trans "Cancel reservation" %}</a>{% endif %}
+              </div>
+            </td>
+          </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  {% else %}<p class="hydra-muted mb-0">{% trans "No housing assignment is visible." %}</p>{% endif %}
+</section>
+
+{% if visible_housing_events %}
+<section class="hydra-card mb-3" aria-labelledby="housing-audit-title">
+  <div class="hydra-header">
+    <div>
+      <h2 class="h4 mb-1" id="housing-audit-title">{% trans "Housing audit" %}</h2>
+      <p class="hydra-muted mb-0">{% trans "Append-only reservation, stay and move facts." %}</p>
+    </div>
+  </div>
+  <table class="hydra-table">
+    <thead><tr><th>{% trans "Event" %}</th><th>{% trans "Effective on" %}</th><th>{% trans "Bed" %}</th><th>{% trans "Related bed" %}</th><th>{% trans "Reason" %}</th><th>{% trans "Actor" %}</th></tr></thead>
+    <tbody>
+      {% for event in visible_housing_events %}
+      <tr>
+        <td data-label="{% trans 'Event' %}">{{ event.get_action_display }}</td>
+        <td data-label="{% trans 'Effective on' %}">{{ event.effective_on|date:"Y-m-d" }}</td>
+        <td data-label="{% trans 'Bed' %}">{{ event.assignment.bed }}</td>
+        <td data-label="{% trans 'Related bed' %}">{% if event.related_assignment %}{{ event.related_assignment.bed }}{% else %}вЂ”{% endif %}</td>
+        <td data-label="{% trans 'Reason' %}">{{ event.reason }}</td>
+        <td data-label="{% trans 'Actor' %}">{{ event.actor|default:_('System') }}</td>
+      </tr>
+      {% endfor %}
+    </tbody>
+  </table>
+</section>
+{% endif %}
 
 {% include "hydra_links/_public_links.html" %}
 
@@ -72,7 +220,7 @@
   </div>
   {% if visible_assignments %}
     <table class="hydra-table">
-      <thead><tr><th>{% trans "Team" %}</th><th>{% trans "Location" %}</th><th>{% trans "Department" %}</th><th>{% trans "Valid from" %}</th><th>{% trans "Valid until" %}</th><th>{% trans "State" %}</th></tr></thead>
+      <thead><tr><th>{% trans "Team" %}</th><th>{% trans "Location" %}</th><th>{% trans "Department" %}</th><th>{% trans "Valid from" %}</th><th>{% trans "Valid until" %}</th><th>{% trans "State" %}</th><th>{% trans "Action" %}</th></tr></thead>
       <tbody>
         {% for assignment in visible_assignments %}
           <tr>
@@ -81,7 +229,8 @@
             <td data-label="{% trans 'Department' %}">{{ assignment.department }}</td>
             <td data-label="{% trans 'Valid from' %}">{{ assignment.valid_from|date:"Y-m-d" }}</td>
             <td data-label="{% trans 'Valid until' %}">{{ assignment.valid_until|date:"Y-m-d"|default:"—" }}</td>
-            <td data-label="{% trans 'State' %}">{% if assignment.is_current %}<span class="hydra-status">{{ assignment.state_label }}</span>{% else %}{{ assignment.state_label }}{% endif %}</td>
+            <td data-label="{% trans 'State' %}">{% if assignment.is_current %}<span class="hydra-status">{{ assignment.state_label }}</span>{% else %}{{ assignment.state_label }}{% endif %}{% if assignment.termination_reason %}<br><small class="hydra-muted">{{ assignment.termination_reason }}</small>{% endif %}</td>
+            <td data-label="{% trans 'Action' %}">{% if assignment.can_terminate and perms.hydra_coordination.change_personassignment and perms.hydra_coordination.assign_person %}<a class="oh-btn" href="{% url 'hydra-person-assignment-end' assignment.pk %}">{% trans "End assignment" %}</a>{% else %}<span class="hydra-muted">—</span>{% endif %}</td>
           </tr>
         {% endfor %}
       </tbody>

@@ -2,7 +2,7 @@
 
 ## Status and audit decision
 
-Implemented on 2026-07-14 as the smallest complete candidate-import vertical slice.
+Implemented on 2026-07-14 as the smallest complete candidate-import vertical slice and hardened on 2026-07-16 with bounded personal-data retention, explicit discard, append-only purge evidence and maintenance-owned cleanup.
 
 The required Horilla inspection found two employee spreadsheet paths. `employee_import()` reads a workbook with pandas and creates users/employees row by row while collecting broad exceptions. `work_info_import()` validates an employee-specific header set, then invokes multiple independent `bulk_create_*` functions and starts password work in a thread. Neither path stores a preview, applies Hydra Person scope, produces a stable import fingerprint or guarantees a single transaction across Person and Candidate creation.
 
@@ -26,9 +26,20 @@ The server-rendered workflow at `/hydra/imports/candidates/` provides:
 6. an apply action enabled only for a clean preview;
 7. one atomic Person + Horilla Candidate + canonical link transaction;
 8. idempotent preview fingerprints and apply behavior;
-9. desktop and mobile views integrated with Hydra Recruitment navigation.
+9. bounded source-data retention, immediate user discard and automatic redaction;
+10. desktop and mobile views integrated with Hydra Recruitment navigation.
 
-The source workbook is never stored. Hydra retains only the safe filename, SHA-256, stable fingerprint, normalized preview values and row hashes required for a reviewed apply and audit trail.
+The source workbook is never stored. During the review window Hydra retains only the safe filename, SHA-256, stable fingerprint, normalized preview values and row hashes required for apply. After the configured deadline, source names, normalized identity/contact values and free-text row messages are redacted while non-sensitive audit evidence remains.
+
+## Source-data retention and purge audit
+
+Every preview snapshots `sensitive_data_purge_after`. The default review window is 72 hours. Applying a clean preview starts a shorter 24-hour post-apply review window; it does not extend the original personal data indefinitely. Staging readiness requires both values to be between 1 and 720 hours and requires the applied window not to exceed the preview window.
+
+The importer can use **Discard source data** at any time with `purge_candidateimportsession`. The single-owner maintenance process also redacts due sessions in bounded batches. Apply locks the session and fails closed when the deadline has passed; if cleanup has not yet run, it redacts and commits the audit event before returning the user-facing expiry error. Detail and recent-session screens stop rendering source filename/row values immediately at the deadline, even during the short interval before physical database redaction.
+
+Redaction clears the source filename, normalized names, birth date, citizenship/language/gender, email, phone fields and row messages. Hydra retains the session UUID, target, actor/timestamps, counts, status, file/fingerprint/row SHA-256 values, row outcomes and links to any Person/Candidate records already created. `CandidateImportLifecycleEvent` records source, reason, previous/resulting status, actor for manual discard, timestamp and number of rows redacted. Events and their queryset are append-only; admin querysets remain owner/scope restricted.
+
+Ready or Blocked sessions become Expired after redaction. Their partial fingerprint uniqueness is released, so the same workbook can be reviewed again. Applied sessions retain active fingerprint uniqueness forever and repeated upload/apply still returns the original result, including after source redaction.
 
 ## Workbook contract
 
@@ -69,9 +80,11 @@ The selected Recruitment must be open, active and returned by `recruitments_for_
 
 Non-superusers see only preview sessions they created and only while the Recruitment remains in their current scope. Direct UUID access by another importer returns HTTP 404. The selected-company session value is not an authorization input.
 
+Manual early discard additionally requires `purge_candidateimportsession`; the service repeats owner and current Recruitment-scope checks while holding the session lock. Automatic retention cleanup has no human actor and cannot impersonate one.
+
 ## Transaction and idempotency
 
-The preview fingerprint is SHA-256 over file SHA-256, actor, Recruitment and Job Position. Uploading the same workbook to the same target by the same actor returns the existing session.
+The preview fingerprint is SHA-256 over file SHA-256, actor, Recruitment and Job Position. Uploading the same workbook to the same target by the same actor returns the existing active session. A redacted non-applied preview may be created again; an Applied fingerprint remains unique and idempotent.
 
 Apply locks the session and every row. It rechecks permissions, current Recruitment scope/state, target position and preview integrity. Each valid row calls the existing `save_person()` and `create_candidate_application()` services inside one outer `transaction.atomic()` block. A failure in any row rolls back all Persons, Candidates, PersonApplication links, row result links and session state.
 
@@ -86,7 +99,9 @@ After success the session records Applied timestamp and actor. A second apply re
 - unique `(session, row_number)` plus owner/status, recruitment/status and row/outcome indexes;
 - the `import_candidate` action permission.
 
-Both models are read-only in Django admin. Normal writes must go through the import services.
+`0002_candidate_import_retention.py` is a staged migration: it adds nullable deadlines, gives existing sessions a one-time 24/72-hour review grace period, makes the deadline mandatory, introduces Expired plus partial active-fingerprint uniqueness, creates append-only lifecycle evidence and adds the discard permission. It does not guess, delete or silently apply any legacy preview.
+
+Sessions, rows and lifecycle events are read-only in Django admin. Their changelists and direct object views apply the same owner/Recruitment scope. Normal writes must go through the import services.
 
 ## Automated verification
 
@@ -102,9 +117,14 @@ Focused tests cover:
 - successful Person/Candidate/PersonApplication creation;
 - apply idempotency and blocked-preview denial;
 - forced second-row failure with complete rollback;
+- deadline snapshots, fail-closed expired apply and immediate UI masking;
+- manual discard permission, scope and idempotency;
+- preservation of hashes/result links plus append-only purge evidence;
+- safe re-preview of an expired non-applied fingerprint and permanent Applied idempotency;
+- bounded command/maintenance cleanup and scoped read-only admin;
 - template download and continued operation of Horilla's employee importer.
 
-The final PostgreSQL 17 acceptance run applied `hydra_imports.0001_initial` and passed the combined 73/73 Hydra tests. `manage.py check`, `makemigrations --check --dry-run`, `migrate --check`, Python compilation, `pip check` and `git diff --check` also passed.
+The retention-focused PostgreSQL 17 suite applied `hydra_imports.0002_candidate_import_retention` and passed 19/19 tests. The combined import/readiness/maintenance set passed 43/43 and the current full Django PostgreSQL regression passed 314/314. `manage.py check`, pending-migration and model-drift checks, Python compilation, `pip check` and `git diff --check` also passed.
 
 The XLSX template was generated with `@oai/artifact-tool`, inspected at key ranges and rendered on all three worksheets. The formula scan returned no formulas on Candidates, Instructions or Example. The generated browser-QA workbook was then parsed by the production parser as one valid row with the expected date and normalized email.
 
@@ -114,7 +134,7 @@ At 1280 × 720 the upload form used a 998 px content card without horizontal ove
 
 ## Manual verification
 
-1. Grant an importer the permissions listed above and a current Hydra scope grant for the target Recruitment company.
+1. Grant an importer the permissions listed above, `purge_candidateimportsession`, and a current Hydra scope grant for the target Recruitment company.
 2. Open `/hydra/recruitment/`, choose **Import candidates**, and download the template.
 3. Enter at least one new identity in `Candidates`; keep headers and worksheet name unchanged.
 4. Select an open Recruitment and one of its positions, upload the file and confirm the preview values/counts.
@@ -122,14 +142,16 @@ At 1280 × 720 the upload form used a 998 px content card without horizontal ove
 6. Upload the same file/target again and confirm the existing applied session is returned without duplicates.
 7. Add a repeated email or an existing passport identity and confirm both preview reason and disabled apply action.
 8. Try another importer's preview UUID or an out-of-scope Recruitment and confirm 404/form denial.
-9. Repeat upload and preview at a viewport no wider than 390 px and confirm no horizontal overflow.
+9. Discard one preview and confirm its values disappear while hashes/counts/audit remain. Expire another Ready preview, confirm apply is unavailable, run `python manage.py purge_candidate_import_data --limit 100`, and verify its system lifecycle event.
+10. Upload the expired non-applied workbook again and confirm a new preview is allowed; repeat an Applied workbook and confirm no duplicate Person/Candidate.
+11. Repeat upload, preview and redacted audit views at a viewport no wider than 390 px and confirm no horizontal overflow.
 
 ## Known limitations and next task
 
 - Duplicate matches are exact normalized identity/email rules; transliteration, fuzzy names and passport-number matching are not attempted.
 - Duplicate resolution is source-file correction; reviewed merge/link decisions are deliberately deferred.
 - One workbook targets one Recruitment and Job Position.
-- Preview rows contain normalized personal data and currently require operational retention/cleanup policy before production rollout.
+- Database backups made before redaction still contain the then-current preview values. They require encryption, restricted access and a bounded backup-retention schedule; a restored environment must start maintenance before receiving traffic.
 - Password-protected workbooks, formulas, `.xls`, CSV and macro-enabled files are intentionally unsupported.
 - Async imports and files above 500 rows are out of MVP scope.
 - The next numbered task is `030-arrivals.md`.

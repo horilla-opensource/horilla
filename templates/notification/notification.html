@@ -1,8 +1,9 @@
 {% load basefilters %}
 {% load static %}
 {% load i18n %}
-{% load notifications_tags %}
+{% load notifications_tags hydra_notification_tags %}
 {% notifications_unread as unread_count %}
+{% hydra_notification_preferences as hydra_notification_preference %}
 
 <div
     class="oh-navbar__notifications"
@@ -55,7 +56,7 @@
 
 <script>
     var staticUrl = $("#statiUrl").attr("data-url");
-    var notification_sound = {{request.user.employee_get.notification_sound.sound_enabled|yesno:"true,false"}};
+    var notification_sound = {{hydra_notification_preference.browser_sound_enabled|yesno:"true,false"}};
     function fill_notification_badge(data) {
         var badges = document.getElementsByClassName(notify_badge_class);
         let previousUnreadCount = parseInt(localStorage.getItem('previousUnreadCount')) || 0;
@@ -85,19 +86,6 @@
 ></script>
 {% register_notify_callbacks callbacks='fill_notification_list,fill_notification_badge' %}
 <script>
-    function markAsRead(notificationId) {
-        fetch("/notifications/mark-as-read/" + notificationId + "/").then(
-            (response) => {
-                if (response.ok) {
-                    // Reload the page to update the notifications
-                    location.reload();
-                } else {
-                    console.error("Failed to mark notification as read");
-                }
-            }
-        );
-    }
-
     $("#viewallnotification").click(function () {
         $("#showallnotificationbtn").toggle();
     });

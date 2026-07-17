@@ -29,6 +29,28 @@ From the repository root:
 .\scripts\bootstrap-local.ps1
 ```
 
+The bootstrap requires CPython 3.11 and verifies the interpreter before it
+changes the environment. When Python is not on `PATH`, pass its absolute path:
+
+```powershell
+.\scripts\bootstrap-local.ps1 -Python "C:\Python311\python.exe"
+```
+
+If an existing `.venv` points to a removed interpreter or another Python
+minor version, the script stops without deleting it. Recreate only that
+derived environment explicitly after reviewing the message:
+
+```powershell
+.\scripts\bootstrap-local.ps1 -Python "C:\Python311\python.exe" -RecreateVenv
+```
+
+If the workstation policy blocks local PowerShell scripts, run the reviewed
+file in a one-process bypass without changing the machine policy:
+
+```powershell
+powershell.exe -NoProfile -ExecutionPolicy Bypass -File .\scripts\bootstrap-local.ps1 -Python "C:\Python311\python.exe"
+```
+
 The script:
 
 1. creates `.venv`;

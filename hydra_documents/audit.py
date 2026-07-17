@@ -21,7 +21,7 @@ def access_context_from_request(request):
 
 
 def log_access(
-    *, actor, context, document_uuid, action, outcome, reason, document=None
+    *, actor, context, document_uuid, action, outcome, reason, document=None, detail=""
 ):
     return DocumentAccessLog.objects.create(
         document=document,
@@ -30,6 +30,7 @@ def log_access(
         action=action,
         outcome=outcome,
         reason=reason,
+        detail=detail[:255],
         ip_address=context.ip_address,
         user_agent_sha256=context.user_agent_sha256,
     )

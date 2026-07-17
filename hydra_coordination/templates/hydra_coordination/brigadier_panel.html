@@ -33,7 +33,8 @@
 {% if selected_team %}
   <section class="hydra-kpi-grid mb-3" aria-label="{% trans 'Team summary' %}">
     <article class="hydra-kpi"><span>{% trans "Roster" %}</span><strong>{{ summary.roster }}</strong></article>
-    <article class="hydra-kpi"><span>{% trans "No attendance record" %}</span><strong>{{ summary.no_attendance }}</strong></article>
+    <article class="hydra-kpi"><span>{% trans "Missing expected attendance" %}</span><strong>{{ summary.no_attendance }}</strong></article>
+    <article class="hydra-kpi"><span>{% trans "Approved leave" %}</span><strong>{{ summary.approved_leave }}</strong></article>
     <article class="hydra-kpi"><span>{% trans "At work" %}</span><strong>{{ summary.at_work }}</strong></article>
     <article class="hydra-kpi"><span>{% trans "Needs review" %}</span><strong>{{ summary.needs_review }}</strong></article>
   </section>
@@ -44,13 +45,13 @@
     <div class="hydra-header">
       <div>
         <h2 class="h4 mb-1" id="brigadier-roster-title">{% trans "Employee attendance" %}</h2>
-        <p class="hydra-muted mb-0">{% trans "No record is an exception for review, not a confirmed absence or approved leave." %}</p>
+        <p class="hydra-muted mb-0">{% trans "Attendance is reconciled with the assigned shift schedule and approved leave for this day." %}</p>
       </div>
       <time datetime="{{ selected_date|date:'Y-m-d' }}">{{ selected_date|date:"Y-m-d" }}</time>
     </div>
     {% if page_obj.object_list %}
       <table class="hydra-table">
-        <thead><tr><th>{% trans "Employee" %}</th><th>{% trans "Department" %}</th><th>{% trans "Check-in" %}</th><th>{% trans "Check-out" %}</th><th>{% trans "Status / exceptions" %}</th></tr></thead>
+        <thead><tr><th>{% trans "Employee" %}</th><th>{% trans "Department" %}</th><th>{% trans "Plan" %}</th><th>{% trans "Check-in" %}</th><th>{% trans "Check-out" %}</th><th>{% trans "Status / exceptions" %}</th></tr></thead>
         <tbody>
           {% for row in page_obj.object_list %}
             <tr{% if row.has_exception %} class="hydra-row--exception"{% endif %}>
@@ -59,11 +60,23 @@
                 <br><span class="hydra-muted">{{ row.person.hydra_id }}</span>
               </td>
               <td data-label="{% trans 'Department' %}">{{ row.assignment.department }}</td>
+              <td data-label="{% trans 'Plan' %}">
+                {% if row.approved_leave_full_day %}{% trans "Approved leave" %}{% if row.approved_leave %}: {{ row.approved_leave.leave_type_id }}{% endif %}
+                {% elif row.schedule %}{{ row.schedule.start_time|time:"H:i" }}-{{ row.schedule.end_time|time:"H:i" }}{% if row.approved_leave_partial_day %}<br><small>{% trans "Partial approved leave" %}</small>{% endif %}
+                {% elif row.schedule_missing %}{% trans "No shift assigned" %}
+                {% else %}{% trans "Not scheduled" %}{% endif %}
+              </td>
               <td data-label="{% trans 'Check-in' %}">{{ row.attendance.attendance_clock_in|time:"H:i"|default:"—" }}</td>
               <td data-label="{% trans 'Check-out' %}">{{ row.attendance.attendance_clock_out|time:"H:i"|default:"—" }}</td>
               <td data-label="{% trans 'Status / exceptions' %}">
                 <div class="hydra-tags">
-                  {% if row.no_attendance %}<span class="hydra-status hydra-status--danger">{% trans "No attendance record" %}</span>{% endif %}
+                  {% if row.approved_leave_full_day %}<span class="hydra-status hydra-status--ok">{% trans "Approved leave" %}</span>{% endif %}
+                  {% if row.approved_leave_partial_day %}<span class="hydra-status hydra-status--warning">{% trans "Partial approved leave" %}</span>{% endif %}
+                  {% if row.no_attendance %}<span class="hydra-status hydra-status--danger">{% trans "Missing expected attendance" %}</span>{% endif %}
+                  {% if row.schedule_missing %}<span class="hydra-status hydra-status--danger">{% trans "No shift assigned" %}</span>{% endif %}
+                  {% if row.leave_conflict %}<span class="hydra-status hydra-status--danger">{% trans "Overlapping approved leave" %}</span>{% endif %}
+                  {% if row.attendance_on_approved_leave %}<span class="hydra-status hydra-status--danger">{% trans "Attendance during approved leave" %}</span>{% endif %}
+                  {% if row.attendance_on_unscheduled_day %}<span class="hydra-status hydra-status--danger">{% trans "Attendance outside schedule" %}</span>{% endif %}
                   {% if row.missing_clock_in %}<span class="hydra-status hydra-status--danger">{% trans "Missing check-in" %}</span>{% endif %}
                   {% if row.at_work %}<span class="hydra-status hydra-status--ok">{% trans "At work" %}</span>{% endif %}
                   {% if row.completed and not row.pending_validation %}<span class="hydra-status hydra-status--ok">{% trans "Complete" %}</span>{% endif %}

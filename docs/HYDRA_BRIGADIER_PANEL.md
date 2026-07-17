@@ -2,7 +2,7 @@
 
 ## Status
 
-Task `040-brigadier-panel.md` is implemented as a read-only, mobile-first operational view for a brigadier's directly granted Teams.
+Task `040-brigadier-panel.md` is implemented as a read-only, mobile-first operational view for a brigadier's directly granted Teams and hardened on 2026-07-15 with attendance/leave/shift reconciliation.
 
 ## Reuse decision
 
@@ -10,13 +10,13 @@ The panel **EXTENDS** the Hydra coordination layer and **WRAPS** existing Horill
 
 - Hydra `Team`, effective-dated `PersonAssignment` and `ScopeGrant` for roster membership and authorization;
 - Hydra `Person` and its controlled Employee link;
-- Horilla `Employee`, `Attendance` and late/early markers for the selected day's operational state.
+- Horilla `Employee`, `Attendance`, late/early markers, approved `LeaveRequest`, and `EmployeeShiftSchedule` for the selected day's operational state.
 
 No parallel attendance, absence, Employee or Team model was created. The new code is a thin selector/view/template slice in `hydra_coordination`.
 
 ## Scope and permission boundary
 
-Access requires all four permissions:
+Access requires all five permissions:
 
 | Permission | Purpose |
 |---|---|
@@ -24,6 +24,7 @@ Access requires all four permissions:
 | `hydra_people.view_person` | identity/roster visibility |
 | `employee.view_employee` | linked Employee visibility |
 | `attendance.view_attendance` | attendance-state visibility |
+| `leave.view_leaverequest` | approved-leave visibility required for reconciliation |
 
 For a normal user, the Team chooser and every roster query use only active, current `ScopeGrant` records whose object is that exact Team. Company, Location, Section and Department grants never widen this panel. The global company selector, including `all`, does not affect the result. Superuser access remains an explicit administrative bypass.
 
@@ -35,7 +36,11 @@ The roster is built from primary `PersonAssignment` records effective on the sel
 
 The panel composes these read-only states:
 
-- no attendance record;
+- missing expected attendance only when the employee is scheduled and not on approved full-day leave;
+- approved full-day or partial-day leave;
+- no assigned shift and an unscheduled day;
+- attendance during approved full-day leave or outside the assigned schedule;
+- overlapping approved-leave records;
 - missing clock-in;
 - currently at work;
 - completed attendance;
@@ -43,7 +48,9 @@ The panel composes these read-only states:
 - late arrival;
 - early departure.
 
-"No record" is an operational exception for review. It is deliberately not labelled as a confirmed absence, approved leave or schedule breach because this slice does not yet reconcile leave and shift scheduling.
+The shift currently stored in `EmployeeWorkInformation` is authoritative, including Horilla's applied shift changes and rotations. A matching active weekday schedule establishes the work expectation. No schedule for an assigned shift means a legitimate unscheduled day; no shift assignment is a configuration exception. Full-day approved leave removes the attendance expectation, while partial leave preserves it. First-half leave suppresses a late-arrival marker and second-half leave suppresses an early-departure marker because those observations are expected for the approved portion.
+
+This remains a read-only operational interpretation. It never writes, validates, rejects, or fabricates attendance or leave records.
 
 The selected date cannot be in the future. Results are paginated at 50 employees per page.
 
@@ -53,12 +60,12 @@ The selected date cannot be in the future. Results are paginated at 50 employees
 
 ## Verification
 
-Focused PostgreSQL coverage contains 9 tests for direct-Team scoping, Horilla attendance composition, exception counts, URL tampering, company `all`, broad Company grants, missing permissions, future dates and scoped search.
+Focused PostgreSQL coverage contains 18 tests for direct-Team scoping, permission composition, scheduled missing attendance, full/partial approved leave, late/early suppression, missing shift configuration, unscheduled days, attendance/leave and attendance/schedule conflicts, exception counts, URL tampering, company `all`, broad Company grants, future dates and scoped search.
 
 The complete implemented Hydra regression passes:
 
 ```text
-Ran 115 tests - OK
+Ran 240 tests - OK
 ```
 
 `manage.py check`, `makemigrations --check --dry-run` and `migrate --check` pass. The local HTTP endpoint responds and redirects unauthenticated requests to login. Automated 390 x 844 browser navigation was not accepted in this desktop run because the browser retained its initial connection-error data page and its URL policy then blocked a retry; no browser screenshot is claimed.
@@ -66,7 +73,7 @@ Ran 115 tests - OK
 ## Deliberate limits
 
 - The panel is read-only; attendance correction and validation remain in Horilla.
-- It does not infer leave, shift expectations or confirmed absence.
+- It reports operational inconsistencies but does not decide payroll, discipline, or legal absence.
 - It does not expose Company/Location-wide coordinator scope.
 - It does not include reports, exports or mutation actions.
 

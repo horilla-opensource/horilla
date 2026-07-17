@@ -81,6 +81,16 @@
                         </div>
                         <a data-cell-index="1" style="color: inherit; text-decoration: none" class="oh-sticky-table__td">
                             {{candidate.email|truncatechars:10}}
+                            {% with delivery=candidate.get_last_portal_delivery %}
+                                {% if delivery %}
+                                    <span
+                                        title="{% trans 'Portal delivery' %}: {{ delivery.get_status_display }}{% if delivery.last_error_code %} ({{ delivery.last_error_code }}){% endif %}"
+                                        class="oh-dot oh-dot--small me-1"
+                                        style="background-color:{% if delivery.status == 'sent' %}yellowgreen{% elif delivery.status == 'dead' %}red{% elif delivery.status == 'cancelled' %}gray{% else %}orange{% endif %}"
+                                        aria-label="{% trans 'Portal delivery' %}: {{ delivery.get_status_display }}"
+                                    ></span>
+                                {% endif %}
+                            {% endwith %}
                             {% if candidate.get_last_sent_mail %}
                                 <span title="{{candidate.get_last_sent_mail.subject}} | {{candidate.get_last_sent_mail.get_status_display}}"
                                     class="oh-dot oh-dot--small me-1"

@@ -54,6 +54,7 @@ Conversion history is exposed only with `hydra_people.view_employeeconversion` a
 - The direct Horilla conversion action redirects a Hydra-linked Candidate to the controlled Hydra form, including HTMX requests.
 - Unlinked legacy Candidates retain the original Horilla direct-conversion behavior.
 - Completing the Horilla onboarding bank-details step synchronizes a linked Person through the same idempotent linking/audit service.
+- Both conversion paths reconcile any open arrival/onboarding handoff in the same transaction; completion still waits for the destination assignment and all configured tasks.
 
 Hydra private Person/Candidate documents are not copied into generic Horilla public media during conversion.
 
@@ -76,4 +77,4 @@ The browser journey was exercised in local Microsoft Edge/Chromium against the r
 - Existing Employee values are not silently synchronized from Person after conversion.
 - Conversion does not create attendance and does not redefine passport identity ownership.
 
-Team assignment is documented in `docs/HYDRA_TEAM_ASSIGNMENT.md`. The next authoritative task is `040-brigadier-panel.md`.
+Team assignment is documented in `docs/HYDRA_TEAM_ASSIGNMENT.md`; the complete cross-domain confirmation trail is documented in `docs/HYDRA_ONBOARDING.md`.

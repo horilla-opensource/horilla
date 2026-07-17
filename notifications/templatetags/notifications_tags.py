@@ -23,7 +23,9 @@ def notifications_unread(context):
     user = user_context(context)
     if not user:
         return ""
-    return user.notifications.unread().count()
+    from hydra_notifications.selectors import unread_notification_count
+
+    return unread_notification_count(user=user)
 
 
 if StrictVersion(get_version()) >= StrictVersion("2.0"):
@@ -39,7 +41,9 @@ else:
 @register.filter
 def has_notification(user):
     if user:
-        return user.notifications.unread().exists()
+        from hydra_notifications.selectors import unread_notification_count
+
+        return unread_notification_count(user=user) > 0
     return False
 
 
@@ -92,8 +96,11 @@ def live_notify_badge(context, badge_class="live_notify_badge"):
     if not user:
         return ""
 
+    from hydra_notifications.selectors import unread_notification_count
+
     html = "<span class='{badge_class}'>{unread}</span>".format(
-        badge_class=badge_class, unread=user.notifications.unread().count()
+        badge_class=badge_class,
+        unread=unread_notification_count(user=user),
     )
     return format_html(html)
 

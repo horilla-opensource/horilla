@@ -4,7 +4,8 @@ from functools import wraps
 from urllib.parse import urlencode
 
 from django.contrib import messages
-from django.http import HttpResponse
+from django.core.exceptions import PermissionDenied
+from django.http import Http404, HttpResponse
 from django.shortcuts import redirect, render
 from django.urls import reverse
 from django.utils.http import url_has_allowed_host_and_scheme
@@ -232,8 +233,10 @@ def login_required(view_func):
             return redirect(redirect_url)
         try:
             func = view_func(request, *args, **kwargs)
+        except (Http404, PermissionDenied):
+            raise
         except Exception as e:
-            logger.error(e)
+            logger.exception("Unhandled exception in authenticated view")
             if (
                 "notifications_notification" in str(e)
                 and request.headers.get("X-Requested-With") != "XMLHttpRequest"
@@ -249,8 +252,8 @@ def login_required(view_func):
                 return redirect(referer)
 
             if DEBUG:
-                return render(request, "went_wrong.html")
-            return view_func(request, *args, **kwargs)
+                return render(request, "went_wrong.html", status=500)
+            raise
         return func
 
     return wrapped_view

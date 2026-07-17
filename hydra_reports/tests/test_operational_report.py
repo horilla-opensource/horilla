@@ -10,6 +10,7 @@ from django.utils import timezone
 from hydra_arrivals.models import ArrivalPlan
 from hydra_coordination.models import ScopeGrant
 from hydra_legalization.models import LegalizationCase
+from hydra_housing.models import HousingAssignment, HousingBed, HousingFacility, HousingRoom
 from hydra_people.tests.test_recruitment import HydraRecruitmentTestCase
 from hydra_reports.models import OperationalReportExport
 from hydra_reports.services import create_operational_report_export
@@ -41,6 +42,7 @@ class OperationalReportTestCase(HydraRecruitmentTestCase):
         cls.case_a = LegalizationCase.objects.create(
             person=cls.person_a,
             case_type=LegalizationCase.CaseType.WORK_PERMIT,
+            **cls.legalization_case_configuration(company=cls.company_a),
             status=LegalizationCase.Status.SUBMITTED,
             responsible=cls.admin,
             deadline=timezone.localdate() + timedelta(days=10),
@@ -48,6 +50,9 @@ class OperationalReportTestCase(HydraRecruitmentTestCase):
         cls.case_b = LegalizationCase.objects.create(
             person=cls.person_b,
             case_type=LegalizationCase.CaseType.VISA,
+            **cls.legalization_case_configuration(
+                company=cls.company_b, case_type=LegalizationCase.CaseType.VISA
+            ),
             status=LegalizationCase.Status.SUBMITTED,
             responsible=cls.admin,
             deadline=timezone.localdate() + timedelta(days=10),
@@ -62,6 +67,10 @@ class OperationalReportTestCase(HydraRecruitmentTestCase):
             ("hydra_arrivals", "view_arrivalplan"),
             ("recruitment", "view_candidate"),
             ("hydra_legalization", "view_legalizationcase"),
+            ("hydra_housing", "view_housingfacility"),
+            ("hydra_housing", "view_housingroom"),
+            ("hydra_housing", "view_housingbed"),
+            ("hydra_housing", "view_housingassignment"),
         )
 
     def grant_report_view(self):
@@ -155,6 +164,41 @@ class OperationalReportScopeTests(OperationalReportTestCase):
         self.assertNotContains(response, self.person_b.hydra_id)
         self.assertContains(response, "Arrival overdue")
 
+    def test_housing_attention_filter_clears_after_scoped_assignment(self):
+        self.grant_report_view()
+        ScopeGrant.objects.create(user=self.user, location=self.location_a)
+        ArrivalPlan.objects.filter(pk=self.arrival_a.pk).update(
+            status=ArrivalPlan.Status.CONFIRMED,
+            actual_arrived_at=timezone.now() - timedelta(hours=2),
+        )
+        self.login()
+
+        missing = self.client.get(
+            reverse("hydra-operational-report"),
+            {"attention": "housing"},
+        )
+
+        self.assertEqual(missing.status_code, 200)
+        self.assertContains(missing, self.person_a.hydra_id)
+        self.assertContains(missing, "No housing after arrival")
+
+        facility = HousingFacility.objects.create(
+            location=self.location_a,
+            name="Report house",
+            address="Report Street 1",
+        )
+        room = HousingRoom.objects.create(facility=facility, name="Report room")
+        bed = HousingBed.objects.create(room=room, label="Report bed")
+        HousingAssignment.objects.create(person=self.person_a, bed=bed)
+
+        resolved = self.client.get(
+            reverse("hydra-operational-report"),
+            {"attention": "housing"},
+        )
+
+        self.assertEqual(resolved.status_code, 200)
+        self.assertNotContains(resolved, self.person_a.hydra_id)
+
 
 class OperationalReportExportTests(OperationalReportTestCase):
     def test_missing_export_permission_returns_403(self):
@@ -183,6 +227,7 @@ class OperationalReportExportTests(OperationalReportTestCase):
         self.assertEqual(exported_ids, {self.person_a.hydra_id, self.person_c.hydra_id})
         self.assertNotIn(self.person_b.hydra_id, exported_ids)
         self.assertIn("'=2+2", {row["PASSPORT_NAME"] for row in rows})
+        self.assertIn("HOUSING_FACILITY", rows[0])
         audit = OperationalReportExport.objects.get()
         self.assertEqual(audit.actor, self.user)
         self.assertEqual(audit.row_count, 2)

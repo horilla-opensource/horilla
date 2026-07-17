@@ -4,18 +4,23 @@
 {% block person_content %}
 <header class="hydra-header">
   <div><p class="hydra-muted mb-1">{{ person.hydra_id }}</p><h1 class="oh-main__titlebar-title">{% trans "Private documents" %}</h1><p class="hydra-muted mb-0">{{ candidate.name }}</p></div>
-  <div class="hydra-actions"><a class="oh-btn" href="{% url 'hydra-recruitment-detail' candidate.pk %}">{% trans "Back to application" %}</a></div>
+  <div class="hydra-actions">
+    {% if can_manage_types %}<a class="oh-btn" href="{% url 'hydra-private-document-type-list' %}">{% trans "Configure document types" %}</a>{% endif %}
+    <a class="oh-btn" href="{% url 'hydra-recruitment-detail' candidate.pk %}">{% trans "Back to application" %}</a>
+  </div>
 </header>
 
 {% if can_upload %}
 <form class="hydra-card mb-3" method="post" enctype="multipart/form-data" novalidate>
   {% csrf_token %}
   <h2 class="h4 mb-2">{% trans "Upload a private document" %}</h2>
+  <p class="hydra-muted">{% trans "Every upload is quarantined and must pass malware scanning before it can be downloaded." %}</p>
+  {% if can_replace %}<p class="hydra-muted">{% trans "To create a new version, choose the current document explicitly and provide a reason. Earlier versions remain protected and auditable." %}</p>{% endif %}
   {% if form.non_field_errors %}<div class="hydra-errors">{{ form.non_field_errors }}</div>{% endif %}
   <div class="hydra-grid">
     {% for field in form %}<div class="hydra-field">{{ field.label_tag }}{{ field }}{% if field.help_text %}<small class="hydra-muted">{{ field.help_text }}</small>{% endif %}{{ field.errors }}</div>{% endfor %}
   </div>
-  <div class="hydra-actions mt-3"><button class="oh-btn oh-btn--secondary" type="submit">{% trans "Upload securely" %}</button></div>
+  <div class="hydra-actions mt-3"><button class="oh-btn oh-btn--secondary" type="submit">{% trans "Scan and upload securely" %}</button></div>
 </form>
 {% endif %}
 
@@ -23,8 +28,51 @@
   <h2 class="h4 mb-2">{% trans "Stored documents" %}</h2>
   {% if documents %}
     <div class="oh-sticky-table"><div class="oh-sticky-table__table">
-      <div class="oh-sticky-table__thead"><div class="oh-sticky-table__tr"><div class="oh-sticky-table__th">{% trans "Title" %}</div><div class="oh-sticky-table__th">{% trans "Category" %}</div><div class="oh-sticky-table__th">{% trans "Uploaded" %}</div><div class="oh-sticky-table__th">{% trans "Action" %}</div></div></div>
-      <div class="oh-sticky-table__tbody">{% for document in documents %}<div class="oh-sticky-table__tr"><div class="oh-sticky-table__td">{{ document.title }}<br><small class="hydra-muted">{{ document.original_filename }} · {{ document.size|filesizeformat }}</small></div><div class="oh-sticky-table__td">{{ document.get_category_display }}</div><div class="oh-sticky-table__td">{{ document.created_at|date:"Y-m-d H:i" }}</div><div class="oh-sticky-table__td">{% if perms.hydra_documents.download_privatedocument %}<a class="oh-btn oh-btn--secondary" href="{% url 'hydra-private-document-download' document.uuid %}">{% trans "Download" %}</a>{% else %}<span class="hydra-muted">{% trans "No download permission" %}</span>{% endif %}</div></div>{% endfor %}</div>
+      <div class="oh-sticky-table__thead"><div class="oh-sticky-table__tr"><div class="oh-sticky-table__th">{% trans "Document" %}</div><div class="oh-sticky-table__th">{% trans "Protection" %}</div><div class="oh-sticky-table__th">{% trans "Retention" %}</div><div class="oh-sticky-table__th">{% trans "Actions" %}</div></div></div>
+      <div class="oh-sticky-table__tbody">
+        {% for document in documents %}
+        <div class="oh-sticky-table__tr">
+          <div class="oh-sticky-table__td">
+            <strong>{{ document.document_type.name }}</strong>
+            {% if document.is_current_version %}<span class="hydra-badge">{% trans "Current" %}</span>{% else %}<span class="hydra-muted">{% trans "Superseded" %}</span>{% endif %}
+            <br>{{ document.title }}
+            <br><small class="hydra-muted">{% trans "Version" %} {{ document.version_number }} / {{ document.original_filename }} / {{ document.size|filesizeformat }} / {{ document.get_category_display }}</small>
+            {% if document.replacement_reason %}<br><small class="hydra-muted">{% trans "Replacement reason" %}: {{ document.replacement_reason }}</small>{% endif %}
+          </div>
+          <div class="oh-sticky-table__td">
+            {% if document.deleted_at %}<strong>{% trans "Deleted" %}</strong><br><small class="hydra-muted">{{ document.deleted_at|date:"Y-m-d H:i" }}</small>
+            {% elif document.scanned_at %}{% trans "Malware scan passed" %}<br><small class="hydra-muted">{{ document.scanner }} / {{ document.scanned_at|date:"Y-m-d H:i" }}</small>
+            {% else %}<strong>{% trans "Download blocked: legacy file requires scanning" %}</strong>{% endif %}
+            {% if document.legal_hold %}<br><strong>{% trans "Legal hold" %}</strong><br><small class="hydra-muted">{{ document.legal_hold_reason }}</small>{% endif %}
+          </div>
+          <div class="oh-sticky-table__td">
+            {% trans "Retain through" %} {{ document.retention_until|date:"Y-m-d" }}
+            {% if document.issued_on %}<br><small class="hydra-muted">{% trans "Issued" %} {{ document.issued_on|date:"Y-m-d" }}</small>{% endif %}
+            {% if document.expires_on %}<br><small class="hydra-muted">{% trans "Expires" %} {{ document.expires_on|date:"Y-m-d" }}</small>{% endif %}
+            <br><small class="hydra-muted">{% trans "Uploaded" %} {{ document.created_at|date:"Y-m-d H:i" }}</small>
+          </div>
+          <div class="oh-sticky-table__td">
+            <div class="hydra-actions">
+              {% if document.is_downloadable and perms.hydra_documents.download_privatedocument %}<a class="oh-btn oh-btn--secondary" href="{% url 'hydra-private-document-download' document.uuid %}">{% trans "Download" %}</a>{% endif %}
+              {% if can_manage_hold and not document.deleted_at %}
+              <form method="post" action="{% url 'hydra-private-document-legal-hold' document.uuid %}">
+                {% csrf_token %}<input type="hidden" name="action" value="{% if document.legal_hold %}release{% else %}apply{% endif %}">
+                <label class="sr-only" for="hold-reason-{{ document.pk }}">{% trans "Legal-hold reason" %}</label><input class="oh-input" id="hold-reason-{{ document.pk }}" name="reason" maxlength="255" required placeholder="{% trans 'Legal-hold reason' %}">
+                <button class="oh-btn" type="submit">{% if document.legal_hold %}{% trans "Release hold" %}{% else %}{% trans "Apply hold" %}{% endif %}</button>
+              </form>
+              {% endif %}
+              {% if can_delete and not document.deleted_at %}
+              <form method="post" action="{% url 'hydra-private-document-delete' document.uuid %}">
+                {% csrf_token %}<label class="sr-only" for="delete-reason-{{ document.pk }}">{% trans "Deletion reason" %}</label><input class="oh-input" id="delete-reason-{{ document.pk }}" name="reason" maxlength="255" required placeholder="{% trans 'Deletion reason' %}">
+                <button class="oh-btn oh-btn--danger" type="submit">{% trans "Delete after retention" %}</button>
+              </form>
+              {% endif %}
+              {% if not document.is_downloadable and not document.deleted_at %}<span class="hydra-muted">{% trans "No download available" %}</span>{% endif %}
+            </div>
+          </div>
+        </div>
+        {% endfor %}
+      </div>
     </div></div>
   {% else %}<p class="hydra-muted mb-0">{% trans "No private documents have been uploaded." %}</p>{% endif %}
 </section>

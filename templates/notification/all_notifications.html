@@ -52,11 +52,7 @@
                 </div>
             </div>
             <span class="oh-activity-sidebar__a">
-                {{ notification.timesince }} {% trans "ago by" %}<img
-                    src="https://ui-avatars.com/api/?name={{notification.actor}}&amp;background=random"
-                    style="width: 1.5em; border-radius: 100%"
-                    alt="{% trans 'User' %}"
-                > {{ notification.actor }}
+                {{ notification.timesince }} {% trans "ago" %} · Hydra
             </span>
         </li>
     {% endfor %}

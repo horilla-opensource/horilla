@@ -10,6 +10,10 @@
 {% hydra_nav_is_active "people" as people_active %}
 {% hydra_nav_is_active "recruitment" as recruitment_active %}
 {% hydra_nav_is_active "arrivals" as arrivals_active %}
+{% hydra_nav_is_active "housing" as housing_active %}
+{% hydra_nav_is_active "tasks" as tasks_active %}
+{% hydra_nav_is_active "notifications" as notifications_active %}
+{% hydra_nav_is_active "onboarding_content" as onboarding_content_active %}
 {% hydra_nav_is_active "coordinator" as coordinator_active %}
 {% hydra_nav_is_active "brigadier" as brigadier_active %}
 {% hydra_nav_is_active "organization" as organization_active %}
@@ -51,7 +55,33 @@
           <span>{% trans "Arrivals" %}</span>
         </a>
       {% endif %}
-      {% if perms.hydra_coordination.view_coordinator_panel and perms.hydra_coordination.view_location and perms.hydra_people.view_person and perms.hydra_arrivals.view_arrivalplan and perms.hydra_legalization.view_legalizationcase %}
+      {% if perms.hydra_housing.view_housingfacility and perms.hydra_housing.view_housingroom and perms.hydra_housing.view_housingbed and perms.hydra_housing.view_housingassignment and perms.hydra_coordination.view_location and perms.hydra_people.view_person %}
+        <a class="hydra-shell__nav-link{% if housing_active %} hydra-shell__nav-link--active{% endif %}"
+           href="{% url 'hydra-housing-dashboard' %}"{% if housing_active %} aria-current="page"{% endif %}>
+          <ion-icon name="home-outline" aria-hidden="true"></ion-icon>
+          <span>{% trans "Housing" %}</span>
+        </a>
+      {% endif %}
+      {% if perms.hydra_tasks.view_hydratask and perms.hydra_people.view_person %}
+        <a class="hydra-shell__nav-link{% if tasks_active %} hydra-shell__nav-link--active{% endif %}"
+           href="{% url 'hydra-task-list' %}"{% if tasks_active %} aria-current="page"{% endif %}>
+          <ion-icon name="checkmark-done-outline" aria-hidden="true"></ion-icon>
+          <span>{% trans "Tasks" %}</span>
+        </a>
+      {% endif %}
+      {% if perms.hydra_onboarding.view_course and perms.hydra_onboarding.view_courseversion %}
+        <a class="hydra-shell__nav-link{% if onboarding_content_active %} hydra-shell__nav-link--active{% endif %}"
+           href="{% url 'hydra-onboarding-dashboard' %}"{% if onboarding_content_active %} aria-current="page"{% endif %}>
+          <ion-icon name="book-outline" aria-hidden="true"></ion-icon>
+          <span>{% trans "Onboarding content" %}</span>
+        </a>
+      {% endif %}
+      <a class="hydra-shell__nav-link{% if notifications_active %} hydra-shell__nav-link--active{% endif %}"
+         href="{% url 'hydra-notification-center' %}"{% if notifications_active %} aria-current="page"{% endif %}>
+        <ion-icon name="notifications-outline" aria-hidden="true"></ion-icon>
+        <span>{% trans "Notifications" %}</span>
+      </a>
+      {% if perms.hydra_coordination.view_coordinator_panel and perms.hydra_coordination.view_location and perms.hydra_people.view_person and perms.hydra_arrivals.view_arrivalplan and perms.hydra_legalization.view_legalizationcase and perms.hydra_housing.view_housingfacility and perms.hydra_housing.view_housingroom and perms.hydra_housing.view_housingbed and perms.hydra_housing.view_housingassignment %}
         <a class="hydra-shell__nav-link{% if coordinator_active %} hydra-shell__nav-link--active{% endif %}"
            href="{% url 'hydra-coordinator-panel' %}"{% if coordinator_active %} aria-current="page"{% endif %}>
           <ion-icon name="grid-outline" aria-hidden="true"></ion-icon>
@@ -93,7 +123,7 @@
           <span>{% trans "Public links" %}</span>
         </a>
       {% endif %}
-      {% if perms.hydra_reports.view_operational_report and perms.hydra_people.view_person and perms.hydra_coordination.view_personassignment and perms.hydra_coordination.view_location and perms.hydra_coordination.view_team and perms.hydra_arrivals.view_arrivalplan and perms.recruitment.view_candidate and perms.hydra_legalization.view_legalizationcase %}
+      {% if perms.hydra_reports.view_operational_report and perms.hydra_people.view_person and perms.hydra_coordination.view_personassignment and perms.hydra_coordination.view_location and perms.hydra_coordination.view_team and perms.hydra_arrivals.view_arrivalplan and perms.recruitment.view_candidate and perms.hydra_legalization.view_legalizationcase and perms.hydra_housing.view_housingfacility and perms.hydra_housing.view_housingroom and perms.hydra_housing.view_housingbed and perms.hydra_housing.view_housingassignment %}
         <a class="hydra-shell__nav-link{% if reports_active %} hydra-shell__nav-link--active{% endif %}"
            href="{% url 'hydra-operational-report' %}"{% if reports_active %} aria-current="page"{% endif %}>
           <ion-icon name="bar-chart-outline" aria-hidden="true"></ion-icon>

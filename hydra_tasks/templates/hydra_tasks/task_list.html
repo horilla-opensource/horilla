@@ -1,0 +1,102 @@
+{% extends "hydra_shell/base.html" %}
+{% load i18n %}
+
+{% block hydra_content %}
+<header class="hydra-header">
+  <div>
+    <p class="hydra-muted mb-1">{% trans "Scoped work queue" %}</p>
+    <h1 class="oh-main__titlebar-title">{% trans "Tasks" %}</h1>
+  </div>
+</header>
+
+<section class="hydra-card mb-3" aria-labelledby="task-filters-title">
+  <h2 class="h4" id="task-filters-title">{% trans "Filters" %}</h2>
+  <form method="get" class="hydra-filter-grid">
+    <div>
+      <label for="task-q">{% trans "Search" %}</label>
+      <input class="oh-input w-100" id="task-q" name="q" value="{{ filters.query }}">
+    </div>
+    <div>
+      <label for="task-status">{% trans "Status" %}</label>
+      <select class="oh-select w-100" id="task-status" name="status">
+        <option value="">{% trans "All statuses" %}</option>
+        {% for value, label in status_choices %}<option value="{{ value }}"{% if filters.status == value %} selected{% endif %}>{{ label }}</option>{% endfor %}
+      </select>
+    </div>
+    <div>
+      <label for="task-priority">{% trans "Priority" %}</label>
+      <select class="oh-select w-100" id="task-priority" name="priority">
+        <option value="">{% trans "All priorities" %}</option>
+        {% for value, label in priority_choices %}<option value="{{ value }}"{% if filters.priority == value %} selected{% endif %}>{{ label }}</option>{% endfor %}
+      </select>
+    </div>
+    <div>
+      <label for="task-ownership">{% trans "Ownership" %}</label>
+      <select class="oh-select w-100" id="task-ownership" name="ownership">
+        <option value="">{% trans "Visible tasks" %}</option>
+        <option value="assigned_to_me"{% if filters.ownership == "assigned_to_me" %} selected{% endif %}>{% trans "Assigned to me" %}</option>
+        <option value="created_by_me"{% if filters.ownership == "created_by_me" %} selected{% endif %}>{% trans "Created by me" %}</option>
+      </select>
+    </div>
+    <div>
+      <label for="task-due">{% trans "Deadline" %}</label>
+      <select class="oh-select w-100" id="task-due" name="due">
+        <option value="">{% trans "Any deadline" %}</option>
+        <option value="overdue"{% if filters.due == "overdue" %} selected{% endif %}>{% trans "Overdue" %}</option>
+        <option value="next_7_days"{% if filters.due == "next_7_days" %} selected{% endif %}>{% trans "Next 7 days" %}</option>
+        <option value="no_due_date"{% if filters.due == "no_due_date" %} selected{% endif %}>{% trans "No due date" %}</option>
+      </select>
+    </div>
+    <div class="hydra-actions hydra-filter-grid__actions">
+      <button class="oh-btn oh-btn--secondary" type="submit">{% trans "Apply" %}</button>
+      <a class="oh-btn" href="{% url 'hydra-task-list' %}">{% trans "Clear" %}</a>
+    </div>
+  </form>
+</section>
+
+<section class="hydra-card" aria-labelledby="task-list-title">
+  <div class="hydra-header">
+    <div>
+      <h2 class="h4 mb-1" id="task-list-title">{% trans "Work queue" %}</h2>
+      <p class="hydra-muted mb-0">{% trans "Only tasks inside your current Person and Company scope are shown." %}</p>
+    </div>
+  </div>
+  {% if tasks %}
+    <table class="hydra-table">
+      <thead>
+        <tr>
+          <th>{% trans "Task" %}</th>
+          <th>{% trans "Person" %}</th>
+          <th>{% trans "Linked record" %}</th>
+          <th>{% trans "Assignee" %}</th>
+          <th>{% trans "Priority" %}</th>
+          <th>{% trans "Deadline" %}</th>
+          <th>{% trans "Status" %}</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for task in tasks %}
+          <tr>
+            <td data-label="{% trans 'Task' %}"><a href="{{ task.get_absolute_url }}"><strong>{{ task.title }}</strong></a></td>
+            <td data-label="{% trans 'Person' %}"><a href="{{ task.person.get_absolute_url }}">{{ task.person.hydra_id }}</a></td>
+            <td data-label="{% trans 'Linked record' %}">{{ task.target_label }}</td>
+            <td data-label="{% trans 'Assignee' %}">{{ task.assignee }}</td>
+            <td data-label="{% trans 'Priority' %}">{{ task.get_priority_display }}</td>
+            <td data-label="{% trans 'Deadline' %}">{% if task.due_at %}<time datetime="{{ task.due_at|date:'c' }}">{{ task.due_at|date:"Y-m-d H:i" }}</time>{% if task.is_overdue %} <span class="hydra-status">{% trans "Overdue" %}</span>{% endif %}{% else %}—{% endif %}</td>
+            <td data-label="{% trans 'Status' %}"><span class="hydra-status">{{ task.get_status_display }}</span></td>
+          </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+    {% if page_obj.has_other_pages %}
+      <nav class="hydra-actions mt-3" aria-label="{% trans 'Task pages' %}">
+        {% if page_obj.has_previous %}<a class="oh-btn" href="?{% if filter_query %}{{ filter_query }}&amp;{% endif %}page={{ page_obj.previous_page_number }}">{% trans "Previous" %}</a>{% endif %}
+        <span class="hydra-muted">{% blocktrans with current=page_obj.number total=page_obj.paginator.num_pages %}Page {{ current }} of {{ total }}{% endblocktrans %}</span>
+        {% if page_obj.has_next %}<a class="oh-btn" href="?{% if filter_query %}{{ filter_query }}&amp;{% endif %}page={{ page_obj.next_page_number }}">{% trans "Next" %}</a>{% endif %}
+      </nav>
+    {% endif %}
+  {% else %}
+    <p class="hydra-muted mb-0">{% trans "No tasks match the current filters." %}</p>
+  {% endif %}
+</section>
+{% endblock hydra_content %}

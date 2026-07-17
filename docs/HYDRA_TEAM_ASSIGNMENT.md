@@ -74,4 +74,6 @@ The browser journey was completed against the real PostgreSQL schema using the `
 - Shift, reporting manager, contract and payroll data are outside this task.
 - Translation catalogs for new strings are not populated yet.
 
-Tasks `040-brigadier-panel.md` and `041-coordinator-panel.md` are implemented in `docs/HYDRA_BRIGADIER_PANEL.md` and `docs/HYDRA_COORDINATOR_PANEL.md`. The next authoritative task is `042-template-module.md`.
+Every successful employee Team assignment now reconciles an open onboarding handoff. Only a current primary assignment whose Team belongs to the confirmed arrival destination counts; task completion remains a separate required milestone.
+
+Tasks `040-brigadier-panel.md` and `041-coordinator-panel.md` are implemented in `docs/HYDRA_BRIGADIER_PANEL.md` and `docs/HYDRA_COORDINATOR_PANEL.md`. The cross-domain onboarding handoff is documented in `docs/HYDRA_ONBOARDING.md`.

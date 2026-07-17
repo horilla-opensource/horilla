@@ -3,11 +3,12 @@ import json
 import re
 from collections import Counter
 from dataclasses import dataclass, field
-from datetime import date, datetime
+from datetime import date, datetime, timedelta
 from io import BytesIO
 from pathlib import Path, PurePosixPath
 from zipfile import BadZipFile, ZipFile
 
+from django.conf import settings
 from django.core.exceptions import PermissionDenied, ValidationError
 from django.core.validators import validate_email
 from django.db import IntegrityError, transaction
@@ -17,7 +18,11 @@ from django.utils.translation import gettext as _
 from openpyxl import load_workbook
 
 from hydra_imports.forms import MAX_IMPORT_BYTES
-from hydra_imports.models import CandidateImportRow, CandidateImportSession
+from hydra_imports.models import (
+    CandidateImportLifecycleEvent,
+    CandidateImportRow,
+    CandidateImportSession,
+)
 from hydra_people.models import Person
 from hydra_people.recruitment_selectors import recruitments_for_user
 from hydra_people.services import create_candidate_application, save_person
@@ -51,6 +56,16 @@ IMPORT_PERMISSIONS = (
     "recruitment.add_candidate",
     "recruitment.view_candidate",
     "recruitment.view_recruitment",
+)
+PURGE_PERMISSIONS = (
+    "hydra_imports.view_candidateimportsession",
+    "hydra_imports.purge_candidateimportsession",
+    "recruitment.view_recruitment",
+)
+ACTIVE_FINGERPRINT_STATUSES = (
+    CandidateImportSession.Status.READY,
+    CandidateImportSession.Status.BLOCKED,
+    CandidateImportSession.Status.APPLIED,
 )
 
 
@@ -463,6 +478,138 @@ def _fingerprint(*, content, actor, recruitment, job_position):
     return file_sha256, hashlib.sha256(material).hexdigest()
 
 
+def _retention_deadline(*, setting_name, now):
+    hours = getattr(settings, setting_name)
+    if not 1 <= hours <= 720:
+        raise RuntimeError(f"{setting_name} must be between 1 and 720 hours")
+    return now + timedelta(hours=hours)
+
+
+def _require_session_scope(*, actor, session):
+    if actor.is_superuser:
+        return
+    if session.created_by_id != actor.pk:
+        raise PermissionDenied
+    if not recruitments_for_user(
+        user=actor,
+        permission="view_recruitment",
+    ).filter(pk=session.recruitment_id).exists():
+        raise PermissionDenied
+
+
+def _purge_locked_session(*, session, now, source, reason, actor=None):
+    if session.sensitive_data_purged_at is not None:
+        return False
+    previous_status = session.status
+    rows_redacted = CandidateImportRow.objects.filter(session=session).update(
+        error_message="",
+        duplicate_reason="",
+        passport_name="",
+        first_name="",
+        last_name="",
+        date_of_birth=None,
+        gender="",
+        citizenship="",
+        preferred_language="",
+        email="",
+        phone="",
+        whatsapp_viber="",
+        candidate_mobile="",
+    )
+    if session.status in {
+        CandidateImportSession.Status.READY,
+        CandidateImportSession.Status.BLOCKED,
+    }:
+        session.status = CandidateImportSession.Status.EXPIRED
+    session.source_filename = "purged-candidate-import.xlsx"
+    session.sensitive_data_purged_at = now
+    update_fields = [
+        "status",
+        "source_filename",
+        "sensitive_data_purged_at",
+    ]
+    if actor is not None:
+        session.modified_by = actor
+        update_fields.append("modified_by")
+    session.save(update_fields=update_fields)
+    CandidateImportLifecycleEvent.objects.create(
+        session=session,
+        event_type=CandidateImportLifecycleEvent.EventType.SENSITIVE_DATA_PURGED,
+        source=source,
+        reason=reason,
+        previous_status=previous_status,
+        resulting_status=session.status,
+        rows_redacted=rows_redacted,
+        actor=actor,
+    )
+    return True
+
+
+def _purge_due_fingerprint(*, fingerprint, now):
+    with transaction.atomic():
+        session = (
+            CandidateImportSession.objects.select_for_update()
+            .filter(
+                fingerprint=fingerprint,
+                status__in=ACTIVE_FINGERPRINT_STATUSES,
+                sensitive_data_purged_at__isnull=True,
+                sensitive_data_purge_after__lte=now,
+            )
+            .first()
+        )
+        if session is None:
+            return False
+        return _purge_locked_session(
+            session=session,
+            now=now,
+            source=CandidateImportLifecycleEvent.Source.SYSTEM,
+            reason=CandidateImportLifecycleEvent.Reason.RETENTION_EXPIRED,
+        )
+
+
+def purge_expired_candidate_import_data(*, now=None, limit=100):
+    if not 1 <= limit <= 1000:
+        raise ValidationError(_("Purge limit must be between 1 and 1000."))
+    now = now or timezone.now()
+    purged = 0
+    for _index in range(limit):
+        with transaction.atomic():
+            session = (
+                CandidateImportSession.objects.select_for_update(skip_locked=True)
+                .filter(
+                    sensitive_data_purged_at__isnull=True,
+                    sensitive_data_purge_after__lte=now,
+                )
+                .order_by("sensitive_data_purge_after", "pk")
+                .first()
+            )
+            if session is None:
+                break
+            if _purge_locked_session(
+                session=session,
+                now=now,
+                source=CandidateImportLifecycleEvent.Source.SYSTEM,
+                reason=CandidateImportLifecycleEvent.Reason.RETENTION_EXPIRED,
+            ):
+                purged += 1
+    return purged
+
+
+@transaction.atomic
+def discard_candidate_import_data(*, session_uuid, actor):
+    _require_permissions(actor, permissions=PURGE_PERMISSIONS)
+    session = CandidateImportSession.objects.select_for_update().get(uuid=session_uuid)
+    _require_session_scope(actor=actor, session=session)
+    created = _purge_locked_session(
+        session=session,
+        now=timezone.now(),
+        source=CandidateImportLifecycleEvent.Source.USER,
+        reason=CandidateImportLifecycleEvent.Reason.MANUALLY_DISCARDED,
+        actor=actor,
+    )
+    return session, created
+
+
 def preview_candidate_import(*, workbook, recruitment, job_position, actor):
     _require_permissions(actor)
     _validate_target(
@@ -479,7 +626,12 @@ def preview_candidate_import(*, workbook, recruitment, job_position, actor):
         recruitment=recruitment,
         job_position=job_position,
     )
-    existing = CandidateImportSession.objects.filter(fingerprint=fingerprint).first()
+    now = timezone.now()
+    _purge_due_fingerprint(fingerprint=fingerprint, now=now)
+    existing = CandidateImportSession.objects.filter(
+        fingerprint=fingerprint,
+        status__in=ACTIVE_FINGERPRINT_STATUSES,
+    ).first()
     if existing:
         return existing
 
@@ -511,6 +663,10 @@ def preview_candidate_import(*, workbook, recruitment, job_position, actor):
                 valid_count=valid_count,
                 duplicate_count=duplicate_count,
                 error_count=error_count,
+                sensitive_data_purge_after=_retention_deadline(
+                    setting_name="HYDRA_IMPORT_PREVIEW_RETENTION_HOURS",
+                    now=now,
+                ),
                 created_by=actor,
                 modified_by=actor,
             )
@@ -519,76 +675,106 @@ def preview_candidate_import(*, workbook, recruitment, job_position, actor):
             )
             return session
     except IntegrityError:
-        return CandidateImportSession.objects.get(fingerprint=fingerprint)
+        return CandidateImportSession.objects.get(
+            fingerprint=fingerprint,
+            status__in=ACTIVE_FINGERPRINT_STATUSES,
+        )
 
 
-@transaction.atomic
 def apply_candidate_import(*, session_uuid, actor):
     _require_permissions(actor)
-    session = CandidateImportSession.objects.select_for_update().get(
-        uuid=session_uuid
-    )
-    if not actor.is_superuser and session.created_by_id != actor.pk:
-        raise PermissionDenied
-    _validate_target(
-        actor=actor,
-        recruitment=session.recruitment,
-        job_position=session.job_position,
-    )
-    if session.status == CandidateImportSession.Status.APPLIED:
-        return session
-    if session.status != CandidateImportSession.Status.READY:
+    expired = False
+    with transaction.atomic():
+        session = CandidateImportSession.objects.select_for_update().get(
+            uuid=session_uuid
+        )
+        _require_session_scope(actor=actor, session=session)
+        _validate_target(
+            actor=actor,
+            recruitment=session.recruitment,
+            job_position=session.job_position,
+        )
+        if session.status == CandidateImportSession.Status.APPLIED:
+            return session
+        now = timezone.now()
+        if (
+            session.sensitive_data_purged_at is not None
+            or session.sensitive_data_purge_after <= now
+        ):
+            if session.sensitive_data_purged_at is None:
+                _purge_locked_session(
+                    session=session,
+                    now=now,
+                    source=CandidateImportLifecycleEvent.Source.SYSTEM,
+                    reason=CandidateImportLifecycleEvent.Reason.RETENTION_EXPIRED,
+                )
+            expired = True
+        elif session.status != CandidateImportSession.Status.READY:
+            raise ValidationError(
+                _("Resolve every validation error and duplicate before applying the import.")
+            )
+        else:
+            rows = list(
+                CandidateImportRow.objects.select_for_update()
+                .filter(session=session)
+                .order_by("row_number")
+            )
+            if len(rows) != session.valid_count or any(
+                row.outcome != CandidateImportRow.Outcome.VALID for row in rows
+            ):
+                raise ValidationError(_("The stored preview is not ready to apply."))
+
+            for row in rows:
+                person = save_person(
+                    person=Person(
+                        passport_name=row.passport_name,
+                        first_name=row.first_name,
+                        last_name=row.last_name,
+                        date_of_birth=row.date_of_birth,
+                        gender=row.gender,
+                        citizenship=row.citizenship,
+                        preferred_language=row.preferred_language,
+                        phone=row.phone,
+                        whatsapp_viber=row.whatsapp_viber,
+                        email=row.email,
+                    ),
+                    actor=actor,
+                )
+                candidate, _link = create_candidate_application(
+                    person=person,
+                    candidate=Candidate(
+                        recruitment_id=session.recruitment,
+                        job_position_id=session.job_position,
+                        email=row.email,
+                        mobile=row.candidate_mobile,
+                        source="software",
+                        resume="",
+                    ),
+                    actor=actor,
+                )
+                row.created_person = person
+                row.created_candidate = candidate
+                row.save(update_fields=("created_person", "created_candidate"))
+
+            session.status = CandidateImportSession.Status.APPLIED
+            session.applied_at = now
+            session.applied_by = actor
+            session.sensitive_data_purge_after = _retention_deadline(
+                setting_name="HYDRA_IMPORT_APPLIED_RETENTION_HOURS",
+                now=now,
+            )
+            session.modified_by = actor
+            session.save(
+                update_fields=(
+                    "status",
+                    "applied_at",
+                    "applied_by",
+                    "sensitive_data_purge_after",
+                    "modified_by",
+                )
+            )
+    if expired:
         raise ValidationError(
-            _("Resolve every validation error and duplicate before applying the import.")
+            _("This preview expired and its personal data was securely redacted. Create a new preview.")
         )
-
-    rows = list(
-        CandidateImportRow.objects.select_for_update()
-        .filter(session=session)
-        .order_by("row_number")
-    )
-    if len(rows) != session.valid_count or any(
-        row.outcome != CandidateImportRow.Outcome.VALID for row in rows
-    ):
-        raise ValidationError(_("The stored preview is not ready to apply."))
-
-    for row in rows:
-        person = save_person(
-            person=Person(
-                passport_name=row.passport_name,
-                first_name=row.first_name,
-                last_name=row.last_name,
-                date_of_birth=row.date_of_birth,
-                gender=row.gender,
-                citizenship=row.citizenship,
-                preferred_language=row.preferred_language,
-                phone=row.phone,
-                whatsapp_viber=row.whatsapp_viber,
-                email=row.email,
-            ),
-            actor=actor,
-        )
-        candidate, _link = create_candidate_application(
-            person=person,
-            candidate=Candidate(
-                recruitment_id=session.recruitment,
-                job_position_id=session.job_position,
-                email=row.email,
-                mobile=row.candidate_mobile,
-                source="software",
-                resume="",
-            ),
-            actor=actor,
-        )
-        row.created_person = person
-        row.created_candidate = candidate
-        row.save(update_fields=("created_person", "created_candidate"))
-
-    session.status = CandidateImportSession.Status.APPLIED
-    session.applied_at = timezone.now()
-    session.applied_by = actor
-    session.modified_by = actor
-    session.save(
-        update_fields=("status", "applied_at", "applied_by", "modified_by")
-    )
     return session

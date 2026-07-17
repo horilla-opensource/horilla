@@ -13,6 +13,15 @@ from hydra_arrivals.forms import (
     ArrivalTransitionForm,
 )
 from hydra_arrivals.models import ArrivalPlan
+from hydra_arrivals.models import OnboardingHandoff
+from hydra_arrivals.onboarding import (
+    HANDOFF_RECONCILE_PERMISSIONS,
+    HANDOFF_START_PERMISSIONS,
+    HANDOFF_TASK_UPDATE_PERMISSIONS,
+    reconcile_onboarding_handoff,
+    start_onboarding_handoff,
+    update_onboarding_task_status,
+)
 from hydra_arrivals.selectors import (
     ARRIVAL_VIEW_PERMISSIONS,
     arrival_plan_for_user,
@@ -26,6 +35,7 @@ from hydra_arrivals.services import (
 from hydra_people.selectors import person_for_user
 from hydra_links.public_urls import resolve_public_links
 from hydra_links.selectors import public_links_for_location
+from onboarding.models import CandidateTask
 
 
 def _add_validation_errors(form, error):
@@ -60,12 +70,59 @@ def _detail_context(*, request, plan, transition_form=None):
         if request.user.has_perm("hydra_arrivals.view_arrivalstatushistory")
         else plan.status_history.none()
     )
+    can_view_handoff = request.user.has_perm(
+        "hydra_arrivals.view_onboardinghandoff"
+    )
+    handoff = None
+    handoff_events = None
+    onboarding_tasks = CandidateTask.objects.none()
+    if can_view_handoff:
+        handoff = (
+            OnboardingHandoff.objects.select_related(
+                "candidate_stage__onboarding_stage_id",
+                "employee_conversion__employee",
+                "person_assignment__team",
+            )
+            .filter(arrival=plan)
+            .first()
+        )
+        if handoff and request.user.has_perm(
+            "hydra_arrivals.view_onboardinghandoffevent"
+        ):
+            handoff_events = handoff.events.select_related("actor")
+        if request.user.has_perm("onboarding.view_candidatetask"):
+            onboarding_tasks = (
+                CandidateTask._base_manager.select_related(
+                    "stage_id", "onboarding_task_id"
+                )
+                .filter(candidate_id=plan.candidate)
+                .order_by("stage_id__sequence", "pk")
+            )
     return {
         "plan": plan,
         "transition_form": transition_form or ArrivalTransitionForm(),
         "can_transition": can_transition,
         "can_edit": can_edit,
         "status_history": history,
+        "onboarding_handoff": handoff,
+        "onboarding_handoff_events": handoff_events,
+        "onboarding_tasks": onboarding_tasks,
+        "can_start_onboarding": (
+            handoff is None
+            and plan.status == ArrivalPlan.Status.CONFIRMED
+            and request.user.has_perms(HANDOFF_START_PERMISSIONS)
+        ),
+        "can_reconcile_onboarding": (
+            handoff is not None
+            and handoff.status != OnboardingHandoff.Status.COMPLETED
+            and request.user.has_perms(HANDOFF_RECONCILE_PERMISSIONS)
+        ),
+        "can_update_onboarding_tasks": (
+            handoff is not None
+            and handoff.status != OnboardingHandoff.Status.COMPLETED
+            and request.user.has_perms(HANDOFF_TASK_UPDATE_PERMISSIONS)
+        ),
+        "onboarding_task_status_choices": CandidateTask.choice,
         "public_links": resolve_public_links(
             links=public_links_for_location(
                 user=request.user,
@@ -218,3 +275,70 @@ def arrival_transition(request, plan_uuid):
         _detail_context(request=request, plan=plan, transition_form=form),
         status=400,
     )
+
+
+@login_required
+@require_POST
+@permission_required(HANDOFF_START_PERMISSIONS, raise_exception=True)
+def onboarding_handoff_start(request, plan_uuid):
+    plan = arrival_plan_for_user(user=request.user, plan_uuid=plan_uuid)
+    try:
+        handoff = start_onboarding_handoff(
+            plan_uuid=plan.uuid,
+            actor=request.user,
+        )
+    except ValidationError as error:
+        messages.error(request, error.messages[0])
+    else:
+        if handoff.status == OnboardingHandoff.Status.COMPLETED:
+            messages.success(request, _("Onboarding handoff completed."))
+        else:
+            messages.success(request, _("Onboarding handoff started."))
+    return redirect(plan)
+
+
+@login_required
+@require_POST
+@permission_required(HANDOFF_RECONCILE_PERMISSIONS, raise_exception=True)
+def onboarding_handoff_reconcile(request, plan_uuid):
+    plan = arrival_plan_for_user(user=request.user, plan_uuid=plan_uuid)
+    handoff = OnboardingHandoff.objects.filter(arrival=plan).first()
+    if handoff is None:
+        messages.error(request, _("Start onboarding before reconciliation."))
+        return redirect(plan)
+    handoff = reconcile_onboarding_handoff(
+        handoff=handoff,
+        actor=request.user,
+        authorize=True,
+    )
+    if handoff.status == OnboardingHandoff.Status.COMPLETED:
+        messages.success(request, _("Onboarding handoff completed."))
+    else:
+        messages.info(request, _("Onboarding milestones refreshed."))
+    return redirect(plan)
+
+
+@login_required
+@require_POST
+@permission_required(HANDOFF_TASK_UPDATE_PERMISSIONS, raise_exception=True)
+def onboarding_task_update(request, plan_uuid, task_id):
+    plan = arrival_plan_for_user(user=request.user, plan_uuid=plan_uuid)
+    handoff = OnboardingHandoff.objects.filter(arrival=plan).first()
+    if handoff is None:
+        messages.error(request, _("Start onboarding before updating tasks."))
+        return redirect(plan)
+    try:
+        _task, handoff = update_onboarding_task_status(
+            handoff=handoff,
+            candidate_task_id=task_id,
+            status=request.POST.get("status", ""),
+            actor=request.user,
+        )
+    except ValidationError as error:
+        messages.error(request, error.messages[0])
+    else:
+        if handoff.status == OnboardingHandoff.Status.COMPLETED:
+            messages.success(request, _("Onboarding handoff completed."))
+        else:
+            messages.success(request, _("Onboarding task updated."))
+    return redirect(plan)

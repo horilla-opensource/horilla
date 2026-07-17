@@ -11,6 +11,11 @@ urlpatterns = [
         name="hydra-recruitment-detail",
     ),
     path(
+        "applications/<int:candidate_id>/transition/",
+        recruitment_views.recruitment_transition,
+        name="hydra-recruitment-transition",
+    ),
+    path(
         "applications/<int:candidate_id>/link-person/",
         recruitment_views.recruitment_link_person,
         name="hydra-recruitment-link-person",

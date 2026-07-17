@@ -1,0 +1,6 @@
+{% extends "hydra_people/base.html" %}
+{% load i18n %}
+{% block person_content %}
+<header class="hydra-header"><div><p class="hydra-muted mb-1">{% trans "Legalization policy" %}</p><h1 class="oh-main__titlebar-title">{% if authority %}{% trans "Edit authority" %}{% else %}{% trans "Create authority" %}{% endif %}</h1></div><a class="oh-btn" href="{% url 'hydra-legalization-configuration' %}">{% trans "Back to configuration" %}</a></header>
+<form class="hydra-card" method="post" novalidate>{% csrf_token %}<p class="hydra-muted">{% trans "Authority names and channels are snapshotted on every external fact." %}</p>{% if form.non_field_errors %}<div class="hydra-errors">{{ form.non_field_errors }}</div>{% endif %}<div class="hydra-grid">{% for field in form %}<div class="hydra-field">{{ field.label_tag }}{{ field }}{{ field.errors }}</div>{% endfor %}</div><div class="hydra-actions mt-3"><button class="oh-btn oh-btn--secondary" type="submit">{% trans "Save authority" %}</button></div></form>
+{% endblock person_content %}

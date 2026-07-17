@@ -80,7 +80,21 @@ class NotificationQuerySet(models.query.QuerySet):
         if recipient:
             qset = qset.filter(recipient=recipient)
 
-        return qset.update(unread=False)
+        from hydra_notifications.services import mark_envelope_read, wrap_legacy_notification
+        from hydra_notifications.models import HydraNotificationEnvelope
+
+        changed = 0
+        for notification in qset.select_related("recipient").iterator(chunk_size=200):
+            envelope = wrap_legacy_notification(notification=notification)
+            try:
+                mark_envelope_read(
+                    actor=notification.recipient,
+                    envelope_uuid=envelope.uuid,
+                )
+            except HydraNotificationEnvelope.DoesNotExist:
+                continue
+            changed += 1
+        return changed
 
     def mark_all_as_unread(self, recipient=None):
         """Mark as unread any read messages in the current queryset.
@@ -92,7 +106,21 @@ class NotificationQuerySet(models.query.QuerySet):
         if recipient:
             qset = qset.filter(recipient=recipient)
 
-        return qset.update(unread=True)
+        from hydra_notifications.services import mark_envelope_unread, wrap_legacy_notification
+        from hydra_notifications.models import HydraNotificationEnvelope
+
+        changed = 0
+        for notification in qset.select_related("recipient").iterator(chunk_size=200):
+            envelope = wrap_legacy_notification(notification=notification)
+            try:
+                mark_envelope_unread(
+                    actor=notification.recipient,
+                    envelope_uuid=envelope.uuid,
+                )
+            except HydraNotificationEnvelope.DoesNotExist:
+                continue
+            changed += 1
+        return changed
 
     def deleted(self):
         """Return only deleted items in the current queryset"""
@@ -113,7 +141,21 @@ class NotificationQuerySet(models.query.QuerySet):
         if recipient:
             qset = qset.filter(recipient=recipient)
 
-        return qset.update(deleted=True)
+        from hydra_notifications.services import archive_envelope, wrap_legacy_notification
+        from hydra_notifications.models import HydraNotificationEnvelope
+
+        changed = 0
+        for notification in qset.select_related("recipient").iterator(chunk_size=200):
+            envelope = wrap_legacy_notification(notification=notification)
+            try:
+                archive_envelope(
+                    actor=notification.recipient,
+                    envelope_uuid=envelope.uuid,
+                )
+            except HydraNotificationEnvelope.DoesNotExist:
+                continue
+            changed += 1
+        return changed
 
     def mark_all_as_active(self, recipient=None):
         """Mark current queryset as active(un-deleted).
@@ -261,13 +303,25 @@ class AbstractNotification(models.Model):
 
     def mark_as_read(self):
         if self.unread:
+            from hydra_notifications.services import (
+                mark_envelope_read,
+                wrap_legacy_notification,
+            )
+
+            envelope = wrap_legacy_notification(notification=self)
+            mark_envelope_read(actor=self.recipient, envelope_uuid=envelope.uuid)
             self.unread = False
-            self.save()
 
     def mark_as_unread(self):
         if not self.unread:
+            from hydra_notifications.services import (
+                mark_envelope_unread,
+                wrap_legacy_notification,
+            )
+
+            envelope = wrap_legacy_notification(notification=self)
+            mark_envelope_unread(actor=self.recipient, envelope_uuid=envelope.uuid)
             self.unread = True
-            self.save()
 
 
 def notify_handler(verb, **kwargs):
@@ -326,6 +380,9 @@ def notify_handler(verb, **kwargs):
             newnotify.verb_es = newnotify.data.get("verb_es", None)
             newnotify.verb_fr = newnotify.data.get("verb_fr", None)
         newnotify.save()
+        from hydra_notifications.services import wrap_legacy_notification
+
+        wrap_legacy_notification(notification=newnotify)
         new_notifications.append(newnotify)
 
     return new_notifications

@@ -1,122 +1,164 @@
-# Hydra private candidate documents — TASK-2
+# Hydra private candidate documents — TASK-2 security boundary
 
-## Status and audit decision
+## Status and reuse decision
 
-Implemented on 2026-07-14 as the smallest complete candidate-document vertical slice.
+Implemented on 2026-07-14 and hardened on 2026-07-15.
 
-The mandatory Horilla audit was repeated before implementation:
+- **REUSE** Horilla `Candidate` and canonical `hydra_people.Person` ownership.
+- **REPLACE** generic `/media/` delivery for Hydra-sensitive content.
+- **EXTEND** the original private-document slice with isolated quarantine, fail-closed malware scanning, logical types, immutable replacement versions, retention, legal hold, secure deletion, and operational readiness checks.
+- Keep Horilla's original document screens operational, but never route Hydra-private files through them.
 
-- **REUSE** Horilla `Candidate` as the application and `hydra_people.Person` as the canonical owner identity;
-- **REPLACE** generic media storage/delivery for Hydra-sensitive files;
-- **NEW MODULE** `hydra_documents` for the focused shared private-document boundary;
-- leave Horilla `CandidateDocument`, `horilla_documents.Document` and `/media/` operational for existing upstream screens, but never route Hydra-private files through them.
+The generic upstream media endpoint authenticates a request without applying Hydra's Candidate/Person object scope. `hydra_documents` is therefore the mandatory security boundary for passport, recruitment, and legalization attachments.
 
-The replacement is necessary because the generic `/media/<path>` endpoint authenticates a session/JWT but does not authorize the related Candidate/Person object or record reads. Horilla's candidate preview also reads a requested document without reliably proving it belongs to the candidate session and embeds content in a data URL.
+## Authorized workflow
 
-## Complete vertical slice
+At `/hydra/documents/candidates/<candidate-id>/`, a scoped internal operator can upload and list private files. Every upload follows this sequence:
 
-At `/hydra/documents/candidates/<candidate-id>/`, an authorized internal operator can:
+1. re-evaluate document, Candidate, Person, and organization permissions;
+2. enforce the configured size limit, inspect PDF/JPEG/PNG magic bytes, sanitize the display filename, and calculate SHA-256;
+3. write an opaque `.upload` object to the dedicated quarantine root;
+4. stream that object to `clamd` with the framed `INSTREAM` protocol;
+5. promote only a `clean` result into private storage and create `PrivateDocument` metadata;
+6. keep detected or failed scans inaccessible in quarantine and write an append-only audit event.
 
-1. open a linked Candidate that is currently visible through Hydra organization scope;
-2. upload a PDF, JPEG or PNG;
-3. see only documents for that scoped application;
-4. download through an authenticated, permission- and object-scoped endpoint;
-5. produce an append-only access event for upload and every authenticated download attempt.
+Scanner timeout, connection failure, malformed response, disabled scanner, or database promotion failure never produces a downloadable document. The user receives a generic error; the internal quarantine record keeps the operational result. The ClamAV TCP port is internal to the Compose network and is not published to the host.
 
-The recruitment detail page links to this screen when the actor has `hydra_documents.view_privatedocument`. Existing Horilla Candidate pages continue to work unchanged.
+The protocol implementation follows the official [ClamD protocol documentation](https://docs.clamav.net/manual/Usage/ClamdProtocol.html). Staging uses the official persistent-database Docker layout described by [ClamAV's Docker guide](https://docs.clamav.net/manual/Installing/Docker.html).
 
-## Storage and validation boundary
+## Logical types and version chains
 
-`HYDRA_PRIVATE_MEDIA_ROOT` defaults to `.private_media` and is separate from `MEDIA_ROOT`. Django system check `hydra_documents.E001` rejects equal or nested public/private roots. `.private_media/` is ignored by Git.
+TASK-011 adds `PrivateDocumentType` as a fixed-field policy dictionary, not a
+generic rule engine. Five active global types are seeded: Passport, Identity,
+Recruitment, Legalization and Other. Authorized operators may create and update
+company-specific types only inside their effective Company scope; global types
+are editable only by a superuser. Direct cross-scope type URLs return 404.
 
-`PrivateDocumentStorage` exposes no public URL. Stored keys contain a generated UUID and verified extension, not a Candidate name, passport number, title or original filename. Templates contain only the authorized download route.
+Each type fixes the category, allowed verified MIME types, maximum size,
+retention days, whether an expiry date is required, and whether only one current
+document may exist. The global size ceiling still applies. Every successful
+upload stores the exact rule snapshot, so changing a type affects future
+versions without rewriting historical decisions.
 
-Upload validation:
+Replacement is a dedicated `replace_privatedocument` action. The operator must
+select the current predecessor and provide a reason of at least ten characters.
+The promotion transaction locks Candidate, Person, type, predecessor and all
+current rows. It then creates, but never overwrites, a new version with the same
+lineage UUID and the next number. `OneToOneField(PROTECT)` permits at most one
+successor per version, and `(lineage_uuid, version_number)` is unique. For a
+single-current type, an existing current row makes an ordinary second upload
+invalid.
 
-- caps size with `HYDRA_PRIVATE_DOCUMENT_MAX_BYTES` (10 MiB by default);
-- recognizes PDF, JPEG and PNG by server-inspected magic bytes instead of trusting the browser MIME type or extension;
-- calculates SHA-256 while reading the upload;
-- stores a sanitized display filename separately;
-- removes a newly written object if the database transaction fails.
+Old versions remain within the same scoped download, retention and legal-hold
+boundary. Version identity, predecessor, type/rule snapshot, dates, file
+metadata and checksum reject model/queryset mutation; hard deletion is blocked
+in favor of the existing retention-controlled tombstone. A canonical Person
+merge may reassign the Person FK only through its separately locked/audited
+service and does not alter version identity.
 
-This signature validation is an MVP containment control, not malware scanning. Scanner/quarantine integration is required before accepting untrusted external uploads in a pilot.
+The configuration UI is at `/hydra/documents/types/`. The Candidate document
+screen shows current/superseded state, version number, replacement reason,
+issue/expiry dates and all historical versions without exposing storage keys.
 
-## Authorization policy
+## Storage boundaries
 
-The list/upload endpoint requires authentication and `view_privatedocument`; upload additionally requires `add_privatedocument`. The service independently repeats upload permissions and obtains the Candidate through `linked_candidate_for_user()`, whose result intersects:
+Three roots must be pairwise disjoint:
 
-1. `recruitment.view_candidate`;
-2. `hydra_people.view_person`;
-3. current Person assignment and Hydra scope grants;
-4. Candidate recruitment company scope.
+- `MEDIA_ROOT` — upstream public/application media;
+- `HYDRA_PRIVATE_MEDIA_ROOT` — approved Hydra documents;
+- `HYDRA_DOCUMENT_QUARANTINE_ROOT` — untrusted or rejected uploads.
 
-The download endpoint re-evaluates `view_privatedocument`, `download_privatedocument`, Candidate permission and current organization scope on every request. A missing action permission returns HTTP 403. An unknown or out-of-scope UUID returns HTTP 404 so the endpoint does not confirm object visibility.
+System checks `hydra_documents.E001` and `hydra_documents.E002` reject overlap. Both private storage classes deliberately have no URL method. Object keys contain generated UUIDs and verified extensions, never a person name, passport number, title, or original filename.
 
-The selected-company session value is not an authorization input. Superuser access remains Django's explicit administrative bypass.
+Successful promotion deletes the quarantine blob while retaining its metadata record. Detected and failed files remain isolated until `purge_document_storage` removes the blob after `HYDRA_DOCUMENT_QUARANTINE_HOURS`; the row and scan result remain as evidence. Quarantine is intentionally excluded from backups so known-untrusted content is not copied into recovery sets.
 
-## Download and audit behavior
+## Download and audit boundary
 
-Authorized content is streamed as an attachment. No inline/base64 preview or storage redirect is emitted. The response includes:
+Download requires authentication plus `view_privatedocument`, `download_privatedocument`, Candidate/Person permissions, and current organization scope on every request. Unknown and out-of-scope UUIDs return 404. Files with no completed clean scan and logically deleted files also return 404 and are audited.
 
-- verified `Content-Type`;
-- `Content-Disposition: attachment` with the sanitized original filename;
-- `X-Content-Type-Options: nosniff`;
-- `Cache-Control: private, no-store, max-age=0` and `Pragma: no-cache`;
-- restrictive `Content-Security-Policy`.
+Authorized content is streamed as an attachment with verified MIME type, `nosniff`, `private, no-store`, `Pragma: no-cache`, and a restrictive CSP. Templates never expose a storage key or `/media/` URL.
 
-`DocumentAccessLog` records document UUID, nullable document relation for unknown UUIDs, actor, action, outcome, reason, time, socket IP and a SHA-256 hash of the user agent. It never stores the raw user-agent string. Uploads record `allowed`; downloads record `allowed`, `denied`, `not_found` or `error`.
+`DocumentAccessLog` now covers upload, download, scan, legal-hold, and deletion events. It stores actor, document UUID, outcome/reason, time, socket IP, a SHA-256 user-agent hash, and a bounded lifecycle detail. Model and queryset APIs are append-only; admin is read-only; protected foreign keys prevent related-object deletion from rewriting history. The deployment database role should additionally be denied direct `UPDATE` and `DELETE` on the table.
 
-Logs are append-only through model/queryset APIs, read-only in Django admin, and use protected actor/document foreign keys so related-object deletion cannot mutate prior events. Production database credentials should additionally be denied direct `UPDATE`/`DELETE` on this table.
+## Retention, legal hold, and deletion
 
-## Migration and configuration
+New documents receive `retention_until` from `HYDRA_PRIVATE_DOCUMENT_RETENTION_DAYS`. Deletion requires `delete_privatedocument`, current Candidate scope, a reason, an expired retention period, and no legal hold.
 
-`hydra_documents/migrations/0001_initial.py` creates `PrivateDocument`, `DocumentAccessLog`, custom permissions and query indexes. No upstream Horilla model or migration is changed.
+Legal hold requires `manage_privatedocumenthold` and a reason. Applying and releasing a hold are separate append-only audit events. A hold prevents deletion regardless of the retention date.
 
-Environment variables:
+Deletion is a tombstone rather than a row delete:
+
+- access is revoked by `deleted_at` immediately;
+- the physical private object is deleted;
+- the file field is cleared and `file_purged_at` is recorded;
+- title, ownership, hash, deletion actor/reason, and access history remain.
+
+If physical cleanup fails after logical deletion, download remains blocked and an error is audited. `purge_document_storage` retries those objects safely.
+
+## Legacy upgrade path
+
+Migration `hydra_documents.0002_alter_privatedocument_options_and_more` adds lifecycle fields, quarantine metadata, new permissions, and audit actions. Existing rows intentionally receive no fake scanner timestamp and are download-blocked until scanned.
+
+Migration `hydra_documents.0003_document_types_and_versions` adds type policy,
+lineage, predecessor, version, rule snapshot and validity fields. It seeds the
+five global types and backfills every existing document with an appropriate
+logical type, lineage equal to its preserved UUID, version 1 and a deterministic
+rule snapshot before making `document_type` non-null. Existing quarantine
+evidence remains valid and may have no intended type because that fact did not
+exist at upload time.
+
+After deploying ClamAV and before reopening document access, run:
+
+```text
+python manage.py rescan_private_documents
+python manage.py purge_document_storage
+```
+
+The rescan command marks clean files with scanner metadata. A detected legacy threat is tombstoned and its object is removed; a scanner/storage failure remains blocked and makes the command exit unsuccessfully. `--limit N` supports bounded operational batches.
+
+The dedicated worker in `HYDRA_MAINTENANCE.md` runs bounded purge cycles. `purge_document_storage` remains available for an operator-triggered repair. Hydra deliberately does not restart legacy APScheduler jobs in web workers.
+
+## Configuration and readiness
+
+Development defaults to `HYDRA_DOCUMENT_SCANNER=disabled`, so uploads fail closed unless a scanner is explicitly configured. Staging/production readiness requires `clamd`, positive retention periods, three writable separated roots, and a live framed `PING`/`PONG` health check. Domain readiness also fails when a single-current application/type group has multiple current rows, a replacement changes its Candidate, Person, logical type, lineage or sequence, or a stored version lacks the complete immutable type-rule snapshot. The corresponding result names are `private_document_current_versions`, `private_document_version_chains`, and `private_document_rule_snapshots`.
 
 ```text
 HYDRA_PRIVATE_MEDIA_ROOT=.private_media
 HYDRA_PRIVATE_DOCUMENT_MAX_BYTES=10485760
+HYDRA_DOCUMENT_QUARANTINE_ROOT=.document_quarantine
+HYDRA_DOCUMENT_QUARANTINE_HOURS=72
+HYDRA_PRIVATE_DOCUMENT_RETENTION_DAYS=365
+HYDRA_DOCUMENT_SCANNER=clamd
+HYDRA_CLAMD_HOST=clamav
+HYDRA_CLAMD_PORT=3310
+HYDRA_CLAMD_TIMEOUT_SECONDS=30
 ```
 
-In staging, the private root must be a non-public encrypted volume/bucket accessible only to the application identity. Backups must capture the database and private object set as one recovery point. Restore verification must confirm every metadata row has an object and matching SHA-256 before the service is reopened.
+`docker-compose.staging.yaml` adds a private `clamav` service and persistent signature database volume. The default image is configurable through `HYDRA_CLAMAV_IMAGE`; review and pin the approved feature/patch image during release management. ClamAV's documented memory requirements must be included in target-host capacity planning.
 
-## Automated verification
+## Automated and manual verification
 
-Focused tests prove:
+Focused tests cover clean promotion, opaque separated storage, protocol framing, threat quarantine, scanner failure, legacy download denial, safe headers, object scope, append-only audit, retention, legal hold, tombstone deletion, quarantine purge, type rules, explicit single-current replacement, immutable version chains, dedicated permissions, cross-scope predecessor denial, Company-scoped configuration and staging configuration.
 
-- opaque storage outside public media and absence of a storage URL;
-- server-side signature, size and hash metadata;
-- rejection and cleanup of disguised active content;
-- authorized streaming with safe headers and audit event;
-- HTTP 403 plus denied event without download permission;
-- HTTP 404 plus denied event for a cross-team direct UUID;
-- HTTP 404 plus not-found event for an unknown UUID;
-- scoped UI with no storage/media path;
-- model/queryset/admin append-only behavior;
-- rejection of overlapping media roots;
-- continued operation of the original Horilla Candidate view.
+The TASK-011 PostgreSQL run passed 26/26 focused private-document tests and 390/390 full Django tests. Migration-manifest verification covers 64 reviewed sources. Browser QA on the real local stack verified type list/form and a two-version Candidate history at 1280 x 720 and 390 x 844 with no horizontal overflow, duplicate HTML ids, broken labels, storage-path disclosure or warning/error console log. `manage.py check`, migration-drift detection, `migrate --check`, dependency consistency, workflow YAML parsing, and `git diff --check` also passed.
 
-The final PostgreSQL 17 acceptance run applied `hydra_documents.0001_initial` and passed 50/50 combined Hydra tests. `manage.py check`, `makemigrations --check --dry-run`, `migrate --check`, Python compilation, `pip check` and `git diff --check` also passed.
+Manual staging acceptance:
 
-Browser QA used the real local Django/PostgreSQL stack and the existing scoped `hydra-qa` role. At 1280 px the upload form and stored-document table rendered with one active Recruitment navigation item, no public-media links and no horizontal overflow. A QA PDF created through the same production upload service appeared without its storage key, the authorized link emitted a real browser download event, and the database recorded both `upload/allowed` and `download/allowed` events. The browser controller cannot drive the native operating-system file chooser, so the UI chooser itself was inspected but the actual file selection is covered by the HTTP integration test.
+1. Confirm `hydra_readiness --json` reports scanner health, all three storage roots, and all three `private_document_*` integrity results as healthy.
+2. Upload an approved inert PDF and verify a clean scan, private object, and `upload/allowed` event.
+3. Use the standard EICAR test artifact only in an approved isolated staging exercise; confirm no `PrivateDocument` is created, no download route is available, and the quarantine event is denied.
+4. Stop ClamAV and confirm uploads fail closed; restart it and confirm readiness recovers.
+5. Test direct UUID access from another team and without download permission.
+6. Confirm deletion is blocked before retention and during legal hold, then succeeds after both gates permit it while retaining the tombstone/audit history.
+7. Run both management commands and verify expected exit status and purge counts.
+8. Repeat the list/upload/lifecycle screen at a viewport no wider than 390 px.
+9. Create a company type, upload version 1, replace it with a reason, and confirm
+   that version 1 remains downloadable/auditable while version 2 alone is marked
+   current. Change the type and confirm both version snapshots remain unchanged.
 
-At 390 × 844 px the page measured 376 px, the document card 350.4 px, the form collapsed to one 316.8 px column, the download remained available and there was no horizontal overflow. The responsive screenshot surface added external white canvas around the emulated viewport; DOM geometry was used to distinguish that tool artifact from application layout.
+## Remaining deployment gates
 
-## Manual verification
-
-1. Grant an operator Person/Candidate read permissions plus `view_privatedocument`, `add_privatedocument` and `download_privatedocument`, and a current Hydra team/company scope.
-2. Open a linked application and select **Private documents**.
-3. Upload a small real PDF and confirm only its display metadata appears; no `/media/` or private object key should be present in page HTML.
-4. Download it and confirm the browser treats it as a file attachment.
-5. Remove download permission and retry the UUID: expect HTTP 403 and a denied event.
-6. With permission restored, try a document belonging to another team: expect HTTP 404 and a denied event.
-7. Repeat the list/upload flow at a viewport no wider than 390 px.
-
-## Known limitations and next task
-
-- Malware scanning/quarantine and encrypted object-store deployment are not part of this local MVP slice.
-- Retention periods and legal-hold deletion are not yet modeled. There is intentionally no document deletion endpoint; define the policy before pilot data.
-- Candidate self-service is not exposed. This slice is for authenticated internal operators.
-- Access-log append-only behavior is enforced in application APIs and relations; staging must also restrict the database role.
-- `022-legalization-mvp.md` is implemented and references `PrivateDocument` rather than creating another file-delivery mechanism. The next numbered task is `023-excel-import.md`.
+- The target host must provide encrypted volumes or encrypted object storage, encrypted off-host backups, restricted service identities, monitoring, and an approved retention schedule. Application code cannot attest host-level encryption.
+- The target environment must size ClamAV, verify signature updates, alert on stale/unhealthy definitions, and record an approved false-positive response procedure.
+- Candidate self-service remains intentionally absent; this boundary is for authenticated internal operators.
+- Database-level append-only grants and target-host maintenance health/alert evidence remain production controls.

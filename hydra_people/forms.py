@@ -1,6 +1,7 @@
 from django import forms
 from django.utils.translation import gettext_lazy as _
 
+from hydra_people.duplicate_services import MERGE_FIELDS
 from hydra_people.models import Person, phone_validator
 from hydra_people.selectors import people_for_user
 from hydra_people.recruitment_selectors import (
@@ -8,8 +9,9 @@ from hydra_people.recruitment_selectors import (
     recruitments_for_user,
     unlinked_candidates_for_user,
 )
+from hydra_people.recruitment_workflow import transition_rules_for_candidate
 from base.models import JobPosition
-from recruitment.models import Candidate, Recruitment
+from recruitment.models import Candidate, Recruitment, Stage
 
 
 class PersonForm(forms.ModelForm):
@@ -43,6 +45,71 @@ class PersonForm(forms.ModelForm):
             else:
                 css_class = "oh-input w-100"
             field.widget.attrs["class"] = css_class
+
+
+class DuplicateMergeSelectionForm(forms.Form):
+    canonical_person = forms.ChoiceField(
+        label=_("Canonical Person"),
+        widget=forms.RadioSelect,
+    )
+    reason = forms.CharField(
+        label=_("Merge reason"),
+        min_length=10,
+        max_length=500,
+        widget=forms.Textarea(attrs={"rows": 3, "class": "oh-input w-100"}),
+        help_text=_("Required, retained in immutable merge evidence."),
+    )
+
+    def __init__(self, *args, person_a, person_b, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.person_a = person_a
+        self.person_b = person_b
+        person_choices = (
+            (str(person_a.pk), person_a.hydra_id),
+            (str(person_b.pk), person_b.hydra_id),
+        )
+        self.fields["canonical_person"].choices = person_choices
+        self.initial.setdefault("canonical_person", str(person_a.pk))
+        source_choices = (
+            ("person_a", person_a.hydra_id),
+            ("person_b", person_b.hydra_id),
+        )
+        for field_name in MERGE_FIELDS:
+            model_field = Person._meta.get_field(field_name)
+            self.fields[f"source_{field_name}"] = forms.ChoiceField(
+                label=model_field.verbose_name,
+                choices=source_choices,
+                initial="person_a",
+                widget=forms.Select(attrs={"class": "oh-select w-100"}),
+            )
+
+    @property
+    def field_sources(self):
+        return {
+            field_name: self.cleaned_data[f"source_{field_name}"]
+            for field_name in MERGE_FIELDS
+        }
+
+
+class DuplicateDismissForm(forms.Form):
+    reason = forms.CharField(
+        label=_("Dismissal reason"),
+        min_length=10,
+        max_length=500,
+        widget=forms.Textarea(attrs={"rows": 3, "class": "oh-input w-100"}),
+    )
+    confirmation = forms.BooleanField(
+        label=_("I confirm these records represent different people."),
+    )
+
+
+class DuplicateMergeCommitForm(forms.Form):
+    payload = forms.CharField(widget=forms.HiddenInput)
+    confirmation = forms.BooleanField(
+        label=_(
+            "I reviewed the preview and confirm this irreversible canonical merge."
+        ),
+    )
 
 
 class EmployeeConversionForm(forms.Form):
@@ -215,3 +282,55 @@ class CandidatePersonLinkForm(forms.Form):
         self.fields["person"].queryset = people_for_user(
             user=actor, permission="change_person"
         )
+
+
+class CandidateStageTransitionForm(forms.Form):
+    target_stage = forms.ModelChoiceField(
+        label=_("Target stage"),
+        queryset=Stage._base_manager.none(),
+    )
+    reason = forms.CharField(
+        label=_("Reason"),
+        required=False,
+        max_length=1000,
+        widget=forms.Textarea(attrs={"rows": 3}),
+        help_text=_(
+            "Required for cancellation, backward/skipped moves and every override."
+        ),
+    )
+    schedule_date = forms.DateTimeField(
+        label=_("Schedule date"),
+        required=False,
+        widget=forms.DateTimeInput(attrs={"type": "datetime-local"}),
+    )
+    joining_date = forms.DateField(
+        label=_("Joining date"),
+        required=False,
+        widget=forms.DateInput(attrs={"type": "date"}),
+    )
+    override = forms.BooleanField(
+        label=_("Override unmet configured requirements"),
+        required=False,
+    )
+
+    def __init__(self, *args, actor, candidate, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.actor = actor
+        self.candidate = candidate
+        rules = transition_rules_for_candidate(candidate=candidate)
+        self.fields["target_stage"].queryset = Stage._base_manager.filter(
+            pk__in=rules.values_list("to_stage_id", flat=True)
+        ).order_by("sequence", "pk")
+        self.initial.setdefault("schedule_date", candidate.schedule_date)
+        self.initial.setdefault("joining_date", candidate.joining_date)
+        if not actor.has_perm("hydra_people.override_recruitment_transition"):
+            self.fields.pop("override")
+
+        for field in self.fields.values():
+            if isinstance(field.widget, forms.CheckboxInput):
+                css_class = "oh-switch__checkbox"
+            elif isinstance(field.widget, forms.Select):
+                css_class = "oh-select oh-select-2 w-100"
+            else:
+                css_class = "oh-input w-100"
+            field.widget.attrs["class"] = css_class

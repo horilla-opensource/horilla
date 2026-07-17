@@ -7,11 +7,14 @@
     <h1 class="oh-main__titlebar-title">{% trans "Hydra people" %}</h1>
     <p class="hydra-muted mb-0">{% trans "Canonical identities before and after hiring." %}</p>
   </div>
-  {% if perms.hydra_people.add_person %}
+  {% if perms.hydra_people.add_person or perms.hydra_people.review_person_duplicates %}
     <div class="hydra-actions">
+      {% if perms.hydra_people.review_person_duplicates %}<a class="oh-btn" href="{% url 'hydra-duplicate-list' %}">{% trans "Review duplicates" %}</a>{% endif %}
+      {% if perms.hydra_people.add_person %}
       <a class="oh-btn oh-btn--secondary" href="{% url 'hydra-person-create' %}">
         <ion-icon name="add-outline" class="me-1"></ion-icon>{% trans "Create person" %}
       </a>
+      {% endif %}
     </div>
   {% endif %}
 </header>

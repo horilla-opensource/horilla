@@ -16,20 +16,61 @@ def active_grants_for_user(*, user, day=None) -> QuerySet[ScopeGrant]:
             valid_from__lte=day,
         )
         .filter(Q(valid_until__isnull=True) | Q(valid_until__gte=day))
-        .select_related("company", "department", "location", "section", "team")
+        .select_related(
+            "company",
+            "department",
+            "location__company",
+            "section__location__company",
+            "team__section__location__company",
+        )
+        .prefetch_related("department__company_id")
     )
 
 
 def _scope_ids(*, user, day=None):
     grants = active_grants_for_user(user=user, day=day)
-    return {
-        field_name: set(
-            grants.exclude(**{f"{field_name}__isnull": True}).values_list(
-                f"{field_name}_id", flat=True
-            )
-        )
-        for field_name in ("company", "department", "location", "section", "team")
-    }
+    field_names = ("company", "department", "location", "section", "team")
+    scope = {field_name: set() for field_name in field_names}
+    for row in grants.order_by().values_list(
+        *(f"{field_name}_id" for field_name in field_names)
+    ):
+        for field_name, identifier in zip(field_names, row):
+            if identifier is not None:
+                scope[field_name].add(identifier)
+    return scope
+
+
+def scope_grants_for_management(*, user) -> QuerySet[ScopeGrant]:
+    """Return grant history whose target is contained by the actor's current scope."""
+
+    if not user.is_authenticated or not user.has_perm(
+        "hydra_coordination.view_scopegrant"
+    ):
+        return ScopeGrant.objects.none()
+    queryset = ScopeGrant.objects.select_related(
+        "user", "company", "department", "location", "section", "team"
+    )
+    if user.is_superuser:
+        return queryset
+
+    scope = _scope_ids(user=user)
+    target_q = (
+        Q(company_id__in=scope["company"])
+        | Q(department__company_id__pk__in=scope["company"])
+        | Q(location__company_id__in=scope["company"])
+        | Q(section__location__company_id__in=scope["company"])
+        | Q(team__section__location__company_id__in=scope["company"])
+        | Q(department_id__in=scope["department"])
+        | Q(section__department_id__in=scope["department"])
+        | Q(team__section__department_id__in=scope["department"])
+        | Q(location_id__in=scope["location"])
+        | Q(section__location_id__in=scope["location"])
+        | Q(team__section__location_id__in=scope["location"])
+        | Q(section_id__in=scope["section"])
+        | Q(team__section_id__in=scope["section"])
+        | Q(team_id__in=scope["team"])
+    )
+    return queryset.filter(target_q).distinct()
 
 
 def company_ids_for_user(*, user, day=None) -> set[int]:

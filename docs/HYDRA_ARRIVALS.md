@@ -2,7 +2,7 @@
 
 ## Status
 
-Task `030-arrivals.md` is implemented as the smallest location-scoped vertical slice for planning an arrival and recording either confirmation or no-show. The module is server-rendered, mobile-first and verified against PostgreSQL.
+Task `030-arrivals.md` is implemented as the smallest location-scoped vertical slice for planning an arrival and recording either confirmation or no-show. It was hardened on 2026-07-15 with durable reminders and location-scoped overdue escalation owned by the production maintenance worker. The module is server-rendered, mobile-first and verified against PostgreSQL.
 
 ## Horilla reuse decision
 
@@ -28,6 +28,8 @@ This boundary avoids three common errors: treating travel date as employment dat
 
 There can be only one active `planned` arrival for a recruitment application. Terminal records remain as history and cannot be edited through the planning form.
 
+`ArrivalAutomationEvent` is an append-only outbox/audit fact for upcoming and overdue notifications. Its unique key includes the plan, planned-time snapshot, threshold and recipient, making repeated worker cycles idempotent while still allowing a changed plan time or coordinator to create the correct new event. Only delivery status, attempt count, bounded error code and notification relation are mutable.
+
 ## Authorization and scope
 
 Access requires the relevant Django model permission and current Hydra scope. Normal users see arrival plans only for locations covered by a direct current company or location grant. A team, section or department grant does not implicitly disclose every arrival at that location.
@@ -40,6 +42,20 @@ Transitions are limited to:
 - `planned -> no_show` after the planned time, with a required reason.
 
 Repeating the same terminal transition is idempotent. Attempting the opposite terminal transition is rejected. Row locks serialize transition races.
+
+Routine reminders go only to the current coordinator at the nearest crossed configured threshold (defaults: 24 hours and 2 hours). Overdue plans notify the current coordinator plus active users with `receive_arrival_escalations`, transition permission, the complete arrival view permission set and current Company/Location scope covering the destination. Delivery repeats scope, status, planned-time and coordinator checks; a confirmed, no-show, rescheduled, reassigned or newly inaccessible event becomes `not_applicable` without sending.
+
+The worker never infers or writes `no_show`. An overdue plan remains `planned` until an authorized operator records confirmation or a reasoned no-show outcome.
+
+Operators can run one bounded diagnostic/backfill cycle and recover a specific exhausted delivery after correcting the notification backend:
+
+```text
+python manage.py run_arrival_automation --limit 100
+python manage.py run_arrival_automation --at 2026-07-15T10:00:00+02:00 --limit 100
+python manage.py dispatch_arrival_notifications --event-uuid <event-uuid>
+```
+
+Future diagnostic timestamps are rejected. Notification verbs contain no Person name, transport reference, pickup point or other personal data.
 
 ## User interface
 
@@ -56,7 +72,7 @@ python manage.py test hydra_people hydra_coordination hydra_shell hydra_document
 Ran 87 tests - OK
 ```
 
-The 14 focused arrival tests cover missing permissions, list and direct-URL isolation, team-grant non-expansion, out-of-scope form data, coordinator assignment, normalization and history, Person/application/company consistency, the single-planned constraint, terminal edit denial, idempotent confirmation, no-show rules, conflicting terminal outcomes and append-only history. A regression test also confirms the original Horilla onboarding candidate view still responds.
+The original 14 focused arrival tests cover missing permissions, list and direct-URL isolation, team-grant non-expansion, out-of-scope form data, coordinator assignment, normalization and history, Person/application/company consistency, the single-planned constraint, terminal edit denial, idempotent confirmation, no-show rules, conflicting terminal outcomes and append-only history. The 2026-07-15 arrival/worker acceptance run passed 41/41 tests, adding threshold catch-up, duplicate prevention, location-scoped escalation, stale-event invalidation, non-sensitive failure evidence, exhausted-attempt recovery, append-only automation facts, command validation, readiness policy and bounded worker integration. The complete current PostgreSQL regression passed 296/296 after the controlled onboarding, durable portal-email integration and authority-evidence legalization workflow.
 
 Operational checks include `manage.py check`, migration drift detection, pending-migration detection, bytecode compilation, dependency consistency and whitespace validation.
 
@@ -66,9 +82,9 @@ The inherited Horilla shell still reports tracking-prevention warnings for third
 
 ## Deliberate limits
 
-- This task does not send notifications or ingest live transport data.
+- This task does not ingest live transport data or automatically decide no-show outcomes.
 - It does not convert a Person into an Employee or create attendance.
 - It does not implement bulk planning, route optimization or a generic workflow engine.
 - Broader coordinator dashboards belong to task `041-coordinator-panel.md`.
 
-The next authoritative task is `032-employee-conversion.md`.
+The controlled onboarding handoff and confirmation trail are implemented in `HYDRA_ONBOARDING.md`. Arrival remains the source fact and never automatically marks a Candidate hired, creates an Employee, chooses a Team or completes a task.

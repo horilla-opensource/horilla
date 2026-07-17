@@ -25,11 +25,15 @@ fi
 restore_db="hydra_restore_$(date -u +%Y%m%d%H%M%S)_$$"
 private_tmp="/tmp/private-restore-$$"
 private_records="/tmp/private-records-$$"
+outbox_tmp="/tmp/outbox-restore-$$"
+outbox_records="/tmp/outbox-records-$$"
 
 cleanup() {
     dropdb --if-exists "$restore_db" >/dev/null 2>&1 || true
     rm -rf -- "$private_tmp"
     rm -f -- "$private_records"
+    rm -rf -- "$outbox_tmp"
+    rm -f -- "$outbox_records"
 }
 trap cleanup EXIT HUP INT TERM
 
@@ -48,7 +52,8 @@ if [ "$migration_count" -le 0 ]; then
 fi
 
 mkdir -m 0700 "$private_tmp"
-tar --no-same-owner -C "$private_tmp" -xzf "$backup_dir/private-media.tar.gz"
+/bin/sh /ops/staging-validate-archive.sh "$backup_dir/private-media.tar.gz" "private-media archive"
+tar --no-same-owner --no-same-permissions -C "$private_tmp" -xzf "$backup_dir/private-media.tar.gz"
 
 tab="$(printf '\t')"
 psql --no-psqlrc --dbname="$restore_db" --tuples-only --no-align --field-separator="$tab" \
@@ -75,9 +80,40 @@ while IFS="$tab" read -r storage_key expected_hash; do
     verified=$((verified + 1))
 done < "$private_records"
 
+outbox_verified=0
+if [ -f "$backup_dir/portal-email-outbox.tar.gz" ]; then
+    mkdir -m 0700 "$outbox_tmp"
+    /bin/sh /ops/staging-validate-archive.sh "$backup_dir/portal-email-outbox.tar.gz" "portal-email outbox archive"
+    tar --no-same-owner --no-same-permissions -C "$outbox_tmp" -xzf "$backup_dir/portal-email-outbox.tar.gz"
+    psql --no-psqlrc --dbname="$restore_db" --tuples-only --no-align --field-separator="$tab" \
+        -c "SELECT file, sha256 FROM hydra_arrivals_onboardingportaldeliveryattachment WHERE file <> '' ORDER BY id" > "$outbox_records"
+    while IFS="$tab" read -r storage_key expected_hash; do
+        [ -n "$storage_key" ] || continue
+        case "$storage_key" in
+            /*|*..*|*[!A-Za-z0-9._/-]*)
+                echo "Unsafe outbox storage key in restored database." >&2
+                exit 8
+                ;;
+        esac
+        restored_file="$outbox_tmp/$storage_key"
+        if [ ! -f "$restored_file" ]; then
+            echo "Missing outbox object after restore: $storage_key" >&2
+            exit 9
+        fi
+        actual_hash="$(sha256sum "$restored_file" | awk '{print $1}')"
+        if [ "$actual_hash" != "$expected_hash" ]; then
+            echo "Outbox object checksum mismatch: $storage_key" >&2
+            exit 10
+        fi
+        outbox_verified=$((outbox_verified + 1))
+    done < "$outbox_records"
+fi
+
 dropdb "$restore_db"
 rm -rf -- "$private_tmp"
 rm -f -- "$private_records"
+rm -rf -- "$outbox_tmp"
+rm -f -- "$outbox_records"
 trap - EXIT HUP INT TERM
 
-echo "Restore verification passed for $backup_id ($migration_count migrations, $verified private objects)."
+echo "Restore verification passed for $backup_id ($migration_count migrations, $verified private objects, $outbox_verified outbox objects)."

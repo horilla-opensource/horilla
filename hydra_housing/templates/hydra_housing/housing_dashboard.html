@@ -1,0 +1,88 @@
+{% extends "hydra_people/base.html" %}
+{% load i18n %}
+
+{% block person_content %}
+<header class="hydra-header">
+  <div>
+    <h1 class="oh-main__titlebar-title">{% trans "Housing" %}</h1>
+    <p class="hydra-muted mb-0">{% trans "Location-scoped facilities, reservations, beds and effective-dated stays." %}</p>
+  </div>
+  {% if perms.hydra_housing.add_housingfacility %}<div class="hydra-actions"><a class="oh-btn oh-btn--secondary" href="{% url 'hydra-housing-facility-create' %}">{% trans "Create facility" %}</a></div>{% endif %}
+</header>
+
+<section class="hydra-card mb-3" aria-label="{% trans 'Housing summary' %}">
+  <dl class="hydra-detail">
+    <div><dt>{% trans "Facilities" %}</dt><dd>{{ facility_count }}</dd></div>
+    <div><dt>{% trans "Current occupants" %}</dt><dd>{{ occupied_count }}</dd></div>
+    <div><dt>{% trans "Upcoming reservations" %}</dt><dd>{{ reservation_count }}</dd></div>
+  </dl>
+</section>
+
+<form class="hydra-card mb-3" method="get">
+  <div class="hydra-grid">
+    {% for field in filter_form %}<div class="hydra-field">{{ field.label_tag }}{{ field }}{{ field.errors }}</div>{% endfor %}
+  </div>
+  <div class="hydra-actions mt-3"><button class="oh-btn" type="submit">{% trans "Filter" %}</button><a class="oh-btn" href="{% url 'hydra-housing-dashboard' %}">{% trans "Clear" %}</a></div>
+</form>
+
+<section class="hydra-card mb-3" aria-labelledby="housing-facilities-title">
+  <h2 class="h4" id="housing-facilities-title">{% trans "Facilities" %}</h2>
+  {% if facilities %}
+  <table class="hydra-table">
+    <thead><tr><th>{% trans "Facility" %}</th><th>{% trans "Location" %}</th><th>{% trans "Address" %}</th><th>{% trans "Inventory" %}</th></tr></thead>
+    <tbody>
+      {% for facility in facilities %}
+      <tr>
+        <td data-label="{% trans 'Facility' %}"><a href="{{ facility.get_absolute_url }}">{{ facility.name }}</a></td>
+        <td data-label="{% trans 'Location' %}">{{ facility.location }}</td>
+        <td data-label="{% trans 'Address' %}">{{ facility.address }}</td>
+        <td data-label="{% trans 'Inventory' %}">{% blocktrans with rooms=facility.rooms.all|length %}{{ rooms }} rooms{% endblocktrans %}</td>
+      </tr>
+      {% endfor %}
+    </tbody>
+  </table>
+  {% else %}<p class="hydra-muted mb-0">{% trans "No housing facilities match the current scope and filters." %}</p>{% endif %}
+</section>
+
+<section class="hydra-card" aria-labelledby="housing-occupants-title">
+  <h2 class="h4" id="housing-occupants-title">{% trans "Current occupants" %}</h2>
+  {% if current_assignments %}
+  <table class="hydra-table">
+    <thead><tr><th>{% trans "Person" %}</th><th>{% trans "Facility" %}</th><th>{% trans "Room / bed" %}</th><th>{% trans "Since" %}</th><th>{% trans "Action" %}</th></tr></thead>
+    <tbody>
+      {% for assignment in current_assignments %}
+      <tr>
+        <td data-label="{% trans 'Person' %}"><a href="{{ assignment.person.get_absolute_url }}">{{ assignment.person.passport_name }}</a><br><span class="hydra-muted">{{ assignment.person.hydra_id }}</span></td>
+        <td data-label="{% trans 'Facility' %}"><a href="{{ assignment.bed.room.facility.get_absolute_url }}">{{ assignment.bed.room.facility.name }}</a><br><span class="hydra-muted">{{ assignment.bed.room.facility.location.name }}</span></td>
+        <td data-label="{% trans 'Room / bed' %}">{{ assignment.bed.room.name }} / {{ assignment.bed.label }}</td>
+        <td data-label="{% trans 'Since' %}">{{ assignment.valid_from|date:"Y-m-d" }}</td>
+        <td data-label="{% trans 'Action' %}"><div class="hydra-actions">{% if perms.hydra_housing.move_housingassignment and perms.hydra_housing.add_housingassignment and perms.hydra_housing.change_housingassignment %}<a class="oh-btn" href="{% url 'hydra-housing-assignment-move' assignment.uuid %}">{% trans "Move" %}</a>{% endif %}{% if perms.hydra_housing.change_housingassignment %}<a class="oh-btn" href="{% url 'hydra-housing-assignment-end' assignment.uuid %}">{% trans "End stay" %}</a>{% endif %}</div></td>
+      </tr>
+      {% endfor %}
+    </tbody>
+  </table>
+  {% else %}<p class="hydra-muted mb-0">{% trans "No current housing assignments match the filters." %}</p>{% endif %}
+</section>
+
+<section class="hydra-card mt-3" aria-labelledby="housing-reservations-title">
+  <h2 class="h4" id="housing-reservations-title">{% trans "Upcoming reservations" %}</h2>
+  {% if reservations %}
+  <table class="hydra-table">
+    <thead><tr><th>{% trans "Person" %}</th><th>{% trans "Facility" %}</th><th>{% trans "Room / bed" %}</th><th>{% trans "From" %}</th><th>{% trans "Until" %}</th><th>{% trans "Hold expiry" %}</th><th>{% trans "Action" %}</th></tr></thead>
+    <tbody>
+      {% for assignment in reservations %}
+      <tr>
+        <td data-label="{% trans 'Person' %}"><a href="{{ assignment.person.get_absolute_url }}">{{ assignment.person.passport_name }}</a><br><span class="hydra-muted">{{ assignment.person.hydra_id }}</span></td>
+        <td data-label="{% trans 'Facility' %}"><a href="{{ assignment.bed.room.facility.get_absolute_url }}">{{ assignment.bed.room.facility.name }}</a><br><span class="hydra-muted">{{ assignment.bed.room.facility.location.name }}</span></td>
+        <td data-label="{% trans 'Room / bed' %}">{{ assignment.bed.room.name }} / {{ assignment.bed.label }}</td>
+        <td data-label="{% trans 'From' %}">{{ assignment.valid_from|date:"Y-m-d" }}</td>
+        <td data-label="{% trans 'Until' %}">{{ assignment.valid_until|date:"Y-m-d"|default:"вЂ”" }}</td>
+        <td data-label="{% trans 'Hold expiry' %}">{% if assignment.reservation_expires_at %}<span class="hydra-status hydra-status--warning">{{ assignment.reservation_expires_at|date:"Y-m-d H:i" }}</span>{% else %}&mdash;{% endif %}</td>
+        <td data-label="{% trans 'Action' %}"><div class="hydra-actions">{% if perms.hydra_housing.move_housingassignment and perms.hydra_housing.add_housingassignment and perms.hydra_housing.change_housingassignment %}<a class="oh-btn" href="{% url 'hydra-housing-assignment-move' assignment.uuid %}">{% trans "Move" %}</a>{% endif %}{% if assignment.is_temporary_reservation and perms.hydra_housing.confirm_housingreservation and perms.hydra_housing.reserve_housingassignment and perms.hydra_housing.change_housingassignment %}<a class="oh-btn" href="{% url 'hydra-housing-reservation-confirm' assignment.uuid %}">{% trans "Confirm" %}</a>{% endif %}{% if assignment.is_temporary_reservation and perms.hydra_housing.renew_housingreservation and perms.hydra_housing.reserve_housingassignment and perms.hydra_housing.change_housingassignment %}<a class="oh-btn" href="{% url 'hydra-housing-reservation-renew' assignment.uuid %}">{% trans "Renew" %}</a>{% endif %}{% if perms.hydra_housing.cancel_housingreservation and perms.hydra_housing.change_housingassignment %}<a class="oh-btn" href="{% url 'hydra-housing-reservation-cancel' assignment.uuid %}">{% trans "Cancel" %}</a>{% endif %}</div></td>
+      </tr>
+      {% endfor %}
+    </tbody>
+  </table>
+  {% else %}<p class="hydra-muted mb-0">{% trans "No upcoming reservations match the filters." %}</p>{% endif %}
+</section>
+{% endblock person_content %}

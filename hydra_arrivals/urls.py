@@ -25,4 +25,19 @@ urlpatterns = [
         views.arrival_transition,
         name="hydra-arrival-transition",
     ),
+    path(
+        "<uuid:plan_uuid>/onboarding/start/",
+        views.onboarding_handoff_start,
+        name="hydra-onboarding-handoff-start",
+    ),
+    path(
+        "<uuid:plan_uuid>/onboarding/reconcile/",
+        views.onboarding_handoff_reconcile,
+        name="hydra-onboarding-handoff-reconcile",
+    ),
+    path(
+        "<uuid:plan_uuid>/onboarding/tasks/<int:task_id>/",
+        views.onboarding_task_update,
+        name="hydra-onboarding-task-update",
+    ),
 ]

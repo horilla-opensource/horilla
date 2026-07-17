@@ -17,11 +17,11 @@ if ($BackupId -and $BackupId -notmatch '^[A-Za-z0-9._-]+$') {
 }
 
 $compose = @("compose", "--env-file", $EnvFile, "-f", $ComposeFile)
-$serverWasStopped = $false
+$servicesWereStopped = $false
 try {
-    & docker @compose stop server
-    if ($LASTEXITCODE -ne 0) { throw "Could not stop the application server." }
-    $serverWasStopped = $true
+    & docker @compose stop maintenance server
+    if ($LASTEXITCODE -ne 0) { throw "Could not stop Hydra writers." }
+    $servicesWereStopped = $true
 
     $run = $compose + @("--profile", "ops", "run", "--rm", "backup", "/ops/staging-backup.sh")
     if ($BackupId) { $run += $BackupId }
@@ -29,10 +29,10 @@ try {
     if ($LASTEXITCODE -ne 0) { throw "Cold backup failed." }
 }
 finally {
-    if ($serverWasStopped) {
-        & docker @compose up -d server
+    if ($servicesWereStopped) {
+        & docker @compose up -d --wait --wait-timeout 1800 server maintenance
         if ($LASTEXITCODE -ne 0) {
-            Write-Error "Backup finished, but the application server did not restart."
+            Write-Error "Backup finished, but Hydra services did not restart."
         }
     }
 }

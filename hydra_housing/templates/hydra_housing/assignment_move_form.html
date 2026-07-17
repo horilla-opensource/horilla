@@ -1,0 +1,25 @@
+{% extends "hydra_people/base.html" %}
+{% load i18n %}
+
+{% block person_content %}
+<header class="hydra-header">
+  <div>
+    <h1 class="oh-main__titlebar-title">{% trans "Move housing assignment" %}</h1>
+    <p class="hydra-muted mb-0">{{ assignment.person.hydra_id }} &middot; {{ assignment.person.passport_name }}</p>
+  </div>
+  <div class="hydra-actions"><a class="oh-btn" href="{{ assignment.person.get_absolute_url }}">{% trans "Cancel" %}</a></div>
+</header>
+<form class="hydra-card" method="post" novalidate>
+  {% csrf_token %}{% if form.non_field_errors %}<div class="hydra-errors">{{ form.non_field_errors }}</div>{% endif %}
+  <dl class="hydra-detail mb-3">
+    <div><dt>{% trans "Current facility" %}</dt><dd>{{ assignment.bed.room.facility }}</dd></div>
+    <div><dt>{% trans "Current room / bed" %}</dt><dd>{{ assignment.bed.room.name }} / {{ assignment.bed.label }}</dd></div>
+    <div><dt>{% trans "Current period" %}</dt><dd>{{ assignment.valid_from|date:"Y-m-d" }} &mdash; {{ assignment.valid_until|date:"Y-m-d"|default:_('open') }}</dd></div>
+  </dl>
+  <div class="hydra-grid">
+    {% for field in form %}<div class="hydra-field{% if field.name == 'reason' %} hydra-field--wide{% endif %}">{{ field.label_tag }}{{ field }}{{ field.errors }}</div>{% endfor %}
+  </div>
+  <p class="hydra-muted mt-3 mb-0">{% trans "The source period and destination period are changed in one transaction. A failed conflict check changes neither." %}</p>
+  <div class="hydra-actions mt-3"><button class="oh-btn oh-btn--secondary" type="submit">{% trans "Record move" %}</button></div>
+</form>
+{% endblock person_content %}

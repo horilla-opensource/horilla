@@ -1,3 +1,5 @@
+from uuid import uuid4
+
 from django.conf import settings
 from django.core.exceptions import ValidationError
 from django.db import models
@@ -129,16 +131,22 @@ class Team(HorillaModel):
         self.code = self.code.strip().upper()
 
 
+class TerminationMode(models.TextChoices):
+    NONE = "", _("Not terminated")
+    SCHEDULED = "scheduled", _("Scheduled end")
+    IMMEDIATE = "immediate", _("Immediate revocation")
+
+
 class ScopeGrant(HorillaModel):
     user = models.ForeignKey(
         settings.AUTH_USER_MODEL,
-        on_delete=models.CASCADE,
+        on_delete=models.PROTECT,
         related_name="hydra_scope_grants",
         verbose_name=_("User"),
     )
     company = models.ForeignKey(
         Company,
-        on_delete=models.CASCADE,
+        on_delete=models.PROTECT,
         related_name="hydra_scope_grants",
         null=True,
         blank=True,
@@ -146,7 +154,7 @@ class ScopeGrant(HorillaModel):
     )
     department = models.ForeignKey(
         Department,
-        on_delete=models.CASCADE,
+        on_delete=models.PROTECT,
         related_name="hydra_scope_grants",
         null=True,
         blank=True,
@@ -154,7 +162,7 @@ class ScopeGrant(HorillaModel):
     )
     location = models.ForeignKey(
         Location,
-        on_delete=models.CASCADE,
+        on_delete=models.PROTECT,
         related_name="scope_grants",
         null=True,
         blank=True,
@@ -162,7 +170,7 @@ class ScopeGrant(HorillaModel):
     )
     section = models.ForeignKey(
         Section,
-        on_delete=models.CASCADE,
+        on_delete=models.PROTECT,
         related_name="scope_grants",
         null=True,
         blank=True,
@@ -170,7 +178,7 @@ class ScopeGrant(HorillaModel):
     )
     team = models.ForeignKey(
         Team,
-        on_delete=models.CASCADE,
+        on_delete=models.PROTECT,
         related_name="scope_grants",
         null=True,
         blank=True,
@@ -178,6 +186,25 @@ class ScopeGrant(HorillaModel):
     )
     valid_from = models.DateField(default=timezone.localdate, verbose_name=_("Valid from"))
     valid_until = models.DateField(null=True, blank=True, verbose_name=_("Valid until"))
+    termination_mode = models.CharField(
+        max_length=16,
+        choices=TerminationMode.choices,
+        default=TerminationMode.NONE,
+        blank=True,
+        editable=False,
+    )
+    termination_reason = models.CharField(max_length=255, blank=True, editable=False)
+    termination_recorded_at = models.DateTimeField(
+        null=True, blank=True, editable=False
+    )
+    termination_recorded_by = models.ForeignKey(
+        settings.AUTH_USER_MODEL,
+        on_delete=models.PROTECT,
+        related_name="hydra_scope_terminations_recorded",
+        null=True,
+        blank=True,
+        editable=False,
+    )
 
     class Meta:
         ordering = ("user__username", "valid_from", "pk")
@@ -195,6 +222,42 @@ class ScopeGrant(HorillaModel):
             models.CheckConstraint(
                 check=Q(valid_until__isnull=True) | Q(valid_until__gte=F("valid_from")),
                 name="hydra_scope_valid_dates",
+            ),
+            models.CheckConstraint(
+                check=(
+                    Q(
+                        termination_mode="",
+                        termination_reason="",
+                        termination_recorded_at__isnull=True,
+                        termination_recorded_by__isnull=True,
+                    )
+                    | (
+                        Q(
+                            termination_mode__in=(
+                                TerminationMode.SCHEDULED,
+                                TerminationMode.IMMEDIATE,
+                            ),
+                            termination_recorded_at__isnull=False,
+                            termination_recorded_by__isnull=False,
+                        )
+                        & ~Q(termination_reason="")
+                    )
+                ),
+                name="hydra_scope_termination_audit",
+            ),
+            models.CheckConstraint(
+                check=(
+                    ~Q(termination_mode=TerminationMode.SCHEDULED)
+                    | Q(valid_until__isnull=False)
+                ),
+                name="hydra_scope_scheduled_end_date",
+            ),
+            models.CheckConstraint(
+                check=(
+                    ~Q(termination_mode=TerminationMode.IMMEDIATE)
+                    | Q(is_active=False)
+                ),
+                name="hydra_scope_immediate_inactive",
             ),
         )
 
@@ -215,6 +278,28 @@ class ScopeGrant(HorillaModel):
     def is_current(self, day=None):
         day = day or timezone.localdate()
         return self.is_active and self.valid_from <= day and (
+            self.valid_until is None or self.valid_until >= day
+        )
+
+    @property
+    def state_label(self):
+        day = timezone.localdate()
+        if self.termination_mode == TerminationMode.IMMEDIATE:
+            return _("Revoked")
+        if not self.is_active:
+            return _("Inactive")
+        if self.valid_from > day:
+            return _("Scheduled")
+        if self.valid_until is not None and self.valid_until < day:
+            return _("Ended")
+        if self.termination_mode == TerminationMode.SCHEDULED:
+            return _("End scheduled")
+        return _("Current")
+
+    @property
+    def can_terminate(self):
+        day = timezone.localdate()
+        return self.is_active and (
             self.valid_until is None or self.valid_until >= day
         )
 
@@ -240,6 +325,25 @@ class PersonAssignment(HorillaModel):
     valid_from = models.DateField(default=timezone.localdate, verbose_name=_("Valid from"))
     valid_until = models.DateField(null=True, blank=True, verbose_name=_("Valid until"))
     is_primary = models.BooleanField(default=True, verbose_name=_("Primary assignment"))
+    termination_mode = models.CharField(
+        max_length=16,
+        choices=TerminationMode.choices,
+        default=TerminationMode.NONE,
+        blank=True,
+        editable=False,
+    )
+    termination_reason = models.CharField(max_length=255, blank=True, editable=False)
+    termination_recorded_at = models.DateTimeField(
+        null=True, blank=True, editable=False
+    )
+    termination_recorded_by = models.ForeignKey(
+        settings.AUTH_USER_MODEL,
+        on_delete=models.PROTECT,
+        related_name="hydra_assignment_terminations_recorded",
+        null=True,
+        blank=True,
+        editable=False,
+    )
 
     class Meta:
         ordering = ("-valid_from", "-pk")
@@ -247,6 +351,42 @@ class PersonAssignment(HorillaModel):
             models.CheckConstraint(
                 check=Q(valid_until__isnull=True) | Q(valid_until__gte=F("valid_from")),
                 name="hydra_assignment_valid_dates",
+            ),
+            models.CheckConstraint(
+                check=(
+                    Q(
+                        termination_mode="",
+                        termination_reason="",
+                        termination_recorded_at__isnull=True,
+                        termination_recorded_by__isnull=True,
+                    )
+                    | (
+                        Q(
+                            termination_mode__in=(
+                                TerminationMode.SCHEDULED,
+                                TerminationMode.IMMEDIATE,
+                            ),
+                            termination_recorded_at__isnull=False,
+                            termination_recorded_by__isnull=False,
+                        )
+                        & ~Q(termination_reason="")
+                    )
+                ),
+                name="hydra_assignment_termination_audit",
+            ),
+            models.CheckConstraint(
+                check=(
+                    ~Q(termination_mode=TerminationMode.SCHEDULED)
+                    | Q(valid_until__isnull=False)
+                ),
+                name="hydra_assignment_scheduled_end_date",
+            ),
+            models.CheckConstraint(
+                check=(
+                    ~Q(termination_mode=TerminationMode.IMMEDIATE)
+                    | Q(is_active=False)
+                ),
+                name="hydra_assignment_immediate_inactive",
             ),
         )
         permissions = (
@@ -278,10 +418,214 @@ class PersonAssignment(HorillaModel):
     @property
     def state_label(self):
         day = timezone.localdate()
+        if self.termination_mode == TerminationMode.IMMEDIATE:
+            return _("Ended immediately")
         if not self.is_active:
             return _("Replaced")
         if self.valid_from > day:
             return _("Scheduled")
         if self.valid_until is not None and self.valid_until < day:
             return _("Ended")
+        if self.termination_mode == TerminationMode.SCHEDULED:
+            return _("End scheduled")
         return _("Current")
+
+    @property
+    def can_terminate(self):
+        day = timezone.localdate()
+        return self.is_active and (
+            self.valid_until is None or self.valid_until >= day
+        )
+
+
+class OrganizationAccessEventQuerySet(models.QuerySet):
+    DELIVERY_FIELDS = {
+        "notification_status",
+        "notification_attempts",
+        "notification_last_attempt_at",
+        "notification_error_code",
+        "notification",
+    }
+
+    def update(self, **kwargs):
+        if set(kwargs) - self.DELIVERY_FIELDS:
+            raise TypeError("Organization access event facts are append-only.")
+        return super().update(**kwargs)
+
+    def delete(self):
+        raise TypeError("Organization access events are append-only.")
+
+
+class OrganizationAccessEvent(models.Model):
+    class Action(models.TextChoices):
+        SCOPE_END_SCHEDULED = "scope_end_scheduled", _("Scope end scheduled")
+        SCOPE_REVOKED = "scope_revoked", _("Scope revoked")
+        ASSIGNMENT_END_SCHEDULED = (
+            "assignment_end_scheduled",
+            _("Assignment end scheduled"),
+        )
+        ASSIGNMENT_ENDED = "assignment_ended", _("Assignment ended")
+
+    class NotificationStatus(models.TextChoices):
+        PENDING = "pending", _("Pending")
+        SENT = "sent", _("Sent")
+        FAILED = "failed", _("Failed")
+        NOT_APPLICABLE = "not_applicable", _("Not applicable")
+
+    uuid = models.UUIDField(default=uuid4, unique=True, editable=False)
+    scope_grant = models.ForeignKey(
+        ScopeGrant,
+        on_delete=models.PROTECT,
+        related_name="lifecycle_events",
+        null=True,
+        blank=True,
+    )
+    person_assignment = models.ForeignKey(
+        PersonAssignment,
+        on_delete=models.PROTECT,
+        related_name="lifecycle_events",
+        null=True,
+        blank=True,
+    )
+    action = models.CharField(max_length=32, choices=Action.choices)
+    actor = models.ForeignKey(
+        settings.AUTH_USER_MODEL,
+        on_delete=models.PROTECT,
+        related_name="hydra_organization_access_events",
+    )
+    subject_user = models.ForeignKey(
+        settings.AUTH_USER_MODEL,
+        on_delete=models.PROTECT,
+        related_name="hydra_organization_access_events_received",
+        null=True,
+        blank=True,
+    )
+    reason = models.CharField(max_length=255)
+    effective_until = models.DateField(null=True, blank=True)
+    occurred_at = models.DateTimeField(auto_now_add=True)
+    notification_status = models.CharField(
+        max_length=20,
+        choices=NotificationStatus.choices,
+        default=NotificationStatus.PENDING,
+    )
+    notification_attempts = models.PositiveSmallIntegerField(default=0)
+    notification_last_attempt_at = models.DateTimeField(null=True, blank=True)
+    notification_error_code = models.CharField(max_length=80, blank=True)
+    notification = models.ForeignKey(
+        "notifications.Notification",
+        on_delete=models.PROTECT,
+        related_name="hydra_organization_access_events",
+        null=True,
+        blank=True,
+    )
+
+    objects = OrganizationAccessEventQuerySet.as_manager()
+
+    class Meta:
+        ordering = ("-occurred_at", "-pk")
+        default_permissions = ()
+        permissions = (
+            ("view_organizationaccessevent", "Can view organization access events"),
+        )
+        constraints = (
+            models.CheckConstraint(
+                check=(
+                    Q(scope_grant__isnull=False, person_assignment__isnull=True)
+                    | Q(scope_grant__isnull=True, person_assignment__isnull=False)
+                ),
+                name="hydra_access_event_one_subject",
+            ),
+            models.CheckConstraint(
+                check=~Q(reason=""),
+                name="hydra_access_event_reason_required",
+            ),
+            models.CheckConstraint(
+                check=(
+                    Q(
+                        action__in=(
+                            "scope_end_scheduled",
+                            "scope_revoked",
+                        ),
+                        scope_grant__isnull=False,
+                        person_assignment__isnull=True,
+                    )
+                    | Q(
+                        action__in=(
+                            "assignment_end_scheduled",
+                            "assignment_ended",
+                        ),
+                        scope_grant__isnull=True,
+                        person_assignment__isnull=False,
+                    )
+                ),
+                name="hydra_access_event_action_subject",
+            ),
+            models.CheckConstraint(
+                check=(
+                    Q(
+                        action__in=(
+                            "scope_end_scheduled",
+                            "assignment_end_scheduled",
+                        ),
+                        effective_until__isnull=False,
+                    )
+                    | Q(
+                        action__in=(
+                            "scope_revoked",
+                            "assignment_ended",
+                        ),
+                        effective_until__isnull=True,
+                    )
+                ),
+                name="hydra_access_event_effective_date",
+            ),
+            models.CheckConstraint(
+                check=(
+                    Q(
+                        subject_user__isnull=True,
+                        notification_status="not_applicable",
+                    )
+                    | (
+                        Q(subject_user__isnull=False)
+                        & ~Q(
+                            notification_status="not_applicable"
+                        )
+                    )
+                ),
+                name="hydra_access_event_notify_target",
+            ),
+            models.CheckConstraint(
+                check=(
+                    ~Q(notification_status="sent")
+                    | Q(notification__isnull=False)
+                ),
+                name="hydra_access_event_sent_record",
+            ),
+        )
+        indexes = (
+            models.Index(
+                fields=("notification_status", "occurred_at"),
+                name="hydra_access_notify_idx",
+            ),
+        )
+
+    CORE_FIELDS = (
+        "scope_grant_id",
+        "person_assignment_id",
+        "action",
+        "actor_id",
+        "subject_user_id",
+        "reason",
+        "effective_until",
+        "occurred_at",
+    )
+
+    def save(self, *args, **kwargs):
+        if self.pk:
+            original = type(self).objects.values(*self.CORE_FIELDS).get(pk=self.pk)
+            if any(original[field] != getattr(self, field) for field in self.CORE_FIELDS):
+                raise TypeError("Organization access event facts are append-only.")
+        return super().save(*args, **kwargs)
+
+    def delete(self, *args, **kwargs):
+        raise TypeError("Organization access events are append-only.")

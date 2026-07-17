@@ -11,6 +11,7 @@ from hydra_arrivals.selectors import (
     arrival_locations_for_user,
     arrival_plans_for_user,
 )
+from hydra_people.identity import ensure_canonical_person
 from hydra_people.models import Person
 from hydra_people.recruitment_selectors import linked_candidates_for_user
 from hydra_people.selectors import people_for_user
@@ -43,6 +44,7 @@ def _validate_coordinator(*, coordinator, location):
 
 
 def _validate_subject(*, plan, actor, require_person_scope):
+    ensure_canonical_person(plan.person)
     if require_person_scope and not people_for_user(user=actor).filter(
         pk=plan.person_id
     ).exists():

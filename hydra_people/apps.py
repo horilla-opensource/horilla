@@ -8,6 +8,7 @@ class HydraPeopleConfig(AppConfig):
 
     def ready(self):
         from horilla.horilla_settings import APPS
+        from hydra_people import signals  # noqa: F401
 
         if self.label not in APPS:
             APPS.append(self.label)

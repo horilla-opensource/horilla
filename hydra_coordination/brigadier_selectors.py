@@ -5,7 +5,9 @@ from django.db.models import Q
 from django.utils import timezone
 
 from attendance.models import Attendance
+from base.models import EmployeeShiftSchedule
 from hydra_coordination.models import PersonAssignment, ScopeGrant, Team
+from leave.models import LeaveRequest
 
 
 BRIGADIER_PERMISSIONS = (
@@ -13,6 +15,7 @@ BRIGADIER_PERMISSIONS = (
     "hydra_people.view_person",
     "employee.view_employee",
     "attendance.view_attendance",
+    "leave.view_leaverequest",
 )
 
 
@@ -20,6 +23,16 @@ BRIGADIER_PERMISSIONS = (
 class BrigadierRosterRow:
     assignment: PersonAssignment
     attendance: Attendance | None
+    schedule: EmployeeShiftSchedule | None
+    approved_leave: LeaveRequest | None
+    scheduled: bool
+    expected_to_work: bool
+    approved_leave_full_day: bool
+    approved_leave_partial_day: bool
+    schedule_missing: bool
+    leave_conflict: bool
+    attendance_on_approved_leave: bool
+    attendance_on_unscheduled_day: bool
     no_attendance: bool
     missing_clock_in: bool
     at_work: bool
@@ -41,6 +54,10 @@ class BrigadierRosterRow:
         return any(
             (
                 self.no_attendance,
+                self.schedule_missing,
+                self.leave_conflict,
+                self.attendance_on_approved_leave,
+                self.attendance_on_unscheduled_day,
                 self.missing_clock_in,
                 self.pending_validation,
                 self.late_come,
@@ -74,6 +91,23 @@ def brigadier_teams_for_user(*, user):
         .values_list("team_id", flat=True)
     )
     return queryset.filter(pk__in=direct_team_ids).distinct()
+
+
+def _leave_portions(leave, day):
+    end_date = leave.end_date or leave.start_date
+    if not leave.start_date <= day <= end_date:
+        return False, False
+    if leave.start_date < day < end_date:
+        return True, True
+
+    breakdowns = set()
+    if day == leave.start_date:
+        breakdowns.add(leave.start_date_breakdown)
+    if day == end_date:
+        breakdowns.add(leave.end_date_breakdown)
+    if "full_day" in breakdowns:
+        return True, True
+    return "first_half" in breakdowns, "second_half" in breakdowns
 
 
 def brigadier_roster_for_team(*, user, team, day, query=""):
@@ -128,10 +162,54 @@ def brigadier_roster_for_team(*, user, team, day, query=""):
     attendance_by_employee = {
         attendance.employee_id_id: attendance for attendance in attendances
     }
+    weekday = day.strftime("%A").lower()
+    shift_ids = {
+        assignment.person.employee.employee_work_info.shift_id_id
+        for assignment in assignments
+        if assignment.person.employee.employee_work_info.shift_id_id
+    }
+    schedules = EmployeeShiftSchedule._base_manager.filter(
+        shift_id_id__in=shift_ids,
+        day__day=weekday,
+        is_active=True,
+    ).select_related("shift_id", "day")
+    schedule_by_shift = {schedule.shift_id_id: schedule for schedule in schedules}
+    approved_leaves = (
+        LeaveRequest._base_manager.filter(
+            employee_id_id__in=employee_ids,
+            status="approved",
+            start_date__lte=day,
+        )
+        .filter(
+            Q(end_date__gte=day)
+            | Q(end_date__isnull=True, start_date=day)
+        )
+        .select_related("leave_type_id")
+        .order_by("employee_id_id", "start_date", "pk")
+    )
+    leaves_by_employee = {}
+    for leave in approved_leaves:
+        leaves_by_employee.setdefault(leave.employee_id_id, []).append(leave)
 
     rows = []
     for assignment in assignments:
-        attendance = attendance_by_employee.get(assignment.person.employee_id)
+        employee = assignment.person.employee
+        attendance = attendance_by_employee.get(employee.pk)
+        work_info = employee.employee_work_info
+        shift_id = work_info.shift_id_id
+        schedule = schedule_by_shift.get(shift_id)
+        employee_leaves = leaves_by_employee.get(employee.pk, [])
+        approved_leave = employee_leaves[0] if employee_leaves else None
+        first_half_leave = second_half_leave = False
+        for leave in employee_leaves:
+            covers_first, covers_second = _leave_portions(leave, day)
+            first_half_leave = first_half_leave or covers_first
+            second_half_leave = second_half_leave or covers_second
+        full_day_leave = first_half_leave and second_half_leave
+        partial_day_leave = bool(employee_leaves) and not full_day_leave
+        scheduled = schedule is not None
+        schedule_missing = shift_id is None
+        expected_to_work = scheduled and not full_day_leave
         report_types = (
             {report.type for report in attendance.late_come_early_out.all()}
             if attendance is not None
@@ -143,7 +221,21 @@ def brigadier_roster_for_team(*, user, team, day, query=""):
             BrigadierRosterRow(
                 assignment=assignment,
                 attendance=attendance,
-                no_attendance=attendance is None,
+                schedule=schedule,
+                approved_leave=approved_leave,
+                scheduled=scheduled,
+                expected_to_work=expected_to_work,
+                approved_leave_full_day=full_day_leave,
+                approved_leave_partial_day=partial_day_leave,
+                schedule_missing=schedule_missing,
+                leave_conflict=len(employee_leaves) > 1,
+                attendance_on_approved_leave=(
+                    attendance is not None and full_day_leave
+                ),
+                attendance_on_unscheduled_day=(
+                    attendance is not None and not scheduled and not full_day_leave
+                ),
+                no_attendance=expected_to_work and attendance is None,
                 missing_clock_in=attendance is not None and clock_in is None,
                 at_work=attendance is not None and clock_in is not None and clock_out is None,
                 completed=attendance is not None and clock_out is not None,
@@ -152,8 +244,12 @@ def brigadier_roster_for_team(*, user, team, day, query=""):
                     and clock_out is not None
                     and not attendance.attendance_validated
                 ),
-                late_come="late_come" in report_types,
-                early_out="early_out" in report_types,
+                late_come=(
+                    "late_come" in report_types and not first_half_leave
+                ),
+                early_out=(
+                    "early_out" in report_types and not second_half_leave
+                ),
             )
         )
     return rows

@@ -20,4 +20,9 @@ urlpatterns = [
         views.candidate_import_apply,
         name="hydra-candidate-import-apply",
     ),
+    path(
+        "candidates/<uuid:session_uuid>/discard/",
+        views.candidate_import_discard,
+        name="hydra-candidate-import-discard",
+    ),
 ]
