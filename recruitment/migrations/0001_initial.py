@@ -5,7 +5,7 @@ import django.core.validators
 from django.db import migrations, models
 import django.db.models.deletion
 import django.utils.timezone
-import horilla.models
+import hydra.models
 import recruitment.models
 import simple_history.models
 
@@ -29,12 +29,12 @@ class Migration(migrations.Migration):
                 ('created_at', models.DateTimeField(auto_now_add=True, null=True, verbose_name='Created At')),
                 ('is_active', models.BooleanField(default=True, verbose_name='Is Active')),
                 ('name', models.CharField(max_length=100, null=True, verbose_name='Name')),
-                ('profile', models.ImageField(null=True, upload_to=horilla.models.upload_path)),
+                ('profile', models.ImageField(null=True, upload_to=hydra.models.upload_path)),
                 ('portfolio', models.URLField(blank=True)),
                 ('schedule_date', models.DateTimeField(blank=True, null=True, verbose_name='Schedule date')),
                 ('email', models.EmailField(max_length=254, verbose_name='Email')),
                 ('mobile', models.CharField(blank=True, max_length=15, validators=[recruitment.models.validate_mobile], verbose_name='Mobile')),
-                ('resume', models.FileField(upload_to=horilla.models.upload_path, validators=[recruitment.models.validate_pdf])),
+                ('resume', models.FileField(upload_to=hydra.models.upload_path, validators=[recruitment.models.validate_pdf])),
                 ('address', models.TextField(blank=True, max_length=255, null=True, verbose_name='Address')),
                 ('country', models.CharField(blank=True, max_length=30, null=True, verbose_name='Country')),
                 ('dob', models.DateField(blank=True, null=True, verbose_name='Date of Birth')),
@@ -161,7 +161,7 @@ class Migration(migrations.Migration):
                 ('id', models.BigAutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
                 ('created_at', models.DateTimeField(auto_now_add=True, null=True, verbose_name='Created At')),
                 ('is_active', models.BooleanField(default=True, verbose_name='Is Active')),
-                ('files', models.FileField(blank=True, null=True, upload_to=horilla.models.upload_path)),
+                ('files', models.FileField(blank=True, null=True, upload_to=hydra.models.upload_path)),
                 ('created_by', models.ForeignKey(blank=True, editable=False, null=True, on_delete=django.db.models.deletion.SET_NULL, to=settings.AUTH_USER_MODEL, verbose_name='Created By')),
                 ('modified_by', models.ForeignKey(blank=True, editable=False, null=True, on_delete=django.db.models.deletion.SET_NULL, related_name='%(class)s_modified_by', to=settings.AUTH_USER_MODEL, verbose_name='Modified By')),
             ],
@@ -242,7 +242,7 @@ class Migration(migrations.Migration):
             name='Resume',
             fields=[
                 ('id', models.BigAutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
-                ('file', models.FileField(upload_to=horilla.models.upload_path, validators=[recruitment.models.validate_pdf])),
+                ('file', models.FileField(upload_to=hydra.models.upload_path, validators=[recruitment.models.validate_pdf])),
                 ('is_candidate', models.BooleanField(default=False)),
                 ('recruitment_id', models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, related_name='resume', to='recruitment.recruitment')),
             ],
@@ -288,7 +288,7 @@ class Migration(migrations.Migration):
                 ('created_at', models.DateTimeField(auto_now_add=True, null=True, verbose_name='Created At')),
                 ('is_active', models.BooleanField(default=True, verbose_name='Is Active')),
                 ('answer_json', models.JSONField()),
-                ('attachment', models.FileField(blank=True, null=True, upload_to=horilla.models.upload_path)),
+                ('attachment', models.FileField(blank=True, null=True, upload_to=hydra.models.upload_path)),
                 ('candidate_id', models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, to='recruitment.candidate')),
                 ('created_by', models.ForeignKey(blank=True, editable=False, null=True, on_delete=django.db.models.deletion.SET_NULL, to=settings.AUTH_USER_MODEL, verbose_name='Created By')),
                 ('job_position_id', models.ForeignKey(null=True, on_delete=django.db.models.deletion.PROTECT, to='base.jobposition', verbose_name='Job Position')),
@@ -493,7 +493,7 @@ class Migration(migrations.Migration):
                 ('created_at', models.DateTimeField(auto_now_add=True, null=True, verbose_name='Created At')),
                 ('is_active', models.BooleanField(default=True, verbose_name='Is Active')),
                 ('title', models.CharField(max_length=250)),
-                ('document', models.FileField(null=True, upload_to=horilla.models.upload_path)),
+                ('document', models.FileField(null=True, upload_to=hydra.models.upload_path)),
                 ('status', models.CharField(choices=[('requested', 'Requested'), ('approved', 'Approved'), ('rejected', 'Rejected')], default='requested', max_length=10)),
                 ('reject_reason', models.TextField(blank=True, max_length=255, null=True)),
                 ('candidate_id', models.ForeignKey(on_delete=django.db.models.deletion.PROTECT, to='recruitment.candidate', verbose_name='Candidate')),

@@ -25,7 +25,7 @@ from base.methods import (
     reload_queryset,
 )
 from employee.filters import EmployeeFilter
-from horilla import horilla_middlewares
+from hydra import hydra_middlewares
 from horilla_widgets.widgets.horilla_multi_select_field import HorillaMultiSelectField
 from horilla_widgets.widgets.select_widgets import HorillaMultiSelectWidget
 from pms.models import (
@@ -350,7 +350,7 @@ class EmployeeObjectiveCreateForm(BaseForm):
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
-        request = getattr(horilla_middlewares._thread_locals, "request", None)
+        request = getattr(hydra_middlewares._thread_locals, "request", None)
 
         if request.user.has_perm("pms.add_keyresult"):
             self.fields["key_result_id"].choices = list(
@@ -425,7 +425,7 @@ class EmployeeKeyResultForm(BaseForm):
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
-        request = getattr(horilla_middlewares._thread_locals, "request", None)
+        request = getattr(hydra_middlewares._thread_locals, "request", None)
         self.fields["start_date"].widget.attrs.update({"onchange": "startDateChange()"})
         if self.initial.get("employee_objective_id"):
             if (
@@ -689,7 +689,7 @@ class FeedbackForm(HorillaModelForm):
         """
         Initializes the form and queryset filtering.
         """
-        request = getattr(horilla_middlewares._thread_locals, "request", None)
+        request = getattr(hydra_middlewares._thread_locals, "request", None)
         super().__init__(*args, **kwargs)
 
         user = request.user if request else None
@@ -1129,7 +1129,7 @@ class EmployeeBonusPointForm(HorillaModelForm):
         exclude = ["bonus_point_id", "instance", "is_active"]
 
     def __init__(self, *args, **kwargs):
-        request = getattr(horilla_middlewares._thread_locals, "request", None)
+        request = getattr(hydra_middlewares._thread_locals, "request", None)
         super().__init__(*args, **kwargs)
         if request.GET.get("employee_id"):
             employee = Employee.objects.filter(id=request.GET["employee_id"])

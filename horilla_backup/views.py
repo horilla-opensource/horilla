@@ -7,7 +7,7 @@ from django.db import connection
 from django.shortcuts import redirect, render
 from django.utils.translation import gettext_lazy as _
 
-from horilla.decorators import (
+from hydra.decorators import (
     hx_request_required,
     login_required,
     manager_can_enter,

@@ -8,7 +8,7 @@ import uuid
 
 from django import forms
 
-from horilla import horilla_middlewares
+from hydra import hydra_middlewares
 
 ALL_INSTANCES = {}
 
@@ -82,7 +82,7 @@ class HorillaMultiSelectWidget(forms.Widget):
         uid = get_short_uuid(5)
         context["section_id"] = uid
         context[self.filter_instance_contex_name] = self.filter_class
-        request = getattr(horilla_middlewares._thread_locals, "request", None)
+        request = getattr(hydra_middlewares._thread_locals, "request", None)
         ALL_INSTANCES[str(request.user.id)] = self
 
         return context

@@ -20,9 +20,9 @@ from django.utils.translation import gettext_lazy as _
 from base.horilla_company_manager import HorillaCompanyManager
 from base.models import Company
 from employee.models import Employee
-from horilla import horilla_middlewares
-from horilla.horilla_middlewares import _thread_locals
-from horilla.models import HorillaModel, upload_path
+from hydra import hydra_middlewares
+from hydra.hydra_middlewares import _thread_locals
+from hydra.models import HorillaModel, upload_path
 from horilla_views.cbv_methods import render_template
 
 # Create your models here.
@@ -230,7 +230,7 @@ class Project(HorillaModel):
 
     def save(self, *args, **kwargs):
         is_new, request = self.pk is None, getattr(
-            horilla_middlewares._thread_locals, "request", None
+            hydra_middlewares._thread_locals, "request", None
         )
         if is_new and (cid := request.session.get("selected_company")) and cid != "all":
             self.company_id = Company.find(cid)

@@ -10,7 +10,7 @@ from datetime import date, timedelta
 
 from apscheduler.schedulers.background import BackgroundScheduler
 
-from horilla.scheduling import should_start_schedulers
+from hydra.scheduling import should_start_schedulers
 from dateutil.relativedelta import relativedelta
 
 from payroll.methods.methods import calculate_employer_contribution, save_payslip

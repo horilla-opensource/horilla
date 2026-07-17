@@ -9,7 +9,7 @@ from django.core.mail import EmailMessage
 from django.core.mail.backends.smtp import EmailBackend
 
 from base.models import EmailLog
-from horilla.horilla_middlewares import _thread_locals
+from hydra.hydra_middlewares import _thread_locals
 from outlook_auth import models
 from outlook_auth.views import send_outlook_email
 

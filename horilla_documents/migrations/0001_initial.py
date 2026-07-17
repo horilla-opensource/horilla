@@ -3,7 +3,7 @@
 from django.conf import settings
 from django.db import migrations, models
 import django.db.models.deletion
-import horilla.models
+import hydra.models
 
 
 class Migration(migrations.Migration):
@@ -42,7 +42,7 @@ class Migration(migrations.Migration):
                 ('created_at', models.DateTimeField(auto_now_add=True, null=True, verbose_name='Created At')),
                 ('is_active', models.BooleanField(default=True, verbose_name='Is Active')),
                 ('title', models.CharField(max_length=250)),
-                ('document', models.FileField(null=True, upload_to=horilla.models.upload_path, verbose_name='Document')),
+                ('document', models.FileField(null=True, upload_to=hydra.models.upload_path, verbose_name='Document')),
                 ('status', models.CharField(choices=[('requested', 'Requested'), ('approved', 'Approved'), ('rejected', 'Rejected')], default='requested', max_length=10, verbose_name='Status')),
                 ('reject_reason', models.TextField(blank=True, max_length=255, null=True, verbose_name='Reject Reason')),
                 ('issue_date', models.DateField(blank=True, null=True, verbose_name='Issue Date')),

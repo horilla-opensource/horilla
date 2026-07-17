@@ -17,7 +17,7 @@ case "${HYDRA_PROCESS_ROLE:-web}" in
             --graceful-timeout "${GUNICORN_GRACEFUL_TIMEOUT:-30}" \
             --access-logfile - \
             --error-logfile - \
-            horilla.wsgi:application
+            hydra.wsgi:application
         ;;
     maintenance)
         python manage.py check --deploy

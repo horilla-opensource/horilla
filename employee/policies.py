@@ -30,8 +30,8 @@ from employee.models import (
     Policy,
     PolicyMultipleFile,
 )
-from horilla.decorators import hx_request_required, login_required, permission_required
-from horilla.http.response import HorillaRedirect
+from hydra.decorators import hx_request_required, login_required, permission_required
+from hydra.http.response import HorillaRedirect
 from notifications.signals import notify
 
 

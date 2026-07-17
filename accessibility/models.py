@@ -6,7 +6,7 @@ from django.db import models
 
 from accessibility.accessibility import ACCESSBILITY_FEATURE
 from employee.models import Employee
-from horilla.models import HorillaModel
+from hydra.models import HorillaModel
 
 
 class DefaultAccessibility(HorillaModel):

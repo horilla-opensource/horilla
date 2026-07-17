@@ -11,5 +11,5 @@ from django.shortcuts import redirect, render
 from django.views.decorators.http import require_http_methods
 
 from base.models import HorillaMailTemplate
-from horilla.decorators import hx_request_required, login_required, permission_required
+from hydra.decorators import hx_request_required, login_required, permission_required
 from recruitment.models import Candidate

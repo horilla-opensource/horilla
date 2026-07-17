@@ -4,7 +4,7 @@ from django.conf import settings
 from django.db import migrations, models
 import django.db.models.deletion
 import django.utils.timezone
-import horilla.models
+import hydra.models
 import project.models
 
 
@@ -29,7 +29,7 @@ class Migration(migrations.Migration):
                 ('status', models.CharField(choices=[('new', 'New'), ('in_progress', 'In Progress'), ('completed', 'Completed'), ('on_hold', 'On Hold'), ('cancelled', 'Cancelled'), ('expired', 'Expired')], default='new', max_length=250, verbose_name='Status')),
                 ('start_date', models.DateField(verbose_name='Start Date')),
                 ('end_date', models.DateField(blank=True, null=True, verbose_name='End Date')),
-                ('document', models.FileField(blank=True, null=True, upload_to=horilla.models.upload_path, verbose_name='Project File')),
+                ('document', models.FileField(blank=True, null=True, upload_to=hydra.models.upload_path, verbose_name='Project File')),
                 ('description', models.TextField(verbose_name='Description')),
                 ('company_id', models.ForeignKey(editable=False, null=True, on_delete=django.db.models.deletion.PROTECT, to='base.company')),
                 ('created_by', models.ForeignKey(blank=True, editable=False, null=True, on_delete=django.db.models.deletion.SET_NULL, to=settings.AUTH_USER_MODEL, verbose_name='Created By')),
@@ -71,7 +71,7 @@ class Migration(migrations.Migration):
                 ('status', models.CharField(choices=[('to_do', 'To Do'), ('in_progress', 'In Progress'), ('completed', 'Completed'), ('expired', 'Expired')], default='to_do', max_length=250, verbose_name='Status')),
                 ('start_date', models.DateField(blank=True, null=True, verbose_name='Start Date')),
                 ('end_date', models.DateField(blank=True, null=True, verbose_name='End Date')),
-                ('document', models.FileField(blank=True, null=True, upload_to=horilla.models.upload_path, verbose_name='Task File')),
+                ('document', models.FileField(blank=True, null=True, upload_to=hydra.models.upload_path, verbose_name='Task File')),
                 ('description', models.TextField(verbose_name='Description')),
                 ('sequence', models.IntegerField(default=0)),
                 ('created_by', models.ForeignKey(blank=True, editable=False, null=True, on_delete=django.db.models.deletion.SET_NULL, to=settings.AUTH_USER_MODEL, verbose_name='Created By')),

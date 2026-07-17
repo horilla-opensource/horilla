@@ -32,15 +32,15 @@ from base.methods import (
 )
 from base.models import Company
 from employee.models import Employee, EmployeeWorkInformation
-from horilla.decorators import (
+from hydra.decorators import (
     hx_request_required,
     login_required,
     owner_can_enter,
     permission_required,
 )
-from horilla.group_by import group_by_queryset
-from horilla.horilla_settings import HORILLA_DATE_FORMATS
-from horilla.http.response import HorillaRedirect
+from hydra.group_by import group_by_queryset
+from hydra.hydra_settings import HORILLA_DATE_FORMATS
+from hydra.http.response import HorillaRedirect
 from notifications.signals import notify
 from payroll.context_processors import get_active_employees
 from payroll.filters import ContractFilter, ContractReGroup, PayslipFilter

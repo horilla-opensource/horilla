@@ -7,7 +7,7 @@ class HydraShellConfig(AppConfig):
     verbose_name = "Hydra Shell"
 
     def ready(self):
-        from horilla.horilla_settings import APPS
+        from hydra.hydra_settings import APPS
 
         from hydra_shell import checks  # noqa: F401
 

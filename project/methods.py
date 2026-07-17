@@ -5,7 +5,7 @@ from django.shortcuts import render
 
 from base.methods import get_pagination, get_subordinates
 from employee.models import Employee
-from horilla.methods import handle_no_permission
+from hydra.methods import handle_no_permission
 from project.models import Project, Task, TimeSheet
 
 decorator_with_arguments = (

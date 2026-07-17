@@ -25,8 +25,8 @@ from base.models import (
     clear_messages,
 )
 from employee.models import Employee, EmployeeWorkInformation
-from horilla import horilla_middlewares
-from horilla.models import HorillaModel, upload_path
+from hydra import hydra_middlewares
+from hydra.models import HorillaModel, upload_path
 from horilla_audit.methods import get_diff
 from horilla_audit.models import HorillaAuditInfo, HorillaAuditLog
 from leave.methods import (
@@ -327,7 +327,7 @@ class LeaveType(HorillaModel):
                 )
 
     def save(self, *args, **kwargs):
-        request = getattr(horilla_middlewares._thread_locals, "request", None)
+        request = getattr(hydra_middlewares._thread_locals, "request", None)
         selected_company = request.session.get("selected_company")
         if (
             not self.id
@@ -927,7 +927,7 @@ class LeaveRequest(HorillaModel):
         attachment = getattr(self, "attachment", None)
         requ_days = set(self.requested_dates())
         restricted_leaves = RestrictLeave.objects.all()
-        request = getattr(horilla_middlewares._thread_locals, "request", None)
+        request = getattr(hydra_middlewares._thread_locals, "request", None)
 
         # Check if leave type is assigned to employee
         if not AvailableLeave.objects.filter(
@@ -1141,7 +1141,7 @@ class LeaveRequest(HorillaModel):
         return result
 
     def is_approved(self):
-        request = getattr(horilla_middlewares._thread_locals, "request", None)
+        request = getattr(hydra_middlewares._thread_locals, "request", None)
         if request:
             employee = Employee.objects.filter(employee_user_id=request.user).first()
             condition_approval = LeaveRequestConditionApproval.objects.filter(
@@ -1159,7 +1159,7 @@ class LeaveRequest(HorillaModel):
             # Update the leave clashes count for all relevant leave requests
             self.update_leave_clashes_count()
         else:
-            request = getattr(horilla_middlewares._thread_locals, "request", None)
+            request = getattr(hydra_middlewares._thread_locals, "request", None)
             if request:
                 clear_messages(request)
                 messages.warning(

@@ -11,7 +11,7 @@ from django.http import QueryDict
 
 from base.templatetags.horillafilters import app_installed
 from employee.models import Employee
-from horilla.models import HorillaModel
+from hydra.models import HorillaModel
 
 recruitment_installed = False
 if app_installed("recruitment"):

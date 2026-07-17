@@ -3,12 +3,12 @@ import os
 from apscheduler.schedulers.background import BackgroundScheduler
 from django.core.management import call_command
 
-from horilla import settings
-from horilla.scheduling import should_start_schedulers
+from hydra import settings
+from hydra.scheduling import should_start_schedulers
 
 from .gdrive import *
 
-# from horilla.settings import DBBACKUP_STORAGE_OPTIONS
+# from hydra.settings import DBBACKUP_STORAGE_OPTIONS
 from .models import *
 from .pgdump import *
 from .zip import *

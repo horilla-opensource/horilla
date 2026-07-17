@@ -35,9 +35,9 @@ from openpyxl import Workbook
 from openpyxl.styles import Alignment, Border, Font, PatternFill, Side
 from openpyxl.utils import get_column_letter
 
-from horilla import settings
-from horilla.horilla_middlewares import _thread_locals
-from horilla.methods import handle_no_permission
+from hydra import settings
+from hydra.hydra_middlewares import _thread_locals
+from hydra.methods import handle_no_permission
 from horilla_views.templatetags.generic_template_filters import getattribute
 
 FIELD_WIDGET_MAP = {

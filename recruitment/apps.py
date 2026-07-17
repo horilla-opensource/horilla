@@ -23,8 +23,8 @@ class RecruitmentConfig(AppConfig):
     def ready(self):
         from django.urls import include, path
 
-        from horilla.horilla_settings import APPS
-        from horilla.urls import urlpatterns
+        from hydra.hydra_settings import APPS
+        from hydra.urls import urlpatterns
         from recruitment import signals
 
         APPS.append("recruitment")

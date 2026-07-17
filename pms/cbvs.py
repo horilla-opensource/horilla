@@ -10,9 +10,9 @@ from django.utils.translation import gettext_lazy as _
 
 from base.methods import filter_own_and_subordinate_recordes, is_reportingmanager
 from employee.models import Employee
-from horilla import horilla_middlewares
-from horilla.decorators import login_required, owner_can_enter, permission_required
-from horilla.http.response import HorillaRedirect
+from hydra import hydra_middlewares
+from hydra.decorators import login_required, owner_can_enter, permission_required
+from hydra.http.response import HorillaRedirect
 from horilla_views.generic.cbv import views
 from pms import models
 from pms.filters import BonusPointSettingFilter, EmployeeBonusPointFilter
@@ -265,7 +265,7 @@ class EmployeeBonusPointListView(views.HorillaListView):
 
     def get_queryset(self):
         queryset = super().get_queryset()
-        request = getattr(horilla_middlewares._thread_locals, "request", None)
+        request = getattr(hydra_middlewares._thread_locals, "request", None)
         if is_reportingmanager(request) or request.user.has_perm(
             "pms.view_employeebonuspoint"
         ):

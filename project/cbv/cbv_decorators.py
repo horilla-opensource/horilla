@@ -1,5 +1,5 @@
-from horilla.horilla_middlewares import _thread_locals
-from horilla.methods import handle_no_permission
+from hydra.hydra_middlewares import _thread_locals
+from hydra.methods import handle_no_permission
 from project.methods import (
     any_project_manager,
     any_project_member,

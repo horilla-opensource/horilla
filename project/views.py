@@ -15,9 +15,9 @@ from django.urls import reverse
 from django.utils.translation import gettext_lazy as _
 
 from base.methods import filtersubordinates, get_key_instances
-from horilla.decorators import hx_request_required, login_required, permission_required
-from horilla.http import HorillaRedirect
-from horilla.methods import handle_no_permission
+from hydra.decorators import hx_request_required, login_required, permission_required
+from hydra.http import HorillaRedirect
+from hydra.methods import handle_no_permission
 from notifications.signals import notify
 from project.methods import (
     generate_colors,

@@ -10,8 +10,8 @@ from django.utils.translation import gettext_lazy as _
 from base.horilla_company_manager import HorillaCompanyManager
 from base.models import Company, Department, JobPosition
 from employee.models import BonusPoint, Employee
-from horilla import horilla_middlewares
-from horilla.models import HorillaModel
+from hydra import hydra_middlewares
+from hydra.models import HorillaModel
 from horilla_audit.methods import get_diff
 from horilla_audit.models import HorillaAuditInfo, HorillaAuditLog
 from horilla_views.cbv_methods import render_template
@@ -139,7 +139,7 @@ class Objective(HorillaModel):
         return f"{self.title}"
 
     def save(self, *args, **kwargs):
-        request = getattr(horilla_middlewares._thread_locals, "request", None)
+        request = getattr(hydra_middlewares._thread_locals, "request", None)
         selected_company = request.session.get("selected_company")
         if (
             not self.id
@@ -799,7 +799,7 @@ class Meetings(HorillaModel):
         return self.title
 
     def save(self, *args, **kwargs):
-        request = getattr(horilla_middlewares._thread_locals, "request", None)
+        request = getattr(hydra_middlewares._thread_locals, "request", None)
         selected_company = request.session.get("selected_company")
         if (
             not self.id

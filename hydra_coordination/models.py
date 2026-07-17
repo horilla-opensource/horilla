@@ -8,7 +8,7 @@ from django.utils import timezone
 from django.utils.translation import gettext_lazy as _
 
 from base.models import Company, Department
-from horilla.models import HorillaModel
+from hydra.models import HorillaModel
 from hydra_people.models import Person
 
 

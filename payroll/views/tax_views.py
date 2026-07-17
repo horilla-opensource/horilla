@@ -20,8 +20,8 @@ from django.shortcuts import redirect, render
 from django.utils.translation import gettext_lazy as _
 
 from base.methods import get_key_instances
-from horilla.decorators import hx_request_required, login_required, permission_required
-from horilla.http.response import HorillaRedirect
+from hydra.decorators import hx_request_required, login_required, permission_required
+from hydra.http.response import HorillaRedirect
 from payroll.forms.tax_forms import FilingStatusForm, TaxBracketForm
 from payroll.methods.safe_tax_code import TaxCodeValidationError, validate_tax_code
 from payroll.models.models import FilingStatus

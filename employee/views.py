@@ -108,7 +108,7 @@ from employee.models import (
     EmployeeWorkInformation,
     NoteFiles,
 )
-from horilla.decorators import (
+from hydra.decorators import (
     hx_request_required,
     logger,
     login_required,
@@ -116,11 +116,11 @@ from horilla.decorators import (
     owner_can_enter,
     permission_required,
 )
-from horilla.filters import HorillaPaginator
-from horilla.group_by import group_by_queryset
-from horilla.horilla_settings import HORILLA_DATE_FORMATS
-from horilla.http import HorillaRedirect
-from horilla.methods import get_horilla_model_class
+from hydra.filters import HorillaPaginator
+from hydra.group_by import group_by_queryset
+from hydra.hydra_settings import HORILLA_DATE_FORMATS
+from hydra.http import HorillaRedirect
+from hydra.methods import get_horilla_model_class
 from horilla_audit.models import AccountBlockUnblock, HistoryTrackingFields
 from horilla_documents.forms import (
     DocumentForm,

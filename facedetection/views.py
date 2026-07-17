@@ -12,7 +12,7 @@ from rest_framework.views import APIView
 
 from base.models import Company
 from facedetection.forms import FaceDetectionSetupForm
-from horilla.decorators import hx_request_required
+from hydra.decorators import hx_request_required
 
 from .serializers import *
 

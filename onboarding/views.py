@@ -46,15 +46,15 @@ from base.methods import (
 )
 from base.models import HorillaMailTemplate, JobPosition
 from employee.models import Employee, EmployeeBankDetails, EmployeeWorkInformation
-from horilla import settings
-from horilla.decorators import (
+from hydra import settings
+from hydra.decorators import (
     hx_request_required,
     logger,
     login_required,
     permission_required,
 )
-from horilla.group_by import group_by_queryset as general_group_by
-from horilla.http.response import HorillaRedirect
+from hydra.group_by import group_by_queryset as general_group_by
+from hydra.http.response import HorillaRedirect
 from horilla_documents.models import Document
 from hydra_arrivals.portal_email import (
     PORTAL_EMAIL_QUEUE_PERMISSIONS,

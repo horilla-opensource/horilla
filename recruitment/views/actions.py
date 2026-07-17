@@ -24,9 +24,9 @@ from base.methods import (
 )
 from base.models import HorillaMailTemplate
 from employee.models import Employee
-from horilla.decorators import login_required, permission_required
-from horilla.group_by import group_by_queryset
-from horilla.http import HorillaRedirect
+from hydra.decorators import login_required, permission_required
+from hydra.group_by import group_by_queryset
+from hydra.http import HorillaRedirect
 from notifications.signals import notify
 from recruitment.decorators import (
     candidate_login_required,

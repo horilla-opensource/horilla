@@ -10,8 +10,8 @@ from django.views.generic import View
 
 from dynamic_fields import forms, models
 from dynamic_fields.methods import structured
-from horilla.decorators import login_required, permission_required
-from horilla.http.response import HorillaRedirect
+from hydra.decorators import login_required, permission_required
+from hydra.http.response import HorillaRedirect
 from horilla_views.generic.cbv.views import HorillaFormView
 
 

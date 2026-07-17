@@ -126,7 +126,7 @@ All future `hydra_*` migrations must be versioned. Before Phase 1, update the ig
 
 ### Management-command schedulers
 
-Task 045 remediation: all legacy startup decisions now use `horilla.scheduling.should_start_schedulers`. Management commands never start jobs, and staging web workers must set `HYDRA_DISABLE_SCHEDULERS=True`. Re-enabling jobs requires a separately reviewed single-owner scheduler process. The paragraph below describes the original Phase 0 finding.
+Task 045 remediation: all legacy startup decisions now use `hydra.scheduling.should_start_schedulers`. Management commands never start jobs, and staging web workers must set `HYDRA_DISABLE_SCHEDULERS=True`. Re-enabling jobs requires a separately reviewed single-owner scheduler process. The paragraph below describes the original Phase 0 finding.
 
 Some modules start APScheduler jobs whenever `sys.argv` is not one of a small excluded commands. `check` and `test` are not excluded. On an empty database this produces background “table does not exist” errors and makes commands slower; after migration, it can still run business jobs during checks. This must be separated into an explicit scheduler process before staging.
 

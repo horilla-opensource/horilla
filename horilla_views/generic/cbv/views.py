@@ -29,11 +29,11 @@ from django.views.generic import DetailView, FormView, ListView, TemplateView
 from xhtml2pdf import pisa
 
 from base.methods import closest_numbers, eval_validate, get_key_instances
-from horilla.filters import FilterSet
-from horilla.group_by import group_by_queryset
-from horilla.horilla_middlewares import _thread_locals
-from horilla.http.response import HorillaRedirect
-from horilla.signals import post_generic_import, pre_generic_import
+from hydra.filters import FilterSet
+from hydra.group_by import group_by_queryset
+from hydra.hydra_middlewares import _thread_locals
+from hydra.http.response import HorillaRedirect
+from hydra.signals import post_generic_import, pre_generic_import
 from horilla_views import models
 from horilla_views.cbv_methods import (  # update_initial_cache,
     assign_related,
@@ -1167,7 +1167,7 @@ class HorillaListView(ListView):
             #         ordered_ids.append(instance.pk)
 
         # CACHE.get(self.request.session.session_key + "cbv")[HorillaListView] = context
-        from horilla.urls import path, urlpatterns
+        from hydra.urls import path, urlpatterns
 
         self.export_path = f"export-list-view-{get_short_uuid(4)}/"
 
@@ -1984,7 +1984,7 @@ class HorillaFormView(FormView):
 
                     from django.urls import path
 
-                    from horilla.urls import urlpatterns
+                    from hydra.urls import urlpatterns
 
                     urlpatterns.append(
                         path(
@@ -2223,7 +2223,7 @@ class HorillaProfileView(DetailView):
         self.ordered_ids_key = f"ordered_ids_{self.model.__name__.lower()}"
         # update_initial_cache(request, CACHE, HorillaProfileView)
 
-        from horilla.urls import path, urlpatterns
+        from hydra.urls import path, urlpatterns
 
         for tab in self.tabs:
             if not tab.get("url"):

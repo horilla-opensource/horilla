@@ -5,7 +5,7 @@ Custom decorators for permission and manager checks in the application.
 """
 
 from employee.models import Employee
-from horilla.methods import handle_no_permission
+from hydra.methods import handle_no_permission
 from onboarding.models import OnboardingStage, OnboardingTask
 from recruitment.models import Recruitment
 

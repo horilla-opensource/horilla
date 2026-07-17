@@ -31,8 +31,8 @@ from base.horilla_company_manager import HorillaCompanyManager
 from base.methods import is_company_leave, is_holiday
 from base.models import Company, EmployeeShift, EmployeeShiftDay, WorkType
 from employee.models import Employee
-from horilla.methods import get_horilla_model_class
-from horilla.models import HorillaModel, upload_path
+from hydra.methods import get_horilla_model_class
+from hydra.models import HorillaModel, upload_path
 from horilla_audit.models import HorillaAuditInfo, HorillaAuditLog
 
 # to skip the migration issue with the old migrations

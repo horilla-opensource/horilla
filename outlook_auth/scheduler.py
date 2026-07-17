@@ -8,7 +8,7 @@ import sys
 
 from apscheduler.schedulers.background import BackgroundScheduler
 
-from horilla.scheduling import should_start_schedulers
+from hydra.scheduling import should_start_schedulers
 
 logger = logging.getLogger(__name__)
 

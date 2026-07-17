@@ -20,10 +20,10 @@ from employee.models import (
     EmployeeWorkInformation,
     ProfileEditFeature,
 )
-from horilla import horilla_apps
-from horilla.decorators import hx_request_required, login_required, permission_required
-from horilla.http.response import HorillaRedirect
-from horilla.methods import get_horilla_model_class
+from hydra import hydra_apps
+from hydra.decorators import hx_request_required, login_required, permission_required
+from hydra.http.response import HorillaRedirect
+from hydra.methods import get_horilla_model_class
 
 
 class AllCompany:
@@ -158,7 +158,7 @@ urlpatterns.append(
 
 
 def white_labelling_company(request):
-    white_labelling = getattr(horilla_apps, "WHITE_LABELLING", False)
+    white_labelling = getattr(hydra_apps, "WHITE_LABELLING", False)
     if white_labelling:
         hq = Company.objects.filter(hq=True).last()
         try:

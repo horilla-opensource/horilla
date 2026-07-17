@@ -1,5 +1,5 @@
 from employee.models import EmployeeWorkInformation
-from horilla.methods import handle_no_permission
+from hydra.methods import handle_no_permission
 from pms.models import AnonymousFeedback, EmployeeObjective, Objective
 
 decorator_with_arguments = (

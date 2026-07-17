@@ -14,8 +14,8 @@ from django.utils.translation import gettext_lazy as _
 from django.views.generic import ListView
 
 from employee.models import Employee
-from horilla.horilla_middlewares import _thread_locals
-from horilla.http import HorillaRedirect
+from hydra.hydra_middlewares import _thread_locals
+from hydra.http import HorillaRedirect
 from horilla_views.cbv_methods import login_required, permission_required
 from horilla_views.generic.cbv.views import (
     HorillaCardView,

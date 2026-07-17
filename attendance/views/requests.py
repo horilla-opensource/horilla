@@ -46,13 +46,13 @@ from base.methods import (
 )
 from base.models import EmployeeShift, EmployeeShiftDay
 from employee.models import Employee
-from horilla.decorators import (
+from hydra.decorators import (
     hx_request_required,
     login_required,
     manager_can_enter,
     permission_required,
 )
-from horilla.http import HorillaRedirect
+from hydra.http import HorillaRedirect
 from notifications.signals import notify
 
 

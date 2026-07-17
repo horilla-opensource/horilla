@@ -16,16 +16,16 @@ from base.methods import closest_numbers, eval_validate, paginator_qry, sortby
 from base.models import Department, JobPosition
 from base.views import general_settings
 from employee.models import Employee
-from horilla import horilla_middlewares
-from horilla.decorators import (
+from hydra import hydra_middlewares
+from hydra.decorators import (
     hx_request_required,
     login_required,
     manager_can_enter,
     permission_required,
 )
-from horilla.group_by import group_by_queryset as group_by
-from horilla.http.response import HorillaRedirect
-from horilla.methods import get_horilla_model_class
+from hydra.group_by import group_by_queryset as group_by
+from hydra.http.response import HorillaRedirect
+from hydra.methods import get_horilla_model_class
 from notifications.signals import notify
 from offboarding.decorators import (
     any_manager_can_enter,
@@ -76,7 +76,7 @@ def any_manager(employee: Employee):
 
 def pipeline_grouper(filters={}, offboardings=[]):
     groups = []
-    request = getattr(horilla_middlewares._thread_locals, "request", None)
+    request = getattr(hydra_middlewares._thread_locals, "request", None)
     for offboarding in offboardings:
         employees = []
         stages = PipelineStageFilter(

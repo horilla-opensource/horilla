@@ -76,5 +76,5 @@ This file records intentional deviations from audited Horilla branch `1.0`.
 - `hydra_notifications` and `/hydra/notifications/` wrap the existing Horilla notification table with immutable recipient/target envelopes, append-only state, user preferences and durable generic-email delivery; no upstream table field was added.
 - All Hydra producers now call the fixed-kind PII-free service. Existing legacy rows are data-migrated into envelopes and future `notify` signal output is wrapped without forwarding legacy content to email.
 - Horilla tray/list/count paths use current-recipient scoped selectors. Read, clear and archive mutations are POST-only; external avatar requests and actor-name rendering were removed from notification partials.
-- `horilla.decorators.login_required` re-raises 404/403, never executes a failed view twice and uses HTTP 500 for the development error page. The custom 404/405 templates return correct statuses.
+- `hydra.decorators.login_required` re-raises 404/403, never executes a failed view twice and uses HTTP 500 for the development error page. The custom 404/405 templates return correct statuses.
 - `hydra_notifications.0001_notification_center` and `0002_backfill_legacy_notifications` are pinned in the exact 70-file migration manifest.

@@ -19,8 +19,8 @@ from base.forms import Form, ModelForm
 from base.methods import reload_queryset
 from employee.filters import EmployeeFilter
 from employee.models import BonusPoint, Employee
-from horilla import horilla_middlewares
-from horilla.methods import get_horilla_model_class
+from hydra import hydra_middlewares
+from hydra.methods import get_horilla_model_class
 from horilla_widgets.forms import HorillaForm, default_select_option_template
 from horilla_widgets.widgets.horilla_multi_select_field import HorillaMultiSelectField
 from horilla_widgets.widgets.select_widgets import HorillaMultiSelectWidget
@@ -798,7 +798,7 @@ class ReimbursementForm(ModelForm):
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
 
-        self.request = getattr(horilla_middlewares._thread_locals, "request", None)
+        self.request = getattr(hydra_middlewares._thread_locals, "request", None)
         self.employee = self.get_employee()  # 819
 
         if not self.instance.pk:

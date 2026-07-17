@@ -3,7 +3,7 @@ from django import forms
 from django.db.models import Q
 from django.utils.translation import gettext as _
 
-from horilla.filters import FilterSet, HorillaFilterSet, filter_by_name
+from hydra.filters import FilterSet, HorillaFilterSet, filter_by_name
 
 from .models import Employee, Project, Task, TimeSheet
 

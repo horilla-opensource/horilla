@@ -7,7 +7,7 @@ from django.core.cache import cache
 from accessibility.accessibility import ACCESSBILITY_FEATURE
 from accessibility.filters import AccessibilityFilter
 from accessibility.models import DefaultAccessibility
-from horilla.horilla_middlewares import _thread_locals
+from hydra.hydra_middlewares import _thread_locals
 
 
 def check_is_accessible(feature, cache_key, employee):

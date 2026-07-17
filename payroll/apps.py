@@ -5,7 +5,7 @@ App configuration for the 'payroll' app.
 from django.apps import AppConfig
 from django.db.models.signals import post_migrate
 
-from horilla.scheduling import should_start_schedulers
+from hydra.scheduling import should_start_schedulers
 
 
 class PayrollConfig(AppConfig):
@@ -20,8 +20,8 @@ class PayrollConfig(AppConfig):
         ready = super().ready()
         from django.urls import include, path
 
-        from horilla.horilla_settings import APPS
-        from horilla.urls import urlpatterns
+        from hydra.hydra_settings import APPS
+        from hydra.urls import urlpatterns
         from payroll import signals
 
         APPS.append("payroll")

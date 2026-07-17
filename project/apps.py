@@ -8,8 +8,8 @@ class ProjectConfig(AppConfig):
     def ready(self):
         from django.urls import include, path
 
-        from horilla.horilla_settings import APP_URLS, APPS
-        from horilla.urls import urlpatterns
+        from hydra.hydra_settings import APP_URLS, APPS
+        from hydra.urls import urlpatterns
 
         APPS.append("project")
         urlpatterns.append(

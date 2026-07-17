@@ -4,7 +4,7 @@ import base.models
 from django.conf import settings
 from django.db import migrations, models
 import django.db.models.deletion
-import horilla.models
+import hydra.models
 import simple_history.models
 
 
@@ -59,7 +59,7 @@ class Migration(migrations.Migration):
                 ('badge_id', models.CharField(blank=True, max_length=50, null=True)),
                 ('employee_first_name', models.CharField(max_length=200, verbose_name='First Name')),
                 ('employee_last_name', models.CharField(blank=True, max_length=200, null=True, verbose_name='Last Name')),
-                ('employee_profile', models.ImageField(blank=True, null=True, upload_to=horilla.models.upload_path)),
+                ('employee_profile', models.ImageField(blank=True, null=True, upload_to=hydra.models.upload_path)),
                 ('email', models.EmailField(max_length=254, unique=True)),
                 ('phone', models.CharField(max_length=25)),
                 ('address', models.TextField(blank=True, max_length=200, null=True)),
@@ -147,7 +147,7 @@ class Migration(migrations.Migration):
                 ('id', models.BigAutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
                 ('created_at', models.DateTimeField(auto_now_add=True, null=True, verbose_name='Created At')),
                 ('is_active', models.BooleanField(default=True, verbose_name='Is Active')),
-                ('attachment', models.FileField(upload_to=horilla.models.upload_path)),
+                ('attachment', models.FileField(upload_to=hydra.models.upload_path)),
                 ('created_by', models.ForeignKey(blank=True, editable=False, null=True, on_delete=django.db.models.deletion.SET_NULL, to=settings.AUTH_USER_MODEL, verbose_name='Created By')),
                 ('modified_by', models.ForeignKey(blank=True, editable=False, null=True, on_delete=django.db.models.deletion.SET_NULL, related_name='%(class)s_modified_by', to=settings.AUTH_USER_MODEL, verbose_name='Modified By')),
             ],
@@ -181,7 +181,7 @@ class Migration(migrations.Migration):
                 ('id', models.BigAutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
                 ('created_at', models.DateTimeField(auto_now_add=True, null=True, verbose_name='Created At')),
                 ('is_active', models.BooleanField(default=True, verbose_name='Is Active')),
-                ('files', models.FileField(blank=True, null=True, upload_to=horilla.models.upload_path)),
+                ('files', models.FileField(blank=True, null=True, upload_to=hydra.models.upload_path)),
                 ('created_by', models.ForeignKey(blank=True, editable=False, null=True, on_delete=django.db.models.deletion.SET_NULL, to=settings.AUTH_USER_MODEL, verbose_name='Created By')),
                 ('modified_by', models.ForeignKey(blank=True, editable=False, null=True, on_delete=django.db.models.deletion.SET_NULL, related_name='%(class)s_modified_by', to=settings.AUTH_USER_MODEL, verbose_name='Modified By')),
             ],
@@ -330,7 +330,7 @@ class Migration(migrations.Migration):
                 ('days', models.IntegerField(default=1, null=True)),
                 ('hours', models.CharField(default='00:00', max_length=6, null=True, validators=[base.models.validate_time_format])),
                 ('start_date', models.DateField(null=True)),
-                ('attachment', models.FileField(blank=True, null=True, upload_to=horilla.models.upload_path)),
+                ('attachment', models.FileField(blank=True, null=True, upload_to=hydra.models.upload_path)),
                 ('action', models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, to='employee.actiontype')),
                 ('created_by', models.ForeignKey(blank=True, editable=False, null=True, on_delete=django.db.models.deletion.SET_NULL, to=settings.AUTH_USER_MODEL, verbose_name='Created By')),
                 ('employee_id', models.ManyToManyField(to='employee.employee', verbose_name='Employees')),

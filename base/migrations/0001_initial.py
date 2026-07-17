@@ -6,7 +6,7 @@ import django.core.validators
 from django.db import migrations, models
 import django.db.models.deletion
 import django.utils.timezone
-import horilla.models
+import hydra.models
 import simple_history.models
 
 
@@ -67,7 +67,7 @@ class Migration(migrations.Migration):
             name='Attachment',
             fields=[
                 ('id', models.BigAutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
-                ('file', models.FileField(upload_to=horilla.models.upload_path)),
+                ('file', models.FileField(upload_to=hydra.models.upload_path)),
             ],
         ),
         migrations.CreateModel(
@@ -82,7 +82,7 @@ class Migration(migrations.Migration):
             name='BaserequestFile',
             fields=[
                 ('id', models.BigAutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
-                ('file', models.FileField(upload_to=horilla.models.upload_path)),
+                ('file', models.FileField(upload_to=hydra.models.upload_path)),
             ],
         ),
         migrations.CreateModel(
@@ -105,7 +105,7 @@ class Migration(migrations.Migration):
                 ('state', models.CharField(max_length=50)),
                 ('city', models.CharField(max_length=50)),
                 ('zip', models.CharField(max_length=20)),
-                ('icon', models.FileField(null=True, upload_to=horilla.models.upload_path)),
+                ('icon', models.FileField(null=True, upload_to=hydra.models.upload_path)),
                 ('date_format', models.CharField(blank=True, max_length=30, null=True)),
                 ('time_format', models.CharField(blank=True, max_length=20, null=True)),
             ],

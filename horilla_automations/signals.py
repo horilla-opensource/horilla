@@ -17,8 +17,8 @@ from django.db.models.query import QuerySet
 from django.db.models.signals import post_delete, post_save, pre_save
 from django.dispatch import receiver
 
-from horilla.horilla_middlewares import _thread_locals
-from horilla.signals import post_bulk_update, pre_bulk_update
+from hydra.hydra_middlewares import _thread_locals
+from hydra.signals import post_bulk_update, pre_bulk_update
 from notifications.signals import notify
 
 logger = logging.getLogger(__name__)

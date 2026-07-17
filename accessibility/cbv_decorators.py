@@ -7,8 +7,8 @@ from django.utils.translation import gettext_lazy as _
 
 from accessibility.methods import check_is_accessible
 from base.decorators import decorator_with_arguments
-from horilla.horilla_middlewares import _thread_locals
-from horilla.http.response import HorillaRedirect
+from hydra.hydra_middlewares import _thread_locals
+from hydra.http.response import HorillaRedirect
 
 
 @decorator_with_arguments

@@ -6,7 +6,7 @@ from datetime import datetime, timedelta
 from apscheduler.schedulers.background import BackgroundScheduler
 from dateutil.relativedelta import relativedelta
 
-from horilla.scheduling import should_start_schedulers
+from hydra.scheduling import should_start_schedulers
 
 
 def leave_reset():

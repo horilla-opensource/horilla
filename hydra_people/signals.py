@@ -6,7 +6,7 @@ from django.db.utils import OperationalError, ProgrammingError
 from django.db.models.signals import post_save
 from django.dispatch import receiver
 
-from horilla.signals import pre_bulk_update
+from hydra.signals import pre_bulk_update
 from hydra_people.models import Person
 from hydra_people.recruitment_workflow import create_default_transition_rules_for_stage
 from recruitment.models import Candidate, Stage

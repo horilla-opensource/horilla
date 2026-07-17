@@ -29,8 +29,8 @@ from base.models import (
 )
 from employee.methods.duration_methods import strtime_seconds
 from employee.models import BonusPoint, Employee, EmployeeWorkInformation
-from horilla import horilla_middlewares
-from horilla.models import HorillaModel, upload_path
+from hydra import hydra_middlewares
+from hydra.models import HorillaModel, upload_path
 from horilla_audit.models import HorillaAuditInfo, HorillaAuditLog
 
 logger = logging.getLogger(__name__)
@@ -1043,7 +1043,7 @@ class Allowance(HorillaModel):
         return str(self.title)
 
     def save(self):
-        request = getattr(horilla_middlewares._thread_locals, "request", None)
+        request = getattr(hydra_middlewares._thread_locals, "request", None)
         selected_company = request.session.get("selected_company")
         if not self.id and selected_company and selected_company != "all":
             self.company_id = Company.find(selected_company)
@@ -1329,7 +1329,7 @@ class Deduction(HorillaModel):
         return str(self.title)
 
     def save(self):
-        request = getattr(horilla_middlewares._thread_locals, "request", None)
+        request = getattr(hydra_middlewares._thread_locals, "request", None)
         selected_company = request.session.get("selected_company")
         if not self.id and selected_company and selected_company != "all":
             self.company_id = Company.find(selected_company)
@@ -1650,7 +1650,7 @@ class Reimbursement(HorillaModel):
         ordering = ["-id"]
 
     def save(self, *args, **kwargs) -> None:
-        request = getattr(horilla_middlewares._thread_locals, "request", None)
+        request = getattr(hydra_middlewares._thread_locals, "request", None)
         amount_for_leave = (
             EncashmentGeneralSettings.objects.first().leave_amount
             if EncashmentGeneralSettings.objects.first()
@@ -1698,7 +1698,7 @@ class Reimbursement(HorillaModel):
                         bonus_points.save()
                     else:
                         request = getattr(
-                            horilla_middlewares._thread_locals, "request", None
+                            hydra_middlewares._thread_locals, "request", None
                         )
                         if request:
                             messages.info(
@@ -1724,7 +1724,7 @@ class Reimbursement(HorillaModel):
                             assigned_leave.save()
                         else:
                             request = getattr(
-                                horilla_middlewares._thread_locals, "request", None
+                                hydra_middlewares._thread_locals, "request", None
                             )
                             if request:
                                 messages.info(
@@ -1767,7 +1767,7 @@ class Reimbursement(HorillaModel):
                     self.allowance_id.delete()
 
     def delete(self, *args, **kwargs):
-        request = getattr(horilla_middlewares._thread_locals, "request", None)
+        request = getattr(hydra_middlewares._thread_locals, "request", None)
         if self.status == "approved":
             message = messages.info(
                 request,

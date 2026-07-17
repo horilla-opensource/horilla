@@ -6,7 +6,7 @@ from django.contrib import messages
 from django.shortcuts import redirect
 from django.utils.translation import gettext_lazy as _
 
-from horilla.methods import handle_no_permission
+from hydra.methods import handle_no_permission
 from leave.models import LeaveGeneralSetting
 
 from .models import LeaveAllocationRequest

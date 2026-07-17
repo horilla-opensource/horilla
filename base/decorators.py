@@ -4,7 +4,7 @@ decorator functions for base
 
 from django.contrib import messages
 
-from horilla.http import HorillaRedirect
+from hydra.http import HorillaRedirect
 
 from .models import ShiftRequest, WorkTypeRequest
 

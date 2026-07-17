@@ -16,8 +16,8 @@ from django.utils.functional import cached_property
 from django.utils.translation import gettext_lazy as _
 
 from base.methods import get_subordinates
-from horilla.http import HorillaRedirect
-from horilla.methods import handle_no_permission
+from hydra.http import HorillaRedirect
+from hydra.methods import handle_no_permission
 from horilla_views.cbv_methods import login_required
 from horilla_views.generic.cbv.views import (
     HorillaCardView,

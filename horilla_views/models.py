@@ -3,8 +3,8 @@ import json
 from django.contrib.auth.models import User
 from django.db import models
 
-from horilla.horilla_middlewares import _thread_locals
-from horilla.models import HorillaModel
+from hydra.hydra_middlewares import _thread_locals
+from hydra.models import HorillaModel
 
 # Create your models here.
 

@@ -7,7 +7,7 @@ from django.urls import reverse
 
 from notifications.signals import notify
 
-from horilla.scheduling import should_start_schedulers
+from hydra.scheduling import should_start_schedulers
 
 
 def update_rotating_work_type_assign(rotating_work_type, new_date):

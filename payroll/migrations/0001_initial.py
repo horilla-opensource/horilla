@@ -4,7 +4,7 @@ import base.models
 from django.conf import settings
 from django.db import migrations, models
 import django.db.models.deletion
-import horilla.models
+import hydra.models
 import payroll.models.models
 import simple_history.models
 
@@ -80,7 +80,7 @@ class Migration(migrations.Migration):
                 ('wage', models.FloatField(default=0, null=True, verbose_name='Basic Salary')),
                 ('contract_status', models.CharField(choices=[('draft', 'Draft'), ('active', 'Active'), ('expired', 'Expired'), ('terminated', 'Terminated')], default='draft', max_length=250, verbose_name='Status')),
                 ('notice_period_in_days', models.IntegerField(default=30, help_text='Notice period in total days.', validators=[payroll.models.models.min_zero], verbose_name='Notice Period')),
-                ('contract_document', models.FileField(blank=True, null=True, upload_to=horilla.models.upload_path)),
+                ('contract_document', models.FileField(blank=True, null=True, upload_to=hydra.models.upload_path)),
                 ('deduct_leave_from_basic_pay', models.BooleanField(default=True, help_text='Deduct the leave amount from basic pay.', verbose_name='Deduct From Basic Pay')),
                 ('calculate_daily_leave_amount', models.BooleanField(default=True, help_text='Leave amount will be calculated by dividing the basic pay by number of working days.', verbose_name='Calculate Daily Leave Amount')),
                 ('deduction_for_one_leave_amount', models.FloatField(blank=True, default=0, null=True, verbose_name='Deduction For One Leave Amount')),
@@ -197,7 +197,7 @@ class Migration(migrations.Migration):
                 ('title', models.CharField(max_length=50)),
                 ('type', models.CharField(choices=[('reimbursement', 'Reimbursement'), ('bonus_encashment', 'Bonus Point Encashment'), ('leave_encashment', 'Leave Encashment')], default='reimbursement', max_length=16)),
                 ('allowance_on', models.DateField()),
-                ('attachment', models.FileField(null=True, upload_to=horilla.models.upload_path)),
+                ('attachment', models.FileField(null=True, upload_to=hydra.models.upload_path)),
                 ('ad_to_encash', models.FloatField(default=0, help_text='Available Days to encash', verbose_name='Available days')),
                 ('cfd_to_encash', models.FloatField(default=0, help_text='Carry Forward Days to encash', verbose_name='Carry forward days')),
                 ('bonus_to_encash', models.IntegerField(default=0, help_text='Bonus points to encash', verbose_name='Bonus points')),
@@ -219,14 +219,14 @@ class Migration(migrations.Migration):
             name='ReimbursementFile',
             fields=[
                 ('id', models.BigAutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
-                ('file', models.FileField(upload_to=horilla.models.upload_path)),
+                ('file', models.FileField(upload_to=hydra.models.upload_path)),
             ],
         ),
         migrations.CreateModel(
             name='ReimbursementMultipleAttachment',
             fields=[
                 ('id', models.BigAutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
-                ('attachment', models.FileField(upload_to=horilla.models.upload_path)),
+                ('attachment', models.FileField(upload_to=hydra.models.upload_path)),
             ],
         ),
         migrations.CreateModel(

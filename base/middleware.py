@@ -20,9 +20,9 @@ from employee.models import (
     EmployeeBankDetails,
     EmployeeWorkInformation,
 )
-from horilla.horilla_apps import TWO_FACTORS_AUTHENTICATION
-from horilla.horilla_settings import APPS
-from horilla.methods import get_horilla_model_class
+from hydra.hydra_apps import TWO_FACTORS_AUTHENTICATION
+from hydra.hydra_settings import APPS
+from hydra.methods import get_horilla_model_class
 from horilla_documents.models import DocumentRequest
 
 CACHE_KEY = "horilla_company_models_cache_key"

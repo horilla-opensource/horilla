@@ -5,7 +5,7 @@ Custom form widgets for conditional visibility and styling.
 from django import forms
 from django.utils.safestring import SafeText, mark_safe
 
-from horilla import settings
+from hydra import settings
 
 
 class AllowanceConditionalVisibility(forms.Widget):

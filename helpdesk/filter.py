@@ -9,7 +9,7 @@ from django import forms
 from django_filters import CharFilter, DateFilter
 
 from helpdesk.models import FAQ, FAQCategory, Ticket
-from horilla.filters import FilterSet
+from hydra.filters import FilterSet
 
 
 class FAQFilter(FilterSet):

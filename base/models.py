@@ -17,9 +17,9 @@ from django.db import models
 from django.utils.translation import gettext_lazy as _
 
 from base.horilla_company_manager import HorillaCompanyManager
-from horilla import horilla_middlewares
-from horilla.horilla_middlewares import _thread_locals
-from horilla.models import HorillaModel, upload_path
+from hydra import hydra_middlewares
+from hydra.hydra_middlewares import _thread_locals
+from hydra.models import HorillaModel, upload_path
 from horilla_audit.models import HorillaAuditInfo, HorillaAuditLog
 
 # Create your models here.
@@ -941,7 +941,7 @@ class WorkTypeRequest(HorillaModel):
         return False
 
     def clean(self):
-        request = getattr(horilla_middlewares._thread_locals, "request", None)
+        request = getattr(hydra_middlewares._thread_locals, "request", None)
         if not request.user.is_superuser:
             if self.requested_date < django.utils.timezone.now().date():
                 raise ValidationError(_("Date must be greater than or equal to today"))
@@ -1060,7 +1060,7 @@ class ShiftRequest(HorillaModel):
 
     def clean(self):
 
-        request = getattr(horilla_middlewares._thread_locals, "request", None)
+        request = getattr(hydra_middlewares._thread_locals, "request", None)
         if not request.user.is_superuser:
             if not self.pk and self.requested_date < django.utils.timezone.now().date():
                 raise ValidationError(_("Date must be greater than or equal to today"))

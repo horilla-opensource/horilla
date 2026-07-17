@@ -42,7 +42,7 @@ from helpdesk.models import (
     Ticket,
     TicketType,
 )
-from horilla import horilla_middlewares
+from hydra import hydra_middlewares
 
 
 class TicketTypeForm(ModelForm):
@@ -125,7 +125,7 @@ class TicketForm(ModelForm):
             self.fields["attachment"] = MultipleFileField(
                 label="Attachements", required=False
             )
-        request = getattr(horilla_middlewares._thread_locals, "request", None)
+        request = getattr(hydra_middlewares._thread_locals, "request", None)
         instance = kwargs.get("instance")
         if instance:
             employee = instance.employee_id
@@ -160,7 +160,7 @@ class TicketForm(ModelForm):
         cleaned_data = super().clean(*args, **kwargs)
         deadline = cleaned_data.get("deadline")
         today = datetime.today().date()
-        request = getattr(horilla_middlewares._thread_locals, "request", None)
+        request = getattr(hydra_middlewares._thread_locals, "request", None)
         user = getattr(request, "user", None)
 
         if deadline and deadline < today:
@@ -194,7 +194,7 @@ class TicketTagForm(ModelForm):
         If an instance is provided, sets the initial value for the form's .
         """
         super().__init__(*args, **kwargs)
-        request = getattr(horilla_middlewares._thread_locals, "request", None)
+        request = getattr(hydra_middlewares._thread_locals, "request", None)
 
         if (
             request

@@ -10,8 +10,8 @@ from django.utils.translation import gettext_lazy as _
 from base.horilla_company_manager import HorillaCompanyManager
 from base.models import Company, Department, JobPosition, Tags
 from employee.models import Employee
-from horilla import horilla_middlewares
-from horilla.models import HorillaModel, upload_path
+from hydra import hydra_middlewares
+from hydra.models import HorillaModel, upload_path
 from horilla_audit.methods import get_diff
 from horilla_audit.models import HorillaAuditInfo, HorillaAuditLog
 
@@ -263,7 +263,7 @@ class FAQCategory(HorillaModel):
         return self.title
 
     def save(self, *args, **kwargs):
-        request = getattr(horilla_middlewares._thread_locals, "request", None)
+        request = getattr(hydra_middlewares._thread_locals, "request", None)
         selected_company = request.session.get("selected_company")
         if (
             not self.id
@@ -294,7 +294,7 @@ class FAQ(HorillaModel):
         return self.question
 
     def save(self, *args, **kwargs):
-        request = getattr(horilla_middlewares._thread_locals, "request", None)
+        request = getattr(hydra_middlewares._thread_locals, "request", None)
         selected_company = request.session.get("selected_company")
         if (
             not self.id

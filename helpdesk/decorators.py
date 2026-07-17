@@ -3,7 +3,7 @@ from pyexpat.errors import messages
 
 from base.methods import check_manager
 from helpdesk.models import Ticket
-from horilla.http import HorillaRedirect
+from hydra.http import HorillaRedirect
 
 decorator_with_arguments = (
     lambda decorator: lambda *args, **kwargs: lambda func: decorator(

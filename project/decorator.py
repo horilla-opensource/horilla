@@ -1,6 +1,6 @@
 from django.utils.translation import gettext_lazy as _
 
-from horilla.http import HorillaRedirect
+from hydra.http import HorillaRedirect
 from project.methods import (
     any_project_manager,
     any_project_member,

@@ -7,7 +7,7 @@ This module is used to register context processor`
 from django.http import JsonResponse
 from django.urls import include, path
 
-from horilla.urls import urlpatterns
+from hydra.urls import urlpatterns
 from horilla_audit.forms import HistoryForm
 from horilla_audit.models import AuditTag
 

@@ -8,7 +8,7 @@ from django.utils import timezone
 from django.utils.translation import gettext_lazy as _
 
 from base.models import Company
-from horilla.models import HorillaModel
+from hydra.models import HorillaModel
 from hydra_documents.storage import private_document_storage, quarantine_storage
 from hydra_people.models import Person
 from recruitment.models import Candidate

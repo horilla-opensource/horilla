@@ -8,7 +8,7 @@ class BackupConfig(AppConfig):
     def ready(self):
         from django.urls import include, path
 
-        from horilla.urls import urlpatterns
+        from hydra.urls import urlpatterns
         from horilla_backup import views
 
         urlpatterns.append(

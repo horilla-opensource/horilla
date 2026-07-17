@@ -24,7 +24,7 @@ from base.models import (
     Attachment,
 )
 from employee.models import Employee
-from horilla.decorators import hx_request_required, login_required, permission_required
+from hydra.decorators import hx_request_required, login_required, permission_required
 from notifications.signals import notify
 
 

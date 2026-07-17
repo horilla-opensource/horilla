@@ -16,7 +16,7 @@ from django.utils.translation import gettext_lazy as _trans
 from django.views import View
 
 from base.models import HorillaMailTemplate
-from horilla.decorators import login_required, permission_required
+from hydra.decorators import login_required, permission_required
 from horilla_automations import models
 from horilla_automations.filters import AutomationFilter
 from horilla_automations.forms import AutomationForm

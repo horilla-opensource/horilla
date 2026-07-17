@@ -205,23 +205,20 @@ Follow the steps below to install **Hydra** on your system. Hydra is compatible 
 
 #### **Ubuntu**
 ```bash
-sudo git init
-sudo git remote add horilla https://horilla-opensource@github.com/horilla-opensource/horilla.git
-sudo git pull horilla master
+git clone https://github.com/OleksandrKiris/horilla-hr.git hydra-platform
+cd hydra-platform
 ```
 
 #### **Windows**
 ```powershell
-git init
-git remote add horilla https://horilla-opensource@github.com/horilla-opensource/horilla.git
-git pull horilla master
+git clone https://github.com/OleksandrKiris/horilla-hr.git hydra-platform
+Set-Location hydra-platform
 ```
 
 #### **macOS**
 ```bash
-git init
-git remote add horilla https://horilla-opensource@github.com/horilla-opensource/horilla.git
-git pull horilla master
+git clone https://github.com/OleksandrKiris/horilla-hr.git hydra-platform
+cd hydra-platform
 ```
 
 ### **2. Set Up Python Virtual Environment**
@@ -277,7 +274,7 @@ git pull horilla master
    TIME_ZONE=Asia/Kolkata
    SECRET_KEY=django-insecure-j8op9)1q8$1&@^s&p*_0%d#pr@w9qj@lo=3#@d=a(^@9@zd@%j
    ALLOWED_HOSTS=www.example.com,example.com,*
-   DB_INIT_PASSWORD=d3f6a1b2c3d4e5f6a7b8c9d0e1f2a3b4c5d6e7f8a9b0c1d
+   DB_INIT_PASSWORD=<generate-a-unique-high-entropy-value>
    DB_ENGINE=django.db.backends.postgresql
    DB_NAME=horilla_main
    DB_USER=horilla
@@ -339,10 +336,10 @@ python manage.py runserver
 
 ---
 
-### **Accessing Horilla**
+### **Accessing Hydra**
 
-If everything is configured correctly, you should be able to access your Horilla app at **http://localhost:8000**.
-![Initialize Database in Horilla HRMS](https://www.horilla.com/wp-content/uploads/2024/12/how-to-initialize-the-database-in-horilla-hrms-step-by-step-1-1024x576.png)
+If everything is configured correctly, you should be able to access Hydra at **http://localhost:8000**.
+![Initialize the inherited database workflow](https://www.horilla.com/wp-content/uploads/2024/12/how-to-initialize-the-database-in-horilla-hrms-step-by-step-1-1024x576.png)
 
 
 #### **Initial Setup**
@@ -424,7 +421,7 @@ python manage.py runserver 8080   # For Windows
 
 ## **About**
 
-[Horilla](https://www.horilla.com/) is an open-source HRMS solution designed to simplify HR operations and improve organizational efficiency.
+[Hydra](https://github.com/OleksandrKiris/horilla-hr) is an open-source HRMS solution designed to simplify HR operations and improve organizational efficiency.
 
 ---
 

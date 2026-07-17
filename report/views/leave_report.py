@@ -5,7 +5,7 @@ from django.shortcuts import render
 if apps.is_installed("leave"):
 
     from base.models import Company
-    from horilla.decorators import login_required, permission_required
+    from hydra.decorators import login_required, permission_required
     from leave.filters import AssignedLeaveFilter, LeaveRequestFilter
     from leave.models import AvailableLeave, LeaveRequest
 

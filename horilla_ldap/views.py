@@ -3,7 +3,7 @@ from django.shortcuts import render
 from django.utils.translation import gettext as __
 from django.utils.translation import gettext_lazy as _
 
-from horilla.decorators import login_required
+from hydra.decorators import login_required
 
 from .forms import LDAPSettingsForm
 from .models import LDAPSettings

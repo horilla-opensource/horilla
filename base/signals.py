@@ -14,7 +14,7 @@ from django.http import Http404
 from django.shortcuts import redirect, render
 
 from base.models import Announcement, PenaltyAccounts
-from horilla.methods import get_horilla_model_class
+from hydra.methods import get_horilla_model_class
 
 
 @receiver(post_save, sender=PenaltyAccounts)

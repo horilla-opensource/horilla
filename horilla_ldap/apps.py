@@ -1,7 +1,7 @@
 from django.apps import AppConfig
 from django.conf import settings
 
-import horilla.horilla_settings
+import hydra.hydra_settings
 
 
 class HorillaLdapConfig(AppConfig):
@@ -11,8 +11,8 @@ class HorillaLdapConfig(AppConfig):
     def ready(self):
         from django.urls import include, path
 
-        from horilla.horilla_settings import APPS
-        from horilla.urls import urlpatterns
+        from hydra.hydra_settings import APPS
+        from hydra.urls import urlpatterns
 
         APPS.append("horilla_ldap")
         urlpatterns.append(
@@ -20,7 +20,7 @@ class HorillaLdapConfig(AppConfig):
         )
         super().ready()
 
-        ldap_config = horilla.horilla_settings.load_ldap_settings()
+        ldap_config = hydra.hydra_settings.load_ldap_settings()
 
         # Apply settings dynamically
         settings.LDAP_SERVER = ldap_config["LDAP_SERVER"]

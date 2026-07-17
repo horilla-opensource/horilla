@@ -9,7 +9,7 @@ from functools import wraps
 from django.shortcuts import redirect
 
 from employee.models import Employee
-from horilla.methods import handle_no_permission
+from hydra.methods import handle_no_permission
 from recruitment.models import Recruitment, Stage
 
 

@@ -6,7 +6,7 @@ from apscheduler.schedulers.background import BackgroundScheduler
 from django.conf import settings
 
 from base.backends import logger
-from horilla.scheduling import should_start_schedulers
+from hydra.scheduling import should_start_schedulers
 
 
 def create_work_record():

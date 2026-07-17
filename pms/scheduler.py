@@ -6,7 +6,7 @@ from apscheduler.triggers.cron import CronTrigger
 
 from notifications.signals import notify
 
-from horilla.scheduling import should_start_schedulers
+from hydra.scheduling import should_start_schedulers
 
 
 def cyclic_feedback_creation():

@@ -12,7 +12,7 @@ from django.urls import reverse
 
 from notifications.signals import notify
 
-from horilla.scheduling import should_start_schedulers
+from hydra.scheduling import should_start_schedulers
 
 
 def notify_expiring_assets():

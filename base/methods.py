@@ -25,9 +25,9 @@ from django.utils.translation import gettext as _
 
 from base.models import Company, CompanyLeaves, DynamicPagination, Holidays
 from employee.models import Employee, EmployeeWorkInformation
-from horilla.horilla_apps import NESTED_SUBORDINATE_VISIBILITY
-from horilla.horilla_middlewares import _thread_locals
-from horilla.horilla_settings import HORILLA_DATE_FORMATS, HORILLA_TIME_FORMATS
+from hydra.hydra_apps import NESTED_SUBORDINATE_VISIBILITY
+from hydra.hydra_middlewares import _thread_locals
+from hydra.hydra_settings import HORILLA_DATE_FORMATS, HORILLA_TIME_FORMATS
 
 # Tokens that must never resolve in a user-supplied mail-template body —
 # they would leak password hashes, session metadata, or full request state.
@@ -977,7 +977,7 @@ def generate_pdf(template_path, context, path=True, title=None, html=True):
 
 
 def get_pagination():
-    from horilla.horilla_middlewares import _thread_locals
+    from hydra.hydra_middlewares import _thread_locals
 
     request = getattr(_thread_locals, "request", None)
     user = request.user

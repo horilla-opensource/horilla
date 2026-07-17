@@ -6,7 +6,7 @@ from django.template.loader import render_to_string
 from django.utils.translation import gettext_lazy as _
 
 from base.forms import ModelForm
-from horilla.horilla_middlewares import _thread_locals
+from hydra.hydra_middlewares import _thread_locals
 
 from .models import *
 

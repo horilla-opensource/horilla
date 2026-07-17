@@ -7,7 +7,7 @@ class HydraTemplatesConfig(AppConfig):
     verbose_name = "Hydra Templates"
 
     def ready(self):
-        from horilla.horilla_settings import APPS
+        from hydra.hydra_settings import APPS
 
         if self.label not in APPS:
             APPS.append(self.label)

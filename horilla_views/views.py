@@ -14,7 +14,7 @@ from django.views import View
 from django.views.decorators.csrf import csrf_protect
 
 from base.methods import eval_validate
-from horilla.signals import post_generic_delete, pre_generic_delete
+from hydra.signals import post_generic_delete, pre_generic_delete
 from horilla_views import models
 from horilla_views.cbv_methods import get_short_uuid, login_required, merge_dicts
 from horilla_views.forms import SavedFilterForm
@@ -308,7 +308,7 @@ class HorillaDeleteConfirmationView(View):
         """
         GET method
         """
-        from horilla.urls import path, urlpatterns
+        from hydra.urls import path, urlpatterns
 
         pk = self.request.GET["pk"]
 

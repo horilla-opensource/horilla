@@ -4,7 +4,7 @@ from django.conf import settings
 from django.db import migrations, models
 import django.db.models.deletion
 import django.utils.timezone
-import horilla.models
+import hydra.models
 import simple_history.models
 
 
@@ -65,7 +65,7 @@ class Migration(migrations.Migration):
                 ('requested_days', models.FloatField(blank=True, null=True, verbose_name='Requested days')),
                 ('requested_date', models.DateField(default=django.utils.timezone.now)),
                 ('description', models.TextField(max_length=255, verbose_name='Description')),
-                ('attachment', models.FileField(blank=True, null=True, upload_to=horilla.models.upload_path, verbose_name='Attachment')),
+                ('attachment', models.FileField(blank=True, null=True, upload_to=hydra.models.upload_path, verbose_name='Attachment')),
                 ('status', models.CharField(choices=[('requested', 'Requested'), ('approved', 'Approved'), ('rejected', 'Rejected')], default='requested', max_length=30)),
                 ('reject_reason', models.TextField(blank=True, max_length=255)),
                 ('created_by', models.ForeignKey(blank=True, editable=False, null=True, on_delete=django.db.models.deletion.SET_NULL, to=settings.AUTH_USER_MODEL, verbose_name='Created By')),
@@ -90,7 +90,7 @@ class Migration(migrations.Migration):
                 ('requested_days', models.FloatField(blank=True, null=True, verbose_name='Requested Days')),
                 ('leave_clashes_count', models.IntegerField(default=0, verbose_name='Leave Clashes Count')),
                 ('description', models.TextField(verbose_name='Description')),
-                ('attachment', models.FileField(blank=True, null=True, upload_to=horilla.models.upload_path, verbose_name='Attachment')),
+                ('attachment', models.FileField(blank=True, null=True, upload_to=hydra.models.upload_path, verbose_name='Attachment')),
                 ('status', models.CharField(choices=[('requested', 'Requested'), ('approved', 'Approved'), ('cancelled', 'Cancelled'), ('rejected', 'Rejected')], default='requested', max_length=30, verbose_name='Status')),
                 ('requested_date', models.DateField(default=django.utils.timezone.now, verbose_name='Created Date')),
                 ('approved_available_days', models.FloatField(default=0)),
@@ -109,7 +109,7 @@ class Migration(migrations.Migration):
             name='LeaverequestFile',
             fields=[
                 ('id', models.BigAutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
-                ('file', models.FileField(upload_to=horilla.models.upload_path)),
+                ('file', models.FileField(upload_to=hydra.models.upload_path)),
             ],
         ),
         migrations.CreateModel(
@@ -118,7 +118,7 @@ class Migration(migrations.Migration):
                 ('id', models.BigAutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
                 ('created_at', models.DateTimeField(auto_now_add=True, null=True, verbose_name='Created At')),
                 ('is_active', models.BooleanField(default=True, verbose_name='Is Active')),
-                ('icon', models.ImageField(blank=True, null=True, upload_to=horilla.models.upload_path, verbose_name='Icon')),
+                ('icon', models.ImageField(blank=True, null=True, upload_to=hydra.models.upload_path, verbose_name='Icon')),
                 ('name', models.CharField(max_length=30, verbose_name='Name')),
                 ('color', models.CharField(max_length=30, null=True, verbose_name='Color')),
                 ('payment', models.CharField(choices=[('paid', 'Paid'), ('unpaid', 'Unpaid')], default='unpaid', max_length=30, verbose_name='Is Paid')),

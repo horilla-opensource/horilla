@@ -35,9 +35,9 @@ from base.models import (
     validate_time_format,
 )
 from employee.methods.duration_methods import format_time, strtime_seconds
-from horilla import horilla_middlewares
-from horilla.methods import get_horilla_model_class
-from horilla.models import HorillaModel, has_xss, upload_path
+from hydra import hydra_middlewares
+from hydra.methods import get_horilla_model_class
+from hydra.models import HorillaModel, has_xss, upload_path
 from horilla_audit.methods import get_diff
 from horilla_audit.models import HorillaAuditInfo, HorillaAuditLog
 
@@ -442,7 +442,7 @@ class Employee(models.Model):
         """
         if apps.is_installed("attendance"):
             Attendance = get_horilla_model_class("attendance", "attendance")
-            request = getattr(horilla_middlewares._thread_locals, "request", None)
+            request = getattr(hydra_middlewares._thread_locals, "request", None)
 
             if request is not None:
                 if (
@@ -551,7 +551,7 @@ class Employee(models.Model):
         self.full_clean()
         super().save(*args, **kwargs)
 
-        request = getattr(horilla_middlewares._thread_locals, "request", None)
+        request = getattr(hydra_middlewares._thread_locals, "request", None)
         if request and not self.is_active and self.get_archive_condition() is not False:
             self.is_active = True
             super().save(*args, **kwargs)

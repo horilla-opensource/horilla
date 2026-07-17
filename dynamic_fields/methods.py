@@ -5,7 +5,7 @@ dynamic_fields/methods.py
 from django.db import connection
 from django.template.loader import render_to_string
 
-from horilla.horilla_middlewares import _thread_locals
+from hydra.hydra_middlewares import _thread_locals
 
 
 def column_exists(table_name, column_name):

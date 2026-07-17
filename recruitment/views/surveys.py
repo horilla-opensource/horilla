@@ -19,13 +19,13 @@ from django.shortcuts import redirect, render
 from django.utils.translation import gettext_lazy as _
 
 from base.methods import closest_numbers, get_pagination
-from horilla.decorators import (
+from hydra.decorators import (
     hx_request_required,
     is_recruitment_manager,
     login_required,
     permission_required,
 )
-from horilla.http import HorillaRedirect
+from hydra.http import HorillaRedirect
 from recruitment.filters import SurveyFilter
 from recruitment.forms import (
     AddQuestionForm,

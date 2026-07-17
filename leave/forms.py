@@ -22,7 +22,7 @@ from base.methods import filtersubordinatesemployeemodel, reload_queryset
 from employee.filters import EmployeeFilter
 from employee.forms import MultipleFileField
 from employee.models import Employee
-from horilla import horilla_middlewares
+from hydra import hydra_middlewares
 from horilla_widgets.forms import HorillaForm, HorillaModelForm
 from horilla_widgets.widgets.horilla_multi_select_field import HorillaMultiSelectField
 from horilla_widgets.widgets.select_widgets import HorillaMultiSelectWidget
@@ -45,7 +45,7 @@ LEAVE_MAX_LIMIT = 1e5
 class ConditionForm(forms.ModelForm):
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
-        request = getattr(horilla_middlewares._thread_locals, "request", None)
+        request = getattr(hydra_middlewares._thread_locals, "request", None)
         reload_queryset(self.fields)
         for field_name, field in self.fields.items():
             widget = field.widget
@@ -926,7 +926,7 @@ if apps.is_installed("attendance"):
         def __init__(self, *args, **kwargs):
             super(CompensatoryLeaveForm, self).__init__(*args, **kwargs)
 
-            request = getattr(horilla_middlewares._thread_locals, "request", None)
+            request = getattr(hydra_middlewares._thread_locals, "request", None)
             instance_id = None
             if self.instance:
                 instance_id = self.instance.id

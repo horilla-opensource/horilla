@@ -59,6 +59,35 @@ The baseline emitted a missing `staticfiles` directory warning and one expected
 test-path log message (`Onboarding portal queue validation failed`). Neither
 caused a failed test. They remain candidates for deployment/smoke validation.
 
+## Rebranding execution evidence
+
+### Django project package
+
+- renamed the main Django project package from `horilla` to `hydra`;
+- renamed its six branded helper modules to `hydra_*` names;
+- changed the settings, URLConf, WSGI/ASGI, management, entrypoint, runtime and
+  migration import paths to the new namespace;
+- renamed the ignored local database to `TestDB_Hydra.sqlite3`;
+- preserved a pre-change database backup under ignored `.local/backups`, with
+  matching SHA-256 and `PRAGMA integrity_check = ok`;
+- updated 12 historical migration files only where their executable import path
+  must follow the moved project package: 42 added and 42 removed lines;
+- regenerated and verified the manifest for 74 reviewed migration files;
+- verified zero remaining `horilla.` project-module imports and zero remaining
+  `from horilla` / `import horilla` imports;
+- reduced the old-brand scan from 6,761 matches in 564 files to 2,776 matches
+  in 470 files; the remaining application packages, identifiers, UI content,
+  fixtures, translations and justified upstream references are still in work.
+
+Post-rename Windows regression:
+
+- Django system check: PASS;
+- migration drift check: PASS;
+- tests discovered/passed: 448/448;
+- skipped: 1;
+- test runtime: 325.581 seconds;
+- result: `OK (skipped=1)`.
+
 ## Load-test evidence
 
 No Windows-native, authenticated multi-role load stage has been measured yet.
@@ -94,6 +123,10 @@ accepted as evidence for this objective.
 
 ## Git delivery evidence
 
-No commits or pushes for this objective have been made yet. This section will
-list each logical commit, its SHA, push verification, the final remote, any PR,
-and intentionally omitted files after implementation and secret scanning.
+Commits created so far:
+
+- `e9e6bcc4` - `feat: preserve completed Hydra business workflows`.
+
+Push is intentionally pending until the remaining implementation, regression
+tests and final secret scan are complete. This section will also list the final
+remote, any PR, and intentionally omitted files.

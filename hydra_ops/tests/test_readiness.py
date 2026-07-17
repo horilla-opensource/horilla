@@ -9,7 +9,7 @@ from django.http import HttpResponse
 from django.test import RequestFactory
 from django.urls import reverse
 
-from horilla.scheduling import should_start_schedulers
+from hydra.scheduling import should_start_schedulers
 from hydra_ops.readiness import ReadinessResult, configuration_results, readiness_payload
 from hydra_ops.middleware import DisableDatabaseInitializationMiddleware
 

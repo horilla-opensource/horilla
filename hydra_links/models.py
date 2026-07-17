@@ -6,7 +6,7 @@ from django.db.models import Q
 from django.urls import reverse
 from django.utils.translation import gettext_lazy as _
 
-from horilla.models import HorillaModel
+from hydra.models import HorillaModel
 from hydra_coordination.models import Location
 from hydra_links.public_urls import validate_public_hydra_url
 

@@ -420,7 +420,7 @@ from rest_framework.response import Response
 from rest_framework.views import APIView
 from rest_framework_simplejwt.authentication import JWTAuthentication
 
-from horilla.horilla_settings import HORILLA_DATE_FORMATS
+from hydra.hydra_settings import HORILLA_DATE_FORMATS
 
 # Your models / helpers
 from payroll.models.models import Company, EmployeeWorkInformation, Payslip

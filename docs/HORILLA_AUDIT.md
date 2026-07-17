@@ -36,7 +36,7 @@ The Windows lock in `requirements.phase0-windows-py311.lock` captures the enviro
 
 ### Settings and applications
 
-`horilla/settings.py` declares the Django core plus notifications, base, employee, recruitment, leave, PMS, onboarding, asset, attendance and payroll. Importing `horilla/__init__.py` mutates settings further through `horilla/horilla_apps.py`, adding audit, documents, automations, biometric, helpdesk, offboarding, backup, project and other Horilla apps. App `ready()` methods append URL patterns dynamically.
+`hydra/settings.py` declares the Django core plus notifications, base, employee, recruitment, leave, PMS, onboarding, asset, attendance and payroll. Importing `horilla/__init__.py` mutates settings further through `horilla/hydra_apps.py`, adding audit, documents, automations, biometric, helpdesk, offboarding, backup, project and other Horilla apps. App `ready()` methods append URL patterns dynamically.
 
 Relevant settings:
 

@@ -8,7 +8,7 @@ from django.urls import reverse
 from django.utils.translation import gettext_lazy as _
 
 from base.models import Company
-from horilla.models import HorillaModel
+from hydra.models import HorillaModel
 from hydra_templates.placeholders import placeholder_names
 
 

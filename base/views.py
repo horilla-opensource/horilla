@@ -161,8 +161,8 @@ from employee.models import (
     EmployeeWorkInformation,
     ProfileEditFeature,
 )
-from horilla import horilla_apps
-from horilla.decorators import (
+from hydra import hydra_apps
+from hydra.decorators import (
     delete_permission,
     duplicate_permission,
     hx_request_required,
@@ -170,16 +170,16 @@ from horilla.decorators import (
     manager_can_enter,
     permission_required,
 )
-from horilla.group_by import group_by_queryset
-from horilla.horilla_settings import (
+from hydra.group_by import group_by_queryset
+from hydra.hydra_settings import (
     APPS,
     DB_INIT_PASSWORD,
     DYNAMIC_URL_PATTERNS,
     FILE_STORAGE,
     NO_PERMISSION_MODALS,
 )
-from horilla.http.response import HorillaRedirect
-from horilla.methods import get_horilla_model_class, remove_dynamic_url
+from hydra.http.response import HorillaRedirect
+from hydra.methods import get_horilla_model_class, remove_dynamic_url
 from horilla_audit.forms import HistoryTrackingFieldsForm
 from horilla_audit.models import AccountBlockUnblock, AuditTag, HistoryTrackingFields
 from notifications.models import Notification
@@ -234,7 +234,10 @@ def initialize_database_condition():
 def load_demo_database(request):
     if initialize_database_condition():
         if request.method == "POST":
-            if request.POST.get("load_data_password") == DB_INIT_PASSWORD:
+            if (
+                DB_INIT_PASSWORD
+                and request.POST.get("load_data_password") == DB_INIT_PASSWORD
+            ):
                 data_files = [
                     "user_data.json",
                     "employee_info_data.json",
@@ -287,7 +290,7 @@ def initialize_database(request):
     if initialize_database_condition():
         if request.method == "POST":
             password = request._post.get("password")
-            if DB_INIT_PASSWORD == password:
+            if DB_INIT_PASSWORD and DB_INIT_PASSWORD == password:
                 return redirect(initialize_database_user)
             else:
                 messages.warning(
@@ -826,7 +829,7 @@ def two_factor_auth(request):
             messages.error(request, "Invalid OTP.")
             return render(request, "base/auth/two_factor_auth.html")
 
-    if not horilla_apps.TWO_FACTORS_AUTHENTICATION:
+    if not hydra_apps.TWO_FACTORS_AUTHENTICATION:
         return redirect("/")
 
     if otp is None:
@@ -1498,7 +1501,7 @@ def mail_server_conf(request):
 @permission_required("base.view_dynamicemailconfiguration")
 def mail_server_test_email(request):
     instance_id = request.GET.get("instance_id")
-    white_labelling = getattr(horilla_apps, "WHITE_LABELLING", False)
+    white_labelling = getattr(hydra_apps, "WHITE_LABELLING", False)
     image_path = path.join(settings.STATIC_ROOT, "images/ui/horilla-logo.png")
     company_name = "Horilla"
 

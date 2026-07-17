@@ -8,7 +8,7 @@ from outlook_auth import scheduler as _scheduler
 
 settings.OUTLOOK_SCOPES = ["https://outlook.office.com/SMTP.Send"]
 
-# Add these in horilla/settings.py
+# Add these in hydra/settings.py
 
 """
 

@@ -29,17 +29,17 @@ from attendance.models import AttendanceActivity
 from attendance.views.clock_in_out import clock_in, clock_out
 from base.methods import get_key_instances, get_pagination
 from employee.models import Employee, EmployeeWorkInformation
-from horilla.decorators import (
+from hydra.decorators import (
     hx_request_required,
     install_required,
     login_required,
     permission_required,
 )
-from horilla.filters import HorillaPaginator
-from horilla.horilla_settings import BIO_DEVICE_THREADS
-from horilla.http.response import HorillaRedirect
-from horilla.scheduling import should_start_schedulers
-from horilla.settings import TIME_ZONE
+from hydra.filters import HorillaPaginator
+from hydra.hydra_settings import BIO_DEVICE_THREADS
+from hydra.http.response import HorillaRedirect
+from hydra.scheduling import should_start_schedulers
+from hydra.settings import TIME_ZONE
 
 from .anviz import CrossChexCloudAPI
 from .cosec import COSECBiometric

@@ -17,8 +17,8 @@ from django.db.models.utils import AltersData
 from django.template.defaultfilters import register
 from django.utils.translation import gettext_lazy as _
 
-from horilla.config import import_method
-from horilla.horilla_middlewares import _thread_locals
+from hydra.config import import_method
+from hydra.hydra_middlewares import _thread_locals
 
 register = template.Library()
 

@@ -11,7 +11,7 @@ from django.shortcuts import render
 
 from base.methods import filtersubordinates, paginator_qry
 from base.models import ShiftRequest, WorkTypeRequest
-from horilla.decorators import login_required
+from hydra.decorators import login_required
 
 
 @login_required

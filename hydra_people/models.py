@@ -9,7 +9,7 @@ from django.utils import timezone
 from django.utils.translation import gettext_lazy as _
 
 from employee.models import Employee
-from horilla.models import HorillaModel
+from hydra.models import HorillaModel
 from recruitment.models import Candidate, Recruitment, Stage
 
 
