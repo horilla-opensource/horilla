@@ -21,6 +21,7 @@ from leave.cbv import (
     leave_types,
     my_leave_request,
     restricted_days,
+    settings_tabs,
 )
 from leave.forms import RestrictLeaveForm
 
@@ -537,6 +538,21 @@ urlpatterns = [
         "restrict-leaves-view/",
         views.restrict_leaves_settings_view,
         name="restrict-leaves-view",
+    ),
+    path(
+        "leave-settings-view/",
+        settings_tabs.LeaveSettingsView.as_view(),
+        name="leave-settings-view",
+    ),
+    path(
+        "leave-settings-tab-view/",
+        settings_tabs.LeaveSettingsTabView.as_view(),
+        name="leave-settings-tab-view",
+    ),
+    path(
+        "leave-settings-restrict-leaves-tab/",
+        settings_tabs.LeaveSettingsRestrictLeavesTab.as_view(),
+        name="leave-settings-restrict-leaves-tab",
     ),
     path(
         "compensatory-leave-settings-view/",

@@ -1,0 +1,10 @@
+{% extends "index.html" %}
+{% load static %}
+{% load i18n %}
+
+{% block content %}
+    <meta name="csrf-token" content="{{ csrf_token }}">
+
+    {% include "generic/components.html" %}
+    <div hx-get='{% url "leave-settings-tab-view" %}' hx-trigger="load"></div>
+{% endblock content %}

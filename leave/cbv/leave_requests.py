@@ -302,6 +302,8 @@ class LeaveRequestsDetailView(HorillaDetailedView):
     """
 
     model = LeaveRequest
+    detail_view_url_name = "leave-requests-detail-view"
+    detail_view_permission = "leave.view_leaverequest"
     title = _("Details")
     header = {
         "title": "leave_requests_detail_subtitle",

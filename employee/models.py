@@ -303,6 +303,12 @@ class Employee(models.Model):
             return self.employee_profile.url
         return static("images/ui/default_avatar.jpg")
 
+    def get_active_status(self):
+        """
+        This method is used to return the active/inactive status of the employee
+        """
+        return _("Active") if self.is_active else _("Inactive")
+
     def get_leave_status(self):
         """
         This method is used to get the leave status of the employee

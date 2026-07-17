@@ -1,0 +1,46 @@
+{% load i18n static %}
+
+<div class="oh-inner-sidebar-content border border-[#ebebeb] rounded-md mb-5" id="autoPayslipTabRoot">
+    <div hx-get="{% url 'pay-slip-automation-nav' %}" hx-trigger="load"></div>
+
+    <p class="text-xs text-gray-500 mt-1 ml-2">
+        {% trans "Automatically generate payslips for employees on a scheduled day of the month." %}
+    </p>
+
+    <div
+        class="oh-checkpoint-badge mb-2"
+        id="selectedInstances"
+        data-ids="[]"
+        data-clicked=""
+        style="display: none"
+    >
+    </div>
+
+    <div class="oh-wrapper" id="payslipAutoGenerationListContainer">
+        <div class="animated-background"></div>
+    </div>
+</div>
+
+<div id="ohMessages"></div>
+
+<script src="{% static 'cbv/deleteFunc.js' %}"></script>
+<script>
+    function updateAutoPayslipIsActivate(checkbox) {
+        var isChecked = $(checkbox).prop('checked');
+        var autoId = $(checkbox).data('id');
+        $.ajax({
+            type: "POST",
+            url: "{% url 'activate-auto-payslip-generate' %}",
+            data: { 'isChecked': isChecked, 'autoId': autoId, 'csrfmiddlewaretoken': getCookie('csrftoken') },
+            dataType: "json",
+            success: function (response) {
+                $("#ohMessages").append(`
+                    <div class="oh-alert-container">
+                        <div class="oh-alert oh-alert--animated oh-alert--${response.type}">
+                            ${response.message}
+                        </div>
+                    </div>`);
+            }
+        });
+    }
+</script>

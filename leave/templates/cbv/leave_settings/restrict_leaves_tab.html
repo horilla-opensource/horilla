@@ -1,0 +1,31 @@
+{% load i18n static %}
+
+<div class="oh-inner-sidebar-content border border-[#ebebeb] rounded-md mb-5" id="restrictLeavesTabRoot">
+    <div hx-get="{% url 'nav-restricted-days' %}" hx-trigger="load"></div>
+
+    <p class="text-xs text-gray-500 mt-1 ml-2">
+        {% trans "Define date ranges during which leave requests are restricted for selected departments or job positions." %}
+    </p>
+
+    <div
+        class="oh-checkpoint-badge mb-2"
+        id="selectedInstances"
+        data-ids="[]"
+        data-clicked=""
+        style="display: none"
+    >
+    </div>
+
+    <div class="oh-wrapper" id="restrictLeavesListContainer">
+        <div class="animated-background"></div>
+    </div>
+</div>
+
+<span
+    id="bulkDeleteSpan"
+    hx-post="{% url 'restrict-days-bulk-delete' %}?{{ request.GET.urlencode }}"
+    hx-target="#restrictday"
+></span>
+
+<script src="{% static 'cbv/deleteFunc.js' %}"></script>
+<script src="{% static '/restrict_days/action.js' %}"></script>

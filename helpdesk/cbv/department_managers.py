@@ -95,6 +95,8 @@ class DepartmentManagersNav(HorillaNavView):
     Nav bar
     """
 
+    template_name = "generic/inline_nav.html"
+
     def __init__(self, **kwargs: Any) -> None:
         super().__init__(**kwargs)
         self.search_url = reverse("department-manager-list")
@@ -115,7 +117,7 @@ class DepartmentManagersNav(HorillaNavView):
 
     nav_title = _("Department managers")
     filter_instance = DepartmentManagerFilter()
-    search_swap_target = "#listContainer"
+    search_swap_target = "#departmentManagerListContainer"
 
 
 @method_decorator(login_required, name="dispatch")

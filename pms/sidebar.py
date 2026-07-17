@@ -2,12 +2,10 @@
 pms/sidebar.py
 """
 
-from django.apps import apps
 from django.urls import reverse_lazy
 from django.utils.translation import gettext_lazy as _
 
 from base.templatetags.basefilters import is_reportingmanager
-from horilla.menu import settings_menu
 
 MENU = _("Performance")
 IMG_SRC = "images/ui/pms.svg"
@@ -49,6 +47,11 @@ SUBMENUS = [
         "redirect": reverse_lazy("templates-periods-view"),
         "accessibility": "pms.sidebar.performance_setup_accessibility",
     },
+    {
+        "menu": _("Settings"),
+        "redirect": reverse_lazy("performance-settings-view"),
+        "accessibility": "pms.sidebar.performance_settings_accessibility",
+    },
 ]
 
 
@@ -84,36 +87,5 @@ def performance_setup_accessibility(request, submenu, user_perms, *args, **kwarg
     )
 
 
-# ---------------------------------------------------------------------------
-# Settings menu registrations
-# ---------------------------------------------------------------------------
-
-
-def bonus_point_accessibility(request, submenu, user_perms, *args, **kwargs):
+def performance_settings_accessibility(request, submenu, user_perms, *args, **kwargs):
     return request.user.has_perm("pms.add_bonuspointsetting")
-
-
-@settings_menu.register
-class PerformanceSettings:
-    title = _("Performance")
-    order = 8
-    condition = lambda self, request: apps.is_installed("pms")
-    items = [
-        {
-            "label": _("Bonus Point Setting"),
-            "url": reverse_lazy("bonus-point-setting"),
-            "accessibility": bonus_point_accessibility,
-            "search_entries": [
-                {
-                    "text": _("Bonus Point Setting"),
-                    "description": _(
-                        "Configure bonus points awarded for objectives tasks and projects"
-                    ),
-                },
-                {
-                    "text": _("Bonus Points"),
-                    "description": _("Points awarded for performance milestones"),
-                },
-            ],
-        },
-    ]

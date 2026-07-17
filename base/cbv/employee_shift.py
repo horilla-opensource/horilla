@@ -11,7 +11,11 @@ from django.utils.translation import gettext_lazy as _
 from base.filters import EmployeeShiftFilter
 from base.models import EmployeeShift
 from horilla_views.cbv_methods import login_required, permission_required
-from horilla_views.generic.cbv.views import HorillaListView, HorillaNavView
+from horilla_views.generic.cbv.views import (
+    HorillaDetailedView,
+    HorillaListView,
+    HorillaNavView,
+)
 
 
 @method_decorator(login_required, name="dispatch")
@@ -74,6 +78,32 @@ class EmployeeShiftListView(HorillaListView):
     ]
 
     row_attrs = """ id = "shiftTr{get_instance_id}" """
+
+
+@method_decorator(login_required, name="dispatch")
+@method_decorator(permission_required(perm="base.view_employeeshift"), name="dispatch")
+class EmployeeShiftDetailView(HorillaDetailedView):
+    """
+    detail view for employee shift, also registered as the related-object-link
+    target for EmployeeShift via detail_view_url_name
+    """
+
+    model = EmployeeShift
+    detail_view_url_name = "employee-shift-detail-view"
+    detail_view_permission = "base.view_employeeshift"
+    title = _("Employee Shift")
+
+    header = {
+        "title": "employee_shift",
+        "subtitle": "",
+        "avatar": "",
+    }
+
+    body = [
+        (_("Employee Shift"), "employee_shift"),
+        (_("Weekly Full Time"), "weekly_full_time"),
+        (_("Full Time"), "full_time"),
+    ]
 
 
 @method_decorator(login_required, name="dispatch")

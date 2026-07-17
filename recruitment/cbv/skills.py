@@ -69,6 +69,7 @@ class SkillsListView(HorillaListView):
                         hx-swap="delete"
                         hx-confirm="{delete_confirm}"
                         hx-target="#skillsTr{{get_delete_instance}}"
+                        hx-on-htmx-after-request="$('#reloadMessagesButton').click();"
                     """,
         },
     ]
@@ -83,6 +84,8 @@ class SkillsNavView(HorillaNavView):
     navbar of skills view
     """
 
+    template_name = "generic/inline_nav.html"
+
     def __init__(self, **kwargs: Any) -> None:
         super().__init__(**kwargs)
         self.search_url = reverse("skills-list-view")
@@ -95,7 +98,7 @@ class SkillsNavView(HorillaNavView):
                             """
 
     nav_title = _("Skills")
-    search_swap_target = "#listContainer"
+    search_swap_target = "#skillListContainer"
     filter_instance = SkillsFilter()
 
 

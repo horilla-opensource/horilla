@@ -19,6 +19,7 @@ from recruitment.cbv import (
     pipeline,
     recruitment_survey,
     recruitment_view,
+    settings_tabs,
     skill_zone,
     skills,
     stage_view,
@@ -763,6 +764,26 @@ urlpatterns = [
         "delete-reject-reasons/",
         views.delete_reject_reason,
         name="delete-reject-reasons",
+    ),
+    path(
+        "recruitment-settings-view/",
+        settings_tabs.RecruitmentSettingsView.as_view(),
+        name="recruitment-settings-view",
+    ),
+    path(
+        "recruitment-settings-tab-view/",
+        settings_tabs.RecruitmentSettingsTabView.as_view(),
+        name="recruitment-settings-tab-view",
+    ),
+    path(
+        "recruitment-settings-reject-reason-tab/",
+        settings_tabs.RecruitmentSettingsRejectReasonTab.as_view(),
+        name="recruitment-settings-reject-reason-tab",
+    ),
+    path(
+        "recruitment-settings-skill-tab/",
+        settings_tabs.RecruitmentSettingsSkillTab.as_view(),
+        name="recruitment-settings-skill-tab",
     ),
     path(
         "resume-completion/",

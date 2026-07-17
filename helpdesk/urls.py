@@ -9,10 +9,42 @@ from django.urls import path
 from base.views import object_delete
 from helpdesk import dashboard as hd_dashboard
 from helpdesk import views
-from helpdesk.cbv import department_managers, faq, pipeline, tags, ticket_type
+from helpdesk.cbv import (
+    department_managers,
+    faq,
+    pipeline,
+    settings_tabs,
+    tags,
+    ticket_type,
+)
 from helpdesk.models import FAQ, FAQCategory, Ticket
 
 urlpatterns = [
+    path(
+        "helpdesk-settings-view/",
+        settings_tabs.HelpdeskSettingsView.as_view(),
+        name="helpdesk-settings-view",
+    ),
+    path(
+        "helpdesk-settings-tab-view/",
+        settings_tabs.HelpdeskSettingsTabView.as_view(),
+        name="helpdesk-settings-tab-view",
+    ),
+    path(
+        "helpdesk-settings-department-manager-tab/",
+        settings_tabs.HelpdeskSettingsDepartmentManagerTab.as_view(),
+        name="helpdesk-settings-department-manager-tab",
+    ),
+    path(
+        "helpdesk-settings-ticket-type-tab/",
+        settings_tabs.HelpdeskSettingsTicketTypeTab.as_view(),
+        name="helpdesk-settings-ticket-type-tab",
+    ),
+    path(
+        "helpdesk-settings-tags-tab/",
+        settings_tabs.HelpdeskSettingsTagsTab.as_view(),
+        name="helpdesk-settings-tags-tab",
+    ),
     path("ticket-list/", ticket_type.TicketsListView.as_view(), name="ticket-list"),
     path("ticket-nav/", ticket_type.TicketsNavView.as_view(), name="ticket-nav"),
     path(

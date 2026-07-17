@@ -69,6 +69,7 @@ class RejectReasonListView(HorillaListView):
                     hx-target="#rejectReasonTr{{get_instance_id}}"
                     hx-post="{{get_delete_url}}"
                     hx-swap="delete"
+                    hx-on-htmx-after-request="$('#reloadMessagesButton').click();"
                     """,
         },
     ]
@@ -89,6 +90,8 @@ class RejectReasonNav(HorillaNavView):
     Nav bar
     """
 
+    template_name = "generic/inline_nav.html"
+
     def __init__(self, **kwargs: Any) -> None:
         super().__init__(**kwargs)
         self.search_url = reverse("candidate-reject-reasons-list")
@@ -102,7 +105,7 @@ class RejectReasonNav(HorillaNavView):
 
     nav_title = _("Reject Reasons")
     filter_instance = RejectReasonFilter()
-    search_swap_target = "#listContainer"
+    search_swap_target = "#rejectReasonListContainer"
 
 
 @method_decorator(login_required, name="dispatch")

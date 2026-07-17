@@ -505,6 +505,11 @@ urlpatterns = [
         "department-nav/", department.DepartmentNavView.as_view(), name="department-nav"
     ),
     path(
+        "department-detail-view/<int:pk>/",
+        department.DepartmentDetailView.as_view(),
+        name="department-detail-view",
+    ),
+    path(
         "settings/department-creation/",
         views.department_create,
         name="department-creation",
@@ -555,6 +560,11 @@ urlpatterns = [
         name="job-position-navbar",
     ),
     path(
+        "job-position-detail-view/<int:pk>/",
+        job_position.JobPositionDetailView.as_view(),
+        name="job-position-detail-view",
+    ),
+    path(
         "settings/job-position-creation/",
         views.job_position_creation,
         name="job-position-creation",
@@ -582,6 +592,11 @@ urlpatterns = [
     path("settings/job-role-create/", views.job_role_create, name="job-role-create"),
     path("job-role-list/", job_role.JobRoleListView.as_view(), name="job-role-list"),
     path("job-role-nav/", job_role.JobRoleNav.as_view(), name="job-role-nav"),
+    path(
+        "job-role-detail-view/<int:pk>/",
+        job_role.JobRoleDetailView.as_view(),
+        name="job-role-detail-view",
+    ),
     path(
         "create-job-role/", job_role.JobRoleFormView.as_view(), name="create-job-role"
     ),
@@ -614,6 +629,11 @@ urlpatterns = [
     ),
     path(
         "worktype-nav/", settings_work_type.WorkTypeNav.as_view(), name="worktype-nav"
+    ),
+    path(
+        "worktype-detail-view/<int:pk>/",
+        settings_work_type.WorkTypeDetailView.as_view(),
+        name="worktype-detail-view",
     ),
     path(
         "work-type-create-form/",
@@ -828,6 +848,11 @@ urlpatterns = [
         "settings/employee-shift-nav/",
         employee_shift.EmployeeShiftNav.as_view(),
         name="employee-shift-nav",
+    ),
+    path(
+        "employee-shift-detail-view/<int:pk>/",
+        employee_shift.EmployeeShiftDetailView.as_view(),
+        name="employee-shift-detail-view",
     ),
     path(
         "settings/employee-shift-create/",

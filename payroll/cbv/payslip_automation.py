@@ -100,6 +100,8 @@ class PaySlipAutomationNav(HorillaNavView):
     Nav bar
     """
 
+    template_name = "generic/inline_nav.html"
+
     def __init__(self, **kwargs: Any) -> None:
         super().__init__(**kwargs)
         self.search_url = reverse("pay-slip-automation-list")
@@ -113,7 +115,7 @@ class PaySlipAutomationNav(HorillaNavView):
 
     nav_title = _("Payslip Automation")
     filter_instance = PayslipAutoGenerateFilter()
-    search_swap_target = "#listContainer"
+    search_swap_target = "#payslipAutoGenerationListContainer"
 
 
 @method_decorator(login_required, name="dispatch")

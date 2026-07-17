@@ -47,6 +47,47 @@
     <div class="oh-modal__dialog" id="genericModalBody"></div>
 </div>
 
+<div
+    style="z-index: 1022"
+    class="oh-modal"
+    id="relatedObjectModal"
+    role="dialog"
+    aria-labelledby="relatedObjectModal"
+    aria-hidden="true"
+>
+    <div class="oh-modal__dialog" id="relatedObjectModalBody"></div>
+</div>
+<script>
+    // Closing #relatedObjectModal must not also close whatever modal it was
+    // opened on top of. The shared close-button rebinding (htmxSelect2.js)
+    // does an unscoped "$('.oh-modal--show').removeClass(...)" after every
+    // htmx swap, which would close every open modal at once. Intercept the
+    // click in the capture phase, before that handler runs, and close only
+    // this modal.
+    document.addEventListener(
+        "click",
+        function (event) {
+            var closeBtn = event.target.closest(
+                "#relatedObjectModal .oh-modal__close, #relatedObjectModal .oh-modal__cancel"
+            );
+            if (closeBtn) {
+                event.stopImmediatePropagation();
+                document.getElementById("relatedObjectModal").classList.remove("oh-modal--show");
+            }
+        },
+        true
+    );
+</script>
+
+<style>
+    /* Related-object links (see the `linkify` template filter): default text
+       color, primary-color on hover, matching the app's own primary color
+       token rather than a hardcoded value. */
+    .oh-related-link:hover {
+        text-decoration: underline;
+    }
+</style>
+
 <div class="oh-activity-sidebar" id="genericSidebar" style="z-index: 1000">
     <div class="oh-activity-sidebar__body" id="genericOffCanvas"></div>
 </div>

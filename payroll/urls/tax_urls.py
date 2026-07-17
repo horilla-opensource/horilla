@@ -23,6 +23,11 @@ urlpatterns = [
         federal_tax.TaxBracketNavView.as_view(),
         name="filing-status-nav",
     ),
+    path(
+        "filing-status-detail-view/<int:pk>/",
+        federal_tax.FilingStatusDetailView.as_view(),
+        name="filing-status-detail-view",
+    ),
     # path(
     #     "create-filing-status",
     #     tax_views.create_filing_status,

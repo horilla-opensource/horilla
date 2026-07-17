@@ -826,6 +826,11 @@ urlpatterns = [
         name="employee-profile",
     ),
     path(
+        "employee-related-detail-view/<int:pk>/",
+        employee_profile.EmployeeRelatedDetailView.as_view(),
+        name="employee-related-detail-view",
+    ),
+    path(
         "assign-group-user/",
         employee_profile.GroupAssignView.as_view(),
         name="assign-group-user",

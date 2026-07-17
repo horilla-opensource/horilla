@@ -69,6 +69,11 @@ SUBMENUS = [
         "redirect": reverse("skill-zone-view"),
         "accessibility": "recruitment.sidebar.skill_zone_accessibility",
     },
+    {
+        "menu": _("Settings"),
+        "redirect": reverse("recruitment-settings-view"),
+        "accessibility": "recruitment.sidebar.recruitment_settings_accessibility",
+    },
 ]
 
 
@@ -141,6 +146,14 @@ def skill_zone_accessibility(
     )
 
 
+def recruitment_settings_accessibility(
+    request, _submenu: dict = {}, user_perms: PermWrapper = [], *args, **kwargs
+) -> bool:
+    return request.user.has_perm(
+        "recruitment.view_rejectreason"
+    ) or request.user.has_perm("recruitment.view_recruitment")
+
+
 def dashboard_accessibility(request, submenu, user_perms, *args, **kwargs):
     return is_stagemanager(request.user) or "recruitment" in user_perms
 
@@ -152,14 +165,6 @@ def dashboard_accessibility(request, submenu, user_perms, *args, **kwargs):
 
 def self_tracking_accessibility(request, submenu, user_perms, *args, **kwargs):
     return request.user.has_perm("recruitment.view_recruitment")
-
-
-def reject_reason_accessibility(request, submenu, user_perms, *args, **kwargs):
-    return request.user.has_perm("recruitment.view_rejectreason")
-
-
-def skills_accessibility(request, submenu, user_perms, *args, **kwargs):
-    return request.user.has_perm("recruitment.add_recruitment")
 
 
 @settings_menu.register
@@ -183,30 +188,6 @@ class RecruitmentSettings:
                     "text": _("Rating Visibility"),
                     "description": _(
                         "Allow candidates to view their recruitment rating"
-                    ),
-                },
-            ],
-        },
-        {
-            "label": _("Candidate Reject Reason"),
-            "url": reverse_lazy("candidate-reject-reasons"),
-            "accessibility": reject_reason_accessibility,
-            "search_entries": [
-                {
-                    "text": _("Candidate Reject Reason"),
-                    "description": _("Define reasons for rejecting a candidate"),
-                },
-            ],
-        },
-        {
-            "label": _("Skills"),
-            "url": reverse_lazy("skills-view"),
-            "accessibility": skills_accessibility,
-            "search_entries": [
-                {
-                    "text": _("Skills"),
-                    "description": _(
-                        "Manage the list of skills available for candidates and employees"
                     ),
                 },
             ],

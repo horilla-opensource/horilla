@@ -67,7 +67,7 @@
                         </span>
                         <div class="text-xs font-semibold flex gap-5">
                             : <span>
-                                {{ object|getattribute:col.1|selected_format:request.user.employee_get.employee_work_info.company_id|safe }}
+                                {{ object|getattribute:col.1|selected_format:request.user.employee_get.employee_work_info.company_id|linkify:request.user|safe }}
                             </span>
                         </div>
                     </div>

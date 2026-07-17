@@ -64,7 +64,7 @@ class BonusPointSettingNavView(views.HorillaNavView):
 
     nav_title = _("Bonus Point Setting")
     search_url = reverse_lazy("bonus-point-setting-list-view")
-    search_swap_target = "#listContainer"
+    search_swap_target = "#bonusPointSettingListContainer"
     template_name = "generic/inline_nav.html"
 
 

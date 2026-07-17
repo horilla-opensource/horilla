@@ -115,7 +115,7 @@ class RestrictedDaysNav(HorillaNavView):
     nav_title = _("Restrict Leaves")
     filter_instance = RestrictLeaveFilter()
     filter_body_template = "cbv/restricted_days/filter.html"
-    search_swap_target = "#listContainer"
+    search_swap_target = "#restrictLeavesListContainer"
     filter_form_context_name = "form"
     template_name = "generic/inline_nav.html"
 

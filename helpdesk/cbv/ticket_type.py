@@ -113,6 +113,8 @@ class TicketsNavView(HorillaNavView):
     nav bar of the department view
     """
 
+    template_name = "generic/inline_nav.html"
+
     def __init__(self, **kwargs: Any) -> None:
         super().__init__(**kwargs)
         self.search_url = reverse("ticket-list")
@@ -125,7 +127,7 @@ class TicketsNavView(HorillaNavView):
         """
 
     nav_title = _("Ticket Type")
-    search_swap_target = "#listContainer"
+    search_swap_target = "#ticketTypeListContainer"
     filter_instance = TicketTypeFilter()
 
 

@@ -71,7 +71,7 @@
                                     <div class="oh-timeoff-modal__stat">
                                         <span class="oh-timeoff-modal__stat-title">{{ col.0 }}</span>
                                         <span class="oh-timeoff-modal__stat-count">
-                                            {{ object|getattribute:col.1|selected_format:request.user.employee_get.employee_work_info.company_id|safe }}
+                                            {{ object|getattribute:col.1|selected_format:request.user.employee_get.employee_work_info.company_id|linkify:request.user|safe }}
                                         </span>
                                     </div>
                                 {% else %}

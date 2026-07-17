@@ -51,6 +51,11 @@ SUBMENUS = [
         "redirect": reverse("filing-status-view"),
         "accessibility": "payroll.sidebar.federal_tax_accessibility",
     },
+    {
+        "menu": _("Settings"),
+        "redirect": reverse("payroll-settings-view"),
+        "accessibility": "payroll.sidebar.payroll_settings_accessibility",
+    },
 ]
 
 
@@ -79,9 +84,7 @@ def federal_tax_accessibility(request, submenu, user_perms, *args, **kwargs):
 # ---------------------------------------------------------------------------
 
 
-def payslip_auto_generation_accessibility(
-    request, submenu, user_perms, *args, **kwargs
-):
+def payroll_settings_accessibility(request, submenu, user_perms, *args, **kwargs):
     return request.user.has_perm("payroll.view_payslipautogenerate")
 
 
@@ -95,23 +98,6 @@ class PayrollSettings:
     order = 7
     condition = lambda self, request: apps.is_installed("payroll")
     items = [
-        {
-            "label": _("Payslip Auto Generation"),
-            "url": reverse_lazy("auto-payslip-settings-view"),
-            "accessibility": payslip_auto_generation_accessibility,
-            "search_entries": [
-                {
-                    "text": _("Auto Generate Payslip"),
-                    "description": _(
-                        "Automatically generate payslips on a set day each month"
-                    ),
-                },
-                {
-                    "text": _("Payslip Generate Day"),
-                    "description": _("Day of the month payslips are auto-generated"),
-                },
-            ],
-        },
         {
             "label": _("Encashment Settings"),
             "url": reverse_lazy("encashment-settings-view"),

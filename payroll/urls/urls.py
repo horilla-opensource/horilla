@@ -8,7 +8,7 @@ from django.urls import include, path
 from django.views.generic import RedirectView
 
 from payroll import dashboard as pay_dashboard
-from payroll.cbv import contracts, dashboard, payslip_automation
+from payroll.cbv import contracts, dashboard, payslip_automation, settings_tabs
 from payroll.models.models import Contract, Payslip
 from payroll.views import views
 
@@ -201,6 +201,21 @@ urlpatterns = [
         "auto-payslip-settings-view/",
         views.auto_payslip_settings_view,
         name="auto-payslip-settings-view",
+    ),
+    path(
+        "payroll-settings-view/",
+        settings_tabs.PayrollSettingsView.as_view(),
+        name="payroll-settings-view",
+    ),
+    path(
+        "payroll-settings-tab-view/",
+        settings_tabs.PayrollSettingsTabView.as_view(),
+        name="payroll-settings-tab-view",
+    ),
+    path(
+        "payroll-settings-auto-payslip-tab/",
+        settings_tabs.PayrollSettingsAutoPayslipTab.as_view(),
+        name="payroll-settings-auto-payslip-tab",
     ),
     path(
         "create-auto-payslip/",

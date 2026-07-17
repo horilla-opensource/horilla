@@ -21,7 +21,7 @@ from employee.models import Employee
 from horilla import settings
 from horilla.http.response import HorillaRedirect
 from horilla_views.cbv_methods import login_required, permission_required
-from horilla_views.generic.cbv.views import HorillaProfileView
+from horilla_views.generic.cbv.views import HorillaDetailedView, HorillaProfileView
 
 Employee.cbv_employee_profile_edi_url = reverse_lazy("edit-profile")
 
@@ -111,6 +111,44 @@ class EmployeeProfileView(HorillaProfileView):
 
 
 class UserProfileView(EmployeeProfileView):
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context["instance_ids"] = None
+        return context
+
+
+@method_decorator(login_required, name="dispatch")
+@method_decorator(permission_required(perm="employee.view_employee"), name="dispatch")
+class EmployeeRelatedDetailView(HorillaDetailedView):
+    """
+    Concise employee summary opened via related-object navigation (e.g. from
+    a leave request/allocation detail view), instead of the full profile page.
+    """
+
+    model = Employee
+    detail_view_url_name = "employee-related-detail-view"
+    detail_view_permission = "employee.view_employee"
+    title = _("Employee")
+    header = {
+        "title": "get_full_name",
+        "subtitle": "get_job_position",
+        "avatar": "get_avatar",
+    }
+    body = [
+        (_("Employee ID"), "badge_id"),
+        (_("Job Position"), "get_job_position"),
+        (_("Department"), "get_department"),
+        (_("Company"), "employee_work_info__company_id"),
+        (_("Work Location"), "employee_work_info__location"),
+        (_("Work Type"), "get_work_type"),
+        (_("Shift"), "get_shift"),
+        (_("Reporting Manager"), "get_reporting_manager"),
+        (_("Employment Type"), "get_employee_type"),
+        (_("Email"), "get_email"),
+        (_("Date of Joining"), "employee_work_info__date_joining"),
+        (_("Status"), "get_active_status"),
+    ]
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)

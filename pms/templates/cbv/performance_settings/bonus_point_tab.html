@@ -1,0 +1,40 @@
+{% load i18n static %}
+
+<div class="oh-inner-sidebar-content border border-[#ebebeb] rounded-md mb-5" id="bonusPointSettingTabRoot">
+    <div hx-get="{% url 'bonus-point-setting-nav' %}" hx-trigger="load"></div>
+
+    <p class="text-xs text-gray-500 mt-1 ml-2">
+        {% trans "Configure rules that automatically award bonus points to employees based on model events and conditions." %}
+    </p>
+
+    <div
+        class="oh-checkpoint-badge mb-2"
+        id="selectedInstances"
+        data-ids="[]"
+        data-clicked=""
+        style="display: none"
+    >
+    </div>
+
+    <div class="oh-wrapper" id="bonusPointSettingListContainer">
+        <div class="animated-background"></div>
+    </div>
+</div>
+
+<div id="ohMessages"></div>
+
+<script>
+    function ModelChange(element) {
+        var model = element.val();
+        $.ajax({
+            url: "{% url 'bonus-setting-form-values' %}",
+            data: { model: model },
+            type: "GET",
+            dataType: "json",
+            success: function (response) {},
+            error: function (xhr, status, error) {
+                console.error("Error:", error);
+            },
+        });
+    }
+</script>

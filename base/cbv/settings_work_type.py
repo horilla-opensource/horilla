@@ -12,7 +12,11 @@ from base.filters import WorkTypeFilter
 from base.models import WorkType
 from horilla.decorators import permission_required
 from horilla_views.cbv_methods import login_required
-from horilla_views.generic.cbv.views import HorillaListView, HorillaNavView
+from horilla_views.generic.cbv.views import (
+    HorillaDetailedView,
+    HorillaListView,
+    HorillaNavView,
+)
 
 
 @method_decorator(login_required, name="dispatch")
@@ -70,6 +74,30 @@ class WorkTypeList(HorillaListView):
         "work_type": """ style="width:300px !important" """,
         "action": """ style="width:180px !important" """,
     }
+
+
+@method_decorator(login_required, name="dispatch")
+@method_decorator(permission_required("base.view_worktype"), name="dispatch")
+class WorkTypeDetailView(HorillaDetailedView):
+    """
+    detail view for work type, also registered as the related-object-link
+    target for WorkType via detail_view_url_name
+    """
+
+    model = WorkType
+    detail_view_url_name = "worktype-detail-view"
+    detail_view_permission = "base.view_worktype"
+    title = _("Work Type")
+
+    header = {
+        "title": "work_type",
+        "subtitle": "",
+        "avatar": "",
+    }
+
+    body = [
+        (_("Work Type"), "work_type"),
+    ]
 
 
 @method_decorator(login_required, name="dispatch")

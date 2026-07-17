@@ -108,14 +108,12 @@ class GraceTimeList(GenericGraceTimeListView):
     def get_queryset(self):
         queryset = super().get_queryset()
         selected_company = self.request.session.get("selected_company")
-        print(f"selected_company: {selected_company}")
         if selected_company == "all":
             queryset = GraceTime.objects.entire().filter(is_default=False)
         else:
             queryset = GraceTime.objects.entire().filter(
                 is_default=False, company_id=selected_company
             )
-        print("queryset after filtering", queryset)
         return queryset
 
 

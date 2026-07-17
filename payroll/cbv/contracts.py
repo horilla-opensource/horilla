@@ -244,6 +244,8 @@ class ContractsDetailView(HorillaDetailedView):
         return context
 
     model = Contract
+    detail_view_url_name = "contracts-detail-view"
+    detail_view_permission = "payroll.view_contract"
     # title = _("Details")
 
     header = {

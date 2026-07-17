@@ -1203,30 +1203,32 @@ class BonusPointSettingForm(HorillaModelForm):
         self.fields["company_id"].widget.attrs.update(
             {"class": "oh-select oh-select-2 w-100"}
         )
+        # Always required: signals.py uses this to decide who receives the
+        # bonus point, so a blank value silently awards nobody.
+        self.fields["applicable_for"].required = True
 
     def clean(self):
         cleaned_data = super().clean()
         model = cleaned_data.get("model")
+        applicable_for = cleaned_data.get("applicable_for")
 
         if model in ["pms.models.EmployeeObjective", "pms.models.EmployeeKeyResult"]:
-            if not cleaned_data.get("applicable_for") == "owner":
+            if applicable_for != "owner":
                 raise ValidationError(
-                    _(
-                        f"Model Doesn't have this {cleaned_data.get('applicable_for')} field"
-                    )
+                    _("For Objective and Key Result, 'Applicable For' must be 'Owner'.")
                 )
-            if not cleaned_data["bonus_for"] == "Closed":
+            if cleaned_data.get("bonus_for") != "Closed":
                 raise ValidationError(
-                    _(f"This 'Bonus for' is not in the Model's status")
+                    _("For Objective and Key Result, 'Bonus For' must be 'Closing'.")
                 )
         if model in ["project.models.Task", "project.models.Project"]:
-            if cleaned_data.get("applicable_for") == "owner":
+            if applicable_for == "owner":
                 raise ValidationError(
                     _(
-                        f"Model Doesn't have this {cleaned_data.get('applicable_for')} field"
+                        "For Task and Project, 'Applicable For' must be 'Members' or 'Managers'."
                     )
                 )
-        if cleaned_data["points"] <= 0:
+        if cleaned_data.get("points", 0) <= 0:
             raise ValidationError(_("Bonus point must be greater than zero"))
 
         return cleaned_data

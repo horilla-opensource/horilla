@@ -57,6 +57,7 @@ from horilla_views.cbv_methods import (  # update_initial_cache,
     update_saved_filter_cache,
 )
 from horilla_views.forms import DynamicBulkUpdateForm, ToggleColumnForm
+from horilla_views.related_link_registry import RELATED_VIEW_PARAM, register_detail_view
 from horilla_views.templatetags.generic_template_filters import getattribute
 
 logger = logging.getLogger(__name__)
@@ -1522,6 +1523,21 @@ class HorillaDetailedView(DetailView):
     instance = None
     empty_template = None
 
+    # Set these on a subclass to self-register as the related-object-link
+    # target for `model` (see horilla_views/related_link_registry.py), instead
+    # of calling register_detail_view() separately from an app's ready().
+    detail_view_url_name = None
+    detail_view_permission = None
+
+    def __init_subclass__(cls, **kwargs):
+        super().__init_subclass__(**kwargs)
+        if getattr(cls, "model", None) and cls.detail_view_url_name:
+            register_detail_view(
+                cls.model,
+                url_name=cls.detail_view_url_name,
+                permission=cls.detail_view_permission,
+            )
+
     ids_key: str = "instance_ids"
 
     def get_object(self, queryset=None):
@@ -1569,7 +1585,12 @@ class HorillaDetailedView(DetailView):
             return context
 
         pk = obj.pk
-        instance_ids = self.request.session.get(self.ordered_ids_key, [])
+        instance_ids = []
+        if self.request.GET.get(RELATED_VIEW_PARAM) != "1":
+            # Skip list-driven Previous/Next when this Detail View was opened
+            # through a related-object link (see related_link_registry.py) so
+            # it behaves as a standalone page, per its own session state.
+            instance_ids = self.request.session.get(self.ordered_ids_key, [])
         url_info = resolve(self.request.path)
         url_name = url_info.url_name
         key = next(iter(url_info.kwargs), "pk")

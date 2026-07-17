@@ -162,6 +162,8 @@ class LeaveTypeDetailView(HorillaDetailedView):
     """
 
     model = LeaveType
+    detail_view_url_name = "leave-type-detail-view"
+    detail_view_permission = "leave.view_leavetype"
     title = _("Details")
     header = {"title": "name", "subtitle": "", "avatar": "get_avatar"}
 

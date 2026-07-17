@@ -16,6 +16,7 @@ from base.forms import JobRoleForm
 from base.models import JobPosition, JobRole
 from horilla_views.cbv_methods import login_required, permission_required
 from horilla_views.generic.cbv.views import (
+    HorillaDetailedView,
     HorillaFormView,
     HorillaListView,
     HorillaNavView,
@@ -76,6 +77,31 @@ class JobRoleNav(HorillaNavView):
                 hx-target="#genericModalBody"
                 hx-get="{reverse('create-job-role')}"
             """
+
+
+@method_decorator(login_required, name="dispatch")
+@method_decorator(permission_required(perm="base.view_jobrole"), name="dispatch")
+class JobRoleDetailView(HorillaDetailedView):
+    """
+    detail view for job role, also registered as the related-object-link
+    target for JobRole via detail_view_url_name
+    """
+
+    model = JobRole
+    detail_view_url_name = "job-role-detail-view"
+    detail_view_permission = "base.view_jobrole"
+    title = _("Job Role")
+
+    header = {
+        "title": "job_role",
+        "subtitle": "job_position_id",
+        "avatar": "",
+    }
+
+    body = [
+        (_("Job Role"), "job_role"),
+        (_("Job Position"), "job_position_id"),
+    ]
 
 
 @method_decorator(login_required, name="dispatch")

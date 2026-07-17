@@ -13,6 +13,7 @@ from pms.cbv import (
     objectives,
     period,
     question_template,
+    settings_tabs,
 )
 
 from . import models, performance_setup, views
@@ -742,6 +743,21 @@ urlpatterns = [
         "bonus-point-setting/",
         cbvs.BonusPointSettingSectionView.as_view(),
         name="bonus-point-setting",
+    ),
+    path(
+        "performance-settings-view/",
+        settings_tabs.PerformanceSettingsView.as_view(),
+        name="performance-settings-view",
+    ),
+    path(
+        "performance-settings-tab-view/",
+        settings_tabs.PerformanceSettingsTabView.as_view(),
+        name="performance-settings-tab-view",
+    ),
+    path(
+        "performance-settings-bonus-point-tab/",
+        settings_tabs.PerformanceSettingsBonusPointTab.as_view(),
+        name="performance-settings-bonus-point-tab",
     ),
     path(
         "bonus-point-setting-nav/",

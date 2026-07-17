@@ -45,7 +45,8 @@
                             data-target="#{{view_id}}{{forloop.counter}}"
                             data-path="{{request.path}}"
                             onclick="switchTab($(this));
-								if (!$(this).attr('data-loaded')) {
+								var tabContentEl = document.querySelector('#{{view_id}}{{forloop.counter}}');
+								if (!$(this).attr('data-loaded') || !tabContentEl || !tabContentEl.innerHTML.trim()) {
 									htmx.ajax('GET', '{{tab.url}}', {target: '#{{view_id}}{{forloop.counter}}'});
 									this.setAttribute('data-loaded', 'true');
 								}"

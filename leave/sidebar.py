@@ -62,6 +62,11 @@ SUBMENUS = [
         "redirect": reverse_lazy("company-leave-view"),
         "accessibility": "leave.sidebar.company_leave_accessibility",
     },
+    {
+        "menu": _("Settings"),
+        "redirect": reverse_lazy("leave-settings-view"),
+        "accessibility": "leave.sidebar.leave_settings_accessibility",
+    },
 ]
 
 
@@ -129,9 +134,7 @@ def leave_rules_accessibility(request, submenu, user_perms, *args, **kwargs):
     )
 
 
-def restrict_leaves_settings_accessibility(
-    request, submenu, user_perms, *args, **kwargs
-):
+def leave_settings_accessibility(request, submenu, user_perms, *args, **kwargs):
     return request.user.has_perm("leave.view_restrictleave")
 
 
@@ -155,31 +158,6 @@ class LeaveSettings:
                     "description": _(
                         "Only admins can create leave requests for past dates"
                     ),
-                },
-            ],
-        },
-        {
-            "label": _("Restrict Leaves"),
-            "url": reverse_lazy("restrict-leaves-view"),
-            "accessibility": restrict_leaves_settings_accessibility,
-            "search_entries": [
-                {
-                    "text": _("Restrict Leaves"),
-                    "description": _(
-                        "Create blackout periods when leave cannot be taken"
-                    ),
-                },
-                {
-                    "text": _("Blackout Period Title"),
-                    "description": _("Name of the leave restriction period"),
-                },
-                {
-                    "text": _("Blackout Start Date"),
-                    "description": _("Start date of the leave restriction"),
-                },
-                {
-                    "text": _("Blackout End Date"),
-                    "description": _("End date of the leave restriction"),
                 },
             ],
         },
