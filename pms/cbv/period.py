@@ -103,6 +103,7 @@ class PeriodNav(HorillaNavView):
     nav_title = _("Period")
     filter_instance = PeriodFilter()
     search_swap_target = "#listContainer"
+    template_name = "generic/inline_nav.html"
 
 
 @method_decorator(login_required, name="dispatch")

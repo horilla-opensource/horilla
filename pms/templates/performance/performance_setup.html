@@ -1,0 +1,127 @@
+{% extends "index.html" %}
+{% load i18n %}
+
+{% block content %}
+    <style>
+        .oh-tabs__tab {
+            display: flex;
+            align-items: center;
+            padding: 4px 8px;
+            gap: 0.5rem;
+            border: 1px solid #f6f6f6;
+            border-radius: 6px;
+            color: #1f2937;
+            font-size: 0.75rem;
+            transition-duration: 300ms;
+            transition-property: all;
+        }
+
+        .oh-tabs__tab--active {
+            border: 1px solid #e54f38;
+            background-color: #fcedeb;
+            color: #e54f38;
+        }
+    </style>
+
+    <div class="bg-white p-3 rounded-md shadow-card oh-tabs">
+        <div class="flex gap-1 flex-wrap mb-3">
+            <button
+                type="button"
+                class="oh-tabs__tab performance-setup-tab-btn"
+                data-tab-id="objective-template"
+                data-url="{% url 'objective-template-list-view' %}"
+            >
+                {% trans "Objective Template" %}
+            </button>
+            <button
+                type="button"
+                class="oh-tabs__tab performance-setup-tab-btn"
+                data-tab-id="question-template"
+                data-url="{% url 'question-template-view' %}"
+            >
+                {% trans "Question Template" %}
+            </button>
+            <button
+                type="button"
+                class="oh-tabs__tab performance-setup-tab-btn"
+                data-tab-id="period"
+                data-url="{% url 'period-view' %}"
+            >
+                {% trans "Period" %}
+            </button>
+        </div>
+
+        <div id="performanceSetupContent" class="oh-wrapper"></div>
+    </div>
+
+    <script>
+        (function () {
+            var STORAGE_KEY = "activePerformanceSetupTab";
+
+            function loadPerformanceSetupTab(buttonEl, persist) {
+                if (!buttonEl || typeof htmx === "undefined") return;
+                var url = buttonEl.getAttribute("data-url");
+                if (!url) return;
+                var tabId = buttonEl.getAttribute("data-tab-id");
+                document.querySelectorAll(".performance-setup-tab-btn").forEach(function (btn) {
+                    btn.classList.remove("oh-tabs__tab--active");
+                });
+                buttonEl.classList.add("oh-tabs__tab--active");
+                if (persist !== false && tabId) {
+                    try {
+                        localStorage.setItem(STORAGE_KEY, tabId);
+                    } catch (_) {}
+                }
+                htmx.ajax("GET", url, {
+                    target: "#performanceSetupContent",
+                    swap: "innerHTML",
+                    select: "#ohMainContent > *",
+                });
+            }
+
+            function restorePerformanceSetupTab() {
+                if (!document.getElementById("performanceSetupContent")) return;
+
+                var savedTabId = null;
+                try {
+                    savedTabId = localStorage.getItem(STORAGE_KEY);
+                } catch (_) {}
+
+                var initialTab = null;
+                if (savedTabId) {
+                    initialTab = document.querySelector(
+                        '.performance-setup-tab-btn[data-tab-id="' +
+                            savedTabId.replace(/"/g, '\\"') +
+                            '"]'
+                    );
+                }
+                if (!initialTab) {
+                    initialTab = document.querySelector(
+                        '.performance-setup-tab-btn[data-tab-id="objective-template"]'
+                    );
+                }
+                loadPerformanceSetupTab(initialTab, false);
+            }
+
+            function runWhenHtmxReady(fn) {
+                if (typeof htmx !== "undefined") {
+                    fn();
+                    return;
+                }
+                document.addEventListener("DOMContentLoaded", fn, { once: true });
+            }
+
+            if (!window._performanceSetupTabsClickBound) {
+                window._performanceSetupTabsClickBound = true;
+                document.addEventListener("click", function (event) {
+                    var buttonEl = event.target.closest(".performance-setup-tab-btn");
+                    if (!buttonEl) return;
+                    event.preventDefault();
+                    loadPerformanceSetupTab(buttonEl);
+                });
+            }
+
+            runWhenHtmxReady(restorePerformanceSetupTab);
+        })();
+    </script>
+{% endblock content %}

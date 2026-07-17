@@ -99,6 +99,7 @@ class QuestionTemplateNav(HorillaNavView):
     nav_title = _("Question Template")
     filter_instance = QuestionTemplateFilter()
     search_swap_target = "#listContainer"
+    template_name = "generic/inline_nav.html"
 
 
 @method_decorator(login_required, name="dispatch")

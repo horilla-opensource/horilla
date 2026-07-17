@@ -15,7 +15,7 @@ from pms.cbv import (
     question_template,
 )
 
-from . import models, views
+from . import models, performance_setup, views
 
 urlpatterns = [
     path(
@@ -341,16 +341,6 @@ urlpatterns = [
         question_template.QuestionTemplateFormView.as_view(),
         name="question-template-creation",
     ),
-    # path(
-    #     "question-template-view/",
-    #     views.question_template_view,
-    #     name="question-template-view",
-    # ),
-    # path(
-    #     "question-template-hx-view",
-    #     views.question_template_hx_view,
-    #     name="question-template-hx-view",
-    # ),
     path(
         "question-template-detailed-view/<int:template_id>/",
         views.question_template_detailed_view,
@@ -374,7 +364,6 @@ urlpatterns = [
     ),
     # path("period-create", views.period_create, name="period-create"),
     path("period-create/", period.PeriodFormView.as_view(), name="period-create"),
-    # path("period-view/", views.period_view, name="period-view"),
     # path("period-hx-view", views.period_hx_view, name="period-hx-view"),
     path("period-delete/<int:period_id>/", views.period_delete, name="period-delete"),
     # path("period-update/<int:period_id>", views.period_update, name="period-update"),
@@ -882,5 +871,10 @@ urlpatterns = [
         "dashboard/api/feedback-completion/",
         pms_dashboard.pms_feedback_completion,
         name="pms-dashboard-fb-completion",
+    ),
+    path(
+        "templates-periods/",
+        performance_setup.performance_setup_view,
+        name="templates-periods-view",
     ),
 ]

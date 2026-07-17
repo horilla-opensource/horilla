@@ -2,48 +2,53 @@
 {% load i18n static %}
 
 {% block content %}
-    <div hx-get="{% url 'nav-question-template' %}" hx-trigger="load"></div>
+    <div class="border border-[#ebebeb] rounded-md">
+        <div hx-get="{% url 'nav-question-template' %}" hx-trigger="load"></div>
+        <p class="text-xs text-gray-500 mt-1 ml-3">
+            {% trans "Define question templates used in 360 feedback and review meetings." %}
+        </p>
 
-    {% include "generic/components.html" %}
+        {% include "generic/components.html" %}
 
-    <div
-        class="oh-checkpoint-badge mb-2"
-        id="selectedInstances"
-        data-ids="[]"
-        data-clicked=""
-        style="display: none"
-    >
+        <div
+            class="oh-checkpoint-badge mb-2"
+            id="selectedInstances"
+            data-ids="[]"
+            data-clicked=""
+            style="display: none"
+        >
+        </div>
+
+        <div class="oh-wrapper" id="listContainer">
+            <div class="animated-background"></div>
+        </div>
+
+        <script>
+            var errorElement = $("#id_question_template_error");
+            $(errorElement).hide();
+
+            $("form").on("submit", function (event) {
+            	event.preventDefault();
+
+            	var fieldValue = $("#id_question_template").val();
+
+            	if (fieldValue.trim() === "") {
+            		$(errorElement).show();
+            		errorElement.text("This field is required.");
+            		errorElement.insertAfter($("#id_question_template"));
+            	} else if (fieldValue.length > 100) {
+            		$(errorElement).show();
+            		errorElement.text(
+            			"The field cannot contain more than 100 characters."
+            		);
+            		errorElement.insertAfter($("#id_question_template"));
+            	} else {
+            		errorElement.text("");
+            		errorElement.remove();
+            		// Submit the form
+            		this.submit();
+            	}
+            });
+        </script>
     </div>
-
-    <div class="oh-wrapper" id="listContainer">
-        <div class="animated-background"></div>
-    </div>
-
-    <script>
-        var errorElement = $("#id_question_template_error");
-        $(errorElement).hide();
-
-        $("form").on("submit", function (event) {
-        	event.preventDefault();
-
-        	var fieldValue = $("#id_question_template").val();
-
-        	if (fieldValue.trim() === "") {
-        		$(errorElement).show();
-        		errorElement.text("This field is required.");
-        		errorElement.insertAfter($("#id_question_template"));
-        	} else if (fieldValue.length > 100) {
-        		$(errorElement).show();
-        		errorElement.text(
-        			"The field cannot contain more than 100 characters."
-        		);
-        		errorElement.insertAfter($("#id_question_template"));
-        	} else {
-        		errorElement.text("");
-        		errorElement.remove();
-        		// Submit the form
-        		this.submit();
-        	}
-        });
-    </script>
 {% endblock %}

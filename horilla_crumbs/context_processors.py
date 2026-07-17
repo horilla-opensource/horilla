@@ -82,10 +82,7 @@ sidebar_urls = [
     "company-leave-view",
     "dashboard-view",
     "objective-list-view",
-    "objective-template-list-view",
     "feedback-view",
-    "period-view",
-    "question-template-view",
     "asset-category-view",
     "asset-request-allocation-view",
     "settings",
@@ -204,6 +201,8 @@ sidebar_urls = [
     "work-schedules",
     "requests",
     "work-structure",
+    "tours",
+    "templates-periods",
 ]
 remove_urls = [
     "feedback-detailed-view",
