@@ -4,20 +4,22 @@ Task 045 supplies the hardened staging boundary for Hydra. It does not silently 
 
 ## Delivered staging boundary
 
-The staging stack uses Python 3.11, PostgreSQL 17, pinned Python dependencies, a non-root web container, a single-owner maintenance container, a non-superuser application database role, private named volumes, internal ClamAV malware scanning, loopback-only HTTP publication, explicit secrets, and dedicated health probes. PostgreSQL and ClamAV are not published on host ports.
+The staging stack uses Python 3.11, PostgreSQL 17, pinned Python dependencies, two stateless non-root web replicas by default, an internal Nginx load balancer, a persistent Redis shared cache, cached database-backed sessions, a single-owner maintenance container, a non-superuser application database role, private named volumes, internal ClamAV malware scanning, loopback-only HTTP publication, explicit secrets, resource limits, and dedicated health probes. PostgreSQL, Redis, ClamAV, and the web replicas are not published on host ports.
 
-For `HYDRA_PROCESS_ROLE=web`, the production entrypoint performs only reviewed operations:
+For `HYDRA_PROCESS_ROLE=release`, a one-shot container performs the only mutating release operations:
 
 1. `manage.py check --deploy`;
 2. apply committed migrations;
 3. collect static files;
 4. run the fail-closed `hydra_readiness` command;
-5. replace the shell with Gunicorn.
+
+Every `HYDRA_PROCESS_ROLE=web` replica then checks deployment settings, verifies that migrations are already applied, runs readiness, and replaces the shell with Gunicorn. A web replica never applies migrations. Gunicorn recycles workers with jitter and emits request-id-correlated JSON access records containing the normalized path but no query string, cookies, authorization header, or user identity.
 
 For `HYDRA_PROCESS_ROLE=maintenance`, the same image checks deployment/schema state and starts the advisory-lock-protected worker documented in `HYDRA_MAINTENANCE.md`; it never migrates. Neither role runs `makemigrations` or creates a fixed administrator. The upstream browser database initializer and demo loader are hidden. Legacy APScheduler remains disabled in every process.
 
 Relevant files:
 
+- `deployment/nginx/` — dynamic Docker-DNS load balancing, bounded proxy timeouts, request IDs, and static cache headers;
 - `docker-compose.staging.yaml` — isolated staging services and volumes;
 - `.env.staging.example` — placeholder-only configuration contract;
 - `Dockerfile` and `entrypoint.sh` — pinned, non-root runtime and fail-closed boot;
@@ -42,6 +44,7 @@ Readiness rejects staging when any of these conditions is false:
 - `DEBUG=False` and a non-default secret key of at least 50 characters;
 - explicit `ALLOWED_HOSTS`, explicit HTTPS CSRF origins, HTTPS redirect, secure cookies, and HSTS;
 - PostgreSQL with a non-superuser application role;
+- Redis as the shared Django cache, cache-backed shared sessions, and a successful Redis read/write/delete probe;
 - a non-placeholder deployment revision;
 - disabled web database initialization and disabled in-process schedulers;
 - applied migrations and a successful database query;
@@ -69,7 +72,9 @@ docker compose --env-file .env.staging -f docker-compose.staging.yaml exec serve
 
 ## First deployment
 
-The host must provide Docker Compose v2, TLS termination/reverse proxy, encrypted persistent storage, restricted backup storage, monitoring, and a secret-management process. The application port binds only to loopback and is intended to sit behind that reverse proxy. Capacity planning must reserve the memory required by ClamAV signature loading and updates; scanner health and signature freshness require alerts.
+The host must provide Docker Compose v2, TLS termination in front of the built-in loopback-only Nginx service, encrypted persistent storage, restricted backup storage, monitoring, and a secret-management process. The application, PostgreSQL, Redis, and ClamAV ports are not directly exposed. The default two-web-replica profile reserves capacity for PostgreSQL, Redis, Nginx, maintenance, and ClamAV; Docker Desktop should have at least 8 GiB available before load testing. Scanner health and signature freshness require alerts.
+
+`HYDRA_WEB_REPLICAS` controls the Compose replica count and must remain between two and four for the production-like profile. Scaling does not start another scheduler: only the advisory-lock-protected `maintenance` service runs background work. Session continuity across replica restarts is provided by Redis-backed `cached_db` sessions.
 
 Validate configuration before starting:
 
@@ -164,7 +169,7 @@ python manage.py hydra_maintenance_health
 .\scripts\staging-smoke.ps1 -BaseUrl https://staging.example.com
 ```
 
-Every pull request and push to `main` or `codex/**` also runs **Hydra staging CI**. Its first job installs the pinned set on clean Ubuntu/Python 3.11, installs the reviewed auth compatibility migration, verifies the exact 67-file migration source manifest, applies the committed baseline to PostgreSQL 17, checks model drift/readiness, and runs the full Django suite. The manifest covers every first-party numbered migration plus the pinned Django auth compatibility source; hashes normalize CRLF to LF so Windows and Linux checkouts are equivalent. A missing, added, replaced, or edited migration fails until both the source and manifest change are reviewed. The image build independently executes the same verifier before creating runtime directories. The second CI job starts the real Compose stack, checks the non-root container and non-superuser database role, runs external smoke checks, creates a cold backup, restores it into an isolated database, repeats smoke checks, and uploads redacted operational evidence for 14 days. It never publishes an image or deploys to a shared environment.
+Every pull request and push to `main` or `codex/**` also runs **Hydra staging CI**. Its first job installs the pinned set on clean Ubuntu/Python 3.11, installs the reviewed auth compatibility migration, verifies the exact 80-file migration source manifest, applies the committed baseline to PostgreSQL 17, checks model drift/readiness, and runs the full Django suite. The manifest covers every first-party numbered migration plus the pinned Django auth compatibility source; hashes normalize CRLF to LF so Windows and Linux checkouts are equivalent. A missing, added, replaced, or edited migration fails until both the source and manifest change are reviewed. The image build independently executes the same verifier before creating runtime directories. The second CI job starts the real two-replica Compose stack, verifies Nginx-only port publication and Redis isolation, checks non-root application identities and the non-superuser database role, runs external smoke checks, creates a cold backup, restores it into an isolated database, repeats smoke checks, and uploads redacted operational evidence for 14 days. It never publishes an image or deploys to a shared environment.
 
 Manual acceptance uses non-production test identities and at least two companies/teams:
 
@@ -196,14 +201,15 @@ After every item is evidenced, the accountable business and technical owners may
 
 ## Verification evidence for task 045
 
-Verified locally through 2026-07-16 with PostgreSQL 17:
+Verified locally through 2026-07-18; PostgreSQL-specific evidence remains from the earlier PostgreSQL 17 drill:
 
 - focused `hydra_ops` tests: 34/34 passed;
-- exact migration-manifest tests: 4/4 passed, and the verifier matched all 67 reviewed migration sources including the pinned Django auth compatibility source, controlled recruitment workflow, Person duplicate-merge, private-document version and legalization-configuration migrations;
+- exact migration-manifest tests: 4/4 passed, and the verifier matched all 80 reviewed migration sources including the pinned Django auth compatibility source and the forward-only Hydra rebranding migrations;
 - focused Person-timeline tests: 7/7 passed, and the combined organization-scope/timeline run passed 20/20;
 - focused controlled-recruitment-workflow tests: 11/11 passed; the affected onboarding-handoff/portal-email regression passed 35/35 after their fixtures were moved through the same public transition service;
 - offline staging-script safety tests: 6/6 passed for empty/non-empty initial deployment plus safe, traversal, duplicate-path and symlink archives;
-- full clean-database Django regression: 394/394 passed after organization-access lifecycle, maintenance-worker, configurable snapshotted legalization policy and authority correspondence, renewal lineage and responsibility continuity, legalization/arrival automation, candidate-import source-data retention, attendance reconciliation, controlled recruitment transitions, controlled onboarding handoff, durable portal-email outbox, the reasoned Housing reservation/cancellation/atomic-move lifecycle, the scope-safe Person timeline, privileged duplicate comparison/canonical merge, logical private-document rules/version chains and readiness integrity guards, the staging deploy/archive safety guards, and exact migration-source verification; focused PostgreSQL evidence is recorded in the domain documents;
+- full clean-database Django regression: 448/448 passed with 1 intentional skip after the complete Hydra rebrand; the isolated upgrade proof additionally preserved mail-template data, content types, permissions, and the legacy physical compatibility table;
+- scaled-staging focused tests: 20/20 passed for readiness, Redis fail-closed behavior, safe request IDs, archive validation, and initial-deployment guards;
 - `manage.py check`, `migrate --check`, `makemigrations --check --dry-run`, readiness, migration-manifest verification, Python compilation, workflow YAML parsing, dependency consistency, and `git diff --check` passed;
 - real custom-format database dump restored into an isolated temporary database;
 - restored database contained 84 migration records and one private-document metadata row;

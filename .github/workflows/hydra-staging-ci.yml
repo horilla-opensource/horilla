@@ -129,6 +129,7 @@ jobs:
           HYDRA_DB_USER=hydra_ci_app
           HYDRA_DB_PASSWORD=ci_application_database_password_only
           DB_CONN_MAX_AGE=0
+          REDIS_PASSWORD=ci_redis_password_only_not_for_shared_environments
           HYDRA_PRIVATE_DOCUMENT_MAX_BYTES=10485760
           HYDRA_BACKUP_HOST_PATH=./backups
           HYDRA_PORTAL_URL=https://oleksandrkiris.github.io/citronex-hydra-project/
@@ -147,6 +148,7 @@ jobs:
           SECURE_HSTS_PRELOAD=False
           HYDRA_HTTP_PORT=18000
           HYDRA_IMAGE=hydra-app:ci
+          HYDRA_WEB_REPLICAS=2
           GUNICORN_WORKERS=2
           GUNICORN_THREADS=2
           GUNICORN_TIMEOUT=60
@@ -162,27 +164,19 @@ jobs:
         run: docker compose --env-file "$STAGING_ENV_FILE" -f "$COMPOSE_FILE" build --pull server
 
       - name: Start staging stack
-        run: docker compose --env-file "$STAGING_ENV_FILE" -f "$COMPOSE_FILE" up -d db clamav server maintenance
+        run: docker compose --env-file "$STAGING_ENV_FILE" -f "$COMPOSE_FILE" up -d --wait --wait-timeout 1800 db redis clamav release server maintenance proxy
 
       - name: Wait for application readiness
         shell: bash
         run: |
-          for service in server maintenance; do
-            container_id="$(docker compose --env-file "$STAGING_ENV_FILE" -f "$COMPOSE_FILE" ps -q "$service")"
-            test -n "$container_id"
-            status="starting"
-            for attempt in $(seq 1 180); do
-              status="$(docker inspect --format '{{.State.Health.Status}}' "$container_id")"
-              if [ "$status" = healthy ]; then
-                break
-              fi
-              if [ "$status" = unhealthy ]; then
-                docker compose --env-file "$STAGING_ENV_FILE" -f "$COMPOSE_FILE" logs --no-color
-                exit 1
-              fi
-              sleep 5
+          server_ids="$(docker compose --env-file "$STAGING_ENV_FILE" -f "$COMPOSE_FILE" ps -q server)"
+          test "$(printf '%s\n' "$server_ids" | sed '/^$/d' | wc -l)" -eq 2
+          for service in server maintenance proxy redis; do
+            container_ids="$(docker compose --env-file "$STAGING_ENV_FILE" -f "$COMPOSE_FILE" ps -q "$service")"
+            test -n "$container_ids"
+            for container_id in $container_ids; do
+              test "$(docker inspect --format '{{.State.Health.Status}}' "$container_id")" = healthy
             done
-            test "$status" = healthy
           done
 
       - name: Verify non-root runtime identity
@@ -216,9 +210,14 @@ jobs:
           clamav_container_id="$(docker compose --env-file "$STAGING_ENV_FILE" -f "$COMPOSE_FILE" ps -q clamav)"
           db_bindings="$(docker inspect --format '{{json (index .NetworkSettings.Ports "5432/tcp")}}' "$db_container_id")"
           clamav_bindings="$(docker inspect --format '{{json (index .NetworkSettings.Ports "3310/tcp")}}' "$clamav_container_id")"
-          server_port="$(docker compose --env-file "$STAGING_ENV_FILE" -f "$COMPOSE_FILE" port server 8000 | tr -d '\r\n')"
+          redis_container_id="$(docker compose --env-file "$STAGING_ENV_FILE" -f "$COMPOSE_FILE" ps -q redis)"
+          redis_bindings="$(docker inspect --format '{{json (index .NetworkSettings.Ports "6379/tcp")}}' "$redis_container_id")"
+          server_bindings="$(docker inspect --format '{{json (index .NetworkSettings.Ports "8000/tcp")}}' "$(printf '%s\n' "$(docker compose --env-file "$STAGING_ENV_FILE" -f "$COMPOSE_FILE" ps -q server)" | head -n1)")"
+          proxy_port="$(docker compose --env-file "$STAGING_ENV_FILE" -f "$COMPOSE_FILE" port proxy 8080 | tr -d '\r\n')"
           echo "Database host bindings: ${db_bindings:-null}"
-          echo "Server published port: ${server_port:-<none>}"
+          echo "Redis host bindings: ${redis_bindings:-null}"
+          echo "Server host bindings: ${server_bindings:-null}"
+          echo "Proxy published port: ${proxy_port:-<none>}"
           if [ -n "$db_bindings" ] && [ "$db_bindings" != "null" ]; then
             echo "::error::The PostgreSQL service must not publish a host port."
             exit 1
@@ -227,10 +226,12 @@ jobs:
             echo "::error::The ClamAV service must not publish a host port."
             exit 1
           fi
-          case "$server_port" in
+          test -z "$redis_bindings" || test "$redis_bindings" = "null"
+          test -z "$server_bindings" || test "$server_bindings" = "null"
+          case "$proxy_port" in
             127.0.0.1:*) ;;
             *)
-              echo "::error::The server port must bind only to 127.0.0.1."
+              echo "::error::The proxy port must bind only to 127.0.0.1."
               exit 1
               ;;
           esac

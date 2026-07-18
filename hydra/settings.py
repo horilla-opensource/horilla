@@ -94,6 +94,7 @@ APSCHEDULER_RUN_NOW_TIMEOUT = 25  # Seconds
 
 MIDDLEWARE = [
     "django.middleware.security.SecurityMiddleware",
+    "hydra_ops.middleware.RequestIdMiddleware",
     "hydra_ops.middleware.DisableDatabaseInitializationMiddleware",
     "whitenoise.middleware.WhiteNoiseMiddleware",
     "django.contrib.sessions.middleware.SessionMiddleware",
@@ -162,6 +163,65 @@ DATABASES["default"]["CONN_MAX_AGE"] = env.int(
     default=60 if HYDRA_ENVIRONMENT in {"staging", "production"} else 0,
 )
 DATABASES["default"]["CONN_HEALTH_CHECKS"] = True
+
+# Redis is the shared cache for every web replica. Sessions remain durable in
+# PostgreSQL while cached_db avoids a database read for the common path.
+REDIS_URL = env("REDIS_URL", default="").strip()
+if REDIS_URL:
+    CACHES = {
+        "default": {
+            "BACKEND": "django.core.cache.backends.redis.RedisCache",
+            "LOCATION": REDIS_URL,
+            "KEY_PREFIX": f"hydra:{HYDRA_ENVIRONMENT}",
+            "TIMEOUT": env.int("CACHE_DEFAULT_TIMEOUT", default=300),
+            "OPTIONS": {
+                "socket_connect_timeout": env.float(
+                    "REDIS_CONNECT_TIMEOUT", default=2.0
+                ),
+                "socket_timeout": env.float("REDIS_SOCKET_TIMEOUT", default=2.0),
+            },
+        }
+    }
+    SESSION_ENGINE = "django.contrib.sessions.backends.cached_db"
+    SESSION_CACHE_ALIAS = "default"
+else:
+    CACHES = {
+        "default": {
+            "BACKEND": "django.core.cache.backends.locmem.LocMemCache",
+            "LOCATION": "hydra-development",
+        }
+    }
+    SESSION_ENGINE = "django.contrib.sessions.backends.db"
+
+SESSION_COOKIE_NAME = "hydra_sessionid"
+CSRF_COOKIE_NAME = "hydra_csrftoken"
+
+LOGGING = {
+    "version": 1,
+    "disable_existing_loggers": False,
+    "filters": {
+        "request_id": {"()": "hydra_ops.logging.RequestIdFilter"},
+    },
+    "formatters": {
+        "hydra": {
+            "format": "%(asctime)s %(levelname)s %(name)s request_id=%(request_id)s %(message)s",
+        },
+    },
+    "handlers": {
+        "console": {
+            "class": "logging.StreamHandler",
+            "filters": ["request_id"],
+            "formatter": "hydra",
+        },
+    },
+    "loggers": {
+        "django": {
+            "handlers": ["console"],
+            "level": env("HYDRA_LOG_LEVEL", default="INFO"),
+            "propagate": False,
+        },
+    },
+}
 
 # Password validation
 # https://docs.djangoproject.com/en/4.1/ref/settings/#auth-password-validators

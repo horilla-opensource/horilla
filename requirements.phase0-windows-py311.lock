@@ -90,6 +90,7 @@ pytz==2026.2
 PyYAML==6.0.3
 pyzk==0.9
 qrcode==8.2
+redis==7.4.1
 reportlab==4.1.0
 requests==2.34.2
 requests-oauthlib==2.0.0

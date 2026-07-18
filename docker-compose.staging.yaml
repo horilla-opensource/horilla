@@ -1,123 +1,187 @@
+x-hydra-environment: &hydra-environment
+  HYDRA_ENVIRONMENT: ${HYDRA_ENVIRONMENT:-staging}
+  HYDRA_DEPLOYMENT_REVISION: ${HYDRA_DEPLOYMENT_REVISION:?HYDRA_DEPLOYMENT_REVISION is required}
+  HYDRA_DISABLE_SCHEDULERS: ${HYDRA_DISABLE_SCHEDULERS:-True}
+  HYDRA_ALLOW_WEB_DATABASE_INITIALIZATION: ${HYDRA_ALLOW_WEB_DATABASE_INITIALIZATION:-False}
+  HYDRA_REQUIRE_POSTGRES: ${HYDRA_REQUIRE_POSTGRES:-True}
+  HYDRA_READINESS_REQUIRE_STATIC: ${HYDRA_READINESS_REQUIRE_STATIC:-True}
+  DEBUG: ${DEBUG:-False}
+  SECRET_KEY: ${SECRET_KEY:?SECRET_KEY is required}
+  ALLOWED_HOSTS: ${ALLOWED_HOSTS:?ALLOWED_HOSTS is required}
+  CSRF_TRUSTED_ORIGINS: ${CSRF_TRUSTED_ORIGINS:?CSRF_TRUSTED_ORIGINS is required}
+  TIME_ZONE: ${TIME_ZONE:-Europe/Warsaw}
+  DB_ENGINE: django.db.backends.postgresql
+  DB_NAME: ${POSTGRES_DB:?POSTGRES_DB is required}
+  DB_USER: ${HYDRA_DB_USER:?HYDRA_DB_USER is required}
+  DB_PASSWORD: ${HYDRA_DB_PASSWORD:?HYDRA_DB_PASSWORD is required}
+  DB_HOST: db
+  DB_PORT: "5432"
+  DB_CONN_MAX_AGE: ${DB_CONN_MAX_AGE:-60}
+  REDIS_URL: redis://:${REDIS_PASSWORD:?REDIS_PASSWORD is required}@redis:6379/0
+  REDIS_CONNECT_TIMEOUT: ${REDIS_CONNECT_TIMEOUT:-2}
+  REDIS_SOCKET_TIMEOUT: ${REDIS_SOCKET_TIMEOUT:-2}
+  CACHE_DEFAULT_TIMEOUT: ${CACHE_DEFAULT_TIMEOUT:-300}
+  STATIC_ROOT: /app/staticfiles
+  MEDIA_ROOT: /var/lib/hydra/media
+  HYDRA_PRIVATE_MEDIA_ROOT: /var/lib/hydra/private
+  HYDRA_PORTAL_EMAIL_MEDIA_ROOT: /var/lib/hydra/outbox
+  HYDRA_PRIVATE_DOCUMENT_MAX_BYTES: ${HYDRA_PRIVATE_DOCUMENT_MAX_BYTES:-10485760}
+  HYDRA_DOCUMENT_QUARANTINE_ROOT: /var/lib/hydra/quarantine
+  HYDRA_DOCUMENT_QUARANTINE_HOURS: ${HYDRA_DOCUMENT_QUARANTINE_HOURS:-72}
+  HYDRA_PRIVATE_DOCUMENT_RETENTION_DAYS: ${HYDRA_PRIVATE_DOCUMENT_RETENTION_DAYS:-365}
+  HYDRA_DOCUMENT_SCANNER: ${HYDRA_DOCUMENT_SCANNER:-clamd}
+  HYDRA_CLAMD_HOST: clamav
+  HYDRA_CLAMD_PORT: "3310"
+  HYDRA_CLAMD_TIMEOUT_SECONDS: ${HYDRA_CLAMD_TIMEOUT_SECONDS:-30}
+  HYDRA_NOTIFICATION_MAX_ATTEMPTS: ${HYDRA_NOTIFICATION_MAX_ATTEMPTS:-10}
+  HYDRA_NOTIFICATION_BASE_URL: ${HYDRA_NOTIFICATION_BASE_URL:?HYDRA_NOTIFICATION_BASE_URL is required}
+  HYDRA_NOTIFICATION_EMAIL_RETRY_BASE_SECONDS: ${HYDRA_NOTIFICATION_EMAIL_RETRY_BASE_SECONDS:-60}
+  HYDRA_NOTIFICATION_EMAIL_RETRY_MAX_SECONDS: ${HYDRA_NOTIFICATION_EMAIL_RETRY_MAX_SECONDS:-3600}
+  HYDRA_NOTIFICATION_EMAIL_LEASE_SECONDS: ${HYDRA_NOTIFICATION_EMAIL_LEASE_SECONDS:-120}
+  HYDRA_ONBOARDING_PORTAL_BASE_URL: ${HYDRA_ONBOARDING_PORTAL_BASE_URL:?HYDRA_ONBOARDING_PORTAL_BASE_URL is required}
+  EMAIL_HOST: ${EMAIL_HOST:?EMAIL_HOST is required}
+  EMAIL_PORT: ${EMAIL_PORT:-587}
+  EMAIL_HOST_USER: ${EMAIL_HOST_USER:?EMAIL_HOST_USER is required}
+  EMAIL_HOST_PASSWORD: ${EMAIL_HOST_PASSWORD:?EMAIL_HOST_PASSWORD is required}
+  DEFAULT_FROM_EMAIL: ${DEFAULT_FROM_EMAIL:?DEFAULT_FROM_EMAIL is required}
+  EMAIL_USE_TLS: ${EMAIL_USE_TLS:-True}
+  EMAIL_USE_SSL: ${EMAIL_USE_SSL:-False}
+  EMAIL_FAIL_SILENTLY: ${EMAIL_FAIL_SILENTLY:-False}
+  EMAIL_TIMEOUT: ${EMAIL_TIMEOUT:-30}
+  HYDRA_PORTAL_EMAIL_MAX_ATTEMPTS: ${HYDRA_PORTAL_EMAIL_MAX_ATTEMPTS:-8}
+  HYDRA_PORTAL_EMAIL_RETRY_BASE_SECONDS: ${HYDRA_PORTAL_EMAIL_RETRY_BASE_SECONDS:-60}
+  HYDRA_PORTAL_EMAIL_RETRY_MAX_SECONDS: ${HYDRA_PORTAL_EMAIL_RETRY_MAX_SECONDS:-3600}
+  HYDRA_PORTAL_EMAIL_LEASE_SECONDS: ${HYDRA_PORTAL_EMAIL_LEASE_SECONDS:-120}
+  HYDRA_PORTAL_EMAIL_DEAD_RETENTION_HOURS: ${HYDRA_PORTAL_EMAIL_DEAD_RETENTION_HOURS:-72}
+  HYDRA_PORTAL_EMAIL_MAX_ATTACHMENTS: ${HYDRA_PORTAL_EMAIL_MAX_ATTACHMENTS:-8}
+  HYDRA_PORTAL_EMAIL_ATTACHMENT_MAX_BYTES: ${HYDRA_PORTAL_EMAIL_ATTACHMENT_MAX_BYTES:-10485760}
+  HYDRA_PORTAL_EMAIL_ATTACHMENTS_TOTAL_BYTES: ${HYDRA_PORTAL_EMAIL_ATTACHMENTS_TOTAL_BYTES:-26214400}
+  HYDRA_MAINTENANCE_INTERVAL_SECONDS: ${HYDRA_MAINTENANCE_INTERVAL_SECONDS:-30}
+  HYDRA_MAINTENANCE_STALE_SECONDS: ${HYDRA_MAINTENANCE_STALE_SECONDS:-120}
+  HYDRA_MAINTENANCE_PURGE_INTERVAL_SECONDS: ${HYDRA_MAINTENANCE_PURGE_INTERVAL_SECONDS:-3600}
+  HYDRA_MAINTENANCE_NOTIFICATION_BATCH_SIZE: ${HYDRA_MAINTENANCE_NOTIFICATION_BATCH_SIZE:-100}
+  HYDRA_MAINTENANCE_NOTIFICATION_EMAIL_BATCH_SIZE: ${HYDRA_MAINTENANCE_NOTIFICATION_EMAIL_BATCH_SIZE:-25}
+  HYDRA_MAINTENANCE_DOCUMENT_BATCH_SIZE: ${HYDRA_MAINTENANCE_DOCUMENT_BATCH_SIZE:-100}
+  HYDRA_MAINTENANCE_LEGALIZATION_BATCH_SIZE: ${HYDRA_MAINTENANCE_LEGALIZATION_BATCH_SIZE:-100}
+  HYDRA_MAINTENANCE_ARRIVAL_BATCH_SIZE: ${HYDRA_MAINTENANCE_ARRIVAL_BATCH_SIZE:-100}
+  HYDRA_MAINTENANCE_ONBOARDING_BATCH_SIZE: ${HYDRA_MAINTENANCE_ONBOARDING_BATCH_SIZE:-100}
+  HYDRA_MAINTENANCE_PORTAL_EMAIL_BATCH_SIZE: ${HYDRA_MAINTENANCE_PORTAL_EMAIL_BATCH_SIZE:-25}
+  HYDRA_MAINTENANCE_MAX_FAILURES: ${HYDRA_MAINTENANCE_MAX_FAILURES:-5}
+  HYDRA_LEGALIZATION_DEADLINE_REMINDER_DAYS: ${HYDRA_LEGALIZATION_DEADLINE_REMINDER_DAYS:-30,7,1}
+  HYDRA_LEGALIZATION_VALIDITY_REMINDER_DAYS: ${HYDRA_LEGALIZATION_VALIDITY_REMINDER_DAYS:-90,30,7}
+  HYDRA_ARRIVAL_REMINDER_MINUTES: ${HYDRA_ARRIVAL_REMINDER_MINUTES:-1440,120}
+  HYDRA_BACKUP_ROOT: /backups
+  HYDRA_PORTAL_URL: ${HYDRA_PORTAL_URL:?HYDRA_PORTAL_URL is required}
+  SECURE_SSL_REDIRECT: ${SECURE_SSL_REDIRECT:-True}
+  SECURE_HSTS_SECONDS: ${SECURE_HSTS_SECONDS:-3600}
+  SECURE_HSTS_INCLUDE_SUBDOMAINS: ${SECURE_HSTS_INCLUDE_SUBDOMAINS:-False}
+  SECURE_HSTS_PRELOAD: ${SECURE_HSTS_PRELOAD:-False}
+
+x-hydra-runtime: &hydra-runtime
+  image: ${HYDRA_IMAGE:-hydra-app:staging}
+  restart: unless-stopped
+  init: true
+  cap_drop: [ALL]
+  security_opt: [no-new-privileges:true]
+  stop_grace_period: 45s
+
 services:
-  server:
+  release:
     image: ${HYDRA_IMAGE:-hydra-app:staging}
     build:
       context: .
       dockerfile: Dockerfile
       args:
         REQUIREMENTS_FILE: requirements.staging.lock
-    environment: &hydra-environment
-      HYDRA_PROCESS_ROLE: web
-      HYDRA_ENVIRONMENT: ${HYDRA_ENVIRONMENT:-staging}
-      HYDRA_DEPLOYMENT_REVISION: ${HYDRA_DEPLOYMENT_REVISION:?HYDRA_DEPLOYMENT_REVISION is required}
-      HYDRA_DISABLE_SCHEDULERS: ${HYDRA_DISABLE_SCHEDULERS:-True}
-      HYDRA_ALLOW_WEB_DATABASE_INITIALIZATION: ${HYDRA_ALLOW_WEB_DATABASE_INITIALIZATION:-False}
-      HYDRA_REQUIRE_POSTGRES: ${HYDRA_REQUIRE_POSTGRES:-True}
-      HYDRA_READINESS_REQUIRE_STATIC: ${HYDRA_READINESS_REQUIRE_STATIC:-True}
-      DEBUG: ${DEBUG:-False}
-      SECRET_KEY: ${SECRET_KEY:?SECRET_KEY is required}
-      ALLOWED_HOSTS: ${ALLOWED_HOSTS:?ALLOWED_HOSTS is required}
-      CSRF_TRUSTED_ORIGINS: ${CSRF_TRUSTED_ORIGINS:?CSRF_TRUSTED_ORIGINS is required}
-      TIME_ZONE: ${TIME_ZONE:-Europe/Warsaw}
-      DB_ENGINE: django.db.backends.postgresql
-      DB_NAME: ${POSTGRES_DB:?POSTGRES_DB is required}
-      DB_USER: ${HYDRA_DB_USER:?HYDRA_DB_USER is required}
-      DB_PASSWORD: ${HYDRA_DB_PASSWORD:?HYDRA_DB_PASSWORD is required}
-      DB_HOST: db
-      DB_PORT: "5432"
-      DB_CONN_MAX_AGE: ${DB_CONN_MAX_AGE:-60}
-      STATIC_ROOT: /app/staticfiles
-      MEDIA_ROOT: /var/lib/hydra/media
-      HYDRA_PRIVATE_MEDIA_ROOT: /var/lib/hydra/private
-      HYDRA_PORTAL_EMAIL_MEDIA_ROOT: /var/lib/hydra/outbox
-      HYDRA_PRIVATE_DOCUMENT_MAX_BYTES: ${HYDRA_PRIVATE_DOCUMENT_MAX_BYTES:-10485760}
-      HYDRA_DOCUMENT_QUARANTINE_ROOT: /var/lib/hydra/quarantine
-      HYDRA_DOCUMENT_QUARANTINE_HOURS: ${HYDRA_DOCUMENT_QUARANTINE_HOURS:-72}
-      HYDRA_PRIVATE_DOCUMENT_RETENTION_DAYS: ${HYDRA_PRIVATE_DOCUMENT_RETENTION_DAYS:-365}
-      HYDRA_DOCUMENT_SCANNER: ${HYDRA_DOCUMENT_SCANNER:-clamd}
-      HYDRA_CLAMD_HOST: clamav
-      HYDRA_CLAMD_PORT: "3310"
-      HYDRA_CLAMD_TIMEOUT_SECONDS: ${HYDRA_CLAMD_TIMEOUT_SECONDS:-30}
-      HYDRA_NOTIFICATION_MAX_ATTEMPTS: ${HYDRA_NOTIFICATION_MAX_ATTEMPTS:-10}
-      HYDRA_NOTIFICATION_BASE_URL: ${HYDRA_NOTIFICATION_BASE_URL:?HYDRA_NOTIFICATION_BASE_URL is required}
-      HYDRA_NOTIFICATION_EMAIL_RETRY_BASE_SECONDS: ${HYDRA_NOTIFICATION_EMAIL_RETRY_BASE_SECONDS:-60}
-      HYDRA_NOTIFICATION_EMAIL_RETRY_MAX_SECONDS: ${HYDRA_NOTIFICATION_EMAIL_RETRY_MAX_SECONDS:-3600}
-      HYDRA_NOTIFICATION_EMAIL_LEASE_SECONDS: ${HYDRA_NOTIFICATION_EMAIL_LEASE_SECONDS:-120}
-      HYDRA_ONBOARDING_PORTAL_BASE_URL: ${HYDRA_ONBOARDING_PORTAL_BASE_URL:?HYDRA_ONBOARDING_PORTAL_BASE_URL is required}
-      EMAIL_HOST: ${EMAIL_HOST:?EMAIL_HOST is required}
-      EMAIL_PORT: ${EMAIL_PORT:-587}
-      EMAIL_HOST_USER: ${EMAIL_HOST_USER:?EMAIL_HOST_USER is required}
-      EMAIL_HOST_PASSWORD: ${EMAIL_HOST_PASSWORD:?EMAIL_HOST_PASSWORD is required}
-      DEFAULT_FROM_EMAIL: ${DEFAULT_FROM_EMAIL:?DEFAULT_FROM_EMAIL is required}
-      EMAIL_USE_TLS: ${EMAIL_USE_TLS:-True}
-      EMAIL_USE_SSL: ${EMAIL_USE_SSL:-False}
-      EMAIL_FAIL_SILENTLY: ${EMAIL_FAIL_SILENTLY:-False}
-      EMAIL_TIMEOUT: ${EMAIL_TIMEOUT:-30}
-      HYDRA_PORTAL_EMAIL_MAX_ATTEMPTS: ${HYDRA_PORTAL_EMAIL_MAX_ATTEMPTS:-8}
-      HYDRA_PORTAL_EMAIL_RETRY_BASE_SECONDS: ${HYDRA_PORTAL_EMAIL_RETRY_BASE_SECONDS:-60}
-      HYDRA_PORTAL_EMAIL_RETRY_MAX_SECONDS: ${HYDRA_PORTAL_EMAIL_RETRY_MAX_SECONDS:-3600}
-      HYDRA_PORTAL_EMAIL_LEASE_SECONDS: ${HYDRA_PORTAL_EMAIL_LEASE_SECONDS:-120}
-      HYDRA_PORTAL_EMAIL_DEAD_RETENTION_HOURS: ${HYDRA_PORTAL_EMAIL_DEAD_RETENTION_HOURS:-72}
-      HYDRA_PORTAL_EMAIL_MAX_ATTACHMENTS: ${HYDRA_PORTAL_EMAIL_MAX_ATTACHMENTS:-8}
-      HYDRA_PORTAL_EMAIL_ATTACHMENT_MAX_BYTES: ${HYDRA_PORTAL_EMAIL_ATTACHMENT_MAX_BYTES:-10485760}
-      HYDRA_PORTAL_EMAIL_ATTACHMENTS_TOTAL_BYTES: ${HYDRA_PORTAL_EMAIL_ATTACHMENTS_TOTAL_BYTES:-26214400}
-      HYDRA_MAINTENANCE_INTERVAL_SECONDS: ${HYDRA_MAINTENANCE_INTERVAL_SECONDS:-30}
-      HYDRA_MAINTENANCE_STALE_SECONDS: ${HYDRA_MAINTENANCE_STALE_SECONDS:-120}
-      HYDRA_MAINTENANCE_PURGE_INTERVAL_SECONDS: ${HYDRA_MAINTENANCE_PURGE_INTERVAL_SECONDS:-3600}
-      HYDRA_MAINTENANCE_NOTIFICATION_BATCH_SIZE: ${HYDRA_MAINTENANCE_NOTIFICATION_BATCH_SIZE:-100}
-      HYDRA_MAINTENANCE_NOTIFICATION_EMAIL_BATCH_SIZE: ${HYDRA_MAINTENANCE_NOTIFICATION_EMAIL_BATCH_SIZE:-25}
-      HYDRA_MAINTENANCE_DOCUMENT_BATCH_SIZE: ${HYDRA_MAINTENANCE_DOCUMENT_BATCH_SIZE:-100}
-      HYDRA_MAINTENANCE_LEGALIZATION_BATCH_SIZE: ${HYDRA_MAINTENANCE_LEGALIZATION_BATCH_SIZE:-100}
-      HYDRA_MAINTENANCE_ARRIVAL_BATCH_SIZE: ${HYDRA_MAINTENANCE_ARRIVAL_BATCH_SIZE:-100}
-      HYDRA_MAINTENANCE_ONBOARDING_BATCH_SIZE: ${HYDRA_MAINTENANCE_ONBOARDING_BATCH_SIZE:-100}
-      HYDRA_MAINTENANCE_PORTAL_EMAIL_BATCH_SIZE: ${HYDRA_MAINTENANCE_PORTAL_EMAIL_BATCH_SIZE:-25}
-      HYDRA_MAINTENANCE_MAX_FAILURES: ${HYDRA_MAINTENANCE_MAX_FAILURES:-5}
-      HYDRA_LEGALIZATION_DEADLINE_REMINDER_DAYS: ${HYDRA_LEGALIZATION_DEADLINE_REMINDER_DAYS:-30,7,1}
-      HYDRA_LEGALIZATION_VALIDITY_REMINDER_DAYS: ${HYDRA_LEGALIZATION_VALIDITY_REMINDER_DAYS:-90,30,7}
-      HYDRA_ARRIVAL_REMINDER_MINUTES: ${HYDRA_ARRIVAL_REMINDER_MINUTES:-1440,120}
-      HYDRA_BACKUP_ROOT: /backups
-      HYDRA_PORTAL_URL: ${HYDRA_PORTAL_URL:?HYDRA_PORTAL_URL is required}
-      SECURE_SSL_REDIRECT: ${SECURE_SSL_REDIRECT:-True}
-      SECURE_HSTS_SECONDS: ${SECURE_HSTS_SECONDS:-3600}
-      SECURE_HSTS_INCLUDE_SUBDOMAINS: ${SECURE_HSTS_INCLUDE_SUBDOMAINS:-False}
-      SECURE_HSTS_PRELOAD: ${SECURE_HSTS_PRELOAD:-False}
-      GUNICORN_WORKERS: ${GUNICORN_WORKERS:-3}
-      GUNICORN_THREADS: ${GUNICORN_THREADS:-2}
-      GUNICORN_TIMEOUT: ${GUNICORN_TIMEOUT:-60}
-      GUNICORN_GRACEFUL_TIMEOUT: ${GUNICORN_GRACEFUL_TIMEOUT:-30}
-    ports:
-      - "127.0.0.1:${HYDRA_HTTP_PORT:-8000}:8000"
-    restart: unless-stopped
+    environment:
+      <<: *hydra-environment
+      HYDRA_PROCESS_ROLE: release
+    restart: "no"
     init: true
-    cap_drop:
-      - ALL
-    security_opt:
-      - no-new-privileges:true
+    cap_drop: [ALL]
+    security_opt: [no-new-privileges:true]
     tmpfs:
       - /tmp:rw,noexec,nosuid,size=128m
     volumes:
+      - hydra-static:/app/staticfiles
       - hydra-media:/var/lib/hydra/media
       - hydra-private-media:/var/lib/hydra/private
       - hydra-portal-email-outbox:/var/lib/hydra/outbox
       - hydra-document-quarantine:/var/lib/hydra/quarantine
     depends_on:
-      db:
-        condition: service_healthy
-      clamav:
-        condition: service_healthy
-    stop_grace_period: 45s
+      db: {condition: service_healthy}
+      redis: {condition: service_healthy}
+      clamav: {condition: service_healthy}
+    deploy:
+      resources:
+        limits: {cpus: "1.0", memory: 1G}
+
+  server:
+    <<: *hydra-runtime
+    scale: ${HYDRA_WEB_REPLICAS:-2}
+    environment:
+      <<: *hydra-environment
+      HYDRA_PROCESS_ROLE: web
+      GUNICORN_WORKERS: ${GUNICORN_WORKERS:-3}
+      GUNICORN_THREADS: ${GUNICORN_THREADS:-2}
+      GUNICORN_TIMEOUT: ${GUNICORN_TIMEOUT:-60}
+      GUNICORN_GRACEFUL_TIMEOUT: ${GUNICORN_GRACEFUL_TIMEOUT:-30}
+      GUNICORN_KEEPALIVE: ${GUNICORN_KEEPALIVE:-5}
+      GUNICORN_MAX_REQUESTS: ${GUNICORN_MAX_REQUESTS:-4000}
+      GUNICORN_MAX_REQUESTS_JITTER: ${GUNICORN_MAX_REQUESTS_JITTER:-400}
+      GUNICORN_FORWARDED_ALLOW_IPS: "*"
+    expose: ["8000"]
+    tmpfs:
+      - /tmp:rw,noexec,nosuid,size=128m
+    volumes:
+      - hydra-static:/app/staticfiles:ro
+      - hydra-media:/var/lib/hydra/media
+      - hydra-private-media:/var/lib/hydra/private
+      - hydra-portal-email-outbox:/var/lib/hydra/outbox
+      - hydra-document-quarantine:/var/lib/hydra/quarantine
+    depends_on:
+      release: {condition: service_completed_successfully}
+    deploy:
+      resources:
+        limits: {cpus: "1.0", memory: 1G}
+        reservations: {cpus: "0.25", memory: 256M}
+
+  proxy:
+    image: nginx:1.28.3-alpine
+    user: "101:101"
+    read_only: true
+    restart: unless-stopped
+    init: true
+    cap_drop: [ALL]
+    security_opt: [no-new-privileges:true]
+    ports:
+      - "127.0.0.1:${HYDRA_HTTP_PORT:-8000}:8080"
+    tmpfs:
+      - /tmp:rw,noexec,nosuid,size=64m,uid=101,gid=101
+    volumes:
+      - ./deployment/nginx/staging.conf:/etc/nginx/nginx.conf:ro
+      - ./deployment/nginx/hydra-proxy.conf:/etc/nginx/hydra-proxy.conf:ro
+      - hydra-static:/srv/hydra/static:ro
+      - hydra-media:/srv/hydra/media:ro
+    depends_on:
+      server: {condition: service_healthy}
+    healthcheck:
+      test: ["CMD-SHELL", "wget -q -O /dev/null http://127.0.0.1:8080/health/ || exit 1"]
+      interval: 15s
+      timeout: 5s
+      retries: 3
+      start_period: 30s
+    stop_grace_period: 30s
+    deploy:
+      resources:
+        limits: {cpus: "0.5", memory: 256M}
+        reservations: {cpus: "0.1", memory: 64M}
 
   maintenance:
-    image: ${HYDRA_IMAGE:-hydra-app:staging}
+    <<: *hydra-runtime
     environment:
       <<: *hydra-environment
       HYDRA_PROCESS_ROLE: maintenance
-    restart: unless-stopped
-    init: true
-    cap_drop:
-      - ALL
-    security_opt:
-      - no-new-privileges:true
     tmpfs:
       - /tmp:rw,noexec,nosuid,size=64m
     volumes:
@@ -125,15 +189,17 @@ services:
       - hydra-portal-email-outbox:/var/lib/hydra/outbox
       - hydra-document-quarantine:/var/lib/hydra/quarantine
     depends_on:
-      server:
-        condition: service_healthy
+      release: {condition: service_completed_successfully}
     healthcheck:
       test: ["CMD", "python", "manage.py", "hydra_maintenance_health"]
       interval: 30s
       timeout: 10s
       retries: 3
       start_period: 90s
-    stop_grace_period: 45s
+    deploy:
+      resources:
+        limits: {cpus: "1.0", memory: 1G}
+        reservations: {cpus: "0.1", memory: 128M}
 
   clamav:
     image: ${HYDRA_CLAMAV_IMAGE:-clamav/clamav:1.4_base}
@@ -141,8 +207,39 @@ services:
     init: true
     volumes:
       - hydra-clamav-db:/var/lib/clamav
-    expose:
-      - "3310"
+    expose: ["3310"]
+    deploy:
+      resources:
+        limits: {cpus: "1.0", memory: 2G}
+        reservations: {memory: 1G}
+
+  redis:
+    image: redis:8.4.0-alpine
+    environment:
+      REDIS_PASSWORD: ${REDIS_PASSWORD:?REDIS_PASSWORD is required}
+    command:
+      - sh
+      - -ec
+      - exec redis-server --appendonly yes --appendfsync everysec --requirepass "$${REDIS_PASSWORD}" --maxmemory 256mb --maxmemory-policy noeviction
+    restart: unless-stopped
+    init: true
+    read_only: true
+    cap_drop: [ALL]
+    security_opt: [no-new-privileges:true]
+    tmpfs:
+      - /tmp:rw,noexec,nosuid,size=32m
+    volumes:
+      - hydra-redis:/data
+    healthcheck:
+      test: ["CMD-SHELL", "REDISCLI_AUTH=\"$${REDIS_PASSWORD}\" redis-cli ping | grep -q PONG"]
+      interval: 10s
+      timeout: 5s
+      retries: 10
+      start_period: 10s
+    deploy:
+      resources:
+        limits: {cpus: "0.5", memory: 384M}
+        reservations: {memory: 128M}
 
   db:
     image: postgres:17-bookworm
@@ -164,10 +261,14 @@ services:
       timeout: 5s
       retries: 10
       start_period: 20s
+    deploy:
+      resources:
+        limits: {cpus: "2.0", memory: 2G}
+        reservations: {cpus: "0.25", memory: 512M}
 
   backup:
     image: postgres:17-bookworm
-    profiles: ["ops"]
+    profiles: [ops]
     user: "0:0"
     environment:
       PGHOST: db
@@ -175,14 +276,11 @@ services:
       PGDATABASE: ${POSTGRES_DB:?POSTGRES_DB is required}
       PGUSER: ${POSTGRES_USER:?POSTGRES_USER is required}
       PGPASSWORD: ${POSTGRES_PASSWORD:?POSTGRES_PASSWORD is required}
-    entrypoint: ["/bin/sh"]
+    entrypoint: [/bin/sh]
     read_only: true
-    cap_drop:
-      - ALL
-    cap_add:
-      - DAC_READ_SEARCH
-    security_opt:
-      - no-new-privileges:true
+    cap_drop: [ALL]
+    cap_add: [DAC_READ_SEARCH]
+    security_opt: [no-new-privileges:true]
     tmpfs:
       - /tmp:rw,noexec,nosuid,size=256m
     volumes:
@@ -192,11 +290,12 @@ services:
       - hydra-private-media:/data/private:ro
       - hydra-portal-email-outbox:/data/outbox:ro
     depends_on:
-      db:
-        condition: service_healthy
+      db: {condition: service_healthy}
 
 volumes:
   hydra-db:
+  hydra-redis:
+  hydra-static:
   hydra-media:
   hydra-private-media:
   hydra-portal-email-outbox:

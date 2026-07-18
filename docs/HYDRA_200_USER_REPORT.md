@@ -140,15 +140,24 @@ No Windows-native, authenticated multi-role load stage has been measured yet.
 Anonymous endpoint throughput and earlier WSL/Agent Lab experiments are not
 accepted as evidence for this objective.
 
+The repository now contains the production-like execution boundary required
+before measurement: an Nginx load balancer, two web replicas by default, a
+one-shot release/migration container, PostgreSQL, persistent Redis shared
+cache and `cached_db` sessions, separate maintenance work, ClamAV, health
+checks, graceful worker recycling, request IDs, resource limits, and
+loopback-only publication. Its focused readiness/staging tests pass 20/20.
+Docker Desktop is still unavailable on this workstation, so this topology has
+not yet produced runtime capacity evidence.
+
 | Stage | Duration | Result | Evidence |
 |---|---:|---|---|
-| 20 users | 15 min | NOT RUN | Generator and Windows runtime pending |
+| 20 users | 15 min | NOT RUN | Authenticated generator pending; Docker Desktop unavailable |
 | 50 users | 30 min | NOT RUN | Generator and Windows runtime pending |
 | 100 users | 60 min | NOT RUN | Generator and Windows runtime pending |
 | 150 users | 60 min | NOT RUN | Generator and Windows runtime pending |
 | 200 users | 120 min | NOT RUN | Generator, monitoring, safety gates, and capable runtime pending |
 | spike 50 -> 200 | 60 s | NOT RUN | Generator and runtime pending |
-| one-replica restart at 200 | during 200-user stage | NOT RUN | Production-like runtime pending |
+| one-replica restart at 200 | during 200-user stage | NOT RUN | Production-like topology implemented; runtime pending |
 
 ## Acceptance status
 
@@ -165,7 +174,7 @@ accepted as evidence for this objective.
 | Data integrity and organization isolation | PARTIAL | Regression tests pass; concurrent-load evidence missing |
 | Replica restart preserves service and sessions | FAIL | Not run |
 | Regression suite passes | PASS | 448 passed, 1 skipped after full rebrand and migration upgrade proof |
-| Changes committed and pushed to user remote | FAIL | Worktree remains uncommitted and unpushed |
+| Changes committed and pushed to user remote | FAIL | Rebrand is committed locally; infrastructure/load work and push remain pending |
 
 ## Git delivery evidence
 
@@ -173,6 +182,8 @@ Commits created so far:
 
 - `e9e6bcc4` - `feat: preserve completed Hydra business workflows`.
 - `a973d09b` - `refactor: rename Django project package to Hydra`.
+- `d3928a73` - `refactor: rename owned applications to Hydra`.
+- `6a50689f` - `refactor: complete Hydra brand migration`.
 
 Push is intentionally pending until the remaining implementation, regression
 tests and final secret scan are complete. This section will also list the final

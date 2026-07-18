@@ -5,6 +5,7 @@ from pathlib import Path
 from urllib.parse import urlparse
 
 from django.conf import settings
+from django.core.cache import caches
 from django.db import connection
 from django.db.migrations.executor import MigrationExecutor
 from django.db.models import Count, F, Max
@@ -50,6 +51,8 @@ def configuration_results():
     allowed_hosts = [host.strip() for host in settings.ALLOWED_HOSTS if host.strip()]
     csrf_origins = [origin.strip() for origin in settings.CSRF_TRUSTED_ORIGINS if origin.strip()]
     database_engine = settings.DATABASES["default"].get("ENGINE", "")
+    cache_backend = settings.CACHES.get("default", {}).get("BACKEND", "")
+    session_engine = getattr(settings, "SESSION_ENGINE", "")
     portal = urlparse(getattr(settings, "HYDRA_PORTAL_URL", ""))
     onboarding_portal = urlparse(
         getattr(settings, "HYDRA_ONBOARDING_PORTAL_BASE_URL", "")
@@ -95,6 +98,22 @@ def configuration_results():
                 },
                 "PostgreSQL is configured",
                 "staging and production require PostgreSQL",
+            ),
+            _result(
+                "redis_cache",
+                cache_backend == "django.core.cache.backends.redis.RedisCache",
+                "Redis is configured as the shared cache",
+                "staging and production require the Django Redis cache backend",
+            ),
+            _result(
+                "shared_sessions",
+                session_engine
+                in {
+                    "django.contrib.sessions.backends.cache",
+                    "django.contrib.sessions.backends.cached_db",
+                },
+                "sessions use the shared cache",
+                "staging and production require cache-backed shared sessions",
             ),
             _result(
                 "legacy_schedulers",
@@ -1138,9 +1157,38 @@ def scanner_results():
     return [ReadinessResult("document_scanner_health", ok, detail)]
 
 
+def cache_results():
+    if getattr(settings, "HYDRA_ENVIRONMENT", "development") not in DEPLOYMENT_ENVIRONMENTS:
+        return []
+    cache = caches["default"]
+    key = "hydra:readiness:probe"
+    expected = timezone.now().isoformat()
+    try:
+        cache.set(key, expected, timeout=10)
+        actual = cache.get(key)
+        cache.delete(key)
+    except Exception as exc:  # Fail closed without leaking connection details.
+        return [
+            ReadinessResult(
+                "redis_health",
+                False,
+                f"shared cache unavailable ({type(exc).__name__})",
+            )
+        ]
+    return [
+        _result(
+            "redis_health",
+            actual == expected,
+            "shared Redis cache read/write/delete probe passed",
+            "shared Redis cache probe returned an unexpected value",
+        )
+    ]
+
+
 def collect_readiness(*, include_filesystem=True, include_migrations=True):
     results = configuration_results()
     results.extend(database_results(include_migrations=include_migrations))
+    results.extend(cache_results())
     results.extend(domain_integrity_results())
     if include_filesystem:
         results.extend(filesystem_results())

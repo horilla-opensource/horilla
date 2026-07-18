@@ -36,8 +36,8 @@ else {
 }
 if ($LASTEXITCODE -ne 0) { throw "Image preparation failed; backup id is $backupId." }
 
-& docker @compose up -d --wait --wait-timeout 1800 db clamav
-if ($LASTEXITCODE -ne 0) { throw "Database/scanner start failed; backup id is $backupId." }
+& docker @compose up -d --wait --wait-timeout 1800 db redis clamav
+if ($LASTEXITCODE -ne 0) { throw "Database/Redis/scanner start failed; backup id is $backupId." }
 
 if ($InitialDeployment) {
     $databaseStateCommand = 'export PGPASSWORD="$POSTGRES_PASSWORD"; exec psql --no-psqlrc --tuples-only --no-align --set ON_ERROR_STOP=1 --username="$POSTGRES_USER" --dbname="$POSTGRES_DB" --command="SELECT COUNT(*) FROM pg_class WHERE relnamespace = ''public''::regnamespace AND relkind IN (''r'', ''p'', ''v'', ''m'', ''S'', ''f'');"'
@@ -59,7 +59,7 @@ if ($InitialDeployment) {
 
 & docker @compose stop maintenance
 if ($LASTEXITCODE -ne 0) { throw "Could not stop the maintenance writer; backup id is $backupId." }
-& docker @compose up -d --wait --wait-timeout 1800 server maintenance
+& docker @compose up -d --wait --wait-timeout 1800 release server maintenance proxy
 if ($LASTEXITCODE -ne 0) { throw "Application deployment failed; backup id is $backupId." }
 
 & "$PSScriptRoot\staging-smoke.ps1" -BaseUrl $BaseUrl

@@ -30,7 +30,7 @@ try {
 }
 finally {
     if ($servicesWereStopped) {
-        & docker @compose up -d --wait --wait-timeout 1800 server maintenance
+        & docker @compose up -d --wait --wait-timeout 1800 server maintenance proxy
         if ($LASTEXITCODE -ne 0) {
             Write-Error "Backup finished, but Hydra services did not restart."
         }
