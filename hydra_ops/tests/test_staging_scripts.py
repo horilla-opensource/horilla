@@ -300,3 +300,17 @@ class StagingRemoteLoadWorkflowContractTests(SimpleTestCase):
             "between(THINK_TIME_MIN_SECONDS, THINK_TIME_MAX_SECONDS)",
             locustfile,
         )
+
+    def test_maintenance_healthcheck_avoids_full_django_startup(self):
+        compose = (REPOSITORY_ROOT / "docker-compose.staging.yaml").read_text(
+            encoding="utf-8"
+        )
+
+        self.assertIn(
+            'test: ["CMD", "python", "-m", "hydra_ops.maintenance_probe"]',
+            compose,
+        )
+        self.assertNotIn(
+            'test: ["CMD", "python", "manage.py", "hydra_maintenance_health"]',
+            compose,
+        )

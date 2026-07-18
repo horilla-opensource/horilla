@@ -15,6 +15,15 @@ For `HYDRA_PROCESS_ROLE=release`, a one-shot container performs the only mutatin
 
 Every `HYDRA_PROCESS_ROLE=web` replica then checks deployment settings, verifies that migrations are already applied, runs readiness, and replaces the shell with Gunicorn. A web replica never applies migrations. Gunicorn recycles workers with jitter and emits request-id-correlated JSON access records containing the normalized path but no query string, cookies, authorization header, or user identity.
 
+The maintenance container healthcheck uses a bounded, direct PostgreSQL probe
+instead of starting the complete Django application every 30 seconds. It reads
+no business rows: it verifies only that the single-owner maintenance heartbeat
+is fresh and its consecutive-failure count is below the configured threshold.
+Both connection and statement execution are limited to five seconds, and any
+missing setting or database error fails closed without printing credentials or
+database details. The full Django maintenance health command remains available
+for deployment and rollback verification.
+
 For `HYDRA_PROCESS_ROLE=maintenance`, the same image checks deployment/schema state and starts the advisory-lock-protected worker documented in `HYDRA_MAINTENANCE.md`; it never migrates. Neither role runs `makemigrations` or creates a fixed administrator. The upstream browser database initializer and demo loader are hidden. Legacy APScheduler remains disabled in every process.
 
 Relevant files:

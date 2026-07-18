@@ -194,7 +194,7 @@ services:
     depends_on:
       release: {condition: service_completed_successfully}
     healthcheck:
-      test: ["CMD", "python", "manage.py", "hydra_maintenance_health"]
+      test: ["CMD", "python", "-m", "hydra_ops.maintenance_probe"]
       interval: 30s
       timeout: 10s
       retries: 3
