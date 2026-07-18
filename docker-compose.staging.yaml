@@ -160,6 +160,7 @@ services:
       - "127.0.0.1:${HYDRA_HTTP_PORT:-8000}:8080"
     tmpfs:
       - /tmp:rw,noexec,nosuid,size=64m,uid=101,gid=101
+      - /var/cache/nginx:rw,noexec,nosuid,size=64m,uid=101,gid=101
     volumes:
       - ./deployment/nginx/staging.conf:/etc/nginx/nginx.conf:ro
       - ./deployment/nginx/hydra-proxy.conf:/etc/nginx/hydra-proxy.conf:ro
