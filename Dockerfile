@@ -40,7 +40,7 @@ RUN python scripts/verify-migration-manifest.py \
     && chmod 0555 /app/entrypoint.sh \
     && install -d -o hydra -g hydra -m 0750 \
         /app/staticfiles /var/lib/hydra/media /var/lib/hydra/private \
-        /var/lib/hydra/quarantine
+        /var/lib/hydra/quarantine /var/lib/hydra/outbox
 
 USER hydra
 
