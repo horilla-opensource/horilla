@@ -152,11 +152,15 @@ separate session per user, exercises real scoped selectors and six real domain
 write services, verifies integrity every minute, records resource/latency
 evidence, applies every mandatory safety stop, and performs the controlled
 single-replica restart during the 200-user stage. Its focused contract tests
-pass 12/12. The complete clean-database regression now passes 464/464 with one
-intentional environment-dependent skip; test execution took 324.868 seconds
-and the complete process took 541.8 seconds. Docker Desktop is still
-unavailable on this workstation, so this
-topology has not yet produced timed runtime capacity evidence.
+pass 12/12. The complete local clean-database regression passes 464/464 with
+one intentional environment-dependent skip; test execution took 324.868
+seconds and the complete process took 541.8 seconds. The clean Linux/PostgreSQL
+17 regression passes 465/465 in GitHub Actions. The same successful CI run
+built the staging and Locust images, started the two-replica stack, verified
+runtime isolation/readiness, passed smoke checks, created a cold recovery point,
+verified it in an isolated restore, and passed smoke checks again. Docker
+Desktop is still unavailable on this workstation, so this topology has not yet
+produced timed runtime capacity evidence.
 
 | Stage | Duration | Result | Evidence |
 |---|---:|---|---|
@@ -208,8 +212,8 @@ these rows only after review.
 | No OOM/readiness/restart/connection leak | FAIL | Not measured at required load |
 | Data integrity and organization isolation | PARTIAL | Regression tests pass; concurrent-load evidence missing |
 | Replica restart preserves service and sessions | FAIL | Not run |
-| Regression suite passes | PASS | 464 passed, 1 skipped after the authenticated load harness and full rebrand proof |
-| Changes committed and pushed to user remote | PASS | Six implementation commits pushed; local and remote SHA matched at `d123c506ed1190fc1d7e77df1e0d7708c8444078`; draft PR #1 opened |
+| Regression suite passes | PASS | GitHub Linux/PostgreSQL 17: 465/465 passed; local Windows: 464/464 passed with 1 environment-dependent skip |
+| Changes committed and pushed to user remote | PASS | Fifteen pre-report commits pushed; local and remote SHA matched at `03e2c6f958529a966071995ad1b3e860343c6cd8`; draft PR #1 and both push/PR CI runs are green |
 
 ## Git delivery evidence
 
@@ -221,6 +225,15 @@ Commits created so far:
 - `6a50689f` - `refactor: complete Hydra brand migration`.
 - `9f02d233` - `feat: add scaled Hydra staging runtime`.
 - `d123c506` - `feat: add authenticated Hydra load acceptance harness`.
+- `2304d5db` - `docs: record Hydra delivery evidence`.
+- `3a61f4e5` - `ci: prepare Hydra quarantine storage`.
+- `544bb106` - `test: tolerate PowerShell error rendering`.
+- `d3618762` - `ci: configure Hydra notification URL`.
+- `e11cc90b` - `fix: initialize Redis volume for non-root runtime`.
+- `4e409c9f` - `fix: prepare portal outbox volume ownership`.
+- `946ae155` - `fix: provide Nginx runtime cache tmpfs`.
+- `51bcee13` - `fix: make Redis volume initialization idempotent`.
+- `03e2c6f9` - `fix: isolate ingress during cold backups`.
 
 Delivery state:
 
@@ -230,9 +243,11 @@ Delivery state:
   `OleksandrKiris/hydra-platform`; the external upstream was not renamed or
   pushed;
 - pushed branch SHA and local SHA both matched
-  `d123c506ed1190fc1d7e77df1e0d7708c8444078` before this report-only update;
+  `03e2c6f958529a966071995ad1b3e860343c6cd8` before this report-only update;
 - draft PR: `https://github.com/OleksandrKiris/hydra-platform/pull/1`, targeting
   the fork's `1.0` branch;
+- successful final pre-report GitHub Actions run:
+  `https://github.com/OleksandrKiris/hydra-platform/actions/runs/29630005771`;
 - the report-only delivery commit is the final branch HEAD and is identified in
   the final handoff rather than self-referencing its own SHA here.
 

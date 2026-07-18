@@ -208,14 +208,15 @@ After every item is evidenced, the accountable business and technical owners may
 
 ## Verification evidence for task 045
 
-Verified locally through 2026-07-18; PostgreSQL-specific evidence remains from the earlier PostgreSQL 17 drill:
+Verified locally and in GitHub Actions through 2026-07-18:
 
 - focused `hydra_ops` tests: 34/34 passed;
 - exact migration-manifest tests: 4/4 passed, and the verifier matched all 80 reviewed migration sources including the pinned Django auth compatibility source and the forward-only Hydra rebranding migrations;
 - focused Person-timeline tests: 7/7 passed, and the combined organization-scope/timeline run passed 20/20;
 - focused controlled-recruitment-workflow tests: 11/11 passed; the affected onboarding-handoff/portal-email regression passed 35/35 after their fixtures were moved through the same public transition service;
-- offline staging-script safety tests: 6/6 passed for empty/non-empty initial deployment plus safe, traversal, duplicate-path and symlink archives;
-- full clean-database Django regression: 464/464 passed with 1 intentional skip after the complete Hydra rebrand and authenticated load-harness integration; the isolated upgrade proof additionally preserved mail-template data, content types, permissions, and the legacy physical compatibility table;
+- offline staging-script safety tests: 7/7 passed for empty/non-empty initial deployment, cold-backup ingress isolation, plus safe, traversal, duplicate-path and symlink archives;
+- full local clean-database Django regression: 464/464 passed with 1 intentional environment-dependent skip after the complete Hydra rebrand and authenticated load-harness integration; the isolated upgrade proof additionally preserved mail-template data, content types, permissions, and the legacy physical compatibility table;
+- clean GitHub Linux/PostgreSQL 17 regression: 465/465 passed in 246.760 seconds;
 - scaled-staging focused tests: 20/20 passed for readiness, Redis fail-closed behavior, safe request IDs, archive validation, and initial-deployment guards;
 - `manage.py check`, `migrate --check`, `makemigrations --check --dry-run`, readiness, migration-manifest verification, Python compilation, workflow YAML parsing, dependency consistency, and `git diff --check` passed;
 - real custom-format database dump restored into an isolated temporary database;
@@ -223,4 +224,13 @@ Verified locally through 2026-07-18; PostgreSQL-specific evidence remains from t
 - the restored private object SHA-256 was `653893bd4c4d8f6a0a472815d1f88b92e46ada775277c3a973cf7b7a64d22606`, equal to database metadata;
 - PowerShell and Bash scripts passed syntax parsing; Compose passed YAML parsing.
 
-Docker is not installed on the audit workstation, so the workflow definition is locally syntax-validated but its Linux image/Compose jobs must pass in GitHub before they count as evidence. A successful CI run reduces risk but does not replace the target-host and business-owner gates.
+Docker is not installed on the audit workstation, so no timed load stage was run
+locally. GitHub Actions run
+`https://github.com/OleksandrKiris/hydra-platform/actions/runs/29630005771`
+successfully built both staging and Locust images; started PostgreSQL, Redis,
+ClamAV, maintenance, Nginx, and two non-root web replicas; verified secret,
+network, runtime-user, and database-role isolation; passed readiness and external
+smoke checks; created a cold backup; restored it into an isolated database with
+124 migration records; and passed readiness/smoke again after restart. This
+successful CI drill reduces infrastructure risk but does not replace the timed
+20/50/100/150/200 stages, target-host monitoring, or business-owner gates.
