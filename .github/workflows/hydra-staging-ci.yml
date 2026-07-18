@@ -144,6 +144,7 @@ jobs:
           HYDRA_BACKUP_HOST_PATH=./backups
           HYDRA_PORTAL_URL=https://oleksandrkiris.github.io/citronex-hydra-project/
           HYDRA_ONBOARDING_PORTAL_BASE_URL=https://localhost/
+          HYDRA_NOTIFICATION_BASE_URL=https://localhost/
           EMAIL_HOST=smtp.example.invalid
           EMAIL_PORT=587
           EMAIL_HOST_USER=hydra-ci
