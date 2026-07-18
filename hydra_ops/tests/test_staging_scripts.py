@@ -267,6 +267,9 @@ class StagingRemoteLoadWorkflowContractTests(SimpleTestCase):
         locustfile = (REPOSITORY_ROOT / "load_tests" / "locustfile.py").read_text(
             encoding="utf-8"
         )
+        load_dockerfile = (REPOSITORY_ROOT / "Dockerfile.load").read_text(
+            encoding="utf-8"
+        )
         self.assertIn("HYDRA_LOAD_RUNTIME_UID:-10002", compose)
         self.assertIn("HYDRA_LOAD_RUNTIME_GID:-10002", compose)
         self.assertIn("DirectorySeparatorChar -eq '/'", runner)
@@ -280,3 +283,7 @@ class StagingRemoteLoadWorkflowContractTests(SimpleTestCase):
         self.assertIn('$container.State.Status -eq "running" -and', runner)
         self.assertEqual(runner.count('SpawnRate = 2; Shape = "standard"'), 5)
         self.assertGreaterEqual(locustfile.count("self._prepare_internal_request()"), 4)
+        self.assertIn("PYTHONPATH=/load", load_dockerfile)
+        self.assertIn("load_tests/ /load/load_tests/", load_dockerfile)
+        self.assertIn("/load/load_tests/locustfile.py", compose)
+        self.assertIn("/load/load_tests/summarize.py", runner)

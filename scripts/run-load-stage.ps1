@@ -480,7 +480,7 @@ finally {
         & docker @composePrefix logs --no-color *> (Join-Path $artifactPath "compose.log")
         if (Test-Path -LiteralPath (Join-Path $artifactPath "locust_stats.csv")) {
             & docker @composePrefix run --rm --no-deps --entrypoint python load `
-                /load/summarize.py --artifacts /artifacts --stage $Stage --users $users --duration-seconds $requiredDuration `
+                /load/load_tests/summarize.py --artifacts /artifacts --stage $Stage --users $users --duration-seconds $requiredDuration `
                 *> (Join-Path $artifactPath "summary-command.txt")
             if ($LASTEXITCODE -ne 0 -and -not $failure) { $failure = "Load summary generation failed." }
         }

@@ -14,7 +14,7 @@ services:
       HYDRA_LOAD_HOST_HEADER: ${HYDRA_LOAD_HOST_HEADER:-localhost}
     command:
       - --locustfile
-      - /load/locustfile.py
+      - /load/load_tests/locustfile.py
       - --headless
       - --host
       - http://proxy:8080

@@ -2,6 +2,7 @@ FROM python:3.11-slim-bookworm
 
 ENV PIP_DISABLE_PIP_VERSION_CHECK=1 \
     PIP_NO_CACHE_DIR=1 \
+    PYTHONPATH=/load \
     PYTHONDONTWRITEBYTECODE=1 \
     PYTHONUNBUFFERED=1
 
@@ -12,7 +13,7 @@ RUN pip install --require-hashes --requirement /tmp/requirements.load.lock \
     && groupadd --gid 10002 loadtest \
     && useradd --uid 10002 --gid loadtest --create-home --shell /usr/sbin/nologin loadtest
 
-COPY --chown=loadtest:loadtest load_tests/ /load/
+COPY --chown=loadtest:loadtest load_tests/ /load/load_tests/
 
 USER loadtest
 
