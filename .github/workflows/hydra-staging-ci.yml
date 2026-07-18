@@ -40,6 +40,7 @@ jobs:
       HYDRA_DISABLE_SCHEDULERS: "True"
       HYDRA_ALLOW_WEB_DATABASE_INITIALIZATION: "False"
       HYDRA_PRIVATE_MEDIA_ROOT: /tmp/hydra-private
+      HYDRA_DOCUMENT_QUARANTINE_ROOT: /tmp/hydra-quarantine
       HYDRA_PORTAL_EMAIL_MEDIA_ROOT: /tmp/hydra-outbox
       MEDIA_ROOT: /tmp/hydra-media
       SECRET_KEY: ci-only-django-key-with-more-than-fifty-characters-000000000000
@@ -80,7 +81,9 @@ jobs:
           python scripts/verify-migration-manifest.py
 
       - name: Prepare runtime directories
-        run: install -d -m 0700 /tmp/hydra-private /tmp/hydra-media /tmp/hydra-outbox
+        run: >-
+          install -d -m 0700 /tmp/hydra-private /tmp/hydra-quarantine
+          /tmp/hydra-media /tmp/hydra-outbox
 
       - name: Validate and migrate schema
         run: |
