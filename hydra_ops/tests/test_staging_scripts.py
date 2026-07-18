@@ -227,3 +227,17 @@ class StagingInitialDeploymentGuardTests(SimpleTestCase):
 
         self.assertEqual(result.returncode, 0, result.stderr)
         self.assertIn("passed smoke checks", result.stdout)
+
+
+class StagingColdBackupContractTests(SimpleTestCase):
+    def test_cold_backup_stops_ingress_and_writers_before_snapshot(self):
+        script = (REPOSITORY_ROOT / "scripts" / "staging-backup.ps1").read_text(
+            encoding="utf-8"
+        )
+
+        self.assertIn("docker @compose stop proxy maintenance server", script)
+        self.assertIn(
+            "docker @compose up -d --wait --wait-timeout 1800 "
+            "server maintenance proxy",
+            script,
+        )

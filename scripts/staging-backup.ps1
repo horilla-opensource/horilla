@@ -19,8 +19,8 @@ if ($BackupId -and $BackupId -notmatch '^[A-Za-z0-9._-]+$') {
 $compose = @("compose", "--env-file", $EnvFile, "-f", $ComposeFile)
 $servicesWereStopped = $false
 try {
-    & docker @compose stop maintenance server
-    if ($LASTEXITCODE -ne 0) { throw "Could not stop Hydra writers." }
+    & docker @compose stop proxy maintenance server
+    if ($LASTEXITCODE -ne 0) { throw "Could not enter Hydra cold-backup downtime." }
     $servicesWereStopped = $true
 
     $run = $compose + @("--profile", "ops", "run", "--rm", "backup", "/ops/staging-backup.sh")
