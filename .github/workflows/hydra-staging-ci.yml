@@ -6,6 +6,8 @@ on:
     branches:
       - main
       - "codex/**"
+    tags:
+      - "hydra-load-*"
   workflow_dispatch:
 
 permissions:
@@ -18,6 +20,7 @@ concurrency:
 jobs:
   django-postgresql:
     name: Django / PostgreSQL 17
+    if: ${{ !startsWith(github.ref, 'refs/tags/hydra-load-') }}
     runs-on: ubuntu-24.04
     timeout-minutes: 30
     services:
@@ -320,3 +323,117 @@ jobs:
           docker compose --env-file "$STAGING_ENV_FILE" -f "$COMPOSE_FILE" down --volumes --remove-orphans || true
           sudo rm -rf backups
           rm -f .env.staging
+
+  load-acceptance:
+    name: Authenticated load / ${{ github.ref_name }}
+    if: startsWith(github.ref, 'refs/tags/hydra-load-')
+    runs-on: ubuntu-24.04
+    timeout-minutes: 240
+    env:
+      STAGING_ENV_FILE: .env.staging
+      HYDRA_LOAD_ARTIFACTS_ROOT: ${{ github.workspace }}/artifacts/load-results
+    steps:
+      - name: Check out tagged source
+        uses: actions/checkout@v6.0.2
+
+      - name: Validate load tag
+        shell: bash
+        run: |
+          case "$GITHUB_REF_NAME" in
+            hydra-load-20-*) stage=20 ;;
+            hydra-load-50-*) stage=50 ;;
+            hydra-load-100-*) stage=100 ;;
+            hydra-load-150-*) stage=150 ;;
+            hydra-load-200-*) stage=200 ;;
+            hydra-load-spike-*) stage=spike ;;
+            *)
+              echo "::error::Invalid load tag. Expected hydra-load-<20|50|100|150|200|spike>-<id>."
+              exit 1
+              ;;
+          esac
+          echo "HYDRA_ACCEPTANCE_STAGE=$stage" >> "$GITHUB_ENV"
+          echo "Validated authenticated load stage: $stage"
+
+      - name: Create isolated load configuration
+        shell: bash
+        run: |
+          umask 077
+          secret_key="$(openssl rand -hex 48)"
+          postgres_password="$(openssl rand -hex 24)"
+          app_password="$(openssl rand -hex 24)"
+          redis_password="$(openssl rand -hex 24)"
+          smtp_password="$(openssl rand -hex 24)"
+          load_password="$(openssl rand -hex 24)"
+          for value in "$secret_key" "$postgres_password" "$app_password" "$redis_password" "$smtp_password" "$load_password"; do
+            echo "::add-mask::$value"
+          done
+          echo "HYDRA_LOAD_TEST_PASSWORD=$load_password" >> "$GITHUB_ENV"
+          cat > .env.staging <<EOF
+          HYDRA_ENVIRONMENT=staging
+          HYDRA_DEPLOYMENT_REVISION=load-ci-${GITHUB_SHA}
+          HYDRA_DISABLE_SCHEDULERS=True
+          HYDRA_ALLOW_WEB_DATABASE_INITIALIZATION=False
+          HYDRA_REQUIRE_POSTGRES=True
+          HYDRA_READINESS_REQUIRE_STATIC=True
+          DEBUG=False
+          SECRET_KEY=${secret_key}
+          ALLOWED_HOSTS=127.0.0.1,localhost
+          CSRF_TRUSTED_ORIGINS=https://localhost
+          TIME_ZONE=Europe/Warsaw
+          POSTGRES_DB=hydra_load
+          POSTGRES_USER=hydra_load_admin
+          POSTGRES_PASSWORD=${postgres_password}
+          HYDRA_DB_USER=hydra_load_app
+          HYDRA_DB_PASSWORD=${app_password}
+          DB_CONN_MAX_AGE=0
+          REDIS_PASSWORD=${redis_password}
+          HYDRA_PRIVATE_DOCUMENT_MAX_BYTES=10485760
+          HYDRA_BACKUP_HOST_PATH=./backups
+          HYDRA_PORTAL_URL=https://oleksandrkiris.github.io/citronex-hydra-project/
+          HYDRA_ONBOARDING_PORTAL_BASE_URL=https://localhost/
+          HYDRA_NOTIFICATION_BASE_URL=https://localhost/
+          EMAIL_HOST=smtp.example.invalid
+          EMAIL_PORT=587
+          EMAIL_HOST_USER=hydra-load-ci
+          EMAIL_HOST_PASSWORD=${smtp_password}
+          DEFAULT_FROM_EMAIL=noreply@example.test
+          EMAIL_USE_TLS=True
+          EMAIL_USE_SSL=False
+          EMAIL_FAIL_SILENTLY=False
+          SECURE_SSL_REDIRECT=True
+          SECURE_HSTS_SECONDS=3600
+          SECURE_HSTS_INCLUDE_SUBDOMAINS=False
+          SECURE_HSTS_PRELOAD=False
+          HYDRA_HTTP_PORT=18080
+          HYDRA_IMAGE=hydra-app:load-ci
+          HYDRA_WEB_REPLICAS=2
+          GUNICORN_WORKERS=2
+          GUNICORN_THREADS=2
+          GUNICORN_TIMEOUT=60
+          GUNICORN_GRACEFUL_TIMEOUT=30
+          EOF
+          ! grep -q REPLACE .env.staging
+          mkdir -p "$HYDRA_LOAD_ARTIFACTS_ROOT"
+
+      - name: Run authenticated load stage
+        shell: pwsh
+        run: |
+          ./scripts/run-load-stage.ps1 `
+            -Stage $env:HYDRA_ACCEPTANCE_STAGE `
+            -RunId "gha-${{ github.run_id }}-${{ github.run_attempt }}" `
+            -EnvFile $env:STAGING_ENV_FILE `
+            -ArtifactsRoot $env:HYDRA_LOAD_ARTIFACTS_ROOT
+
+      - name: Upload load evidence
+        if: always()
+        uses: actions/upload-artifact@v7.0.1
+        with:
+          name: hydra-load-${{ env.HYDRA_ACCEPTANCE_STAGE }}-${{ github.run_id }}-${{ github.run_attempt }}
+          path: artifacts/load-results/
+          if-no-files-found: error
+          retention-days: 30
+
+      - name: Remove ephemeral load secret
+        if: always()
+        shell: bash
+        run: rm -f .env.staging

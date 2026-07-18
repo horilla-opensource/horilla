@@ -95,20 +95,20 @@ function Add-RunEvent {
 }
 
 if (-not (Get-Command docker -ErrorAction SilentlyContinue)) {
-    throw "Docker CLI is unavailable. Install and start Docker Desktop before running a Hydra load stage."
+    throw "Docker CLI is unavailable. Install and start Docker Engine (Docker Desktop on Windows) before running a Hydra load stage."
 }
 & docker info --format '{{.ServerVersion}}' *> $null
 if ($LASTEXITCODE -ne 0) {
-    throw "Docker Desktop engine is unavailable. Start Docker Desktop before running a Hydra load stage."
+    throw "Docker Engine is unavailable. Start Docker Desktop on Windows or the Docker service on Linux before running a Hydra load stage."
 }
 $memoryText = (& docker info --format '{{.MemTotal}}').Trim()
 [long]$dockerMemory = 0
 if (-not [long]::TryParse($memoryText, [ref]$dockerMemory)) {
-    throw "Could not determine Docker Desktop memory capacity."
+    throw "Could not determine Docker Engine memory capacity."
 }
 $minimumGiB = if ($users -ge 150) { 8 } else { 6 }
 if ($dockerMemory -lt ($minimumGiB * 1GB)) {
-    throw "Stage $Stage requires at least $minimumGiB GiB assigned to Docker Desktop; detected $([math]::Round($dockerMemory / 1GB, 2)) GiB."
+    throw "Stage $Stage requires at least $minimumGiB GiB available to Docker Engine; detected $([math]::Round($dockerMemory / 1GB, 2)) GiB."
 }
 
 $password = [string]$env:HYDRA_LOAD_TEST_PASSWORD
@@ -270,7 +270,7 @@ $fullUserSeconds = 0
 $restartAttempted = $false
 "timestamp,cpu_percent,memory_percent,db_connections,redis_used_memory_bytes" |
     Set-Content -LiteralPath $resourcePath -Encoding UTF8
-Add-RunEvent "preflight" "Docker Desktop and isolated project checks passed"
+Add-RunEvent "preflight" "Docker Engine and isolated project checks passed"
 
 try {
     Invoke-Compose -Arguments @("config", "--quiet")

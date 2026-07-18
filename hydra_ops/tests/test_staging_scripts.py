@@ -241,3 +241,19 @@ class StagingColdBackupContractTests(SimpleTestCase):
             "server maintenance proxy",
             script,
         )
+
+
+class StagingRemoteLoadWorkflowContractTests(SimpleTestCase):
+    def test_remote_load_tags_are_explicit_bounded_and_publish_evidence(self):
+        workflow = (
+            REPOSITORY_ROOT / ".github" / "workflows" / "hydra-staging-ci.yml"
+        ).read_text(encoding="utf-8")
+
+        self.assertIn('      - "hydra-load-*"', workflow)
+        for stage in ("20", "50", "100", "150", "200", "spike"):
+            self.assertIn(f"hydra-load-{stage}-*) stage={stage} ;;", workflow)
+        self.assertIn("timeout-minutes: 240", workflow)
+        self.assertIn("openssl rand -hex", workflow)
+        self.assertIn('echo "::add-mask::$value"', workflow)
+        self.assertIn("./scripts/run-load-stage.ps1", workflow)
+        self.assertIn("retention-days: 30", workflow)

@@ -80,6 +80,36 @@ The plan runs these exact stages and stops at the first failure:
 | 200 | 120 min | `.\scripts\run-load-stage.ps1 -Stage 200` |
 | spike | 5 s to establish 50 sessions, 50 to 200 in exactly 60 s, then 300 s hold | `.\scripts\run-load-stage.ps1 -Stage spike` |
 
+### Isolated GitHub runner fallback
+
+When Docker Desktop is unavailable, the same committed PowerShell runner can
+execute on an isolated Ubuntu GitHub Actions runner. This is an explicit
+operator action, not an automatic PR load. Push one uniquely named tag at a
+time, in the required order, only after the preceding stage passes:
+
+```powershell
+$stamp = Get-Date -Format 'yyyyMMdd-HHmmss'
+$tag = "hydra-load-20-$stamp"
+git tag $tag
+git push fork $tag
+```
+
+Accepted tag prefixes are `hydra-load-20-`, `hydra-load-50-`,
+`hydra-load-100-`, `hydra-load-150-`, `hydra-load-200-`, and
+`hydra-load-spike-`. A tag run skips the ordinary regression/staging jobs and
+runs only the isolated authenticated stage with a four-hour hard timeout. It
+generates and masks ephemeral secrets, uses the same safety stops, destroys its
+owned Compose project, and retains the load evidence artifact for 30 days.
+Never reuse a tag or advance to the next stage after a failed safety or
+acceptance gate.
+
+Inspect and download the result with GitHub CLI:
+
+```powershell
+gh run list --repo OleksandrKiris/hydra-platform --workflow hydra-staging-ci.yml
+gh run download <run-id> --repo OleksandrKiris/hydra-platform --dir .local\remote-load
+```
+
 Each invocation receives a unique run ID by default. `-DurationOverrideSeconds`
 exists only for harness smoke diagnostics: a shortened result fails the
 required-duration acceptance gate and must never be reported as a completed
