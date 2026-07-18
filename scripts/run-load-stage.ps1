@@ -134,6 +134,26 @@ $env:HYDRA_LOAD_ARTIFACTS_PATH = $artifactPath
 $env:HYDRA_HTTP_PORT = [string]$HttpPort
 $env:HYDRA_WEB_REPLICAS = "2"
 $env:HYDRA_LOAD_IMAGE = "hydra-load:$revision"
+$env:HYDRA_LOAD_RUNTIME_UID = "10002"
+$env:HYDRA_LOAD_RUNTIME_GID = "10002"
+if ([System.IO.Path]::DirectorySeparatorChar -eq '/') {
+    $runtimeUid = [string](& id -u)
+    $runtimeUidExitCode = $LASTEXITCODE
+    $runtimeGid = [string](& id -g)
+    $runtimeGidExitCode = $LASTEXITCODE
+    $runtimeUid = $runtimeUid.Trim()
+    $runtimeGid = $runtimeGid.Trim()
+    if (
+        $runtimeUidExitCode -ne 0 -or
+        $runtimeGidExitCode -ne 0 -or
+        $runtimeUid -notmatch '^\d+$' -or
+        $runtimeGid -notmatch '^\d+$'
+    ) {
+        throw "Could not determine the Linux host UID/GID for the load artifact bind mount."
+    }
+    $env:HYDRA_LOAD_RUNTIME_UID = $runtimeUid
+    $env:HYDRA_LOAD_RUNTIME_GID = $runtimeGid
+}
 
 $composePrefix = @(
     "compose", "--project-name", $projectName,
@@ -203,6 +223,15 @@ function Get-ProjectStates {
     return $states
 }
 
+function Get-ContainerHealthStatus {
+    param([object]$State)
+    $healthProperty = $State.PSObject.Properties['Health']
+    if ($null -eq $healthProperty -or $null -eq $healthProperty.Value) { return "" }
+    $statusProperty = $healthProperty.Value.PSObject.Properties['Status']
+    if ($null -eq $statusProperty) { return "" }
+    return [string]$statusProperty.Value
+}
+
 function Add-ResourceSample {
     $ids = @(& docker ps --filter "label=com.docker.compose.project=$projectName" --quiet)
     [double]$cpu = 0
@@ -270,7 +299,7 @@ $fullUserSeconds = 0
 $restartAttempted = $false
 "timestamp,cpu_percent,memory_percent,db_connections,redis_used_memory_bytes" |
     Set-Content -LiteralPath $resourcePath -Encoding UTF8
-Add-RunEvent "preflight" "Docker Engine and isolated project checks passed"
+Add-RunEvent "preflight" "Docker Engine, isolated project, and artifact runtime identity checks passed"
 
 try {
     Invoke-Compose -Arguments @("config", "--quiet")
@@ -314,7 +343,7 @@ try {
                 $restartLoopCount += 1
                 throw "SAFETY STOP: restart loop detected in $($container.Service)."
             }
-            if ($container.State.Health -and $container.State.Health.Status -eq "unhealthy") {
+            if ((Get-ContainerHealthStatus -State $container.State) -eq "unhealthy") {
                 throw "SAFETY STOP: unhealthy container detected in $($container.Service)."
             }
             if ($container.State.Status -eq "restarting") {

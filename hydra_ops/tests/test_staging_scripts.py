@@ -257,3 +257,16 @@ class StagingRemoteLoadWorkflowContractTests(SimpleTestCase):
         self.assertIn('echo "::add-mask::$value"', workflow)
         self.assertIn("./scripts/run-load-stage.ps1", workflow)
         self.assertIn("retention-days: 30", workflow)
+
+        compose = (REPOSITORY_ROOT / "docker-compose.load.yaml").read_text(
+            encoding="utf-8"
+        )
+        runner = (REPOSITORY_ROOT / "scripts" / "run-load-stage.ps1").read_text(
+            encoding="utf-8"
+        )
+        self.assertIn("HYDRA_LOAD_RUNTIME_UID:-10002", compose)
+        self.assertIn("HYDRA_LOAD_RUNTIME_GID:-10002", compose)
+        self.assertIn("DirectorySeparatorChar -eq '/'", runner)
+        self.assertIn("runtimeUidExitCode", runner)
+        self.assertIn("runtimeGidExitCode", runner)
+        self.assertIn("PSObject.Properties['Health']", runner)

@@ -5,6 +5,7 @@ services:
       dockerfile: Dockerfile.load
     image: ${HYDRA_LOAD_IMAGE:-hydra-load:local}
     profiles: [load]
+    user: "${HYDRA_LOAD_RUNTIME_UID:-10002}:${HYDRA_LOAD_RUNTIME_GID:-10002}"
     environment:
       HYDRA_LOAD_TEST_RUN_ID: ${HYDRA_LOAD_TEST_RUN_ID:?HYDRA_LOAD_TEST_RUN_ID is required}
       HYDRA_LOAD_TEST_PASSWORD: ${HYDRA_LOAD_TEST_PASSWORD:?HYDRA_LOAD_TEST_PASSWORD is required}
