@@ -254,6 +254,11 @@ class ReadinessEndpointTests(TestCase):
         self.assertEqual(response.status_code, 200)
         self.assertEqual(response.json(), {"status": "ready"})
         self.assertEqual(response["Cache-Control"], "no-store")
+        collect.assert_called_once_with(
+            include_filesystem=False,
+            include_migrations=False,
+            include_domain_integrity=False,
+        )
 
     @patch("hydra_ops.views.collect_readiness")
     def test_ready_endpoint_returns_503_without_details(self, collect):

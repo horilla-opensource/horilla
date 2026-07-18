@@ -1,0 +1,7 @@
+stage,users,duration_seconds,status,throughput_rps,p50_ms,p95_ms,p99_ms,error_rate,cpu_percent,memory_percent,db_connections,redis_used_memory_bytes
+20,20,900,not_run,,,,,,,,,
+50,50,1800,not_run,,,,,,,,,
+100,100,3600,not_run,,,,,,,,,
+150,150,3600,not_run,,,,,,,,,
+200,200,7200,not_run,,,,,,,,,
+spike,200,365,not_run,,,,,,,,,

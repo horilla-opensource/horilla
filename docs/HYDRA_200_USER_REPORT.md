@@ -146,18 +146,53 @@ one-shot release/migration container, PostgreSQL, persistent Redis shared
 cache and `cached_db` sessions, separate maintenance work, ClamAV, health
 checks, graceful worker recycling, request IDs, resource limits, and
 loopback-only publication. Its focused readiness/staging tests pass 20/20.
-Docker Desktop is still unavailable on this workstation, so this topology has
-not yet produced runtime capacity evidence.
+The authenticated Locust harness is also implemented. It creates 200 isolated
+accounts with deterministic role allocation, performs normal CSRF login into a
+separate session per user, exercises real scoped selectors and six real domain
+write services, verifies integrity every minute, records resource/latency
+evidence, applies every mandatory safety stop, and performs the controlled
+single-replica restart during the 200-user stage. Its focused contract tests
+pass 12/12. The complete clean-database regression now passes 464/464 with one
+intentional environment-dependent skip; test execution took 324.868 seconds
+and the complete process took 541.8 seconds. Docker Desktop is still
+unavailable on this workstation, so this
+topology has not yet produced timed runtime capacity evidence.
 
 | Stage | Duration | Result | Evidence |
 |---|---:|---|---|
-| 20 users | 15 min | NOT RUN | Authenticated generator pending; Docker Desktop unavailable |
-| 50 users | 30 min | NOT RUN | Generator and Windows runtime pending |
-| 100 users | 60 min | NOT RUN | Generator and Windows runtime pending |
-| 150 users | 60 min | NOT RUN | Generator and Windows runtime pending |
-| 200 users | 120 min | NOT RUN | Generator, monitoring, safety gates, and capable runtime pending |
-| spike 50 -> 200 | 60 s | NOT RUN | Generator and runtime pending |
-| one-replica restart at 200 | during 200-user stage | NOT RUN | Production-like topology implemented; runtime pending |
+| 20 users | 15 min | NOT RUN | Complete runner available; Docker Desktop unavailable |
+| 50 users | 30 min | NOT RUN | Complete runner available; Docker Desktop unavailable |
+| 100 users | 60 min | NOT RUN | Complete runner available; Docker Desktop unavailable |
+| 150 users | 60 min | NOT RUN | Complete runner available; Docker Desktop unavailable |
+| 200 users | 120 min | NOT RUN | Safety monitor and restart proof implemented; Docker Desktop unavailable |
+| spike 50 -> 200 | 5 s baseline + 60 s ramp + 300 s hold | NOT RUN | Spike shape implemented; Docker Desktop unavailable |
+| one-replica restart at 200 | minute 15 of 200-user stage | NOT RUN | Automated proof implemented; runtime unavailable |
+
+The same honest NOT RUN state is published for automation in
+`HYDRA_LOAD_RESULTS.json` and `HYDRA_LOAD_RESULTS.csv`; missing measurements
+are `null`/empty rather than forecasts. Successful runner artifacts replace
+these rows only after review.
+
+## Profiling and optimization evidence
+
+- The previous public readiness path executed the complete cross-domain
+  integrity audit on every Docker health probe. The high-frequency path is now
+  bounded to configuration, PostgreSQL, and Redis; the full audit still runs at
+  release and through the operator command.
+- Every load read selector has a regression budget of at most 20 ORM queries
+  after permission-map warm-up, independent of the number of sampled rows. All
+  seven role budgets pass.
+- Recruiter writes are partitioned by the authenticated creator account, so
+  concurrent users do not contend on one shared candidate. Candidate seeding
+  now emits a real controlled stage event, and every later stage is checked
+  against the immutable latest event.
+- The stage runner captures per-role query counts and PostgreSQL `EXPLAIN
+  (ANALYZE, BUFFERS)` before and after load, while storing only SQL hashes and
+  plans. It also records database connections and Redis memory every 10
+  seconds.
+- No speculative database index or organization-sensitive application cache
+  was added without a PostgreSQL plan or timed load result. Any further query,
+  index, or cache change is deliberately gated on the generated profiles.
 
 ## Acceptance status
 
@@ -173,7 +208,7 @@ not yet produced runtime capacity evidence.
 | No OOM/readiness/restart/connection leak | FAIL | Not measured at required load |
 | Data integrity and organization isolation | PARTIAL | Regression tests pass; concurrent-load evidence missing |
 | Replica restart preserves service and sessions | FAIL | Not run |
-| Regression suite passes | PASS | 448 passed, 1 skipped after full rebrand and migration upgrade proof |
+| Regression suite passes | PASS | 464 passed, 1 skipped after the authenticated load harness and full rebrand proof |
 | Changes committed and pushed to user remote | FAIL | Rebrand is committed locally; infrastructure/load work and push remain pending |
 
 ## Git delivery evidence
@@ -184,6 +219,7 @@ Commits created so far:
 - `a973d09b` - `refactor: rename Django project package to Hydra`.
 - `d3928a73` - `refactor: rename owned applications to Hydra`.
 - `6a50689f` - `refactor: complete Hydra brand migration`.
+- `9f02d233` - `feat: add scaled Hydra staging runtime`.
 
 Push is intentionally pending until the remaining implementation, regression
 tests and final secret scan are complete. This section will also list the final

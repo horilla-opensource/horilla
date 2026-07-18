@@ -11,6 +11,8 @@ from django.db.migrations.executor import MigrationExecutor
 from django.db.models import Count, F, Max
 from django.utils import timezone
 
+from hydra_ops.load_test import RUN_ID_PATTERN
+
 
 INSECURE_SECRET_MARKERS = ("django-insecure-", "change-me", "replace-me")
 DEPLOYMENT_ENVIRONMENTS = {"staging", "production"}
@@ -53,6 +55,8 @@ def configuration_results():
     database_engine = settings.DATABASES["default"].get("ENGINE", "")
     cache_backend = settings.CACHES.get("default", {}).get("BACKEND", "")
     session_engine = getattr(settings, "SESSION_ENGINE", "")
+    load_test_enabled = getattr(settings, "HYDRA_LOAD_TEST_ENABLED", False)
+    load_test_run_id = getattr(settings, "HYDRA_LOAD_TEST_RUN_ID", "")
     portal = urlparse(getattr(settings, "HYDRA_PORTAL_URL", ""))
     onboarding_portal = urlparse(
         getattr(settings, "HYDRA_ONBOARDING_PORTAL_BASE_URL", "")
@@ -114,6 +118,20 @@ def configuration_results():
                 },
                 "sessions use the shared cache",
                 "staging and production require cache-backed shared sessions",
+            ),
+            _result(
+                "load_test_boundary",
+                not load_test_enabled
+                or (
+                    environment == "staging"
+                    and bool(RUN_ID_PATTERN.fullmatch(load_test_run_id))
+                ),
+                (
+                    "isolated staging load-test endpoints are explicitly enabled"
+                    if load_test_enabled
+                    else "load-test endpoints are disabled"
+                ),
+                "load-test endpoints require staging plus a valid explicit run id and are forbidden in production",
             ),
             _result(
                 "legacy_schedulers",
@@ -1185,11 +1203,17 @@ def cache_results():
     ]
 
 
-def collect_readiness(*, include_filesystem=True, include_migrations=True):
+def collect_readiness(
+    *,
+    include_filesystem=True,
+    include_migrations=True,
+    include_domain_integrity=True,
+):
     results = configuration_results()
     results.extend(database_results(include_migrations=include_migrations))
     results.extend(cache_results())
-    results.extend(domain_integrity_results())
+    if include_domain_integrity:
+        results.extend(domain_integrity_results())
     if include_filesystem:
         results.extend(filesystem_results())
     results.extend(scanner_results())

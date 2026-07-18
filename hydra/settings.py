@@ -60,6 +60,8 @@ HYDRA_REQUIRE_POSTGRES = env.bool(
     default=HYDRA_ENVIRONMENT in {"staging", "production"},
 )
 HYDRA_DEPLOYMENT_REVISION = env("HYDRA_DEPLOYMENT_REVISION", default="").strip()
+HYDRA_LOAD_TEST_ENABLED = env.bool("HYDRA_LOAD_TEST_ENABLED", default=False)
+HYDRA_LOAD_TEST_RUN_ID = env("HYDRA_LOAD_TEST_RUN_ID", default="").strip().lower()
 
 # Application definition
 

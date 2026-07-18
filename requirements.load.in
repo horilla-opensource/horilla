@@ -1,0 +1,2 @@
+# Dedicated load-generator dependency; compiled for Linux/CPython 3.11.
+locust==2.44.4

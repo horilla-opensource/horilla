@@ -42,6 +42,9 @@
 > [`docs/HYDRA_STAGING.md`](docs/HYDRA_STAGING.md). The single-owner production
 > maintenance worker is documented in
 > [`docs/HYDRA_MAINTENANCE.md`](docs/HYDRA_MAINTENANCE.md).
+> Windows-native authenticated capacity testing, automatic safety stops, and
+> the exact 20/50/100/150/200-user plan are documented in
+> [`docs/HYDRA_LOAD_TESTING.md`](docs/HYDRA_LOAD_TESTING.md).
 > Universal Person/domain tasks, append-only lifecycle evidence and durable
 > privacy-safe assignment notifications are documented in
 > [`docs/HYDRA_TASKS.md`](docs/HYDRA_TASKS.md). The scoped in-app notification

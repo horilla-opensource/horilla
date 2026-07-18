@@ -12,11 +12,13 @@ class Command(BaseCommand):
         parser.add_argument("--json", action="store_true", dest="as_json")
         parser.add_argument("--skip-filesystem", action="store_true")
         parser.add_argument("--skip-migrations", action="store_true")
+        parser.add_argument("--skip-domain-integrity", action="store_true")
 
     def handle(self, *args, **options):
         results = collect_readiness(
             include_filesystem=not options["skip_filesystem"],
             include_migrations=not options["skip_migrations"],
+            include_domain_integrity=not options["skip_domain_integrity"],
         )
         payload = readiness_payload(results)
         if options["as_json"]:

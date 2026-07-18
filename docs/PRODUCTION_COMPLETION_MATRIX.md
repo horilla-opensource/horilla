@@ -54,7 +54,7 @@ Status meanings:
 | 033 data-quality dashboard | Missing | Readiness detects selected integrity failures, but there is no scoped finding lifecycle/dashboard for duplicates, missing data, expired documents and assignment problems. Findings must never auto-correct. |
 | 034 backup/restore | Implemented locally; external evidence pending | Cold-writer backup, hashes, hostile-archive validation and isolated restore verification are implemented. Scheduled encrypted off-host retention and a restore from the actual target stack remain external gates. |
 | 035 staging | External gate | Hardened image/Compose/CI/scripts/readiness exist. Linux image/Compose, TLS, secrets, SMTP, ClamAV, monitoring and target-host smoke evidence have not been executed on this workstation. |
-| 036 acceptance suite | Partial/external gate | The PostgreSQL regression currently passes 448/448 with one environment-dependent skip, plus focused browser journeys and a local restore drill. Production-scale import/performance, target recovery, all role journeys, legal review and owner sign-off remain required. |
+| 036 acceptance suite | Partial/external gate | The clean-database regression currently passes 464/464 with one environment-dependent skip, including the authenticated load-harness contracts, plus focused browser journeys and a local restore drill. Production-scale load, target recovery, all role journeys, legal review and owner sign-off remain required. |
 
 ## Priority order
 

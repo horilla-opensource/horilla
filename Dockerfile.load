@@ -1,0 +1,19 @@
+FROM python:3.11-slim-bookworm
+
+ENV PIP_DISABLE_PIP_VERSION_CHECK=1 \
+    PIP_NO_CACHE_DIR=1 \
+    PYTHONDONTWRITEBYTECODE=1 \
+    PYTHONUNBUFFERED=1
+
+WORKDIR /load
+
+COPY requirements.load.lock /tmp/requirements.load.lock
+RUN pip install --require-hashes --requirement /tmp/requirements.load.lock \
+    && groupadd --gid 10002 loadtest \
+    && useradd --uid 10002 --gid loadtest --create-home --shell /usr/sbin/nologin loadtest
+
+COPY --chown=loadtest:loadtest load_tests/ /load/
+
+USER loadtest
+
+ENTRYPOINT ["locust"]

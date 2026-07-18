@@ -1,0 +1,15 @@
+{
+  "environment": "Windows Docker Desktop staging",
+  "generator": "Locust authenticated multi-role harness",
+  "measured": false,
+  "overall_pass": false,
+  "reason": "Docker Desktop is not installed or discoverable on the audit workstation.",
+  "stages": [
+    {"stage": "20", "users": 20, "duration_seconds": 900, "status": "not_run", "throughput_rps": null, "p50_ms": null, "p95_ms": null, "p99_ms": null, "error_rate": null, "cpu_percent": null, "memory_percent": null, "db_connections": null, "redis_used_memory_bytes": null},
+    {"stage": "50", "users": 50, "duration_seconds": 1800, "status": "not_run", "throughput_rps": null, "p50_ms": null, "p95_ms": null, "p99_ms": null, "error_rate": null, "cpu_percent": null, "memory_percent": null, "db_connections": null, "redis_used_memory_bytes": null},
+    {"stage": "100", "users": 100, "duration_seconds": 3600, "status": "not_run", "throughput_rps": null, "p50_ms": null, "p95_ms": null, "p99_ms": null, "error_rate": null, "cpu_percent": null, "memory_percent": null, "db_connections": null, "redis_used_memory_bytes": null},
+    {"stage": "150", "users": 150, "duration_seconds": 3600, "status": "not_run", "throughput_rps": null, "p50_ms": null, "p95_ms": null, "p99_ms": null, "error_rate": null, "cpu_percent": null, "memory_percent": null, "db_connections": null, "redis_used_memory_bytes": null},
+    {"stage": "200", "users": 200, "duration_seconds": 7200, "status": "not_run", "throughput_rps": null, "p50_ms": null, "p95_ms": null, "p99_ms": null, "error_rate": null, "cpu_percent": null, "memory_percent": null, "db_connections": null, "redis_used_memory_bytes": null},
+    {"stage": "spike", "users": 200, "duration_seconds": 365, "status": "not_run", "throughput_rps": null, "p50_ms": null, "p95_ms": null, "p99_ms": null, "error_rate": null, "cpu_percent": null, "memory_percent": null, "db_connections": null, "redis_used_memory_bytes": null}
+  ]
+}

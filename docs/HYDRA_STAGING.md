@@ -32,6 +32,10 @@ Relevant files:
 - `scripts/staging-validate-archive.sh` — fail-closed member/path/type validation before sensitive archive extraction;
 - `scripts/staging-rollback.ps1` — code-only rollback with an explicit schema-compatibility acknowledgement;
 - `scripts/staging-smoke.ps1` — external liveness/readiness/security smoke checks.
+- `scripts/run-load-stage.ps1`, `scripts/run-load-plan.ps1`, and
+  `docker-compose.load.yaml` — isolated authenticated load stages, safety
+  stops, controlled replica restart, and machine-readable evidence; see
+  `HYDRA_LOAD_TESTING.md`.
 - `scripts/verify-migration-manifest.py` and `deployment/migration-manifest.sha256` — exact reviewed migration-source set and normalized SHA-256 content gate;
 - `.github/workflows/hydra-staging-ci.yml` — clean Linux/PostgreSQL regression plus live Compose, recovery, and evidence gate.
 
@@ -56,7 +60,10 @@ Readiness rejects staging when any of these conditions is false:
 - bounded maintenance cadence, stale window, batch size, delivery attempts, and failure threshold;
 - collected static assets.
 
-The public probes intentionally disclose no internal detail:
+The public probes intentionally disclose no internal detail. The high-frequency
+readiness probe is bounded to configuration, PostgreSQL, and Redis checks; it
+does not rescan every business record. Release readiness and the operator
+command retain the full domain-integrity audit:
 
 ```text
 GET /health/        -> 200 {"status":"ok"}
@@ -208,7 +215,7 @@ Verified locally through 2026-07-18; PostgreSQL-specific evidence remains from t
 - focused Person-timeline tests: 7/7 passed, and the combined organization-scope/timeline run passed 20/20;
 - focused controlled-recruitment-workflow tests: 11/11 passed; the affected onboarding-handoff/portal-email regression passed 35/35 after their fixtures were moved through the same public transition service;
 - offline staging-script safety tests: 6/6 passed for empty/non-empty initial deployment plus safe, traversal, duplicate-path and symlink archives;
-- full clean-database Django regression: 448/448 passed with 1 intentional skip after the complete Hydra rebrand; the isolated upgrade proof additionally preserved mail-template data, content types, permissions, and the legacy physical compatibility table;
+- full clean-database Django regression: 464/464 passed with 1 intentional skip after the complete Hydra rebrand and authenticated load-harness integration; the isolated upgrade proof additionally preserved mail-template data, content types, permissions, and the legacy physical compatibility table;
 - scaled-staging focused tests: 20/20 passed for readiness, Redis fail-closed behavior, safe request IDs, archive validation, and initial-deployment guards;
 - `manage.py check`, `migrate --check`, `makemigrations --check --dry-run`, readiness, migration-manifest verification, Python compilation, workflow YAML parsing, dependency consistency, and `git diff --check` passed;
 - real custom-format database dump restored into an isolated temporary database;

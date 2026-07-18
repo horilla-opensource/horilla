@@ -21,6 +21,7 @@ from django.urls import include, path, re_path
 
 import notifications.urls
 
+from hydra_ops.load_views import load_test_read, load_test_write
 from hydra_ops.views import readiness_check
 
 from . import settings
@@ -60,6 +61,16 @@ urlpatterns = [
     path("i18n/", include("django.conf.urls.i18n")),
     path("health/", health_check),
     path("health/ready/", readiness_check, name="hydra-readiness"),
+    path(
+        "internal/load-test/<slug:role>/read/",
+        load_test_read,
+        name="hydra-load-test-read",
+    ),
+    path(
+        "internal/load-test/<slug:role>/write/",
+        load_test_write,
+        name="hydra-load-test-write",
+    ),
 ]
 
 # if settings.DEBUG:
