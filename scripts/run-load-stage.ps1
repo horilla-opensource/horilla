@@ -22,11 +22,11 @@ $ErrorActionPreference = "Stop"
 Set-StrictMode -Version Latest
 
 $stageConfig = @{
-    "20" = @{ Users = 20; Duration = 900; SpawnRate = 5; Shape = "standard" }
-    "50" = @{ Users = 50; Duration = 1800; SpawnRate = 10; Shape = "standard" }
-    "100" = @{ Users = 100; Duration = 3600; SpawnRate = 10; Shape = "standard" }
-    "150" = @{ Users = 150; Duration = 3600; SpawnRate = 10; Shape = "standard" }
-    "200" = @{ Users = 200; Duration = 7200; SpawnRate = 10; Shape = "standard" }
+    "20" = @{ Users = 20; Duration = 900; SpawnRate = 2; Shape = "standard" }
+    "50" = @{ Users = 50; Duration = 1800; SpawnRate = 2; Shape = "standard" }
+    "100" = @{ Users = 100; Duration = 3600; SpawnRate = 2; Shape = "standard" }
+    "150" = @{ Users = 150; Duration = 3600; SpawnRate = 2; Shape = "standard" }
+    "200" = @{ Users = 200; Duration = 7200; SpawnRate = 2; Shape = "standard" }
     "spike" = @{ Users = 200; Duration = 365; SpawnRate = 10; Shape = "spike" }
 }
 $config = $stageConfig[$Stage]
@@ -297,6 +297,7 @@ $lastIntegrityAt = $null
 $fullUsersSince = $null
 $fullUserSeconds = 0
 $restartAttempted = $false
+$expectedCompletedServices = @("release", "redis-volume-init")
 "timestamp,cpu_percent,memory_percent,db_connections,redis_used_memory_bytes" |
     Set-Content -LiteralPath $resourcePath -Encoding UTF8
 Add-RunEvent "preflight" "Docker Engine, isolated project, and artifact runtime identity checks passed"
@@ -343,18 +344,24 @@ try {
                 $restartLoopCount += 1
                 throw "SAFETY STOP: restart loop detected in $($container.Service)."
             }
-            if ((Get-ContainerHealthStatus -State $container.State) -eq "unhealthy") {
+            if (
+                $container.State.Status -eq "running" -and
+                (Get-ContainerHealthStatus -State $container.State) -eq "unhealthy"
+            ) {
                 throw "SAFETY STOP: unhealthy container detected in $($container.Service)."
             }
             if ($container.State.Status -eq "restarting") {
                 $restartLoopCount += 1
                 throw "SAFETY STOP: restarting container detected in $($container.Service)."
             }
-            if (
-                $container.State.Status -eq "exited" -and
-                $container.Service -notin @("release", "load")
-            ) {
-                throw "SAFETY STOP: $($container.Service) exited during the stage."
+            if ($container.State.Status -eq "exited" -and $container.Service -ne "load") {
+                if (
+                    $container.Service -in $expectedCompletedServices -and
+                    [int]$container.State.ExitCode -eq 0
+                ) {
+                    continue
+                }
+                throw "SAFETY STOP: $($container.Service) exited with code $($container.State.ExitCode) during the stage."
             }
         }
 

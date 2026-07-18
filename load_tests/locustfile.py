@@ -6,6 +6,8 @@ import uuid
 from locust import HttpUser, LoadTestShape, between, events, task
 from locust.exception import StopUser
 
+from load_tests.cookies import prepare_internal_http_cookies
+
 
 RUN_ID = os.environ["HYDRA_LOAD_TEST_RUN_ID"]
 PASSWORD = os.environ["HYDRA_LOAD_TEST_PASSWORD"]
@@ -62,11 +64,15 @@ def remember_environment(environment, **_kwargs):
 
 @events.spawning_complete.add_listener
 def reset_warmup_stats(user_count, **_kwargs):
-    """Reset once, not after every incremental custom-shape spawn."""
+    """Reset the spike baseline once; standard stages retain every login."""
 
     global _stats_reset
-    threshold = REQUESTED_USERS if SHAPE == "standard" else 50
-    if not _stats_reset and user_count >= threshold and _environment is not None:
+    if (
+        SHAPE == "spike"
+        and not _stats_reset
+        and user_count >= 50
+        and _environment is not None
+    ):
         _environment.stats.reset_all()
         _stats_reset = True
 
@@ -100,7 +106,7 @@ class HydraBusinessUser(HttpUser):
             if response.status_code != 200 or not csrf:
                 response.failure("login page or CSRF cookie unavailable")
                 raise StopUser
-        self._allow_secure_cookie_on_internal_http("hydra_csrftoken")
+        self._prepare_internal_request()
         with self.client.post(
             "/login/",
             data={"username": self.username, "password": PASSWORD, "csrfmiddlewaretoken": csrf},
@@ -113,18 +119,17 @@ class HydraBusinessUser(HttpUser):
             if response.status_code != 302 or not session:
                 response.failure("authenticated session was not established")
                 raise StopUser
-        self._allow_secure_cookie_on_internal_http("hydra_sessionid")
+        self._prepare_internal_request()
 
-    def _allow_secure_cookie_on_internal_http(self, name):
-        for cookie in self.client.cookies:
-            if cookie.name == name:
-                cookie.secure = False
+    def _prepare_internal_request(self):
+        prepare_internal_http_cookies(self.client.cookies)
 
     def _request_id(self):
         return f"{self.request_prefix}-{uuid.uuid4().hex[:12]}"
 
     @task(8)
     def read_business_data(self):
+        self._prepare_internal_request()
         query = random.choice(("", "HYDRA_LOAD", "Load", str(random.randint(1, 9))))
         marker = "typical-read" if self.role == "dashboard" else "list-filter"
         with self.client.get(
@@ -142,6 +147,7 @@ class HydraBusinessUser(HttpUser):
         if self.role == "dashboard":
             self.read_business_data()
             return
+        self._prepare_internal_request()
         csrf = self.client.cookies.get("hydra_csrftoken")
         with self.client.post(
             f"/internal/load-test/{self.role}/write/",

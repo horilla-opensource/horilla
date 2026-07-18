@@ -12,9 +12,11 @@ from django.db import connection
 from django.test import TestCase, override_settings
 from django.test.utils import CaptureQueriesContext
 from django.urls import reverse
+from requests.cookies import RequestsCookieJar, create_cookie
 
 from hydra_ops.load_test import ROLE_WEIGHTS, group_name, role_counts, username_for
 from hydra_ops.load_views import _read_profile
+from load_tests.cookies import prepare_internal_http_cookies
 from load_tests.summarize import summarize_run
 
 
@@ -22,6 +24,18 @@ User = get_user_model()
 
 
 class LoadTestContractTests(TestCase):
+    def test_private_http_hop_reenables_only_hydra_secure_cookies(self):
+        jar = RequestsCookieJar()
+        for name in ("hydra_csrftoken", "hydra_sessionid", "unrelated"):
+            jar.set_cookie(create_cookie(name, "opaque", secure=True))
+
+        prepare_internal_http_cookies(jar)
+
+        secure_by_name = {cookie.name: cookie.secure for cookie in jar}
+        self.assertFalse(secure_by_name["hydra_csrftoken"])
+        self.assertFalse(secure_by_name["hydra_sessionid"])
+        self.assertTrue(secure_by_name["unrelated"])
+
     def test_role_weights_match_the_required_business_profile(self):
         self.assertEqual(sum(ROLE_WEIGHTS.values()), 100)
         self.assertEqual(

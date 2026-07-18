@@ -113,10 +113,12 @@ gh run download <run-id> --repo OleksandrKiris/hydra-platform --dir .local\remot
 Each invocation receives a unique run ID by default. `-DurationOverrideSeconds`
 exists only for harness smoke diagnostics: a shortened result fails the
 required-duration acceptance gate and must never be reported as a completed
-stage. Standard stages add bounded login warm-up and a 30-second sampling
-margin; their acceptance duration starts only after the monitor observes every
-required authenticated user active. Thus the 200-user gate proves a full 7,200
-seconds at concurrency 200 rather than counting login ramp time.
+stage. Standard stages add a two-login-per-second warm-up and a 30-second
+sampling margin. Their acceptance duration starts only after the monitor
+observes every required authenticated user active. Standard-stage statistics
+retain all login requests so the login p95 gate is based on the complete ramp
+rather than a late subset. Thus the 200-user gate proves a full 7,200 seconds at
+concurrency 200 rather than counting login ramp time.
 
 ## Safety and restart proof
 
@@ -126,7 +128,8 @@ domain-integrity command every 60 seconds. It stops the generator immediately
 for:
 
 - any OOM kill or unavailable readiness response;
-- any exited/unhealthy application dependency or detected restart loop;
+- any unexpected exit, unhealthy running dependency, failed one-shot service,
+  or detected restart loop;
 - any data-integrity or organization-isolation failure;
 - error rate above 5% continuously for 60 seconds;
 - aggregate p95 above 10 seconds continuously for 180 seconds.

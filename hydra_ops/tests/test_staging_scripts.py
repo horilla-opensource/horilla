@@ -264,9 +264,19 @@ class StagingRemoteLoadWorkflowContractTests(SimpleTestCase):
         runner = (REPOSITORY_ROOT / "scripts" / "run-load-stage.ps1").read_text(
             encoding="utf-8"
         )
+        locustfile = (REPOSITORY_ROOT / "load_tests" / "locustfile.py").read_text(
+            encoding="utf-8"
+        )
         self.assertIn("HYDRA_LOAD_RUNTIME_UID:-10002", compose)
         self.assertIn("HYDRA_LOAD_RUNTIME_GID:-10002", compose)
         self.assertIn("DirectorySeparatorChar -eq '/'", runner)
         self.assertIn("runtimeUidExitCode", runner)
         self.assertIn("runtimeGidExitCode", runner)
         self.assertIn("PSObject.Properties['Health']", runner)
+        self.assertIn(
+            '$expectedCompletedServices = @("release", "redis-volume-init")',
+            runner,
+        )
+        self.assertIn('$container.State.Status -eq "running" -and', runner)
+        self.assertEqual(runner.count('SpawnRate = 2; Shape = "standard"'), 5)
+        self.assertGreaterEqual(locustfile.count("self._prepare_internal_request()"), 4)
