@@ -215,8 +215,23 @@ services:
         limits: {cpus: "1.0", memory: 2G}
         reservations: {memory: 1G}
 
+  redis-volume-init:
+    image: redis:8.4.0-alpine
+    user: "0:0"
+    entrypoint: [sh, -ec]
+    command: ["chown -R 999:1000 /data && chmod 0700 /data"]
+    restart: "no"
+    network_mode: none
+    read_only: true
+    cap_drop: [ALL]
+    cap_add: [CHOWN, FOWNER]
+    security_opt: [no-new-privileges:true]
+    volumes:
+      - hydra-redis:/data
+
   redis:
     image: redis:8.4.0-alpine
+    user: "999:1000"
     environment:
       REDIS_PASSWORD: ${REDIS_PASSWORD:?REDIS_PASSWORD is required}
     command:
@@ -232,6 +247,8 @@ services:
       - /tmp:rw,noexec,nosuid,size=32m
     volumes:
       - hydra-redis:/data
+    depends_on:
+      redis-volume-init: {condition: service_completed_successfully}
     healthcheck:
       test: ["CMD-SHELL", "REDISCLI_AUTH=\"$${REDIS_PASSWORD}\" redis-cli ping | grep -q PONG"]
       interval: 10s
