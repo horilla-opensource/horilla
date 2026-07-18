@@ -1,4 +1,4 @@
-{% load static %} {% load i18n %} {% load horillafilters %}
+{% load static %} {% load i18n %} {% load hydrafilters %}
 {% load basefilters %}
 {% verbatim %}
 <script>
@@ -174,13 +174,13 @@
                                     <a href="{% url 'multiple-approval-condition' %}" class="oh-sidebar__submenu-link">{% trans "Multiple Approvals" %}</a>
                                 </li>
                             {% endif %}
-                            {% if perms.base.view_horillamailtemplate %}
+                            {% if perms.base.view_hydramailtemplate %}
                                 <li class="oh-sidebar__submenu-item">
                                     <a class="oh-sidebar__submenu-link" href="{% url 'view-mail-templates' %}"
                                         class="oh-sidebar__submenu-link">{% trans "Mail Templates" %}</a>
                                 </li>
                             {% endif %}
-                            {% if "hydra_automations"|app_installed and perms.horilla_automations.view_mailautomation %}
+                            {% if "hydra_automations"|app_installed and perms.hydra_automations.view_mailautomation %}
                                 <li class="oh-sidebar__submenu-item">
                                     <a class="oh-sidebar__submenu-link" href="{% url 'mail-automations' %}"
                                         class="oh-sidebar__submenu-link">{% trans "Mail Automations" %}</a>

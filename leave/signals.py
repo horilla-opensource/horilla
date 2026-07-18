@@ -7,7 +7,7 @@ from django.db.models.signals import post_migrate, post_save, pre_delete, pre_sa
 from django.dispatch import receiver
 from django.utils.translation import gettext_lazy as _
 
-from hydra.methods import get_horilla_model_class
+from hydra.methods import get_hydra_model_class
 from leave.models import LeaveRequest
 
 if apps.is_installed("attendance"):
@@ -17,7 +17,7 @@ if apps.is_installed("attendance"):
         """
         Overriding LeaveRequest model save method
         """
-        WorkRecords = get_horilla_model_class(
+        WorkRecords = get_hydra_model_class(
             app_label="attendance", model="workrecords"
         )
         if (

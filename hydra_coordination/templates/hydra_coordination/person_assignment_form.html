@@ -15,7 +15,7 @@
 <form class="hydra-card" method="post" novalidate>
   {% csrf_token %}
   {% if employee_assignment %}
-    <p class="hydra-muted">{% trans "Company, department and work location are derived from the selected team hierarchy. The current Horilla work information will be synchronized." %}</p>
+    <p class="hydra-muted">{% trans "Company, department and work location are derived from the selected team hierarchy. The current Hydra work information will be synchronized." %}</p>
   {% endif %}
   {% if form.non_field_errors %}<div class="hydra-errors">{{ form.non_field_errors }}</div>{% endif %}
   <div class="hydra-grid">

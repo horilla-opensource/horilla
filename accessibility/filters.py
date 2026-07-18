@@ -10,7 +10,7 @@ from django.template.loader import render_to_string
 from django.utils.translation import gettext as _
 
 from employee.models import Employee
-from hydra.filters import HorillaFilterSet
+from hydra.filters import HydraFilterSet
 from hydra.hydra_middlewares import _thread_locals
 
 
@@ -27,7 +27,7 @@ def _filter_form_structured(self):
     return table_html
 
 
-class AccessibilityFilter(HorillaFilterSet):
+class AccessibilityFilter(HydraFilterSet):
     """
     Accessibility Filter with dynamic OR logic between fields
     """

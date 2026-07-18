@@ -40,8 +40,8 @@ from employee.filters import EmployeeFilter
 from employee.models import Employee
 from hydra import hydra_middlewares
 from hydra.hydra_middlewares import _thread_locals
-from hydra_widgets.widgets.hydra_multi_select_field import HorillaMultiSelectField
-from hydra_widgets.widgets.select_widgets import HorillaMultiSelectWidget
+from hydra_widgets.widgets.hydra_multi_select_field import HydraMultiSelectField
+from hydra_widgets.widgets.select_widgets import HydraMultiSelectWidget
 from recruitment import widgets
 from recruitment.models import (
     Candidate,
@@ -314,9 +314,9 @@ class RecruitmentCreationForm(BaseModelForm):
 
         reload_queryset(self.fields)
         if not self.instance.pk:
-            self.fields["recruitment_managers"] = HorillaMultiSelectField(
+            self.fields["recruitment_managers"] = HydraMultiSelectField(
                 queryset=Employee.objects.filter(is_active=True),
-                widget=HorillaMultiSelectWidget(
+                widget=HydraMultiSelectWidget(
                     filter_route_name="employee-widget-filter",
                     filter_class=EmployeeFilter,
                     filter_instance_contex_name="f",
@@ -347,7 +347,7 @@ class RecruitmentCreationForm(BaseModelForm):
     #     return option
 
     def clean(self):
-        if isinstance(self.fields["recruitment_managers"], HorillaMultiSelectField):
+        if isinstance(self.fields["recruitment_managers"], HydraMultiSelectField):
             ids = self.data.getlist("recruitment_managers")
             if ids:
                 self.errors.pop("recruitment_managers", None)
@@ -392,9 +392,9 @@ class StageCreationForm(BaseModelForm):
         super().__init__(*args, **kwargs)
         reload_queryset(self.fields)
         if not self.instance.pk:
-            self.fields["stage_managers"] = HorillaMultiSelectField(
+            self.fields["stage_managers"] = HydraMultiSelectField(
                 queryset=Employee.objects.filter(is_active=True),
-                widget=HorillaMultiSelectWidget(
+                widget=HydraMultiSelectWidget(
                     filter_route_name="employee-widget-filter",
                     filter_class=EmployeeFilter,
                     filter_instance_contex_name="f",
@@ -405,7 +405,7 @@ class StageCreationForm(BaseModelForm):
             )
 
     def clean(self):
-        if isinstance(self.fields["stage_managers"], HorillaMultiSelectField):
+        if isinstance(self.fields["stage_managers"], HydraMultiSelectField):
             ids = self.data.getlist("stage_managers")
             if ids:
                 self.errors.pop("stage_managers", None)
@@ -1010,7 +1010,7 @@ exclude_fields = [
     "modified_by",
     "is_active",
     "last_updated",
-    "horilla_history",
+    "hydra_history",
 ]
 
 

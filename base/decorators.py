@@ -4,7 +4,7 @@ decorator functions for base
 
 from django.contrib import messages
 
-from hydra.http import HorillaRedirect
+from hydra.http import HydraRedirect
 
 from .models import ShiftRequest, WorkTypeRequest
 
@@ -35,7 +35,7 @@ def shift_request_change_permission(function=None, *args, **kwargs):
         ):
             return function(request, *args, shift_request_id=shift_request_id, **kwargs)
         messages.info(request, "You dont have permission.")
-        return HorillaRedirect(request)
+        return HydraRedirect(request)
         # return function(request, *args, **kwargs)
 
     return check_permission
@@ -63,7 +63,7 @@ def work_type_request_change_permission(function=None, *args, **kwargs):
                 request, *args, work_type_request_id=work_type_request_id, **kwargs
             )
         messages.info(request, "You dont have permission.")
-        return HorillaRedirect(request)
+        return HydraRedirect(request)
         # return function(request, *args, **kwargs)
 
     return check_permission

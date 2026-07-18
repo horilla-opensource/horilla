@@ -1,5 +1,5 @@
 name: Feature Request
-description: Suggest an idea to enhance Horilla
+description: Suggest an idea to enhance Hydra
 title: "[Feature] <short description>"
 labels: ["enhancement"]
 assignees: []
@@ -7,12 +7,12 @@ body:
   - type: markdown
     attributes:
       value: |
-        Thank you for suggesting a new feature for Horilla! Please fill out the fields below to help us understand your idea. Search existing issues first to avoid duplicates.
+        Thank you for suggesting a new feature for Hydra! Please fill out the fields below to help us understand your idea. Search existing issues first to avoid duplicates.
   - type: dropdown
     id: module
     attributes:
       label: Target Module
-      description: Which Horilla module would this feature apply to?
+      description: Which Hydra module would this feature apply to?
       options:
         - Recruitment
         - Employee Onboarding
@@ -38,7 +38,7 @@ body:
     id: use-case
     attributes:
       label: Use Case
-      description: Explain how this feature would be useful and how it fits into Horilla's context.
+      description: Explain how this feature would be useful and how it fits into Hydra's context.
       placeholder: "E.g., Managers need to assign shifts for employees working in multiple time zones."
     validations:
       required: true
@@ -97,7 +97,7 @@ body:
     attributes:
       label: Assignees
       description: Optional - Suggest GitHub usernames to assign this request (e.g., @username).
-      placeholder: "E.g., @horilla-dev"
+      placeholder: "E.g., @hydra-admin"
     validations:
       required: false
   - type: textarea

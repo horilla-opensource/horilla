@@ -1,5 +1,5 @@
 """
-WSGI config for horilla project.
+WSGI config for the Hydra project.
 
 It exposes the WSGI callable as a module-level variable named ``application``.
 

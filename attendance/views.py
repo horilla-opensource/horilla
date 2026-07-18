@@ -65,7 +65,7 @@ from hydra.decorators import (
     manager_can_enter,
     permission_required,
 )
-from hydra.http import HorillaRedirect
+from hydra.http import HydraRedirect
 from notifications.signals import notify
 
 # Create your views here.
@@ -182,7 +182,7 @@ def attendance_create(request):
         if form.is_valid():
             form.save()
             messages.success(request, _("Attendance added."))
-            return HorillaRedirect(request)
+            return HydraRedirect(request)
     return render(request, "attendance/attendance/form.html", {"form": form})
 
 
@@ -323,7 +323,7 @@ def attendance_update(request, obj_id):
         if form.is_valid():
             form.save()
             messages.success(request, _("Attendance Updated."))
-            return HorillaRedirect(request)
+            return HydraRedirect(request)
     return render(
         request,
         "attendance/attendance/update_form.html",
@@ -365,7 +365,7 @@ def attendance_delete(request, obj_id):
         except Exception as error:
             messages.error(request, error)
             messages.error(request, _("You cannot delete this attendance"))
-    return HorillaRedirect(request)
+    return HydraRedirect(request)
 
 
 @require_http_methods(["POST"])
@@ -484,7 +484,7 @@ def attendance_overtime_create(request):
         if form.is_valid():
             form.save()
             messages.success(request, _("Attendance account added."))
-            return HorillaRedirect(request)
+            return HydraRedirect(request)
     return render(request, "attendance/attendance_account/form.html", {"form": form})
 
 
@@ -565,7 +565,7 @@ def attendance_overtime_update(request, obj_id):
         if form.is_valid():
             form.save()
             messages.success(request, _("Attendance account updated successfully."))
-            return HorillaRedirect(request)
+            return HydraRedirect(request)
     return render(
         request, "attendance/attendance_account/update_form.html", {"form": form}
     )
@@ -586,7 +586,7 @@ def attendance_overtime_delete(request, obj_id):
     except Exception as e:
         messages.error(request, e)
         messages.error(request, _("You cannot delete this attendance OT"))
-    return HorillaRedirect(request)
+    return HydraRedirect(request)
 
 
 @login_required
@@ -744,7 +744,7 @@ def clock_in(request):
         if start_time_sec > end_time_sec:
             # night shift
             # ------------------
-            # Night shift in Horilla consider a 24 hours from noon to next day noon,
+            # Night shift in Hydra consider a 24 hours from noon to next day noon,
             # the shift day taken today if the attendance clocked in after 12 O clock.
 
             if mid_day_sec > now_sec:
@@ -1069,7 +1069,7 @@ def validate_this_attendance(request, obj_id):
             redirect=reverse("view-my-attendance"),
             icon="checkmark",
         )
-        return HorillaRedirect(request)
+        return HydraRedirect(request)
     return HttpResponse("You Dont Have Permission")
 
 
@@ -1102,7 +1102,7 @@ def revalidate_this_attendance(request, obj_id):
                 redirect=reverse("view-my-attendance"),
                 icon="refresh",
             )
-        return HorillaRedirect(request)
+        return HydraRedirect(request)
     return HttpResponse("You Cannot Request for others attendance")
 
 
@@ -1129,7 +1129,7 @@ def approve_overtime(request, obj_id):
             redirect=reverse("attendance-overtime-view"),
             icon="checkmark",
         )
-    return HorillaRedirect(request)
+    return HydraRedirect(request)
 
 
 @login_required

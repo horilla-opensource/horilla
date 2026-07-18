@@ -1,5 +1,5 @@
 {% load i18n %}
-{% load attendancefilters static horillafilters %}
+{% load attendancefilters static hydrafilters %}
 {% include 'filter_tags.html' %}
 <div class="oh-card">
     {% dynamic_regroup payslips by "group_name" as group_payslips %}

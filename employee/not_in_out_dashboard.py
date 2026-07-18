@@ -24,12 +24,12 @@ from base.methods import (
     sanitize_mail_template_body,
     sanitize_mail_template_placeholders,
 )
-from base.models import HorillaMailTemplate
+from base.models import HydraMailTemplate
 from employee.filters import EmployeeFilter
 from employee.models import Employee
 from hydra import settings
 from hydra.decorators import login_required, manager_can_enter
-from hydra.http.response import HorillaRedirect
+from hydra.http.response import HydraRedirect
 
 
 def paginator_qry(qryset, page_number):
@@ -91,7 +91,7 @@ def send_mail(request, emp_id=None):
     if emp_id:
         employee = Employee.objects.get(id=emp_id)
     employees = Employee.objects.all()
-    templates = HorillaMailTemplate.objects.all()
+    templates = HydraMailTemplate.objects.all()
     return render(
         request,
         "employee/send_mail.html",
@@ -179,7 +179,7 @@ def get_template(request, emp_id):
     """
     This method is used to return the mail template
     """
-    body = HorillaMailTemplate.objects.get(id=emp_id).body
+    body = HydraMailTemplate.objects.get(id=emp_id).body
     return JsonResponse({"body": body})
 
 
@@ -263,7 +263,7 @@ def send_mail_to_employee(request):
     template_attachment_ids = request.POST.getlist("template_attachments")
     for employee in employees:
         bodys = list(
-            HorillaMailTemplate.objects.filter(
+            HydraMailTemplate.objects.filter(
                 id__in=template_attachment_ids
             ).values_list("body", flat=True)
         )
@@ -312,4 +312,4 @@ def send_mail_to_employee(request):
                 messages.info(request, f"Email not set for {employee.get_full_name()}")
         except Exception as e:
             messages.error(request, "Something went wrong")
-    return HorillaRedirect(request)
+    return HydraRedirect(request)

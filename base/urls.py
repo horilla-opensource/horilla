@@ -20,7 +20,7 @@ from base.models import (
     EmployeeShiftSchedule,
     EmployeeType,
     Holidays,
-    HorillaMailTemplate,
+    HydraMailTemplate,
     JobPosition,
     JobRole,
     RotatingShift,
@@ -82,7 +82,7 @@ urlpatterns = [
     path("login/", views.login_user, name="login"),
     path(
         "forgot-password",
-        views.HorillaPasswordResetView.as_view(),
+        views.HydraPasswordResetView.as_view(),
         name="forgot-password",
     ),
     path(
@@ -184,7 +184,7 @@ urlpatterns = [
         views.object_duplicate,
         name="duplicate-mail-template",
         kwargs={
-            "model": HorillaMailTemplate,
+            "model": HydraMailTemplate,
             "form": MailTemplateForm,
             "template": "mail/htmx/form.html",
         },
@@ -1004,9 +1004,9 @@ urlpatterns = [
         name="emp-workinfo-complete",
     ),
     path(
-        "get-horilla-installed-apps/",
-        views.get_horilla_installed_apps,
-        name="get-horilla-installed-apps",
+        "get-hydra-installed-apps/",
+        views.get_hydra_installed_apps,
+        name="get-hydra-installed-apps",
     ),
     path("configuration/holiday-view", views.holiday_view, name="holiday-view"),
     path(

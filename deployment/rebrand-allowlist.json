@@ -1,0 +1,32 @@
+[
+  {
+    "path_pattern": "(^|/)[^/]*migrations/.*\\.py$",
+    "line_pattern": "(?i)hori(?:lla)",
+    "reason": "Historical migration labels, model states, source values, and reversible data migrations must remain replayable."
+  },
+  {
+    "path_pattern": "^docs/UPSTREAM_(AUDIT|CUSTOMIZATIONS)\\.md$",
+    "line_pattern": "(?i)hori(?:lla)",
+    "reason": "These two documents record the pinned upstream source audit and attribution."
+  },
+  {
+    "path_pattern": ".*",
+    "line_pattern": "(?i)hori(?:lla)_(audit|documents|automations|backup|ldap|views)",
+    "reason": "Stable Django app labels and permission namespaces are retained for database and authorization compatibility."
+  },
+  {
+    "path_pattern": ".*",
+    "line_pattern": "(?i)base_hori(?:lla)mailtemplate",
+    "reason": "The physical mail-template table name is pinned to preserve data while the Django model is renamed."
+  },
+  {
+    "path_pattern": ".*",
+    "line_pattern": "(?i)(https?://[^ ]*hori(?:lla)|info@hori(?:lla)\\.com)",
+    "reason": "Verbatim upstream URLs, the current fork URL, issue references, and inherited security contact remain external identifiers."
+  },
+  {
+    "path_pattern": "^requirements(\\..*)?\\.(txt|lock)$",
+    "line_pattern": "(?i)hori(?:lla)setup",
+    "reason": "The published third-party Python distribution keeps its upstream package name."
+  }
+]

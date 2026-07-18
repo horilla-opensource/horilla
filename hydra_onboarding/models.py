@@ -9,12 +9,12 @@ from django.utils import timezone
 from django.utils.translation import gettext_lazy as _
 
 from base.models import Company, Department, EmployeeType
-from hydra.models import HorillaModel
+from hydra.models import HydraModel
 from hydra_coordination.models import Location, Team
 from hydra_people.models import Person
 
 
-class Course(HorillaModel):
+class Course(HydraModel):
     uuid = models.UUIDField(default=uuid4, unique=True, editable=False)
     company = models.ForeignKey(
         Company,
@@ -62,7 +62,7 @@ class ProtectedVersionQuerySet(models.QuerySet):
         raise TypeError("Course versions cannot be bulk-deleted.")
 
 
-class CourseVersion(HorillaModel):
+class CourseVersion(HydraModel):
     class Status(models.TextChoices):
         DRAFT = "draft", _("Draft")
         PUBLISHED = "published", _("Published")
@@ -378,7 +378,7 @@ class QuizOption(DraftContentModel):
         self.label = " ".join(self.label.split())
 
 
-class CourseAssignmentRule(HorillaModel):
+class CourseAssignmentRule(HydraModel):
     uuid = models.UUIDField(default=uuid4, unique=True, editable=False)
     company = models.ForeignKey(
         Company,
@@ -494,7 +494,7 @@ class ProtectedAssignmentQuerySet(models.QuerySet):
         raise TypeError("Course assignments are durable records.")
 
 
-class CourseAssignment(HorillaModel):
+class CourseAssignment(HydraModel):
     class Status(models.TextChoices):
         ASSIGNED = "assigned", _("Assigned")
         IN_PROGRESS = "in_progress", _("In progress")

@@ -21,7 +21,7 @@ This is a focused **NEW OPERATIONS BOUNDARY**, not a generic workflow engine. It
 - retry physical cleanup for logically deleted private documents.
 - redact expired candidate-import source values while preserving non-sensitive audit evidence and applied-record links.
 
-Future approved recurring jobs will be added as explicit bounded functions with their own tests and cadence; legacy Horilla APScheduler jobs remain disabled.
+Future approved recurring jobs will be added as explicit bounded functions with their own tests and cadence; legacy HR platform APScheduler jobs remain disabled.
 
 ## Single ownership and failure model
 

@@ -17,7 +17,7 @@ from hydra_arrivals.models import (
     OnboardingPortalDeliveryEvent,
 )
 from base.backends import ConfiguredEmailBackend
-from base.models import DynamicEmailConfiguration, EmailLog, HorillaMailTemplate
+from base.models import DynamicEmailConfiguration, EmailLog, HydraMailTemplate
 from hydra_arrivals.portal_email import (
     PORTAL_EMAIL_QUEUE_PERMISSIONS,
     dispatch_portal_emails,
@@ -412,7 +412,7 @@ class PortalEmailOutboxTests(HydraArrivalTestCase):
         self.assertNotContains(response, candidate_b.name)
 
     def test_other_company_attachment_template_is_rejected(self):
-        foreign_template = HorillaMailTemplate._base_manager.create(
+        foreign_template = HydraMailTemplate._base_manager.create(
             title="Foreign portal attachment",
             body="Foreign company content",
             company_id=self.company_b,
@@ -528,7 +528,7 @@ class PortalEmailOutboxTests(HydraArrivalTestCase):
         scan.assert_called_once_with(upload)
 
     @patch("django.core.mail.backends.smtp.EmailBackend.send_messages", return_value=1)
-    def test_legacy_horilla_mail_log_redacts_sensitive_portal_payload(self, send):
+    def test_legacy_mail_log_redacts_sensitive_portal_payload(self, send):
         backend = ConfiguredEmailBackend(fail_silently=False)
         message = EmailMessage(
             subject=f"Hello {self.candidate.name}",

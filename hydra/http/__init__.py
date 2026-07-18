@@ -1,1 +1,1 @@
-from hydra.http.response import HorillaRedirect
+from hydra.http.response import HydraRedirect

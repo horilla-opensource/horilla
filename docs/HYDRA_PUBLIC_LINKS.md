@@ -46,7 +46,7 @@ The fallback language is Russian. Person IDs, employee IDs, assignments, session
 
 Reading requires `hydra_links.view_publichydralink`. Creating and changing records require the matching Django model permission and an active Hydra scope that resolves to the selected Location. A separate `hydra_links.manage_global_publichydralink` permission is required to create or change a global record.
 
-The form restricts Location choices, the object selector returns 404 for an out-of-scope direct URL, and the save service independently rechecks permission and scope. Selecting Horilla company `all` does not widen Hydra access. Superuser remains the explicit bypass.
+The form restricts Location choices, the object selector returns 404 for an out-of-scope direct URL, and the save service independently rechecks permission and scope. Selecting legacy HR platform company `all` does not widen Hydra access. Superuser remains the explicit bypass.
 
 Deletion is intentionally absent from the operator UI. Records can instead be deactivated while preserving configuration history.
 

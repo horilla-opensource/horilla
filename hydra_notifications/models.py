@@ -11,7 +11,7 @@ from hydra_people.models import Person
 
 
 class NotificationKind(models.TextChoices):
-    LEGACY = "legacy", _("Horilla notification")
+    LEGACY = "legacy", _("Hydra notification")
     ORGANIZATION_SCOPE_END = "organization_scope_end", _("Scope end scheduled")
     ORGANIZATION_SCOPE_REVOKED = "organization_scope_revoked", _("Scope revoked")
     ORGANIZATION_ASSIGNMENT_END = (
@@ -53,7 +53,7 @@ class NotificationKind(models.TextChoices):
 
 
 class NotificationCategory(models.TextChoices):
-    LEGACY = "legacy", _("Horilla")
+    LEGACY = "legacy", _("Hydra")
     ORGANIZATION = "organization", _("Organization")
     ARRIVALS = "arrivals", _("Arrivals")
     LEGALIZATION = "legalization", _("Legalization")
@@ -256,7 +256,7 @@ class AppendOnlyNotificationEventQuerySet(models.QuerySet):
 class HydraNotificationStateEvent(models.Model):
     class Action(models.TextChoices):
         CREATED = "created", _("Created")
-        IMPORTED = "imported", _("Imported from Horilla")
+        IMPORTED = "imported", _("Imported from Hydra")
         READ = "read", _("Marked as read")
         UNREAD = "unread", _("Marked as unread")
         OPENED = "opened", _("Opened")

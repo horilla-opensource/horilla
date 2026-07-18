@@ -2,7 +2,7 @@
 
 ## Decision and delivery contract
 
-The onboarding portal keeps Horilla's token portal and configured email backend,
+The onboarding portal keeps legacy HR platform's token portal and configured email backend,
 but Hydra **WRAPS** delivery in a durable, domain-specific outbox. A web request
 never waits for SMTP and never starts onboarding merely because an operator
 clicked Send. It commits the current portal token, exact payload, verified
@@ -80,7 +80,7 @@ Queueing requires all of:
 - current Hydra Person/company/location/team visibility from the canonical
   linked-Candidate selector.
 
-The hired-Candidate portal list uses the same selector. A broad Horilla company
+The hired-Candidate portal list uses the same selector. A broad legacy HR platform company
 manager or `selected_company=all` does not widen Hydra scope. An unauthorized
 Candidate selection is not queued.
 
@@ -94,7 +94,7 @@ available. Persisted objects have opaque names in
 public `MEDIA_ROOT`. Hash and size are rechecked before every send.
 
 Sent and cancelled payloads/files are purged immediately while metadata, hashes
-and events remain. Dead payloads use bounded retention. The standard Horilla
+and events remain. Dead payloads use bounded retention. The standard legacy HR platform
 `EmailLog` is retained for compatibility but sensitive Hydra messages replace
 recipient, subject and body with a non-sensitive Hydra delivery reference, so
 the portal token is not copied into the legacy log.

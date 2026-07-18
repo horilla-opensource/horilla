@@ -1,5 +1,5 @@
 """
-horilla/generic/views.py
+hydra_views/generic/cbv/views.py
 """
 
 import io
@@ -32,7 +32,7 @@ from base.methods import closest_numbers, eval_validate, get_key_instances
 from hydra.filters import FilterSet
 from hydra.group_by import group_by_queryset
 from hydra.hydra_middlewares import _thread_locals
-from hydra.http.response import HorillaRedirect
+from hydra.http.response import HydraRedirect
 from hydra.signals import post_generic_import, pre_generic_import
 from hydra_views import models
 from hydra_views.cbv_methods import (  # update_initial_cache,
@@ -55,9 +55,9 @@ logger = logging.getLogger(__name__)
 
 
 @method_decorator(hx_request_required, name="dispatch")
-class HorillaListView(ListView):
+class HydraListView(ListView):
     """
-    HorillaListView
+    HydraListView
     """
 
     filter_class: FilterSet = None
@@ -303,7 +303,7 @@ class HorillaListView(ListView):
         """
         if not self.import_accessibility():
             messages.info(request, "You dont have permission")
-            return HorillaFormView.HttpResponse()
+            return HydraFormView.HttpResponse()
         ids = eval_validate(request.POST["selected_ids"])
 
         wb = generate_import_excel(
@@ -1166,7 +1166,7 @@ class HorillaListView(ListView):
             #         instance.ordered_ids = ordered_ids
             #         ordered_ids.append(instance.pk)
 
-        # CACHE.get(self.request.session.session_key + "cbv")[HorillaListView] = context
+        # CACHE.get(self.request.session.session_key + "cbv")[HydraListView] = context
         from hydra.urls import path, urlpatterns
 
         self.export_path = f"export-list-view-{get_short_uuid(4)}/"
@@ -1243,7 +1243,7 @@ class HorillaListView(ListView):
 
         _model = self.model
 
-        class HorillaListViewResorce(resources.ModelResource):
+        class HydraListViewResource(resources.ModelResource):
             """
             Instant Resource class
             """
@@ -1310,7 +1310,7 @@ class HorillaListView(ListView):
                 cleaned_text = "\n".join(non_blank_lines)
                 return cleaned_text
 
-        book_resource = HorillaListViewResorce()
+        book_resource = HydraListViewResource()
 
         # Export the data using the resource
         dataset = book_resource.export(queryset)
@@ -1411,16 +1411,16 @@ class HorillaListView(ListView):
         return export_xlsx(json_data, columns, file_name=self.export_file_name)
 
 
-class HorillaSectionView(TemplateView):
+class HydraSectionView(TemplateView):
     """
-    Horilla Template View
+    Hydra Template View
     """
 
     def __init__(self, **kwargs: Any) -> None:
         super().__init__(**kwargs)
         request = getattr(_thread_locals, "request", None)
         self.request = request
-        # update_initial_cache(request, CACHE, HorillaListView)
+        # update_initial_cache(request, CACHE, HydraListView)
 
     nav_url: str = ""
     view_url: str = ""
@@ -1457,7 +1457,7 @@ class HorillaSectionView(TemplateView):
 
 
 @method_decorator(hx_request_required, name="dispatch")
-class HorillaDetailedView(DetailView):
+class HydraDetailedView(DetailView):
     """
     HorillDetailedView
     """
@@ -1465,8 +1465,8 @@ class HorillaDetailedView(DetailView):
     title = "Detailed View"
     template_name = "generic/hydra_detailed_view.html"
     header: dict = {
-        "title": "Horilla",
-        "subtitle": "Horilla Detailed View",
+        "title": "Hydra",
+        "subtitle": "Hydra Detailed View",
         "avatar": "",
     }
     body: list = []
@@ -1492,7 +1492,7 @@ class HorillaDetailedView(DetailView):
             return render(request, self.empty_template, context=self.get_context_data())
         elif not self.instance:
             messages.info(request, "No record found...")
-            return HorillaRedirect(self.request)
+            return HydraRedirect(self.request)
         return response
 
     def __init__(self, **kwargs: Any) -> None:
@@ -1500,7 +1500,7 @@ class HorillaDetailedView(DetailView):
         self.ordered_ids_key = f"ordered_ids_{self.model.__name__.lower()}"
         request = getattr(_thread_locals, "request", None)
         self.request = request
-        # update_initial_cache(request, CACHE, HorillaDetailedView)
+        # update_initial_cache(request, CACHE, HydraDetailedView)
 
     def get_context_data(self, **kwargs: Any):
         context = super().get_context_data(**kwargs)
@@ -1545,9 +1545,9 @@ class HorillaDetailedView(DetailView):
 
 
 @method_decorator(hx_request_required, name="dispatch")
-class HorillaTabView(TemplateView):
+class HydraTabView(TemplateView):
     """
-    HorillaTabView
+    HydraTabView
     """
 
     view_id: str = get_short_uuid(3, "htv")
@@ -1574,7 +1574,7 @@ class HorillaTabView(TemplateView):
         request = getattr(_thread_locals, "request", None)
         self.request = request
         self.query_params = {}
-        # update_initial_cache(request, CACHE, HorillaTabView)
+        # update_initial_cache(request, CACHE, HydraTabView)
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
@@ -1595,15 +1595,15 @@ class HorillaTabView(TemplateView):
         context["tabs"] = self.tabs
         context["view_id"] = self.view_id
 
-        # CACHE.get(self.request.session.session_key + "cbv")[HorillaTabView] = context
+        # CACHE.get(self.request.session.session_key + "cbv")[HydraTabView] = context
 
         return context
 
 
 @method_decorator(hx_request_required, name="dispatch")
-class HorillaCardView(ListView):
+class HydraCardView(ListView):
     """
-    HorillaCardView
+    HydraCardView
     """
 
     filter_class: FilterSet = None
@@ -1648,7 +1648,7 @@ class HorillaCardView(ListView):
         super().__init__(**kwargs)
         request = getattr(_thread_locals, "request", None)
         self.request = request
-        # update_initial_cache(request, CACHE, HorillaCardView)
+        # update_initial_cache(request, CACHE, HydraCardView)
         self._saved_filters = QueryDict()
         self.ordered_ids_key = f"ordered_ids_{self.model.__name__.lower()}"
 
@@ -1726,7 +1726,7 @@ class HorillaCardView(ListView):
                 ordered_ids.append(instance.pk)
         self.request.session[self.ordered_ids_key] = ordered_ids
 
-        # CACHE.get(self.request.session.session_key + "cbv")[HorillaCardView] = context
+        # CACHE.get(self.request.session.session_key + "cbv")[HydraCardView] = context
         referrer = self.request.GET.get("referrer", "")
         if referrer:
             # Remove the protocol and domain part
@@ -1794,9 +1794,9 @@ def save(self: forms.ModelForm, commit=True, *args, **kwargs):
 
 
 @method_decorator(hx_request_required, name="dispatch")
-class HorillaFormView(FormView):
+class HydraFormView(FormView):
     """
-    HorillaFormView
+    HydraFormView
     """
 
     class HttpResponse:
@@ -1856,7 +1856,7 @@ class HorillaFormView(FormView):
         self.request = request
         if not self.success_url:
             self.success_url = self.request.path
-        # update_initial_cache(request, CACHE, HorillaFormView)
+        # update_initial_cache(request, CACHE, HydraFormView)
 
         if self.form_class:
             setattr(self.form_class, "structured", structured)
@@ -2047,7 +2047,7 @@ class HorillaFormView(FormView):
                 self.form_class.verbose_name = self.new_display_title
             form.close_button_attrs = self.close_button_attrs
             form.submit_button_attrs = self.submit_button_attrs
-            # CACHE.get(self.request.session.session_key + "cbv")[HorillaFormView] = form
+            # CACHE.get(self.request.session.session_key + "cbv")[HydraFormView] = form
             self.form = form
         return self.form
 
@@ -2066,9 +2066,9 @@ class HorillaFormView(FormView):
 
 
 @method_decorator(hx_request_required, name="dispatch")
-class HorillaNavView(TemplateView):
+class HydraNavView(TemplateView):
     """
-    HorillaNavView
+    HydraNavView
 
     filter form submit button id: applyFilter
     """
@@ -2096,7 +2096,7 @@ class HorillaNavView(TemplateView):
         self._initialize_model_and_group_fields()
         request = getattr(_thread_locals, "request", None)
         self.request = request
-        # update_initial_cache(request, CACHE, HorillaNavView)
+        # update_initial_cache(request, CACHE, HydraNavView)
 
     def _initialize_model_and_group_fields(self) -> None:
         """
@@ -2175,7 +2175,7 @@ class HorillaNavView(TemplateView):
         context["active_view"] = models.ActiveView.objects.filter(
             path=self.request.path
         ).first()
-        # CACHE.get(self.request.session.session_key + "cbv")[HorillaNavView] = context
+        # CACHE.get(self.request.session.session_key + "cbv")[HydraNavView] = context
         return context
 
     @classmethod
@@ -2193,9 +2193,9 @@ class HorillaNavView(TemplateView):
 
 
 @method_decorator(hx_request_required, name="dispatch")
-class HorillaProfileView(DetailView):
+class HydraProfileView(DetailView):
     """
-    GenericHorillaProfileView
+    GenericHydraProfileView
     """
 
     template_name = "generic/hydra_profile_view.html"
@@ -2221,7 +2221,7 @@ class HorillaProfileView(DetailView):
         request = getattr(_thread_locals, "request", None)
         self.request = request
         self.ordered_ids_key = f"ordered_ids_{self.model.__name__.lower()}"
-        # update_initial_cache(request, CACHE, HorillaProfileView)
+        # update_initial_cache(request, CACHE, HydraProfileView)
 
         from hydra.urls import path, urlpatterns
 

@@ -13,10 +13,10 @@ from recruitment.models import Candidate
 
 @transaction.atomic
 def ensure_candidate_onboarding(*, candidate, actor=None):
-    """Create the reused Horilla onboarding rows exactly once.
+    """Create the reused Hydra onboarding rows exactly once.
 
     Callers are responsible for authorization. Locking the Candidate makes the
-    check/create sequence safe for concurrent Hydra and Horilla entry points.
+    check/create sequence safe for concurrent Hydra and Hydra entry points.
     Existing duplicate task rows are reported instead of being silently
     deleted or merged.
     """

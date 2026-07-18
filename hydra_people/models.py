@@ -9,7 +9,7 @@ from django.utils import timezone
 from django.utils.translation import gettext_lazy as _
 
 from employee.models import Employee
-from hydra.models import HorillaModel
+from hydra.models import HydraModel
 from recruitment.models import Candidate, Recruitment, Stage
 
 
@@ -23,7 +23,7 @@ citizenship_validator = RegexValidator(
 )
 
 
-class Person(HorillaModel):
+class Person(HydraModel):
     class Gender(models.TextChoices):
         FEMALE = "female", _("Female")
         MALE = "male", _("Male")
@@ -147,7 +147,7 @@ class Person(HorillaModel):
             ("merge_person", "Can merge duplicate Hydra Person records"),
             (
                 "convert_person_to_employee",
-                "Can convert Hydra person to Horilla employee",
+                "Can convert Hydra person to Hydra employee",
             ),
         )
         indexes = (
@@ -221,7 +221,7 @@ class Person(HorillaModel):
         return reverse("hydra-person-detail", kwargs={"person_uuid": self.uuid})
 
 
-class PersonDuplicateSuggestion(HorillaModel):
+class PersonDuplicateSuggestion(HydraModel):
     class State(models.TextChoices):
         OPEN = "open", _("Open")
         DISMISSED = "dismissed", _("Dismissed")
@@ -384,7 +384,7 @@ class AppendOnlyConversionQuerySet(models.QuerySet):
 class EmployeeConversion(models.Model):
     class Source(models.TextChoices):
         HYDRA_OPERATOR = "hydra_operator", _("Hydra operator")
-        HORILLA_ONBOARDING = "horilla_onboarding", _("Horilla onboarding")
+        HYDRA_ONBOARDING = "hydra_onboarding", _("Hydra onboarding")
 
     person = models.OneToOneField(
         Person,
@@ -461,7 +461,7 @@ class EmployeeConversion(models.Model):
         raise TypeError("Employee conversion history is append-only.")
 
 
-class RecruitmentStageTransitionRule(HorillaModel):
+class RecruitmentStageTransitionRule(HydraModel):
     """Configurable contract for one directed recruitment-stage transition."""
 
     recruitment = models.ForeignKey(
@@ -534,7 +534,7 @@ class CandidateStageTransition(models.Model):
 
     class Source(models.TextChoices):
         HYDRA = "hydra", _("Hydra")
-        HORILLA_PIPELINE = "horilla_pipeline", _("Horilla pipeline")
+        HYDRA_PIPELINE = "hydra_pipeline", _("Hydra pipeline")
 
     candidate = models.ForeignKey(
         Candidate,
@@ -622,7 +622,7 @@ class CandidateStageTransition(models.Model):
         raise TypeError("Candidate stage transition history is append-only.")
 
 
-class PersonApplication(HorillaModel):
+class PersonApplication(HydraModel):
     class LinkSource(models.TextChoices):
         MANUAL = "manual", _("Manual link")
         HYDRA_INTAKE = "hydra_intake", _("Hydra intake")

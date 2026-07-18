@@ -176,5 +176,5 @@ Assert-NativeSuccess "Applying database migrations"
 & $venvPython manage.py check
 Assert-NativeSuccess "Running Django system checks"
 
-Write-Output "Local Horilla bootstrap completed."
+Write-Output "Local Hydra bootstrap completed."
 Write-Output "Run: .\scripts\run-local.ps1 -PostgresBin `"$pgBin`" -DataDirectory `"$DataDirectory`" -Port $Port -Database $Database"

@@ -127,8 +127,8 @@ def config_perms(user):
             "base.change_holiday",
             "base.add_companyleaves",
             "base.change_companyleaves",
-            "base.add_horillamailtemplates",
-            "base.view_horillamailtemplates",
+            "base.add_hydramailtemplates",
+            "base.view_hydramailtemplates",
         ],
     }
 

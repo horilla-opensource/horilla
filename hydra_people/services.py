@@ -151,7 +151,7 @@ def link_candidate(
 
 @transaction.atomic
 def create_candidate_application(*, person: Person, candidate: Candidate, actor):
-    """Create a Horilla application and its canonical Hydra Person link."""
+    """Create a Hydra application and its canonical Hydra Person link."""
 
     _require_permissions(
         actor,
@@ -510,7 +510,7 @@ def _create_conversion_record(
 def convert_person_to_employee(
     *, person, candidate, work_email, phone, joining_date, actor
 ):
-    """Create/link one Horilla Employee and preserve the conversion decision."""
+    """Create/link one Hydra Employee and preserve the conversion decision."""
 
     _require_permissions(actor, *CONVERSION_PERMISSIONS)
     if joining_date is None:
@@ -599,7 +599,7 @@ def convert_person_to_employee(
 
 @transaction.atomic
 def synchronize_onboarding_employee(*, candidate, employee, actor):
-    """Record a completed Horilla onboarding conversion for a linked Person."""
+    """Record a completed Hydra onboarding conversion for a linked Person."""
 
     locked_candidate = Candidate._base_manager.select_for_update().get(
         pk=candidate.pk
@@ -638,7 +638,7 @@ def synchronize_onboarding_employee(*, candidate, employee, actor):
         employee=locked_employee,
         work_info=work_info,
         actor=actor,
-        source=EmployeeConversion.Source.HORILLA_ONBOARDING,
+        source=EmployeeConversion.Source.HYDRA_ONBOARDING,
         submitted={"onboarding_employee_id": locked_employee.pk},
         pre_conversion=pre_conversion,
         existing_employee=True,

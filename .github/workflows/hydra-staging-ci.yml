@@ -69,7 +69,7 @@ jobs:
           python -m pip install -r requirements.staging.lock
           python -m pip check
 
-      - name: Install pinned Horilla auth migration
+      - name: Install pinned Hydra auth migration
         run: python scripts/install-django-auth-migration.py
 
       - name: Verify committed migration baseline

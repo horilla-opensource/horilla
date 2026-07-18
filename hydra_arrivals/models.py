@@ -8,7 +8,7 @@ from django.urls import reverse
 from django.utils import timezone
 from django.utils.translation import gettext_lazy as _
 
-from hydra.models import HorillaModel
+from hydra.models import HydraModel
 from hydra_coordination.models import Location
 from hydra_people.models import Person, PersonApplication
 from recruitment.models import Candidate
@@ -21,7 +21,7 @@ def portal_email_attachment_path(instance, filename):
     return f"portal-email/{identifier[:2]}/{identifier}.payload"
 
 
-class ArrivalPlan(HorillaModel):
+class ArrivalPlan(HydraModel):
     class Status(models.TextChoices):
         PLANNED = "planned", _("Planned")
         CONFIRMED = "confirmed", _("Confirmed")

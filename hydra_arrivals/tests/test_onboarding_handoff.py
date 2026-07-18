@@ -442,7 +442,7 @@ class OnboardingHandoffMilestoneTests(OnboardingHandoffTestCase):
             reconcile_open_onboarding_handoffs(batch_size=0)
 
 
-class HorillaOnboardingRegressionTests(OnboardingHandoffTestCase):
+class HydraOnboardingRegressionTests(OnboardingHandoffTestCase):
     def test_candidate_detail_get_does_not_create_onboarding_rows(self):
         self.client.force_login(self.admin)
 

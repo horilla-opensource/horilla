@@ -65,8 +65,8 @@ from base.models import Company, EmployeeShift
 from employee.filters import EmployeeFilter
 from employee.models import Employee
 from hydra import hydra_middlewares
-from hydra_widgets.widgets.hydra_multi_select_field import HorillaMultiSelectField
-from hydra_widgets.widgets.select_widgets import HorillaMultiSelectWidget
+from hydra_widgets.widgets.hydra_multi_select_field import HydraMultiSelectField
+from hydra_widgets.widgets.select_widgets import HydraMultiSelectWidget
 
 logger = logging.getLogger(__name__)
 
@@ -202,9 +202,9 @@ class AttendanceForm(BaseModelForm):
     Model form for Attendance model
     """
 
-    employee_id = HorillaMultiSelectField(
+    employee_id = HydraMultiSelectField(
         queryset=Employee.objects.filter(employee_work_info__isnull=False),
-        widget=HorillaMultiSelectWidget(
+        widget=HydraMultiSelectWidget(
             filter_route_name="employee-widget-filter",
             filter_class=EmployeeFilter,
             filter_instance_contex_name="f",
@@ -794,7 +794,7 @@ excluded_fields = [
     "request_type",
     "month_sequence",
     "objects",
-    "horilla_history",
+    "hydra_history",
 ]
 
 

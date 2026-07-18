@@ -4,10 +4,10 @@
 
 Implemented on 2026-07-14 and hardened on 2026-07-15.
 
-- **REUSE** Horilla `Candidate` and canonical `hydra_people.Person` ownership.
+- **REUSE** legacy HR platform `Candidate` and canonical `hydra_people.Person` ownership.
 - **REPLACE** generic `/media/` delivery for Hydra-sensitive content.
 - **EXTEND** the original private-document slice with isolated quarantine, fail-closed malware scanning, logical types, immutable replacement versions, retention, legal hold, secure deletion, and operational readiness checks.
-- Keep Horilla's original document screens operational, but never route Hydra-private files through them.
+- Keep legacy HR platform's original document screens operational, but never route Hydra-private files through them.
 
 The generic upstream media endpoint authenticates a request without applying Hydra's Candidate/Person object scope. `hydra_documents` is therefore the mandatory security boundary for passport, recruitment, and legalization attachments.
 

@@ -1,7 +1,7 @@
 """
-horilla/config.py
+hydra/config.py
 
-Horilla app configurations
+Hydra app configurations
 """
 
 import importlib

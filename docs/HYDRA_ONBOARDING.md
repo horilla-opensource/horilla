@@ -2,7 +2,7 @@
 
 ## Status and reuse decision
 
-The production decision is **EXTEND + WRAP**. Hydra reuses Horilla
+The production decision is **EXTEND + WRAP**. Hydra reuses legacy HR platform
 `OnboardingStage`, `OnboardingTask`, `CandidateStage`, `CandidateTask` and the
 token portal. It does not create a parallel onboarding engine. Hydra adds a
 scoped, transactional handoff around the boundary between a confirmed arrival,
@@ -16,7 +16,7 @@ facts were connected for one application.
 ## Controlled flow
 
 1. The arrival must be `confirmed`, with an actual arrival timestamp.
-2. The linked Horilla application must be active, not cancelled and genuinely
+2. The linked legacy HR platform application must be active, not cancelled and genuinely
    in a recruitment stage whose type is `hired`.
 3. An authorized, in-scope operator starts the handoff from the arrival detail.
 4. `onboarding.services.ensure_candidate_onboarding` locks the Candidate,
@@ -58,7 +58,7 @@ state/reference shapes, and `PROTECT` prevents removal of evidence.
 
 Each event records user/system source, actor rules, referenced milestone rows,
 opaque identifiers and the task total/completed count. Event update and delete
-are rejected by both model/queryset behavior and database constraints. Horilla
+are rejected by both model/queryset behavior and database constraints. legacy HR platform
 CandidateTask history remains the detailed task-status audit.
 
 No Person name, email, transport reference or task title is placed in Hydra
@@ -70,23 +70,23 @@ still access the destination arrival through current Hydra scope.
 
 Starting a handoff requires the complete arrival/Person/Candidate read boundary,
 the dedicated `hydra_arrivals.initiate_onboardinghandoff` permission, Person and
-Candidate change permissions, and the underlying Horilla onboarding view/add
+Candidate change permissions, and the underlying legacy HR platform onboarding view/add
 permissions. A generic Django permission never widens location scope.
 
 Task changes require:
 
 - current visibility of the source arrival;
 - `hydra_arrivals.view_onboardinghandoff`;
-- Horilla CandidateTask view/change permissions;
+- legacy HR platform CandidateTask view/change permissions;
 - assignment as manager of the task or current onboarding stage (or
   superuser).
 
-Hydra task updates are CSRF-protected POST operations. The old Horilla GET
+Hydra task updates are CSRF-protected POST operations. The old legacy HR platform GET
 mutation and bulk update return 405/409 for a Hydra handoff task, so they cannot
 bypass destination scope, task-manager assignment or completion immutability.
 Direct out-of-scope arrival URLs remain 404.
 
-## Horilla defects repaired
+## Legacy HR platform defects repaired
 
 - Candidate detail GET no longer creates onboarding state as a side effect.
 - The invalid `OnboardingTask.recruitment_id` lookup was removed; task

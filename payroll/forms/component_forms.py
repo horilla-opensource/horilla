@@ -20,10 +20,10 @@ from base.methods import reload_queryset
 from employee.filters import EmployeeFilter
 from employee.models import BonusPoint, Employee
 from hydra import hydra_middlewares
-from hydra.methods import get_horilla_model_class
-from hydra_widgets.forms import HorillaForm, default_select_option_template
-from hydra_widgets.widgets.hydra_multi_select_field import HorillaMultiSelectField
-from hydra_widgets.widgets.select_widgets import HorillaMultiSelectWidget
+from hydra.methods import get_hydra_model_class
+from hydra_widgets.forms import HydraForm, default_select_option_template
+from hydra_widgets.widgets.hydra_multi_select_field import HydraMultiSelectField
+from hydra_widgets.widgets.select_widgets import HydraMultiSelectWidget
 from notifications.signals import notify
 from payroll.models import tax_models as models
 from payroll.models.models import (
@@ -75,9 +75,9 @@ class AllowanceForm(ModelForm):
             kwargs["initial"] = initial
         super().__init__(*args, **kwargs)
 
-        self.fields["specific_employees"] = HorillaMultiSelectField(
+        self.fields["specific_employees"] = HydraMultiSelectField(
             queryset=Employee.objects.all(),
-            widget=HorillaMultiSelectWidget(
+            widget=HydraMultiSelectWidget(
                 filter_route_name="employee-widget-filter",
                 filter_class=EmployeeFilter,
                 filter_instance_contex_name="f",
@@ -110,7 +110,7 @@ class AllowanceForm(ModelForm):
         condition_based = self.data.get("is_condition_based")
 
         for field_name, field_instance in self.fields.items():
-            if isinstance(field_instance, HorillaMultiSelectField):
+            if isinstance(field_instance, HydraMultiSelectField):
                 self.errors.pop(field_name, None)
                 if (
                     not specific_employees
@@ -215,9 +215,9 @@ class DeductionForm(ModelForm):
             kwargs["initial"] = initial
         super().__init__(*args, **kwargs)
 
-        self.fields["specific_employees"] = HorillaMultiSelectField(
+        self.fields["specific_employees"] = HydraMultiSelectField(
             queryset=Employee.objects.all(),
-            widget=HorillaMultiSelectWidget(
+            widget=HydraMultiSelectWidget(
                 filter_route_name="employee-widget-filter",
                 filter_class=EmployeeFilter,
                 filter_instance_contex_name="f",
@@ -245,7 +245,7 @@ class DeductionForm(ModelForm):
         condition_based = self.data.get("is_condition_based")
 
         for field_name, field_instance in self.fields.items():
-            if isinstance(field_instance, HorillaMultiSelectField):
+            if isinstance(field_instance, HydraMultiSelectField):
                 self.errors.pop(field_name, None)
                 if (
                     not specific_employees
@@ -404,7 +404,7 @@ class PayslipForm(ModelForm):
         }
 
 
-class GeneratePayslipForm(HorillaForm):
+class GeneratePayslipForm(HydraForm):
     """
     Form for Payslip
     """
@@ -414,9 +414,9 @@ class GeneratePayslipForm(HorillaForm):
         required=True,
         # help_text="Enter +-something if you want to generate payslips by batches",
     )
-    employee_id = HorillaMultiSelectField(
+    employee_id = HydraMultiSelectField(
         queryset=Employee.objects.none(),
-        widget=HorillaMultiSelectWidget(
+        widget=HydraMultiSelectWidget(
             filter_route_name="employee-widget-filter",
             filter_class=EmployeeFilter,
             filter_instance_contex_name="f",
@@ -828,7 +828,7 @@ class ReimbursementForm(ModelForm):
         return employee_qs.first()
 
     def get_encashable_leaves(self, employee):
-        LeaveType = get_horilla_model_class(app_label="leave", model="leavetype")
+        LeaveType = get_hydra_model_class(app_label="leave", model="leavetype")
         return LeaveType.objects.filter(
             employee_available_leave__employee_id=employee,
             employee_available_leave__total_leave_days__gte=1,
@@ -861,7 +861,7 @@ class ReimbursementForm(ModelForm):
         if not apps.is_installed("leave") or not self.employee:
             return
 
-        AvailableLeave = get_horilla_model_class(
+        AvailableLeave = get_hydra_model_class(
             app_label="leave", model="availableleave"
         )
         assigned_leaves = self.get_encashable_leaves(self.employee)
@@ -959,7 +959,7 @@ class ReimbursementForm(ModelForm):
                 if leave_type not in encashable:
                     self.add_error("leave_type_id", "This leave type is not encashable")
                 else:
-                    AvailableLeave = get_horilla_model_class("leave", "availableleave")
+                    AvailableLeave = get_hydra_model_class("leave", "availableleave")
                     available_leave = AvailableLeave.objects.filter(
                         leave_type_id=leave_type, employee_id=employee
                     ).first()

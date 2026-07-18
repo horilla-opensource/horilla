@@ -520,12 +520,12 @@ def employee_conversion(request, person_uuid):
             if created:
                 messages.success(
                     request,
-                    _("Horilla employee created and linked with an audit record."),
+                    _("Hydra employee created and linked with an audit record."),
                 )
             else:
                 messages.success(
                     request,
-                    _("Existing Horilla employee linked with an audit record."),
+                    _("Existing Hydra employee linked with an audit record."),
                 )
             return redirect(conversion.person)
     return render(

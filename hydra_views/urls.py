@@ -42,12 +42,12 @@ urlpatterns = [
     ),
     path(
         "generic-delete",
-        views.HorillaDeleteConfirmationView.as_view(),
+        views.HydraDeleteConfirmationView.as_view(),
         name="generic-delete",
     ),
     path(
-        "horilla-history-revert/<int:pk>/<int:history_id>/",
-        history.HorillaHistoryView.as_view(),
+        "hydra-history-revert/<int:pk>/<int:history_id>/",
+        history.HydraHistoryView.as_view(),
         name="history-revert",
     ),
 ]

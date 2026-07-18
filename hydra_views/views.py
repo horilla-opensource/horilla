@@ -18,7 +18,7 @@ from hydra.signals import post_generic_delete, pre_generic_delete
 from hydra_views import models
 from hydra_views.cbv_methods import get_short_uuid, login_required, merge_dicts
 from hydra_views.forms import SavedFilterForm
-from hydra_views.generic.cbv.views import HorillaFormView, HorillaListView
+from hydra_views.generic.cbv.views import HydraFormView, HydraListView
 
 # Create your views here.
 
@@ -78,7 +78,7 @@ class ReloadField(View):
         if not onchange:
             onchange = ""
 
-        model: models.HorillaModel = dynamic_cache["model"]
+        model: models.HydraModel = dynamic_cache["model"]
         value = dynamic_cache.get("value", "")
 
         cache_field = dynamic_cache["dynamic_field"]
@@ -171,7 +171,7 @@ class ActiveGroup(View):
 
 
 @method_decorator(login_required, name="dispatch")
-class SavedFilter(HorillaFormView):
+class SavedFilter(HydraFormView):
     """
     SavedFilter
     """
@@ -281,7 +281,7 @@ class LastAppliedFilter(View):
         return HttpResponse("success")
 
 
-class DynamiListView(HorillaListView):
+class DynamiListView(HydraListView):
     """
     DynamicListView for Generic Delete
     """
@@ -297,7 +297,7 @@ class DynamiListView(HorillaListView):
         return filter(_search_filter, self.instances)
 
 
-class HorillaDeleteConfirmationView(View):
+class HydraDeleteConfirmationView(View):
     """
     Generic Delete Confirmation View
     """
@@ -369,7 +369,7 @@ class HorillaDeleteConfirmationView(View):
                     f"{get_short_uuid(prefix='generic-delete',length=10)}"
                 )
 
-                class DynamiListView(HorillaListView):
+                class DynamiListView(HydraListView):
                     """
                     DynamicListView for Generic Delete
                     """
@@ -586,7 +586,7 @@ class HorillaDeleteConfirmationView(View):
         # deleting related objects
         collector.nested(delete_callback)
 
-        return HorillaFormView.HttpResponse()
+        return HydraFormView.HttpResponse()
 
     def get_context_data(self, **kwargs) -> dict:
         context = {}

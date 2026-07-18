@@ -1,5 +1,5 @@
 """
-This module provides Horilla ModelForms for creating and managing leave-related data,
+This module provides Hydra ModelForms for creating and managing leave-related data,
 including leave type, leave request, leave allocation request, holidays and company leaves.
 """
 
@@ -23,9 +23,9 @@ from employee.filters import EmployeeFilter
 from employee.forms import MultipleFileField
 from employee.models import Employee
 from hydra import hydra_middlewares
-from hydra_widgets.forms import HorillaForm, HorillaModelForm
-from hydra_widgets.widgets.hydra_multi_select_field import HorillaMultiSelectField
-from hydra_widgets.widgets.select_widgets import HorillaMultiSelectWidget
+from hydra_widgets.forms import HydraForm, HydraModelForm
+from hydra_widgets.widgets.hydra_multi_select_field import HydraMultiSelectField
+from hydra_widgets.widgets.select_widgets import HydraMultiSelectWidget
 from leave.methods import get_leave_day_attendance
 from leave.models import (
     AvailableLeave,
@@ -111,9 +111,9 @@ class LeaveTypeAdminForm(forms.ModelForm):
 
 class LeaveTypeForm(ConditionForm):
 
-    employee_id = HorillaMultiSelectField(
+    employee_id = HydraMultiSelectField(
         queryset=Employee.objects.all(),
-        widget=HorillaMultiSelectWidget(
+        widget=HydraMultiSelectWidget(
             filter_route_name="employee-widget-filter",
             filter_class=EmployeeFilter,
             filter_instance_contex_name="f",
@@ -370,7 +370,7 @@ class AvailableLeaveForm(BaseModelForm):
         fields = ["leave_type_id", "employee_id", "is_active"]
 
 
-class LeaveOneAssignForm(HorillaModelForm):
+class LeaveOneAssignForm(HydraModelForm):
     """
     Form for assigning available leave to employees.
 
@@ -378,12 +378,12 @@ class LeaveOneAssignForm(HorillaModelForm):
     by specifying the employee and setting the is_active flag.
 
     Attributes:
-        - employee_id: A HorillaMultiSelectField representing the employee to assign leave to.
+        - employee_id: A HydraMultiSelectField representing the employee to assign leave to.
     """
 
-    employee_id = HorillaMultiSelectField(
+    employee_id = HydraMultiSelectField(
         queryset=Employee.objects.all(),
-        widget=HorillaMultiSelectWidget(
+        widget=HydraMultiSelectWidget(
             filter_route_name="employee-widget-filter",
             filter_class=EmployeeFilter,
             filter_instance_contex_name="f",
@@ -696,7 +696,7 @@ class LeaveRequestExportForm(forms.Form):
     )
 
 
-class AssignLeaveForm(HorillaForm):
+class AssignLeaveForm(HydraForm):
     """
     Form for Payslip
     """
@@ -710,9 +710,9 @@ class AssignLeaveForm(HorillaForm):
         label=_("Leave Type"),
         required=False,
     )
-    employee_id = HorillaMultiSelectField(
+    employee_id = HydraMultiSelectField(
         queryset=Employee.objects.all(),
-        widget=HorillaMultiSelectWidget(
+        widget=HydraMultiSelectWidget(
             filter_route_name="employee-widget-filter",
             filter_class=EmployeeFilter,
             filter_instance_contex_name="f",

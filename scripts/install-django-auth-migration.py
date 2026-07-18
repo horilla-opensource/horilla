@@ -1,6 +1,6 @@
-"""Install Horilla's pinned dynamic-User compatibility migration.
+"""Install Hydra's pinned dynamic-User compatibility migration.
 
-Horilla adds ``is_new_employee`` directly to Django's built-in User model, so
+Hydra adds ``is_new_employee`` directly to Django's built-in User model, so
 the migration autodetector places the migration in Django's package. Clean CI
 runners need the reviewed migration installed before loading the migration
 graph. The staging image performs the equivalent copy in its Dockerfile.

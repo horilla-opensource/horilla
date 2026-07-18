@@ -2,11 +2,11 @@
 hydra_automations/filters.py
 """
 
-from hydra.filters import HorillaFilterSet, django_filters
+from hydra.filters import HydraFilterSet, django_filters
 from hydra_automations.models import MailAutomation
 
 
-class AutomationFilter(HorillaFilterSet):
+class AutomationFilter(HydraFilterSet):
     """
     AutomationFilter
     """

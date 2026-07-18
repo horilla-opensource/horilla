@@ -392,7 +392,7 @@ class RecruitmentApplicationWorkflowTests(HydraRecruitmentTestCase):
         self.assertEqual(link.person, self.person_c)
         self.assertEqual(link.link_source, PersonApplication.LinkSource.BACKFILL)
 
-    def test_existing_horilla_candidate_view_remains_operational(self):
+    def test_existing_hydra_candidate_view_remains_operational(self):
         self.client.force_login(self.admin)
 
         response = self.client.get(reverse("candidate-view"))

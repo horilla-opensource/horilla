@@ -323,7 +323,7 @@ class OperationalReportExportTests(OperationalReportTestCase):
         self.assertContains(response, own.sha256)
         self.assertNotContains(response, "b" * 64)
 
-    def test_existing_horilla_employee_view_remains_operational(self):
+    def test_existing_hydra_employee_view_remains_operational(self):
         self.client.force_login(self.admin)
 
         response = self.client.get(reverse("employee-view"))

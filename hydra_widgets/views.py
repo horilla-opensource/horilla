@@ -3,7 +3,7 @@ from django.shortcuts import render
 from hydra.decorators import login_required
 from hydra_widgets.widgets.select_widgets import (
     ALL_INSTANCES,
-    HorillaMultiSelectWidget,
+    HydraMultiSelectWidget,
 )
 
 # Create your views here.

@@ -4,14 +4,14 @@
 
 Implemented on 2026-07-14 as the smallest complete candidate-import vertical slice and hardened on 2026-07-16 with bounded personal-data retention, explicit discard, append-only purge evidence and maintenance-owned cleanup.
 
-The required Horilla inspection found two employee spreadsheet paths. `employee_import()` reads a workbook with pandas and creates users/employees row by row while collecting broad exceptions. `work_info_import()` validates an employee-specific header set, then invokes multiple independent `bulk_create_*` functions and starts password work in a thread. Neither path stores a preview, applies Hydra Person scope, produces a stable import fingerprint or guarantees a single transaction across Person and Candidate creation.
+The required legacy HR platform inspection found two employee spreadsheet paths. `employee_import()` reads a workbook with pandas and creates users/employees row by row while collecting broad exceptions. `work_info_import()` validates an employee-specific header set, then invokes multiple independent `bulk_create_*` functions and starts password work in a thread. Neither path stores a preview, applies Hydra Person scope, produces a stable import fingerprint or guarantees a single transaction across Person and Candidate creation.
 
 The implementation decision is:
 
 - **NEW MODULE** for `hydra_imports`, its preview session and row decisions;
-- **REUSE** the XLSX container and openpyxl value parser already present in Horilla's dependencies;
+- **REUSE** the XLSX container and openpyxl value parser already present in legacy HR platform's dependencies;
 - **WRAP** `hydra_people.save_person()` and `create_candidate_application()` inside one outer transaction;
-- preserve the existing Horilla employee imports unchanged and operational;
+- preserve the existing legacy HR platform employee imports unchanged and operational;
 - do not add a generic ETL framework, SPA, microservice or desktop runtime.
 
 ## Complete vertical slice
@@ -24,7 +24,7 @@ The server-rendered workflow at `/hydra/imports/candidates/` provides:
 4. a persisted preview with valid, duplicate and error counts;
 5. deterministic duplicate reasons per row;
 6. an apply action enabled only for a clean preview;
-7. one atomic Person + Horilla Candidate + canonical link transaction;
+7. one atomic Person + legacy HR platform Candidate + canonical link transaction;
 8. idempotent preview fingerprints and apply behavior;
 9. bounded source-data retention, immediate user discard and automatic redaction;
 10. desktop and mobile views integrated with Hydra Recruitment navigation.
@@ -122,13 +122,13 @@ Focused tests cover:
 - preservation of hashes/result links plus append-only purge evidence;
 - safe re-preview of an expired non-applied fingerprint and permanent Applied idempotency;
 - bounded command/maintenance cleanup and scoped read-only admin;
-- template download and continued operation of Horilla's employee importer.
+- template download and continued operation of legacy HR platform's employee importer.
 
 The retention-focused PostgreSQL 17 suite applied `hydra_imports.0002_candidate_import_retention` and passed 19/19 tests. The combined import/readiness/maintenance set passed 43/43 and the current full Django PostgreSQL regression passed 314/314. `manage.py check`, pending-migration and model-drift checks, Python compilation, `pip check` and `git diff --check` also passed.
 
 The XLSX template was generated with `@oai/artifact-tool`, inspected at key ranges and rendered on all three worksheets. The formula scan returned no formulas on Candidates, Instructions or Example. The generated browser-QA workbook was then parsed by the production parser as one valid row with the expected date and normalized email.
 
-Browser QA used the real local Django/PostgreSQL stack and scoped `hydra-qa` account. A one-row preview reported Ready, 1 valid, 0 duplicates and 0 errors. Applying it created Person `QA IMPORT PERSON 2026`, a standard Horilla Candidate and their canonical link; the UI changed to Applied and exposed both scoped detail links. Recruitment remained the single active Hydra navigation item and browser logs contained no errors or warnings.
+Browser QA used the real local Django/PostgreSQL stack and scoped `hydra-qa` account. A one-row preview reported Ready, 1 valid, 0 duplicates and 0 errors. Applying it created Person `QA IMPORT PERSON 2026`, a standard legacy HR platform Candidate and their canonical link; the UI changed to Applied and exposed both scoped detail links. Recruitment remained the single active Hydra navigation item and browser logs contained no errors or warnings.
 
 At 1280 × 720 the upload form used a 998 px content card without horizontal overflow. At 390 × 844 both upload and applied-preview pages measured 380 px document width, the form collapsed to one column, preview/recent rows switched to mobile cards, scoped Person/Candidate links remained visible and there was no horizontal overflow. The temporary viewport override was reset after verification.
 
@@ -138,7 +138,7 @@ At 1280 × 720 the upload form used a 998 px content card without horizontal ove
 2. Open `/hydra/recruitment/`, choose **Import candidates**, and download the template.
 3. Enter at least one new identity in `Candidates`; keep headers and worksheet name unchanged.
 4. Select an open Recruitment and one of its positions, upload the file and confirm the preview values/counts.
-5. Apply a clean preview and confirm links open both the new Hydra Person and standard Horilla Candidate application.
+5. Apply a clean preview and confirm links open both the new Hydra Person and standard legacy HR platform Candidate application.
 6. Upload the same file/target again and confirm the existing applied session is returned without duplicates.
 7. Add a repeated email or an existing passport identity and confirm both preview reason and disabled apply action.
 8. Try another importer's preview UUID or an out-of-scope Recruitment and confirm 404/form denial.

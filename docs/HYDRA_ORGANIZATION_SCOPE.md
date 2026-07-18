@@ -6,10 +6,10 @@ Implemented on 2026-07-14 and hardened on 2026-07-15 with controlled access term
 
 | Concern | Decision | Rationale |
 |---|---|---|
-| Legal company | **REUSE** `base.Company` | It remains Horilla's legal-company identity. |
+| Legal company | **REUSE** `base.Company` | It remains legacy HR platform's legal-company identity. |
 | Department | **REUSE** `base.Department` | Existing HR and employee relations remain authoritative. |
-| Horilla selected company | **WRAP** for navigation only | Session selection, including `all`, is not authorization. |
-| Location, section/stage and team | **NEW** `hydra_coordination` models | Horilla has no normalized physical/operational hierarchy at these levels. |
+| legacy HR platform selected company | **WRAP** for navigation only | Session selection, including `all`, is not authorization. |
+| Location, section/stage and team | **NEW** `hydra_coordination` models | legacy HR platform has no normalized physical/operational hierarchy at these levels. |
 | Role actions | **REUSE** Django permissions/groups | Permissions answer which action is allowed. |
 | Record scope | **NEW** effective-dated `ScopeGrant` | Grants answer where that action is allowed. |
 | Person placement | **NEW** effective-dated `PersonAssignment` | Placement history must exist before Employee conversion and cannot be free text. |
@@ -52,7 +52,7 @@ Both grants and Person assignments support:
 
 Every operation requires a normalized reason, records actor/time/mode, preserves the original row, and creates an append-only `OrganizationAccessEvent`. Repeating the exact action is idempotent. Event business facts cannot be changed or deleted through model/queryset APIs; only bounded delivery fields may change.
 
-After commit, the affected user receives a Horilla notification. Delivery failure never rolls back urgent revocation: the event becomes `failed`, stores a non-sensitive error code, and can be retried with:
+After commit, the affected user receives a legacy HR platform notification. Delivery failure never rolls back urgent revocation: the event becomes `failed`, stores a non-sensitive error code, and can be retried with:
 
 ```text
 python manage.py dispatch_organization_notifications
@@ -77,7 +77,7 @@ Missing action permission returns 403. An out-of-scope direct grant/assignment I
 ## Migrations
 
 - `0001_initial.py` creates organization models and base constraints.
-- `0004_organizationaccessevent_and_more.py` adds termination metadata, protected grant relations, the durable event/outbox model, indexes, custom permission, and PostgreSQL consistency constraints. It depends on Horilla's configured notification model.
+- `0004_organizationaccessevent_and_more.py` adds termination metadata, protected grant relations, the durable event/outbox model, indexes, custom permission, and PostgreSQL consistency constraints. It depends on legacy HR platform's configured notification model.
 
 ## Verification
 
@@ -86,7 +86,7 @@ The focused PostgreSQL run passed 44/44 organization/readiness tests. Coverage i
 Manual production acceptance:
 
 1. Give a manager action permissions and a company/location/team grant; confirm only contained hierarchy and grant records appear.
-2. Change the Horilla company selector to `all`; confirm visibility does not widen.
+2. Change the legacy HR platform company selector to `all`; confirm visibility does not widen.
 3. Schedule a grant end; confirm access remains through the last day and disappears the next day.
 4. Revoke another grant immediately; confirm access disappears at once while history remains.
 5. Repeat direct URLs without change permission and from another company; expect 403 and 404.
@@ -98,6 +98,6 @@ Manual production acceptance:
 
 - Access periods are intentionally not edited through generic CRUD. The end workflow only preserves or narrows access; extending/replacing access requires a reviewed new grant.
 - Primary overlap is enforced transactionally; every production write path must use the service.
-- With no current Hydra assignment, Horilla `EmployeeWorkInformation` remains a last-known compatibility projection; operational scope and reports use Hydra history.
+- With no current Hydra assignment, legacy HR platform `EmployeeWorkInformation` remains a last-known compatibility projection; operational scope and reports use Hydra history.
 - New translation-ready strings still need populated locale catalogs.
 - Notification retries are owned by the monitored single-owner worker documented in `HYDRA_MAINTENANCE.md`.

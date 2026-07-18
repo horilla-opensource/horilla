@@ -21,7 +21,7 @@ from django.utils.translation import gettext_lazy as _
 
 from base.methods import get_key_instances
 from hydra.decorators import hx_request_required, login_required, permission_required
-from hydra.http.response import HorillaRedirect
+from hydra.http.response import HydraRedirect
 from payroll.forms.tax_forms import FilingStatusForm, TaxBracketForm
 from payroll.methods.safe_tax_code import TaxCodeValidationError, validate_tax_code
 from payroll.models.models import FilingStatus
@@ -63,7 +63,7 @@ def create_filing_status(request):
             messages.success(request, _("Filing status created successfully "))
             filing_status_form = FilingStatusForm()
             if len(FilingStatus.objects.filter()) == 1:
-                return HorillaRedirect(request)
+                return HydraRedirect(request)
     return render(
         request,
         "payroll/tax/filing_status_creation.html",
@@ -88,7 +88,7 @@ def update_filing_status(request, filing_status_id):
     filing_status = FilingStatus.find(filing_status_id)
     if not filing_status:
         messages.error(request, _("Filing status not found"))
-        return HorillaRedirect(request)
+        return HydraRedirect(request)
     filing_status_form = FilingStatusForm(instance=filing_status)
     if request.method == "POST":
         filing_status_form = FilingStatusForm(request.POST, instance=filing_status)
@@ -133,7 +133,7 @@ def filing_status_delete(request, filing_status_id):
             request, _("An error occurred while trying to delete the filing status.")
         )
     if not FilingStatus.objects.exists():
-        return HorillaRedirect(request)
+        return HydraRedirect(request)
     return redirect(filing_status_search)
 
 
@@ -256,7 +256,7 @@ def update_tax_bracket(request, tax_bracket_id):
         }
         return render(request, "payroll/tax/tax_bracket_edit.html", context)
     messages.error(request, _("Tax bracket not found"))
-    return HorillaRedirect(request)
+    return HydraRedirect(request)
 
 
 @login_required

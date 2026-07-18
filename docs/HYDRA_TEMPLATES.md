@@ -10,7 +10,7 @@ No supplied task brief existed for 042. The implemented scope follows `TARGET_AR
 
 The solution is **WRAP**:
 
-- Horilla `HorillaMailTemplate` remains available and unchanged for legacy email workflows;
+- legacy HR platform `HydraMailTemplate` remains available and unchanged for legacy email workflows;
 - Hydra owns a narrower template type with explicit company scope and plain-text semantics;
 - the existing Python/openpyxl dependency produces the compatible XLSX response;
 - Szablonizator stays an independently deployed WPF/.NET desktop tool.
@@ -23,7 +23,7 @@ Hydra does not execute `.exe`, WPF, .NET, Office COM or server-side DOCX generat
 
 Create and update views require the corresponding Django model permission and intersect the selected Company with the actor's active Hydra scope. Direct update URLs for another Company return 404.
 
-Preview uses deterministic sample values and never sends a message or reads a Person record. Output is rendered through Django's normal escaping. Horilla's global XSS validator remains active as an additional input control.
+Preview uses deterministic sample values and never sends a message or reads a Person record. Output is rendered through Django's normal escaping. legacy HR platform's global XSS validator remains active as an additional input control.
 
 ## Placeholder registry
 
@@ -73,7 +73,7 @@ Instance save/delete and queryset update/delete are rejected after creation. Use
 
 ## Verification
 
-Focused PostgreSQL coverage contains 12 tests for the parser contract, malformed and unknown placeholders, Company scope, direct URL denial, missing permissions, out-of-scope form values, escaped no-write preview, legacy Horilla compatibility, workbook schema, scope, values-only behavior, checksum and append-only audit.
+Focused PostgreSQL coverage contains 12 tests for the parser contract, malformed and unknown placeholders, Company scope, direct URL denial, missing permissions, out-of-scope form values, escaped no-write preview, legacy HR platform compatibility, workbook schema, scope, values-only behavior, checksum and append-only audit.
 
 The complete implemented regression passes:
 

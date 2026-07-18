@@ -2,8 +2,8 @@
 models.py
 =========
 
-This module defines the abstract base model `HorillaModel` for the Horilla HRMS project.
-The `HorillaModel` provides common fields and functionalities for other models within
+This module defines the abstract base model `HydraModel` for the Hydra HRMS project.
+The `HydraModel` provides common fields and functionalities for other models within
 the application, such as tracking creation and modification timestamps and user
 information, audit logging, and active/inactive status management.
 """
@@ -89,10 +89,10 @@ def upload_path(instance, filename):
     return f"{app_label}/{model_name}/{unique_name}"
 
 
-class HorillaModel(models.Model):
+class HydraModel(models.Model):
     """
     An abstract base model that includes common fields and functionalities
-    for models within the Horilla application.
+    for models within the Hydra application.
     """
 
     created_at = models.DateTimeField(
@@ -119,7 +119,7 @@ class HorillaModel(models.Model):
         verbose_name=_("Modified By"),
         related_name="%(class)s_modified_by",
     )
-    horilla_history = AuditlogHistoryField()
+    hydra_history = AuditlogHistoryField()
     objects = models.Manager()
     is_active = models.BooleanField(default=True, verbose_name=_("Is Active"))
 
@@ -132,7 +132,7 @@ class HorillaModel(models.Model):
 
     class Meta:
         """
-        Meta class for HorillaModel
+        Meta class for HydraModel
         """
 
         abstract = True
@@ -161,7 +161,7 @@ class HorillaModel(models.Model):
             if request and not request.user.is_anonymous:
                 self.modified_by = user
 
-        super(HorillaModel, self).save(*args, **kwargs)
+        super(HydraModel, self).save(*args, **kwargs)
 
     def clean_fields(self, exclude=None):
         errors = {}
@@ -228,4 +228,4 @@ class HorillaModel(models.Model):
         return final_field.verbose_name
 
 
-auditlog.register(HorillaModel, serialize_data=True)
+auditlog.register(HydraModel, serialize_data=True)

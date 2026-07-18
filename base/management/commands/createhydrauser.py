@@ -1,5 +1,5 @@
 """
-Horilla management command to create a new user and associated employee.
+Hydra management command to create a new user and associated employee.
 """
 
 import uuid
@@ -12,7 +12,7 @@ from employee.models import Employee
 
 class Command(BaseCommand):
     """
-    Horilla management command to create a new user and associated employee.
+    Hydra management command to create a new user and associated employee.
     """
 
     help = "Creates a new user"
@@ -59,10 +59,10 @@ class Command(BaseCommand):
             employee.phone = phone
             employee.save()
 
-            bot = User.objects.filter(username="Horilla Bot").first()
+            bot = User.objects.filter(username="Hydra Bot").first()
             if bot is None:
                 User.objects.create_user(
-                    username="Horilla Bot",
+                    username="Hydra Bot",
                     password=str(uuid.uuid4()),
                 )
 

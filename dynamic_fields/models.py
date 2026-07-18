@@ -144,7 +144,7 @@ class DynamicField(models.Model):
     def save(self, *args, **kwargs):
         # instance = self
         is_create = self.pk is None
-        # hdf -> horilla_dynamic_field
+        # hdf -> hydra_dynamic_field
         field_name = "hdf_" + self.verbose_name.lower().replace(" ", "_")
 
         if is_create:

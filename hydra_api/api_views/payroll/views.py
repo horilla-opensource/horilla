@@ -420,7 +420,7 @@ from rest_framework.response import Response
 from rest_framework.views import APIView
 from rest_framework_simplejwt.authentication import JWTAuthentication
 
-from hydra.hydra_settings import HORILLA_DATE_FORMATS
+from hydra.hydra_settings import HYDRA_DATE_FORMATS
 
 # Your models / helpers
 from payroll.models.models import Company, EmployeeWorkInformation, Payslip
@@ -501,10 +501,10 @@ class PayslipPDFAPIView(APIView):
 
         # formatted date for chosen company format (safe default if not found)
         formatted_start_date = start_date.strftime(
-            HORILLA_DATE_FORMATS.get(date_format, "%b. %d, %Y")
+            HYDRA_DATE_FORMATS.get(date_format, "%b. %d, %Y")
         )
         formatted_end_date = end_date.strftime(
-            HORILLA_DATE_FORMATS.get(date_format, "%b. %d, %Y")
+            HYDRA_DATE_FORMATS.get(date_format, "%b. %d, %Y")
         )
 
         # fill template context like original view

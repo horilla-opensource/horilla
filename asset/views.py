@@ -70,9 +70,9 @@ from hydra.decorators import (
     permission_required,
 )
 from hydra.group_by import group_by_queryset
-from hydra.hydra_settings import HORILLA_DATE_FORMATS
-from hydra.http import HorillaRedirect
-from hydra.methods import horilla_users_with_perms
+from hydra.hydra_settings import HYDRA_DATE_FORMATS
+from hydra.http import HydraRedirect
+from hydra.methods import hydra_users_with_perms
 from notifications.signals import notify
 
 
@@ -114,7 +114,7 @@ def asset_creation(request, asset_category_id):
     asset_category = AssetCategory.find(asset_category_id)
     if not asset_category:
         messages.error(request, _("Asset category not found"))
-        return HorillaRedirect(request)
+        return HydraRedirect(request)
 
     initial_data = {"asset_category_id": asset_category_id}
     # Use request.GET to pre-fill the form with dynamic create batch number data if available
@@ -276,7 +276,7 @@ def asset_delete(request, asset_id):
         asset = Asset.objects.get(id=asset_id)
     except Asset.DoesNotExist:
         messages.error(request, _("Asset not found"))
-        return HorillaRedirect(request)
+        return HydraRedirect(request)
     asset_cat_id = asset.asset_category_id.id
     status = asset.asset_status
     asset_list_filter = request.GET.get("asset_list")
@@ -303,7 +303,7 @@ def asset_delete(request, asset_id):
             messages.error(request, _("Asset is used in allocation!."))
         else:
             asset_del(request, asset)
-        return HorillaRedirect(request)
+        return HydraRedirect(request)
 
     instances_ids = request.GET.get("requests_ids", "[]")
     instances_list = eval_validate(instances_ids)
@@ -320,7 +320,7 @@ def asset_delete(request, asset_id):
     else:
         asset_del(request, asset)
         if len(eval_validate(instances_ids)) <= 1:
-            return HorillaRedirect(request)
+            return HydraRedirect(request)
 
         if Asset.find(asset.id):
             return redirect(
@@ -402,7 +402,7 @@ def asset_category_creation(request):
             form = AssetCategoryForm()
             if AssetCategory.objects.filter().count() == 1:
                 if AssetCategory.objects.count() == 1:
-                    return HorillaRedirect(request)
+                    return HydraRedirect(request)
     context = {"form": form}
     return render(request, "category/asset_category_form.html", context)
 
@@ -424,7 +424,7 @@ def asset_category_update(request, cat_id):
     asset_category = AssetCategory.find(cat_id)
     if not asset_category:
         messages.error(request, _("Asset category not found"))
-        return HorillaRedirect(request)
+        return HydraRedirect(request)
 
     form = AssetCategoryForm(instance=asset_category)
     context = {"form": form, "pg": previous_data}
@@ -459,7 +459,7 @@ def delete_asset_category(request, cat_id):
         messages.error(request, _("Assets are located within this category."))
 
     if not AssetCategory.objects.exists():
-        return HorillaRedirect(request)
+        return HydraRedirect(request)
 
     return redirect(f"/asset/asset-category-view-search-filter?{previous_data}")
 
@@ -662,7 +662,7 @@ def asset_request_approve(request, req_id):
                 )
 
                 messages.success(request, _("Asset request approved successfully!"))
-                return HorillaRedirect(request)
+                return HydraRedirect(request)
             except Exception as e:
                 messages.error(request, _("An error occurred: ") + str(e))
                 return HttpResponse(error_response)
@@ -676,7 +676,7 @@ def asset_request_approve(request, req_id):
 
 def reject_request_return(request, asset_request, req_id):
     if not request.META.get("HTTP_HX_REQUEST"):
-        return HorillaRedirect(request)
+        return HydraRedirect(request)
 
     hx_target = request.META.get("HTTP_HX_TARGET")
     if hx_target == "objectDetailsModalW25Target":
@@ -790,7 +790,7 @@ def asset_allocate_return_request(request, asset_id):
     asset_assign.save()
     message = _("Return request for {} initiated.").format(asset_assign.asset_id)
     messages.success(request, message)
-    permed_users = horilla_users_with_perms("asset.change_assetassignment")
+    permed_users = hydra_users_with_perms("asset.change_assetassignment")
     notify.send(
         request.user.employee_get,
         recipient=permed_users,
@@ -813,7 +813,7 @@ def asset_allocate_return_request(request, asset_id):
         url = reverse("asset-request-allocation-view-search-filter")
         return redirect(f"{url}?{previous_data}")
 
-    return HorillaRedirect(request)
+    return HydraRedirect(request)
 
 
 @login_required
@@ -862,7 +862,7 @@ def asset_allocate_return(request, asset_id):
                 asset.asset_status = "Available"
                 asset.save()
                 messages.info(request, _("Asset Return Successful !."))
-                return HorillaRedirect(request)
+                return HydraRedirect(request)
             asset.asset_status = "Not-Available"
             asset.save()
             asset_allocation = AssetAssignment.objects.filter(
@@ -880,7 +880,7 @@ def asset_allocate_return(request, asset_id):
                     attachments.append(attachment)
                 asset_allocation.return_images.add(*attachments)
             messages.info(request, _("Asset Return Successful!."))
-            return HorillaRedirect(request)
+            return HydraRedirect(request)
 
     context = {"asset_return_form": asset_return_form, "asset_id": asset_id}
     context["asset_alocation"] = asset_allocation
@@ -1236,7 +1236,7 @@ def asset_import(request):
         request (HttpRequest): The HTTP request object containing metadata about the request.
 
     Returns:
-        HorillaRedirect: A redirect to the asset category view after processing the import.
+        HydraRedirect: A redirect to the asset category view after processing the import.
     """
     if request.META.get("HTTP_HX_REQUEST"):
         return render(request, "asset/asset_import.html")
@@ -1358,7 +1358,7 @@ def asset_export_excel(request):
                     start_date = datetime.strptime(str(value), "%Y-%m-%d").date()
 
                     # The formatted date for each format
-                    for format_name, format_string in HORILLA_DATE_FORMATS.items():
+                    for format_name, format_string in HYDRA_DATE_FORMATS.items():
                         if format_name == date_format:
                             value = start_date.strftime(format_string)
 
@@ -1418,7 +1418,7 @@ def asset_batch_number_creation(request):
             asset_batch_form = AssetBatchForm()
             messages.success(request, _("Batch number created successfully."))
             if AssetLot.objects.filter().count() == 1 and not hx_vals:
-                return HorillaRedirect(request)
+                return HydraRedirect(request)
             if hx_vals:
                 category_id = request.GET.get("asset_category_id")
                 url = reverse("asset-creation", args=[category_id])
@@ -1523,7 +1523,7 @@ def asset_batch_number_delete(request, batch_id):
     except ProtectedError:
         messages.error(request, _("You cannot delete this Batch number."))
     if not AssetLot.objects.filter():
-        return HorillaRedirect(request)
+        return HydraRedirect(request)
     return redirect(f"/asset/asset-batch-number-search?{previous_data}")
 
 

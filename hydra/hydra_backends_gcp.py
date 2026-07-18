@@ -1,5 +1,5 @@
 """
-horilla/hydra_backends_gcp.py
+hydra/hydra_backends_gcp.py
 """
 
 from django.db import models

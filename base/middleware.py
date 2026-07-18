@@ -12,7 +12,7 @@ from django.utils.translation import gettext_lazy as _
 
 from base.backends import ConfiguredEmailBackend
 from base.context_processors import AllCompany
-from base.horilla_company_manager import HorillaCompanyManager
+from base.hydra_company_manager import HydraCompanyManager
 from base.models import Company, ShiftRequest, WorkTypeRequest
 from employee.models import (
     DisciplinaryAction,
@@ -22,10 +22,10 @@ from employee.models import (
 )
 from hydra.hydra_apps import TWO_FACTORS_AUTHENTICATION
 from hydra.hydra_settings import APPS
-from hydra.methods import get_horilla_model_class
+from hydra.methods import get_hydra_model_class
 from hydra_legacy_documents.models import DocumentRequest
 
-CACHE_KEY = "horilla_company_models_cache_key"
+CACHE_KEY = "hydra_company_models_cache_key"
 
 
 class CompanyMiddleware:
@@ -103,13 +103,13 @@ class CompanyMiddleware:
         """
         is_company_model = model in self._get_company_models()
         company_field = getattr(model, "company_id", None)
-        is_horilla_manager = isinstance(model.objects, HorillaCompanyManager)
+        is_hydra_manager = isinstance(model.objects, HydraCompanyManager)
         related_company_field = getattr(model.objects, "related_company_field", None)
 
         if is_company_model:
             if company_field:
                 model.add_to_class("company_filter", Q(company_id=company_id))
-            elif is_horilla_manager and related_company_field:
+            elif is_hydra_manager and related_company_field:
                 model.add_to_class(
                     "company_filter", Q(**{related_company_field: company_id})
                 )
@@ -119,7 +119,7 @@ class CompanyMiddleware:
                     "company_filter",
                     Q(company_id=company_id) | Q(company_id__isnull=True),
                 )
-            elif is_horilla_manager and related_company_field:
+            elif is_hydra_manager and related_company_field:
                 model.add_to_class(
                     "company_filter",
                     Q(**{related_company_field: company_id})
@@ -173,7 +173,7 @@ class CompanyMiddleware:
             for app_label, models in app_model_mappings.items():
                 if apps.is_installed(app_label):
                     company_models.extend(
-                        [get_horilla_model_class(app_label, model) for model in models]
+                        [get_hydra_model_class(app_label, model) for model in models]
                     )
 
             cache.set(CACHE_KEY, company_models)

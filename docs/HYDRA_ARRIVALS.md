@@ -4,13 +4,13 @@
 
 Task `030-arrivals.md` is implemented as the smallest location-scoped vertical slice for planning an arrival and recording either confirmation or no-show. It was hardened on 2026-07-15 with durable reminders and location-scoped overdue escalation owned by the production maintenance worker. The module is server-rendered, mobile-first and verified against PostgreSQL.
 
-## Horilla reuse decision
+## Legacy HR platform reuse decision
 
 The decision is **NEW MODULE** for the arrival domain.
 
-- **REUSE** `hydra_people.Person`, the linked Horilla `recruitment.Candidate`, Django users and `hydra_coordination.Location`/`ScopeGrant`.
+- **REUSE** `hydra_people.Person`, the linked legacy HR platform `recruitment.Candidate`, Django users and `hydra_coordination.Location`/`ScopeGrant`.
 - **WRAP** every read in arrival selectors and every mutation in transactional arrival services.
-- Leave Horilla `Candidate.joining_date`, onboarding and attendance unchanged. A pre-employment journey and pickup event is not an employment start date or an attendance fact.
+- Leave legacy HR platform `Candidate.joining_date`, onboarding and attendance unchanged. A pre-employment journey and pickup event is not an employment start date or an attendance fact.
 
 This boundary avoids three common errors: treating travel date as employment date, granting a coordinator broad recruitment access, and allowing competing confirmation/no-show writes.
 
@@ -59,7 +59,7 @@ Future diagnostic timestamps are rejected. Notification verbs contain no Person 
 
 ## User interface
 
-The Hydra shell contains an **Arrivals** entry for authorized users. The coordinator list provides the current queue, daily counters and filters. A Person page links to arrival planning when the user has the complete permission set. Detail pages expose planning data, the outcome form and immutable status history without relying on a broad Horilla recruitment view.
+The Hydra shell contains an **Arrivals** entry for authorized users. The coordinator list provides the current queue, daily counters and filters. A Person page links to arrival planning when the user has the complete permission set. Detail pages expose planning data, the outcome form and immutable status history without relying on a broad legacy HR platform recruitment view.
 
 Templates use the existing Hydra responsive shell. Tables collapse into card rows at narrow widths and forms use a single-column mobile layout.
 
@@ -78,7 +78,7 @@ Operational checks include `manage.py check`, migration drift detection, pending
 
 The browser journey was also exercised in local Microsoft Edge/Chromium against the running PostgreSQL-backed application: login, plan creation, detail display, `planned -> confirmed`, automatic actual-arrival time and two immutable history rows. At 390 x 844 pixels the detail and queue had no horizontal overflow, queue/history rows rendered as cards, the filter grid collapsed to one column and **Arrivals** was the single active Hydra navigation item.
 
-The inherited Horilla shell still reports tracking-prevention warnings for third-party CDN scripts and requests its unconfigured `/media/images/ui/company.png` placeholder. These pre-existing shell assets did not affect the arrival journey and are not introduced by `hydra_arrivals`.
+The inherited legacy HR platform shell still reports tracking-prevention warnings for third-party CDN scripts and requests its unconfigured `/media/images/ui/company.png` placeholder. These pre-existing shell assets did not affect the arrival journey and are not introduced by `hydra_arrivals`.
 
 ## Deliberate limits
 

@@ -6,7 +6,7 @@ from django.db.models.signals import post_delete
 from django.dispatch import receiver
 
 from employee.models import Employee
-from hydra.models import HorillaModel, upload_path
+from hydra.models import HydraModel, upload_path
 
 # Create your models here.
 

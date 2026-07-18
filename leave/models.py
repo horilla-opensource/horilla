@@ -14,7 +14,7 @@ from django.db.models import Q, Sum
 from django.utils import timezone
 from django.utils.translation import gettext_lazy as _
 
-from base.horilla_company_manager import HorillaCompanyManager
+from base.hydra_company_manager import HydraCompanyManager
 from base.models import (
     Company,
     CompanyLeaves,
@@ -26,9 +26,9 @@ from base.models import (
 )
 from employee.models import Employee, EmployeeWorkInformation
 from hydra import hydra_middlewares
-from hydra.models import HorillaModel, upload_path
+from hydra.models import HydraModel, upload_path
 from hydra_audit.methods import get_diff
-from hydra_audit.models import HorillaAuditInfo, HorillaAuditLog
+from hydra_audit.models import HydraAuditInfo, HydraAuditLog
 from leave.methods import (
     calculate_requested_days,
     company_leave_dates_list,
@@ -156,7 +156,7 @@ WEEK_DAYS = [
 ]
 
 
-class LeaveType(HorillaModel):
+class LeaveType(HydraModel):
     icon = models.ImageField(
         null=True, blank=True, upload_to=upload_path, verbose_name=_("Icon")
     )
@@ -242,7 +242,7 @@ class LeaveType(HorillaModel):
     company_id = models.ForeignKey(
         Company, null=True, blank=True, on_delete=models.PROTECT
     )
-    objects = HorillaCompanyManager(related_company_field="company_id")
+    objects = HydraCompanyManager(related_company_field="company_id")
 
     class Meta:
         ordering = ["-id"]
@@ -361,7 +361,7 @@ class LeaveType(HorillaModel):
         return self.name
 
 
-class Holiday(HorillaModel):
+class Holiday(HydraModel):
     name = models.CharField(max_length=30, null=False, verbose_name=_("Name"))
     start_date = models.DateField(verbose_name=_("Start Date"))
     end_date = models.DateField(null=True, blank=True, verbose_name=_("End Date"))
@@ -369,13 +369,13 @@ class Holiday(HorillaModel):
     company_id = models.ForeignKey(
         Company, null=True, editable=False, on_delete=models.PROTECT
     )
-    objects = HorillaCompanyManager(related_company_field="company_id")
+    objects = HydraCompanyManager(related_company_field="company_id")
 
     def __str__(self):
         return self.name
 
 
-class CompanyLeave(HorillaModel):
+class CompanyLeave(HydraModel):
     based_on_week = models.CharField(
         max_length=100, choices=WEEKS, blank=True, null=True
     )
@@ -383,7 +383,7 @@ class CompanyLeave(HorillaModel):
     company_id = models.ForeignKey(
         Company, null=True, editable=False, on_delete=models.PROTECT
     )
-    objects = HorillaCompanyManager(related_company_field="company_id")
+    objects = HydraCompanyManager(related_company_field="company_id")
 
     class Meta:
         unique_together = ("based_on_week", "based_on_week_day")
@@ -392,7 +392,7 @@ class CompanyLeave(HorillaModel):
         return f"{dict(WEEK_DAYS).get(self.based_on_week_day)} | {dict(WEEKS).get(self.based_on_week)}"
 
 
-class AvailableLeave(HorillaModel):
+class AvailableLeave(HydraModel):
     employee_id = models.ForeignKey(
         Employee,
         on_delete=models.CASCADE,
@@ -421,13 +421,13 @@ class AvailableLeave(HorillaModel):
     expired_date = models.DateField(
         blank=True, null=True, verbose_name=_("CarryForward Expired Date")
     )
-    objects = HorillaCompanyManager(
+    objects = HydraCompanyManager(
         related_company_field="employee_id__employee_work_info__company_id"
     )
-    history = HorillaAuditLog(
+    history = HydraAuditLog(
         related_name="history_set",
         bases=[
-            HorillaAuditInfo,
+            HydraAuditInfo,
         ],
     )
 
@@ -643,7 +643,7 @@ def cal_effective_requested_days(start_date, end_date, leave_type_id, requested_
     return requested_days
 
 
-class LeaveRequest(HorillaModel):
+class LeaveRequest(HydraModel):
     employee_id = models.ForeignKey(
         Employee, on_delete=models.CASCADE, verbose_name=_("Employee")
     )
@@ -691,10 +691,10 @@ class LeaveRequest(HorillaModel):
     reject_reason = models.TextField(
         blank=True, verbose_name=_("Reject Reason"), max_length=255
     )
-    history = HorillaAuditLog(
+    history = HydraAuditLog(
         related_name="history_set",
         bases=[
-            HorillaAuditInfo,
+            HydraAuditInfo,
         ],
     )
     created_by = models.ForeignKey(
@@ -705,7 +705,7 @@ class LeaveRequest(HorillaModel):
         related_name="leave_request_created",
         verbose_name=_("Created By"),
     )
-    objects = HorillaCompanyManager(
+    objects = HydraCompanyManager(
         related_company_field="employee_id__employee_work_info__company_id"
     )
 
@@ -1218,7 +1218,7 @@ class LeaverequestFile(models.Model):
     file = models.FileField(upload_to=upload_path)
 
 
-class LeaverequestComment(HorillaModel):
+class LeaverequestComment(HydraModel):
     """
     LeaverequestComment Model
     """
@@ -1232,7 +1232,7 @@ class LeaverequestComment(HorillaModel):
         return f"{self.comment}"
 
 
-class LeaveAllocationRequest(HorillaModel):
+class LeaveAllocationRequest(HydraModel):
     leave_type_id = models.ForeignKey(
         LeaveType, on_delete=models.PROTECT, verbose_name=_("Leave type")
     )
@@ -1254,13 +1254,13 @@ class LeaveAllocationRequest(HorillaModel):
         max_length=30, choices=LEAVE_ALLOCATION_STATUS, default="requested"
     )
     reject_reason = models.TextField(blank=True, max_length=255)
-    history = HorillaAuditLog(
+    history = HydraAuditLog(
         related_name="history_set",
         bases=[
-            HorillaAuditInfo,
+            HydraAuditInfo,
         ],
     )
-    objects = HorillaCompanyManager(
+    objects = HydraCompanyManager(
         related_company_field="employee_id__employee_work_info__company_id"
     )
 
@@ -1298,7 +1298,7 @@ class LeaveAllocationRequest(HorillaModel):
             return None
 
 
-class LeaveallocationrequestComment(HorillaModel):
+class LeaveallocationrequestComment(HydraModel):
     """
     LeaveallocationrequestComment Model
     """
@@ -1320,7 +1320,7 @@ class LeaveRequestConditionApproval(models.Model):
     manager_id = models.ForeignKey(Employee, on_delete=models.CASCADE)
 
 
-class RestrictLeave(HorillaModel):
+class RestrictLeave(HydraModel):
     title = models.CharField(max_length=200, verbose_name=_("Title"))
     start_date = models.DateField(verbose_name=_("Start Date"))
     end_date = models.DateField(verbose_name=_("End Date"))
@@ -1365,7 +1365,7 @@ class RestrictLeave(HorillaModel):
         on_delete=models.CASCADE,
         verbose_name=_("Company"),
     )
-    objects = HorillaCompanyManager(related_company_field="company_id")
+    objects = HydraCompanyManager(related_company_field="company_id")
 
     def __str__(self) -> str:
         return f"{self.title}"
@@ -1373,7 +1373,7 @@ class RestrictLeave(HorillaModel):
 
 if apps.is_installed("attendance"):
 
-    class CompensatoryLeaveRequest(HorillaModel):
+    class CompensatoryLeaveRequest(HydraModel):
         leave_type_id = models.ForeignKey(
             LeaveType, on_delete=models.PROTECT, verbose_name="Leave type"
         )
@@ -1391,13 +1391,13 @@ if apps.is_installed("attendance"):
             max_length=30, choices=LEAVE_ALLOCATION_STATUS, default="requested"
         )
         reject_reason = models.TextField(blank=True, max_length=255)
-        history = HorillaAuditLog(
+        history = HydraAuditLog(
             related_name="history_set",
             bases=[
-                HorillaAuditInfo,
+                HydraAuditInfo,
             ],
         )
-        objects = HorillaCompanyManager(
+        objects = HydraCompanyManager(
             related_company_field="employee_id__employee_work_info__company_id"
         )
 
@@ -1442,7 +1442,7 @@ if apps.is_installed("attendance"):
             super().save(*args, **kwargs)
 
 
-class LeaveGeneralSetting(HorillaModel):
+class LeaveGeneralSetting(HydraModel):
     """
     LeaveGeneralSettings
     """
@@ -1454,7 +1454,7 @@ class LeaveGeneralSetting(HorillaModel):
 
 if apps.is_installed("attendance"):
 
-    class CompensatoryLeaverequestComment(HorillaModel):
+    class CompensatoryLeaverequestComment(HydraModel):
         """
         CompensatoryLeaverequestComment Model
         """
@@ -1470,7 +1470,7 @@ if apps.is_installed("attendance"):
             return f"{self.comment}"
 
 
-class EmployeePastLeaveRestrict(HorillaModel):
+class EmployeePastLeaveRestrict(HydraModel):
     enabled = models.BooleanField(default=True)
 
 
@@ -1488,7 +1488,7 @@ if apps.is_installed("attendance"):
         #     """
         #     Overriding LeaveRequest model save method
         #     """
-        #     WorkRecords = get_horilla_model_class(
+        #     WorkRecords = get_hydra_model_class(
         #         app_label="attendance", model="workrecords"
         #     )
         #     if (

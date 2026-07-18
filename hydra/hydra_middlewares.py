@@ -1,7 +1,7 @@
 """
 hydra_middlewares.py
 
-This module is used to register horilla's middlewares without affecting the hydra/settings.py
+This module registers Hydra middleware without modifying hydra/settings.py.
 """
 
 import threading

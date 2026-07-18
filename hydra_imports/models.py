@@ -7,12 +7,12 @@ from django.utils import timezone
 from django.utils.translation import gettext_lazy as _
 
 from base.models import JobPosition
-from hydra.models import HorillaModel
+from hydra.models import HydraModel
 from hydra_people.models import Person
 from recruitment.models import Candidate, Recruitment
 
 
-class CandidateImportSession(HorillaModel):
+class CandidateImportSession(HydraModel):
     class Status(models.TextChoices):
         READY = "ready", _("Ready to apply")
         BLOCKED = "blocked", _("Blocked")

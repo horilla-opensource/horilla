@@ -51,7 +51,7 @@ from base.models import (
     EmployeeShiftSchedule,
     EmployeeType,
     Holidays,
-    HorillaMailTemplate,
+    HydraMailTemplate,
     JobPosition,
     JobRole,
     MultipleApprovalCondition,
@@ -73,10 +73,10 @@ from employee.forms import MultipleFileField
 from employee.models import Employee
 from hydra import hydra_middlewares
 from hydra.hydra_middlewares import _thread_locals
-from hydra.methods import get_horilla_model_class
+from hydra.methods import get_hydra_model_class
 from hydra_audit.models import AuditTag
-from hydra_widgets.widgets.hydra_multi_select_field import HorillaMultiSelectField
-from hydra_widgets.widgets.select_widgets import HorillaMultiSelectWidget
+from hydra_widgets.widgets.hydra_multi_select_field import HydraMultiSelectField
+from hydra_widgets.widgets.select_widgets import HydraMultiSelectWidget
 
 # your form here
 
@@ -443,9 +443,9 @@ class AssignPermission(Form):
     Forms to assign user permision
     """
 
-    employee = HorillaMultiSelectField(
+    employee = HydraMultiSelectField(
         queryset=Employee.objects.all(),
-        widget=HorillaMultiSelectWidget(
+        widget=HydraMultiSelectWidget(
             filter_route_name="employee-widget-filter",
             filter_class=EmployeeFilter,
             filter_instance_contex_name="f",
@@ -559,7 +559,7 @@ class JobPositionMultiForm(ModelForm):
     JobPosition model's form
     """
 
-    department_id = HorillaMultiSelectField(
+    department_id = HydraMultiSelectField(
         queryset=Department.objects.all(),
         label=JobPosition._meta.get_field("department_id").verbose_name,
         widget=forms.SelectMultiple(
@@ -796,9 +796,9 @@ class RotatingWorkTypeAssignForm(ModelForm):
     RotatingWorkTypeAssign model's form
     """
 
-    employee_id = HorillaMultiSelectField(
+    employee_id = HydraMultiSelectField(
         queryset=Employee.objects.filter(employee_work_info__isnull=False),
-        widget=HorillaMultiSelectWidget(
+        widget=HydraMultiSelectWidget(
             filter_route_name="employee-widget-filter",
             filter_class=EmployeeFilter,
             filter_instance_contex_name="f",
@@ -1417,9 +1417,9 @@ class RotatingShiftAssignForm(ModelForm):
     RotatingShiftAssign model's form
     """
 
-    employee_id = HorillaMultiSelectField(
+    employee_id = HydraMultiSelectField(
         queryset=Employee.objects.filter(employee_work_info__isnull=False),
-        widget=HorillaMultiSelectWidget(
+        widget=HydraMultiSelectWidget(
             filter_route_name="employee-widget-filter",
             filter_class=EmployeeFilter,
             filter_instance_contex_name="f",
@@ -2018,7 +2018,7 @@ excluded_fields = [
     "created_by",
     "modified_by",
     "additional_data",
-    "horilla_history",
+    "hydra_history",
     "additional_data",
 ]
 
@@ -2211,7 +2211,7 @@ class MailTemplateForm(ModelForm):
     """
 
     class Meta:
-        model = HorillaMailTemplate
+        model = HydraMailTemplate
         fields = "__all__"
         widgets = {
             "body": forms.Textarea(
@@ -2381,9 +2381,9 @@ class AnnouncementForm(ModelForm):
     Announcement Form
     """
 
-    employees = HorillaMultiSelectField(
+    employees = HydraMultiSelectField(
         queryset=Employee.objects.all(),
-        widget=HorillaMultiSelectWidget(
+        widget=HydraMultiSelectWidget(
             filter_route_name="employee-widget-filter",
             filter_class=EmployeeFilter,
             filter_instance_contex_name="f",
@@ -2448,7 +2448,7 @@ class AnnouncementForm(ModelForm):
         cleaned_data = super().clean()
 
         # Remove 'employees' field error if it's handled manually
-        if isinstance(self.fields["employees"], HorillaMultiSelectField):
+        if isinstance(self.fields["employees"], HydraMultiSelectField):
             self.errors.pop("employees", None)
             employee_data = self.fields["employees"].queryset.filter(
                 id__in=self.data.getlist("employees")
@@ -2832,7 +2832,7 @@ class PenaltyAccountForm(ModelForm):
         employee = kwargs.pop("employee", None)
         super().__init__(*args, **kwargs)
         if apps.is_installed("leave") and employee:
-            LeaveType = get_horilla_model_class(app_label="leave", model="leavetype")
+            LeaveType = get_hydra_model_class(app_label="leave", model="leavetype")
             available_leaves = employee.available_leave.all()
             assigned_leave_types = LeaveType.objects.filter(
                 id__in=available_leaves.values_list("leave_type_id", flat=True)

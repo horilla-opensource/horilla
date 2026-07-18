@@ -1,5 +1,5 @@
 """
-horilla/cbv_methods.py
+hydra_views/cbv_methods.py
 """
 
 import json

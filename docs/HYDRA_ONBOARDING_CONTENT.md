@@ -4,10 +4,10 @@
 
 TASK-024/025 use **EXTEND + WRAP + NEW MODULE**:
 
-- Horilla remains authoritative for candidate onboarding stages, onboarding tasks,
+- legacy HR platform remains authoritative for candidate onboarding stages, onboarding tasks,
   candidate-task state and its token portal;
 - `hydra_arrivals.OnboardingHandoff` remains the controlled bridge from a confirmed
-  arrival to Horilla onboarding;
+  arrival to legacy HR platform onboarding;
 - `hydra_onboarding` owns only versioned internal learning content, deterministic
   assignment rules and durable learning evidence.
 
@@ -38,7 +38,7 @@ Company and course and may narrow by:
 - Department;
 - Team;
 - preferred language;
-- Horilla worker/employee type.
+- legacy HR platform worker/employee type.
 
 Blank dimensions mean "any". Matching uses the current effective Person
 assignment, with the confirmed handoff destination as the arrival-time Location
@@ -49,7 +49,7 @@ course default language. Only a published version may be assigned.
 Automatic application is idempotent through the Person/course uniqueness boundary
 and database conflict handling. Manual assignment uses the same version snapshot,
 scope validation and immutable event history. A confirmed arrival applies matching
-rules after the existing Horilla handoff has been reconciled.
+rules after the existing legacy HR platform handoff has been reconciled.
 
 ## Completion evidence
 

@@ -8,12 +8,12 @@ Phase 0 was accepted on 2026-07-14. TASK-1 Person identity, organization scope a
 
 ## Accepted architecture decisions
 
-1. **Fork and extend Horilla branch `1.0`.** Do not rewrite HRMS behavior from zero.
+1. **Fork and extend legacy HR platform branch `1.0`.** Do not rewrite HRMS behavior from zero.
 2. **Use a Django monolith with server-rendered, mobile-first templates.** No React SPA, microservices or native mobile app in the MVP.
-3. **Create `hydra_people.Person` as canonical pre-employment identity.** A Person can exist without email, have multiple recruitment applications and optionally link one-to-one to Horilla Employee after hiring.
-4. **Keep application and person separate.** Horilla Candidate remains the recruitment/application record. New Hydra intake creates the Person link transactionally; legacy Candidates enter an explicit, company-scoped review/backfill queue.
-5. **Reuse Horilla Employee only after employment.** All creation/linking goes through one idempotent transaction service.
-6. **Reuse Company and Department.** Add Location, operational Section/Stage, Team and effective-dated assignments; do not duplicate or overload the Horilla models.
+3. **Create `hydra_people.Person` as canonical pre-employment identity.** A Person can exist without email, have multiple recruitment applications and optionally link one-to-one to legacy HR platform Employee after hiring.
+4. **Keep application and person separate.** legacy HR platform Candidate remains the recruitment/application record. New Hydra intake creates the Person link transactionally; legacy Candidates enter an explicit, company-scoped review/backfill queue.
+5. **Reuse legacy HR platform Employee only after employment.** All creation/linking goes through one idempotent transaction service.
+6. **Reuse Company and Department.** Add Location, operational Section/Stage, Team and effective-dated assignments; do not duplicate or overload the legacy HR platform models.
 7. **Wrap permissions with explicit Hydra scope.** Django model permissions answer what action a role may perform; Hydra scope answers on which records. Both must pass.
 8. **Use selectors for all scoped reads and services for business writes.** Views remain thin. Direct `.objects.get(pk=url_id)` is prohibited for scoped Hydra objects.
 9. **Replace private media delivery.** Passports/legalization documents use private storage, authorized streaming and immutable access logging. Generic `/media/` is not acceptable.
@@ -25,10 +25,10 @@ Phase 0 was accepted on 2026-07-14. TASK-1 Person identity, organization scope a
 15. **Priva remains outside Hydra.** No production-row or productivity integration.
 16. **Treat future housing periods as reservations and moves as one transaction.** Do not create a parallel booking identity. A move narrows/deactivates the protected source, creates the destination and appends paired evidence under deterministic Person/bed locks; day-granular facts are never rewritten to fabricate intra-day ordering.
 17. **Treat deployment shortcuts and backup archives as untrusted input.** `-InitialDeployment` may skip a recovery point only after PostgreSQL proves the application schema empty. Sensitive restore archives are validated for normalized unique paths and regular file/directory types before extraction; an operator flag, checksum file or archive metadata alone is not authority to overwrite recovery storage.
-18. **Project one Person timeline from authoritative histories; do not dual-write a second event store.** Horilla auditlog and explicit append-only Hydra domain facts retain ownership. The user-facing aggregate independently rechecks Person scope and every source permission, exposes only safe labels/context, caps work per source and never renders raw audit changes or sensitive payloads.
-19. **Wrap Horilla recruitment stages with one controlled transition contract for linked applications.** Keep Recruitment, Stage, Candidate and pipeline UX, but require a directed active rule, current Person scope and one locked service for every linked Candidate stage change. Preserve immutable actor/source/reason evidence; expose only from/to Stage labels on the Person timeline. Direct save and bulk stage updates are invalid bypasses, while unlinked Candidates remain outside Hydra until reviewed.
+18. **Project one Person timeline from authoritative histories; do not dual-write a second event store.** legacy HR platform auditlog and explicit append-only Hydra domain facts retain ownership. The user-facing aggregate independently rechecks Person scope and every source permission, exposes only safe labels/context, caps work per source and never renders raw audit changes or sensitive payloads.
+19. **Wrap legacy HR platform recruitment stages with one controlled transition contract for linked applications.** Keep Recruitment, Stage, Candidate and pipeline UX, but require a directed active rule, current Person scope and one locked service for every linked Candidate stage change. Preserve immutable actor/source/reason evidence; expose only from/to Stage labels on the Person timeline. Direct save and bulk stage updates are invalid bypasses, while unlinked Candidates remain outside Hydra until reviewed.
 20. **Extend legalization with fixed-field policy dictionaries, not a generic workflow engine.** Keep the closed, code-reviewed core transition graph, then configure Company/global procedure labels, enabled normalized statuses, document requirements and approved authorities. Snapshot the complete selected policy on case creation and the selected case-policy authority on every external fact, so later configuration changes affect only future cases. An authority mapping that cannot be inferred from legacy facts remains a readiness failure until a superuser performs the explicit one-time, reasoned and append-only adoption.
-21. **Own one closed universal-task contract and wrap Horilla notifications.** Horilla project, onboarding and helpdesk task models keep their existing domain ownership. `hydra_tasks` owns a Person/Company-scoped task with only five code-reviewed target types, optimistic versioning and append-only events. Durable notification delivery rechecks the recipient's current permissions and scope and never carries task/Person PII; it does not pre-empt TASK-018's general notification-center policy.
+21. **Own one closed universal-task contract and wrap legacy HR platform notifications.** legacy HR platform project, onboarding and helpdesk task models keep their existing domain ownership. `hydra_tasks` owns a Person/Company-scoped task with only five code-reviewed target types, optimistic versioning and append-only events. Durable notification delivery rechecks the recipient's current permissions and scope and never carries task/Person PII; it does not pre-empt TASK-018's general notification-center policy.
 
 ## Data ownership and synchronization
 
@@ -51,7 +51,7 @@ Phase 0 was accepted on 2026-07-14. TASK-1 Person identity, organization scope a
 
 ### Employee/WorkInformation owns
 
-- active Horilla user relationship;
+- active legacy HR platform user relationship;
 - work email/account after employment;
 - company, department, job, manager, shift, work type and employment dates;
 - selected attendance/leave/employment features.
@@ -96,7 +96,7 @@ At minimum, later permission tasks must prove:
 
 | Module | Owns | Must not own |
 |---|---|---|
-| `hydra_people` | Person, lifecycle, application links, Employee link/conversion service | Horilla work information or recruitment stages |
+| `hydra_people` | Person, lifecycle, application links, Employee link/conversion service | legacy HR platform work information or recruitment stages |
 | `hydra_coordination` | Location, section/stage, team, role scope grants, historical assignments | Company/Department duplicates |
 | `hydra_documents` | private file metadata/storage, content validation, authorized download and append-only access events | generic public media or legalization workflow |
 | `hydra_legalization` | Company/global procedure/requirement/authority policy, immutable case snapshots, cases, statuses, bounded deputies, audited responsibility transfer, scoped workload, evidence-backed authority correspondence and renewal lineage | generic workflow engines, inferred leave access, silent load balancing, public file delivery, guessed legacy policy/chain mappings or unsupported authority API integration |
@@ -126,7 +126,7 @@ Private document storage/access may be a focused shared app if it serves multipl
 
 ## Controlled onboarding decision
 
-Horilla onboarding is **EXTEND + WRAP**, not replaced. A confirmed Hydra arrival
+legacy HR platform onboarding is **EXTEND + WRAP**, not replaced. A confirmed Hydra arrival
 may start the existing CandidateStage/CandidateTask structure only through the
 locked, scoped handoff service. Employee conversion, a current primary Team at
 the arrival destination, and all assigned tasks in `done` state are independent
@@ -139,7 +139,7 @@ mutations are rejected for Hydra handoffs. Recovery runs as an explicit bounded
 maintenance job. External portal email does not change onboarding state unless
 delivery succeeds. The implemented Hydra outbox persists the stable token and
 verified attachments, uses one-active-row/idempotency constraints, leases and
-capped retry, preserves append-only events, redacts Horilla's legacy mail log,
+capped retry, preserves append-only events, redacts legacy HR platform's legacy mail log,
 and purges sensitive payload after resolution. SMTP remains honestly
 at-least-once because remote acceptance cannot share the database transaction.
 

@@ -6,11 +6,11 @@ Task `040-brigadier-panel.md` is implemented as a read-only, mobile-first operat
 
 ## Reuse decision
 
-The panel **EXTENDS** the Hydra coordination layer and **WRAPS** existing Horilla attendance data. It reuses:
+The panel **EXTENDS** the Hydra coordination layer and **WRAPS** existing legacy HR platform attendance data. It reuses:
 
 - Hydra `Team`, effective-dated `PersonAssignment` and `ScopeGrant` for roster membership and authorization;
 - Hydra `Person` and its controlled Employee link;
-- Horilla `Employee`, `Attendance`, late/early markers, approved `LeaveRequest`, and `EmployeeShiftSchedule` for the selected day's operational state.
+- legacy HR platform `Employee`, `Attendance`, late/early markers, approved `LeaveRequest`, and `EmployeeShiftSchedule` for the selected day's operational state.
 
 No parallel attendance, absence, Employee or Team model was created. The new code is a thin selector/view/template slice in `hydra_coordination`.
 
@@ -48,7 +48,7 @@ The panel composes these read-only states:
 - late arrival;
 - early departure.
 
-The shift currently stored in `EmployeeWorkInformation` is authoritative, including Horilla's applied shift changes and rotations. A matching active weekday schedule establishes the work expectation. No schedule for an assigned shift means a legitimate unscheduled day; no shift assignment is a configuration exception. Full-day approved leave removes the attendance expectation, while partial leave preserves it. First-half leave suppresses a late-arrival marker and second-half leave suppresses an early-departure marker because those observations are expected for the approved portion.
+The shift currently stored in `EmployeeWorkInformation` is authoritative, including legacy HR platform's applied shift changes and rotations. A matching active weekday schedule establishes the work expectation. No schedule for an assigned shift means a legitimate unscheduled day; no shift assignment is a configuration exception. Full-day approved leave removes the attendance expectation, while partial leave preserves it. First-half leave suppresses a late-arrival marker and second-half leave suppresses an early-departure marker because those observations are expected for the approved portion.
 
 This remains a read-only operational interpretation. It never writes, validates, rejects, or fabricates attendance or leave records.
 
@@ -72,7 +72,7 @@ Ran 240 tests - OK
 
 ## Deliberate limits
 
-- The panel is read-only; attendance correction and validation remain in Horilla.
+- The panel is read-only; attendance correction and validation remain in legacy HR platform.
 - It reports operational inconsistencies but does not decide payroll, discipline, or legal absence.
 - It does not expose Company/Location-wide coordinator scope.
 - It does not include reports, exports or mutation actions.

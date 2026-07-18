@@ -3,9 +3,9 @@ from django.urls import reverse
 from django.utils.translation import gettext_lazy as _trans
 
 from base.methods import eval_validate
-from base.models import HorillaMailTemplate
+from base.models import HydraMailTemplate
 from employee.models import Employee
-from hydra.models import HorillaModel
+from hydra.models import HydraModel
 from hydra_views.cbv_methods import render_template
 
 MODEL_CHOICES = []
@@ -21,7 +21,7 @@ CONDITIONS = [
 ]
 
 
-class MailAutomation(HorillaModel):
+class MailAutomation(HydraModel):
     """
     MailAutoMation
     """
@@ -52,7 +52,7 @@ class MailAutomation(HorillaModel):
     # udpate the on_update logic to if and only if when
     # changes in the previous and current value
     mail_template = models.ForeignKey(
-        HorillaMailTemplate, on_delete=models.CASCADE, null=True, blank=True
+        HydraMailTemplate, on_delete=models.CASCADE, null=True, blank=True
     )
     also_sent_to = models.ManyToManyField(
         Employee,
@@ -66,7 +66,7 @@ class MailAutomation(HorillaModel):
         verbose_name=_trans("Choose Delivery Channel"),
     )
     template_attachments = models.ManyToManyField(
-        HorillaMailTemplate,
+        HydraMailTemplate,
         related_name="template_attachment",
         blank=True,
     )

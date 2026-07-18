@@ -10,14 +10,14 @@ from simple_history.utils import get_history_model_for_model
 
 from hydra.hydra_middlewares import _thread_locals
 from hydra_views.cbv_methods import hx_request_required
-from hydra_views.generic.cbv.views import HorillaFormView
+from hydra_views.generic.cbv.views import HydraFormView
 from hydra_views.history_methods import get_diff
 
 
 @method_decorator(hx_request_required, name="dispatch")
-class HorillaHistoryView(DetailView):
+class HydraHistoryView(DetailView):
     """
-    GenericHorillaProfileView
+    GenericHydraProfileView
     """
 
     template_name = "generic/hydra_history_view.html"
@@ -56,4 +56,4 @@ class HorillaHistoryView(DetailView):
         history.instance.save()
         messages.success(request, "History reverted")
 
-        return HorillaFormView.HttpResponse()
+        return HydraFormView.HttpResponse()

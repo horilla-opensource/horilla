@@ -8,11 +8,11 @@ from django.utils import timezone
 from django.utils.translation import gettext_lazy as _
 
 from base.models import Company, Department
-from hydra.models import HorillaModel
+from hydra.models import HydraModel
 from hydra_people.models import Person
 
 
-class Location(HorillaModel):
+class Location(HydraModel):
     company = models.ForeignKey(
         Company,
         on_delete=models.PROTECT,
@@ -47,7 +47,7 @@ class Location(HorillaModel):
         self.address = " ".join(self.address.split())
 
 
-class Section(HorillaModel):
+class Section(HydraModel):
     location = models.ForeignKey(
         Location,
         on_delete=models.PROTECT,
@@ -93,7 +93,7 @@ class Section(HorillaModel):
             )
 
 
-class Team(HorillaModel):
+class Team(HydraModel):
     section = models.ForeignKey(
         Section,
         on_delete=models.PROTECT,
@@ -137,7 +137,7 @@ class TerminationMode(models.TextChoices):
     IMMEDIATE = "immediate", _("Immediate revocation")
 
 
-class ScopeGrant(HorillaModel):
+class ScopeGrant(HydraModel):
     user = models.ForeignKey(
         settings.AUTH_USER_MODEL,
         on_delete=models.PROTECT,
@@ -303,7 +303,7 @@ class ScopeGrant(HorillaModel):
             self.valid_until is None or self.valid_until >= day
         )
 
-class PersonAssignment(HorillaModel):
+class PersonAssignment(HydraModel):
     person = models.ForeignKey(
         Person,
         on_delete=models.PROTECT,

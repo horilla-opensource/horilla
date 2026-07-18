@@ -1,7 +1,7 @@
 # Hydra notification center
 
 Full Engineering Package TASK-018 is implemented. The decision is **REUSE +
-WRAP**: Horilla's `notifications.Notification` remains the in-app transport,
+WRAP**: legacy HR platform's `notifications.Notification` remains the in-app transport,
 while `hydra_notifications` owns Hydra scope, reviewed messages, read/archive
 history, user delivery preferences and durable email-delivery evidence.
 
@@ -14,7 +14,7 @@ history, user delivery preferences and durable email-delivery evidence.
   filters, 30-row pagination, open, read, unread, archive, restore and bounded
   batch read actions.
 - Every state mutation is POST-only, CSRF-protected, recipient-scoped and
-  version-checked. State changes mirror the Horilla compatibility flags and
+  version-checked. State changes mirror the legacy HR platform compatibility flags and
   append an immutable sequence event.
 - Email is opt-in and has a configurable minimum severity. Email contains only
   a generic sign-in prompt and the notification-center URL; it never contains a
@@ -31,12 +31,12 @@ access, arrivals, legalization, universal tasks and onboarding handoffs. The
 service resolves the authoritative Company/Person relationship, checks the
 recipient's current target visibility and accepts only a safe local redirect.
 
-The underlying Horilla row stores a fixed, reviewed, PII-free message and only
+The underlying legacy HR platform row stores a fixed, reviewed, PII-free message and only
 the notification-center redirect, icon and Hydra label. Detailed target URLs
 remain in the protected envelope and are rechecked before open. Producers use
 stable idempotency keys, so retries do not create duplicate notifications.
 
-Legacy Horilla notifications are wrapped as `legacy` envelopes. Existing rows
+Legacy legacy HR platform notifications are wrapped as `legacy` envelopes. Existing rows
 are backfilled by migration and future `notify` signal rows are wrapped at
 creation. Legacy redirects are accepted only when they are safe local paths;
 otherwise open returns to the center. Legacy content is not forwarded to the
@@ -57,13 +57,13 @@ it rechecks current scope, archive state, active account, email address and the
 latest preference. Persisted failures contain only a bounded exception-class
 code. A deterministic Message-ID narrows the unavoidable SMTP crash window.
 
-## Legacy Horilla hardening
+## Legacy legacy HR platform hardening
 
 The shared tray, list, count and JSON endpoints now consume recipient-scoped
 Hydra selectors. Read, clear, delete/archive and sound mutations require POST;
 foreign identifiers return 404 and archival replaces destructive deletion.
 Actor names and external avatar-service requests were removed from notification
-partials. The common Horilla login decorator now preserves `Http404` and
+partials. The common legacy HR platform login decorator now preserves `Http404` and
 `PermissionDenied`, renders debug failures as HTTP 500 and never retries a
 failed view. The custom 404 and 405 pages now return their real status codes.
 
@@ -80,7 +80,7 @@ HYDRA_MAINTENANCE_NOTIFICATION_EMAIL_BATCH_SIZE=25
 
 Staging/production readiness requires an absolute HTTPS base URL, bounded
 retry/backoff, a lease at least twice the SMTP timeout and a 1-1000 worker
-batch. Domain readiness checks envelope/Horilla state parity, event sequences,
+batch. Domain readiness checks envelope/legacy HR platform state parity, event sequences,
 target resolution, fixed minimal payloads, recipient consistency and exhausted
 email delivery.
 

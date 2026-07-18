@@ -52,7 +52,7 @@ from hydra.decorators import (
     manager_can_enter,
     permission_required,
 )
-from hydra.http import HorillaRedirect
+from hydra.http import HydraRedirect
 from notifications.signals import notify
 
 
@@ -570,7 +570,7 @@ def approve_validate_attendance_request(request, attendance_id):
             redirect=reverse("request-attendance-view") + f"?id={attendance.id}",
             icon="checkmark-circle-outline",
         )
-    return HorillaRedirect(request)
+    return HydraRedirect(request)
 
 
 @login_required
@@ -610,7 +610,7 @@ def cancel_attendance_request(request, attendance_id):
             )
     except (Attendance.DoesNotExist, OverflowError):
         messages.error(request, _("Attendance request not found"))
-    return HorillaRedirect(request)
+    return HydraRedirect(request)
 
 
 @login_required

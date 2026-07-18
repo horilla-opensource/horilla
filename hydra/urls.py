@@ -1,4 +1,4 @@
-"""horilla URL Configuration
+"""Hydra URL configuration.
 
 The `urlpatterns` list routes URLs to views. For more information please see:
     https://docs.djangoproject.com/en/4.1/topics/http/urls/
@@ -52,7 +52,7 @@ urlpatterns = [
     path("hydra/templates/", include("hydra_templates.urls")),
     path("hydra/links/", include("hydra_links.urls")),
     path("hydra/reports/", include("hydra_reports.urls")),
-    path("horilla-widget/", include("hydra_widgets.urls")),
+    path("hydra-widget/", include("hydra_widgets.urls")),
     path("api/", include("hydra_api.urls")),
     re_path(
         "^inbox/notifications/", include(notifications.urls, namespace="notifications")

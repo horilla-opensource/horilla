@@ -38,7 +38,7 @@ from base.context_processors import (
 from base.models import AttendanceAllowedIP, Company, EmployeeShiftDay
 from hydra.decorators import hx_request_required, login_required
 from hydra.hydra_middlewares import _thread_locals
-from hydra.http import HorillaRedirect
+from hydra.http import HydraRedirect
 
 
 def late_come_create(attendance):
@@ -267,7 +267,7 @@ def clock_in(request):
             if start_time_sec > end_time_sec:
                 # night shift
                 # ------------------
-                # Night shift in Horilla consider a 24 hours from noon to next day noon,
+                # Night shift in Hydra consider a 24 hours from noon to next day noon,
                 # the shift day taken today if the attendance clocked in after 12 O clock.
 
                 if mid_day_sec > now_sec:
@@ -345,7 +345,7 @@ def clock_in(request):
         )
     else:
         messages.error(request, _("Check in/Check out feature is not enabled."))
-        return HorillaRedirect(request)
+        return HydraRedirect(request)
 
 
 def clock_out_attendance_and_activity(employee, date_today, now, out_datetime=None):
@@ -602,4 +602,4 @@ def clock_out(request):
         )
     else:
         messages.error(request, _("Check in/Check out feature is not enabled."))
-        return HorillaRedirect(request)
+        return HydraRedirect(request)

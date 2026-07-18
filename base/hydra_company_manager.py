@@ -1,5 +1,5 @@
 """
-horilla_company_manager.py
+hydra_company_manager.py
 """
 
 import logging
@@ -30,9 +30,9 @@ def update(self, *args, **kwargs):
 setattr(QuerySet, "update", update)
 
 
-class HorillaCompanyManager(models.Manager):
+class HydraCompanyManager(models.Manager):
     """
-    HorillaCompanyManager
+    HydraCompanyManager
     """
 
     def __init__(self, related_company_field=None, *args, **kwargs):

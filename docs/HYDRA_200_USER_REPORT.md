@@ -57,9 +57,8 @@ Measured result:
 
 ### Owned application packages
 
-- renamed `horilla_api`, `horilla_audit`, `horilla_automations`,
-  `horilla_backup`, `horilla_crumbs`, `horilla_ldap`, `horilla_views`, and
-  `horilla_widgets` to `hydra_*` packages;
+- renamed the eight remaining legacy-named API, audit, automations, backup,
+  breadcrumbs, LDAP, generic-view, and widget packages to `hydra_*` packages;
 - renamed the legacy document-request package to `hydra_legacy_documents` to
   avoid collision with Hydra's private-document application;
 - renamed the corresponding template directories, template filenames, widget
@@ -74,9 +73,9 @@ Measured result:
 - skipped: 1;
 - test execution time: 307.697 seconds (528.333 seconds total process time);
 - result: `OK (skipped=1)`;
-- current old-brand scan: 2,358 matches in 411 files. Remaining work is owned
+- checkpoint old-brand scan: 2,358 matches in 411 files. Remaining work was owned
   identifiers/UI/fixtures/translations plus an explicit technical/legal
-  allowlist, so the complete-rebranding requirement remains failed.
+  allowlist; those items were completed in the next phase.
 
 The baseline emitted a missing `staticfiles` directory warning and one expected
 test-path log message (`Onboarding portal queue validation failed`). Neither
@@ -86,7 +85,7 @@ caused a failed test. They remain candidates for deployment/smoke validation.
 
 ### Django project package
 
-- renamed the main Django project package from `horilla` to `hydra`;
+- renamed the legacy Django project package to `hydra`;
 - renamed its six branded helper modules to `hydra_*` names;
 - changed the settings, URLConf, WSGI/ASGI, management, entrypoint, runtime and
   migration import paths to the new namespace;
@@ -96,8 +95,7 @@ caused a failed test. They remain candidates for deployment/smoke validation.
 - updated 12 historical migration files only where their executable import path
   must follow the moved project package: 42 added and 42 removed lines;
 - regenerated and verified the manifest for 74 reviewed migration files;
-- verified zero remaining `horilla.` project-module imports and zero remaining
-  `from horilla` / `import horilla` imports;
+- verified zero remaining imports from the legacy project namespace;
 - reduced the old-brand scan from 6,761 matches in 564 files to 2,776 matches
   in 470 files; the remaining application packages, identifiers, UI content,
   fixtures, translations and justified upstream references are still in work.
@@ -109,6 +107,31 @@ Post-rename Windows regression:
 - tests discovered/passed: 448/448;
 - skipped: 1;
 - test runtime: 325.581 seconds;
+- result: `OK (skipped=1)`.
+
+### Identifiers, UI, fixtures, translations, and compatibility
+
+- renamed owned classes, functions, constants, fields, commands, template tags,
+  route names, files, and user-facing strings to Hydra terminology;
+- renamed `HydraMailTemplate` in migration state while pinning its existing
+  physical table, updating content type and permission codenames in place, and
+  preserving assigned authorization rows;
+- added a dedicated upgrade proof that starts from the pre-rename state, inserts
+  data and a permission, applies the complete graph, and verifies the record,
+  permission, content type, and physical table are preserved: PASS;
+- changed stored recruitment/onboarding source values through a reversible data
+  migration;
+- removed the two inherited branded raster logos and replaced default login and
+  email branding with accessible Hydra text while retaining company white-label
+  images;
+- rebranded all ten gettext source catalogs and all shipped demo fixtures;
+- reviewed migration manifest: PASS, 80 exact source files;
+- executable rebrand allowlist: PASS, 175 approved technical/legal/upstream
+  occurrences and 0 violations;
+- Python compilation, Django check, and migration drift check: PASS;
+- tests discovered/passed: 448/448;
+- skipped: 1;
+- test execution time: 309.528 seconds (520.868 seconds total process time);
 - result: `OK (skipped=1)`.
 
 ## Load-test evidence
@@ -131,7 +154,7 @@ accepted as evidence for this objective.
 
 | Requirement | Status | Current evidence |
 |---|---|---|
-| Complete Horilla -> Hydra rebranding | FAIL | 2,358 matches in 411 files remain; allowlist not yet produced |
+| Complete old-brand removal / Hydra rebranding | PASS | 175 approved compatibility/legal/upstream occurrences; 0 allowlist violations |
 | 200 authenticated active users for 2 hours | FAIL | Not run |
 | Warm error rate below 1% | FAIL | Not measured |
 | Login/read p95 below 2 s | FAIL | Not measured |
@@ -141,7 +164,7 @@ accepted as evidence for this objective.
 | No OOM/readiness/restart/connection leak | FAIL | Not measured at required load |
 | Data integrity and organization isolation | PARTIAL | Regression tests pass; concurrent-load evidence missing |
 | Replica restart preserves service and sessions | FAIL | Not run |
-| Regression suite passes | PASS | 448 passed, 1 skipped on Windows baseline |
+| Regression suite passes | PASS | 448 passed, 1 skipped after full rebrand and migration upgrade proof |
 | Changes committed and pushed to user remote | FAIL | Worktree remains uncommitted and unpushed |
 
 ## Git delivery evidence

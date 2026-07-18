@@ -11,15 +11,15 @@ from django.views.generic import View
 from dynamic_fields import forms, models
 from dynamic_fields.methods import structured
 from hydra.decorators import login_required, permission_required
-from hydra.http.response import HorillaRedirect
-from hydra_views.generic.cbv.views import HorillaFormView
+from hydra.http.response import HydraRedirect
+from hydra_views.generic.cbv.views import HydraFormView
 
 
 @method_decorator(login_required, name="dispatch")
 @method_decorator(
     permission_required("dynamic_fields.change_mailautomation"), name="dispatch"
 )
-class ChoiceFormView(HorillaFormView):
+class ChoiceFormView(HydraFormView):
     """
     ChoiceFormView
     """
@@ -33,7 +33,7 @@ class ChoiceFormView(HorillaFormView):
 @method_decorator(
     permission_required("dynamic_fields.change_mailautomation"), name="dispatch"
 )
-class DynamicFieldFormView(HorillaFormView):
+class DynamicFieldFormView(HydraFormView):
     """
     DynamicFieldFormView
     """
@@ -58,7 +58,7 @@ class DynamicFieldFormView(HorillaFormView):
             form.save()
 
             messages.success(self.request, message)
-            return HorillaRedirect(self.request)
+            return HydraRedirect(self.request)
         return super().form_valid(form)
 
 

@@ -13,8 +13,8 @@ from employee.models import Employee
 from hydra_automations.methods.methods import generate_choices
 from hydra_automations.models import MODEL_CHOICES, MailAutomation
 from hydra_widgets.forms import default_select_option_template
-from hydra_widgets.widgets.hydra_multi_select_field import HorillaMultiSelectField
-from hydra_widgets.widgets.select_widgets import HorillaMultiSelectWidget
+from hydra_widgets.widgets.hydra_multi_select_field import HydraMultiSelectField
+from hydra_widgets.widgets.select_widgets import HydraMultiSelectWidget
 
 
 class AutomationForm(ModelForm):
@@ -35,10 +35,10 @@ class AutomationForm(ModelForm):
         super().__init__(*args, **kwargs)
 
         # --- Field: also_sent_to ---
-        self.fields["also_sent_to"] = HorillaMultiSelectField(
+        self.fields["also_sent_to"] = HydraMultiSelectField(
             queryset=Employee.objects.all(),
             required=False,
-            widget=HorillaMultiSelectWidget(
+            widget=HydraMultiSelectWidget(
                 filter_route_name="employee-widget-filter",
                 filter_class=EmployeeFilter,
                 filter_instance_contex_name="f",
@@ -105,7 +105,7 @@ class AutomationForm(ModelForm):
 
     def clean(self):
         cleaned_data = super().clean()
-        if isinstance(self.fields["also_sent_to"], HorillaMultiSelectField):
+        if isinstance(self.fields["also_sent_to"], HydraMultiSelectField):
             self.errors.pop("also_sent_to", None)
 
             employee_data = self.fields["also_sent_to"].queryset.filter(

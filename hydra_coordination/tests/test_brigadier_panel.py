@@ -319,7 +319,7 @@ class BrigadierSelectorTests(BrigadierPanelTestCase):
         )
         self.assertFalse(brigadier_teams_for_user(user=self.company_only).exists())
 
-    def test_roster_composes_team_assignment_and_horilla_attendance(self):
+    def test_roster_composes_team_assignment_and_attendance(self):
         rows = brigadier_roster_for_team(
             user=self.brigadier,
             team=self.team_a,

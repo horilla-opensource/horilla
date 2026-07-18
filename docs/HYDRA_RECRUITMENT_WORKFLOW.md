@@ -2,7 +2,7 @@
 
 ## Decision
 
-TASK-010 is implemented as **REUSE + EXTEND + WRAP**. Horilla continues to own
+TASK-010 is implemented as **REUSE + EXTEND + WRAP**. legacy HR platform continues to own
 `Recruitment`, configurable `Stage`, `Candidate`, the pipeline UI, interviews,
 ratings and simple-history records. Hydra adds one directed transition contract
 and one immutable business-history model around linked Candidate applications;
@@ -20,7 +20,7 @@ the same Recruitment. An active rule can require:
 
 Migration `hydra_people.0004_recruitmentstagetransitionrule_and_more` seeds
 directed rules between every existing pair of active stages. Adjacent forward
-moves preserve the current Horilla flow. Cancellation, backward and skipped
+moves preserve the current legacy HR platform flow. Cancellation, backward and skipped
 moves require a reason; entering a hired stage requires a joining date. New
 Stages receive equivalent defaults through a post-save integration hook.
 Configuration is editable in Django admin without deleting historical events.
@@ -37,7 +37,7 @@ it:
 4. rejects closed/inactive Recruitments, cross-Recruitment targets, same-stage
    moves and disabled rules;
 5. validates reason/schedule/joining-date requirements and override authority;
-6. updates the Horilla Candidate flags and dates;
+6. updates the legacy HR platform Candidate flags and dates;
 7. appends `CandidateStageTransition` with actor, source, reason, rule and a
    non-PII requirements snapshot.
 
@@ -47,13 +47,13 @@ flag must both pass.
 
 ## Legacy-route closure
 
-The main Horilla list/kanban stage-change endpoints now route linked
+The main legacy HR platform list/kanban stage-change endpoints now route linked
 applications through the same service. Unlinked legacy Candidates retain the
 upstream behavior until reviewed and linked. Two defense-in-depth guards close
 future bypasses for linked applications:
 
 - direct `Candidate.save()` rejects an uncontrolled stage change;
-- Horilla's bulk-update signal rejects `QuerySet.update(stage_id=...)`.
+- legacy HR platform's bulk-update signal rejects `QuerySet.update(stage_id=...)`.
 
 Changing the legacy `canceled` checkbox is also rejected for a linked
 application; the operator uses the reasoned transition form instead. Reordering
@@ -93,7 +93,7 @@ Eleven PostgreSQL tests cover:
 - direct-save and bulk-update bypass prevention;
 - a reasoned cancellation to the exact configured target;
 - scoped transition form/history rendering;
-- the existing Horilla kanban route using the same service;
+- the existing legacy HR platform kanban route using the same service;
 - ordinary hired transition with a joining date.
 
 The focused workflow run passes 11/11, the affected onboarding-handoff and
@@ -105,7 +105,7 @@ covered automatically.
 ## Known boundary
 
 This task controls recruitment Stage mutations for applications already linked
-to canonical Person. An unlinked Horilla Candidate stays in the explicit
+to canonical Person. An unlinked legacy HR platform Candidate stays in the explicit
 backfill queue and is not silently pulled into Hydra scope. TASK-012 duplicate
 review/merge is now implemented separately; no recruitment transition attempts
 to merge identities, and application moves occur only inside the reviewed

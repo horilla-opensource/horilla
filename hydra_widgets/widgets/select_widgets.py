@@ -1,7 +1,7 @@
 """
 select_widgets.py
 
-This module is used to write horilla form select widgets
+This module defines Hydra form select widgets.
 """
 
 import uuid
@@ -21,9 +21,9 @@ def get_short_uuid(length: int, prefix: str = "widget"):
     return prefix + str(uuid_str[:length]).replace("-", "")
 
 
-class HorillaMultiSelectWidget(forms.Widget):
+class HydraMultiSelectWidget(forms.Widget):
     """
-    HorillaMultiSelectWidget
+    HydraMultiSelectWidget
     """
 
     def __init__(

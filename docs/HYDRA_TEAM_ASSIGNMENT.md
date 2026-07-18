@@ -6,9 +6,9 @@ Task `033-team-assignment.md` is implemented as a scoped, transactional vertical
 
 ## Reuse decision
 
-The implementation **REUSES** Horilla `Company`, `Department`, `Employee` and `EmployeeWorkInformation`. It **EXTENDS** the existing Hydra `Location` → `Section` → `Team` hierarchy and effective-dated `PersonAssignment`. It **WRAPS** the Horilla work-information update inside the same transaction and permission boundary.
+The implementation **REUSES** legacy HR platform `Company`, `Department`, `Employee` and `EmployeeWorkInformation`. It **EXTENDS** the existing Hydra `Location` → `Section` → `Team` hierarchy and effective-dated `PersonAssignment`. It **WRAPS** the legacy HR platform work-information update inside the same transaction and permission boundary.
 
-No parallel employee, department, team or assignment model was created. `PersonAssignment` remains the source of truth; Horilla work information is a compatibility projection for its existing employee screens.
+No parallel employee, department, team or assignment model was created. `PersonAssignment` remains the source of truth; legacy HR platform work information is a compatibility projection for its existing employee screens.
 
 ## Workflow
 
@@ -19,7 +19,7 @@ For a Person already linked to an Employee, an authorized operator selects an in
 3. derives Department, Company and Location from the selected Team hierarchy;
 4. ends the previous primary assignment on the day before the new one, or marks a same-day record as replaced;
 5. creates the new primary `PersonAssignment` with actor attribution;
-6. synchronizes Horilla `EmployeeWorkInformation` in the same transaction.
+6. synchronizes legacy HR platform `EmployeeWorkInformation` in the same transaction.
 
 Repeated submission of the same current assignment returns the existing record. History is never deleted. The Person detail shows Team, normalized Location, Department, validity interval and current/ended/replaced state.
 
@@ -27,14 +27,14 @@ The existing pre-employment Person assignment remains available. It is intention
 
 ## Data synchronization
 
-| Source of truth | Horilla projection |
+| Source of truth | legacy HR platform projection |
 |---|---|
 | Team → Section → Location → Company | `EmployeeWorkInformation.company_id` |
 | Team → Section → Department | `EmployeeWorkInformation.department_id` |
 | normalized Hydra Location name | `EmployeeWorkInformation.location` |
-| Hydra PersonAssignment | no Team field is added to Horilla |
+| Hydra PersonAssignment | no Team field is added to legacy HR platform |
 
-If the existing Horilla JobPosition belongs to another Department, JobPosition and JobRole are cleared instead of retaining an invalid cross-department combination. Horilla simple-history records the work-information update and attributes it to the operator.
+If the existing legacy HR platform JobPosition belongs to another Department, JobPosition and JobRole are cleared instead of retaining an invalid cross-department combination. legacy HR platform simple-history records the work-information update and attributes it to the operator.
 
 ## Permissions and scope
 
@@ -51,11 +51,11 @@ The form queryset is scoped, but the service independently repeats every authori
 
 ## Migration
 
-No schema migration is required. The task deliberately extends `PersonAssignment` from `hydra_coordination/migrations/0001_initial.py` and Horilla `EmployeeWorkInformation`; `makemigrations --check --dry-run` reports no changes.
+No schema migration is required. The task deliberately extends `PersonAssignment` from `hydra_coordination/migrations/0001_initial.py` and legacy HR platform `EmployeeWorkInformation`; `makemigrations --check --dry-run` reports no changes.
 
 ## Verification
 
-Focused PostgreSQL coverage contains 10 tests for reassignment history, Horilla synchronization, incompatible JobPosition cleanup, idempotency, missing work-information permission, out-of-scope targets, missing Department, unconverted Person, future dates, scoped form choices and direct form denial.
+Focused PostgreSQL coverage contains 10 tests for reassignment history, legacy HR platform synchronization, incompatible JobPosition cleanup, idempotency, missing work-information permission, out-of-scope targets, missing Department, unconverted Person, future dates, scoped form choices and direct form denial.
 
 The complete implemented Hydra regression suite passes:
 
@@ -65,7 +65,7 @@ Ran 106 tests - OK
 
 `manage.py check`, Python compilation and migration-drift checks pass.
 
-The browser journey was completed against the real PostgreSQL schema using the `hydra-qa` operator. At 390 × 844 pixels it moved Employee Person `e6ae2352-cb51-44bf-9b28-273683045fae` from Browser Team Alpha to Browser Team Beta, showed the success message, current Beta row and ended Alpha row, and synchronized Company, Department and Location in Horilla. The document width was 380 pixels for a 390-pixel viewport; the form and card-style history stayed inside the viewport. The tested Hydra assignment/detail URLs emitted no console warnings or errors. The initial upstream Horilla root page still emits its pre-existing `ReferenceError: c is not defined` before navigation into Hydra.
+The browser journey was completed against the real PostgreSQL schema using the `hydra-qa` operator. At 390 × 844 pixels it moved Employee Person `e6ae2352-cb51-44bf-9b28-273683045fae` from Browser Team Alpha to Browser Team Beta, showed the success message, current Beta row and ended Alpha row, and synchronized Company, Department and Location in legacy HR platform. The document width was 380 pixels for a 390-pixel viewport; the form and card-style history stayed inside the viewport. The tested Hydra assignment/detail URLs emitted no console warnings or errors. The initial upstream legacy HR platform root page still emits its pre-existing `ReferenceError: c is not defined` before navigation into Hydra.
 
 ## Deliberate limits
 

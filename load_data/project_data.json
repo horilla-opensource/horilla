@@ -3,13 +3,13 @@
     "model": "project.project",
     "pk": 1,
     "fields": {
-      "title": "Horilla OpenSource HRMS",
+      "title": "Hydra OpenSource HRMS",
       "status": "new",
       "start_date": "2025-07-01",
       "end_date": "2025-12-31",
       "document": "",
       "is_active": true,
-      "description": "Horilla stands as a complete Human Resource Management System (HRMS) software solution, offering a sophisticated and versatile platform designed to address the diverse and intricate needs of workforce management. Its holistic approach, coupled with a modular architecture, sets it apart in the realm of HR technology.",
+      "description": "Hydra stands as a complete Human Resource Management System (HRMS) software solution, offering a sophisticated and versatile platform designed to address the diverse and intricate needs of workforce management. Its holistic approach, coupled with a modular architecture, sets it apart in the realm of HR technology.",
       "managers": [1],
       "members": [12, 22, 28, 30, 27]
     }

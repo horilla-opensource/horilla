@@ -25,7 +25,7 @@ from hydra.decorators import (
     login_required,
     permission_required,
 )
-from hydra.http import HorillaRedirect
+from hydra.http import HydraRedirect
 from recruitment.filters import SurveyFilter
 from recruitment.forms import (
     AddQuestionForm,
@@ -448,7 +448,7 @@ def create_template(request):
         or request.user.has_perm("recruitment.change_surveytemplate")
     ):
         messages.info(request, "You dont have permission.")
-        return HorillaRedirect(request)
+        return HydraRedirect(request)
 
     title = request.GET.get("title")
     instance = None
@@ -460,7 +460,7 @@ def create_template(request):
         if form.is_valid():
             form.save()
             messages.success(request, "Template saved")
-            return HorillaRedirect(request)
+            return HydraRedirect(request)
     return render(request, "survey/main_form.html", {"form": form})
 
 
@@ -477,7 +477,7 @@ def delete_template(request):
     else:
         messages.success(request, "Template group deleted")
 
-    return HorillaRedirect(request)
+    return HydraRedirect(request)
 
 
 @login_required
@@ -498,5 +498,5 @@ def question_add(request):
         if form.is_valid():
             form.save()
             messages.success(request, "Question added")
-            return HorillaRedirect(request)
+            return HydraRedirect(request)
     return render(request, "survey/add_form.html", {"form": form})

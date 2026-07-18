@@ -1,4 +1,4 @@
-{% extends 'settings.html' %} {% block settings %}{% load i18n %} {% load horillafilters %}
+{% extends 'settings.html' %} {% block settings %}{% load i18n %} {% load hydrafilters %}
 
 {% if perms.base.change_announcementexpire %}
 {% include "announcement/expiry_day.html" %}

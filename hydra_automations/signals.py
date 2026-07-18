@@ -1,5 +1,5 @@
 """
-horilla_automation/signals.py
+hydra_automation/signals.py
 
 """
 
@@ -44,7 +44,7 @@ def start_automation():
     """
     Automation signals
     """
-    from base.models import HorillaMailTemplate
+    from base.models import HydraMailTemplate
     from hydra_automations.methods.methods import get_model_class, split_query_string
     from hydra_automations.models import MailAutomation
 
@@ -57,8 +57,8 @@ def start_automation():
         start_connection()
         track_previous_instance()
 
-    @receiver(post_delete, sender=HorillaMailTemplate)
-    @receiver(post_save, sender=HorillaMailTemplate)
+    @receiver(post_delete, sender=HydraMailTemplate)
+    @receiver(post_save, sender=HydraMailTemplate)
     def template_signal(sender, instance, **kwargs):
         """
         signal method to handle automation post save

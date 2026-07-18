@@ -68,7 +68,7 @@ def _notification_kind(event):
 
 
 def dispatch_organization_access_event(event_id):
-    """Deliver one durable organization event to Horilla notifications."""
+    """Deliver one durable organization event to Hydra notifications."""
 
     try:
         with transaction.atomic():
@@ -440,7 +440,7 @@ def assign_person(*, assignment: PersonAssignment, actor) -> PersonAssignment:
 
 
 def _synchronize_employee_work_information(*, person, team, department, actor):
-    """Project the current Hydra assignment into Horilla employee work data."""
+    """Project the current Hydra assignment into Hydra employee work data."""
 
     work_info = EmployeeWorkInformation._base_manager.select_for_update().get(
         employee_id=person.employee_id
@@ -466,9 +466,9 @@ def _synchronize_employee_work_information(*, person, team, department, actor):
 def assign_employee_to_team(
     *, person: Person, team: Team, valid_from, actor
 ) -> PersonAssignment:
-    """Move a converted Person to a Team and keep Horilla work data aligned.
+    """Move a converted Person to a Team and keep Hydra work data aligned.
 
-    ``PersonAssignment`` remains the source of truth. The current Horilla work
+    ``PersonAssignment`` remains the source of truth. The current Hydra work
     information is a compatibility projection for existing employee screens.
     """
 

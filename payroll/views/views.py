@@ -39,8 +39,8 @@ from hydra.decorators import (
     permission_required,
 )
 from hydra.group_by import group_by_queryset
-from hydra.hydra_settings import HORILLA_DATE_FORMATS
-from hydra.http.response import HorillaRedirect
+from hydra.hydra_settings import HYDRA_DATE_FORMATS
+from hydra.http.response import HydraRedirect
 from notifications.signals import notify
 from payroll.context_processors import get_active_employees
 from payroll.filters import ContractFilter, ContractReGroup, PayslipFilter
@@ -280,14 +280,14 @@ def contract_delete(request, contract_id):
                 urls = f"/payroll/single-contract-view/{next_instance}/"
                 params = f"?{previous_data}&instances_ids={instances_list}"
                 return redirect(urls + params)
-            return HorillaRedirect(request)
+            return HydraRedirect(request)
         else:
             return redirect(f"/payroll/contract-filter?{request.GET.urlencode()}")
     except Contract.DoesNotExist:
         messages.error(request, _("Contract not found."))
     except ProtectedError:
         messages.error(request, _("You cannot delete this contract."))
-    return HorillaRedirect(request)
+    return HydraRedirect(request)
 
 
 @login_required
@@ -440,7 +440,7 @@ def settings(request):
 
             currency_form.save()
             messages.success(request, _("Payroll settings updated."))
-            return HorillaRedirect(request)
+            return HydraRedirect(request)
     return render(
         request,
         "payroll/settings/payroll_settings.html",
@@ -582,11 +582,11 @@ def view_payslip_pdf(request, payslip_id):
             month_end_name = end_date.strftime("%B %d, %Y")
 
             # Formatted date for each format
-            for format_name, format_string in HORILLA_DATE_FORMATS.items():
+            for format_name, format_string in HYDRA_DATE_FORMATS.items():
                 if format_name == date_format:
                     formatted_start_date = start_date.strftime(format_string)
 
-            for format_name, format_string in HORILLA_DATE_FORMATS.items():
+            for format_name, format_string in HYDRA_DATE_FORMATS.items():
                 if format_name == date_format:
                     formatted_end_date = end_date.strftime(format_string)
             data["month_start_name"] = month_start_name
@@ -664,7 +664,7 @@ def delete_payslip(request, payslip_id):
     except ProtectedError:
         messages.error(request, _("Something went wrong"))
     if not Payslip.objects.filter():
-        return HorillaRedirect(request)
+        return HydraRedirect(request)
     return redirect(filter_payslip)
 
 
@@ -1052,11 +1052,11 @@ def payslip_export(request):
             start_date = datetime.strptime(start_date_str, "%Y-%m-%d").date()
             end_date = datetime.strptime(end_date_str, "%Y-%m-%d").date()
 
-            for format_name, format_string in HORILLA_DATE_FORMATS.items():
+            for format_name, format_string in HYDRA_DATE_FORMATS.items():
                 if format_name == date_format:
                     formatted_start_date = start_date.strftime(format_string)
 
-            for format_name, format_string in HORILLA_DATE_FORMATS.items():
+            for format_name, format_string in HYDRA_DATE_FORMATS.items():
                 if format_name == date_format:
                     formatted_end_date = end_date.strftime(format_string)
 
@@ -1533,7 +1533,7 @@ def payslip_pdf(request, id):
             end_date = datetime.strptime(end_date_str, "%Y-%m-%d").date()
 
             # Format the start and end dates
-            for format_name, format_string in HORILLA_DATE_FORMATS.items():
+            for format_name, format_string in HYDRA_DATE_FORMATS.items():
                 if format_name == date_format:
                     formatted_start_date = start_date.strftime(format_string)
                     formatted_end_date = end_date.strftime(format_string)
@@ -1843,7 +1843,7 @@ def initial_notice_period(request):
     )
     if request.META.get("HTTP_HX_REQUEST"):
         return HttpResponse()
-    return HorillaRedirect(request)
+    return HydraRedirect(request)
 
 
 # ===========================Auto payslip generate================================
@@ -1876,7 +1876,7 @@ def create_or_update_auto_payslip(request, auto_id=None):
             messages.success(
                 request, _(f"Payslip Auto generate for {company} created successfully ")
             )
-            return HorillaRedirect(request)
+            return HydraRedirect(request)
     return render(
         request, "payroll/settings/auto_payslip_create_or_update.html", {"form": form}
     )
@@ -1936,7 +1936,7 @@ def delete_auto_payslip(request, auto_id):
             )
         else:
             messages.info(request, _(f"Active 'Payslip auto generate' cannot delete."))
-        return HorillaRedirect(request)
+        return HydraRedirect(request)
     except PayslipAutoGenerate.DoesNotExist:
         messages.error(request, _("Payslip auto generate not found."))
-    return HorillaRedirect(request)
+    return HydraRedirect(request)

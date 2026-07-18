@@ -6,7 +6,7 @@ TASK-008 is implemented as **REUSE + WRAP**, not as a second writable event
 store.
 
 - `django-auditlog` remains the technical model-change audit already supplied by
-  Horilla;
+  legacy HR platform;
 - explicit Hydra status histories, lifecycle events, authority events and access
   logs remain the authoritative immutable business facts;
 - `hydra_people.timeline` composes a read-only, user-facing Person timeline from

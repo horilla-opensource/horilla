@@ -3,7 +3,7 @@ from django.http import HttpResponseRedirect
 from django.utils.http import url_has_allowed_host_and_scheme
 
 
-class HorillaRedirect(HttpResponseRedirect):
+class HydraRedirect(HttpResponseRedirect):
     """
     Safe redirect class to prevent open redirect vulnerabilities.
     Validates the target URL before redirecting.

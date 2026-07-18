@@ -1,9 +1,9 @@
-# **Horilla 🦍** [![LGPL License](https://img.shields.io/badge/license-LGPL-green.svg)](https://www.gnu.org/licenses/lgpl-3.0)  [![Docker](https://img.shields.io/badge/Docker-Horilla-blue?logo=docker)](https://hub.docker.com/r/horilla/horilla)
+# **Hydra** [![LGPL License](https://img.shields.io/badge/license-LGPL-green.svg)](https://www.gnu.org/licenses/lgpl-3.0)
 
 > **Hydra — Phase 0 audit/bootstrap**
 >
 > Phase 0 deliberately did not implement business modules. Start with
-> [`docs/HORILLA_AUDIT.md`](docs/HORILLA_AUDIT.md), review the decisions in
+> [`docs/UPSTREAM_AUDIT.md`](docs/UPSTREAM_AUDIT.md), review the decisions in
 > [`docs/IMPLEMENTATION_DECISIONS.md`](docs/IMPLEMENTATION_DECISIONS.md), and use
 > [`scripts/bootstrap-local.ps1`](scripts/bootstrap-local.ps1) for the verified
 > Windows/PostgreSQL development bootstrap. Phase 1 starts only after this audit
@@ -14,7 +14,7 @@
 > scope and denial rules are documented in
 > [`docs/HYDRA_ORGANIZATION_SCOPE.md`](docs/HYDRA_ORGANIZATION_SCOPE.md). The
 > responsive shared workspace is documented in
-> [`docs/HYDRA_SHELL.md`](docs/HYDRA_SHELL.md). The TASK-2 Horilla recruitment
+> [`docs/HYDRA_SHELL.md`](docs/HYDRA_SHELL.md). The TASK-2 recruitment
 > extension and Person-link workflow are documented in
 > [`docs/HYDRA_RECRUITMENT.md`](docs/HYDRA_RECRUITMENT.md). The private candidate
 > document boundary is documented in
@@ -48,15 +48,15 @@
 > center, append-only read/archive state and opt-in generic email policy are
 > documented in [`docs/HYDRA_NOTIFICATIONS.md`](docs/HYDRA_NOTIFICATIONS.md).
 
-**Horilla** is a Free and Open Source HRMS (Human Resource Management System) Software designed to streamline HR processes and enhance organizational efficiency.
+**Hydra** is an open-source HRMS (Human Resource Management System) designed to streamline HR processes and operational coordination.
 
-![Horilla Screenshot](https://github.com/horilla-opensource/horilla/assets/131998600/1317bd0a-03a8-40be-8fb2-ecb655bb5c13)
+
 
 ---
 
 ## **Installation**
 
-Horilla can be installed on your system by following the steps below. Ensure you have **Python**, **Django**, and a **database** (preferably PostgreSQL) installed as prerequisites.
+Hydra can be installed on your system by following the steps below. Ensure you have **Python**, **Django**, and a **database** (preferably PostgreSQL) installed as prerequisites.
 
 ---
 
@@ -230,8 +230,8 @@ cd hydra-platform
    ```
 2. Create and activate the virtual environment:
    ```bash
-   python3 -m venv horillavenv
-   source horillavenv/bin/activate
+   python3 -m venv hydravenv
+   source hydravenv/bin/activate
    ```
 3. Install dependencies:
    ```bash
@@ -241,8 +241,8 @@ cd hydra-platform
 #### **Windows**
 1. Create and activate the virtual environment:
    ```powershell
-   python -m venv horillavenv
-   .\horillavenv\Scripts\activate
+   python -m venv hydravenv
+   .\hydravenv\Scripts\activate
    ```
 2. Install dependencies:
    ```powershell
@@ -252,8 +252,8 @@ cd hydra-platform
 #### **macOS**
 1. Create and activate the virtual environment:
    ```bash
-   python3 -m venv horillavenv
-   source horillavenv/bin/activate
+   python3 -m venv hydravenv
+   source hydravenv/bin/activate
    ```
 2. Install dependencies:
    ```bash
@@ -272,13 +272,13 @@ cd hydra-platform
    ```env
    DEBUG=True
    TIME_ZONE=Asia/Kolkata
-   SECRET_KEY=django-insecure-j8op9)1q8$1&@^s&p*_0%d#pr@w9qj@lo=3#@d=a(^@9@zd@%j
+   SECRET_KEY=
    ALLOWED_HOSTS=www.example.com,example.com,*
    DB_INIT_PASSWORD=<generate-a-unique-high-entropy-value>
    DB_ENGINE=django.db.backends.postgresql
-   DB_NAME=horilla_main
-   DB_USER=horilla
-   DB_PASSWORD=horilla
+   DB_NAME=hydra_main
+   DB_USER=hydra
+   DB_PASSWORD=
    DB_HOST=localhost
    DB_PORT=5432
    ```
@@ -339,16 +339,16 @@ python manage.py runserver
 ### **Accessing Hydra**
 
 If everything is configured correctly, you should be able to access Hydra at **http://localhost:8000**.
-![Initialize the inherited database workflow](https://www.horilla.com/wp-content/uploads/2024/12/how-to-initialize-the-database-in-horilla-hrms-step-by-step-1-1024x576.png)
+
 
 
 #### **Initial Setup**
 From the login page, you will have two options:
-1. **Initialize Database**: Use this option to initialize the Horilla database by creating a super admin, headquarter company, department, and job position. Authenticate using the `DB_INIT_PASSWORD` specified in the `.env` file.
+1. **Initialize Database**: Use this option to initialize the Hydra database by creating a super admin, headquarter company, department, and job position. Authenticate using the `DB_INIT_PASSWORD` specified in the `.env` file.
 2. **Load Demo Data**: Use this option if you want to work with demo data. Authenticate using the `DB_INIT_PASSWORD` specified in the `.env` file.
 
 #### **Running on a Custom Port**
-If you wish to run the Horilla application on a different port, specify the port number after the `runserver` command. For example:
+If you wish to run Hydra on a different port, specify the port number after the `runserver` command. For example:
 ```bash
 python3 manage.py runserver 8080  # For Ubuntu/macOS
 python manage.py runserver 8080   # For Windows
@@ -425,5 +425,5 @@ python manage.py runserver 8080   # For Windows
 
 ---
 
-This README provides a comprehensive guide to installing and setting up Horilla on various platforms. If you encounter any issues, feel free to reach out to the Horilla community for support. Happy coding! 🚀
+This README provides a guide to installing and setting up Hydra on supported platforms. Use this repository's issue tracker for project-specific support.
 

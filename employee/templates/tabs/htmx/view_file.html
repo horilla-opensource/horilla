@@ -1,5 +1,5 @@
 {% load i18n %}
-{% load horillafilters %}
+{% load hydrafilters %}
 {% load static %}
 <div class="d-flex justify-content-end">
     <div class="oh-btn-group mb-4">
@@ -15,7 +15,7 @@
             <ion-icon name="attach-outline"></ion-icon>
         </a>
         {% if document.document %}
-            {% if perms.horilla_document.change_documentrequest %}
+            {% if perms.horilla_documents.change_documentrequest %}
                 {% if document.status == "approved" %}
                     <a class="oh-btn oh-btn--success w-100 oh-btn--disabled" title="{% trans 'Approved' %}">
                         <ion-icon class="me-1" name="checkmark-outline"></ion-icon>

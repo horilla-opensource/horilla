@@ -6,11 +6,11 @@ Implemented after Phase 0 approval on 2026-07-14.
 
 | Concern | Decision | Rationale |
 |---|---|---|
-| Canonical identity | **NEW** `hydra_people.Person` | Horilla Employee requires employment semantics and email; Candidate is an application, not a person. |
+| Canonical identity | **NEW** `hydra_people.Person` | legacy HR platform Employee requires employment semantics and email; Candidate is an application, not a person. |
 | Employee | **REUSE/LINK** | A nullable one-to-one link enables later conversion without copying work ownership into Person. |
 | Recruitment Candidate | **WRAP** with `PersonApplication` | One Person can own many applications while each Candidate belongs to exactly one Person. The bridge avoids adding a new migration to the upstream recruitment app before its baseline-migration problem is remediated. |
-| Authentication and authorization | **REUSE/EXTEND** Django/Horilla auth | Default model permissions plus explicit `link_candidate` permission protect every server endpoint. |
-| Audit metadata | **REUSE** `HorillaModel` and global auditlog | Creation/modification actors and auditlog history remain consistent with Horilla. |
+| Authentication and authorization | **REUSE/EXTEND** Django/legacy HR platform auth | Default model permissions plus explicit `link_candidate` permission protect every server endpoint. |
+| Audit metadata | **REUSE** `HydraModel` and global auditlog | Creation/modification actors and auditlog history remain consistent with legacy HR platform. |
 
 ## Implemented vertical slice
 
@@ -47,7 +47,7 @@ Anonymous requests are redirected to login. Authenticated users missing an actio
 
 ## Migration
 
-`hydra_people/migrations/0001_initial.py` is versioned even though upstream Horilla ignores most migration files. It depends on locally generated upstream `employee.0001_initial` and `recruitment.0001_initial`, matching the Phase 0 bootstrap strategy. TASK-2 adds `0002_personapplication_link_source.py`; TASK-012 adds `0005_person_duplicate_merge.py` with fingerprint/suggestion backfill. No upstream schema was modified.
+`hydra_people/migrations/0001_initial.py` is versioned even though upstream legacy HR platform ignores most migration files. It depends on locally generated upstream `employee.0001_initial` and `recruitment.0001_initial`, matching the Phase 0 bootstrap strategy. TASK-2 adds `0002_personapplication_link_source.py`; TASK-012 adds `0005_person_duplicate_merge.py` with fingerprint/suggestion backfill. No upstream schema was modified.
 
 ## Manual verification
 
@@ -67,7 +67,7 @@ Automated in-app browser attachment was unavailable during TASK-1 verification. 
 Verified on PostgreSQL 17.2 and CPython 3.11.9:
 
 - `python manage.py test` discovered and passed all 14 tests, including model/service behavior, direct-URL denials and rendering every TASK-1 page;
-- the test database was created and destroyed successfully with Horilla schedulers disabled for the test command;
+- the test database was created and destroyed successfully with legacy HR platform schedulers disabled for the test command;
 - `python manage.py check` reported no issues;
 - `python manage.py makemigrations --check --dry-run` reported no changes;
 - `python manage.py migrate --check` succeeded;

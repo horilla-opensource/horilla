@@ -23,7 +23,7 @@ class MigrationManifestTests(SimpleTestCase):
         )
 
         self.assertEqual(verifier.comparison_errors(manifest, current), [])
-        self.assertEqual(len(current), 74)
+        self.assertEqual(len(current), 80)
         self.assertIn(
             "deployment/django_auth_migrations/0013_user_is_new_employee.py",
             current,

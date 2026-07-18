@@ -1,5 +1,5 @@
 """
-horilla_automation/views/views.py
+hydra_automation/views/views.py
 """
 
 from django import forms
@@ -13,7 +13,7 @@ from hydra_automations.methods.methods import generate_choices
 from hydra_automations.methods.serialize import serialize_form
 from hydra_automations.models import MailAutomation
 from hydra_automations.signals import REFRESH_METHODS
-from hydra_views.generic.cbv.views import HorillaFormView
+from hydra_views.generic.cbv.views import HydraFormView
 
 
 @login_required
@@ -45,7 +45,7 @@ def get_to_field(request):
 
 
 @login_required
-@permission_required("horilla_automations.delete_mailautomation")
+@permission_required("hydra_automations.delete_mailautomation")
 def delete_automation(request, pk):
     """
     Automation delete view
@@ -60,7 +60,7 @@ def delete_automation(request, pk):
 
 
 @login_required
-@permission_required("horilla_automations.add_mailautomation")
+@permission_required("hydra_automations.add_mailautomation")
 def refresh_automations(request):
     """
     Method to  refresh automation signals
@@ -79,4 +79,4 @@ def refresh_automations(request):
     else:
         messages.error(request, "Automation method not available to refresh.")
 
-    return HorillaFormView.HttpResponse()
+    return HydraFormView.HttpResponse()

@@ -1,5 +1,5 @@
 """
-horilla/signals.py
+hydra/signals.py
 """
 
 from django.dispatch import Signal

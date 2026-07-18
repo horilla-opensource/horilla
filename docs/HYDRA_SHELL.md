@@ -6,10 +6,10 @@ Implemented on 2026-07-14 after Person identity and organization scope.
 
 | Concern | Decision | Rationale |
 |---|---|---|
-| Horilla page frame | **REUSE** `index.html`, navbar, sidebar, notifications and profile controls | The shell must not fork or rewrite working HRMS infrastructure. |
+| legacy HR platform page frame | **REUSE** `index.html`, navbar, sidebar, notifications and profile controls | The shell must not fork or rewrite working HRMS infrastructure. |
 | Hydra page frame | **WRAP** with `hydra_shell/base.html` | Hydra receives one branded workspace inside the existing authenticated frame. |
 | People and Organization templates | **EXTEND** through the shared base | Both modules keep their server-rendered views and now use one responsive shell. |
-| Branding and module navigation | **NEW** scoped CSS and template tags | Hydra-specific presentation stays isolated from non-Hydra Horilla pages. |
+| Branding and module navigation | **NEW** scoped CSS and template tags | Hydra-specific presentation stays isolated from non-Hydra legacy HR platform pages. |
 | Public training portal | **WRAP** with an HTTPS-only URL builder | The existing portal remains external and receives only public language plus `from=hydra`. |
 
 ## Implemented vertical slice
@@ -22,7 +22,7 @@ Implemented on 2026-07-14 after Person identity and organization scope.
 - a skip link, keyboard focus styles, 44 px-class touch targets and reduced-motion handling;
 - responsive cards, forms, details, tables and organization hierarchy styles shared by all current Hydra screens;
 - an external `Training / Hydra` link with a visible external-site label and safe `noopener noreferrer external` attributes;
-- mobile initialization that collapses the inherited Horilla sidebar while preserving the existing menu button for reopening it.
+- mobile initialization that collapses the inherited legacy HR platform sidebar while preserving the existing menu button for reopening it.
 
 The previous inline CSS in `hydra_people/base.html` moved to the shell's namespaced static stylesheet. The People base is now a compatibility shim over `hydra_shell/base.html`, so Organization is migrated without changing each individual template.
 
@@ -64,7 +64,7 @@ Verified in the in-app browser against the local PostgreSQL-backed server:
 - at 390 × 844, the inherited sidebar collapsed, the document measured 390 px with no horizontal overflow, shell width was 386 px and navigation width was 361 px;
 - People table rows became readable mobile cards and the active tab remained unique;
 - Organization rendered without horizontal overflow, showed only Browser Location A and excluded Browser Location B;
-- the inherited menu button reopened the 230 px Horilla sidebar and closed it again successfully.
+- the inherited menu button reopened the 230 px legacy HR platform sidebar and closed it again successfully.
 
 ## Manual test steps
 
@@ -72,7 +72,7 @@ Verified in the in-app browser against the local PostgreSQL-backed server:
 2. Open `/hydra/people/` and confirm the shell shows only modules allowed by Django permissions.
 3. Follow Organization and confirm `aria-current`/active styling moves to that module.
 4. Resize to 390 × 844 and confirm there is no horizontal scroll.
-5. Open and close the inherited Horilla sidebar with the navbar menu button.
+5. Open and close the inherited legacy HR platform sidebar with the navbar menu button.
 6. Open `Training / Hydra` and confirm the external URL contains only `lang` and `from=hydra`.
 7. Remove each view permission and confirm its link disappears while direct endpoints still enforce 403/404 as previously tested.
 
@@ -81,6 +81,6 @@ Verified in the in-app browser against the local PostgreSQL-backed server:
 - Translation strings are ready for catalogs, but catalogs are not populated yet.
 - Only implemented Hydra modules appear in the local module navigation; later apps must opt into the shell and add explicit permission-gated links.
 - Per-location training URLs and content ownership remain outside this slice.
-- The shell intentionally retains Horilla's outer navbar/sidebar and does not rebrand unrelated HRMS pages.
+- The shell intentionally retains legacy HR platform's outer navbar/sidebar and does not rebrand unrelated HRMS pages.
 
 Next: extend recruitment with the existing Candidate/Application boundary and current organization selectors.

@@ -5,10 +5,10 @@
 Full Engineering Package TASK-017 is implemented. The decision is **NEW MODULE
 + REUSE/WRAP**:
 
-- `hydra_tasks` owns one canonical operational task contract because Horilla's
+- `hydra_tasks` owns one canonical operational task contract because legacy HR platform's
   project, onboarding and helpdesk tasks have different owners and cannot link
   one scoped task consistently to `hydra_people.Person` and Hydra domain facts;
-- Horilla's database `notifications.Notification` and `notify` signal are
+- legacy HR platform's database `notifications.Notification` and `notify` signal are
   reused behind a durable, scope-rechecking delivery boundary;
 - Company, Person, legalization, arrival, housing and onboarding records remain
   owned by their existing modules. Tasks reference them but never copy their

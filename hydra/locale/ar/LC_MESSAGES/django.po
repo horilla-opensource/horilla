@@ -1,6 +1,6 @@
 msgid ""
 msgstr ""
-"Project-Id-Version: horilla-hrms\n"
+"Project-Id-Version: hydra-hrms\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2026-07-09 15:16+0530\n"
 "PO-Revision-Date: 2025-10-16 06:41\n"
@@ -12,7 +12,7 @@ msgstr ""
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=6; plural=(n==0 ? 0 : n==1 ? 1 : n==2 ? 2 : n%100>=3 "
 "&& n%100<=10 ? 3 : n%100>=11 && n%100<=99 ? 4 : 5);\n"
-"X-Crowdin-Project: horilla-hrms\n"
+"X-Crowdin-Project: hydra-hrms\n"
 "X-Crowdin-Project-ID: 838370\n"
 "X-Crowdin-Language: ar\n"
 "X-Crowdin-File: django.po\n"
@@ -66,7 +66,7 @@ msgstr "الأذونات"
 msgid "Default Accessibility"
 msgstr "إمكانية الوصول الافتراضية"
 
-msgid "Limit default view access to horilla feature"
+msgid "Limit default view access to hydra feature"
 msgstr "الحد من الوصول الافتراضي للعرض إلى ميزة الهورلا"
 
 msgid "Actions"
@@ -2394,7 +2394,7 @@ msgid "Automatic Check Out Time"
 msgstr "وقت التدقيق التلقائي"
 
 msgid ""
-"Time at which the horilla will automatically check out the employee "
+"Time at which the hydra will automatically check out the employee "
 "attendance if they forget."
 msgstr "الوقت الذي ستتحقق فيه الهرلية تلقائياً من حضور العامل إذا نسيت."
 
@@ -2877,8 +2877,8 @@ msgid "Forgot password"
 msgstr "نسيت كلمة المرور"
 
 #, fuzzy
-#| msgid "horilla-theme"
-msgid "Horilla"
+#| msgid "hydra-theme"
+msgid "Hydra"
 msgstr "قالب الهرلية"
 
 msgid "Employee Permissions"
@@ -4607,7 +4607,7 @@ msgstr "النسخ الاحتياطي"
 msgid "gdrive"
 msgstr "قرص"
 
-msgid "horilla-theme"
+msgid "hydra-theme"
 msgstr "قالب الهرلية"
 
 msgid "color-settings"
@@ -4685,7 +4685,7 @@ msgstr "تم حذف {} بنجاح."
 msgid "{} not found."
 msgstr "{} غير موجود."
 
-msgid "Test mail from Horilla"
+msgid "Test mail from Hydra"
 msgstr "اختبار البريد الإلكتروني من هوريلا"
 
 msgid "Something went wrong :"
@@ -13466,7 +13466,7 @@ msgstr "مسح الكل"
 msgid "Settings"
 msgstr "الإعدادات"
 
-msgid "Horilla HRMS"
+msgid "Hydra HRMS"
 msgstr ""
 
 msgid "Sign Up"
@@ -13479,10 +13479,10 @@ msgid "Go To Home"
 msgstr "الذهاب إلى الصفحة الرئيسية"
 
 msgid ""
-"Authenticate with your password to initialize the Horilla HRMS database."
+"Authenticate with your password to initialize the Hydra HRMS database."
 msgstr "المصادقة مع كلمة المرور الخاصة بك لتهيئة قاعدة بيانات HRMS هوريا."
 
-msgid "Please sign up to access the Horilla HRMS."
+msgid "Please sign up to access the Hydra HRMS."
 msgstr "الرجاء التسجيل للوصول إلى نظام هوريلا HRMS."
 
 msgid "e.g. Adam"
@@ -14094,10 +14094,10 @@ msgstr ""
 #~ msgid "No image chosen."
 #~ msgstr "لم يتم اختيار صورة."
 
-#~ msgid "LDAP to Horilla Employee Field Mapping"
+#~ msgid "LDAP to Hydra Employee Field Mapping"
 #~ msgstr "LDAP إلى خرائط حقل موظفي هوريلا"
 
-#~ msgid "Horilla Employee Field"
+#~ msgid "Hydra Employee Field"
 #~ msgstr "حقل موظفي الهوريلا"
 
 #~ msgid "LDAP Attribute Name"

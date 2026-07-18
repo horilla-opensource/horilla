@@ -8,7 +8,7 @@ from django.utils import timezone
 from django.utils.translation import gettext_lazy as _
 
 from base.models import Company
-from hydra.models import HorillaModel
+from hydra.models import HydraModel
 from hydra_documents.storage import private_document_storage, quarantine_storage
 from hydra_people.models import Person
 from recruitment.models import Candidate
@@ -61,7 +61,7 @@ def default_retention_until():
     )
 
 
-class PrivateDocumentType(HorillaModel):
+class PrivateDocumentType(HydraModel):
     """Fixed-field, company-scoped rules for future private-document uploads."""
 
     Category = DocumentCategory
@@ -195,7 +195,7 @@ class PrivateDocumentQuerySet(models.QuerySet):
         raise TypeError("Private documents use retention-controlled tombstones.")
 
 
-class PrivateDocument(HorillaModel):
+class PrivateDocument(HydraModel):
     Category = DocumentCategory
 
     objects = PrivateDocumentQuerySet.as_manager()

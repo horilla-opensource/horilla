@@ -1,7 +1,7 @@
 #
 msgid ""
 msgstr ""
-"Project-Id-Version: Horilla\n"
+"Project-Id-Version: Hydra\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2026-07-09 15:16+0530\n"
 "PO-Revision-Date: 2026-07-07 00:00+0000\n"
@@ -62,8 +62,8 @@ msgstr "Дозволи"
 msgid "Default Accessibility"
 msgstr "Доступність за замовчуванням"
 
-msgid "Limit default view access to horilla feature"
-msgstr "Обмежити доступ до функції Horilla за замовчуванням"
+msgid "Limit default view access to hydra feature"
+msgstr "Обмежити доступ до функції Hydra за замовчуванням"
 
 msgid "Actions"
 msgstr "Дії"
@@ -2383,10 +2383,10 @@ msgid "Automatic Check Out Time"
 msgstr "Час автоматичного виходу"
 
 msgid ""
-"Time at which the horilla will automatically check out the employee "
+"Time at which the hydra will automatically check out the employee "
 "attendance if they forget."
 msgstr ""
-"Час, коли Horilla автоматично зафіксує вихід співробітника, якщо він забуде "
+"Час, коли Hydra автоматично зафіксує вихід співробітника, якщо він забуде "
 "це зробити."
 
 msgid "Employee Shift Schedule"
@@ -2883,9 +2883,9 @@ msgid "Forgot password"
 msgstr "Забули пароль"
 
 #, fuzzy
-#| msgid "horilla-theme"
-msgid "Horilla"
-msgstr "тема horilla"
+#| msgid "hydra-theme"
+msgid "Hydra"
+msgstr "тема hydra"
 
 msgid "Employee Permissions"
 msgstr "Дозволи співробітника"
@@ -4607,8 +4607,8 @@ msgstr "резервна копія"
 msgid "gdrive"
 msgstr "gdrive"
 
-msgid "horilla-theme"
-msgstr "тема horilla"
+msgid "hydra-theme"
+msgstr "тема hydra"
 
 msgid "color-settings"
 msgstr "налаштування кольорів"
@@ -4687,8 +4687,8 @@ msgstr "{} успішно видалено."
 msgid "{} not found."
 msgstr "{} не знайдено."
 
-msgid "Test mail from Horilla"
-msgstr "Тестовий лист від Horilla"
+msgid "Test mail from Hydra"
+msgstr "Тестовий лист від Hydra"
 
 msgid "Something went wrong :"
 msgstr "Щось пішло не так:"
@@ -13442,7 +13442,7 @@ msgstr "Очистити все"
 msgid "Settings"
 msgstr "Налаштування"
 
-msgid "Horilla HRMS"
+msgid "Hydra HRMS"
 msgstr ""
 
 msgid "Sign Up"
@@ -13455,11 +13455,11 @@ msgid "Go To Home"
 msgstr "На головну"
 
 msgid ""
-"Authenticate with your password to initialize the Horilla HRMS database."
-msgstr "Введіть пароль для ініціалізації бази даних Horilla HRMS."
+"Authenticate with your password to initialize the Hydra HRMS database."
+msgstr "Введіть пароль для ініціалізації бази даних Hydra HRMS."
 
-msgid "Please sign up to access the Horilla HRMS."
-msgstr "Будь ласка, зареєструйтеся для доступу до Horilla HRMS."
+msgid "Please sign up to access the Hydra HRMS."
+msgstr "Будь ласка, зареєструйтеся для доступу до Hydra HRMS."
 
 msgid "e.g. Adam"
 msgstr ""
@@ -14049,11 +14049,11 @@ msgstr ""
 #~ msgid "No image chosen."
 #~ msgstr "Зображення не вибрано."
 
-#~ msgid "LDAP to Horilla Employee Field Mapping"
-#~ msgstr "Відповідність полів LDAP та полів співробітника Horilla"
+#~ msgid "LDAP to Hydra Employee Field Mapping"
+#~ msgstr "Відповідність полів LDAP та полів співробітника Hydra"
 
-#~ msgid "Horilla Employee Field"
-#~ msgstr "Поле співробітника Horilla"
+#~ msgid "Hydra Employee Field"
+#~ msgstr "Поле співробітника Hydra"
 
 #~ msgid "LDAP Attribute Name"
 #~ msgstr "Назва атрибута LDAP"

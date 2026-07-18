@@ -16,7 +16,7 @@ from django.http import QueryDict
 from django.utils import timezone
 from django.utils.translation import gettext_lazy as _
 
-from base.horilla_company_manager import HorillaCompanyManager
+from base.hydra_company_manager import HydraCompanyManager
 from base.methods import get_next_month_same_date
 from base.models import (
     Company,
@@ -30,8 +30,8 @@ from base.models import (
 from employee.methods.duration_methods import strtime_seconds
 from employee.models import BonusPoint, Employee, EmployeeWorkInformation
 from hydra import hydra_middlewares
-from hydra.models import HorillaModel, upload_path
-from hydra_audit.models import HorillaAuditInfo, HorillaAuditLog
+from hydra.models import HydraModel, upload_path
+from hydra_audit.models import HydraAuditInfo, HydraAuditLog
 
 logger = logging.getLogger(__name__)
 
@@ -73,7 +73,7 @@ def get_date_range(start_date, end_date):
     return date_list
 
 
-class FilingStatus(HorillaModel):
+class FilingStatus(HydraModel):
     """
     FilingStatus model
     """
@@ -106,7 +106,7 @@ class FilingStatus(HorillaModel):
     company_id = models.ForeignKey(
         Company, null=True, editable=False, on_delete=models.PROTECT
     )
-    objects = HorillaCompanyManager()
+    objects = HydraCompanyManager()
 
     def __str__(self) -> str:
         return str(self.filing_status)
@@ -117,7 +117,7 @@ class FilingStatus(HorillaModel):
         verbose_name_plural = _("Filing Statuses")
 
 
-class Contract(HorillaModel):
+class Contract(HydraModel):
     """
     Contract Model
     """
@@ -263,14 +263,14 @@ class Contract(HorillaModel):
     )
 
     note = models.TextField(null=True, blank=True, max_length=255)
-    history = HorillaAuditLog(
+    history = HydraAuditLog(
         related_name="history_set",
         bases=[
-            HorillaAuditInfo,
+            HydraAuditInfo,
         ],
     )
 
-    objects = HorillaCompanyManager("employee_id__employee_work_info__company_id")
+    objects = HydraCompanyManager("employee_id__employee_work_info__company_id")
 
     def __str__(self) -> str:
         return f"{self.contract_name} -{self.contract_start_date} - {self.contract_end_date}"
@@ -425,7 +425,7 @@ class WorkRecord(models.Model):
     is_leave_record = models.BooleanField(default=False)
     day_percentage = models.FloatField(default=0)
     last_update = models.DateTimeField(null=True, blank=True)
-    objects = HorillaCompanyManager("employee_id__employee_work_info__company_id")
+    objects = HydraCompanyManager("employee_id__employee_work_info__company_id")
 
     def save(self, *args, **kwargs):
         self.last_update = timezone.now()
@@ -706,7 +706,7 @@ class MultipleCondition(models.Model):
     )
 
 
-class Allowance(HorillaModel):
+class Allowance(HydraModel):
     """
     Allowance model
     """
@@ -931,7 +931,7 @@ class Allowance(HorillaModel):
     )
     only_show_under_employee = models.BooleanField(default=False, editable=False)
     is_loan = models.BooleanField(default=False, editable=False)
-    objects = HorillaCompanyManager()
+    objects = HydraCompanyManager()
     other_conditions = models.ManyToManyField(
         MultipleCondition, blank=True, editable=False
     )
@@ -1050,7 +1050,7 @@ class Allowance(HorillaModel):
         super().save()
 
 
-class Deduction(HorillaModel):
+class Deduction(HydraModel):
     """
     Deduction model
     """
@@ -1242,7 +1242,7 @@ class Deduction(HorillaModel):
         Company, null=True, editable=False, on_delete=models.PROTECT
     )
     only_show_under_employee = models.BooleanField(default=False, editable=False)
-    objects = HorillaCompanyManager()
+    objects = HydraCompanyManager()
 
     is_installment = models.BooleanField(default=False, editable=False)
     other_conditions = models.ManyToManyField(
@@ -1336,7 +1336,7 @@ class Deduction(HorillaModel):
         super().save()
 
 
-class Payslip(HorillaModel):
+class Payslip(HydraModel):
     """
     Payslip model
     """
@@ -1366,12 +1366,12 @@ class Payslip(HorillaModel):
         max_length=20, null=True, default="draft", choices=status_choices
     )
     sent_to_employee = models.BooleanField(null=True, default=False)
-    objects = HorillaCompanyManager("employee_id__employee_work_info__company_id")
+    objects = HydraCompanyManager("employee_id__employee_work_info__company_id")
     installment_ids = models.ManyToManyField(Deduction, editable=False)
-    history = HorillaAuditLog(
+    history = HydraAuditLog(
         related_name="history_set",
         bases=[
-            HorillaAuditInfo,
+            HydraAuditInfo,
         ],
     )
 
@@ -1459,7 +1459,7 @@ class Payslip(HorillaModel):
         ]
 
 
-class LoanAccount(HorillaModel):
+class LoanAccount(HydraModel):
     """
     This modal is used to store the loan Account details
     """
@@ -1502,7 +1502,7 @@ class LoanAccount(HorillaModel):
             null=True,
             editable=False,
         )
-    objects = HorillaCompanyManager("employee_id__employee_work_info__company_id")
+    objects = HydraCompanyManager("employee_id__employee_work_info__company_id")
 
     def __str__(self):
         return f"{self.title} - {self.employee_id}"
@@ -1574,7 +1574,7 @@ class ReimbursementMultipleAttachment(models.Model):
     objects = models.Manager()
 
 
-class Reimbursement(HorillaModel):
+class Reimbursement(HydraModel):
     """
     Reimbursement Model
     """
@@ -1644,7 +1644,7 @@ class Reimbursement(HorillaModel):
     allowance_id = models.ForeignKey(
         Allowance, on_delete=models.SET_NULL, null=True, editable=False
     )
-    objects = HorillaCompanyManager("employee_id__employee_work_info__company_id")
+    objects = HydraCompanyManager("employee_id__employee_work_info__company_id")
 
     class Meta:
         ordering = ["-id"]
@@ -1793,7 +1793,7 @@ class ReimbursementFile(models.Model):
     objects = models.Manager()
 
 
-class ReimbursementrequestComment(HorillaModel):
+class ReimbursementrequestComment(HydraModel):
     """
     ReimbursementRequestComment Model
     """

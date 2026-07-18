@@ -12,14 +12,14 @@ from django.db.models.signals import post_save
 from django.dispatch import receiver
 from django.utils.translation import gettext_lazy as _
 
-from base.horilla_company_manager import HorillaCompanyManager
+from base.hydra_company_manager import HydraCompanyManager
 from employee.models import Employee
-from hydra.models import HorillaModel
-from hydra_audit.models import HorillaAuditInfo, HorillaAuditLog
+from hydra.models import HydraModel
+from hydra_audit.models import HydraAuditInfo, HydraAuditLog
 from recruitment.models import Candidate, Recruitment
 
 
-class OnboardingStage(HorillaModel):
+class OnboardingStage(HydraModel):
     """
     OnboardingStage models
     """
@@ -37,7 +37,7 @@ class OnboardingStage(HorillaModel):
     is_final_stage = models.BooleanField(
         default=False, verbose_name=_("Is Final Stage")
     )
-    objects = HorillaCompanyManager("recruitment_id__company_id")
+    objects = HydraCompanyManager("recruitment_id__company_id")
 
     def __str__(self):
         return f"{self.stage_title}"
@@ -65,7 +65,7 @@ def create_initial_stage(sender, instance, created, **kwargs):
         initial_stage.save()
 
 
-class OnboardingTask(HorillaModel):
+class OnboardingTask(HydraModel):
     """
     OnboardingTask models
     """
@@ -89,7 +89,7 @@ class OnboardingTask(HorillaModel):
         Employee, related_name="onboarding_task", verbose_name=_("Task Managers")
     )
 
-    objects = HorillaCompanyManager("stage_id__recruitment_id__company_id")
+    objects = HydraCompanyManager("stage_id__recruitment_id__company_id")
 
     def __str__(self):
         return f"{self.task_title}"
@@ -111,7 +111,7 @@ class OnboardingCandidate(Candidate):
         app_label = "onboarding"
 
 
-class CandidateStage(HorillaModel):
+class CandidateStage(HydraModel):
     """
     CandidateStage model
     """
@@ -124,7 +124,7 @@ class CandidateStage(HorillaModel):
     )
     onboarding_end_date = models.DateField(blank=True, null=True)
     sequence = models.IntegerField(null=True, default=0)
-    objects = HorillaCompanyManager("candidate_id__recruitment_id__company_id")
+    objects = HydraCompanyManager("candidate_id__recruitment_id__company_id")
 
     def __str__(self):
         return f"{self.candidate_id}  |  {self.onboarding_stage_id}"
@@ -151,7 +151,7 @@ class CandidateStage(HorillaModel):
         ordering = ["sequence"]
 
 
-class CandidateTask(HorillaModel):
+class CandidateTask(HydraModel):
     """
     CandidateTask model
     """
@@ -177,11 +177,11 @@ class CandidateTask(HorillaModel):
         max_length=50, choices=choice, blank=True, null=True, default="todo"
     )
     onboarding_task_id = models.ForeignKey(OnboardingTask, on_delete=models.PROTECT)
-    objects = HorillaCompanyManager("candidate_id__recruitment_id__company_id")
-    history = HorillaAuditLog(
+    objects = HydraCompanyManager("candidate_id__recruitment_id__company_id")
+    history = HydraAuditLog(
         related_name="history_set",
         bases=[
-            HorillaAuditInfo,
+            HydraAuditInfo,
         ],
     )
 
@@ -197,7 +197,7 @@ class CandidateTask(HorillaModel):
         verbose_name_plural = _("Onboarding Tasks")
 
 
-class OnboardingPortal(HorillaModel):
+class OnboardingPortal(HydraModel):
     """
     OnboardingPortal model
     """
@@ -209,7 +209,7 @@ class OnboardingPortal(HorillaModel):
     used = models.BooleanField(default=False)
     count = models.IntegerField(default=0)
     profile = models.ImageField(upload_to="employee/profile", null=True, blank=True)
-    objects = HorillaCompanyManager("candidate_id__recruitment_id__company_id")
+    objects = HydraCompanyManager("candidate_id__recruitment_id__company_id")
 
     def __str__(self):
         return f"{self.candidate_id} | {self.token}"

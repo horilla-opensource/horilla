@@ -90,7 +90,7 @@ Decision: reuse `Company` and `Department`; add only the missing physical and op
 
 ### Existing recruitment pipeline
 
-`recruitment.Recruitment`, `Stage` and `Candidate` provide campaigns, open positions, stage managers, recruitment managers, ordered stages, hiring/cancel states, interviews, surveys, ratings and document requests. `Candidate` uses `HorillaCompanyManager` through its recruitment's company and has simple-history audit records.
+`recruitment.Recruitment`, `Stage` and `Candidate` provide campaigns, open positions, stage managers, recruitment managers, ordered stages, hiring/cancel states, interviews, surveys, ratings and document requests. `Candidate` uses `HydraCompanyManager` through its recruitment's company and has simple-history audit records.
 
 ### Why `Candidate` is not `Person`
 
@@ -134,13 +134,13 @@ Decision: extend, not replace.
 - View decorators such as `permission_required`, recruitment manager checks and owner/manager checks.
 - Reporting-manager subordinate selection.
 - `CompanyMiddleware` stores a selected company in the session.
-- `HorillaCompanyManager` applies a model-level `company_filter` when a selected company exists.
+- `HydraCompanyManager` applies a model-level `company_filter` when a selected company exists.
 
 ### Limitations
 
 - Selecting `all` removes company filtering.
 - Filtering is held in thread-local request state and dynamically attached to model classes.
-- `HorillaCompanyManager.entire()` deliberately bypasses the filter.
+- `HydraCompanyManager.entire()` deliberately bypasses the filter.
 - broad Django model permissions do not encode a user's location, department or team scope;
 - manager decorators decide whether someone is a manager globally and do not prove access to the object in the URL;
 - swallowed exceptions in the manager can return unscoped querysets;
@@ -160,8 +160,8 @@ Decision: reuse. Hydra services may emit notifications after transaction commit.
 
 There are two overlapping mechanisms:
 
-1. `django-auditlog` is configured to include all models and records actor/request context through middleware. `HorillaModel` exposes an auditlog history field and created/modified users.
-2. `django-simple-history` is used selectively through `HorillaAuditLog` for Candidate, EmployeeWorkInformation, Attendance and other models, with diff UI helpers.
+1. `django-auditlog` is configured to include all models and records actor/request context through middleware. `HydraModel` exposes an auditlog history field and created/modified users.
+2. `django-simple-history` is used selectively through `HydraAuditLog` for Candidate, EmployeeWorkInformation, Attendance and other models, with diff UI helpers.
 
 Decision: reuse both where they already operate, but define one convention per Hydra model. Business status transitions should have explicit history records, and private document reads/downloads need a dedicated immutable access log because model-change history does not record reads.
 

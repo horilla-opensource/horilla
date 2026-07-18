@@ -1,6 +1,6 @@
 msgid ""
 msgstr ""
-"Project-Id-Version: horillatw\n"
+"Project-Id-Version: hydratw\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2026-07-09 15:16+0530\n"
 "PO-Revision-Date: 2025-07-31 06:12\n"
@@ -11,7 +11,7 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=1; plural=0;\n"
-"X-Crowdin-Project: horillatw\n"
+"X-Crowdin-Project: hydratw\n"
 "X-Crowdin-Project-ID: 813444\n"
 "X-Crowdin-Language: zh-TW\n"
 "X-Crowdin-File: django.po\n"
@@ -65,8 +65,8 @@ msgstr "權限"
 msgid "Default Accessibility"
 msgstr "預設可訪問性"
 
-msgid "Limit default view access to horilla feature"
-msgstr "限制預設檢視存取至 Horilla 功能"
+msgid "Limit default view access to hydra feature"
+msgstr "限制預設檢視存取至 Hydra 功能"
 
 msgid "Actions"
 msgstr "操作"
@@ -2431,7 +2431,7 @@ msgid "Automatic Check Out Time"
 msgstr "自動下班打卡時間"
 
 msgid ""
-"Time at which the horilla will automatically check out the employee "
+"Time at which the hydra will automatically check out the employee "
 "attendance if they forget."
 msgstr "如果員工忘記了，將會自動檢查員工出勤的時間。"
 
@@ -2936,7 +2936,7 @@ msgstr "儲存密碼"
 msgid "Forgot password"
 msgstr "忘記密碼"
 
-msgid "Horilla"
+msgid "Hydra"
 msgstr ""
 
 msgid "Employee Permissions"
@@ -4688,7 +4688,7 @@ msgstr ""
 msgid "gdrive"
 msgstr ""
 
-msgid "horilla-theme"
+msgid "hydra-theme"
 msgstr ""
 
 #, fuzzy
@@ -4782,8 +4782,8 @@ msgstr "{} 已成功刪除。"
 msgid "{} not found."
 msgstr "{} 未找到。"
 
-msgid "Test mail from Horilla"
-msgstr "來自 Horilla 的測試郵件"
+msgid "Test mail from Hydra"
+msgstr "來自 Hydra 的測試郵件"
 
 msgid "Something went wrong :"
 msgstr "出了點問題："
@@ -14095,7 +14095,7 @@ msgstr "清除全部"
 msgid "Settings"
 msgstr "設定"
 
-msgid "Horilla HRMS"
+msgid "Hydra HRMS"
 msgstr ""
 
 msgid "Sign Up"
@@ -14108,11 +14108,11 @@ msgid "Go To Home"
 msgstr "轉至首頁"
 
 msgid ""
-"Authenticate with your password to initialize the Horilla HRMS database."
-msgstr "使用您的密碼進行身份驗證以初始化 Horilla HRMS 資料庫。"
+"Authenticate with your password to initialize the Hydra HRMS database."
+msgstr "使用您的密碼進行身份驗證以初始化 Hydra HRMS 資料庫。"
 
-msgid "Please sign up to access the Horilla HRMS."
-msgstr "請註冊以存取 Horilla HRMS。"
+msgid "Please sign up to access the Hydra HRMS."
+msgstr "請註冊以存取 Hydra HRMS。"
 
 msgid "e.g. Adam"
 msgstr ""
@@ -14720,7 +14720,7 @@ msgstr ""
 
 #, fuzzy
 #~| msgid "Employee deleted"
-#~ msgid "Horilla Employee Field"
+#~ msgid "Hydra Employee Field"
 #~ msgstr "員工被刪除"
 
 #, fuzzy

@@ -9,12 +9,12 @@ from django.urls import reverse
 from django.utils import timezone
 from django.utils.translation import gettext_lazy as _
 
-from hydra.models import HorillaModel
+from hydra.models import HydraModel
 from hydra_coordination.models import Location
 from hydra_people.models import Person
 
 
-class HousingFacility(HorillaModel):
+class HousingFacility(HydraModel):
     uuid = models.UUIDField(default=uuid4, unique=True, editable=False)
     location = models.ForeignKey(
         Location,
@@ -48,7 +48,7 @@ class HousingFacility(HorillaModel):
         self.notes = self.notes.strip()
 
 
-class HousingBuilding(HorillaModel):
+class HousingBuilding(HydraModel):
     uuid = models.UUIDField(default=uuid4, unique=True, editable=False)
     facility = models.ForeignKey(
         HousingFacility,
@@ -77,7 +77,7 @@ class HousingBuilding(HorillaModel):
         self.notes = self.notes.strip()
 
 
-class HousingFloor(HorillaModel):
+class HousingFloor(HydraModel):
     uuid = models.UUIDField(default=uuid4, unique=True, editable=False)
     building = models.ForeignKey(
         HousingBuilding,
@@ -105,7 +105,7 @@ class HousingFloor(HorillaModel):
         self.name = " ".join(self.name.split())
 
 
-class HousingRoom(HorillaModel):
+class HousingRoom(HydraModel):
     uuid = models.UUIDField(default=uuid4, unique=True, editable=False)
     facility = models.ForeignKey(
         HousingFacility,
@@ -156,7 +156,7 @@ class HousingRoom(HorillaModel):
         return self.floor
 
 
-class HousingBed(HorillaModel):
+class HousingBed(HydraModel):
     uuid = models.UUIDField(default=uuid4, unique=True, editable=False)
     room = models.ForeignKey(
         HousingRoom,
@@ -191,7 +191,7 @@ class HousingAssignmentQuerySet(models.QuerySet):
         raise TypeError("Housing assignments cannot be deleted.")
 
 
-class HousingAssignment(HorillaModel):
+class HousingAssignment(HydraModel):
     uuid = models.UUIDField(default=uuid4, unique=True, editable=False)
     person = models.ForeignKey(
         Person,

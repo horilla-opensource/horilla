@@ -199,7 +199,7 @@ class EmployeeTeamAssignmentTestCase(TestCase):
 
 
 class EmployeeTeamAssignmentServiceTests(EmployeeTeamAssignmentTestCase):
-    def test_reassignment_closes_history_and_synchronizes_horilla_work_info(self):
+    def test_reassignment_closes_history_and_synchronizes_work_info(self):
         self.grant_assignment_permissions()
         history_count = self.employee.employee_work_info.history.count()
 

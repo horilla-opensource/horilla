@@ -521,7 +521,7 @@ class PrivateDocumentTests(HydraRecruitmentTestCase):
                 errors = private_storage_check(None)
         self.assertEqual([error.id for error in errors], ["hydra_documents.E001"])
 
-    def test_existing_horilla_candidate_view_remains_operational(self):
+    def test_existing_hydra_candidate_view_remains_operational(self):
         self.client.force_login(self.admin)
         response = self.client.get(reverse("candidate-view"))
         self.assertEqual(response.status_code, 200)

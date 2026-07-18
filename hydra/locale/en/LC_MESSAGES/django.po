@@ -70,7 +70,7 @@ msgstr ""
 msgid "Default Accessibility"
 msgstr ""
 
-msgid "Limit default view access to horilla feature"
+msgid "Limit default view access to hydra feature"
 msgstr ""
 
 msgid "Actions"
@@ -2586,7 +2586,7 @@ msgid "Automatic Check Out Time"
 msgstr ""
 
 msgid ""
-"Time at which the horilla will automatically check out the employee "
+"Time at which the hydra will automatically check out the employee "
 "attendance if they forget."
 msgstr ""
 
@@ -3098,8 +3098,8 @@ msgid "Forgot password"
 msgstr ""
 
 #, fuzzy
-#| msgid "horilla-theme"
-msgid "Horilla"
+#| msgid "hydra-theme"
+msgid "Hydra"
 msgstr "Theme Customization"
 
 #, fuzzy
@@ -4885,7 +4885,7 @@ msgstr "Settings"
 msgid "gdrive"
 msgstr "Gdrive Backup"
 
-msgid "horilla-theme"
+msgid "hydra-theme"
 msgstr "Theme Customization"
 
 msgid "color-settings"
@@ -4969,7 +4969,7 @@ msgstr ""
 msgid "{} not found."
 msgstr ""
 
-msgid "Test mail from Horilla"
+msgid "Test mail from Hydra"
 msgstr ""
 
 msgid "Something went wrong :"
@@ -14537,7 +14537,7 @@ msgstr ""
 msgid "Settings"
 msgstr ""
 
-msgid "Horilla HRMS"
+msgid "Hydra HRMS"
 msgstr ""
 
 msgid "Sign Up"
@@ -14550,10 +14550,10 @@ msgid "Go To Home"
 msgstr ""
 
 msgid ""
-"Authenticate with your password to initialize the Horilla HRMS database."
+"Authenticate with your password to initialize the Hydra HRMS database."
 msgstr ""
 
-msgid "Please sign up to access the Horilla HRMS."
+msgid "Please sign up to access the Hydra HRMS."
 msgstr ""
 
 msgid "e.g. Adam"
@@ -15115,7 +15115,7 @@ msgstr ""
 
 #, fuzzy
 #~| msgid "employee"
-#~ msgid "Horilla Employee Field"
+#~ msgid "Hydra Employee Field"
 #~ msgstr "Employee"
 
 #, fuzzy
@@ -15447,7 +15447,7 @@ msgstr ""
 
 #, fuzzy
 #~| msgid "recruitment"
-#~ msgid "Horilla - Open Recruitments"
+#~ msgid "Hydra - Open Recruitments"
 #~ msgstr "Recruitment"
 
 #, fuzzy

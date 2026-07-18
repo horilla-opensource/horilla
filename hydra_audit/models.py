@@ -18,7 +18,7 @@ from simple_history.signals import (  # pre_create_historical_m2m_records,; post
 )
 
 # from employee.models import Employee
-from hydra.models import HorillaModel
+from hydra.models import HydraModel
 from hydra_audit.methods import remove_duplicate_history
 
 # Create your models here.
@@ -43,9 +43,9 @@ class AuditTag(models.Model):
         app_label = "horilla_audit"
 
 
-class HorillaAuditInfo(models.Model):
+class HydraAuditInfo(models.Model):
     """
-    HorillaAuditInfo model to store additional info
+    HydraAuditInfo model to store additional info
     """
 
     history_title = models.CharField(max_length=20, null=True, blank=True)
@@ -62,13 +62,13 @@ class HorillaAuditInfo(models.Model):
         abstract = True
 
 
-class HorillaAuditLog(HistoricalRecords):
+class HydraAuditLog(HistoricalRecords):
     """
     Model to store additional information for historical records.
     """
 
     # def __init__(self, *args, bases=None, **kwargs):
-    #     super(HorillaAuditLog, self).__init__(*args, **kwargs)
+    #     super(HydraAuditLog, self).__init__(*args, **kwargs)
     #     self.is_hydra_audit_log = True
 
     pass
@@ -109,7 +109,7 @@ def post_create_hydra_audit_log(sender, instance, *_args, **kwargs):
         history_instance.history_tags.set(
             HistoricalRecords.thread.request.POST.getlist("history_tags")
         )
-        if isinstance(history_instance, HorillaAuditLog):
+        if isinstance(history_instance, HydraAuditLog):
             history_instance.history_title = "Demo Title"
             remove_duplicate_history(instance)
             if instance.skip_history:
@@ -119,11 +119,11 @@ def post_create_hydra_audit_log(sender, instance, *_args, **kwargs):
         pass
 
 
-class HistoryTrackingFields(HorillaModel):
+class HistoryTrackingFields(HydraModel):
     tracking_fields = models.JSONField(null=True, blank=True, editable=False)
     work_info_track = models.BooleanField(default=True)
 
 
-class AccountBlockUnblock(HorillaModel):
+class AccountBlockUnblock(HydraModel):
     is_enabled = models.BooleanField(default=False, null=True, blank=True)
     objects = models.Manager()

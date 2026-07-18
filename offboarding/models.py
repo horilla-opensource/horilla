@@ -8,20 +8,20 @@ from django.db.models.signals import post_save
 from django.dispatch import receiver
 from django.utils.translation import gettext_lazy as _
 
-from base.horilla_company_manager import HorillaCompanyManager
+from base.hydra_company_manager import HydraCompanyManager
 from base.models import Company
 from employee.models import Employee
 from hydra import hydra_middlewares
 from hydra.hydra_middlewares import _thread_locals
-from hydra.methods import get_horilla_model_class
-from hydra.models import HorillaModel, upload_path
-from hydra_audit.models import HorillaAuditInfo, HorillaAuditLog
+from hydra.methods import get_hydra_model_class
+from hydra.models import HydraModel, upload_path
+from hydra_audit.models import HydraAuditInfo, HydraAuditLog
 from notifications.signals import notify
 
 # Create your models here.
 
 
-class Offboarding(HorillaModel):
+class Offboarding(HydraModel):
     """
     Offboarding model
     """
@@ -37,7 +37,7 @@ class Offboarding(HorillaModel):
         null=True,
         verbose_name="Company",
     )
-    objects = HorillaCompanyManager("company_id")
+    objects = HydraCompanyManager("company_id")
 
     def __str__(self):
         return self.title
@@ -63,7 +63,7 @@ class Offboarding(HorillaModel):
         return
 
 
-class OffboardingStage(HorillaModel):
+class OffboardingStage(HydraModel):
     """
     Offboarding model
     """
@@ -106,7 +106,7 @@ def create_initial_stage(sender, instance, created, **kwargs):
         initial_stage.save()
 
 
-class OffboardingStageMultipleFile(HorillaModel):
+class OffboardingStageMultipleFile(HydraModel):
     """
     OffboardingStageMultipleFile
     """
@@ -114,7 +114,7 @@ class OffboardingStageMultipleFile(HorillaModel):
     attachment = models.FileField(upload_to=upload_path)
 
 
-class OffboardingEmployee(HorillaModel):
+class OffboardingEmployee(HydraModel):
     """
     OffboardingEmployee model / Employee on stage
     """
@@ -130,7 +130,7 @@ class OffboardingEmployee(HorillaModel):
     unit = models.CharField(max_length=10, choices=UNIT, default="month", null=True)
     notice_period_starts = models.DateField(null=True)
     notice_period_ends = models.DateField(null=True, blank=True)
-    objects = HorillaCompanyManager(
+    objects = HydraCompanyManager(
         related_company_field="employee_id__employee_work_info__company_id"
     )
 
@@ -138,7 +138,7 @@ class OffboardingEmployee(HorillaModel):
         return self.employee_id.get_full_name()
 
 
-class ResignationLetter(HorillaModel):
+class ResignationLetter(HydraModel):
     """
     Resignation Request Employee model
     """
@@ -158,7 +158,7 @@ class ResignationLetter(HorillaModel):
     offboarding_employee_id = models.ForeignKey(
         OffboardingEmployee, on_delete=models.CASCADE, editable=False, null=True
     )
-    objects = HorillaCompanyManager(
+    objects = HydraCompanyManager(
         related_company_field="employee_id__employee_work_info__company_id"
     )
 
@@ -188,7 +188,7 @@ class ResignationLetter(HorillaModel):
             .first()
         )
         default_notice_end = (
-            get_horilla_model_class(
+            get_hydra_model_class(
                 app_label="payroll", model="payrollgeneralsetting"
             ).objects.first()
             if apps.is_installed("payroll")
@@ -228,7 +228,7 @@ class ResignationLetter(HorillaModel):
         offboarding_employee.save()
 
 
-class OffboardingTask(HorillaModel):
+class OffboardingTask(HydraModel):
     """
     OffboardingTask model
     """
@@ -250,7 +250,7 @@ class OffboardingTask(HorillaModel):
         return self.title
 
 
-class EmployeeTask(HorillaModel):
+class EmployeeTask(HydraModel):
     """
     EmployeeTask model
     """
@@ -270,10 +270,10 @@ class EmployeeTask(HorillaModel):
     status = models.CharField(max_length=20, choices=statuses, default="todo")
     task_id = models.ForeignKey(OffboardingTask, on_delete=models.CASCADE)
     description = models.TextField(null=True, editable=False, max_length=255)
-    history = HorillaAuditLog(
+    history = HydraAuditLog(
         related_name="history_set",
         bases=[
-            HorillaAuditInfo,
+            HydraAuditInfo,
         ],
     )
 
@@ -296,7 +296,7 @@ class EmployeeTask(HorillaModel):
         )
 
 
-class ExitReason(HorillaModel):
+class ExitReason(HydraModel):
     """
     ExitReason model
     """
@@ -309,7 +309,7 @@ class ExitReason(HorillaModel):
     attachments = models.ManyToManyField(OffboardingStageMultipleFile)
 
 
-class OffboardingNote(HorillaModel):
+class OffboardingNote(HydraModel):
     """
     OffboardingNote
     """
@@ -341,7 +341,7 @@ class OffboardingNote(HorillaModel):
         return super().save(*args, **kwargs)
 
 
-class OffboardingGeneralSetting(HorillaModel):
+class OffboardingGeneralSetting(HydraModel):
     """
     OffboardingGeneralSettings
     """

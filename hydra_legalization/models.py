@@ -9,7 +9,7 @@ from django.utils import timezone
 from django.utils.translation import gettext_lazy as _
 
 from base.models import Company
-from hydra.models import HorillaModel
+from hydra.models import HydraModel
 from hydra_documents.models import PrivateDocument, PrivateDocumentType
 from hydra_people.models import Person
 
@@ -48,7 +48,7 @@ class LegalizationConfigurationQuerySet(models.QuerySet):
         raise TypeError("Legalization configuration must be deactivated, not deleted.")
 
 
-class LegalizationAuthority(HorillaModel):
+class LegalizationAuthority(HydraModel):
     """Approved authority dictionary; company NULL denotes a system-wide entry."""
 
     uuid = models.UUIDField(default=uuid4, unique=True, editable=False)
@@ -115,7 +115,7 @@ class LegalizationAuthority(HorillaModel):
         raise TypeError("Legalization configuration must be deactivated, not deleted.")
 
 
-class LegalizationProcedureType(HorillaModel):
+class LegalizationProcedureType(HydraModel):
     """Fixed-field procedure configuration whose rules are snapshotted per case."""
 
     uuid = models.UUIDField(default=uuid4, unique=True, editable=False)
@@ -251,7 +251,7 @@ class LegalizationCaseQuerySet(models.QuerySet):
         return super().update(**kwargs)
 
 
-class LegalizationCase(HorillaModel):
+class LegalizationCase(HydraModel):
     CaseType = LegalizationCaseType
     Status = LegalizationStatus
 
@@ -436,7 +436,7 @@ class LegalizationCase(HorillaModel):
         return super().save(*args, **kwargs)
 
 
-class LegalizationProcedureStatus(HorillaModel):
+class LegalizationProcedureStatus(HydraModel):
     procedure = models.ForeignKey(
         LegalizationProcedureType,
         on_delete=models.PROTECT,
@@ -470,7 +470,7 @@ class LegalizationProcedureStatus(HorillaModel):
         raise TypeError("Legalization configuration must be deactivated, not deleted.")
 
 
-class LegalizationProcedureRequirement(HorillaModel):
+class LegalizationProcedureRequirement(HydraModel):
     uuid = models.UUIDField(default=uuid4, unique=True, editable=False)
     procedure = models.ForeignKey(
         LegalizationProcedureType,
@@ -603,7 +603,7 @@ class LegalizationCaseDelegationQuerySet(models.QuerySet):
         raise TypeError("Legalization delegations cannot be deleted.")
 
 
-class LegalizationCaseDelegation(HorillaModel):
+class LegalizationCaseDelegation(HydraModel):
     MAX_DURATION_DAYS = LEGALIZATION_DELEGATION_MAX_DURATION_DAYS
 
     uuid = models.UUIDField(default=uuid4, unique=True, editable=False)
@@ -1438,7 +1438,7 @@ class LegalizationAutomationEvent(models.Model):
         raise TypeError("Legalization automation events are append-only.")
 
 
-class LegalizationCaseDocument(HorillaModel):
+class LegalizationCaseDocument(HydraModel):
     class Role(models.TextChoices):
         IDENTITY = "identity", _("Identity evidence")
         APPLICATION = "application", _("Application")

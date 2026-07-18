@@ -116,11 +116,11 @@ from hydra.decorators import (
     owner_can_enter,
     permission_required,
 )
-from hydra.filters import HorillaPaginator
+from hydra.filters import HydraPaginator
 from hydra.group_by import group_by_queryset
-from hydra.hydra_settings import HORILLA_DATE_FORMATS
-from hydra.http import HorillaRedirect
-from hydra.methods import get_horilla_model_class
+from hydra.hydra_settings import HYDRA_DATE_FORMATS
+from hydra.http import HydraRedirect
+from hydra.methods import get_hydra_model_class
 from hydra_audit.models import AccountBlockUnblock, HistoryTrackingFields
 from hydra_legacy_documents.forms import (
     DocumentForm,
@@ -312,7 +312,7 @@ def profile_edit_access(request, emp_id):
                 cache.delete(user_cache_key[-1])
                 update_employee_accessibility_cache(user_cache_key[-1], employee)
 
-    return HorillaRedirect(request)
+    return HydraRedirect(request)
 
 
 @login_required
@@ -580,7 +580,7 @@ def document_request_create(request):
                 redirect=reverse("employee-profile"),
                 icon="chatbox-ellipses",
             )
-            return HorillaRedirect(request)
+            return HydraRedirect(request)
 
     context = {
         "form": form,
@@ -613,7 +613,7 @@ def document_request_update(request, id):
                 Employee.objects.filter(id__in=form.data.getlist("employee_id"))
             )
             documents.exclude(employee_id__in=doc_obj.employee_id.all()).delete()
-            return HorillaRedirect(request)
+            return HydraRedirect(request)
 
     context = {
         "form": form,
@@ -670,7 +670,7 @@ def document_create(request, emp_id):
         if form.is_valid():
             form.save()
             messages.success(request, _("Document created successfully."))
-            return HorillaRedirect(request)
+            return HydraRedirect(request)
 
     context = {
         "form": form,
@@ -757,7 +757,7 @@ def document_delete(request, id):
             messages.error(request, _("Document not found"))
     except ProtectedError:
         messages.error(request, _("You cannot delete this document."))
-    return HorillaRedirect(request)
+    return HydraRedirect(request)
 
 
 def can_access_document(request, document, perm):
@@ -787,14 +787,14 @@ def file_upload(request, id):
 
     document_item = Document.find(id)
     if document_item is None:
-        return HorillaRedirect(
+        return HydraRedirect(
             request, message=_("No Document found matching the query.")
         )
 
     if not can_access_document(
         request, document_item, "horilla_documents.change_document"
     ):
-        return HorillaRedirect(
+        return HydraRedirect(
             request, message=_("You do not have permission to update this document.")
         )
 
@@ -821,7 +821,7 @@ def file_upload(request, id):
                 )
             except:
                 pass
-            return HorillaRedirect(request)
+            return HydraRedirect(request)
         else:
             logger.error(f"Document upload form errors: {form.errors}")
     context = {"form": form, "document": document_item}
@@ -843,14 +843,14 @@ def view_file(request, id):
 
     document_obj = Document.objects.filter(id=id).first()
     if document_obj is None:
-        return HorillaRedirect(
+        return HydraRedirect(
             request, message=_("No Document found matching the query.")
         )
 
     if not can_access_document(
         request, document_obj, "horilla_documents.view_document"
     ):
-        return HorillaRedirect(
+        return HydraRedirect(
             request, message=_("You do not have permission to view this document.")
         )
 
@@ -945,7 +945,7 @@ def document_approve(request, id):
         """
         return HttpResponse(span)
 
-    return HorillaRedirect(request)
+    return HydraRedirect(request)
 
 
 @login_required
@@ -972,10 +972,10 @@ def document_reject(request, id):
                 document_obj.save()
                 messages.error(request, _("Document request rejected"))
 
-                return HorillaRedirect(request)
+                return HydraRedirect(request)
     else:
         messages.error(request, _("No document uploaded"))
-        return HorillaRedirect(request)
+        return HydraRedirect(request)
 
     return render(
         request,
@@ -1016,7 +1016,7 @@ def document_bulk_approve(request):
                 request, _(f"{not_uploaded_count} document(s) skipped (not uploaded)")
             )
 
-    return HorillaRedirect(request)
+    return HydraRedirect(request)
 
 
 @login_required
@@ -1046,7 +1046,7 @@ def document_bulk_reject(request):
         messages.success(
             request, _("{} Document request rejected").format(updated_count)
         )
-        return HorillaRedirect(request)
+        return HydraRedirect(request)
 
     return render(
         request, "documents/document_reject_reason.html", {"ids": ids, "form": form}
@@ -1067,7 +1067,7 @@ def employee_profile_bank_details(request):
         bank_info.employee_id = employee
         bank_info.save()
         messages.success(request, _("Bank details updated"))
-    return HorillaRedirect(request)
+    return HydraRedirect(request)
 
 
 @login_required
@@ -1104,7 +1104,7 @@ def paginator_qry(qryset, page_number):
     """
     This method is used to paginate query set
     """
-    paginator = HorillaPaginator(qryset, get_pagination())
+    paginator = HydraPaginator(qryset, get_pagination())
     qryset = paginator.get_page(page_number)
     return qryset
 
@@ -1594,7 +1594,7 @@ def employee_view_update(request, obj_id, **kwargs):
                 "work_info_history": work_info_history,
             },
         )
-    return HorillaRedirect(request, fallback_url="/employee/employee-view")
+    return HydraRedirect(request, fallback_url="/employee/employee-view")
 
 
 @login_required
@@ -2045,7 +2045,7 @@ def employee_delete(request, obj_id):
         error_message = str(error_message)
         request.session["error_message"] = error_message
         return redirect(employee_view)
-    return HorillaRedirect(request, fallback_url=f"/view={view}")
+    return HydraRedirect(request, fallback_url=f"/view={view}")
 
 
 @login_required
@@ -2161,7 +2161,7 @@ def employee_archive(request, obj_id):
         messages.success(request, message)
         key = "HTTP_HX_REQUEST"
         if key not in request.META.keys():
-            return HorillaRedirect(request)
+            return HydraRedirect(request)
         else:
             return HttpResponse("<script>$('#filterEmployee').click();</script>")
     else:
@@ -2204,7 +2204,7 @@ def replace_employee(request, emp_id):
                     and field_name == "recruitment_managers"
                     and str(emp_id) != replace_emp_id
                 ):
-                    Recruitment = get_horilla_model_class(
+                    Recruitment = get_hydra_model_class(
                         app_label="recruitment", model="recruitment"
                     )
                     recruitment_query = Recruitment.objects.filter(
@@ -2219,7 +2219,7 @@ def replace_employee(request, emp_id):
                     and field_name == "recruitment_stage_managers"
                     and str(emp_id) != replace_emp_id
                 ):
-                    Stage = get_horilla_model_class(
+                    Stage = get_hydra_model_class(
                         app_label="recruitment", model="stage"
                     )
                     recruitment_stage_query = Stage.objects.filter(
@@ -2234,7 +2234,7 @@ def replace_employee(request, emp_id):
                     and field_name == "onboarding_stage_manager"
                     and str(emp_id) != replace_emp_id
                 ):
-                    OnboardingStage = get_horilla_model_class(
+                    OnboardingStage = get_hydra_model_class(
                         app_label="onboarding", model="onboardingstage"
                     )
                     onboarding_stage_query = OnboardingStage.objects.filter(
@@ -2249,7 +2249,7 @@ def replace_employee(request, emp_id):
                     and field_name == "onboarding_task_manager"
                     and str(emp_id) != replace_emp_id
                 ):
-                    OnboardingTask = get_horilla_model_class(
+                    OnboardingTask = get_hydra_model_class(
                         app_label="onboarding", model="onboardingtask"
                     )
                     onboarding_task_query = OnboardingTask.objects.filter(
@@ -2298,7 +2298,7 @@ def get_manager_in(request):
     if save:
         employee.save()
         messages.success(request, message)
-        return HorillaRedirect(request)
+        return HydraRedirect(request)
     else:
         return render(
             request,
@@ -2809,7 +2809,7 @@ def work_info_export(request):
             if isinstance(value, date):
                 try:
                     data = value.strftime(
-                        HORILLA_DATE_FORMATS.get(date_format, "%Y-%m-%d")
+                        HYDRA_DATE_FORMATS.get(date_format, "%Y-%m-%d")
                     )
                 except Exception:
                     data = str(value)
@@ -2927,7 +2927,7 @@ def total_employees_count(request):
 def joining_today_count(request):
     newbies_today = 0
     if apps.is_installed("recruitment"):
-        Candidate = get_horilla_model_class(app_label="recruitment", model="candidate")
+        Candidate = get_hydra_model_class(app_label="recruitment", model="candidate")
         newbies_today = Candidate.objects.filter(
             joining_date__range=[date.today(), date.today() + timedelta(days=1)],
             is_active=True,
@@ -2939,7 +2939,7 @@ def joining_today_count(request):
 def joining_week_count(request):
     newbies_week = 0
     if apps.is_installed("recruitment"):
-        Candidate = get_horilla_model_class(app_label="recruitment", model="candidate")
+        Candidate = get_hydra_model_class(app_label="recruitment", model="candidate")
         newbies_week = Candidate.objects.filter(
             joining_date__range=[
                 date.today() - timedelta(days=date.today().weekday()),
@@ -3254,7 +3254,7 @@ def bonus_points_tab(request, emp_id):
     try:
         points = BonusPoint.objects.get(employee_id=emp_id)
         if apps.is_installed("payroll"):
-            Reimbursement = get_horilla_model_class(
+            Reimbursement = get_hydra_model_class(
                 app_label="payroll", model="reimbursement"
             )
             requested_bonus_points = Reimbursement.objects.filter(
@@ -3340,7 +3340,7 @@ def add_bonus_points(request, emp_id):
                     form.cleaned_data["points"]
                 ),
             )
-            return HorillaRedirect(request)
+            return HydraRedirect(request)
 
     return render(
         request,
@@ -3375,7 +3375,7 @@ def redeem_points(request, emp_id):
 
     amount_for_bonus_point = 0
     if apps.is_installed("payroll"):
-        EncashmentGeneralSettings = get_horilla_model_class(
+        EncashmentGeneralSettings = get_hydra_model_class(
             app_label="payroll", model="encashmentgeneralsettings"
         )
         amount_for_bonus_point = (
@@ -3391,7 +3391,7 @@ def redeem_points(request, emp_id):
             points = form.cleaned_data["points"]
             amount = amount_for_bonus_point * points
             if apps.is_installed("payroll"):
-                Reimbursement = get_horilla_model_class(
+                Reimbursement = get_hydra_model_class(
                     app_label="payroll", model="reimbursement"
                 )
                 Reimbursement.objects.create(
@@ -3403,7 +3403,7 @@ def redeem_points(request, emp_id):
                     description=f"{employee} want to redeem {points} points",
                     allowance_on=date.today(),
                 )
-            return HorillaRedirect(request)
+            return HydraRedirect(request)
     return render(
         request,
         "tabs/forms/redeem_points_form.html",
@@ -3542,7 +3542,7 @@ def encashment_condition_create(request):
     if apps.is_installed("payroll"):
         from payroll.forms.forms import EncashmentGeneralSettingsForm
 
-        EncashmentGeneralSettings = get_horilla_model_class(
+        EncashmentGeneralSettings = get_hydra_model_class(
             app_label="payroll", model="encashmentgeneralsettings"
         )
         instance = (
@@ -3558,7 +3558,7 @@ def encashment_condition_create(request):
             if encashment_form.is_valid():
                 encashment_form.save()
                 messages.success(request, _("Settings updated."))
-                return HorillaRedirect(request)
+                return HydraRedirect(request)
         else:
             encashment_form = EncashmentGeneralSettingsForm(instance=instance)
 
@@ -3569,7 +3569,7 @@ def encashment_condition_create(request):
         )
 
     messages.warning(request, _("Payroll app not installed"))
-    return HorillaRedirect(request)
+    return HydraRedirect(request)
 
 
 @login_required
@@ -3587,7 +3587,7 @@ def initial_prefix(request):
         if form.is_valid():
             form.save()
             messages.success(request, _("Initial prefix updated successfully."))
-            return HorillaRedirect(request)
+            return HydraRedirect(request)
         else:
             messages.error(request, "There was an error updating the prefix.")
     else:
@@ -3714,7 +3714,7 @@ def employee_tag_update(request, tag_id):
             form.save()
             form = EmployeeTagForm()
             messages.success(request, _("Tag has been updated successfully!"))
-            return HorillaRedirect(request)
+            return HydraRedirect(request)
     return render(
         request,
         "base/employee_tag/employee_tag_form.html",

@@ -6,7 +6,7 @@ This module is used to write cutom multiple select field
 from django import forms
 
 
-class HorillaMultiSelectField(forms.ModelMultipleChoiceField):
+class HydraMultiSelectField(forms.ModelMultipleChoiceField):
     """
-    HorillaMultiSelectField
+    HydraMultiSelectField
     """

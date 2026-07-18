@@ -14,7 +14,7 @@ from django.http import Http404
 from django.shortcuts import redirect, render
 
 from base.models import Announcement, PenaltyAccounts
-from hydra.methods import get_horilla_model_class
+from hydra.methods import get_hydra_model_class
 
 
 @receiver(post_save, sender=PenaltyAccounts)
@@ -26,7 +26,7 @@ def create_deduction_cutleave_from_penalty(sender, instance, created, **kwargs):
     if created:
         penalty_amount = instance.penalty_amount
         if apps.is_installed("payroll") and penalty_amount:
-            Deduction = get_horilla_model_class(app_label="payroll", model="deduction")
+            Deduction = get_hydra_model_class(app_label="payroll", model="deduction")
             penalty = Deduction()
             if instance.late_early_id:
                 penalty.title = f"{instance.late_early_id.get_type_display()} penalty"

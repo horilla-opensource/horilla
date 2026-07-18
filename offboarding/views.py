@@ -24,8 +24,8 @@ from hydra.decorators import (
     permission_required,
 )
 from hydra.group_by import group_by_queryset as group_by
-from hydra.http.response import HorillaRedirect
-from hydra.methods import get_horilla_model_class
+from hydra.http.response import HydraRedirect
+from hydra.methods import get_hydra_model_class
 from notifications.signals import notify
 from offboarding.decorators import (
     any_manager_can_enter,
@@ -249,7 +249,7 @@ def create_offboarding(request):
                 redirect=reverse("offboarding-pipeline"),
             )
 
-            return HorillaRedirect(request)
+            return HydraRedirect(request)
 
     return render(
         request,
@@ -309,7 +309,7 @@ def create_stage(request):
                 icon="people-circle",
                 redirect=reverse("offboarding-pipeline"),
             )
-            return HorillaRedirect(request)
+            return HydraRedirect(request)
     return render(request, "offboarding/stage/form.html", {"form": form})
 
 
@@ -354,7 +354,7 @@ def add_employee(request):
                     redirect=reverse("offboarding-pipeline"),
                     icon="information",
                 )
-            return HorillaRedirect(request)
+            return HydraRedirect(request)
     return render(request, "offboarding/employee/form.html", {"form": form})
 
 
@@ -403,7 +403,7 @@ def delete_stage(request):
             messages.error(request, _("Stage not found"))
     except OverflowError:
         messages.error(request, _("Stage not found"))
-    return HorillaRedirect(request)
+    return HydraRedirect(request)
 
 
 @login_required
@@ -867,7 +867,7 @@ def create_resignation_request(request):
         if form.is_valid():
             form.save()
             messages.success(request, _("Resignation letter saved"))
-            return HorillaRedirect(request)
+            return HydraRedirect(request)
     return render(request, "offboarding/resignation/form.html", {"form": form})
 
 
@@ -883,7 +883,7 @@ def update_status(request):
     employee_id = request.GET.get("employee_id")
     offboarding_id = request.GET.get("offboarding_id")
     contract_notice_end_date = (
-        get_horilla_model_class(app_label="payroll", model="contract")
+        get_hydra_model_class(app_label="payroll", model="contract")
         .objects.filter(employee_id=employee_id, contract_status="active")
         .first()
         if apps.is_installed("payroll")
@@ -987,7 +987,7 @@ def get_notice_period(request):
     """
     employee_id = request.GET["employee_id"]
     if apps.is_installed("payroll"):
-        Contract = get_horilla_model_class(app_label="payroll", model="contract")
+        Contract = get_hydra_model_class(app_label="payroll", model="contract")
         employee_contract = (
             (
                 Contract.objects.order_by("-id")
@@ -1043,7 +1043,7 @@ def offboarding_dashboard(request):
 
     onboarding_employees = []
     if apps.is_installed("recruitment"):
-        Candidate = get_horilla_model_class("recruitment", "candidate")
+        Candidate = get_hydra_model_class("recruitment", "candidate")
         onboarding_employees = Candidate.objects.filter(
             onboarding_stage__isnull=False, converted_employee_id__isnull=True
         )
@@ -1096,7 +1096,7 @@ if apps.is_installed("asset"):
         """
         This method is used to render the employee assets table page in the dashboard.
         """
-        AssetAssignment = get_horilla_model_class(
+        AssetAssignment = get_hydra_model_class(
             app_label="asset", model="assetassignment"
         )
 
@@ -1123,7 +1123,7 @@ if apps.is_installed("pms"):
         This method is used to render the employee assets table page in the dashboard.
         """
 
-        Feedback = get_horilla_model_class(app_label="pms", model="feedback")
+        Feedback = get_hydra_model_class(app_label="pms", model="feedback")
 
         offboarding_employees = OffboardingEmployee.objects.entire().values_list(
             "employee_id__id", "notice_period_starts"
@@ -1166,7 +1166,7 @@ def dashboard_join_chart(request):
         archived_employees.count(),
     ]
     if apps.is_installed("recruitment"):
-        Candidate = get_horilla_model_class(app_label="recruitment", model="candidate")
+        Candidate = get_hydra_model_class(app_label="recruitment", model="candidate")
         onboarding_employees = Candidate.objects.filter(
             onboarding_stage__isnull=False, converted_employee_id__isnull=True
         )

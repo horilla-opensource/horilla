@@ -97,7 +97,7 @@ def _locked_visible_task(*, actor, task_uuid):
         raise PermissionDenied
     # Lock only the owned task row. PostgreSQL rejects FOR UPDATE when a
     # select_related() path introduces a nullable outer join (created_by is
-    # nullable in HorillaModel even though Hydra constrains it for tasks).
+    # nullable in HydraModel even though Hydra constrains it for tasks).
     task = HydraTask._base_manager.select_for_update().get(pk=visible_id)
     if not tasks_for_user(user=actor).filter(pk=task.pk).exists():
         raise PermissionDenied

@@ -5,7 +5,7 @@ from django.core.exceptions import ValidationError
 from django.urls import reverse
 from openpyxl import load_workbook
 
-from base.models import HorillaMailTemplate
+from base.models import HydraMailTemplate
 from hydra_people.tests.test_recruitment import HydraRecruitmentTestCase
 from hydra_shell.templatetags.hydra_shell_tags import hydra_nav_is_active
 from hydra_templates.models import MessageTemplate, TemplateDataExport
@@ -278,10 +278,10 @@ class TemplateDataExportTests(TemplateModuleTestCase):
 
 
 class TemplateCompatibilityTests(TemplateModuleTestCase):
-    def test_shell_state_and_legacy_horilla_templates_remain_operational(self):
+    def test_shell_state_and_legacy_templates_remain_operational(self):
         self.grant_template_read()
         self.login()
-        legacy = HorillaMailTemplate.objects.create(
+        legacy = HydraMailTemplate.objects.create(
             title="Legacy template",
             body="Legacy body",
             company_id=self.company_a,

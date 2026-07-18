@@ -2,7 +2,7 @@
 {% load i18n %}
 {% load static %}
 {% load basefilters %}
-{% load horillafilters employee_filter %}
+{% load hydrafilters employee_filter %}
 
 
 <span name="" id="filterEmployee" style="display: none" hx-get="{% url 'employee-filter-view' %}?{{pd}}" hx-target="#view-container"></span>

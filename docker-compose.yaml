@@ -7,10 +7,10 @@ services:
       - 8000:8000
     restart: unless-stopped
     environment:
-      DATABASE_URL: "postgres://postgres:postgres@db:5432/horilla"
+      DATABASE_URL: "postgresql://${POSTGRES_USER:-hydra}:${POSTGRES_PASSWORD:?Set POSTGRES_PASSWORD}@db:5432/${POSTGRES_DB:-hydra}"
     command: sh ./entrypoint.sh
     volumes:
-      - ./horilla:/app/horilla
+      - ./hydra:/app/hydra
       - ./media:/app/media
     depends_on:
       db:
@@ -19,21 +19,21 @@ services:
   db:
     image: postgres:16-bullseye
     environment:
-      POSTGRES_DB: horilla
-      POSTGRES_USER: postgres
-      POSTGRES_PASSWORD: postgres
+      POSTGRES_DB: ${POSTGRES_DB:-hydra}
+      POSTGRES_USER: ${POSTGRES_USER:-hydra}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:?Set POSTGRES_PASSWORD}
       POSTGRES_INITDB_ARGS: "--auth-host=scram-sha-256"
       PGDATA: /var/lib/postgresql/data/pgdata
     ports:
       - 5432:5432
     restart: unless-stopped
     volumes:
-      - horilla-data:/var/lib/postgresql/data
+      - hydra-data:/var/lib/postgresql/data
     healthcheck:
-      test: ["CMD", "pg_isready", "-U", "postgres"]
+      test: ["CMD-SHELL", "pg_isready -U ${POSTGRES_USER:-hydra} -d ${POSTGRES_DB:-hydra}"]
       interval: 10s
       timeout: 5s
       retries: 5
 
 volumes:
-  horilla-data:
+  hydra-data:

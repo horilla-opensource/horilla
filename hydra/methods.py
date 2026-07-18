@@ -11,7 +11,7 @@ from django.utils.translation import gettext_lazy as _
 from hydra.hydra_settings import APP_URLS, DYNAMIC_URL_PATTERNS
 
 
-def get_horilla_model_class(app_label, model):
+def get_hydra_model_class(app_label, model):
     """
     Retrieves the model class for the given app label and model name using Django's ContentType framework.
 
@@ -44,7 +44,7 @@ def dynamic_attr(obj, attribute_path):
 
     for attr in attributes:
         with contextlib.suppress(Exception):
-            Contract = get_horilla_model_class(app_label="payroll", model="contract")
+            Contract = get_hydra_model_class(app_label="payroll", model="contract")
             if isinstance(obj.first(), Contract):
                 obj = obj.filter(is_active=True).first()
 
@@ -54,7 +54,7 @@ def dynamic_attr(obj, attribute_path):
     return obj
 
 
-def horilla_users_with_perms(permissions):
+def hydra_users_with_perms(permissions):
     """
     Filters users who have any of the specified permissions or are superusers.
 

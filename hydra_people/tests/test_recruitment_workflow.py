@@ -268,7 +268,7 @@ class ControlledRecruitmentWorkflowTests(HydraRecruitmentTestCase):
         event = CandidateStageTransition.objects.get(candidate=self.candidate_a)
         self.assertEqual(
             event.source,
-            CandidateStageTransition.Source.HORILLA_PIPELINE,
+            CandidateStageTransition.Source.HYDRA_PIPELINE,
         )
         self.assertEqual(event.to_stage, self.interview_a)
 

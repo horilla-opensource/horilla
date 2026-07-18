@@ -1,5 +1,5 @@
 """
-horillafilters.py
+hydrafilters.py
 
 This module is used to write custom template filters.
 
@@ -19,7 +19,7 @@ from django.utils.translation import gettext as _
 from base.models import Company, EmployeeShiftSchedule
 from employee.methods.duration_methods import strtime_seconds
 from hydra.hydra_middlewares import _thread_locals
-from hydra.methods import get_horilla_model_class
+from hydra.methods import get_hydra_model_class
 
 register = template.Library()
 
@@ -37,7 +37,7 @@ def checkminimumot(ot=None):
     """
     if ot is not None:
         if apps.is_installed("attendance"):
-            AttendanceValidationCondition = get_horilla_model_class(
+            AttendanceValidationCondition = get_hydra_model_class(
                 app_label="attendance", model="attendancevalidationcondition"
             )
             condition = AttendanceValidationCondition.objects.all()
@@ -283,7 +283,7 @@ def on_off(value):
 @register.filter(name="currency_symbol_position")
 def currency_symbol_position(amount):
     if apps.is_installed("payroll"):
-        PayrollSettings = get_horilla_model_class(
+        PayrollSettings = get_hydra_model_class(
             app_label="payroll", model="payrollsettings"
         )
     symbol = PayrollSettings.objects.first()

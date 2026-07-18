@@ -4,17 +4,17 @@
 
 | System | Repository and audited revision | Role in Hydra | Phase 0 handling |
 |---|---|---|---|
-| Horilla HRMS | `horilla/horilla-hr`, branch `1.0`, commit `11c4e3a2596c58f2381bda4c6bbc319a4430b097` | Django foundation and future Hydra codebase | Cloned as this repository; audited and bootstrapped |
+| Upstream HRMS | `https://github.com/horilla/horilla-hr`, branch `1.0`, commit `11c4e3a2596c58f2381bda4c6bbc319a4430b097` | Django foundation and future Hydra codebase | Cloned as this repository; audited and bootstrapped |
 | Current Hydra portal | `OleksandrKiris/citronex-hydra-project`, branch `main`, commit `2262497c6c53281b3bd55bee5b9eebc03064b582` | Public multilingual start/training-link portal | Audited read-only; remains deployed separately |
 | Szablonizator | `OleksandrKiris/Szablonizator`, branch `main`, commit `fbd0fbdbeea02153f8f72d5ead72305d4bbb0150` | Local Windows XLSX-to-DOCX generator | Audited read-only; remains a separate application |
 
 The two reference repositories are not vendored or added as submodules. Their runtimes must not be coupled to Django during the MVP.
 
-## Horilla map
+## Upstream HRMS map
 
 | Path | Responsibility | Hydra decision |
 |---|---|---|
-| `horilla/` | Django settings, middleware, root URLs and dynamic app configuration | Extend minimally; register Hydra apps explicitly |
+| `hydra/` | Django settings, middleware, root URLs and dynamic app configuration | Extend minimally; register Hydra apps explicitly |
 | `base/` | Company, department, job/shift/work types, common views and company middleware | Reuse organization core; do not treat session filtering as authorization |
 | `employee/` | Employee, work information, employee documents, permissions/imports | Reuse after hiring and link from Person |
 | `recruitment/` | Recruitment campaigns, stages, candidates, surveys, interviews and candidate documents | Extend application records to point to Person |
@@ -30,9 +30,9 @@ The two reference repositories are not vendored or added as submodules. Their ru
 | `docs/` | Audit and architecture decisions | Phase 0 deliverables |
 | `hydra_documents/` | Private candidate-document quarantine/scanning, storage, lifecycle policy, scoped delivery and access events | Shared security boundary; never served by generic `/media/`; fail-closed without ClamAV |
 | `hydra_housing/` | Location-scoped facilities, optional buildings/floors, rooms, beds, expiring/confirmed reservations, stays, atomic moves and append-only lifecycle facts | New workforce-accommodation boundary; deterministic Person/bed locking, maintenance expiry and readiness prevent overlap, silent hold promotion or partial moves |
-| `hydra_tasks/` | Person/Company-scoped universal tasks, approved domain-target resolution, append-only lifecycle and durable delivery evidence | New focused task boundary wrapping Horilla notifications; not a generic workflow engine or replacement for domain-owned task concepts |
-| `hydra_notifications/` | Scoped notification envelopes, reviewed PII-free kinds, append-only state, preferences, center and durable generic-email outbox | Reuse/wrap Horilla rows; current target visibility and recipient ownership remain mandatory at list, mutation, open and email send |
-| `hydra_onboarding/` | Company-scoped immutable published courses/lessons/quizzes, deterministic fixed-field assignment rules and append-only attempt/confirmation evidence | New internal-learning boundary extending the reused Horilla onboarding/handoff; exact version fingerprints, Person scope and idempotent assignment prevent drift or parallel onboarding workflows |
+| `hydra_tasks/` | Person/Company-scoped universal tasks, approved domain-target resolution, append-only lifecycle and durable delivery evidence | New focused task boundary wrapping legacy HR platform notifications; not a generic workflow engine or replacement for domain-owned task concepts |
+| `hydra_notifications/` | Scoped notification envelopes, reviewed PII-free kinds, append-only state, preferences, center and durable generic-email outbox | Reuse/wrap legacy HR platform rows; current target visibility and recipient ownership remain mandatory at list, mutation, open and email send |
+| `hydra_onboarding/` | Company-scoped immutable published courses/lessons/quizzes, deterministic fixed-field assignment rules and append-only attempt/confirmation evidence | New internal-learning boundary extending the reused legacy HR platform onboarding/handoff; exact version fingerprints, Person scope and idempotent assignment prevent drift or parallel onboarding workflows |
 | `hydra_ops/` | Deployment readiness, public ready probe, single-owner maintenance worker, portal-email dispatch and lifecycle recovery | New staging/production operations boundary |
 
 ## Current Hydra portal map
@@ -66,12 +66,12 @@ The public location URLs are catalogued in `docs/HYDRA_PORTAL_MIGRATION.md`.
 The exact app split remains subject to task-by-task implementation, but the audit supports this minimal direction:
 
 ```text
-hydra_people/          canonical Person plus scoped Horilla recruitment extension (TASK-1/TASK-2 implemented)
+hydra_people/          canonical Person plus scoped legacy HR platform recruitment extension (TASK-1/TASK-2 implemented)
 hydra_coordination/    Location, Section/Stage, Team, scope and assignments (TASK-1 implemented)
 hydra_shell/           shared branding, responsive navigation and public portal boundary (TASK-1 implemented)
 hydra_documents/       private candidate documents and access logging (TASK-2 implemented)
 hydra_legalization/    cases, scoped workload/deputies, audited responsibility, validity, reminders, authority evidence and renewal lineage (TASK-2 extended)
-hydra_arrivals/        arrivals, controlled Horilla onboarding handoff and durable portal-email outbox
+hydra_arrivals/        arrivals, controlled legacy HR platform onboarding handoff and durable portal-email outbox
 hydra_housing/         scoped Facility/Building/Floor/Room/Bed and effective/temporary assignments (TASK-020/021/022 implemented)
 hydra_imports/         previewed transactional imports with bounded audited source-data redaction
 hydra_templates/       message templates and Szablonizator-compatible exports

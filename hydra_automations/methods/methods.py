@@ -9,9 +9,9 @@ from django.core.exceptions import FieldDoesNotExist
 from django.db import models as django_models
 from django.http import QueryDict
 
-from base.templatetags.horillafilters import app_installed
+from base.templatetags.hydrafilters import app_installed
 from employee.models import Employee
-from hydra.models import HorillaModel
+from hydra.models import HydraModel
 
 recruitment_installed = False
 if app_installed("recruitment"):
@@ -20,7 +20,7 @@ if app_installed("recruitment"):
     recruitment_installed = True
 
 
-def get_related_models(model: HorillaModel) -> list:
+def get_related_models(model: HydraModel) -> list:
     related_models = []
     for field in model._meta.get_fields():
         if field.one_to_many or field.one_to_one or field.many_to_many:

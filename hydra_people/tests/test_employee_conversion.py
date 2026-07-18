@@ -371,7 +371,7 @@ class EmployeeConversionServiceTests(EmployeeConversionTestCase):
 
         with self.assertRaises(TypeError):
             EmployeeConversion.objects.filter(pk=conversion.pk).update(
-                source=EmployeeConversion.Source.HORILLA_ONBOARDING
+                source=EmployeeConversion.Source.HYDRA_ONBOARDING
             )
         with self.assertRaises(TypeError):
             conversion.save()
@@ -393,7 +393,7 @@ class EmployeeConversionServiceTests(EmployeeConversionTestCase):
         )
 
         self.assertEqual(first, second)
-        self.assertEqual(first.source, EmployeeConversion.Source.HORILLA_ONBOARDING)
+        self.assertEqual(first.source, EmployeeConversion.Source.HYDRA_ONBOARDING)
         self.person_a.refresh_from_db()
         self.assertEqual(self.person_a.employee, employee)
         self.assertEqual(EmployeeConversion.objects.count(), 1)
@@ -460,7 +460,7 @@ class EmployeeConversionPermissionViewTests(EmployeeConversionTestCase):
         self.assertEqual(self.person_a.employee.email, "view.convert@example.test")
         self.assertTrue(EmployeeConversion.objects.filter(person=self.person_a).exists())
 
-    def test_horilla_direct_conversion_redirects_linked_candidate_to_hydra(self):
+    def test_direct_conversion_redirects_linked_candidate_to_hydra(self):
         self.client.force_login(self.admin)
 
         response = self.client.post(
@@ -481,7 +481,7 @@ class EmployeeConversionPermissionViewTests(EmployeeConversionTestCase):
             Candidate._base_manager.get(pk=self.candidate_a.pk).converted_employee_id
         )
 
-    def test_original_horilla_conversion_remains_available_for_legacy_candidate(self):
+    def test_original_conversion_remains_available_for_legacy_candidate(self):
         legacy = self.make_candidate(
             "Legacy conversion",
             "legacy-conversion@example.test",

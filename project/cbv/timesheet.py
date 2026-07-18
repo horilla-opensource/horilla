@@ -17,11 +17,11 @@ from django.utils.translation import gettext_lazy as _
 from employee.models import Employee
 from hydra_views.cbv_methods import login_required
 from hydra_views.generic.cbv.views import (
-    HorillaCardView,
-    HorillaDetailedView,
-    HorillaFormView,
-    HorillaListView,
-    HorillaNavView,
+    HydraCardView,
+    HydraDetailedView,
+    HydraFormView,
+    HydraListView,
+    HydraNavView,
     TemplateView,
 )
 from project.cbv.cbv_decorators import is_projectmanager_or_member_or_perms
@@ -48,7 +48,7 @@ class TimeSheetView(TemplateView):
 @method_decorator(
     is_projectmanager_or_member_or_perms("project.view_timesheet"), name="dispatch"
 )
-class TimeSheetNavView(HorillaNavView):
+class TimeSheetNavView(HydraNavView):
     """
     Nav bar
     """
@@ -126,7 +126,7 @@ class TimeSheetNavView(HorillaNavView):
 @method_decorator(
     is_projectmanager_or_member_or_perms("project.view_timesheet"), name="dispatch"
 )
-class TimeSheetList(HorillaListView):
+class TimeSheetList(HydraListView):
     """
     Time sheet list view
     """
@@ -249,7 +249,7 @@ class TaskTimeSheet(TimeSheetList):
     template_name = "cbv/timesheet/task_timesheet.html"
 
     def get_queryset(self):
-        queryset = HorillaListView.get_queryset(self)
+        queryset = HydraListView.get_queryset(self)
         task_id = self.kwargs.get("task_id")
         task = Task.objects.filter(id=task_id).first()
         queryset = TimeSheet.objects.filter(task_id=task_id)
@@ -272,7 +272,7 @@ class TaskTimeSheet(TimeSheetList):
 @method_decorator(
     is_projectmanager_or_member_or_perms("project.view_timesheet"), name="dispatch"
 )
-class TimeSheetFormView(HorillaFormView):
+class TimeSheetFormView(HydraFormView):
     """
     form view for create project
     """
@@ -397,7 +397,7 @@ class TimeSheetFormView(HorillaFormView):
 @method_decorator(
     is_projectmanager_or_member_or_perms("project.view_timesheet"), name="dispatch"
 )
-class TimeSheetCardView(HorillaCardView):
+class TimeSheetCardView(HydraCardView):
     """
     For card view
     """
@@ -487,7 +487,7 @@ class TimeSheetCardView(HorillaCardView):
 @method_decorator(
     is_projectmanager_or_member_or_perms("project.view_timesheet"), name="dispatch"
 )
-class TimeSheetDetailView(HorillaDetailedView):
+class TimeSheetDetailView(HydraDetailedView):
     """
     detail view of the page
     """

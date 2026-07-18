@@ -6,7 +6,7 @@ from django.apps import apps
 from django.db.models import Q
 
 from employee.models import Employee
-from hydra.methods import get_horilla_model_class
+from hydra.methods import get_hydra_model_class
 
 
 def calculate_requested_days(
@@ -85,7 +85,7 @@ def get_leave_day_attendance(employee, comp_id=None):
     """
     This function returns a queryset of attendance on leave dates
     """
-    Attendance = get_horilla_model_class(app_label="attendance", model="attendance")
+    Attendance = get_hydra_model_class(app_label="attendance", model="attendance")
     from leave.models import CompensatoryLeaveRequest
 
     attendances_to_exclude = Attendance.objects.none()  # Empty queryset to start with

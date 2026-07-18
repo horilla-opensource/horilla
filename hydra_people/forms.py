@@ -133,7 +133,7 @@ class EmployeeConversionForm(forms.Form):
     confirmation = forms.BooleanField(
         label=_(
             "I confirm the application is hired and these values should create/link "
-            "the Horilla employee."
+            "the Hydra employee."
         ),
     )
 

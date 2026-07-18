@@ -1,11 +1,11 @@
 {% load i18n %}{% load widget_tweaks %}
-{% load horillafilters %}
+{% load hydrafilters %}
 <script>
     function auditDynamicTag(optionElement) {
         var val = optionElement.val();
         $.ajax({
             type: "post",
-            url: "/horilla-audit-log",
+            url: "/hydra-audit-log",
             data: {
                 csrfmiddlewaretoken: getCookie("csrftoken"),
                 title: val,

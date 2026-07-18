@@ -7,14 +7,14 @@
       "created_by": 1,
       "modified_by": 1,
       "is_active": false,
-      "company": "Horilla",
+      "company": "Hydra",
       "hq": true,
       "address": "ABCD street",
       "country": "USA",
       "state": "Nevada",
       "city": "las vegas",
       "zip": "89036",
-      "icon": "base/icon/Horilla_2.png",
+      "icon": "base/icon/Hydra_2.png",
       "date_format": null,
       "time_format": null
     }
@@ -27,14 +27,14 @@
       "created_by": 1,
       "modified_by": 1,
       "is_active": false,
-      "company": "Horilla Inc.",
+      "company": "Hydra Inc.",
       "hq": false,
       "address": "The Estate , 8th Floor",
       "country": "India",
       "state": "Karnataka",
       "city": "Bangalore",
       "zip": "560042",
-      "icon": "base/icon/Horilla_3.png",
+      "icon": "base/icon/Hydra_3.png",
       "date_format": null,
       "time_format": null
     }
@@ -47,14 +47,14 @@
       "created_by": 1,
       "modified_by": 1,
       "is_active": false,
-      "company": "Horilla Next Inc.",
+      "company": "Hydra Next Inc.",
       "hq": false,
       "address": "Alpha House",
       "country": "United Kingdom",
       "state": "City of London",
       "city": "SE1 1LB",
       "zip": "673589",
-      "icon": "base/icon/Horilla_1.png",
+      "icon": "base/icon/Hydra_1.png",
       "date_format": null,
       "time_format": null
     }
@@ -2953,8 +2953,8 @@
       "created_by": 1,
       "modified_by": 1,
       "is_active": true,
-      "title": "Horilla Tour",
-      "description": "<h1 class=\"hr-heading hr-heading--h1 hr-hero__title\" style=\"-webkit-font-smoothing: auto; font-size: 5rem; margin-right: auto; margin-bottom: 0px; margin-left: auto; font-family: Poppins, &quot;Helvetica Neue&quot;, Helvetica, Arial, sans-serif; font-weight: bold; text-align: center; max-width: 855px; line-height: 96px; color: rgb(28, 28, 28);\">The&nbsp;<span class=\"hr-hero__highlight\" style=\"-webkit-font-smoothing: auto; position: relative;\">only</span>&nbsp;HR Software You'll ever need.</h1><p class=\"hr-hero__lead\" style=\"-webkit-font-smoothing: auto; font-size: 1.25rem; color: rgb(28, 28, 28); max-width: 650px; text-align: center; margin: 1rem auto 1.5rem; font-family: &quot;Open Sans&quot;, Inter, &quot;Helvetica Neue Light&quot;, &quot;Helvetica Neue&quot;, Helvetica, Arial, sans-serif;\">Horilla HRMS offers all the features you would expect from your favorite Open Source HR Software and much more.<span style=\"-webkit-font-smoothing: auto; font-weight: bolder;\"><br style=\"-webkit-font-smoothing: auto;\">It's free &amp; open-source!</span></p>",
+      "title": "Hydra Tour",
+      "description": "<h1 class=\"hr-heading hr-heading--h1 hr-hero__title\" style=\"-webkit-font-smoothing: auto; font-size: 5rem; margin-right: auto; margin-bottom: 0px; margin-left: auto; font-family: Poppins, &quot;Helvetica Neue&quot;, Helvetica, Arial, sans-serif; font-weight: bold; text-align: center; max-width: 855px; line-height: 96px; color: rgb(28, 28, 28);\">The&nbsp;<span class=\"hr-hero__highlight\" style=\"-webkit-font-smoothing: auto; position: relative;\">only</span>&nbsp;HR Software You'll ever need.</h1><p class=\"hr-hero__lead\" style=\"-webkit-font-smoothing: auto; font-size: 1.25rem; color: rgb(28, 28, 28); max-width: 650px; text-align: center; margin: 1rem auto 1.5rem; font-family: &quot;Open Sans&quot;, Inter, &quot;Helvetica Neue Light&quot;, &quot;Helvetica Neue&quot;, Helvetica, Arial, sans-serif;\">Hydra HRMS offers all the features you would expect from your favorite Open Source HR Software and much more.<span style=\"-webkit-font-smoothing: auto; font-weight: bolder;\"><br style=\"-webkit-font-smoothing: auto;\">It's free &amp; open-source!</span></p>",
       "expire_date": "2100-12-17",
       "disable_comments": false,
       "attachments": [],
@@ -3190,7 +3190,7 @@
     }
   },
   {
-    "model": "base.horillamailtemplate",
+    "model": "base.hydramailtemplate",
     "pk": 1,
     "fields": {
       "created_at": "2025-07-05T09:39:13.733Z",
@@ -3203,7 +3203,7 @@
     }
   },
   {
-    "model": "base.horillamailtemplate",
+    "model": "base.hydramailtemplate",
     "pk": 2,
     "fields": {
       "created_at": "2025-07-12T10:23:52.188Z",

@@ -76,8 +76,9 @@
                 >{% trans "Forgot password" %}?</a></small>
         </form>
     </div>
-    <img
-        src="{% if white_label_company.icon %}"{{white_label_company.icon.url}}" {% else %} "{% static 'images/ui/auth-logo.png' %}" {% endif %}"
-        alt="{% trans 'Horilla' %}"
-    >
+    {% if white_label_company.icon %}
+        <img src="{{ white_label_company.icon.url }}" alt="{{ white_label_company_name }}">
+    {% else %}
+        <strong aria-label="{% trans 'Hydra' %}" style="color: #2b3445; font-size: 2.5rem; letter-spacing: .18em;">HYDRA</strong>
+    {% endif %}
 </main>

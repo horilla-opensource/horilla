@@ -44,7 +44,7 @@ from base.methods import (
     get_pagination,
     sortby,
 )
-from base.models import HorillaMailTemplate, JobPosition
+from base.models import HydraMailTemplate, JobPosition
 from employee.models import Employee, EmployeeBankDetails, EmployeeWorkInformation
 from hydra import settings
 from hydra.decorators import (
@@ -54,7 +54,7 @@ from hydra.decorators import (
     permission_required,
 )
 from hydra.group_by import group_by_queryset as general_group_by
-from hydra.http.response import HorillaRedirect
+from hydra.http.response import HydraRedirect
 from hydra_legacy_documents.models import Document
 from hydra_arrivals.portal_email import (
     PORTAL_EMAIL_QUEUE_PERMISSIONS,
@@ -198,7 +198,7 @@ def stage_update(request, stage_id, recruitment_id):
                 icon="people-circle",
                 redirect=reverse("onboarding-view"),
             )
-            return HorillaRedirect(request)
+            return HydraRedirect(request)
     return render(
         request,
         "onboarding/stage_update.html",
@@ -228,7 +228,7 @@ def stage_delete(request, stage_id):
         messages.error(request, _("Stage not found."))
     except ProtectedError:
         messages.error(request, _("There are candidates in this stage..."))
-    return HorillaRedirect(request)
+    return HydraRedirect(request)
 
 
 @login_required
@@ -284,7 +284,7 @@ def task_creation(request):
                 redirect=reverse("onboarding-view"),
             )
             messages.success(request, _("New task created successfully..."))
-            return HorillaRedirect(request)
+            return HydraRedirect(request)
     return render(
         request, "onboarding/task_form.html", {"form": form, "stage_id": stage_id}
     )
@@ -335,7 +335,7 @@ def task_update(
                 icon="people-circle",
                 redirect=reverse("onboarding-view"),
             )
-            return HorillaRedirect(request)
+            return HydraRedirect(request)
     return render(
         request,
         "onboarding/task_update.html",
@@ -526,7 +526,7 @@ def candidates_view(request):
     previous_data = request.GET.urlencode()
     page_number = request.GET.get("page")
     page_obj = paginator_qry(candidate_filter_obj.qs, page_number)
-    mail_templates = HorillaMailTemplate._base_manager.filter(
+    mail_templates = HydraMailTemplate._base_manager.filter(
         Q(company_id__isnull=True)
         | Q(company_id__in=company_ids_for_user(user=request.user))
     )
@@ -629,7 +629,7 @@ def email_send(request):
     template_attachment_ids = request.POST.getlist("template_attachment_ids")
     if not candidates:
         messages.info(request, "Please choose candidates")
-        return HorillaRedirect(request)
+        return HydraRedirect(request)
     if not request.user.has_perms(PORTAL_EMAIL_QUEUE_PERMISSIONS):
         raise PermissionDenied
 
@@ -637,7 +637,7 @@ def email_send(request):
         uploaded_attachments = prepare_uploaded_portal_attachments(other_attachments)
     except ValidationError as error:
         messages.error(request, error.messages[0])
-        return HorillaRedirect(request)
+        return HydraRedirect(request)
 
     try:
         selected_template_ids = {
@@ -645,13 +645,13 @@ def email_send(request):
         }
     except (TypeError, ValueError):
         messages.error(request, _("An attachment template selection is invalid."))
-        return HorillaRedirect(request)
+        return HydraRedirect(request)
     if (
         len(uploaded_attachments) + len(selected_template_ids)
         > settings.HYDRA_PORTAL_EMAIL_MAX_ATTACHMENTS
     ):
         messages.error(request, _("Too many portal-email attachments were selected."))
-        return HorillaRedirect(request)
+        return HydraRedirect(request)
 
     for cand_id in candidates:
         candidate = linked_candidates_for_user(user=request.user).filter(pk=cand_id).first()
@@ -674,7 +674,7 @@ def email_send(request):
         try:
             attachments = list(uploaded_attachments)
             candidate_templates = list(
-                HorillaMailTemplate._base_manager.filter(
+                HydraMailTemplate._base_manager.filter(
                     id__in=selected_template_ids,
                 )
                 .filter(
@@ -717,7 +717,7 @@ def email_send(request):
             else _("This portal email is already queued."),
         )
 
-    return HorillaRedirect(request)
+    return HydraRedirect(request)
 
 
 def onboarding_query_grouper(request, queryset):
@@ -1847,7 +1847,7 @@ def add_to_rejected_candidates(request):
             form.save()
             form = RejectedCandidateForm()
             messages.success(request, "Candidate reject reason saved")
-            return HorillaRedirect(request)
+            return HydraRedirect(request)
     return render(request, "onboarding/rejection/form.html", {"form": form})
 
 
@@ -1867,7 +1867,7 @@ def delete_candidate_rejection(request, rej_id):
             messages.error(request, "Candidate rejection not found")
     except Exception as e:
         messages.error(request, "Error occurred while deleting candidate rejection")
-    return HorillaRedirect(request)
+    return HydraRedirect(request)
 
 
 @login_required

@@ -66,8 +66,8 @@ msgstr "權限"
 msgid "Default Accessibility"
 msgstr "預設可訪問性"
 
-msgid "Limit default view access to horilla feature"
-msgstr "限制預設檢視存取至 Horilla 功能"
+msgid "Limit default view access to hydra feature"
+msgstr "限制預設檢視存取至 Hydra 功能"
 
 msgid "Actions"
 msgstr "操作"
@@ -2429,9 +2429,9 @@ msgid "Automatic Check Out Time"
 msgstr "自动签退时间"
 
 msgid ""
-"Time at which the horilla will automatically check out the employee "
+"Time at which the hydra will automatically check out the employee "
 "attendance if they forget."
-msgstr "如果员工忘记签退，Horilla 将在此时间自动签退其考勤。"
+msgstr "如果员工忘记签退，Hydra 将在此时间自动签退其考勤。"
 
 msgid "Employee Shift Schedule"
 msgstr "员工轮班安排"
@@ -2934,7 +2934,7 @@ msgstr "保存密码"
 msgid "Forgot password"
 msgstr "忘记密码"
 
-msgid "Horilla"
+msgid "Hydra"
 msgstr ""
 
 msgid "Employee Permissions"
@@ -4502,7 +4502,7 @@ msgstr "部门"
 msgid "job_position"
 msgstr ""
 "职位\n"
-"这些翻译保持了专业性和准确性，适用于企业级人力资源管理系统（Horilla HRM）的上"
+"这些翻译保持了专业性和准确性，适用于企业级人力资源管理系统（Hydra HRM）的上"
 "下文。每个术语都遵循了指定的翻译要求，确保了在中文商业环境中的适用性和清晰"
 "度。"
 
@@ -4690,7 +4690,7 @@ msgstr ""
 msgid "gdrive"
 msgstr ""
 
-msgid "horilla-theme"
+msgid "hydra-theme"
 msgstr ""
 
 #, fuzzy
@@ -4784,8 +4784,8 @@ msgstr "{} 已成功删除。"
 msgid "{} not found."
 msgstr "未找到 {}。"
 
-msgid "Test mail from Horilla"
-msgstr "来自 Horilla 的测试邮件"
+msgid "Test mail from Hydra"
+msgstr "来自 Hydra 的测试邮件"
 
 msgid "Something went wrong :"
 msgstr "出现错误："
@@ -14096,7 +14096,7 @@ msgstr "全部清除"
 msgid "Settings"
 msgstr "设置"
 
-msgid "Horilla HRMS"
+msgid "Hydra HRMS"
 msgstr ""
 
 msgid "Sign Up"
@@ -14109,11 +14109,11 @@ msgid "Go To Home"
 msgstr "返回首页"
 
 msgid ""
-"Authenticate with your password to initialize the Horilla HRMS database."
-msgstr "使用您的密码进行身份验证以初始化 Horilla HRMS 数据库。"
+"Authenticate with your password to initialize the Hydra HRMS database."
+msgstr "使用您的密码进行身份验证以初始化 Hydra HRMS 数据库。"
 
-msgid "Please sign up to access the Horilla HRMS."
-msgstr "请注册以访问 Horilla HRMS。"
+msgid "Please sign up to access the Hydra HRMS."
+msgstr "请注册以访问 Hydra HRMS。"
 
 msgid "e.g. Adam"
 msgstr ""
@@ -14719,7 +14719,7 @@ msgstr ""
 
 #, fuzzy
 #~| msgid "Employee deleted"
-#~ msgid "Horilla Employee Field"
+#~ msgid "Hydra Employee Field"
 #~ msgstr "员工已删除"
 
 #, fuzzy

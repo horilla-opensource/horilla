@@ -1,4 +1,4 @@
-# Local Horilla development — Phase 0
+# Local Hydra development — Phase 0
 
 ## Verified environment
 
@@ -8,7 +8,7 @@ The following setup was executed successfully on 2026-07-14:
 - CPython 3.11.9;
 - PostgreSQL 17.2 tools;
 - Django 4.2.24;
-- audited Horilla branch/commit from `docs/HORILLA_AUDIT.md`.
+- audited legacy HR platform branch/commit from `docs/UPSTREAM_AUDIT.md`.
 
 The test used a private PostgreSQL cluster bound only to `127.0.0.1:55432`. It did not modify the existing system PostgreSQL cluster or require its administrator password.
 
@@ -93,7 +93,7 @@ Adjust the binary/data paths if custom arguments were used.
 
 ## Create an administrator
 
-Phase 0 deliberately does not create a fixed default account. Use either Horilla's initial database setup page with a locally supplied `DB_INIT_PASSWORD` or Django's command after setting the same environment as `run-local.ps1`:
+Phase 0 deliberately does not create a fixed default account. Use either legacy HR platform's initial database setup page with a locally supplied `DB_INIT_PASSWORD` or Django's command after setting the same environment as `run-local.ps1`:
 
 ```powershell
 .\.venv\Scripts\python.exe manage.py createsuperuser

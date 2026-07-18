@@ -28,7 +28,7 @@
 {% if can_start_onboarding %}
 <section class="hydra-card mb-3" aria-labelledby="onboarding-start-title">
   <h2 class="h4" id="onboarding-start-title">{% trans "Onboarding handoff" %}</h2>
-  <p>{% trans "Create the reused Horilla onboarding stage and tasks for this confirmed arrival. The action is idempotent and audited." %}</p>
+  <p>{% trans "Create the reused Hydra onboarding stage and tasks for this confirmed arrival. The action is idempotent and audited." %}</p>
   <form method="post" action="{% url 'hydra-onboarding-handoff-start' plan.uuid %}">
     {% csrf_token %}
     <button class="oh-btn oh-btn--secondary" type="submit">{% trans "Start onboarding" %}</button>
@@ -41,7 +41,7 @@
   <header class="hydra-header">
     <div>
       <h2 class="h4" id="onboarding-handoff-title">{% trans "Onboarding handoff" %}</h2>
-      <p class="hydra-muted mb-0">{% trans "Confirmed arrival, Horilla onboarding, employee conversion and destination team assignment." %}</p>
+      <p class="hydra-muted mb-0">{% trans "Confirmed arrival, Hydra onboarding, employee conversion and destination team assignment." %}</p>
     </div>
     {% if can_reconcile_onboarding %}
     <form method="post" action="{% url 'hydra-onboarding-handoff-reconcile' plan.uuid %}">

@@ -30,4 +30,4 @@ def dynamic_tag(request):
     return JsonResponse({"id": title[0].id})
 
 
-urlpatterns.append(path("horilla-audit-log", dynamic_tag, name="horilla-audit-log"))
+urlpatterns.append(path("hydra-audit-log", dynamic_tag, name="hydra-audit-log"))

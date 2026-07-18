@@ -17,13 +17,13 @@ class Bot:
         self.__str__()
 
     def __str__(self) -> str:
-        return "Horilla Bot"
+        return "Hydra Bot"
 
     def get_avatar(self):
         """
         Get avatar
         """
-        return "https://ui-avatars.com/api/?name=Horilla+Bot&background=random"
+        return "https://ui-avatars.com/api/?name=Hydra+Bot&background=random"
 
 
 def _check_and_delete(entry1, entry2, dry_run=False):
@@ -162,7 +162,7 @@ def history_tracking(request, obj_id, **kwargs):
     @apply_decorators(decorator_strings)
     def _history_tracking(request, obj_id, model):
         instance = model.objects.get(pk=obj_id)
-        histories = instance.horilla_history.all()
+        histories = instance.hydra_history.all()
         page_number = request.GET.get("page", 1)
         paginator = Paginator(histories, 4)
         page_obj = paginator.get_page(page_number)

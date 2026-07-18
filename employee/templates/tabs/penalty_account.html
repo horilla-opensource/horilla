@@ -1,4 +1,4 @@
-{% load i18n %}{% load horillafilters %}
+{% load i18n %}{% load hydrafilters %}
 {% if "attendance"|app_installed %}
 <div hx-get="{% url "view-penalties" %}?employee_id={{employee.id}}" hx-trigger="load"></div>
 {% endif %}

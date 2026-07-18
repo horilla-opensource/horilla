@@ -8,11 +8,11 @@ from django.urls import reverse
 from django.utils.translation import gettext_lazy as _
 
 from base.models import Company
-from hydra.models import HorillaModel
+from hydra.models import HydraModel
 from hydra_templates.placeholders import placeholder_names
 
 
-class MessageTemplate(HorillaModel):
+class MessageTemplate(HydraModel):
     class Language(models.TextChoices):
         POLISH = "pl", _("Polish")
         UKRAINIAN = "uk", _("Ukrainian")

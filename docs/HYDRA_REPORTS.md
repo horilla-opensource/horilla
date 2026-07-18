@@ -4,18 +4,18 @@
 
 Task `044-reports.md` is implemented as the `hydra_reports` Django app. It provides one complete operational reporting slice across scoped Hydra people, current assignments, arrivals, housing and legalization cases, with server-generated CSV and append-only export audit.
 
-The supplied 044 brief duplicated the earlier housing task. The implemented scope follows the numerical architecture, `HORILLA_AUDIT.md`, `REUSE_MATRIX.md`, `IMPLEMENTATION_DECISIONS.md` and the completed coordinator/report dependencies.
+The supplied 044 brief duplicated the earlier housing task. The implemented scope follows the numerical architecture, `UPSTREAM_AUDIT.md`, `REUSE_MATRIX.md`, `IMPLEMENTATION_DECISIONS.md` and the completed coordinator/report dependencies.
 
 ## Reuse decision
 
 The solution is **EXTEND + WRAP**:
 
-- Horilla's report navigation, filter/table conventions and existing business reports remain unchanged;
+- legacy HR platform's report navigation, filter/table conventions and existing business reports remain unchanged;
 - Hydra adds its own authenticated report route and responsive table within the shared shell;
 - all records originate from Hydra permission-and-scope selectors;
 - export is generated and authorized on the server rather than from browser DOM data.
 
-The audited Horilla pivot endpoints start from broad managers such as `Employee.objects.all()` and `Candidate.objects.all()`, then rely mainly on model permissions and the selected Company session. Their client-side Excel export is not reused for Hydra data because it cannot be the authorization boundary.
+The audited legacy HR platform pivot endpoints start from broad managers such as `Employee.objects.all()` and `Candidate.objects.all()`, then rely mainly on model permissions and the selected Company session. Their client-side Excel export is not reused for Hydra data because it cannot be the authorization boundary.
 
 ## Permission boundary
 
@@ -35,7 +35,7 @@ CSV additionally requires `hydra_reports.export_operational_report`. Audit visib
 
 The report starts from `people_for_user`. Current assignments are re-intersected with that visible Person set, arrivals come from `arrival_plans_for_user`, and legalization cases come from `legalization_cases_for_user`. A Team grant can expose its assigned people but does not silently grant arrival access; the arrival selector's existing Company/Location requirement remains authoritative.
 
-Location and Team filter choices are limited to active scope. A forged filter is invalid, exports nothing and creates no audit row. The save/export service independently rechecks scope, so bypassing the HTML form does not widen access. Horilla session value `selected_company=all` has no effect on Hydra scope.
+Location and Team filter choices are limited to active scope. A forged filter is invalid, exports nothing and creates no audit row. The save/export service independently rechecks scope, so bypassing the HTML form does not widen access. legacy HR platform session value `selected_company=all` has no effect on Hydra scope.
 
 ## Report contract
 
@@ -83,7 +83,7 @@ Every successful response creates one `OperationalReportExport` row containing a
 
 ## Verification
 
-Focused PostgreSQL coverage contains 14 tests for report and domain permissions, Team scope, forged Location filters, the Company `all` denial rule, arrival and Housing attention filtering, missing export permission, exact scoped CSV rows, formula neutralization, private response headers, service-level scope rechecks, append-only audit, actor-only audit visibility and an existing Horilla employee view.
+Focused PostgreSQL coverage contains 14 tests for report and domain permissions, Team scope, forged Location filters, the Company `all` denial rule, arrival and Housing attention filtering, missing export permission, exact scoped CSV rows, formula neutralization, private response headers, service-level scope rechecks, append-only audit, actor-only audit visibility and an existing legacy HR platform employee view.
 
 The complete implemented regression passes:
 

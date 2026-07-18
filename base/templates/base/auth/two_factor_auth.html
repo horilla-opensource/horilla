@@ -143,15 +143,11 @@
                 </div>
 
                 <div style="display: contents">
-                    <img
-                        src="{% if white_label_company.icon %}
-                            "{{white_label_company.icon.url}}"
-                            alt="{{white_label_company_name}}"
-                            style=" opacity:.90; 200px; height: 140px;"
-                        {% else %}
-                            "{% static 'images/ui/auth-logo.png' %}" alt="{% trans 'Horilla' %}"
-                        {% endif %}"
-                    >
+                    {% if white_label_company.icon %}
+                        <img src="{{ white_label_company.icon.url }}" alt="{{ white_label_company_name }}" style="opacity: .9; max-width: 200px; max-height: 140px;">
+                    {% else %}
+                        <strong aria-label="{% trans 'Hydra' %}" style="color: #2b3445; font-size: 2.5rem; letter-spacing: .18em;">HYDRA</strong>
+                    {% endif %}
                     {% if white_label_company %}
                         <p style="font-size: large; color: gray; text-align: center" class="mt-2">
                             {{ white_label_company }}

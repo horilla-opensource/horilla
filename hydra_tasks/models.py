@@ -9,7 +9,7 @@ from django.utils import timezone
 from django.utils.translation import gettext_lazy as _
 
 from base.models import Company
-from hydra.models import HorillaModel
+from hydra.models import HydraModel
 from hydra_people.models import Person
 
 
@@ -29,7 +29,7 @@ class ProtectedTaskQuerySet(models.QuerySet):
         raise TypeError("Hydra tasks cannot be hard-deleted.")
 
 
-class HydraTask(HorillaModel):
+class HydraTask(HydraModel):
     class Status(models.TextChoices):
         OPEN = "open", _("Open")
         IN_PROGRESS = "in_progress", _("In progress")

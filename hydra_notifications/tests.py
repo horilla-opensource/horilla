@@ -310,7 +310,7 @@ class HydraNotificationTests(HydraRecruitmentTestCase):
         responses = notify.send(
             self.admin,
             recipient=self.user,
-            verb="A legacy Horilla notification.",
+            verb="A legacy Hydra notification.",
             redirect="#",
         )
         notifications = [

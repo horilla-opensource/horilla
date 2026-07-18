@@ -1,23 +1,23 @@
 """
 forms.py
 
-Horilla forms
+Hydra forms
 """
 
 from typing import Any, Dict
 
 from django import forms
 
-from hydra_widgets.widgets.hydra_multi_select_field import HorillaMultiSelectField
+from hydra_widgets.widgets.hydra_multi_select_field import HydraMultiSelectField
 
 default_select_option_template = forms.Select.option_template_name
 forms.Select.option_template_name = "hydra_widgets/hydra_select_option.html"
 
 
-class HorillaForm(forms.Form):
+class HydraForm(forms.Form):
     def clean(self) -> Dict[str, Any]:
         for field_name, field_instance in self.fields.items():
-            if isinstance(field_instance, HorillaMultiSelectField):
+            if isinstance(field_instance, HydraMultiSelectField):
                 self.errors.pop(field_name, None)
                 if len(self.data.getlist(field_name)) < 1:
                     raise forms.ValidationError({field_name: "This field is required"})
@@ -30,10 +30,10 @@ class HorillaForm(forms.Form):
         return cleaned_data
 
 
-class HorillaModelForm(forms.ModelForm):
+class HydraModelForm(forms.ModelForm):
     def clean(self) -> Dict[str, Any]:
         for field_name, field_instance in self.fields.items():
-            if isinstance(field_instance, HorillaMultiSelectField):
+            if isinstance(field_instance, HydraMultiSelectField):
                 self.errors.pop(field_name, None)
                 if len(self.data.getlist(field_name)) < 1:
                     raise forms.ValidationError({field_name: "Thif field is required"})

@@ -1,6 +1,6 @@
 from django.utils.translation import gettext_lazy as _
 
-from hydra.http import HorillaRedirect
+from hydra.http import HydraRedirect
 from project.methods import (
     any_project_manager,
     any_project_member,
@@ -32,7 +32,7 @@ def is_projectmanager_or_member_or_perms(function, perm):
             or any_task_member(user)
         ):
             return function(request, *args, **kwargs)
-        return HorillaRedirect(request, message=_("You don't have permission."))
+        return HydraRedirect(request, message=_("You don't have permission."))
 
     return _function
 
@@ -62,7 +62,7 @@ def project_update_permission(function=None, *args, **kwargs):
             )
         ):
             return function(request, *args, project_id=project_id, **kwargs)
-        return HorillaRedirect(request, message=_("You don't have permission."))
+        return HydraRedirect(request, message=_("You don't have permission."))
         # return function(request, *args, **kwargs)
 
     return check_project_member
@@ -85,7 +85,7 @@ def project_delete_permission(function=None, *args, **kwargs):
             or request.user.is_superuser
         ):
             return function(request, *args, project_id=project_id, **kwargs)
-        return HorillaRedirect(request, message=_("You don't have permission."))
+        return HydraRedirect(request, message=_("You don't have permission."))
 
     return is_project_manager
 
@@ -109,7 +109,7 @@ def project_stage_update_permission(function=None, *args, **kwargs):
             or request.user.employee_get in project.members.all()
         ):
             return function(request, *args, stage_id=stage_id, **kwargs)
-        return HorillaRedirect(request, message=_("You don't have permission."))
+        return HydraRedirect(request, message=_("You don't have permission."))
         # return function(request, *args, **kwargs)
 
     return check_project_member
@@ -132,7 +132,7 @@ def project_stage_delete_permission(function=None, *args, **kwargs):
             or request.user.is_superuser
         ):
             return function(request, *args, stage_id=stage_id, **kwargs)
-        return HorillaRedirect(request, message=_("You don't have permission."))
+        return HydraRedirect(request, message=_("You don't have permission."))
 
     return is_project_manager
 
@@ -156,7 +156,7 @@ def task_update_permission(function=None, *args, **kwargs):
         ):
             return function(request, *args, task_id=task_id, **kwargs)
 
-        return HorillaRedirect(request, message=_("You don't have permission."))
+        return HydraRedirect(request, message=_("You don't have permission."))
 
     return is_task_member
 
@@ -177,6 +177,6 @@ def task_delete_permission(function=None, *args, **kwargs):
         ):
             return function(request, task_id=task_id)
 
-        return HorillaRedirect(request, message=_("You don't have permission."))
+        return HydraRedirect(request, message=_("You don't have permission."))
 
     return is_task_manager

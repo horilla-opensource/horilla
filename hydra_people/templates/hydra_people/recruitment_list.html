@@ -5,7 +5,7 @@
 <header class="hydra-header">
   <div>
     <h1 class="oh-main__titlebar-title">{% trans "Hydra recruitment" %}</h1>
-    <p class="hydra-muted mb-0">{% trans "Horilla applications linked to canonical Person identities in your scope." %}</p>
+    <p class="hydra-muted mb-0">{% trans "Hydra applications linked to canonical Person identities in your scope." %}</p>
   </div>
   <div class="hydra-actions">{% if perms.hydra_imports.import_candidate %}<a class="oh-btn oh-btn--secondary" href="{% url 'hydra-candidate-import' %}">{% trans "Import candidates" %}</a>{% endif %}<a class="oh-btn" href="{% url 'hydra-person-list' %}">{% trans "Choose a person" %}</a></div>
 </header>

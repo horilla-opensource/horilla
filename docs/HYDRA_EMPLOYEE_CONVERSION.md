@@ -2,13 +2,13 @@
 
 ## Status
 
-Task `032-employee-conversion.md` is implemented as a permissioned, PostgreSQL-backed vertical slice that creates or explicitly links one Horilla Employee without losing the Person/application history.
+Task `032-employee-conversion.md` is implemented as a permissioned, PostgreSQL-backed vertical slice that creates or explicitly links one legacy HR platform Employee without losing the Person/application history.
 
-## Horilla reuse decision
+## Legacy HR platform reuse decision
 
-The implementation **REUSES** Horilla `employee.Employee`, `EmployeeWorkInformation`, Django `User`, `Candidate.converted_employee_id`, Company, Department and JobPosition. It **EXTENDS** `hydra_people` with one append-only `EmployeeConversion` decision record and **WRAPS** all writes in one transaction service.
+The implementation **REUSES** legacy HR platform `employee.Employee`, `EmployeeWorkInformation`, Django `User`, `Candidate.converted_employee_id`, Company, Department and JobPosition. It **EXTENDS** `hydra_people` with one append-only `EmployeeConversion` decision record and **WRAPS** all writes in one transaction service.
 
-For the Hydra path, the unsafe Horilla behavior that derives a new account password from the employee phone is **REPLACED**. Hydra creates an inactive account with an unusable password. Account activation and credential delivery are separate controlled operations.
+For the Hydra path, the unsafe legacy HR platform behavior that derives a new account password from the employee phone is **REPLACED**. Hydra creates an inactive account with an unusable password. Account activation and credential delivery are separate controlled operations.
 
 No parallel employee model was created.
 
@@ -49,18 +49,18 @@ Conversion requires the dedicated `hydra_people.convert_person_to_employee` perm
 
 Conversion history is exposed only with `hydra_people.view_employeeconversion` and only through the already-scoped Person detail.
 
-## Existing Horilla paths
+## Existing legacy HR platform paths
 
-- The direct Horilla conversion action redirects a Hydra-linked Candidate to the controlled Hydra form, including HTMX requests.
-- Unlinked legacy Candidates retain the original Horilla direct-conversion behavior.
-- Completing the Horilla onboarding bank-details step synchronizes a linked Person through the same idempotent linking/audit service.
+- The direct legacy HR platform conversion action redirects a Hydra-linked Candidate to the controlled Hydra form, including HTMX requests.
+- Unlinked legacy Candidates retain the original legacy HR platform direct-conversion behavior.
+- Completing the legacy HR platform onboarding bank-details step synchronizes a linked Person through the same idempotent linking/audit service.
 - Both conversion paths reconcile any open arrival/onboarding handoff in the same transaction; completion still waits for the destination assignment and all configured tasks.
 
-Hydra private Person/Candidate documents are not copied into generic Horilla public media during conversion.
+Hydra private Person/Candidate documents are not copied into generic legacy HR platform public media during conversion.
 
 ## Verification
 
-Focused PostgreSQL verification contains 14 tests for creation/mapping, inactive credentials, idempotency, hired-state enforcement, email collision, explicit existing-Employee linking, conflicting links, rollback, append-only history, onboarding synchronization, permission denial, direct-URL scope, scoped form choices and both linked/legacy Horilla conversion behavior.
+Focused PostgreSQL verification contains 14 tests for creation/mapping, inactive credentials, idempotency, hired-state enforcement, email collision, explicit existing-Employee linking, conflicting links, rollback, append-only history, onboarding synchronization, permission denial, direct-URL scope, scoped form choices and both linked/legacy HR platform conversion behavior.
 
 The complete implemented Hydra suite passes:
 

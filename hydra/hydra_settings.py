@@ -12,7 +12,7 @@ default and must be supplied through the environment when this feature is used.
 DB_INIT_PASSWORD = settings.env("DB_INIT_PASSWORD", default="").strip()
 
 
-HORILLA_DATE_FORMATS = {
+HYDRA_DATE_FORMATS = {
     "DD/MM/YY": "%d/%m/%y",
     "DD-MM-YYYY": "%d-%m-%Y",
     "DD.MM.YYYY": "%d.%m.%Y",
@@ -27,7 +27,7 @@ HORILLA_DATE_FORMATS = {
     "dddd, MMMM D, YYYY": "%A, %B %d, %Y",
 }
 
-HORILLA_TIME_FORMATS = {
+HYDRA_TIME_FORMATS = {
     "hh:mm A": "%I:%M %p",  # 12-hour format
     "HH:mm": "%H:%M",  # 24-hour format
     "HH:mm:ss.SSSSSS": "%H:%M:%S.%f",  # 24-hour format with seconds and microseconds
@@ -50,7 +50,7 @@ APPS = [
     "employee",
     # Historical Django labels retained for database/permission compatibility.
     "horilla_documents",
-    "horilla_automations",
+    "hydra_automations",
 ]
 
 NO_PERMISSION_MODALS = [
@@ -132,9 +132,9 @@ if settings.env("AWS_ACCESS_KEY_ID", default=None) and "storages" in INSTALLED_A
 # Default LDAP settings
 DEFAULT_LDAP_CONFIG = {
     "LDAP_SERVER": settings.env("LDAP_SERVER", default="ldap://127.0.0.1:389"),
-    "BIND_DN": settings.env("BIND_DN", default="cn=admin,dc=horilla,dc=com"),
-    "BIND_PASSWORD": settings.env("BIND_PASSWORD", default="horilla"),
-    "BASE_DN": settings.env("BASE_DN", default="ou=users,dc=horilla,dc=com"),
+    "BIND_DN": settings.env("BIND_DN", default="cn=admin,dc=hydra,dc=internal"),
+    "BIND_PASSWORD": settings.env("BIND_PASSWORD", default=""),
+    "BASE_DN": settings.env("BASE_DN", default="ou=users,dc=hydra,dc=internal"),
 }
 
 

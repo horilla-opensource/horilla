@@ -1,5 +1,5 @@
 {% load i18n %}
-{% load horillafilters %}
+{% load hydrafilters %}
 {% load basefilters %}
 {% load static %}
 
@@ -203,7 +203,7 @@
                                             </div>
                                         </div>
                                         <div class="oh-btn-group">
-                                            {% if perms.horilla_document.change_documentrequest %}
+                                            {% if perms.horilla_documents.change_documentrequest %}
                                                 {% if document.status == "approved" or not document.document %}
                                                     <a
                                                         class="oh-btn oh-btn--success w-100 oh-btn--disabled"
@@ -254,7 +254,7 @@
                                                     </a>
                                                 {% endif %}
                                             {% endif %}
-                                            {% if perms.horilla_document.delete_documentrequest %}
+                                            {% if perms.horilla_documents.delete_documentrequest %}
                                                 <form
                                                     hx-confirm="{% trans 'Are you sure you want to delete this Document Request?' %}"
                                                     hx-post="{% url 'document-delete' document.id %}"

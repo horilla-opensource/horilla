@@ -4,7 +4,7 @@
 
 Implemented on 2026-07-14 as the smallest complete legalization vertical slice, hardened on 2026-07-15 with durable reminders, scoped escalation, retryable delivery and automatic expiry, extended on 2026-07-16 with evidence-backed authority correspondence, explicit renewal lineage, a scoped workload queue, audited permanent responsibility transfer and time-bounded case deputies, and completed for TASK-014 on 2026-07-17 with scoped fixed-field configuration, immutable case policy snapshots and fail-closed legacy adoption.
 
-The required Horilla inspection found employee and candidate document-request models with simple request/approve/reject states, issue/expiry dates and generic media delivery. Horilla has no pre-employment legalization case, responsible operator, controlled workflow or Person-scoped deadline view.
+The required legacy HR platform inspection found employee and candidate document-request models with simple request/approve/reject states, issue/expiry dates and generic media delivery. legacy HR platform has no pre-employment legalization case, responsible operator, controlled workflow or Person-scoped deadline view.
 
 The implementation decision is:
 
@@ -13,8 +13,8 @@ The implementation decision is:
 - **WRAP** `hydra_documents.PrivateDocument` through an authorized case link;
 - **EXTEND + WRAP** the existing closed legalization graph with Company/global procedure, normalized status, document-requirement and approved-authority configuration;
 - snapshot selected rules per case instead of adding a generic workflow engine;
-- do not extend Horilla employee/candidate document status into a legalization workflow;
-- leave the existing Horilla document-request screens and schema operational.
+- do not extend legacy HR platform employee/candidate document status into a legalization workflow;
+- leave the existing legacy HR platform document-request screens and schema operational.
 
 ## Complete vertical slice
 
@@ -91,7 +91,7 @@ Active-case uniqueness is enforced by the supported creation services under the 
 
 The responsible operator must be active, have both legalization and Person read permissions, and currently see the Person through Hydra scope. Assigning a new case to someone other than oneself requires `assign_legalizationcase`. Responsibility is removed from the ordinary edit form: a later owner change can only use `reassign_legalization_case()`, requires `change_legalizationcase` plus `assign_legalizationcase`, a normalized reason, the target's current Person scope, a Person/case lock and one atomic update plus `LegalizationWorkEvent`. An identical retry is a no-op. The transfer immediately invalidates every current or scheduled deputy for that case and records a separate revocation fact for each.
 
-`LegalizationCaseDelegation` is case-specific so it can never grant access to unrelated cases. The current owner (or explicit superuser) may appoint one fully permissioned operator for a future/current inclusive date range of at most 90 calendar days. The service locks Person, case and existing windows, rejects overlap, self-delegation, past starts, excessive duration, insufficient permissions and missing deputy Person scope. A deputy never inherits the owner's scope: every read and write still passes through the deputy's own `people_for_user()` result. Expired rows remain as history; explicit revocation is narrowing-only, reasoned and audited. Horilla leave is not used to infer or silently create access.
+`LegalizationCaseDelegation` is case-specific so it can never grant access to unrelated cases. The current owner (or explicit superuser) may appoint one fully permissioned operator for a future/current inclusive date range of at most 90 calendar days. The service locks Person, case and existing windows, rejects overlap, self-delegation, past starts, excessive duration, insufficient permissions and missing deputy Person scope. A deputy never inherits the owner's scope: every read and write still passes through the deputy's own `people_for_user()` result. Expired rows remain as history; explicit revocation is narrowing-only, reasoned and audited. legacy HR platform leave is not used to infer or silently create access.
 
 Owner-or-current-deputy authority is now rechecked inside case edit, status transition, document linking, authority correspondence and renewal services. Managers retain the dedicated audited transfer path. The server-rendered `/hydra/legalization/workload/` queue is separately gated by `view_legalizationworkload`, contains only the actor's current Person scope, defaults to active work and exposes owner, deputy, overdue/due-soon/no-deadline filters without automatic load balancing.
 
@@ -190,7 +190,7 @@ Focused tests cover:
 - assignment permission enforcement;
 - same-Person/scoped/idempotent private-document linking;
 - absence of storage/media paths in case detail;
-- continued operation of Horilla's original document-request view.
+- continued operation of legacy HR platform's original document-request view.
 - atomic/idempotent deputy creation, window overlap and 90-day limit rejection;
 - full operator permission and independent Person-scope validation for deputies;
 - delegated write authority only during the effective window and immediate loss after revocation;
@@ -237,7 +237,7 @@ TASK-014 browser QA then used the real local Django/PostgreSQL stack and the sup
 
 ## Known limitations and next task
 
-- Workload assignment remains an explicit accountable decision; Hydra does not silently rebalance cases or infer deputies from Horilla leave. Bulk transfer across multiple cases is not exposed in this slice.
+- Workload assignment remains an explicit accountable decision; Hydra does not silently rebalance cases or infer deputies from legacy HR platform leave. Bulk transfer across multiple cases is not exposed in this slice.
 - Renewal lineage is explicit and safe for new work; legacy chains remain unlinked until an operator verifies each edge and records a reason.
 - Legacy authority policy adoption is deliberately a one-time superuser deployment action, not an ordinary case-edit capability; source verification remains an accountable operational step.
 - The audited manual authority workflow is complete. Automatic synchronization remains unavailable until a specific authority exposes an approved API, authentication method, rate/error contract and data-processing agreement; no screen-scraping or fabricated connector is used.

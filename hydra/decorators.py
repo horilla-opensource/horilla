@@ -11,7 +11,7 @@ from django.urls import reverse
 from django.utils.http import url_has_allowed_host_and_scheme
 from django.utils.translation import gettext as _
 
-from hydra.http import HorillaRedirect
+from hydra.http import HydraRedirect
 from hydra.methods import handle_no_permission
 from hydra.settings import BASE_DIR, DEBUG, TEMPLATES
 
@@ -290,7 +290,7 @@ def owner_can_enter(function, perm: str, model: object, manager_access=False):
                     else None
                 )
             except:
-                return HorillaRedirect(
+                return HydraRedirect(
                     request, message=_("Sorry, something went wrong!")
                 )
         can_enter = (
@@ -325,7 +325,7 @@ def install_required(function):
                     request,
                     _("Please enable the Track Late Come & Early Out from settings"),
                 )
-                return HorillaRedirect(request)
+                return HydraRedirect(request)
 
         object = BiometricAttendance.objects.all().first()
         if not object or object.is_installed:
@@ -337,7 +337,7 @@ def install_required(function):
                     "Please activate the biometric attendance feature in the settings menu."
                 ),
             )
-            return HorillaRedirect(request)
+            return HydraRedirect(request)
 
     return _function
 

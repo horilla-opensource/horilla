@@ -9,7 +9,7 @@ The solution is **EXTEND + WRAP**:
 - `hydra_people.Person` remains the canonical person identity;
 - `hydra_coordination.Location` remains the physical-site and authorization anchor;
 - existing `ScopeGrant` records and Hydra Person selectors remain the access boundary;
-- Horilla audit fields record creation and modification actors, while Hydra owns immutable housing lifecycle facts;
+- legacy HR platform audit fields record creation and modification actors, while Hydra owns immutable housing lifecycle facts;
 - Housing owns only facilities, optional buildings/floors, rooms, beds and accommodation periods. It does not duplicate Company, Location, Team or employee work information.
 
 ## Domain model

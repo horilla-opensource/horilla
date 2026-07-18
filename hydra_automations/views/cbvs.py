@@ -15,7 +15,7 @@ from django.utils.decorators import method_decorator
 from django.utils.translation import gettext_lazy as _trans
 from django.views import View
 
-from base.models import HorillaMailTemplate
+from base.models import HydraMailTemplate
 from hydra.decorators import login_required, permission_required
 from hydra_automations import models
 from hydra_automations.filters import AutomationFilter
@@ -25,9 +25,9 @@ from hydra_views.generic.cbv import views
 
 @method_decorator(login_required, name="dispatch")
 @method_decorator(
-    permission_required("horilla_automations.view_mailautomation"), name="dispatch"
+    permission_required("hydra_automations.view_mailautomation"), name="dispatch"
 )
-class AutomationSectionView(views.HorillaSectionView):
+class AutomationSectionView(views.HydraSectionView):
     """
     AutomationSectionView
     """
@@ -45,9 +45,9 @@ class AutomationSectionView(views.HorillaSectionView):
 
 @method_decorator(login_required, name="dispatch")
 @method_decorator(
-    permission_required("horilla_automations.view_mailautomation"), name="dispatch"
+    permission_required("hydra_automations.view_mailautomation"), name="dispatch"
 )
-class AutomationNavView(views.HorillaNavView):
+class AutomationNavView(views.HydraNavView):
     """
     AutomationNavView
     """
@@ -55,7 +55,7 @@ class AutomationNavView(views.HorillaNavView):
     def __init__(self, *args, **kwargs) -> None:
         super().__init__(*args, **kwargs)
         self.actions = []
-        if self.request.user.has_perm("horilla_automations.add_mailautomation"):
+        if self.request.user.has_perm("hydra_automations.add_mailautomation"):
             self.create_attrs = f"""
                 hx-get="{reverse_lazy("create-automation")}"
                 hx-target="#genericModalBody"
@@ -76,7 +76,7 @@ class AutomationNavView(views.HorillaNavView):
                 }
             )
 
-        if self.request.user.has_perm("horilla_automations.add_mailautomation"):
+        if self.request.user.has_perm("hydra_automations.add_mailautomation"):
             self.actions.append(
                 {
                     "action": "Refresh Automations",
@@ -95,9 +95,9 @@ class AutomationNavView(views.HorillaNavView):
 
 @method_decorator(login_required, name="dispatch")
 @method_decorator(
-    permission_required("horilla_automations.change_mailautomation"), name="dispatch"
+    permission_required("hydra_automations.change_mailautomation"), name="dispatch"
 )
-class AutomationFormView(views.HorillaFormView):
+class AutomationFormView(views.HydraFormView):
     """
     AutomationFormView
     """
@@ -128,9 +128,9 @@ class AutomationFormView(views.HorillaFormView):
 
 @method_decorator(login_required, name="dispatch")
 @method_decorator(
-    permission_required("horilla_automations.view_mailautomation"), name="dispatch"
+    permission_required("hydra_automations.view_mailautomation"), name="dispatch"
 )
-class AutomationListView(views.HorillaListView):
+class AutomationListView(views.HydraListView):
     """
     AutomationListView
     """
@@ -182,9 +182,9 @@ class AutomationListView(views.HorillaListView):
 
 @method_decorator(login_required, name="dispatch")
 @method_decorator(
-    permission_required("horilla_automations.view_mailautomation"), name="dispatch"
+    permission_required("hydra_automations.view_mailautomation"), name="dispatch"
 )
-class AutomationDetailedView(views.HorillaDetailedView):
+class AutomationDetailedView(views.HydraDetailedView):
     """
     AutomationDetailedView
     """
@@ -230,7 +230,7 @@ class AutomationDetailedView(views.HorillaDetailedView):
 
 @method_decorator(login_required, name="dispatch")
 @method_decorator(
-    permission_required("horilla_automations.add_mailautomation"), name="dispatch"
+    permission_required("hydra_automations.add_mailautomation"), name="dispatch"
 )
 class LoadAutomationsView(View):
     template_name = "hydra_automations/load_automation.html"
@@ -283,7 +283,7 @@ class LoadAutomationsView(View):
                 template_data = list(
                     serializers.deserialize("json", json.dumps([template_json]))
                 )[0].object
-                existing = HorillaMailTemplate.objects.filter(
+                existing = HydraMailTemplate.objects.filter(
                     title=template_data.title
                 ).first()
                 if not existing:
@@ -298,7 +298,7 @@ class LoadAutomationsView(View):
 
             template_pk = automation_json["fields"].get("mail_template")
             template_body = template_lookup.get(template_pk)
-            mail_template = HorillaMailTemplate.objects.filter(
+            mail_template = HydraMailTemplate.objects.filter(
                 body=template_body
             ).first()
             automation_obj.mail_template = mail_template

@@ -9,7 +9,7 @@
 
 ## Current role
 
-The portal is a static, public, mobile-first start page hosted independently from Horilla. Its purpose is one stable link that helps a worker choose arrival guidance or a location-specific training site. It does not contain authenticated worker records and does not duplicate the training sites.
+The portal is a static, public, mobile-first start page hosted independently from legacy HR platform. Its purpose is one stable link that helps a worker choose arrival guidance or a location-specific training site. It does not contain authenticated worker records and does not duplicate the training sites.
 
 This portal must remain operational during the Hydra MVP.
 

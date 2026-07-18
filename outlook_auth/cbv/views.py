@@ -18,7 +18,7 @@ from outlook_auth import filters, forms, models
 @method_decorator(
     permission_required(perm="outlook_auth.view_azureapi"), name="dispatch"
 )
-class ServerNav(views.HorillaNavView):
+class ServerNav(views.HydraNavView):
     """
     ServerList
     """
@@ -45,7 +45,7 @@ class ServerNav(views.HorillaNavView):
 @method_decorator(
     permission_required(perm="outlook_auth.view_azureapi"), name="dispatch"
 )
-class ServerList(views.HorillaListView):
+class ServerList(views.HydraListView):
     """
     ServerList
     """
@@ -75,7 +75,7 @@ class ServerList(views.HorillaListView):
 @method_decorator(
     permission_required(perm="outlook_auth.add_azureapi"), name="dispatch"
 )
-class ServerForm(views.HorillaFormView):
+class ServerForm(views.HydraFormView):
     """
     ServerForm
     """

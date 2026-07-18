@@ -1355,7 +1355,7 @@ class LegalizationDocumentAndRegressionTests(HydraLegalizationTestCase):
         self.assertNotContains(response, document.file.name)
         self.assertNotContains(response, "/media/")
 
-    def test_existing_horilla_document_request_view_remains_operational(self):
+    def test_existing_hydra_document_request_view_remains_operational(self):
         self.client.force_login(self.admin)
         response = self.client.get(reverse("document-request-view"))
         self.assertEqual(response.status_code, 200)

@@ -7,8 +7,8 @@ from base.methods import reload_queryset
 from employee.filters import EmployeeFilter
 from employee.models import Employee
 from hydra_legacy_documents.models import Document, DocumentRequest
-from hydra_widgets.widgets.hydra_multi_select_field import HorillaMultiSelectField
-from hydra_widgets.widgets.select_widgets import HorillaMultiSelectWidget
+from hydra_widgets.widgets.hydra_multi_select_field import HydraMultiSelectField
+from hydra_widgets.widgets.select_widgets import HydraMultiSelectWidget
 
 
 class DocumentRequestForm(ModelForm):
@@ -21,7 +21,7 @@ class DocumentRequestForm(ModelForm):
 
     def clean(self):
         cleaned_data = super().clean()
-        if isinstance(self.fields["employee_id"], HorillaMultiSelectField):
+        if isinstance(self.fields["employee_id"], HydraMultiSelectField):
             self.errors.pop("employee_id", None)
             if len(self.data.getlist("employee_id")) < 1:
                 raise forms.ValidationError({"employee_id": "This field is required"})
@@ -35,9 +35,9 @@ class DocumentRequestForm(ModelForm):
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
-        self.fields["employee_id"] = HorillaMultiSelectField(
+        self.fields["employee_id"] = HydraMultiSelectField(
             queryset=Employee.objects.all(),
-            widget=HorillaMultiSelectWidget(
+            widget=HydraMultiSelectWidget(
                 filter_route_name="employee-widget-filter",
                 filter_class=EmployeeFilter,
                 filter_instance_contex_name="f",

@@ -3,10 +3,10 @@ App configuration for the Hydra Automations app.
 Initializes model choices and starts automation when the server runs.
 """
 
-import os
 import sys
 
 from django.apps import AppConfig
+from django.conf import settings
 
 
 class HydraAutomationConfig(AppConfig):
@@ -14,24 +14,28 @@ class HydraAutomationConfig(AppConfig):
 
     default_auto_field = "django.db.models.BigAutoField"
     name = "hydra_automations"
-    label = "horilla_automations"
+    label = "hydra_automations"
 
     def ready(self) -> None:
         ready = super().ready()
-        if any(
+        if getattr(settings, "HYDRA_DISABLE_SCHEDULERS", False) or any(
             cmd in sys.argv
             for cmd in [
+                "check",
+                "collectstatic",
                 "makemigrations",
                 "migrate",
+                "showmigrations",
                 "compilemessages",
                 "flush",
                 "shell",
+                "test",
             ]
         ):
             return ready
         try:
 
-            from base.templatetags.horillafilters import app_installed
+            from base.templatetags.hydrafilters import app_installed
             from employee.models import Employee
             from hydra_automations.methods.methods import get_related_models
             from hydra_automations.models import MODEL_CHOICES

@@ -1,10 +1,10 @@
-# Horilla Open Source Project - Security Guidelines
+# Hydra Open Source Project - Security Guidelines
 
-Thank you for your interest in contributing to the Horilla open-source project. We take security seriously and value the community's efforts in helping us identify and address security vulnerabilities. This document outlines the security guidelines for reporting and addressing security issues within the Horilla project.
+Thank you for your interest in contributing to the Hydra open-source project. We take security seriously and value the community's efforts in helping us identify and address security vulnerabilities. This document outlines the security guidelines for reporting and addressing security issues within the Hydra project.
 
 ## Reporting Security Issues
 
-If you discover a security vulnerability in the Horilla project, please follow these steps to report it:
+If you discover a security vulnerability in the Hydra project, please follow these steps to report it:
 
 1. **Do Not** create a public GitHub issue for the security vulnerability.
 2. **Do Not** disclose the vulnerability details publicly until the issue has been resolved.
@@ -15,7 +15,7 @@ If you discover a security vulnerability in the Horilla project, please follow t
 
 ## Vulnerability Handling
 
-Horilla project follows these principles when handling security vulnerabilities:
+Hydra project follows these principles when handling security vulnerabilities:
 
 - **Swift Response:** We strive to respond to and address security vulnerabilities as quickly as possible. The time to resolution may vary depending on the complexity of the issue, but we will keep you updated on our progress.
 - **Coordinated Disclosure:** We follow a coordinated disclosure process, meaning we work with the reporter to ensure that the vulnerability is disclosed responsibly. This may involve a joint announcement or other measures to protect users until a fix is available.
@@ -23,7 +23,7 @@ Horilla project follows these principles when handling security vulnerabilities:
 
 ## Security Best Practices
 
-For contributors to the Horilla project, we recommend the following security best practices:
+For contributors to the Hydra project, we recommend the following security best practices:
 
 - **Code Review:** Perform thorough code reviews to identify and address security issues before they are merged into the project's codebase.
 - **Secure Dependencies:** Regularly update and monitor the project's dependencies for security vulnerabilities. Use trusted and well-maintained packages.
@@ -35,7 +35,7 @@ For contributors to the Horilla project, we recommend the following security bes
 
 ## Disclaimer
 
-The Horilla project and its maintainers assume no liability for any security vulnerabilities reported or discovered. We do, however, greatly appreciate your help in keeping the project secure.
+The Hydra project and its maintainers assume no liability for any security vulnerabilities reported or discovered. We do, however, greatly appreciate your help in keeping the project secure.
 
 ## Contact
 

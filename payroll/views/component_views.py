@@ -45,9 +45,9 @@ from hydra.decorators import (
     permission_required,
 )
 from hydra.group_by import group_by_queryset
-from hydra.hydra_settings import HORILLA_DATE_FORMATS
-from hydra.http.response import HorillaRedirect
-from hydra.methods import dynamic_attr, get_horilla_model_class, get_urlencode
+from hydra.hydra_settings import HYDRA_DATE_FORMATS
+from hydra.http.response import HydraRedirect
+from hydra.methods import dynamic_attr, get_hydra_model_class, get_urlencode
 
 # from leave.models import AvailableLeave
 from notifications.signals import notify
@@ -521,7 +521,7 @@ def delete_allowance(request, allowance_id):
         request.path.split("/")[2] == "delete-employee-allowance"
         or not Allowance.objects.exists()
     ):
-        return HorillaRedirect(request)
+        return HydraRedirect(request)
 
     instances_ids = request.GET.get("instances_ids")
     if instances_ids:
@@ -707,13 +707,13 @@ def delete_deduction(request, deduction_id, emp_id=None):
             http_hx_target == "payroll-deduction-container"
             and not Deduction.objects.filter()
         ):
-            return HorillaRedirect(request)
+            return HydraRedirect(request)
         if redirected_path:
             return redirect(redirected_path)
     default_redirect = (
         request.path if http_hx_target else request.META.get("HTTP_REFERER", "/")
     )
-    return HorillaRedirect(request)
+    return HydraRedirect(request)
 
 
 def get_month_start_end(year):
@@ -936,7 +936,7 @@ def create_payslip(request, new_post_data=None):
                     ),
                     icon="close",
                 )
-                return HorillaRedirect(
+                return HydraRedirect(
                     request,
                     redirect_to=reverse(
                         "view-payslip", kwargs={"payslip_id": payslip.pk}
@@ -967,7 +967,7 @@ def validate_start_date(request):
             int(e) for e in request.GET.getlist("employee_id") if e.isdigit()
         ]
     except:
-        return HorillaRedirect(request, message=_("Invalid Request"))
+        return HydraRedirect(request, message=_("Invalid Request"))
 
     if start_date:
         start_datetime = datetime.strptime(start_date, "%Y-%m-%d").date()
@@ -1170,7 +1170,7 @@ def payslip_export(request):
                 date_format = request.user.employee_get.get_date_format()
                 start_date = datetime.strptime(str(value), "%Y-%m-%d").date()
 
-                for format_name, format_string in HORILLA_DATE_FORMATS.items():
+                for format_name, format_string in HYDRA_DATE_FORMATS.items():
                     if format_name == date_format:
                         data = start_date.strftime(format_string)
             else:
@@ -1218,7 +1218,7 @@ def send_slip(request):
     ) or not len(email_backend.dynamic_from_email_with_display_name):
         messages.error(request, "Email server is not configured")
         if view:
-            return HorillaRedirect(request)
+            return HydraRedirect(request)
         else:
             return redirect(filter_payslip)
 
@@ -1234,7 +1234,7 @@ def send_slip(request):
     mail_thread.start()
     messages.info(request, "Mail processing")
     if view:
-        return HorillaRedirect(request)
+        return HydraRedirect(request)
     else:
         return redirect(filter_payslip)
 
@@ -1288,7 +1288,7 @@ def add_bonus(request):
                             "No active contract found for  {} during this payslip period"
                         ).format(employee),
                     )
-            return HorillaRedirect(request)
+            return HydraRedirect(request)
     return render(
         request,
         "payroll/bonus/form.html",
@@ -1399,7 +1399,7 @@ def create_loan(request):
         if form.is_valid():
             form.save()
             messages.success(request, "Loan created/updated")
-            return HorillaRedirect(request)
+            return HydraRedirect(request)
     return render(
         request, "payroll/loan/form.html", {"form": form, "instance_id": instance_id}
     )
@@ -1562,7 +1562,7 @@ def asset_fine(request):
     Add asset fine method
     """
     if apps.is_installed("asset"):
-        Asset = get_horilla_model_class(app_label="asset", model="asset")
+        Asset = get_hydra_model_class(app_label="asset", model="asset")
     asset_id = request.GET["asset_id"]
     employee_id = request.GET["employee_id"]
     asset = Asset.objects.get(id=asset_id)
@@ -1648,7 +1648,7 @@ def create_reimbursement(request):
         if form.is_valid():
             form.save()
             messages.success(request, "Reimbursement saved successfully")
-            return HorillaRedirect(request)
+            return HydraRedirect(request)
     else:
         form = forms.ReimbursementForm(instance=instance)
 
@@ -1711,7 +1711,7 @@ def get_assigned_leaves(request):
     in Json
     """
     if apps.is_installed("leave"):
-        AvailableLeave = get_horilla_model_class(
+        AvailableLeave = get_hydra_model_class(
             app_label="leave", model="availableleave"
         )
 
@@ -2089,7 +2089,7 @@ def payslip_detailed_export_data(request):
                 date_format = request.user.employee_get.get_date_format()
                 start_date = datetime.strptime(str(value), "%Y-%m-%d").date()
 
-                for format_name, format_string in HORILLA_DATE_FORMATS.items():
+                for format_name, format_string in HYDRA_DATE_FORMATS.items():
                     if format_name == date_format:
                         data = start_date.strftime(format_string)
             else:
