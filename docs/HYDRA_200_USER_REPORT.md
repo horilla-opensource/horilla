@@ -209,7 +209,7 @@ these rows only after review.
 | Data integrity and organization isolation | PARTIAL | Regression tests pass; concurrent-load evidence missing |
 | Replica restart preserves service and sessions | FAIL | Not run |
 | Regression suite passes | PASS | 464 passed, 1 skipped after the authenticated load harness and full rebrand proof |
-| Changes committed and pushed to user remote | FAIL | Rebrand is committed locally; infrastructure/load work and push remain pending |
+| Changes committed and pushed to user remote | PASS | Six implementation commits pushed; local and remote SHA matched at `d123c506ed1190fc1d7e77df1e0d7708c8444078`; draft PR #1 opened |
 
 ## Git delivery evidence
 
@@ -220,7 +220,28 @@ Commits created so far:
 - `d3928a73` - `refactor: rename owned applications to Hydra`.
 - `6a50689f` - `refactor: complete Hydra brand migration`.
 - `9f02d233` - `feat: add scaled Hydra staging runtime`.
+- `d123c506` - `feat: add authenticated Hydra load acceptance harness`.
 
-Push is intentionally pending until the remaining implementation, regression
-tests and final secret scan are complete. This section will also list the final
-remote, any PR, and intentionally omitted files.
+Delivery state:
+
+- branch: `codex/hydra-staging`;
+- user remote: `fork` -> `https://github.com/OleksandrKiris/hydra-platform.git`;
+- the user-owned fork was renamed from its legacy-branded repository name to
+  `OleksandrKiris/hydra-platform`; the external upstream was not renamed or
+  pushed;
+- pushed branch SHA and local SHA both matched
+  `d123c506ed1190fc1d7e77df1e0d7708c8444078` before this report-only update;
+- draft PR: `https://github.com/OleksandrKiris/hydra-platform/pull/1`, targeting
+  the fork's `1.0` branch;
+- the report-only delivery commit is the final branch HEAD and is identified in
+  the final handoff rather than self-referencing its own SHA here.
+
+Intentionally omitted from Git:
+
+- `.env`, `.env.staging`, secret-manager values, cookies, and credentials;
+- `.venv/` and ignored `.local/` tooling, temporary PR text, backups, test
+  databases, and raw load artifacts;
+- `media/`, private media, quarantine, outbox, static collection output, and
+  user-uploaded files;
+- no timed-load raw output exists on this workstation because Docker Desktop is
+  unavailable.
