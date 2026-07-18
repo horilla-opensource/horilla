@@ -22,17 +22,18 @@ $ErrorActionPreference = "Stop"
 Set-StrictMode -Version Latest
 
 $stageConfig = @{
-    "20" = @{ Users = 20; Duration = 900; SpawnRate = 2; Shape = "standard" }
-    "50" = @{ Users = 50; Duration = 1800; SpawnRate = 2; Shape = "standard" }
-    "100" = @{ Users = 100; Duration = 3600; SpawnRate = 2; Shape = "standard" }
-    "150" = @{ Users = 150; Duration = 3600; SpawnRate = 2; Shape = "standard" }
-    "200" = @{ Users = 200; Duration = 7200; SpawnRate = 2; Shape = "standard" }
-    "spike" = @{ Users = 200; Duration = 365; SpawnRate = 10; Shape = "spike" }
+    "20" = @{ Users = 20; Duration = 900; SpawnRate = 2; WebReplicas = 2; Shape = "standard" }
+    "50" = @{ Users = 50; Duration = 1800; SpawnRate = 2; WebReplicas = 2; Shape = "standard" }
+    "100" = @{ Users = 100; Duration = 3600; SpawnRate = 2; WebReplicas = 2; Shape = "standard" }
+    "150" = @{ Users = 150; Duration = 3600; SpawnRate = 2; WebReplicas = 3; Shape = "standard" }
+    "200" = @{ Users = 200; Duration = 7200; SpawnRate = 2; WebReplicas = 3; Shape = "standard" }
+    "spike" = @{ Users = 200; Duration = 365; SpawnRate = 10; WebReplicas = 3; Shape = "spike" }
 }
 $config = $stageConfig[$Stage]
 $requiredDuration = [int]$config.Duration
 $duration = if ($DurationOverrideSeconds -gt 0) { $DurationOverrideSeconds } else { $requiredDuration }
 $users = [int]$config.Users
+$webReplicas = [int]$config.WebReplicas
 $thinkTimeMinSeconds = 15
 $thinkTimeMaxSeconds = 25
 $spawnWarmupSeconds = [int][math]::Ceiling($users / [double][int]$config.SpawnRate)
@@ -136,7 +137,7 @@ $env:HYDRA_LOAD_THINK_TIME_MIN_SECONDS = [string]$thinkTimeMinSeconds
 $env:HYDRA_LOAD_THINK_TIME_MAX_SECONDS = [string]$thinkTimeMaxSeconds
 $env:HYDRA_LOAD_ARTIFACTS_PATH = $artifactPath
 $env:HYDRA_HTTP_PORT = [string]$HttpPort
-$env:HYDRA_WEB_REPLICAS = "2"
+$env:HYDRA_WEB_REPLICAS = [string]$webReplicas
 $env:HYDRA_LOAD_IMAGE = "hydra-load:$revision"
 $env:HYDRA_LOAD_RUNTIME_UID = "10002"
 $env:HYDRA_LOAD_RUNTIME_GID = "10002"
@@ -311,10 +312,10 @@ try {
     Invoke-Compose -Arguments @("build", "--pull", "server", "load")
     $stackOwned = $true
     Invoke-Compose -Arguments @(
-        "up", "-d", "--wait", "--wait-timeout", "1800", "--scale", "server=2",
+        "up", "-d", "--wait", "--wait-timeout", "1800", "--scale", "server=$webReplicas",
         "db", "redis", "clamav", "release", "server", "maintenance", "proxy"
     )
-    Add-RunEvent "stack_ready" "Two web replicas and supporting services are healthy"
+    Add-RunEvent "stack_ready" "$webReplicas web replicas and supporting services are healthy"
 
     & docker @composePrefix exec -T -e HYDRA_LOAD_TEST_PASSWORD server python manage.py hydra_load_seed --run-id $RunId --users 200
     if ($LASTEXITCODE -ne 0) { throw "Authenticated load-test data seeding failed." }
@@ -461,6 +462,7 @@ finally {
     [ordered]@{
         stage = $Stage
         requested_users = $users
+        web_replicas = $webReplicas
         required_duration_seconds = $requiredDuration
         configured_duration_seconds = $duration
         generator_run_time_seconds = $runDuration

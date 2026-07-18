@@ -281,7 +281,12 @@ class StagingRemoteLoadWorkflowContractTests(SimpleTestCase):
             runner,
         )
         self.assertIn('$container.State.Status -eq "running" -and', runner)
-        self.assertEqual(runner.count('SpawnRate = 2; Shape = "standard"'), 5)
+        self.assertEqual(runner.count("SpawnRate = 2; WebReplicas"), 5)
+        self.assertEqual(runner.count("WebReplicas = 2"), 3)
+        self.assertEqual(runner.count("WebReplicas = 3"), 3)
+        self.assertIn('$env:HYDRA_WEB_REPLICAS = [string]$webReplicas', runner)
+        self.assertIn('"server=$webReplicas"', runner)
+        self.assertIn("web_replicas = $webReplicas", runner)
         self.assertGreaterEqual(locustfile.count("self._prepare_internal_request()"), 4)
         self.assertIn("PYTHONPATH=/load", load_dockerfile)
         self.assertIn("load_tests/ /load/load_tests/", load_dockerfile)

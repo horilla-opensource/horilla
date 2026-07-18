@@ -103,6 +103,9 @@ def summarize_run(*, artifacts, stage, users, duration_seconds):
             "think_time_min_seconds": int(evidence.get("think_time_min_seconds", 0)),
             "think_time_max_seconds": int(evidence.get("think_time_max_seconds", 0)),
         },
+        "topology": {
+            "web_replicas": int(evidence.get("web_replicas", 0)),
+        },
         "response_ms": {
             "p50": number(aggregate, "50%"),
             "p95": number(aggregate, "95%"),
@@ -117,6 +120,9 @@ def summarize_run(*, artifacts, stage, users, duration_seconds):
     }
     acceptance = {
         "required_user_count_reached": observed_users >= users,
+        "web_replica_count_between_2_and_4": 2
+        <= summary["topology"]["web_replicas"]
+        <= 4,
         "committed_business_pacing": summary["workload"]
         == {"think_time_min_seconds": 15, "think_time_max_seconds": 25},
         "required_duration_met": (
@@ -178,6 +184,7 @@ def main():
         writer.writerow(("duration_seconds", summary["duration_seconds"]))
         writer.writerow(("throughput_rps", summary["throughput_rps"]))
         writer.writerow(("max_active_users", summary["max_active_users"]))
+        writer.writerow(("web_replicas", summary["topology"]["web_replicas"]))
         writer.writerow(("observed_duration_seconds", summary["observed_duration_seconds"]))
         writer.writerow(("full_concurrency_seconds", summary["full_concurrency_seconds"]))
         writer.writerow(("error_rate", summary["error_rate"]))

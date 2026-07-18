@@ -35,6 +35,15 @@ per user (about 72,000 authenticated business operations in total), while
 avoiding the unrealistic assumption that every HR user submits another form
 every one to three seconds for two hours.
 
+The standard 20-, 50-, and 100-user stages use the production-like default of
+two stateless web replicas. The 150-, 200-user, and spike stages use three
+replicas, still within the supported two-to-four-replica topology. This
+evidence-driven scale-out preserves the same business workload and acceptance
+thresholds while adding web CPU capacity at the point where a measured
+two-replica 150-user run reached 331.45% aggregate CPU and a strict 2,000 ms
+login p95 (the contract requires less than 2,000 ms). Every run records the
+actual replica count in `run-evidence.json`, `summary.json`, and `summary.csv`.
+
 The seed command creates only `hydra-load-<run-id>-*` accounts and
 `HYDRA_LOAD_<RUN_ID>_*` business objects in a new Compose project and volume
 set. Load endpoints return 404 unless explicitly enabled in `staging`, supplied

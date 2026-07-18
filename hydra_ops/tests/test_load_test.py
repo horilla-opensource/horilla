@@ -114,6 +114,7 @@ class LoadTestContractTests(TestCase):
                     {
                         "elapsed_seconds": 900,
                         "full_concurrency_seconds": 900,
+                        "web_replicas": 2,
                         "safety_stop_triggered": False,
                         "readiness_failures": 0,
                         "oom_count": 0,
@@ -136,12 +137,16 @@ class LoadTestContractTests(TestCase):
             )
             self.assertTrue(summary["overall_pass"])
             self.assertEqual(summary["max_active_users"], 20)
+            self.assertEqual(summary["topology"], {"web_replicas": 2})
             self.assertEqual(summary["resource_peaks"]["db_connections"], 12)
             self.assertEqual(
                 summary["workload"],
                 {"think_time_min_seconds": 15, "think_time_max_seconds": 25},
             )
             self.assertTrue(summary["acceptance"]["committed_business_pacing"])
+            self.assertTrue(
+                summary["acceptance"]["web_replica_count_between_2_and_4"]
+            )
 
 
 @override_settings(
