@@ -99,6 +99,10 @@ def summarize_run(*, artifacts, stage, users, duration_seconds):
         "failures": failures,
         "error_rate": error_rate,
         "throughput_rps": number(aggregate, "Requests/s"),
+        "workload": {
+            "think_time_min_seconds": int(evidence.get("think_time_min_seconds", 0)),
+            "think_time_max_seconds": int(evidence.get("think_time_max_seconds", 0)),
+        },
         "response_ms": {
             "p50": number(aggregate, "50%"),
             "p95": number(aggregate, "95%"),
@@ -113,6 +117,8 @@ def summarize_run(*, artifacts, stage, users, duration_seconds):
     }
     acceptance = {
         "required_user_count_reached": observed_users >= users,
+        "committed_business_pacing": summary["workload"]
+        == {"think_time_min_seconds": 15, "think_time_max_seconds": 25},
         "required_duration_met": (
             int(evidence.get("elapsed_seconds", 0)) >= duration_seconds
             if stage == "spike"
@@ -175,6 +181,8 @@ def main():
         writer.writerow(("observed_duration_seconds", summary["observed_duration_seconds"]))
         writer.writerow(("full_concurrency_seconds", summary["full_concurrency_seconds"]))
         writer.writerow(("error_rate", summary["error_rate"]))
+        for key, value in summary["workload"].items():
+            writer.writerow((key, value))
         for key, value in summary["response_ms"].items():
             writer.writerow((key, value))
         for key, value in summary["resource_peaks"].items():

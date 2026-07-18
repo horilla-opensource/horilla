@@ -287,3 +287,11 @@ class StagingRemoteLoadWorkflowContractTests(SimpleTestCase):
         self.assertIn("load_tests/ /load/load_tests/", load_dockerfile)
         self.assertIn("/load/load_tests/locustfile.py", compose)
         self.assertIn("/load/load_tests/summarize.py", runner)
+        self.assertIn("HYDRA_LOAD_THINK_TIME_MIN_SECONDS", compose)
+        self.assertIn("HYDRA_LOAD_THINK_TIME_MAX_SECONDS", compose)
+        self.assertIn("$thinkTimeMinSeconds = 15", runner)
+        self.assertIn("$thinkTimeMaxSeconds = 25", runner)
+        self.assertIn(
+            "between(THINK_TIME_MIN_SECONDS, THINK_TIME_MAX_SECONDS)",
+            locustfile,
+        )

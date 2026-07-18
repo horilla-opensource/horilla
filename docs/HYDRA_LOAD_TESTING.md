@@ -26,6 +26,15 @@ candidate-stage, Person, assignment, task-transition, housing, and onboarding
 domain services. The dashboard role is intentionally read-only. The mix is 80%
 reads and 20% writes for writing roles.
 
+After each completed business action, a user spends 15-25 seconds reading the
+screen, reviewing data, or completing the next form. This fixed think-time is
+part of the committed workload contract, not an operator-tunable acceptance
+shortcut, and is recorded in every `run-evidence.json` and summary. At the
+acceptance limits, a two-hour 200-user stage still executes roughly 360 actions
+per user (about 72,000 authenticated business operations in total), while
+avoiding the unrealistic assumption that every HR user submits another form
+every one to three seconds for two hours.
+
 The seed command creates only `hydra-load-<run-id>-*` accounts and
 `HYDRA_LOAD_<RUN_ID>_*` business objects in a new Compose project and volume
 set. Load endpoints return 404 unless explicitly enabled in `staging`, supplied

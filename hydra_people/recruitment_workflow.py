@@ -135,28 +135,26 @@ def transition_candidate(
     if not locked_candidate.stage_id_id:
         raise ValidationError({"target_stage": "The application has no current stage."})
 
-    locked_target = (
-        Stage._base_manager.select_for_update()
-        .filter(
+    selected_target = (
+        Stage._base_manager.filter(
             pk=target_stage.pk,
             recruitment_id_id=locked_candidate.recruitment_id_id,
             is_active=True,
         )
         .first()
     )
-    if locked_target is None:
+    if selected_target is None:
         raise ValidationError(
             {"target_stage": "Choose an active stage from this recruitment."}
         )
-    if locked_target.pk == locked_candidate.stage_id_id:
+    if selected_target.pk == locked_candidate.stage_id_id:
         raise ValidationError({"target_stage": "Choose a different stage."})
 
     rule = (
-        RecruitmentStageTransitionRule.objects.select_for_update()
-        .filter(
+        RecruitmentStageTransitionRule.objects.filter(
             recruitment_id=locked_candidate.recruitment_id_id,
             from_stage_id=locked_candidate.stage_id_id,
-            to_stage=locked_target,
+            to_stage=selected_target,
             is_active=True,
         )
         .first()
@@ -179,9 +177,9 @@ def transition_candidate(
     )
 
     from_stage = locked_candidate.stage_id
-    locked_candidate.stage_id = locked_target
-    locked_candidate.hired = locked_target.stage_type == "hired"
-    locked_candidate.canceled = locked_target.stage_type == "cancelled"
+    locked_candidate.stage_id = selected_target
+    locked_candidate.hired = selected_target.stage_type == "hired"
+    locked_candidate.canceled = selected_target.stage_type == "cancelled"
     locked_candidate.start_onboard = False
     locked_candidate.schedule_date = effective_schedule_date
     locked_candidate.joining_date = effective_joining_date
@@ -205,7 +203,7 @@ def transition_candidate(
     event = CandidateStageTransition(
         candidate=locked_candidate,
         from_stage=from_stage,
-        to_stage=locked_target,
+        to_stage=selected_target,
         rule=rule,
         actor=actor,
         source=source,

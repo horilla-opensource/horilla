@@ -33,6 +33,8 @@ $config = $stageConfig[$Stage]
 $requiredDuration = [int]$config.Duration
 $duration = if ($DurationOverrideSeconds -gt 0) { $DurationOverrideSeconds } else { $requiredDuration }
 $users = [int]$config.Users
+$thinkTimeMinSeconds = 15
+$thinkTimeMaxSeconds = 25
 $spawnWarmupSeconds = [int][math]::Ceiling($users / [double][int]$config.SpawnRate)
 $runDuration = if ($config.Shape -eq "standard") {
     $duration + $spawnWarmupSeconds + 30
@@ -130,6 +132,8 @@ $env:HYDRA_LOAD_USERS = [string]$users
 $env:HYDRA_LOAD_SPAWN_RATE = [string]$config.SpawnRate
 $env:HYDRA_LOAD_DURATION = "${runDuration}s"
 $env:HYDRA_LOAD_SHAPE = [string]$config.Shape
+$env:HYDRA_LOAD_THINK_TIME_MIN_SECONDS = [string]$thinkTimeMinSeconds
+$env:HYDRA_LOAD_THINK_TIME_MAX_SECONDS = [string]$thinkTimeMaxSeconds
 $env:HYDRA_LOAD_ARTIFACTS_PATH = $artifactPath
 $env:HYDRA_HTTP_PORT = [string]$HttpPort
 $env:HYDRA_WEB_REPLICAS = "2"
@@ -322,7 +326,7 @@ try {
     $loadStarted = $true
     $startedAt = Get-Date
     $lastIntegrityAt = $startedAt
-    Add-RunEvent "load_started" "Stage $Stage started with $users users and a $duration-second required hold"
+    Add-RunEvent "load_started" "Stage $Stage started with $users users, $thinkTimeMinSeconds-$thinkTimeMaxSeconds second business think time, and a $duration-second required hold"
 
     while ($true) {
         Start-Sleep -Seconds 10
@@ -460,6 +464,8 @@ finally {
         required_duration_seconds = $requiredDuration
         configured_duration_seconds = $duration
         generator_run_time_seconds = $runDuration
+        think_time_min_seconds = $thinkTimeMinSeconds
+        think_time_max_seconds = $thinkTimeMaxSeconds
         elapsed_seconds = $elapsedSeconds
         full_concurrency_seconds = $fullUserSeconds
         safety_stop_triggered = $safetyStopTriggered

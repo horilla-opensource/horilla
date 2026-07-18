@@ -122,6 +122,8 @@ class LoadTestContractTests(TestCase):
                         "integrity_before": True,
                         "integrity_after": True,
                         "controlled_restart_completed": False,
+                        "think_time_min_seconds": 15,
+                        "think_time_max_seconds": 25,
                     }
                 ),
                 encoding="utf-8",
@@ -135,6 +137,11 @@ class LoadTestContractTests(TestCase):
             self.assertTrue(summary["overall_pass"])
             self.assertEqual(summary["max_active_users"], 20)
             self.assertEqual(summary["resource_peaks"]["db_connections"], 12)
+            self.assertEqual(
+                summary["workload"],
+                {"think_time_min_seconds": 15, "think_time_max_seconds": 25},
+            )
+            self.assertTrue(summary["acceptance"]["committed_business_pacing"])
 
 
 @override_settings(

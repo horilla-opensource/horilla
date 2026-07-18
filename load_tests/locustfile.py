@@ -14,6 +14,10 @@ PASSWORD = os.environ["HYDRA_LOAD_TEST_PASSWORD"]
 SHAPE = os.environ.get("HYDRA_LOAD_SHAPE", "standard")
 REQUESTED_USERS = int(os.environ.get("HYDRA_LOAD_USERS", "200"))
 HOST_HEADER = os.environ.get("HYDRA_LOAD_HOST_HEADER", "localhost")
+THINK_TIME_MIN_SECONDS = float(os.environ["HYDRA_LOAD_THINK_TIME_MIN_SECONDS"])
+THINK_TIME_MAX_SECONDS = float(os.environ["HYDRA_LOAD_THINK_TIME_MAX_SECONDS"])
+if not 1 <= THINK_TIME_MIN_SECONDS <= THINK_TIME_MAX_SECONDS <= 120:
+    raise RuntimeError("Hydra load think time must be between 1 and 120 seconds")
 ROLE_CAPACITY = {
     "recruiter": 50,
     "hr_admin": 40,
@@ -81,7 +85,7 @@ class HydraBusinessUser(HttpUser):
     abstract = True
     role = ""
     weight = 0
-    wait_time = between(1.0, 3.0)
+    wait_time = between(THINK_TIME_MIN_SECONDS, THINK_TIME_MAX_SECONDS)
 
     def on_start(self):
         # Docker's internal hop is HTTP, but Nginx represents the TLS

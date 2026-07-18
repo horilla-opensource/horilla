@@ -1,6 +1,8 @@
 from datetime import date
 
 from django.core.exceptions import PermissionDenied, ValidationError
+from django.db import connection
+from django.test.utils import CaptureQueriesContext
 from django.urls import reverse
 
 from hydra_people.models import (
@@ -97,6 +99,30 @@ class ControlledRecruitmentWorkflowTests(HydraRecruitmentTestCase):
         with self.assertRaises(TypeError):
             event.delete()
 
+    def test_transition_locks_only_the_candidate_not_shared_stage_configuration(self):
+        self.grant_transition()
+
+        with CaptureQueriesContext(connection) as queries:
+            transition_candidate(
+                candidate=self.candidate_a,
+                target_stage=self.interview_a,
+                actor=self.user,
+            )
+
+        if connection.features.has_select_for_update:
+            locking_queries = [
+                query["sql"]
+                for query in queries
+                if "FOR UPDATE" in query["sql"].upper()
+            ]
+            self.assertEqual(len(locking_queries), 1)
+            self.assertIn(Candidate._meta.db_table, locking_queries[0])
+            self.assertNotIn(Stage._meta.db_table, locking_queries[0])
+            self.assertNotIn(
+                RecruitmentStageTransitionRule._meta.db_table,
+                locking_queries[0],
+            )
+
     def test_configured_requirements_reject_invalid_hiring_without_partial_write(self):
         self.grant_transition()
         candidate, _event = transition_candidate(
@@ -140,7 +166,7 @@ class ControlledRecruitmentWorkflowTests(HydraRecruitmentTestCase):
 
     def test_authorized_override_requires_reason_and_keeps_reason_out_of_person_timeline(self):
         self.grant_transition(history=True, override=True)
-        secret_reason = "PRIVATE DECISION DETAIL 2026"
+        secret_reason = "PRIVATE DECISION DETAIL 2026"  # pragma: allowlist secret
 
         candidate, event = transition_candidate(
             candidate=self.candidate_a,
