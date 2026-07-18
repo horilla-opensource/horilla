@@ -220,7 +220,14 @@ services:
     image: redis:8.4.0-alpine
     user: "0:0"
     entrypoint: [sh, -ec]
-    command: ["chown -R 999:1000 /data && chmod 0700 /data"]
+    command:
+      - |
+        state="$$(stat -c '%u:%g:%a' /data)"
+        if [ "$${state}" != "999:1000:700" ]; then
+          chown -R 999:1000 /data
+          chmod 0700 /data
+        fi
+        test "$$(stat -c '%u:%g:%a' /data)" = "999:1000:700"
     restart: "no"
     network_mode: none
     read_only: true
