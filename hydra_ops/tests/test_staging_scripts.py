@@ -217,7 +217,10 @@ class StagingInitialDeploymentGuardTests(SimpleTestCase):
 
         self.assertNotEqual(result.returncode, 0)
         self.assertIn("InitialDeployment refused", result.stderr)
-        self.assertIn("creates and verifies a recovery point", result.stderr)
+        # PowerShell 7 may wrap and decorate long exceptions differently on Linux.
+        # Assert the two safety instructions independently of terminal rendering.
+        self.assertIn("Hydra creates", result.stderr)
+        self.assertIn("verifies a recovery point", result.stderr)
 
     def test_initial_deployment_allows_proven_empty_schema(self):
         result = self.run_deploy(public_relation_count=0)
