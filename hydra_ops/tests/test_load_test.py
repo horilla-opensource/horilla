@@ -16,6 +16,7 @@ from requests.cookies import RequestsCookieJar, create_cookie
 
 from hydra_ops.load_test import ROLE_WEIGHTS, group_name, role_counts, username_for
 from hydra_ops.load_views import _read_profile
+from hydra_people.models import CandidateStageTransition
 from load_tests.cookies import prepare_internal_http_cookies
 from load_tests.summarize import summarize_run
 
@@ -177,6 +178,25 @@ class LoadTestSeedAndEndpointTests(TestCase):
             "--json",
             stdout=output,
         )
+        self.assertIn('"status": "ok"', output.getvalue())
+
+    def test_candidate_transition_integrity_uses_one_database_snapshot(self):
+        output = StringIO()
+        with CaptureQueriesContext(connection) as queries:
+            call_command(
+                "hydra_load_integrity",
+                "--run-id=test-run",
+                "--users=20",
+                "--json",
+                stdout=output,
+            )
+
+        transition_table = CandidateStageTransition._meta.db_table
+        transition_queries = [
+            query["sql"] for query in queries if transition_table in query["sql"]
+        ]
+        self.assertEqual(len(transition_queries), 1)
+        self.assertIn("SELECT", transition_queries[0].upper())
         self.assertIn('"status": "ok"', output.getvalue())
 
     def test_query_profiler_covers_every_role_without_raw_sql(self):

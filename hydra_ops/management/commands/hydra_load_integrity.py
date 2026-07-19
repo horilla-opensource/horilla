@@ -2,7 +2,7 @@ import json
 
 from django.contrib.auth import get_user_model
 from django.core.management.base import BaseCommand, CommandError
-from django.db.models import Count, Exists, F, Max, OuterRef, Q
+from django.db.models import Count, Exists, F, Max, OuterRef, Q, Subquery
 
 from employee.models import EmployeeWorkInformation
 from hydra_coordination.models import PersonAssignment, ScopeGrant
@@ -88,13 +88,19 @@ class Command(BaseCommand):
             failures.append("candidate_person_link")
         if PersonApplication.objects.filter(candidate__in=candidates).count() != candidates.count():
             failures.append("candidate_link_count")
-        for candidate in candidates.select_related("stage_id"):
-            latest = CandidateStageTransition.objects.filter(candidate=candidate).order_by(
-                "-occurred_at", "-pk"
-            ).first()
-            if latest is None or latest.to_stage_id != candidate.stage_id_id:
-                failures.append("candidate_transition_atomicity")
-                break
+        latest_transition_stage = (
+            CandidateStageTransition.objects.filter(candidate_id=OuterRef("pk"))
+            .order_by("-occurred_at", "-pk")
+            .values("to_stage_id")[:1]
+        )
+        candidates_with_latest_transition = candidates.annotate(
+            latest_transition_stage_id=Subquery(latest_transition_stage)
+        )
+        if candidates_with_latest_transition.filter(
+            Q(latest_transition_stage_id__isnull=True)
+            | ~Q(latest_transition_stage_id=F("stage_id"))
+        ).exists():
+            failures.append("candidate_transition_atomicity")
 
         tasks = HydraTask._base_manager.filter(created_by__in=users)
         if tasks.count() != expected["employee"]:
