@@ -153,6 +153,13 @@ for:
 - aggregate p95 above 10 seconds continuously for 180 seconds.
 - PostgreSQL connection count above the explicit safety limit (50 by default).
 
+Locust is configured to finish normally when individual HTTP requests fail so
+that the committed error-rate gate, rather than an implicit zero-error rule,
+decides acceptance. The summary still fails the stage for an error rate of 1%
+or more and now has a separate `no_generator_exceptions` gate: any Locust task
+exception fails the run. A process crash retains a non-zero container exit and
+is rejected by the runner before final acceptance checks.
+
 At minute 15 of the required 200-user stage, the runner restarts exactly one
 web replica, then proves that readiness and integrity remain available while
 the other replica serves the existing Redis-backed sessions. This event is a

@@ -90,11 +90,11 @@ class LoadTestContractTests(TestCase):
                 "99%",
             )
             rows = [
-                ("", "Aggregated", 1000, 0, 25, 100, 400, 900),
+                ("", "Aggregated", 1000, 5, 25, 100, 400, 900),
                 ("GET", "GET /login/ [login]", 20, 0, 1, 100, 300, 500),
                 ("GET", "dashboard [typical-read]", 50, 0, 3, 100, 300, 500),
                 ("GET", "role [list-filter]", 700, 0, 18, 100, 400, 700),
-                ("POST", "role [business-write]", 230, 0, 3, 150, 500, 900),
+                ("POST", "role [business-write]", 230, 5, 3, 150, 500, 900),
             ]
             with (artifacts / "locust_stats.csv").open("w", newline="", encoding="utf-8") as target:
                 writer = csv.DictWriter(target, fieldnames=fieldnames)
@@ -110,6 +110,12 @@ class LoadTestContractTests(TestCase):
                 "55.5,60.5,12,1000000\n",
                 encoding="utf-8",
             )
+            exception_fields = ("Count", "Message", "Traceback", "Nodes")
+            with (artifacts / "locust_exceptions.csv").open(
+                "w", newline="", encoding="utf-8"
+            ) as target:
+                writer = csv.DictWriter(target, fieldnames=exception_fields)
+                writer.writeheader()
             (artifacts / "run-evidence.json").write_text(
                 json.dumps(
                     {
@@ -137,6 +143,9 @@ class LoadTestContractTests(TestCase):
                 duration_seconds=900,
             )
             self.assertTrue(summary["overall_pass"])
+            self.assertEqual(summary["error_rate"], 0.005)
+            self.assertEqual(summary["generator_exceptions"], 0)
+            self.assertTrue(summary["acceptance"]["no_generator_exceptions"])
             self.assertEqual(summary["max_active_users"], 20)
             self.assertEqual(summary["topology"], {"web_replicas": 2})
             self.assertEqual(summary["resource_peaks"]["db_connections"], 12)
@@ -148,6 +157,30 @@ class LoadTestContractTests(TestCase):
             self.assertTrue(
                 summary["acceptance"]["web_replica_count_between_2_and_4"]
             )
+
+            with (artifacts / "locust_exceptions.csv").open(
+                "a", newline="", encoding="utf-8"
+            ) as target:
+                writer = csv.DictWriter(target, fieldnames=exception_fields)
+                writer.writerow(
+                    {
+                        "Count": 1,
+                        "Message": "generator failure",
+                        "Traceback": "redacted",
+                        "Nodes": "local",
+                    }
+                )
+            exception_summary = summarize_run(
+                artifacts=artifacts,
+                stage="20",
+                users=20,
+                duration_seconds=900,
+            )
+            self.assertEqual(exception_summary["generator_exceptions"], 1)
+            self.assertFalse(
+                exception_summary["acceptance"]["no_generator_exceptions"]
+            )
+            self.assertFalse(exception_summary["overall_pass"])
 
 
 @override_settings(

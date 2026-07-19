@@ -62,6 +62,13 @@ def max_users(path):
     return maximum
 
 
+def csv_data_row_count(path):
+    if not path.exists():
+        return None
+    with path.open(encoding="utf-8-sig", newline="") as source:
+        return sum(1 for _row in csv.DictReader(source))
+
+
 def load_evidence(path):
     if not path.exists():
         return {
@@ -87,6 +94,7 @@ def summarize_run(*, artifacts, stage, users, duration_seconds):
     error_rate = failures / requests if requests else 1.0
     evidence = load_evidence(artifacts / "run-evidence.json")
     observed_users = max_users(artifacts / "locust_stats_history.csv")
+    generator_exceptions = csv_data_row_count(artifacts / "locust_exceptions.csv")
     summary = {
         "measured": True,
         "stage": stage,
@@ -97,6 +105,7 @@ def summarize_run(*, artifacts, stage, users, duration_seconds):
         "full_concurrency_seconds": int(evidence.get("full_concurrency_seconds", 0)),
         "requests": requests,
         "failures": failures,
+        "generator_exceptions": generator_exceptions,
         "error_rate": error_rate,
         "throughput_rps": number(aggregate, "Requests/s"),
         "workload": {
@@ -131,6 +140,7 @@ def summarize_run(*, artifacts, stage, users, duration_seconds):
             else int(evidence.get("full_concurrency_seconds", 0)) >= duration_seconds
         ),
         "error_rate_below_1_percent": error_rate < 0.01,
+        "no_generator_exceptions": generator_exceptions == 0,
         "login_p95_below_2s": (summary["response_ms"]["login_p95"] or 1e99) < 2000,
         "typical_read_p95_below_2s": (
             summary["response_ms"]["typical_read_p95"] or 1e99
@@ -188,6 +198,7 @@ def main():
         writer.writerow(("observed_duration_seconds", summary["observed_duration_seconds"]))
         writer.writerow(("full_concurrency_seconds", summary["full_concurrency_seconds"]))
         writer.writerow(("error_rate", summary["error_rate"]))
+        writer.writerow(("generator_exceptions", summary["generator_exceptions"]))
         for key, value in summary["workload"].items():
             writer.writerow((key, value))
         for key, value in summary["response_ms"].items():

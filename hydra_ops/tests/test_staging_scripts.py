@@ -291,6 +291,7 @@ class StagingRemoteLoadWorkflowContractTests(SimpleTestCase):
         self.assertIn("PYTHONPATH=/load", load_dockerfile)
         self.assertIn("load_tests/ /load/load_tests/", load_dockerfile)
         self.assertIn("/load/load_tests/locustfile.py", compose)
+        self.assertIn('      - --exit-code-on-error\n      - "0"', compose)
         self.assertIn("/load/load_tests/summarize.py", runner)
         self.assertIn("HYDRA_LOAD_THINK_TIME_MIN_SECONDS:-15", compose)
         self.assertIn("HYDRA_LOAD_THINK_TIME_MAX_SECONDS:-25", compose)

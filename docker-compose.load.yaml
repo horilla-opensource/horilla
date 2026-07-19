@@ -32,6 +32,8 @@ services:
       - --html
       - /artifacts/locust-report.html
       - --only-summary
+      - --exit-code-on-error
+      - "0"
     init: true
     read_only: true
     cap_drop: [ALL]
