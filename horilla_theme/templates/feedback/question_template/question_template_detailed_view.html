@@ -22,8 +22,8 @@
                             {{ form.question_type.errors }}
                         </div>
                         <div class="flex-1">
-                            {% render_field form.question class="form-control" placeholder="{% trans 'Enter question here' %}"
-                            %}
+                            {% trans 'Enter question here' as question_placeholder %}
+                            {% render_field form.question class="form-control" placeholder=question_placeholder %}
                             <p id="id_question_template_error" class="text-danger mt-1 p-2"></p>
                         </div>
                     </div>
