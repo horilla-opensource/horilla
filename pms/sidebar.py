@@ -48,7 +48,7 @@ SUBMENUS = [
         "accessibility": "pms.sidebar.performance_setup_accessibility",
     },
     {
-        "menu": _("Settings"),
+        "menu": _("Configuration"),
         "redirect": reverse_lazy("performance-settings-view"),
         "accessibility": "pms.sidebar.performance_settings_accessibility",
     },

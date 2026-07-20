@@ -63,7 +63,7 @@ SUBMENUS = [
         "accessibility": "leave.sidebar.company_leave_accessibility",
     },
     {
-        "menu": _("Settings"),
+        "menu": _("Configuration"),
         "redirect": reverse_lazy("leave-settings-view"),
         "accessibility": "leave.sidebar.leave_settings_accessibility",
     },

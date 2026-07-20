@@ -52,7 +52,7 @@ SUBMENUS = [
         "accessibility": "payroll.sidebar.federal_tax_accessibility",
     },
     {
-        "menu": _("Settings"),
+        "menu": _("Configuration"),
         "redirect": reverse("payroll-settings-view"),
         "accessibility": "payroll.sidebar.payroll_settings_accessibility",
     },

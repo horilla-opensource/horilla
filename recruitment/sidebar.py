@@ -70,7 +70,7 @@ SUBMENUS = [
         "accessibility": "recruitment.sidebar.skill_zone_accessibility",
     },
     {
-        "menu": _("Settings"),
+        "menu": _("Configuration"),
         "redirect": reverse("recruitment-settings-view"),
         "accessibility": "recruitment.sidebar.recruitment_settings_accessibility",
     },

@@ -27,7 +27,7 @@ SUBMENUS = [
         "match_prefixes": ["/helpdesk/faq-view/"],
     },
     {
-        "menu": _("Settings"),
+        "menu": _("Configuration"),
         "redirect": reverse_lazy("helpdesk-settings-view"),
         "accessibility": "helpdesk.sidebar.helpdesk_settings_accessibility",
     },
