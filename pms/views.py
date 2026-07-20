@@ -301,7 +301,7 @@ def view_key_result(request):
 
 @login_required
 @hx_request_required
-# @permission_required("pms.view_keyresult")
+# @permission_required("pms.view_key_result")
 def filter_key_result(request):
     """
     Filter and retrieve a list of key results based on the provided query parameters.
@@ -330,7 +330,7 @@ def filter_key_result(request):
 
 @login_required
 @hx_request_required
-@permission_required("pms.add_keyresult")
+@permission_required("pms.add_key_result")
 def key_result_create(request):
     """
     This method renders form and template to create key result
@@ -2581,6 +2581,34 @@ def question_template_detailed_view(request, template_id, **kwargs):
     return render(
         request,
         "feedback/question_template/question_template_detailed_view.html",
+        context,
+    )
+
+
+@login_required
+@manager_can_enter(perm="pms.view_questiontemplate")
+def question_template_related_view(request, template_id, **kwargs):
+    """
+    Read-only detail view for a question template, showing each question's
+    type, text, and options (for multiple-choice questions). Used when the
+    template is opened via a related-object link (see
+    horilla_views/related_link_registry.py), so it renders as a modal
+    fragment without the question-creation form or edit/delete actions.
+    """
+
+    question_template = QuestionTemplate.objects.filter(id=template_id).first()
+    if not question_template:
+        messages.error(request, _("Question template does not exist"))
+        return redirect("question-template-view")
+    questions = question_template.question.all().order_by("-id")
+    question_form_list = [QuestionForm(instance=question) for question in questions]
+    context = {
+        "question_template": question_template,
+        "form_list": question_form_list,
+    }
+    return render(
+        request,
+        "feedback/question_template/question_template_related_view.html",
         context,
     )
 

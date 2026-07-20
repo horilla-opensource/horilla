@@ -1,0 +1,63 @@
+{% load i18n %}
+<div class="oh-modal__dialog-header">
+    <span class="oh-modal__dialog-title">
+        {{ question_template.question_template }}
+    </span>
+    <button
+        class="oh-modal__close--custom"
+        onclick="$(this).closest('.oh-modal--show').removeClass('oh-modal--show')"
+        aria-label="{% trans 'Close' %}"
+    >
+        <ion-icon name="close-outline"></ion-icon>
+    </button>
+</div>
+
+<div class="oh-modal__dialog-body">
+    <table class="w-full">
+        <thead class="sticky top-0 bg-[white] z-[1]">
+            <tr class="border-b border-[#ececec]">
+                <th class="text-sm font-medium text-left p-3" style="width: 30%">
+                    {% trans "Question Type" %}
+                </th>
+                <th class="text-sm font-medium text-left p-3">{% trans "Question" %}</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for form in form_list %}
+                <tr class="border-b border-[#ebebeb]">
+                    <td class="text-sm text-left p-3 text-[#666]">
+                        {{ form.instance.get_question_type_display }}
+                    </td>
+                    <td class="text-sm text-left p-3 text-[#666]">
+                        <div class="font-medium mb-2">{{ form.instance.question }}</div>
+
+                        {% if form.instance.question_type == "4" %}
+                            <!-- Multiple choice -->
+                            <div class="mt-2 grid grid-cols-2 gap-2">
+                                <div class="flex items-center gap-2">
+                                    <span class="text-xs text-muted mt-1">1:</span>
+                                    <span>{{ form.option_a.value }}</span>
+                                </div>
+
+                                <div class="flex items-center gap-2">
+                                    <span class="text-xs text-muted mt-1">2:</span>
+                                    <span>{{ form.option_b.value }}</span>
+                                </div>
+
+                                <div class="flex items-center gap-2">
+                                    <span class="text-xs text-muted mt-1">3:</span>
+                                    <span>{{ form.option_c.value }}</span>
+                                </div>
+
+                                <div class="flex items-center gap-2">
+                                    <span class="text-xs text-muted mt-1">4:</span>
+                                    <span>{{ form.option_d.value }}</span>
+                                </div>
+                            </div>
+                        {% endif %}
+                    </td>
+                </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</div>

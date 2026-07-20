@@ -344,9 +344,16 @@ class Objective(HorillaModel):
         return url
 
     def save(self, *args, **kwargs):
-        from base.auth_backends import stamp_company_on_create
+        request = getattr(_thread_locals, "request", None)
+        selected_company = request.session.get("selected_company")
+        if (
+            not self.id
+            and not self.company_id
+            and selected_company
+            and selected_company != "all"
+        ):
+            self.company_id = Company.find(selected_company)
 
-        stamp_company_on_create(self)
         super().save()
 
 
@@ -935,7 +942,7 @@ class QuestionTemplate(HorillaModel):
         Detail view url
         """
         url = reverse_lazy(
-            "question-template-detailed-view", kwargs={"template_id": self.pk}
+            "question-template-related-view", kwargs={"template_id": self.pk}
         )
         return url
 
@@ -1572,9 +1579,16 @@ class Meetings(HorillaModel):
         return url
 
     def save(self, *args, **kwargs):
-        from base.auth_backends import stamp_company_on_create
+        request = getattr(_thread_locals, "request", None)
+        selected_company = request.session.get("selected_company")
+        if (
+            not self.id
+            and not self.company_id
+            and selected_company
+            and selected_company != "all"
+        ):
+            self.company_id = Company.find(selected_company)
 
-        stamp_company_on_create(self)
         super().save()
 
 
@@ -1805,9 +1819,15 @@ class BonusPointSetting(models.Model):
             ).save()
 
     def save(self, *args, **kwargs):
-        from base.auth_backends import stamp_company_on_create
-
-        stamp_company_on_create(self)
+        request = getattr(_thread_locals, "request", None)
+        selected_company = request.session.get("selected_company") if request else None
+        if (
+            not self.id
+            and not self.company_id
+            and selected_company
+            and selected_company != "all"
+        ):
+            self.company_id = Company.find(selected_company)
         super().save(*args, **kwargs)
 
     def __str__(self) -> str:
