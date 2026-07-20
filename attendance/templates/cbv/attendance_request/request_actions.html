@@ -14,7 +14,7 @@
     {% if perms.attendance.change_attendance or can_manage %}
         <a
             href="#"
-            hx-get="{% url 'cancel-validate-attendance-request' instance.id %}"
+            hx-post="{% url 'cancel-validate-attendance-request' instance.id %}"
             hx-target="#validateAttendanceRequestModalBody"
             hx-swap="innerHTML"
             class="oh-btn oh-btn--danger w-100"

@@ -96,7 +96,7 @@
         {% if request.user.is_superuser or perms.attendance.change_attendance %}
             <a
                 href="#"
-                hx-get="{% url 'cancel-validate-attendance-request' attendance.id %}"
+                hx-post="{% url 'cancel-validate-attendance-request' attendance.id %}"
                 hx-target="#validateAttendanceRequestModalBody"
                 hx-swap="innerHTML"
                 onclick="event.preventDefault(); event.stopPropagation()"
@@ -119,7 +119,7 @@
             {% else %}
                 <a
                     href="#"
-                    hx-get="{% url 'approve-validate-attendance-request' attendance.id %}"
+                    hx-post="{% url 'approve-validate-attendance-request' attendance.id %}"
                     hx-target="#validateAttendanceRequestModalBody"
                     hx-swap="innerHTML"
                     onclick="event.preventDefault(); event.stopPropagation()"

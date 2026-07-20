@@ -162,14 +162,16 @@
                                                                 ><ion-icon name="eye-outline" role="img"></ion-icon></a>
 
                                                                 <a
-                                                                    type="submit"
+                                                                    href="#"
                                                                     class="
                                                                         oh-btn oh-btn--danger
                                                                         oh-btn--light-bkg w-100
                                                                     "
                                                                     title="{% trans 'Re-validate Request' %}"
-                                                                    onclick="return confirm('{% trans "Are you sure want to cancel the request?" %}')"
-                                                                    href="{% url 'cancel-validate-attendance-request' attendance.id	%}"
+                                                                    onclick="event.preventDefault();"
+                                                                    hx-confirm="{% trans 'Are you sure want to cancel the request?' %}"
+                                                                    hx-post="{% url 'cancel-validate-attendance-request' attendance.id %}"
+                                                                    hx-target="this"
                                                                 >
                                                                     <ion-icon name="close-circle-outline"></ion-icon>
                                                                 </a>

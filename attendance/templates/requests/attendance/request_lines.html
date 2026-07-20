@@ -173,10 +173,12 @@
                                                 <a class="oh-btn oh-btn--light-bkg w-100" title="{% trans 'View' %}"><ion-icon
                                                         name="eye-outline" role="img"></ion-icon></a>
 
-                                                <a type="submit" class="oh-btn oh-btn--danger w-100"
+                                                <a href="#" type="submit" class="oh-btn oh-btn--danger w-100"
                                                     title="{% trans 'Cancel / Reject' %}"
-                                                    onclick="event.stopPropagation();return confirm('{% trans " Are you sure want to cancel the request?" %}');"
-                                                    href="{% url 'cancel-validate-attendance-request' attendance.id %}">
+                                                    onclick="event.preventDefault();event.stopPropagation();"
+                                                    hx-confirm="{% trans 'Are you sure want to cancel the request?' %}"
+                                                    hx-post="{% url 'cancel-validate-attendance-request' attendance.id %}"
+                                                    hx-target="this">
                                                     <ion-icon name="close-circle-outline"></ion-icon>
                                                 </a>
                                             </div>

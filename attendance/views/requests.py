@@ -16,6 +16,7 @@ from django.shortcuts import redirect, render
 from django.template.loader import render_to_string
 from django.urls import reverse
 from django.utils.translation import gettext_lazy as _
+from django.views.decorators.http import require_http_methods
 
 from attendance.filters import AttendanceFilters, AttendanceRequestReGroup
 from attendance.forms import (
@@ -450,6 +451,7 @@ def validate_attendance_request(request, attendance_id):
 
 @login_required
 @manager_can_enter("attendance.change_attendance")
+@require_http_methods(["POST"])
 def approve_validate_attendance_request(request, attendance_id):
     """
     This method is used to validate the attendance requests
@@ -585,6 +587,7 @@ def approve_validate_attendance_request(request, attendance_id):
 
 
 @login_required
+@require_http_methods(["POST"])
 def cancel_attendance_request(request, attendance_id):
     """
     This method is used to cancel attendance request
