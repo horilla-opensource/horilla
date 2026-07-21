@@ -782,6 +782,17 @@ class FeedbackForm(HorillaModelForm):
         self.fields["employee_id"].widget.attrs["onchange"] = "get_collegues($(this))"
 
         reload_queryset(self.fields)
+        selected_employee_id = self.data.get("employee_id") if self.data else None
+        if not selected_employee_id and self.instance and self.instance.pk:
+            selected_employee_id = self.instance.employee_id_id
+
+        self.fields["employee_key_results_id"].queryset = (
+            EmployeeKeyResult.objects.filter(
+                employee_objective_id__employee_id=selected_employee_id
+            )
+            if selected_employee_id
+            else EmployeeKeyResult.objects.none()
+        )
 
         if self.instance and self.instance.pk:
             employee = self.instance.employee_id
@@ -882,11 +893,13 @@ class QuestionTemplateForm(ModelForm):
             }
         )
         if not self.instance.pk:
-            from base.auth_backends import resolve_company_id_for_new_record
-
-            company_id = resolve_company_id_for_new_record()
-            if company_id:
-                self.initial["company_id"] = Company.objects.filter(id=company_id)
+            request = getattr(horilla_middlewares._thread_locals, "request", None)
+            if request:
+                selected_company = request.session.get("selected_company")
+                if selected_company and selected_company != "all":
+                    self.initial["company_id"] = Company.objects.filter(
+                        id=selected_company
+                    )
 
     def as_p(self):
         """
