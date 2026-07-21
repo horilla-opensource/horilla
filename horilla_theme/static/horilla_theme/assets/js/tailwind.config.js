@@ -52,6 +52,19 @@ window.tailwind.config = {
         DEFAULT: "#ef4444",
         dark: "#b91c1c",
       },
+
+      brand: {
+        200: '#FEF6F5',
+        300: '#FCEDEB',
+        500: '#F7C8C1',
+        600: '#E54F38',
+        700: '#ce4732',
+        800: '#AC3B2A',
+      },
+
+      color: {
+        600: '#374151',
+      },
     },
     extend: {
       boxShadow: {
