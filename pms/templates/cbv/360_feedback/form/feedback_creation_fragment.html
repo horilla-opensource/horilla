@@ -138,6 +138,23 @@
 <button id="subordinatesButton" hx-get="{% url 'get-collegues' %}" hx-target="#id_subordinate_id" hidden></button>
 <button id="keyresultButtton" hx-get="{% url 'get-collegues' %}" hx-target="#id_employee_key_results_id" hidden></button>
 
+<!-- period modal -->
+<div class="oh-modal" id="PeriodModal" role="dialog" aria-labelledby="createPeriodModal" aria-hidden="true">
+    <div class="oh-modal__dialog">
+        <div class="oh-modal__dialog-header">
+            <button
+                type="button"
+                class="oh-modal__close--custom"
+                onclick="$('#PeriodModal').removeClass('oh-modal--show')"
+            >
+                <ion-icon name="close-outline" role="img" aria-label="{% trans 'close outline' %}"></ion-icon>
+            </button>
+        </div>
+        <div class="oh-modal__dialog-body" id="periodModalTarget"></div>
+    </div>
+</div>
+<!-- end of period modal -->
+
 <script>
     $(document).ready(function () {
         get_collegues($("#id_employee_id"));
@@ -148,7 +165,17 @@
 
             $("#id_period").on("change", function () {
                 var period_id = $(this).val();
-                if (period_id && period_id !== "create_new_period") {
+                if (period_id === "create_new_period") {
+                    $.ajax({
+                        url: "{% url 'create-period' %}",
+                        type: "GET",
+                        success: function (response) {
+                            $("#periodModalTarget").html(response);
+                            $("#PeriodModal").addClass("oh-modal--show");
+                        },
+                        error: function (err) { console.log("Create period error", err); },
+                    });
+                } else if (period_id) {
                     $.ajax({
                         url: "/pms/period-change/",
                         type: "POST",

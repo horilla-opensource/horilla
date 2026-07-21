@@ -81,7 +81,7 @@
             formData["csrfmiddlewaretoken"] = getCookie("csrftoken");
             $.ajax({
                 type: "post",
-                url: "create-period",
+                url: "{% url 'create-period' %}",
                 data: formData,
                 beforeSend: function () {
                     $(".errorlist").remove();

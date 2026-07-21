@@ -176,11 +176,42 @@
             }
           }
 
+          var staleTabLoadPattern = /\/(feedback-generic-tab|self-feedback-tab|requested-feedback-tab|all-feedback-tab|anonymous-feedback-tab)\//;
+
+          function blockStrayBodySwap(e) {
+            var target = e.detail.target;
+            var path = (e.detail.pathInfo && e.detail.pathInfo.requestPath) || "";
+
+            // A stale tab-load request (e.g. self-feedback-tab) whose original
+            // target element was already replaced (by navigating to Create/Detail)
+            // resolves to no element, and htmx falls back to swapping into
+            // <body>, wiping the whole page. That fallback target is never a
+            // legitimate destination for this page, so always reject it.
+            if (target === document.body) {
+              e.detail.shouldSwap = false;
+              return;
+            }
+
+            // The list nav's initial tab content can be requested twice on
+            // page load; if the duplicate response arrives after the user has
+            // already navigated to Create/Detail, it would otherwise legitimately
+            // re-target #listContainer and overwrite the form that's now showing.
+            if (
+              target &&
+              target.id === "listContainer" &&
+              staleTabLoadPattern.test(path) &&
+              (target.querySelector("#feedbackCreationForm") || target.querySelector("#feedbackDetailContainer"))
+            ) {
+              e.detail.shouldSwap = false;
+            }
+          }
+
           document.addEventListener("DOMContentLoaded", function () {
             loadCreationIntoContainerIfNeeded();
             loadDetailIntoContainerIfNeeded();
             syncFeedbackNavVisibility();
           });
+          document.body.addEventListener("htmx:beforeSwap", blockStrayBodySwap);
           document.body.addEventListener("htmx:afterSwap", onListContainerSwap);
           document.body.addEventListener("htmx:afterSettle", onListContainerSwap);
           window.addEventListener("popstate", function () {
