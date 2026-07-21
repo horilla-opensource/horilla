@@ -3,28 +3,46 @@
     <div class="oh-faq-card">
         <div class="d-flex justify-content-between align-items-center">
             <h3 class="oh-faq-card__title">{% trans "Bonus Points" %}</h3>
-            {% if perms.employee.add_bonuspoint or request.user|check_manager:employee %}
-            <div class="oh-dropdown">
-                <button
-                    class="oh-btn oh-btn--secondary-outline oh-stop-prop oh-accordion-meta__btn p-2"
-                    title="{% trans 'Add points' %}"
-                    data-toggle="oh-modal-toggle"
-                    data-target="#objectDetailsModal"
-                    {% if "pms"|app_installed %}
+            {% if "pms"|app_installed %}
+                {% if perms.pms.add_employeebonuspoint or request.user|is_reportingmanager %}
+                <div class="oh-dropdown">
+                    <button
+                        class="oh-btn oh-btn--secondary-outline oh-stop-prop oh-accordion-meta__btn p-2"
+                        title="{% trans 'Add points' %}"
+                        data-toggle="oh-modal-toggle"
+                        data-target="#objectDetailsModal"
                         hx-get="{% url 'create-employee-bonus-point'%}?employee_id={{employee.id}} "
-                    {% else %}
+                        hx-target="#objectDetailsModalTarget"
+                    >
+                        <ion-icon
+                            name="add-outline"
+                            role="img"
+                            class="md hydrated"
+                            aria-label="{% trans 'ellipsis vertical' %}"
+                        ></ion-icon>
+                    </button>
+                </div>
+                {% endif %}
+            {% else %}
+                {% if perms.employee.add_bonuspoint or request.user|check_manager:employee %}
+                <div class="oh-dropdown">
+                    <button
+                        class="oh-btn oh-btn--secondary-outline oh-stop-prop oh-accordion-meta__btn p-2"
+                        title="{% trans 'Add points' %}"
+                        data-toggle="oh-modal-toggle"
+                        data-target="#objectDetailsModal"
                         hx-get="{% url 'add-bonus-points' employee.id %}"
-                    {% endif %}
-                    hx-target="#objectDetailsModalTarget"
-                >
-                    <ion-icon
-                        name="add-outline"
-                        role="img"
-                        class="md hydrated"
-                        aria-label="{% trans 'ellipsis vertical' %}"
-                    ></ion-icon>
-                </button>
-            </div>
+                        hx-target="#objectDetailsModalTarget"
+                    >
+                        <ion-icon
+                            name="add-outline"
+                            role="img"
+                            class="md hydrated"
+                            aria-label="{% trans 'ellipsis vertical' %}"
+                        ></ion-icon>
+                    </button>
+                </div>
+                {% endif %}
             {% endif %}
 
         </div>

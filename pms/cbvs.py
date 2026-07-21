@@ -12,6 +12,7 @@ from base.methods import filter_own_and_subordinate_recordes, is_reportingmanage
 from employee.models import Employee
 from horilla import horilla_middlewares
 from horilla.decorators import login_required, owner_can_enter, permission_required
+from horilla.methods import handle_no_permission
 from horilla_views.generic.cbv import views
 from pms import models
 from pms.filters import BonusPointSettingFilter, EmployeeBonusPointFilter
@@ -199,7 +200,6 @@ class EmployeeBonusPointNavView(views.HorillaNavView):
 
 
 @method_decorator(login_required, name="dispatch")
-@method_decorator(permission_required("pms.change_employeebonuspoint"), name="dispatch")
 class EmployeeBonusPointFormView(views.HorillaFormView):
     """
     BonusPointForm View
@@ -209,6 +209,16 @@ class EmployeeBonusPointFormView(views.HorillaFormView):
     model = models.EmployeeBonusPoint
     new_display_title = _("Create Employee Bonus Point ")
     # template_name = "bonus/bonus_form.html"
+
+    def dispatch(self, request, *args, **kwargs):
+        perm = (
+            "pms.change_employeebonuspoint"
+            if kwargs.get("pk")
+            else "pms.add_employeebonuspoint"
+        )
+        if is_reportingmanager(request) or request.user.has_perm(perm):
+            return super().dispatch(request, *args, **kwargs)
+        return handle_no_permission(request)
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
