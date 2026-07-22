@@ -298,7 +298,6 @@ class EmployeesList(HorillaListView):
     ]
 
     action_method = "employee_actions"
-    records_per_page = 20
 
     header_attrs = {
         "action": """
