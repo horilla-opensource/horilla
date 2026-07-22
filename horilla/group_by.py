@@ -20,7 +20,15 @@ def record_queryset_paginator(request, queryset, page_name, records_per_page=10)
     return paginator.get_page(page)
 
 
-def generate_groups(request, groupers, queryset, page_name, group_field, is_fk_field):
+def generate_groups(
+    request,
+    groupers,
+    queryset,
+    page_name,
+    group_field,
+    is_fk_field,
+    records_per_page=10,
+):
     """
     groups generating method
     """
@@ -36,6 +44,7 @@ def generate_groups(request, groupers, queryset, page_name, group_field, is_fk_f
                         request,
                         group_queryset,
                         f"dynamic_page_{page_name}{grouper.id}",
+                        records_per_page,
                     ),
                     "dynamic_name": f"dynamic_page_{page_name}{grouper.id}",
                 }
@@ -51,6 +60,7 @@ def generate_groups(request, groupers, queryset, page_name, group_field, is_fk_f
                         request,
                         group_queryset,
                         f"dynamic_page_{page_name}{grouper}".replace(" ", "_"),
+                        records_per_page,
                     ),
                     "dynamic_name": f"dynamic_page_{page_name}{grouper}".replace(
                         " ", "_"
@@ -61,15 +71,15 @@ def generate_groups(request, groupers, queryset, page_name, group_field, is_fk_f
 
 
 def group_by_queryset(
-    queryset, group_field, page=None, page_name="page", records_per_page=10
+    queryset, group_field, page=None, page_name="page", records_per_page=None
 ):
     """
     This method is used to make group-by and split groups by nested pagination
     """
     from base.methods import get_pagination
 
-    if get_pagination() != 50:
-        records_per_page = get_pagination()
+    if not records_per_page:
+        records_per_page = get_pagination(default=10)
 
     fields_split = group_field.split("__")
     splitted = len(fields_split) > 1
@@ -95,6 +105,7 @@ def group_by_queryset(
                 page_name,
                 group_field,
                 is_fk_field=True,
+                records_per_page=records_per_page,
             )
         else:
             groupers = [
@@ -105,7 +116,13 @@ def group_by_queryset(
                 if item not in queryset.values_list(group_field, flat=True)[:index]
             ]
             groups = generate_groups(
-                request, groupers, queryset, page_name, group_field, is_fk_field=False
+                request,
+                groupers,
+                queryset,
+                page_name,
+                group_field,
+                is_fk_field=False,
+                records_per_page=records_per_page,
             )
 
     else:
@@ -120,7 +137,13 @@ def group_by_queryset(
         if related_model:
             groupers = related_model.objects.filter(id__in=groupers)
         groups = generate_groups(
-            request, groupers, queryset, page_name, group_field, is_fk_field=False
+            request,
+            groupers,
+            queryset,
+            page_name,
+            group_field,
+            is_fk_field=False,
+            records_per_page=records_per_page,
         )
 
     groups = Paginator(groups, records_per_page)
