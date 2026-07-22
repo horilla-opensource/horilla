@@ -40,6 +40,7 @@ from horilla.filters import FilterSet
 from horilla.group_by import group_by_queryset
 from horilla.horilla_middlewares import _thread_locals
 from horilla.http.response import HorillaRedirect
+from horilla.models import HorillaModel
 from horilla.signals import post_generic_import, pre_generic_import
 from horilla_views import models
 from horilla_views.cbv_methods import (  # update_initial_cache,
@@ -327,7 +328,7 @@ class HorillaListView(ListView):
 
         self.columns = updated_column
 
-        if self.history_tracking:
+        if self.history_tracking and issubclass(self.model, HorillaModel):
             self.columns += [(_("History"), "get_model_history")]
         self.visible_column = list(self.columns)
 
