@@ -316,8 +316,19 @@
     	updateDeleteBtnState();
     });
 
-    // Prevent HTMX from submitting the delete confirmation form unless all boxes are checked
+    // Prevent HTMX from submitting the delete confirmation form unless all boxes are checked.
+    // Scoped to requests triggered from inside this modal's own body: this listener is bound
+    // on `document` and re-registered every time this fragment is (re)loaded via htmx, so
+    // without the scope check it would permanently intercept and silently cancel every other
+    // htmx request on the page (Create buttons, search, nav, etc) the moment this modal is
+    // opened once and closed without checking all three boxes — since closing only hides the
+    // modal, it doesn't remove these checkboxes (still unchecked) or this listener from the DOM.
     document.addEventListener('htmx:configRequest', function (evt) {
+    	var triggerEl = evt.detail && evt.detail.elt;
+    	if (!triggerEl || !triggerEl.closest || !triggerEl.closest('#deleteConfirmationBody')) {
+    		return;
+    	}
+
     	var actionEl = document.getElementById('action');
     	var revertEl = document.getElementById('revert');
     	var confirmEl = document.getElementById('confirm');
