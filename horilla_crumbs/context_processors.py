@@ -236,7 +236,12 @@ def breadcrumbs(request):
     # Initialize breadcrumbs in the session if not already present
     if "breadcrumbs" not in request.session:
         request.session["breadcrumbs"] = [
-            {"url": base_url, "name": company, "found": True}
+            {
+                "url": base_url,
+                "name": company,
+                "found": True,
+                "clickable": True,
+            }
         ]
 
     try:
