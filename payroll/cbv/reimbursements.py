@@ -69,7 +69,6 @@ class ReimbursementsAndEncashmentsListView(HorillaListView):
         if self.request.user.has_perm("payroll.change_reimbursement"):
             self.action_method = "actions_col"
 
-    records_per_page = 5
     option_method = "options_col"
 
     row_status_indications = [

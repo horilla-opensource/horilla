@@ -68,7 +68,6 @@ class AllowanceTabList(AllowanceListView):
     """
 
     template_name = "cbv/allowance_deduction/allowance_deduction.html"
-    records_per_page = 5
 
     def __init__(self, **kwargs: Any) -> None:
         super().__init__(**kwargs)

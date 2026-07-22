@@ -276,5 +276,3 @@ class DeductionCardView(HorillaCardView):
                     """,
         },
     ]
-
-    records_per_page = 10

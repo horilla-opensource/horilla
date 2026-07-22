@@ -106,7 +106,6 @@ class PayslipList(HorillaListView):
         (_("Net Pay"), "net_pay_display"),
         (_("Status"), "custom_status_col"),
     ]
-    records_per_page = 10
     action_method = "custom_actions_col"
 
     row_status_indications = [
@@ -379,8 +378,6 @@ class PayrollTab(PayslipList):
     """
     class for rendering payroll tab in employee profile
     """
-
-    records_per_page = 3
 
     def get_queryset(self):
         queryset = super().get_queryset()
