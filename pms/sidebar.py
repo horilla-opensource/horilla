@@ -43,11 +43,6 @@ SUBMENUS = [
         "redirect": reverse_lazy("employee-bonus-point"),
     },
     {
-        "menu": _("Templates & Periods"),
-        "redirect": reverse_lazy("templates-periods-view"),
-        "accessibility": "pms.sidebar.performance_setup_accessibility",
-    },
-    {
         "menu": _("Configuration"),
         "redirect": reverse_lazy("performance-settings-view"),
         "accessibility": "pms.sidebar.performance_settings_accessibility",
@@ -77,15 +72,12 @@ def question_template_accessibility(request, submenu, user_perms, *args, **kwarg
     )
 
 
-def performance_setup_accessibility(request, submenu, user_perms, *args, **kwargs):
+def performance_settings_accessibility(request, submenu, user_perms, *args, **kwargs):
     return (
         request.user.is_superuser
+        or request.user.has_perm("pms.add_bonuspointsetting")
         or request.user.has_perm("pms.view_objective")
         or request.user.has_perm("pms.view_questiontemplate")
         or request.user.has_perm("pms.view_period")
         or is_reportingmanager(request.user)
     )
-
-
-def performance_settings_accessibility(request, submenu, user_perms, *args, **kwargs):
-    return request.user.has_perm("pms.add_bonuspointsetting")

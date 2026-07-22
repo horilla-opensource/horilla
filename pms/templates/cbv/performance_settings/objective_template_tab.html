@@ -1,0 +1,20 @@
+{% load i18n static %}
+
+<div class="oh-inner-sidebar-content border border-[#ebebeb] rounded-md mb-5" id="objectiveTemplateSettingsTabRoot">
+    <div hx-get="{% url 'performance-settings-objective-template-nav' %}" hx-trigger="load"></div>
+
+    <div
+        class="oh-checkpoint-badge mb-2"
+        id="objectiveTemplateSettingsSelectedInstances"
+        data-ids="[]"
+        data-clicked=""
+        style="display: none"
+    >
+    </div>
+
+    <div class="oh-wrapper" id="objectiveTemplateSettingsListContainer">
+        <div class="animated-background"></div>
+    </div>
+</div>
+
+<div id="ohMessages"></div>

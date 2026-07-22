@@ -1,0 +1,20 @@
+{% load i18n static %}
+
+<div class="oh-inner-sidebar-content border border-[#ebebeb] rounded-md mb-5" id="periodSettingsTabRoot">
+    <div hx-get="{% url 'performance-settings-period-nav' %}" hx-trigger="load"></div>
+
+    <div
+        class="oh-checkpoint-badge mb-2"
+        id="periodSettingsSelectedInstances"
+        data-ids="[]"
+        data-clicked=""
+        style="display: none"
+    >
+    </div>
+
+    <div class="oh-wrapper" id="periodSettingsListContainer">
+        <div class="animated-background"></div>
+    </div>
+</div>
+
+<div id="ohMessages"></div>
