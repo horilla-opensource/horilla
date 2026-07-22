@@ -99,7 +99,6 @@ class HourAccountList(HorillaListView):
         ("Worked Hours", "worked_hours"),
         ("Overtime Hours", "overtime"),
     ]
-    records_per_page = 20
 
 
 @method_decorator(login_required, name="dispatch")

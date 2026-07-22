@@ -54,7 +54,6 @@ class MyAttendancesListView(HorillaListView):
                 data-target="#genericModal"
                 data-toggle="oh-modal-toggle"
                 """
-    records_per_page = 20
 
     sortby_mapping = [
         (_("Employee"), "employee_id__get_full_name", "employee_id__get_avatar"),

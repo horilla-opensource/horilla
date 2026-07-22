@@ -101,7 +101,6 @@ class AttendancesListView(HorillaListView):
         (_("Pending Hour"), "hours_pending"),
         (_("Overtime"), "attendance_overtime"),
     ]
-    records_per_page = 10
 
     # def get_queryset(self, queryset=None, filtered=False, *args, **kwargs):
     #     """
@@ -613,7 +612,6 @@ class PenaltyAccountListView(HorillaListView):
 
     filter_class = PenaltyFilter
     model = PenaltyAccounts
-    records_per_page = 3
     columns = [
         (_("Leave Type"), "leave_type_id"),
         (_("Minus Days"), "minus_leaves"),

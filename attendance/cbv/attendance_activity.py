@@ -56,7 +56,6 @@ class AttendanceActivityListView(HorillaListView):
 
     filter_class = AttendanceActivityFilter
     model = AttendanceActivity
-    records_per_page = 10
     template_name = "cbv/attendance_activity/delete_inherit.html"
 
     columns = [
