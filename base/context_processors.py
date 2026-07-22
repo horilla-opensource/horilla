@@ -337,7 +337,7 @@ def enable_profile_edit(request):
     from accessibility.accessibility import ACCESSBILITY_FEATURE
 
     profile_edit = ProfileEditFeature.objects.filter().first()
-    enable = False if profile_edit and profile_edit.is_enabled else True
+    enable = bool(profile_edit and profile_edit.is_enabled)
     if enable:
         if not any(item[0] == "profile_edit" for item in ACCESSBILITY_FEATURE):
             ACCESSBILITY_FEATURE.append(("profile_edit", _("Profile Edit Access")))
