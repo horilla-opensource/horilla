@@ -38,7 +38,6 @@ class MailLogTabList(HorillaListView):
     """
 
     model = EmailLog
-    records_per_page = 5
     filter_class = MailLogFilter
 
     def __init__(self, **kwargs: Any) -> None:

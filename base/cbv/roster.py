@@ -26,7 +26,7 @@ from base.filters import RosterFilter
 from base.forms import RosterCellUpdateForm
 from base.models import CompanyLeaves, EmployeeShift, Holidays, Roster, RosterPublishLog
 from employee.models import Employee
-from horilla_views.cbv_methods import login_required
+from horilla_views.cbv_methods import login_required, paginator_qry
 from horilla_views.generic.cbv.views import HorillaCardView, HorillaNavView
 
 # ---------------------------------------------------------------------------
@@ -130,7 +130,6 @@ class RosterGridView(HorillaCardView):
         return queryset
 
     def get_context_data(self, **kwargs):
-        from base.methods import paginator_qry
         from employee.models import Employee
 
         context = super().get_context_data(**kwargs)
@@ -150,7 +149,9 @@ class RosterGridView(HorillaCardView):
             .select_related("employee_work_info__department_id")
             .order_by("employee_first_name", "employee_last_name")
         )
-        paginated = paginator_qry(employees_qs, self.request.GET.get("page"))
+        paginated = paginator_qry(
+            employees_qs, self.request.GET.get("page"), self.records_per_page
+        )
 
         page_emp_ids = [emp.pk for emp in paginated]
         roster_entries = self.queryset.filter(

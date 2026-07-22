@@ -88,7 +88,6 @@ class WorkRequestListView(HorillaListView):
         (_("Description"), "description"),
         (_("Comment"), "comment_note"),
     ]
-    records_per_page = 10
     option_method = "work_actions"
 
     header_attrs = {

@@ -1104,13 +1104,13 @@ def generate_pdf(template_path, context, path=True, title=None, html=True):
     return response
 
 
-def get_pagination():
+def get_pagination(default=20):
     from horilla.horilla_middlewares import _thread_locals
 
     request = getattr(_thread_locals, "request", None)
     user = request.user
     page = DynamicPagination.objects.filter(user_id=user).first()
-    count = 20
+    count = default
     if page:
         count = page.pagination
     return count
