@@ -451,6 +451,8 @@ def sortby(
         result = getattribute(object, attr=sort_key)
         if result is None:
             none_ids.append(object.pk)
+        elif isinstance(result, models.Model):
+            result = str(result)
         return result
 
     order = not reverse
