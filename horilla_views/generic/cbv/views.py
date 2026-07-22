@@ -147,6 +147,7 @@ class HorillaListView(ListView):
     bulk_update_fields: list = []
     bulk_template: str = "generic/bulk_form.html"
     records_count_in_tab: bool = True
+    history_tracking: bool = True
 
     header_attrs: dict = {}
 
@@ -297,6 +298,7 @@ class HorillaListView(ListView):
             self.records_per_page = get_pagination()
 
         # Updating the column_order
+        col_order = None
         if self.request:
             col_order = models.ColumnOrder.objects.filter(
                 employee=self.request.user.employee_get, path=self.request.path_info
@@ -325,6 +327,8 @@ class HorillaListView(ListView):
 
         self.columns = updated_column
 
+        if self.history_tracking:
+            self.columns += [(_("History"), "get_model_history")]
         self.visible_column = list(self.columns)
 
         hidden_fields = []
@@ -337,7 +341,14 @@ class HorillaListView(ListView):
                 hidden_fields = existing_instance.excluded_columns
 
         if not self.default_columns:
-            self.default_columns = self.columns
+            self.default_columns = [
+                col
+                for col in self.columns
+                if (col[1] if isinstance(col, tuple) else col) != "get_model_history"
+            ]
+
+        if existing_instance:
+            self.default_columns = []
 
         self.toggle_form = ToggleColumnForm(
             self.columns, self.default_columns, hidden_fields
@@ -1727,7 +1738,7 @@ class HorillaCardView(ListView):
     show_filter_tags: bool = True
     filter_keys_to_remove: list = []
 
-    records_per_page: int = 50
+    records_per_page: int = 0
     card_status_class: str = """"""
     card_status_indications: list = []
     custom_body_template: str = ""
@@ -1834,6 +1845,11 @@ class HorillaCardView(ListView):
                 referrer=referrer, created_by=self.request.user
             )
         ).distinct()
+
+        # Set default pagination if not set
+        if not self.records_per_page:
+            self.records_per_page = get_pagination(default=50)
+
         context["queryset"] = paginator_qry(
             queryset, self.request.GET.get("page"), self.records_per_page
         )

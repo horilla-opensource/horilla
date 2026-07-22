@@ -18,7 +18,7 @@ from horilla_views.history_methods import get_diff
 @method_decorator(hx_request_required, name="dispatch")
 class HorillaHistoryView(DetailView):
     """
-    GenericHorillaProfileView
+    GenericHorillaHistoryView
     """
 
     template_name = "generic/horilla_history_view.html"
@@ -43,6 +43,21 @@ class HorillaHistoryView(DetailView):
         super().__init__(**kwargs)
         request = getattr(_thread_locals, "request", None)
         self.request = request
+
+    def get(self, request, *args, **kwargs):
+        """
+        Resolve the model dynamically when a subclass hasn't set one, so a
+        single URL/view can serve the history sidebar for any model.
+        """
+        if not self.model:
+            model_param = request.GET.get("model")
+            if model_param:
+                app_label, model_name = model_param.split(".")
+                self.model = apps.get_model(app_label, model_name)
+        self.history_related_name = (
+            "history_set" if hasattr(self.model, "history_set") else "history"
+        )
+        return super().get(request, *args, **kwargs)
 
     def post(self, request, history_id, *args, **kwargs):
         """

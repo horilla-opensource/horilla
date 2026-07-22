@@ -51,6 +51,11 @@ urlpatterns = [
         name="history-revert",
     ),
     path(
+        "generic-history/<int:pk>/",
+        history.HorillaHistoryView.as_view(),
+        name="generic-history",
+    ),
+    path(
         "update-kanban-sequence/",
         views.update_kanban_sequence,
         name="update-kanban-sequence",

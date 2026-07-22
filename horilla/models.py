@@ -22,11 +22,9 @@ from django.utils.text import slugify
 from django.utils.translation import gettext_lazy as _
 
 from horilla.horilla_middlewares import _thread_locals
-from horilla.inherit.model_inherit import (  # noqa: F401
-    EXTENSION_REGISTRY,
-    HorillaModelBase,
-)
+from horilla.inherit.model_inherit import EXTENSION_REGISTRY, HorillaModelBase
 from horilla_auth.models import HorillaUser
+from horilla_views.cbv_methods import render_template
 
 
 @property
@@ -192,6 +190,25 @@ class HorillaModel(models.Model, metaclass=HorillaModelBase):
 
     def get_verbose_name_plural(self):
         return self._meta.verbose_name_plural
+
+    def get_model_history(self):
+        """
+        returns the history button column
+        """
+
+        return render_template(
+            path="generic/history_col.html",
+            context={"instance": self},
+        )
+
+    def get_history_url(self):
+        """
+        URL for opening this instance's history sidebar
+        """
+        return (
+            reverse("generic-history", kwargs={"pk": self.pk})
+            + f"?model={self._meta.app_label}.{self._meta.model_name}"
+        )
 
     @classmethod
     def find(cls, object_id):
