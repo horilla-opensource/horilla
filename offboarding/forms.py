@@ -291,7 +291,6 @@ class ResignationLetterForm(ModelForm):
                 emp_id = request.GET.get("emp_id")
                 self.fields["employee_id"].queryset = Employee.objects.filter(id=emp_id)
                 self.fields["employee_id"].initial = emp_id
-        print("employee queryset:", self.fields["employee_id"].queryset)
         exclude = list(set(exclude))
         for field in exclude:
             del self.fields[field]

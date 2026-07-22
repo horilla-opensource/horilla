@@ -73,7 +73,6 @@ class ResignationListView(HorillaListView):
         if self.request.user.has_perm("offboarding.change_resignationletter"):
             self.action_method = "actions_column"
 
-    records_per_page = 5
     option_method = "option_column"
 
     row_status_indications = [
