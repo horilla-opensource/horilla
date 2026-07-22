@@ -103,7 +103,6 @@ class InterviewLIstView(HorillaListView):
 
     filter_class = InterviewFilter
     model = InterviewSchedule
-    records_per_page = 10
     template_name = "cbv/interview/inherit_script.html"
 
     columns = [

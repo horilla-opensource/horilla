@@ -243,8 +243,6 @@ class ListCandidates(HorillaListView):
         ),
     ]
 
-    records_per_page = 10
-
     row_status_class = "hired-{hired} canceled-{canceled}"
 
     # row_attrs = """
@@ -658,8 +656,6 @@ class CardCandidates(HorillaCardView):
                 hx-swap="innerHTML"
                 hx-push-url="{get_individual_url}"
                 """
-
-    records_per_page = 30
 
 
 @method_decorator(login_required, name="dispatch")
