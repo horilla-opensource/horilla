@@ -68,7 +68,6 @@ class MainParentListView(HorillaListView):
 
     filter_class = UserLeaveRequestFilter
     model = LeaveRequest
-    records_per_page = 10
     view_id = "deleteleavedata"
     columns = [
         (_("Leave Type"), "leave_type_custom"),

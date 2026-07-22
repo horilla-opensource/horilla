@@ -92,7 +92,6 @@ class LeaveRequestsListView(HorillaListView):
 
     filter_class = LeaveRequestFilter
     model = LeaveRequest
-    records_per_page = 10
     columns = [
         (_("Employee"), "leave_requests_custom_emp_col"),
         (_("Leave Type"), "leave_type_id"),

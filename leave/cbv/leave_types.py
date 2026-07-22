@@ -321,8 +321,6 @@ class LeaveTypeCardView(HorillaCardView):
         },
     ]
 
-    records_per_page = 10
-
 
 @method_decorator(login_required, name="dispatch")
 @method_decorator(permission_required(perm="leave.view_leavetype"), name="dispatch")
