@@ -30,14 +30,14 @@ from horilla_views.generic.cbv.views import (
 @method_decorator(login_required, name="dispatch")
 class MultipleApprovalConditionView(TemplateView):
     """
-    Legacy standalone Multiple Approval page. Migrated into Settings > Approvals;
-    redirect direct visits to the settings page.
+    Legacy standalone Multiple Approval page. Migrated into Leave > Configuration;
+    redirect direct visits to the merged settings page.
     """
 
     template_name = "cbv/multiple_approval_condition/multiple_approval_condition.html"
 
     def get(self, request, *args, **kwargs):
-        return redirect("multiple-approval-rules-view")
+        return redirect("leave-settings-view")
 
 
 @method_decorator(login_required, name="dispatch")

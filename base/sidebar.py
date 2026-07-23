@@ -29,7 +29,7 @@ def system_preferences_accessibility(request, submenu, user_perms, *args, **kwar
             "base.view_dynamicpagination",
             "horilla_audit.view_accountblockunblock",
             "employee.change_employeegeneralsetting",
-            "horilla_audit.view_historytrackingfields",
+            "base.view_historytrackingfields",
             "payroll.view_payrollsettings",
             "base.view_company",
         ]
@@ -95,14 +95,6 @@ def mail_automation_accessibility(request, submenu, user_perms, *args, **kwargs)
     )
 
 
-def multiple_approval_rules_accessibility(
-    request, submenu, user_perms, *args, **kwargs
-):
-    return apps.is_installed("leave") and request.user.has_perm(
-        "base.view_multipleapprovalcondition"
-    )
-
-
 def outlook_mail_accessibility(request, submenu, user_perms, *args, **kwargs):
     return request.user.has_perm(
         "base.view_dynamicemailconfiguration"
@@ -162,7 +154,7 @@ def google_meet_accessibility(request, submenu, user_perms, *args, **kwargs):
 
 def whatsapp_accessibility(request, submenu, user_perms, *args, **kwargs):
     return apps.is_installed("whatsapp") and request.user.has_perm(
-        "whatsapp.add_whatsappcredientials"
+        "whatsapp.add_whatsappcredentials"
     )
 
 
@@ -412,23 +404,17 @@ class BaseSettings:
                 },
             ],
         },
-        {
-            "label": _("Public Holidays"),
-            "url": reverse_lazy("holidays-view"),
-            "accessibility": holidays_settings_accessibility,
-            "search_entries": [
-                {
-                    "text": _("Public Holiday"),
-                    "description": _("Name of the public holiday"),
-                },
-                {"text": _("Holiday Start Date"), "description": _("Start date")},
-                {"text": _("Holiday End Date"), "description": _("End date")},
-                {
-                    "text": _("Recurring Holiday"),
-                    "description": _("Whether this holiday repeats every year"),
-                },
-            ],
-        },
+        # {
+        #     "label": _("Public Holidays"),
+        #     "url": reverse_lazy("holidays-view"),
+        #     "accessibility": holidays_settings_accessibility,
+        #     "search_entries": [
+        #         {"text": _("Public Holiday"), "description": _("Name of the public holiday")},
+        #         {"text": _("Holiday Start Date"), "description": _("Start date")},
+        #         {"text": _("Holiday End Date"), "description": _("End date")},
+        #         {"text": _("Recurring Holiday"), "description": _("Whether this holiday repeats every year")},
+        #     ],
+        # },
     ]
 
 
@@ -531,47 +517,6 @@ class MailSettings:
                 {
                     "text": _("Delivery Channel"),
                     "description": _("Send via Email Notification or Both"),
-                },
-            ],
-        },
-    ]
-
-
-# ---------------------------------------------------------------------------
-# 4. Approvals section
-# ---------------------------------------------------------------------------
-
-
-@settings_menu.register
-class ApprovalsSettings:
-    title = _("Approvals")
-    order = 4
-    condition = lambda self, request: apps.is_installed("leave")
-    items = [
-        {
-            "label": _("Multiple Approval Rules"),
-            "url": reverse_lazy("multiple-approval-rules-view"),
-            "accessibility": multiple_approval_rules_accessibility,
-            "search_entries": [
-                {
-                    "text": _("Multiple Approval"),
-                    "description": _(
-                        "Configure multi-level approval rules by condition"
-                    ),
-                },
-                {
-                    "text": _("Approval Condition Field"),
-                    "description": _(
-                        "Which field is evaluated for the approval condition"
-                    ),
-                },
-                {
-                    "text": _("Approval Condition Operator"),
-                    "description": _("Comparison operator for the approval condition"),
-                },
-                {
-                    "text": _("Approval Manager"),
-                    "description": _("Who approves when the condition is met"),
                 },
             ],
         },

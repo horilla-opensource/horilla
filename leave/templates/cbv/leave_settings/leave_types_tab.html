@@ -1,0 +1,59 @@
+{% load i18n static %}
+
+<style>
+.paid--dot{
+  background-color:yellowgreen;
+}
+.unpaid--dot{
+  background-color:orange;
+}
+
+.payment-paid{
+  border-left: 3.4px solid yellowgreen !important;
+  border-radius: 4px 0 0 4px;
+}
+.payment-unpaid{
+  border-left: 3.4px solid orange !important;
+  border-radius: 4px 0 0 4px;
+}
+</style>
+
+<div class="oh-inner-sidebar-content border border-[#ebebeb] rounded-md mb-5" id="leaveTypesTabRoot">
+    <div hx-get="{% url 'leave-type-navbar' %}" hx-trigger="load"></div>
+
+    <p class="text-xs text-gray-500 mt-1 ml-2">
+        {% trans "Define the different types of leave employees can request, along with payment and carry-forward rules." %}
+    </p>
+
+    <div
+        class="oh-checkpoint-badge mb-2"
+        id="selectedInstances"
+        data-ids="[]"
+        data-clicked=""
+        style="display: none"
+    >
+    </div>
+
+    <div
+        class="oh-wrapper"
+        hx-get="{% url 'leave-type-list' %}?{{ request.GET.urlencode }}"
+        hx-trigger="load"
+        id="listContainer"
+    >
+        <div class="animated-background"></div>
+    </div>
+</div>
+
+<script src="{% static '/candidate/bulk.js' %}"></script>
+<script src="{% static 'cbv/deleteFunc.js' %}"></script>
+<script>
+  function refreshLeaveTypeListContainer() {
+    if (typeof htmx === "undefined") return;
+    var query = window.location.search || "";
+    var url = "{% url 'leave-type-list' %}" + query;
+    htmx.ajax("GET", url, { target: "#listContainer", swap: "innerHTML" });
+  }
+  document.addEventListener("reloadLeaveTypeList", function () {
+    refreshLeaveTypeListContainer();
+  });
+</script>

@@ -18,7 +18,8 @@
 	<div
 		class="oh-wrapper"
 		hx-get="{% url 'restrict-filter'  %}?{{request.GET.urlencode}}"
-		id="listContainer"
+		hx-trigger="load"
+		id="restrictLeavesListContainer"
 	>
 		<div class="animated-background"></div>
 	</div>

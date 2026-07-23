@@ -1,0 +1,27 @@
+{% load i18n static %}
+
+<div class="oh-inner-sidebar-content border border-[#ebebeb] rounded-md mb-5" id="multipleApprovalTabRoot">
+    <div hx-get="{% url 'nav-multiple-approval-condition' %}" hx-trigger="load"></div>
+
+    <p class="text-xs text-gray-500 mt-1 ml-2">
+        {% trans "Configure department-based conditions and manager sequences for multi-level request approvals." %}
+    </p>
+
+    <div
+        class="oh-checkpoint-badge mb-2"
+        id="selectedInstances"
+        data-ids="[]"
+        data-clicked=""
+        style="display: none"
+    >
+    </div>
+
+    <div
+        class="oh-wrapper"
+        hx-get="{% url 'hx-multiple-approval-condition' %}?{{ request.GET.urlencode }}"
+        hx-trigger="load"
+        id="listContainer"
+    >
+        <div class="animated-background"></div>
+    </div>
+</div>

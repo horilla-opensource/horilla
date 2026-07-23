@@ -550,9 +550,14 @@ urlpatterns = [
         name="leave-settings-tab-view",
     ),
     path(
-        "leave-settings-restrict-leaves-tab/",
-        settings_tabs.LeaveSettingsRestrictLeavesTab.as_view(),
-        name="leave-settings-restrict-leaves-tab",
+        "leave-settings-leave-types-tab/",
+        settings_tabs.LeaveSettingsLeaveTypesTab.as_view(),
+        name="leave-settings-leave-types-tab",
+    ),
+    path(
+        "leave-settings-approvals-tab/",
+        settings_tabs.LeaveSettingsApprovalsTab.as_view(),
+        name="leave-settings-approvals-tab",
     ),
     path(
         "compensatory-leave-settings-view/",

@@ -6,7 +6,6 @@ from typing import Any
 
 from django.contrib import messages
 from django.http import HttpResponse
-from django.shortcuts import redirect
 from django.urls import reverse, reverse_lazy
 from django.utils.decorators import method_decorator
 from django.utils.translation import gettext_lazy as _
@@ -31,17 +30,10 @@ from horilla_views.generic.cbv.views import (
 @method_decorator(login_required, name="dispatch")
 class HolidaysView(TemplateView):
     """
-    Standalone Holidays page. For admins it has been migrated into
-    Settings > Organization, so users with the manage permission are redirected
-    there; employees without the permission keep the read-only list view.
+    Standalone Public Holidays page, linked from the Leave app sidebar.
     """
 
     template_name = "cbv/holidays/holidays_home.html"
-
-    def get(self, request, *args, **kwargs):
-        if request.user.has_perm("base.view_holidays"):
-            return redirect("holidays-view")
-        return super().get(request, *args, **kwargs)
 
 
 @method_decorator(login_required, name="dispatch")

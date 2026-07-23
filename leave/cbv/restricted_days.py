@@ -6,7 +6,6 @@ from typing import Any
 
 from django.contrib import messages
 from django.http import HttpResponse
-from django.shortcuts import redirect
 from django.urls import reverse
 from django.utils.decorators import method_decorator
 from django.utils.translation import gettext_lazy as _
@@ -27,14 +26,10 @@ from leave.models import RestrictLeave
 @method_decorator(login_required, name="dispatch")
 class RestrictedDaysView(TemplateView):
     """
-    Legacy standalone Restrict Leaves page. Migrated into Settings > Leave;
-    redirect direct visits to the merged settings page.
+    Standalone Restrict Leaves page.
     """
 
     template_name = "cbv/restricted_days/restricted_days.html"
-
-    def get(self, request, *args, **kwargs):
-        return redirect("restrict-leaves-view")
 
 
 @method_decorator(login_required, name="dispatch")

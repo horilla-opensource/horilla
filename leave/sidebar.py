@@ -43,19 +43,14 @@ SUBMENUS = [
         "accessibility": "leave.sidebar.assign_accessibility",
     },
     {
-        "menu": _("Leave Types"),
-        "redirect": reverse_lazy("type-view"),
-        "accessibility": "leave.sidebar.type_accessibility",
-        # type-creation/ and type-update/<id>/ are sibling URLs (reached via a
-        # plain link/form from type-view/, not a sub-path of it), so they need
-        # explicit prefixes for the sidebar's path-based active-link highlighting
-        # to match them.
-        "match_prefixes": ["/leave/type-creation/", "/leave/type-update/"],
+        "menu": _("Restrict Leaves"),
+        "redirect": reverse_lazy("restrict-view"),
+        "accessibility": "leave.sidebar.restrict_leave_accessibility",
     },
     {
-        "menu": _("Holidays"),
+        "menu": _("Public Holidays"),
         "redirect": reverse_lazy("holiday-view"),
-        "accessibility": "leave.sidebar.holiday_accessibility",
+        # "accessibility": "leave.sidebar.holiday_accessibility",
     },
     {
         "menu": _("Company Leaves"),
@@ -89,10 +84,6 @@ def leave_request_accessibility(request, submenu, user_perms, *args, **kwargs):
     )
 
 
-def type_accessibility(request, submenu, user_perms, *args, **kwargs):
-    return request.user.has_perm("leave.view_leavetype")
-
-
 def assign_accessibility(request, submenu, user_perm, *args, **kwargs):
     submenu["redirect"] = submenu["redirect"] + "?field=leave_type_id"
     return request.user.has_perm("leave.view_availableleave") or is_reportingmanager(
@@ -113,9 +104,7 @@ def company_leave_accessibility(request, submenu, user_perms, *args, **kwargs):
 
 
 def restrict_leave_accessibility(request, submenu, user_perms, *args, **kwargs):
-    return not request.user.is_superuser and not request.user.has_perm(
-        "leave.view_restrictleave"
-    )
+    return request.user.has_perm("leave.view_restrictleave")
 
 
 def componstory_accessibility(request, submenu, user_perms, *args, **kwargs):

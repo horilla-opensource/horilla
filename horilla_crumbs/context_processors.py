@@ -117,7 +117,6 @@ sidebar_urls = [
     "mail-server-conf",
     "mail-templates-view",
     "multiple-approval-condition",
-    "multiple-approval-rules-view",
     "skill-zone-view",
     "view-mail-templates",
     "view-loan",

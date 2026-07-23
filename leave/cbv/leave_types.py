@@ -7,7 +7,7 @@ from typing import Any
 
 from django.contrib import messages
 from django.http import HttpResponse
-from django.shortcuts import render
+from django.shortcuts import redirect, render
 from django.urls import reverse, reverse_lazy
 from django.utils.decorators import method_decorator
 from django.utils.text import format_lazy
@@ -34,10 +34,14 @@ from notifications.signals import notify
 @method_decorator(permission_required(perm="leave.view_leavetype"), name="dispatch")
 class LeaveTypeView(TemplateView):
     """
-    template view
+    Standalone Leave Types page. Migrated into Configuration; redirect direct
+    visits to the merged settings page.
     """
 
     template_name = "cbv/leave_types/leave_type_home.html"
+
+    def get(self, request, *args, **kwargs):
+        return redirect("leave-settings-view")
 
 
 @method_decorator(login_required, name="dispatch")
@@ -152,6 +156,7 @@ class LeaveTypeNavView(HorillaNavView):
     filter_form_context_name = "form"
     filter_instance = LeaveTypeFilter()
     search_swap_target = "#listContainer"
+    template_name = "generic/inline_nav.html"
 
 
 @method_decorator(login_required, name="dispatch")
