@@ -174,7 +174,7 @@ class RecruitmentSettings:
     condition = lambda self, request: apps.is_installed("recruitment")
     items = [
         {
-            "label": _("Candidate Self Tracking"),
+            "label": _("Candidate Portal"),
             "url": reverse_lazy("self-tracking-feature"),
             "accessibility": self_tracking_accessibility,
             "search_entries": [
