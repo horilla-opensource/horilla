@@ -10,6 +10,15 @@ function checkSelected(names, target, initial = false) {
       $(target).find(`[value=${valueOfElement}]`).prop("checked", true);
     }
   });
+  if (typeof refreshPermPicker === "function") {
+    var $picker = $(target).closest("[data-perm-picker]");
+    if (!$picker.length) {
+      $picker = $(target).find("[data-perm-picker]");
+    }
+    if ($picker.length) {
+      refreshPermPicker($picker);
+    }
+  }
 }
 
 // CUSTOM MODAL

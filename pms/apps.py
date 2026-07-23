@@ -4,6 +4,7 @@ Django application configuration for the PMS (Performance Management System) app
 
 from django.apps import AppConfig
 from django.conf import settings
+from django.utils.translation import gettext_lazy as _
 
 
 class PmsConfig(AppConfig):
@@ -14,6 +15,7 @@ class PmsConfig(AppConfig):
 
     default_auto_field = "django.db.models.BigAutoField"
     name = "pms"
+    verbose_name = _("Performance")
 
     def ready(self):
         from django.urls import include, path

@@ -13,6 +13,15 @@
               $(target).find(`[value=${valueOfElement}]`).prop("checked", true);
             }
           });
+          if (typeof refreshPermPicker === "function") {
+            var $picker = $(target).closest("[data-perm-picker]");
+            if (!$picker.length) {
+              $picker = $(target).find("[data-perm-picker]");
+            }
+            if ($picker.length) {
+              refreshPermPicker($picker);
+            }
+          }
         }
         var showSearch = true
     </script>
@@ -62,6 +71,13 @@
         });
 
         function updateBadge() {
+          if (typeof refreshPermPicker === "function") {
+            $("[data-perm-picker]").each(function () {
+              refreshPermPicker($(this));
+            });
+            return;
+          }
+
           $(".accordion-wrapper").each(function () {
             const wrapper = $(this);
 
@@ -95,9 +111,23 @@
 
         // Select all per table
         function selectAllPermissions(source) {
+          if (typeof window.selectAllPermissions === "function" && window.selectAllPermissions !== selectAllPermissions) {
+            return window.selectAllPermissions(source);
+          }
           const isChecked = $(source).is(":checked");
           const table = $(source).closest("table");
-          table.find("tbody input.row-permission").prop("checked", isChecked).trigger("change");
+          const $rows = table.find("tr.perm-feature-row").not(".hidden");
+          $rows.each(function () {
+            $(this).find("[name=permissions]").prop("checked", isChecked);
+            $(this).find(".row-permission").prop("checked", isChecked);
+          });
+          if (typeof refreshPermPicker === "function") {
+            refreshPermPicker($(source).closest("[data-perm-picker]"));
+          }
+          const $any = $rows.find("[name=permissions]").first();
+          if ($any.length) {
+            $any.trigger("change");
+          }
         }
 
         // Trigger badge count on load (for already checked states)

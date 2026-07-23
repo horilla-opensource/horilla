@@ -1,0 +1,41 @@
+{% load i18n %}
+<div class="space-y-4">
+    <div>
+        <label class="block text-sm font-medium text-dark-400 mb-1" for="{{ form.name.id_for_label }}">
+            {% trans "Group name" %} <span class="text-danger">*</span>
+        </label>
+        {{ form.name.errors }}
+        {{ form.name }}
+    </div>
+
+    <div>
+        {{ form.permissions.errors }}
+        <div id="permTable">
+            {% include "base/auth/permission_table.html" %}
+        </div>
+    </div>
+
+    <div class="flex flex-wrap justify-end gap-2 pt-2 border-t border-[#ececec]">
+        <button
+            type="button"
+            class="px-4 py-2 text-xs rounded-md border border-dark-50 text-dark-300 hover:bg-dark-50 transition"
+            onclick="$(this).closest('.oh-modal--show').removeClass('oh-modal--show'); event.preventDefault()"
+        >
+            {% trans "Cancel" %}
+        </button>
+        <button
+            type="submit"
+            class="px-4 py-2 bg-brand-600 text-white rounded-md text-xs hover:bg-brand-800 transition"
+        >
+            {% trans "Create group" %}
+        </button>
+    </div>
+</div>
+
+<script>
+$(document).ready(function () {
+  if (typeof refreshPermPicker === "function") {
+    refreshPermPicker($("#permTable").find("[data-perm-picker]"));
+  }
+});
+</script>

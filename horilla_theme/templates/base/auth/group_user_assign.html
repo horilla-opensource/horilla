@@ -1,0 +1,49 @@
+{% load i18n %}
+<form
+    hx-post="{% url 'user-group-assign' %}?group={{ group_id }}"
+    hx-target="#groupAssignBody"
+    class="oh-profile-section space-y-4"
+>
+    <div class="rounded-md border border-primary-200 bg-primary-50/60 px-4 py-3 text-sm">
+        <p class="font-medium text-primary-700 mb-1">
+            {% blocktrans with name=group.name %}Manage members of "{{ name }}"{% endblocktrans %}
+        </p>
+        <p class="text-xs text-dark-300 leading-relaxed">
+            {% trans "Search and pick employees below. Saving replaces the current member list with your selection." %}
+            {% if member_count %}
+                <span class="font-medium text-primary-700">
+                    {% blocktrans count counter=member_count %}{{ counter }} member currently in this group.{% plural %}{{ counter }} members currently in this group.{% endblocktrans %}
+                </span>
+            {% endif %}
+        </p>
+    </div>
+
+    {{ form.group.errors }}
+    <div>
+        <label class="block text-sm font-medium text-dark-400 mb-1">
+            {% trans "Employees in this group" %}
+        </label>
+        <p class="text-xs text-dark-200 mb-2">
+            {% trans "Use search or filters to find people quickly." %}
+        </p>
+        {{ form.employee.errors }}
+        {{ form.employee }}
+    </div>
+    <input type="hidden" name="group" value="{{ group_id }}">
+
+    <div class="flex flex-wrap justify-end gap-2 pt-2 border-t border-[#ececec]">
+        <button
+            type="button"
+            class="px-4 py-2 text-xs rounded-md border border-dark-50 text-dark-300 hover:bg-dark-50 transition"
+            onclick="$(this).closest('.oh-modal--show').removeClass('oh-modal--show'); event.preventDefault()"
+        >
+            {% trans "Cancel" %}
+        </button>
+        <button
+            type="submit"
+            class="px-4 py-2 bg-brand-600 text-white rounded-md text-xs hover:bg-brand-800 transition"
+        >
+            {% trans "Save members" %}
+        </button>
+    </div>
+</form>

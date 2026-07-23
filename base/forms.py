@@ -395,6 +395,23 @@ class UserGroupForm(ModelForm):
 
         model = Group
         fields = ["name", "permissions"]
+        labels = {
+            "name": _("Group name"),
+        }
+        help_texts = {
+            "name": _(
+                "Give this group a clear name, e.g. HR Managers or Finance Team."
+            ),
+        }
+        widgets = {
+            "name": forms.TextInput(
+                attrs={
+                    "placeholder": _("e.g. HR Managers"),
+                    "class": "oh-input w-100",
+                    "autocomplete": "off",
+                }
+            ),
+        }
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
@@ -430,11 +447,23 @@ class UserGroupForm(ModelForm):
 
 class AssignUserGroup(Form):
     """
-    Form to assign groups
+    Form to assign employees to a group (searchable multi-select).
     """
 
-    employee = forms.ModelMultipleChoiceField(
-        queryset=Employee.objects.all(), required=False
+    employee = HorillaMultiSelectField(
+        queryset=Employee.objects.filter(
+            is_active=True, employee_user_id__isnull=False
+        ),
+        widget=HorillaMultiSelectWidget(
+            filter_route_name="employee-widget-filter",
+            filter_class=EmployeeFilter,
+            filter_instance_context_name="f",
+            filter_template_path="employee_filters.html",
+            required=False,
+        ),
+        label=_("Employees"),
+        required=False,
+        help_text=_("Search and select who should belong to this group."),
     )
 
     group = forms.ModelChoiceField(
@@ -447,20 +476,30 @@ class AssignUserGroup(Form):
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
         reload_queryset(self.fields)
+        self.fields["employee"].widget.attrs.update(
+            {"data-placeholder": _("Search employees...")}
+        )
+
+    def clean(self):
+        emps = self.data.getlist("employee") if hasattr(self.data, "getlist") else []
+        if emps is not None:
+            self.errors.pop("employee", None)
+        super().clean()
+        return self.cleaned_data
 
     def save(self):
         """
-        Save method to assign group to selected employees only.
-        It removes the group from previously assigned employees
-        and assigns it to the new ones.
+        Replace group membership with the selected employees.
         """
         group = self.cleaned_data["group"]
-        assigning_employees = self.cleaned_data["employee"]
+        employee_ids = (
+            self.data.getlist("employee") if hasattr(self.data, "getlist") else []
+        )
+        assigning_employees = Employee.objects.filter(id__in=employee_ids)
         assigning_users = [
             e.employee_user_id for e in assigning_employees if e.employee_user_id
         ]
 
-        # Get employees currently in this group on selected company instance
         existing_employees = Employee.objects.filter(
             employee_user_id__in=group.user_set.all()
         )

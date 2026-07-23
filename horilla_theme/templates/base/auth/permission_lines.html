@@ -32,7 +32,16 @@
                 <div class="py-3">
                     <script>
                         $(document).ready(function () {
-                            checkSelected(`{{employee.employee_user_id.user_permissions.all|user_perms|safe}}`, '#panel{{employee.id}}', true)
+                            checkSelected(
+                                `{{ employee.employee_user_id|all_user_perms|safe }}`,
+                                '#panel{{employee.id}}',
+                                true
+                            );
+                            if (typeof refreshPermPicker === "function") {
+                                refreshPermPicker(
+                                    $("#panel{{employee.id}}").find("[data-perm-picker]")
+                                );
+                            }
                         })
                     </script>
                     {% if perms.auth.add_permission or perms.auth.change_permission or perms.auth.delete_permission %}
@@ -99,13 +108,6 @@
       updateBadge();
     });
 
-    var timeout;
-    function selectAllPermissions(source) {
-      const isChecked = $(source).is(':checked');
-      const table = $(source).closest('table'); // or your specific container
-      table.find('tbody input.row-permission').prop('checked', isChecked).trigger('change');
-    }
-
     function updatePermissions(panelElem) {
       var userId = panelElem.data("user-id");
       var permissions = [];
@@ -128,7 +130,7 @@
         headers: {
           "X-CSRFToken": getCookie("csrftoken"),
         },
-        success: function (response) {
+        success: function () {
           reloadMessage()
         },
         error: function () {
@@ -139,27 +141,19 @@
 
     $(document).ready(function () {
       updateBadge();
-      var timeout;
-      $(".view-employees [name=permissions]").on("change", function (e) {
-        e.preventDefault();
-        clearTimeout(timeout);
-
-        const panel = $(this).closest(".panel.view-employees");
-
-        timeout = setTimeout(() => {
-          updateBadge();
-          updatePermissions(panel);  // ✅ pass correct panel
-        }, 100);
-      });
     });
 
-
     function updateBadge() {
-      // Loop through each employee panel
+      if (typeof refreshPermPicker === "function") {
+        $("[data-perm-picker]").each(function () {
+          refreshPermPicker($(this));
+        });
+        return;
+      }
+
       $(".accordion-wrapper").each(function () {
         const wrapper = $(this);
 
-        // For each permission panel
         wrapper.find(".panel").each(function () {
           const panel = $(this);
           const badge = panel.prev(".inner-accordion-toggle").find(".permission-badge");
@@ -169,7 +163,6 @@
           badge.attr("title", checkedCount + " Permissions");
         });
 
-        // Update row-permission checkboxes (4 perms = checked)
         wrapper.find("tbody tr").each(function () {
           const row = $(this);
           const rowPermissionCheckbox = row.find(".row-permission");
@@ -178,17 +171,33 @@
           rowPermissionCheckbox.prop("checked", checkedCount === 4);
         });
 
-        // Update "Select All" checkboxes
         wrapper.find("table").each(function () {
           const table = $(this);
           const allCheckboxes = table.find("tbody [name=permissions]");
           const checkedCheckboxes = table.find("tbody [name=permissions]:checked");
           const selectAll = table.find(".row-permission__select-all");
 
-          selectAll.prop("checked", allCheckboxes.length === checkedCheckboxes.length);
+          selectAll.prop(
+            "checked",
+            allCheckboxes.length > 0 &&
+              allCheckboxes.length === checkedCheckboxes.length
+          );
         });
       });
     }
+
+    // Keep badges in sync when toggles change (delegated for HTMX swaps)
+    $(document).off("change.empPermBadge", ".view-employees [name=permissions]");
+    $(document).on("change.empPermBadge", ".view-employees [name=permissions]", function () {
+      clearTimeout(window.__empPermBadgeTimeout);
+      const panel = $(this).closest(".panel.view-employees");
+      window.__empPermBadgeTimeout = setTimeout(function () {
+        updateBadge();
+        if (panel.length) {
+          updatePermissions(panel);
+        }
+      }, 100);
+    });
 </script>
 
 <!-- ACCORDION -->

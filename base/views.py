@@ -30,7 +30,7 @@ from django.core.files.base import ContentFile
 from django.core.mail import EmailMessage, EmailMultiAlternatives
 from django.core.management import call_command
 from django.core.validators import validate_ipv46_address
-from django.db.models import ProtectedError, Q
+from django.db.models import Count, ProtectedError, Q
 from django.http import FileResponse, Http404, HttpResponse, JsonResponse
 from django.shortcuts import get_object_or_404, redirect, render
 from django.template.loader import render_to_string
@@ -175,6 +175,7 @@ from employee.models import (
     ProfileEditFeature,
 )
 from horilla.decorators import (
+    any_permission_required,
     delete_permission,
     duplicate_permission,
     hx_request_required,
@@ -1118,27 +1119,77 @@ class SettingsView(LoginRequiredMixin, RedirectView):
     pattern_name = "system-preferences-view"
 
 
-@login_required
-@hx_request_required
-@permission_required("auth.add_group")
-def user_group_table(request):
+def _permission_app_label(app_name):
     """
-    Group assign htmx view
+    Human label for permission UI module nav.
+    Uses AppConfig.verbose_name and drops a leading "Horilla" product prefix.
     """
+    import re
+
+    from django.apps import apps as django_apps
+
+    try:
+        label = str(django_apps.get_app_config(app_name).verbose_name)
+    except LookupError:
+        label = app_name.replace("_", " ")
+
+    label = re.sub(r"(?i)^horilla[\s_\-]*", "", label).strip()
+    label = label.replace("_", " ").strip()
+    if not label:
+        label = app_name.replace("_", " ")
+    # Title-case only fully lowercase labels (keep "Theme Manager", "LDAP", etc.)
+    if label == label.lower():
+        label = label.title()
+    # Sidebar-friendly short label for Django auth
+    if app_name == "auth":
+        label = "Auth"
+    return label
+
+
+def _build_permission_matrix():
+    """Shared permission matrix context for group/employee permission UIs."""
     permissions = []
-    apps = settings.APPS
     no_permission_models = settings.NO_PERMISSION_MODALS
-    form = UserGroupForm()
-    for app_name in apps:
+    for app_name in settings.APPS:
         app_models = []
         for model in get_models_in_app(app_name):
+            if model._meta.model_name in no_permission_models:
+                continue
             app_models.append(
                 {
                     "verbose_name": model._meta.verbose_name.capitalize(),
                     "model_name": model._meta.model_name,
                 }
             )
-        permissions.append({"app": app_name.capitalize(), "app_models": app_models})
+        permissions.append(
+            {
+                "app": _permission_app_label(app_name),
+                "app_models": app_models,
+            }
+        )
+    return permissions, no_permission_models
+
+
+def _user_groups_queryset(search=""):
+    """Lightweight group list with annotated counts (no heavy prefetches)."""
+    groups = Group.objects.annotate(
+        member_count=Count("user", distinct=True),
+        perm_count=Count("permissions", distinct=True),
+    ).order_by("name")
+    if search:
+        groups = groups.filter(name__icontains=search)
+    return groups
+
+
+@login_required
+@hx_request_required
+@permission_required("auth.add_group")
+def user_group_table(request):
+    """
+    Group create form (HTMX) — loaded on demand when opening Create modal.
+    """
+    permissions, no_permission_models = _build_permission_matrix()
+    form = UserGroupForm()
     if request.method == "POST":
         form = UserGroupForm(request.POST)
         if form.is_valid():
@@ -1151,6 +1202,73 @@ def user_group_table(request):
         {
             "permissions": permissions,
             "form": form,
+            "no_permission_models": no_permission_models,
+        },
+    )
+
+
+@login_required
+@permission_required("auth.view_group")
+def user_group(request):
+    """
+    User group list — headers only; detail panels load lazily on expand.
+    """
+    form = UserGroupForm()
+    groups = _user_groups_queryset()
+    return render(
+        request,
+        "base/auth/group.html",
+        {
+            "form": form,
+            "groups": paginator_qry(groups, request.GET.get("page")),
+            "permissions": [],
+            "no_permission_models": settings.NO_PERMISSION_MODALS,
+        },
+    )
+
+
+@login_required
+@hx_request_required
+@permission_required("auth.view_group")
+def user_group_search(request):
+    """
+    Search / paginate user groups (list rows only).
+    """
+    search = str(request.GET.get("search") or "")
+    groups = _user_groups_queryset(search=search)
+    return render(
+        request,
+        "base/auth/group_lines.html",
+        {
+            "groups": paginator_qry(groups, request.GET.get("page")),
+            "pd": request.GET.urlencode(),
+            "permissions": [],
+            "no_permission_models": settings.NO_PERMISSION_MODALS,
+        },
+    )
+
+
+@login_required
+@hx_request_required
+@permission_required("auth.view_group")
+def user_group_detail(request, obj_id):
+    """
+    Lazy-loaded members + permissions panel for a single group.
+    """
+    group = get_object_or_404(
+        Group.objects.prefetch_related(
+            "permissions", "user_set", "user_set__employee_get"
+        ),
+        id=obj_id,
+    )
+    permissions, no_permission_models = _build_permission_matrix()
+    return render(
+        request,
+        "base/auth/group_detail.html",
+        {
+            "group": group,
+            "member_count": group.user_set.count(),
+            "permissions": permissions,
             "no_permission_models": no_permission_models,
         },
     )
@@ -1194,114 +1312,42 @@ def update_group_permission(
 
 
 @login_required
-@permission_required("auth.view_group")
-def user_group(request):
-    """
-    This method is used to create user permission group
-    """
-    permissions = []
-
-    apps = settings.APPS
-    no_permission_models = settings.NO_PERMISSION_MODALS
-    form = UserGroupForm()
-    for app_name in apps:
-        app_models = []
-        for model in get_models_in_app(app_name):
-            app_models.append(
-                {
-                    "verbose_name": model._meta.verbose_name.capitalize(),
-                    "model_name": model._meta.model_name,
-                }
-            )
-        permissions.append(
-            {"app": app_name.capitalize().replace("_", " "), "app_models": app_models}
-        )
-    groups = Group.objects.all()
-    return render(
-        request,
-        "base/auth/group.html",
-        {
-            "permissions": permissions,
-            "form": form,
-            "groups": paginator_qry(groups, request.GET.get("page")),
-            "no_permission_models": no_permission_models,
-        },
-    )
-
-
-@login_required
 @hx_request_required
-@permission_required("auth.view_group")
-def user_group_search(request):
-    """
-    This method is used to create user permission group
-    """
-    permissions = []
-
-    apps = settings.APPS
-    no_permission_models = settings.NO_PERMISSION_MODALS
-    form = UserGroupForm()
-    for app_name in apps:
-        app_models = []
-        for model in get_models_in_app(app_name):
-            app_models.append(
-                {
-                    "verbose_name": model._meta.verbose_name.capitalize(),
-                    "model_name": model._meta.model_name,
-                }
-            )
-        permissions.append({"app": app_name.capitalize(), "app_models": app_models})
-    search = ""
-    if request.GET.get("search"):
-        search = str(request.GET["search"])
-    groups = Group.objects.filter(name__icontains=search)
-    return render(
-        request,
-        "base/auth/group_lines.html",
-        {
-            "permissions": permissions,
-            "form": form,
-            "groups": paginator_qry(groups, request.GET.get("page")),
-            "no_permission_models": no_permission_models,
-        },
-    )
-
-
-@login_required
-@hx_request_required
-@permission_required("auth.add_group")
+@any_permission_required(perms=["auth.add_group", "auth.change_group"])
 def group_assign(request):
     """
     This method is used to assign user group to the users.
     """
-    group_id = request.GET.get("group")
+    group_id = request.GET.get("group") or request.POST.get("group")
     if not group_id:
         return HorillaRedirect(request, message=_("Required parameters are missing"))
+    group = Group.objects.filter(id=group_id).first()
+    if not group:
+        return HorillaRedirect(request, message=_("Group not found"))
+    current_employees = Employee.objects.filter(
+        employee_user_id__groups__id=group_id, is_active=True
+    )
     form = AssignUserGroup(
         initial={
             "group": group_id,
-            "employee": Employee.objects.filter(
-                employee_user_id__groups__id=group_id
-            ).values_list("id", flat=True),
+            "employee": list(current_employees.values_list("id", flat=True)),
         }
     )
     if request.POST:
-        group_id = request.POST.get("group")
-        if not group_id:
-            return HorillaRedirect(
-                request, message=_("Required parameters are missing")
-            )
-        form = AssignUserGroup(
-            {"group": group_id, "employee": request.POST.getlist("employee")}
-        )
+        form = AssignUserGroup(request.POST)
         if form.is_valid():
             form.save()
-            messages.success(request, _("User group assigned."))
+            messages.success(request, _("Group members updated."))
             return HorillaRedirect(request)
     return render(
         request,
         "base/auth/group_user_assign.html",
-        {"form": form, "group_id": group_id},
+        {
+            "form": form,
+            "group_id": group_id,
+            "group": group,
+            "member_count": current_employees.count(),
+        },
     )
 
 
@@ -1354,7 +1400,7 @@ def user_group_permission_remove(request, pid, gid):
 
 
 @login_required
-@permission_required("change_group")
+@permission_required("auth.change_group")
 @require_http_methods(["POST"])
 def group_remove_user(request, uid, gid):
     """
@@ -1363,9 +1409,15 @@ def group_remove_user(request, uid, gid):
         uid: user instance id
         gid: group instance id
     """
-    group = Group.objects.get(id=gid)
-    user = HorillaUser.objects.get(id=uid)
-    group.user_set.remove(user)
+    group = Group.objects.filter(id=gid).first()
+    user = HorillaUser.objects.filter(id=uid).first()
+    if group and user:
+        group.user_set.remove(user)
+        messages.success(request, _("Employee removed from the group."))
+    else:
+        messages.error(request, _("Unable to remove employee from the group."))
+    if request.headers.get("HX-Request"):
+        return HttpResponse("")
     return HorillaRedirect(request)
 
 
@@ -3635,25 +3687,13 @@ def employee_permission_assign(request, pk=None):
         context["employee"] = employees.first()
     else:
         employees = Employee.objects.filter(
-            employee_user_id__user_permissions__isnull=False
+            Q(employee_user_id__user_permissions__isnull=False)
+            | Q(employee_user_id__groups__isnull=False)
         ).distinct()
         context["show_assign"] = True
-    permissions = [
-        {
-            "app": app_name.capitalize().replace("_", " "),
-            "app_models": [
-                {
-                    "verbose_name": model._meta.verbose_name.capitalize(),
-                    "model_name": model._meta.model_name,
-                }
-                for model in get_models_in_app(app_name)
-                if model._meta.model_name not in settings.NO_PERMISSION_MODALS
-            ],
-        }
-        for app_name in settings.APPS
-    ]
+    permissions, no_permission_models = _build_permission_matrix()
     context["permissions"] = permissions
-    context["no_permission_models"] = settings.NO_PERMISSION_MODALS
+    context["no_permission_models"] = no_permission_models
     context["employees"] = paginator_qry(employees, request.GET.get("page"))
     return render(
         request,
@@ -3677,25 +3717,13 @@ def employee_permission_search(request, codename=None, uid=None):
         context["employee"] = employees.first()
     else:
         employees = employees.filter(
-            employee_user_id__user_permissions__isnull=False
+            Q(employee_user_id__user_permissions__isnull=False)
+            | Q(employee_user_id__groups__isnull=False)
         ).distinct()
         context["show_assign"] = True
-    permissions = [
-        {
-            "app": app_name.capitalize().replace("_", " "),
-            "app_models": [
-                {
-                    "verbose_name": model._meta.verbose_name.capitalize(),
-                    "model_name": model._meta.model_name,
-                }
-                for model in get_models_in_app(app_name)
-                if model._meta.model_name not in settings.NO_PERMISSION_MODALS
-            ],
-        }
-        for app_name in settings.APPS
-    ]
+    permissions, no_permission_models = _build_permission_matrix()
     context["permissions"] = permissions
-    context["no_permission_models"] = settings.NO_PERMISSION_MODALS
+    context["no_permission_models"] = no_permission_models
     context["employees"] = paginator_qry(employees, request.GET.get("page"))
     return render(
         request,
@@ -3766,25 +3794,8 @@ def permission_table(request):
     """
     This method is used to render the permission table
     """
-    permissions = []
-    apps = settings.APPS
     form = AssignPermission()
-
-    no_permission_models = settings.NO_PERMISSION_MODALS
-
-    for app_name in apps:
-        app_models = []
-        for model in get_models_in_app(app_name):
-            if model not in no_permission_models:
-                app_models.append(
-                    {
-                        "verbose_name": model._meta.verbose_name.capitalize(),
-                        "model_name": model._meta.model_name,
-                    }
-                )
-        permissions.append(
-            {"app": app_name.capitalize().replace("_", " "), "app_models": app_models}
-        )
+    permissions, no_permission_models = _build_permission_matrix()
     if request.method == "POST":
         form = AssignPermission(request.POST)
         if form.is_valid():
@@ -3800,6 +3811,25 @@ def permission_table(request):
             "no_permission_models": no_permission_models,
         },
     )
+
+
+@login_required
+@permission_required("auth.add_permission")
+def employee_permission_codenames(request, emp_id):
+    """
+    JSON list of effective permission codenames for one employee.
+    Used by the Assign Permissions modal when a single employee is selected.
+    """
+    employee = get_object_or_404(
+        Employee.objects.select_related("employee_user_id"), id=emp_id
+    )
+    user = employee.employee_user_id
+    if not user:
+        return JsonResponse({"codenames": []})
+    codenames = sorted(
+        {perm.split(".", 1)[-1] for perm in user.get_all_permissions() if perm}
+    )
+    return JsonResponse({"codenames": codenames})
 
 
 @login_required

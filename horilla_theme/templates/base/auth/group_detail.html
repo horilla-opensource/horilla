@@ -1,0 +1,127 @@
+{% load static i18n basefilters %}
+<div class="space-y-3">
+    <div class="flex gap-1 border-b border-[#ececec]">
+        <button
+            type="button"
+            class="ug-tab-btn px-3 py-2 text-xs font-medium border-b-2 border-brand-600 text-brand-600"
+            data-ug-tab="members"
+            data-group="{{ group.id }}"
+            onclick="switchUserGroupTab(this); event.stopPropagation()"
+        >
+            {% trans "Members" %}
+        </button>
+        <button
+            type="button"
+            class="ug-tab-btn px-3 py-2 text-xs font-medium border-b-2 border-transparent text-dark-200 hover:text-dark-400"
+            data-ug-tab="permissions"
+            data-group="{{ group.id }}"
+            onclick="switchUserGroupTab(this); event.stopPropagation()"
+        >
+            {% trans "Permissions" %}
+        </button>
+    </div>
+
+    <div class="ug-tab-panel" data-ug-panel="members" data-group="{{ group.id }}">
+        <div class="flex flex-wrap items-center justify-between gap-2 mb-3">
+            <p class="text-xs text-dark-200">
+                {% trans "People in this group get all of its permissions." %}
+            </p>
+            {% if perms.auth.change_group or perms.auth.add_group %}
+                <a
+                    class="cursor-pointer px-3 py-1.5 text-xs bg-brand-600 text-white rounded-md inline-flex items-center gap-1.5 hover:bg-brand-800 transition"
+                    hx-get="{% url 'user-group-assign' %}"
+                    hx-vals='{"group":"{{ group.id }}"}'
+                    hx-target="#groupAssignBody"
+                    data-toggle="oh-modal-toggle"
+                    data-target="#groupAssign"
+                >
+                    <i class="fa-solid fa-user-plus"></i>
+                    {% trans "Add / edit members" %}
+                </a>
+            {% endif %}
+        </div>
+
+        {% if member_count %}
+            <div class="grid sm:grid-cols-2 gap-2" id="groupMembers{{ group.id }}">
+                {% for user in group.user_set.all %}
+                    {% if user.employee_get %}
+                        <div
+                            class="ug-member-row flex items-center justify-between gap-2 border border-[#ececec] rounded-md px-3 py-2"
+                            id="groupMember{{ group.id }}_{{ user.id }}"
+                        >
+                            <div class="flex items-center gap-2 min-w-0">
+                                <img
+                                    src="{{ user.employee_get.get_avatar }}"
+                                    alt=""
+                                    class="w-7 h-7 rounded-full object-cover shrink-0"
+                                    loading="lazy"
+                                >
+                                <div class="min-w-0">
+                                    <p class="text-sm font-medium text-dark-400 truncate">
+                                        {{ user.employee_get.get_full_name }}
+                                    </p>
+                                    <p class="text-[11px] text-dark-200 truncate">
+                                        {{ user.employee_get.get_mail }}
+                                    </p>
+                                </div>
+                            </div>
+                            {% if perms.auth.change_group %}
+                                <button
+                                    type="button"
+                                    class="text-xs text-danger hover:underline shrink-0"
+                                    hx-post="{% url 'group-remove-user' user.id group.id %}"
+                                    hx-target="#groupMember{{ group.id }}_{{ user.id }}"
+                                    hx-swap="outerHTML"
+                                    hx-trigger="confirmed"
+                                    onclick="hxConfirm(this, &quot;{% filter escapejs %}{% blocktrans with name=user.employee_get.get_full_name %}Remove {{ name }} from this group?{% endblocktrans %}{% endfilter %}&quot;)"
+                                    hx-on-htmx-after-request="reloadMessage()"
+                                    title="{% trans 'Remove from group' %}"
+                                >
+                                    {% trans "Remove" %}
+                                </button>
+                            {% endif %}
+                        </div>
+                    {% endif %}
+                {% endfor %}
+            </div>
+        {% else %}
+            <div class="text-center py-8 border border-dashed border-[#ddd] rounded-md">
+                <p class="text-sm text-dark-300 mb-3">
+                    {% trans "No one is in this group yet." %}
+                </p>
+                {% if perms.auth.change_group or perms.auth.add_group %}
+                    <a
+                        class="cursor-pointer px-3 py-1.5 text-xs bg-brand-600 text-white rounded-md inline-flex items-center gap-1.5 hover:bg-brand-800 transition"
+                        hx-get="{% url 'user-group-assign' %}"
+                        hx-vals='{"group":"{{ group.id }}"}'
+                        hx-target="#groupAssignBody"
+                        data-toggle="oh-modal-toggle"
+                        data-target="#groupAssign"
+                    >
+                        <i class="fa-solid fa-user-plus"></i>
+                        {% trans "Add members" %}
+                    </a>
+                {% endif %}
+            </div>
+        {% endif %}
+    </div>
+
+    <div class="ug-tab-panel hidden" data-ug-panel="permissions" data-group="{{ group.id }}">
+        <p class="text-xs text-dark-200 mb-3">
+            {% trans "Pick a module on the left, then turn Create / View / Edit / Delete on. Use View only or Full access for faster setup. Changes save automatically." %}
+        </p>
+        <script>
+            $(function () {
+                checkSelected(
+                    `{{ group.permissions.all|user_perms|safe }}`,
+                    "#panel{{ group.id }}",
+                    true,
+                );
+                if (typeof refreshPermPicker === "function") {
+                    refreshPermPicker($("#panel{{ group.id }}").find("[data-perm-picker]"));
+                }
+            });
+        </script>
+        {% include "base/auth/permission_table.html" %}
+    </div>
+</div>

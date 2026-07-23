@@ -1,164 +1,392 @@
 {% load i18n %}
-{% for perm in permissions %}
-    <div class="border border-[#ebebeb] rounded-md overflow-hidden mb-2">
-        <button
-            class="inner-accordion-toggle w-full text-sm font-semibold bg-[#f3f3f3] px-4 py-3 text-[#333] flex items-center gap-2 perm-accordion"
-            onclick="event.preventDefault()"
-        >
-            <span>{{ perm.app }}</span>
-            <span class="oh-badge permission-badge bg-primary-600 text-white px-2 py-1 rounded-full text-xs">0</span>
-        </button>
+{# Searchable module picker + always-visible permission matrix (replaces nested accordions) #}
+<style>
+    .perm-picker .perm-matrix-table input[type="checkbox"] {
+        margin-top: 0;
+        vertical-align: middle;
+    }
+    .perm-picker .perm-matrix-table td,
+    .perm-picker .perm-matrix-table th {
+        vertical-align: middle;
+    }
+    /* Override legacy .panel { display:none } from style.css */
+    .perm-picker .perm-app-panel.panel {
+        display: block !important;
+    }
+    .perm-picker .perm-app-panel.panel.hidden {
+        display: none !important;
+    }
+</style>
+<div class="perm-picker" data-perm-picker>
+    <div class="flex flex-wrap items-center gap-2 mb-3 sticky top-0 z-[3] bg-white py-1">
+        <div class="relative flex-1 min-w-[180px]">
+            <input
+                type="text"
+                class="perm-search w-full text-sm border border-dark-50 rounded-md ps-8 pe-3 py-1.5 focus:border-primary-600 focus-visible:outline-0"
+                placeholder="{% trans 'Search module or feature…' %}"
+                aria-label="{% trans 'Search permissions' %}"
+                autocomplete="off"
+            >
+            <i class="fas fa-search absolute left-3 top-1/2 -translate-y-1/2 text-xs opacity-50"></i>
+        </div>
+        <span class="text-[11px] text-dark-200 whitespace-nowrap perm-total-selected">
+            <span class="font-semibold text-primary-600">0</span> {% trans "selected" %}
+        </span>
+    </div>
 
-        <div
-            class="panel inner-accordion-content transition-all duration-300 overflow-auto bg-white relative"
-            style="max-height: 0; opacity: 0"
-        >
-            <div class="p-4 pt-0">
-                <table class="w-full">
-                    <!-- Table Head -->
-                    <thead class="top-0 bg-white text-left sticky z-[2]">
-                        <tr class="border-b border-[#ececec]">
-                            <!-- Select All Checkbox -->
-                            <th class="w-12 text-sm font-medium text-left p-3">
-                                <input
-                                    type="checkbox"
-                                    class="custom-checkbox w-4 h-4 bg-[#E9EDF7] rounded-sm text-primary-600 cursor-pointer row-permission__select-all"
-                                    id="id{{perm.app}}Permissions"
-                                    onchange="selectAllPermissions(this)"
-                                >
-                            </th>
+    <div class="flex flex-col md:flex-row gap-3 border border-[#ebebeb] rounded-md overflow-hidden min-h-[320px]">
+        <aside class="perm-app-nav md:w-48 shrink-0 border-b md:border-b-0 md:border-r border-[#ebebeb] bg-[#fafafa] max-h-[280px] md:max-h-[420px] overflow-y-auto">
+            {% for perm in permissions %}
+                <button
+                    type="button"
+                    class="perm-app-btn w-full text-left px-3 py-2.5 text-xs font-medium text-dark-300 border-b border-[#f0f0f0] hover:bg-white flex items-center justify-between gap-2 {% if forloop.first %}bg-white text-primary-600 border-l-2 border-l-brand-600{% endif %}"
+                    data-perm-app="{{ perm.app }}"
+                    title="{{ perm.app }}"
+                >
+                    <span class="truncate">{{ perm.app }}</span>
+                    <span class="oh-badge permission-badge bg-primary-600 text-white px-1.5 py-0.5 rounded-full text-[10px] min-w-[1.25rem] text-center">0</span>
+                </button>
+            {% endfor %}
+        </aside>
 
-                            <!-- Actions Label -->
-                            <th class="text-sm font-medium p-3">
-                                {% trans "Actions" %}
-                            </th>
+        <div class="flex-1 min-w-0 max-h-[420px] overflow-y-auto p-3">
+            <p class="text-[11px] text-dark-200 mb-2 perm-empty-search hidden">
+                {% trans "No features match your search." %}
+            </p>
 
-                            <!-- Create Icon -->
-                            <th class="text-lg text-center font-medium p-3" title="{% trans 'Can create' %}">
-                                <i class="fa-regular fa-square-plus"></i>
-                            </th>
+            {% for perm in permissions %}
+                <div
+                    class="panel perm-app-panel {% if not forloop.first %}hidden{% endif %}"
+                    data-perm-panel="{{ perm.app }}"
+                    data-app-label="{{ perm.app|lower }}"
+                >
+                    <div class="flex flex-wrap items-center justify-between gap-2 mb-3">
+                        <div>
+                            <p class="text-sm font-semibold text-dark-400">{{ perm.app }}</p>
+                            <p class="text-[11px] text-dark-200">
+                                {% trans "Turn on what this group can do in this module." %}
+                            </p>
+                        </div>
+                        <div class="flex flex-wrap gap-1">
+                            <button
+                                type="button"
+                                class="perm-preset px-2 py-1 text-[11px] rounded border border-dark-50 text-dark-300 hover:bg-dark-50"
+                                data-preset="view"
+                                title="{% trans 'Only allow viewing' %}"
+                            >
+                                {% trans "View only" %}
+                            </button>
+                            <button
+                                type="button"
+                                class="perm-preset px-2 py-1 text-[11px] rounded border border-dark-50 text-dark-300 hover:bg-dark-50"
+                                data-preset="full"
+                                title="{% trans 'Allow create, view, edit and delete' %}"
+                            >
+                                {% trans "Full access" %}
+                            </button>
+                            <button
+                                type="button"
+                                class="perm-preset px-2 py-1 text-[11px] rounded border border-dark-50 text-dark-300 hover:bg-dark-50"
+                                data-preset="clear"
+                                title="{% trans 'Clear all in this module' %}"
+                            >
+                                {% trans "Clear" %}
+                            </button>
+                        </div>
+                    </div>
 
-                            <!-- View Icon -->
-                            <th class="text-lg text-center font-medium p-3" title="{% trans 'Can view' %}">
-                                <i class="fa-solid fa-eye"></i>
-                            </th>
-
-                            <!-- Edit Icon -->
-                            <th class="text-lg text-center font-medium p-3" title="{% trans 'Can edit' %}">
-                                <i class="fa-solid fa-pen-to-square"></i>
-                            </th>
-
-                            <!-- Delete Icon -->
-                            <th class="text-lg text-center font-medium p-3" title="{% trans 'Can delete' %}">
-                                <i class="fa-solid fa-trash"></i>
-                            </th>
-                        </tr>
-                    </thead>
-
-                    <tbody>
-                        {% for model in perm.app_models %}
-                            {% if model.model_name not in no_permission_models %}
-                                <tr class="border-b border-[#f3f3f3]">
-                                    <!-- Checkbox -->
-                                    <td class="left text-sm text-left p-3 text-[#666]">
-                                        <input
-                                            type="checkbox"
-                                            id="id_{{perm.app}}{{model.model_name}}"
-                                            class="custom-checkbox w-4 h-4 bg-[#E9EDF7] rounded-sm text-primary-600 cursor-pointer row-permission"
-                                            onchange="$(this).closest('tr').find('[type=checkbox][name=permissions]').prop('checked', $(this).is(':checked')).change()"
-                                        >
-                                    </td>
-
-                                    <!-- Model Info -->
-                                    <td class="text-sm text-center p-3 text-[#666]">
-                                        <div class="flex gap-3 items-center w-max">
-                                            <img
-                                                src="https://ui-avatars.com/api/?name={{model.verbose_name}}&background=random"
-                                                alt="{{model.verbose_name}}"
-                                                width="30"
-                                                class="w-6 h-6 rounded-full"
-                                            >
-                                            <span>{{ model.verbose_name }}</span>
-                                        </div>
-                                    </td>
-
-                                    <!-- Can Create -->
-                                    <td class="text-sm text-center p-3 text-[#666]">
-                                        <label class="toggle-label">
+                    <table class="w-full perm-matrix-table">
+                        <thead class="bg-white text-left">
+                            <tr class="border-b border-[#ececec]">
+                                <th class="w-10 text-sm font-medium text-left p-2 bg-white">
+                                    <input
+                                        type="checkbox"
+                                        class="custom-checkbox w-4 h-4 bg-[#E9EDF7] rounded-sm text-primary-600 cursor-pointer row-permission__select-all"
+                                        id="id{{ perm.app }}Permissions"
+                                        title="{% trans 'Select all for this module' %}"
+                                        onchange="typeof selectAllPermissions === 'function' && selectAllPermissions(this)"
+                                    >
+                                </th>
+                                <th class="text-xs font-medium p-2 text-dark-300 bg-white">
+                                    {% trans "Feature" %}
+                                </th>
+                                <th class="text-xs text-center font-medium p-2 text-dark-300 w-16 bg-white" title="{% trans 'Can create' %}">
+                                    {% trans "Create" %}
+                                </th>
+                                <th class="text-xs text-center font-medium p-2 text-dark-300 w-16 bg-white" title="{% trans 'Can view' %}">
+                                    {% trans "View" %}
+                                </th>
+                                <th class="text-xs text-center font-medium p-2 text-dark-300 w-16 bg-white" title="{% trans 'Can edit' %}">
+                                    {% trans "Edit" %}
+                                </th>
+                                <th class="text-xs text-center font-medium p-2 text-dark-300 w-16 bg-white" title="{% trans 'Can delete' %}">
+                                    {% trans "Delete" %}
+                                </th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for model in perm.app_models %}
+                                {% if model.model_name not in no_permission_models %}
+                                    <tr
+                                        class="border-b border-[#f3f3f3] perm-feature-row"
+                                        data-feature="{{ model.verbose_name|lower }} {{ model.model_name|lower }} {{ perm.app|lower }}"
+                                    >
+                                        <td class="text-sm text-left p-2 text-[#666] align-middle">
                                             <input
                                                 type="checkbox"
-                                                class="toggle-input"
-                                                name="permissions"
-                                                value="add_{{model.model_name}}"
-                                                data-group-id="{{group.id}}"
-                                                data-group-name="{{group.name}}"
-                                                onchange="if (!$(this).is(':checked')) {
-                                                            $(this).closest('tr').find('.row-permission').prop('checked', false)
-                                                        }"
+                                                id="id_{{ perm.app }}{{ model.model_name }}"
+                                                class="custom-checkbox w-4 h-4 bg-[#E9EDF7] rounded-sm text-primary-600 cursor-pointer row-permission"
+                                                title="{% trans 'Select all for this feature' %}"
                                             >
-                                            <div class="toggle-switch"></div>
-                                        </label>
-                                    </td>
-
-                                    <!-- Can View -->
-                                    <td class="text-sm text-center p-3 text-[#666]">
-                                        <label class="toggle-label">
+                                        </td>
+                                        <td class="text-sm p-2 text-[#666] align-middle">
+                                            <span class="font-medium text-dark-400">{{ model.verbose_name }}</span>
+                                        </td>
+                                        <td class="text-sm text-center p-2 text-[#666] align-middle">
                                             <input
                                                 type="checkbox"
-                                                class="toggle-input view-permission"
+                                                class="custom-checkbox w-4 h-4 bg-[#E9EDF7] rounded-sm text-primary-600 cursor-pointer"
                                                 name="permissions"
-                                                value="view_{{model.model_name}}"
-                                                data-group-id="{{group.id}}"
-                                                data-group-name="{{group.name}}"
-                                                onchange="if (!$(this).is(':checked')) {
-                                                            $(this).closest('tr').find('.row-permission').prop('checked', false)
-                                                        }"
+                                                value="add_{{ model.model_name }}"
+                                                title="{% trans 'Create' %}"
+                                                data-group-id="{{ group.id }}"
+                                                data-group-name="{{ group.name }}"
+                                                onchange="if (!$(this).is(':checked')) { $(this).closest('tr').find('.row-permission').prop('checked', false) }"
                                             >
-                                            <div class="toggle-switch"></div>
-                                        </label>
-                                    </td>
-
-                                    <!-- Can Edit -->
-                                    <td class="text-sm text-center p-3 text-[#666]">
-                                        <label class="toggle-label">
+                                        </td>
+                                        <td class="text-sm text-center p-2 text-[#666] align-middle">
                                             <input
                                                 type="checkbox"
-                                                class="toggle-input"
+                                                class="custom-checkbox w-4 h-4 bg-[#E9EDF7] rounded-sm text-primary-600 cursor-pointer view-permission"
                                                 name="permissions"
-                                                value="change_{{model.model_name}}"
-                                                data-group-id="{{group.id}}"
-                                                data-group-name="{{group.name}}"
-                                                onchange="if (!$(this).is(':checked')) {
-                                                            $(this).closest('tr').find('.row-permission').prop('checked', false)
-                                                        }"
+                                                value="view_{{ model.model_name }}"
+                                                title="{% trans 'View' %}"
+                                                data-group-id="{{ group.id }}"
+                                                data-group-name="{{ group.name }}"
+                                                onchange="if (!$(this).is(':checked')) { $(this).closest('tr').find('.row-permission').prop('checked', false) }"
                                             >
-                                            <div class="toggle-switch"></div>
-                                        </label>
-                                    </td>
-
-                                    <!-- Can Delete -->
-                                    <td class="text-sm text-center p-3 text-[#666]">
-                                        <label class="toggle-label">
+                                        </td>
+                                        <td class="text-sm text-center p-2 text-[#666] align-middle">
                                             <input
                                                 type="checkbox"
-                                                class="toggle-input"
+                                                class="custom-checkbox w-4 h-4 bg-[#E9EDF7] rounded-sm text-primary-600 cursor-pointer"
                                                 name="permissions"
-                                                value="delete_{{model.model_name}}"
-                                                data-group-id="{{group.id}}"
-                                                data-group-name="{{group.name}}"
-                                                onchange="if (!$(this).is(':checked')) {
-                                                            $(this).closest('tr').find('.row-permission').prop('checked', false)
-                                                        }"
+                                                value="change_{{ model.model_name }}"
+                                                title="{% trans 'Edit' %}"
+                                                data-group-id="{{ group.id }}"
+                                                data-group-name="{{ group.name }}"
+                                                onchange="if (!$(this).is(':checked')) { $(this).closest('tr').find('.row-permission').prop('checked', false) }"
                                             >
-                                            <div class="toggle-switch"></div>
-                                        </label>
-                                    </td>
-                                </tr>
-                            {% endif %}
-                        {% endfor %}
-                    </tbody>
-                </table>
-            </div>
+                                        </td>
+                                        <td class="text-sm text-center p-2 text-[#666] align-middle">
+                                            <input
+                                                type="checkbox"
+                                                class="custom-checkbox w-4 h-4 bg-[#E9EDF7] rounded-sm text-primary-600 cursor-pointer"
+                                                name="permissions"
+                                                value="delete_{{ model.model_name }}"
+                                                title="{% trans 'Delete' %}"
+                                                data-group-id="{{ group.id }}"
+                                                data-group-name="{{ group.name }}"
+                                                onchange="if (!$(this).is(':checked')) { $(this).closest('tr').find('.row-permission').prop('checked', false) }"
+                                            >
+                                        </td>
+                                    </tr>
+                                {% endif %}
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+            {% endfor %}
         </div>
     </div>
-{% endfor %}
+</div>
+
+<script>
+(function () {
+    function refreshPermPicker($picker) {
+        if (!$picker || !$picker.length) return;
+        var total = 0;
+        $picker.find(".perm-app-btn").each(function () {
+            var app = $(this).attr("data-perm-app");
+            var count = $picker
+                .find("[data-perm-panel]")
+                .filter(function () {
+                    return $(this).attr("data-perm-panel") === app;
+                })
+                .find("[name=permissions]:checked").length;
+            $(this).find(".permission-badge").text(count);
+            total += count;
+        });
+        $picker.find(".perm-total-selected span").first().text(total);
+
+        $picker.find("tbody tr.perm-feature-row").each(function () {
+            var $row = $(this);
+            var checked = $row.find("[name=permissions]:checked").length;
+            $row.find(".row-permission").prop("checked", checked === 4);
+        });
+        $picker.find("table").each(function () {
+            var $table = $(this);
+            var $rows = $table.find("tr.perm-feature-row").not(".hidden");
+            var totalPerms = $rows.find("[name=permissions]").length;
+            var checkedPerms = $rows.find("[name=permissions]:checked").length;
+            $table
+                .find(".row-permission__select-all")
+                .prop("checked", totalPerms > 0 && totalPerms === checkedPerms);
+        });
+    }
+
+    function showApp($picker, app) {
+        $picker.find(".perm-app-panel").addClass("hidden");
+        $picker
+            .find("[data-perm-panel]")
+            .filter(function () {
+                return $(this).attr("data-perm-panel") === app;
+            })
+            .removeClass("hidden");
+        $picker
+            .find(".perm-app-btn")
+            .removeClass("bg-white text-primary-600 border-l-2 border-l-brand-600")
+            .addClass("text-dark-300");
+        $picker
+            .find(".perm-app-btn")
+            .filter(function () {
+                return $(this).attr("data-perm-app") === app;
+            })
+            .addClass("bg-white text-primary-600 border-l-2 border-l-brand-600")
+            .removeClass("text-dark-300");
+    }
+
+    function applyPreset($panel, preset) {
+        $panel.find("tr.perm-feature-row").not(".hidden").each(function () {
+            var $row = $(this);
+            var $perms = $row.find("[name=permissions]");
+            if (preset === "clear") {
+                $perms.prop("checked", false);
+            } else if (preset === "view") {
+                $perms.prop("checked", false);
+                $row.find(".view-permission").prop("checked", true);
+            } else if (preset === "full") {
+                $perms.prop("checked", true);
+            }
+            $row.find(".row-permission").prop(
+                "checked",
+                $row.find("[name=permissions]:checked").length === 4
+            );
+        });
+        var $first = $panel.find("[name=permissions]").first();
+        if ($first.length) {
+            $first.trigger("change");
+        }
+        refreshPermPicker($panel.closest("[data-perm-picker]"));
+    }
+
+    function filterPicker($picker, query) {
+        query = (query || "").trim().toLowerCase();
+        var anyVisible = false;
+        var firstMatchApp = null;
+
+        if (!query) {
+            $picker.find(".perm-feature-row").removeClass("hidden");
+            $picker.find(".perm-app-btn").removeClass("hidden");
+            $picker.find(".perm-empty-search").addClass("hidden");
+            return;
+        }
+
+        $picker.find(".perm-app-panel").each(function () {
+            var $panel = $(this);
+            var app = $panel.attr("data-perm-panel");
+            var matchCount = 0;
+            $panel.find(".perm-feature-row").each(function () {
+                var hay = ($(this).attr("data-feature") || "").toLowerCase();
+                var match = hay.indexOf(query) !== -1;
+                $(this).toggleClass("hidden", !match);
+                if (match) matchCount += 1;
+            });
+            var appMatch = (app || "").toLowerCase().indexOf(query) !== -1;
+            if (appMatch) {
+                $panel.find(".perm-feature-row").removeClass("hidden");
+                matchCount = $panel.find(".perm-feature-row").length;
+            }
+            var showAppNav = matchCount > 0;
+            $picker
+                .find('.perm-app-btn[data-perm-app="' + app + '"]')
+                .toggleClass("hidden", !showAppNav);
+            if (showAppNav) {
+                anyVisible = true;
+                if (!firstMatchApp) firstMatchApp = app;
+            }
+        });
+
+        $picker.find(".perm-empty-search").toggleClass("hidden", anyVisible);
+        if (firstMatchApp) showApp($picker, firstMatchApp);
+    }
+
+    // Select all features in the current module (header checkbox next to "Feature")
+    window.selectAllPermissions = function (source) {
+        var $source = $(source);
+        var isChecked = $source.is(":checked");
+        var $table = $source.closest("table");
+        var $rows = $table.find("tr.perm-feature-row").not(".hidden");
+
+        $rows.each(function () {
+            var $row = $(this);
+            $row.find("[name=permissions]").prop("checked", isChecked);
+            $row.find(".row-permission").prop("checked", isChecked);
+        });
+
+        // Keep header in sync with the action the user just took
+        $source.prop("checked", isChecked);
+
+        var $picker = $source.closest("[data-perm-picker]");
+        refreshPermPicker($picker);
+
+        // Fire one change so live-save / badge handlers run
+        var $any = $rows.find("[name=permissions]").first();
+        if ($any.length) {
+            $any.trigger("change");
+        }
+    };
+
+    if (!window.__permPickerBound) {
+        window.__permPickerBound = true;
+
+        $(document).on("click", ".perm-app-btn", function (e) {
+            e.preventDefault();
+            var $picker = $(this).closest("[data-perm-picker]");
+            showApp($picker, $(this).attr("data-perm-app"));
+        });
+
+        $(document).on("input", ".perm-search", function () {
+            filterPicker($(this).closest("[data-perm-picker]"), this.value);
+        });
+
+        $(document).on("click", ".perm-preset", function (e) {
+            e.preventDefault();
+            var $panel = $(this).closest(".perm-app-panel");
+            applyPreset($panel, $(this).attr("data-preset"));
+        });
+
+        $(document).on("change", "[data-perm-picker] [name=permissions]", function () {
+            refreshPermPicker($(this).closest("[data-perm-picker]"));
+        });
+
+        // Row "select all" checkbox for a single feature
+        $(document).on("change", "[data-perm-picker] .row-permission", function () {
+            var $row = $(this).closest("tr");
+            var checked = $(this).is(":checked");
+            $row.find("[name=permissions]").prop("checked", checked);
+            refreshPermPicker($(this).closest("[data-perm-picker]"));
+            var $any = $row.find("[name=permissions]").first();
+            if ($any.length) {
+                $any.trigger("change");
+            }
+        });
+    }
+
+    $("[data-perm-picker]").each(function () {
+        refreshPermPicker($(this));
+    });
+
+    window.refreshPermPicker = refreshPermPicker;
+})();
+</script>

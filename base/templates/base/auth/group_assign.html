@@ -1,14 +1,22 @@
 {% load i18n %}
-<label class="settings-label mb-1" for="id_{{form.department.name}}">
-  {% trans "Group" %}
+<div class="oh-alert oh-alert--info mb-3">
+  <p class="mb-0">
+    {% trans "Name the group, then optionally choose what members can do. You can edit permissions later." %}
+  </p>
+</div>
+<label class="settings-label mb-1" for="id_{{form.name.name}}">
+  {% trans "Group name" %}
 </label>
 <div class="oh-input-group mb-2">{{form.name.errors}} {{form.name}}</div>
+<p class="text-muted mb-2" style="font-size: 12px;">
+  {% trans "What can this group do? (optional)" %}
+</p>
 {{form.permissions.errors}}
 <div id="permTable">{% include "base/auth/permission_table.html" %}</div>
 
 <div class="d-flex flex-row-reverse">
   <button type="submit" class="oh-btn oh-btn--secondary mt-2 mr-0 pl-4 pr-5 oh-btn--w-100-resp">
-    {% trans "Save" %}
+    {% trans "Create group" %}
   </button>
 </div>
 

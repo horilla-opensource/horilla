@@ -3,97 +3,91 @@
 {% if groups %}
     {% for group in groups %}
         <div
-            class="accordion-item border border-primary-300 rounded-md"
-            id="groupPanel{{group.id}}"
+            class="accordion-item border border-primary-300 rounded-md overflow-hidden"
+            id="groupPanel{{ group.id }}"
         >
             <button
+                type="button"
                 onclick="event.preventDefault()"
-                class="accordion-btn-gp w-full flex justify-between gap-5 md:gap-0 items-center flex-wrap px-4 py-2 bg-primary-100 text-primary-600 text-sm transition-all"
+                class="accordion-btn-gp w-full flex items-center justify-between gap-2 px-3 py-1.5 bg-primary-100 text-primary-600 text-sm transition-all text-left min-h-0"
             >
-                <div class="flex flex-wrap items-center gap-2">
-                    <span
-                        class="w-6 h-6 bg-primary-600 rounded-full text-white flex items-center justify-center text-xs"
-                    >
-                        <img
-                            src="https://ui-avatars.com/api/?name={{group}}"
-                            class="oh-navbar__user-image w-6 h-6 rounded-full"
-                            loading="lazy"
-                        >
+                <div class="flex items-center gap-2 min-w-0 flex-1">
+                    <span class="w-6 h-6 bg-primary-600 rounded-full text-white flex items-center justify-center text-[10px] font-semibold shrink-0">
+                        {{ group.name|slice:":1"|upper }}
                     </span>
                     <input
                         type="text"
-                        value="{{group}}"
+                        value="{{ group.name }}"
                         name="name"
                         size="{{ group.name|length|default:10 }}"
-                        class="font-semibold text-inherit bg-transparent border-none px-1 -mx-1 m-0 outline-none cursor-pointer focus:cursor-text focus:bg-white focus:ring-1 focus:ring-primary-300 focus:shadow-sm rounded transition-all"
+                        class="font-semibold text-sm text-inherit bg-transparent border-none px-1 m-0 outline-none cursor-pointer focus:cursor-text focus:bg-white focus:ring-1 focus:ring-primary-300 rounded transition-all shrink min-w-0 max-w-[140px]"
                         style="field-sizing: content"
+                        title="{% trans 'Click to rename' %}"
                         readonly
-                        onclick="this.removeAttribute('readonly');
-                            event.stopPropagation()"
+                        onclick="this.removeAttribute('readonly'); event.stopPropagation()"
                         onblur="this.setAttribute('readonly', true)"
-                        onkeydown="if (event.key === 'Enter') this.blur();
-                            event.stopPropagation()"
+                        onkeydown="if (event.key === 'Enter') this.blur(); event.stopPropagation()"
                         hx-post="{% url 'update-group-permission' %}"
                         hx-vals='{"name_update": true, "id": {{ group.id }}}'
                         hx-swap="none"
                         hx-trigger="change"
                         hx-on-htmx-after-request="reloadMessage()"
                     >
-                    <span class="text-xs mt-1 text-dark-300">{% trans "Total" %} {{ group.user_set.all|length }}
-                        {% trans "users in this group" %}</span>
+                    <span class="inline-flex items-center gap-1 text-[10px] px-1.5 py-0.5 rounded-full bg-white text-dark-300 border border-primary-200 whitespace-nowrap shrink-0">
+                        <i class="fa-solid fa-users text-[9px]"></i>
+                        {{ group.member_count }} {% trans "employees" %}
+                    </span>
+                    <span class="inline-flex items-center gap-1 text-[10px] px-1.5 py-0.5 rounded-full bg-white text-dark-300 border border-primary-200 whitespace-nowrap shrink-0">
+                        <i class="fa-solid fa-key text-[9px]"></i>
+                        {{ group.perm_count }} {% trans "permissions" %}
+                    </span>
                 </div>
 
-                <div class="flex items-center flex-wrap gap-2 md:gap-8">
-                    <div class="flex gap-1 items-center">
-                        {% if perms.auth.change_group %}
-                            <a
-                                class="cursor-pointer px-2 py-1 text-sm bg-white shadow-card text-brand-600 rounded-sm w-7 h-7 flex items-center justify-center hover:bg-brand-600 hover:text-white transition duration-300"
-                                hx-get="{% url 'user-group-assign' %}"
-                                hx-vals='{"group":"{{group.id}}"}'
-                                hx-target="#groupAssignBody"
-                                data-toggle="oh-modal-toggle"
-                                data-target="#groupAssign"
-                                onclick="event.stopPropagation()"
-                            >
-                                <i class="fa-solid fa-user-plus"></i>
-                            </a>
-                        {% endif %}
-                        {% if perms.auth.delete_group %}
-                            <a
-                                href="#"
-                                class="cursor-pointer px-2 py-1 text-sm bg-danger shadow-card text-white rounded-sm w-7 h-7 flex items-center justify-center hover:bg-danger-dark transition duration-300"
-                                hx-post="{% url 'user-group-delete' group.id %}"
-                                hx-target="#settingsContainer"
-                                hx-swap="none"
-                                hx-confirm="{% trans 'Do you want to delete this group permission?' %}"
-                                onclick="event.stopPropagation(); event.preventDefault()"
-                            >
-                                <i class="fa-solid fa-trash"></i>
-                            </a>
-                        {% endif %}
-                    </div>
-
-                    <span class="icon text-xl font-bold">+</span>
+                <div class="flex items-center gap-1.5 shrink-0">
+                    {% if perms.auth.change_group or perms.auth.add_group %}
+                        <a
+                            class="cursor-pointer px-2 py-1 text-[11px] leading-none bg-white shadow-card text-brand-600 rounded inline-flex items-center gap-1 hover:bg-brand-600 hover:text-white transition duration-300 h-6"
+                            hx-get="{% url 'user-group-assign' %}"
+                            hx-vals='{"group":"{{ group.id }}"}'
+                            hx-target="#groupAssignBody"
+                            data-toggle="oh-modal-toggle"
+                            data-target="#groupAssign"
+                            title="{% trans 'Add or change who is in this group' %}"
+                            onclick="event.stopPropagation()"
+                        >
+                            <i class="fa-solid fa-user-plus text-[10px]"></i>
+                            <span>{% trans "Members" %}</span>
+                        </a>
+                    {% endif %}
+                    {% if perms.auth.delete_group %}
+                        <a
+                            href="#"
+                            class="cursor-pointer px-2 py-1 text-[11px] leading-none bg-danger shadow-card text-white rounded inline-flex items-center gap-1 hover:bg-danger-dark transition duration-300 h-6"
+                            hx-post="{% url 'user-group-delete' group.id %}"
+                            hx-target="#settingsContainer"
+                            hx-swap="none"
+                            hx-confirm="{% trans 'Delete this group? Employees will keep their accounts, but will no longer get permissions from this group.' %}"
+                            onclick="event.preventDefault(); event.stopPropagation()"
+                            title="{% trans 'Delete group' %}"
+                        >
+                            <i class="fa-solid fa-trash text-[10px]"></i>
+                            <span>{% trans "Delete" %}</span>
+                        </a>
+                    {% endif %}
+                    <span class="icon text-base font-bold leading-none w-5 text-center select-none">+</span>
                 </div>
             </button>
+
             <div
-                class="panel accordion-panel-gp max-h-0 overflow-hidden transition-all duration-300 bg-white px-4 text-sm text-gray-700"
-                id="panel{{group.id}}"
-                data-group-id="{{group.id}}"
-                data-group-name="{{group.name}}"
+                class="panel accordion-panel-gp max-h-0 overflow-hidden transition-all duration-300 bg-white text-sm text-gray-700"
+                id="panel{{ group.id }}"
+                data-group-id="{{ group.id }}"
+                data-group-name="{{ group.name }}"
             >
-                <div class="py-3">
-                    <script>
-                        $(document).ready(function () {
-                            checkSelected(
-                                `{{group.permissions.all|user_perms|safe}}`,
-                                "#panel{{group.id}}",
-                                true,
-                            );
-                        });
-                    </script>
-                    {% include "base/auth/permission_table.html" %}
-                </div>
+                <div
+                    class="ug-detail-body px-4 pt-3 pb-4"
+                    data-url="{% url 'user-group-detail' group.id %}"
+                ></div>
             </div>
         </div>
     {% endfor %}
@@ -104,12 +98,27 @@
                 <img
                     src="/static/horilla_theme/assets/img/no-records.svg"
                     alt=""
-                    width="300"
+                    width="260"
                     class="mb-4"
                 >
-                <p class="text-[#666] mb-5">
-                    {% trans "There are no employee groups at this moment." %}
+                <p class="text-[#666] mb-2 font-medium">
+                    {% trans "No user groups yet" %}
                 </p>
+                <p class="text-xs text-dark-200 mb-5 max-w-sm">
+                    {% trans "Create a group, add employees, then choose what they can access. You can change this anytime." %}
+                </p>
+                {% if perms.auth.add_group %}
+                    <button
+                        class="px-4 py-2 bg-brand-600 text-white rounded-md text-xs inline-flex items-center gap-2 hover:bg-brand-800 transition"
+                        data-toggle="oh-modal-toggle"
+                        data-target="#Permissions"
+                        hx-get="{% url 'user-group-create' %}"
+                        hx-target="#permissionForm"
+                    >
+                        <i class="fa-solid fa-plus"></i>
+                        {% trans "Create your first group" %}
+                    </button>
+                {% endif %}
             </div>
         </div>
     </div>
@@ -117,17 +126,13 @@
 
 {% if groups %}
     <div class="flex justify-between items-center mt-4 w-full bottom-0 inset-0">
-        <!-- Left: Page status -->
         <p class="text-xs text-[#666]">
             {% trans "Page" %}
             {{ groups.number }}
             {% trans "of" %}
             {{ groups.paginator.num_pages }}
         </p>
-
-        <!-- Right: Pagination controls -->
         <div class="text-sm flex gap-3 text-[#666] items-center">
-            <!-- Previous -->
             {% if groups.has_previous %}
                 <button
                     hx-get="{% url 'user-group-search' %}?{{ pd }}&page={{ groups.previous_page_number }}"
@@ -142,13 +147,9 @@
                     <i class="fa-solid fa-arrow-left"></i>
                 </button>
             {% endif %}
-
-            <!-- Current / Total -->
             <span class="text-xs">
                 {{ groups.number }} / {{ groups.paginator.num_pages }}
             </span>
-
-            <!-- Next -->
             {% if groups.has_next %}
                 <button
                     hx-get="{% url 'user-group-search' %}?{{ pd }}&page={{ groups.next_page_number }}"

@@ -139,17 +139,17 @@
         		}
         	});
 
-        	// Restore the open accordion on first load
+        	// Restore the open accordion section only. Do NOT auto-click
+        	// lastSettingsItem — localStorage is shared across tabs, so clicking
+        	// it would navigate this tab away from its own URL (e.g. Employee
+        	// Permission reloading as User Group because another tab saved that).
         	const openPanel = localStorage.getItem("openAccordion");
-        	const lastItem = localStorage.getItem("lastSettingsItem");
         	if (openPanel) {
         		const $button = $(`.accordion-btn-stng[data-id="${openPanel}"]`);
         		const $panel = $button.next(".accordion-panel");
-        		$panel.removeClass("max-h-0").addClass("max-h-[9999px]");
-        		$button.find(".icon").text("-");
-        		if (lastItem) {
-        			const anchor = document.getElementById(lastItem)?.querySelector("a");
-        			if (anchor) anchor.click(); // native click — HTMX intercepts this
+        		if ($panel.length) {
+        			$panel.removeClass("max-h-0").addClass("max-h-[9999px]");
+        			$button.find(".icon").text("-");
         		}
         	}
         });

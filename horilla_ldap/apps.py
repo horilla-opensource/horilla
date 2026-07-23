@@ -5,6 +5,7 @@ from django.conf import settings
 class HorillaLdapConfig(AppConfig):
     default_auto_field = "django.db.models.BigAutoField"
     name = "horilla_ldap"
+    verbose_name = "LDAP"
 
     def ready(self):
         from django.urls import include, path

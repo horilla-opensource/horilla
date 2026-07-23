@@ -16,7 +16,10 @@
     <div class="oh-general__tab-target oh-profile-section">
       <script>
         $(document).ready(function () {
-          checkSelected(`{{employee.employee_user_id.user_permissions.all|user_perms|safe}}`, '#panel{{employee.id}}', true)
+          checkSelected(`{{ employee.employee_user_id|all_user_perms|safe }}`, '#panel{{employee.id}}', true)
+          if (typeof refreshPermPicker === "function") {
+            refreshPermPicker($("#panel{{employee.id}}").find("[data-perm-picker]"))
+          }
         })
       </script>
       {% if perms.auth.add_permission or perms.auth.change_permission or perms.auth.delete_permission %}

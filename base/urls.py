@@ -344,6 +344,11 @@ urlpatterns = [
         "settings/user-group-search/", views.user_group_search, name="user-group-search"
     ),
     path(
+        "settings/user-group-detail/<int:obj_id>/",
+        views.user_group_detail,
+        name="user-group-detail",
+    ),
+    path(
         "user-group-delete/<int:obj_id>/",
         views.object_delete,
         name="user-group-delete",
@@ -389,6 +394,11 @@ urlpatterns = [
         "permission-table/",
         views.permission_table,
         name="permission-table",
+    ),
+    path(
+        "employee-permission-codenames/<int:emp_id>/",
+        views.employee_permission_codenames,
+        name="employee-permission-codenames",
     ),
     path("settings/mail-server-conf/", views.mail_server_conf, name="mail-server-conf"),
     path(

@@ -5,7 +5,7 @@ from django.conf import settings
 class HorillaMeetConfig(AppConfig):
     default_auto_field = "django.db.models.BigAutoField"
     name = "horilla_meet"
-    verbose_name = "Horilla Meet"
+    verbose_name = "Meet"
 
     def ready(self):
         from django.urls import include, path

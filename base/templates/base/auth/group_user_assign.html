@@ -1,14 +1,19 @@
 {% load i18n %}
 <form hx-post="{% url 'user-group-assign' %}?group={{group_id}}" hx-target="#groupAssignBody"
     class="oh-profile-section">
+    <div class="oh-alert oh-alert--info mb-3">
+        <p class="mb-0">
+            {% blocktrans with name=group.name %}Choose employees for "{{ name }}". Saving replaces the current members with your selection.{% endblocktrans %}
+        </p>
+    </div>
+    <label class="settings-label mb-1">{% trans "Employees" %}</label>
     {{form.group.errors}}
     {{form.employee.errors}}
     {{form.employee}}
     <input type="hidden" name="group" value="{{group_id}}" id="{{group_id}}">
     <div class="d-flex flex-row-reverse">
         <button type="submit" class="oh-btn oh-btn--secondary mt-2 mr-0 pl-4 pr-5 oh-btn--w-100-resp">
-            {% trans "Save" %}
+            {% trans "Save members" %}
         </button>
     </div>
-
 </form>

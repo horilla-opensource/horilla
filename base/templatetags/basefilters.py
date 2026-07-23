@@ -102,6 +102,20 @@ def user_perms(perms):
     return json.dumps(list(perms.values_list("codename", flat="True")))
 
 
+@register.filter(name="all_user_perms")
+def all_user_perms(user):
+    """
+    Return JSON list of effective permission codenames for a user
+    (direct user permissions + permissions from assigned groups).
+    """
+    if not user:
+        return json.dumps([])
+    codenames = sorted(
+        {perm.split(".", 1)[-1] for perm in user.get_all_permissions() if perm}
+    )
+    return json.dumps(codenames)
+
+
 @register.filter(name="abs_value")
 def abs_value(value):
     """
