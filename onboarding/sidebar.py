@@ -20,11 +20,6 @@ SUBMENUS = [
         "redirect": reverse("onboarding-dashboard"),
     },
     {
-        "menu": _("Onboarding Tasks"),
-        "redirect": reverse("cbv-pipeline-onboarding") + "?closed=false",
-        "accessibility": "onboarding.sidebar.onboarding_view_accessibility",
-    },
-    {
         "menu": _("Candidates"),
         "redirect": reverse("candidates-view"),
         "accessibility": "onboarding.sidebar.candidates_view_accessibility",
@@ -33,6 +28,11 @@ SUBMENUS = [
         # not a sub-path of candidates-view/), so it needs an explicit prefix
         # here for the sidebar's path-based active-link highlighting to match it.
         "match_prefixes": ["/recruitment/candidate-create/"],
+    },
+    {
+        "menu": _("Onboarding Tasks"),
+        "redirect": reverse("cbv-pipeline-onboarding") + "?closed=false",
+        "accessibility": "onboarding.sidebar.onboarding_view_accessibility",
     },
 ]
 
