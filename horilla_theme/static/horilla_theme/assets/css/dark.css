@@ -401,3 +401,45 @@ body.dark input:focus-visible {
 body.dark .hover\:bg-primary-50:hover {
   background-color: #2a2a2a !important;
 }
+
+/* Report pivot builder labels/hints added in v1_styles.css — the light
+   backgrounds/borders there need dark equivalents so they stay readable
+   instead of showing up as stray light patches on the dark theme. */
+body.dark .oh-report-drag-hint {
+  color: #bbbbbb;
+}
+body.dark .pvtAxisContainer.pvtUnused::before,
+body.dark .pvtAxisContainer.pvtRows::before,
+body.dark .pvtAxisContainer.pvtCols::before {
+  color: #9aa1ab;
+  background-color: #1a1a1a;
+  border-color: #444444;
+}
+body.dark .pvtAxisContainer.pvtUnused {
+  background-color: #0d0d0d;
+}
+body.dark .pvtAxisContainer.pvtRows:not(:has(li))::after,
+body.dark .pvtAxisContainer.pvtCols:not(:has(li))::after {
+  color: #777777;
+  border-color: #444444;
+}
+body.dark .pvtUiCell {
+  background-color: #141414 !important;
+}
+body.dark .pvtVals.pvtUiCell,
+body.dark .pvtAxisContainer.pvtRows {
+  border-right-color: #666666 !important;
+}
+body.dark .pvtRendererArea {
+  border-color: #666666 !important;
+  /* Between the page background (#000) and the table's own cells (#1b1b1b)
+     so the same light/frame/table layering from light mode carries over. */
+  background-color: #101010;
+}
+
+body.dark .pvtFilterBox .pvtCheckContainer label:hover {
+  background-color: #1a1a1a;
+}
+body.dark .pvtFilterBox {
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.6);
+}

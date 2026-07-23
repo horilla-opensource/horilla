@@ -3687,6 +3687,7 @@ input[type="range"]::-ms-fill-upper {
   position: relative;
 }
 
+/* Triangle opens a per-field "filter this field's values" popup. */
 .pvtAxisContainer li span.pvtAttr .pvtTriangle {
   position: absolute;
   right: 8px;
@@ -3721,8 +3722,62 @@ input[type="range"]::-ms-fill-upper {
   table-layout: auto;
 }
 
+/* .pvtUi is a real <table> (the library's markup). Converted to CSS Grid so
+   each cell can be positioned explicitly and the 3 columns get independent,
+   controllable widths: `display:contents` on <tr> removes the row wrapper
+   from the box tree so its <td> children become direct grid items. Cells
+   still stretch to fill their grid row's height by default (same visual
+   effect as the original table), which is intentional -- see the note by
+   .pvtAxisContainer.pvtUnused below for why. This only changes visual
+   layout -- the DOM tree (and therefore the jQuery UI Sortable drag-and-
+   drop wiring, which only cares about element positions, not display mode)
+   is completely untouched. */
 .pvtUi {
   width: 100% !important;
+  display: grid !important;
+  grid-template-columns: 170px 170px 1fr;
+  grid-template-rows: auto auto;
+}
+
+.pvtUi > tr {
+  display: contents;
+}
+
+.pvtUi > tr:first-child > td.pvtUiCell:first-child {
+  grid-column: 1;
+  grid-row: 1;
+}
+
+.pvtVals.pvtUiCell {
+  grid-column: 2;
+  grid-row: 1;
+}
+
+.pvtAxisContainer.pvtCols {
+  grid-column: 3;
+  grid-row: 1;
+}
+
+/* align-self left at its default (stretch) here on purpose: with `start`,
+   the box shrinks to fit just its own field pills, which looked fine when
+   the pill list was long but left a jarring, abruptly-short white box with
+   a gray gap underneath whenever the field list was shorter than the
+   actual data table next to it. Stretching keeps the white background
+   filling the same height as the table, regardless of which one has more
+   content, so the layout never looks visually "cut off". */
+.pvtAxisContainer.pvtUnused {
+  grid-column: 1;
+  grid-row: 2;
+}
+
+.pvtAxisContainer.pvtRows {
+  grid-column: 2;
+  grid-row: 2;
+}
+
+.pvtRendererArea {
+  grid-column: 3;
+  grid-row: 2;
 }
 
 #pivot-container .pvtUiCell .pvtAggregator,
@@ -3736,16 +3791,24 @@ input[type="range"]::-ms-fill-upper {
 
 .pvtSearch {
   border: 1px solid hsl(213, 22%, 84%) !important;
-  border-radius: 0rem !important;
+  border-radius: 6px !important;
   padding: 0.8rem 1.25rem !important;
   color: hsl(0, 0%, 11%) !important;
   margin-bottom: 4px !important;
 }
 
+/* The per-field value filter popup (opened via the ▾ triangle) previously
+   had flat, sharp-cornered, shadow-less styling that made it look like a
+   stray box sitting on the page rather than a floating overlay -- give it
+   the same elevated-card treatment (rounded corners, drop shadow) used by
+   modals/dropdowns elsewhere in the app. */
 .pvtFilterBox {
   padding: 16px;
   width: auto !important;
   border: 1px solid #e9edf1 !important;
+  border-radius: 8px;
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.12);
+  background-color: #ffffff;
 }
 
 .pvtFilterBox h4,
@@ -3755,6 +3818,232 @@ input[type="range"]::-ms-fill-upper {
   text-align: left;
   margin-left: 0 !important;
   margin-top: 0 !important;
+  padding-bottom: 8px;
+  margin-bottom: 8px !important;
+  border-bottom: 1px solid #e9edf1;
+}
+
+.pvtFilterBox input[type="checkbox"].pvtFilter {
+  accent-color: #e54f38;
+  width: 15px;
+  height: 15px;
+  cursor: pointer;
+}
+
+.pvtFilterBox .pvtCheckContainer label {
+  cursor: pointer;
+  border-radius: 4px;
+  padding: 2px 4px;
+  transition: background-color 0.15s ease;
+}
+
+.pvtFilterBox .pvtCheckContainer label:hover {
+  background-color: #f4f5f7;
+}
+
+/* Report pivot builder: make the drag-and-drop mechanics understandable.
+   The library gives every zone (available fields / rows / columns) the
+   same look with no labels or drag affordance, so people can't tell what
+   they're looking at or that the field pills can be dragged around.
+
+   The "drag fields..." hint itself is NOT a ::before on .pvtUi (the
+   <table> the library generates) -- a pseudo-element's content there
+   still participates in the table's own auto-layout width calculation
+   (specifically it was inflating the Available Fields column), so it's a
+   real, separate <p class="oh-report-drag-hint"> placed in the template
+   above #pivot-container instead, completely independent of the table. */
+.oh-report-drag-hint {
+  font-size: 13px;
+  color: #6b7280;
+  margin-bottom: 8px;
+  font-weight: bold;
+  padding: 10px;
+}
+
+.pvtAxisContainer.pvtUnused,
+.pvtAxisContainer.pvtRows,
+.pvtAxisContainer.pvtCols {
+  position: relative;
+  padding-top: 26px !important;
+}
+
+/* Available Fields was taking up way more width than it needs (the table's
+   auto-layout was giving it several times the Rows column's width). A plain
+   `width` on the <td> doesn't stick because the table's auto-layout sizes
+   each column to its widest content in the column -- which turned out to
+   be the "Table" renderer <select> above it (native selects size to their
+   widest option, e.g. "Horizontal Stacked Bar Chart"), not the field pills.
+   Constrain the select too, and the field pills (li/span), so nothing in
+   the column forces it wider than intended. */
+.pvtUi select.pvtRenderer {
+  width: 150px;
+  max-width: 150px;
+  min-width: 150px;
+}
+
+/* When there's no data, the library renders zero field pills, so these
+   columns have no content left to hold their width open -- without a
+   min-width the whole table collapses/reflows into a broken-looking mess.
+   A floor width keeps the layout stable whether it's full or empty.
+
+   Cap both Available Fields AND Rows at the same width -- different report
+   types have a different split of how many fields land in each (e.g. a
+   report with few Available Fields but many Row fields), and whichever one
+   has more fields otherwise balloons to fill the leftover table width. */
+.pvtAxisContainer.pvtUnused,
+.pvtAxisContainer.pvtRows {
+  width: 1%;
+  min-width: 170px;
+  max-width: 170px;
+}
+
+.pvtVals.pvtUiCell {
+  min-width: 170px;
+}
+
+.pvtAxisContainer.pvtCols,
+.pvtRendererArea {
+  min-width: 300px;
+}
+
+.pvtAxisContainer.pvtUnused li,
+.pvtAxisContainer.pvtRows li {
+  width: 160px;
+  max-width: 160px;
+}
+
+.pvtAxisContainer.pvtUnused li span.pvtAttr,
+.pvtAxisContainer.pvtRows li span.pvtAttr {
+  display: block;
+  width: 100%;
+  max-width: 100%;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  box-sizing: border-box;
+}
+
+/* Visual split between the report builder controls (renderer/aggregator
+   pickers, Available Fields, Rows, Columns) on the left/top and the actual
+   report table on the right, so the two are easy to tell apart at a glance. */
+.pvtUiCell {
+  background-color: #fafbfc;
+}
+
+.pvtVals.pvtUiCell,
+.pvtAxisContainer.pvtRows {
+  border-right: 2px solid #9aa1ab !important;
+}
+
+/* The actual report table gets its own darker, fully-enclosing border, PLUS
+   a light tinted background behind it (with real padding -- an earlier rule
+   set padding to 0, which would have hidden any tint) so the table reads as
+   its own clearly bordered, distinctly colored area rather than blending
+   into the same white background as the rest of the page. The table's own
+   cells stay white (set elsewhere) so the data itself stays crisp against
+   this tinted "frame". */
+.pvtRendererArea {
+  border: 2px solid #9aa1ab !important;
+  background-color: #eef2f7;
+  padding: 10px !important;
+}
+
+.pvtAxisContainer.pvtUnused::before,
+.pvtAxisContainer.pvtRows::before,
+.pvtAxisContainer.pvtCols::before {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  display: block;
+  font-size: 10px;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  color: #9aa1ab;
+  padding: 5px 8px;
+  background-color: #f4f5f7;
+  border-bottom: 1px solid #e9edf1;
+}
+
+.pvtAxisContainer.pvtUnused::before {
+  content: "Available Fields";
+}
+
+.pvtAxisContainer.pvtRows::before {
+  content: "Rows";
+}
+
+.pvtAxisContainer.pvtCols::before {
+  content: "Columns";
+}
+
+/* Available Fields is an inert shelf, not part of the active report
+   configuration -- give it a visually "dimmer" pool look so it doesn't
+   read the same as the active Rows/Columns zones next to it. */
+.pvtAxisContainer.pvtUnused {
+  background-color: #fbfbfc;
+}
+
+/* Empty-state placeholder so an empty Rows/Columns zone reads as a real
+   drop target instead of unexplained blank space. Kept compact -- this sits
+   in the Columns zone, which is in the SAME table row as the "Table"
+   renderer select; a tall placeholder here stretches that whole row (table
+   rows share one height across all cells) and pushes Available Fields/Rows
+   down with an empty-looking gap above them. */
+.pvtAxisContainer.pvtRows:not(:has(li)),
+.pvtAxisContainer.pvtCols:not(:has(li)) {
+  min-height: 24px;
+}
+
+.pvtAxisContainer.pvtRows:not(:has(li))::after,
+.pvtAxisContainer.pvtCols:not(:has(li))::after {
+  content: "Drag a field here";
+  display: block;
+  text-align: center;
+  font-size: 12px;
+  font-style: italic;
+  color: #b5b9c0;
+  border: 1px dashed #d7dbe0;
+  border-radius: 4px;
+  margin: 4px;
+  padding: 6px 6px;
+}
+
+/* Drag handle: a 6-dot grip before each field's label, plus a grab cursor,
+   so fields visually announce that they can be dragged (the chevron next
+   to the label is a separate, unrelated "filter this field's values"
+   control, not a drag handle). */
+.pvtAxisContainer li span.pvtAttr {
+  cursor: grab;
+  padding-left: 22px !important;
+}
+
+.pvtAxisContainer li span.pvtAttr::before {
+  content: "";
+  position: absolute;
+  left: 9px;
+  top: 50%;
+  width: 3px;
+  height: 3px;
+  background-color: #b0b5bd;
+  border-radius: 50%;
+  box-shadow:
+    0 -5px 0 #b0b5bd,
+    0 5px 0 #b0b5bd,
+    6px -5px 0 #b0b5bd,
+    6px 0 0 #b0b5bd,
+    6px 5px 0 #b0b5bd;
+  transform: translateY(-50%);
+}
+
+.pvtAxisContainer li span.pvtAttr:active,
+.pvtAxisContainer li.ui-sortable-helper span.pvtAttr {
+  cursor: grabbing;
+}
+
+.pvtAxisContainer li.ui-sortable-helper span.pvtAttr {
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
 }
 
 .pvtFilterBox p {
@@ -3765,7 +4054,7 @@ input[type="range"]::-ms-fill-upper {
 
 .pvtFilterBox p :nth-child(1) {
   width: 100%;
-  border-radius: 0 !important;
+  border-radius: 6px !important;
   background-color: hsl(8, 77%, 56%);
   color: hsl(0, 0%, 100%);
   text-decoration: none;
@@ -3776,7 +4065,7 @@ input[type="range"]::-ms-fill-upper {
 
 .pvtFilterBox p :nth-child(2) {
   width: 100%;
-  border-radius: 0 !important;
+  border-radius: 6px !important;
   background-color: #f0f0f0;
   color: hsl(0, 0%, 16%);
   text-decoration: none;

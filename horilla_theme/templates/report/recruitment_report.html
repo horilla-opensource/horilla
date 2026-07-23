@@ -40,7 +40,7 @@
                                     style="display: none; width: 395px"
                                 >
                                     <div class="oh-dropdown__filter-body">
-                                        <div class="oh-accordion">
+                                        <div class="oh-accordion" data-model="candidate">
                                             <div class="oh-accordion-header">{% trans "Candidate" %}</div>
                                             <div class="oh-accordion-body">
                                                 <div class="row">
@@ -125,7 +125,7 @@
                                             </div>
                                         </div>
 
-                                        <div class="oh-accordion">
+                                        <div class="oh-accordion" data-model="recruitment">
                                             <div class="oh-accordion-header">{% trans "Recruitment" %}</div>
                                             <div class="oh-accordion-body">
                                                 <div class="row">
@@ -197,7 +197,7 @@
                                             </div>
                                         </div>
 
-                                        <div class="oh-accordion">
+                                        <div class="oh-accordion" data-model="onboarding">
                                             <div class="oh-accordion-header">{% trans "Onboarding" %}</div>
                                             <div class="oh-accordion-body">
                                                 <div class="row">
@@ -284,6 +284,7 @@
         </div>
 
         <!-- Pivot Container -->
+        <p class="oh-report-drag-hint">{% trans "Drag fields between the boxes below to change how this report is grouped." %}</p>
         <div id="pivot-container" class="mb-5" style="width: 100%; overflow-x: auto">
             <div id="pivot-candidate" class="pivot-wrapper" style="display: none; width: 100%; overflow-x: auto"></div>
             <div id="pivot-recruitment" class="pivot-wrapper" style="display: none; width: 100%; overflow-x: auto">
@@ -300,6 +301,27 @@
 
     <script>
         $(function () {
+            // Shared "no records" empty state (same illustration/wording used
+            // throughout the app) shown instead of an empty/broken-looking
+            // pivot table when a report type has zero matching records.
+            function isEmptyPivotData(data) {
+                return !data || (Array.isArray(data) ? data.length === 0 : Object.keys(data).length === 0);
+            }
+
+            function showNoRecordsState(containerId) {
+                $("#" + containerId).html(`
+                    <div class="oh-wrapper h-full" align="center">
+                        <div class="xl:col-span-4 md:col-span-6 col-span-12 bg-white p-6 rounded-md shadow-card h-[70%]">
+                            <div class="flex flex-col items-center justify-center h-full">
+                                <img src="/static/horilla_theme/assets/img/no-records.svg" alt="" width="300" class="mb-4">
+                                <p class="text-[#666] mb-5">{% trans "No records available at the moment" %}</p>
+                            </div>
+                        </div>
+                    </div>
+                `);
+                $("#export-btn").hide();
+            }
+
             // Function to load pivot data dynamically
             function loadPivotData(model) {
                 let url = `/report/recruitment-pivot?model=${model}`;
@@ -330,11 +352,17 @@
 
 
                 $.getJSON(url, function (data) {
+                    if (isEmptyPivotData(data)) {
+                        showNoRecordsState(containerId);
+                        return;
+                    }
+
                     // Add Plotly renderers correctly
                     let plotlyRenderers = $.pivotUtilities.plotly_renderers;
 
                     // Initialize pivot table with Plotly enabled
                     $("#" + containerId).pivotUI(data, {
+                        unusedAttrsVertical: true,
                         rows: rowsConfig,
                         cols: [],
                         aggregatorName: "Count",
@@ -394,10 +422,15 @@
                 $("#" + containerId).show();
 
                 $.getJSON(`/report/recruitment-pivot?model=${selectedModel}&${formData}`, function (data) {
+                    if (isEmptyPivotData(data)) {
+                        showNoRecordsState(containerId);
+                        return;
+                    }
 
                     const plotlyRenderers = $.pivotUtilities.plotly_renderers;
 
                     $("#" + containerId).pivotUI(data, {
+                        unusedAttrsVertical: true,
                         rows: rowsConfig,
                         cols: [],
                         aggregatorName: "Count",
@@ -417,13 +450,22 @@
             }
 
 
+            // Show only the filter accordion matching the selected report
+            // type, hiding the other report types' (irrelevant) filters.
+            function toggleFilterSections(selectedModel) {
+                $(".oh-accordion[data-model]").hide();
+                $(`.oh-accordion[data-model="${selectedModel}"]`).show();
+            }
+
             // Initial load with all models
             loadPivotData("candidate");
+            toggleFilterSections("candidate");
 
             // Model selection change event
             $("#model-select").on("change", function () {
                 let selectedModel = $(this).val();
                 loadPivotData(selectedModel); // Reload pivot data with selected model
+                toggleFilterSections(selectedModel);
             });
 
             // Export to Excel on button click
@@ -445,8 +487,9 @@
 
                 const workbook = new ExcelJS.Workbook();
                 const worksheet = workbook.addWorksheet("Pivot Data");
-                const baseRow = 5;
-                const baseCol = 5;
+                // Start at the top-left corner -- no reason to leave blank rows/columns.
+            const baseRow = 1;
+                const baseCol = 1;
 
                 let currentRow = baseRow;
 
@@ -504,7 +547,7 @@
                     };
                     worksheet.getRow(currentRow).height = 80;
 
-                    currentRow += 2; // Leave a blank row
+                    currentRow += 1; // Leave a blank row
                 }
 
                 // Add timestamp
@@ -519,7 +562,7 @@
                 downloadCell.alignment = { horizontal: 'left', vertical: 'middle', wrapText: true };
                 downloadCell.font = { size: 10, italic: true, color: { argb: 'FF666666' }, bold: true };
 
-                currentRow += 3; // Leave some rows before the table
+                currentRow += 1; // Leave some rows before the table
 
                 // ------------------------
                 // Render pivot table
@@ -552,7 +595,13 @@
                         const excelCell = worksheet.getCell(currentRow + rowIndex, colIndex);
                         excelCell.value = cellValue;
 
-                        const isHeader = rowIndex === 0;
+                        // A pivot table can have MORE than one header row (e.g. when a
+                        // Columns grouping is used, the field's name like "Gender" gets
+                        // its own row above the actual value headers "Female"/"Male") --
+                        // treating only rowIndex 0 as "header" left every row after the
+                        // first looking like unstyled stray text sitting above the data.
+                        const headerRowCount = table.tHead ? table.tHead.rows.length : 1;
+                        const isHeader = rowIndex < headerRowCount;
                         const isLastRow = rowIndex === lastRowIndex;
 
                         excelCell.font = {
