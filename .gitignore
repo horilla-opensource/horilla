@@ -57,9 +57,10 @@ coverage.xml
 # Django stuff:
 *.log
 local_settings.py
-TestDB_Horilla.sqlite3
-db.sqlite3
-db.sqlite3-journal
+*.sqlite3
+*.sqlite3-journal
+*.sqlite3-wal
+*.sqlite3-shm
 
 # Flask stuff:
 instance/
