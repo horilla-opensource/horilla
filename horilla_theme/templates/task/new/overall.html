@@ -2,15 +2,15 @@
 {% load static i18n horillafilters %}
 
 {% block content %}
-    <div>
-        {% include 'task/new/task_navbar.html' %}
-    </div>
 
     {% include "generic/components.html" %}
 
     <div class="oh-wrapper">
         {% include "cbv/projects/project_details.html" %}
 
+        <div>
+            {% include 'task/new/task_navbar.html' %}
+        </div>
         <div id="viewContainer" class="bg-white p-3 rounded-md shadow-card">
             {% if view_type == 'list' %}
                 {% include 'task/new/task_list_view.html' %}

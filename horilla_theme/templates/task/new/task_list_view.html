@@ -11,27 +11,6 @@
 {% endif %}
 {% include "filter_tags.html" %}
 <div id="gridView">
-    <div class="flex items-center justify-between mb-3">
-        <h3 class="text-sm font-semibold">{% trans "List View" %}</h3>
-
-        {% if request.user|is_project_manager:stages.first.project %}
-            <button
-                class="px-4 py-2 bg-brand-600 text-white rounded-md text-xs flex items-center gap-2 hover:bg-brand-800 transition duration-300"
-                data-toggle="oh-modal-toggle"
-                data-target="#objectCreateModal"
-                hx-get="{% url 'create-project-stage' project_id %}"
-                hx-target="#objectCreateModalTarget"
-            >
-                <img
-                    src="/static/horilla_theme/assets/img/icons/more.svg"
-                    alt=""
-                    width="13"
-                    class="filter brightness-0 invert"
-                >
-                {% trans "Stage" %}
-            </button>
-        {% endif %}
-    </div>
 
     <div class="accordion-wrapper space-y-2" id="projectStages">
         {% for stage in stages %}
@@ -250,18 +229,18 @@
             const isOpen = panel.style.maxHeight && panel.style.maxHeight !== "0px";
 
             // Collapse all others (optional — comment this block if you want multiple open)
-            document.querySelectorAll('.accordion-panel-pr').forEach(p => {
-                p.style.maxHeight = null;
-                p.previousElementSibling.classList.remove("bg-primary-600", "text-white");
-                p.previousElementSibling.classList.add("bg-primary-100", "text-primary-600");
-                const otherIcon = p.previousElementSibling.querySelector('.icon');
-                if (otherIcon) otherIcon.textContent = '+';
-            });
+            // document.querySelectorAll('.accordion-panel-pr').forEach(p => {
+            //     p.style.maxHeight = null;
+            //     p.previousElementSibling.classList.remove("bg-primary-600", "text-white");
+            //     p.previousElementSibling.classList.add("bg-primary-100", "text-primary-600");
+            //     const otherIcon = p.previousElementSibling.querySelector('.icon');
+            //     if (otherIcon) otherIcon.textContent = '+';
+            // });
 
             // Toggle current
             if (!isOpen) {
                 panel.style.maxHeight = panel.scrollHeight + 'px';
-                icon.textContent = '−';
+                icon.textContent = '-';
                 btn.classList.remove("bg-primary-100", "text-primary-600");
                 btn.classList.add("bg-primary-100", "text-primary-600");
             } else {

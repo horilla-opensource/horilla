@@ -1,7 +1,7 @@
 {% load i18n taskfilters %}
 
 <div class="flex flex-wrap justify-between items-center mb-3">
-    <h3 class="text-lg font-semibold">{{ project }}</h3>
+    <h3 class="text-lg font-semibold">{% trans "Tasks" %}</h3>
     <div class="flex items-center flex-wrap gap-2">
         <form
             hx-get="{% url 'task-filter' project_id %}"
@@ -70,7 +70,25 @@
             </div>
         </form>
 
-        {% if perms.project.add_task or request.user|is_project_manager:project %}
+        {% if perms.project.add_stage or request.user|is_project_manager:project %}
+        <button
+            class="px-4 py-2 bg-brand-600 text-white rounded-md text-xs flex items-center gap-2 hover:bg-brand-800 transition duration-300"
+            data-toggle="oh-modal-toggle"
+            data-target="#objectCreateModal"
+            hx-get="{% url 'create-project-stage' project_id %}"
+            hx-target="#objectCreateModalTarget"
+        >
+            <img
+                src="/static/horilla_theme/assets/img/icons/more.svg"
+                alt=""
+                width="13"
+                class="filter brightness-0 invert"
+            >
+            {% trans "Stage" %}
+        </button>
+        {% endif %}
+
+        {% comment %} {% if perms.project.add_task or request.user|is_project_manager:project %}
             <button
                 type="button"
                 class="px-4 py-2 bg-brand-600 text-white rounded-md text-xs flex items-center gap-2 hover:bg-brand-800 transition duration-300"
@@ -85,9 +103,9 @@
                     width="13"
                     class="filter brightness-0 invert"
                 >
-                {% trans "Create" %}
+                {% trans "Tasks" %}
             </button>
-        {% endif %}
+        {% endif %} {% endcomment %}
     </div>
 </div>
 

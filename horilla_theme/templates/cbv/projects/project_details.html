@@ -2,7 +2,7 @@
 
 <div class="bg-white p-3 rounded-md shadow-card mb-5">
     <div class="flex gap-2 md:gap-0 flex-wrap justify-between items-end mb-5 border-b border-dark-50 pb-3">
-        <h3 class="text-sm font-semibold">{{ project }}</h3>
+        <h3 class="text-lg font-semibold">{{ project }}</h3>
 
         <div class="flex items-center gap-3">
             {% if perms.pms.change_project or request.user|is_project_manager_or_member:project %}
@@ -34,12 +34,12 @@
 
             {% if perms.project.change_project %}
                 <a
+                    class="px-2 py-1 oh-btn oh-btn--light text-info-600 rounded-sm w-7 h-7 flex justify-center items-center hover:text-white transition duration-300"
                     onclick="event.preventDefault();event.stopPropagation()"
                     data-toggle="oh-modal-toggle"
                     data-target="#objectCreateModal"
                     hx-get="{% url 'update-project' project.id %}"
                     hx-target="#objectCreateModalTarget"
-                    class="px-2 py-1 bg-info-300 text-info-600 rounded-sm w-7 h-7 flex justify-center items-center hover:bg-info-600 hover:text-white transition duration-300"
                     title="{% trans 'Edit' %}"
                 >
                     <i class="fa-solid fa-pen-to-square"></i>

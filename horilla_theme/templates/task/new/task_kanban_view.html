@@ -14,25 +14,6 @@
 
 {% if stages %}
     <div id="listView">
-        <!-- Header -->
-        <div class="flex items-center justify-between mb-3">
-            <h3 class="text-sm font-semibold">{% trans "Kanban View" %}</h3>
-            <button
-                class="px-4 py-2 bg-brand-600 text-white rounded-md text-xs flex items-center gap-2 hover:bg-brand-800 transition duration-300"
-                data-toggle="oh-modal-toggle"
-                data-target="#objectCreateModal"
-                hx-get="{% url 'create-project-stage' project_id %}"
-                hx-target="#objectCreateModalTarget"
-            >
-                <img
-                    src="/static/horilla_theme/assets/img/icons/more.svg"
-                    alt=""
-                    width="13"
-                    class="filter brightness-0 invert"
-                >
-                {% trans "Stage" %}
-            </button>
-        </div>
 
         <!-- Scroll Container -->
         <div class="oh-kanban overflow-x-auto whitespace-nowrap">
