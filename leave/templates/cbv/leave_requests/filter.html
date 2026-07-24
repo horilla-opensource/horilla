@@ -13,7 +13,7 @@
                       </div>
                     <div class="oh-input-group">
                         <label class="oh-label">{% trans "Start Date" %}</label>
-                        {{form.start_date}}
+                        {{form.from_date}}
                     </div>
                 </div>
                 <div class="col-sm-12 col-md-12 col-lg-6">
@@ -23,7 +23,7 @@
                     </div>
                     <div class="oh-input-group">
                         <label class="oh-label">{% trans "End Date" %}</label>
-                        {{form.end_date}}
+                        {{form.to_date}}
                     </div>
                 </div>
                 <div class="col-sm-12 col-md-12">
@@ -81,7 +81,7 @@
           </div>
         </div>
 
-    <div class="oh-accordion" >
+    {% comment %} <div class="oh-accordion" >
         <div class="oh-accordion-header" onclick="event.stopImmediatePropagation();$(this).parent().toggleClass('oh-accordion--show');">{% trans "Advanced" %}</div>
         <div class="oh-accordion-body">
             <div class="row">
@@ -100,6 +100,6 @@
                 </div>
             </div>
         </div>
-    </div>
+    </div> {% endcomment %}
 
 </div>

@@ -94,7 +94,7 @@ class LeaveRequestsListView(HorillaListView):
     model = LeaveRequest
     columns = [
         (_("Employee"), "leave_requests_custom_emp_col"),
-        (_("Leave Type"), "leave_type_id"),
+        (_("Leave Type"), "leave_type_id__name"),
         (_("Start Date"), "start_date"),
         (_("End Date"), "end_date"),
         (_("Requested Days"), "requested_days"),
@@ -112,7 +112,7 @@ class LeaveRequestsListView(HorillaListView):
     """
     sortby_mapping = [
         (_("Employee"), "employee_id__get_full_name", "employee_id__get_avatar"),
-        (_("Leave Type"), "leave_type_id"),
+        (_("Leave Type"), "leave_type_id__name"),
         (_("Start Date"), "start_date"),
         (_("End Date"), "end_date"),
         (_("Requested Days"), "requested_days"),

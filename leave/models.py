@@ -1781,6 +1781,8 @@ class LeaveRequest(HorillaModel):
         Method to count leave clashes where this employee's leave request overlaps
         with other employees' requested dates.
         """
+        if self.status in ["cancelled", "rejected"]:
+            return 0
         work_info = EmployeeWorkInformation.objects.filter(employee_id=self.employee_id)
         if work_info.exists() and self.status not in ["cancelled", "rejected"]:
             overlapping_requests = (
@@ -1793,9 +1795,6 @@ class LeaveRequest(HorillaModel):
                         | Q(
                             employee_id__employee_work_info__job_position_id=self.employee_id.get_job_position()
                         )
-                    )
-                    & Q(
-                        employee_id__employee_work_info__company_id=self.employee_id.get_company()
                     ),
                     start_date__lte=self.end_date,
                     end_date__gte=self.start_date,

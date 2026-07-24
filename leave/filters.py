@@ -145,17 +145,17 @@ class LeaveRequestFilter(HorillaFilterSet):
         widget=forms.DateInput(attrs={"type": "date"}),
     )
 
-    start_date = DateFilter(
-        field_name="start_date",
-        lookup_expr="exact",
-        widget=forms.DateInput(attrs={"type": "date"}),
-    )
+    # start_date = DateFilter(
+    #     field_name="start_date",
+    #     lookup_expr="exact",
+    #     widget=forms.DateInput(attrs={"type": "date"}),
+    # )
 
-    end_date = DateFilter(
-        field_name="end_date",
-        lookup_expr="exact",
-        widget=forms.DateInput(attrs={"type": "date"}),
-    )
+    # end_date = DateFilter(
+    #     field_name="end_date",
+    #     lookup_expr="exact",
+    #     widget=forms.DateInput(attrs={"type": "date"}),
+    # )
     start_date_gte = DateFilter(
         field_name="start_date",
         lookup_expr="gte",
