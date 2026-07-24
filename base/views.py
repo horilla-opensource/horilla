@@ -4284,9 +4284,11 @@ def work_type_request_approve(request, id):
         messages.error(request, _("Work type request not found."))
         return JsonResponse({"result": False}) if is_ajax else HorillaRedirect(request)
     if not (
-        is_reportingmanger(request, work_type_request)
-        or request.user.has_perm("approve_worktyperequest")
-        or request.user.has_perm("change_worktyperequest")
+        (
+            is_reportingmanger(request, work_type_request)
+            or request.user.has_perm("base.approve_worktyperequest")
+            or request.user.has_perm("base.change_worktyperequest")
+        )
         and not work_type_request.approved
     ):
         messages.error(request, _("You don't have permission"))
@@ -4338,10 +4340,9 @@ def work_type_request_bulk_approve(request):
         work_type_request = WorkTypeRequest.objects.get(id=id)
         if (
             is_reportingmanger(request, work_type_request)
-            or request.user.has_perm("approve_worktyperequest")
-            or request.user.has_perm("change_worktyperequest")
-            and not work_type_request.approved
-        ):
+            or request.user.has_perm("base.approve_worktyperequest")
+            or request.user.has_perm("base.change_worktyperequest")
+        ) and not work_type_request.approved:
             # """
             # Here the request will be approved, can send mail right here
             # """
@@ -5243,9 +5244,11 @@ def shift_request_approve(request, id):
 
     user = request.user
     if not (
-        is_reportingmanger(request, shift_request)
-        or user.has_perm("approve_shiftrequest")
-        or user.has_perm("change_shiftrequest")
+        (
+            is_reportingmanger(request, shift_request)
+            or user.has_perm("base.approve_shiftrequest")
+            or user.has_perm("base.change_shiftrequest")
+        )
         and not shift_request.approved
     ):
         messages.error(request, _("You don't have permission"))
@@ -5350,10 +5353,9 @@ def shift_request_bulk_approve(request):
         shift_request = ShiftRequest.objects.get(id=id)
         if (
             is_reportingmanger(request, shift_request)
-            or request.user.has_perm("approve_shiftrequest")
-            or request.user.has_perm("change_shiftrequest")
-            and not shift_request.approved
-        ):
+            or request.user.has_perm("base.approve_shiftrequest")
+            or request.user.has_perm("base.change_shiftrequest")
+        ) and not shift_request.approved:
             """
             here the request will be approved, can send mail right here
             """

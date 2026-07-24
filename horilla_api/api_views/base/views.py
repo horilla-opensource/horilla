@@ -477,10 +477,9 @@ class WorkRequestApproveView(APIView):
         work_type_request = WorkTypeRequest.find(pk)
         if (
             is_reportingmanger(request, work_type_request)
-            or request.user.has_perm("approve_worktyperequest")
-            or request.user.has_perm("change_worktyperequest")
-            and not work_type_request.approved
-        ):
+            or request.user.has_perm("base.approve_worktyperequest")
+            or request.user.has_perm("base.change_worktyperequest")
+        ) and not work_type_request.approved:
             """
             Here the request will be approved, can send mail right here
             """
@@ -1048,10 +1047,9 @@ class ShiftRequestApproveView(APIView):
         shift_request = ShiftRequest.objects.get(id=pk)
         if (
             is_reportingmanger(request, shift_request)
-            or request.user.has_perm("approve_shiftrequest")
-            or request.user.has_perm("change_shiftrequest")
-            and not shift_request.approved
-        ):
+            or request.user.has_perm("base.approve_shiftrequest")
+            or request.user.has_perm("base.change_shiftrequest")
+        ) and not shift_request.approved:
             """
             here the request will be approved, can send mail right here
             """
@@ -1079,10 +1077,9 @@ class ShiftRequestBulkApproveView(APIView):
             shift_request = ShiftRequest.objects.get(id=id)
             if (
                 is_reportingmanger(request, shift_request)
-                or request.user.has_perm("approve_shiftrequest")
-                or request.user.has_perm("change_shiftrequest")
-                and not shift_request.approved
-            ):
+                or request.user.has_perm("base.approve_shiftrequest")
+                or request.user.has_perm("base.change_shiftrequest")
+            ) and not shift_request.approved:
                 """
                 here the request will be approved, can send mail right here
                 """
@@ -1262,8 +1259,8 @@ class WorktypeRequestApprovePermissionCheck(APIView):
         instance = Employee.objects.filter(id=request.GET.get("employee_id")).first()
         if (
             _is_reportingmanger(request, instance)
-            or request.user.has_perm("approve_shiftrequest")
-            or request.user.has_perm("change_shiftrequest")
+            or request.user.has_perm("base.approve_worktyperequest")
+            or request.user.has_perm("base.change_worktyperequest")
         ):
             return Response(status=200)
         return Response(status=400)
@@ -1276,8 +1273,8 @@ class ShiftRequestApprovePermissionCheck(APIView):
         instance = Employee.objects.filter(id=request.GET.get("employee_id")).first()
         if (
             _is_reportingmanger(request, instance)
-            or request.user.has_perm("approve_shiftrequest")
-            or request.user.has_perm("change_shiftrequest")
+            or request.user.has_perm("base.approve_shiftrequest")
+            or request.user.has_perm("base.change_shiftrequest")
         ):
             return Response(status=200)
         return Response(status=400)
