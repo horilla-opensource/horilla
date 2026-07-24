@@ -1,7 +1,6 @@
 {% load i18n %}
 {% load horillafilters %}
 {% load static %}
-{% include 'generic/components.html' %}
 <div class="d-flex justify-content-end">
     <div class="oh-btn-group mb-4">
         <a
@@ -94,16 +93,13 @@
         <p class="ms-4">{{ document.reject_reason }}</p>
     {% endif %}
 {% else %}
-    <div class="oh-not-found">
-        <img
-            style="width: 150px; height: 150px"
-            src="{% static 'images/ui/document.png' %}"
-            class="oh-404__image mb-4"
-            alt="{% trans 'Page not found. 404.' %}"
-        >
-        <h3 class="oh-404__subtitle">
-            {% trans "No Document to view." %}
-        </h3>
+    <div class="oh-wrapper h-full" align="center" >
+        <div class="xl:col-span-4 md:col-span-6 col-span-12 bg-white p-6 rounded-md shadow-card h-[70%]">
+            <div class="flex flex-col items-center justify-center h-full">
+                <img src="{% static 'images/ui/document.png' %}" alt="" style="width: 150px; height: 150px" width="300" class="mb-4">
+                <p class="text-[#666] mb-5">{% trans "No Document to view." %}</p>
+            </div>
+        </div>
     </div>
 {% endif %}
 

@@ -33,6 +33,7 @@ from django.template.loader import render_to_string
 from django.utils.translation import gettext_lazy as _
 
 from base.methods import eval_validate, reload_queryset
+from employee.filters import EmployeeFilter
 from employee.models import (
     Actiontype,
     BonusPoint,
@@ -50,6 +51,8 @@ from employee.models import (
 from horilla import horilla_middlewares
 from horilla_audit.models import AccountBlockUnblock
 from horilla_auth.models import HorillaUser
+from horilla_widgets.widgets.horilla_multi_select_field import HorillaMultiSelectField
+from horilla_widgets.widgets.select_widgets import HorillaMultiSelectWidget
 
 logger = logging.getLogger(__name__)
 
@@ -790,6 +793,16 @@ class DisciplinaryActionForm(ModelForm):
             "start_date": forms.DateInput(attrs={"type": "date"}),
         }
 
+    employee_id = HorillaMultiSelectField(
+        queryset=Employee.objects.filter(employee_work_info__isnull=False),
+        widget=HorillaMultiSelectWidget(
+            filter_route_name="employee-widget-filter",
+            filter_class=EmployeeFilter,
+            filter_instance_context_name="f",
+            filter_template_path="employee_filters.html",
+        ),
+        label=_("Employees"),
+    )
     action = forms.ModelChoiceField(
         queryset=Actiontype.objects.all(),
         label=_("Action"),
@@ -809,6 +822,21 @@ class DisciplinaryActionForm(ModelForm):
         self.fields["action"].choices = action_choices
         if self.instance.pk is None:
             self.fields["action"].choices += [("create", _("Create new action type "))]
+
+    def clean(self):
+        cleaned_data = super().clean()
+
+        # Remove 'employee_id' field error if it's handled manually
+        if isinstance(self.fields["employee_id"], HorillaMultiSelectField):
+            self.errors.pop("employee_id", None)
+            employee_data = self.fields["employee_id"].queryset.filter(
+                id__in=self.data.getlist("employee_id")
+            )
+            if not employee_data.exists():
+                self.add_error("employee_id", _("This field is required."))
+            cleaned_data["employee_id"] = employee_data
+
+        return cleaned_data
 
     def as_p(self):
         """
