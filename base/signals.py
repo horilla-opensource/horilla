@@ -190,12 +190,11 @@ _HRMS_GROUP_MIGRATE_APPS = {
 
 # name -> permission rules
 # apps: list of app_labels, or "__all__" for every installed HRMS app below
-# actions: add / view / change / delete, or "__all__" for every permission
-#          (CRUD + custom Meta permissions such as approve_ / cancel_)
+# actions: add / view / change / delete / export
 _DEFAULT_HRMS_GROUPS = {
     "Admin": {
         "apps": "__all__",
-        "actions": "__all__",
+        "actions": ("add", "view", "change", "delete", "export"),
     },
     "HR Manager": {
         "apps": (
@@ -323,23 +322,16 @@ def _resolve_group_permissions(config):
     else:
         app_labels = [label for label in app_labels if _is_app_available(label)]
 
-    default_actions = config.get("actions", ("view",))
+    default_actions = tuple(config.get("actions", ("view",)))
     app_actions = config.get("app_actions") or {}
 
     permission_ids = []
     for app_label in app_labels:
-        actions = app_actions.get(app_label, default_actions)
+        actions = tuple(app_actions.get(app_label, default_actions))
         content_types = ContentType.objects.filter(app_label=app_label)
         if not content_types.exists():
             continue
-        if actions == "__all__":
-            permission_ids.extend(
-                Permission.objects.filter(
-                    content_type__in=content_types,
-                ).values_list("id", flat=True)
-            )
-            continue
-        for action in tuple(actions):
+        for action in actions:
             permission_ids.extend(
                 Permission.objects.filter(
                     content_type__in=content_types,
@@ -354,8 +346,8 @@ def _resolve_group_permissions(config):
                 content_type__app_label="auth",
                 codename__in=[
                     "add_group",
-                    "auth.change_group",
-                    "auth.delete_group",
+                    "change_group",
+                    "delete_group",
                     "view_group",
                     "add_permission",
                     "change_permission",
@@ -370,6 +362,33 @@ def _resolve_group_permissions(config):
         )
 
     return Permission.objects.filter(id__in=set(permission_ids))
+
+
+def _sync_export_permissions():
+    """
+    Create an `export_<model>` Permission for every model that appears in
+    the group/employee permission matrix (mirrors Django's own auto-created
+    add/change/delete/view permissions, which don't include "export").
+    """
+    from django.conf import settings
+    from django.contrib.auth.models import Permission
+    from django.contrib.contenttypes.models import ContentType
+
+    no_permission_models = settings.NO_PERMISSION_MODALS
+    for app_label in _ALL_HRMS_APP_LABELS:
+        if not _is_app_available(app_label):
+            continue
+        for content_type in ContentType.objects.filter(app_label=app_label):
+            if content_type.model in no_permission_models:
+                continue
+            model_class = content_type.model_class()
+            if model_class is None:
+                continue
+            Permission.objects.get_or_create(
+                content_type=content_type,
+                codename=f"export_{content_type.model}",
+                defaults={"name": f"Can export {model_class._meta.verbose_name}"},
+            )
 
 
 def _sync_default_hrms_groups():
@@ -397,6 +416,7 @@ def create_default_hrms_groups(sender, **kwargs):
     if getattr(sender, "label", None) not in _HRMS_GROUP_MIGRATE_APPS:
         return
     try:
+        _sync_export_permissions()
         _sync_default_hrms_groups()
     except Exception:
         # Auth / contenttypes tables may not be ready for some migrate senders

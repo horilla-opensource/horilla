@@ -64,7 +64,7 @@
                         <div>
                             <p class="text-sm font-semibold text-dark-400">{{ perm.app }}</p>
                             <p class="text-[11px] text-dark-200">
-                                {% trans "Permissions from this employee's groups in the selected company (plus any direct permissions)." %}
+                                {% trans "Turn on what this group can do in this module." %}
                             </p>
                         </div>
                         <div class="flex flex-wrap gap-1">
@@ -80,7 +80,7 @@
                                 type="button"
                                 class="perm-preset px-2 py-1 text-[11px] rounded border border-dark-50 text-dark-300 hover:bg-dark-50"
                                 data-preset="full"
-                                title="{% trans 'Allow create, view, edit, delete and other actions' %}"
+                                title="{% trans 'Allow create, view, edit and delete' %}"
                             >
                                 {% trans "Full access" %}
                             </button>
@@ -122,11 +122,9 @@
                                 <th class="text-xs text-center font-medium p-2 text-dark-300 w-16 bg-white" title="{% trans 'Can delete' %}">
                                     {% trans "Delete" %}
                                 </th>
-                                {% if perm.has_custom_permissions %}
-                                    <th class="text-xs text-left font-medium p-2 text-dark-300 min-w-[7rem] bg-white" title="{% trans 'Extra actions defined for this feature' %}">
-                                        {% trans "Other" %}
-                                    </th>
-                                {% endif %}
+                                <th class="text-xs text-center font-medium p-2 text-dark-300 w-16 bg-white" title="{% trans 'Can export' %}">
+                                    {% trans "Export" %}
+                                </th>
                             </tr>
                         </thead>
                         <tbody>
@@ -134,7 +132,7 @@
                                 {% if model.model_name not in no_permission_models %}
                                     <tr
                                         class="border-b border-[#f3f3f3] perm-feature-row"
-                                        data-feature="{{ model.verbose_name|lower }} {{ model.model_name|lower }} {{ perm.app|lower }}{% for cp in model.custom_permissions %} {{ cp.label|lower }} {{ cp.codename|lower }}{% endfor %}"
+                                        data-feature="{{ model.verbose_name|lower }} {{ model.model_name|lower }} {{ perm.app|lower }}"
                                     >
                                         <td class="text-sm text-left p-2 text-[#666] align-middle">
                                             <input
@@ -195,34 +193,18 @@
                                                 onchange="if (!$(this).is(':checked')) { $(this).closest('tr').find('.row-permission').prop('checked', false) }"
                                             >
                                         </td>
-                                        {% if perm.has_custom_permissions %}
-                                            <td class="text-sm p-2 text-[#666] align-middle">
-                                                {% if model.custom_permissions %}
-                                                    <div class="flex flex-wrap gap-x-3 gap-y-1">
-                                                        {% for cp in model.custom_permissions %}
-                                                            <label
-                                                                class="inline-flex items-center gap-1.5 text-[11px] text-dark-300 cursor-pointer whitespace-nowrap"
-                                                                title="{{ cp.name }}"
-                                                            >
-                                                                <input
-                                                                    type="checkbox"
-                                                                    class="custom-checkbox w-4 h-4 bg-[#E9EDF7] rounded-sm text-primary-600 cursor-pointer"
-                                                                    name="permissions"
-                                                                    value="{{ cp.codename }}"
-                                                                    title="{{ cp.name }}"
-                                                                    data-group-id="{{ group.id }}"
-                                                                    data-group-name="{{ group.name }}"
-                                                                    onchange="if (!$(this).is(':checked')) { $(this).closest('tr').find('.row-permission').prop('checked', false) }"
-                                                                >
-                                                                <span>{{ cp.label }}</span>
-                                                            </label>
-                                                        {% endfor %}
-                                                    </div>
-                                                {% else %}
-                                                    <span class="text-[11px] text-dark-100">—</span>
-                                                {% endif %}
-                                            </td>
-                                        {% endif %}
+                                        <td class="text-sm text-center p-2 text-[#666] align-middle">
+                                            <input
+                                                type="checkbox"
+                                                class="custom-checkbox w-4 h-4 bg-[#E9EDF7] rounded-sm text-primary-600 cursor-pointer"
+                                                name="permissions"
+                                                value="export_{{ model.model_name }}"
+                                                title="{% trans 'Export' %}"
+                                                data-group-id="{{ group.id }}"
+                                                data-group-name="{{ group.name }}"
+                                                onchange="if (!$(this).is(':checked')) { $(this).closest('tr').find('.row-permission').prop('checked', false) }"
+                                            >
+                                        </td>
                                     </tr>
                                 {% endif %}
                             {% endfor %}
@@ -254,9 +236,9 @@
 
         $picker.find("tbody tr.perm-feature-row").each(function () {
             var $row = $(this);
-            var total = $row.find("[name=permissions]").length;
-            var checked = $row.find("[name=permissions]:checked").length;
-            $row.find(".row-permission").prop("checked", total > 0 && total === checked);
+            var $rowPerms = $row.find("[name=permissions]");
+            var checked = $rowPerms.filter(":checked").length;
+            $row.find(".row-permission").prop("checked", $rowPerms.length > 0 && checked === $rowPerms.length);
         });
         $picker.find("table").each(function () {
             var $table = $(this);
@@ -302,11 +284,10 @@
             } else if (preset === "full") {
                 $perms.prop("checked", true);
             }
+            var $rowPerms = $row.find("[name=permissions]");
             $row.find(".row-permission").prop(
                 "checked",
-                $row.find("[name=permissions]").length > 0 &&
-                    $row.find("[name=permissions]:checked").length ===
-                        $row.find("[name=permissions]").length
+                $rowPerms.length > 0 && $rowPerms.filter(":checked").length === $rowPerms.length
             );
         });
         var $first = $panel.find("[name=permissions]").first();
