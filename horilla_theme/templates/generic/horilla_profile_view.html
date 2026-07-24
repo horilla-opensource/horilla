@@ -306,6 +306,28 @@
             </div>
         </div>
     </div>
+</div>
+
+<div
+    class="oh-modal"
+    id="groupAssign"
+    role="dialog"
+    aria-labelledby="groupAssign"
+    aria-hidden="true"
+>
+    <div class="oh-modal__dialog">
+        <div class="oh-modal__dialog-header">
+            <h2 class="text-md font-semibold" >
+                {% trans "Group Assign" %}
+            </h2>
+            <button class="oh-modal__close" onclick="$(this).closest('.oh-modal--show').removeClass('oh-modal--show')" aria-label="{% trans 'Close' %}">
+                <ion-icon name="close-outline"></ion-icon>
+            </button>
+        </div>
+        <div class="oh-modal__dialog-body" id="groupAssignBody"></div>
+    </div>
+</div>
+
     <script>
         $("#{{view_id}} ul.usertablist li button").click(function (e) {
         var target = `[data-url="${$(this).attr('data-url')}"]`
@@ -334,4 +356,3 @@
         	}, 100);
         {% endif %}
     </script>
-</div>
