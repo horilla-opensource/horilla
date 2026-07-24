@@ -1,6 +1,6 @@
 {% load i18n %}{% load basefilters %}
 {% is_manager_of request.user instance as can_manage %}
-{% with can_penalty=perms.base.chanage_penaltyaccounts can_delete=perms.attendance.delete_attendance %}
+{% with can_penalty=perms.base.change_penaltyaccounts can_delete=perms.attendance.delete_attendance %}
     {% if can_manage or can_penalty or can_delete %}
         <div onclick="event.stopPropagation()">
             <div class="flex items-center justify-center gap-1">

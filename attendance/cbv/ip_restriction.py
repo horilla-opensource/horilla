@@ -23,7 +23,7 @@ def _get_session_company(request):
 
 @method_decorator(login_required, name="dispatch")
 @method_decorator(
-    permission_required("attendance.view_attendanceallowedip"),
+    permission_required("base.view_attendanceallowedip"),
     name="dispatch",
 )
 class IpRestrictionList(HorillaListView):
@@ -71,7 +71,7 @@ class IpRestrictionList(HorillaListView):
 
 @method_decorator(login_required, name="dispatch")
 @method_decorator(
-    permission_required("attendance.view_attendanceallowedip"),
+    permission_required("base.view_attendanceallowedip"),
     name="dispatch",
 )
 class IpRestrictionnav(HorillaNavView):

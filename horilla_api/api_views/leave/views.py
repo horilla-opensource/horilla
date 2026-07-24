@@ -580,7 +580,7 @@ class CompanyLeaveGetCreateAPIView(APIView):
     permission_classes = [IsAuthenticated]
 
     @method_decorator(
-        permission_required("leave.view_companyleave", raise_exception=True),
+        permission_required("base.view_companyleaves", raise_exception=True),
         name="dispatch",
     )
     def get(self, request):
@@ -612,7 +612,7 @@ class CompanyLeaveGetUpdateDeleteAPIView(APIView):
             raise serializers.ValidationError(e)
 
     @method_decorator(
-        permission_required("leave.view_companyleave", raise_exception=True),
+        permission_required("base.view_companyleaves", raise_exception=True),
         name="dispatch",
     )
     def get(self, request, pk):
@@ -621,7 +621,7 @@ class CompanyLeaveGetUpdateDeleteAPIView(APIView):
         return Response(serializer.data, status=200)
 
     @method_decorator(
-        permission_required("leave.change_companyleave", raise_exception=True),
+        permission_required("base.change_companyleaves", raise_exception=True),
         name="dispatch",
     )
     def put(self, request, pk):
@@ -633,7 +633,7 @@ class CompanyLeaveGetUpdateDeleteAPIView(APIView):
         return Response(serializer.errors, status=400)
 
     @method_decorator(
-        permission_required("leave.delete_companyleave", raise_exception=True),
+        permission_required("base.delete_companyleaves", raise_exception=True),
         name="dispatch",
     )
     def delete(self, request, pk):
@@ -646,7 +646,7 @@ class HolidayGetCreateAPIView(APIView):
     permission_classes = [IsAuthenticated]
 
     @method_decorator(
-        permission_required("leave.view_holiday", raise_exception=True), name="dispatch"
+        permission_required("base.view_holidays", raise_exception=True), name="dispatch"
     )
     def get(self, request):
         holiday = Holidays.objects.all().order_by("-id")
@@ -656,7 +656,7 @@ class HolidayGetCreateAPIView(APIView):
         return paginator.get_paginated_response(serializer.data)
 
     @method_decorator(
-        permission_required("leave.add_holiday", raise_exception=True), name="dispatch"
+        permission_required("base.add_holidays", raise_exception=True), name="dispatch"
     )
     def post(self, request):
         serializer = HoildaySerializer(data=request.data)
@@ -675,7 +675,7 @@ class HolidayGetUpdateDeleteAPIView(APIView):
             raise serializers.ValidationError(e)
 
     @method_decorator(
-        permission_required("leave.view_holiday", raise_exception=True), name="dispatch"
+        permission_required("base.view_holidays", raise_exception=True), name="dispatch"
     )
     def get(self, request, pk):
         holiday = self.get_holiday(pk)
@@ -683,7 +683,7 @@ class HolidayGetUpdateDeleteAPIView(APIView):
         return Response(serializer.data, status=200)
 
     @method_decorator(
-        permission_required("leave.change_holiday", raise_exception=True),
+        permission_required("base.change_holidays", raise_exception=True),
         name="dispatch",
     )
     def put(self, request, pk):
@@ -695,7 +695,7 @@ class HolidayGetUpdateDeleteAPIView(APIView):
         return Response(serializer.errors, status=400)
 
     @method_decorator(
-        permission_required("leave.delete_holiday", raise_exception=True),
+        permission_required("base.delete_holidays", raise_exception=True),
         name="dispatch",
     )
     def delete(self, request, pk):

@@ -1,7 +1,7 @@
 {% load i18n %}
 {% load basefilters %}
 {% is_manager_of request.user instance as can_manage %}
-{% with can_change=perms.leave.change_leaverequest can_delete=perms.leave.delete_leaverequest can_penalty=perms.base.chanage_penaltyaccounts leave_manager=request.user|is_leave_approval_manager %}
+{% with can_change=perms.leave.change_leaverequest can_delete=perms.leave.delete_leaverequest can_penalty=perms.base.change_penaltyaccounts leave_manager=request.user|is_leave_approval_manager %}
 {% if can_change or can_delete or can_penalty or can_manage or leave_manager %}
     <div onclick="event.stopPropagation()">
         <div class="flex items-center justify-center gap-1">

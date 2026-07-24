@@ -24,7 +24,7 @@ from horilla_views.generic.cbv.views import (
 
 
 @method_decorator(login_required, name="dispatch")
-@method_decorator(permission_required(perm="helpdesk.view_tag"), name="dispatch")
+@method_decorator(permission_required(perm="base.view_tags"), name="dispatch")
 class TagsListView(HorillaListView):
     """
     list view for tickets in settings
@@ -81,7 +81,7 @@ class TagsListView(HorillaListView):
 
 
 @method_decorator(login_required, name="dispatch")
-@method_decorator(permission_required(perm="helpdesk.view_tag"), name="dispatch")
+@method_decorator(permission_required(perm="base.view_tags"), name="dispatch")
 class TagsNavView(HorillaNavView):
     """
     nav bar of the department view
@@ -106,7 +106,7 @@ class TagsNavView(HorillaNavView):
 
 
 @method_decorator(login_required, name="dispatch")
-@method_decorator(permission_required(perm="helpdesk.add_tag"), name="dispatch")
+@method_decorator(permission_required(perm="base.add_tags"), name="dispatch")
 class TagsFormView(HorillaFormView):
     """
     Form view for creating and updating Helpdesk Tags.

@@ -156,7 +156,7 @@
 									</div>
 								</div>
 								<div class="oh-btn-group">
-										{% if perms.horilla_document.change_documentrequest %}
+										{% if perms.horilla_documents.change_documentrequest %}
 											{% if document.status == "approved" or not document.document %}
 											<a class="oh-btn oh-btn--success w-100 oh-btn--disabled"  onclick="event.stopPropagation()">
 												<ion-icon class="me-1" name="checkmark-outline"></ion-icon>

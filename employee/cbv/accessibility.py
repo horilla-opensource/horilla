@@ -95,7 +95,7 @@ def permission_accessibility(
     """
     accessibility for permissions tab in employee profile and individual view
     """
-    if request.user.has_perm("auth.view_permissions") or request.user.has_perm(
+    if request.user.has_perm("auth.view_permission") or request.user.has_perm(
         "auth.view_group"
     ):
         return True

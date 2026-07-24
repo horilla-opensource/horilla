@@ -1199,7 +1199,7 @@ def employee_profile_update(request):
 
 
 @login_required
-@permission_required("delete_group")
+@permission_required("auth.delete_group")
 @require_http_methods(["POST"])
 def employee_user_group_assign_delete(_, obj_id):
     """

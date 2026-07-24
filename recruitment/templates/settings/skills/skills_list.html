@@ -31,7 +31,7 @@
 								<ion-icon name="create-outline"></ion-icon
 							></a>
 							{% endif %}
-							{% if perms.base.delete_deaprtment %}
+							{% if perms.base.delete_department %}
                             <a onclick="return confirm('{% trans "Are you sure want to delete this skill?" %}')"
                                 href="{% url 'delete-skills' %}?ids={{skill.id}}"
                                 class="oh-btn oh-btn--danger w-50"

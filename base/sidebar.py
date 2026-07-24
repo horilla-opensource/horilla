@@ -29,7 +29,7 @@ def system_preferences_accessibility(request, submenu, user_perms, *args, **kwar
             "base.view_dynamicpagination",
             "horilla_audit.view_accountblockunblock",
             "employee.change_employeegeneralsetting",
-            "base.view_historytrackingfields",
+            "horilla_audit.view_historytrackingfields",
             "payroll.view_payrollsettings",
             "base.view_company",
         ]
@@ -162,7 +162,7 @@ def google_meet_accessibility(request, submenu, user_perms, *args, **kwargs):
 
 def whatsapp_accessibility(request, submenu, user_perms, *args, **kwargs):
     return apps.is_installed("whatsapp") and request.user.has_perm(
-        "whatsapp.add_whatsappcredentials"
+        "whatsapp.add_whatsappcredientials"
     )
 
 

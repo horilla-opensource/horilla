@@ -547,7 +547,7 @@ class AttendancesFormView(HorillaFormView):
 
 
 @method_decorator(login_required, name="dispatch")
-@method_decorator(manager_can_enter("attendance.change__attendance"), name="dispatch")
+@method_decorator(manager_can_enter("attendance.change_attendance"), name="dispatch")
 class AttendanceUpdateFormView(HorillaFormView):
     """
     form for update

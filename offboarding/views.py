@@ -684,7 +684,7 @@ def add_note(request):
 
 
 @login_required
-@manager_can_enter(perm="offboarding.delete_offboardingNote")
+@manager_can_enter(perm="offboarding.delete_offboardingnote")
 def offboarding_note_delete(request, note_id):
     """
     This method is used to delete the offboarding note

@@ -80,7 +80,7 @@
                                     </button>
                                 {% endif %}
 
-                                {% if perms.leave.add_holidays %}
+                                {% if perms.base.add_holidays %}
                                     <a hx-get="{% url 'duplicate-holiday' holiday.id %}" hx-target="#objectCreateModalTarget"
                                         data-toggle="oh-modal-toggle" data-target="#objectCreateModal"
                                         title="{% trans 'Duplicate' %}" style="cursor: pointer;"

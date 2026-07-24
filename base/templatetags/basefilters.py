@@ -163,8 +163,8 @@ def general_section_main(context):
             user.has_perm("attendance.change_attendancegeneralsetting"),
             user.has_perm("payroll.change_payrollgeneralsetting"),
             user.has_perm("employee.change_employeegeneralsetting"),
-            user.has_perm("payroll.change_encashmentgeneralsetting"),
-            user.has_perm("base.view_historytrackingfields"),
+            user.has_perm("payroll.change_encashmentgeneralsettings"),
+            user.has_perm("horilla_audit.view_historytrackingfields"),
             user.has_perm("payroll.view_payrollsettings"),
             user.has_perm("auth.view_permission"),
             user.has_perm("auth.view_group"),
@@ -194,8 +194,8 @@ def general_section(context):
             user.has_perm("attendance.change_attendancegeneralsetting"),
             user.has_perm("payroll.change_payrollgeneralsetting"),
             user.has_perm("employee.change_employeegeneralsetting"),
-            user.has_perm("payroll.change_encashmentgeneralsetting"),
-            user.has_perm("base.view_historytrackingfields"),
+            user.has_perm("payroll.change_encashmentgeneralsettings"),
+            user.has_perm("horilla_audit.view_historytrackingfields"),
             user.has_perm("payroll.view_payrollsettings"),
         ]
     )
@@ -269,7 +269,7 @@ def show_section(context):
             user.has_perm("attendance.change_attendancegeneralsetting"),
             user.has_perm("payroll.change_payrollgeneralsetting"),
             user.has_perm("employee.change_employeegeneralsetting"),
-            user.has_perm("payroll.change_encashmentgeneralsetting"),
+            user.has_perm("payroll.change_encashmentgeneralsettings"),
             user.has_perm("payroll.view_payrollsettings"),
             user.has_perm("auth.view_permission"),
             user.has_perm("auth.view_group"),
@@ -278,8 +278,8 @@ def show_section(context):
             user.has_perm("horilla_ldap.add_ldapsettings"),
             user.has_perm("horilla_ldap.update_ldapsettings"),
             user.has_perm("employee.view_actiontype"),
-            user.has_perm("helpdesk.view_tag"),
-            user.has_perm("whatsapp.view_whatsappcredentials"),
+            user.has_perm("base.view_tags"),
+            user.has_perm("whatsapp.view_whatsappcredientials"),
             user.has_perm("base.view_company"),
             user.has_perm("base.view_tags"),
             user.has_perm("base.view_dynamicemailconfiguration"),
@@ -299,7 +299,7 @@ def show_section(context):
             user.has_perm("horilla_ldap.add_ldapsettings"),
             user.has_perm("horilla_ldap.update_ldapsettings"),
             user.has_perm("horilla_meet.view_googlecloudcredential"),
-            user.has_perm("whatsapp.add_whatsappcredentials"),
+            user.has_perm("whatsapp.add_whatsappcredientials"),
             user.has_perm("horilla_theme.view_horillacolortheme"),
         ]
     )
@@ -390,8 +390,8 @@ def config_perms(user):
     app_permissions = {
         "leave": ["leave.view_restrictleave"],
         "base": [
-            "base.add_holiday",
-            "base.change_holiday",
+            "base.add_holidays",
+            "base.change_holidays",
             "base.add_companyleaves",
             "base.change_companyleaves",
             "base.add_horillamailtemplates",

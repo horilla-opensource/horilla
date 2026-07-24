@@ -42,5 +42,5 @@ def helpdesk_settings_accessibility(request, submenu, user_perms, *args, **kwarg
     return (
         request.user.has_perm("helpdesk.view_departmentmanager")
         or request.user.has_perm("helpdesk.view_tickettype")
-        or request.user.has_perm("helpdesk.view_tag")
+        or request.user.has_perm("base.view_tags")
     )

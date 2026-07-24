@@ -331,7 +331,7 @@ def recruitment_pipeline(request):
     if request.method == "POST":
         if request.POST.get(
             "recruitment_managers"
-        ) is not None and request.user.has_perm("add_recruitment"):
+        ) is not None and request.user.has_perm("recruitment.add_recruitment"):
             recruitment_form = RecruitmentDropDownForm(request.POST)
             if recruitment_form.is_valid():
                 recruitment_obj = recruitment_form.save()
@@ -358,7 +358,7 @@ def recruitment_pipeline(request):
 
                 return HorillaRedirect(request)
         elif request.FILES.get("resume") is not None:
-            if request.user.has_perm("add_candidate") or is_stagemanager(
+            if request.user.has_perm("recruitment.add_candidate") or is_stagemanager(
                 request,
             ):
                 candidate_form = CandidateDropDownForm(request.POST, request.FILES)
@@ -384,7 +384,9 @@ def recruitment_pipeline(request):
 
                     messages.success(request, _("Candidate added."))
                     return HorillaRedirect(request)
-        elif request.POST.get("stage_managers") and request.user.has_perm("add_stage"):
+        elif request.POST.get("stage_managers") and request.user.has_perm(
+            "recruitment.add_stage"
+        ):
             stage_form = StageDropDownForm(request.POST)
             if stage_form.is_valid():
                 if recruitment_manages(
@@ -890,7 +892,7 @@ def stage_delete(request, stage_id):
             manager.employee_user_id.user_permissions.remove(view_recruitment.id)
         initial_stage_manager = all_this_manger.filter(stage_type="initial")
         if len(initial_stage_manager) == 1:
-            add_candidate = Permission.objects.get(codename="add_candidate")
+            add_candidate = Permission.objects.get(codename="recruitment.add_candidate")
             change_candidate = Permission.objects.get(codename="change_candidate")
             manager.employee_user_id.user_permissions.remove(add_candidate.id)
             manager.employee_user_id.user_permissions.remove(change_candidate.id)

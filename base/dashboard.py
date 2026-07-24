@@ -1049,7 +1049,7 @@ def dashboard_pending_approvals(request):
     pending = {}
 
     has_leave_perm = user.has_perm("leave.change_leaverequest")
-    has_attendance_perm = user.has_perm("attendance.validate_attendance")
+    has_attendance_perm = user.has_perm("attendance.change_validateattendance")
     has_asset_perm = user.has_perm("asset.change_assetrequest")
     has_shift_perm = user.has_perm("base.change_shiftrequest")
     has_wt_perm = user.has_perm("base.change_worktyperequest")
@@ -1114,7 +1114,7 @@ def dashboard_pending_approvals(request):
                     is_validate_request_approved=False,
                 )
                 att_count = filtersubordinates(
-                    request, qs, "attendance.validate_attendance"
+                    request, qs, "attendance.change_validateattendance"
                 ).count()
         else:
             att_count = (

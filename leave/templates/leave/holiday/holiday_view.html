@@ -57,7 +57,7 @@
       {% endif %}
 
       <!-- start of Actions -->
-      {% if perms.leave.add_holiday or perms.leave.delete_holiday%}
+      {% if perms.base.add_holidays or perms.base.delete_holidays%}
       <div class="oh-dropdown ml-2" x-data="{open: false}">
         <button
           class="oh-btn oh-btn--dropdown"
@@ -72,7 +72,7 @@
           style="display: none"
         >
           <ul class="oh-dropdown__items">
-            {% if perms.leave.add_holiday %}
+            {% if perms.base.add_holidays %}
             <li class="oh-dropdown__item">
               <a
                 href="#"
@@ -82,7 +82,7 @@
                 >{% trans "Import" %}</a
               >
             </li>
-            {% endif %} {% if holidays %} {% if perms.leave.add_holiday %}
+            {% endif %} {% if holidays %} {% if perms.base.add_holidays %}
             <li class="oh-dropdown__item">
               <a
                 href="#"
@@ -95,7 +95,7 @@
                 >{% trans "Export" %}</a
               >
             </li>
-            {% endif %} {% if perms.leave.delete_holiday %}
+            {% endif %} {% if perms.base.delete_holidays %}
             <li class="oh-dropdown__item">
               <a
                 href="#"
@@ -112,7 +112,7 @@
       <!-- end of actions -->
 
       <!-- start of create -->
-      {% if perms.leave.add_holiday %}
+      {% if perms.base.add_holidays %}
       <div class="oh-btn-group ml-2">
         <div class="oh-dropdown" x-data="{open: false}">
           <button

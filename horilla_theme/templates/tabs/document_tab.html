@@ -106,7 +106,7 @@
 
                     <div class="flex gap-1 items-center justify-center">
                         {% if document.document %}
-                            {% if perms.horilla_document.change_documentrequest %}
+                            {% if perms.horilla_documents.change_documentrequest %}
                                 {% if document.status == "requested" %}
                                     <button
                                         class="oh-btn oh-btn--sq-sm bg-primary-300 text-dark-700 hover:bg-success hover:text-white"
@@ -183,7 +183,7 @@
                             </button>
                         {% endif %}
 
-                        {% if not document.document_request_id or perms.horilla_document.change_documentrequest %}
+                        {% if not document.document_request_id or perms.horilla_documents.change_documentrequest %}
                             <form
                                 hx-confirm="{% trans 'Are you sure you want to delete this Document Request?' %}"
                                 hx-post="{% url 'document-delete' document.id %}"

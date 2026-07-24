@@ -46,7 +46,7 @@
 						>{{emp.get_full_name}}</span
 					>
 				</div>
-				{% if perms.payroll.change_disciplinaryaction or perms.payroll.delete_disciplinaryaction %}
+				{% if perms.employee.change_disciplinaryaction or perms.employee.delete_disciplinaryaction %}
 					<a
 						title="{% trans 'Remove' %}"
 						hx-post="{% url 'remove-employee-disciplinary-action' instance.id emp.id %}"

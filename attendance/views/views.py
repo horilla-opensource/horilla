@@ -710,7 +710,7 @@ def attendance_overtime_update(request, obj_id):
 
 
 @login_required
-@permission_required("attendance.delete_attendanceoverTime")
+@permission_required("attendance.delete_attendanceovertime")
 @require_http_methods(["POST"])
 def attendance_overtime_delete(request, obj_id):
     """

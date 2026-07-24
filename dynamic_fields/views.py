@@ -16,7 +16,7 @@ from horilla_views.generic.cbv.views import HorillaFormView
 
 @method_decorator(login_required, name="dispatch")
 @method_decorator(
-    permission_required("dynamic_fields.change_mailautomation"), name="dispatch"
+    permission_required("horilla_automations.change_mailautomation"), name="dispatch"
 )
 class ChoiceFormView(HorillaFormView):
     """
@@ -30,7 +30,7 @@ class ChoiceFormView(HorillaFormView):
 
 @method_decorator(login_required, name="dispatch")
 @method_decorator(
-    permission_required("dynamic_fields.change_mailautomation"), name="dispatch"
+    permission_required("horilla_automations.change_mailautomation"), name="dispatch"
 )
 class DynamicFieldFormView(HorillaFormView):
     """
@@ -63,7 +63,7 @@ class DynamicFieldFormView(HorillaFormView):
 
 @method_decorator(login_required, name="dispatch")
 @method_decorator(
-    permission_required("dynamic_fields.change_mailautomation"), name="dispatch"
+    permission_required("horilla_automations.change_mailautomation"), name="dispatch"
 )
 class RemoveDf(View):
     """

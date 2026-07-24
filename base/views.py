@@ -1430,7 +1430,7 @@ def user_group_view(request):
 
 
 @login_required
-@permission_required("change_group")
+@permission_required("auth.change_group")
 @require_http_methods(["POST"])
 def user_group_permission_remove(request, pid, gid):
     """
@@ -3788,7 +3788,7 @@ def employee_permission_assign(request, pk=None):
 
 @login_required
 @hx_request_required
-@permission_required("view_permissions")
+@permission_required("auth.view_permission")
 def employee_permission_search(request, codename=None, uid=None):
     """
     This method renders template to view all instances of user permissions
@@ -5452,7 +5452,7 @@ def shift_request_delete(request, id):
 
 
 @login_required
-@permission_required("delete_shiftrequest")
+@permission_required("base.delete_shiftrequest")
 @require_http_methods(["POST"])
 def shift_request_bulk_delete(request):
     """
@@ -6256,7 +6256,7 @@ def tag_view(request):
 
 
 @login_required
-@permission_required("helpdesk.view_tag")
+@permission_required("base.view_tags")
 def helpdesk_tag_view(request):
     """
     This method is used to show Help desk tags
@@ -6271,7 +6271,7 @@ def helpdesk_tag_view(request):
 
 @login_required
 @hx_request_required
-@permission_required("helpdesk.add_tag")
+@permission_required("base.add_tags")
 def tag_create(request):
     """
     This method renders form and template to create Ticket type
@@ -6295,7 +6295,7 @@ def tag_create(request):
 
 @login_required
 @hx_request_required
-@permission_required("helpdesk.change_tag")
+@permission_required("base.change_tags")
 def tag_update(request, tag_id):
     """
     This method renders form and template to create Ticket type
@@ -7602,7 +7602,7 @@ def excel_holiday_import(file):
 
 @login_required
 @hx_request_required
-@permission_required("base.add_holiday")
+@permission_required("base.add_holidays")
 def holidays_info_import(request):
     result = None
     file_name = "HolidaysImportError.xlsx"
@@ -7804,7 +7804,7 @@ def holiday_delete(request, obj_id):
 
 @login_required
 @require_http_methods(["POST"])
-@permission_required("base.delete_holiday")
+@permission_required("base.delete_holidays")
 def bulk_holiday_delete(request):
     """
     Deletes multiple holidays based on IDs passed in the POST request.

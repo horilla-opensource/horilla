@@ -354,8 +354,8 @@ def _resolve_group_permissions(config):
                 content_type__app_label="auth",
                 codename__in=[
                     "add_group",
-                    "change_group",
-                    "delete_group",
+                    "auth.change_group",
+                    "auth.delete_group",
                     "view_group",
                     "add_permission",
                     "change_permission",

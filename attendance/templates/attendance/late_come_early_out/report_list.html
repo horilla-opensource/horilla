@@ -138,7 +138,7 @@
                             >
                                 {% trans "Penalties" %}
                             </div>
-                            {% if request.user|is_reportingmanager or perms.attendance.change_penaltyaccounts or perms.attendance.delete_attendancelatecomeearlyout %}
+                            {% if request.user|is_reportingmanager or perms.base.change_penaltyaccounts or perms.attendance.delete_attendancelatecomeearlyout %}
                                 <div
                                     class="oh-sticky-table__th oh-sticky-table__right"
                                     scope="col"
@@ -223,13 +223,13 @@
                                         </div>
                                     {% endif %}
                                 </div>
-                                {% if request.user|is_reportingmanager or perms.attendance.change_penaltyaccounts or perms.attendance.delete_attendancelatecomeearlyout %}
+                                {% if request.user|is_reportingmanager or perms.base.change_penaltyaccounts or perms.attendance.delete_attendancelatecomeearlyout %}
                                     <div
                                         class="oh-sticky-table__td oh-sticky-table__right"
                                         onclick="event.stopPropagation()"
                                     >
                                         <div class="oh-btn-group">
-                                            {% if request.user|is_reportingmanager or perms.attendance.change_penaltyaccounts %}
+                                            {% if request.user|is_reportingmanager or perms.base.change_penaltyaccounts %}
                                                 <button
                                                     data-toggle="oh-modal-toggle"
                                                     data-target="#penaltyModal"

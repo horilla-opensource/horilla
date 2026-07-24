@@ -136,7 +136,7 @@ x-data="{searchShow: false}"
       >
           <ul class="oh-dropdown__items">
             <li class="oh-dropdown__item">
-              {% if perms.delete_candidates %}
+              {% if perms.recruitment.delete_candidate %}
               <a
                 href="#"
                 class="oh-dropdown__link"
@@ -147,7 +147,7 @@ x-data="{searchShow: false}"
               >
               {% endif %}
             </li>
-            {% if perms.delete_candidates %}
+            {% if perms.recruitment.delete_candidate %}
             <li class="oh-dropdown__item">
               <a href="#" class="oh-dropdown__link " id="archiveCandidates"
 
@@ -156,7 +156,7 @@ x-data="{searchShow: false}"
             </li>
             {% endif %}
 
-            {% if perms.delete_candidates %}
+            {% if perms.recruitment.delete_candidate %}
             <li class="oh-dropdown__item">
               <a href="#" class="oh-dropdown__link "
 
@@ -166,7 +166,7 @@ x-data="{searchShow: false}"
             </li>
             {% endif %}
 
-            {% if perms.delete_candidates %}
+            {% if perms.recruitment.delete_candidate %}
             <li class="oh-dropdown__item">
               <a
                 href="#"

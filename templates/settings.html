@@ -603,7 +603,7 @@
                             {% if "helpdesk"|app_installed %}
                                 <li class="oh-inner-sidebar__item">
                                     <div class="oh-accordion ms-2">
-                                        {% if perms.helpdesk.view_departmentmanager or perms.helpdesk.view_tickettype or perms.helpdesk.view_tag %}
+                                        {% if perms.helpdesk.view_departmentmanager or perms.helpdesk.view_tickettype or perms.base.view_tags %}
                                             <div class="oh-accordion-header" style="font-size: 16px">
                                                 <ion-icon name="headset" class="me-2"></ion-icon>
                                                 {% trans "Helpdesk" %}
@@ -631,7 +631,7 @@
                                                         {% endif %}
                                                     </div>
                                                     <div class="oh-input-group">
-                                                        {% if perms.helpdesk.view_tag %}
+                                                        {% if perms.base.view_tags %}
                                                             <a
                                                                 id="ticket_type"
                                                                 href="{% url 'helpdesk-tag-view' %}"
@@ -644,12 +644,12 @@
                                         </div>
                                     </div>
                                 </li>
-                                {% if perms.helpdesk.view_departmentmanager or perms.helpdesk.view_tickettype or perms.helpdesk.view_tag %}
+                                {% if perms.helpdesk.view_departmentmanager or perms.helpdesk.view_tickettype or perms.base.view_tags %}
                                     <hr>
                                 {% endif %}
                             {% endif %}
                             {% if "whatsapp"|app_installed %}
-                                {% if perms.whatsapp.view_whatsappcredentials %}
+                                {% if perms.whatsapp.view_whatsappcredientials %}
                                     <li class="oh-inner-sidebar__item">
                                         <div class="oh-accordion ms-2">
                                             <div class="oh-accordion-header" style="font-size: 16px">
@@ -660,7 +660,7 @@
                                                 <div class="row">
                                                     <div class="col-sm-12 col-md-12 col-lg-12">
                                                         <div class="oh-input-group">
-                                                            {% if perms.whatsapp.add_whatsappcredentials %}
+                                                            {% if perms.whatsapp.add_whatsappcredientials %}
                                                                 <a
                                                                     id="whatsapp_credentials"
                                                                     href="{% url 'whatsapp-credential-view' %}"

@@ -89,7 +89,7 @@ def payroll_settings_accessibility(request, submenu, user_perms, *args, **kwargs
 
 
 def encashment_settings_accessibility(request, submenu, user_perms, *args, **kwargs):
-    return request.user.has_perm("payroll.change_encashmentgeneralsetting")
+    return request.user.has_perm("payroll.change_encashmentgeneralsettings")
 
 
 @settings_menu.register

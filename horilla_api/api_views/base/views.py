@@ -1288,7 +1288,7 @@ class EmployeeTabPermissionCheck(APIView):
         instance = Employee.objects.filter(id=request.GET.get("employee_id")).first()
         if _is_reportingmanger(request, instance) or request.user.has_perms(
             [
-                "view.view_worktyperequest",
+                "base.view_worktyperequest",
                 "attendance.view_shiftrequest",
                 "employee.change_employee",
             ]

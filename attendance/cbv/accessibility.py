@@ -36,7 +36,7 @@ def penalty_accessibility(
     employee = Employee.objects.get(id=instance.pk)
     check_manages = check_manager(request.user.employee_get, instance)
     if (
-        request.user.has_perm("attendance.view_penaltyaccount")
+        request.user.has_perm("base.view_penaltyaccounts")
         or request.user == employee.employee_user_id
         or check_manages
     ):

@@ -201,7 +201,9 @@ def stage_delete(request, stage_id):
                 manager.employee_user_id.user_permissions.remove(view_recruitment.id)
             initial_stage_manager = all_this_manger.filter(stage_type="initial")
             if len(initial_stage_manager) == 1:
-                add_candidate = Permission.objects.get(codename="add_candidate")
+                add_candidate = Permission.objects.get(
+                    codename="recruitment.add_candidate"
+                )
                 change_candidate = Permission.objects.get(codename="change_candidate")
                 manager.employee_user_id.user_permissions.remove(add_candidate.id)
                 manager.employee_user_id.user_permissions.remove(change_candidate.id)

@@ -10,7 +10,7 @@
         </p>
     </div>
 
-    {% if "payroll"|app_installed and perms.payroll.change_encashmentgeneralsetting %}
+    {% if "payroll"|app_installed and perms.payroll.change_encashmentgeneralsettings %}
         {% include "settings/encashment_settings.html" %}
     {% endif %}
 {% endblock settings %}

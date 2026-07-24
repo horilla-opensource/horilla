@@ -259,7 +259,7 @@ def update_title(request):
     try:
         batch = BatchAttendance.objects.filter(id=batch_id).first()
         if (
-            request.user.has_perm("attendance.change_attendancegeneralsettings")
+            request.user.has_perm("attendance.change_attendancegeneralsetting")
             or request.user == batch.created_by
         ):
             title = request.POST.get("title")

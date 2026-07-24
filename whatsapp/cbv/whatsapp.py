@@ -23,7 +23,7 @@ from whatsapp.utils import send_text_message
 
 @method_decorator(login_required, name="dispatch")
 @method_decorator(
-    permission_required("whatsapp.view_whatsappcredentials"), name="dispatch"
+    permission_required("whatsapp.view_whatsappcredientials"), name="dispatch"
 )
 @method_decorator(check_integration_enabled(app_name="whatsapp"), name="dispatch")
 class CredentialListView(HorillaListView):
@@ -98,7 +98,7 @@ class CredentialListView(HorillaListView):
 
 @method_decorator(login_required, name="dispatch")
 @method_decorator(
-    permission_required("whatsapp.view_whatsappcredentials"), name="dispatch"
+    permission_required("whatsapp.view_whatsappcredientials"), name="dispatch"
 )
 @method_decorator(check_integration_enabled(app_name="whatsapp"), name="dispatch")
 class CredentialNav(HorillaNavView):
@@ -123,7 +123,7 @@ class CredentialNav(HorillaNavView):
 
 @method_decorator(login_required, name="dispatch")
 @method_decorator(
-    permission_required("whatsapp.add_whatsappcredentials"), name="dispatch"
+    permission_required("whatsapp.add_whatsappcredientials"), name="dispatch"
 )
 @method_decorator(check_integration_enabled(app_name="whatsapp"), name="dispatch")
 class CredentialForm(HorillaFormView):
@@ -153,7 +153,7 @@ class CredentialForm(HorillaFormView):
 
 
 @func_login_required
-@permission_required("whatsapp.delete_whatsappcredentials")
+@permission_required("whatsapp.delete_whatsappcredientials")
 @check_integration_enabled(app_name="whatsapp")
 def delete_credentials(request):
     """
@@ -171,7 +171,7 @@ def delete_credentials(request):
 
 
 @func_login_required
-@permission_required("whatsapp.view_whatsappcredentials")
+@permission_required("whatsapp.view_whatsappcredientials")
 @check_integration_enabled(app_name="whatsapp")
 def send_test_message(request):
     """

@@ -171,10 +171,10 @@
                     {% endif %}
                 </div>
             </div>
-            {% if request.user|is_reportingmanager or perms.attendance.change_penaltyaccounts or perms.attendance.delete_attendancelatecomeearlyout %}
+            {% if request.user|is_reportingmanager or perms.base.change_penaltyaccounts or perms.attendance.delete_attendancelatecomeearlyout %}
                 <div class="oh-modal__button-container text-center">
                     <div class="oh-btn-group">
-                        {% if request.user|is_reportingmanager or perms.attendance.change_penaltyaccounts %}
+                        {% if request.user|is_reportingmanager or perms.base.change_penaltyaccounts %}
                             <a
                                 class="oh-btn oh-btn--warning"
                                 data-toggle="oh-modal-toggle"

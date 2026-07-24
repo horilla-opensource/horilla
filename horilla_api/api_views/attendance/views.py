@@ -747,7 +747,7 @@ class OfflineEmployeesCountView(APIView):
             .exists()
         )
 
-        if request.user.has_perm("employee.view_enployee") or is_manager:
+        if request.user.has_perm("employee.view_employee") or is_manager:
             count = (
                 EmployeeFilter({"not_in_yet": date.today()})
                 .qs.exclude(employee_work_info__isnull=True)

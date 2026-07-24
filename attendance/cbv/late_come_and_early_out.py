@@ -54,7 +54,7 @@ class LateComeAndEarlyOutList(HorillaListView):
         self.search_url = reverse("late-come-early-out-search")
         self.view_id = "late-container"
         if (
-            not self.request.user.has_perm("attendance.chanage_penaltyaccount")
+            not self.request.user.has_perm("base.change_penaltyaccounts")
             and not is_reportingmanager(self.request)
             and not self.request.user.has_perm(
                 "perms.attendance.delete_attendancelatecomeearlyout"
@@ -142,7 +142,7 @@ class LateComeAndEarlyOutListNav(HorillaNavView):
         ]
 
         if self.request.user.has_perm(
-            "attendance.chanage_penaltyaccount"
+            "base.change_penaltyaccounts"
         ) or self.request.user.has_perm(
             "perms.attendance.delete_attendancelatecomeearlyout"
         ):
@@ -160,7 +160,7 @@ class LateComeAndEarlyOutListNav(HorillaNavView):
             )
 
         if (
-            not self.request.user.has_perm("attendance.chanage_penaltyaccount")
+            not self.request.user.has_perm("base.change_penaltyaccounts")
             and not is_reportingmanager(self.request)
             and not self.request.user.has_perm(
                 "perms.attendance.delete_attendancelatecomeearlyout"

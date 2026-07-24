@@ -4,7 +4,7 @@
     {% load horillafilters %}
 
     {% if "payroll"|app_installed %}
-        {% if perms.payroll.change_encashmentgeneralsetting %}
+        {% if perms.payroll.change_encashmentgeneralsettings %}
             {% include "settings/encashment_settings.html" %}
         {% endif %}
     {% endif %}

@@ -301,7 +301,7 @@ class ResignationLetterForm(ModelForm):
         if (
             not request.user.has_perm("offboarding.add_resignationletter")
             and instance.status == "requested"
-        ) or request.user.has_perm("add_resignationletter"):
+        ) or request.user.has_perm("offboarding.add_resignationletter"):
             instance = super().save(commit)
         else:
             messages.info(

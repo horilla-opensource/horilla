@@ -735,7 +735,7 @@ class DocumentRequestAPIView(APIView):
             serializer = DocumentRequestSerializer(page, many=True)
             return pagination.get_paginated_response(serializer.data)
 
-    @manager_permission_required("horilla_documents.add_documentrequests")
+    @manager_permission_required("horilla_documents.add_documentrequest")
     def post(self, request):
         serializer = DocumentRequestSerializer(data=request.data)
         if serializer.is_valid():

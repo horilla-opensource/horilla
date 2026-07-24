@@ -1861,7 +1861,7 @@ def delete_reimbursement_comment_file(request):
     if not ids:
         return HorillaRedirect(request, message=_("No file IDs provided for deletion."))
     records = ReimbursementFile.objects.filter(id__in=ids)
-    if not request.user.has_perm("payroll.delete_reimbursmentfile"):
+    if not request.user.has_perm("payroll.delete_reimbursementfile"):
         records = records.filter(employee_id__employee_user_id=request.user)
     records.delete()
     return HorillaRedirect(request, message=_("File deleted successfully"))

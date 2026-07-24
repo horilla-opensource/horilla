@@ -189,7 +189,7 @@ def filter_survey(request):
         for manager in i.recruitment_managers.all():
             if request.user.employee_get == manager:
                 ids.append(i.id)
-    if request.user.has_perm("view_recruitmentsurvey"):
+    if request.user.has_perm("recruitment.view_recruitmentsurvey"):
         questions = RecruitmentSurvey.objects.all()
     else:
         questions = RecruitmentSurvey.objects.filter(recruitment_ids__in=ids)
