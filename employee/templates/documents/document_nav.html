@@ -184,7 +184,7 @@
 							style="display: none"
 						>
 							<ul class="oh-dropdown__items">
-								{% if perms.horilla_documnets.change_documentrequest or request.user|is_reportingmanager %}
+								{% if perms.horilla_documents.change_documentrequest or request.user|is_reportingmanager %}
 
 								<li class="oh-dropdown__item">
 									<a class="oh-dropdown__link mb-2 bulk_approve" style="cursor: pointer;" onclick="validateDocsIds(event);"
