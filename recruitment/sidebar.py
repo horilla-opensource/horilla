@@ -60,11 +60,6 @@ SUBMENUS = [
         "accessibility": "recruitment.sidebar.survey_accessibility",
     },
     {
-        "menu": _("Stages"),
-        "redirect": reverse("rec-stage-view"),
-        "accessibility": "recruitment.sidebar.stage_accessibility",
-    },
-    {
         "menu": _("Skill Zone"),
         "redirect": reverse("skill-zone-view"),
         "accessibility": "recruitment.sidebar.skill_zone_accessibility",
@@ -132,12 +127,6 @@ def interview_accessibility(
     return request.user.has_perm("recruitment.view_interviewschedule") or view_interview
 
 
-def stage_accessibility(
-    request, _submenu: dict = {}, user_perms: PermWrapper = [], *args, **kwargs
-) -> bool:
-    return request.user.has_perm("recruitment.view_stage")
-
-
 def skill_zone_accessibility(
     request, _submenu: dict = {}, user_perms: PermWrapper = [], *args, **kwargs
 ) -> bool:
@@ -149,9 +138,11 @@ def skill_zone_accessibility(
 def recruitment_settings_accessibility(
     request, _submenu: dict = {}, user_perms: PermWrapper = [], *args, **kwargs
 ) -> bool:
-    return request.user.has_perm(
-        "recruitment.view_rejectreason"
-    ) or request.user.has_perm("recruitment.view_recruitment")
+    return (
+        request.user.has_perm("recruitment.view_rejectreason")
+        or request.user.has_perm("recruitment.view_recruitment")
+        or request.user.has_perm("recruitment.view_stage")
+    )
 
 
 def dashboard_accessibility(request, submenu, user_perms, *args, **kwargs):

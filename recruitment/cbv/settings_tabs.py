@@ -32,6 +32,10 @@ class RecruitmentSettingsTabView(HorillaTabView):
         super().__init__(**kwargs)
         self.tabs = [
             {
+                "title": _("Stages"),
+                "url": f"{reverse('recruitment-settings-stage-tab')}",
+            },
+            {
                 "title": _("Reject Reason"),
                 "url": f"{reverse('recruitment-settings-reject-reason-tab')}",
             },
@@ -60,3 +64,13 @@ class RecruitmentSettingsSkillTab(TemplateView):
     """
 
     template_name = "cbv/recruitment_settings/skill_tab.html"
+
+
+@method_decorator(login_required, name="dispatch")
+@method_decorator(hx_request_required, name="dispatch")
+class RecruitmentSettingsStageTab(TemplateView):
+    """
+    stages tab content, embeds the existing stage nav + list
+    """
+
+    template_name = "cbv/recruitment_settings/stage_tab.html"
