@@ -43,44 +43,9 @@
 
         {% if member_count %}
             <div class="grid sm:grid-cols-2 gap-2" id="groupMembers{{ group.id }}">
-                {% for user in group.user_set.all %}
-                    {% if user.employee_get %}
-                        <div
-                            class="ug-member-row flex items-center justify-between gap-2 border border-[#ececec] rounded-md px-3 py-2"
-                            id="groupMember{{ group.id }}_{{ user.id }}"
-                        >
-                            <div class="flex items-center gap-2 min-w-0">
-                                <img
-                                    src="{{ user.employee_get.get_avatar }}"
-                                    alt=""
-                                    class="w-7 h-7 rounded-full object-cover shrink-0"
-                                    loading="lazy"
-                                >
-                                <div class="min-w-0">
-                                    <p class="text-sm font-medium text-dark-400 truncate">
-                                        {{ user.employee_get.get_full_name }}
-                                    </p>
-                                    <p class="text-[11px] text-dark-200 truncate">
-                                        {{ user.employee_get.get_mail }}
-                                    </p>
-                                </div>
-                            </div>
-                            {% if perms.auth.change_group %}
-                                <button
-                                    type="button"
-                                    class="text-xs text-danger hover:underline shrink-0"
-                                    hx-post="{% url 'group-remove-user' user.id group.id %}"
-                                    hx-target="#groupMember{{ group.id }}_{{ user.id }}"
-                                    hx-swap="outerHTML"
-                                    hx-trigger="confirmed"
-                                    onclick="hxConfirm(this, &quot;{% filter escapejs %}{% blocktrans with name=user.employee_get.get_full_name %}Remove {{ name }} from this group?{% endblocktrans %}{% endfilter %}&quot;)"
-                                    hx-on-htmx-after-request="reloadMessage()"
-                                    title="{% trans 'Remove from group' %}"
-                                >
-                                    {% trans "Remove" %}
-                                </button>
-                            {% endif %}
-                        </div>
+                {% for member in members %}
+                    {% if member.user.employee_get %}
+                        {% include "base/auth/group_member_row.html" with user=member.user companies=member.companies %}
                     {% endif %}
                 {% endfor %}
             </div>

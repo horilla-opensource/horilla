@@ -152,6 +152,61 @@ class Company(HorillaModel):
         return self.pk
 
 
+class CompanyGroupAssignment(HorillaModel):
+    """
+    Company-scoped membership of a user in an auth Group.
+
+    When settings.COMPANY_SCOPED_PERMISSIONS is enabled, a user's group
+    permissions only apply in companies where such an assignment exists
+    (resolved by base.auth_backends.CompanyScopedBackend). The plain
+    ``user.groups`` M2M is kept in sync as the union of these rows so that
+    disabling the flag instantly restores legacy global behavior.
+    """
+
+    user = models.ForeignKey(
+        HorillaUser,
+        on_delete=models.CASCADE,
+        related_name="company_group_assignments",
+        verbose_name=_("User"),
+    )
+    company = models.ForeignKey(
+        Company,
+        on_delete=models.CASCADE,
+        related_name="group_assignments",
+        verbose_name=_("Company"),
+    )
+    group = models.ForeignKey(
+        "auth.Group",
+        on_delete=models.CASCADE,
+        related_name="company_assignments",
+        verbose_name=_("Group"),
+    )
+
+    class Meta:
+        """
+        Meta class to add additional options
+        """
+
+        verbose_name = _("Company group assignment")
+        verbose_name_plural = _("Company group assignments")
+        unique_together = ["user", "company", "group"]
+        app_label = "base"
+
+    def __str__(self) -> str:
+        return f"{self.user} - {self.group} @ {self.company}"
+
+    @classmethod
+    def sync_user_group_membership(cls, user, group):
+        """
+        Keep the plain ``user.groups`` M2M as the union of company
+        assignments: member of the group in >=1 company -> in the M2M.
+        """
+        if cls.objects.filter(user=user, group=group).exists():
+            user.groups.add(group)
+        else:
+            user.groups.remove(group)
+
+
 class Department(HorillaModel):
     """
     Department model

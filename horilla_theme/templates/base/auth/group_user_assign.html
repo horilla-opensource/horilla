@@ -29,6 +29,20 @@
         {{ form.employee.errors }}
         {{ form.employee }}
     </div>
+    {% if form.companies %}
+        <div>
+            <label class="block text-sm font-medium text-dark-400 mb-1">
+                {% trans "Companies" %}
+            </label>
+            <p class="text-xs text-dark-200 mb-2">
+                {{ form.companies.help_text }}
+            </p>
+            {{ form.companies.errors }}
+            <div class="flex flex-wrap gap-x-5 gap-y-1 text-sm [&_label]:flex [&_label]:items-center [&_label]:gap-1.5 [&_ul]:flex [&_ul]:flex-wrap [&_ul]:gap-x-5 [&_ul]:gap-y-1 [&_ul]:list-none [&_ul]:p-0 [&_ul]:m-0">
+                {{ form.companies }}
+            </div>
+        </div>
+    {% endif %}
     <input type="hidden" name="group" value="{{ group_id }}">
 
     <div class="flex flex-wrap justify-end gap-2 pt-2 border-t border-[#ececec]">

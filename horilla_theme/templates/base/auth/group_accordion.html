@@ -242,7 +242,8 @@
         }
         $("tbody tr.perm-feature-row").each(function () {
             var check = $(this).find("[name=permissions]:checked").length;
-            $(this).find(".row-permission").prop("checked", check === 4);
+            var total = $(this).find("[name=permissions]").length;
+            $(this).find(".row-permission").prop("checked", total > 0 && check === total);
         });
     }
 

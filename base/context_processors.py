@@ -51,41 +51,82 @@ def get_last_section(path):
 
 def get_companies(request):
     """
-    This method will return the history additional field form
+    Companies for the header switcher. With COMPANY_SCOPED_PERMISSIONS on,
+    non-superusers only see companies they hold assignments for, and the
+    "All Company" entry is superuser-only.
     """
-    companies = list(
-        [company.id, company.company, company.icon.url, False]
-        for company in Company.objects.all()
+    from base.auth_backends import company_scoped_active, get_allowed_company_ids
+
+    scoped = (
+        company_scoped_active()
+        and request.user.is_authenticated
+        and not request.user.is_superuser
     )
-    companies = [
-        [
-            "all",
-            "All Company",
-            "https://ui-avatars.com/api/?name=All+Company&background=random",
-            False,
-        ],
-    ] + companies
+    company_qs = Company.objects.all()
+    if scoped:
+        company_qs = company_qs.filter(id__in=get_allowed_company_ids(request.user))
+    companies = list(
+        [company.id, company.company, company.icon.url, False] for company in company_qs
+    )
+    if not scoped:
+        companies = [
+            [
+                "all",
+                "All Company",
+                "https://ui-avatars.com/api/?name=All+Company&background=random",
+                False,
+            ],
+        ] + companies
     selected_company = request.session.get("selected_company")
     company_selected = False
     if selected_company and selected_company == "all":
-        companies[0][3] = True
-        company_selected = True
+        if not scoped:
+            companies[0][3] = True
+            company_selected = True
     else:
         for company in companies:
             if str(company[0]) == selected_company:
                 company[3] = True
                 company_selected = True
-    return {"all_companies": companies, "company_selected": company_selected}
+
+    if not request.user.is_authenticated:
+        show_switcher = False
+    elif scoped:
+        show_switcher = len(companies) > 1
+    else:
+        show_switcher = request.user.has_perm("base.change_company")
+    return {
+        "all_companies": companies,
+        "company_selected": company_selected,
+        "show_company_switcher": show_switcher,
+    }
 
 
 @login_required
 @hx_request_required
-@permission_required("base.change_company")
 def update_selected_company(request):
     """
     This method is used to update the selected company on the session
     """
+    from base.auth_backends import company_scoped_active, get_allowed_company_ids
+
     company_id = request.GET.get("company_id")
+    if company_scoped_active() and not request.user.is_superuser:
+        # Scoped mode: users may switch only among their own companies
+        # (regardless of base.change_company, to avoid one-way lockouts);
+        # "all" is superuser-only.
+        try:
+            target_allowed = company_id != "all" and int(company_id) in (
+                get_allowed_company_ids(request.user)
+            )
+        except (TypeError, ValueError):
+            target_allowed = False
+        if not target_allowed:
+            messages.error(request, _("You do not have access to that company."))
+            return HorillaRedirect(request)
+    elif not request.user.has_perm("base.change_company"):
+        messages.error(request, _("You do not have permission to switch the company."))
+        return HorillaRedirect(request)
     user = request.user.employee_get
     user_company = getattr(
         getattr(user, "employee_work_info", None), "company_id", None

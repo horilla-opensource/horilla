@@ -340,7 +340,14 @@ DB_INIT_PASSWORD = env(
 # ========================================
 # PERMISSIONS / CUSTOM LOGIC
 # ========================================
+# When True, group permissions are scoped per company via
+# base.models.CompanyGroupAssignment (resolved by CompanyScopedBackend).
+# When False, legacy behavior: user.groups grant permissions globally.
+# Instant rollback switch: set the COMPANY_SCOPED_PERMISSIONS env var to False.
+COMPANY_SCOPED_PERMISSIONS = env.bool("COMPANY_SCOPED_PERMISSIONS", default=True)
+
 NO_PERMISSION_MODALS = [
+    "companygroupassignment",
     "historicalbonuspoint",
     "assetreport",
     "assetdocuments",
@@ -453,8 +460,11 @@ DEFAULT_LDAP_CONFIG = {
     "BASE_DN": env("BASE_DN", default="ou=users,dc=horilla,dc=com"),
 }
 
+# CompanyScopedBackend subclasses ModelBackend; it behaves identically while
+# COMPANY_SCOPED_PERMISSIONS is False. It must REPLACE ModelBackend (Django
+# unions grants across backends, so listing both would keep global perms).
 AUTHENTICATION_BACKENDS = [
-    "django.contrib.auth.backends.ModelBackend",
+    "base.auth_backends.CompanyScopedBackend",
     # "django_auth_ldap.backend.LDAPBackend",
 ]
 

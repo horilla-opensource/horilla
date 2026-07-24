@@ -190,11 +190,12 @@ _HRMS_GROUP_MIGRATE_APPS = {
 
 # name -> permission rules
 # apps: list of app_labels, or "__all__" for every installed HRMS app below
-# actions: add / view / change / delete
+# actions: add / view / change / delete, or "__all__" for every permission
+#          (CRUD + custom Meta permissions such as approve_ / cancel_)
 _DEFAULT_HRMS_GROUPS = {
     "Admin": {
         "apps": "__all__",
-        "actions": ("add", "view", "change", "delete"),
+        "actions": "__all__",
     },
     "HR Manager": {
         "apps": (
@@ -322,16 +323,23 @@ def _resolve_group_permissions(config):
     else:
         app_labels = [label for label in app_labels if _is_app_available(label)]
 
-    default_actions = tuple(config.get("actions", ("view",)))
+    default_actions = config.get("actions", ("view",))
     app_actions = config.get("app_actions") or {}
 
     permission_ids = []
     for app_label in app_labels:
-        actions = tuple(app_actions.get(app_label, default_actions))
+        actions = app_actions.get(app_label, default_actions)
         content_types = ContentType.objects.filter(app_label=app_label)
         if not content_types.exists():
             continue
-        for action in actions:
+        if actions == "__all__":
+            permission_ids.extend(
+                Permission.objects.filter(
+                    content_type__in=content_types,
+                ).values_list("id", flat=True)
+            )
+            continue
+        for action in tuple(actions):
             permission_ids.extend(
                 Permission.objects.filter(
                     content_type__in=content_types,

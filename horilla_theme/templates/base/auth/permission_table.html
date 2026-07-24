@@ -80,7 +80,7 @@
                                 type="button"
                                 class="perm-preset px-2 py-1 text-[11px] rounded border border-dark-50 text-dark-300 hover:bg-dark-50"
                                 data-preset="full"
-                                title="{% trans 'Allow create, view, edit and delete' %}"
+                                title="{% trans 'Allow create, view, edit, delete and other actions' %}"
                             >
                                 {% trans "Full access" %}
                             </button>
@@ -122,6 +122,11 @@
                                 <th class="text-xs text-center font-medium p-2 text-dark-300 w-16 bg-white" title="{% trans 'Can delete' %}">
                                     {% trans "Delete" %}
                                 </th>
+                                {% if perm.has_custom_permissions %}
+                                    <th class="text-xs text-left font-medium p-2 text-dark-300 min-w-[7rem] bg-white" title="{% trans 'Extra actions defined for this feature' %}">
+                                        {% trans "Other" %}
+                                    </th>
+                                {% endif %}
                             </tr>
                         </thead>
                         <tbody>
@@ -129,7 +134,7 @@
                                 {% if model.model_name not in no_permission_models %}
                                     <tr
                                         class="border-b border-[#f3f3f3] perm-feature-row"
-                                        data-feature="{{ model.verbose_name|lower }} {{ model.model_name|lower }} {{ perm.app|lower }}"
+                                        data-feature="{{ model.verbose_name|lower }} {{ model.model_name|lower }} {{ perm.app|lower }}{% for cp in model.custom_permissions %} {{ cp.label|lower }} {{ cp.codename|lower }}{% endfor %}"
                                     >
                                         <td class="text-sm text-left p-2 text-[#666] align-middle">
                                             <input
@@ -190,6 +195,34 @@
                                                 onchange="if (!$(this).is(':checked')) { $(this).closest('tr').find('.row-permission').prop('checked', false) }"
                                             >
                                         </td>
+                                        {% if perm.has_custom_permissions %}
+                                            <td class="text-sm p-2 text-[#666] align-middle">
+                                                {% if model.custom_permissions %}
+                                                    <div class="flex flex-wrap gap-x-3 gap-y-1">
+                                                        {% for cp in model.custom_permissions %}
+                                                            <label
+                                                                class="inline-flex items-center gap-1.5 text-[11px] text-dark-300 cursor-pointer whitespace-nowrap"
+                                                                title="{{ cp.name }}"
+                                                            >
+                                                                <input
+                                                                    type="checkbox"
+                                                                    class="custom-checkbox w-4 h-4 bg-[#E9EDF7] rounded-sm text-primary-600 cursor-pointer"
+                                                                    name="permissions"
+                                                                    value="{{ cp.codename }}"
+                                                                    title="{{ cp.name }}"
+                                                                    data-group-id="{{ group.id }}"
+                                                                    data-group-name="{{ group.name }}"
+                                                                    onchange="if (!$(this).is(':checked')) { $(this).closest('tr').find('.row-permission').prop('checked', false) }"
+                                                                >
+                                                                <span>{{ cp.label }}</span>
+                                                            </label>
+                                                        {% endfor %}
+                                                    </div>
+                                                {% else %}
+                                                    <span class="text-[11px] text-dark-100">—</span>
+                                                {% endif %}
+                                            </td>
+                                        {% endif %}
                                     </tr>
                                 {% endif %}
                             {% endfor %}
@@ -221,8 +254,9 @@
 
         $picker.find("tbody tr.perm-feature-row").each(function () {
             var $row = $(this);
+            var total = $row.find("[name=permissions]").length;
             var checked = $row.find("[name=permissions]:checked").length;
-            $row.find(".row-permission").prop("checked", checked === 4);
+            $row.find(".row-permission").prop("checked", total > 0 && total === checked);
         });
         $picker.find("table").each(function () {
             var $table = $(this);
@@ -270,7 +304,9 @@
             }
             $row.find(".row-permission").prop(
                 "checked",
-                $row.find("[name=permissions]:checked").length === 4
+                $row.find("[name=permissions]").length > 0 &&
+                    $row.find("[name=permissions]:checked").length ===
+                        $row.find("[name=permissions]").length
             );
         });
         var $first = $panel.find("[name=permissions]").first();

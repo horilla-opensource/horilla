@@ -137,6 +137,7 @@ from base.models import (
     BaserequestFile,
     BiometricAttendance,
     Company,
+    CompanyGroupAssignment,
     CompanyLeaves,
     DashboardEmployeeCharts,
     Department,
@@ -1146,6 +1147,18 @@ def _permission_app_label(app_name):
     return label
 
 
+def _custom_permission_label(perm_name, model_verbose):
+    """
+    Short UI label for a custom Meta permission.
+    "Approve Shift Request" + model "Shift Request" -> "Approve".
+    """
+    label = str(perm_name).strip()
+    verbose = str(model_verbose).strip()
+    if verbose and label.lower().endswith(verbose.lower()):
+        label = label[: -len(verbose)].strip(" -–:")
+    return label or str(perm_name)
+
+
 def _build_permission_matrix():
     """Shared permission matrix context for group/employee permission UIs."""
     permissions = []
@@ -1155,16 +1168,29 @@ def _build_permission_matrix():
         for model in get_models_in_app(app_name):
             if model._meta.model_name in no_permission_models:
                 continue
+            verbose = model._meta.verbose_name.capitalize()
+            custom_permissions = [
+                {
+                    "codename": codename,
+                    "name": str(name),
+                    "label": _custom_permission_label(name, model._meta.verbose_name),
+                }
+                for codename, name in (model._meta.permissions or ())
+            ]
             app_models.append(
                 {
-                    "verbose_name": model._meta.verbose_name.capitalize(),
+                    "verbose_name": verbose,
                     "model_name": model._meta.model_name,
+                    "custom_permissions": custom_permissions,
                 }
             )
         permissions.append(
             {
                 "app": _permission_app_label(app_name),
                 "app_models": app_models,
+                "has_custom_permissions": any(
+                    m["custom_permissions"] for m in app_models
+                ),
             }
         )
     return permissions, no_permission_models
@@ -1255,12 +1281,27 @@ def user_group_detail(request, obj_id):
     """
     Lazy-loaded members + permissions panel for a single group.
     """
+    from base.auth_backends import company_scoped_active
+
     group = get_object_or_404(
         Group.objects.prefetch_related(
             "permissions", "user_set", "user_set__employee_get"
         ),
         id=obj_id,
     )
+    company_scoped = company_scoped_active()
+    member_companies = {}
+    if company_scoped:
+        for user_id, company_id, company_name in CompanyGroupAssignment.objects.filter(
+            group=group
+        ).values_list("user_id", "company_id", "company__company"):
+            member_companies.setdefault(user_id, []).append(
+                {"id": company_id, "name": company_name}
+            )
+    members = [
+        {"user": user, "companies": member_companies.get(user.id, [])}
+        for user in group.user_set.all()
+    ]
     permissions, no_permission_models = _build_permission_matrix()
     return render(
         request,
@@ -1268,8 +1309,10 @@ def user_group_detail(request, obj_id):
         {
             "group": group,
             "member_count": group.user_set.count(),
+            "members": members,
             "permissions": permissions,
             "no_permission_models": no_permission_models,
+            "company_scoped": company_scoped,
         },
     )
 
@@ -1331,6 +1374,9 @@ def group_assign(request):
         initial={
             "group": group_id,
             "employee": list(current_employees.values_list("id", flat=True)),
+            "companies": list(
+                Company.objects.filter(group_assignments__group=group).distinct()
+            ),
         }
     )
     if request.POST:
@@ -1404,19 +1450,54 @@ def user_group_permission_remove(request, pid, gid):
 @require_http_methods(["POST"])
 def group_remove_user(request, uid, gid):
     """
-    This method is used to remove an user from group permission.
+    Remove a user from a group — entirely, or (with a ``company_id``
+    parameter) only for one company. When the last company assignment is
+    removed the user leaves the group's M2M too (union sync).
     args:
         uid: user instance id
         gid: group instance id
     """
     group = Group.objects.filter(id=gid).first()
     user = HorillaUser.objects.filter(id=uid).first()
+    company_id = request.POST.get("company_id") or request.GET.get("company_id")
+    fully_removed = True
     if group and user:
-        group.user_set.remove(user)
-        messages.success(request, _("Employee removed from the group."))
+        if company_id:
+            CompanyGroupAssignment.objects.filter(
+                user=user, group=group, company_id=company_id
+            ).delete()
+            CompanyGroupAssignment.sync_user_group_membership(user, group)
+            fully_removed = not user.groups.filter(id=group.id).exists()
+            if fully_removed:
+                messages.success(request, _("Employee removed from the group."))
+            else:
+                messages.success(
+                    request, _("Company removed from the employee's assignment.")
+                )
+        else:
+            group.user_set.remove(user)
+            CompanyGroupAssignment.objects.filter(user=user, group=group).delete()
+            messages.success(request, _("Employee removed from the group."))
     else:
         messages.error(request, _("Unable to remove employee from the group."))
     if request.headers.get("HX-Request"):
+        if group and user and not fully_removed:
+            member_companies = [
+                {"id": cid, "name": name}
+                for cid, name in CompanyGroupAssignment.objects.filter(
+                    user=user, group=group
+                ).values_list("company_id", "company__company")
+            ]
+            return render(
+                request,
+                "base/auth/group_member_row.html",
+                {
+                    "group": group,
+                    "user": user,
+                    "companies": member_companies,
+                    "company_scoped": True,
+                },
+            )
         return HttpResponse("")
     return HorillaRedirect(request)
 
@@ -3691,9 +3772,12 @@ def employee_permission_assign(request, pk=None):
             | Q(employee_user_id__groups__isnull=False)
         ).distinct()
         context["show_assign"] = True
+    from base.auth_backends import company_scoped_active
+
     permissions, no_permission_models = _build_permission_matrix()
     context["permissions"] = permissions
     context["no_permission_models"] = no_permission_models
+    context["company_scoped"] = company_scoped_active()
     context["employees"] = paginator_qry(employees, request.GET.get("page"))
     return render(
         request,

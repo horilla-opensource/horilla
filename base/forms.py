@@ -473,12 +473,31 @@ class AssignUserGroup(Form):
         },
     )
 
+    companies = forms.ModelMultipleChoiceField(
+        queryset=Company.objects.all(),
+        required=False,
+        widget=forms.CheckboxSelectMultiple,
+        label=_("Companies"),
+        help_text=_(
+            "Members get this group's permissions only in the selected "
+            "companies. Leave empty for all companies."
+        ),
+    )
+
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
         reload_queryset(self.fields)
         self.fields["employee"].widget.attrs.update(
             {"data-placeholder": _("Search employees...")}
         )
+        from base.auth_backends import company_scoped_active
+
+        if not company_scoped_active():
+            self.fields.pop("companies", None)
+        else:
+            # reload_queryset narrows Company fields to the selected company;
+            # group assignments must be grantable across all companies.
+            self.fields["companies"].queryset = Company.objects.all()
 
     def clean(self):
         emps = self.data.getlist("employee") if hasattr(self.data, "getlist") else []
@@ -490,7 +509,14 @@ class AssignUserGroup(Form):
     def save(self):
         """
         Replace group membership with the selected employees.
+
+        Company scoping: CompanyGroupAssignment rows for this group are
+        replaced too — selected members are assigned for the chosen companies
+        (all companies when none are chosen or scoping is disabled) and
+        user.groups stays the union of assignments.
         """
+        from base.models import CompanyGroupAssignment
+
         group = self.cleaned_data["group"]
         employee_ids = (
             self.data.getlist("employee") if hasattr(self.data, "getlist") else []
@@ -507,11 +533,22 @@ class AssignUserGroup(Form):
             e.employee_user_id for e in existing_employees if e.employee_user_id
         ]
 
+        companies = list(self.cleaned_data.get("companies") or [])
+        if not companies:
+            companies = list(Company.objects.all())
+
         for user in existing_users:
             user.groups.remove(group)
+        CompanyGroupAssignment.objects.filter(group=group).delete()
 
+        assignments = []
         for user in assigning_users:
             user.groups.add(group)
+            for company in companies:
+                assignments.append(
+                    CompanyGroupAssignment(user=user, company=company, group=group)
+                )
+        CompanyGroupAssignment.objects.bulk_create(assignments, ignore_conflicts=True)
 
         return group
 
@@ -532,11 +569,22 @@ class AddToUserGroupForm(Form):
         """
         Save method to assign the selected groups to the employee
         """
+        from base.models import CompanyGroupAssignment
+
         employee = self.cleaned_data["employee"]
         groups = self.cleaned_data["group"]
-        employee.employee_user_id.groups.clear()
+        user = employee.employee_user_id
+        user.groups.clear()
+        CompanyGroupAssignment.objects.filter(user=user).delete()
+        companies = list(Company.objects.all())
+        assignments = []
         for group in groups:
-            employee.employee_user_id.groups.add(group)
+            user.groups.add(group)
+            for company in companies:
+                assignments.append(
+                    CompanyGroupAssignment(user=user, company=company, group=group)
+                )
+        CompanyGroupAssignment.objects.bulk_create(assignments, ignore_conflicts=True)
         return employee
 
 

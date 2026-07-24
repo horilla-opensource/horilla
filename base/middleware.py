@@ -289,6 +289,38 @@ class CompanyMiddleware:
                 "id": all_company.id,
             }
 
+    def _clamp_to_allowed(self, request, company_id):
+        """
+        With COMPANY_SCOPED_PERMISSIONS on, non-superusers may only have one
+        of their own companies selected. Stale sessions ("all" or a company
+        they lost access to) self-heal to their default/first allowed company.
+        """
+        from base.auth_backends import company_scoped_active, get_allowed_company_ids
+
+        if not company_scoped_active() or request.user.is_superuser:
+            return company_id
+
+        allowed = get_allowed_company_ids(request.user)
+        try:
+            if company_id != "all" and company_id and int(company_id) in allowed:
+                return company_id
+        except (TypeError, ValueError):
+            pass
+
+        default_company = self._get_user_default_company(request)
+        if default_company and default_company.id in allowed:
+            clamped = default_company.id
+        elif allowed:
+            clamped = sorted(allowed)[0]
+        else:
+            # No allowed companies at all: keep their own company if any,
+            # otherwise leave unset (user has no group perms anyway).
+            clamped = default_company.id if default_company else None
+        request.session["selected_company"] = (
+            str(clamped) if clamped is not None else "all"
+        )
+        return clamped if clamped is not None else "all"
+
     def __call__(self, request):
         # ✅ make request globally accessible (safe)
         _thread_locals.request = request
@@ -316,6 +348,10 @@ class CompanyMiddleware:
             else:
                 request.session["selected_company"] = "all"
                 company_id = "all"
+
+        # Scoped mode: never leave a non-superuser on "all" or a company
+        # outside their allowed set.
+        company_id = self._clamp_to_allowed(request, company_id)
 
         # ✅ Store in context
         set_selected_company(company_id)

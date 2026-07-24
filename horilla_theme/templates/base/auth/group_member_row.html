@@ -1,0 +1,63 @@
+{% load i18n %}
+<div
+    class="ug-member-row flex items-center justify-between gap-2 border border-[#ececec] rounded-md px-3 py-2"
+    id="groupMember{{ group.id }}_{{ user.id }}"
+>
+    <div class="flex items-center gap-2 min-w-0">
+        <img
+            src="{{ user.employee_get.get_avatar }}"
+            alt=""
+            class="w-7 h-7 rounded-full object-cover shrink-0"
+            loading="lazy"
+        >
+        <div class="min-w-0">
+            <p class="text-sm font-medium text-dark-400 truncate">
+                {{ user.employee_get.get_full_name }}
+            </p>
+            <p class="text-[11px] text-dark-200 truncate">
+                {{ user.employee_get.get_mail }}
+            </p>
+            {% if company_scoped %}
+                <div class="flex flex-wrap gap-1 mt-1">
+                    {% for company in companies %}
+                        <span class="inline-flex items-center gap-1 text-[10px] bg-primary-50 text-primary-700 border border-primary-200 rounded-full px-2 py-0.5">
+                            {{ company.name }}
+                            {% if perms.auth.change_group %}
+                                <button
+                                    type="button"
+                                    class="text-primary-400 hover:text-danger leading-none"
+                                    hx-post="{% url 'group-remove-user' user.id group.id %}?company_id={{ company.id }}"
+                                    hx-target="#groupMember{{ group.id }}_{{ user.id }}"
+                                    hx-swap="outerHTML"
+                                    hx-trigger="confirmed"
+                                    onclick="hxConfirm(this, &quot;{% filter escapejs %}{% blocktrans with name=user.employee_get.get_full_name cname=company.name %}Remove {{ cname }} from {{ name }}'s assignment?{% endblocktrans %}{% endfilter %}&quot;)"
+                                    hx-on-htmx-after-request="reloadMessage()"
+                                    title="{% trans 'Remove this company' %}"
+                                >&times;</button>
+                            {% endif %}
+                        </span>
+                    {% empty %}
+                        <span class="text-[10px] text-dark-200 italic">
+                            {% trans "No company assignments" %}
+                        </span>
+                    {% endfor %}
+                </div>
+            {% endif %}
+        </div>
+    </div>
+    {% if perms.auth.change_group %}
+        <button
+            type="button"
+            class="text-xs text-danger hover:underline shrink-0"
+            hx-post="{% url 'group-remove-user' user.id group.id %}"
+            hx-target="#groupMember{{ group.id }}_{{ user.id }}"
+            hx-swap="outerHTML"
+            hx-trigger="confirmed"
+            onclick="hxConfirm(this, &quot;{% filter escapejs %}{% blocktrans with name=user.employee_get.get_full_name %}Remove {{ name }} from this group?{% endblocktrans %}{% endfilter %}&quot;)"
+            hx-on-htmx-after-request="reloadMessage()"
+            title="{% trans 'Remove from group' %}"
+        >
+            {% trans "Remove" %}
+        </button>
+    {% endif %}
+</div>

@@ -599,13 +599,13 @@ def leave_upcoming(request):
 
 
 def _get_employee_for_user(request):
-    """Return the Employee instance for the current user, or None."""
-    try:
-        from employee.models import Employee
+    """Return the Employee instance for the current user, or None.
 
-        return Employee.objects.get(employee_user_id=request.user)
-    except Exception:
-        return None
+    Uses the reverse OneToOne (``employee_get``) so company filtering on
+    ``Employee.objects`` cannot hide the logged-in user when they have
+    switched to a company that is not their work-info company.
+    """
+    return getattr(request.user, "employee_get", None)
 
 
 @login_required
