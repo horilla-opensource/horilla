@@ -22,6 +22,7 @@ django-jsonfield
 django-mathfilters
 django-microsoft-auth
 django-model-utils
+django-redis==5.4.0
 django-simple-history
 django-widget-tweaks
 djangorestframework
