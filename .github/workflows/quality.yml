@@ -1,0 +1,104 @@
+# Lightweight quality gates for open-source PRs.
+# Full-repo Black reformatting is left to pre-commit for contributors;
+# CI checks settings/bootstrap modules + Django system checks.
+
+name: Quality
+
+on:
+  push:
+    branches: [dev/v2.0]
+  pull_request:
+    branches: [dev/v2.0]
+
+jobs:
+  lint-and-check:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+          cache: pip
+
+      - name: Install system libraries (Weasy/xhtml2pdf)
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y --no-install-recommends \
+            libcairo2 libpango-1.0-0 libpangocairo-1.0-0 \
+            libgdk-pixbuf-2.0-0 libffi8 shared-mime-info
+
+      - name: Install dependencies
+        run: |
+          python -m pip install --upgrade pip
+          pip install -r requirements.txt
+          pip install "black==24.4.2" "isort==5.13.2"
+
+      - name: Ensure local_settings stub exists
+        run: |
+          if [ ! -f horilla/settings/local_settings.py ]; then
+            printf '%s\n' '# Ephemeral for CI' > horilla/settings/local_settings.py
+          fi
+
+      - name: Black (settings + urls)
+        run: black --check horilla/settings horilla/urls.py
+
+      - name: isort (settings + urls)
+        run: isort --check-only --profile black horilla/settings horilla/urls.py
+
+      - name: Django system checks (SQLite defaults)
+        env:
+          DJANGO_SETTINGS_MODULE: horilla.settings
+          DEBUG: "True"
+          SECRET_KEY: ci-dev-not-for-production
+          ALLOWED_HOSTS: localhost,127.0.0.1
+        run: python manage.py check
+
+  production-settings-gate:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+          cache: pip
+
+      - name: Install dependencies
+        run: |
+          python -m pip install --upgrade pip
+          pip install -r requirements.txt
+
+      - name: Ensure local_settings stub exists
+        run: |
+          if [ ! -f horilla/settings/local_settings.py ]; then
+            printf '%s\n' '# Ephemeral for CI' > horilla/settings/local_settings.py
+          fi
+
+      - name: Reject insecure production defaults
+        env:
+          DJANGO_SETTINGS_MODULE: horilla.settings
+          DEBUG: "False"
+          SECRET_KEY: django-insecure-default-key
+          ALLOWED_HOSTS: "*"
+          DB_INIT_PASSWORD: d3f6a1b2c3d4e5f6a7b8c9d0e1f2a3b4c5d6e7f8a9b0c1d
+        run: |
+          set +e
+          # Accessing settings forces LazySettings to load base.py (where the gate runs).
+          out=$(python -c "from django.conf import settings; print(settings.DEBUG)" 2>&1)
+          status=$?
+          set -e
+          echo "$out"
+          if [ "$status" -eq 0 ]; then
+            echo "Expected ImproperlyConfigured for insecure production defaults"
+            exit 1
+          fi
+          echo "$out" | grep -qi "production security check failed"

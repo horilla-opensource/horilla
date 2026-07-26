@@ -1,6 +1,6 @@
 # Verify Docker build and runtime on the runner.
 # Catches: Dockerfile/build failures, migration errors, collectstatic issues,
-# gunicorn startup failures, and broken health endpoint.
+# gunicorn startup failures, and broken health/readiness endpoints.
 
 name: Docker CI
 
@@ -30,16 +30,15 @@ jobs:
           set -e
           docker compose -f "$COMPOSE_FILE" build web
 
-      - name: Ensure local_settings exists (gitignored; Django settings import requires it)
+      - name: Ensure local_settings exists
         run: |
           if [ ! -f horilla/settings/local_settings.py ]; then
-            printf '%s\n' '# Ephemeral for CI — allows settings import *' > horilla/settings/local_settings.py
+            printf '%s\n' '# Ephemeral for CI — allows settings import' > horilla/settings/local_settings.py
           fi
 
       - name: Start db and redis
         run: |
           docker compose -f "$COMPOSE_FILE" up -d db redis
-          # Wait for Postgres to accept connections
           for i in $(seq 1 60); do
             if docker compose -f "$COMPOSE_FILE" exec -T db pg_isready -U horilla_user -d horilla_db 2>/dev/null; then
               echo "Postgres is ready"
@@ -56,8 +55,8 @@ jobs:
       - name: Run migrations and Django checks (no long-running server)
         run: |
           set -e
-          # Bypass entrypoint to avoid makemigrations mutating the workspace on mounted volume.
-          # Still validates migrate + collectstatic + Django system checks against real Postgres.
+          # Bypass entrypoint so CI controls migrate/collectstatic explicitly
+          # (entrypoint only runs migrate, not makemigrations).
           docker compose -f "$COMPOSE_FILE" run --rm --no-deps \
             --entrypoint "" \
             web sh -c "
@@ -67,7 +66,7 @@ jobs:
               python manage.py check
             "
 
-      - name: Start web (gunicorn) and wait for health
+      - name: Start web (gunicorn) and wait for health + readiness
         run: |
           set -e
           docker compose -f "$COMPOSE_FILE" up -d web
@@ -77,12 +76,27 @@ jobs:
             if curl -sf --max-time 5 http://localhost:8000/health/ | grep -q '"status"'; then
               echo "Health check OK"
               curl -s http://localhost:8000/health/
+              break
+            fi
+            sleep 2
+            if [ "$i" -eq 90 ]; then
+              echo "Health check failed — web logs:"
+              docker compose -f "$COMPOSE_FILE" logs --tail=80 web
+              exit 1
+            fi
+          done
+
+          echo "Waiting for http://localhost:8000/ready/ ..."
+          for i in $(seq 1 60); do
+            if curl -sf --max-time 5 http://localhost:8000/ready/ | grep -q '"database"'; then
+              echo "Readiness check OK"
+              curl -s http://localhost:8000/ready/
               exit 0
             fi
             sleep 2
           done
 
-          echo "Health check failed — web logs:"
+          echo "Readiness check failed — web logs:"
           docker compose -f "$COMPOSE_FILE" logs --tail=80 web
           exit 1
 
@@ -92,6 +106,21 @@ jobs:
           docker compose -f "$COMPOSE_FILE" --profile production up -d nginx
           sleep 5
           curl -sf --max-time 10 http://localhost:80/health/ || echo "Nginx health check skipped or failed (web :8000 already validated)"
+
+      - name: Optional — Trivy image scan (advisory)
+        continue-on-error: true
+        run: |
+          IMAGE=$(docker compose -f "$COMPOSE_FILE" images -q web | head -n1)
+          if [ -z "$IMAGE" ]; then
+            echo "No web image id found; skipping Trivy"
+            exit 0
+          fi
+          docker run --rm \
+            -v /var/run/docker.sock:/var/run/docker.sock \
+            aquasec/trivy:0.58.1 image \
+            --severity CRITICAL,HIGH \
+            --exit-code 0 \
+            "$IMAGE"
 
       - name: Tear down
         if: always()

@@ -1,0 +1,55 @@
+# Production overlay for Horilla HR (open-source).
+#
+# Usage:
+#   cp .env.dist .env   # then set strong secrets
+#   docker compose -f docker-compose.yml -f docker-compose.prod.yml up --build -d
+#   # or: make prod
+#
+# Requires Docker Compose v2.24+ (!override / !reset merge).
+# Does not bind-mount source code; uses image contents + named volumes.
+
+services:
+  web:
+    env_file:
+      - .env
+    environment: !override
+      DEBUG: "0"
+      HORILLA_ENV: production
+      DB_HOST: db
+      SECRET_KEY: ${SECRET_KEY:?Set SECRET_KEY in .env}
+      ALLOWED_HOSTS: ${ALLOWED_HOSTS:?Set ALLOWED_HOSTS in .env}
+      CSRF_TRUSTED_ORIGINS: ${CSRF_TRUSTED_ORIGINS:?Set CSRF_TRUSTED_ORIGINS in .env}
+      DATABASE_URL: ${DATABASE_URL:?Set DATABASE_URL in .env}
+      DB_INIT_PASSWORD: ${DB_INIT_PASSWORD:?Set DB_INIT_PASSWORD in .env}
+      REDIS_URL: ${REDIS_URL:?Set REDIS_URL in .env}
+      SECURE_SSL_REDIRECT: ${SECURE_SSL_REDIRECT:-0}
+      GUNICORN_WORKERS: ${GUNICORN_WORKERS:-}
+      GUNICORN_LOG_LEVEL: ${GUNICORN_LOG_LEVEL:-info}
+    volumes: !override
+      - staticfiles:/app/staticfiles
+      - media:/app/media
+    ports: !override
+      - "8000:8000"
+
+  db:
+    environment:
+      POSTGRES_DB: ${POSTGRES_DB:-horilla_db}
+      POSTGRES_USER: ${POSTGRES_USER:-horilla_user}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:?Set POSTGRES_PASSWORD in .env}
+
+  redis:
+    command: redis-server --appendonly yes --requirepass ${REDIS_PASSWORD:?Set REDIS_PASSWORD in .env}
+    healthcheck:
+      test:
+        [
+          "CMD",
+          "redis-cli",
+          "-a",
+          "${REDIS_PASSWORD:?Set REDIS_PASSWORD in .env}",
+          "ping",
+        ]
+
+  nginx:
+    # Clear the "production" profile so nginx starts with `make prod`
+    # without requiring --profile production.
+    profiles: !reset

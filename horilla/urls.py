@@ -16,6 +16,8 @@ Including another URLconf
 
 from django.conf.urls.static import static
 from django.contrib import admin
+from django.core.cache import cache
+from django.db import connection
 from django.http import JsonResponse
 from django.urls import include, path, re_path
 from django.views.i18n import JavaScriptCatalog
@@ -26,7 +28,37 @@ from . import settings
 
 
 def health_check(request):
+    """Liveness probe — cheap, no dependency checks (Docker HEALTHCHECK)."""
     return JsonResponse({"status": "ok"}, status=200)
+
+
+def readiness_check(request):
+    """
+    Readiness probe — verifies database (and Redis cache when REDIS_URL is set).
+    """
+    checks = {}
+    try:
+        connection.ensure_connection()
+        checks["database"] = "ok"
+    except Exception as exc:
+        return JsonResponse(
+            {"status": "unavailable", "database": str(exc)},
+            status=503,
+        )
+
+    if getattr(settings, "REDIS_URL", None):
+        try:
+            cache.set("horilla_ready_probe", "1", timeout=5)
+            if cache.get("horilla_ready_probe") != "1":
+                raise RuntimeError("cache readback failed")
+            checks["cache"] = "ok"
+        except Exception as exc:
+            return JsonResponse(
+                {"status": "unavailable", "cache": str(exc), **checks},
+                status=503,
+            )
+
+    return JsonResponse({"status": "ok", **checks}, status=200)
 
 
 urlpatterns = [
@@ -46,6 +78,7 @@ urlpatterns = [
     path("i18n/", include("django.conf.urls.i18n")),
     path("jsi18n/", JavaScriptCatalog.as_view(), name="javascript-catalog"),
     path("health/", health_check),
+    path("ready/", readiness_check),
 ]
 
 # if settings.DEBUG:

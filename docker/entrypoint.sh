@@ -3,14 +3,17 @@ set -e
 
 echo "Starting Horilla HR..."
 
+DB_HOST="${DB_HOST:-db}"
+DB_PORT="${DB_PORT:-5432}"
+
 # Wait for PostgreSQL to be ready (with timeout)
-echo "Waiting for PostgreSQL..."
+echo "Waiting for PostgreSQL at ${DB_HOST}:${DB_PORT}..."
 MAX_TRIES=30
 COUNT=0
-while ! nc -z db 5432; do
+while ! nc -z "$DB_HOST" "$DB_PORT"; do
   COUNT=$((COUNT + 1))
   if [ "$COUNT" -ge "$MAX_TRIES" ]; then
-    echo "ERROR: PostgreSQL not available after $MAX_TRIES attempts"
+    echo "ERROR: PostgreSQL not available at ${DB_HOST}:${DB_PORT} after $MAX_TRIES attempts"
     exit 1
   fi
   sleep 1

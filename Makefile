@@ -1,39 +1,43 @@
-.PHONY: help dev prod build stop logs shell clean db-shell status restart
+.PHONY: help dev prod build stop logs logs-web shell clean db-shell status restart
+
+COMPOSE ?= docker compose
+COMPOSE_PROD ?= $(COMPOSE) -f docker-compose.yml -f docker-compose.prod.yml
 
 help: ## Show help
 	@echo 'Available commands:'
 	@grep -E '^[a-zA-Z_-]+:.*?## .*$$' $(MAKEFILE_LIST) | sort | awk 'BEGIN {FS = ":.*?## "}; {printf "  %-15s %s\n", $$1, $$2}'
 
-dev: ## Start development server (web + db + redis)
-	docker compose up --build
+dev: ## Start development stack (web + db + redis; bind-mount source)
+	$(COMPOSE) up --build
 
-prod: ## Start production with nginx
-	docker compose --profile production up --build -d
+prod: ## Start production overlay (no source bind-mount; requires .env)
+	@test -f .env || (echo "Missing .env — copy .env.dist and set production secrets:" && echo "  cp .env.dist .env" && exit 1)
+	$(COMPOSE_PROD) up --build -d
 
 build: ## Build images
-	docker compose build
+	$(COMPOSE) build
 
-stop: ## Stop services
-	docker compose --profile production down
+stop: ## Stop services (includes prod overlay / nginx)
+	$(COMPOSE_PROD) down
 
 logs: ## Show logs (all services)
-	docker compose logs -f
+	$(COMPOSE) logs -f
 
 logs-web: ## Show web server logs
-	docker compose logs -f web
+	$(COMPOSE) logs -f web
 
 shell: ## Open shell in web container
-	docker compose exec web bash
+	$(COMPOSE) exec web bash
 
 db-shell: ## Open PostgreSQL shell
-	docker compose exec db psql -U horilla_user -d horilla_db
+	$(COMPOSE) exec db psql -U horilla_user -d horilla_db
 
 status: ## Show status of all services
-	docker compose ps
+	$(COMPOSE) ps
 
 restart: ## Restart all services
-	docker compose restart
+	$(COMPOSE) restart
 
 clean: ## Clean up (removes volumes — data loss!)
-	docker compose --profile production down -v
+	$(COMPOSE_PROD) down -v
 	docker system prune -f

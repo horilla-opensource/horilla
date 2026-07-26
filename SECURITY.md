@@ -8,7 +8,7 @@ If you discover a security vulnerability in the Horilla project, please follow t
 
 1. **Do Not** create a public GitHub issue for the security vulnerability.
 2. **Do Not** disclose the vulnerability details publicly until the issue has been resolved.
-3. Notify the project maintainers by sending an email to `info@horilla.com`. Include a detailed description of the vulnerability, including the potential impact and any relevant technical details.
+3. Notify the project maintainers by sending an email to `info@horilla.com`. Include a detailed description of the vulnerability, including the potential impact and any relevant technical details. For production misconfiguration reports, you may include Compose/settings context (variable *names* and redacted examples) — never paste live secrets, tokens, or database dumps.
 4. A project maintainer will respond to your email within 72 hours to acknowledge the report and begin the investigation process.
 5. Once the security vulnerability has been verified and validated, we will work on a fix.
 6. We will collaborate with you to coordinate the release of the fix and any necessary announcements.

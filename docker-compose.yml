@@ -1,3 +1,10 @@
+# Development Compose stack for Horilla HR.
+# Zero-config: `make dev` / `docker compose up --build`
+# Production: `make prod` (uses docker-compose.prod.yml + .env — see .env.dist)
+#
+# Dev secrets below are intentionally weak and for local use only.
+# Replaces the legacy docker-compose.yaml (Python 3.10 / runserver) stack.
+
 services:
   web:
     build: .
@@ -9,6 +16,7 @@ services:
       - media:/app/media
     environment:
       - DEBUG=1
+      - DB_HOST=db
       - SECRET_KEY=dev-secret-key-change-in-production
       - ALLOWED_HOSTS=localhost,127.0.0.1,0.0.0.0
       - CSRF_TRUSTED_ORIGINS=http://localhost:8000

@@ -1,4 +1,11 @@
-from .local_settings import *
+"""
+Optional integrations (e.g. AWS S3) layered on top of base settings.
+
+Imported from horilla.settings.__init__ after base.py. Client overrides belong
+in local_settings.py (imported after this module) — do not import them here.
+"""
+
+from .base import INSTALLED_APPS, MEDIA_ROOT, MEDIA_URL, env
 
 if env("AWS_ACCESS_KEY_ID", default=None):
     AWS_ACCESS_KEY_ID = env("AWS_ACCESS_KEY_ID")

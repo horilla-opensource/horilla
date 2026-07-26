@@ -60,8 +60,8 @@ Get Horilla running in under 5 minutes:
 
 ```bash
 # 1. Clone the repository
-git clone -b dev/v2.0 https://github.com/horilla-opensource/horilla.git
-cd horilla
+git clone -b dev/v2.0 https://github.com/horilla/horilla-hr.git
+cd horilla-hr
 
 # 2. Start all services
 make dev
@@ -196,7 +196,7 @@ make logs
 For cleaner configuration, create a `.env` file from the template:
 
 ```bash
-cp .env.example .env
+cp .env.dist .env
 # Edit .env with your values
 ```
 
@@ -278,47 +278,26 @@ docker compose logs --tail=100 web
 
 ## 6. Production Deployment
 
-### Step 1: Update Environment Variables
+Production uses a Compose **overlay** so the zero-config `make dev` path stays intact.
 
-Edit `docker-compose.yml` with production values:
-
-```yaml
-environment:
-  - DEBUG=0
-  - SECRET_KEY=your-unique-50-char-random-string-here
-  - ALLOWED_HOSTS=yourdomain.com,www.yourdomain.com
-  - CSRF_TRUSTED_ORIGINS=https://yourdomain.com,https://www.yourdomain.com
-```
-
-Generate a secure secret key:
+### Step 1: Create a production `.env`
 
 ```bash
+cp .env.dist .env
 python3 -c "from django.core.management.utils import get_random_secret_key; print(get_random_secret_key())"
 ```
 
-### Step 2: Update Passwords
+Set strong `SECRET_KEY`, `ALLOWED_HOSTS`, `CSRF_TRUSTED_ORIGINS`, DB/Redis passwords, and `DB_INIT_PASSWORD`.
+With `DEBUG=False` (or `HORILLA_ENV=production`), Django refuses known-insecure secrets.
 
-Change `horilla_pass` in all locations:
-- `web` service: `DATABASE_URL`, `REDIS_URL`
-- `db` service: `POSTGRES_PASSWORD`
-- `redis` service: `command` (--requirepass) and healthcheck (-a)
-
-### Step 3: Enable Nginx
-
-Start with the production profile:
+### Step 2: Start production overlay
 
 ```bash
 make prod
-# or: docker compose --profile production up --build -d
+# or: docker compose -f docker-compose.yml -f docker-compose.prod.yml up --build -d
 ```
 
-This starts the Nginx service which:
-- Serves static files directly (with 1-year cache)
-- Serves media files directly
-- Proxies all other requests to Django
-- Adds security headers (`X-Content-Type-Options`, `X-Frame-Options`, `Referrer-Policy`)
-- Enables gzip compression
-- Hides server version information (`server_tokens off`)
+This builds without bind-mounting source, forces `DEBUG=0`, and enables Nginx.
 
 ### Step 4: Set Up SSL/TLS
 
@@ -366,9 +345,10 @@ docker compose exec web python manage.py createsuperuser
 # Check all services are healthy
 make status
 
-# Test health endpoint
+# Liveness
 curl http://localhost:8000/health/
-# Returns: {"status": "ok"}
+# Readiness (DB + Redis when REDIS_URL set)
+curl http://localhost:8000/ready/
 
 # Check logs for errors
 docker compose logs --tail=50 web
@@ -653,16 +633,17 @@ make dev
 
 Before going to production, verify the following:
 
-- [ ] `DEBUG=0` is set
+- [ ] `.env` created from `.env.dist` (not committed to git)
+- [ ] `DEBUG=False` — app refuses insecure defaults when False
 - [ ] `SECRET_KEY` is a unique, random 50+ character string
-- [ ] `ALLOWED_HOSTS` lists only your actual domain(s)
+- [ ] `ALLOWED_HOSTS` lists only your actual domain(s) (not `*`)
 - [ ] `CSRF_TRUSTED_ORIGINS` uses `https://` URLs
-- [ ] `DB_INIT_PASSWORD` is strong and unique
-- [ ] Database password is strong and unique (not `horilla_pass`)
-- [ ] Redis password is strong and unique
-- [ ] SSL/TLS is configured (HTTPS)
+- [ ] `DB_INIT_PASSWORD` is strong and unique (not the documented default)
+- [ ] Database/Redis passwords are strong and unique
+- [ ] SSL/TLS configured; set `SECURE_SSL_REDIRECT=True` behind TLS
 - [ ] Database and Redis ports are NOT exposed to the host
-- [ ] Nginx is enabled (`--profile production`)
+- [ ] Started via `make prod` (Nginx on, no source bind-mount)
+- [ ] `/health/` and `/ready/` both return OK
 - [ ] Regular backups are configured
 - [ ] Container images are kept up to date
 
@@ -725,6 +706,6 @@ docker-compose.yml       # Service orchestration
 Makefile                 # Developer convenience commands
                            - make dev/prod/build/stop/logs/shell/etc.
 
-.env.example             # Environment variable template
+.env.dist             # Environment variable template
 .dockerignore            # Files excluded from Docker build context
 ```

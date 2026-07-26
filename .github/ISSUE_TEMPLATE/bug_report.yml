@@ -57,7 +57,7 @@ body:
     attributes:
       label: Django Version
       description: The Django version you're using.
-      placeholder: "E.g., 3.2.1"
+      placeholder: "E.g., 5.2"
     validations:
       required: true
   - type: input
@@ -65,7 +65,7 @@ body:
     attributes:
       label: Python Version
       description: The Python version you're using.
-      placeholder: "E.g., 3.9"
+      placeholder: "E.g., 3.12"
     validations:
       required: true
   - type: input
