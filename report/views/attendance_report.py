@@ -67,6 +67,7 @@ if apps.is_installed("attendance"):
             qs.values(
                 "employee_id__employee_first_name",
                 "employee_id__employee_last_name",
+                "employee_id__badge_id",
                 "attendance_date",
                 "attendance_clock_in",
                 "attendance_clock_out",
@@ -106,6 +107,7 @@ if apps.is_installed("attendance"):
         data_list = [
             {
                 "Name": f"{item['employee_id__employee_first_name']} {item['employee_id__employee_last_name']}",
+                "Badge Id": item["employee_id__badge_id"] or "-",
                 "Gender": choice_gender.get(item["employee_id__gender"]),
                 "Email": item["employee_id__email"],
                 "Phone": item["employee_id__phone"],

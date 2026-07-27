@@ -185,64 +185,6 @@
     </div>
 
     <script>
-    // One-click alternative to dragging: a "+" button on each Available
-    // Field that adds it straight to Rows (dragging is still how you add a
-    // field to Columns, or reorder within Rows/Columns). The click handler
-    // is bound ONCE here, not inside onRefresh (which fires on every
-    // re-render) -- a delegated handler rebound on every refresh would
-    // accumulate duplicate bindings, the same class of bug already hit
-    // once this session with a different (htmx) listener.
-    $(document).off('click.ohMoveToRows').on('click.ohMoveToRows', '.oh-move-to-rows-btn', function (e) {
-        e.preventDefault();
-        e.stopPropagation();
-        var li = $(this).closest('li')[0];
-        var pvtUi = $(this).closest('.pvtUi')[0];
-        var rowsContainer = pvtUi ? pvtUi.querySelector('.pvtAxisContainer.pvtRows') : null;
-        if (li && rowsContainer) simulateDragToRows(li, rowsContainer);
-    });
-
-    function simulateDragToRows(li, rowsContainer) {
-        // jQuery UI Sortable only reacts to a real drag sequence, so a
-        // click can't just re-parent the DOM node directly -- it has to
-        // simulate the same mousedown/mousemove/mouseup sequence a manual
-        // drag would dispatch, which Sortable's own mousedown-bound
-        // listener picks up and processes normally (including firing the
-        // "update" callback that refreshes the pivot table's data).
-        var startRect = li.getBoundingClientRect();
-        var targetRect = rowsContainer.getBoundingClientRect();
-        var startX = startRect.left + startRect.width / 2;
-        var startY = startRect.top + startRect.height / 2;
-        var endX = targetRect.left + 10;
-        var endY = targetRect.top + 10;
-        function fire(el, type, x, y) {
-            var ev = $.Event(type);
-            ev.pageX = x; ev.pageY = y; ev.clientX = x; ev.clientY = y; ev.which = 1; ev.button = 0;
-            $(el).trigger(ev);
-        }
-        fire(li, 'mousedown', startX, startY);
-        fire(document, 'mousemove', (startX + endX) / 2, (startY + endY) / 2);
-        fire(document, 'mousemove', endX, endY);
-        fire(document, 'mouseup', endX, endY);
-    }
-
-    function syncMoveToRowsButtons() {
-        // Drop any leftover button on a field that's no longer in
-        // Available Fields (e.g. after being moved into Rows/Columns).
-        document.querySelectorAll('.pvtAxisContainer.pvtRows .oh-move-to-rows-btn, .pvtAxisContainer.pvtCols .oh-move-to-rows-btn').forEach(function (btn) {
-            btn.remove();
-        });
-        // Add the button to every Available Field that doesn't have one yet.
-        document.querySelectorAll('.pvtAxisContainer.pvtUnused li span.pvtAttr').forEach(function (span) {
-            if (span.querySelector('.oh-move-to-rows-btn')) return;
-            var btn = document.createElement('button');
-            btn.type = 'button';
-            btn.className = 'oh-move-to-rows-btn';
-            btn.title = '{% trans "Add to Rows" %}';
-            btn.textContent = '+';
-            span.appendChild(btn);
-        });
-    }
-
         // Function to load filtered pivot data
         function loadFilteredPivotData() {
             // Get filter form data
@@ -263,7 +205,6 @@
                     aggregatorName: "Count",
                     rendererName: "Table", // Default view as Table
                     onRefresh: function (config) {
-                            syncMoveToRowsButtons();
                         let currentRenderer = config.rendererName;
                         if (currentRenderer === "Table" || currentRenderer === "Table Barchart" ||
                             currentRenderer === "Heatmap" || currentRenderer === "Row Heatmap" || currentRenderer === "Col Heatmap" ) {
@@ -298,7 +239,6 @@
                     aggregatorName: "Count",
                     rendererName: "Table", // Default view as Table
                     onRefresh: function (config) {
-                            syncMoveToRowsButtons();
                         let currentRenderer = config.rendererName;
                         if (currentRenderer === "Table" || currentRenderer === "Table Barchart" ||
                             currentRenderer === "Heatmap" || currentRenderer === "Row Heatmap" || currentRenderer === "Col Heatmap" ) {

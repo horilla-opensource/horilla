@@ -3694,7 +3694,7 @@ input[type="range"]::-ms-fill-upper {
 }
 
 .pvtHorizList .ui-sortable-handle .pvtAttr {
-  padding: 2px 26px 2px 8px !important;
+  padding: 2px 26px 2px 22px !important;
 }
 
 .pvtAxisContainer,
@@ -3881,6 +3881,32 @@ input[type="range"]::-ms-fill-upper {
   min-width: 150px;
 }
 
+/* The field-picker select that appears next to aggregators needing a target
+   field (e.g. "Sum" of <field>) isn't covered by the Renderer/Aggregator
+   border-reset rule above, so the browser's native widget chrome (appearance:
+   auto) was overriding the shared border-radius/border-color and rendering
+   as a plain, square-cornered, unstyled box. Forcing appearance:none makes
+   the custom border actually take effect, matching the rest of the pivot
+   table's inputs. */
+.pvtUi select.pvtAttrDropdown {
+  appearance: none;
+  -webkit-appearance: none;
+  width: 150px;
+  max-width: 150px;
+  min-width: 150px;
+  border: 1px solid #e6e6e6 !important;
+  border-radius: 5px !important;
+  background-color: #fff;
+}
+
+/* Row/column sort-order toggles (cycle through key/asc/desc order) -- not
+   a control this app's reports need, and left as visual clutter next to
+   the aggregator box. */
+.pvtRowOrder,
+.pvtColOrder {
+  display: none !important;
+}
+
 /* When there's no data, the library renders zero field pills, so these
    columns have no content left to hold their width open -- without a
    min-width the whole table collapses/reflows into a broken-looking mess.
@@ -3971,11 +3997,11 @@ input[type="range"]::-ms-fill-upper {
 }
 
 .pvtAxisContainer.pvtRows::before {
-  content: "Rows";
+  content: "Columns";
 }
 
 .pvtAxisContainer.pvtCols::before {
-  content: "Columns";
+  content: "Rows";
 }
 
 /* Available Fields is an inert shelf, not part of the active report

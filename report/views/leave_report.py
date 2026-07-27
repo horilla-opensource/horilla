@@ -46,6 +46,7 @@ if apps.is_installed("leave"):
                 qs.values(
                     "employee_id__employee_first_name",
                     "employee_id__employee_last_name",
+                    "employee_id__badge_id",
                     "leave_type_id__name",
                     "start_date",
                     "start_date_breakdown",
@@ -87,6 +88,7 @@ if apps.is_installed("leave"):
             data_list = [
                 {
                     "Name": f"{item['employee_id__employee_first_name']} {item['employee_id__employee_last_name']}",
+                    "Badge Id": item["employee_id__badge_id"] or "-",
                     "Gender": choice_gender.get(item["employee_id__gender"]),
                     "Email": item["employee_id__email"],
                     "Phone": item["employee_id__phone"],
@@ -159,6 +161,7 @@ if apps.is_installed("leave"):
                 qs.values(
                     "employee_id__employee_first_name",
                     "employee_id__employee_last_name",
+                    "employee_id__badge_id",
                     "leave_type_id__name",
                     "available_days",
                     "carryforward_days",
@@ -187,6 +190,7 @@ if apps.is_installed("leave"):
             data_list = [
                 {
                     "Name": f"{item['employee_id__employee_first_name']} {item['employee_id__employee_last_name']}",
+                    "Badge Id": item["employee_id__badge_id"] or "-",
                     "Gender": choice_gender.get(item["employee_id__gender"]),
                     "Email": item["employee_id__email"],
                     "Phone": item["employee_id__phone"],
