@@ -130,7 +130,7 @@
 
 <div class="fab-container" id="fabContainer">
     <div class="inner-fabs">
-        <div
+        {% comment %} <div
             class="fab inner-fab"
             title="{% trans 'Dashboard Charts' %}"
             data-delay="1"
@@ -140,7 +140,7 @@
             hx-target="#objectDetailsModalTarget"
         >
             <i class="material-icons">leaderboard</i>
-        </div>
+        </div> {% endcomment %}
 
         {% if "helpdesk"|app_installed %}
             <div
