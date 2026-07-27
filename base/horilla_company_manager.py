@@ -56,9 +56,22 @@ setattr(QuerySet, "update", update)
 
 
 class HorillaCompanyManager(models.Manager):
+
+    company_filter_path = None
+
+    def __new__(cls, related_company_field=None, *args, **kwargs):
+        if cls is HorillaCompanyManager:
+            cls = type(
+                cls.__name__,
+                (cls,),
+                {"company_filter_path": related_company_field},
+            )
+        return super().__new__(cls)
+
     def __init__(self, related_company_field=None, *args, **kwargs):
         super().__init__(*args, **kwargs)
-        self.company_filter_path = related_company_field
+        if related_company_field is not None:
+            self.company_filter_path = related_company_field
 
     def _resolve_related_field(self, model, part):
         # Forward field
