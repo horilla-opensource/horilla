@@ -77,6 +77,15 @@ class MainParentListView(HorillaListView):
         (_("Status"), "custom_status_col"),
         (_("Comment"), "comment_action"),
     ]
+
+    default_columns = [
+        (_("Leave Type"), "leave_type_custom"),
+        (_("Start Date"), "start_date"),
+        (_("End Date"), "end_date"),
+        (_("Requested Days"), "requested_days"),
+        (_("Status"), "custom_status_col"),
+    ]
+
     option_method = "cancel_confirmation_action"
     action_method = "leave_actions"
     sortby_mapping = [

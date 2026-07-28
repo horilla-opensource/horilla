@@ -64,6 +64,15 @@ class CompensatoryListView(HorillaListView):
         (_("Description"), "description"),
         (_("Comment"), "compensatory_comment"),
     ]
+
+    default_columns = [
+        (_("Employee"), "employee_id", "employee_id__get_avatar"),
+        (_("Leave Type"), "leave_type_id"),
+        (_("Attendance Dates"), "compensatory_date"),
+        (_("Requested Days"), "requested_days"),
+        (_("Status"), "status_display"),
+    ]
+
     option_method = "compensatory_options"
 
     sortby_mapping = [

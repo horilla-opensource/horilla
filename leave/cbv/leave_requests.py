@@ -103,6 +103,16 @@ class LeaveRequestsListView(HorillaListView):
         (_("Comment"), "comment_sidebar"),
         (_("Penalities"), "penality_col"),
     ]
+
+    default_columns = [
+        (_("Employee"), "leave_requests_custom_emp_col"),
+        (_("Leave Type"), "leave_type_id__name"),
+        (_("Start Date"), "start_date"),
+        (_("End Date"), "end_date"),
+        (_("Requested Days"), "requested_days"),
+        (_("Status"), "custom_status_col"),
+    ]
+
     row_attrs = """
         {is_attendance_request_cancelled},
         hx-get='{leave_requests_detail_view}?instance_ids={ordered_ids}'
