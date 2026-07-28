@@ -40,10 +40,12 @@ def validate_production_secrets(secret_key, allowed_hosts, db_init_password):
             '"from django.core.management.utils import get_random_secret_key; '
             'print(get_random_secret_key())"'
         )
-    elif secret_key.startswith("django-insecure-"):
+    elif secret_key.startswith("django-insecure-") or secret_key.startswith(
+        "change-me"
+    ):
         errors.append(
-            "SECRET_KEY still uses a django-insecure-* value. "
-            "Set a unique SECRET_KEY before running with DEBUG=False."
+            "SECRET_KEY still uses a placeholder value (django-insecure-* or "
+            "change-me*). Set a unique SECRET_KEY before running with DEBUG=False."
         )
 
     hosts = list(allowed_hosts or [])

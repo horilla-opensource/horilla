@@ -20,6 +20,28 @@ while ! nc -z "$DB_HOST" "$DB_PORT"; do
 done
 echo "PostgreSQL is ready!"
 
+# Every shipped default (.env.dist, docker-compose.yml's own dev default, and
+# historical leaked keys) is a known, public string -- never a real secret.
+# If SECRET_KEY is unset or matches one of those, generate a random one and
+# persist it in the media volume so it survives container restarts instead of
+# invalidating every session/JWT on each `docker compose up`.
+SECRET_KEY_FILE="/app/media/.generated_secret_key"
+case "${SECRET_KEY:-}" in
+  ""|"django-insecure-default-key"|"dev-secret-key-change-in-production"|"django-insecure-j8op9)1q8\$1&0^s&p*_0%d#pr@w9qj@1o=3#@d=a(^@9@zd@%j"|change-me*|django-insecure-*)
+    if [ -f "$SECRET_KEY_FILE" ]; then
+      SECRET_KEY="$(cat "$SECRET_KEY_FILE")"
+      echo "Using previously generated SECRET_KEY from $SECRET_KEY_FILE"
+    else
+      SECRET_KEY="$(python -c 'from django.core.management.utils import get_random_secret_key; print(get_random_secret_key())')"
+      mkdir -p "$(dirname "$SECRET_KEY_FILE")"
+      printf '%s' "$SECRET_KEY" > "$SECRET_KEY_FILE"
+      chmod 600 "$SECRET_KEY_FILE"
+      echo "Generated a new random SECRET_KEY and saved it to $SECRET_KEY_FILE"
+    fi
+    export SECRET_KEY
+    ;;
+esac
+
 # Run migrations
 python manage.py migrate --noinput
 
