@@ -13,6 +13,7 @@ from django.apps import apps
 from django.conf import settings
 from django.contrib import messages
 from django.contrib.admin.utils import NestedObjects
+from django.contrib.contenttypes.models import ContentType
 from django.contrib.staticfiles import finders
 from django.core.cache import cache as CACHE
 from django.core.exceptions import FieldDoesNotExist
@@ -127,15 +128,7 @@ class ReloadField(View):
 
         module_name, class_name = class_path.rsplit(".", 1)
         module = importlib.import_module(module_name)
-        form_class = getattr(module, class_name, None)
-        if not (
-            isinstance(form_class, type) and issubclass(form_class, forms.BaseForm)
-        ):
-            return HorillaRedirect(
-                request,
-                message=_("No matching query found."),
-            )
-        parent_form = form_class()
+        parent_form = getattr(module, class_name)()
 
         dynamic_cache = CACHE.get(request.session.session_key + "cbv" + reload_field)
         onchange = CACHE.get(
@@ -1021,6 +1014,14 @@ def export_data(request, *args, **kwargs):
     model_name = model_path.split(".")[-1]
     model = apps.get_model(app_label, model_name)
     base_table = model._meta.db_table
+
+    # =====================================================
+    # EXPORT ACCESS CONTROL
+    # =====================================================
+    export_codename = f"{model._meta.app_label}.export_{model._meta.model_name}"
+    if not request.user.has_perm(export_codename):
+        messages.info(request, _("You dont have access to export this data"))
+        return HorillaRedirect(request)
 
     # =====================================================
     # SQL BUILD

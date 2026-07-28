@@ -1,3 +1,5 @@
 from django.contrib import admin
 
-# Register your models here.
+from accessibility.models import DefaultAccessibility
+
+admin.site.register(DefaultAccessibility)

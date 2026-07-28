@@ -2,12 +2,16 @@
 accessibility/methods.py
 """
 
+import logging
+
 from django.core.cache import cache
 
 from accessibility.accessibility import ACCESSBILITY_FEATURE
 from accessibility.filters import AccessibilityFilter
 from accessibility.models import DefaultAccessibility
 from horilla.horilla_middlewares import _thread_locals
+
+logger = logging.getLogger(__name__)
 
 
 def check_is_accessible(feature, cache_key, employee):

@@ -882,6 +882,14 @@ def export_data(request, model, form_class, filter_class, file_name, perm=None):
     }
     employee = request.user.employee_get
 
+    from horilla.http.response import HorillaRedirect
+
+    export_codename = f"{model._meta.app_label}.export_{model._meta.model_name}"
+    if not request.user.has_perm(export_codename):
+        return HorillaRedirect(
+            request, message=_("You dont have access to export this data")
+        )
+
     selected_columns = []
     today_date = date.today().strftime("%Y-%m-%d")
     file_name = f"{file_name}_{today_date}.xlsx"
@@ -967,17 +975,8 @@ def reload_queryset(fields):
         model = field.queryset.model
         model_name = model.__name__
 
-        if model_name == "Company":
-            if selected_company and selected_company != "all":
-                field.queryset = model.objects.filter(id=selected_company)
-            elif selected_company == "all" and request:
-                allowed = getattr(request, "allowed_company_ids", None)
-                if allowed is not None:
-                    field.queryset = model.objects.filter(id__in=allowed)
-                else:
-                    field.queryset = model.objects.all()
-            else:
-                field.queryset = model.objects.all()
+        if model_name == "Company" and selected_company and selected_company != "all":
+            field.queryset = model.objects.filter(id=selected_company)
         elif (filters := model_filters.get(model_name)) is not None:
             field.queryset = model.objects.filter(**filters)
         else:
