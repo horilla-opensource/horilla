@@ -141,7 +141,7 @@ class ShiftRequestList(ShiftList):
         return queryset
 
     columns = [
-        (_("Employee"), "employee_id", "employee_id__get_avatar"),
+        (_("Employee"), "employee_id__get_full_name", "employee_id__get_avatar"),
         (_("Requested Shift"), "shift_id"),
         (_("Previous/Current Shift"), "previous_shift_id"),
         (_("Requested Date"), "requested_date"),
@@ -149,6 +149,15 @@ class ShiftRequestList(ShiftList):
         (_("Status"), "request_status"),
         (_("Description"), "description"),
         (_("Comment"), "comment"),
+    ]
+
+    default_columns = [
+        (_("Employee"), "employee_id__get_full_name", "employee_id__get_avatar"),
+        (_("Requested Shift"), "shift_id"),
+        (_("Previous/Current Shift"), "previous_shift_id"),
+        (_("Requested Date"), "requested_date"),
+        (_("Requested Till"), "requested_till"),
+        (_("Status"), "request_status"),
     ]
 
     header_attrs = {
@@ -187,8 +196,8 @@ class AllocatedShift(ShiftList):
         self.search_url = reverse("allocated-shift-view")
 
     columns = [
-        (_("Employee"), "employee_id", "employee_id__get_avatar"),
-        (_("Allocated Employee"), "reallocate_to"),
+        (_("Employee"), "employee_id__get_full_name", "employee_id__get_avatar"),
+        (_("Allocated Employee"), "reallocate_to__get_full_name"),
         (_("User Availability"), "user_availability"),
         (_("Requested Shift"), "shift_id"),
         (_("Previous/Current Shift"), "previous_shift_id"),
@@ -196,6 +205,15 @@ class AllocatedShift(ShiftList):
         (_("Requested Till"), "requested_till"),
         (_("Description"), "description"),
         (_("Comment"), "comment"),
+    ]
+
+    default_columns = [
+        (_("Employee"), "employee_id__get_full_name", "employee_id__get_avatar"),
+        (_("Allocated Employee"), "reallocate_to__get_full_name"),
+        (_("Requested Shift"), "shift_id"),
+        (_("Previous/Current Shift"), "previous_shift_id"),
+        (_("Requested Date"), "requested_date"),
+        (_("Requested Till"), "requested_till"),
     ]
 
     action_method = "allocated_confirm_action_col"
