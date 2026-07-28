@@ -726,10 +726,26 @@ class DocumentRequestAPIView(APIView):
     def get(self, request, pk=None):
         if pk:
             document_request = self.get_object(pk)
+            has_perm = request.user.has_perm("horilla_documents.view_documentrequest")
+            is_addressee = document_request.employee_id.filter(
+                id=getattr(request.user.employee_get, "id", None)
+            ).exists()
+            if not (has_perm or is_addressee):
+                return Response(
+                    {
+                        "error": "You do not have permission to view this document request."
+                    },
+                    status=status.HTTP_403_FORBIDDEN,
+                )
             serializer = DocumentRequestSerializer(document_request)
             return Response(serializer.data)
         else:
-            document_requests = DocumentRequest.objects.all()
+            if request.user.has_perm("horilla_documents.view_documentrequest"):
+                document_requests = DocumentRequest.objects.all()
+            else:
+                document_requests = DocumentRequest.objects.filter(
+                    employee_id=request.user.employee_get
+                )
             pagination = PageNumberPagination()
             page = pagination.paginate_queryset(document_requests, request)
             serializer = DocumentRequestSerializer(page, many=True)

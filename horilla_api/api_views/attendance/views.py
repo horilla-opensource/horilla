@@ -228,6 +228,19 @@ class AttendanceView(APIView):
         # individual object workflow
         if pk:
             attendance = get_object_or_404(Attendance, pk=pk)
+            scoped = permission_based_queryset(
+                request.user,
+                "attendance.view_attendance",
+                Attendance.objects.filter(pk=pk),
+                user_obj=True,
+            )
+            if not scoped.exists():
+                return Response(
+                    {
+                        "error": "You do not have permission to view this attendance record."
+                    },
+                    status=403,
+                )
             serializer = AttendanceSerializer(instance=attendance)
             return Response(serializer.data, status=200)
         # permission based querysete
@@ -411,7 +424,17 @@ class AttendanceRequestView(APIView):
 
     def get(self, request, pk=None):
         if pk:
-            attendance = Attendance.objects.get(id=pk)
+            attendance = get_object_or_404(Attendance, id=pk)
+            scoped = filtersubordinates(
+                request, Attendance.objects.filter(id=pk), "attendance.view_attendance"
+            )
+            if not scoped.exists():
+                return Response(
+                    {
+                        "error": "You do not have permission to view this attendance request."
+                    },
+                    status=403,
+                )
             serializer = AttendanceRequestSerializer(instance=attendance)
             return Response(serializer.data, status=200)
 
@@ -609,6 +632,18 @@ class AttendanceOverTimeView(APIView):
     def get(self, request, pk=None):
         if pk:
             attendance_ot = get_object_or_404(AttendanceOverTime, pk=pk)
+            scoped = filtersubordinates(
+                request,
+                AttendanceOverTime.objects.filter(pk=pk),
+                "attendance.view_attendanceovertime",
+            )
+            if not scoped.exists():
+                return Response(
+                    {
+                        "error": "You do not have permission to view this overtime record."
+                    },
+                    status=403,
+                )
             serializer = AttendanceOverTimeSerializer(attendance_ot)
             return Response(serializer.data, status=200)
 
