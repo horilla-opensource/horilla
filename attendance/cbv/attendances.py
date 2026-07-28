@@ -86,6 +86,14 @@ class AttendancesListView(HorillaListView):
         (_("Pending Hour"), "hours_pending"),
         (_("Overtime"), "attendance_overtime"),
     ]
+    default_columns = [
+        (_("Employee"), "employee_id", "employee_id__get_avatar"),
+        (_("Date"), "attendance_date"),
+        (_("Check-In"), "attendance_clock_in"),
+        (_("Check-Out"), "attendance_clock_out"),
+        (_("Shift"), "shift_id"),
+        (_("At Work"), "attendance_worked_hour"),
+    ]
     sortby_mapping = [
         (_("Employee"), "employee_id__get_full_name", "employee_id__get_avatar"),
         (_("Date"), "attendance_date"),

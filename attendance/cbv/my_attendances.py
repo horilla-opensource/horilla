@@ -47,6 +47,14 @@ class MyAttendancesListView(HorillaListView):
         (_("Pending Hour"), "hours_pending"),
         (_("Overtime"), "attendance_overtime"),
     ]
+    default_columns = [
+        (_("Employee"), "employee_id", "employee_id__get_avatar"),
+        (_("Date"), "attendance_date"),
+        (_("Check-In"), "attendance_clock_in"),
+        (_("Check-Out"), "attendance_clock_out"),
+        (_("Shift"), "shift_id"),
+        (_("At Work"), "attendance_worked_hour"),
+    ]
 
     row_attrs = """
                 hx-get='{my_attendance_detail}?instance_ids={ordered_ids}'

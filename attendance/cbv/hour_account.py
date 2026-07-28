@@ -74,6 +74,15 @@ class HourAccountList(HorillaListView):
         (_("Not Approved OT Hours"), "not_approved_ot_hrs"),
     ]
 
+    default_columns = [
+        (_("Employee"), "employee_id", "employee_id__get_avatar"),
+        (_("Worked Hours"), "worked_hours"),
+        (_("Hours to Validate"), "not_validated_hrs"),
+        (_("Pending Hours"), "pending_hours"),
+        (_("Overtime Hours"), "overtime"),
+        (_("Not Approved OT Hours"), "not_approved_ot_hrs"),
+    ]
+
     header_attrs = {
         "employee_id": """
                       style='width:200px !important'
