@@ -354,11 +354,20 @@ class ListCandidates(HorillaListView):
                 """
                 return instance.pk
 
+            def _make_dehydrate(field_name):
+                # Factory, not exec(): closes over field_name by value so each
+                # generated method reads its own column, without ever
+                # compiling a string built from request data.
+                def dehydrate(self, instance):
+                    return self.remove_extra_spaces(getattribute(instance, field_name))
+
+                return dehydrate
+
             for field_tuple in _columns:
                 if not field_tuple[1].startswith("question_"):
-                    dynamic_fn_str = f"def dehydrate_{field_tuple[1]}(self, instance):return self.remove_extra_spaces(getattribute(instance, '{field_tuple[1]}'))"
-                    exec(dynamic_fn_str)
-                    dynamic_fn = locals()[f"dehydrate_{field_tuple[1]}"]
+                    locals()[f"dehydrate_{field_tuple[1]}"] = _make_dehydrate(
+                        field_tuple[1]
+                    )
                     locals()[field_tuple[1]] = fields.Field(column_name=field_tuple[0])
 
             def remove_extra_spaces(self, text):
