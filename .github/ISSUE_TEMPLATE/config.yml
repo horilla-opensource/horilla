@@ -1,8 +1,8 @@
 blank_issues_enabled: false
 contact_links:
   - name: Horilla Community Support
-    url: https://github.com/horilla-opensource/horilla/discussions
+    url: https://github.com/horilla/horilla-hr/discussions
     about: Ask questions or discuss features here
   - name: Documentation
-    url: https://horilla-opensource.github.io/horilla-docs/
+    url: https://docs.horilla.com
     about: Check the official Horilla documentation
