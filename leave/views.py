@@ -5209,7 +5209,7 @@ if apps.is_installed("attendance"):
             messages.error(request, _("Sorry, something went wrong!"))
         if request.GET.get("individual"):
             return HorillaRedirect(request)
-        return redirect(filter_compensatory_leave)
+        return redirect("compensatory-tab-view")
 
     @login_required
     @is_compensatory_leave_enabled()

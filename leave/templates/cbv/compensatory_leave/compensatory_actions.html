@@ -1,7 +1,7 @@
 {% load i18n %}
 <div class="" onclick="event.stopPropagation()">
     <div class="oh-btn-group">
-        {% if instance.status ==  'requested' %}
+        {% if instance.status == 'requested' %}
             <button
                 class="oh-btn oh-btn--light-bkg w-50"
                 title="{% trans 'Edit' %}"
@@ -15,9 +15,9 @@
             <button
                 class="oh-btn oh-btn--light-bkg w-50" disabled>
                 <ion-icon name="create-outline" ></ion-icon>
-            </button></td>
+            </button>
         {% endif %}
-        {% if instance.status !=  'approved' %}
+        {% if instance.status != 'approved' %}
             <a class="oh-btn oh-btn--danger w-50" id="delete-link"
                 hx-confirm="{% trans 'Are you sure you want to delete ?' %}"
                 hx-post="{% url 'delete-compensatory-leave' instance.id %}"
@@ -28,7 +28,7 @@
         {% else %}
             <button class="oh-btn oh-btn--light-bkg w-50" disabled>
                 <ion-icon name="trash-outline"></ion-icon>
-            </button></td>
+            </button>
         {% endif %}
     </div>
 </div>
