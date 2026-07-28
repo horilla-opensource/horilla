@@ -32,7 +32,14 @@ class HorillaHistoryView(DetailView):
         """
         context = super().get_context_data(**kwargs)
         instance = self.get_object()
-        context["tracking"] = get_diff(instance, self.history_related_name)
+        if self.history_related_name:
+            context["tracking"] = get_diff(instance, self.history_related_name)
+            context["log_entries"] = None
+        else:
+            context["tracking"] = None
+            context["log_entries"] = instance.horilla_history.all().order_by(
+                "-timestamp"
+            )
         context["model"] = (
             f"{self.model._meta.app_label}.{self.model._meta.object_name}"
         )
@@ -54,9 +61,12 @@ class HorillaHistoryView(DetailView):
             if model_param:
                 app_label, model_name = model_param.split(".")
                 self.model = apps.get_model(app_label, model_name)
-        self.history_related_name = (
-            "history_set" if hasattr(self.model, "history_set") else "history"
-        )
+        if hasattr(self.model, "history_set"):
+            self.history_related_name = "history_set"
+        elif hasattr(self.model, "history"):
+            self.history_related_name = "history"
+        else:
+            self.history_related_name = None
         return super().get(request, *args, **kwargs)
 
     def post(self, request, history_id, *args, **kwargs):

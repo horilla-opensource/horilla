@@ -119,6 +119,60 @@
                     </div>
                 </div>
             {% endfor %}
+        {% elif log_entries %}
+            {% for entry in log_entries %}
+                <div class="oh-history__container">
+                    <div class="oh-history_date oh-card__title oh-card__title--sm fw-bold me-2">
+                        <span class="oh-history_date-content">
+                            <span class="dateformat_changer">{{ entry.timestamp|date:'M. d, Y' }}</span>&nbsp,&nbsp
+                            <span class="timeformat_changer">{{ entry.timestamp|date:'g:i A' }}</span>
+                        </span>
+                    </div>
+                    <div class="d-flex">
+                        <div class="oh-history_user-img">
+                            {% if entry.actor.employee_get %}
+                                <img src="{{ entry.actor.employee_get.get_avatar }}" alt="" class="oh-history_user-pic">
+                            {% else %}
+                                <img src="https://ui-avatars.com/api/?name=Horilla+Bot&background=random" alt="" class="oh-history_user-pic">
+                            {% endif %}
+                        </div>
+                        <div class="oh-history_user-details">
+                            <span class="oh-history__username">
+                                {% if entry.actor.employee_get %}{{ entry.actor.employee_get.get_full_name }}{% else %}{% trans "Horilla Bot" %}{% endif %}
+                            </span>
+                            <div class="oh-history_msg-container">
+                                <div class="oh-history_task-tracker">
+                                    <span class="oh-history_msging-email">
+                                        {% if entry.action == 0 %}
+                                            {% trans "Created" %}
+                                        {% elif entry.action == 2 %}
+                                            {% trans "Deleted" %}
+                                        {% else %}
+                                            {% trans "Updated" %}
+                                        {% endif %}
+                                    </span>
+                                    <ul class="ul">
+                                        {% for field, values in entry.changes_display_dict.items %}
+                                            <li class="oh-history_task-list">
+                                                <div class="oh-history_track-value">
+                                                    <span>{{ values.0 }}</span>
+                                                    <img
+                                                        src="{% static '/images/ui/arrow-right-line.svg' %}"
+                                                        class="oh-progress_arrow"
+                                                        alt=""
+                                                    >
+                                                    <span class="oh-history_tracking-value">{{ values.1 }}</span>
+                                                    <span class="oh-history-task-state"><i>({{ field }})</i></span>
+                                                </div>
+                                            </li>
+                                        {% endfor %}
+                                    </ul>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            {% endfor %}
         {% else %}
             <div class="oh-wrapper" align="center" style="margin-top: 7vh; margin-bottom: 7vh">
                 <div align="center">
@@ -130,10 +184,6 @@
                     <h5 class="oh-404__subtitle mt-4 ml-2">{% trans 'No history found.' %}</h5>
                 </div>
             </div>
-
-            {% comment %} <div class="d-flex justify-content-center align-items-center" style="height: 40vh">
-          <h5 class="oh-404__subtitle">{% trans 'No history found.' %}</h5>
-        </div> {% endcomment %}
         {% endif %}
     </div>
 </div>
