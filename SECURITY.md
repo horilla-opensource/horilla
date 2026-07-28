@@ -1,51 +1,126 @@
-# Horilla Open Source Project - Security Guidelines
+# Security Policy
 
-Thank you for your interest in contributing to the Horilla open-source project. We take security seriously and value the community's efforts in helping us identify and address security vulnerabilities. This document outlines the security guidelines for reporting and addressing security issues within the Horilla project.
+Horilla takes security seriously. This document explains how to report vulnerabilities, which versions we support, what is in or out of scope, and how we handle disclosure and CVE assignment.
 
-## Supported Versions
+This policy applies to Horilla HR ([`horilla/horilla-hr`](https://github.com/horilla/horilla-hr)).
 
-| Version | Branch(es) | Security Support |
-|---|---|---|
-| v2 | `2.0` (default), `dev/v2.0` (active dev) | Yes — actively maintained |
-| v1 | `1.0`, `master` | Deprioritized — fixes considered case-by-case at maintainer discretion, no guaranteed patch schedule |
+## Supported versions
+
+| Version | Branch(es) | Security support |
+|---------|------------|------------------|
+| v2 | `2.0` (default), `dev/v2.0` (active development) | **Yes** — actively maintained |
+| v1 | `1.0`, `master` | **Deprioritized** — fixes considered case-by-case at maintainer discretion; no guaranteed patch schedule. Prefer upgrading to v2. |
 
 See [Discussion #1127](https://github.com/horilla/horilla-hr/discussions/1127) for background on this policy.
 
-## Reporting Security Issues
+After v2 GA, we intend to treat v1 as **EOL for security** except for extraordinary cases (e.g. critical issues affecting customers we still host on v1). Reports that only affect unsupported lines will normally be closed with guidance to upgrade.
 
-If you discover a security vulnerability in the Horilla project, please follow these steps to report it:
+## Reporting a vulnerability
 
-1. **Do Not** create a public GitHub issue for the security vulnerability.
-2. **Do Not** disclose the vulnerability details publicly until the issue has been resolved.
-3. Notify the project maintainers by sending an email to `info@horilla.com`. Include a detailed description of the vulnerability, including the potential impact and any relevant technical details. For production misconfiguration reports, you may include Compose/settings context (variable *names* and redacted examples) — never paste live secrets, tokens, or database dumps.
-4. A project maintainer will respond to your email within 72 hours to acknowledge the report and begin the investigation process.
-5. Once the security vulnerability has been verified and validated, we will work on a fix.
-6. We will collaborate with you to coordinate the release of the fix and any necessary announcements.
+**Do not** open a public GitHub issue or discussion for a security vulnerability.
+**Do not** disclose exploit details publicly until we have published a fix or explicitly agreed otherwise.
 
-## Vulnerability Handling
+### How to report
 
-Horilla project follows these principles when handling security vulnerabilities:
+Use **GitHub Private Vulnerability Reporting** only:
 
-- **Swift Response:** We strive to respond to and address security vulnerabilities as quickly as possible. The time to resolution may vary depending on the complexity of the issue, but we will keep you updated on our progress.
-- **Coordinated Disclosure:** We follow a coordinated disclosure process, meaning we work with the reporter to ensure that the vulnerability is disclosed responsibly. This may involve a joint announcement or other measures to protect users until a fix is available.
-- **Public Disclosure:** Once the vulnerability is fixed and released, we will publicly acknowledge your contribution to the security of the project, unless you prefer to remain anonymous.
+1. Open a [private vulnerability report](https://github.com/horilla/horilla-hr/security/advisories/new) on this repository.
+2. Include enough detail for us to reproduce the issue (see below).
 
-## Security Best Practices
+We do **not** accept or triage security vulnerability reports by email. General support inboxes are for product help, not vulnerability disclosure.
 
-For contributors to the Horilla project, we recommend the following security best practices:
+We aim to **acknowledge** valid reports within **72 hours**. Resolution time depends on severity and complexity; we will keep you informed via the private advisory thread.
 
-- **Code Review:** Perform thorough code reviews to identify and address security issues before they are merged into the project's codebase.
-- **Secure Dependencies:** Regularly update and monitor the project's dependencies for security vulnerabilities. Use trusted and well-maintained packages.
-- **Authentication and Authorization:** Implement strong authentication and authorization mechanisms to prevent unauthorized access to sensitive resources.
-- **Data Validation:** Validate and sanitize all user inputs to prevent common security vulnerabilities such as SQL injection, Cross-Site Scripting (XSS), and more.
-- **Secure Configuration:** Store sensitive configuration and credentials securely, and avoid hardcoding secrets in your codebase.
-- **Sensitive Data Handling:** Handle sensitive data, such as passwords and tokens, with care. Store them securely using encryption and follow industry best practices for data protection.
-- **Regular Security Audits:** Conduct periodic security audits and assessments of the project's codebase and infrastructure.
+### What to include
 
-## Disclaimer
+- Affected Horilla HR **version** or commit / Docker tag
+- Environment notes (self-hosted Compose, reverse proxy, auth mode) — use variable *names* and redacted examples only
+- Step-by-step reproduction (minimal PoC preferred)
+- Impact (who can exploit it, and what they gain)
+- Whether a fix or workaround is already known
 
-The Horilla project and its maintainers assume no liability for any security vulnerabilities reported or discovered. We do, however, greatly appreciate your help in keeping the project secure.
+**Never** paste live secrets, tokens, database dumps, or customer PII.
+
+Reporter-supplied CVSS scores are helpful input; maintainers decide the final severity.
+
+Please avoid dumping large batches of unverified findings without waiting for triage feedback on earlier reports.
+
+## Scope
+
+### In scope
+
+- Vulnerabilities in **Horilla application code** shipped in this repository
+- Unsafe **default configuration** that we ship (for example a publicly known default `SECRET_KEY` in production paths)
+- Issues that are **authentically exploitable** with realistic privileges on a **supported** version
+
+### Out of scope
+
+We will normally **not** treat the following as Horilla product CVEs. We may still harden or document them when useful.
+
+| Class | Notes |
+|-------|--------|
+| CSV / Excel formula injection | Spreadsheet clients interpret cell content; not a Horilla application bug |
+| Privilege escalation by users who already administer users/roles | Trusted-admin capability by design |
+| Issues only on EOL Python or EOL Horilla versions | Upgrade to a supported line |
+| Pure deployment misconfiguration | Operator responsibility (`DEBUG=True`, open admin, weak secrets you set yourself). **Exception:** shipping an insecure default that works out of the box |
+| Media / static XSS when files are served outside documented secure paths | Follow Docker / deployment docs; do not bypass Django `protected_media` with a raw `/media/` alias |
+| Dependency CVEs with **no reachable path** in Horilla | Tracked via Dependabot when applicable |
+| Third-party plugins or custom code not shipped by Horilla | Report to that project’s maintainers |
+| Compromise of marketing sites, email, or social accounts | Operational incident response — not a product advisory |
+| Demands for cash payment (“beg bounties”) | Credit only (see Rewards) |
+
+### Grey areas
+
+- Dynamic code paths used for payroll / exports: treated as **high priority** if a non-superuser can inject or trigger execution; if strictly limited to trusted admins, we still harden for v2 quality and may document the trust boundary
+- Default secrets in images or quickstart docs: **in-scope product defects**
+
+## Severity (guidance)
+
+Final severity is decided by maintainers:
+
+| Level | Examples |
+|-------|----------|
+| Critical | Unauthenticated RCE, unauthenticated auth bypass, mass data exposure without auth |
+| High | Authenticated RCE, large-scale IDOR on PII/payroll, authenticated auth bypass |
+| Medium | XSS requiring user interaction, limited IDOR, open redirect |
+| Low | Low-impact issues, verbose errors without clear exploit path |
+
+## Disclosure and CVE process
+
+1. Private intake via GitHub Private Vulnerability Reporting (private advisory draft)
+2. Triage: in scope? valid? duplicate? supported version?
+3. Fix on a supported branch; coordinate disclosure with the reporter when practical
+4. Publish a GitHub Security Advisory and **request a CVE ID via GitHub** when the issue meets our publish criteria
+5. Credit the reporter in the advisory (unless anonymity is requested)
+
+We use **GitHub as the CVE Numbering Authority** for Horilla HR advisories. We do not require reporters to self-request CVEs from MITRE; unsupported self-requests may be disputed.
+
+**We publish a CVE when all of the following are true:**
+
+- Affects a **supported** release
+- Is **authentically exploitable** with realistic privileges
+- Is in **Horilla code** or an unsafe default we ship
+- Is **not** a duplicate of an already-published advisory for the same root cause
+
+Historical issues that only affected v1 and are fixed (or EOL) in v2 are generally **closed without a new CVE**, with a short disposition note.
+
+## Rewards
+
+There is **no cash bug bounty** at this time. We offer public credit in advisories and release notes. A paid program may be considered later when triage capacity is stable.
+
+## Security tooling
+
+We aim to keep the following enabled on this repository:
+
+- Private vulnerability reporting
+- Dependabot alerts and security updates
+- Secret scanning (and push protection where available)
 
 ## Contact
 
-If you have any questions or concerns about the security guidelines or the project's security practices, please contact us at `info@horilla.com`.
+- Security reports: [GitHub Private Vulnerability Reporting](https://github.com/horilla/horilla-hr/security/advisories/new) only — see [Reporting a vulnerability](#reporting-a-vulnerability)
+- Non-security questions about this policy: open a GitHub Discussion, or contact the maintainers through the project’s normal channels
+
+## Disclaimer
+
+The Horilla project and its maintainers assume no liability for security vulnerabilities reported or discovered. We greatly appreciate responsible disclosure that helps keep users safe.
