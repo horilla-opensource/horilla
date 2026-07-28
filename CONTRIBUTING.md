@@ -2,6 +2,12 @@
 
 Thank you for considering contributing to Horilla! We welcome your input and appreciate the community effort to make this project even better.
 
+## Branches
+
+- **`dev/v2.0`** — the active integration branch. Always clone this and always open PRs against this — never against `2.0` directly.
+- **`2.0`** — starting July 29, 2026, this is the repository's default branch: a periodic public snapshot, not where development happens. GitHub will default new PRs here, so double-check your PR's base branch before submitting.
+- **`1.0`/`master`** — v1, now deprioritized. See "Contributing to v1" below and [Discussion #1127](https://github.com/horilla/horilla-hr/discussions/1127) for full background.
+
 ## How to Contribute
 
 1. **Fork the Repository**
@@ -47,6 +53,7 @@ Thank you for considering contributing to Horilla! We welcome your input and app
 
 7. **Push and Open a Pull Request**
    - Target branch: **`dev/v2.0`**
+   - Starting July 29, 2026, GitHub will default your PR's base branch to `2.0` (the new default branch) — you must manually change it to `dev/v2.0` before submitting.
    - Provide a clear title/description and link related issues
    - CI should stay green: **Docker CI** + **Quality**
 
@@ -68,6 +75,10 @@ Thank you for considering contributing to Horilla! We welcome your input and app
 
 - Bugs and features: open a public GitHub issue with reproduction steps.
 - **Security vulnerabilities:** do **not** open a public issue — email `info@horilla.com` per [SECURITY.md](SECURITY.md).
+
+### Contributing to v1 (1.0/master)
+
+v1 is now deprioritized: fixes are considered case-by-case at maintainer discretion, with no guaranteed timeline and no new features backported. If you'd like to contribute a v1 fix, please open an issue first to confirm interest before submitting a PR.
 
 ## Community Guidelines
 

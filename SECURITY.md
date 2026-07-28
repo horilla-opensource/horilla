@@ -2,6 +2,15 @@
 
 Thank you for your interest in contributing to the Horilla open-source project. We take security seriously and value the community's efforts in helping us identify and address security vulnerabilities. This document outlines the security guidelines for reporting and addressing security issues within the Horilla project.
 
+## Supported Versions
+
+| Version | Branch(es) | Security Support |
+|---|---|---|
+| v2 | `2.0` (default), `dev/v2.0` (active dev) | Yes — actively maintained |
+| v1 | `1.0`, `master` | Deprioritized — fixes considered case-by-case at maintainer discretion, no guaranteed patch schedule |
+
+See [Discussion #1127](https://github.com/horilla/horilla-hr/discussions/1127) for background on this policy.
+
 ## Reporting Security Issues
 
 If you discover a security vulnerability in the Horilla project, please follow these steps to report it:

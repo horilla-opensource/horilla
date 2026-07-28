@@ -278,6 +278,8 @@ docker compose logs --tail=100 web
 
 ## 6. Production Deployment
 
+> **Branch note:** this guide's Quick Start clones `dev/v2.0` (the active development branch) for a reason — that section is for local development. For a production deployment, check out the stable `2.0` branch instead (the repository's default branch starting July 29, 2026: `git checkout 2.0` after cloning, or `git clone https://github.com/horilla/horilla-hr.git` with no `-b` flag from that date onward). Running production off `dev/v2.0` means running whatever's currently mid-flight in active development.
+
 Production uses a Compose **overlay** so the zero-config `make dev` path stays intact.
 
 ### Step 1: Create a production `.env`
