@@ -113,14 +113,15 @@ make logs
                │  ┌──────────────────────────────────┐  │
                │  │  Nginx (production profile only)  │  │
                │  │  - Static files (/static/)       │  │
-               │  │  - Media files (/media/)         │  │
                │  │  - Reverse proxy to web:8000     │  │
+               │  │    (incl. /media/ — see below)   │  │
                │  │  - Gzip + security headers       │  │
                │  └──────────────┬───────────────────┘  │
                │                 │                       │
                │                 ▼                       │
                │  ┌──────────────────────────────────┐  │
                │  │  Web (Django + Gunicorn)          │  │
+               │  │  - protected_media for /media/   │  │
                │  │  - 2–8 workers (adaptive)        │  │
                │  │  - 4 threads per worker           │  │
                │  │  - Health check: /health/         │  │
@@ -146,7 +147,7 @@ make logs
 | **web** | Custom (Dockerfile) | Django application with Gunicorn WSGI server |
 | **db** | `postgres:16-alpine` | Primary database for all application data |
 | **redis** | `redis:7-alpine` | Caching, session storage (password-protected, AOF persistence) |
-| **nginx** | `nginx:alpine` | Reverse proxy, static file serving (production only) |
+| **nginx** | `nginx:alpine` | Reverse proxy and static file serving (production only). Does **not** serve `/media/` directly — that path is proxied to Django so `protected_media()` can enforce auth and content-type gates. |
 
 ### Volumes
 
@@ -278,8 +279,6 @@ docker compose logs --tail=100 web
 
 ## 6. Production Deployment
 
-> **Branch note:** this guide's Quick Start clones `dev/v2.0` (the active development branch) for a reason — that section is for local development. For a production deployment, check out the stable `2.0` branch instead (the repository's default branch starting July 29, 2026: `git checkout 2.0` after cloning, or `git clone https://github.com/horilla/horilla-hr.git` with no `-b` flag from that date onward). Running production off `dev/v2.0` means running whatever's currently mid-flight in active development.
-
 Production uses a Compose **overlay** so the zero-config `make dev` path stays intact.
 
 ### Step 1: Create a production `.env`
@@ -403,7 +402,9 @@ docker compose exec web python manage.py collectstatic --noinput --clear
 
 ### Media Files
 
-User uploads (employee photos, documents, attachments) are stored in the `media` volume.
+User uploads (employee photos, documents, attachments) are stored in the `media` volume on the **web** service (`/app/media`).
+
+In production, nginx does **not** alias `/media/` to disk. Requests are proxied to Django’s `protected_media` view, which requires a session or valid JWT (except a small allowlist of public assets such as company icons) and forces HTML/SVG/XML/JS uploads to download instead of rendering inline. Do not re-add a `location /media/ { alias … }` block in `docker/nginx.conf` — that would bypass those checks.
 
 ```bash
 # List media files

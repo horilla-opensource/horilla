@@ -65,8 +65,9 @@ services:
     ports:
       - "80:80"
     volumes:
+      # Static only — /media/ is proxied to Django (protected_media). Do not
+      # mount the media volume here; an alias location would bypass auth.
       - staticfiles:/static:ro
-      - media:/media:ro
       - ./docker/nginx.conf:/etc/nginx/nginx.conf:ro
     depends_on:
       web:
