@@ -17,7 +17,9 @@ from django.db.models.query import QuerySet
 from django.db.models.signals import post_delete, post_save, pre_save
 from django.dispatch import receiver
 
+from base.methods import build_safe_template_request, sanitize_mail_template_body
 from horilla.horilla_middlewares import _thread_locals
+from horilla.models import has_xss
 from horilla.signals import post_bulk_update, pre_bulk_update
 from notifications.signals import notify
 
@@ -426,19 +428,42 @@ def send_mail(request, automation, instance):
             sender = request.user.employee_get
         except:
             sender = None
+        # Automation bodies/titles are admin-authored Django template source
+        # stored in the DB, rendered here with real employee/instance data and
+        # (for attachments) fed to wkhtmltopdf. sanitize_mail_template_body()
+        # strips forbidden attribute access (password, META, session, ...) and
+        # forbidden tags; build_safe_template_request() keeps `request` usable
+        # in templates without exposing its sensitive internals.
+        safe_request = build_safe_template_request(request)
         if context_instance:
             if template_attachments := automation.template_attachments.all():
                 for template_attachment in template_attachments:
-                    template_bdy = template.Template(template_attachment.body)
+                    template_bdy = template.Template(
+                        sanitize_mail_template_body(template_attachment.body)
+                    )
                     context = template.Context(
                         {
                             "instance": context_instance,
                             "self": sender,
                             "model_instance": instance,
-                            "request": request,
+                            "request": safe_request,
                         }
                     )
                     render_bdy = template_bdy.render(context)
+                    # A blocklist over the raw template source can be bypassed
+                    # by splitting a dangerous tag across separate {{ }}
+                    # expressions that only combine into e.g. "<script>" once
+                    # rendered. Re-check the actual rendered HTML -- the thing
+                    # that's about to reach wkhtmltopdf (which runs with
+                    # local-file-access enabled) -- not just the source.
+                    if has_xss(render_bdy):
+                        logger.error(
+                            "Automation '%s': rendered attachment body failed "
+                            "the post-render XSS check; skipping this PDF "
+                            "attachment.",
+                            automation.title,
+                        )
+                        continue
                     attachments.append(
                         (
                             "Document",
@@ -449,22 +474,26 @@ def send_mail(request, automation, instance):
                         )
                     )
 
-            template_bdy = template.Template(mail_template.body)
+            template_bdy = template.Template(
+                sanitize_mail_template_body(mail_template.body)
+            )
         else:
-            template_bdy = template.Template(pk_or_text)
+            template_bdy = template.Template(sanitize_mail_template_body(pk_or_text))
         context = template.Context(
             {
                 "instance": context_instance,
                 "self": sender,
                 "model_instance": instance,
-                "request": request,
+                "request": safe_request,
             }
         )
         render_bdy = template_bdy.render(context)
 
-        title_template = template.Template(automation.title)
+        title_template = template.Template(
+            sanitize_mail_template_body(automation.title)
+        )
         title_context = template.Context(
-            {"instance": instance, "self": sender, "request": request}
+            {"instance": instance, "self": sender, "request": safe_request}
         )
         render_title = title_template.render(title_context)
         soup = BeautifulSoup(render_bdy, "html.parser")
