@@ -4424,5 +4424,205 @@
         17
       ]
     }
+  },
+  {
+    "model": "helpdesk.tickettype",
+    "pk": 1,
+    "fields": {
+      "created_at": "2025-07-05T11:30:00.000Z",
+      "created_by": 1,
+      "modified_by": 1,
+      "is_active": true,
+      "title": "IT Support",
+      "type": "service_request",
+      "prefix": "ITS",
+      "company_id": null
+    }
+  },
+  {
+    "model": "helpdesk.tickettype",
+    "pk": 2,
+    "fields": {
+      "created_at": "2025-07-05T11:30:00.050Z",
+      "created_by": 1,
+      "modified_by": 1,
+      "is_active": true,
+      "title": "Payroll Support",
+      "type": "service_request",
+      "prefix": "PAY",
+      "company_id": null
+    }
+  },
+  {
+    "model": "helpdesk.tickettype",
+    "pk": 3,
+    "fields": {
+      "created_at": "2025-07-05T11:30:00.100Z",
+      "created_by": 1,
+      "modified_by": 1,
+      "is_active": true,
+      "title": "HR Complaint",
+      "type": "complaint",
+      "prefix": "HRC",
+      "company_id": null
+    }
+  },
+  {
+    "model": "helpdesk.tickettype",
+    "pk": 4,
+    "fields": {
+      "created_at": "2025-07-05T11:30:00.150Z",
+      "created_by": 1,
+      "modified_by": 1,
+      "is_active": true,
+      "title": "Suggestion",
+      "type": "suggestion",
+      "prefix": "SUG",
+      "company_id": null
+    }
+  },
+  {
+    "model": "helpdesk.ticket",
+    "pk": 1,
+    "fields": {
+      "created_at": "2025-07-05T11:31:45.270Z",
+      "created_by": 1,
+      "modified_by": 1,
+      "is_active": true,
+      "title": "Laptop WiFi not connecting",
+      "employee_id": 2,
+      "ticket_type": 1,
+      "description": "Unable to connect to office WiFi after the latest update.",
+      "priority": "medium",
+      "created_date": "2025-07-18",
+      "resolved_date": null,
+      "assigning_type": "department",
+      "raised_on": "1",
+      "deadline": "2025-07-25",
+      "status": "new",
+      "assigned_to": [
+        1
+      ]
+    }
+  },
+  {
+    "model": "helpdesk.ticket",
+    "pk": 2,
+    "fields": {
+      "created_at": "2025-07-05T11:31:45.325Z",
+      "created_by": 1,
+      "modified_by": 1,
+      "is_active": true,
+      "title": "Payslip correction request",
+      "employee_id": 3,
+      "ticket_type": 2,
+      "description": "July payslip shows incorrect overtime hours.",
+      "priority": "high",
+      "created_date": "2025-07-19",
+      "resolved_date": null,
+      "assigning_type": "department",
+      "raised_on": "3",
+      "deadline": "2025-07-26",
+      "status": "in_progress",
+      "assigned_to": [
+        1
+      ]
+    }
+  },
+  {
+    "model": "helpdesk.ticket",
+    "pk": 3,
+    "fields": {
+      "created_at": "2025-07-05T11:31:45.380Z",
+      "created_by": 1,
+      "modified_by": 1,
+      "is_active": true,
+      "title": "Office AC not working",
+      "employee_id": 4,
+      "ticket_type": 1,
+      "description": "Meeting room AC is not cooling properly.",
+      "priority": "low",
+      "created_date": "2025-07-20",
+      "resolved_date": null,
+      "assigning_type": "department",
+      "raised_on": "1",
+      "deadline": "2025-07-28",
+      "status": "new",
+      "assigned_to": [
+        1
+      ]
+    }
+  },
+  {
+    "model": "helpdesk.ticket",
+    "pk": 4,
+    "fields": {
+      "created_at": "2025-07-05T11:31:45.435Z",
+      "created_by": 1,
+      "modified_by": 1,
+      "is_active": true,
+      "title": "Improve remote work policy",
+      "employee_id": 5,
+      "ticket_type": 4,
+      "description": "Suggest adding flexible remote work days each month.",
+      "priority": "medium",
+      "created_date": "2025-07-21",
+      "resolved_date": null,
+      "assigning_type": "department",
+      "raised_on": "3",
+      "deadline": "2025-07-30",
+      "status": "on_hold",
+      "assigned_to": [
+        1
+      ]
+    }
+  },
+  {
+    "model": "helpdesk.ticket",
+    "pk": 5,
+    "fields": {
+      "created_at": "2025-07-05T11:31:45.490Z",
+      "created_by": 1,
+      "modified_by": 1,
+      "is_active": true,
+      "title": "Printer issue resolved",
+      "employee_id": 6,
+      "ticket_type": 1,
+      "description": "Shared printer on floor 2 was jammed and has been fixed.",
+      "priority": "low",
+      "created_date": "2025-07-15",
+      "resolved_date": "2025-07-17",
+      "assigning_type": "department",
+      "raised_on": "1",
+      "deadline": "2025-07-20",
+      "status": "resolved",
+      "assigned_to": [
+        1
+      ]
+    }
+  },
+  {
+    "model": "helpdesk.ticket",
+    "pk": 6,
+    "fields": {
+      "created_at": "2025-07-05T11:31:45.545Z",
+      "created_by": 1,
+      "modified_by": 1,
+      "is_active": true,
+      "title": "Harassment complaint",
+      "employee_id": 7,
+      "ticket_type": 3,
+      "description": "Employee reported inappropriate behavior during team meeting.",
+      "priority": "high",
+      "created_date": "2025-07-22",
+      "resolved_date": null,
+      "assigning_type": "individual",
+      "raised_on": "1",
+      "deadline": "2025-07-24",
+      "status": "in_progress",
+      "assigned_to": [
+        1
+      ]
+    }
   }
 ]

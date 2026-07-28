@@ -36,11 +36,6 @@ SUBMENUS = [
         "redirect": reverse_lazy("organisation-chart"),
     },
     {
-        "menu": _("Work Structure"),
-        "redirect": reverse_lazy("work-structure-view"),
-        "accessibility": "employee.sidebar.work_structure_accessibility",
-    },
-    {
         "menu": _("Work Requests"),
         "redirect": reverse_lazy("requests-view"),
         "accessibility": "employee.sidebar.requests_accessibility",
@@ -53,6 +48,11 @@ SUBMENUS = [
     {
         "menu": _("Policies & Discipline"),
         "redirect": reverse_lazy("policies-discipline-view"),
+    },
+    {
+        "menu": _("Configuration"),
+        "redirect": reverse_lazy("employee-settings-view"),
+        "accessibility": "employee.sidebar.employee_settings_accessibility",
     },
 ]
 
@@ -99,7 +99,7 @@ def work_schedules_accessibility(request, submenu, user_perms, *args, **kwargs):
     )
 
 
-def work_structure_accessibility(request, submenu, user_perms, *args, **kwargs):
+def employee_settings_accessibility(request, submenu, user_perms, *args, **kwargs):
     return (
         employee_shift_accessibility(request, submenu, user_perms, *args, **kwargs)
         or shift_schedule_accessibility(request, submenu, user_perms, *args, **kwargs)

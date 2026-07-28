@@ -10,12 +10,12 @@ from base.templatetags.horillafilters import app_installed
 from base.views import object_delete, object_duplicate
 from employee import dashboard as emp_dashboard
 from employee import (
+    employee_settings,
     not_in_out_dashboard,
     policies,
     requests,
     views,
     work_schedules,
-    work_structure,
 )
 from employee.cbv import (
     action_type,
@@ -445,44 +445,44 @@ urlpatterns = [
         name="policies-discipline-action-type-tab",
     ),
     path(
-        "work-structure/",
-        work_structure.work_structure_view,
-        name="work-structure-view",
+        "employee-settings-view/",
+        employee_settings.employee_settings_view,
+        name="employee-settings-view",
     ),
     path(
-        "work-structure/shift-tab/",
-        work_structure.work_structure_shift_tab,
-        name="work-structure-shift-tab",
+        "employee-settings-shift-tab/",
+        employee_settings.employee_settings_shift_tab,
+        name="employee-settings-shift-tab",
     ),
     path(
-        "work-structure/shift-schedule-tab/",
-        work_structure.work_structure_shift_schedule_tab,
-        name="work-structure-shift-schedule-tab",
+        "employee-settings-shift-schedule-tab/",
+        employee_settings.employee_settings_shift_schedule_tab,
+        name="employee-settings-shift-schedule-tab",
     ),
     path(
-        "work-structure/rotating-shift-tab/",
-        work_structure.work_structure_rotating_shift_tab,
-        name="work-structure-rotating-shift-tab",
+        "employee-settings-rotating-shift-tab/",
+        employee_settings.employee_settings_rotating_shift_tab,
+        name="employee-settings-rotating-shift-tab",
     ),
     path(
-        "work-structure/work-type-tab/",
-        work_structure.work_structure_work_type_tab,
-        name="work-structure-work-type-tab",
+        "employee-settings-work-type-tab/",
+        employee_settings.employee_settings_work_type_tab,
+        name="employee-settings-work-type-tab",
     ),
     path(
-        "work-structure/rotating-work-type-tab/",
-        work_structure.work_structure_rotating_work_type_tab,
-        name="work-structure-rotating-work-type-tab",
+        "employee-settings-rotating-work-type-tab/",
+        employee_settings.employee_settings_rotating_work_type_tab,
+        name="employee-settings-rotating-work-type-tab",
     ),
     path(
-        "work-structure/employee-type-tab/",
-        work_structure.work_structure_employee_type_tab,
-        name="work-structure-employee-type-tab",
+        "employee-settings-employee-type-tab/",
+        employee_settings.employee_settings_employee_type_tab,
+        name="employee-settings-employee-type-tab",
     ),
     path(
-        "work-structure/employee-tags-tab/",
-        work_structure.work_structure_employee_tags_tab,
-        name="work-structure-employee-tags-tab",
+        "employee-settings-employee-tags-tab/",
+        employee_settings.employee_settings_employee_tags_tab,
+        name="employee-settings-employee-tags-tab",
     ),
     path(
         "work-schedules/",

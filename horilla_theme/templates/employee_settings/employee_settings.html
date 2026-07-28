@@ -35,9 +35,9 @@
             {% if perms.base.view_employeeshift %}
                 <button
                     type="button"
-                    class="oh-tabs__tab work-structure-tab-btn"
+                    class="oh-tabs__tab employee-settings-tab-btn"
                     data-tab-id="shift"
-                    data-url="{% url 'work-structure-shift-tab' %}"
+                    data-url="{% url 'employee-settings-shift-tab' %}"
                 >
                     {% trans "Shift" %}
                 </button>
@@ -45,9 +45,9 @@
             {% if perms.base.view_employeeshiftschedule %}
                 <button
                     type="button"
-                    class="oh-tabs__tab work-structure-tab-btn"
+                    class="oh-tabs__tab employee-settings-tab-btn"
                     data-tab-id="shift-schedule"
-                    data-url="{% url 'work-structure-shift-schedule-tab' %}"
+                    data-url="{% url 'employee-settings-shift-schedule-tab' %}"
                 >
                     {% trans "Shift Schedule" %}
                 </button>
@@ -55,9 +55,9 @@
             {% if perms.base.view_rotatingshift %}
                 <button
                     type="button"
-                    class="oh-tabs__tab work-structure-tab-btn"
+                    class="oh-tabs__tab employee-settings-tab-btn"
                     data-tab-id="rotating-shift"
-                    data-url="{% url 'work-structure-rotating-shift-tab' %}"
+                    data-url="{% url 'employee-settings-rotating-shift-tab' %}"
                 >
                     {% trans "Rotating Shift" %}
                 </button>
@@ -65,9 +65,9 @@
             {% if perms.base.view_worktype %}
                 <button
                     type="button"
-                    class="oh-tabs__tab work-structure-tab-btn"
+                    class="oh-tabs__tab employee-settings-tab-btn"
                     data-tab-id="work-type"
-                    data-url="{% url 'work-structure-work-type-tab' %}"
+                    data-url="{% url 'employee-settings-work-type-tab' %}"
                 >
                     {% trans "Work Type" %}
                 </button>
@@ -75,9 +75,9 @@
             {% if perms.base.view_rotatingworktype %}
                 <button
                     type="button"
-                    class="oh-tabs__tab work-structure-tab-btn"
+                    class="oh-tabs__tab employee-settings-tab-btn"
                     data-tab-id="rotating-work-type"
-                    data-url="{% url 'work-structure-rotating-work-type-tab' %}"
+                    data-url="{% url 'employee-settings-rotating-work-type-tab' %}"
                 >
                     {% trans "Rotating Work Type" %}
                 </button>
@@ -85,9 +85,9 @@
             {% if perms.base.view_employeetype %}
                 <button
                     type="button"
-                    class="oh-tabs__tab work-structure-tab-btn"
+                    class="oh-tabs__tab employee-settings-tab-btn"
                     data-tab-id="employee-type"
-                    data-url="{% url 'work-structure-employee-type-tab' %}"
+                    data-url="{% url 'employee-settings-employee-type-tab' %}"
                 >
                     {% trans "Employee Type" %}
                 </button>
@@ -95,28 +95,28 @@
             {% if perms.employee.view_employeetag %}
                 <button
                     type="button"
-                    class="oh-tabs__tab work-structure-tab-btn"
+                    class="oh-tabs__tab employee-settings-tab-btn"
                     data-tab-id="employee-tags"
-                    data-url="{% url 'work-structure-employee-tags-tab' %}"
+                    data-url="{% url 'employee-settings-employee-tags-tab' %}"
                 >
                     {% trans "Employee Tags" %}
                 </button>
             {% endif %}
         </div>
 
-        <div id="workStructureContent" class="oh-wrapper"></div>
+        <div id="employeeSettingsContent" class="oh-wrapper"></div>
     </div>
 
     <script>
         (function () {
-            var STORAGE_KEY = "activeWorkStructureTab";
+            var STORAGE_KEY = "activeEmployeeSettingsTab";
 
-            function loadWorkStructureTab(buttonEl, persist) {
+            function loadEmployeeSettingsTab(buttonEl, persist) {
                 if (!buttonEl || typeof htmx === "undefined") return;
                 var url = buttonEl.getAttribute("data-url");
                 if (!url) return;
                 var tabId = buttonEl.getAttribute("data-tab-id");
-                document.querySelectorAll(".work-structure-tab-btn").forEach(function (btn) {
+                document.querySelectorAll(".employee-settings-tab-btn").forEach(function (btn) {
                     btn.classList.remove("oh-tabs__tab--active");
                 });
                 buttonEl.classList.add("oh-tabs__tab--active");
@@ -126,13 +126,13 @@
                     } catch (_) {}
                 }
                 htmx.ajax("GET", url, {
-                    target: "#workStructureContent",
+                    target: "#employeeSettingsContent",
                     swap: "innerHTML",
                 });
             }
 
-            function restoreWorkStructureTab() {
-                if (!document.getElementById("workStructureContent")) return;
+            function restoreEmployeeSettingsTab() {
+                if (!document.getElementById("employeeSettingsContent")) return;
 
                 var savedTabId = null;
                 try {
@@ -142,15 +142,15 @@
                 var initialTab = null;
                 if (savedTabId) {
                     initialTab = document.querySelector(
-                        '.work-structure-tab-btn[data-tab-id="' +
+                        '.employee-settings-tab-btn[data-tab-id="' +
                             savedTabId.replace(/"/g, '\\"') +
                             '"]'
                     );
                 }
                 if (!initialTab) {
-                    initialTab = document.querySelector(".work-structure-tab-btn");
+                    initialTab = document.querySelector(".employee-settings-tab-btn");
                 }
-                loadWorkStructureTab(initialTab, false);
+                loadEmployeeSettingsTab(initialTab, false);
             }
 
             function runWhenHtmxReady(fn) {
@@ -161,17 +161,17 @@
                 document.addEventListener("DOMContentLoaded", fn, { once: true });
             }
 
-            if (!window._workStructureTabsClickBound) {
-                window._workStructureTabsClickBound = true;
+            if (!window._employeeSettingsTabsClickBound) {
+                window._employeeSettingsTabsClickBound = true;
                 document.addEventListener("click", function (event) {
-                    var buttonEl = event.target.closest(".work-structure-tab-btn");
+                    var buttonEl = event.target.closest(".employee-settings-tab-btn");
                     if (!buttonEl) return;
                     event.preventDefault();
-                    loadWorkStructureTab(buttonEl);
+                    loadEmployeeSettingsTab(buttonEl);
                 });
             }
 
-            runWhenHtmxReady(restoreWorkStructureTab);
+            runWhenHtmxReady(restoreEmployeeSettingsTab);
         })();
     </script>
 {% endblock content %}
