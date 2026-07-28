@@ -57,6 +57,7 @@ class AttendanceActivityListView(HorillaListView):
     filter_class = AttendanceActivityFilter
     model = AttendanceActivity
     template_name = "cbv/attendance_activity/delete_inherit.html"
+    history_tracking = False
 
     columns = [
         (_("Employee"), "employee_id", "employee_id__get_avatar"),

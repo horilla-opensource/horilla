@@ -96,11 +96,15 @@ class LateComeAndEarlyOutList(HorillaListView):
         (_("Penalities"), "penalities_column"),
     ]
 
-    header_attrs = {
-        "penalities_column": """
-                             style ="width:170px !important"
-                             """
-    }
+    default_columns = [
+        (_("Employee"), "employee_id", "employee_id__get_avatar"),
+        (_("Type"), "get_type"),
+        (_("Attendance Date"), "attendance_id__attendance_date"),
+        (_("Check-In"), "attendance_id__attendance_clock_in"),
+        (_("Check-Out"), "attendance_id__attendance_clock_out"),
+    ]
+
+    header_attrs = {"penalities_column": """ style ="width:170px !important" """}
 
     sortby_mapping = [
         (_("Employee"), "employee_id__get_full_name", "employee_id__get_avatar"),
