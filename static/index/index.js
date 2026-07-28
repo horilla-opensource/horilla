@@ -912,31 +912,34 @@ $(document).on('click', '.oh-kanban__card-body-collapse', function (e) {
 });
 
 
-$(document).on("htmx:beforeRequest", function (event, data) {
-    if (
-        !Array.from(event.target.getAttributeNames()).some((attr) =>
-            attr.startsWith("hx-on")
-        )
-    ) {
-        var response = event.detail.xhr.response;
-        var target = $(event.detail.elt.getAttribute("hx-target"));
-        var avoid_target_ids = [
-            "BiometricDeviceTestFormTarget",
-            "reloadMessages",
-            "infinite",
-            "OtpContainer",
-            "attendance-activity-container"
-        ];
-        var avoid_target_class = ["oh-badge--small"];
-        if (
-            !target.closest("form").length &&
-            !avoid_target_ids.includes(target.attr("id")) &&
-            !avoid_target_class.some((cls) => target.hasClass(cls))
-        ) {
-            target.html(`<div class="animated-background"></div>`);
-        }
-    }
-});
+
+// $(document).on("htmx:beforeRequest", function (event, data) {
+//     var isSortTrigger = $(event.target).is(".arrow-up, .arrow-down, .arrow-up-down");
+//     if (
+//         !isSortTrigger &&
+//         !Array.from(event.target.getAttributeNames()).some((attr) =>
+//             attr.startsWith("hx-on")
+//         )
+//     ) {
+//         var response = event.detail.xhr.response;
+//         var target = $(event.detail.elt.getAttribute("hx-target"));
+//         var avoid_target_ids = [
+//             "BiometricDeviceTestFormTarget",
+//             "reloadMessages",
+//             "infinite",
+//             "OtpContainer",
+//             "attendance-activity-container"
+//         ];
+//         var avoid_target_class = ["oh-badge--small"];
+//         if (
+//             !target.closest("form").length &&
+//             !avoid_target_ids.includes(target.attr("id")) &&
+//             !avoid_target_class.some((cls) => target.hasClass(cls))
+//         ) {
+//             target.html(`<div class="animated-background"></div>`);
+//         }
+//     }
+// });
 
 $(document).on("click", ".select2-selection__choice__remove", function (event) {
     if ($('[role="tooltip"]:visible').length) {
