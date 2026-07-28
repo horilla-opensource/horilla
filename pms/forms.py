@@ -882,13 +882,11 @@ class QuestionTemplateForm(ModelForm):
             }
         )
         if not self.instance.pk:
-            request = getattr(horilla_middlewares._thread_locals, "request", None)
-            if request:
-                selected_company = request.session.get("selected_company")
-                if selected_company and selected_company != "all":
-                    self.initial["company_id"] = Company.objects.filter(
-                        id=selected_company
-                    )
+            from base.auth_backends import resolve_company_id_for_new_record
+
+            company_id = resolve_company_id_for_new_record()
+            if company_id:
+                self.initial["company_id"] = Company.objects.filter(id=company_id)
 
     def as_p(self):
         """

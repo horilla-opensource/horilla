@@ -1383,10 +1383,10 @@ class Allowance(HorillaModel):
         return str(self.title)
 
     def save(self, *args, **kwargs):
-        request = getattr(horilla_middlewares._thread_locals, "request", None)
-        selected_company = request.session.get("selected_company")
-        if not self.id and selected_company and selected_company != "all":
-            self.company_id = Company.find(selected_company)
+        from base.auth_backends import stamp_company_on_create
+
+        if not self.id:
+            stamp_company_on_create(self)
         super().save(*args, **kwargs)
 
 
@@ -1883,10 +1883,10 @@ class Deduction(HorillaModel):
         return str(self.title)
 
     def save(self, *args, **kwargs):
-        request = getattr(horilla_middlewares._thread_locals, "request", None)
-        selected_company = request.session.get("selected_company")
-        if not self.id and selected_company and selected_company != "all":
-            self.company_id = Company.find(selected_company)
+        from base.auth_backends import stamp_company_on_create
+
+        if not self.id:
+            stamp_company_on_create(self)
         super().save(*args, **kwargs)
 
 

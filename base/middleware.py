@@ -15,7 +15,7 @@ from django.shortcuts import redirect
 from django.utils.translation import gettext_lazy as _
 
 from base.backends import ConfiguredEmailBackend
-from base.context_processors import AllCompany
+from base.context_processors import AllCompany, AllMyCompanies
 from base.horilla_company_manager import HorillaCompanyManager
 from base.models import Company, ShiftRequest, WorkTypeRequest
 from employee.models import (
@@ -281,7 +281,13 @@ class CompanyMiddleware:
                 else Company.objects.filter(hq=True).first()
             )
             request.session["selected_company"] = "all"
-            all_company = AllCompany()
+            from base.auth_backends import company_scoped_active
+
+            all_company = (
+                AllMyCompanies()
+                if company_scoped_active() and not request.user.is_superuser
+                else AllCompany()
+            )
             request.session["selected_company_instance"] = {
                 "company": all_company.company,
                 "icon": all_company.icon.url,
@@ -291,18 +297,28 @@ class CompanyMiddleware:
 
     def _clamp_to_allowed(self, request, company_id):
         """
-        With COMPANY_SCOPED_PERMISSIONS on, non-superusers may only have one
-        of their own companies selected. Stale sessions ("all" or a company
-        they lost access to) self-heal to their default/first allowed company.
+        With COMPANY_SCOPED_PERMISSIONS on, non-superusers may only have:
+        - one of their allowed companies (assignments ∪ work-info), or
+        - "all" (= All my companies) when they have 2+ *assignment* companies.
+
+        Stale sessions pointing at a company they lost self-heal to their
+        default/first allowed company.
         """
-        from base.auth_backends import company_scoped_active, get_allowed_company_ids
+        from base.auth_backends import (
+            company_scoped_active,
+            get_allowed_company_ids,
+            get_assigned_company_ids,
+        )
 
         if not company_scoped_active() or request.user.is_superuser:
             return company_id
 
         allowed = get_allowed_company_ids(request.user)
+        assigned = get_assigned_company_ids(request.user)
+        if company_id == "all" and len(assigned) >= 2:
+            return "all"
         try:
-            if company_id != "all" and company_id and int(company_id) in allowed:
+            if company_id and company_id != "all" and int(company_id) in allowed:
                 return company_id
         except (TypeError, ValueError):
             pass
@@ -311,10 +327,10 @@ class CompanyMiddleware:
         if default_company and default_company.id in allowed:
             clamped = default_company.id
         elif allowed:
-            clamped = sorted(allowed)[0]
+            # Prefer an assignment company over work-only when clamping
+            prefer = assigned or allowed
+            clamped = sorted(prefer)[0]
         else:
-            # No allowed companies at all: keep their own company if any,
-            # otherwise leave unset (user has no group perms anyway).
             clamped = default_company.id if default_company else None
         request.session["selected_company"] = (
             str(clamped) if clamped is not None else "all"
@@ -349,9 +365,37 @@ class CompanyMiddleware:
                 request.session["selected_company"] = "all"
                 company_id = "all"
 
-        # Scoped mode: never leave a non-superuser on "all" or a company
-        # outside their allowed set.
+        # Scoped mode: clamp to allowed companies, but permit "all"
+        # (= All my companies) when the user has 2+ assignments.
         company_id = self._clamp_to_allowed(request, company_id)
+
+        # Cache allowed / assigned ids on the request for queryset filtering / writes
+        from base.auth_backends import (
+            company_scoped_active,
+            get_allowed_company_ids,
+            get_assigned_company_ids,
+            get_write_company_id,
+        )
+
+        if (
+            company_scoped_active()
+            and not request.user.is_superuser
+            and request.user.is_authenticated
+        ):
+            allowed = get_allowed_company_ids(request.user)
+            assigned = get_assigned_company_ids(request.user)
+            request.allowed_company_ids = allowed
+            request.assigned_company_ids = assigned
+            # All my companies → filter to assignment companies only
+            request.all_my_company_ids = assigned if len(assigned) >= 2 else allowed
+            request.write_company_id = (
+                get_write_company_id(request.user) if company_id == "all" else None
+            )
+        else:
+            request.allowed_company_ids = None
+            request.assigned_company_ids = None
+            request.all_my_company_ids = None
+            request.write_company_id = None
 
         # ✅ Store in context
         set_selected_company(company_id)

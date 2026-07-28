@@ -12,6 +12,7 @@ from base.models import (
     Attachment,
     AttendanceAllowedIP,
     Company,
+    CompanyGroupAssignment,
     CompanyLeaves,
     DashboardEmployeeCharts,
     Department,
@@ -42,6 +43,7 @@ from base.models import (
 
 # Register your models here.
 
+admin.site.register(CompanyGroupAssignment)
 admin.site.register(Company)
 admin.site.register(Department, SimpleHistoryAdmin)
 admin.site.register(JobPosition)

@@ -10,12 +10,11 @@ ContextVar before any view or template runs).
 
 Resolution rules (flag on, non-superusers — superusers bypass backends):
 - specific company selected  -> permissions from groups assigned for that company
+- "all" / "All my companies" -> union of the user's per-company assignments
+  (data layer still limits rows to those companies via HorillaCompanyManager)
 - no company context (API/JWT without session, shells, schedulers)
                              -> user's work-info company; if none, the union
                                 of all their per-company assignments
-- "all companies" selected   -> union of the user's per-company assignments
-                                (defense in depth; the switcher restricts
-                                "all" to superusers)
 
 The union fallbacks never grant anything beyond what the user already holds
 in at least one of their companies, so they cannot escalate privileges while
@@ -26,7 +25,7 @@ from django.conf import settings
 from django.contrib.auth.backends import ModelBackend
 from django.contrib.auth.models import Permission
 
-from horilla.horilla_middlewares import get_selected_company
+from horilla.horilla_middlewares import _thread_locals, get_selected_company
 
 
 class CompanyScopedBackend(ModelBackend):
@@ -70,18 +69,27 @@ def company_scoped_active():
     return bool(getattr(settings, "COMPANY_SCOPED_PERMISSIONS", False))
 
 
-def get_allowed_company_ids(user):
+def get_assigned_company_ids(user):
     """
-    Companies a user may select: any company where they hold a group
-    assignment, plus their work-info company.
+    Companies where the user holds a CompanyGroupAssignment (role grant).
+    Used for All-my-companies data scope and permission unions.
     """
     from base.models import CompanyGroupAssignment
 
-    ids = set(
+    return set(
         CompanyGroupAssignment.objects.filter(user=user).values_list(
             "company_id", flat=True
         )
     )
+
+
+def get_allowed_company_ids(user):
+    """
+    Companies the user may select in the switcher: assignment companies
+    plus their work-info company (so they can return to their home company
+    even when they only hold a role elsewhere).
+    """
+    ids = get_assigned_company_ids(user)
     try:
         work_company_id = user.employee_get.employee_work_info.company_id_id
         if work_company_id:
@@ -89,3 +97,72 @@ def get_allowed_company_ids(user):
     except Exception:
         pass
     return ids
+
+
+def get_write_company_id(user):
+    """
+    Company to stamp on new records when the session is "All my companies".
+
+    Prefers the user's work-info company when it is an *assignment* company;
+    otherwise the first assigned company. Falls back to allowed (work) only
+    if they have no assignments.
+    """
+    assigned = get_assigned_company_ids(user)
+    pool = assigned or get_allowed_company_ids(user)
+    if not pool:
+        return None
+    try:
+        work_company_id = user.employee_get.employee_work_info.company_id_id
+        if work_company_id in pool:
+            return work_company_id
+    except Exception:
+        pass
+    return sorted(pool)[0]
+
+
+def resolve_company_id_for_new_record(request=None):
+    """
+    Concrete company id for creating/saving rows.
+
+    - Specific company selected -> that id
+    - Superuser on "all" -> None (leave unset / form chooses)
+    - Non-superuser on "all" -> write company (work-info or first allowed)
+    """
+    request = request or getattr(_thread_locals, "request", None)
+    company = get_selected_company()
+    if company and company != "all":
+        try:
+            return int(company)
+        except (TypeError, ValueError):
+            return company
+    if not request or not getattr(request, "user", None):
+        return None
+    if not request.user.is_authenticated or request.user.is_superuser:
+        return None
+    if company_scoped_active():
+        return get_write_company_id(request.user)
+    return None
+
+
+def stamp_company_on_create(instance, attr="company_id"):
+    """
+    If ``instance`` is new and ``attr`` is unset, assign the company from
+    ``resolve_company_id_for_new_record`` (supports All my companies writes).
+
+    Returns True when a company was stamped.
+    """
+    if getattr(instance, "pk", None):
+        return False
+    fk_id_attr = f"{attr}_id"
+    if getattr(instance, fk_id_attr, None):
+        return False
+    company_id = resolve_company_id_for_new_record()
+    if not company_id:
+        return False
+    from base.models import Company
+
+    company = Company.find(company_id)
+    if not company:
+        return False
+    setattr(instance, attr, company)
+    return True

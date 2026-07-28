@@ -1361,22 +1361,46 @@ def group_assign(request):
     """
     This method is used to assign user group to the users.
     """
+    from base.auth_backends import company_scoped_active, get_assigned_company_ids
+
     group_id = request.GET.get("group") or request.POST.get("group")
     if not group_id:
         return HorillaRedirect(request, message=_("Required parameters are missing"))
     group = Group.objects.filter(id=group_id).first()
     if not group:
         return HorillaRedirect(request, message=_("Group not found"))
-    current_employees = Employee.objects.filter(
-        employee_user_id__groups__id=group_id, is_active=True
-    )
+
+    grantable_ids = None
+    if (
+        company_scoped_active()
+        and request.user.is_authenticated
+        and not request.user.is_superuser
+    ):
+        grantable_ids = get_assigned_company_ids(request.user)
+
+    if grantable_ids is not None:
+        current_employees = Employee.objects.filter(
+            is_active=True,
+            employee_user_id__company_group_assignments__group=group,
+            employee_user_id__company_group_assignments__company_id__in=grantable_ids,
+        ).distinct()
+        initial_companies = Company.objects.filter(
+            id__in=grantable_ids,
+            group_assignments__group=group,
+        ).distinct()
+    else:
+        current_employees = Employee.objects.filter(
+            employee_user_id__groups__id=group_id, is_active=True
+        )
+        initial_companies = Company.objects.filter(
+            group_assignments__group=group
+        ).distinct()
+
     form = AssignUserGroup(
         initial={
             "group": group_id,
             "employee": list(current_employees.values_list("id", flat=True)),
-            "companies": list(
-                Company.objects.filter(group_assignments__group=group).distinct()
-            ),
+            "companies": list(initial_companies),
         }
     )
     if request.POST:
@@ -2312,10 +2336,10 @@ def work_type_create(request):
     This method is used to create work type
     """
     dynamic = request.GET.get("dynamic")
-    selected_company = request.session.get("selected_company")
-    company = None
-    if selected_company and selected_company != "all":
-        company = Company.objects.filter(id=selected_company).first()
+    from base.auth_backends import resolve_company_id_for_new_record
+
+    company_id = resolve_company_id_for_new_record(request)
+    company = Company.objects.filter(id=company_id).first() if company_id else None
     initial = {"company_id": [company] if company else []}
     form = WorkTypeForm(initial=initial)
     work_types = WorkType.objects.all()
@@ -6361,6 +6385,16 @@ def audit_tag_update(request, tag_id):
         "base/audit_tag/audit_tag_form.html",
         {"form": form, "tag_id": tag_id},
     )
+
+
+@login_required
+@permission_required("base.view_multipleapprovalcondition")
+def multiple_approval_rules_settings_view(request):
+    """
+    Multiple Approval Rules settings page. Migrated from the Configuration menu
+    into Settings > Approvals; reuses the existing nav/list HTMX endpoints.
+    """
+    return render(request, "base/settings/multiple_approval_rules.html")
 
 
 @login_required

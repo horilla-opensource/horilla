@@ -434,15 +434,9 @@ class LeaveType(HorillaModel):
         return expired_date
 
     def save(self, *args, **kwargs):
-        request = getattr(horilla_middlewares._thread_locals, "request", None)
-        selected_company = request.session.get("selected_company")
-        if (
-            not self.id
-            and not self.company_id
-            and selected_company
-            and selected_company != "all"
-        ):
-            self.company_id = Company.find(selected_company)
+        from base.auth_backends import stamp_company_on_create
+
+        stamp_company_on_create(self)
 
         if (
             self.carryforward_type != "no carryforward"
@@ -1781,8 +1775,6 @@ class LeaveRequest(HorillaModel):
         Method to count leave clashes where this employee's leave request overlaps
         with other employees' requested dates.
         """
-        if self.status in ["cancelled", "rejected"]:
-            return 0
         work_info = EmployeeWorkInformation.objects.filter(employee_id=self.employee_id)
         if work_info.exists() and self.status not in ["cancelled", "rejected"]:
             overlapping_requests = (
@@ -1795,6 +1787,9 @@ class LeaveRequest(HorillaModel):
                         | Q(
                             employee_id__employee_work_info__job_position_id=self.employee_id.get_job_position()
                         )
+                    )
+                    & Q(
+                        employee_id__employee_work_info__company_id=self.employee_id.get_company()
                     ),
                     start_date__lte=self.end_date,
                     end_date__gte=self.start_date,

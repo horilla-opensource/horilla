@@ -56,22 +56,9 @@ setattr(QuerySet, "update", update)
 
 
 class HorillaCompanyManager(models.Manager):
-
-    company_filter_path = None
-
-    def __new__(cls, related_company_field=None, *args, **kwargs):
-        if cls is HorillaCompanyManager:
-            cls = type(
-                cls.__name__,
-                (cls,),
-                {"company_filter_path": related_company_field},
-            )
-        return super().__new__(cls)
-
     def __init__(self, related_company_field=None, *args, **kwargs):
         super().__init__(*args, **kwargs)
-        if related_company_field is not None:
-            self.company_filter_path = related_company_field
+        self.company_filter_path = related_company_field
 
     def _resolve_related_field(self, model, part):
         # Forward field
@@ -139,8 +126,34 @@ class HorillaCompanyManager(models.Manager):
         company = get_selected_company()
         filter_path = self.get_company_filter_path()
 
-        if not filter_path or not company or company == "all":
+        if not filter_path or not company:
             return qs
+
+        # Superuser / legacy "all": no company filter (true tenant-wide).
+        # Non-superuser "all" (All my companies): restrict to assignment
+        # companies (all_my_company_ids), falling back to allowed ids.
+        if company == "all":
+            request = getattr(_thread_locals, "request", None)
+            filter_ids = None
+            if request:
+                filter_ids = getattr(request, "all_my_company_ids", None)
+                if filter_ids is None:
+                    filter_ids = getattr(request, "allowed_company_ids", None)
+            if filter_ids is None:
+                return qs
+            if not filter_ids:
+                return qs.none()
+            try:
+                return qs.filter(
+                    Q(**{f"{filter_path}__in": list(filter_ids)})
+                    | Q(**{f"{filter_path}__isnull": True})
+                ).distinct()
+            except Exception as e:
+                logger.exception(
+                    f"Company filter (all-my-companies) failed for model "
+                    f"{self.model.__name__} with path '{filter_path}': {e}"
+                )
+                return qs.none()
 
         try:
             return qs.filter(

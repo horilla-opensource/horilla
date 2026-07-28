@@ -344,16 +344,9 @@ class Objective(HorillaModel):
         return url
 
     def save(self, *args, **kwargs):
-        request = getattr(_thread_locals, "request", None)
-        selected_company = request.session.get("selected_company")
-        if (
-            not self.id
-            and not self.company_id
-            and selected_company
-            and selected_company != "all"
-        ):
-            self.company_id = Company.find(selected_company)
+        from base.auth_backends import stamp_company_on_create
 
+        stamp_company_on_create(self)
         super().save()
 
 
@@ -1579,16 +1572,9 @@ class Meetings(HorillaModel):
         return url
 
     def save(self, *args, **kwargs):
-        request = getattr(_thread_locals, "request", None)
-        selected_company = request.session.get("selected_company")
-        if (
-            not self.id
-            and not self.company_id
-            and selected_company
-            and selected_company != "all"
-        ):
-            self.company_id = Company.find(selected_company)
+        from base.auth_backends import stamp_company_on_create
 
+        stamp_company_on_create(self)
         super().save()
 
 
@@ -1819,15 +1805,9 @@ class BonusPointSetting(models.Model):
             ).save()
 
     def save(self, *args, **kwargs):
-        request = getattr(_thread_locals, "request", None)
-        selected_company = request.session.get("selected_company") if request else None
-        if (
-            not self.id
-            and not self.company_id
-            and selected_company
-            and selected_company != "all"
-        ):
-            self.company_id = Company.find(selected_company)
+        from base.auth_backends import stamp_company_on_create
+
+        stamp_company_on_create(self)
         super().save(*args, **kwargs)
 
     def __str__(self) -> str:

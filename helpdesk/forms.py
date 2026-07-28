@@ -61,12 +61,13 @@ class TicketTypeForm(ModelForm):
         instance = self.instance
 
         request = getattr(horilla_middlewares._thread_locals, "request", None)
-        selected_company = request.session.get("selected_company") if request else None
+        from base.auth_backends import resolve_company_id_for_new_record
 
-        if selected_company and selected_company != "all":
+        company_id = resolve_company_id_for_new_record(request)
+        if company_id:
             from base.models import Company as CompanyModel
 
-            company = CompanyModel.find(selected_company)
+            company = CompanyModel.find(company_id)
             qs_title = TicketType.objects.filter(title=title, company_id=company)
             qs_prefix = TicketType.objects.filter(prefix=prefix, company_id=company)
         else:

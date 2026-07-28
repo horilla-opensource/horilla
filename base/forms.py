@@ -480,7 +480,7 @@ class AssignUserGroup(Form):
         label=_("Companies"),
         help_text=_(
             "Members get this group's permissions only in the selected "
-            "companies. Leave empty for all companies."
+            "companies. Leave empty for all companies you can manage."
         ),
     )
 
@@ -490,33 +490,71 @@ class AssignUserGroup(Form):
         self.fields["employee"].widget.attrs.update(
             {"data-placeholder": _("Search employees...")}
         )
-        from base.auth_backends import company_scoped_active
+        from base.auth_backends import company_scoped_active, get_assigned_company_ids
+        from horilla.horilla_middlewares import _thread_locals
 
+        self._grantable_company_ids = None
         if not company_scoped_active():
             self.fields.pop("companies", None)
+            return
+
+        request = getattr(_thread_locals, "request", None)
+        user = getattr(request, "user", None) if request else None
+        if user and user.is_authenticated and not user.is_superuser:
+            # Only companies where the editor already holds a role — blocks
+            # self-escalation onto companies they do not manage.
+            grantable = get_assigned_company_ids(user)
+            self._grantable_company_ids = grantable
+            self.fields["companies"].queryset = Company.objects.filter(
+                id__in=grantable or []
+            )
+            self.fields["companies"].help_text = _(
+                "Members get this group's permissions only in the selected "
+                "companies. You can only assign companies you already have "
+                "access to. Leave empty for all of those companies."
+            )
         else:
-            # reload_queryset narrows Company fields to the selected company;
-            # group assignments must be grantable across all companies.
             self.fields["companies"].queryset = Company.objects.all()
+            self._grantable_company_ids = None
 
     def clean(self):
         emps = self.data.getlist("employee") if hasattr(self.data, "getlist") else []
         if emps is not None:
             self.errors.pop("employee", None)
         super().clean()
+        companies = list(self.cleaned_data.get("companies") or [])
+        if self._grantable_company_ids is not None and companies:
+            illegal = [c for c in companies if c.id not in self._grantable_company_ids]
+            if illegal:
+                self.add_error(
+                    "companies",
+                    _("You cannot assign this group for companies you do not manage."),
+                )
         return self.cleaned_data
+
+    def _companies_for_save(self):
+        """Companies in scope for this save (never expands beyond grantable)."""
+        companies = list(self.cleaned_data.get("companies") or [])
+        if self._grantable_company_ids is not None:
+            if companies:
+                return [c for c in companies if c.id in self._grantable_company_ids]
+            return list(Company.objects.filter(id__in=self._grantable_company_ids))
+        if companies:
+            return companies
+        return list(Company.objects.all())
 
     def save(self):
         """
-        Replace group membership with the selected employees.
+        Replace group membership for companies the editor may manage.
 
-        Company scoping: CompanyGroupAssignment rows for this group are
-        replaced too — selected members are assigned for the chosen companies
-        (all companies when none are chosen or scoping is disabled) and
-        user.groups stays the union of assignments.
+        Non-superusers only touch CompanyGroupAssignment rows inside their
+        grantable companies; other companies' assignments are left alone.
         """
+        from django.contrib.auth import get_user_model
+
         from base.models import CompanyGroupAssignment
 
+        User = get_user_model()
         group = self.cleaned_data["group"]
         employee_ids = (
             self.data.getlist("employee") if hasattr(self.data, "getlist") else []
@@ -525,30 +563,48 @@ class AssignUserGroup(Form):
         assigning_users = [
             e.employee_user_id for e in assigning_employees if e.employee_user_id
         ]
+        assigning_user_ids = {u.id for u in assigning_users}
+        companies = self._companies_for_save()
 
-        existing_employees = Employee.objects.filter(
-            employee_user_id__in=group.user_set.all()
+        if self._grantable_company_ids is not None:
+            scope_ids = list(self._grantable_company_ids)
+            # Who had this group in-scope before the edit (for membership sync)
+            previously_in_scope = set(
+                CompanyGroupAssignment.objects.filter(
+                    group=group, company_id__in=scope_ids
+                ).values_list("user_id", flat=True)
+            )
+            CompanyGroupAssignment.objects.filter(
+                group=group, company_id__in=scope_ids
+            ).exclude(user_id__in=assigning_user_ids).delete()
+            CompanyGroupAssignment.objects.filter(
+                group=group,
+                company_id__in=scope_ids,
+                user_id__in=assigning_user_ids,
+            ).delete()
+            touched_ids = previously_in_scope | assigning_user_ids
+        else:
+            existing_users = list(group.user_set.all())
+            for user in existing_users:
+                user.groups.remove(group)
+            CompanyGroupAssignment.objects.filter(group=group).delete()
+            touched_ids = assigning_user_ids
+
+        CompanyGroupAssignment.objects.bulk_create(
+            [
+                CompanyGroupAssignment(user=user, company=company, group=group)
+                for user in assigning_users
+                for company in companies
+            ],
+            ignore_conflicts=True,
         )
-        existing_users = [
-            e.employee_user_id for e in existing_employees if e.employee_user_id
-        ]
 
-        companies = list(self.cleaned_data.get("companies") or [])
-        if not companies:
-            companies = list(Company.objects.all())
-
-        for user in existing_users:
-            user.groups.remove(group)
-        CompanyGroupAssignment.objects.filter(group=group).delete()
-
-        assignments = []
-        for user in assigning_users:
-            user.groups.add(group)
-            for company in companies:
-                assignments.append(
-                    CompanyGroupAssignment(user=user, company=company, group=group)
-                )
-        CompanyGroupAssignment.objects.bulk_create(assignments, ignore_conflicts=True)
+        if self._grantable_company_ids is not None:
+            for user in User.objects.filter(id__in=touched_ids):
+                CompanyGroupAssignment.sync_user_group_membership(user, group)
+        else:
+            for user in assigning_users:
+                user.groups.add(group)
 
         return group
 
@@ -1036,13 +1092,11 @@ class WorkTypeForm(ModelForm):
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
         if not self.instance.pk:
-            request = getattr(_thread_locals, "request", None)
-            if request:
-                selected_company = request.session.get("selected_company")
-                if selected_company and selected_company != "all":
-                    self.initial["company_id"] = Company.objects.filter(
-                        id=selected_company
-                    )
+            from base.auth_backends import resolve_company_id_for_new_record
+
+            company_id = resolve_company_id_for_new_record()
+            if company_id:
+                self.initial["company_id"] = Company.objects.filter(id=company_id)
 
 
 class RotatingWorkTypeForm(ModelForm):
