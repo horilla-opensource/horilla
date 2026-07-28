@@ -282,7 +282,7 @@ class EmployeesList(HorillaListView):
 
     columns = [
         (_("Employee"), "employee_name_with_badge_id", "get_avatar"),
-        (_("Email"), "email"),
+        (_("Email"), "get_email"),
         (_("Phone"), "phone"),
         (_("Badge Id"), "badge_id"),
         (_("Job Position"), "employee_work_info__job_position_id"),
@@ -293,8 +293,17 @@ class EmployeesList(HorillaListView):
         (_("Job Role"), "employee_work_info__job_role_id"),
         (_("Reporting Manager"), "employee_work_info__reporting_manager_id"),
         (_("Company"), "employee_work_info__company_id"),
-        (_("Work Email"), "employee_work_info__email"),
         (_("Date of Joining"), "employee_work_info__date_joining"),
+    ]
+
+    default_columns = [
+        (_("Employee"), "employee_name_with_badge_id", "get_avatar"),
+        (_("Email"), "get_email"),
+        (_("Phone"), "phone"),
+        (_("Department"), "employee_work_info__department_id"),
+        (_("Shift"), "employee_work_info__shift_id"),
+        (_("Reporting Manager"), "employee_work_info__reporting_manager_id"),
+        (_("Company"), "employee_work_info__company_id"),
     ]
 
     action_method = "employee_actions"

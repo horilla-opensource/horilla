@@ -34,3 +34,4 @@ class RequestsShiftInboxNav(ShitRequestNav):
     def __init__(self, **kwargs):
         super().__init__(**kwargs)
         self.search_url = reverse("allocated-shift-view")
+        self.create_attrs = None
