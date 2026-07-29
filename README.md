@@ -154,7 +154,7 @@ pip install -r requirements.txt
 
 ### Reporting Security Issues
 
-Please report security vulnerabilities to **support@horilla.com**. Do not create public GitHub issues for security vulnerabilities.
+Please report security vulnerabilities via [GitHub Private Vulnerability Reporting](https://github.com/horilla/horilla-hr/security/advisories/new), not email. Do not create public GitHub issues for security vulnerabilities. See [SECURITY.md](SECURITY.md) for full details.
 
 ### Security Best Practices
 

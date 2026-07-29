@@ -74,7 +74,7 @@ Thank you for considering contributing to Horilla! We welcome your input and app
 ## Issues
 
 - Bugs and features: open a public GitHub issue with reproduction steps.
-- **Security vulnerabilities:** do **not** open a public issue — email `info@horilla.com` per [SECURITY.md](SECURITY.md).
+- **Security vulnerabilities:** do **not** open a public issue — use [GitHub Private Vulnerability Reporting](https://github.com/horilla/horilla-hr/security/advisories/new), not email. See [SECURITY.md](SECURITY.md) for full details.
 
 ### Contributing to v1 (1.0/master)
 
