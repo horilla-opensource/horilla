@@ -23,7 +23,13 @@ from django.http import HttpResponse
 from django.template.loader import render_to_string
 from django.utils.translation import gettext as _
 
-from base.models import Company, CompanyLeaves, DynamicPagination, Holidays
+from base.models import (
+    Company,
+    CompanyLeaves,
+    DefaultExportPermission,
+    DynamicPagination,
+    Holidays,
+)
 from employee.models import Employee, EmployeeWorkInformation
 from horilla.horilla_middlewares import _thread_locals
 
@@ -853,6 +859,34 @@ def format_export_value(value, employee):
     return value
 
 
+def has_export_access(request, model):
+    """
+    Centralized export-access check reused by every export endpoint.
+
+    Superusers always have access. When the "Default Export Access"
+    setting is enabled for the requesting user's current company (or not
+    yet configured for that company), every user of that company may
+    export data. Otherwise access falls back to the per-module
+    ``export_<model>`` permission.
+    """
+    user = request.user
+    if user.is_superuser:
+        return True
+
+    selected_company = request.session.get("selected_company")
+    if not selected_company or selected_company == "all":
+        company = None
+    else:
+        company = Company.objects.filter(id=selected_company).first()
+
+    setting = DefaultExportPermission.objects.filter(company_id=company).first()
+    if setting is None or setting.is_enabled:
+        return True
+
+    export_codename = f"{model._meta.app_label}.export_{model._meta.model_name}"
+    return user.has_perm(export_codename)
+
+
 def export_data(request, model, form_class, filter_class, file_name, perm=None):
     fields_mapping = {
         "male": _("Male"),
@@ -884,8 +918,7 @@ def export_data(request, model, form_class, filter_class, file_name, perm=None):
 
     from horilla.http.response import HorillaRedirect
 
-    export_codename = f"{model._meta.app_label}.export_{model._meta.model_name}"
-    if not request.user.has_perm(export_codename):
+    if not has_export_access(request, model):
         return HorillaRedirect(
             request, message=_("You dont have access to export this data")
         )

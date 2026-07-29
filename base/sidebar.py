@@ -43,18 +43,11 @@ def general_settings_accessibility(request, submenu, user_perms, *args, **kwargs
 
 
 def employee_permission_accessibility(request, submenu, user_perms, *args, **kwargs):
-    # Direct permission assign: superadmin only
-    return request.user.is_superuser
-
-
-def accessibility_restriction_accessibility(
-    request, submenu, user_perms, *args, **kwargs
-):
     return request.user.has_perm("auth.view_permission")
 
 
 def user_group_accessibility(request, submenu, user_perms, *args, **kwargs):
-    return request.user.is_superuser
+    return request.user.has_perm("auth.view_group")
 
 
 def date_settings_accessibility(request, submenu, user_perms, *args, **kwargs):
@@ -173,6 +166,10 @@ def whatsapp_accessibility(request, submenu, user_perms, *args, **kwargs):
     )
 
 
+def default_export_accessibility(request, submenu, user_perms, *args, **kwargs):
+    return request.user.has_perm("base.view_defaultexportpermission")
+
+
 # ---------------------------------------------------------------------------
 # 1. General settings section
 # ---------------------------------------------------------------------------
@@ -243,6 +240,32 @@ class GeneralSettings:
             ],
         },
         {
+            "label": _("Accessibility Restriction"),
+            "url": reverse_lazy("user-accessibility"),
+            "accessibility": employee_permission_accessibility,
+            "search_entries": [
+                {
+                    "text": _("Accessibility Restriction"),
+                    "description": _(
+                        "Control which user roles can see which menu items"
+                    ),
+                },
+            ],
+        },
+        {
+            "label": _("Default Export Access"),
+            "url": reverse_lazy("default-export-access-settings"),
+            "accessibility": default_export_accessibility,
+            "search_entries": [
+                {
+                    "text": _("Default Export Access"),
+                    "description": _(
+                        "Control the default data export behavior for the currently selected company"
+                    ),
+                },
+            ],
+        },
+        {
             "label": _("Employee Permission"),
             "url": reverse_lazy("employee-permission-assign"),
             "accessibility": employee_permission_accessibility,
@@ -257,19 +280,6 @@ class GeneralSettings:
                     "text": _("Assign Permission"),
                     "description": _(
                         "Grant or revoke specific access rights per employee"
-                    ),
-                },
-            ],
-        },
-        {
-            "label": _("Accessibility Restriction"),
-            "url": reverse_lazy("user-accessibility"),
-            "accessibility": accessibility_restriction_accessibility,
-            "search_entries": [
-                {
-                    "text": _("Accessibility Restriction"),
-                    "description": _(
-                        "Control which user roles can see which menu items"
                     ),
                 },
             ],

@@ -145,7 +145,7 @@ x-data="{searchShow: false}"
         >
             <ul class="oh-dropdown__items">
               <li class="oh-dropdown__item">
-                {% if perms.recruitment.delete_candidate %}
+                {% if export_access_enabled or perms.recruitment.export_candidate %}
                 <a
                   href="#"
                   class="oh-dropdown__link"

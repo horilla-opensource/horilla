@@ -47,9 +47,11 @@
     <div class="oh-checkpoint-badge text-secondary mb-2" id="unselectAllInstances" style="cursor: pointer">
         {% trans "Unselect All Candidates" %}
     </div>
+    {% if export_access_enabled or perms.recruitment.export_candidate %}
     <div class="oh-checkpoint-badge text-info mb-2" id="exportsection" style="cursor: pointer">
         {% trans "Export Candidates" %}
     </div>
+    {% endif %}
     <div class="oh-checkpoint-badge text-danger mb-2" id="selectedCandidate"></div>
 {% endif %}
 {% if data %}

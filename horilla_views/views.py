@@ -31,7 +31,7 @@ from openpyxl.drawing.image import Image
 from openpyxl.styles import Alignment, Border, Font, PatternFill, Side
 from xhtml2pdf import pisa
 
-from base.methods import eval_validate
+from base.methods import eval_validate, has_export_access
 from horilla.decorators import login_required as func_login_required
 from horilla.http.response import HorillaRedirect
 from horilla.signals import post_generic_delete, pre_generic_delete
@@ -1018,8 +1018,7 @@ def export_data(request, *args, **kwargs):
     # =====================================================
     # EXPORT ACCESS CONTROL
     # =====================================================
-    export_codename = f"{model._meta.app_label}.export_{model._meta.model_name}"
-    if not request.user.has_perm(export_codename):
+    if not has_export_access(request, model):
         messages.info(request, _("You dont have access to export this data"))
         return HorillaRedirect(request)
 

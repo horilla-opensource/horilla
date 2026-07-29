@@ -4,23 +4,31 @@ context_processor.py
 This module is used to register context processor`
 """
 
+import re
+
 from django.apps import apps
 from django.conf import settings
 from django.contrib import messages
-from django.urls import path
+from django.http import HttpResponse
+from django.urls import path, reverse
 from django.utils.translation import gettext_lazy as _
 
-from base.models import Company, TrackLateComeEarlyOut
+from base.models import Company, DefaultExportPermission, TrackLateComeEarlyOut
 from base.urls import urlpatterns
-from employee.models import EmployeeGeneralSetting, ProfileEditFeature
-from horilla.decorators import hx_request_required, login_required
+from employee.models import (
+    Employee,
+    EmployeeGeneralSetting,
+    EmployeeWorkInformation,
+    ProfileEditFeature,
+)
+from horilla.decorators import hx_request_required, login_required, permission_required
 from horilla.http.response import HorillaRedirect
 from horilla.methods import get_horilla_model_class
 
 
 class AllCompany:
     """
-    Dummy class for the "all companies" switcher entry.
+    Dummy class
     """
 
     class Urls:
@@ -32,54 +40,35 @@ class AllCompany:
     id = None
 
 
-class AllMyCompanies(AllCompany):
-    """Non-superuser combined view over assignment companies only."""
+def get_last_section(path):
+    # Remove any trailing slash and split the path
+    segments = path.strip("/").split("/")
 
-    class Urls:
-        url = "https://ui-avatars.com/api/?name=All+My+Companies&background=random"
-
-    company = "All my companies"
-    icon = Urls()
-    text = "All my companies"
+    # Get the last section (the ID)
+    last_section = segments[-1] if segments else None
+    return last_section
 
 
 def get_companies(request):
     """
-    Companies for the header switcher.
-
-    With COMPANY_SCOPED_PERMISSIONS on, non-superusers see assignment companies
-    plus their work-info company. "All my companies" appears when they hold
-    roles in 2+ companies (combined view over those assignment IDs only).
+    Companies for the header switcher. With COMPANY_SCOPED_PERMISSIONS on,
+    non-superusers only see companies they hold assignments for, and the
+    "All Company" entry is superuser-only.
     """
-    from base.auth_backends import (
-        company_scoped_active,
-        get_allowed_company_ids,
-        get_assigned_company_ids,
-    )
+    from base.auth_backends import company_scoped_active, get_allowed_company_ids
 
     scoped = (
         company_scoped_active()
         and request.user.is_authenticated
         and not request.user.is_superuser
     )
-    allowed_ids = get_allowed_company_ids(request.user) if scoped else None
-    assigned_ids = get_assigned_company_ids(request.user) if scoped else None
     company_qs = Company.objects.all()
     if scoped:
-        company_qs = company_qs.filter(id__in=allowed_ids or [])
+        company_qs = company_qs.filter(id__in=get_allowed_company_ids(request.user))
     companies = list(
         [company.id, company.company, company.icon.url, False] for company in company_qs
     )
-    if scoped and assigned_ids and len(assigned_ids) >= 2:
-        companies = [
-            [
-                "all",
-                "All my companies",
-                "https://ui-avatars.com/api/?name=All+My+Companies&background=random",
-                False,
-            ],
-        ] + companies
-    elif not scoped:
+    if not scoped:
         companies = [
             [
                 "all",
@@ -91,7 +80,7 @@ def get_companies(request):
     selected_company = request.session.get("selected_company")
     company_selected = False
     if selected_company and selected_company == "all":
-        if companies and companies[0][0] == "all":
+        if not scoped:
             companies[0][3] = True
             company_selected = True
     else:
@@ -119,56 +108,72 @@ def update_selected_company(request):
     """
     This method is used to update the selected company on the session
     """
-    from base.auth_backends import (
-        company_scoped_active,
-        get_allowed_company_ids,
-        get_assigned_company_ids,
-    )
+    from base.auth_backends import company_scoped_active, get_allowed_company_ids
 
     company_id = request.GET.get("company_id")
     if company_scoped_active() and not request.user.is_superuser:
-        allowed = get_allowed_company_ids(request.user)
-        assigned = get_assigned_company_ids(request.user)
-        if company_id == "all":
-            # Combined view over assignment companies only (need 2+ roles)
-            target_allowed = len(assigned) >= 2
-        else:
-            try:
-                target_allowed = int(company_id) in allowed
-            except (TypeError, ValueError):
-                target_allowed = False
+        # Scoped mode: users may switch only among their own companies
+        # (regardless of base.change_company, to avoid one-way lockouts);
+        # "all" is superuser-only.
+        try:
+            target_allowed = company_id != "all" and int(company_id) in (
+                get_allowed_company_ids(request.user)
+            )
+        except (TypeError, ValueError):
+            target_allowed = False
         if not target_allowed:
             messages.error(request, _("You do not have access to that company."))
-            return HorillaRedirect(request, redirect_to="/")
+            return HorillaRedirect(request)
     elif not request.user.has_perm("base.change_company"):
         messages.error(request, _("You do not have permission to switch the company."))
-        return HorillaRedirect(request, redirect_to="/")
+        return HorillaRedirect(request)
     user = request.user.employee_get
     user_company = getattr(
         getattr(user, "employee_work_info", None), "company_id", None
     )
     request.session["selected_company"] = company_id
-    scoped_all = (
-        company_id == "all"
-        and company_scoped_active()
-        and not request.user.is_superuser
-    )
     company = (
-        AllMyCompanies()
-        if scoped_all
+        AllCompany()
+        if company_id == "all"
         else (
-            AllCompany()
-            if company_id == "all"
-            else (
-                Company.objects.filter(id=company_id).first()
-                if Company.objects.filter(id=company_id).first()
-                else AllCompany()
-            )
+            Company.objects.filter(id=company_id).first()
+            if Company.objects.filter(id=company_id).first()
+            else AllCompany()
         )
     )
+    previous_path = request.GET.get("next", "/")
+    # Define the regex pattern for the path
+    pattern = r"^/employee/employee-view/\d+/$"
+    # Check if the previous path matches the pattern
+    if company_id != "all":
+        if re.match(pattern, previous_path):
+            employee_id = get_last_section(previous_path)
+            employee = Employee.objects.filter(id=employee_id).first()
+            emp_company = getattr(
+                getattr(employee, "employee_work_info", None), "company_id", None
+            )
+            if emp_company != company:
+                text = "Other Company"
+                if company_id == user_company:
+                    text = "My Company"
+                company = {
+                    "company": company.company,
+                    "icon": company.icon.url,
+                    "text": text,
+                    "id": company.id,
+                }
+                messages.error(
+                    request, _("Employee is not working in the selected company.")
+                )
+                request.session["selected_company_instance"] = company
+                return HttpResponse(
+                    f"""
+                    <script>window.location.href = `{reverse("employee-view")}`</script>
+                """
+                )
 
     if company_id == "all":
-        text = "All my companies" if scoped_all else "All companies"
+        text = "All companies"
     elif company_id == user_company:
         text = "My Company"
     else:
@@ -181,8 +186,7 @@ def update_selected_company(request):
         "id": company.id,
     }
     request.session["selected_company_instance"] = company
-    # Always land on home so company-scoped menus/data reload cleanly
-    return HorillaRedirect(request, redirect_to="/")
+    return HorillaRedirect(request)
 
 
 urlpatterns.append(
@@ -380,3 +384,24 @@ def enable_profile_edit(request):
             ACCESSBILITY_FEATURE.append(("profile_edit", _("Profile Edit Access")))
 
     return {"profile_edit_enabled": enable}
+
+
+def export_access_enabled(request):
+    """
+    Exposes whether the "Default Export Access" setting is enabled for
+    the user's current company, so templates can decide whether to show
+    export buttons/menu options without requiring per-view context.
+    Superusers always see export actions regardless of the setting.
+    """
+    if request.user.is_superuser:
+        return {"export_access_enabled": True}
+
+    selected_company = request.session.get("selected_company")
+    if not selected_company or selected_company == "all":
+        company = None
+    else:
+        company = Company.objects.filter(id=selected_company).first()
+
+    setting = DefaultExportPermission.objects.filter(company_id=company).first()
+    enabled = setting is None or bool(setting.is_enabled)
+    return {"export_access_enabled": enabled}

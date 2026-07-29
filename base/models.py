@@ -1967,9 +1967,16 @@ class Tags(HorillaModel):
         return self.title
 
     def save(self, *args, **kwargs):
-        from base.auth_backends import stamp_company_on_create
-
-        stamp_company_on_create(self)
+        request = getattr(horilla_middlewares._thread_locals, "request", None)
+        if request:
+            selected_company = request.session.get("selected_company")
+            if (
+                not self.id
+                and not self.company_id_id
+                and selected_company
+                and selected_company != "all"
+            ):
+                self.company_id = Company.find(selected_company)
         super().save(*args, **kwargs)
 
     def get_color(self):
@@ -3150,6 +3157,25 @@ class SetupChecklistDismissal(models.Model):
 
     def __str__(self):
         return f"{self.user} — {self.company or 'global'}"
+
+
+class DefaultExportPermission(HorillaModel):
+    """
+    Per-company toggle for the "Default Export Access" setting. When
+    enabled for a company, every user of that company may export data
+    from any module; when disabled, export access falls back to the
+    per-module export_<model> permission (superusers are always allowed).
+    """
+
+    is_enabled = models.BooleanField(default=True, blank=True, null=True)
+    company_id = models.ForeignKey(
+        Company,
+        null=True,
+        blank=True,
+        on_delete=models.CASCADE,
+        verbose_name=_("Company"),
+    )
+    objects = models.Manager()
 
 
 # User.add_to_class("is_new_employee", models.BooleanField(default=False))

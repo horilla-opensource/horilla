@@ -82,7 +82,7 @@
                 >{% trans "Import" %}</a
               >
             </li>
-            {% endif %} {% if holidays %} {% if perms.base.add_holidays %}
+            {% endif %} {% if holidays %} {% if export_access_enabled or perms.base.export_holidays %}
             <li class="oh-dropdown__item">
               <a
                 href="#"

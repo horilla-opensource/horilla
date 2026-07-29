@@ -352,7 +352,7 @@ urlpatterns = [
         "user-group-delete/<int:obj_id>/",
         views.object_delete,
         name="user-group-delete",
-        kwargs={"model": Group, "redirect": "user-group-view", "superuser_only": True},
+        kwargs={"model": Group, "redirect": "user-group-view"},
     ),
     path(
         "group-permission-remove/<int:pid>/<int:gid>/",
@@ -1330,6 +1330,16 @@ urlpatterns = [
         "enable-profile-edit-feature/",
         views.enable_profile_edit_feature,
         name="enable-profile-edit-feature",
+    ),
+    path(
+        "settings/default-export-access/",
+        views.default_export_access_settings_view,
+        name="default-export-access-settings",
+    ),
+    path(
+        "enable-default-export-access/",
+        views.enable_default_export_access,
+        name="enable-default-export-access",
     ),
     path(
         "rwork-individual-view/<int:instance_id>/",

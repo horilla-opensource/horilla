@@ -129,7 +129,7 @@
                                 style="display: none; cursor: pointer"
                             >
                                 <ul class="oh-dropdown__items">
-                                    {% if perms.payroll.add_contract %}
+                                    {% if export_access_enabled or perms.payroll.export_contract %}
                                         <li class="oh-dropdown__item">
                                             <a
                                                 href="#"
