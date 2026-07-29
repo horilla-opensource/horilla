@@ -53,6 +53,14 @@ body:
     validations:
       required: false
   - type: input
+    id: horilla-version
+    attributes:
+      label: Horilla Version / Branch
+      description: Horilla release tag or git branch (e.g. `2.0`, `dev/v2.0`, `1.6.0`).
+      placeholder: "E.g., 2.0"
+    validations:
+      required: true
+  - type: input
     id: django-version
     attributes:
       label: Django Version

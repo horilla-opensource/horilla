@@ -7,7 +7,7 @@
 [![Forks](https://img.shields.io/github/forks/horilla/horilla-hr)](https://github.com/horilla/horilla-hr/network/members)
 
 > [!IMPORTANT]
-> **Horilla v2 becomes the default branch on July 29, 2026.** If you want to run or deploy Horilla, the default `2.0` branch is what you want. If you want to contribute code, branch from and PR into `dev/v2.0` instead — GitHub will default new PRs to `2.0`, so switch the base branch manually. v1 (`1.0`/`master`) is deprioritized, with fixes considered case-by-case rather than on a guaranteed schedule. Full details → [Discussion #1127](https://github.com/horilla/horilla-hr/discussions/1127).
+> **`2.0` is now this repository’s default branch.** Use it to run or deploy Horilla (a plain `git clone` checks it out). To contribute code, branch from and open PRs against `dev/v2.0` — GitHub still pre-selects `2.0` as the PR base, so switch it manually. v1 (`1.0`/`master`) is deprioritized, with fixes considered case-by-case rather than on a guaranteed schedule. Full details → [Discussion #1127](https://github.com/horilla/horilla-hr/discussions/1127).
 
 > **A comprehensive, free, and open-source Human Resource Management System (HRMS) designed to streamline HR operations and enhance organizational efficiency.**
 
@@ -38,7 +38,7 @@
 
 ## 🌳 Which Branch Do I Want?
 
-- **`2.0`** (becomes the default branch on July 29, 2026) — the latest stable v2 snapshot. This is what a plain `git clone` gives you. Use it to run or deploy Horilla.
+- **`2.0`** (default) — the latest stable v2 snapshot. This is what a plain `git clone` gives you. Use it to run or deploy Horilla.
 - **`dev/v2.0`** — the active integration branch. If you want to contribute code, branch from and open PRs against this, not `2.0`.
 - **`1.0`/`master`** — v1, now deprioritized (fixes considered case-by-case, no guaranteed schedule). Not deleted, but no longer where active development happens.
 
@@ -49,8 +49,8 @@ See [Discussion #1127](https://github.com/horilla/horilla-hr/discussions/1127) f
 ### Using Docker (Recommended)
 
 ```bash
-# Clone the repository
-git clone -b dev/v2.0 https://github.com/horilla/horilla-hr.git
+# Clone the repository (defaults to the stable 2.0 branch)
+git clone https://github.com/horilla/horilla-hr.git
 cd horilla-hr
 
 # Start with Docker Compose
@@ -63,8 +63,8 @@ open http://localhost:8000
 ### Manual Installation
 
 ```bash
-# Clone and setup
-git clone -b dev/v2.0 https://github.com/horilla/horilla-hr.git
+# Clone and setup (defaults to the stable 2.0 branch)
+git clone https://github.com/horilla/horilla-hr.git
 cd horilla-hr
 
 # Create virtual environment
@@ -133,7 +133,7 @@ pip install -r requirements.txt
 # Submit pull request
 ```
 
-> **Note:** starting July 29, 2026, `2.0` is this repo's default branch, and GitHub will pre-select it as your PR's base branch. Before submitting, change the base branch to `dev/v2.0` — that's where active development and reviews happen, not `2.0`.
+> **Note:** `2.0` is the repo default, so GitHub pre-selects it as your PR base. Before submitting, change the base branch to `dev/v2.0` — that's where active development and reviews happen, not `2.0`.
 
 ### Code Standards
 

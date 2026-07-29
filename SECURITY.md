@@ -110,11 +110,13 @@ There is **no cash bug bounty** at this time. We offer public credit in advisori
 
 ## Security tooling
 
-We aim to keep the following enabled on this repository:
+On this repository:
 
-- Private vulnerability reporting
-- Dependabot alerts and security updates
-- Secret scanning (and push protection where available)
+- **Private vulnerability reporting** — enabled (required intake path above)
+- **Dependabot** — config lives in `.github/dependabot.yml` (PRs target `dev/v2.0`); alert/update features are enabled when available on the org/plan
+- **Secret scanning / push protection** — enabled when available on the org/plan
+
+These are operational controls for maintainers; they do not replace private reporting of product vulnerabilities.
 
 ## Contact
 

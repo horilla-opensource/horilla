@@ -5,7 +5,7 @@ Thank you for considering contributing to Horilla! We welcome your input and app
 ## Branches
 
 - **`dev/v2.0`** — the active integration branch. Always clone this and always open PRs against this — never against `2.0` directly.
-- **`2.0`** — starting July 29, 2026, this is the repository's default branch: a periodic public snapshot, not where development happens. GitHub will default new PRs here, so double-check your PR's base branch before submitting.
+- **`2.0`** — the repository’s default branch: a periodic public snapshot for running/deploying, not where day-to-day development happens. GitHub pre-selects this as the PR base, so change it to `dev/v2.0` before submitting.
 - **`1.0`/`master`** — v1, now deprioritized. See "Contributing to v1" below and [Discussion #1127](https://github.com/horilla/horilla-hr/discussions/1127) for full background.
 
 ## How to Contribute
@@ -53,7 +53,7 @@ Thank you for considering contributing to Horilla! We welcome your input and app
 
 7. **Push and Open a Pull Request**
    - Target branch: **`dev/v2.0`**
-   - Starting July 29, 2026, GitHub will default your PR's base branch to `2.0` (the new default branch) — you must manually change it to `dev/v2.0` before submitting.
+   - GitHub defaults your PR’s base branch to `2.0` — manually change it to `dev/v2.0` before submitting.
    - Provide a clear title/description and link related issues
    - CI should stay green: **Docker CI** + **Quality**
 

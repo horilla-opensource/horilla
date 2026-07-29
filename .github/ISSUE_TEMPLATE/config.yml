@@ -1,5 +1,8 @@
 blank_issues_enabled: false
 contact_links:
+  - name: Report a security vulnerability
+    url: https://github.com/horilla/horilla-hr/security/advisories/new
+    about: Use GitHub Private Vulnerability Reporting only — do not open a public issue
   - name: Horilla Community Support
     url: https://github.com/horilla/horilla-hr/discussions
     about: Ask questions or discuss features here
