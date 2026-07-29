@@ -30,6 +30,7 @@
         .form-input-items {
             margin-bottom: 1.3rem;
         }
+
         .form-input-items label,
         .form-input-items .text-xs {
             margin-bottom: 0.35rem;
@@ -54,7 +55,7 @@
         }
 
         .col-span-12.md\:col-span-6.rounded-md.border.p-5.bg-gray-50,
-        .col-span-12.md\:col-span-6 > .p-5.bg-gray-50.rounded-md.border {
+        .col-span-12.md\:col-span-6>.p-5.bg-gray-50.rounded-md.border {
             padding: 1rem;
             border: 1px solid #eef2f6;
             border-radius: 8px;
@@ -65,8 +66,9 @@
             position: absolute;
             left: -9999px;
         }
-        .sr-only.peer + div,
-        .sr-only.peer + .relative {
+
+        .sr-only.peer+div,
+        .sr-only.peer+.relative {
             position: relative;
             flex-shrink: 0;
             width: 36px;
@@ -75,8 +77,9 @@
             background: #aeaeb2;
             transition: background 0.18s ease;
         }
-        .sr-only.peer + div::after,
-        .sr-only.peer + .relative::after {
+
+        .sr-only.peer+div::after,
+        .sr-only.peer+.relative::after {
             position: absolute;
             top: 2px;
             left: 2px;
@@ -88,12 +91,20 @@
             content: '';
             transition: transform 0.18s ease;
         }
-        .sr-only.peer:checked + div,
-        .sr-only.peer:checked + .relative {
-            background: {{ theme_obj.primary_600|default:"#E54F38" }};
+
+        .sr-only.peer:checked+div,
+        .sr-only.peer:checked+.relative {
+            background: {
+                    {
+                    theme_obj.primary_600|default: "#E54F38"
+                }
+            }
+
+            ;
         }
-        .sr-only.peer:checked + div::after,
-        .sr-only.peer:checked + .relative::after {
+
+        .sr-only.peer:checked+div::after,
+        .sr-only.peer:checked+.relative::after {
             transform: translateX(16px);
         }
 
@@ -103,6 +114,7 @@
             overflow: hidden;
             border-radius: 999px;
         }
+
         .oh-profile__avatar img {
             display: block;
             width: 100%;
@@ -115,9 +127,17 @@
             border-radius: 8px;
             font-weight: 600;
         }
+
         .oh-btn.oh-btn--secondary {
             border: 0;
-            background-color: {{ theme_obj.primary_600|default:"#E54F38" }};
+
+            background-color: {
+                    {
+                    theme_obj.primary_600|default: "#E54F38"
+                }
+            }
+
+            ;
             box-shadow: 0 6px 18px rgba(20, 20, 30, 0.12);
             color: #fff;
         }
@@ -135,13 +155,18 @@
             .grid.grid-cols-12.gap-4 {
                 grid-template-columns: repeat(1, 1fr) !important;
             }
+
             .col-span-12.md\:col-span-6 {
                 grid-column: span 12 !important;
             }
-            .resetContainer, .totalDaysContainer, .oh-input-group {
+
+            .resetContainer,
+            .totalDaysContainer,
+            .oh-input-group {
                 flex-direction: column;
                 align-items: flex-start;
             }
+
             label[for='fileUpload'] {
                 justify-content: center;
                 width: 100%;
@@ -151,13 +176,26 @@
         .form-input-items input:focus,
         .form-input-items select:focus,
         .form-input-items textarea:focus {
-            border-color: {{ theme_obj.primary_600|default:'rgba(229, 79, 56, 0.8)' }};
+            border-color: {
+                    {
+                    theme_obj.primary_600|default: 'rgba(229, 79, 56, 0.8)'
+                }
+            }
+
+            ;
             outline: none;
             box-shadow: 0 6px 18px rgba(20, 20, 30, 0.06);
         }
+
+        .leave-type-form-card {
+            width: 70%;
+            padding: 1.25rem;
+            margin-left: auto;
+            margin-right: auto;
+        }
     </style>
 
-    <div class="bg-white p-5 pe-2 pt-3 rounded-md shadow-card m-auto" style="width: 70%; padding: 2%">
+    <div class="bg-white p-5 pe-2 pt-3 rounded-md shadow-card leave-type-form-card">
         <h3 class="text-lg font-semibold mb-3">{% trans "Create Leave Type" %}</h3>
         <form method="post" enctype="multipart/form-data" id="mainform">
             {% csrf_token %}
@@ -297,6 +335,17 @@
                         <label class="text-xs font-medium" for="id_reset_weekend">{% trans "Reset Weekday" %}</label>
                         {{ form.reset_weekend|add_class:"mb-3 text-color-600 px-3 p-2 placeholder:text-xs w-full border border-dark-50 rounded-md focus-visible:outline-0 placeholder:text-dark-100 text-xs transition duration-300 focus:border-primary-600" }}
                         {{ form.reset_weekend.errors }}
+                    </div>
+
+                    <div class="form-input-items hidden">
+                        <div class="flex items-center gap-1 pb-2 overflow-visible relative" style="display: ruby">
+                            <label class="text-xs font-medium" for="id_custom_reset_days">
+                                {% trans "Custom Reset Days" %}
+                            </label>
+                            <span class="oh-info" title="{% trans 'Custom reset interval in days' %}"></span>
+                        </div>
+                        {{ form.custom_reset_days|add_class:"mb-3 text-color-600 px-3 p-2 placeholder:text-xs w-full border border-dark-50 rounded-md focus-visible:outline-0 placeholder:text-dark-100 text-xs transition duration-300 focus:border-primary-600" }}
+                        {{ form.custom_reset_days.errors }}
                     </div>
 
                     <!-- Carry Forward -->
@@ -551,210 +600,234 @@
 
     <script>
         var icon = $("#id_icon");
-            icon.show();
-            document.getElementById('fileUpload').addEventListener('change', function () {
-                    const file = this.files[0];
-                    const preview = document.getElementById('imagePreview');
+        icon.show();
+        document.getElementById('fileUpload').addEventListener('change', function () {
+            const file = this.files[0];
+            const preview = document.getElementById('imagePreview');
 
-                    if (file && file.type.startsWith('image/')) {
-                        const reader = new FileReader();
-                        reader.onload = function (e) {
-                            preview.src = e.target.result;
-                            preview.classList.remove('hidden');
-                        }
-                        reader.readAsDataURL(file);
-                    } else {
-                        preview.src = '';
-                        preview.classList.add('hidden');
-                    }
-                });
-            function toggleInput(inputSelector, shouldShow = null) {
-                const $target = $(inputSelector).closest(".form-input-items");
-                const $targetInput =  $(inputSelector)
-                if (shouldShow === null) {
-                    $target.toggle();
-                } else if (shouldShow) {
-                    $target.removeClass("hidden");
-                    $targetInput.prop("required", true);
-                } else {
-                    $target.addClass("hidden");
-                    $targetInput.prop("required", false);
+            if (file && file.type.startsWith('image/')) {
+                const reader = new FileReader();
+                reader.onload = function (e) {
+                    preview.src = e.target.result;
+                    preview.classList.remove('hidden');
                 }
+                reader.readAsDataURL(file);
+            } else {
+                preview.src = '';
+                preview.classList.add('hidden');
+            }
+        });
+        function toggleInput(inputSelector, shouldShow = null) {
+            const $targetInput = $(inputSelector);
+            if (!$targetInput.length) {
+                return;
+            }
+            const $target = $targetInput.closest(".form-input-items");
+            if (!$target.length) {
+                return;
+            }
+            if (shouldShow === null) {
+                $target.toggle();
+                return;
+            }
+            if (shouldShow) {
+                $target.removeClass("hidden");
+                $targetInput.prop("required", true);
+                // Clear UpdateLeaveTypeForm inline display:none on empty fields
+                if (!$targetInput.hasClass("select2-hidden-accessible")) {
+                    $targetInput.css("display", "");
+                    $targetInput.show();
+                }
+                $target.find(".select2-container").show();
+            } else {
+                $target.addClass("hidden");
+                $targetInput.prop("required", false);
+            }
+        }
+
+        $(document).ready(function () {
+
+            function initializeResetFields() {
+                const $reset = $("[name='reset']");
+                const isResetChecked = $reset.is(":checked");
+
+                // Toggle reset-related fields
+                toggleInput($("[name='reset_based']"), isResetChecked);
+                toggleInput($("[name='carryforward_type']"), isResetChecked);
+
+                // Handle dependent fields based on reset_based value
+                const resetBasedValue = $("[name='reset_based']").val();
+                toggleInput($("[name='reset_month']"), isResetChecked && resetBasedValue === "yearly");
+                toggleInput($("[name='reset_day']"), isResetChecked && (resetBasedValue === "yearly" || resetBasedValue === "monthly"));
+                toggleInput($("[name='reset_weekend']"), isResetChecked && resetBasedValue === "weekly");
+                toggleInput($("[name='custom_reset_days']"), isResetChecked && resetBasedValue === "custom");
+
+                // Handle carryforward fields
+                const carryforwardTypeValue = $("[name='carryforward_type']").val();
+                toggleInput($("[name='carryforward_max']"), isResetChecked && (carryforwardTypeValue === "carryforward" || carryforwardTypeValue === "carryforward expire"));
+                toggleInput($("[name='carryforward_expire_in']"), isResetChecked && carryforwardTypeValue === "carryforward expire");
+                toggleInput($("[name='carryforward_expire_date']"), isResetChecked && carryforwardTypeValue === "carryforward expire");
+                toggleInput($("[name='carryforward_expire_period']"), isResetChecked && carryforwardTypeValue === "carryforward expire");
             }
 
-            $(document).ready(function () {
+            // Call initialization immediately
+            initializeResetFields();
 
-                function initializeResetFields() {
-                    const $reset = $("[name='reset']");
-                    const isResetChecked = $reset.is(":checked");
+            const $limitLeave = $("[name='limit_leave']");
+            const $countInput = $("[name='count']");
 
-                    // Toggle reset-related fields
-                    toggleInput($("[name='reset_based']"), isResetChecked);
-                    toggleInput($("[name='carryforward_type']"), isResetChecked);
+            toggleInput($countInput, $limitLeave.is(":checked"));
 
-                    // Handle dependent fields based on reset_based value
-                    const resetBasedValue = $("[name='reset_based']").val();
-                    toggleInput($("[name='reset_month']"), isResetChecked && resetBasedValue === "yearly");
-                    toggleInput($("[name='reset_day']"), isResetChecked && (resetBasedValue === "yearly" || resetBasedValue === "monthly"));
-                    toggleInput($("[name='reset_weekend']"), isResetChecked && resetBasedValue === "weekly");
+            $limitLeave.on("change", function () {
+                toggleInput($countInput, $(this).is(":checked"));
+            });
 
-                    // Handle carryforward fields
-                    const carryforwardTypeValue = $("[name='carryforward_type']").val();
-                    toggleInput($("[name='carryforward_max']"), isResetChecked && (carryforwardTypeValue === "carryforward" || carryforwardTypeValue === "carryforward expire"));
-                    toggleInput($("[name='carryforward_expire_in']"), isResetChecked && carryforwardTypeValue === "carryforward expire");
-                    toggleInput($("[name='carryforward_expire_date']"), isResetChecked && carryforwardTypeValue === "carryforward expire");
-                    toggleInput($("[name='carryforward_expire_period']"), isResetChecked && carryforwardTypeValue === "carryforward expire");
+            $("[name='reset']").on("change", function () {
+                toggleInput($("[name='reset_based']"), $(this).is(":checked"));
+                toggleInput($("[name='carryforward_type']"), $(this).is(":checked"));
+
+                if (!$(this).is(":checked")) {
+                    toggleInput($("[name='reset_month']"), false);
+                    toggleInput($("[name='reset_day']"), false);
+                    toggleInput($("[name='reset_weekend']"), false);
+                    toggleInput($("[name='custom_reset_days']"), false);
+                    toggleInput($("[name='carryforward_max']"), false);
+                    toggleInput($("[name='carryforward_expire_in']"), false);
+                    toggleInput($("[name='carryforward_expire_date']"), false);
+                    toggleInput($("[name='carryforward_expire_period']"), false);
+                }
+            });
+
+            $("[name='reset_based']").on("change", function () {
+                const value = $(this).val();
+                if (value == "yearly") {
+                    toggleInput($("[name='reset_month']"), true);
+                    toggleInput($("[name='reset_day']"), true);
+                    toggleInput($("[name='reset_weekend']"), false);
+                    toggleInput($("[name='custom_reset_days']"), false);
+                }
+                if (value == "monthly") {
+                    toggleInput($("[name='reset_day']"), true);
+                    toggleInput($("[name='reset_month']"), false);
+                    toggleInput($("[name='reset_weekend']"), false);
+                    toggleInput($("[name='custom_reset_days']"), false);
+                }
+                if (value == "weekly") {
+                    toggleInput($("[name='reset_weekend']"), true);
+                    toggleInput($("[name='reset_month']"), false);
+                    toggleInput($("[name='reset_day']"), false);
+                    toggleInput($("[name='custom_reset_days']"), false);
+                }
+                if (value == "custom") {
+                    toggleInput($("[name='reset_weekend']"), false);
+                    toggleInput($("[name='reset_month']"), false);
+                    toggleInput($("[name='reset_day']"), false);
+                    toggleInput($("[name='custom_reset_days']"), true);
+                }
+            });
+            $("[name='carryforward_type']").on("change", function () {
+                const value = $(this).val();
+                if (value == "no carryforward") {
+                    toggleInput($("[name='carryforward_max']"), false);
+                    toggleInput($("[name='carryforward_expire_in']"), false);
+                    toggleInput($("[name='carryforward_expire_date']"), false);
+                    toggleInput($("[name='carryforward_expire_period']"), false);
+
+                }
+                if (value == "carryforward") {
+                    toggleInput($("[name='carryforward_max']"), true);
+                    toggleInput($("[name='carryforward_expire_in']"), false);
+                    toggleInput($("[name='carryforward_expire_date']"), false);
+                    toggleInput($("[name='carryforward_expire_period']"), false);
+
+                }
+                if (value == "carryforward expire") {
+                    toggleInput($("[name='carryforward_max']"), true);
+                    toggleInput($("[name='carryforward_expire_in']"), true);
+                    toggleInput($("[name='carryforward_expire_date']"), true);
+                    toggleInput($("[name='carryforward_expire_period']"), true);
+                    //toggleInput($("[name='reset_day']"), false);
                 }
 
-                // Call initialization immediately
-                initializeResetFields();
-
-                const $limitLeave = $("[name='limit_leave']");
-                const $countInput = $("[name='count']");
-
-                toggleInput($countInput, $limitLeave.is(":checked"));
-
-                $limitLeave.on("change", function () {
-                    toggleInput($countInput, $(this).is(":checked"));
-                });
-
-                $("[name='reset']").on("change", function () {
-                    toggleInput($("[name='reset_based']"), $(this).is(":checked"));
-                    toggleInput($("[name='carryforward_type']"), $(this).is(":checked"));
-
-                    if (!$(this).is(":checked")) {
-                        toggleInput("[name='reset_month']", false);
-                        toggleInput("[name='reset_day']", false);
-                        toggleInput($("[name='reset_weekend']"), false);
-                        toggleInput($("[name='carryforward_max']"), false);
-                        toggleInput($("[name='carryforward_expire_in']"), false);
-                        toggleInput($("[name='carryforward_expire_date']"), false);
-                        toggleInput($("[name='carryforward_expire_period']"), false);
-                    }
-                });
-
-                $("[name='reset_based']").on("change", function () {
-                    const value = $(this).val();
-                    if (value == "yearly") {
-                        toggleInput($("[name='reset_month']"), true);
-                        toggleInput($("[name='reset_day']"), true);
-                        toggleInput($("[name='reset_weekend']"), false);
-
-                    }
-                    if (value == "monthly") {
-                        toggleInput($("[name='reset_day']"), true);
-                        toggleInput($("[name='reset_month']"), false);
-                        toggleInput($("[name='reset_weekend']"), false);
-                    }
-                    if (value == "weekly") {
-                        toggleInput($("[name='reset_weekend']"), true);
-                        toggleInput($("[name='reset_month']"), false);
-                        toggleInput($("[name='reset_day']"), false);
-                    }
-                });
-                $("[name='carryforward_type']").on("change", function () {
-                    const value = $(this).val();
-                    if (value == "no carryforward") {
-                        toggleInput($("[name='carryforward_max']"), false);
-                        toggleInput($("[name='carryforward_expire_in']"), false);
-                        toggleInput($("[name='carryforward_expire_date']"), false);
-                        toggleInput($("[name='carryforward_expire_period']"), false);
-
-                    }
-                    if (value == "carryforward") {
-                        toggleInput($("[name='carryforward_max']"), true);
-                        toggleInput($("[name='carryforward_expire_in']"), false);
-                        toggleInput($("[name='carryforward_expire_date']"), false);
-                        toggleInput($("[name='carryforward_expire_period']"), false);
-
-                    }
-                    if (value == "carryforward expire") {
-                        toggleInput($("[name='carryforward_max']"), true);
-                        toggleInput($("[name='carryforward_expire_in']"), true);
-                        toggleInput($("[name='carryforward_expire_date']"), true);
-                        toggleInput($("[name='carryforward_expire_period']"), true);
-                        //toggleInput($("[name='reset_day']"), false);
-                    }
-
-                });
+            });
 
 
             // leave total days calculation
             $("#id_period_in, #id_count").change(function () {
-              const month = 30;
-              const year = 365;
-              const day = 1;
-              var totalDays = 0;
-              var unit = $("#id_period_in").val();
-              var count = $("#id_count").val();
+                const month = 30;
+                const year = 365;
+                const day = 1;
+                var totalDays = 0;
+                var unit = $("#id_period_in").val();
+                var count = $("#id_count").val();
 
-              if (unit == "day") {
-                totalDays = day * count;
-              } else if (unit == "month") {
-                totalDays = month * count;
-              } else if (unit == "year") {
-                totalDays = year * count;
-              }
-              $("#id_total_days").val(totalDays);
+                if (unit == "day") {
+                    totalDays = day * count;
+                } else if (unit == "month") {
+                    totalDays = month * count;
+                } else if (unit == "year") {
+                    totalDays = year * count;
+                }
+                $("#id_total_days").val(totalDays);
             });
 
             //check the yes or no fields
             if ($('#id_require_approval').val() == 'no') {
-              $('#id_approval').prop('checked', false);
+                $('#id_approval').prop('checked', false);
             }
-            else{
-              $('#id_approval').prop('checked', true);
+            else {
+                $('#id_approval').prop('checked', true);
             }
             if ($('#id_require_attachment').val() == 'no') {
-              $('#id_attachment').prop('checked', false);
+                $('#id_attachment').prop('checked', false);
             }
-            else{
-              $('#id_attachment').prop('checked', true);
+            else {
+                $('#id_attachment').prop('checked', true);
             }
             if ($('#id_exclude_company_leave').val() == 'no') {
-              $('#id_exclude_comp_leave').prop('checked', false);
+                $('#id_exclude_comp_leave').prop('checked', false);
             }
-            else{
-              $('#id_exclude_comp_leave').prop('checked', true);
+            else {
+                $('#id_exclude_comp_leave').prop('checked', true);
             }
             if ($('#id_exclude_holiday').val() == 'no') {
-              $('#id_exclude_public_leave').prop('checked', false);
+                $('#id_exclude_public_leave').prop('checked', false);
             }
-            else{
-              $('#id_exclude_public_leave').prop('checked', true);
+            else {
+                $('#id_exclude_public_leave').prop('checked', true);
             }
-          });
+        });
 
-          function checkYesOrNoFields(){
+        function checkYesOrNoFields() {
 
             if ($('#id_approval').is(":checked")) {
                 $('#id_require_approval').val('yes');
             }
-            else{
-                $('#id_require_approval').val('no') ;
+            else {
+                $('#id_require_approval').val('no');
             }
             if ($('#id_attachment').is(":checked")) {
                 $('#id_require_attachment').val('yes');
             }
-            else{
+            else {
                 $('#id_require_attachment').val('no');
             }
             if ($('#id_exclude_comp_leave').is(":checked")) {
                 $('#id_exclude_company_leave').val('yes');
             }
-            else{
+            else {
                 $('#id_exclude_company_leave').val('no')
             }
             if ($('#id_exclude_public_leave').is(":checked")) {
                 $('#id_exclude_holiday').val('yes');
             }
-            else{
+            else {
                 $('#id_exclude_holiday').val('no');
             }
 
         }
 
-        $('.yesOrNo').change(function(){
+        $('.yesOrNo').change(function () {
             checkYesOrNoFields()
         })
 

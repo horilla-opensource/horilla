@@ -602,13 +602,28 @@
     		}
     	});
     function toggleInput(inputSelector, shouldShow = null) {
-    	const $target = $(inputSelector).closest(".form-input-items");
     	const $targetInput = $(inputSelector);
+    	if (!$targetInput.length) {
+    		return;
+    	}
+    	const $target = $targetInput.closest(".form-input-items");
+    	if (!$target.length) {
+    		return;
+    	}
     	if (shouldShow === null) {
     		$target.toggle();
-    	} else if (shouldShow) {
+    		return;
+    	}
+    	if (shouldShow) {
     		$target.removeClass("hidden");
     		$targetInput.prop("required", true);
+    		// UpdateLeaveTypeForm hides empty fields with inline display:none —
+    		// clear that so the field is actually visible when shown by JS.
+    		if (!$targetInput.hasClass("select2-hidden-accessible")) {
+    			$targetInput.css("display", "");
+    			$targetInput.show();
+    		}
+    		$target.find(".select2-container").show();
     	} else {
     		$target.addClass("hidden");
     		$targetInput.prop("required", false);
@@ -640,7 +655,6 @@
     			$("[name='reset_weekend']"),
     			isResetChecked && resetBasedValue === "weekly",
     		);
-
     		toggleInput(
     			$("[name='custom_reset_days']"),
     			isResetChecked && resetBasedValue === "custom",
@@ -684,21 +698,21 @@
     	});
 
     	$("[name='reset']").on("change", function () {
-    		toggleInput($("[name='reset_based']"), $(this).is(":checked"));
-    		toggleInput(
-    			$("[name='carryforward_type']"),
-    			$(this).is(":checked"),
-    		);
+    		const isChecked = $(this).is(":checked");
+    		toggleInput($("[name='reset_based']"), isChecked);
+    		toggleInput($("[name='carryforward_type']"), isChecked);
 
-    		if (!$(this).is(":checked")) {
-    			toggleInput("[name='reset_month']", false);
-    			toggleInput("[name='reset_day']", false);
+    		if (!isChecked) {
+    			toggleInput($("[name='reset_month']"), false);
+    			toggleInput($("[name='reset_day']"), false);
     			toggleInput($("[name='reset_weekend']"), false);
     			toggleInput($("[name='custom_reset_days']"), false);
     			toggleInput($("[name='carryforward_max']"), false);
     			toggleInput($("[name='carryforward_expire_in']"), false);
     			toggleInput($("[name='carryforward_expire_date']"), false);
     			toggleInput($("[name='carryforward_expire_period']"), false);
+    		} else {
+    			initializeResetFields();
     		}
     	});
 
@@ -748,7 +762,6 @@
     			toggleInput($("[name='carryforward_expire_in']"), true);
     			toggleInput($("[name='carryforward_expire_date']"), true);
     			toggleInput($("[name='carryforward_expire_period']"), true);
-    			//toggleInput($("[name='reset_day']"), false);
     		}
     	});
 

@@ -136,17 +136,6 @@ def leave_type_creation(request):
                 response["HX-Redirect"] = update_url
                 return response
             return redirect(update_url)
-    if is_htmx:
-        return render(
-            request,
-            "leave/leave_type/leave_type_form_fragment.html",
-            {
-                "form": form,
-                "title": _("Create Leave Type"),
-                "post_url": reverse("type-creation"),
-                "is_htmx": True,
-            },
-        )
     return render(request, "leave/leave_type/leave_type_creation.html", {"form": form})
 
 
@@ -303,10 +292,6 @@ def leave_type_update(request, id, **kwargs):
         "post_url": request.get_full_path(),
         "is_htmx": is_htmx,
     }
-    if is_htmx:
-        return render(
-            request, "leave/leave_type/leave_type_form_fragment.html", context
-        )
     return render(request, "leave/leave_type/leave_type_update_page.html", context)
 
 

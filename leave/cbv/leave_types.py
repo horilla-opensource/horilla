@@ -129,8 +129,10 @@ class LeaveTypeNavView(HorillaNavView):
             self.create_attrs = f"""
                                     href="#"
                                     hx-get="{reverse_lazy('type-creation')}"
-                                    hx-target="#listContainer"
-                                    hx-swap="innerHTML"
+                                    hx-target="#ohMainContent"
+                                    hx-select="#ohMainContent"
+                                    hx-push-url="true"
+                                    hx-swap="outerHTML"
                                 """
             self.view_types = [
                 {
