@@ -4,6 +4,7 @@ from django.shortcuts import render
 
 if apps.is_installed("pms"):
 
+    from base.methods import has_export_access
     from base.models import Company
     from horilla.decorators import login_required, permission_required
     from pms.filters import EmployeeObjectiveFilter, FeedbackFilter
@@ -42,6 +43,11 @@ if apps.is_installed("pms"):
             "company": company,
             "feedback_filter_form": feedback_filter_own.form,
             "emp_obj_form": EmployeeObjectiveFilter(),
+            "export_access_map": {
+                "objective": has_export_access(request, Objective),
+                "feedback": has_export_access(request, Feedback),
+                "employeeobjective": has_export_access(request, EmployeeKeyResult),
+            },
         }
         context.update(cm)
 
@@ -69,10 +75,8 @@ if apps.is_installed("pms"):
                     "title",
                     "managers__employee_first_name",
                     "managers__employee_last_name",
-                    "managers__badge_id",
                     "assignees__employee_first_name",
                     "assignees__employee_last_name",
-                    "assignees__badge_id",
                     "key_result_id__title",
                     "key_result_id__target_value",
                     "duration_unit",
@@ -104,9 +108,7 @@ if apps.is_installed("pms"):
                         if item["managers__employee_first_name"]
                         else "-"
                     ),
-                    "Manager Badge Id": item["managers__badge_id"] or "-",
                     "Assignees": f"{item['assignees__employee_first_name']} {item['assignees__employee_last_name']}",
-                    "Assignee Badge Id": item["assignees__badge_id"] or "-",
                     "Assignee Department": (
                         item["assignees__employee_work_info__department_id__department"]
                         if item[
@@ -179,17 +181,11 @@ if apps.is_installed("pms"):
                     if feedback.manager_id
                     else ""
                 )
-                manager_badge_id = (
-                    feedback.manager_id.badge_id if feedback.manager_id else "-"
-                ) or "-"
                 employee = (
                     f"{feedback.employee_id.employee_first_name} {feedback.employee_id.employee_last_name}"
                     if feedback.employee_id
                     else ""
                 )
-                employee_badge_id = (
-                    feedback.employee_id.badge_id if feedback.employee_id else "-"
-                ) or "-"
 
                 answerable_employees = list(feedback.colleague_id.all()) + list(
                     feedback.subordinate_id.all()
@@ -220,9 +216,7 @@ if apps.is_installed("pms"):
                             {
                                 "Title": feedback.review_cycle,
                                 "Manager": manager,
-                                "Manager Badge Id": manager_badge_id,
                                 "Employee": employee,
-                                "Employee Badge Id": employee_badge_id,
                                 "Answerable Employees": answerable_names,
                                 "Questions": question.question,
                                 "Answer": "",
@@ -254,9 +248,7 @@ if apps.is_installed("pms"):
                                 {
                                     "Title": feedback.review_cycle,
                                     "Manager": manager,
-                                    "Manager Badge Id": manager_badge_id,
                                     "Employee": employee,
-                                    "Employee Badge Id": employee_badge_id,
                                     "Answerable Employees": answerable_names,
                                     "Questions": question.question,
                                     "Answer": answer_value,
@@ -307,7 +299,6 @@ if apps.is_installed("pms"):
                     "key_result",
                     "employee_objective_id__employee_id__employee_first_name",
                     "employee_objective_id__employee_id__employee_last_name",
-                    "employee_objective_id__employee_id__badge_id",
                     "employee_objective_id__objective_id__title",
                     "employee_objective_id__objective_id__duration_unit",
                     "employee_objective_id__objective_id__duration",
@@ -337,9 +328,6 @@ if apps.is_installed("pms"):
             data_list = [
                 {
                     "Employee": f"{item['employee_objective_id__employee_id__employee_first_name']} {item['employee_objective_id__employee_id__employee_last_name']}",
-                    "Employee Badge Id": (
-                        item["employee_objective_id__employee_id__badge_id"] or "-"
-                    ),
                     "Department": (
                         item[
                             "employee_objective_id__employee_id__employee_work_info__department_id__department"

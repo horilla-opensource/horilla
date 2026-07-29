@@ -236,6 +236,7 @@
                 </button>
             </div>
         </div>
+        {{ export_access_map|json_script:"export-access-map" }}
 
         <!-- Model Selection Dropdown -->
         <span class="ms-1 fw-bold" style="font-size: 16px">{% trans "Choose Report" %} : </span>
@@ -263,6 +264,15 @@
 
     <script>
         $(function () {
+                // Per-model export permission, computed server-side via the
+                // centralized has_export_access() check.
+                const exportAccessMap = JSON.parse(document.getElementById("export-access-map").textContent);
+                const modelPathMap = {
+                    objective: "pms.Objective",
+                    feedback: "pms.Feedback",
+                    employeeobjective: "pms.EmployeeKeyResult",
+                };
+
                 // Shared "no records" empty state (same illustration/wording
                 // used throughout the app) shown instead of an empty/broken-
                 // looking pivot table when a report type has zero matching
@@ -325,7 +335,8 @@
                             renderers: $.extend($.pivotUtilities.renderers, plotlyRenderers),
                             onRefresh: function (config) {
                                 const currentRenderer = config.rendererName;
-                                if (["Table", "Table Barchart", "Heatmap", "Row Heatmap", "Col Heatmap"].includes(currentRenderer)) {
+                                const isTableRenderer = ["Table", "Table Barchart", "Heatmap", "Row Heatmap", "Col Heatmap"].includes(currentRenderer);
+                                if (isTableRenderer && exportAccessMap[model]) {
                                     $("#export-btn").show();
                                 } else {
                                     $("#export-btn").hide();
@@ -385,7 +396,8 @@
                             renderers: $.extend($.pivotUtilities.renderers, plotlyRenderers),
                             onRefresh: function (config) {
                                 const currentRenderer = config.rendererName;
-                                if (["Table", "Table Barchart", "Heatmap", "Row Heatmap", "Col Heatmap"].includes(currentRenderer)) {
+                                const isTableRenderer = ["Table", "Table Barchart", "Heatmap", "Row Heatmap", "Col Heatmap"].includes(currentRenderer);
+                                if (isTableRenderer && exportAccessMap[selectedModel]) {
                                     $("#export-btn").show();
                                 } else {
                                     $("#export-btn").hide();
@@ -417,13 +429,25 @@
                 toggleFilterSections("objective");
 
 
-                // Export to Excel on button click
+                // Export to Excel on button click. Re-checks export access
+                // on the backend so the action can't be triggered by calling
+                // the click handler directly once the button is hidden
+                // client-side.
                 $("#export-btn").on("click", function () {
                     let visiblePivot = $(".pivot-wrapper:visible .pvtTable").closest(".pivot-wrapper");
 
-                    if (visiblePivot.length) {
-                        exportTableToExcel(visiblePivot.attr("id"), "pivot_report.xlsx");
+                    if (!visiblePivot.length) {
+                        return;
                     }
+
+                    let selectedModel = $("#model-select").val();
+                    $.get("{% url 'report-check-export-access' %}", {model: modelPathMap[selectedModel]}, function (resp) {
+                        if (resp.allowed) {
+                            exportTableToExcel(visiblePivot.attr("id"), "pivot_report.xlsx");
+                        } else {
+                            alert("{% trans 'You dont have access to export this data' %}");
+                        }
+                    });
                 });
 
                 // Export Function

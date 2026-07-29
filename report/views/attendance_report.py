@@ -8,6 +8,7 @@ if apps.is_installed("attendance"):
 
     from attendance.filters import AttendanceFilters
     from attendance.models import Attendance
+    from base.methods import has_export_access
     from base.models import Company
     from horilla.decorators import login_required, permission_required
 
@@ -53,7 +54,11 @@ if apps.is_installed("attendance"):
         return render(
             request,
             "report/attendance_report.html",
-            {"company": company, "f": AttendanceFilters()},
+            {
+                "company": company,
+                "f": AttendanceFilters(),
+                "export_access": has_export_access(request, Attendance),
+            },
         )
 
     @login_required
@@ -67,7 +72,6 @@ if apps.is_installed("attendance"):
             qs.values(
                 "employee_id__employee_first_name",
                 "employee_id__employee_last_name",
-                "employee_id__badge_id",
                 "attendance_date",
                 "attendance_clock_in",
                 "attendance_clock_out",
@@ -107,7 +111,6 @@ if apps.is_installed("attendance"):
         data_list = [
             {
                 "Name": f"{item['employee_id__employee_first_name']} {item['employee_id__employee_last_name']}",
-                "Badge Id": item["employee_id__badge_id"] or "-",
                 "Gender": choice_gender.get(item["employee_id__gender"]),
                 "Email": item["employee_id__email"],
                 "Phone": item["employee_id__phone"],

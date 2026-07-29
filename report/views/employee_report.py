@@ -1,6 +1,7 @@
 from django.http import JsonResponse
 from django.shortcuts import render
 
+from base.methods import has_export_access
 from base.models import Company
 from employee.filters import EmployeeFilter
 from employee.models import Employee
@@ -18,7 +19,11 @@ def employee_report(request):
     return render(
         request,
         "report/employee_report.html",
-        {"company": company, "f": EmployeeFilter()},
+        {
+            "company": company,
+            "f": EmployeeFilter(),
+            "export_access": has_export_access(request, Employee),
+        },
     )
 
 
@@ -33,7 +38,6 @@ def employee_pivot(request):
         qs.values(
             "employee_first_name",
             "employee_last_name",
-            "badge_id",
             "gender",
             "email",
             "phone",
@@ -60,7 +64,6 @@ def employee_pivot(request):
     data_list = [
         {
             "Name": f"{item['employee_first_name']} {item['employee_last_name']}",
-            "Badge Id": item["badge_id"] or "-",
             "Gender": choice_gender.get(item["gender"]),
             "Email": item["email"],
             "Phone": item["phone"],

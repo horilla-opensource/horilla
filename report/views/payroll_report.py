@@ -5,6 +5,7 @@ from django.utils.dateparse import parse_date
 
 if apps.is_installed("payroll"):
 
+    from base.methods import has_export_access
     from base.models import Company
     from horilla.decorators import login_required, permission_required
     from payroll.filters import PayslipFilter
@@ -27,10 +28,20 @@ if apps.is_installed("payroll"):
 
         filter_form = PayslipFilter(request.GET, payslips)
 
+        payslip_export_access = has_export_access(request, Payslip)
+        export_access_map = {
+            "payslip": payslip_export_access,
+            "allowance": payslip_export_access,
+        }
+
         return render(
             request,
             "report/payroll_report.html",
-            {"company": company, "f": filter_form},
+            {
+                "company": company,
+                "f": filter_form,
+                "export_access_map": export_access_map,
+            },
         )
 
     @login_required
@@ -91,7 +102,6 @@ if apps.is_installed("payroll"):
                     "id",  # Include payslip ID to fetch pay_head_data later
                     "employee_id__employee_first_name",
                     "employee_id__employee_last_name",
-                    "employee_id__badge_id",
                     "employee_id__gender",
                     "employee_id__email",
                     "employee_id__phone",
@@ -193,7 +203,6 @@ if apps.is_installed("payroll"):
                 data_list.append(
                     {
                         "Employee": f"{item['employee_id__employee_first_name']} {item['employee_id__employee_last_name']}",
-                        "Badge Id": item["employee_id__badge_id"] or "-",
                         "Gender": choice_gender.get(item["employee_id__gender"]),
                         "Email": item["employee_id__email"],
                         "Phone": item["employee_id__phone"],
@@ -286,7 +295,6 @@ if apps.is_installed("payroll"):
                     "id",  # Include payslip ID to fetch pay_head_data later
                     "employee_id__employee_first_name",
                     "employee_id__employee_last_name",
-                    "employee_id__badge_id",
                     "employee_id__gender",
                     "employee_id__email",
                     "employee_id__phone",
@@ -357,7 +365,6 @@ if apps.is_installed("payroll"):
                     data_list.append(
                         {
                             "Employee": f"{item['employee_id__employee_first_name']} {item['employee_id__employee_last_name']}",
-                            "Badge Id": item["employee_id__badge_id"] or "-",
                             "Gender": choice_gender.get(item["employee_id__gender"]),
                             "Email": item["employee_id__email"],
                             "Phone": item["employee_id__phone"],

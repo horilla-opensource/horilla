@@ -4,36 +4,19 @@ from django.urls import path
 from report.views import (
     asset_report,
     attendance_report,
+    check_export_access,
     employee_report,
     leave_report,
     payroll_report,
     pms_report,
     recruitment_report,
-    report_templates,
 )
 
 urlpatterns = [
     path("employee-report/", employee_report.employee_report, name="employee-report"),
     path("employee-pivot/", employee_report.employee_pivot, name="employee-pivot"),
     path(
-        "report-templates/list/",
-        report_templates.list_report_templates,
-        name="report-templates-list",
-    ),
-    path(
-        "report-templates/save/",
-        report_templates.save_report_template,
-        name="report-templates-save",
-    ),
-    path(
-        "report-templates/<int:template_id>/",
-        report_templates.get_report_template,
-        name="report-templates-get",
-    ),
-    path(
-        "report-templates/<int:template_id>/delete/",
-        report_templates.delete_report_template,
-        name="report-templates-delete",
+        "check-export-access/", check_export_access, name="report-check-export-access"
     ),
 ]
 
