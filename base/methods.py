@@ -1008,8 +1008,17 @@ def reload_queryset(fields):
         model = field.queryset.model
         model_name = model.__name__
 
-        if model_name == "Company" and selected_company and selected_company != "all":
-            field.queryset = model.objects.filter(id=selected_company)
+        if model_name == "Company":
+            if selected_company and selected_company != "all":
+                field.queryset = model.objects.filter(id=selected_company)
+            elif selected_company == "all" and request:
+                allowed = getattr(request, "allowed_company_ids", None)
+                if allowed is not None:
+                    field.queryset = model.objects.filter(id__in=allowed)
+                else:
+                    field.queryset = model.objects.all()
+            else:
+                field.queryset = model.objects.all()
         elif (filters := model_filters.get(model_name)) is not None:
             field.queryset = model.objects.filter(**filters)
         else:
